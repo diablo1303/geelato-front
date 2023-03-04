@@ -1,0 +1,70 @@
+<template>
+  <div>
+    <a-select @change="onEntityChange" v-model="mv">
+      <a-option v-for="item in entityLiteMetas" :value="item.entityName">{{ item.entityTitle }}</a-option>
+    </a-select>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import {inject, ref, watch} from 'vue'
+import {useEntityStore} from "@geelato/gl-ide";
+
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default() {
+      return ''
+    }
+  }
+})
+const emits = defineEmits(['update:modelValue'])
+const entityStore = useEntityStore()
+const entityLiteMetas = ref({})
+const ds = inject('$entityDS')
+const res = entityStore.loadEntityLiteMetas('')
+res.then(data=>{
+  entityLiteMetas.value = data
+})
+
+const mv = ref('')
+mv.value = props.modelValue
+watch(mv, (val) => {
+  emits('update:modelValue', val)
+})
+
+const setEntityAndLoadFieldMetas = (entityName: string) => {
+  console.log('setEntityAndLoadFieldMetas by entity:', entityName)
+  entityStore.loadFieldMetas('', entityName)
+}
+const onEntityChange = (entityName: string) => {
+  console.log('onEntityChange', entityName,entityLiteMetas)
+  let entityLiteMeta = {}
+  for(let i in entityLiteMetas.value){
+    // @ts-ignore
+    if(entityLiteMetas.value[i].entityName===entityName){
+      // @ts-ignore
+      entityLiteMeta = entityLiteMetas.value[i]
+    }
+  }
+  entityStore.loadFieldMetas('', entityName).then((fieldMetas)=>{
+    console.log('fieldMetas',fieldMetas)
+    ds.value.entityMeta = {entityName:entityName,
+      // @ts-ignore
+      entityTitle:entityLiteMeta.entityTitle,
+      fieldMetas
+    }
+    ds.value.fieldMetas = fieldMetas
+    console.log('inject ds:',ds)
+  })
+}
+
+// 初始化，加载实体列表及相应的实体元数据
+if(props.modelValue){
+  onEntityChange(props.modelValue)
+}
+</script>
+
+<style scoped>
+
+</style>

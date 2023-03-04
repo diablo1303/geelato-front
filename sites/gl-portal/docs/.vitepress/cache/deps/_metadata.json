@@ -1,0 +1,101 @@
+{
+  "hash": "6afd1119",
+  "browserHash": "c46b8bc5",
+  "optimized": {
+    "vue": {
+      "src": "../../../../../../node_modules/.pnpm/vue@3.2.47/node_modules/vue/dist/vue.runtime.esm-bundler.js",
+      "file": "vue.js",
+      "fileHash": "4d93d112",
+      "needsInterop": false
+    },
+    "vuedraggable": {
+      "src": "../../../../../../node_modules/.pnpm/vuedraggable@4.1.0_vue@3.2.47/node_modules/vuedraggable/dist/vuedraggable.umd.js",
+      "file": "vuedraggable.js",
+      "fileHash": "3e932a6b",
+      "needsInterop": true
+    },
+    "pinia": {
+      "src": "../../../../../../node_modules/.pnpm/pinia@2.0.32_vue@3.2.47/node_modules/pinia/dist/pinia.mjs",
+      "file": "pinia.js",
+      "fileHash": "cf042f84",
+      "needsInterop": false
+    },
+    "@arco-design/web-vue": {
+      "src": "../../../../../../node_modules/.pnpm/@arco-design+web-vue@2.43.2_vue@3.2.47/node_modules/@arco-design/web-vue/es/index.js",
+      "file": "@arco-design_web-vue.js",
+      "fileHash": "9d5db3e9",
+      "needsInterop": false
+    },
+    "vue-i18n": {
+      "src": "../../../../../../node_modules/.pnpm/vue-i18n@9.2.2_vue@3.2.47/node_modules/vue-i18n/dist/vue-i18n.esm-bundler.js",
+      "file": "vue-i18n.js",
+      "fileHash": "3ec753ff",
+      "needsInterop": false
+    },
+    "vue-json-pretty": {
+      "src": "../../../../../../node_modules/.pnpm/vue-json-pretty@2.2.3_vue@3.2.47/node_modules/vue-json-pretty/lib/vue-json-pretty.js",
+      "file": "vue-json-pretty.js",
+      "fileHash": "7fd75194",
+      "needsInterop": true
+    },
+    "mitt": {
+      "src": "../../../../../../node_modules/.pnpm/mitt@3.0.0/node_modules/mitt/dist/mitt.mjs",
+      "file": "mitt.js",
+      "fileHash": "aa73fffa",
+      "needsInterop": false
+    },
+    "@ant-design/icons-vue": {
+      "src": "../../../../../../node_modules/.pnpm/@ant-design+icons-vue@6.1.0_vue@3.2.47/node_modules/@ant-design/icons-vue/es/index.js",
+      "file": "@ant-design_icons-vue.js",
+      "fileHash": "0af27c79",
+      "needsInterop": false
+    },
+    "splitpanes": {
+      "src": "../../../../../../node_modules/.pnpm/splitpanes@3.1.5/node_modules/splitpanes/dist/splitpanes.es.js",
+      "file": "splitpanes.js",
+      "fileHash": "895b631e",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../../../../../node_modules/.pnpm/axios@1.3.4/node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "86c393e1",
+      "needsInterop": false
+    },
+    "lodash/cloneDeep": {
+      "src": "../../../../../../packages/gl-ui-arco/node_modules/lodash/cloneDeep.js",
+      "file": "lodash_cloneDeep.js",
+      "fileHash": "2f741fb0",
+      "needsInterop": true
+    },
+    "screenfull": {
+      "src": "../../../../../../node_modules/.pnpm/screenfull@6.0.2/node_modules/screenfull/index.js",
+      "file": "screenfull.js",
+      "fileHash": "7d8712a6",
+      "needsInterop": false
+    },
+    "clipboard": {
+      "src": "../../../../../../node_modules/.pnpm/clipboard@2.0.11/node_modules/clipboard/dist/clipboard.js",
+      "file": "clipboard.js",
+      "fileHash": "a19c9996",
+      "needsInterop": true
+    },
+    "sortablejs": {
+      "src": "../../../../../../node_modules/.pnpm/sortablejs@1.15.0/node_modules/sortablejs/modular/sortable.esm.js",
+      "file": "sortablejs.js",
+      "fileHash": "76dc9c0d",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-VJW3XOCT": {
+      "file": "chunk-VJW3XOCT.js"
+    },
+    "chunk-5PJZPTXT": {
+      "file": "chunk-5PJZPTXT.js"
+    },
+    "chunk-AC2VUBZ6": {
+      "file": "chunk-AC2VUBZ6.js"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+/**
+ * override
+ */
+
+/* 默认删除图标为红色 */
+
+.gl-theme-default .anticon.anticon-delete {
+    color: red;
+}

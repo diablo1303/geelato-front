@@ -1,0 +1,44 @@
+/**
+ * Base
+ * -------------------------------------------------------------------------- */
+
+:root {
+    --vp-c-brand: #8214e8;
+    --vp-c-brand-light: #ac58f6;
+}
+
+/**
+ * Colors
+ * -------------------------------------------------------------------------- */
+
+:root {
+    --c-yellow: #8214e8;
+    --c-yellow-light: #ac58f6;
+    --c-yellow-lighter: #ac58f6;
+    --c-yellow-dark: #8214e8;
+    --c-yellow-darker: #8214e8;
+}
+
+/**
+ * Component: Home
+ * -------------------------------------------------------------------------- */
+:root {
+    --vp-home-hero-name-color: #8214e8;
+    --vp-home-hero-name-color: transparent;
+    --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #28bfef);
+}
+/**
+ * Component: Button
+ * -------------------------------------------------------------------------- */
+
+:root {
+    --vp-button-brand-border: var(--c-yellow-dark);
+    /*--vp-button-brand-text: var(--vp-c-brand-text);*/
+    --vp-button-brand-bg: var(--c-yellow);
+    --vp-button-brand-hover-border: var(--c-yellow-light);
+    /*--vp-button-brand-hover-text: var(--vp-c-brand-text);*/
+    --vp-button-brand-hover-bg: var(--c-yellow-light);
+    --vp-button-brand-active-border: var(--c-yellow-dark);
+    /*--vp-button-brand-active-text: var(--vp-c-brand-text);*/
+    --vp-button-brand-active-bg: var(--vp-button-brand-bg);
+}

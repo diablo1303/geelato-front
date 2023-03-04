@@ -1,0 +1,193 @@
+/**************************************
+ * 重置、扩展第三方插件的样式
+   带gl-*为扩展样式，其它则为重置样式
+ *************************************/
+/********* semantic ui *************/
+/*@import url("gl-sui.css");*/
+/********* jsoneditor *************/
+/*@import url("gl-jsoneditor.css");*/
+/********* Jstree *************/
+@import url("../public/style/gl-jstree.css");
+/********* handsontable**************/
+/*@import url("gl-handsontable.css");*/
+/********* gl-split *************/
+/*@import url("gl-splitjs.css");*/
+/********* gl-codemirror *************/
+/*@import url("gl-codemirror.css");*/
+
+.gl-compact > .ant-tabs-bar {
+    margin: 0 !important;
+}
+
+.gl-compact > .ant-card-head {
+    min-height: 24px;
+}
+
+.ant-modal-body > .gl-compact {
+    margin: -24px;
+}
+
+.gl-card-gutter {
+    margin-bottom: 0.5em;
+}
+
+.gl-card-designer .ant-modal-body {
+    padding: 0
+}
+
+/**************************************
+ * 各组件的专用设置页面面板的样式
+   应用于：gl-ide-plugin-table-designer、gl-ide-plugin-form-designer等
+ *************************************/
+.gl-dnd-handle {
+    cursor: move;
+}
+
+.gl-ide-plugin-designer-settings .ant-tabs-tab {
+    padding-right: 5px !important;
+    padding-left: 8px !important;
+}
+
+.gl-ide-plugin-designer-settings .ant-tabs-tabpane {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.gl-ide-plugin-designer-settings .gl-title {
+    margin: 0.5em 1em;
+    font-weight: bold;
+}
+
+.gl-ide-plugin-designer-settings .gl-title > i {
+    margin: 0.5em
+}
+
+.gl-ide-plugin-designer-settings .gl-title-sub {
+    margin: 0.5em 0;
+    font-weight: bold;
+}
+
+.gl-ide-plugin-designer-settings .gl-title-sub:before {
+    content: '#';
+}
+
+.gl-ide-plugin-designer-settings .gl-mini-btn {
+    padding-right: 8px !important;
+    padding-left: 8px !important;
+}
+
+.gl-ide-plugin-designer-settings input, .gl-ide-plugin-designer-settings button, .gl-ide-plugin-designer-settings select {
+    line-height: 2em;
+    padding-left: 0.5em;
+}
+
+.gl-ide-plugin-designer-settings th {
+    font-weight: normal;
+    line-height: 2em;
+    background-color: #eeeeee;
+}
+
+.gl-ide-plugin-designer-settings .ant-tabs-bar.ant-tabs-top-bar.ant-tabs-default-bar {
+    margin: 0;
+}
+
+.gl-table-cell-sub-label {
+    width: 31%;
+    text-align: right;
+    vertical-align: middle;
+    font-weight: 500;
+    background-color: #f9f9f9;
+}
+
+.gl-table-row-header {
+    background-color: #e1e1e1;
+    text-align: center;
+}
+
+.gl-ide-designer-tips {
+    font-size: 0.9em;
+    padding: 0.5em;
+    display: none;
+    border: 1px solid #91d5ff;
+    background-color: #e6f7ff;
+}
+
+.gl-table-cell:hover .gl-ide-designer-tips {
+    display: block;
+}
+
+.label i {
+    margin-right: 0.25em;
+    color: #000000;
+}
+
+.gl-left {
+    text-align: left;
+}
+
+.gl-right {
+    text-align: right;
+}
+
+.gl-center {
+    text-align: center;
+}
+
+.gl-bold {
+    font-weight: bold;
+}
+
+/* icon */
+/* iconfont 本质上还是使用的字体，所以多色图标还是不支持的，需要在这里设置*/
+
+.iconfont.icon-file {
+    color: #515151;
+}
+
+i.gl-menuItem:before {
+    content: "M"
+    /*content: "\e895"*/
+    /*color: #2185d0;*/
+}
+
+i[rel="iconfont icon-file"]:before {
+    content: "\e67d" !important;
+    /*color: #515151 !important;*/
+}
+
+[contenteditable]:focus, [input]:focus {
+    outline: 2px solid #178df7;
+}
+
+/**************************************
+ * ide preview
+ *************************************/
+.gl-ide-preview .gl-dnd-col-toolbar, .gl-ide-preview .gl-dnd-row-toolbar {
+    display: none;
+}
+
+.gl-designer {
+    margin: 0;
+    padding: 0;
+}
+
+
+.gl-scrollbar-small::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);
+    -moz-box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);
+    -o-box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);
+    background-color: #F5F5F5;
+    border-radius: 8px;
+}
+
+.gl-scrollbar-small::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.gl-scrollbar-small::-webkit-scrollbar-thumb {
+    background-color: #646464;
+    border-radius: 8px;
+    background-image: -webkit-linear-gradient(30deg, rgba(0, 0, 0, .2) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, .2) 50%, rgba(0, 0, 0, .2) 75%, transparent 75%, transparent);
+}

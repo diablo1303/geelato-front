@@ -1,0 +1,18 @@
+:root {
+    --gl-color-primary: #6bd1ff;
+    --gl-color-danger: #cc0016;
+    --gl-color-dashed: #ccc;
+
+    --gl-color-border: #dedede;
+
+    /*--gl-layout-header-height: 3.2em;*/
+    /*--gl-layout-header-title-height: 1.59em;*/
+    /*--gl-layout-footer-height: 1.5em;*/
+    /*--gl-layout-content-nav-width: 1.6em;*/
+    /*--gl-layout-content-subnav-width: 20em;*/
+    /*--gl-ele-hover-color: #cccccc;*/
+    /*--gl-ele-color: #ececec;*/
+    /*--gl-ele-line-color: #dddddd;*/
+    /*--gl-ele-title-bg-color: #EBEBEB;*/
+    /*--gl-ele-content-bg-color: #f8f8f8;*/
+}
