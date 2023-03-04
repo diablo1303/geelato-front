@@ -1,0 +1,9 @@
+packages:
+  # 所有子包
+  - 'packages/*'
+  # 项目的门户网站
+  - 'sites/*'
+  # all packages in subdirs of webapps/
+  - 'webapps/*'
+  # 应用站点，包括gl-admin
+  - '!**/test/**'
