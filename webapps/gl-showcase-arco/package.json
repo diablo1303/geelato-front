@@ -17,7 +17,7 @@
     "@geelato/gl-ui-schema-arco": "workspace:^0.0.1",
     "@scena/ruler": "^0.7.2",
     "@types/splitpanes": "^2.2.1",
-    "axios": "^0.19.0",
+    "axios": "^0.24.0",
     "echarts": "^5.1.0",
     "mitt": "^2.1.0",
     "monaco-editor": "0.23.0",
