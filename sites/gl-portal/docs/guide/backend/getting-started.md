@@ -41,7 +41,7 @@
 并从github上将以上几个项目（modules）clone下来，放在geelato-projects目录下。
 
 ```bash
-D:\ws\x\geelato-projects-2>git clone git@github.com:geelato-projects/geelato-parent.git
+D:\ws\x\geelato-projects>git clone git@github.com:geelato-projects/geelato-parent.git
 Cloning into 'geelato-parent'...
 remote: Enumerating objects: 44, done.
 remote: Counting objects: 100% (6/6), done.
