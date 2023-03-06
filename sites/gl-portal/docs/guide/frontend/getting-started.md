@@ -14,12 +14,10 @@
   npm config set registry https://registry.npmmirror.com
   ```
 
-  
-
 ## 项目创建
 
 ```bash
-# 先更改CMD窗口编码
+# 先更改CMD窗口编码 (可选操作)
 chcp 65001
 ```
 
@@ -37,11 +35,35 @@ remote: Compressing objects: 100% (677/677), done.
 remote: Total 910 (delta 128), reused 908 (delta 126), pack-reused 0
 Receiving objects: 100% (910/910), 3.39 MiB | 2.29 MiB/s, done.
 Resolving deltas: 100% (128/128), done.
+```
+
+在项目目录D:\ws\x\geelato-projects\geelato-front下添加package.json文件
+
+```json
+{
+  "private": true,
+  "version": "1.0.0-alpha.1",
+  "packageManager": "pnpm@7.28.0",
+  "type": "module",
+  "resolutions": {
+	"bin-wrapper": "npm:bin-wrapper-china"
+  }
+}
+```
+
+```bash
+# 安装
+# 关闭ssl，否则Hostname/IP does not match certificate's altnames的问题，待安装完成之后再开启
+npm set strict-ssl false 
 
 # 安装依赖
 D:\ws\x\geelato-projects\geelato-front>pnpm i
 
+# 启用ssl
+npm set strict-ssl true
 ```
+
+
 
 ## 启动项目
 
@@ -101,7 +123,7 @@ node_modules/.pnpm/mozjpeg@7.1.1/node_modules/mozjpeg: Running postinstall scrip
 
 ```
 # github
-199.232.4.133    raw.githubusercontent.com
+199.232.4.133 raw.githubusercontent.com
 ```
 
 ```
@@ -122,5 +144,8 @@ ping raw.githubusercontent.com
 npm set strict-ssl false  
 ```
 
+### clone时git上的项目，SSH远程连接报错：kex_exchange_identification: Connection closed by remote host
 
+删除以下文件known_hosts.old，重新打开命令窗口，重试，如果还有问题删除或known_hosts，再重试。
 
+![image-20230306115944768](./../../public/images/image-20230306115944768.png)
