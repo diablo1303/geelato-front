@@ -100,23 +100,8 @@ node_modules/.pnpm/mozjpeg@7.1.1/node_modules/mozjpeg: Running postinstall scrip
 此时ping raw.githubusercontent.com，看是不是超时了，是的话，把下面的内容加到C:\Windows\System32\drivers\etc\hosts文件中
 
 ```
-52.74.223.119     github.com
-192.30.253.119    gist.github.com
-54.169.195.247    api.github.com
-185.199.111.153   assets-cdn.github.com
-151.101.76.133    raw.githubusercontent.com
-151.101.76.133    gist.githubusercontent.com
-151.101.76.133    cloud.githubusercontent.com
-151.101.76.133    camo.githubusercontent.com
-151.101.76.133    avatars0.githubusercontent.com
-151.101.76.133    avatars1.githubusercontent.com
-151.101.76.133    avatars2.githubusercontent.com
-151.101.76.133    avatars3.githubusercontent.com
-151.101.76.133    avatars4.githubusercontent.com
-151.101.76.133    avatars5.githubusercontent.com
-151.101.76.133    avatars6.githubusercontent.com
-151.101.76.133    avatars7.githubusercontent.com
-151.101.76.133    avatars8.githubusercontent.com
+# github
+199.232.4.133    raw.githubusercontent.com
 ```
 
 ```
