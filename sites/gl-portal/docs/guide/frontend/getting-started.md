@@ -56,7 +56,8 @@ Resolving deltas: 100% (128/128), done.
 # 关闭ssl，否则Hostname/IP does not match certificate's altnames的问题，待安装完成之后再开启
 npm set strict-ssl false 
 
-# 安装依赖
+# 安装依赖，执行pnpm i不成功时(如出现connect ETIMEDOUT问题)，可多执行几次pnpm i试试，详见常见问题
+D:\ws\x\geelato-projects>cd geelato-front
 D:\ws\x\geelato-projects\geelato-front>pnpm i
 
 # 启用ssl
