@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import "../../assets/iconfont.js"
+// import "../../assets/iconfont.js"
 export default defineComponent({
   name: "GlIconfont",
   // components: {GlIconfontBase},
@@ -26,6 +26,16 @@ export default defineComponent({
     twoToneColor: String,
     // 样式
     iconStyle: Object
+  },
+  created() {
+
+  },
+  mounted () {
+    // 动态import，解决build时，window is not defined的问题
+    // @ts-ignore
+    import('../../assets/iconfont.js').then(module => {
+      // use code
+    })
   }
 })
 </script>

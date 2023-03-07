@@ -33,6 +33,7 @@ import DesignerStagePanel from './StagePanel.vue'
 import DesignerSetterPanel from './SetterPanel.vue'
 import DesignerStatusPanel from './StatusPanel.vue'
 import {useThemeStore} from "../stores/UseThemeStore";
+import {CheckUtil} from "@geelato/gl-ui";
 // DesignerSidebar, DesignerStage, DesignerSettings
 export default defineComponent({
   name: "GlIde",
@@ -50,11 +51,13 @@ export default defineComponent({
     const stagePanels = ref([])
     const themeStore = useThemeStore()
     const refreshFlag = true
-    if (typeof window !== 'undefined') {
-      window.onresize = () => {
-        return (() => {
-          themeStore.resize()
-        })()
+    if(CheckUtil.isBrowser()) {
+      if (typeof window !== 'undefined') {
+        window.onresize = () => {
+          return (() => {
+            themeStore.resize()
+          })()
+        }
       }
     }
 

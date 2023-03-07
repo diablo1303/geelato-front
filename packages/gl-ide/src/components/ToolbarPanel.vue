@@ -56,7 +56,7 @@
 
 <script lang="ts" setup>
 import {ref} from 'vue'
-import {utils} from "@geelato/gl-ui";
+import {utils,CheckUtil} from "@geelato/gl-ui";
 import screenfull from 'screenfull'
 import Events from "../entity/Events"
 import {useIdeStore} from "../stores/UseIdeStore";
@@ -138,7 +138,9 @@ const toggleFullScreen = () => {
 }
 
 const gotoHelpPage = ()=>{
-  window.open('https://www.geelato.cn', '_blank');
+  if(CheckUtil.isBrowser()){
+    window.open('https://www.geelato.cn', '_blank');
+  }
 }
 
 const changeLanguages = () => {

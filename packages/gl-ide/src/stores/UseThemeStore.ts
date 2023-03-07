@@ -1,4 +1,5 @@
 import {defineStore} from 'pinia'
+import {CheckUtil} from "@geelato/gl-ui";
 
 const sidebarTabWidthDefault = 22
 
@@ -41,9 +42,11 @@ export const useThemeStore = defineStore({
          *  window 窗口调整
          */
         resize() {
-            if (typeof window !== 'undefined') {
-                this.ideHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
-                this.ideWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+            if(CheckUtil.isBrowser()){
+                if (typeof window !== 'undefined') {
+                    this.ideHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+                    this.ideWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth
+                }
             }
         }
     }
