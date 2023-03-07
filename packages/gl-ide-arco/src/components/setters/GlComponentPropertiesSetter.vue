@@ -4,7 +4,7 @@
     <template v-for="propertySetterMeta in componentMeta.properties">
       <GlPropertySetter :propertySetterMeta="propertySetterMeta"
                         :propertyValue="getPropertyValue(propertySetterMeta.name,propertySetterMeta.type||'props')"
-                        @update="(val)=>{setPropertyValue(propertySetterMeta.name,val,propertySetterMeta.type||'props')}">
+                        @update="(val:any)=>{setPropertyValue(propertySetterMeta.name,val,propertySetterMeta.type||'props')}">
       </GlPropertySetter>
     </template>
   </div>

@@ -19,7 +19,7 @@ import {utils} from "@geelato/gl-ui";
 import {useIdeStore} from "@geelato/gl-ide";
 import {emitter} from "@geelato/gl-ui";
 import {getCurrentInstance} from "vue";
-import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const test = ref('')
 const componentStore = useIdeStore().componentStore

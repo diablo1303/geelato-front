@@ -71,7 +71,7 @@ export default defineComponent({
       }
     },
     /**
-     *  共选择的实体字段集合
+     *  供选择的实体字段集合
      */
     entityFieldMetas:{
       type:Array as PropType<Array<FieldMeta>>,

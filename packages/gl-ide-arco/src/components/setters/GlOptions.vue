@@ -63,8 +63,8 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive} from 'vue'
-
+import {defineComponent, type PropType, reactive} from 'vue'
+type ColumnType = {dataIndex:String,title?:String}
 export default defineComponent({
   name: "GlOptions",
   props: {
@@ -75,7 +75,7 @@ export default defineComponent({
       }
     },
     columns: {
-      type: Array,
+      type: Array as PropType<Array<ColumnType>>,
       default() {
         return [{dataIndex: 'label', title: '显示名'}, {dataIndex: 'key', title: '值'}]
       }

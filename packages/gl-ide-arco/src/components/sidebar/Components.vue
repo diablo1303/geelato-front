@@ -13,11 +13,11 @@
             :group="{ name: 'layoutItems', pull: 'clone', put: false }"
             ghostClass="ghost"
             :sort="false"
-            :clone="($event)=>getCloneItem($event,groupMap[group.name])"
+            :clone="($event:any)=>getCloneItem($event,groupMap[group.name])"
             @start="drag=true"
             @end="drag=false"
             @change="onChange"
-            @choose="($event)=>onChoose($event,groupMap[group.name])"
+            @choose="($event:any)=>onChoose($event,groupMap[group.name])"
             itemKey="id"
         >
           <template #item="{element}">

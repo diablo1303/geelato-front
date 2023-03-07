@@ -3,22 +3,22 @@
     <a-tabs size="small" v-model:activeKey="activeKey">
       <a-tab-pane key="1" tab="属性" title="属性">
         <GlComponentPropertiesSetter :componentMeta="componentMeta" :componentInstance="componentInstance"
-                                     @update="(val)=>{setInstance(val,'props')}" />
+                                     @update="(val:any)=>{setInstance(val,'props')}" />
       </a-tab-pane>
       <a-tab-pane key="2" tab="样式" title="样式" force-render>
         <GlComponentStyleSetter :componentMeta="componentMeta" :componentInstance="componentInstance"
-                                @update="(val)=>{setInstance(val,'style')}" />
+                                @update="(val:any)=>{setInstance(val,'style')}" />
       </a-tab-pane>
       <a-tab-pane key="3" tab="动作" title="动作">
         <GlComponentActionsSetter :componentMeta="componentMeta" :componentInstance="componentInstance"
-                                  @update="(val)=>{setInstance(val,'actions')}" />
+                                  @update="(val:any)=>{setInstance(val,'actions')}" />
       </a-tab-pane>
     </a-tabs>
   </div>
 </template>
 <script lang="ts" setup>
 import {EntityMeta, LooseObject} from "@geelato/gl-ui";
-import {ComponentMeta} from "@geelato/gl-ui-schema";
+import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import {provide, ref} from "vue";
 
 const entityMeta = new EntityMeta()
@@ -36,13 +36,13 @@ const props = defineProps({
     required: true
   },
   componentInstance: {
-    type: LooseObject
+    type: ComponentInstance
   }
 })
 // 组件实例值
 const componentModel = ref({})
 const activeKey = ref("1")
-const setInstance = (instance:Object,form:String)  => {
+const setInstance = (instance:ComponentInstance,form:String)  => {
   console.log('GlComponentSetter > set instance:', instance,'form',form)
   // Object.extend(this.componentInstance,instance)
   componentModel.value = instance

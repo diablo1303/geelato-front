@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="gl-history-item" v-if="history" v-for="(item,index) in reverseItems">
+    <div class="gl-history-item" v-for="(item,index) in reverseItems">
       <span>{{ index + 1 }}. {{ item.type }}</span>
       <span style="float: right">{{ item.createAt }}</span>
     </div>
@@ -8,10 +8,10 @@
 </template>
 <script setup lang="ts">
 import {computed, ref} from "vue";
-
-const history = ref([])
+import {useHistoryStore} from "@geelato/gl-ide";
+const historyStore = useHistoryStore()
 const reverseItems = computed(()=>{
-  return history.value.reverse()
+  return historyStore.steps.reverse()
 })
 </script>
 <script lang="ts">

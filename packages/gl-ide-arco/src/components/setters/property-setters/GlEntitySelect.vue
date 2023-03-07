@@ -9,7 +9,7 @@
 <script lang="ts" setup>
 import {inject, ref, watch} from 'vue'
 import {useEntityStore} from "@geelato/gl-ide";
-import {EntityLiteMeta, EntityMeta} from "@geelato/gl-ui";
+import type {EntityLiteMeta, EntityMeta} from "@geelato/gl-ui";
 
 const props = defineProps({
   modelValue: {

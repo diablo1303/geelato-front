@@ -1,14 +1,14 @@
 <template>
   <div>
     <a-select size="small" v-model="mv" @change="onChange">
-      <a-option v-for="item in ds.entityMeta.fieldMetas" :value="item.name">{{ item.title + ' ' + item.name }}</a-option>
+      <a-option v-for="item in entityFieldMetas" :value="item.name">{{ item.title + ' ' + item.name }}</a-option>
     </a-select>
   </div>
 </template>
 
 <script lang="ts" setup>
 import {inject, ref, watch} from 'vue'
-
+import type {FieldMeta} from "@geelato/gl-ui";
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: {
@@ -18,7 +18,7 @@ const props = defineProps({
     }
   }
 })
-const entityFieldMetas = ref([])
+const entityFieldMetas = ref(new Array<FieldMeta>())
 const mv = ref('')
 mv.value = props.modelValue
 watch(mv, (val) => {

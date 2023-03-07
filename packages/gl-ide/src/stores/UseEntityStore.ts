@@ -40,6 +40,8 @@ export const useEntityStore = defineStore('GlEntityStore', () => {
     return {
         loadEntityLiteMetas,
         loadFieldMetas,
-        setCurrentEntityName
+        setCurrentEntityName,
+        currentFieldMetas,
+        entityLiteMetas
     }
 })

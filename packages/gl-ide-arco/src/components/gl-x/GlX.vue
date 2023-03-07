@@ -44,7 +44,8 @@ let chooseIndex = -1
 const setData = (dataTransfer: DataTransfer, dragEl: HTMLElement) => {
   console.log('setData>', dataTransfer, dragEl)
 }
-const onAdd = (event: any, items: Array<IComponentInstance>) => {
+const onAdd = (event: any, items?: Array<IComponentInstance>) => {
+  if(!items)return
   // 添加之后去掉占位组件
   if (items.length > 0 && items.length < 3) {
     for (let key in items) {
@@ -64,7 +65,8 @@ const onAdd = (event: any, items: Array<IComponentInstance>) => {
     emitter.emit(Events.GlIdeStageComponentAdd, {event, addedItem})
   })
 }
-const onStart = (event: Event, items: Array<any>) => {
+const onStart = (event: Event, items?: Array<any>) => {
+  if(!items)return;
   dragging.value = true
   let item = items[items.length === 1 ? 0 : event.oldIndex]
   componentStore.currentDragComponentId = item.id
@@ -77,7 +79,8 @@ const onStart = (event: Event, items: Array<any>) => {
   // console.log('GlX > onStart()', event.item.classList.contains('gl-drag-start'), event.item.classList)
 
 }
-const onEnd = (event: Event, items: Array<any>) => {
+const onEnd = (event: Event, items?: Array<any>) => {
+  if(!items)return
   dragging.value = false
   let item = items[items.length === 1 ? 0 : event.newIndex]
   componentStore.currentDragComponentId = ''
@@ -90,21 +93,22 @@ const onEnd = (event: Event, items: Array<any>) => {
   }
   tryAddDndPlaceholder(items)
 }
-const onRemove = (event: Event, items: Array<any>) => {
+const onRemove = (event: Event, items?: Array<any>) => {
   console.log('GlX > onRemove()')
 }
 const onChange = () => {
 
 }
-const onChoose = (event: Event, items: Array<any>) => {
+const onChoose = (event: Event, items?: Array<any>) => {
   console.log('GlX > onChoose()')
   // console.log('gl-ide-plugin-layout > sidebar > onChoose: ', event, event.oldIndex)
   chooseIndex = event.oldIndex
 }
-const onUnchoose = (event: Event, items: Array<any>) => {
+const onUnchoose = (event: Event, items?: Array<any>) => {
   console.log('GlX > onUnchoose()')
 }
-const onClone = (event: Event, items: Array<any>) => {
+const onClone = (event: Event, items?: Array<any>) => {
+  if(!items)return
   console.log('GlX > clone()')
   if (chooseIndex < 0) {
     return

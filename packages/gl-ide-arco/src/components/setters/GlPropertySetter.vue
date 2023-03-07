@@ -160,10 +160,10 @@ setPropertyModel()
  * 属性设置之后会影响原组件的默认值设置，可以该将改属性删除，需要时再添加
  * @param propertyName
  */
-const tryClearProp = (propertyName: string) => {
+const tryClearProp = (propertyName: String) => {
   // delete this.propertyModel[propertyName]
 }
-const onSubPropertyUpdate = (name: string, value: any) => {
+const onSubPropertyUpdate = (name: String, value: any) => {
   console.log('onSubPropertyUpdate>', name, value)
   // TODO
   // @ts-ignore
