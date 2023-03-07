@@ -5,5 +5,5 @@ export default {
     "group": "dataEntry",
     "title": "树选择",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

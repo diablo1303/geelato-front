@@ -88,7 +88,7 @@
         </div>
         <div>
           <GlOptions v-model="cMeta.properties" :columns="[{dataIndex: 'name'}]" :allowAddSub="true"
-                              @selectedElement="selectProperty"></GlOptions>
+                     @selectedElement="selectProperty"></GlOptions>
         </div>
         <!--<div class="gl-title">-->
         <!--<span>-->
@@ -108,7 +108,7 @@
         </div>
         <div>
           <GlOptions v-model="cMeta.actions" :columns="[{dataIndex: 'name'}]"
-                              @selectedElement="selectMethod"></GlOptions>
+                     @selectedElement="selectMethod"></GlOptions>
         </div>
       </pane>
       <!--
@@ -157,7 +157,8 @@
               </span>
                   </template>
                   <div style="background-color: #fafafa;padding: 0 0.5em;min-height: 4em">
-                    <a-button type="" shape="round" size="small" style="float: right" @click="copyJson(cMeta)">复制</a-button>
+                    <a-button type="" shape="round" size="small" style="float: right" @click="copyJson(cMeta)">复制
+                    </a-button>
                     <VueJsonPretty v-if="refreshFlag" :data="cMeta"></VueJsonPretty>
                   </div>
                 </a-tab-pane>
@@ -168,11 +169,12 @@
               生成组件设置器UI
             </span>
                   </template>
-                  <GlComponentSetter :componentMeta="cMeta" :componentInstance="cInstance" @update="(val)=>{setInstance(val)}"/>
-<!--                  <GlComponentPropertiesSetter :componentMeta="cMeta" :componentInstance="cInstance"-->
-<!--                                     @update="(val)=>{setInstance(val)}">-->
+                  <GlComponentSetter :componentMeta="cMeta" :componentInstance="cInstance"
+                                     @update="(val:any)=>{setInstance(val)}"/>
+                  <!--                  <GlComponentPropertiesSetter :componentMeta="cMeta" :componentInstance="cInstance"-->
+                  <!--                                     @update="(val)=>{setInstance(val)}">-->
 
-<!--                  </GlComponentPropertiesSetter>-->
+                  <!--                  </GlComponentPropertiesSetter>-->
                 </a-tab-pane>
                 <a-tab-pane key="3">
                   <template #title>
@@ -181,8 +183,9 @@
                       生成组件默认实例JSON
                     </span>
                   </template>
-                  <a-button type="" shape="round" size="small" style="float: right" @click="copyJson(cInstance)">复制</a-button>
-                  <VueJsonPretty v-if="refreshFlag"  :data="cInstance"></VueJsonPretty>
+                  <a-button type="" shape="round" size="small" style="float: right" @click="copyJson(cInstance)">复制
+                  </a-button>
+                  <VueJsonPretty v-if="refreshFlag" :data="cInstance"></VueJsonPretty>
                 </a-tab-pane>
               </a-tabs>
             </td>
@@ -236,17 +239,20 @@
 </template>
 
 <script lang="ts">
-import {LooseObject, utils} from "@geelato/gl-ui";
+import {type IComponentInstance, LooseObject, utils} from "@geelato/gl-ui";
 import {Splitpanes, Pane} from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
-import {defineComponent, nextTick} from 'vue'
+import {defineComponent, nextTick, type PropType} from 'vue'
 import GlPropertySetterBuilder from './GlPropertySetterBuilder.vue'
 import GlOptions from "../setters/GlOptions.vue";
 import ClipboardJS from "clipboard";
 import VueJsonPretty from 'vue-json-pretty'
+import {ComponentMeta} from "@geelato/gl-ui-schema";
+import {ComponentInstance, PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
+
 export default defineComponent({
   name: "GlComponentBuilder",
-  components: {GlPropertySetterBuilder, Splitpanes, Pane,GlOptions,VueJsonPretty},
+  components: {GlPropertySetterBuilder, Splitpanes, Pane, GlOptions, VueJsonPretty},
   props: {
     modelValue: {
       type: Object,
@@ -262,17 +268,16 @@ export default defineComponent({
         }
       }
     },
-    componentMeta: Object,
-    componentInstance:{
-      type:Object,
+    componentMeta: {
+      type:Object as PropType<ComponentMeta>,
       default(){
-        return {
-          id: '',
-          props: {},
-          // {name: 'icon', value: 'sdfsdf'}
-          slots: {},
-          children: {}
-        }
+        return new ComponentMeta()
+      }
+    },
+    componentInstance: {
+      type: Object as PropType<IComponentInstance>,
+      default() {
+        return new ComponentInstance()
       }
     },
     // create update
@@ -281,15 +286,15 @@ export default defineComponent({
   data() {
     return {
       previewEnable: false,
-      currentProperty: {},
+      currentProperty: new PropertySetterMetaImpl(),
       currentIndex: -1,
       paneSize: {
         A: 18,
         B: 35
       },
       // componentInstance: this.modelValue.runtimeMetaruntimeMeta || ,
-      cMeta:this.componentMeta,
-      cInstance:this.componentInstance,
+      cMeta: this.componentMeta,
+      cInstance: this.componentInstance,
       // 该属性需配置的面板
       // panels: []
       refreshFlag: true
@@ -306,7 +311,7 @@ export default defineComponent({
     'cMeta.alias': {
       handler: function (val, oval) {
         this.cInstance.id = this.modelValue.runtimeMeta.id || utils.gid(val)
-        this.cInstance.templateId = this.modelValue.runtimeMeta.templateId || utils.gid(val)
+        // this.cInstance.templateId = this.modelValue.runtimeMeta.templateId || utils.gid(val)
         this.emitUpdate()
       },
       immediate: true
@@ -320,7 +325,8 @@ export default defineComponent({
     },
     'cMeta.group': {
       handler: function (val, oval) {
-        this.cInstance.group = val
+        // TODO cInstance需要group属性？
+        // this.cInstance.group = val
         this.emitUpdate()
       },
       immediate: true
@@ -334,7 +340,8 @@ export default defineComponent({
     },
     'cMeta.useBy': {
       handler: function (val, oval) {
-        this.cInstance.useBy = val
+        // TODO cInstance需要useBy属性？
+        // this.cInstance.useBy = val
         this.emitUpdate()
       },
       immediate: true
@@ -350,18 +357,18 @@ export default defineComponent({
   },
   methods: {
     addProperty() {
-      this.currentProperty = {name: ''}
+      this.currentProperty = new PropertySetterMetaImpl()
       // @ts-ignore
       this.cMeta.properties.push(this.currentProperty)
       // @ts-ignore
       this.currentIndex = this.cMeta.properties.length - 1
       this.emitUpdate()
     },
-    selectProperty({element, index}:{element:any,index:number}) {
+    selectProperty({element, index}: { element: any, index: number }) {
       this.currentProperty = element
       this.currentIndex = index
       if (this.currentIndex === -1) {
-        this.currentProperty = {}
+        this.currentProperty = new PropertySetterMetaImpl()
       }
     },
     selectChild() {
@@ -380,7 +387,7 @@ export default defineComponent({
         that.refreshFlag = true
       })
     },
-    getInstance(propertyName:string) {
+    getInstance(propertyName: string) {
       // for (let key in this.demoProps as LooseObject) {
       //   if (key === propertyName) {
       //     let kv = new LooseObject()
@@ -389,17 +396,18 @@ export default defineComponent({
       //   }
       // }
     },
-    setInstance(instance:object) {
+    setInstance(instance: IComponentInstance) {
       let that = this
       // console.log('set instance:', instance,this.cInstance)
       this.cInstance = instance
       this.refreshInstance()
     },
-    updateGlPropertySetter(mv:any) {
+    updateGlPropertySetter(mv: any) {
       console.log('updateGlPropertySetter>', mv)
       this.refreshInstance()
     },
-    copyJson(json:Object){
+    copyJson(json?: ComponentMeta | IComponentInstance) {
+      if (!json) return
       ClipboardJS.copy(JSON.stringify(json))
     }
   }

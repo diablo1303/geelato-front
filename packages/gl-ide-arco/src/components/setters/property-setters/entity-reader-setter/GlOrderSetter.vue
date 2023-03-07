@@ -52,10 +52,9 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from 'vue'
+import {defineComponent, type PropType} from 'vue'
 import GlOptions from "../../GlOptions.vue";
-import {FieldMeta} from "@geelato/gl-ide";
-import {compareMeta} from "@geelato/gl-ui";
+import {FieldMeta,compareMeta} from "@geelato/gl-ui";
 export default defineComponent({
   name: "FieldsSetter",
   components: {GlOptions},

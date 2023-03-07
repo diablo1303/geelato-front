@@ -6,6 +6,48 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "6598349",
+      "name": "login",
+      "font_class": "login",
+      "unicode": "e8ef",
+      "unicode_decimal": 59631
+    },
+    {
+      "icon_id": "4114089",
+      "name": "help",
+      "font_class": "help",
+      "unicode": "e696",
+      "unicode_decimal": 59030
+    },
+    {
+      "icon_id": "4765888",
+      "name": "logout",
+      "font_class": "logout",
+      "unicode": "e78d",
+      "unicode_decimal": 59277
+    },
+    {
+      "icon_id": "4767015",
+      "name": "fullscreen",
+      "font_class": "fullscreen",
+      "unicode": "e7ec",
+      "unicode_decimal": 59372
+    },
+    {
+      "icon_id": "4767016",
+      "name": "fullscreen-exit",
+      "font_class": "fullscreen-exit",
+      "unicode": "e7ed",
+      "unicode_decimal": 59373
+    },
+    {
+      "icon_id": "15984035",
+      "name": "preview",
+      "font_class": "preview",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
       "icon_id": "712657",
       "name": "history",
       "font_class": "history",

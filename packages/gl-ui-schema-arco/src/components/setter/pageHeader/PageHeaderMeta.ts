@@ -5,5 +5,5 @@ export default {
     "group": "navigation",
     "title": "页头",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

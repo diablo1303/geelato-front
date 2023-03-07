@@ -7,31 +7,27 @@
       <a-radio value="tags">标签</a-radio>
     </a-radio-group>
     <span>&nbsp;&nbsp;可选项：</span>
-    <GlOptions v-model="theProps.dataItems"
-                        :columns="[{dataIndex: 'label'},{dataIndex: 'value'}]"></GlOptions>
+    <GlOptions v-model="options"
+               :columns="[{dataIndex: 'label'},{dataIndex: 'value'}]"></GlOptions>
   </div>
 </template>
 
 <script lang="ts">
-import {reactive} from "vue";
+export default {name: "SelectPropsSetter"}
+</script>
+<script setup lang="ts">
 import GlOptions from "../../setters/GlOptions.vue";
 
-export default {
-  name: "SelectPropsSetter",
-  components:{GlOptions},
-  props:{
-    mode:String,
-    options:Array
-  },
-  data:{
-    theProps:{
-      //@ts-ignore
-      mode:this.mode,
-      //@ts-ignore
-      dataItems:this.options || reactive([])
+
+const props = defineProps({
+  mode: String,
+  options: {
+    type: Array,
+    default() {
+      return []
     }
   }
-}
+})
 </script>
 
 <style scoped>

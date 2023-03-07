@@ -10,13 +10,12 @@
     </a>
 
     <span style="margin-left: -13em">
-<!--      <span style="margin-right: 2em">-->
-<!--        <a size="small" :style="btnStyle" :disabled="!ideStore.history.prevAble"-->
-<!--           :title="$ide.history.prevAble?'回撤上一步':'无法回撤'" @click="$ide.history.prevStep()"><ArrowLeftOutlined/></a>-->
-<!--       <a size="small" :style="btnStyle" :disabled="!$ide.history.nextAble"-->
-<!--          :title="$ide.history.nextAble?'恢复':'无法恢复'" @click="$ide.history.nextStep()"><ArrowRightOutlined/></a>-->
-<!--      </span>-->
-
+<span style="margin-right: 2em">
+        <a-button size="small" :style="btnStyle" :disabled="!historyStore.prevAble"
+                  :title="historyStore.prevAble?'回撤上一步':'无法回撤'" @click="historyStore.prevStep()"><ArrowLeftOutlined/></a-button>
+       <a-button size="small" :style="btnStyle" :disabled="!historyStore.nextAble"
+                 :title="historyStore.nextAble?'恢复':'无法恢复'" @click="historyStore.nextStep()"><ArrowRightOutlined/></a-button>
+      </span>
       <GlIconfont type="gl-desktop" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"
                   @click="currentIconSelected='gl-desktop'"></GlIconfont>
       <GlIconfont type="gl-tablet" :class="{'gl-selected':currentIconSelected==='gl-tablet'}"
@@ -29,19 +28,15 @@
 
 
     <span style="float: right">
-      <a size="small" :style="btnStyle" style="float: right" v-if="isLogined">
-      <LogoutOutlined/>
-      退出
-    </a>
-    <a size="small" :style="btnStyle" style="float: right" v-if="!isLogined">
-      <LoginOutlined/>
+      <a-button size="small" :style="btnStyle" style="float: right" v-if="islogined">
+      <GlIconfont type="gl-logout" text="退出"></GlIconfont>
+    </a-button>
+    <a-button size="small" :style="btnStyle" style="float: right" v-if="!islogined">
+      <GlIconfont type="gl-preview"></GlIconfont>
       登录
-    </a>
-    <a size="small" :style="btnStyle" href="https://www.geelato.cn" target="_blank"
-       style="float: right">
-      <QuestionCircleOutlined/>
-      帮助
-    </a>
+    </a-button>
+      <GlIconfont type="gl-help" text="帮助" style="float: right"
+                   @click=" window.open('https://www.geelato.cn', '_blank');"></GlIconfont>
       <!--<a v-if="currentLanguage" size="small" :style="btnStyle" style="float: right"-->
       <!--@click="setI18nLanguage($i18n.locale==='zh-CN'?'en-US':'zh-CN')">-->
       <!--{{$i18n.locale==='zh-CN'?'English':'中文'}}-->
@@ -49,12 +44,10 @@
     <a size="small" :style="btnStyle" @click="toggleFullScreen" style="float: right"
        title="按ESC键即可退出全屏">
       <template v-if="isFullscreen">
-        <FullscreenExitOutlined/>
-        退出全屏
+        <GlIconfont type="gl-fullscreen-exit" text="退出全屏"></GlIconfont>
       </template>
       <template v-else>
-        <FullscreenOutlined/>
-        全屏
+      <GlIconfont type="gl-fullscreen" text="全屏"></GlIconfont>
       </template>
     </a>
     </span>
@@ -69,11 +62,13 @@ import Events from "../entity/Events"
 import {useIdeStore} from "../stores/UseIdeStore";
 import {usePageStore} from "../stores/UsePageStore";
 import {useThemeStore} from "../stores/UseThemeStore";
-import {emitter,useCurrentInstance} from "@geelato/gl-ui";
+import {emitter, useCurrentInstance} from "@geelato/gl-ui";
+import {useHistoryStore} from "../stores/UseHistoryStore";
 
 const ideStore = useIdeStore()
 const themeStore = useThemeStore()
 const pageStore = usePageStore()
+const historyStore = useHistoryStore()
 
 const btnStyle = {background: themeStore.theme.background}
 const isFullscreen = ref(false)
@@ -117,7 +112,7 @@ const openCodeViewer = () => {
   emitter.emit('GlDesignerToolbar.showCodeViewer')
 }
 
-const comingSoon = (text:string) => {
+const comingSoon = (text: string) => {
   useCurrentInstance().$message.info(text + '正在努力开发中...')
 }
 /**
@@ -130,14 +125,14 @@ const showPlugins = () => {
 /**
  *  打开预览页面
  */
-const preview = ()=> {
+const preview = () => {
   // if (ideStore.editingFile && ideStore.editingFile.id) {
   //   console.log('this.ideStore.editingFile', this.ideStore.editingFile)
   //   window.open(window.location.origin + `/#/preview/${this.ideStore.editingFile.id}/${this.ideStore.editingFile.extendId}`, '_blank')
   // }
 }
 
-const toggleFullScreen = ()=> {
+const toggleFullScreen = () => {
   screenfull.toggle()
   isFullscreen.value = !isFullscreen.value
 }

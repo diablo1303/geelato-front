@@ -1,6 +1,6 @@
 import type StyleSetterMeta from "./StyleSetterMeta";
 import  {SetterComponentPropsMetaImpl} from "./SetterComponentPropsMetaImpl";
-export default interface PropertySetterMeta {
+export default interface IPropertySetterMeta {
     // 属性名
     name: String
 
@@ -41,7 +41,7 @@ export default interface PropertySetterMeta {
     description?: String
 
     // 子属性，适用于Json结构配置的组件，如echarts中的组件
-    properties?: Array<PropertySetterMeta>
+    properties?: Array<IPropertySetterMeta>
 
     // 默认值，可用于压缩配置文件时，检查是否等于默认值，若等于默认值，则可以删除该配置的属性
     defaultValue?: any
@@ -52,9 +52,12 @@ export default interface PropertySetterMeta {
     // type为slots时有值
     slotComponentName?:String
 
+    subComponentName?:String;
+    subComponentCount?:Number
+
 }
 
-export class PropertySetterMetaImpl implements PropertySetterMeta {
+export class PropertySetterMetaImpl implements IPropertySetterMeta {
     expanded: Boolean;
     group: String;
     name: String;
@@ -68,6 +71,10 @@ export class PropertySetterMetaImpl implements PropertySetterMeta {
     properties: Array<any>;
     titleField:String;
     slotComponentName:String;
+    subComponentName?:String;
+    subComponentCount?:Number
+    placeholder?:String
+    style?: StyleSetterMeta
 
     constructor() {
         this.expanded = true
@@ -83,6 +90,8 @@ export class PropertySetterMetaImpl implements PropertySetterMeta {
         this.dataItems = []
         this.titleField = 'title'
         this.slotComponentName  =''
+        this.placeholder = ''
+        this.style = {}
     }
 
 }

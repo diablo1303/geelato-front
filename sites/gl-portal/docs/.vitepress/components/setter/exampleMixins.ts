@@ -1,4 +1,4 @@
-import {LooseObject} from "gl-runtime";
+import {LooseObject} from "geelato/gl-ui";
 import {nextTick} from "vue";
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';

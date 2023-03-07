@@ -5,5 +5,5 @@ export default {
     "group": "dataEntry",
     "title": "级联选择",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

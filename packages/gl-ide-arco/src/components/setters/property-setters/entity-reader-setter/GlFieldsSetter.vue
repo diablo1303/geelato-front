@@ -53,11 +53,11 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from 'vue'
+import {defineComponent, type PropType} from 'vue'
 import GlOptions from "../../GlOptions.vue";
-import {FieldMeta, useEntityStore} from "@geelato/gl-ide";
-import {EntityReader, EntityReaderOrder, EntityReaderParam} from "@geelato/gl-ui";
-import {compareMeta} from "@geelato/gl-ide";
+import {useEntityStore} from "@geelato/gl-ide";
+import {FieldMeta} from "@geelato/gl-ui";
+import {compareMeta} from "@geelato/gl-ui";
 export default defineComponent({
   name: "FieldsSetter",
   components: {GlOptions},
@@ -148,7 +148,7 @@ export default defineComponent({
       const fieldMeta = this.entityFieldMetas.find((fieldMeta)=>{
         return fieldMeta.name === fieldName
       })
-      this.mv[index].title =fieldMeta.title
+      this.mv[index].title =fieldMeta?.title || ''
       this.onChangeElement(fieldName,element,index)
     }
   }

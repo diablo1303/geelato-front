@@ -5,5 +5,5 @@ export default {
     "group": "navigation",
     "title": "导航菜单",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

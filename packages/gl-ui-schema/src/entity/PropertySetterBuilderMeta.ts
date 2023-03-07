@@ -40,4 +40,6 @@ export class  PropertySetterSelectOption{
     type: string = ''
     // e.g. GlRadioGroupSetter
     propsSetter?: string = ''
+
+    slotComponentName?:string = ''
 }

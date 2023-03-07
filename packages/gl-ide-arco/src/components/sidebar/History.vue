@@ -6,23 +6,18 @@
     </div>
   </div>
 </template>
+<script setup lang="ts">
+import {computed, ref} from "vue";
 
-<script lang="ts">
-import {defineComponent} from 'vue'
-
-export default defineComponent({
-  name: "GlIdePluginCoreHistory",
-  data() {
-    return {
-      history: this.$ide.operationHistory
-    }
-  },
-  computed: {
-    reverseItems() {
-      return this.history.items.reverse()
-    }
-  }
+const history = ref([])
+const reverseItems = computed(()=>{
+  // return history.value.items.reverse()
 })
+</script>
+<script lang="ts">
+export default {
+  name: "GlIdePluginCoreHistory"
+}
 </script>
 
 <style>

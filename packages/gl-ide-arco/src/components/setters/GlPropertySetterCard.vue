@@ -98,6 +98,7 @@ export default defineComponent({
   },
   data() {
     return {
+      cardTitleField:'',
       items: this.modelValue,
       selectedElement: {},
       selectedIndex: -1
@@ -141,6 +142,7 @@ export default defineComponent({
         this.selectedElement = {}
       } else {
         this.selectedIndex = index
+        // @ts-ignore
         this.selectedElement = this.items[index]
       }
      this.emitSelectedElement()

@@ -22,7 +22,7 @@
 
 import {defineComponent} from 'vue'
 import {propertySetterMetasData} from "./propertySetterMetasData";
-import {LooseObject} from "gl-runtime";
+import {LooseObject} from "geelato/gl-ui";
 
 export default defineComponent({
   name: "Example",

@@ -5,5 +5,5 @@ export default {
     "group": "dataDisplay",
     "title": "走马灯",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

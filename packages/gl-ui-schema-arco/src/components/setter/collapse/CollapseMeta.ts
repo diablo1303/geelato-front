@@ -5,5 +5,5 @@ export default {
     "group": "dataDisplay",
     "title": "折叠面板",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

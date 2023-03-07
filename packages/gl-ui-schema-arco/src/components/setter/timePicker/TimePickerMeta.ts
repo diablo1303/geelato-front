@@ -5,5 +5,5 @@ export default {
     "group": "dataEntry",
     "title": "时间选择",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

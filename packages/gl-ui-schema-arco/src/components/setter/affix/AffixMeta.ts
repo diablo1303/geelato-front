@@ -5,5 +5,5 @@ export default {
     "group": "navigation",
     "title": "固钉",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

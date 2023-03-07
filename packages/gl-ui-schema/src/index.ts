@@ -2,8 +2,8 @@ import type {App, Plugin} from 'vue'
 import ComponentMeta from "./entity/ComponentMeta";
 import ComponentInstance from "./entity/ComponentInstance";
 import ComponentMaterial from "./entity/ComponentMaterial";
-import {PropertySetterMetaImpl} from "./entity/PropertySetterMeta";
-import type PropertySetterMeta from "./entity/PropertySetterMeta";
+import {PropertySetterMetaImpl} from "./entity/IPropertySetterMeta";
+import type IPropertySetterMeta from "./entity/IPropertySetterMeta";
 import {ComponentSetterMetaImpl} from "./entity/ComponentSetterMeta";
 import {PropertySetterBuilderMeta, PropertySetterSelectOption} from "./entity/PropertySetterBuilderMeta";
 import {schema} from "./components/schema";
@@ -19,7 +19,7 @@ export {
     ComponentMeta,
     ComponentInstance,
     ComponentSetterMetaImpl,
-    PropertySetterMeta,
+    IPropertySetterMeta,
     PropertySetterMetaImpl,
     PropertySetterBuilderMeta,
     PropertySetterSelectOption,

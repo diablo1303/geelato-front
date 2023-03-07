@@ -5,5 +5,5 @@ export default {
     "group": "dataDisplay",
     "title": "日历",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

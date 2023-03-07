@@ -5,5 +5,5 @@ export default {
     "group": "navigation",
     "title": "步骤条",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

@@ -21,7 +21,7 @@
 
 import {defineComponent, nextTick, ref} from 'vue'
 import {componentMeta, componentInstance} from "./ComponentSetterData.ts";
-import {LooseObject} from "gl-runtime";
+import {LooseObject} from "geelato/gl-ui";
 
 export default defineComponent({
   name: "ComponentSetterSteps",

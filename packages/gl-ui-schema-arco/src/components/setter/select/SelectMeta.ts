@@ -5,5 +5,5 @@ export default {
     "group": "dataEntry",
     "title": "选择器",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

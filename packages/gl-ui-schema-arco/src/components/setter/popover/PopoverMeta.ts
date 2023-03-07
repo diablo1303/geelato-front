@@ -5,5 +5,5 @@ export default {
     "group": "dataDisplay",
     "title": "气泡卡片",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

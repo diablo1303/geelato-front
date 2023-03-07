@@ -14,5 +14,6 @@ export default {
         "description": "组件自动获取焦点",
         "title": "自动焦点",
         "setterComponentName": "ASwitch"
-    }]
+    }],
+    "actions": []
 }

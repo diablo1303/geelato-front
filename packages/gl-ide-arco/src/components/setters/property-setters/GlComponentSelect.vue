@@ -31,16 +31,18 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, watch} from "vue";
+import {PropType, ref, watch} from "vue";
 import GlComponentSetter from "../GlComponentSetter.vue";
 import {useIdeStore} from "@geelato/gl-ide";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
+import  {IComponentInstance} from "@geelato/gl-ui";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps(
     {
       modelValue: {
-        type: Object,
+        type: Object as PropType<IComponentInstance>,
         default() {
           return {
             componentName:'',
@@ -60,10 +62,7 @@ const props = defineProps(
       }
     }
 )
-const mv = ref({
-  componentName:'',
-  props:{}
-})
+const mv = ref(new ComponentInstance())
 const visible = ref(false)
 const componentMeta = ref({})
 const componentInstance = ref({})

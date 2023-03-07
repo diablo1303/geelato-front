@@ -10,6 +10,8 @@ module.exports = {
     '@vue/eslint-config-prettier/skip-formatting'
   ],
   parserOptions: {
-    ecmaVersion: 'latest'
+    ecmaVersion: 'latest',
+    "sourceType": "module",  // 指定来源的类型，"script" (默认) 或 "module"（如果你的代码是 ECMAScript 模块)
+    "allowImportExportEverywhere": true  // 不限制eslint对import使用位置
   }
 }

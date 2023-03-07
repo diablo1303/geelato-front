@@ -32,10 +32,10 @@ export default {
         app.component('ComponentBuilderExample', ComponentBuilderExample)
         app.component('SetterExample', SetterExample)
 
+        app.use(createPinia())
         // app is the Vue 3 app instance from `createApp()`.
         // router is VitePress' custom router. `siteData` is
         // a `ref` of current site-level metadata.
-        app.use(createPinia())
         if (inBrowser) {
             const i18n = createI18n({
                 locale: localStorage.getItem('arco-locale') || 'zh-CN',
@@ -47,18 +47,19 @@ export default {
                 },
             });
             app.use(i18n)
+            // TODO build之后，执行useComponentMaterialStore会报错
             const componentMaterialStore = useComponentMaterialStore()
             componentMaterialStore.init()
             const ideStore = useIdeStore()
             ideStore.addComponentMetas(componentMaterialStore.componentMetas)
         }
+        entityApi.reCreate({baseURL:"https://localhost:8080"})
         app.use(ArcoVue)
         app.use(GlUi)
-        entityApi.reCreate({baseURL:"https://localhost:8080"})
         app.use(GlUiArco)
         app.use(GlUiSchemaCore)
         app.use(GlUiSchemaArco)
-        // app.use(GlIde)
+        app.use(GlIde)
         app.use(GlIdeArco)
 
         // 需要在调用时手动传入 AppContext，或者为组件全局指定 AppContext

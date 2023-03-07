@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   computed,
-  nextTick,
+  nextTick, onMounted,
   type PropType,
   reactive,
   ref,
@@ -53,9 +53,9 @@ const props = defineProps({
   /**
    *  列上的操作配置
    */
-  columnActions:{
-    type:Array as PropType<Action[]>,
-    default(){
+  columnActions: {
+    type: Array as PropType<Action[]>,
+    default() {
       return []
     }
   },
@@ -110,7 +110,7 @@ const columns = computed<TableColumnData[]>(() => {
   if (props.enableI18n && props.columns) {
     columnData = JSON.parse(JSON.stringify(props.columns));
     columnData.forEach((item) => {
-      console.log("item:", item, item.title, t("searchTable.columns.status"));
+      // console.log("gl-entity-table > columns item:", item, item.title);
       // @ts-ignore
       item.title = item.title ? t(item.title + "") : "";
     });
@@ -151,7 +151,7 @@ const fetchData = async (readerInfo?: {
     // @ts-ignore
     entityReader.params = readerInfo?.params;
     const response = await entityApi.queryByEntityReader(entityReader);
-    console.log('table > fetch data and response:',response)
+    console.log('table > fetch data and response:', response)
     renderData.value = response.data.data;
     pagination.current = readerInfo?.pageNo || 1;
     pagination.total = response.data.total;
@@ -172,7 +172,9 @@ const onPageChange = (pageNo: number) => {
   fetchData({pageNo});
 };
 
-fetchData();
+onMounted(() => {
+  fetchData();
+})
 const exchangeArray = <T extends Array<any>>(
     array: T,
     beforeIdx: number,
@@ -268,7 +270,8 @@ defineExpose({search, popupVisibleChange, handleChange});
   >
     <template #optional="{ record }">
       <template v-for="columnAction in columnActions">
-        <a-button size="mini" :status="columnAction.status" @click="$modal.info({ title: 'Name', content: record.name })">
+        <a-button size="mini" :status="columnAction.status"
+                  @click="$modal.info({ title: 'Name', content: record.name })">
           {{ columnAction.title }}
         </a-button>
       </template>

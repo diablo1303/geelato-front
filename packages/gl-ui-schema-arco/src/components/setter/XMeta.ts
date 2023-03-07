@@ -5,5 +5,5 @@ export default {
     "group": "general",
     "title": "",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

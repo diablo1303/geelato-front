@@ -14,7 +14,7 @@ export default class PluginUtil {
       return true
     }
     app.config.globalProperties.$gl_packages[packageName] = true
-    console.log(packageName,"> install()",app.config.globalProperties.$gl_packages,'app._uid:',app._uid);
+    // console.log(packageName,"> install()",app.config.globalProperties.$gl_packages,'app._uid:',app._uid);
     return false
   }
 }

@@ -5,5 +5,5 @@ export default {
     "group": "dataDisplay",
     "title": "图片",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

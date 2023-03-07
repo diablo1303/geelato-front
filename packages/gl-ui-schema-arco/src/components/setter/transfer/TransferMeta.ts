@@ -5,5 +5,5 @@ export default {
     "group": "dataEntry",
     "title": "穿梭框",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

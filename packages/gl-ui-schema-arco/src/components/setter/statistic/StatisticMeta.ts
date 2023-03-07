@@ -5,5 +5,6 @@ export default {
     "group": "dataDisplay",
     "title": "统计数值",
     "useBy": ["freePage"],
-    "properties": []
+    "properties": [],
+    "actions": []
 }

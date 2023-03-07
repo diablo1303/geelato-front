@@ -1,21 +1,20 @@
 <template>
   <span class="GlIconfont">
-    <GlIconfontBase v-if="type" :type="type" :spin="spin" :rotate="rotate" :twoToneColor="twoToneColor"
-                    :style="iconStyle"></GlIconfontBase>
+<!--    <GlIconfontBase v-if="type" :type="type" :spin="spin" :rotate="rotate" :twoToneColor="twoToneColor"-->
+<!--                    :style="iconStyle"></GlIconfontBase>-->
+    <svg class="gl-icon" aria-hidden="true" :style="iconStyle">
+      <use :xlink:href="'#'+type"></use>
+    </svg>
     <span v-if="text" class="GlIconfontText">{{ text }}</span>
   </span>
 </template>
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {createFromIconfontCN} from '@ant-design/icons-vue';
-
-const GlIconfontBase = createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/c/font_2457479_dm72t8c3b6v.js', // 在 iconfont.cn 上生成
-});
+import "../../assets/iconfont.js"
 export default defineComponent({
   name: "GlIconfont",
-  components: {GlIconfontBase},
+  // components: {GlIconfontBase},
   props: {
     type: String,
     text: String,
@@ -42,5 +41,12 @@ export default defineComponent({
 
 .ant-tabs-tab .GlIconfont .anticon {
   margin-right: 0;
+}
+
+.gl-icon {
+  width: 1em; height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
 }
 </style>

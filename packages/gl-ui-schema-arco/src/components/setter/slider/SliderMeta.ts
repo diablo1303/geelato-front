@@ -5,5 +5,5 @@ export default {
     "group": "dataEntry",
     "title": "滑动输入条",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

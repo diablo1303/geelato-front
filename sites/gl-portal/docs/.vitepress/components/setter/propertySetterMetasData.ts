@@ -1,6 +1,6 @@
-import {PropertySetterMeta} from "@geelato/gl-ui-schema";
+import {IPropertySetterMeta} from "@geelato/gl-ui-schema";
 
-export const propertySetterMetasData: Array<PropertySetterMeta> = [
+export const propertySetterMetasData: Array<IPropertySetterMeta> = [
     {
         expanded: true,
         placeholder: "",

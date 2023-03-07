@@ -96,5 +96,6 @@ export default {
         "description": "自动完成的数据源",
         "title": "数据源"
     }],
-    "diplayMode": "Tile"
+    "diplayMode": "Tile",
+    "actions": []
 }

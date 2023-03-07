@@ -2,7 +2,8 @@
   组件的属性配置器
 -->
 <template>
-  <div class="GlPropertySetter gl-table-row" v-if="propertySetterMeta.setterComponentName!=='GlEmptySetter'&&propertySetterMeta.show!==false">
+  <div class="GlPropertySetter gl-table-row"
+       v-if="propertySetterMeta.setterComponentName!=='GlEmptySetter'&&propertySetterMeta.show!==false">
     <div class="gl-table-cell gl-label" style="position: relative;width: 7em"
          @dblclick.ctrl="tryClearProp(propertySetterMeta.name)" title="按住Ctrl，双击清除该属性，恢复初始状态">
       <template v-if="displayMode==='Collapse'">
@@ -34,7 +35,7 @@
               <template v-for="property in propertySetterMeta.properties">
                 <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
                                   :propertyValue="slotProps.item[property.name]"
-                                  @update="($event)=>{slotProps.item[property.name]=$event}"></GlPropertySetter>
+                                  @update="($event:any)=>{slotProps.item[property.name]=$event}"></GlPropertySetter>
               </template>
             </div>
           </GlPropertySetterCard>
@@ -72,7 +73,7 @@
       </template>
       <!-- 2 ========================type为slots========================-->
       <template v-else-if="propertySetterMeta.type==='slots'">
-         <component :is="propertySetterMeta.setterComponentName"
+        <component :is="propertySetterMeta.setterComponentName"
                    v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel.props"
                    v-bind="propertySetterMeta.setterComponentProps"
                    :style="propertySetterMeta.style"
@@ -92,7 +93,7 @@
             <template v-for="property in propertySetterMeta.properties">
               <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
                                 :propertyValue="slotProps.item.props[property.name]"
-                                @update="($event)=>{slotProps.item.props[property.name]=$event}"></GlPropertySetter>
+                                @update="($event:any)=>{slotProps.item.props[property.name]=$event}"></GlPropertySetter>
             </template>
           </div>
         </GlPropertySetterCard>
@@ -102,95 +103,96 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, ref} from 'vue'
-import {PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
+export default {
+  name: "GlPropertySetter"
+}
+</script>
+<script setup lang="ts">
+import {type PropType, reactive, ref, watch} from 'vue'
+import type {PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
+import {emitter} from "@geelato/gl-ui";
 
-export default defineComponent({
-  name: "GlPropertySetter",
-  props: {
-    /**
-     *  属性的配置展示模式
-     */
-    displayMode: String,
-    propertySetterMeta: {
-      type: [PropertySetterMetaImpl, Object],
-      required: true
-    },
-    propertyValue: [String, Number, Boolean, Array, Object, Date, Function, Symbol]
+const props = defineProps({
+  /**
+   *  属性的配置展示模式
+   */
+  displayMode: String,
+  propertySetterMeta: {
+    type: Object as PropType<PropertySetterMetaImpl>,
+    required: true
   },
-  data() {
-    return {
-      propertyModel: undefined,
-    }
-  },
-  created() {
-    this.setPropertyModel()
-  },
-  watch: {
-    propertyModel: {
-      handler: function (val, oval) {
-        console.log('update property', this.propertySetterMeta?.name, ' and set value as ', val)
-        this.$emit("update", val)
-      },
-      deep: true
-    }
-  },
-  methods: {
-    setPropertyModel() {
-      this.propertyModel = this.propertyValue
-      if (!this.propertyModel) {
-        if(this.propertySetterMeta.type==='slots'){
-          this.propertyModel = ref({componentName:this.propertySetterMeta.slotComponentName,props:{}})
-        }else{
-          if(this.propertySetterMeta.properties && this.propertySetterMeta.properties.length > 0){
-            if (this.propertySetterMeta.type === 'children' || this.propertySetterMeta.setterComponentName === 'GlObjectArraySetter') {
-              this.propertyModel = ref([])
-            } else {
-              this.propertyModel = ref({})
-            }
-          }
+  propertyValue: [String, Number, Boolean, Array, Object, Date, Function, Symbol]
+})
+
+const propertyModel = ref()
+
+// const propertyModel:[String, Number, Boolean, Array<any>, Object, Date, Function, Symbol]
+watch(() => {
+  return propertyModel.value
+}, (val, oval) => {
+  console.log('update property', props.propertySetterMeta?.name, ' and set value as ', val)
+  emitter.emit("update", val)
+}, {deep: true})
+const setPropertyModel = () => {
+  // @ts-ignore
+  propertyModel.value = this.propertyValue
+  if (!propertyModel.value) {
+    if (props.propertySetterMeta.type === 'slots') {
+      // @ts-ignore
+      this.propertyModel = ref({componentName: this.propertySetterMeta.slotComponentName, props: {}})
+    } else {
+      if (props.propertySetterMeta.properties && props.propertySetterMeta.properties.length > 0) {
+        if (props.propertySetterMeta.type === 'children' || props.propertySetterMeta.setterComponentName === 'GlObjectArraySetter') {
+          // @ts-ignore
+          this.propertyModel = ref([])
+        } else {
+          // @ts-ignore
+          this.propertyModel = ref({})
         }
       }
-      // console.log('setPropertyModel>', this.propertySetterMeta, this.propertyValue, this.propertyModel)
-    },
-    /**
-     * 属性设置之后会影响原组件的默认值设置，可以该将改属性删除，需要时再添加
-     * @param propertyName
-     */
-    tryClearProp(propertyName: string) {
-      // delete this.propertyModel[propertyName]
-    },
-    onSubPropertyUpdate(name: string, value: any) {
-      console.log('onSubPropertyUpdate>', name, value)
-      // TODO
-      this.propertyModel[name] = value
-    },
-    /**
-     * 用于创建子对象
-     */
-    createChildObjectTemplate() {
-      return reactive({})
-    },
-    /**
-     * 用于创建子组件
-     * @param childName
-     * @param childComponentName
-     */
-    createChildElementTemplate(childName: string, childComponentName: string) {
-      return reactive({
-        id: '',
-        groupName: childName,
-        componentName: childComponentName,
-        props: {},
-        slots: {},
-        children: []
-      })
-    },
-    selectChildElement() {
-
     }
   }
-})
+  // console.log('setPropertyModel>', this.propertySetterMeta, this.propertyValue, this.propertyModel)
+}
+setPropertyModel()
+
+/**
+ * 属性设置之后会影响原组件的默认值设置，可以该将改属性删除，需要时再添加
+ * @param propertyName
+ */
+const tryClearProp = (propertyName: string) => {
+  // delete this.propertyModel[propertyName]
+}
+const onSubPropertyUpdate = (name: string, value: any) => {
+  console.log('onSubPropertyUpdate>', name, value)
+  // TODO
+  // @ts-ignore
+  this.propertyModel[name] = value
+}
+/**
+ * 用于创建子对象
+ */
+const createChildObjectTemplate = () => {
+  return reactive({})
+}
+/**
+ * 用于创建子组件
+ * @param childName
+ * @param childComponentName
+ */
+const createChildElementTemplate = (childName: String, childComponentName: String) => {
+  return reactive({
+    id: '',
+    groupName: childName,
+    componentName: childComponentName,
+    props: {},
+    slots: {},
+    children: []
+  })
+}
+const selectChildElement = () => {
+
+}
 </script>
 
 <style>

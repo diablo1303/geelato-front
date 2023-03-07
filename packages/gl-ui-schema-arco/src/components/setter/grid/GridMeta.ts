@@ -5,5 +5,5 @@ export default {
     "group": "layout",
     "title": "栅格",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

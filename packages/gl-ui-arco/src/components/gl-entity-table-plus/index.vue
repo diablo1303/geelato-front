@@ -100,7 +100,7 @@
 import GlQuery from "../gl-query/index.vue";
 import GlToolbar from "../gl-toolbar/index.vue";
 import GlEntityTable from "../gl-entity-table/index.vue";
-import { computed, type PropType, ref } from "vue";
+import {computed, onMounted, type PropType, ref} from "vue";
 import type { EntityReader, EntityReaderParam } from "@geelato/gl-ui";
 import { type Query, defaultQuery } from "../gl-query/query";
 import cloneDeep from "lodash/cloneDeep";
@@ -113,7 +113,7 @@ import {
 import { type Toolbar, defaultToolbar } from "../gl-toolbar/toolbar";
 import { useI18n } from "vue-i18n";
 import { CheckUtil } from "@geelato/gl-ui";
-import {Action} from "../../types/global";
+import type {Action} from "../../types/global";
 const { t } = CheckUtil.isBrowser() ? useI18n() : { t: ()=>{} };
 
 const props = defineProps({
@@ -160,14 +160,17 @@ const props = defineProps({
   },
 });
 // 数据预处理
-props.columns.forEach((item, index) => {
-  if (item.xRenderFnBody) {
-    const fn = `(record,column,rowIndex)=>{return ${item.xRenderFnBody}}`;
-    // eslint-disable-next-line no-eval
-    item.render = eval(fn);
-  }
-});
-console.log("转换后的table:", props.columns);
+onMounted(()=>{
+  props.columns.forEach((item, index) => {
+    if (item.xRenderFnBody) {
+      const fn = `(record,column,rowIndex)=>{return ${item.xRenderFnBody}}`;
+      // eslint-disable-next-line no-eval
+      item.render = eval(fn);
+    }
+  });
+  console.log("转换后的table:", props.columns);
+})
+
 
 const size = ref<SizeProps>(props.size || "medium");
 const densityList = computed(() => [

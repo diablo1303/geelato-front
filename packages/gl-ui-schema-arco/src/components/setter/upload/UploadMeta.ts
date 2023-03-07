@@ -5,5 +5,5 @@ export default {
     "group": "dataEntry",
     "title": "上传",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

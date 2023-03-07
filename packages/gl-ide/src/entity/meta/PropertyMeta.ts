@@ -30,6 +30,9 @@ export default class PropertyMeta {
 
     props?: object
 
+    // 子属性
+    properties?:Array<PropertyMeta>
+
 
     constructor(options: { title: string, name: string, type: TypeEnums, componentName?: string, vModelName?: string, defaultValue?: any, description?: any, group?: string, data?: Array<any>, ds?: object, props?: object, style?: object }) {
         this.title = options.title
@@ -43,5 +46,9 @@ export default class PropertyMeta {
         this.vModelName = options.vModelName || (options.type === TypeEnums.Boolean ? 'checked' : 'value')
         this.props = options.props || {}
         this.style = options.style
+    }
+
+    static create(){
+        return new PropertyMeta({title: '', name: '', type: TypeEnums.String})
     }
 }

@@ -1,4 +1,4 @@
-import type PropertySetterMeta from "./PropertySetterMeta";
+import type IPropertySetterMeta from "./IPropertySetterMeta";
 
 export default interface ComponentSetterMeta {
     // 注册到全局环境的名称GlButton
@@ -12,7 +12,7 @@ export default interface ComponentSetterMeta {
     // 在属性配置面板中，是以哪种模式来展示属性，值为：Tile|Collapse
     displayMode: String,
     // 属性数组
-    properties: Array<PropertySetterMeta>
+    properties: Array<IPropertySetterMeta>
 }
 
 export class ComponentSetterMetaImpl implements ComponentSetterMeta {
@@ -20,6 +20,6 @@ export class ComponentSetterMetaImpl implements ComponentSetterMeta {
     componentRefName: String = "";
     displayMode: String = "";
     group: String = "";
-    properties: Array<PropertySetterMeta> = [];
+    properties: Array<IPropertySetterMeta> = [];
     useBy: Array<String> = [];
 }

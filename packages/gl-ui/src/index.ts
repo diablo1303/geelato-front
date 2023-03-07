@@ -6,7 +6,7 @@ import GlDndPlaceholder from './components/gl-dnd-placeholder/Index.vue'
 import GlComponent from "./components/gl-component/GlComponent.vue";
 import type IComponentInstance from "./components/gl-component/IComponentInstance";
 import {LooseObject} from "./m/mix/LooseObject";
-import {default as iconsJson} from './assets/font.json'
+import {default as iconsJson} from './assets/iconfont.json'
 import {IconsJson} from "./components/gl-iconfont/IconsJson";
 import {EntityApi, entityApi} from "./m/datasource/EntityApi";
 import {

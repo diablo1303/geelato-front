@@ -1,7 +1,7 @@
 /*
  *  打包引用的入口
  */
-import type {App,Plugin} from 'vue'
+import type {App, Plugin} from 'vue'
 import GlPlugin from "./entity/GlPlugin";
 import Panel from "./entity/Panel";
 import Events from "./entity/Events";
@@ -12,11 +12,12 @@ import BaseDesignMeta from "./entity/meta/BaseDesignMeta";
 import PropertyMeta from "./entity/meta/PropertyMeta";
 import TypeEnums from "./entity/meta/TypeEnums";
 import Page from "./entity/Page";
-import {EntityMeta,FieldMeta,compareMeta,PluginUtil} from "@geelato/gl-ui";
+import {PluginUtil} from "@geelato/gl-ui";
 import {useIdeStore} from "./stores/UseIdeStore";
 import {useEntityStore} from "./stores/UseEntityStore";
 import {useComponentStore} from "./stores/UseComponentStore";
 import {useThemeStore} from "./stores/UseThemeStore";
+import {useHistoryStore} from "./stores/UseHistoryStore";
 import uiLibAdapter from "./utils/UiLibAdapter";
 import './assets/gl-root.css'
 import './assets/gl-table-form.css'
@@ -25,7 +26,7 @@ const ide = reactive(new Ide())
 const component: Plugin = {
     install: function (app: App) {
         // @ts-ignore
-        if(PluginUtil.markInstalledPlugin(app,'gl-ide')){
+        if (PluginUtil.markInstalledPlugin(app, 'gl-ide')) {
             return
         }
         if (!app.config.globalProperties.$ide) {
@@ -35,6 +36,22 @@ const component: Plugin = {
         app.component(GlIde.name, GlIde)
     }
 }
-export {Events, GlPlugin, Panel, ide, BaseDesignMeta, PropertyMeta,EntityMeta,FieldMeta, TypeEnums,Page,GlIde,useIdeStore,useEntityStore,useComponentStore,useThemeStore,uiLibAdapter,compareMeta}
+export {
+    Events,
+    GlPlugin,
+    Panel,
+    ide,
+    BaseDesignMeta,
+    PropertyMeta,
+    TypeEnums,
+    Page,
+    GlIde,
+    useIdeStore,
+    useEntityStore,
+    useComponentStore,
+    useThemeStore,
+    useHistoryStore,
+    uiLibAdapter
+}
 // 默认导出组件
 export default component

@@ -67,13 +67,14 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-
+import {defineComponent, type PropType} from 'vue'
+type ElementType = String | Boolean | Number | undefined
+const defaultElementType:ElementType = ''
 export default defineComponent({
-  name: "GlSimpleArrayr",
+  name: "GlSimpleArray",
   props: {
     modelValue: {
-      type: Array,
+      type: Array as PropType<Array<ElementType>>,
       default() {
         return []
       }
@@ -87,8 +88,8 @@ export default defineComponent({
   },
   data() {
     return {
-      items: [],
-      selectedElement: undefined,
+      items: new Array<ElementType>(),
+      selectedElement: defaultElementType,
       selectedIndex: -1
     }
   },
@@ -112,7 +113,7 @@ export default defineComponent({
   },
   methods: {
     getDefaultElement() {
-      let element: String | Boolean | Number | undefined
+      let element:ElementType
       if (this.mode === 'Boolean') {
         element = true
       } else if (this.mode === 'Number') {
@@ -125,10 +126,11 @@ export default defineComponent({
       return element
     },
     addElement() {
-      let element: String | Boolean | Number | undefined = this.getDefaultElement()
+      let element = this.getDefaultElement()
       this.items.push(element)
       this.$emit('update:modelValue', this.items)
       this.$emit('addElement', element)
+      // @ts-ignore
       this.selectedElement = element
       this.selectedIndex = this.items.length - 1
       this.emitSelectedElement()
@@ -138,6 +140,7 @@ export default defineComponent({
       let element = this.items[index]
       // console.log('removeElement', this.selectedIndex, index, this.selectedElement)
       if (this.selectedIndex === index) {
+        // @ts-ignore
         this.selectedElement = this.getDefaultElement()
       }
       if (this.selectedIndex >= index) {
@@ -148,12 +151,14 @@ export default defineComponent({
       this.$emit('removeElement', {index: index})
       this.emitSelectedElement()
     },
-    onSelectElement(element: String | Boolean | Number, index: number) {
+    onSelectElement(element: ElementType, index: number) {
+      // @ts-ignore
       this.selectedElement = element
       this.selectedIndex = index
       this.emitSelectedElement()
     },
-    onChangeElement(element: String | Boolean | Number, index: number, $event) {
+    onChangeElement(element: ElementType, index: number, $event:any) {
+      // @ts-ignore
       this.selectedElement = element
       // this.selectedIndex = index
       // this.items[index] = this.selectedElement

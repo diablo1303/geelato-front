@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from 'vue'
+import {defineComponent, type PropType} from 'vue'
 import GlOptions from "../../GlOptions.vue";
 import {useEntityStore} from "@geelato/gl-ide";
 import {EntityReader} from "@geelato/gl-ui";

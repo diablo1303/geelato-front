@@ -5,5 +5,5 @@ export default {
     "group": "dataDisplay",
     "title": "卡片",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

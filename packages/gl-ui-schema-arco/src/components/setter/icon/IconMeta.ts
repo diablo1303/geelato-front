@@ -5,5 +5,5 @@ export default {
     "group": "general",
     "title": "图标",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

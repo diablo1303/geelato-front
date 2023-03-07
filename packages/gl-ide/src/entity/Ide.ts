@@ -8,6 +8,7 @@ import ComponentMetaManager from "./meta/ComponentMetaManager";
 import type OperationHistoryItem from "./OperationHistoryItem";
 import type ComponentDesignMeta from "./meta/ComponentDesignMeta";
 import type BaseDesignMeta from "./meta/BaseDesignMeta";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 // TODO 待整合到stores中
 export default class Ide {
@@ -59,7 +60,7 @@ export default class Ide {
     panelPadding: number = 4
 
     //--------------- 设计时交互 ---------------//
-    currentComponentTree: Array<any> = reactive([])
+    currentComponentTree: Array<ComponentInstance> = reactive([])
     private _currentHoverComponentId: string = ''
     private _currentHoverComponentName: string = ''
     private _currentSelectedComponentId: string = ''

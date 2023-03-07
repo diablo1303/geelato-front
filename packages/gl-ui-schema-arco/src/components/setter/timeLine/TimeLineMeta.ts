@@ -5,5 +5,5 @@ export default {
     "group": "dataDisplay",
     "title": "时间轴",
     "useBy": ["freePage"],
-    "properties": [],
+    "properties": [],"actions": [],
 }

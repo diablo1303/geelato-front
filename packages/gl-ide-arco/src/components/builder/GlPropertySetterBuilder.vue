@@ -154,7 +154,7 @@
                    v-model="mv.setterComponentProps"></component>
       </td>
     </tr>
-    <tr v-if="selectedSetterItem.slotCompanentName">
+    <tr v-if="selectedSetterItem.slotComponentName">
       <td class="gl-table-cell gl-label" title="将该属性设置器组件的设置结果设置到该组件中，结合slot属性使用。">
         <GlIconfont type="gl-info-circle"></GlIconfont>
         配置器Props
@@ -309,7 +309,7 @@ const setterItemsForSubComponent = [
 ]
 const vModelNameEditable = ref(true)
 const defaultValueType = ref('')
-const selectedSetterItem = ref({})
+const selectedSetterItem = ref(new PropertySetterSelectOption())
 const mv = ref<PropertySetterMetaImpl>(new PropertySetterMetaImpl())
 mv.value = props.modelValue
 onBeforeUpdate(() => {
@@ -344,7 +344,7 @@ const setSetterItem = (componentName: String) => {
     vModelNameEditable.value = true
     defaultValueType.value = option.type
   } else {
-    selectedSetterItem.value = {}
+    selectedSetterItem.value = new PropertySetterSelectOption()
     mv.value.setterComponentVModelName = ''
     vModelNameEditable.value = true
   }

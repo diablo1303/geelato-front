@@ -2,7 +2,7 @@
   <div class="gl-setter-example">
     <h4>{{ titles.result }}</h4>
     <div v-if="refreshFlag">
-      <GlComponent :glComponentInst="componentInstance">按钮</GlComponent>
+<!--      <GlComponent :glComponentInst="componentInstance">按钮</GlComponent>-->
     </div>
     <h4 :id="titles.setter" tabindex="-1">{{ titles.setter }}
       <a class="header-anchor" :href="'#'+titles.setter" aria-hidden="true">#</a>
@@ -23,7 +23,7 @@
 <script lang="ts">
 
 import {defineComponent,nextTick} from 'vue'
-import {LooseObject} from "gl-ui";
+import {LooseObject} from "@geelato/gl-ui";
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
 import {ButtonMeta as componentMeta} from "@geelato/gl-ui-schema-arco";
