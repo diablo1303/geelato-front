@@ -2,6 +2,7 @@ import {defineStore} from 'pinia'
 import ComponentMetaManager from "../entity/meta/ComponentMetaManager";
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import {emitter} from "@geelato/gl-ui";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 // 组件元数据
 const componentMetaManager: ComponentMetaManager = new ComponentMetaManager()
 const componentMetaMap: { [key: string]: any } = {}
@@ -23,7 +24,7 @@ export const useComponentStore = defineStore({
             currentHoverComponentName: '',
             currentDragComponentId: '',
             currentDragComponentName: '',
-            currentComponentTree: []
+            currentComponentTree: new Array<ComponentInstance>
         }
     },
     actions: {

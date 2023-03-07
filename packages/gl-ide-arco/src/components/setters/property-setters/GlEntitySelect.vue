@@ -9,6 +9,7 @@
 <script lang="ts" setup>
 import {inject, ref, watch} from 'vue'
 import {useEntityStore} from "@geelato/gl-ide";
+import {EntityLiteMeta, EntityMeta} from "@geelato/gl-ui";
 
 const props = defineProps({
   modelValue: {
@@ -20,10 +21,10 @@ const props = defineProps({
 })
 const emits = defineEmits(['update:modelValue'])
 const entityStore = useEntityStore()
-const entityLiteMetas = ref({})
+const entityLiteMetas= ref(new Array<EntityLiteMeta>)
 const ds = inject('$entityDS')
 const res = entityStore.loadEntityLiteMetas('')
-res.then(data=>{
+res.then((data:Array<EntityLiteMeta>)=>{
   entityLiteMetas.value = data
 })
 
@@ -39,7 +40,7 @@ const setEntityAndLoadFieldMetas = (entityName: string) => {
 }
 const onEntityChange = (entityName: string) => {
   console.log('onEntityChange', entityName,entityLiteMetas)
-  let entityLiteMeta = {}
+  let entityLiteMeta = {entityTitle:''}
   for(let i in entityLiteMetas.value){
     // @ts-ignore
     if(entityLiteMetas.value[i].entityName===entityName){
@@ -49,11 +50,13 @@ const onEntityChange = (entityName: string) => {
   }
   entityStore.loadFieldMetas('', entityName).then((fieldMetas)=>{
     console.log('fieldMetas',fieldMetas)
+    // @ts-ignore
     ds.value.entityMeta = {entityName:entityName,
-      // @ts-ignore
+
       entityTitle:entityLiteMeta.entityTitle,
       fieldMetas
     }
+    // @ts-ignore
     ds.value.fieldMetas = fieldMetas
     console.log('inject ds:',ds)
   })

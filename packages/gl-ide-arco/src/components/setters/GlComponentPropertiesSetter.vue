@@ -11,9 +11,9 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref, unref} from 'vue'
+import {defineComponent, type PropType, ref, unref} from 'vue'
 import {utils,LooseObject} from "@geelato/gl-ui";
-import {ComponentSetterMetaImpl} from "@geelato/gl-ui-schema";
+import {ComponentInstance, ComponentMeta, ComponentSetterMetaImpl, PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
 
 export default defineComponent({
   name: "GlComponentPropertiesSetter",
@@ -24,17 +24,17 @@ export default defineComponent({
      */
     displayMode: String,
     componentMeta: {
-      type: [ComponentSetterMetaImpl, Object],
+      type: Object as PropType<PropertySetterMetaImpl>,
       required: true
     },
     componentInstance: {
-      type: LooseObject
+      type: ComponentInstance
     }
   },
   data() {
     return {
       // 组件实例值
-      componentModel: new LooseObject()
+      componentModel: new ComponentInstance()
     }
   },
   created() {
@@ -48,9 +48,12 @@ export default defineComponent({
     setComponentModel() {
       if (utils.isNullOrEmpty(this.componentInstance)) {
         const defaultComponentModel: LooseObject = new LooseObject()
+        // @ts-ignore
         defaultComponentModel[this.componentMeta.name] = undefined
+        // @ts-ignore
         this.componentModel = ref(defaultComponentModel)
       } else {
+        // @ts-ignore
         this.componentModel = this.componentInstance
       }
     },
@@ -95,6 +98,7 @@ export default defineComponent({
         // 如果properties不存在，初始该类型(如props、slots...)的properties
         properties = ref({[propertyName]: value})
       }
+      // @ts-ignore
       this.componentModel[type] = properties
       console.log('setPropertyValue  after> properties:', properties)
       console.log('setPropertyValue update componentModel:', this.componentModel)
@@ -107,6 +111,7 @@ export default defineComponent({
     setPropertyArrayValue(propertyName: string, value: any, type: string) {
       let properties = Object.getOwnPropertyDescriptor(this.componentModel, type)?.value
       console.log('setPropertyArrayValue > properties:', properties)
+      // @ts-ignore
       this.componentModel[type] = properties
       this.$emit("update", this.componentModel)
     },

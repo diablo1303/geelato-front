@@ -48,7 +48,6 @@ import {mixins} from "@geelato/gl-ui";
 import {useIdeStore} from "@geelato/gl-ide";
 import {emitter} from "@geelato/gl-ui";
 import {onMounted} from "vue";
-import IComponentInstance from "@geelato/gl-ui/src/components/gl-component/IComponentInstance";
 
 const props = defineProps(mixins.props)
 const emits = defineEmits(['onComponentClick', 'onComponentMounted'])

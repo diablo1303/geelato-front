@@ -1,6 +1,6 @@
 <template>
   <div class="gl-ide-sidebar-components gl-scrollbar-small">
-    <div v-for="group in groups">{{props}}
+    <div v-for="group in groups">
       <div class="gl-group-title" @click="group.opened=!group.opened"
            style="border-bottom: 1px solid #04559f;width: 90%">
         <span>{{ group.text }} {{ toUpperCase(group.name) }}</span>
@@ -39,17 +39,18 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from "vue";
+import {defineComponent, type PropType, ref} from "vue";
 import {useIdeStore} from "@geelato/gl-ide";
 import {utils} from "@geelato/gl-ui";
 import type {ComponentMaterial,ComponentInstance} from "@geelato/gl-ui-schema";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
 
+type ComponentGroupType = {name:String,text:String,opened:Boolean}
 export default defineComponent({
   name: 'GlIdePluginCoreComponents',
   props: {
     componentGroups: {
-      type: Array,
+      type: Array as PropType<Array<ComponentGroupType>>,
       default() {
         return [
           {name: 'general', text: '通用', opened: true},

@@ -31,23 +31,19 @@
 </template>
 
 <script lang="ts" setup>
-import {PropType, ref, watch} from "vue";
+import {type PropType, ref, watch} from "vue";
 import GlComponentSetter from "../GlComponentSetter.vue";
 import {useIdeStore} from "@geelato/gl-ide";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
-import  {IComponentInstance} from "@geelato/gl-ui";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
+import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps(
     {
       modelValue: {
-        type: Object as PropType<IComponentInstance>,
+        type: Object as PropType<ComponentInstance>,
         default() {
-          return {
-            componentName:'',
-            props:{}
-          }
+          return new ComponentInstance()
         }
       },
       options: {
@@ -64,8 +60,8 @@ const props = defineProps(
 )
 const mv = ref(new ComponentInstance())
 const visible = ref(false)
-const componentMeta = ref({})
-const componentInstance = ref({})
+const componentMeta = ref(new ComponentMeta())
+const componentInstance = ref(new ComponentInstance())
 const ideStore = useIdeStore()
 
 mv.value = props.modelValue
@@ -76,14 +72,15 @@ const openComponentSetterModal = ()=>{
   visible.value = true
 }
 const findComponentMeta = (componentName:string) => {
-  return useComponentMaterialStore().componentMetas.value.find((value)=>{
+  return useComponentMaterialStore().componentMetas.find((value:any)=>{
     return value.componentName === componentName
   })
 }
 const changeComponent = (componentName:string) => {
+  // @ts-ignore
   componentMeta.value = findComponentMeta(componentName)
 }
-const updateInstance = (instance:object) => {
+const updateInstance = (instance:ComponentInstance) => {
   mv.value = instance
   console.log(instance)
 }

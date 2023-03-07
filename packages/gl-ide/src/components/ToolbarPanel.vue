@@ -28,15 +28,15 @@
 
 
     <span style="float: right">
-      <a-button size="small" :style="btnStyle" style="float: right" v-if="islogined">
+      <a-button size="small" :style="btnStyle" style="float: right" v-if="isLogined">
       <GlIconfont type="gl-logout" text="退出"></GlIconfont>
     </a-button>
-    <a-button size="small" :style="btnStyle" style="float: right" v-if="!islogined">
+    <a-button size="small" :style="btnStyle" style="float: right" v-if="!isLogined">
       <GlIconfont type="gl-preview"></GlIconfont>
       登录
     </a-button>
       <GlIconfont type="gl-help" text="帮助" style="float: right"
-                   @click=" window.open('https://www.geelato.cn', '_blank');"></GlIconfont>
+                   @click="gotoHelpPage"></GlIconfont>
       <!--<a v-if="currentLanguage" size="small" :style="btnStyle" style="float: right"-->
       <!--@click="setI18nLanguage($i18n.locale==='zh-CN'?'en-US':'zh-CN')">-->
       <!--{{$i18n.locale==='zh-CN'?'English':'中文'}}-->
@@ -135,6 +135,10 @@ const preview = () => {
 const toggleFullScreen = () => {
   screenfull.toggle()
   isFullscreen.value = !isFullscreen.value
+}
+
+const gotoHelpPage = ()=>{
+  window.open('https://www.geelato.cn', '_blank');
 }
 
 const changeLanguages = () => {

@@ -75,6 +75,7 @@ export class PropertySetterMetaImpl implements IPropertySetterMeta {
     subComponentCount?:Number
     placeholder?:String
     style?: StyleSetterMeta
+    description?:String
 
     constructor() {
         this.expanded = true

@@ -11,7 +11,7 @@ import {computed, ref} from "vue";
 
 const history = ref([])
 const reverseItems = computed(()=>{
-  // return history.value.items.reverse()
+  return history.value.reverse()
 })
 </script>
 <script lang="ts">

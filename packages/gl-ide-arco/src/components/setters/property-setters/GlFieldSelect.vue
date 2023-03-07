@@ -26,6 +26,7 @@ watch(mv, (val) => {
 })
 const ds = inject('$entityDS')
 console.log('field select inject ds:',ds)
+// @ts-ignore
 entityFieldMetas.value = ds.value.entityMeta.fieldMetas
 
 const onChange = () => {

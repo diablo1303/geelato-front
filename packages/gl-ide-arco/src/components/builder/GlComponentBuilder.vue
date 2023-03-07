@@ -293,7 +293,7 @@ export default defineComponent({
         B: 35
       },
       // componentInstance: this.modelValue.runtimeMetaruntimeMeta || ,
-      cMeta: this.componentMeta,
+      cMeta: this.componentMeta || new ComponentMeta(),
       cInstance: this.componentInstance,
       // 该属性需配置的面板
       // panels: []

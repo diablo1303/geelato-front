@@ -25,10 +25,8 @@
   </a-form>
 </template>
 <script lang="ts">
-import {ValidateErrorEntity} from 'ant-design-vue/es/form/interface';
-import {Moment} from 'moment';
-import {defineComponent, reactive, ref, toRaw, UnwrapRef} from 'vue';
-import utils from "@geelato/gl-ui";
+import {defineComponent, reactive, ref, toRaw, type UnwrapRef} from 'vue';
+import {utils} from "@geelato/gl-ui";
 
 interface FormState {
   name: string;
@@ -56,14 +54,14 @@ export default defineComponent({
       description: [{required: false, message: '', trigger: 'blur'}],
     };
     const onSubmit = () => {
-      formRef.value
-          .validate()
-          .then(() => {
-            console.log('values', formState, toRaw(formState));
-          })
-          .catch((error: ValidateErrorEntity<FormState>) => {
-            console.log('error', error);
-          });
+      // formRef.value
+      //     .validate()
+      //     .then(() => {
+      //       console.log('values', formState, toRaw(formState));
+      //     })
+      //     .catch((error: ValidateErrorEntity<FormState>) => {
+      //       console.log('error', error);
+      //     });
     };
     const resetForm = () => {
       formRef.value.ruleformState.resetFields();
