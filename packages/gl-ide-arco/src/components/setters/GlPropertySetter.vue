@@ -63,8 +63,9 @@
           </template>
         </template>
         <!-- 1.3 ========================其它Setter========================-->
+<!--        v-model:[propertySetterMeta.setterComponentVModelName]-->
         <component v-else :is="propertySetterMeta.setterComponentName"
-                   v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel"
+                   v-model:propertySetterMeta.setterComponentVModelName="propertyModel"
                    v-bind="propertySetterMeta.setterComponentProps"
                    :style="propertySetterMeta.style"
                    :placeholder="propertySetterMeta.placeholder"
@@ -74,7 +75,7 @@
       <!-- 2 ========================type为slots========================-->
       <template v-else-if="propertySetterMeta.type==='slots'">
         <component :is="propertySetterMeta.setterComponentName"
-                   v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel.props"
+                   v-model:propertySetterMeta.setterComponentVModelName="propertyModel.props"
                    v-bind="propertySetterMeta.setterComponentProps"
                    :style="propertySetterMeta.style"
                    :placeholder="propertySetterMeta.placeholder"
@@ -135,24 +136,24 @@ watch(() => {
 }, {deep: true})
 const setPropertyModel = () => {
   // @ts-ignore
-  propertyModel.value = this.propertyValue
+  propertyModel.value = props.propertyValue
   if (!propertyModel.value) {
     if (props.propertySetterMeta.type === 'slots') {
       // @ts-ignore
-      this.propertyModel = ref({componentName: this.propertySetterMeta.slotComponentName, props: {}})
+      propertyModel.value = {componentName: props.propertySetterMeta.slotComponentName, props: {}}
     } else {
       if (props.propertySetterMeta.properties && props.propertySetterMeta.properties.length > 0) {
         if (props.propertySetterMeta.type === 'children' || props.propertySetterMeta.setterComponentName === 'GlObjectArraySetter') {
           // @ts-ignore
-          this.propertyModel = ref([])
+          propertyModel.value = []
         } else {
           // @ts-ignore
-          this.propertyModel = ref({})
+          propertyModel.value = {}
         }
       }
     }
   }
-  // console.log('setPropertyModel>', this.propertySetterMeta, this.propertyValue, this.propertyModel)
+  // console.log('setPropertyModel>', props.propertySetterMeta, props.propertyValue, props.propertyModel)
 }
 setPropertyModel()
 
@@ -161,13 +162,13 @@ setPropertyModel()
  * @param propertyName
  */
 const tryClearProp = (propertyName: String) => {
-  // delete this.propertyModel[propertyName]
+  // delete props.propertyModel[propertyName]
 }
 const onSubPropertyUpdate = (name: String, value: any) => {
   console.log('onSubPropertyUpdate>', name, value)
   // TODO
   // @ts-ignore
-  this.propertyModel[name] = value
+  propertyModel.value[name] = value
 }
 /**
  * 用于创建子对象

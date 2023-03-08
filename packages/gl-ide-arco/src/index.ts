@@ -6,7 +6,7 @@ import {useIdeStore} from "@geelato/gl-ide";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco"
 import pluginCore from './plugin'
 import {PluginUtil} from "@geelato/gl-ui";
-
+import GlIdeArco from './App.vue'
 const component: Plugin = {
     install: function (app: App) {
         console.log('gl-ide-arco:gl-ide-arco:gl-ide-arco')
@@ -15,10 +15,11 @@ const component: Plugin = {
             return
         }
         // 注册组件
-        // app.component(XXX.name, XXX)
+        app.component(GlIdeArco.name, GlIdeArco)
 
         // @ts-ignore
-        pluginCore.install(app)
+        app.use(pluginCore)
+        // pluginCore.install(app)
     }
 }
 // 默认导出组件

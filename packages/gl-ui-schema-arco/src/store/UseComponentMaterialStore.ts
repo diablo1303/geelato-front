@@ -1,6 +1,6 @@
 import {ref} from "vue";
 import {defineStore} from "pinia";
-import {ComponentMaterial,ComponentInstance,ComponentMeta,schema} from "@geelato/gl-ui-schema";
+import {ComponentMaterial, ComponentInstance, ComponentMeta, schema} from "@geelato/gl-ui-schema";
 import {schemaArco} from "../components/schema";
 
 /**
@@ -85,8 +85,8 @@ export const useComponentMaterialStore = defineStore('GlComponentMaterialStore',
         }
     }
 
-    function init(){
-        if(inited)return
+    function initRegisterComponentMetas() {
+        if (inited) return
         registerComponentMetas(schema.componentMetas)
         registerComponentMaterials(schema.componentInstances)
         registerComponentMetas(schemaArco.componentMetas)
@@ -94,5 +94,13 @@ export const useComponentMaterialStore = defineStore('GlComponentMaterialStore',
         inited = true
     }
 
-    return {init,componentMetas,componentMaterials,registerComponentMeta,registerComponentMetas,registerComponentMaterial,registerComponentMaterials}
+    return {
+        initRegisterComponentMetas,
+        componentMetas,
+        componentMaterials,
+        registerComponentMeta,
+        registerComponentMetas,
+        registerComponentMaterial,
+        registerComponentMaterials
+    }
 })

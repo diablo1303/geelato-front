@@ -141,9 +141,10 @@ const component: Plugin = {
         app.config.globalProperties.$gl.alias[GlToolbarBreadcrumbs.name] = 'crumbs'
 
         // 安装插件
-        useIdeStore().usePlugin(plugin)
+        // useIdeStore().usePlugin(plugin)
     }
 }
 
 // 默认导出组件
 export default component
+export {plugin}

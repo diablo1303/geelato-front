@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// @ts-nocheck
 import { useI18n } from "vue-i18n";
 import { type PropType, ref } from "vue";
 import type { EntityReaderParam } from "@geelato/gl-ui";

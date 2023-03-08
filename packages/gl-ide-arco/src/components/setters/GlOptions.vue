@@ -63,6 +63,7 @@
 </template>
 
 <script lang="ts">
+// @ts-nocheck
 import {defineComponent, type PropType, reactive} from 'vue'
 type ColumnType = {dataIndex:String,title?:String}
 export default defineComponent({

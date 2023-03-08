@@ -16,10 +16,12 @@ export default class ComponentMeta {
     // 属性数组
     properties: Array<IPropertySetterMeta> = []
     // 事件动作 TODO any to Action
-    actions:Array<any> = []
+    actions: Array<any> = []
 
     // 引用的组件名称，如AButton
     // componentRefName: String
+    propsWrapper?: String = ''
+    alias?: String = ''
 
     constructor() {
     }

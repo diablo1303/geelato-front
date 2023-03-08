@@ -59,15 +59,15 @@
 <script lang="ts">
 import {defineComponent, type PropType} from 'vue'
 import GlOptions from "../../GlOptions.vue";
-import {FieldMeta,compareMeta} from "@geelato/gl-ui";
+import {FieldMeta, compareMeta, EntityReaderParam} from "@geelato/gl-ui";
 export default defineComponent({
   name: "FieldsSetter",
   components: {GlOptions},
   props: {
     modelValue: {
-      type: Array as PropType<Array<FieldMeta>>,
+      type: Array as PropType<Array<EntityReaderParam>>,
       default() {
-        return new Array<FieldMeta>()
+        return new Array<EntityReaderParam>()
       }
     },
     /**
@@ -89,7 +89,7 @@ export default defineComponent({
   data() {
     return {
       compareMeta:compareMeta,
-      mv: this.modelValue as Array<FieldMeta>,
+      mv: this.modelValue as Array<EntityReaderParam>,
       selectedElement:{},
       selectedIndex:-1,
     }
@@ -104,7 +104,7 @@ export default defineComponent({
   },
   methods:{
     addElement() {
-      const item = new FieldMeta()
+      const item = new EntityReaderParam()
       this.mv.push(item)
       this.$emit('update:modelValue', this.mv)
       this.$emit('addElement', item)

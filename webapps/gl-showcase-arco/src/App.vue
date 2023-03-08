@@ -1,6 +1,6 @@
 <template>
   <div>
-    <gl-ide></gl-ide>
+    <GlIdeArco></GlIdeArco>
   </div>
 </template>
 

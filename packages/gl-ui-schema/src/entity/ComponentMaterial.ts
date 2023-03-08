@@ -1,6 +1,10 @@
 import type ComponentInstance from "./ComponentInstance";
 import type ComponentMeta from "./ComponentMeta";
 
+/**
+ *  组件物料
+ *  由组件元数据、组件默认实例数据组成
+ */
 export default class ComponentMaterial {
     /**
      *  物料全局id，material开头，16位

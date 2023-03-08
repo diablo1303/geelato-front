@@ -1,17 +1,15 @@
 <template>
-  <span class="GlIconfont">
-<!--    <GlIconfontBase v-if="type" :type="type" :spin="spin" :rotate="rotate" :twoToneColor="twoToneColor"-->
-<!--                    :style="iconStyle"></GlIconfontBase>-->
-    <svg class="gl-icon" aria-hidden="true" :style="iconStyle">
+  <span class="gl-icon-font">
+    <svg aria-hidden="true" :style="iconStyle">
       <use :xlink:href="'#'+type"></use>
     </svg>
-    <span v-if="text" class="GlIconfontText">{{ text }}</span>
+    <span v-if="text">{{ text }}</span>
   </span>
 </template>
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-// import "../../assets/iconfont.js"
+
 export default defineComponent({
   name: "GlIconfont",
   // components: {GlIconfontBase},
@@ -30,7 +28,7 @@ export default defineComponent({
   created() {
 
   },
-  mounted () {
+  mounted() {
     // 动态import，解决build时，window is not defined的问题
     // @ts-ignore
     import('../../assets/iconfont.js').then(module => {
@@ -41,22 +39,20 @@ export default defineComponent({
 </script>
 
 <style>
-.GlIconfontText {
-  padding-left: 4px;
+.gl-icon-font {
+  display: inline-block;
 }
 
-.GlIconfont svg {
-  /*margin-bottom: 0.45em;*/
-}
-
-.ant-tabs-tab .GlIconfont .anticon {
-  margin-right: 0;
-}
-
-.gl-icon {
-  width: 1em; height: 1em;
+.gl-icon-font > svg {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
+}
+
+.gl-icon-font > span {
+
 }
 </style>

@@ -5,8 +5,8 @@ import GlUi from '@geelato/gl-ui'
 import {entityApi} from "@geelato/gl-ui";
 import GlUiArco from '@geelato/gl-ui-arco'
 import GlUiSchemaCore from '@geelato/gl-ui-schema'
-import GlUiSchemaArco,{useComponentMaterialStore} from '@geelato/gl-ui-schema-arco'
-import GlIde,{useIdeStore}  from '@geelato/gl-ide'
+import GlUiSchemaArco from '@geelato/gl-ui-schema-arco'
+import GlIde from '@geelato/gl-ide'
 import GlIdeArco from '@geelato/gl-ide-arco'
 import ComponentBuilderExample from '../components/setter/ComponentBuilderExample.vue'
 import SetterExample from '../components/setter/SetterExample.vue'
@@ -31,11 +31,21 @@ export default {
         app.component('gl-draggable', draggable)
         app.component('ComponentBuilderExample', ComponentBuilderExample)
         app.component('SetterExample', SetterExample)
-
-        app.use(createPinia())
+        const pinia = createPinia()
+        app.use(pinia)
         // app is the Vue 3 app instance from `createApp()`.
         // router is VitePress' custom router. `siteData` is
         // a `ref` of current site-level metadata.
+
+        entityApi.reCreate({baseURL:"https://localhost:8080"})
+        app.use(ArcoVue)
+        app.use(GlUi)
+        app.use(GlUiArco)
+        app.use(GlUiSchemaCore)
+        app.use(GlUiSchemaArco)
+        app.use(GlIde)
+        app.use(GlIdeArco)
+
         if (inBrowser) {
             const i18n = createI18n({
                 locale: localStorage.getItem('arco-locale') || 'zh-CN',
@@ -47,20 +57,7 @@ export default {
                 },
             });
             app.use(i18n)
-            // TODO build之后，执行useComponentMaterialStore会报错
-            const componentMaterialStore = useComponentMaterialStore()
-            componentMaterialStore.init()
-            const ideStore = useIdeStore()
-            ideStore.addComponentMetas(componentMaterialStore.componentMetas)
         }
-        entityApi.reCreate({baseURL:"https://localhost:8080"})
-        app.use(ArcoVue)
-        app.use(GlUi)
-        app.use(GlUiArco)
-        app.use(GlUiSchemaCore)
-        app.use(GlUiSchemaArco)
-        app.use(GlIde)
-        app.use(GlIdeArco)
 
         // 需要在调用时手动传入 AppContext，或者为组件全局指定 AppContext
         // Modal._context = app._context;

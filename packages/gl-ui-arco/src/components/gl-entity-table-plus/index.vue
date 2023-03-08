@@ -94,6 +94,7 @@
 </template>
 
 <script setup lang="ts">
+// @ts-nocheck
 /**
  * 整合gl-query、gl-toolbar、gl-table形成完整可直接使用的table应用
  */

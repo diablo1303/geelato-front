@@ -2,6 +2,7 @@ import type {App, Plugin} from 'vue'
 import ComponentMeta from "./entity/ComponentMeta";
 import ComponentInstance from "./entity/ComponentInstance";
 import ComponentMaterial from "./entity/ComponentMaterial";
+import ComponentMaterialGroup from "./entity/ComponentMaterialGroup";
 import {PropertySetterMetaImpl} from "./entity/IPropertySetterMeta";
 import type IPropertySetterMeta from "./entity/IPropertySetterMeta";
 import {ComponentSetterMetaImpl} from "./entity/ComponentSetterMeta";
@@ -16,6 +17,7 @@ const component: Plugin = {
 export {
     schema,
     ComponentMaterial,
+    ComponentMaterialGroup,
     ComponentMeta,
     ComponentInstance,
     ComponentSetterMetaImpl,

@@ -44,7 +44,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {mixins} from "@geelato/gl-ui";
+import {type IComponentInstance, mixins} from "@geelato/gl-ui";
 import {useIdeStore} from "@geelato/gl-ide";
 import {emitter} from "@geelato/gl-ui";
 import {onMounted} from "vue";
