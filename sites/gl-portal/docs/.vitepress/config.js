@@ -49,7 +49,7 @@ export default defineConfig({
 function nav() {
   return [
     { text: '指南', link: '/guide/what-is-geelato', activeMatch: '/guide/' },
-    { text: '协议', link: '/schema/introduction', activeMatch: '/schema/' },
+    // { text: '协议', link: '/schema/introduction', activeMatch: '/schema/' },
     { text: '组件', link: '/component/introduction', activeMatch: '/component/' },
     { text: '接口', link: '/api/platform-api', activeMatch: '/api/' },
     { text: '演示', items: [
