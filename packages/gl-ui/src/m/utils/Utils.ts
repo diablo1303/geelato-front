@@ -1,5 +1,6 @@
 import type {LooseObject} from "../mix/LooseObject";
-export class Utils {
+
+export class Utils  {
     constructor() {
     }
 
@@ -118,7 +119,7 @@ export class Utils {
      */
     gid(prefix?: string, maxLength?: number) {
         if (prefix) {
-            return `${prefix}_${this.uuid(maxLength||16 - prefix.length - 1)}`
+            return `${prefix}_${this.uuid(maxLength || 16 - prefix.length - 1)}`
         }
         return this.uuid(16)
     }
