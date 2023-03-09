@@ -3,7 +3,7 @@
     <svg aria-hidden="true" :style="iconStyle">
       <use :xlink:href="'#'+type"></use>
     </svg>
-    <span v-if="text">{{ text }}</span>
+    <span v-if="text">&nbsp;{{ text }}</span>
   </span>
 </template>
 

@@ -1,23 +1,29 @@
 <template>
   <div class="gl-table" :class="{'gl-table-as-tree':false}">
     <!--需保障currentSelectedComponentMeta有且有正确的数据，否则该属性值会马上影响舞台上的组件展示-->
-    <template v-for="propertySetterMeta in componentMeta.properties">
+    <template v-if="componentMeta" v-for="propertySetterMeta in componentMeta.properties">
       <GlPropertySetter :propertySetterMeta="propertySetterMeta"
                         :propertyValue="getPropertyValue(propertySetterMeta.name,propertySetterMeta.type||'props')"
                         @update="(val:any)=>{setPropertyValue(propertySetterMeta.name,val,propertySetterMeta.type||'props')}">
       </GlPropertySetter>
+    </template>
+    <template v-else>
+      <a-alert type="warning">
+        组件元数据（componentMeta）为空。组件实例信息（componentInstance）为：
+        <br/>
+        {{ componentInstance }}
+      </a-alert>
     </template>
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent, type PropType, ref, unref} from 'vue'
-import {utils,LooseObject} from "@geelato/gl-ui";
+import {utils, LooseObject} from "@geelato/gl-ui";
 import {ComponentInstance, ComponentMeta, ComponentSetterMetaImpl, PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
 
 export default defineComponent({
   name: "GlComponentPropertiesSetter",
-  components: {},
   props: {
     /**
      *  属性的配置展示模式

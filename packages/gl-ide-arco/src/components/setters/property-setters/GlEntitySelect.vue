@@ -23,6 +23,9 @@ const emits = defineEmits(['update:modelValue'])
 const entityStore = useEntityStore()
 const entityLiteMetas= ref(new Array<EntityLiteMeta>)
 const ds = inject('$entityDS')
+if(!ds){
+  console.error('未注入实体数据源：$entityDS，请检查是否已从服务端加载数据源。')
+}
 const res = entityStore.loadEntityLiteMetas('')
 res.then((data:Array<EntityLiteMeta>)=>{
   entityLiteMetas.value = data

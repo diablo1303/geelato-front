@@ -25,6 +25,9 @@ watch(mv, (val) => {
   emits('update:modelValue', val)
 })
 const ds = inject('$entityDS')
+if(!ds){
+  console.error('未注入实体数据源：$entityDS，请检查是否已从服务端加载数据源。')
+}
 console.log('field select inject ds:',ds)
 // @ts-ignore
 entityFieldMetas.value = ds.value.entityMeta.fieldMetas

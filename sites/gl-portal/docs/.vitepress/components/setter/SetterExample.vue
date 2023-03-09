@@ -61,11 +61,10 @@ const getInstance = (propertyName: String) => {
   }
 }
 const updateInstance = (instance: ComponentInstance) => {
-  let that = this
   console.log('updateInstance > instance:', instance)
-  that.refreshFlag = false
+  refreshFlag.value = false
   nextTick(() => {
-    that.refreshFlag = true
+    refreshFlag.value = true
   })
 }
 </script>
