@@ -46,7 +46,7 @@ const onDeleteNode = (params:any) => {
   const data = {
     id: params.clickedNodeData.key,
   }
-  console.log('onRenameNode',params)
+  console.log('onDeleteNode',params)
   entityApi.delete('platform_tree_node', data).then((res: any) => {
     glEntityTree.value.reloadTreeData()
   })

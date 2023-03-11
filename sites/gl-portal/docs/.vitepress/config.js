@@ -51,9 +51,8 @@ function nav() {
     { text: '指南', link: '/guide/what-is-geelato', activeMatch: '/guide/' },
     // { text: '协议', link: '/schema/introduction', activeMatch: '/schema/' },
     { text: '组件', link: '/component/introduction', activeMatch: '/component/' },
-    { text: '接口', link: '/api/platform-api', activeMatch: '/api/' },
     { text: '演示', items: [
-        {text: 'Low Code', link: '/showcase/ide', activeMatch: '/showcase/'},
+        {text: 'IDE', link: '/showcase/ide', activeMatch: '/showcase/'},
         {text: 'Admin', link: '/showcase/admin', activeMatch: '/showcase/'}
       ] },
     // {
@@ -86,7 +85,6 @@ function sidebarGuide() {
       collapsible: true,
       items: [
         { text: '快速开始', link: '/guide/frontend/getting-started' },
-        // { text: '工程配置', link: '/guide/frontend/configuration' },
         // { text: '工程部署', link: '/guide/frontend/configuration' },
       ]
     },
@@ -95,9 +93,18 @@ function sidebarGuide() {
       collapsible: true,
       items: [
         { text: '快速开始', link: '/guide/backend/getting-started' },
-        { text: '工程配置', link: '/guide/backend/configuration' },
-        { text: '工程部署', link: '/guide/backend/deploying' },
+        // { text: '工程配置', link: '/guide/backend/configuration' },
+        // { text: '工程部署', link: '/guide/backend/deploying' },
         { text: '数据库约定', link: '/guide/backend/db-standard-guide' }
+      ]
+    },
+    {
+      text: '前后端接口',
+      collapsible: true,
+      items: [
+        { text: 'Entity增删改查', link: '/guide/api/entity-api' },
+        { text: 'SqlKey增删改查', link: '/guide/api/sql-key' },
+        { text: 'Mql', link: '/guide/api/mql' },
       ]
     },
     {

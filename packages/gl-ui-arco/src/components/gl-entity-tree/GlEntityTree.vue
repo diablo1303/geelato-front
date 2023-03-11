@@ -161,6 +161,7 @@ const addNode = (clickedNodeData: any, addNodeData: any) => {
   const children = clickedNodeData.children || []
   const node = JSON.parse(JSON.stringify(addNodeData))
   node.key = utils.gid('', 32)
+  console.log('addNode:',node)
   children.push(node)
   clickedNodeData.children = children
   refreshTree()

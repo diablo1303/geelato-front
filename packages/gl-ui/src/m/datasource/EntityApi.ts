@@ -55,19 +55,19 @@ export class EntityApi {
     }
 
     /**
-     * 基于gql对象进行查询
-     * @param gql Object or gqlArray
+     * 基于mql对象进行查询
+     * @param mql Object or mqlArray
      * @param withMeta 是否需同时查询出各列表字段的元数据信息
      * @returns {*}
      */
-    queryByGql(gql: object | Array<object>, withMeta: boolean) {
-        const path = Array.isArray(gql)
+    queryByGql(mql: object | Array<object>, withMeta: boolean) {
+        const path = Array.isArray(mql)
             ? this.url.metaMultiList
             : this.url.metaList;
         return this.service({
             url: `${path}?withMeta=${!!withMeta}`,
             method: "POST",
-            data: gql,
+            data: mql,
             headers: {
                 "Access-Control-Allow-Origin": "*",
             },
@@ -81,17 +81,17 @@ export class EntityApi {
      * @returns {*}
      */
     queryByEntityReader(entityReader: EntityReader) {
-        const gql: LooseObject = {};
-        gql[entityReader.entity] = {}
+        const mql: LooseObject = {};
+        mql[entityReader.entity] = {}
         // fields
         if (entityReader.fields && entityReader.fields.length > 0) {
             const fieldNames: Array<string> = []
             entityReader.fields.forEach((item) => {
                 fieldNames.push(item.name)
             })
-            gql[entityReader.entity]['@fs'] = fieldNames.join(',');
+            mql[entityReader.entity]['@fs'] = fieldNames.join(',');
         } else {
-            gql[entityReader.entity] = {"@fs": "*"};
+            mql[entityReader.entity] = {"@fs": "*"};
         }
         // order
         if (entityReader.order && entityReader.order.length > 0) {
@@ -100,7 +100,7 @@ export class EntityApi {
                 orderStr = item.field + ' ' + item.order + ' '
             })
             orderStr = AllUtils.ConvertUtil.trim(orderStr)
-            gql[entityReader.entity]['@order'] = orderStr;
+            mql[entityReader.entity]['@order'] = orderStr;
         }
         // params
         const params: LooseObject = {};
@@ -112,18 +112,18 @@ export class EntityApi {
                 params[key] = param.value;
             }
         }
-        Object.assign(gql[entityReader.entity], params);
+        Object.assign(mql[entityReader.entity], params);
 
         const pageNo = entityReader.pageNo || 1
         const pageSize = entityReader.pageSize || 10
         // page
-        gql[entityReader.entity]['@p'] = pageNo + ',' + pageSize;
+        mql[entityReader.entity]['@p'] = pageNo + ',' + pageSize;
 
-        return this.queryByGql(gql, entityReader.withMeta);
+        return this.queryByGql(mql, entityReader.withMeta);
     }
 
     /**
-     * 实体查询，内部依据参数构建gql对象进行查询
+     * 实体查询，内部依据参数构建mql对象进行查询
      * 更复杂、高级的查询@see queryByGql
      * @param entityName e.g. platform_dev_project
      * @param fieldNames 查询的列字段 e.g. id,name
@@ -139,13 +139,13 @@ export class EntityApi {
             // eslint-disable-next-line no-throw-literal
             throw "查询列（fieldNames）不能为空。";
         }
-        // gql查询语句
-        const gql: LooseObject = {};
-        gql[entityName] = {
+        // mql查询语句
+        const mql: LooseObject = {};
+        mql[entityName] = {
             "@fs": fieldNames || "*",
         };
-        Object.assign(gql[entityName], params);
-        return this.queryByGql(gql, withMeta);
+        Object.assign(mql[entityName], params);
+        return this.queryByGql(mql, withMeta);
     }
 
     /**
@@ -154,17 +154,17 @@ export class EntityApi {
      *        @see query
      */
     queryBatch(queryParamArray: Array<object>, withMeta: boolean) {
-        const gqlAry: Array<any> = [];
+        const mqlAry: Array<any> = [];
         queryParamArray.forEach((item, index) => {
             const queryParam: LooseObject = item;
-            const gql: LooseObject = {};
-            gql[queryParam.entityName] = {
+            const mql: LooseObject = {};
+            mql[queryParam.entityName] = {
                 "@fs": queryParam.fieldNames || "*",
             };
-            Object.assign(gql[queryParam.entityName], queryParam.keyValues);
-            gqlAry.push(gql);
+            Object.assign(mql[queryParam.entityName], queryParam.keyValues);
+            mqlAry.push(mql);
         });
-        return this.queryByGql(gqlAry, withMeta);
+        return this.queryByGql(mqlAry, withMeta);
     }
 
     update(
@@ -210,20 +210,20 @@ export class EntityApi {
     }
 
     /**
-     * 基于gql对象进行查询
-     * @param gqlObject or gqlArray
+     * 基于mql对象进行查询
+     * @param mqlObject or mqlArray
      * @param biz 业务代码
      * @returns {*}
      */
-    saveByGql(biz: string, gql: LooseObject) {
-        const path = Array.isArray(gql)
+    saveByGql(biz: string, mql: LooseObject) {
+        const path = Array.isArray(mql)
             ? this.url.apiMetaSave
             : this.url.apiMetaSave;
         const bizCode = biz || "0";
         return this.service({
             url: `${path}/${bizCode}`,
             method: "POST",
-            data: gql,
+            data: mql,
         });
     }
 
@@ -237,8 +237,8 @@ export class EntityApi {
      * @returns {*}
      */
     queryPageByCode(pageCode: string) {
-        // gql查询语句
-        const gql = {
+        // mql查询语句
+        const mql = {
             platform_dev_page: {
                 "@p": "1,1",
                 "@fs": "id,code,release_content",
@@ -248,7 +248,7 @@ export class EntityApi {
         return this.service({
             url: this.url.metaList,
             method: "POST",
-            data: gql,
+            data: mql,
         });
     }
 
@@ -356,7 +356,7 @@ export class EntityApi {
 
     /**
      * 查询数据定义信息，即元数据信息
-     * @param gqlObject or gqlArray
+     * @param mqlObject or mqlArray
      * @param withMeta 是否需同时查询出各列表字段的元数据信息
      * @returns {*}
      */
