@@ -227,7 +227,7 @@ export class EntityApi {
         });
     }
 
-    delete(entityName: string, keyValues: object, biz: string) {
+    delete(entityName: string, keyValues: object, biz?: string) {
         return this.update(this.url.apiMetaDelete, entityName, keyValues, biz);
     }
 

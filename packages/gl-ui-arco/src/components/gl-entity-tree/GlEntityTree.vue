@@ -3,7 +3,7 @@
     <ATree v-if="treeData&&treeData.length>0" blockNode :data="treeData" :draggable="true"
            @select="onSelect" show-line>
       <template #switcher-icon="node, { isLeaf }">
-        <GlIconfont :type="node.iconType"></GlIconfont>
+        <GlIconfont :type="node.iconType" style="font-size: 1.2em;color:#3370ff"></GlIconfont>
       </template>
       <template #extra="nodeData">
         <a-trigger ref="contextMenu" position="tl" auto-fit-position :click-to-close="true" :show-arrow="true"
@@ -21,7 +21,7 @@
                              :key="contextMenuItemIndex"
                              @click="() => onMenuItemClick(nodeData,contextMenuItem)">
                   <template #icon>
-                    <GlIconfont :type="contextMenuItem.iconType"></GlIconfont>
+                    <GlIconfont :type="contextMenuItem.iconType" :style="{color:contextMenuItem.iconColor}"></GlIconfont>
                   </template>
                   {{ contextMenuItem.title }}
                 </a-menu-item>
@@ -32,7 +32,8 @@
       </template>
 
     </ATree>
-    <a-modal :visible="currentAction&&['addNode','renameNode'].includes(currentAction.action)" @ok="saveNode">
+    <a-modal :visible="currentAction&&['addNode','renameNode'].includes(currentAction.action)" @ok="saveNode"
+             @cancel="closeModal">
       <template #title>
         {{ currentAction.title }}
       </template>
@@ -56,22 +57,23 @@ const props = defineProps({
     type: Array as PropType<Array<ContextMenuDataType>>,
     default() {
       return [
-        {title: '新建目录', iconType: 'gl-folder', nodeType: 'folder', useFor: ['gl-folder'], action: 'addNode'},
-        {title: '新建自由页面', iconType: 'gl-file', nodeType: 'freePage', useFor: ['gl-folder'], action: 'addNode'},
-        {title: '新建表单页面', iconType: 'gl-form', nodeType: 'formPage', useFor: ['gl-folder'], action: 'addNode'},
-        {title: '新建列表页面', iconType: 'gl-list', nodeType: 'listPage', useFor: ['gl-folder'], action: 'addNode'},
+        {title: '新建目录', iconType: 'gl-folder', nodeType: 'folder', useFor: ['folder'], action: 'addNode'},
+        {title: '新建自由页面', iconType: 'gl-file', nodeType: 'freePage', useFor: ['folder'], action: 'addNode'},
+        {title: '新建表单页面', iconType: 'gl-form', nodeType: 'formPage', useFor: ['folder'], action: 'addNode'},
+        {title: '新建列表页面', iconType: 'gl-list', nodeType: 'listPage', useFor: ['folder'], action: 'addNode'},
         {
           title: '重命名',
           iconType: 'gl-edit-square',
           nodeType: 'freePage',
-          useFor: ['gl-folder', 'gl-file'],
+          useFor: ['folder', 'freePage', 'formPage', 'listPage'],
           action: 'renameNode'
         },
         {
           title: '删除',
           iconType: 'gl-delete',
+          iconColor:'#cc3636',
           nodeType: 'freePage',
-          useFor: ['gl-folder', 'gl-file'],
+          useFor: ['folder', 'freePage', 'formPage', 'listPage'],
           action: 'deleteNode'
         }
       ]
@@ -86,14 +88,9 @@ const currentClickedNodeData = ref({})
 const currentEditNodeData = ref({})
 const currentAction = ref({action: '', title: ''})
 
-type ContextMenuDataType = { title: String, iconType: String, nodeType: String, useFor: Array<String>, action: String }
+type ContextMenuDataType = { title: String, iconType: String,iconColor?:String, nodeType: String, useFor: Array<String>, action: String }
 
-entityApi.query('platform_tree_node', 'id key,text title,parent pid,icon iconType,type nodeType', {}, false).then((res) => {
-  console.log('platform_tree_node:', res)
-  const id = '1976169388038462609'
-  treeData.value.push(...Utils.ConvertUtil.listToTree(res.data.result || res.data.data, id))
-  console.log('treeData', treeData)
-})
+
 const defaultTreeData = [
   {
     title: '根节点',
@@ -108,7 +105,7 @@ const dragRules = [{type: 'allow', from: '*', to: 'folder'}]
 const filterContextMenuData = ref(new Array<ContextMenuDataType>())
 const onShowContextMenu = (clickedNodeData: any) => {
   filterContextMenuData.value = props.contextMenuData.filter((item: ContextMenuDataType) => {
-    return item.useFor.includes(clickedNodeData.iconType)
+    return item.useFor.includes(clickedNodeData.nodeType)
   })
 }
 
@@ -132,7 +129,9 @@ const onMenuItemClick = (clickedNodeData: any, contextMenuItemData: ContextMenuD
     currentAction.value = {action: 'renameNode', title: '修改名称'}
   } else if (contextMenuItemData.action === 'deleteNode') {
     currentAction.value = {action: 'deleteNode', title: '删除节点'}
-    deleteNode(clickedNodeData)
+    console.log('currentAction deleteNode',clickedNodeData)
+
+    deleteNode(currentClickedNodeData.value)
   } else {
     // custom click event
   }
@@ -155,8 +154,8 @@ const saveNode = () => {
 
 const updateNode = (clickedNodeData: any, editNodeData: any) => {
   clickedNodeData.title = editNodeData.title
-  treeData.value = [...treeData.value]
-  emits('addNode', {clickedNodeData, editNodeData: editNodeData})
+  refreshTree()
+  emits('renameNode', {clickedNodeData, editNodeData: editNodeData})
 }
 const addNode = (clickedNodeData: any, addNodeData: any) => {
   const children = clickedNodeData.children || []
@@ -164,13 +163,24 @@ const addNode = (clickedNodeData: any, addNodeData: any) => {
   node.key = utils.gid('', 32)
   children.push(node)
   clickedNodeData.children = children
-
-  treeData.value = [...treeData.value]
+  refreshTree()
   emits('addNode', {clickedNodeData, addNodeData: node})
 }
 
 const deleteNode = (clickedNodeData: any) => {
+  emits('deleteNode', {clickedNodeData})
+}
 
+const reloadTreeData = () => {
+  entityApi.query('platform_tree_node', 'id key,title,pid,iconType,type nodeType', {}, false).then((res) => {
+    console.log('platform_tree_node:', res)
+    const id = '1976169388038462609'
+    treeData.value.push(...Utils.ConvertUtil.listToTree(res.data.result || res.data.data, id, 'key'))
+    console.log('treeData', treeData)
+  })
+}
+const refreshTree = () => {
+  treeData.value = [...treeData.value]
 }
 
 const onContextMenuClick = (treeKey: string, menuKey: string | number) => {
@@ -181,6 +191,14 @@ const onSelect = () => {
 
 }
 
+const closeModal = () => {
+  currentAction.value = {action: '', title: ''}
+}
+
+// 初始化加载
+reloadTreeData()
+// 对外提供方法
+defineExpose(['refreshTree'])
 </script>
 <style>
 .gl-entity-tree .arco-tree-node-drag-icon {

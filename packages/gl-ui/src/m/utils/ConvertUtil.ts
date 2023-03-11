@@ -24,16 +24,22 @@ export default class ConvertUtil {
      *
      * @param data 列表数据
      * @param pid  根id
-     * @param pid  重命名pid字段名，默认为“pid”
+     * @param renameId  重命名pid字段名，默认为“id”
+     * @param renamePid  重命名pid字段名，默认为“pid”
      * @returns {Array}
      */
-    static listToTree(data: Array<any>, pid: String | Number, renamePid?: String) {
+    static listToTree(data: Array<any>, pid: String | Number, renameId?:String,renamePid?: String) {
+        console.log('listToTree',data)
         const tree = [];
+        const idName = renameId || 'id'
+        const pidName = renamePid || 'pid'
         let temp;
         for (let i = 0; i < data.length; i += 1) {
-            if (data[i].pid === pid) {
+            // @ts-ignore
+            if (data[i][pidName] === pid) {
                 const obj = data[i];
-                temp = this.listToTree(data, data[i].id, renamePid);
+                // @ts-ignore
+                temp = this.listToTree(data, data[i][idName],renameId, renamePid);
                 if (temp.length > 0) {
                     obj.children = temp;
                 }
