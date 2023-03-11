@@ -29,7 +29,7 @@ export default class ConvertUtil {
      * @returns {Array}
      */
     static listToTree(data: Array<any>, pid: String | Number, renameId?:String,renamePid?: String) {
-        console.log('listToTree',data)
+        // console.log('listToTree',data)
         const tree = [];
         const idName = renameId || 'id'
         const pidName = renamePid || 'pid'
