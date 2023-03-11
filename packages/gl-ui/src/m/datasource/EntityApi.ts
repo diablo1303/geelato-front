@@ -38,7 +38,6 @@ export class EntityApi {
     reCreate(options?: AxiosRequestConfig) {
 
 
-
         this.service = axios.create({
             baseURL: (options && options.baseURL) || (this.VITE_API_BASE_URL || ''), // api base url，在env文件中配置
             timeout: (options && options.timeout) || 6000, // 请求超时时间
@@ -172,7 +171,7 @@ export class EntityApi {
         url: string,
         entityName: string,
         keyValues: object,
-        biz: string,
+        biz?: string,
         successMsg?: string,
         errorMsg?: string
     ) {
@@ -196,9 +195,9 @@ export class EntityApi {
     save(
         entityName: string,
         keyValues: object,
-        biz: string,
-        successMsg: string,
-        errorMsg: string
+        biz?: string,
+        successMsg?: string,
+        errorMsg?: string
     ) {
         return this.update(
             this.url.apiMetaSave,

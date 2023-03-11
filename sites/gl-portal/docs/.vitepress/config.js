@@ -96,7 +96,8 @@ function sidebarGuide() {
       items: [
         { text: '快速开始', link: '/guide/backend/getting-started' },
         { text: '工程配置', link: '/guide/backend/configuration' },
-        { text: '工程部署', link: '/guide/backend/deploying' }
+        { text: '工程部署', link: '/guide/backend/deploying' },
+        { text: '数据库约定', link: '/guide/backend/db-standard-guide' }
       ]
     },
     {
