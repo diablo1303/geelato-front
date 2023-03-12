@@ -1,6 +1,6 @@
 <template>
   <div class="gl-app-tree">
-    <GlEntityTree></GlEntityTree>
+    <GlEntityTree :treeId="treeId" @selectNode="onSelectNode"></GlEntityTree>
   </div>
 </template>
 <script lang="ts">
@@ -9,17 +9,18 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {useIdeStore, Page} from "@geelato/gl-ide";
+import {useIdeStore, useAppStore, Page} from "@geelato/gl-ide";
 import {ref} from "vue";
 
-// treeId，即project表中的id
-const treeId = ref('1976169388038462609')
 const ideStore = useIdeStore()
+const appStore = useAppStore()
+appStore.currentApp.id = '1976169388038462609'
 
+// treeId，即应用的id
+const treeId = ref(appStore.currentApp.id || '')
 
-const onSelect = (selectedKeys: Array<string | number>, data: any) => {
-  console.log('selectedKeys,data:', selectedKeys, data)
-  const dataRef = data.node
+const onSelectNode = (params:any) => {
+  const dataRef = params.selectedNode
   ideStore.openPage(<Page>{
     type: dataRef.nodeType,
     id: dataRef.key,
@@ -27,6 +28,17 @@ const onSelect = (selectedKeys: Array<string | number>, data: any) => {
     iconType: dataRef.iconType
   })
 }
+
+// const onSelect = (selectedKeys: Array<string | number>, data: any) => {
+//   console.log('selectedKeys,data:', selectedKeys, data)
+//   const dataRef = data.node
+//   ideStore.openPage(<Page>{
+//     type: dataRef.nodeType,
+//     id: dataRef.key,
+//     title: dataRef.title,
+//     iconType: dataRef.iconType
+//   })
+// }
 
 const onIconClick = (nodeData: any) => {
   console.log('onIconClick:', nodeData)

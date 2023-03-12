@@ -18,6 +18,7 @@ import {useEntityStore} from "./stores/UseEntityStore";
 import {useComponentStore} from "./stores/UseComponentStore";
 import {useThemeStore} from "./stores/UseThemeStore";
 import {useHistoryStore} from "./stores/UseHistoryStore";
+import {useAppStore} from "./stores/UseAppStore";
 import uiLibAdapter from "./utils/UiLibAdapter";
 import './assets/gl-root.css'
 import './assets/gl-table-form.css'
@@ -47,6 +48,7 @@ export {
     Page,
     GlIde,
     useIdeStore,
+    useAppStore,
     useEntityStore,
     useComponentStore,
     useThemeStore,

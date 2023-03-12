@@ -15,6 +15,5 @@ export default class App {
     watermark: number = 0
 
     constructor() {
-
     }
 }

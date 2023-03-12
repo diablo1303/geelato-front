@@ -56,8 +56,8 @@ const props = defineProps({
       return [
         {name: 'general', text: '通用', opened: true},
         {name: 'layout', text: '布局', opened: true},
-        {name: 'navigation', text: '导航', opened: true},
-        {name: 'dataEntry', text: '数据录入', opened: true},
+        {name: 'navigation', text: '导航', opened: false},
+        {name: 'dataEntry', text: '数据录入', opened: false},
         {name: 'dataDisplay', text: '数据展示', opened: true},
         {name: 'feedback', text: '反馈', opened: true},
         {name: 'chart', text: '图表', opened: true},
@@ -86,6 +86,7 @@ const onChange = () => {
 const componentMaterialGroups = ref(new Array<ComponentMaterialGroup>())
 
 const resetComponentMaterialGroups = () => {
+  componentMaterialGroups.value = []
   for (let index in props.componentGroups) {
     const componentMaterialItems = componentMaterialStore.componentMaterials.filter((compoentMaterial:ComponentMaterial)=>{
       return compoentMaterial.group === props.componentGroups[index].name

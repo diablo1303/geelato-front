@@ -1,6 +1,9 @@
 <template>
   <div class="gl-base-tree">
-    <ATree v-if="treeData&&treeData.length>0" blockNode :data="treeData" :draggable="true"
+    <ATree v-if="treeData&&treeData.length>0" blockNode
+           :data="treeData"
+           :draggable="true"
+           :selectedKeys="selectedKeys"
            @select="onSelect" show-line>
       <template #switcher-icon="node, { isLeaf }">
         <GlIconfont :type="node.iconType" style="font-size: 1.2em;color:#3370ff"></GlIconfont>
@@ -54,6 +57,10 @@ import {entityApi, utils, Utils,} from "@geelato/gl-ui";
 import {PropType, ref} from "vue";
 
 const props = defineProps({
+  treeId: {
+    type: [String, Number],
+    required: true
+  },
   contextMenuData: {
     type: Array as PropType<Array<ContextMenuDataType>>,
     default() {
@@ -62,6 +69,14 @@ const props = defineProps({
         {title: '新建自由页面', iconType: 'gl-file', nodeType: 'freePage', useFor: ['folder'], action: 'addNode'},
         {title: '新建表单页面', iconType: 'gl-form', nodeType: 'formPage', useFor: ['folder'], action: 'addNode'},
         {title: '新建列表页面', iconType: 'gl-list', nodeType: 'listPage', useFor: ['folder'], action: 'addNode'},
+        {
+          title: '设置为菜单',
+          iconType: 'gl-menu',
+          nodeType: '*',
+          useFor: ['folder', 'freePage', 'formPage', 'listPage'],
+          action: 'updateNode',
+          updateNode: {type: 'menuItem'}
+        },
         {
           title: '重命名',
           iconType: 'gl-edit-square',
@@ -97,14 +112,16 @@ const props = defineProps({
   }
 })
 // 注意，所有的contextMenuitem click都会触发clickContextMenuItem事件，若是内置的addNode等，还会先触发addNode等事件
-const emits = defineEmits(['addNode', 'renameNode', 'deleteNode', 'clickContextMenuItem'])
+// selectNode:选择一个节点，和a-tree的select是有区别的
+const emits = defineEmits(['selectNode', 'addNode', 'updateNode', 'renameNode', 'deleteNode', 'clickContextMenuItem'])
+const selectedKeys = ref([])
 const treeData = ref(new Array<any>())
 const contextMenu = ref()
 const currentClickedNodeData = ref({})
 const currentEditNodeData = ref({})
 const currentAction = ref({action: '', title: ''})
 
-type ContextMenuDataType = { title: String, iconType: String, iconColor?: String, nodeType: String, useFor: Array<String>, action: String }
+type ContextMenuDataType = { title: String, iconType: String, iconColor?: String, nodeType: String, useFor: Array<String>, action: String, actionParams?: Object }
 
 const refreshTree = () => {
   treeData.value = [...treeData.value]
@@ -146,10 +163,13 @@ const onMenuItemClick = (clickedNodeData: any, contextMenuItemData: ContextMenuD
   } else if (contextMenuItemData.action === 'renameNode') {
     currentEditNodeData.value = JSON.parse(JSON.stringify(clickedNodeData))
     currentAction.value = {action: 'renameNode', title: '修改名称'}
+  } else if (contextMenuItemData.action === 'updateNode') {
+    currentEditNodeData.value = JSON.parse(JSON.stringify(clickedNodeData))
+    currentAction.value = {action: 'updateNode', title: '修改节点'}
+    // updateNode(currentClickedNodeData.value,)
   } else if (contextMenuItemData.action === 'deleteNode') {
     currentAction.value = {action: 'deleteNode', title: '删除节点'}
     console.log('currentAction deleteNode', clickedNodeData)
-
     deleteNode(currentClickedNodeData.value)
   } else {
     // custom click event
@@ -158,6 +178,9 @@ const onMenuItemClick = (clickedNodeData: any, contextMenuItemData: ContextMenuD
   emits('clickContextMenuItem', {clickedNodeData, contextMenuItemData})
 }
 
+/**
+ *  在菜单项上点新建或修改之后，弹出页面，调用该页面的保存操作时调用saveNode方法
+ */
 const saveNode = () => {
   console.log('saveNode', currentEditNodeData)
   // @ts-ignore
@@ -183,9 +206,14 @@ const renameNode = (clickedNodeData: any, editNodeData: any) => {
     emits('renameNode', params)
   }
 }
+
+const updateNode = (clickedNodeData: any, editNodeData: any) => {
+
+}
 const addNode = (clickedNodeData: any, addNodeData: any) => {
   const children = clickedNodeData.children || []
   const node = JSON.parse(JSON.stringify(addNodeData))
+  node.treeId = props.treeId
   console.log('addNode:', node)
   const params = {clickedNodeData, addNodeData: node}
   if (props.addNode) {
@@ -196,6 +224,7 @@ const addNode = (clickedNodeData: any, addNodeData: any) => {
       children.push(node)
       clickedNodeData.children = children
       refreshTree()
+      selectNode(node)
       emits('addNode', params)
     })
   } else {
@@ -215,13 +244,23 @@ const deleteNode = (clickedNodeData: any) => {
 }
 
 
-const onContextMenuClick = (treeKey: string, menuKey: string | number) => {
-  console.log(`treeKey: ${treeKey}, menuKey: ${menuKey}`);
-};
-
-const onSelect = () => {
-
+/**
+ *  选择一个节点，可能是点击选择，也可以是新增之后选择
+ *  并触发selectNode事件，将当前的节点为作参数
+ */
+const selectNode = (node:any) => {
+  // 定位到新增的节点
+  selectedKeys.value = []
+  // @ts-ignore
+  selectedKeys.value.push(node.key)
+  emits('selectNode', {selectedNode:node})
 }
+
+const onSelect = (selectedKeys: any, data: any) => {
+  console.log('onSelect', selectedKeys, data.node)
+  selectNode(data.node)
+}
+
 
 const closeModal = () => {
   currentAction.value = {action: '', title: ''}
@@ -231,9 +270,8 @@ const reloadTreeData = () => {
   if (props.loadTreeData) {
     props.loadTreeData().then((res: any) => {
       console.log('platform_tree_node:', res)
-      const id = '1976169388038462609'
       treeData.value = []
-      treeData.value.push(...Utils.ConvertUtil.listToTree(res.data.result || res.data.data, id, 'key'))
+      treeData.value.push(...Utils.ConvertUtil.listToTree(res.data.result || res.data.data, props.treeId, 'key'))
       console.log('treeData', treeData)
     })
   }
