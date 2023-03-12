@@ -71,12 +71,12 @@ export default defineComponent({
     getPropertyValue(propertyName: string, type: string) {
       let properties = Object.getOwnPropertyDescriptor(this.componentModel, type)?.value
       if (!this.componentModel || !properties) {
-        // console.log('getPropertyValue > type is', type, 'and propertyName is', propertyName, ',return:undefined')
+        console.log('getPropertyValue > type is', type, 'and propertyName is', propertyName, ',return:undefined')
         return undefined
       }
       for (let key in properties) {
         if (key === propertyName) {
-          // console.log('getPropertyValue > type is', type, 'and propertyName is', propertyName, ',return:', properties[key], 'form properties:', properties)
+          console.log('getPropertyValue > type is', type, 'and propertyName is', propertyName, ',return:', properties[key], 'form properties:', properties)
           return properties[key]
         }
       }

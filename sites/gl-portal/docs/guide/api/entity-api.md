@@ -20,8 +20,9 @@
 entityApi.query('platform_tree_node', 'id key,title,pid,iconType,type nodeType', {pid:'1976169388038462609'}, false).then((res) => {
   console.log('platform_tree_node:', res)
 })
+// 该示例，调用的是后台服务 https://localhost:8080/api/meta/list?withMeta=false
 ```
-该示例，调用的是后台服务https://localhost:8080/api/meta/list?withMeta=false
+
  对应后台的`Controller`为：`org.geelato.web.platform.m.base.rest.MetaController`
 
 更多的用法详见：

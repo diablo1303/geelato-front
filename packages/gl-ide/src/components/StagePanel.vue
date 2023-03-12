@@ -8,7 +8,8 @@
           {{ page.title }}
         </span>
         </template>
-        <component :is="page.ideStageComponentName" style="overflow-y: auto"></component>
+        <component v-if="ideStore.stageRefreshFlag" :is="page.ideStageComponentName"
+                   style="overflow-y: auto"></component>
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -16,13 +17,16 @@
 
 <script lang="ts">
 import {defineComponent, watch, type SetupContext, ref, nextTick} from 'vue'
+import {useIdeStore} from "../stores/UseIdeStore";
 import {usePageStore} from "../stores/UsePageStore";
 import uiLibAdapter from "../utils/UiLibAdapter";
+
 export default defineComponent({
   name: "GlDesignerStage",
 
   setup(props, {emit}: SetupContext) {
     const activeKey = ref(0)
+    const ideStore = useIdeStore()
     const pageStore = usePageStore()
 
     const slotName = uiLibAdapter.getTabSlotName()
@@ -31,7 +35,13 @@ export default defineComponent({
       activeKey.value = index
     }
 
-
+    watch(() => ideStore.stageRefreshFlag, (flag: Boolean) => {
+      nextTick(() => {
+        if (!ideStore.stageRefreshFlag) {
+          ideStore.stageRefreshFlag = true
+        }
+      })
+    })
     watch(() => pageStore.currentPageIndex, (index: number) => {
       activeKey.value = Number(index)
       console.log('activeKey.value', activeKey.value, typeof index)
@@ -41,6 +51,7 @@ export default defineComponent({
       slotName,
       tabClick,
       activeKey,
+      ideStore,
       pageStore
     }
   }
@@ -48,7 +59,7 @@ export default defineComponent({
 </script>
 
 <style>
-.gl-designer-stage > div > div > div > div > .ant-tabs-tab + .ant-tabs-tab {
-  margin: 0 0 0 12px;
-}
+/*.gl-designer-stage > div > div > div > div > .ant-tabs-tab + .ant-tabs-tab {*/
+/*  margin: 0 0 0 12px;*/
+/*}*/
 </style>

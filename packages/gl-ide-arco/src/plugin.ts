@@ -78,14 +78,14 @@ plugin.stage.push(new Panel({
 // plugin.setter.push(new Panel({
 //     title: '属性',
 //     name: '属性',
-//     icon: 'LayoutOutlined',
+//     iconType: 'LayoutOutlined',
 //     componentName: GlIdePluginCoreSettingProperties.name
 // }))
 //
 // plugin.setter.push(new Panel({
 //     title: '样式',
 //     name: '样式',
-//     icon: 'LayoutOutlined',
+//     iconType: 'LayoutOutlined',
 //     componentName: GlIdePluginCoreSettingStyle.name
 // }))
 

@@ -24,6 +24,9 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
     const componentStore = useComponentStore()
     const currentComponentTree = ref([])
 
+    // 舞台强行更新标识
+    const stageRefreshFlag = ref(true)
+
     /**
      * 安装插件
      * 插件title唯一
@@ -63,9 +66,10 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
         componentStore.addComponentMetas(componentMetas)
     }
 
-    function getUiLibName(){
+    function getUiLibName() {
         return uiLibName.value
     }
+
     function setUiLibName(name: string) {
         if ('ant|arco'.indexOf(name) === -1) {
             throw "未支持的UI库:" + name + ",当前支持的UI库为：ant|arco"
@@ -97,8 +101,15 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
             }
         }
     }
+
+    function setStageRefreshFlag(flag: boolean) {
+        stageRefreshFlag.value = flag
+    }
+
     return {
         name,
+        stageRefreshFlag,
+        setStageRefreshFlag,
         activatedSidebarPanelTitle,
         componentAlias,
         logo,

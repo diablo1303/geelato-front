@@ -12,7 +12,7 @@
         <DesignerSidebarPanel @switchPanel="onSwitchSidebarPanel"></DesignerSidebarPanel>
       </pane>
       <pane :size="themeStore.stageWidthPercent">
-        <DesignerStagePanel v-if="refreshFlag"></DesignerStagePanel>
+        <DesignerStagePanel></DesignerStagePanel>
       </pane>
       <pane :size="themeStore.setterWidthPercent">
         <DesignerSetterPanel @update="updateSetter"></DesignerSetterPanel>
@@ -50,7 +50,6 @@ export default defineComponent({
   setup(props, context) {
     const stagePanels = ref([])
     const themeStore = useThemeStore()
-    const refreshFlag = true
     if(CheckUtil.isBrowser()) {
       if (typeof window !== 'undefined') {
         window.onresize = () => {
@@ -70,8 +69,7 @@ export default defineComponent({
     return {
       stagePanels,
       themeStore,
-      onSwitchSidebarPanel,
-      refreshFlag
+      onSwitchSidebarPanel
     }
   },
   created() {
@@ -80,10 +78,6 @@ export default defineComponent({
   methods: {
     updateSetter(data: any) {
       console.log('updateSetter:', data)
-      this.refreshFlag = false
-      nextTick(() => {
-        this.refreshFlag = true
-      })
     }
   }
 })

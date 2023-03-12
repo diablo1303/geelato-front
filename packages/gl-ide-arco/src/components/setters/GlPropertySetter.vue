@@ -18,7 +18,7 @@
       <span>&nbsp;{{ propertySetterMeta.title }}</span>
     </div>
     <div class="gl-table-cell" v-if="propertySetterMeta.expanded!==false">
-      <!-- 1 ========================type为props或默认========================-->
+      <!-- 1 ========================type为props或默认为空========================-->
       <template v-if="propertySetterMeta.type==='props'||!propertySetterMeta.type">
         <!-- 1.1 ========================GlObjectArraySetter========================-->
         <template v-if="propertySetterMeta.setterComponentName==='GlObjectArraySetter'">
@@ -63,9 +63,9 @@
           </template>
         </template>
         <!-- 1.3 ========================其它Setter========================-->
-<!--        v-model:[propertySetterMeta.setterComponentVModelName]-->
+        <!--        v-model:[propertySetterMeta.setterComponentVModelName]-->
         <component v-else :is="propertySetterMeta.setterComponentName"
-                   v-model:propertySetterMeta.setterComponentVModelName="propertyModel"
+                   v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel"
                    v-bind="propertySetterMeta.setterComponentProps"
                    :style="propertySetterMeta.style"
                    :placeholder="propertySetterMeta.placeholder"
@@ -75,7 +75,7 @@
       <!-- 2 ========================type为slots========================-->
       <template v-else-if="propertySetterMeta.type==='slots'">
         <component :is="propertySetterMeta.setterComponentName"
-                   v-model:propertySetterMeta.setterComponentVModelName="propertyModel.props"
+                   v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel.props"
                    v-bind="propertySetterMeta.setterComponentProps"
                    :style="propertySetterMeta.style"
                    :placeholder="propertySetterMeta.placeholder"
@@ -111,8 +111,8 @@ export default {
 <script setup lang="ts">
 import {type PropType, reactive, ref, watch} from 'vue'
 import type {PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
-import {emitter} from "@geelato/gl-ui";
 
+const emits = defineEmits(['update'])
 const props = defineProps({
   /**
    *  属性的配置展示模式
@@ -125,15 +125,16 @@ const props = defineProps({
   propertyValue: [String, Number, Boolean, Array, Object, Date, Function, Symbol]
 })
 
-const propertyModel = ref()
+const propertyModel = ref(props.propertyValue)
 
-// const propertyModel:[String, Number, Boolean, Array<any>, Object, Date, Function, Symbol]
 watch(() => {
-  return propertyModel.value
+  return propertyModel
 }, (val, oval) => {
   console.log('update property', props.propertySetterMeta?.name, ' and set value as ', val)
-  emitter.emit("update", val)
+  emits("update", val)
 }, {deep: true})
+
+
 const setPropertyModel = () => {
   // @ts-ignore
   propertyModel.value = props.propertyValue
@@ -153,8 +154,9 @@ const setPropertyModel = () => {
       }
     }
   }
-  // console.log('setPropertyModel>', props.propertySetterMeta, props.propertyValue, props.propertyModel)
+  console.log('setPropertyModel>', props.propertySetterMeta, props.propertyValue, propertyModel.value)
 }
+
 setPropertyModel()
 
 /**
