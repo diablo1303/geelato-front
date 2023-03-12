@@ -107,7 +107,7 @@ const pagination = reactive({
 
 const columns = computed<TableColumnData[]>(() => {
   // 如果启用了多语言，则需要对标题进行翻译
-  let columnData: TableColumnData[] = [];
+  let columnData: Array<TableColumnData> = [];
   if (props.enableI18n && props.columns) {
     columnData = JSON.parse(JSON.stringify(props.columns));
     columnData.forEach((item) => {
@@ -116,7 +116,7 @@ const columns = computed<TableColumnData[]>(() => {
       item.title = item.title ? t(item.title + "") : "";
     });
   } else {
-    columnData = props.columns as TableColumnData[];
+    columnData = props.columns as Array<TableColumnData>;
   }
   return columnData;
 });

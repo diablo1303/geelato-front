@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "16930082",
+      "name": "树状结构",
+      "font_class": "tree-structure",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "6246309",
+      "name": "组件",
+      "font_class": "component",
+      "unicode": "e652",
+      "unicode_decimal": 58962
+    },
+    {
+      "icon_id": "7674877",
+      "name": "权限/结构",
+      "font_class": "tree",
+      "unicode": "e712",
+      "unicode_decimal": 59154
+    },
+    {
       "icon_id": "663142",
       "name": "more",
       "font_class": "more",
@@ -417,13 +438,6 @@
       "font_class": "statistic",
       "unicode": "e62b",
       "unicode_decimal": 58923
-    },
-    {
-      "icon_id": "17365805",
-      "name": "tree",
-      "font_class": "tree",
-      "unicode": "e6b9",
-      "unicode_decimal": 59065
     },
     {
       "icon_id": "18126055",

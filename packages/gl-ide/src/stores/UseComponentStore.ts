@@ -88,9 +88,9 @@ export const useComponentStore = defineStore({
             return findNodeFromTree(componentId, this.currentComponentTree) || {}
         },
 
-        setCurrentSelectedComponentId(value: string) {
-            const payload = {old: this.currentSelectedComponentId, new: value}
-            this.currentSelectedComponentId = value;
+        setCurrentSelectedComponentId(componentId: string) {
+            const payload = {old: this.currentSelectedComponentId, new: componentId}
+            this.currentSelectedComponentId = componentId;
             emitter.emit('setCurrentSelectedComponentId', payload)
         },
         setCurrentHoverComponentId(value: string) {

@@ -2,7 +2,7 @@ import type {App,Plugin} from 'vue'
 import {GlPlugin, Panel,useIdeStore} from '@geelato/gl-ide'
 import GlIdePluginCoreComponents from './components/sidebar/Components.vue'
 import GlIdePluginCoreAppTree from './components/sidebar/AppTree.vue'
-//import GlIdePluginCoreComponentTree from './components/sidebar/ComponentTree.vue'
+import GlComponentTree from './components/sidebar/ComponentTree.vue'
 //import GlIdePluginCorePanelLayout from './components/sidebar/Layout.vue'
 import GlIdePluginCoreHistory from './components/sidebar/History.vue'
 import GlIdePluginCoreStageFreePage from './components/stage/FreePage.vue'
@@ -33,26 +33,27 @@ const plugin = new GlPlugin('gl-plugin-arco')
 plugin.sidebar.push(new Panel({
     title: '应用结构',
     name: '应用结构',
-    icon: 'ApartmentOutlined',
+    iconType: 'gl-tree',
     componentName: GlIdePluginCoreAppTree.name
 }))
 plugin.sidebar.push(new Panel({
     title: '组件',
     name: 'components',
-    icon: 'LayoutOutlined',
+    iconType: 'gl-component',
     componentName: 'GlIdePluginCoreComponents'
 }))
-// plugin.sidebar.push(new Panel({
-//     title: '页面结构',
-//     name: '页面结构',
-//     icon: 'FileOutlined',
-//     componentName: GlIdePluginCoreComponentTree.name
-// }))
+
+plugin.sidebar.push(new Panel({
+    title: '页面结构',
+    name: '页面结构',
+    iconType: 'gl-tree-structure',
+    componentName: GlComponentTree.name
+}))
 
 plugin.sidebar.push(new Panel({
     title: '历史记录',
     name: '历史记录',
-    icon: 'HistoryOutlined',
+    iconType: 'gl-history',
     componentName: GlIdePluginCoreHistory.name
 }))
 
@@ -60,7 +61,7 @@ plugin.sidebar.push(new Panel({
 plugin.stage.push(new Panel({
     title: '页面',
     name: 'freePage',
-    icon: 'LayoutOutlined',
+    iconType: 'LayoutOutlined',
     componentName: GlIdePluginCoreStageFreePage.name
 }))
 
@@ -68,7 +69,7 @@ plugin.stage.push(new Panel({
 plugin.stage.push(new Panel({
     title: '页面',
     name: 'Page',
-    icon: 'LayoutOutlined',
+    iconType: 'LayoutOutlined',
     componentName: GlIdePluginCoreStageFreePage.name
 }))
 
@@ -98,7 +99,7 @@ const component: Plugin = {
 
         // 注册组件
         app.component('GlIdePluginCoreComponents', GlIdePluginCoreComponents)
-        //app.component(GlIdePluginCoreComponentTree.name, GlIdePluginCoreComponentTree)
+        app.component(GlComponentTree.name, GlComponentTree)
         app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
         app.component(GlIdePluginCoreHistory.name, GlIdePluginCoreHistory)
         // app.component(GlIdePluginCorePanelLayout.name, GlIdePluginCorePanelLayout)

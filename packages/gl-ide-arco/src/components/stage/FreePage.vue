@@ -21,7 +21,6 @@ import {emitter} from "@geelato/gl-ui";
 import {getCurrentInstance} from "vue";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
-const test = ref('')
 const componentStore = useIdeStore().componentStore
 const inst = getCurrentInstance();
 const codeViewerVisible = ref(false)

@@ -5,7 +5,8 @@
            :class="{activated:ideStore.activatedSidebarPanelTitle?(ideStore.activatedSidebarPanelTitle===panel.title):index===0}"
            @click="onLeftToolbarClick(panel.title)" readonly
       >
-        <component v-if="panel.icon" :is="panel.icon" :style="{'font-size':themeStore.sidebarTabFontSize+'em'}"></component>
+<!--        <component v-if="panel.iconType" :is="panel.iconType" :style="{'font-size':themeStore.sidebarTabFontSize+'em'}"></component>-->
+        <GlIconfont :type="panel.iconType" style="font-size: 1.2em"></GlIconfont>
         <div style="padding-top: 4px">
           {{ panel.title }}
         </div>
