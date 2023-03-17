@@ -14,7 +14,7 @@ export default defineComponent({
     info: {
       type: String,
       default() {
-        return '请拖放组件到此位置'
+        return '拖放组件到此'
       }
     }
   },

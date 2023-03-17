@@ -1,5 +1,5 @@
 export default {
-    "componentName": "GlRow",
+    "componentName": "GlFormRow",
     "displayMode": "Tile",
     "iconType":"gl-layout",
     "group": "layout",

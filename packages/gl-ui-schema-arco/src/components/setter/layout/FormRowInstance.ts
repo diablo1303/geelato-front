@@ -1,12 +1,12 @@
 export default {
-    "id": "GlRow",
-    "componentName": "GlRow",
+    "id": "GlFormRow",
+    "componentName": "GlFormRow",
     "title": "栅格布局",
     "props": {"title": "栅格布局","spans":[8,8,8]},
     "slots": {},
     "children": [
         {
-            "componentName": "GlCol",
+            "componentName": "GlFormCol",
             "title": "列",
             "props": {},
             "slots": {},
@@ -21,7 +21,7 @@ export default {
             ]
         },
         {
-            "componentName": "GlCol",
+            "componentName": "GlFormCol",
             "title": "列",
             "props": {},
             "slots": {},
@@ -36,7 +36,7 @@ export default {
             ]
         },
         {
-            "componentName": "GlCol",
+            "componentName": "GlFormCol",
             "title": "列",
             "props": {},
             "slots": {},

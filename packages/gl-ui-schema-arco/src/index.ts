@@ -8,7 +8,7 @@ export {default as DividerMeta} from './components/setter/divider/DividerMeta'
 export {default as InputMeta} from "./components/setter/input/InputMeta";
 export {default as InputNumberMeta} from "./components/setter/inputNumber/InputNumberMeta";
 export {default as TableMeta} from "./components/setter/table/TableMeta";
-export {default as RowMeta} from "./components/setter/layout/RowMeta";
+export {default as FormRowMeta} from "./components/setter/layout/FormRowMeta";
 
 import {useComponentMaterialStore} from "./store/UseComponentMaterialStore";
 

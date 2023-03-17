@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: "GlRow"
+  name: "GlFormRow"
 }
 </script>
 <script setup lang="ts">
@@ -26,7 +26,6 @@ const colSpans = ref(props.spans)
 onUpdated(() => {
   if (props.glComponentInst.children && props.glComponentInst.children.length != colSpans.value.length) {
     console.log('colSpans:', colSpans)
-
     while (props.glComponentInst.children.length < colSpans.value.length) {
       props.glComponentInst.children.push(JSON.parse(JSON.stringify(colTemplate)))
     }

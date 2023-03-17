@@ -8,10 +8,8 @@ import DividerMeta from "../components/setter/divider/DividerMeta";
 import IconMeta from "../components/setter/icon/IconMeta";
 import TypographyMeta from "../components/setter/typography/TypographyMeta";
 import GridMeta from "../components/setter/grid/GridMeta";
-import RowMeta from "../components/setter/layout/RowMeta";
-import RowInstance from "../components/setter/layout/RowInstance";
-import ColMeta from "../components/setter/layout/ColMeta";
-import ColInstance from "../components/setter/layout/ColInstance";
+import FormRowMeta from "../components/setter/layout/FormRowMeta";
+import FormRowInstance from "../components/setter/layout/FormRowInstance";
 import SpaceMeta from "../components/setter/space/SpaceMeta";
 import AffixMeta from "../components/setter/affix/AffixMeta";
 import AffixInstance from "../components/setter/affix/AffixInstance";
@@ -58,12 +56,10 @@ import TimeLineMeta from "../components/setter/timeLine/TimeLineMeta";
 import TooltipMeta from "../components/setter/tooltip/TooltipMeta";
 import TreeMeta from "../components/setter/tree/TreeMeta";
 import {ComponentMeta, ComponentInstance, ComponentMaterial} from "@geelato/gl-ui-schema";
-import RowLayoutMeta from "../components/setter/layout/RowLayoutMeta";
-import RowLayoutInstance from "../components/setter/layout/RowLayoutInstance";
 
 
 // @ts-ignore
-const componentMetas:Array<ComponentMeta> = [ButtonMeta, IconMeta,InputMeta, InputNumberMeta, RateMeta,TableMeta, TypographyMeta, DividerMeta, GridMeta,RowLayoutMeta, RowMeta,ColMeta, SpaceMeta,
+const componentMetas:Array<ComponentMeta> = [ButtonMeta, IconMeta,InputMeta, InputNumberMeta, RateMeta,TableMeta, TypographyMeta, DividerMeta, GridMeta, FormRowMeta, SpaceMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, CheckboxMeta, DatePickerMeta, FormMeta,  MentionsMeta, RadioMeta,
     SelectMeta, SliderMeta, SwitchMeta, TimePickerMeta, TransferMeta, TreeSelectMeta, UploadMeta, AvatarMeta, BadgeMeta,
@@ -71,7 +67,7 @@ const componentMetas:Array<ComponentMeta> = [ButtonMeta, IconMeta,InputMeta, Inp
     StatisticMeta,  TabsMeta, TagMeta, TimeLineMeta, TooltipMeta, TreeMeta]
 
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [ButtonInstance,TableInstance,CardInstance,FormInstance,RowLayoutInstance,RowInstance,ColInstance]
+const customInstances: Array<ComponentInstance> = [ButtonInstance,TableInstance,CardInstance,FormInstance,FormRowInstance]
 const componentInstances: Array<ComponentInstance> = []
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {

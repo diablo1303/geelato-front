@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: "GlCol"
+  name: "GlFormCol"
 }
 </script>
 <script setup lang="ts">
@@ -22,7 +22,9 @@ const props = defineProps({
 
 <template>
   <a-col :gutter="gutter">
-    <GlX :glComponentInst="glComponentInst"></GlX>
+    <a-form-item  field="name" tooltip="Please enter username" label="Username">
+      <GlX :glComponentInst="glComponentInst"></GlX>
+    </a-form-item>
   </a-col>
 </template>
 

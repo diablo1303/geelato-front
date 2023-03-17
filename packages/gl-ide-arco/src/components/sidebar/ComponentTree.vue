@@ -30,7 +30,7 @@ const selectNode = (node: any) => {
   // @ts-ignore
   selectedKeys.value.push(node.id)
   console.log('selectedKeys', selectedKeys.value)
-  componentStore.setCurrentSelectedComponentId(node.id)
+  componentStore.setCurrentSelectedComponentById(node.id)
   // emits('selectNode', {selectedNode:node})
 }
 
