@@ -21,6 +21,8 @@ export default {
 import {useThemeStore} from "../stores/UseThemeStore";
 import {useComponentStore} from "../stores/UseComponentStore";
 import {useIdeStore} from "../stores/UseIdeStore";
+import {emitter} from "@geelato/gl-ui";
+import EventNames from "../entity/Events";
 
 const emits = defineEmits(['update'])
 const ideStore = useIdeStore()
@@ -33,7 +35,8 @@ const componentInstance = {}
 
 const updateInstance = (instance: any) => {
   console.log('updateInstance:', instance)
-  ideStore.stageRefreshFlag = false
+  emitter.emit(EventNames.GlIdeSetterUpdateComponentInstance, instance)
+  // ideStore.updateInstanceKey = false
   emits('update', instance)
 }
 

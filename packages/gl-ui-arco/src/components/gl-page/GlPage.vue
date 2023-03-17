@@ -2,12 +2,13 @@
   <div class="gl-page-container">
     <Breadcrumb :items="breadcrumb"/>
     <a-card class="gl-page-general-card" :title="pageTitle?$t(pageTitle):pageTitle" @click="showSlot">
-      <slot></slot>
+      <slot @openDrawer="openDrawer"></slot>
     </a-card>
   </div>
 </template>
 
 <script lang="ts" setup>
+
 const props = defineProps({
   breadcrumb: {
     type: Array,
@@ -31,12 +32,13 @@ const props = defineProps({
     }
   }
 })
-
 const fnManager = {}
 
 const showSlot = ()=>{
   console.log('showSlot')
 }
+
+
 </script>
 
 

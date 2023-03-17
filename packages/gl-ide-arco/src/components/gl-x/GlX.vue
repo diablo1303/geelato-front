@@ -32,11 +32,21 @@ export default {name: "GlX"}
 <script setup lang="ts">
 import {nextTick, ref} from 'vue'
 import {type IComponentInstance, mixins, utils, emitter} from "@geelato/gl-ui"
-import {Events, useIdeStore} from "@geelato/gl-ide";
+import {EventNames, useIdeStore} from "@geelato/gl-ide";
 
 type Event = { item: { classList: any, id: any }, pullMode: string, oldIndex: number, newIndex: number }
 
-const props = defineProps(mixins.props)
+const props = defineProps({
+  ...mixins.props
+})
+
+const instRefreshKey = ref(utils.gid('', 16))
+emitter.on(EventNames.GlIdeSetterUpdateComponentInstance, (instance: any) => {
+  if (props.glComponentInst.id === instance.id) {
+    instRefreshKey.value = utils.gid('', 16)
+  }
+})
+
 const componentStore = useIdeStore().componentStore
 const dragging = ref(false)
 const gid = utils.gid('glx')
@@ -45,7 +55,7 @@ const setData = (dataTransfer: DataTransfer, dragEl: HTMLElement) => {
   console.log('setData>', dataTransfer, dragEl)
 }
 const onAdd = (event: any, items?: Array<IComponentInstance>) => {
-  if(!items)return
+  if (!items) return
   // 添加之后去掉占位组件
   if (items.length > 0 && items.length < 3) {
     for (let key in items) {
@@ -62,11 +72,11 @@ const onAdd = (event: any, items?: Array<IComponentInstance>) => {
 
   nextTick(() => {
     componentStore.setCurrentSelectedComponentById(addedItem.id || '')
-    emitter.emit(Events.GlIdeStageComponentAdd, {event, addedItem})
+    emitter.emit(EventNames.GlIdeStageComponentAdd, {event, addedItem})
   })
 }
 const onStart = (event: Event, items?: Array<any>) => {
-  if(!items)return;
+  if (!items) return;
   dragging.value = true
   let item = items[items.length === 1 ? 0 : event.oldIndex]
   componentStore.currentDragComponentId = item.id
@@ -80,7 +90,7 @@ const onStart = (event: Event, items?: Array<any>) => {
 
 }
 const onEnd = (event: Event, items?: Array<any>) => {
-  if(!items)return
+  if (!items) return
   dragging.value = false
   let item = items[items.length === 1 ? 0 : event.newIndex]
   componentStore.currentDragComponentId = ''
@@ -108,7 +118,7 @@ const onUnchoose = (event: Event, items?: Array<any>) => {
   console.log('GlX > onUnchoose()')
 }
 const onClone = (event: Event, items?: Array<any>) => {
-  if(!items)return
+  if (!items) return
   console.log('GlX > clone()')
   if (chooseIndex < 0) {
     return

@@ -7,7 +7,7 @@ export default class Page {
     appId: string = '';
     extendId: any;
     title: string = '';
-    // type: Canvas | Page | Dbm
+    // type: Canvas | FreePage | Dbm
     type: string = '';
     iconType:string = '';
     code: string = '';
@@ -16,9 +16,9 @@ export default class Page {
     previewContent: { component: any; opts: {} | any; params: {} | any; events: {} | any } | any;
     releaseContent: { component: any; opts: {} | any; params: any; events: {} | any } | any;
     objectTree: any[] = [];
-    // 该页面的设计器舞台组件
+    // 该页面的舞台组件
     ideStageComponentName: string = ''
-    // 该页面的设计器舞台组件
+    // 该页面的设计器组件
     ideSetterComponentName: string = 'GlComponentSetter'
 
     /**

@@ -40,7 +40,7 @@ export default {
         "type": "props",
         "title": "各星信息",
         "description": "自定义每项的提示信息",
-        "setterComponentName": "GlSimpleArray",
+        "setterComponentName": "GlSimpleArraySetter",
         "properties": []
     }, {
         "name": "allowClear",

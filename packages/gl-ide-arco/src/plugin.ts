@@ -1,5 +1,5 @@
-import type {App,Plugin} from 'vue'
-import {GlPlugin, Panel,useIdeStore} from '@geelato/gl-ide'
+import type {App, Plugin} from 'vue'
+import {GlPlugin, Panel, useIdeStore} from '@geelato/gl-ide'
 import GlIdePluginCoreComponents from './components/sidebar/Components.vue'
 import GlIdePluginCoreAppTree from './components/sidebar/AppTree.vue'
 import GlComponentTree from './components/sidebar/ComponentTree.vue'
@@ -7,6 +7,8 @@ import GlComponentTree from './components/sidebar/ComponentTree.vue'
 import GlIdePluginCoreHistory from './components/sidebar/History.vue'
 import GlIdePluginCoreStageFreePage from './components/stage/FreePage.vue'
 import GlComponentBuilder from "./components/builder/GlComponentBuilder.vue";
+import GlSimpleArrayBuilder from "./components/builder/props-builder/GlSimpleArrayBuilder.vue";
+import GlSimpleArraySetter from "./components/setters/property-setters/GlSimpleArraySetter.vue";
 import GlComponentSetter from "./components/setters/GlComponentSetter.vue";
 import GlComponentPropertiesSetter from "./components/setters/GlComponentPropertiesSetter.vue";
 import GlComponentStyleSetter from "./components/setters/GlComponentStyleSetter.vue";
@@ -27,6 +29,11 @@ import GlToolbarBreadcrumbs from './components/gl-toolbar-breadcrumbs/Index.vue'
 import GlX from './components/gl-x/GlX.vue'
 import GlComponentRecursion from './components/gl-component-recursion/ComponentRecursion.vue'
 import "./assets/style.css"
+import GlArrayBaseSetter from "./components/setters/property-setters/GlArrayBaseSetter.vue";
+import GlArrayNumberSetter from "./components/setters/property-setters/GlArrayNumberSetter.vue";
+import GlArrayNumberBuilder from "./components/builder/props-builder/GlArrayNumberBuilder.vue";
+import GlArrayStringSetter from "./components/setters/property-setters/GlArrayStringSetter.vue";
+import GlArrayBooleanSetter from "./components/setters/property-setters/GlArrayBooleanSetter.vue";
 
 const plugin = new GlPlugin('gl-plugin-arco')
 
@@ -74,7 +81,6 @@ plugin.stage.push(new Panel({
 }))
 
 
-
 // plugin.setter.push(new Panel({
 //     title: '属性',
 //     name: '属性',
@@ -113,25 +119,32 @@ const component: Plugin = {
 
         // 注册组件构建器
         app.component(GlComponentBuilder.name, GlComponentBuilder)
+        app.component(GlSimpleArrayBuilder.name, GlSimpleArrayBuilder)
         // 注册属性设置组件
         app.component('GlComponentSetter', GlComponentSetter)
         app.component(GlComponentPropertiesSetter.name, GlComponentPropertiesSetter)
         app.component(GlComponentStyleSetter.name, GlComponentStyleSetter)
         app.component(GlComponentActionsSetter.name, GlComponentActionsSetter)
+        app.component(GlSimpleArraySetter.name, GlSimpleArraySetter)
+        app.component(GlArrayBaseSetter.name, GlArrayBaseSetter)
+        app.component(GlArrayNumberBuilder.name, GlArrayNumberBuilder)
+        app.component(GlArrayNumberSetter.name, GlArrayNumberSetter)
+        app.component(GlArrayStringSetter.name, GlArrayStringSetter)
+        app.component(GlArrayBooleanSetter.name, GlArrayBooleanSetter)
         app.component(GlSimpleObjectSetter.name, GlSimpleObjectSetter)
         // app.component(GlSettingOptions.name, GlSettingOptions)
         // app.component(GlSettingProperty.name, GlSettingProperty)
         app.component(GlPropertySetter.name, GlPropertySetter)
         app.component(GlPropertySetterCard.name, GlPropertySetterCard)
-        app.component('GlIconfontSetter',GlIconfontSetter)
+        app.component('GlIconfontSetter', GlIconfontSetter)
         app.component(GlIconfontSetterForSlot.name, GlIconfontSetterForSlot)
         app.component(GlSelectSetter.name, GlSelectSetter)
-        app.component('GlEntitySelect',GlEntitySelect)
-        app.component('GlFieldSelect',GlFieldSelect)
-        app.component('GlComponentSelect',GlComponentSelect)
-        app.component(GlEntityReaderSetter.name,GlEntityReaderSetter)
+        app.component('GlEntitySelect', GlEntitySelect)
+        app.component('GlFieldSelect', GlFieldSelect)
+        app.component('GlComponentSelect', GlComponentSelect)
+        app.component(GlEntityReaderSetter.name, GlEntityReaderSetter)
         app.component(GlRadioGroupSetter.name, GlRadioGroupSetter)
-        app.component(GlHtmlSetter.name,GlHtmlSetter)
+        app.component(GlHtmlSetter.name, GlHtmlSetter)
 
         // 注册组件元数据
         // ide.componentMetaManager.registerManyComponentRuntimeMeta(componentMeta.runtimeMeta)

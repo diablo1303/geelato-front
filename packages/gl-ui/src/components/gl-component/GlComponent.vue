@@ -42,7 +42,9 @@ import {onMounted} from 'vue'
 import mixins from "../mixins";
 import type IComponentInstance from "./IComponentInstance";
 
-const props = defineProps(mixins.props)
+const props = defineProps({
+  ...mixins.props
+})
 const emits = defineEmits(['onComponentClick', 'onComponentMounted'])
 
 const onClick = (...args:any[]) => {
@@ -84,16 +86,17 @@ onMounted(() => {
  *  由于部分组件，如AStep，采用template两层嵌套迭代用component渲染时，样式名称渲染为undefined
  *  在这里改成取出最终的迭代元素组成一层数据组，直接在component上迭代
  */
-const getChildComponentInsts = (glComponentInst: IComponentInstance) => {
-  let result: Array<any> = []
-  for (let key in glComponentInst.children) {
-    // @ts-ignore
-    for (let childElement of glComponentInst.children[key]) {
-      result.push(childElement)
-    }
-  }
-  return result
-}
+// const getChildComponentInsts = (glComponentInst: IComponentInstance) => {
+//   let result: Array<any> = []
+//   for (let key in glComponentInst.children) {
+//     console.log('getChildElements getChildComponentInsts:',glComponentInst)
+//     // @ts-ignore
+//     for (let childElement of glComponentInst.children[key]) {
+//       result.push(childElement)
+//     }
+//   }
+//   return result
+// }
 </script>
 
 <style>

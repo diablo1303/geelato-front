@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia'
 import Page from "../entity/Page";
+import {entityApi} from "@geelato/gl-ui";
 
 export const usePageStore = defineStore({
     id: 'GlPageStore',
@@ -44,6 +45,13 @@ export const usePageStore = defineStore({
         setCurrentPageIndex(index: number) {
             console.log('setCurrentPageIndex:',index)
             this.currentPageIndex = index
+        },
+        /**
+         * 保存当前的页面到后台服务中
+         */
+        saveCurrentPage(){
+            const p =
+            entityApi.save('platform_app_page',{})
         }
     }
 })

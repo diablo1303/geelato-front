@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import {Events} from "@geelato/gl-ide"
+import {EventNames} from "@geelato/gl-ide"
 import {computed, defineComponent} from 'vue'
 import {useIdeStore} from "@geelato/gl-ide";
 // {'gl-hover':!!$ide.currentHoverComponentId&&eventType==='Hover'&&!$ide.currentDragComponentId,'gl-selected':!!$ide.currentSelectedComponentId&&eventType==='Selected'}
@@ -47,8 +47,8 @@ export default defineComponent({
     })
 
     const onComponentDelete = () => {
-      console.log('onComponentDelete', Events.GlIdeStageComponentDelete)
-      ctx.emit(Events.GlIdeStageComponentDelete, {id: componentStore.currentSelectedComponentId})
+      console.log('onComponentDelete', EventNames.GlIdeStageComponentDelete)
+      ctx.emit(EventNames.GlIdeStageComponentDelete, {id: componentStore.currentSelectedComponentId})
     }
 
     return {

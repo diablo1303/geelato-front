@@ -4,7 +4,7 @@
 import type {App, Plugin} from 'vue'
 import GlPlugin from "./entity/GlPlugin";
 import Panel from "./entity/Panel";
-import Events from "./entity/Events";
+import EventNames from "./entity/Events";
 import GlIde from './components/Index.vue'
 import {reactive} from 'vue'
 import Ide from "./entity/Ide";
@@ -38,7 +38,7 @@ const component: Plugin = {
     }
 }
 export {
-    Events,
+    EventNames,
     GlPlugin,
     Panel,
     ide,

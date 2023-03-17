@@ -107,7 +107,7 @@ export const useComponentStore = defineStore({
          * @param value
          */
         setCurrentSelectedComponentById(value: string) {
-            // console.log('setCurrentSelectedComponentById > value:', value)
+            console.log('setCurrentSelectedComponentById > value:', value)
             this.setCurrentSelectedComponentId(value)
 
             if (this.currentSelectedComponentId) {

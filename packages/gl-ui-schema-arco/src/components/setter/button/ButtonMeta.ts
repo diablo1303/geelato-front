@@ -16,13 +16,13 @@ export default {
         "setterComponentName": "ARadioGroup",
         "setterComponentVModelName": "modelValue",
         "setterComponentProps": {
-            "options": [{"label": "主要按钮", "value": "primary"}, {
-                "label": "次要按钮",
+            "options": [{"label": "主要", "value": "primary"}, {
+                "label": "次要",
                 "value": "secondary"
-            }, {"label": "虚框按钮", "value": "outline"}, {
-                "label": "线性按钮",
+            }, {"label": "虚框", "value": "outline"}, {
+                "label": "线性",
                 "value": "dashed"
-            }, {"label": "文字按钮", "value": "text"}], "type": "button"
+            }, {"label": "文字", "value": "text"}], "type": "button"
         },
         "type": "props",
         "show": true

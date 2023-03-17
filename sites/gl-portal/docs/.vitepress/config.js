@@ -142,7 +142,7 @@ function sidebarComponent(){
       collapsible: true,
       items: [
         { text: 'Divider 分割线', link: '/component/layout/divider' },
-        { text: 'Grid 栅格', link: '/component/layout/grid' },
+        { text: 'Grid 栅格', link: '/component/layout/rowLayout' },
         { text: 'Layout 布局', link: '/component/layout/layout' },
         { text: 'Space 间距', link: '/component/layout/space' }
       ]

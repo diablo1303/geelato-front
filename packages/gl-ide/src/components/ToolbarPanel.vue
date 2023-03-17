@@ -88,6 +88,7 @@ import {useThemeStore} from "../stores/UseThemeStore";
 import {emitter, useCurrentInstance} from "@geelato/gl-ui";
 import {useHistoryStore} from "../stores/UseHistoryStore";
 import {useAppStore} from "../stores/UseAppStore";
+import EventNames from "../entity/Events";
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()
@@ -130,7 +131,7 @@ const showProjectList = () => {
 }
 
 const saveFile = () => {
-  emitter.emit('GlDesignerToolbar.saveFile')
+  emitter.emit(EventNames.GlIdeToolbarSaveFile)
 }
 
 const projectConfig = ()=>{
@@ -138,7 +139,7 @@ const projectConfig = ()=>{
 }
 
 const openCodeViewer = () => {
-  emitter.emit('GlDesignerToolbar.showCodeViewer')
+  emitter.emit(EventNames.GlIdeToolbarShowCodeViewer)
 }
 
 const comingSoon = (text: string) => {

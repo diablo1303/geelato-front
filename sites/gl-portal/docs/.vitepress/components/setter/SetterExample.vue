@@ -2,7 +2,8 @@
   <div class="gl-setter-example">
     <h4>{{ titles.result }}</h4>
     <div v-if="refreshFlag">
-      <!--        <GlComponent :glComponentInst="buttonComponentInstance">按钮</GlComponent>-->
+<!--      <GlComponent :glComponentInst="componentInstance"></GlComponent>-->
+<!--      <GlComponentRecursion :glComponentInst="componentInstance"></GlComponentRecursion>-->
     </div>
     <h4 :id="titles.setter" tabindex="-1">{{ titles.setter }}
       <a class="header-anchor" :href="'#'+titles.setter" aria-hidden="true">#</a>
