@@ -177,6 +177,10 @@ const tryAddDndPlaceholder = (items: Array<any>, info?: string) => {
 </script>
 
 <style>
+
+.gl-x{
+  width: 100%;
+}
 /**
  *  解决有时未能将gl-dnd-item-ghost加到元素上的问题
  *  解决方式： .gl-x > *:nth-last-child(2):first-child:not(.gl-dnd-placeholder)[draggable=true], .gl-dnd-placeholder + *
