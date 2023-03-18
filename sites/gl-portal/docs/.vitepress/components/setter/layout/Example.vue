@@ -5,7 +5,7 @@
 <script lang="ts">
 
 import {defineComponent} from 'vue'
-import {RowMeta as componentMeta} from "@geelato/gl-ui-schema-arco";
+import {FormRowMeta as componentMeta} from "@geelato/gl-ui-schema-arco";
 import componentInstance from "./instanceData";
 
 export default defineComponent({
