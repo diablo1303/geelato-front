@@ -177,12 +177,28 @@
       </td>
     </tr>
     <tr v-if="hasNoSub&&mv.type==='slots'">
-      <td class="gl-table-cell gl-label" title="应用于该插槽的组件名称">
+      <td class="gl-table-cell gl-label" title="在运行时应用于该插槽的组件名称，属性配置器配置后的v-model值，需要适用于该插槽渲染组件">
         <GlIconfont type="gl-info-circle"></GlIconfont>
-        插槽组件名
+        插槽渲染组件名
       </td>
       <td class="gl-table-cell">
         <a-input v-model="mv.slotComponentName" placeholder=""></a-input>
+      </td>
+    </tr>
+    <tr v-if="hasNoSub&&mv.type==='slots'">
+      <td class="gl-table-cell gl-label" title="将配置该的结果绑定到槽渲染组件的v-model中还是v-bind中">
+        <GlIconfont type="gl-info-circle"></GlIconfont>
+        属性值绑定目标
+      </td>
+      <td class="gl-table-cell">
+        <a-switch v-model="mv.slotComponentBindTarget" checkedValue="v-bind" uncheckedValue="v-model">
+          <template #checked>
+            v-bind
+          </template>
+          <template #unchecked>
+            v-model
+          </template>
+        </a-switch>
       </td>
     </tr>
     <template v-if="mv.type==='children'">

@@ -18,6 +18,7 @@ const component: Plugin = {
         if (PluginUtil.markInstalledPlugin(app, "gl-ui-arco")) {
             return;
         }
+
         app.component("GlPage", GlPage);
         app.component("GlEntityTablePlus", GlEntityTablePlus);
         app.component(GlEntityTree.name, GlEntityTree)

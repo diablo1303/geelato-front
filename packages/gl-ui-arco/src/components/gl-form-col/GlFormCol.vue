@@ -22,7 +22,7 @@ const props = defineProps({
 
 <template>
   <a-col :gutter="gutter">
-    <a-form-item  field="name" tooltip="Please enter username" label="Username">
+    <a-form-item field="name" tooltip="Please enter username" label="Username">
       <GlX :glComponentInst="glComponentInst"></GlX>
     </a-form-item>
   </a-col>

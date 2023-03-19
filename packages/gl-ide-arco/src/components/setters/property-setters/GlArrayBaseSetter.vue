@@ -34,6 +34,7 @@
 
 <script lang="ts">
 import {defineComponent, nextTick, type PropType} from 'vue'
+import {CheckUtil, utils} from "@geelato/gl-ui";
 
 const defaultItemType: any = ''
 export default defineComponent({
@@ -57,10 +58,10 @@ export default defineComponent({
     }
   },
   beforeMount() {
-    this.items = this.modelValue
+      this.items = this.modelValue
   },
   beforeUpdate() {
-    this.items = this.modelValue
+      this.items = this.modelValue
   },
   methods: {
     getDefaultItem() {

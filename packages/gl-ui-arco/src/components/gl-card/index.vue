@@ -1,7 +1,7 @@
 <template>
-  <GlCard :title="title">
+  <a-card :title="title">
     <GlX :glComponentInst="glComponentInst"></GlX>
-  </GlCard>
+  </a-card>
 </template>
 <script lang="ts">
 export default {

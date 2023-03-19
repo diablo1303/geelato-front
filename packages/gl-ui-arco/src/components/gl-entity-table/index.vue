@@ -29,10 +29,10 @@ import {
   CheckUtil,
 } from "@geelato/gl-ui";
 import type {Column, TableColumnDataPlus} from "./table";
-import {useCurrentInstance} from "@geelato/gl-ui";
+import {useGlobal} from "@geelato/gl-ui";
 
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
-const $modal = useCurrentInstance().$modal;
+const $modal = useGlobal().$modal;
 const emit = defineEmits(["updateColumns"]);
 const props = defineProps({
   /**

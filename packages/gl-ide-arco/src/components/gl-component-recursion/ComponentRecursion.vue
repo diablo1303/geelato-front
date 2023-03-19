@@ -17,9 +17,12 @@
              @end="onEnd($event,glComponentInst)"
   >
     <!-- 通过加入空span 解决按钮组件动态slot时，按钮大小不随内容变化的问题-->
-    <template v-for="(slotItem,slotName) in glComponentInst.slots">
-      <component :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"
-                 v-slot:[slotName]></component>
+    <template v-for="(slotItem,slotName) in glComponentInst.slots"  v-slot:[slotName]>
+
+      <component v-if="slotItem.propsTarget==='v-bind'" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"></component>
+      <component v-else-if="slotItem.propsTarget==='v-model'" :is="slotItem.componentName" v-model="slotItem.props" :style="slotItem.style"></component>
+      <template v-else>不支持的propsTarget：{{slotItem.propsTarget}}</template>
+
       <!--<GlIconfont :type="slotItem.gl_font_class"></GlIconfont>  -->
       <!--      <template v-if="slotItem.handler==='ComponentHandler'">-->
       <!--        <component :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"-->
@@ -47,7 +50,7 @@ export default {
 import {type IComponentInstance, mixins} from "@geelato/gl-ui";
 import {useIdeStore} from "@geelato/gl-ide";
 import {emitter} from "@geelato/gl-ui";
-import {onMounted} from "vue";
+import {computed, onMounted} from "vue";
 
 const props = defineProps({
   ...mixins.props
@@ -55,6 +58,13 @@ const props = defineProps({
 const emits = defineEmits(['onComponentClick', 'onComponentMounted'])
 
 const componentStore = useIdeStore().componentStore
+
+const slots = computed(()=>{
+  // @ts-ignore
+  props.glComponentInst.props.filter((propItem:any)=>{
+
+  })
+})
 
 const onClick = (...args: any[]) => {
   console.log('gl-component > onClick() > arguments:', args, props.glComponentInst)

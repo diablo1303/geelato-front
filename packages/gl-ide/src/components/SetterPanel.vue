@@ -3,7 +3,9 @@
     <GlComponentSetter v-if="componentStore.currentSelectedComponentMeta"
                        :componentMeta="componentStore.currentSelectedComponentMeta"
                        :componentInstance="componentStore.currentSelectedComponentInstance"
-                       @update="(instance:any)=>{updateInstance(instance)}"></GlComponentSetter>
+                       @update="(instance:any)=>{updateInstance(instance)}"
+                       :key="componentStore.currentSelectedComponentId"
+    ></GlComponentSetter>
     <template v-else>
       <div style="text-align: center;line-height: 3;height: 3em;background-color: #e7e7e7;margin: 12px 12px 0px">
         请先选择组件

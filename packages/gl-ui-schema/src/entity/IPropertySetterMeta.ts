@@ -52,6 +52,9 @@ export default interface IPropertySetterMeta {
     // type为slots时有值
     slotComponentName?:String
 
+    // 将配置该的结果绑定到槽渲染组件的v-model中还是v-bind中,默认为v-model
+    slotComponentBindTarget?:String
+
     subComponentName?:String;
     subComponentCount?:Number
 
@@ -71,6 +74,7 @@ export class PropertySetterMetaImpl implements IPropertySetterMeta {
     properties: Array<any>;
     titleField:String;
     slotComponentName:String;
+    slotComponentBindTarget:String;
     subComponentName?:String;
     subComponentCount?:Number
     placeholder?:String
@@ -91,6 +95,7 @@ export class PropertySetterMetaImpl implements IPropertySetterMeta {
         this.dataItems = []
         this.titleField = 'title'
         this.slotComponentName  =''
+        this.slotComponentBindTarget = 'v-model'
         this.placeholder = ''
         this.style = {}
     }

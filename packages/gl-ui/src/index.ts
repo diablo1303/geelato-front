@@ -4,6 +4,7 @@ import GlHtml from './components/gl-html/Index.vue'
 import GlIconfont from './components/gl-iconfont/Index.vue'
 import GlDndPlaceholder from './components/gl-dnd-placeholder/Index.vue'
 import GlComponent from "./components/gl-component/GlComponent.vue";
+import GlText from './components/gl-text/Index.vue'
 import type IComponentInstance from "./components/gl-component/IComponentInstance";
 import {LooseObject} from "./m/mix/LooseObject";
 import {default as iconsJson} from './assets/iconfont.json'
@@ -25,7 +26,7 @@ import PluginUtil from "./m/utils/PluginUtil";
 import AllUtils from "./m/utils/AllUtils";
 import CheckUtil from "./m/utils/CheckUtil";
 import ConvertUtil from "./m/utils/ConvertUtil";
-import useCurrentInstance from "./m/hooks/useCurrentInstance";
+import useGlobal from "./m/hooks/useGlobal";
 import './assets/style.css'
 
 const Utils = AllUtils
@@ -41,7 +42,8 @@ const component: Plugin = {
         app.component('GlIconfont', GlIconfont)
         app.component(GlHtml.name, GlHtml)
         app.component(GlDndPlaceholder.name, GlDndPlaceholder)
-        app.component('GlComponent',GlComponent)
+        app.component(GlText.name, GlText)
+        app.component('GlComponent', GlComponent)
 
         if (!app.config.globalProperties.$gl) {
             app.config.globalProperties.$gl = reactive({alias: {}})
@@ -75,7 +77,7 @@ export {
     ConvertUtil,
     Utils,
     PluginUtil,
-    useCurrentInstance,
+    useGlobal,
     IComponentInstance
 }
 // 默认导出组件

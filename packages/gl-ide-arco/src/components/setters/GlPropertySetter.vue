@@ -34,7 +34,7 @@
             <div class="gl-table" :class="{'gl-table-as-tree':false}">
               <template v-for="property in propertySetterMeta.properties">
                 <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
-                                  :propertyValue="slotProps.item[property.name]"
+                                  v-model:propertyValue="slotProps.item[property.name]"
                                   @update="($event:any)=>{slotProps.item[property.name]=$event}"></GlPropertySetter>
               </template>
             </div>
@@ -56,25 +56,27 @@
             <div class="gl-table" :class="{'gl-table-as-tree':false}" style="margin: 1px;border: 1px solid #e4e4e4">
               <template v-for="subPropertySetterMeta in propertySetterMeta.properties">
                 <GlPropertySetter v-if="propertyModel" :propertySetterMeta="subPropertySetterMeta"
-                                  :propertyValue="propertyModel[subPropertySetterMeta.name]"
+                                  v-model:propertyValue="propertyModel[subPropertySetterMeta.name]"
                                   @update="onSubPropertyUpdate(subPropertySetterMeta.name,$event)"></GlPropertySetter>
               </template>
             </div>
           </template>
         </template>
-        <!-- 1.3 ========================其它Setter========================-->
+        <!-- 1.3 ========================其它Setter,大部分的为该类========================-->
         <!--        v-model:[propertySetterMeta.setterComponentVModelName]-->
-        <component v-else :is="propertySetterMeta.setterComponentName"
-                   v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel"
-                   v-bind="propertySetterMeta.setterComponentProps"
-                   :style="propertySetterMeta.style"
-                   :placeholder="propertySetterMeta.placeholder"
-        >
-        </component>
+        <template v-else>
+          <component :is="propertySetterMeta.setterComponentName"
+                     v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel"
+                     v-bind="propertySetterMeta.setterComponentProps"
+                     :style="propertySetterMeta.style"
+                     :placeholder="propertySetterMeta.placeholder"
+          >
+          </component>
+        </template>
       </template>
       <!-- 2 ========================type为slots========================-->
       <template v-else-if="propertySetterMeta.type==='slots'">
-        <component :is="propertySetterMeta.setterComponentName"
+        <component v-if="propertyModel" :is="propertySetterMeta.setterComponentName"
                    v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel.props"
                    v-bind="propertySetterMeta.setterComponentProps"
                    :style="propertySetterMeta.style"
@@ -93,7 +95,7 @@
           <div class="gl-table" :class="{'gl-table-as-tree':false}">
             <template v-for="property in propertySetterMeta.properties">
               <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
-                                :propertyValue="slotProps.item.props[property.name]"
+                                v-model:propertyValue="slotProps.item.props[property.name]"
                                 @update="($event:any)=>{slotProps.item.props[property.name]=$event}"></GlPropertySetter>
             </template>
           </div>
@@ -109,10 +111,11 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {type PropType, reactive, ref, watch} from 'vue'
+import {onMounted, onUpdated, type PropType, reactive, ref, watch} from 'vue'
 import type {PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
+import {utils} from "@geelato/gl-ui";
 
-const emits = defineEmits(['update'])
+const emits = defineEmits(['update', 'update:propertyValue'])
 const props = defineProps({
   /**
    *  属性的配置展示模式
@@ -127,13 +130,17 @@ const props = defineProps({
 
 const propertyModel = ref(props.propertyValue)
 
+onUpdated(() => {
+  setPropertyModel()
+})
+
 watch(() => {
   return propertyModel
 }, (val, oval) => {
   console.log('update property', props.propertySetterMeta?.name, ' and set value as ', val)
-  emits("update", val)
+  emits("update:propertyValue", val)
+  // emits("update", val)
 }, {deep: true})
-
 
 const setPropertyModel = () => {
   // @ts-ignore
@@ -141,7 +148,11 @@ const setPropertyModel = () => {
   if (!propertyModel.value) {
     if (props.propertySetterMeta.type === 'slots') {
       // @ts-ignore
-      propertyModel.value = {componentName: props.propertySetterMeta.slotComponentName, props: {}}
+      propertyModel.value = {
+        componentName: props.propertySetterMeta.slotComponentName,
+        props: undefined,
+        propsTarget: props.propertySetterMeta.slotComponentBindTarget
+      }
     } else {
       if (props.propertySetterMeta.properties && props.propertySetterMeta.properties.length > 0) {
         if (props.propertySetterMeta.type === 'children' || props.propertySetterMeta.setterComponentName === 'GlObjectArraySetter') {
@@ -156,8 +167,8 @@ const setPropertyModel = () => {
   }
   console.log('setPropertyModel>', props.propertySetterMeta, props.propertyValue, propertyModel.value)
 }
-
 setPropertyModel()
+
 
 /**
  * 属性设置之后会影响原组件的默认值设置，可以该将改属性删除，需要时再添加

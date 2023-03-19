@@ -6,77 +6,102 @@ export default {
     "title": "评分",
     "useBy": ["freePage"],
     "properties": [{
-        "name": "allowHalf",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
-        "group": "base",
-        "type": "props",
-        "description": "是否允许半选",
-        "title": "半星评分",
-        "setterComponentName": "ASwitch"
-    }, {
         "name": "count",
-        "setterComponentProps": {},
+        "setterComponentProps": {"defaultValue": 10},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
         "description": "star 总数",
         "title": "评分总数",
-        "setterComponentName": "AInputNumber"
+        "setterComponentName": "AInputNumber",
+        "show": true,
+        "expanded": true
+    }, {
+        "name": "defaultValue",
+        "setterComponentProps": {"defaultValue": 5},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "placeholder": "",
+        "setterComponentName": "AInputNumber",
+        "title": "默认值"
+    }, {
+        "name": "allowHalf",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "description": "是否允许半选",
+        "title": "半星评分",
+        "setterComponentName": "ASwitch",
+        "show": true,
+        "expanded": true
+    }, {
+        "name": "allowClear",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "title": "允许清除",
+        "description": "是否允许再次点击后清除",
+        "setterComponentName": "ASwitch",
+        "show": true,
+        "expanded": true
+    }, {
+        "name": "grading",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "placeholder": "是否开启笑脸分级",
+        "title": "笑脸分级",
+        "setterComponentName": "ASwitch"
+    }, {
+        "name": "readonly",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "只读",
+        "setterComponentName": "ASwitch"
+    }, {
+        "name": "disabled",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "description": "",
+        "title": "禁用",
+        "setterComponentName": "ASwitch",
+        "show": true,
+        "expanded": true
+    }, {
+        "name": "color",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentName": "AInput",
+        "title": "颜色"
     }, {
         "name": "character",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
-        "type": "props",
-        "description": "自定义字符",
-        "title": "自定义字符",
-        "setterComponentName": "AInput"
-    }, {
-        "name": "tooltips",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "title": "各星信息",
-        "description": "自定义每项的提示信息",
-        "setterComponentName": "GlSimpleArraySetter",
-        "properties": []
-    }, {
-        "name": "allowClear",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
-        "group": "base",
-        "type": "props",
-        "title": "允许清除",
-        "description": "是否允许再次点击后清除",
-        "setterComponentName": "ASwitch"
-    }, {
-        "name": "disabled",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
-        "group": "base",
-        "type": "props",
-        "description": "",
-        "title": "只读",
-        "setterComponentName": "ASwitch"
-    }, {
-        "name": "__status",
-        "setterComponentProps": {
-            "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
-            "options": [{"label": "普通", "value": "普通"}, {"label": "禁用", "value": "禁用"}, {
-                "label": "只读",
-                "value": "只读"
-            }, {"label": "隐藏", "value": "隐藏"}],
-            "optionType": "button",
-            "buttonStyle": "outline",
-            "defaultValue": "只读"
-        },
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "title": "状态",
-        "setterComponentName": "ARadioGroup"
+        "type": "slots",
+        "show": true,
+        "expanded": true,
+        "title": "符号",
+        "setterComponentName": "AInput",
+        "slotComponentBindTarget": "v-model"
     }],
     "diplayMode": "Tile"
 }

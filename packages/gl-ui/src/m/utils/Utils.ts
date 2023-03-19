@@ -1,6 +1,6 @@
 import type {LooseObject} from "../mix/LooseObject";
 
-export class Utils  {
+export class Utils {
     constructor() {
     }
 
@@ -291,6 +291,13 @@ export class Utils  {
 
     isEmpty(str: string) {
         return str === undefined || str === null || str.replace(/\s/g, '') === ''
+    }
+
+    isArray(ary: any) {
+        if (typeof ary === 'object' && ary.length !== undefined) {
+            return true
+        }
+        return false
     }
 
     isNullOrEmpty(obj: Object | undefined | null) {

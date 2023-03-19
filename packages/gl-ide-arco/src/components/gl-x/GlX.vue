@@ -30,11 +30,13 @@
 export default {name: "GlX"}
 </script>
 <script setup lang="ts">
-import {nextTick, ref} from 'vue'
+import {getCurrentInstance, nextTick, ref} from 'vue'
 import {type IComponentInstance, mixins, utils, emitter} from "@geelato/gl-ui"
 import {EventNames, useIdeStore} from "@geelato/gl-ide";
-
+import {useGlobal} from "@geelato/gl-ui";
 type Event = { item: { classList: any, id: any }, pullMode: string, oldIndex: number, newIndex: number }
+
+const proxy = getCurrentInstance()?.proxy
 
 const props = defineProps({
   ...mixins.props
@@ -43,7 +45,9 @@ const props = defineProps({
 const instRefreshKey = ref(utils.gid('', 16))
 emitter.on(EventNames.GlIdeSetterUpdateComponentInstance, (instance: any) => {
   if (props.glComponentInst.id === instance.id) {
+    console.log('GlIdeSetterUpdateComponentInstance Update',props.glComponentInst.id === instance.id,props.glComponentInst,instance)
     instRefreshKey.value = utils.gid('', 16)
+    proxy?.$forceUpdate()
   }
 })
 
@@ -71,6 +75,7 @@ const onAdd = (event: any, items?: Array<IComponentInstance>) => {
   console.log('gl-x > onAdd() > addedItem:', addedItem)
 
   nextTick(() => {
+    // TODO 在移动已有组件时，出现addedItem会为空？
     componentStore.setCurrentSelectedComponentById(addedItem.id || '')
     emitter.emit(EventNames.GlIdeStageComponentAdd, {event, addedItem})
   })

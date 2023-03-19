@@ -85,7 +85,7 @@ import Events from "../entity/Events"
 import {useIdeStore} from "../stores/UseIdeStore";
 import {usePageStore} from "../stores/UsePageStore";
 import {useThemeStore} from "../stores/UseThemeStore";
-import {emitter, useCurrentInstance} from "@geelato/gl-ui";
+import {emitter, useGlobal} from "@geelato/gl-ui";
 import {useHistoryStore} from "../stores/UseHistoryStore";
 import {useAppStore} from "../stores/UseAppStore";
 import EventNames from "../entity/Events";
@@ -143,7 +143,7 @@ const openCodeViewer = () => {
 }
 
 const comingSoon = (text: string) => {
-  useCurrentInstance().$message.info(text + '正在努力开发中...')
+  useGlobal().$message.info(text + '正在努力开发中...')
 }
 /**
  *  打开插件页面

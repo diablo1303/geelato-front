@@ -6,114 +6,42 @@ export default {
     "title": "数字输入",
     "useBy": ["freePage"],
     "properties": [{
-        "name": "addonAfter",
+        "name": "bindField",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
-        "description": "带标签的 input，设置后置标签",
-        "title": "后置标签",
-        "setterComponentName": "AInput"
-    }, {
-        "name": "addonBefore",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "title": "前置标签",
-        "description": "带标签的 input，设置前置标签",
-        "setterComponentName": "AInput"
-    }, {
-        "name": "autofocus",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
-        "group": "base",
-        "type": "props",
-        "description": "自动获取焦点",
-        "title": "自动焦点",
-        "setterComponentName": "ASwitch"
-    }, {
-        "name": "bordered",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
-        "group": "base",
-        "type": "props",
-        "title": "边框",
-        "setterComponentName": "ASwitch"
-    }, {
-        "name": "controls",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
-        "group": "base",
-        "type": "props",
-        "title": "增减按钮",
-        "setterComponentName": "ASwitch"
-    }, {
-        "name": "decimalSeparator",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "title": "小数点",
-        "setterComponentName": "AInput"
+        "show": true,
+        "expanded": true,
+        "title": "绑定字段",
+        "setterComponentName": "GlFieldSelect"
     }, {
         "name": "defaultValue",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
-        "title": "初始值",
-        "setterComponentName": "AInputNumber"
+        "title": "默认值",
+        "setterComponentName": "AInputNumber",
+        "show": true,
+        "expanded": true,
+        "placeholder": "默认值（非受控模式）"
     }, {
-        "name": "disabled",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
-        "group": "base",
-        "type": "props",
-        "title": "禁用",
-        "setterComponentName": "ASwitch"
-    }, {
-        "name": "formatter",
-        "setterComponentProps": {},
+        "name": "mode",
+        "setterComponentProps": {
+            "options": [{"label": "按钮内嵌", "value": "embed"}, {
+                "label": "左右按钮",
+                "value": "button"
+            }]
+        },
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
-        "description": "指定输入框展示值的格式function(value: number | string, info: { userTyping: boolean, input: string }): string",
-        "title": "值的格式",
-        "setterComponentName": "AInput"
-    }, {
-        "name": "keyboard",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
-        "group": "base",
-        "type": "props",
-        "description": "是否启用键盘快捷行为",
-        "title": "快捷键盘",
-        "setterComponentName": "ASwitch"
-    }, {
-        "name": "max",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "title": "最大值",
-        "setterComponentName": "AInputNumber"
-    }, {
-        "name": "min",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "title": "最小值",
-        "setterComponentName": "AInputNumber"
-    }, {
-        "name": "parser",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "",
-        "group": "base",
-        "type": "props",
-        "description": "指定从 formatter 里转换回数字的方式，和 formatter 搭配使用,function( string): number",
-        "title": "转换方式"
+        "show": true,
+        "expanded": true,
+        "title": "模式",
+        "description": "（embed：按钮内嵌模式，button：左右按钮模式）",
+        "setterComponentName": "ARadioGroup"
     }, {
         "name": "precision",
         "setterComponentProps": {},
@@ -121,31 +49,9 @@ export default {
         "group": "base",
         "type": "props",
         "title": "数值精度",
-        "setterComponentName": "AInputNumber"
-    }, {
-        "name": "prefix",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "description": "带有前缀图标的 input",
-        "title": "前缀图标",
-        "setterComponentName": "AInput"
-    }, {
-        "name": "size",
-        "setterComponentProps": {
-            "optionType": "button",
-            "buttonStyle": "solid",
-            "options": [{"label": "large", "value": "large"}, {
-                "label": "default",
-                "value": "default"
-            }, {"label": "small", "value": "small"}]
-        },
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "title": "大小",
-        "setterComponentName": "ARadioGroup"
+        "setterComponentName": "AInputNumber",
+        "show": true,
+        "expanded": true
     }, {
         "name": "step",
         "setterComponentProps": {},
@@ -154,16 +60,122 @@ export default {
         "type": "props",
         "description": "每次改变步数，可以为小数",
         "title": "步数",
-        "setterComponentName": "AInputNumber"
+        "setterComponentName": "AInputNumber",
+        "show": true,
+        "expanded": true
     }, {
-        "name": "stringMode",
+        "name": "disabled",
         "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
+        "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
-        "description": "字符值模式，开启后支持高精度小数。同时 change 事件将返回 string 类",
-        "title": "字符值模式",
+        "title": "禁用",
+        "setterComponentName": "ASwitch",
+        "show": true,
+        "expanded": true
+    }, {
+        "name": "error",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "错误状态",
+        "placeholder": "是否为错误状态",
         "setterComponentName": "ASwitch"
+    }, {
+        "name": "max",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "title": "最大值",
+        "setterComponentName": "AInputNumber",
+        "show": true,
+        "expanded": true
+    }, {
+        "name": "min",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "title": "最小值",
+        "setterComponentName": "AInputNumber",
+        "show": true,
+        "expanded": true
+    }, {
+        "name": "placeholder",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "占位提示",
+        "placeholder": "输入框提示文字"
+    }, {
+        "name": "size",
+        "setterComponentProps": {
+            "optionType": "button",
+            "buttonStyle": "solid",
+            "options": [{"label": "迷你", "value": "mini"}, {"label": "小", "value": "small"}, {
+                "label": "中",
+                "value": "medium"
+            }, {"label": "大", "value": "large"}]
+        },
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "title": "大小",
+        "setterComponentName": "ARadioGroup",
+        "show": true,
+        "expanded": true
+    }, {
+        "name": "allowClear",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "placeholder": "是否允许清空输入框",
+        "title": "允许清空",
+        "setterComponentName": "ASwitch"
+    }, {
+        "name": "readOnly",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "只读",
+        "setterComponentName": "ASwitch"
+    }, {
+        "name": "append",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "slots",
+        "show": true,
+        "expanded": true,
+        "title": "后置标签",
+        "setterComponentName": "AInput",
+        "slotComponentName":"GlText",
+        "slotComponentBindTarget":"v-model"
+    }, {
+        "name": "prepend",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "slots",
+        "show": true,
+        "expanded": true,
+        "title": "前置标签",
+        "setterComponentName": "AInput",
+        "slotComponentName":"GlText",
+        "slotComponentBindTarget":"v-model"
     }],
     "diplayMode": "Tile"
 }

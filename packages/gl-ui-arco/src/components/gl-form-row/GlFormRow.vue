@@ -34,7 +34,7 @@ onUpdated(() => {
 
 const colTemplate = {
   "id":utils.gid('16'),
-  "componentName": "GlCol",
+  "componentName": "GlFormCol",
   "title": "列",
   "props": {},
   "slots": {},

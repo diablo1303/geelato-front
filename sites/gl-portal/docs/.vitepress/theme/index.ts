@@ -12,7 +12,7 @@ import ComponentBuilderExample from '../components/setter/ComponentBuilderExampl
 import SetterExample from '../components/setter/SetterExample.vue'
 // import i18n from '../locale/index';
 import {createPinia} from "pinia";
-import ArcoVue from '@arco-design/web-vue';
+import ArcoVue, {Modal} from '@arco-design/web-vue';
 import '@arco-design/web-vue/dist/arco.css';
 import './custom.css'
 import {createI18n} from "vue-i18n";
@@ -39,6 +39,9 @@ export default {
 
         entityApi.reCreate({baseURL:"https://localhost:8080"})
         app.use(ArcoVue)
+        Modal._context = app._context;
+        app.component('GlModal', Modal)
+
         app.use(GlUi)
         app.use(GlUiArco)
         app.use(GlUiSchemaCore)
