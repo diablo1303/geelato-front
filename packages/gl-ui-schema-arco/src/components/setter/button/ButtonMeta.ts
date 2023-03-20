@@ -112,7 +112,8 @@ export default {
         "setterComponentVModelName": "modelValue",
         "setterComponentProps": {},
         "show": true,
-        "slotComponentName": "GlIconfont"
+        "slotComponentName": "GlIconfont",
+        "slotComponentBindTarget": "v-bind"
     }, {
         "expanded": true,
         "style": "",

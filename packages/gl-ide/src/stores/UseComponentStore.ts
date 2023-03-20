@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 import ComponentMetaManager from "../entity/meta/ComponentMetaManager";
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
-import {emitter} from "@geelato/gl-ui";
+import {emitter, utils} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 // 组件元数据
 const componentMetaManager: ComponentMetaManager = new ComponentMetaManager()
@@ -38,6 +38,43 @@ export const useComponentStore = defineStore({
             })
         },
         /**
+         * 从组件实体树中删除组件
+         * @param componentId
+         */
+        deleteComponentInstById(componentId: String) {
+            // console.log("try to deleteComponentById", componentId)
+            const thisProxy = this
+
+            function deleteNodeFromTree(nodeId: String, nodes: Array<any>): any {
+                for (let index in nodes) {
+                    let node = nodes[index]
+                    console.log('compare node.id,componentId', node.id, componentId, node.id === componentId)
+                    if (node.id === componentId) {
+                        nodes.splice(Number.parseInt(index), 1)
+                        thisProxy.clearCurrentSelectedComponent()
+                        // 如果nodes下已无组件，则加入占位符
+                        if (nodes.length === 0) {
+                            nodes.push(
+                                {
+                                    componentName: "GlDndPlaceholder",
+                                    id: utils.gid('pHolder', 16),
+                                    props: {},
+                                    slots: {},
+                                    children: []
+                                }
+                            );
+                        }
+                        return
+                    } else if (node.children && node.children.length > 0) {
+                        deleteNodeFromTree(nodeId, node.children)
+                    }
+                }
+            }
+
+            deleteNodeFromTree(componentId, this.currentComponentTree)
+        },
+
+        /**
          *  选中上一级组件
          */
         selectParentComponent() {
@@ -47,7 +84,8 @@ export const useComponentStore = defineStore({
             let dom = document.getElementById(this.currentSelectedComponentId)
             let parentDom = this.findParentNode(dom)
             if (parentDom.id.indexOf('GlRoot') === -1) {
-                this.currentSelectedComponentId = parentDom.id
+                this.setCurrentSelectedComponentId(parentDom.id)
+                // this.currentSelectedComponentId = parentDom.id
                 // this.currentSelectedComponentName = parentDom.id
             }
             console.log('selectParentComponent:', parentDom.id)
@@ -98,7 +136,7 @@ export const useComponentStore = defineStore({
             this.currentHoverComponentId = value;
             emitter.emit('setCurrentHoverComponentId', payload)
         },
-        setCurrentSelectedComponentInstance(instance:any){
+        setCurrentSelectedComponentInstance(instance: any) {
             this.currentSelectedComponentInstance = instance
         },
         /**
@@ -131,6 +169,9 @@ export const useComponentStore = defineStore({
                 this.currentSelectedComponentMeta = undefined
                 this.currentSelectedComponentInstance = undefined
             }
+        },
+        clearCurrentSelectedComponent() {
+            this.setCurrentSelectedComponentById('')
         }
     }
 })

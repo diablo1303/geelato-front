@@ -1,10 +1,10 @@
 <template>
-  <div class="container">
+  <div class="gl-entity-form">
     <a-form ref="formRef" layout="vertical" :model="formData" :title="title">
       <a-space direction="vertical" :size="0">
         <GlX :glComponentInst="glComponentInst"></GlX>
       </a-space>
-      <div class="actions">
+      <div class="gl-entity-form-actions">
         <a-space>
           <a-button>
             {{ $t('groupForm.reset') }}
@@ -49,12 +49,12 @@ const onSubmitClick = async () => {
 </script>
 
 <style scoped lang="less">
-.container {
-  padding: 0 20px 40px 20px;
-  overflow: hidden;
+.gl-entity-form {
+  //padding: 0 20px 40px 20px;
+  //overflow: hidden;
 }
 
-.actions {
+.gl-entity-form-actions {
   position: fixed;
   left: 0;
   right: 0;

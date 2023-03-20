@@ -22,7 +22,6 @@ import uiLibAdapter from "../utils/UiLibAdapter";
 
 export default defineComponent({
   name: "GlDesignerStage",
-
   setup(props, {emit}: SetupContext) {
     const activeKey = ref(0)
     const ideStore = useIdeStore()
@@ -32,6 +31,7 @@ export default defineComponent({
     const tabClick = (index: number) => {
       console.log(index, typeof index)
       activeKey.value = index
+      pageStore.switchToPage(index)
     }
 
     // watch(() => ideStore.stageRefreshFlag, (flag: Boolean) => {

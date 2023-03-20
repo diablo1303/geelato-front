@@ -5,6 +5,8 @@ import GlIdePluginCoreAppTree from './components/sidebar/AppTree.vue'
 import GlComponentTree from './components/sidebar/ComponentTree.vue'
 //import GlIdePluginCorePanelLayout from './components/sidebar/Layout.vue'
 import GlIdePluginCoreHistory from './components/sidebar/History.vue'
+import GlIdeBasePage from './components/stage/BasePage.vue'
+import GlIdeFormPage from './components/stage/FormPage.vue'
 import GlIdePluginCoreStageFreePage from './components/stage/FreePage.vue'
 import GlComponentBuilder from "./components/builder/GlComponentBuilder.vue";
 import GlSimpleArrayBuilder from "./components/builder/props-builder/GlSimpleArrayBuilder.vue";
@@ -72,6 +74,13 @@ plugin.stage.push(new Panel({
     componentName: GlIdePluginCoreStageFreePage.name
 }))
 
+plugin.stage.push(new Panel({
+    title: '页面',
+    name: 'formPage',
+    iconType: 'LayoutOutlined',
+    componentName: GlIdeFormPage.name
+}))
+
 
 plugin.stage.push(new Panel({
     title: '页面',
@@ -109,6 +118,8 @@ const component: Plugin = {
         app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
         app.component(GlIdePluginCoreHistory.name, GlIdePluginCoreHistory)
         // app.component(GlIdePluginCorePanelLayout.name, GlIdePluginCorePanelLayout)
+        app.component(GlIdeBasePage.name, GlIdeBasePage)
+        app.component(GlIdeFormPage.name, GlIdeFormPage)
         app.component(GlIdePluginCoreStageFreePage.name, GlIdePluginCoreStageFreePage)
         // app.component(GlIdePluginCoreSettingProperties.name, GlIdePluginCoreSettingProperties)
         // app.component(GlIdePluginCoreSettingStyle.name, GlIdePluginCoreSettingStyle)

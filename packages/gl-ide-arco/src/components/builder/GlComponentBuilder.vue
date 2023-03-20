@@ -61,8 +61,8 @@
               <td class="gl-table-cell">
                 <template v-if="cMeta.displayMode=cMeta.displayMode||'Tile'"></template>
                 <a-radio-group size="small" v-model="cMeta.displayMode" type="button">
-                  <a-radio value="Collapse">折叠</a-radio>
-                  <a-radio value="Tile">平铺</a-radio>
+                  <a-radio value="collapse">折叠</a-radio>
+                  <a-radio value="tile">平铺</a-radio>
                 </a-radio-group>
               </td>
             </tr>

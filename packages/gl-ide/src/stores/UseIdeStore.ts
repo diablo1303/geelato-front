@@ -8,7 +8,6 @@ import {useEntityStore} from "./UseEntityStore";
 import Page from "../entity/Page";
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import {ref} from "vue";
-
 export const useIdeStore = defineStore('GlIdeStore', () => {
     const name = ref('Geelato Ide')
     // 主UI库，如：ant | arco
@@ -77,27 +76,47 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
         uiLibName.value = name
     }
 
-    function openPage({type, id, title, iconType}: Page) {
+    /**
+     * 在舞台stage中打开页面
+     * @param type
+     * @param extendId 页面所处的节点id
+     * @param title
+     * @param iconType
+     */
+    function openPage({type, extendId, title, iconType}: Page) {
         // 从已打开的页面中查找，若有若激活
-        let foundItem = pageStore.findPage(id)
+        let foundItem = pageStore.findPageByExtendId(extendId)
         if (foundItem.index >= 0) {
-            pageStore.setCurrentPage(foundItem.page)
-            pageStore.setCurrentPageIndex(<number>foundItem.index)
+            pageStore.switchToPage(<number>foundItem.index)
         } else {
             let items = findPanelsByType('stage')
             let foundPanel = items.find((panel) => {
                 return panel.name === type
             })
             if (foundPanel) {
-                let newPage = new Page()
-                newPage.type = type
-                newPage.id = id
-                newPage.title = title
-                newPage.iconType = iconType
-                newPage.ideStageComponentName = foundPanel.componentName
-                pageStore.addPage(newPage)
-                pageStore.setCurrentPage(newPage)
-                pageStore.setCurrentPageIndex(pageStore.pages.length - 1)
+                // 从后台服务中加载页面，若无则创建新页面
+                pageStore.loadPage({extendId}).then((res) => {
+                    console.log(res.data.data)
+                    let page = new Page()
+                    if (res.data.data && res.data.data.length > 0) {
+                        const pageItem = res.data.data[0]
+                        page.id = pageItem.id
+                        page.extendId = pageItem.extendId
+                        page.title = title
+                        page.iconType = iconType
+                        page.code = pageItem.code
+                        page.description = pageItem.description
+                        page.sourceContent = page.parseContent(pageItem.sourceContent)
+                    } else {
+                        page.type = type
+                        page.extendId = extendId
+                        page.title = title
+                        page.iconType = iconType
+                    }
+                    // @ts-ignore
+                    page.ideStageComponentName = foundPanel.componentName
+                    pageStore.addPage(page)
+                })
             }
         }
     }
@@ -109,7 +128,6 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
     return {
         name,
         stageRefreshFlag,
-        setStageRefreshFlag,
         activatedSidebarPanelTitle,
         componentAlias,
         logo,

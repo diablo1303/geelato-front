@@ -28,10 +28,6 @@ provide('$entityDS',ds)
 console.log('provide ds:',ds)
 const emits = defineEmits(['update']);
 const props = defineProps({
-  /**
-   *  属性的配置展示模式
-   */
-  displayMode: String,
   componentMeta: {
     type: [ComponentMeta],
     required: true

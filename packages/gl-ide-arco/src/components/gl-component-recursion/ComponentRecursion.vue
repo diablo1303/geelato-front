@@ -21,7 +21,7 @@
 
       <component v-if="slotItem.propsTarget==='v-bind'" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"></component>
       <component v-else-if="slotItem.propsTarget==='v-model'" :is="slotItem.componentName" v-model="slotItem.props" :style="slotItem.style"></component>
-      <template v-else>不支持的propsTarget：{{slotItem.propsTarget}}</template>
+      <template v-else>不支持的slot props target：{{slotItem.propsTarget}}</template>
 
       <!--<GlIconfont :type="slotItem.gl_font_class"></GlIconfont>  -->
       <!--      <template v-if="slotItem.handler==='ComponentHandler'">-->

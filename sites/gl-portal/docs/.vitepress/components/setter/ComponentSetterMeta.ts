@@ -9,7 +9,7 @@ export default interface ComponentSetterMeta {
     group: String,
     // 使用于哪些类型的页面，如Page、Dbm...，以便于在编辑相应的页面时从sidebar中过滤掉不合适的组件
     useBy: Array<String>,
-    // 在属性配置面板中，是以哪种模式来展示属性，值为：Tile|Collapse
+    // 在属性配置面板中，是以哪种模式来展示属性，值为：tile|collapse
     displayMode: String,
     // 属性数组
     properties: Array<PropertySetterMeta>

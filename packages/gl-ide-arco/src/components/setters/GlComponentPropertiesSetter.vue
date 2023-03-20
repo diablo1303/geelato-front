@@ -6,8 +6,11 @@
 <!--                        :propertyValue="getPropertyValue(propertySetterMeta.name,propertySetterMeta.type||'props')"-->
 <!--                        @update="(val:any)=>{setPropertyValue(propertySetterMeta.name,val,propertySetterMeta.type||'props')}">-->
 <!--      </GlPropertySetter>-->
-      <GlPropertySetter v-if="propertySetterMeta.type&&propertySetterMeta.name" :propertySetterMeta="propertySetterMeta"
-                        v-model:propertyValue="componentModel[propertySetterMeta.type][propertySetterMeta.name]">
+      <GlPropertySetter v-if="propertySetterMeta.type&&propertySetterMeta.name"
+                        :displayMode="componentMeta.displayMode"
+                        :propertySetterMeta="propertySetterMeta"
+                        v-model:propertyValue="componentModel[propertySetterMeta.type][propertySetterMeta.name]"
+      >
       </GlPropertySetter>
     </template>
     <template v-else>
@@ -28,10 +31,6 @@ import {ComponentInstance, PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
 export default defineComponent({
   name: "GlComponentPropertiesSetter",
   props: {
-    /**
-     *  属性的配置展示模式
-     */
-    displayMode: String,
     componentMeta: {
       type: Object as PropType<PropertySetterMetaImpl>,
       required: true

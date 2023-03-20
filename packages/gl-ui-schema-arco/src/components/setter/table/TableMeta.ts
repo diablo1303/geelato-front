@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlEntityTablePlus",
-    "displayMode": "Tile",
+    "displayMode": "collapse",
     "iconType": "gl-table",
     "group": "dataDisplay",
     "title": "表格",

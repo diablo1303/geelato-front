@@ -131,6 +131,7 @@ const showProjectList = () => {
 }
 
 const saveFile = () => {
+  pageStore.saveCurrentPage()
   emitter.emit(EventNames.GlIdeToolbarSaveFile)
 }
 

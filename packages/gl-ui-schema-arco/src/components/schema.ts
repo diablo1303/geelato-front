@@ -52,10 +52,12 @@ import TableMeta from "../components/setter/table/TableMeta";
 import TableInstance from "../components/setter/table/TableInstance";
 import TabsMeta from "../components/setter/tabs/TabsMeta";
 import TagMeta from "../components/setter/tag/TagMeta";
-import TimeLineMeta from "../components/setter/timeLine/TimeLineMeta";
+import TimelineMeta from "./setter/timeLine/TimelineMeta";
+import TimelineItemMeta from "./setter/timeLine/TimelineMeta";
 import TooltipMeta from "../components/setter/tooltip/TooltipMeta";
 import TreeMeta from "../components/setter/tree/TreeMeta";
 import {ComponentMeta, ComponentInstance, ComponentMaterial} from "@geelato/gl-ui-schema";
+import PageMeta from "../components/setter/page/PageMeta";
 
 
 // @ts-ignore
@@ -64,7 +66,7 @@ const componentMetas:Array<ComponentMeta> = [ButtonMeta, IconMeta,InputMeta, Inp
     CascaderMeta, CheckboxMeta, DatePickerMeta, FormMeta,  MentionsMeta, RadioMeta,
     SelectMeta, SliderMeta, SwitchMeta, TimePickerMeta, TransferMeta, TreeSelectMeta, UploadMeta, AvatarMeta, BadgeMeta,
     CalendarMeta, CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
-    StatisticMeta,  TabsMeta, TagMeta, TimeLineMeta, TooltipMeta, TreeMeta]
+    StatisticMeta,  TabsMeta, TagMeta, TimelineMeta,TimelineItemMeta, TooltipMeta, TreeMeta,PageMeta]
 
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [ButtonInstance,TableInstance,CardInstance,FormInstance,FormRowInstance]
