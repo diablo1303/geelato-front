@@ -8,24 +8,30 @@ export default {
                 "cop": "contains",
                 "isAdvanceQuery": false,
                 "colspan": 6,
-                "componentName": "AInput",
-                "props": {}
+                "component": {
+                    "componentName": "AInput",
+                    "props": {}
+                }
             }, {
                 "id": "code",
                 "name": "编码",
                 "isAdvanceQuery": false,
                 "colspan": 6,
-                "componentName": "AInput",
-                "props": {}
+                "component": {
+                    "componentName": "AInput",
+                    "props": {}
+                }
             }, {
                 "id": "enableStatus",
                 "name": "启用状态",
                 "isAdvanceQuery": false,
                 "colspan": 6,
-                "componentName": "ASelect",
-                "props": {
-                    "options": [{"value": 1, "label": "已启用"}, {"value": 0, "label": "已停用"}],
-                    "allowClear": true
+                "component": {
+                    "componentName": "ASelect",
+                    "props": {
+                        "options": [{"value": 1, "label": "已启用"}, {"value": 0, "label": "已停用"}],
+                        "allowClear": true
+                    }
                 }
             }]
         },
@@ -33,11 +39,9 @@ export default {
             "leftColSpan": 12,
             "centerColSpan": 0,
             "rightColSpan": 12,
-            "leftItems": [{"componentName": "AButton", "props": {"name": "新增"}}],
-            "rightItems": [{"componentName": "ATooltip", "props": {"name": "新增"}}, {
-                "componentName": "AButton",
-                "props": {"name": "新增"}
-            }]
+            "leftItems": [],
+            "centerItems": [],
+            "rightItems": []
         },
         "columns": [{"title": "ID", "dataIndex": "id", "slotName": "index"}, {
             "title": "名称",

@@ -2,8 +2,6 @@
  *  打包引用的入口
  */
 import type {App,Plugin} from 'vue'
-import {useIdeStore} from "@geelato/gl-ide";
-import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco"
 import pluginCore from './plugin'
 import {PluginUtil} from "@geelato/gl-ui";
 import GlIdeArco from './App.vue'

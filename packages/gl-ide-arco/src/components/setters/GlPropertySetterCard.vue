@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive} from 'vue'
+import {defineComponent} from 'vue'
 import {utils} from "@geelato/gl-ui";
 
 export default defineComponent({

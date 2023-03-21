@@ -36,6 +36,7 @@ import GlArrayNumberSetter from "./components/setters/property-setters/GlArrayNu
 import GlArrayNumberBuilder from "./components/builder/props-builder/GlArrayNumberBuilder.vue";
 import GlArrayStringSetter from "./components/setters/property-setters/GlArrayStringSetter.vue";
 import GlArrayBooleanSetter from "./components/setters/property-setters/GlArrayBooleanSetter.vue";
+import GlArrayComponentSetter from "./components/setters/property-setters/GlArrayComponentSetter.vue";
 
 const plugin = new GlPlugin('gl-plugin-arco')
 
@@ -141,6 +142,7 @@ const component: Plugin = {
         app.component(GlArrayNumberBuilder.name, GlArrayNumberBuilder)
         app.component(GlArrayNumberSetter.name, GlArrayNumberSetter)
         app.component(GlArrayStringSetter.name, GlArrayStringSetter)
+        app.component(GlArrayComponentSetter.name, GlArrayComponentSetter)
         app.component(GlArrayBooleanSetter.name, GlArrayBooleanSetter)
         app.component(GlSimpleObjectSetter.name, GlSimpleObjectSetter)
         // app.component(GlSettingOptions.name, GlSettingOptions)

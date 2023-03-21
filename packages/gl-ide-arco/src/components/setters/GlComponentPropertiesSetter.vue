@@ -2,6 +2,7 @@
   <div class="gl-table" :class="{'gl-table-as-tree':false}">
     <!--需保障currentSelectedComponentMeta有且有正确的数据，否则该属性值会马上影响舞台上的组件展示-->
     <template v-if="componentMeta" v-for="(propertySetterMeta,index) in componentMeta.properties">
+      <!--      <GlPropertySetter :propertySetterMeta="propertySetterMeta"-->
 <!--      <GlPropertySetter :propertySetterMeta="propertySetterMeta"-->
 <!--                        :propertyValue="getPropertyValue(propertySetterMeta.name,propertySetterMeta.type||'props')"-->
 <!--                        @update="(val:any)=>{setPropertyValue(propertySetterMeta.name,val,propertySetterMeta.type||'props')}">-->

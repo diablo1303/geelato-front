@@ -53,7 +53,7 @@ import TableInstance from "../components/setter/table/TableInstance";
 import TabsMeta from "../components/setter/tabs/TabsMeta";
 import TagMeta from "../components/setter/tag/TagMeta";
 import TimelineMeta from "./setter/timeLine/TimelineMeta";
-import TimelineItemMeta from "./setter/timeLine/TimelineMeta";
+import TimelineItemMeta from "./setter/timeLine/TimelineItemMeta";
 import TooltipMeta from "../components/setter/tooltip/TooltipMeta";
 import TreeMeta from "../components/setter/tree/TreeMeta";
 import {ComponentMeta, ComponentInstance, ComponentMaterial} from "@geelato/gl-ui-schema";

@@ -11,7 +11,7 @@
   >
     <!-- 通过加入空span 解决按钮组件动态slot时，按钮大小不随内容变化的问题-->
     <template v-for="(slotItem,slotName) in glComponentInst.slots">
-      <component :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"
+      <component v-if="slotItem" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"
                  v-slot:[slotName]></component>
       <!--<GlIconfont :type="slotItem.gl_font_class"></GlIconfont>  -->
       <!--      <template v-if="slotItem.handler==='ComponentHandler'">-->

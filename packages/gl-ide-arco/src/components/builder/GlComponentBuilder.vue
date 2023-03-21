@@ -239,7 +239,7 @@
 </template>
 
 <script lang="ts">
-import {type IComponentInstance, LooseObject, utils} from "@geelato/gl-ui";
+import {type IComponentInstance, utils} from "@geelato/gl-ui";
 import {Splitpanes, Pane} from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import {defineComponent, nextTick, type PropType} from 'vue'

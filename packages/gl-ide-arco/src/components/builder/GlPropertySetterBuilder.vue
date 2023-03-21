@@ -303,24 +303,23 @@ const setterItems: Array<PropertySetterSelectOption> = [
   {name: 'GlIconfontSetter', label: '图标选择器', vModelName: 'modelValue', type: 'object'},
   {name: 'GlIconfontSetterForSlot', label: '图标选择器（用于插槽）', vModelName: 'modelValue', type: 'String'},
   {name: 'GlHtmlSetterForSlot', label: 'Html设置（用于插槽）', vModelName: 'modelValue', type: 'String'},
-  {name: 'GlComponentSelect', label: '组件选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlEntitySelect', label: '实体选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlFieldSelect', label: '字段选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlUserSelect', label: '用户选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlGroupSelect', label: '组织选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlJson', label: 'Json编辑器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlColor', label: '颜色选择器（TODO）', vModelName: 'modelValue', type: 'String'},
-  {name: 'GlStyle', label: '样式设置器（TODO）', vModelName: 'modelValue', type: 'String'},
-  {name: 'GlSubComponentSetter', label: '组件设置', vModelName: 'modelValue', type: 'String'},
+  {name: 'GlComponentSelect', label: '组件选择器', vModelName: 'modelValue', type: 'String'},
+  {name: 'GlSubComponentSetter', label: '子组件设置', vModelName: 'modelValue', type: 'String'},
   {name: 'GlEntityReaderSetter', label: '实体数据源设置', vModelName: 'modelValue', type: 'Object'},
-  {name: 'GlArrayNumberSetter', label: '数组-数值 [1,2,3...]', vModelName: 'modelValue', type: 'String',propsSetter: 'GlArrayNumberBuilder'},
-  {name: 'GlArrayStringSetter', label: '数组-字符串 ["a","b"...]', vModelName: 'modelValue', type: 'String'},
-  {name: 'GlArrayBooleanSetter', label: '数组-布尔 [true,false...]', vModelName: 'modelValue', type: 'String'},
+  {name: 'GlArrayNumberSetter', label: '数组-数值类 [1,2,3...]', vModelName: 'modelValue', type: 'String',propsSetter: 'GlArrayNumberBuilder'},
+  {name: 'GlArrayStringSetter', label: '数组-字符串类 ["a","b"...]', vModelName: 'modelValue', type: 'String'},
+  {name: 'GlArrayBooleanSetter', label: '数组-布尔类 [true,false...]', vModelName: 'modelValue', type: 'String'},
+  {name: 'GlArrayComponentSetter', label: '数组-组件类 [{componentName,props,slots...}...]', vModelName: 'modelValue', type: 'String'}
 ]
 const setterItemsForObject = [
   {name: 'GlObjectArraySetter', label: '对象数组-[{}]'},
   {name: 'GlSimpleObjectSetter', label: '简单对象-{}'},
-  {name: 'GlComponentArraySetter', label: '组件数组-[{componentName,props,slots...}]'}
 ]
 
 const setterItemsForSubComponent = [

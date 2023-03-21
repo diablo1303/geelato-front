@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { PropType, ref } from "vue";
-import type { ComponentMeta } from "./toolbar";
+import type {PropType} from "vue";
+import type {ComponentMeta} from "./toolbar";
 
 defineProps({
   leftColSpan: {
@@ -41,7 +41,6 @@ defineProps({
   },
 });
 
-// defineExpose();
 </script>
 
 <template>
@@ -49,24 +48,27 @@ defineProps({
     <a-col :span="leftColSpan">
       <a-space>
         <slot name="leftItems"></slot>
+        <span></span>
         <template v-for="(item, index) in leftItems" :key="index">
-          <component :is="item.componentName"></component>
+          <GlComponent v-if="item" :glComponentInst="item"></GlComponent>
         </template>
       </a-space>
     </a-col>
     <a-col :span="centerColSpan">
-      <template v-for="(item, index) in centerItems" :key="index">
-        <component :is="item.componentName"></component> </template
-    ></a-col>
-    <a-col
-      :span="rightColSpan"
-      style="display: flex; align-items: center; justify-content: end"
-    >
+      <a-space>
+        <span></span>
+        <template v-for="(item, index) in centerItems" :key="index">
+          <GlComponent v-if="item" :glComponentInst="item"></GlComponent>
+        </template>
+      </a-space>
+    </a-col>
+    <a-col :span="rightColSpan" style="display: flex; align-items: center; justify-content: end">
       <a-space>
         <template v-for="(item, index) in rightItems" :key="index">
-          <component :is="item.componentName"></component>
+          <GlComponent v-if="item" :glComponentInst="item"></GlComponent>
         </template>
         <slot name="rightItems"></slot>
+        <span></span>
       </a-space>
     </a-col>
   </a-row>

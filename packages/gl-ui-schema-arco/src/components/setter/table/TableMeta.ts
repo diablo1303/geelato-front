@@ -16,7 +16,7 @@ export default {
         "show": true,
         "expanded": true
     }, {
-        "expanded": true,
+        "expanded": false,
         "name": "query",
         "setterComponentProps": {},
         "setterComponentVModelName": "",
@@ -49,7 +49,7 @@ export default {
                 "group": "base",
                 "type": "props",
                 "setterComponentName": "GlFieldSelect",
-                "title": "字段名",
+                "title": "绑定字段",
                 "show": true,
                 "expanded": true
             }, {
@@ -101,7 +101,7 @@ export default {
                 "setterComponentVModelName": "modelValue",
                 "group": "base",
                 "type": "props",
-                "title": "是否高级查询",
+                "title": "高级查询",
                 "expanded": true,
                 "setterComponentName": "ASwitch",
                 "show": true
@@ -131,7 +131,7 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "_showSub": false,
+        "_showSub": true,
         "properties": [{
             "name": "leftColSpan",
             "setterComponentProps": {"defaultValue": 12},
@@ -170,66 +170,42 @@ export default {
         }, {
             "name": "leftItems",
             "setterComponentProps": {},
-            "setterComponentVModelName": "",
+            "setterComponentVModelName": "modelValue",
             "group": "base",
             "type": "props",
             "show": true,
             "expanded": true,
             "_showSub": false,
-            "properties": [{
-                "name": "componentName",
-                "setterComponentProps": {},
-                "setterComponentVModelName": "modelValue",
-                "group": "base",
-                "type": "props",
-                "show": true,
-                "expanded": true,
-                "title": "组件",
-                "setterComponentName": "GlComponentSelect"
-            }, {
-                "name": "props",
-                "setterComponentProps": {},
-                "setterComponentVModelName": "",
-                "group": "base",
-                "type": "props",
-                "show": false,
-                "expanded": true,
-                "title": "props"
-            }],
-            "setterComponentName": "GlObjectArraySetter",
+            "properties": [],
+            "setterComponentName": "GlArrayComponentSetter",
             "titleField": "componentName",
             "title": "左边组件"
         }, {
+            "name": "centerItems",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "show": true,
+            "expanded": true,
+            "_showSub": false,
+            "properties": [],
+            "setterComponentName": "GlArrayComponentSetter",
+            "titleField": "",
+            "title": "中间组件"
+        }, {
             "name": "rightItems",
             "setterComponentProps": {},
-            "setterComponentVModelName": "",
+            "setterComponentVModelName": "modelValue",
             "group": "base",
             "type": "props",
             "show": true,
             "expanded": true,
             "_showSub": true,
-            "properties": [{
-                "name": "componentName",
-                "setterComponentProps": {},
-                "setterComponentVModelName": "modelValue",
-                "group": "base",
-                "type": "props",
-                "show": true,
-                "expanded": true,
-                "setterComponentName": "GlComponentSelect"
-            }, {
-                "name": "props",
-                "setterComponentProps": {},
-                "setterComponentVModelName": "",
-                "group": "base",
-                "type": "props",
-                "show": false,
-                "expanded": true,
-                "title": "props"
-            }],
+            "properties": [],
             "title": "左边组件",
-            "setterComponentName": "GlObjectArraySetter",
-            "titleField": "componentName"
+            "setterComponentName": "GlArrayComponentSetter",
+            "titleField": ""
         }],
         "title": "工具条",
         "setterComponentName": "GlSimpleObjectSetter",
@@ -242,7 +218,7 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "_showSub": true,
+        "_showSub": false,
         "properties": [{
             "name": "title",
             "setterComponentProps": {},
@@ -261,7 +237,7 @@ export default {
             "type": "props",
             "show": true,
             "expanded": true,
-            "title": "字段名",
+            "title": "绑定字段",
             "setterComponentName": "GlFieldSelect"
         }, {
             "name": "fixed",
