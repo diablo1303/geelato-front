@@ -24,7 +24,7 @@
         </a-button>
       </a-col>
     </a-row>
-    <a-modal :visible="visible" title="设置组件" @ok="()=>{visible=false}" @cancel="()=>{visible=false}" :width="1024" style="top: 20px">
+    <a-modal draggable :visible="visible" title="设置组件" @ok="()=>{visible=false}" @cancel="()=>{visible=false}" :width="600" style="top: 20px">
       <GlComponentSetter :componentMeta="componentMeta" :componentInstance="mv" @update="(val)=>{updateInstance(val)}"/>
     </a-modal>
   </div>

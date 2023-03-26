@@ -78,7 +78,7 @@ export {
     Utils,
     PluginUtil,
     useGlobal,
-    IComponentInstance
+    IComponentInstance,
 }
 // 默认导出组件
 export default component

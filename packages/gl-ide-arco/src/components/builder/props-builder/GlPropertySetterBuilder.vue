@@ -253,6 +253,11 @@
   </table>
 </template>
 
+<script lang="ts">
+export default {
+  name:'GlPropertySetterBuilder'
+}
+</script>
 <script lang="ts" setup>
 import {computed, defineComponent, getCurrentInstance, onBeforeUpdate, reactive, ref, watch} from 'vue'
 // import GlSelectSetter from "../setters/property-setters/GlSelectSetter.vue";

@@ -138,5 +138,11 @@ export default {
         "title": "链接",
         "show": true,
         "expanded": true
-    }]
+    }],
+    "actions": [
+        {
+            "name": "click",
+            "title": "点击"
+        }
+    ]
 }

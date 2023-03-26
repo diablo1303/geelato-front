@@ -14,6 +14,9 @@
         <GlComponentActionsSetter :componentMeta="componentMeta" :componentInstance="componentInstance"
                                   @update="(val:any)=>{setInstance(val,'actions')}"/>
       </a-tab-pane>
+      <a-tab-pane key="4" tab="权限" title="权限">
+        <a-alert>Coming Soon...</a-alert>
+      </a-tab-pane>
     </a-tabs>
   </div>
 </template>

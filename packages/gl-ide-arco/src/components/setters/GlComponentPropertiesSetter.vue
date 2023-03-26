@@ -27,13 +27,13 @@
 <script lang="ts">
 import {defineComponent, type PropType, ref, unref} from 'vue'
 import {utils, LooseObject} from "@geelato/gl-ui";
-import {ComponentInstance, PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
+import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 
 export default defineComponent({
   name: "GlComponentPropertiesSetter",
   props: {
     componentMeta: {
-      type: Object as PropType<PropertySetterMetaImpl>,
+      type: Object as PropType<ComponentMeta>,
       required: true
     },
     componentInstance: {
