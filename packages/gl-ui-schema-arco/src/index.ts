@@ -8,6 +8,11 @@ export {default as DividerMeta} from './components/setter/divider/DividerMeta'
 export {default as InputMeta} from "./components/setter/input/InputMeta";
 export {default as InputNumberMeta} from "./components/setter/inputNumber/InputNumberMeta";
 export {default as TableMeta} from "./components/setter/table/TableMeta";
+export {default as FormRowMeta} from "./components/setter/layout/FormRowMeta";
+export {default as DatePickerMeta} from "./components/setter/datePicker/DatePickerMeta"
+export {default as TimelineMeta} from "./components/setter/timeLine/TimelineMeta"
+export {default as TimelineItemMeta} from "./components/setter/timeLine/TimelineItemMeta"
+
 import {useComponentMaterialStore} from "./store/UseComponentMaterialStore";
 
 const component: Plugin = {
@@ -17,6 +22,6 @@ const component: Plugin = {
     }
 }
 
-export {useComponentMaterialStore}
+export { useComponentMaterialStore}
 // 默认导出组件
 export default component

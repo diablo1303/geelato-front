@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive} from 'vue'
+import {defineComponent} from 'vue'
 import {utils} from "@geelato/gl-ui";
 
 export default defineComponent({
@@ -177,7 +177,7 @@ export default defineComponent({
 
 <style>
 .gl-property-setter-card {
-  margin: 0px;
+  margin: 2px;
 }
 
 /* gl-m 即为 gl-modifier*/
@@ -186,11 +186,12 @@ export default defineComponent({
 }
 
 .gl-property-setter-card .gl-m-header {
-  padding: 0 1em;
-  line-height: 2.4em;
+  padding: 0 0.68em;
+  line-height: 2em;
   border: 1px solid rgba(31, 56, 88, .2);
-  border-radius: 3px;
-  margin: 2px 0;
+  border-left: 3px solid #c8cdd4;
+  border-radius: 2px;
+  margin: 2px 0px;
 }
 
 .gl-property-setter-card .gl-m-header .gl-m-action {

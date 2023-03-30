@@ -7,7 +7,11 @@ import {PropertySetterMetaImpl} from "./entity/IPropertySetterMeta";
 import type IPropertySetterMeta from "./entity/IPropertySetterMeta";
 import {ComponentSetterMetaImpl} from "./entity/ComponentSetterMeta";
 import {PropertySetterBuilderMeta, PropertySetterSelectOption} from "./entity/PropertySetterBuilderMeta";
+import type IActionSetterMeta from "./entity/actions/ActionSetterMeta";
+import {ActionSetterMeta} from "./entity/actions/ActionSetterMeta";
 import {schema} from "./components/schema";
+import Action from './entity/actions/Action';
+import CommandBlock from './entity/actions/CommandBlock';
 
 const component: Plugin = {
     install: function (app: App) {
@@ -23,8 +27,12 @@ export {
     ComponentSetterMetaImpl,
     IPropertySetterMeta,
     PropertySetterMetaImpl,
+    IActionSetterMeta,
+    ActionSetterMeta,
     PropertySetterBuilderMeta,
     PropertySetterSelectOption,
+    Action,
+    CommandBlock
 }
 // 默认导出组件
 export default component

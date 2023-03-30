@@ -299,4 +299,10 @@ reloadTreeData()
   /*padding: 0 !important;*/
   /*margin: 0 !important;*/
 }
+/*.arco-tree-node .gl-more{*/
+/*  display: none;*/
+/*}*/
+/*.arco-tree-node:hover .gl-more{*/
+/*  display: inline-block;*/
+/*}*/
 </style>

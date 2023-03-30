@@ -6,8 +6,10 @@ export interface QueryCol {
   // 操作
   cop: string;
   isAdvanceQuery: boolean;
-  componentName: string;
-  props: { placeholder: "" };
+  component:{
+    componentName: string;
+    props: { placeholder: "" };
+  }
 }
 
 export interface Query {

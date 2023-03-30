@@ -15,20 +15,24 @@ enum Events {
     GlIdeToolbarSaveFile = 'GlIdeToolbarSaveFile',
     // 切换中间的图标
     GlIdeToolbarIconSelected = 'GlIdeToolbarIconSelected',
+    // 显示代码
+    GlIdeToolbarShowCodeViewer = 'GlIdeToolbarShowCodeViewer',
 
     // 侧边组件栏上选择组件
     GlIdeSidebarComponentSelected = 'GlIdeSidebarComponentSelected',
 
+    // 在设置面板中更新了组件实例信息
+    GlIdeSetterUpdateComponentInstance = 'GlIdeSetterUpdateComponentInstance',
     // 打开ide的设置面板
-    GlIdeSettingOpen = 'GlIdeSettingOpen',
+    GlIdeSetterOpen = 'GlIdeSetterOpen',
     // 更新ide的设置面板
-    GlIdeSettingUpdate = 'GlIdeSettingUpdate',
+    GlIdeSetterUpdate = 'GlIdeSetterUpdate',
     // 切换面板
-    GlIdeSettingPanelSwitch = 'GlIdeSettingPanelSwitch',
+    GlIdeSetterPanelSwitch = 'GlIdeSetterPanelSwitch',
     // 更新对象树节点
-    GlIdeSettingObjectTreeNodeUpdate = 'GlIdeSettingObjectTreeNodeUpdate',
+    GlIdeSetterObjectTreeNodeUpdate = 'GlIdeSetterObjectTreeNodeUpdate',
     // 更新组件绑定事件的状态
-    GlIdeSettingComponentEventStateUpdate = 'GlIdeSettingComponentEventStateUpdate',
+    GlIdeSetterComponentEventStateUpdate = 'GlIdeSetterComponentEventStateUpdate',
 
     // 舞台上选择组件
     GlIdeStageComponentSelected = 'GlIdeStageComponentSelected',

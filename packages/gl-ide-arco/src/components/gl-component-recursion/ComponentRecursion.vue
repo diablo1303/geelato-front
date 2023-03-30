@@ -17,9 +17,12 @@
              @end="onEnd($event,glComponentInst)"
   >
     <!-- 通过加入空span 解决按钮组件动态slot时，按钮大小不随内容变化的问题-->
-    <template v-for="(slotItem,slotName) in glComponentInst.slots">
-      <component :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"
-                 v-slot:[slotName]></component>
+    <template v-for="(slotItem,slotName) in glComponentInst.slots"  v-slot:[slotName]>
+
+      <component v-if="slotItem.propsTarget==='v-bind'" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"></component>
+      <component v-else-if="slotItem.propsTarget==='v-model'" :is="slotItem.componentName" v-model="slotItem.props" :style="slotItem.style"></component>
+      <template v-else>不支持的slot props target：{{slotItem.propsTarget}}</template>
+
       <!--<GlIconfont :type="slotItem.gl_font_class"></GlIconfont>  -->
       <!--      <template v-if="slotItem.handler==='ComponentHandler'">-->
       <!--        <component :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"-->
@@ -34,7 +37,7 @@
       <!--      <div v-else-if="slotItem.handler==='HtmlHandler'" v-html="slotItem.props.html">-->
       <!--      </div>-->
     </template>
-    <GlComponentRecursion v-for="childElement in getChildElements(glComponentInst)"
+    <GlComponentRecursion v-for="childElement in glComponentInst.children"
                           :glComponentInst="childElement"></GlComponentRecursion>
   </component>
 </template>
@@ -47,12 +50,21 @@ export default {
 import {type IComponentInstance, mixins} from "@geelato/gl-ui";
 import {useIdeStore} from "@geelato/gl-ide";
 import {emitter} from "@geelato/gl-ui";
-import {onMounted} from "vue";
+import {computed, onMounted} from "vue";
 
-const props = defineProps(mixins.props)
+const props = defineProps({
+  ...mixins.props
+})
 const emits = defineEmits(['onComponentClick', 'onComponentMounted'])
 
 const componentStore = useIdeStore().componentStore
+
+const slots = computed(()=>{
+  // @ts-ignore
+  props.glComponentInst.props.filter((propItem:any)=>{
+
+  })
+})
 
 const onClick = (...args: any[]) => {
   console.log('gl-component > onClick() > arguments:', args, props.glComponentInst)
@@ -112,17 +124,21 @@ onMounted(() => {
  *  由于部分组件，如AStep，采用template两层嵌套迭代用component渲染时，样式名称渲染为undefined
  *  在这里改成取出最终的迭代元素组成一层数据组，直接在component上迭代
  */
-const getChildElements = (glComponentInst: IComponentInstance) => {
-  let result: Array<any> = []
-  for (let key in glComponentInst.children) {
-    // @ts-ignore
-    for (let childElement of glComponentInst.children[key]) {
-      result.push(childElement)
-    }
-  }
-  // console.log('getChildElements> result:', result)
-  return result
-}
+// const getChildElements = (glComponentInst: IComponentInstance) => {
+//   let result: Array<any> = []
+//   result.push()
+//   for (let key in glComponentInst.children) {
+//     // console.log('getChildElements glComponentInst:', glComponentInst, 'key:', key)
+//     // @ts-ignore
+//     for (let childElement of glComponentInst.children[key]) {
+//       result.push(childElement)
+//     }
+//   }
+//
+//
+//   // console.log('getChildElements> result:', result)
+//   return result
+// }
 </script>
 
 <style>

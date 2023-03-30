@@ -25,7 +25,7 @@
                 <td v-for="(column,columnIndex) in columns" :key="index+'_'+columnIndex">
                   <a-input size="small" v-model="element[column.dataIndex]"
                            @change="onChangeElement(element,index,$event)"
-                           @click="onSelectElement(element,index)" style="width: 99%">
+                           @click="onSelectElement(element,index)" style="width: 99%" :key="index+'_'+columnIndex+'_'+column.dataIndex">
                     <template v-if="columnIndex===0" #prepend>
                       <GlIconfont title="拖动" type="gl-drag" class="gl-dnd-item" style="cursor: move"></GlIconfont>
                       <GlIconfont v-if="allowAddSub" :type="element._showSub?'gl-minus-square':'gl-plus-square'"

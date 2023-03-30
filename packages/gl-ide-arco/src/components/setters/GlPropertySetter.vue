@@ -2,22 +2,31 @@
   组件的属性配置器
 -->
 <template>
-  <div class="GlPropertySetter gl-table-row"
+  <div class="gl-property-setter gl-table-row"
        v-if="propertySetterMeta.setterComponentName!=='GlEmptySetter'&&propertySetterMeta.show!==false">
-    <div class="gl-table-cell gl-label" style="position: relative;width: 7em"
+    <div :class="cellDisplayModeClass" class="gl-label" style="position: relative;" :style="{width: isCollapseDisplayMode?'100%':'7em'}"
          @dblclick.ctrl="tryClearProp(propertySetterMeta.name)" title="按住Ctrl，双击清除该属性，恢复初始状态">
-      <template v-if="displayMode==='Collapse'">
-        <GlIconfont type="gl-left-circle" style="cursor: pointer" v-if="propertySetterMeta.expanded!==false"
+      <template v-if="isCollapseDisplayMode">
+        <GlIconfont type="gl-left-circle" style="cursor: pointer;margin-left: 0.5em"
+                    v-if="propertySetterMeta.expanded!==false"
                     @click="propertySetterMeta.expanded=false"></GlIconfont>
-        <GlIconfont type="gl-down-circle" style="cursor: pointer" v-if="propertySetterMeta.expanded===false"
+        <GlIconfont type="gl-down-circle" style="cursor: pointer;margin-left: 0.5em"
+                    v-if="propertySetterMeta.expanded===false"
                     @click="propertySetterMeta.expanded=true"></GlIconfont>
+        <span v-if="propertySetterMeta.description">
+          <GlIconfont type="gl-info-circle" :title="propertySetterMeta.description"></GlIconfont>
+        </span>
+        <span style="cursor:pointer;font-weight: 580"
+              @click="propertySetterMeta.expanded=!propertySetterMeta.expanded">&nbsp;{{ propertySetterMeta.title }}</span>
       </template>
-      <span v-if="propertySetterMeta.description">
-        <GlIconfont type="gl-info-circle" :title="propertySetterMeta.description"></GlIconfont>
-      </span>
-      <span>&nbsp;{{ propertySetterMeta.title }}</span>
+      <template v-if="!isCollapseDisplayMode">
+         <span v-if="propertySetterMeta.description">
+          <GlIconfont type="gl-info-circle" :title="propertySetterMeta.description"></GlIconfont>
+        </span>
+        <span>&nbsp;{{ propertySetterMeta.title }}</span>
+      </template>
     </div>
-    <div class="gl-table-cell" v-if="propertySetterMeta.expanded!==false">
+    <div :class="cellDisplayModeClass" v-if="propertySetterMeta.expanded!==false">
       <!-- 1 ========================type为props或默认为空========================-->
       <template v-if="propertySetterMeta.type==='props'||!propertySetterMeta.type">
         <!-- 1.1 ========================GlObjectArraySetter========================-->
@@ -34,7 +43,7 @@
             <div class="gl-table" :class="{'gl-table-as-tree':false}">
               <template v-for="property in propertySetterMeta.properties">
                 <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
-                                  :propertyValue="slotProps.item[property.name]"
+                                  v-model:propertyValue="slotProps.item[property.name]"
                                   @update="($event:any)=>{slotProps.item[property.name]=$event}"></GlPropertySetter>
               </template>
             </div>
@@ -56,25 +65,27 @@
             <div class="gl-table" :class="{'gl-table-as-tree':false}" style="margin: 1px;border: 1px solid #e4e4e4">
               <template v-for="subPropertySetterMeta in propertySetterMeta.properties">
                 <GlPropertySetter v-if="propertyModel" :propertySetterMeta="subPropertySetterMeta"
-                                  :propertyValue="propertyModel[subPropertySetterMeta.name]"
+                                  v-model:propertyValue="propertyModel[subPropertySetterMeta.name]"
                                   @update="onSubPropertyUpdate(subPropertySetterMeta.name,$event)"></GlPropertySetter>
               </template>
             </div>
           </template>
         </template>
-        <!-- 1.3 ========================其它Setter========================-->
+        <!-- 1.3 ========================其它Setter,大部分的为该类========================-->
         <!--        v-model:[propertySetterMeta.setterComponentVModelName]-->
-        <component v-else :is="propertySetterMeta.setterComponentName"
-                   v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel"
-                   v-bind="propertySetterMeta.setterComponentProps"
-                   :style="propertySetterMeta.style"
-                   :placeholder="propertySetterMeta.placeholder"
-        >
-        </component>
+        <template v-else>
+          <component :is="propertySetterMeta.setterComponentName"
+                     v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel"
+                     v-bind="propertySetterMeta.setterComponentProps"
+                     :style="propertySetterMeta.style"
+                     :placeholder="propertySetterMeta.placeholder"
+          >
+          </component>
+        </template>
       </template>
       <!-- 2 ========================type为slots========================-->
       <template v-else-if="propertySetterMeta.type==='slots'">
-        <component :is="propertySetterMeta.setterComponentName"
+        <component v-if="propertyModel" :is="propertySetterMeta.setterComponentName"
                    v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel.props"
                    v-bind="propertySetterMeta.setterComponentProps"
                    :style="propertySetterMeta.style"
@@ -92,8 +103,9 @@
           <!-- 通过属性元数据，定义每张卡片的内容  -->
           <div class="gl-table" :class="{'gl-table-as-tree':false}">
             <template v-for="property in propertySetterMeta.properties">
+              {{ slotProps.item.props }}{{ propertyModel }}
               <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
-                                :propertyValue="slotProps.item.props[property.name]"
+                                v-model:propertyValue="slotProps.item.props[property.name]"
                                 @update="($event:any)=>{slotProps.item.props[property.name]=$event}"></GlPropertySetter>
             </template>
           </div>
@@ -109,10 +121,11 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {type PropType, reactive, ref, watch} from 'vue'
+import {computed, onMounted, onUpdated, type PropType, reactive, ref, watch} from 'vue'
 import type {PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
+import {utils} from "@geelato/gl-ui";
 
-const emits = defineEmits(['update'])
+const emits = defineEmits(['update', 'update:propertyValue'])
 const props = defineProps({
   /**
    *  属性的配置展示模式
@@ -126,14 +139,26 @@ const props = defineProps({
 })
 
 const propertyModel = ref(props.propertyValue)
+const isCollapseDisplayMode = props.displayMode === 'collapse'
+const displayModeClass = computed(() => {
+  return {["gl-display-mode-" + props.displayMode || 'default']: true}
+})
+const cellDisplayModeClass = computed(() => {
+  return isCollapseDisplayMode ? {"gl-table-cell-collapse": true} : {"gl-table-cell": true}
+})
+
+
+onUpdated(() => {
+  setPropertyModel()
+})
 
 watch(() => {
   return propertyModel
 }, (val, oval) => {
   console.log('update property', props.propertySetterMeta?.name, ' and set value as ', val)
-  emits("update", val)
+  emits("update:propertyValue", val)
+  // emits("update", val)
 }, {deep: true})
-
 
 const setPropertyModel = () => {
   // @ts-ignore
@@ -141,7 +166,11 @@ const setPropertyModel = () => {
   if (!propertyModel.value) {
     if (props.propertySetterMeta.type === 'slots') {
       // @ts-ignore
-      propertyModel.value = {componentName: props.propertySetterMeta.slotComponentName, props: {}}
+      propertyModel.value = {
+        componentName: props.propertySetterMeta.slotComponentName,
+        props: undefined,
+        propsTarget: props.propertySetterMeta.slotComponentBindTarget
+      }
     } else {
       if (props.propertySetterMeta.properties && props.propertySetterMeta.properties.length > 0) {
         if (props.propertySetterMeta.type === 'children' || props.propertySetterMeta.setterComponentName === 'GlObjectArraySetter') {
@@ -156,8 +185,8 @@ const setPropertyModel = () => {
   }
   console.log('setPropertyModel>', props.propertySetterMeta, props.propertyValue, propertyModel.value)
 }
-
 setPropertyModel()
+
 
 /**
  * 属性设置之后会影响原组件的默认值设置，可以该将改属性删除，需要时再添加
@@ -200,26 +229,29 @@ const selectChildElement = () => {
 
 <style>
 
-.gl-table.gl-table-as-tree > .gl-table-row > .gl-table-cell.gl-label {
-  padding-left: 1em;
-  width: 100% !important;
-  height: 32px;
-  line-height: 32px;
-  background-color: #FFF;
-  font-weight: 700;
+.gl-property-setter .gl-label {
+  height: 40px;
+  line-height: 40px;
+  font-weight: 500;
+  border-bottom: solid 1px #e7e7e7;
 }
 
-.gl-table.gl-table-as-tree > .gl-table-row > .gl-table-cell {
+.gl-property-setter .gl-table.gl-table-as-tree > .gl-table-row > .gl-table-cell.gl-label {
+  padding-left: 1em;
+  height: 32px;
+  line-height: 32px;
+  width: 100% !important;
+  background-color: #FFF;
+}
+
+.gl-property-setter .gl-table.gl-table-as-tree > .gl-table-row > .gl-table-cell {
   height: auto;
   text-align: left;
   display: block;
 }
 
-.GlPropertySetter .ant-select {
-  width: 100%
-}
 
-.GlPropertySetter .triangle-top-left {
+.gl-property-setter .triangle-top-left {
   /*position: absolute;*/
   /*top: -8px;*/
   /*left: 10px;*/

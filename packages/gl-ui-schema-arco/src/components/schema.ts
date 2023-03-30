@@ -8,7 +8,8 @@ import DividerMeta from "../components/setter/divider/DividerMeta";
 import IconMeta from "../components/setter/icon/IconMeta";
 import TypographyMeta from "../components/setter/typography/TypographyMeta";
 import GridMeta from "../components/setter/grid/GridMeta";
-import LayoutMeta from "../components/setter/layout/LayoutMeta";
+import FormRowMeta from "../components/setter/layout/FormRowMeta";
+import FormRowInstance from "../components/setter/layout/FormRowInstance";
 import SpaceMeta from "../components/setter/space/SpaceMeta";
 import AffixMeta from "../components/setter/affix/AffixMeta";
 import AffixInstance from "../components/setter/affix/AffixInstance";
@@ -22,6 +23,7 @@ import CascaderMeta from "../components/setter/cascader/CascaderMeta";
 import CheckboxMeta from "../components/setter/checkbox/CheckboxMeta";
 import DatePickerMeta from "../components/setter/datePicker/DatePickerMeta";
 import FormMeta from "../components/setter/form/FormMeta";
+import FormInstance from "../components/setter/form/FormInstance";
 import InputMeta from "../components/setter/input/InputMeta";
 import InputNumberMeta from "../components/setter/inputNumber/InputNumberMeta";
 import MentionsMeta from "../components/setter/mentions/MentionsMeta";
@@ -36,6 +38,7 @@ import AvatarMeta from "../components/setter/avatar/AvatarMeta";
 import BadgeMeta from "../components/setter/badge/BadgeMeta";
 import CalendarMeta from "../components/setter/calendar/CalendarMeta";
 import CardMeta from "../components/setter/card/CardMeta";
+import CardInstance from "../components/setter/card/CardInstance";
 import CarouselMeta from "../components/setter/carousel/CarouselMeta";
 import CollapseMeta from "../components/setter/collapse/CollapseMeta";
 import CommentMeta from "../components/setter/comment/CommentMeta";
@@ -46,23 +49,27 @@ import ListMeta from "../components/setter/list/ListMeta";
 import PopoverMeta from "../components/setter/popover/PopoverMeta";
 import StatisticMeta from "../components/setter/statistic/StatisticMeta";
 import TableMeta from "../components/setter/table/TableMeta";
+import TableInstance from "../components/setter/table/TableInstance";
 import TabsMeta from "../components/setter/tabs/TabsMeta";
 import TagMeta from "../components/setter/tag/TagMeta";
-import TimeLineMeta from "../components/setter/timeLine/TimeLineMeta";
+import TimelineMeta from "./setter/timeLine/TimelineMeta";
+import TimelineItemMeta from "./setter/timeLine/TimelineItemMeta";
 import TooltipMeta from "../components/setter/tooltip/TooltipMeta";
 import TreeMeta from "../components/setter/tree/TreeMeta";
 import {ComponentMeta, ComponentInstance, ComponentMaterial} from "@geelato/gl-ui-schema";
+import PageMeta from "../components/setter/page/PageMeta";
 
 
 // @ts-ignore
-const componentMetas:Array<ComponentMeta> = [ButtonMeta, IconMeta,InputMeta, InputNumberMeta, RateMeta,TableMeta, TypographyMeta, DividerMeta, GridMeta, LayoutMeta, SpaceMeta,
+const componentMetas:Array<ComponentMeta> = [ButtonMeta, IconMeta,InputMeta, InputNumberMeta, RateMeta,TableMeta, TypographyMeta, DividerMeta, GridMeta, FormRowMeta, SpaceMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, CheckboxMeta, DatePickerMeta, FormMeta,  MentionsMeta, RadioMeta,
     SelectMeta, SliderMeta, SwitchMeta, TimePickerMeta, TransferMeta, TreeSelectMeta, UploadMeta, AvatarMeta, BadgeMeta,
     CalendarMeta, CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
-    StatisticMeta,  TabsMeta, TagMeta, TimeLineMeta, TooltipMeta, TreeMeta]
+    StatisticMeta,  TabsMeta, TagMeta, TimelineMeta,TimelineItemMeta, TooltipMeta, TreeMeta,PageMeta]
 
-const customInstances: Array<ComponentInstance> = [ButtonInstance]
+// @ts-ignore
+const customInstances: Array<ComponentInstance> = [ButtonInstance,TableInstance,CardInstance,FormInstance,FormRowInstance]
 const componentInstances: Array<ComponentInstance> = []
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {

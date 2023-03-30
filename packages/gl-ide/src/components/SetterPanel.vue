@@ -3,7 +3,9 @@
     <GlComponentSetter v-if="componentStore.currentSelectedComponentMeta"
                        :componentMeta="componentStore.currentSelectedComponentMeta"
                        :componentInstance="componentStore.currentSelectedComponentInstance"
-                       @update="(instance:any)=>{updateInstance(instance)}"></GlComponentSetter>
+                       @update="(instance:any)=>{updateInstance(instance)}"
+                       :key="componentStore.currentSelectedComponentId"
+    ></GlComponentSetter>
     <template v-else>
       <div style="text-align: center;line-height: 3;height: 3em;background-color: #e7e7e7;margin: 12px 12px 0px">
         请先选择组件
@@ -21,6 +23,8 @@ export default {
 import {useThemeStore} from "../stores/UseThemeStore";
 import {useComponentStore} from "../stores/UseComponentStore";
 import {useIdeStore} from "../stores/UseIdeStore";
+import {emitter} from "@geelato/gl-ui";
+import EventNames from "../entity/Events";
 
 const emits = defineEmits(['update'])
 const ideStore = useIdeStore()
@@ -33,7 +37,8 @@ const componentInstance = {}
 
 const updateInstance = (instance: any) => {
   console.log('updateInstance:', instance)
-  ideStore.stageRefreshFlag = false
+  emitter.emit(EventNames.GlIdeSetterUpdateComponentInstance, instance)
+  // ideStore.updateInstanceKey = false
   emits('update', instance)
 }
 

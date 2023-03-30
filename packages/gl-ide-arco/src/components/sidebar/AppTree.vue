@@ -23,7 +23,7 @@ const onSelectNode = (params:any) => {
   const dataRef = params.selectedNode
   ideStore.openPage(<Page>{
     type: dataRef.nodeType,
-    id: dataRef.key,
+    extendId: dataRef.key,
     title: dataRef.title,
     iconType: dataRef.iconType
   })
@@ -44,7 +44,7 @@ const onIconClick = (nodeData: any) => {
   console.log('onIconClick:', nodeData)
   ideStore.openPage(<Page>{
     type: nodeData.nodeType,
-    id: nodeData.key,
+    extendId: nodeData.key,
     title: nodeData.title,
     iconType: nodeData.iconType
   })

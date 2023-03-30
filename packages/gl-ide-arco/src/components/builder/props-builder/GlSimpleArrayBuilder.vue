@@ -8,6 +8,7 @@
           <a-option value='String'>字符串数组</a-option>
           <a-option value="Number">数字数组</a-option>
           <a-option value="Boolean">布尔数组</a-option>
+          <a-option value="Component">组件数组</a-option>
         </a-select>
       </td>
     </tr>

@@ -14,7 +14,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@arco-design/web-vue": "^2.43.2",
+    "@arco-design/web-vue": "^2.44.2",
     "@geelato/gl-ui": "workspace:^0.0.1",
     "pinia": "^2.0.32",
     "sortablejs": "^1.15.0",

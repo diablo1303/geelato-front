@@ -4,20 +4,20 @@
        @mouseover="componentStore.setCurrentHoverComponentId('glToolbarBreadcrumbs')"
        @mouseleave="componentStore.setCurrentHoverComponentId('')">
     <span class="gl-crumb" v-if="eventType==='Selected'">
-      <span class="gl-crumb-nav" @click="componentStore.selectParentComponent" title="点击选择上一层"> <GlIconfont type="gl-breadcrumb" /></span>
+      <span class="gl-crumb-nav" @click="componentStore.selectParentComponent()" title="点击选择上一层"> <GlIconfont type="gl-breadcrumb" /></span>
       <span :title="componentStore.currentSelectedComponentName">{{ componentStore.currentSelectedComponentName }}</span>
     </span>
     <span class="gl-crumb" v-else-if="eventType==='Hover'">{{ componentStore.currentHoverComponentName }}</span>
     <span class="gl-crumb-actions" v-if="!isDeleteAble">
       <GlIconfont type="gl-save" title="保存为模板片段" />
       <GlIconfont type="gl-copy" title="复制" />
-      <GlIconfont type="gl-delete" title="删除"  @click="onComponentDelete" />
+      <GlIconfont type="gl-delete" title="删除"  @click="componentStore.deleteComponentInstById(componentStore.currentSelectedComponentId)" />
     </span>
   </div>
 </template>
 
 <script lang="ts">
-import {Events} from "@geelato/gl-ide"
+import {EventNames} from "@geelato/gl-ide"
 import {computed, defineComponent} from 'vue'
 import {useIdeStore} from "@geelato/gl-ide";
 // {'gl-hover':!!$ide.currentHoverComponentId&&eventType==='Hover'&&!$ide.currentDragComponentId,'gl-selected':!!$ide.currentSelectedComponentId&&eventType==='Selected'}
@@ -47,8 +47,8 @@ export default defineComponent({
     })
 
     const onComponentDelete = () => {
-      console.log('onComponentDelete', Events.GlIdeStageComponentDelete)
-      ctx.emit(Events.GlIdeStageComponentDelete, {id: componentStore.currentSelectedComponentId})
+      console.log('onComponentDelete', EventNames.GlIdeStageComponentDelete)
+      ctx.emit(EventNames.GlIdeStageComponentDelete, {id: componentStore.currentSelectedComponentId})
     }
 
     return {

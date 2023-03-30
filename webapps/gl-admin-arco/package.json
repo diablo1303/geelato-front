@@ -29,7 +29,7 @@
     ]
   },
   "dependencies": {
-    "@arco-design/web-vue": "^2.40.0",
+    "@arco-design/web-vue": "^2.44.2",
     "@geelato/gl-ui": "workspace:^0.0.1",
     "@geelato/gl-ui-arco": "workspace:^0.0.1",
     "@vueuse/core": "^9.3.0",

@@ -1,9 +1,24 @@
 export default {
-    "componentName": "AForm",
+    "componentName": "GlEntityForm",
     "displayMode": "Tile",
     "iconType":"gl-form",
     "group": "dataEntry",
-    "title": "表单",
+    "title": "实体表单",
     "useBy": ["freePage"],
-    "properties": [],"actions": [],
+    "properties":  [
+        {
+            "expanded": true,
+            "style": "",
+            "name": "title",
+            "title": "标题",
+            "group": "base",
+            "placeholder": "",
+            "description": "标题",
+            "setterComponentName": "AInput",
+            "setterComponentVModelName": "modelValue",
+            "setterComponentProps": {},
+            "type": "props",
+            "show": true
+        }
+    ],"actions": [],
 }

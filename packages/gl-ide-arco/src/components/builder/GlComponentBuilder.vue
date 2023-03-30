@@ -61,8 +61,8 @@
               <td class="gl-table-cell">
                 <template v-if="cMeta.displayMode=cMeta.displayMode||'Tile'"></template>
                 <a-radio-group size="small" v-model="cMeta.displayMode" type="button">
-                  <a-radio value="Collapse">折叠</a-radio>
-                  <a-radio value="Tile">平铺</a-radio>
+                  <a-radio value="collapse">折叠</a-radio>
+                  <a-radio value="tile">平铺</a-radio>
                 </a-radio-group>
               </td>
             </tr>
@@ -108,25 +108,35 @@
         </div>
         <div>
           <GlOptions v-model="cMeta.actions" :columns="[{dataIndex: 'name'}]"
-                     @selectedElement="selectMethod"></GlOptions>
+                     @selectedElement="selectAction"></GlOptions>
         </div>
       </pane>
       <!--
        ========================================================================================
        -->
       <pane :size="paneSize.B" style="overflow-y: auto">
-        <div class="gl-title">
+        <template v-if="currentSetterTarget === setterTarget.props">
+          <div class="gl-title">
               <span>
                 <GlIconfont type="gl-setting"/>
               组件属性设置 (当前属性：{{ (currentProperty.name || '未设置') }})
               </span>
-        </div>
-        <template v-if="currentProperty.name">
+          </div>
           <GlPropertySetterBuilder v-model:modelValue="currentProperty"
                                    @updateSetter="updateGlPropertySetter"></GlPropertySetterBuilder>
         </template>
+        <template v-else-if="currentSetterTarget===setterTarget.actions">
+          <div class="gl-title">
+              <span>
+                <GlIconfont type="gl-setting"/>
+              组件动作设置 (当前动作：{{ (currentAction.name || '未设置') }})
+              </span>
+          </div>
+          <GlActionSetterBuilder v-model:modelValue="currentAction"
+                                 @updateSetter="updateGlActionSetter"></GlActionSetterBuilder>
+        </template>
         <template v-else>
-          <div style="text-align: center;padding: 2em;background-color: #fafafa">请先从左边面板添加属性</div>
+          <div style="text-align: center;padding: 2em;background-color: #fafafa">请先从左边面板添加属性或事件动作</div>
         </template>
       </pane>
       <!--
@@ -239,20 +249,28 @@
 </template>
 
 <script lang="ts">
-import {type IComponentInstance, LooseObject, utils} from "@geelato/gl-ui";
+import {type IComponentInstance, utils} from "@geelato/gl-ui";
 import {Splitpanes, Pane} from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import {defineComponent, nextTick, type PropType} from 'vue'
-import GlPropertySetterBuilder from './GlPropertySetterBuilder.vue'
+import GlPropertySetterBuilder from './props-builder/GlPropertySetterBuilder.vue'
+import GlActionSetterBuilder from "./actions-builder/GlActionSetterBuilder.vue";
 import GlOptions from "../setters/GlOptions.vue";
 import ClipboardJS from "clipboard";
 import VueJsonPretty from 'vue-json-pretty'
 import {ComponentMeta} from "@geelato/gl-ui-schema";
 import {ComponentInstance, PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
+import {ActionSetterMeta} from "@geelato/gl-ui-schema/src/entity/actions/ActionSetterMeta";
+
+enum SetterTarget {
+  actions = 'actions',
+  props = 'props',
+  none = 'none'
+}
 
 export default defineComponent({
   name: "GlComponentBuilder",
-  components: {GlPropertySetterBuilder, Splitpanes, Pane, GlOptions, VueJsonPretty},
+  components: {GlPropertySetterBuilder, GlActionSetterBuilder, Splitpanes, Pane, GlOptions, VueJsonPretty},
   props: {
     modelValue: {
       type: Object,
@@ -269,8 +287,8 @@ export default defineComponent({
       }
     },
     componentMeta: {
-      type:Object as PropType<ComponentMeta>,
-      default(){
+      type: Object as PropType<ComponentMeta>,
+      default() {
         return new ComponentMeta()
       }
     },
@@ -285,9 +303,13 @@ export default defineComponent({
   },
   data() {
     return {
+      setterTarget: SetterTarget,
       previewEnable: false,
+      currentSetterTarget: SetterTarget.none,
       currentProperty: new PropertySetterMetaImpl(),
       currentIndex: -1,
+      currentAction: new ActionSetterMeta(),
+      currentActionIndex: -1,
       paneSize: {
         A: 18,
         B: 35
@@ -365,16 +387,22 @@ export default defineComponent({
       this.emitUpdate()
     },
     selectProperty({element, index}: { element: any, index: number }) {
+      this.currentSetterTarget = SetterTarget.props
       this.currentProperty = element
       this.currentIndex = index
       if (this.currentIndex === -1) {
         this.currentProperty = new PropertySetterMetaImpl()
       }
     },
-    selectChild() {
-
+    selectAction({element, index}: { element: any, index: number }) {
+      this.currentSetterTarget = SetterTarget.actions
+      this.currentAction = element
+      this.currentActionIndex = index
+      if (this.currentActionIndex === -1) {
+        this.currentAction = new ActionSetterMeta()
+      }
     },
-    selectMethod() {
+    selectChild() {
 
     },
     emitUpdate() {
@@ -404,6 +432,10 @@ export default defineComponent({
     },
     updateGlPropertySetter(mv: any) {
       console.log('updateGlPropertySetter>', mv)
+      this.refreshInstance()
+    },
+    updateGlActionSetter(mv: any) {
+      console.log('updateGlActionSetter>', mv)
       this.refreshInstance()
     },
     copyJson(json?: ComponentMeta | IComponentInstance) {

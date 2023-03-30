@@ -5,7 +5,13 @@
     <GlToolbarBreadcrumbs eventType="Hover"></GlToolbarBreadcrumbs>
     <GlToolbarBreadcrumbs eventType="Selected"></GlToolbarBreadcrumbs>
     <gl-x :glComponentInst="componentStore.currentComponentTree[0]"></gl-x>
-    <gl-json ref="codeViewer" v-model="componentStore.currentComponentTree[0]" style="display: none"></gl-json>
+    <gl-modal :visible="codeViewerVisible"
+              title="生成的配置代码预览"
+              :fullscreen="true"
+              @ok="codeViewerVisible=false"
+              @cancel="codeViewerVisible=false">
+        <VueJsonPretty  :data="componentStore.currentComponentTree[0]"></VueJsonPretty>
+    </gl-modal>
   </div>
 </template>
 <script lang="ts">
@@ -14,22 +20,19 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
+import {h, ref} from 'vue'
 import {utils} from "@geelato/gl-ui";
-import {useIdeStore} from "@geelato/gl-ide";
+import {EventNames, useIdeStore} from "@geelato/gl-ide";
 import {emitter} from "@geelato/gl-ui";
 import {getCurrentInstance} from "vue";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import {useGlobal} from "@geelato/gl-ui";
+import VueJsonPretty from "vue-json-pretty";
 
+const global = useGlobal()
 const componentStore = useIdeStore().componentStore
 const inst = getCurrentInstance();
 const codeViewerVisible = ref(false)
-const codeViewer = ref()
-const showCodeViewer = () => {
-  // this.codeViewerVisible = true
-  codeViewer.value.openModal()
-  codeViewer.value.reset()
-}
 
 /**
  * 设置工具条的位置
@@ -67,6 +70,10 @@ emitter.on('setCurrentHoverComponentId', (data) => {
   setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsHover', componentStore.currentHoverComponentId)
 })
 
+emitter.on(EventNames.GlIdeToolbarShowCodeViewer, () => {
+  codeViewerVisible.value = true
+})
+
 
 /**
  *  初始的组件树
@@ -90,10 +97,10 @@ const items: Array<ComponentInstance> = [
   }
 ]
 
-
-onMounted(() => {
+// 避免update时，重新push items
+if (componentStore.currentComponentTree.length === 0) {
   componentStore.currentComponentTree.push(...items)
-})
+}
 </script>
 
 <style>

@@ -8,8 +8,7 @@
           {{ page.title }}
         </span>
         </template>
-        <component v-if="ideStore.stageRefreshFlag" :is="page.ideStageComponentName"
-                   style="overflow-y: auto"></component>
+        <component :is="page.ideStageComponentName" style="overflow-y: auto"></component>
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -23,7 +22,6 @@ import uiLibAdapter from "../utils/UiLibAdapter";
 
 export default defineComponent({
   name: "GlDesignerStage",
-
   setup(props, {emit}: SetupContext) {
     const activeKey = ref(0)
     const ideStore = useIdeStore()
@@ -33,15 +31,16 @@ export default defineComponent({
     const tabClick = (index: number) => {
       console.log(index, typeof index)
       activeKey.value = index
+      pageStore.switchToPage(index)
     }
 
-    watch(() => ideStore.stageRefreshFlag, (flag: Boolean) => {
-      nextTick(() => {
-        if (!ideStore.stageRefreshFlag) {
-          ideStore.stageRefreshFlag = true
-        }
-      })
-    })
+    // watch(() => ideStore.stageRefreshFlag, (flag: Boolean) => {
+    //   nextTick(() => {
+    //     if (!ideStore.stageRefreshFlag) {
+    //       ideStore.stageRefreshFlag = true
+    //     }
+    //   })
+    // })
     watch(() => pageStore.currentPageIndex, (index: number) => {
       activeKey.value = Number(index)
       console.log('activeKey.value', activeKey.value, typeof index)

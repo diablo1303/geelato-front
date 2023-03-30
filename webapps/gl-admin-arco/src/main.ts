@@ -1,5 +1,5 @@
-import { createApp } from 'vue';
-import ArcoVue from '@arco-design/web-vue';
+import {createApp} from 'vue';
+import ArcoVue, {Modal} from '@arco-design/web-vue';
 import ArcoVueIcon from '@arco-design/web-vue/es/icon';
 import globalComponents from '@/components';
 import geelatoMain from "@/main.geelato";
@@ -15,7 +15,12 @@ import '@/api/interceptor';
 
 const app = createApp(App);
 
+
+
 app.use(ArcoVue, {});
+// Modal._context = app._context;
+// app.component('GlModal', Modal)
+
 app.use(ArcoVueIcon);
 app.use(geelatoMain)
 

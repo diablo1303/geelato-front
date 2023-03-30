@@ -3,11 +3,12 @@
  */
 export default interface IComponentInstance {
     id?: string
-    title?:string
+    title?: string
     componentName: string
     props?: { [key: string]: any }
     slots?: { [key: string]: any }
     children?: Array<IComponentInstance>
+    actions?: Array<any>
     style?: object,
-    propsWrapper?:string
+    propsWrapper?: string
 }

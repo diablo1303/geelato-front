@@ -6,40 +6,108 @@ export default {
     "title": "字符输入",
     "useBy": ["freePage"],
     "properties": [{
-        "name": "addonAfter",
-        "setterComponentProps": {},
+        "name": "size",
+        "setterComponentProps": {
+            "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
+            "optionType": "button",
+            "options": [{"label": "大", "value": "large"}, {"label": "默认", "value": "default"}, {
+                "label": "小",
+                "value": "small"
+            }],
+            "defaultValue": "default"
+        },
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
-        "description": "带标签的 input，设置后置标签",
-        "title": "后置标签",
-        "setterComponentName": "AInput"
+        "title": "控件大小",
+        "setterComponentName": "ARadioGroup",
+        "show": true,
+        "expanded": true
     }, {
-        "name": "addonBefore",
+        "name": "prepend",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
-        "type": "props",
-        "description": "带标签的 input，设置前置标签",
+        "type": "slots",
+        "show": true,
+        "expanded": true,
         "title": "前置标签",
-        "setterComponentName": "AInput"
+        "setterComponentName": "AInput",
+        "slotComponentName": "GlText",
+        "slotComponentBindTarget": "v-model"
+    }, {
+        "name": "append",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "slots",
+        "show": true,
+        "expanded": true,
+        "title": "后置标签",
+        "setterComponentName": "AInput",
+        "slotComponentName": "GlText",
+        "slotComponentBindTarget": "v-model"
     }, {
         "name": "allowClear",
         "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
+        "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
         "title": "点击清除",
-        "setterComponentName": "ASwitch"
+        "setterComponentName": "ASwitch",
+        "show": true,
+        "expanded": true
     }, {
-        "name": "bordered",
+        "name": "disabled",
         "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
+        "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
-        "description": "是否有边框",
+        "description": "是否禁用状态，默认为 false",
+        "title": "是否禁用",
         "setterComponentName": "ASwitch",
-        "title": "边框"
+        "show": true,
+        "expanded": true
+    }, {
+        "name": "readonly",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "只读",
+        "setterComponentName": "ASwitch"
+    }, {
+        "name": "placeholder",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "提示文字",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "maxlength",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "title": "最大长度",
+        "setterComponentName": "AInputNumber",
+        "show": true,
+        "expanded": true
+    }, {
+        "name": "showWordLimit",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "显示字数",
+        "setterComponentName": "ASwitch"
     }, {
         "name": "defaultValue",
         "setterComponentProps": {},
@@ -48,67 +116,20 @@ export default {
         "type": "props",
         "description": "输入框默认内容",
         "title": "默认内容",
-        "setterComponentName": "AInput"
+        "setterComponentName": "AInput",
+        "show": true,
+        "expanded": true
     }, {
-        "name": "disabled",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
-        "group": "base",
-        "type": "props",
-        "description": "是否禁用状态，默认为 false",
-        "title": "是否禁用",
-        "setterComponentName": "ASwitch"
-    }, {
-        "name": "maxlength",
+        "name": "fieldName",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
-        "title": "最大长度",
-        "setterComponentName": "AInputNumber"
-    }, {
-        "name": "prefix",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "description": "带有前缀图标的 input",
-        "title": "前缀图标",
-        "setterComponentName": "AInput"
-    }, {
-        "name": "showCount",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "checked",
-        "group": "base",
-        "type": "props",
-        "description": "是否展示字数",
-        "title": "展示字数",
-        "setterComponentName": "ASwitch"
-    }, {
-        "name": "size",
-        "setterComponentProps": {
-            "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
-            "optionType": "button",
-            "options": [{"label": "large", "value": "large"}, {
-                "label": "default",
-                "value": "default"
-            }, {"label": "small", "value": "small"}],
-            "defaultValue": "default"
-        },
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "title": "控件大小",
-        "setterComponentName": "ARadioGroup"
-    }, {
-        "name": "suffix",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "description": "带有后缀图标的 input",
-        "title": "后缀图标",
-        "setterComponentName": "AInput"
+        "show": true,
+        "expanded": true,
+        "title": "绑定字段",
+        "setterComponentName": "GlFieldSelect"
     }],
-    "diplayMode": "Tile"
+    "diplayMode": "Tile",
+    "actions": []
 }
