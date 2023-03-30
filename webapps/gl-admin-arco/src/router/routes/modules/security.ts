@@ -13,11 +13,29 @@ const USER: AppRouteRecordRaw = {
   },
   children: [
     {
+      path: 'orgList',
+      name: 'orgList',
+      component: () => import('@/views/security/org/index.vue'),
+      meta: {
+        locale: '部门管理',
+        requiresAuth: true,
+      },
+    },
+    {
+      path: 'userList',
+      name: 'userList',
+      component: () => import('@/views/security/user/index.vue'),
+      meta: {
+        locale: '用户管理',
+        requiresAuth: true,
+      },
+    },
+    {
       path: 'roleList',
       name: 'roleList',
       component: () => import('@/views/security/role/index.vue'),
       meta: {
-        locale: '角色列表',
+        locale: '角色管理',
         requiresAuth: true,
         roles: ['*'],
       },
