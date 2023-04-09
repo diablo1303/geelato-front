@@ -1,0 +1,45 @@
+.gl-block-title{
+    font-weight: 700;
+}
+
+.gl-command-block {
+    background-color: white;
+}
+
+.gl-command-block.gl-hover {
+    background-color: rgb(246, 246, 246);
+}
+
+.gl-command-block  .gl-left {
+    display: inline-block;
+    vertical-align: top;
+    padding: 0 0.5em
+}
+
+.gl-command-block  .gl-right {
+    display: inline-block;
+}
+
+.gl-command-block  .gl-right > .gl-title {
+    font-weight: 600;
+}
+
+
+.gl-command-block  .gl-right > .gl-content {
+    color: #8f8f8f;
+}
+
+.gl-command-block  .gl-right > .gl-content .gl-var {
+    color: #165DFF;
+    background-color: #ecf5ff;
+}
+
+.gl-command-block.gl-disabled .gl-title{
+    font-weight: 500;
+    color: #cccccc !important;
+}
+
+.gl-command-block-children{
+    border-left: 1px solid #e3e2e2;
+    margin-left: 2em;
+}

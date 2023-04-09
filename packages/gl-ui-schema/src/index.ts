@@ -11,8 +11,6 @@ import type IActionSetterMeta from "./entity/actions/ActionSetterMeta";
 import {ActionSetterMeta} from "./entity/actions/ActionSetterMeta";
 import {schema} from "./components/schema";
 import Action from './entity/actions/Action';
-import CommandBlock from './entity/actions/CommandBlock';
-
 const component: Plugin = {
     install: function (app: App) {
         console.log('gl-ui-schema > install()', app)
@@ -31,8 +29,7 @@ export {
     ActionSetterMeta,
     PropertySetterBuilderMeta,
     PropertySetterSelectOption,
-    Action,
-    CommandBlock
+    Action
 }
 // 默认导出组件
 export default component

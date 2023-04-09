@@ -20,7 +20,7 @@
       @unchoose="onUnchoose"
   >
     <template #item="{element}">
-      <GlComponentRecursion class="gl-dnd-item gl-x-item" :glComponentInst="element">
+      <GlComponentRecursion class="gl-dnd-item gl-x-item" :glComponentInst="element" :componentStoreId="componentStoreId">
       </GlComponentRecursion>
     </template>
   </gl-draggable>
@@ -32,13 +32,18 @@ export default {name: "GlX"}
 <script setup lang="ts">
 import {getCurrentInstance, nextTick, ref} from 'vue'
 import {type IComponentInstance, mixins, utils, emitter} from "@geelato/gl-ui"
-import {EventNames, useIdeStore} from "@geelato/gl-ide";
-import {useGlobal} from "@geelato/gl-ui";
+import {componentStoreFactory, EventNames, useIdeStore} from "@geelato/gl-ide";
 type Event = { item: { classList: any, id: any }, pullMode: string, oldIndex: number, newIndex: number }
 
 const proxy = getCurrentInstance()?.proxy
 
 const props = defineProps({
+  componentStoreId:{
+    type:String,
+    default(){
+      return 'useComponentStore'
+    }
+  },
   ...mixins.props
 })
 
@@ -51,7 +56,7 @@ emitter.on(EventNames.GlIdeSetterUpdateComponentInstance, (instance: any) => {
   }
 })
 
-const componentStore = useIdeStore().componentStore
+const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
 const dragging = ref(false)
 const gid = utils.gid('glx')
 let chooseIndex = -1

@@ -1,20 +1,21 @@
 import type {App, Plugin} from 'vue'
 
-export {default as ButtonMeta} from "./components/setter/button/ButtonMeta";
-export {default as RateMeta} from "./components/setter/rate/RateMeta";
-export {default as SwitchMeta} from "./components/setter/switch/SwitchMeta";
-export {default as AutoCompleteMeta} from "./components/setter/autoComplete/AutoCompleteMeta";
-export {default as DividerMeta} from './components/setter/divider/DividerMeta'
-export {default as InputMeta} from "./components/setter/input/InputMeta";
-export {default as InputNumberMeta} from "./components/setter/inputNumber/InputNumberMeta";
-export {default as TableMeta} from "./components/setter/table/TableMeta";
-export {default as FormRowMeta} from "./components/setter/layout/FormRowMeta";
-export {default as DatePickerMeta} from "./components/setter/datePicker/DatePickerMeta"
-export {default as TimelineMeta} from "./components/setter/timeLine/TimelineMeta"
-export {default as TimelineItemMeta} from "./components/setter/timeLine/TimelineItemMeta"
-
+export {default as ButtonMeta} from "./components/setter-arco/button/ButtonMeta";
+export {default as RateMeta} from "./components/setter-arco/rate/RateMeta";
+export {default as SwitchMeta} from "./components/setter-arco/switch/SwitchMeta";
+export {default as AutoCompleteMeta} from "./components/setter-arco/autoComplete/AutoCompleteMeta";
+export {default as DividerMeta} from './components/setter-arco/divider/DividerMeta'
+export {default as InputMeta} from "./components/setter-arco/input/InputMeta";
+export {default as InputNumberMeta} from "./components/setter-arco/inputNumber/InputNumberMeta";
+export {default as TableMeta} from "./components/setter-arco/table/TableMeta";
+export {default as FormRowMeta} from "./components/setter-arco/layout/FormRowMeta";
+export {default as DatePickerMeta} from "./components/setter-arco/datePicker/DatePickerMeta"
+export {default as TimelineMeta} from "./components/setter-arco/timeLine/TimelineMeta"
+export {default as TimelineItemMeta} from "./components/setter-arco/timeLine/TimelineItemMeta"
+export {default as BlockNotificationMeta} from "./components/setter-block/notification/BlockNotificationMeta";
+export {default as BlockOpenThirdPageMeta} from "./components/setter-block/page/BlockOpenThirdPageMeta";
 import {useComponentMaterialStore} from "./store/UseComponentMaterialStore";
-
+import {schemaBlock} from "./components/schemaBlock";
 const component: Plugin = {
     // @ts-ignore
     install: function (app: App) {
@@ -22,6 +23,6 @@ const component: Plugin = {
     }
 }
 
-export { useComponentMaterialStore}
+export {useComponentMaterialStore,schemaBlock}
 // 默认导出组件
 export default component

@@ -28,6 +28,8 @@ import CheckUtil from "./m/utils/CheckUtil";
 import ConvertUtil from "./m/utils/ConvertUtil";
 import useGlobal from "./m/hooks/useGlobal";
 import './assets/style.css'
+import actionScriptExecutor from "./m/actions/ActionScriptExecutor";
+
 
 const Utils = AllUtils
 
@@ -37,6 +39,7 @@ const component: Plugin = {
         if (PluginUtil.markInstalledPlugin(app, 'gl-ui')) {
             return
         }
+        actionScriptExecutor.setApp(app)
 
         // 注册图标库组件
         app.component('GlIconfont', GlIconfont)
@@ -46,8 +49,12 @@ const component: Plugin = {
         app.component('GlComponent', GlComponent)
 
         if (!app.config.globalProperties.$gl) {
-            app.config.globalProperties.$gl = reactive({alias: {}})
+            app.config.globalProperties.$gl = reactive({
+                alias: {},
+                utils: utils
+            })
         }
+
         // 别名，用于生成组件id时，作为前缀
         app.config.globalProperties.$gl.alias['GlIconfont'] = 'icon'
         app.config.globalProperties.$gl.alias[GlHtml.name] = 'html'
@@ -79,6 +86,7 @@ export {
     PluginUtil,
     useGlobal,
     IComponentInstance,
+    actionScriptExecutor,
 }
 // 默认导出组件
 export default component

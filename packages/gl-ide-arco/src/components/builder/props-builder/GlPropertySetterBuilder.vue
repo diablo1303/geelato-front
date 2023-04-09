@@ -170,10 +170,12 @@
         配置器默认值
       </td>
       <td class="gl-table-cell">
-        <a-switch v-if="defaultValueType==='Boolean'" v-model:checked="mv.setterComponentProps.defaultValue"></a-switch>
-        <a-input-number v-else-if="defaultValueType==='Number'"
-                        v-model="mv.setterComponentProps.defaultValue"></a-input-number>
-        <a-input v-else v-model="mv.setterComponentProps.defaultValue" placeholder="默认值"></a-input>
+        <template v-if="mv.setterComponentProps">
+          <a-switch v-if="defaultValueType==='Boolean'" v-model:checked="mv.setterComponentProps.defaultValue"></a-switch>
+          <a-input-number v-else-if="defaultValueType==='Number'"
+                          v-model="mv.setterComponentProps.defaultValue"></a-input-number>
+          <a-input v-else v-model="mv.setterComponentProps.defaultValue" placeholder="默认值"></a-input>
+        </template>
       </td>
     </tr>
     <tr v-if="hasNoSub&&mv.type==='slots'">

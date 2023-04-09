@@ -39,21 +39,21 @@
               </td>
             </tr>
             <tr>
-              <td class="gl-table-cell gl-label" title="用于作为id的前缀">别名</td>
-              <td class="gl-table-cell">
-                <a-input v-model="cMeta.alias" placeholder="alias"/>
-              </td>
-            </tr>
-            <tr>
               <td class="gl-table-cell gl-label" title="用于作为id的前缀">图标</td>
               <td class="gl-table-cell">
                 <a-input v-model="cMeta.iconType" placeholder="alias"/>
               </td>
             </tr>
+<!--            <tr>-->
+<!--              <td class="gl-table-cell gl-label" title="进属性进行打包">包名</td>-->
+<!--              <td class="gl-table-cell">-->
+<!--                <a-input v-model="cMeta.propsWrapper"/>-->
+<!--              </td>-->
+<!--            </tr>-->
             <tr>
-              <td class="gl-table-cell gl-label" title="进属性进行打包">包名</td>
+              <td class="gl-table-cell gl-label" title="作为命令块组件(CommandBlockComponent)时，显示的内容，如：打开第三方页面，页面地址为：${url}">命令内容</td>
               <td class="gl-table-cell">
-                <a-input v-model="cMeta.propsWrapper"/>
+                <a-input v-model="cMeta.blockContent"/>
               </td>
             </tr>
             <tr>
@@ -76,6 +76,12 @@
                     placeholder="请选择"
                     :options="[{label:'自由页面',value:'freePage'},{label:'表单页面',value:'formPage'},{label:'列表页面',value:'listPage'},{label:'脚本页面',value:'scriptPage'}]"
                 ></a-select>
+              </td>
+            </tr>
+            <tr>
+              <td class="gl-table-cell gl-label" title="用于生成组件id时，作为id的前缀">别名</td>
+              <td class="gl-table-cell">
+                <a-input v-model="cMeta.alias" placeholder="alias"/>
               </td>
             </tr>
           </table>

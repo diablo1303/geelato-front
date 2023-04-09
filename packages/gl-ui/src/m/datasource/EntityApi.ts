@@ -263,7 +263,7 @@ export class EntityApi {
         resultMapping: ResultMapping
     ) {
         console.log(
-            "geelato-ui-ant > Api.js > entityReaderResultHandler() > res: ",
+            "gl-ui > Api.js > entityReaderResultHandler() > res: ",
             res
         );
         const resultSet: LooseObject = {
@@ -286,7 +286,7 @@ export class EntityApi {
         }
         // 先找出需处理的列：resultMapping的key和value不相同，mapping，e.g. [{avatar:'https://xxxxx/xx/xx.jpg'}]
         const toStatMappingItems: Array<any> = [];
-        // console.log('geelato-ui-ant > toStatMappingItems>', toStatMappingItems)
+        // console.log('gl-ui > toStatMappingItems>', toStatMappingItems)
         const mapping = resultMapping.getMapping();
         // eslint-disable-next-line guard-for-in,no-restricted-syntax
         for (const key in mapping) {
@@ -299,15 +299,15 @@ export class EntityApi {
             }
         }
         // console.log(
-        //   'geelato-ui-ant > Api.js > entityReaderResultHandler() > resColumns: ',
+        //   'gl-ui > Api.js > entityReaderResultHandler() > resColumns: ',
         //   resColumns
         // );
         // console.log(
-        //   'geelato-ui-ant > Api.js > entityReaderResultHandler() > resultMapping: ',
+        //   'gl-ui > Api.js > entityReaderResultHandler() > resultMapping: ',
         //   resultMapping
         // );
         // console.log(
-        //   'geelato-ui-ant > Api.js > entityReaderResultHandler() > toStatMappingItems: ',
+        //   'gl-ui > Api.js > entityReaderResultHandler() > toStatMappingItems: ',
         //   toStatMappingItems
         // );
 
@@ -327,7 +327,7 @@ export class EntityApi {
         });
         resultSet.data = res.data;
         console.log(
-            "geelato-ui-ant > Api.js > entityReaderResultHandler() > resultSet: ",
+            "gl-ui > Api.js > entityReaderResultHandler() > resultSet: ",
             resultSet
         );
         return resultSet;

@@ -78,29 +78,6 @@ export class Utils {
     }
 
     /**
-     *
-     * @param obj {id:1,name:'z3',description:''}
-     * @param separator ','
-     * @returns {string} e.g. id,name,description
-     */
-    // joinProperties(obj:object, separator = ',') {
-    //     // let ary = []
-    //     // for (let key in obj) {
-    //     //     ary.push(key)
-    //     // }
-    //     // return ary.join(separator)
-    //     return Object.keys(obj).join(separator)
-    // }
-
-    // join(objectAry, propertyName, separator) {
-    //     let stringAry = new Array(objectAry.length)
-    //     for (let i in objectAry) {
-    //         stringAry[i] = objectAry[i][propertyName]
-    //     }
-    //     return stringAry.join(separator)
-    // }
-
-    /**
      * 'false' -> false ,'0' -> false
      * @param v
      * @returns {boolean}
@@ -159,27 +136,27 @@ export class Utils {
      * @param ctxName 指定上下文的参数名，默认为$ctx
      * @returns {*}
      */
-    evalPlus(expression: string, ctx: object, ctxName = '$ctx') {
-        console.log('geelato-ui-ant > utils > eval() > expression: ', expression)
-        console.log('geelato-ui-ant > utils > eval() > ctx: ', ctx)
-        if (expression.indexOf(ctxName) === -1) {
-            return expression
-        }
-        let $utils = this
-        let utilsName = '$utils'
+    evalPlus(expression: string, ctx: object, ctxName = '$ctx', $utils?: object, utilsName?: string) {
+        console.log('gl-ui > utils > eval() > expression: ', expression)
+        console.log('gl-ui > utils > eval() > ctx: ', ctx)
+        // if (expression.indexOf(ctxName) === -1) {
+        //     return expression
+        // }
         let Fn = Function
+        let uName = utilsName || '$utils'
         let str = this.trim(expression)
         let index = str.indexOf(';')
-        if (index === -1 || index === str.length - 1) {
-            // 单语句
-            return new Fn(ctxName, utilsName, 'return ' + expression)(ctx, $utils)
-        } else {
-            // 多语句
-            let strAry = str.split(';')
-            let lastStr = strAry.pop();
-            let preStr = strAry.join(';')
-            return new Fn(ctxName, utilsName, preStr + '; return ' + lastStr)(ctx, $utils)
-        }
+        // if (index === -1 || index === str.length - 1) {
+        //     // 单语句
+        //     return new Fn(ctxName, uName, 'return ' + expression)(ctx, $utils || {})
+        // } else {
+        //     // 多语句
+        //     let strAry = str.split(';')
+        //     let lastStr = strAry.pop();
+        //     let preStr = strAry.join(';')
+        //     return new Fn(ctxName, uName, preStr + '; return ' + lastStr)(ctx, $utils || {})
+        // }
+        return new Fn(ctxName, uName,  expression)(ctx, $utils || {})
     }
 
     /**
@@ -214,7 +191,7 @@ export class Utils {
             let objCopy: LooseObject = {}
             Object.assign(objCopy, obj)
             for (let i in objCopy) {
-                // console.log('geelato-ui-ant > 解析替换' + i, objCopy[i], keyValues, this.invoke(objCopy[i], keyValues))
+                // console.log('gl-ui > 解析替换' + i, objCopy[i], keyValues, this.invoke(objCopy[i], keyValues))
                 objCopy[i] = this.invoke(objCopy[i], keyValues)
             }
             return objCopy
@@ -476,7 +453,7 @@ export class Utils {
             // 到了根节点，还找不到，可能是在设计器中执行该方案，设计器的舞台中不存在GlPage
             return undefined
         }
-        console.log('geelato-ui-ant > CtxHandler.js > findCurrentPage() > component.$parent):', component.$parent)
+        console.log('gl-ui > CtxHandler.js > findCurrentPage() > component.$parent):', component.$parent)
         if (component.$parent.glType === 'page') {
             return component.$parent
         } else {
@@ -494,7 +471,7 @@ export class Utils {
             // 到了根节点，还找不到，可能是在设计器中执行该方案，设计器的舞台中不存在GlPage
             return undefined
         }
-        console.log('geelato-ui-ant > CtxHandler.js > findCurrentPage() > component.$parent):', component.$parent)
+        console.log('gl-ui > CtxHandler.js > findCurrentPage() > component.$parent):', component.$parent)
         if (component.$parent.glType === 'component') {
             return component.$parent
         } else {

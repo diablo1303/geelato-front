@@ -47,7 +47,7 @@ export default defineComponent({
       }
     },
     defaultItemForAdd: {
-      type: Object
+      type: [Object, Function]
     }
   },
   data() {
@@ -58,16 +58,19 @@ export default defineComponent({
     }
   },
   beforeMount() {
-      this.items = this.modelValue
+    this.items = this.modelValue
   },
   beforeUpdate() {
-      this.items = this.modelValue
+    this.items = this.modelValue
   },
   methods: {
     getDefaultItem() {
+      console.log('........', typeof this.defaultItemForAdd,this.defaultItemForAdd)
+      const template = typeof this.defaultItemForAdd === 'function' ? this.defaultItemForAdd() : this.defaultItemForAdd
       try {
-        return JSON.parse(JSON.stringify(this.defaultItemForAdd))
+        return JSON.parse(JSON.stringify(template))
       } catch (e) {
+        console.error(e)
       }
       return this.defaultItemForAdd
     },

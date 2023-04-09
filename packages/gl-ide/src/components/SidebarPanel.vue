@@ -1,5 +1,5 @@
 <template>
-  <div class="gl-designer-sidebar">
+  <div class="gl-ide-sidebar">
     <!--    <div class="leftToolBar" :style="{height:`${themeStore.sidebarHeight}px`,width:`${themeStore.sidebarLeftToolbarWidth}px`}">-->
     <!--      <div class="leftToolBarBtn" v-for="(panel,index) in panels" :key="index"-->
     <!--           :class="{activated:selectedPanelTitle?(selectedPanelTitle===panel.title):index===0}"-->
@@ -35,21 +35,20 @@ const showPanel = ref(true)
 
 <style>
 
-.gl-designer-sidebar {
+.gl-ide-sidebar {
 }
 
-.gl-designer-sidebar .rightPanel {
+.gl-ide-sidebar .rightPanel {
   display: inline-block;
 }
-
 
 /***
  * 提供默认的组件卡片式样式
  */
-.gl-designer-sidebar .gl-group-cards {
+.gl-ide-sidebar .gl-group-cards {
 }
 
-.gl-designer-sidebar .gl-card {
+.gl-ide-sidebar .gl-card {
   display: inline-block;
   min-width: 82px;
   text-align: center;
@@ -58,18 +57,18 @@ const showPanel = ref(true)
   user-select: none;
 }
 
-.gl-designer-sidebar .gl-card:hover {
+.gl-ide-sidebar .gl-card:hover {
   box-shadow: 0 0 2px 1px rgba(4, 103, 194, 0.76);
 }
 
-.gl-designer-sidebar .gl-group-title {
+.gl-ide-sidebar .gl-group-title {
   margin: 1em;
   font-weight: 500;
   position: relative;
   cursor: pointer;
 }
 
-.gl-designer-sidebar .gl-group-title > .gl-tag {
+.gl-ide-sidebar .gl-group-title > .gl-tag {
   float: right;
   background-color: #41a4fc;
   color: white;
@@ -78,13 +77,13 @@ const showPanel = ref(true)
   border-radius: 4px
 }
 
-.gl-designer-sidebar .gl-card > .gl-title {
+.gl-ide-sidebar .gl-card > .gl-title {
   font-weight: 400;
   font-size: 12px;
   opacity: .80;
 }
 
-.gl-designer-sidebar .gl-card:hover > .gl-title {
+.gl-ide-sidebar .gl-card:hover > .gl-title {
   opacity: 1;
   font-weight: 600;
   color: rgba(4, 103, 194, 0.76);

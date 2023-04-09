@@ -1,4 +1,5 @@
 import type IPropertySetterMeta from "./IPropertySetterMeta";
+import Action from "./actions/Action";
 
 export default class ComponentMeta {
     // 组件英文名称，注册到全局环境的名称GlButton
@@ -15,13 +16,17 @@ export default class ComponentMeta {
     useBy: Array<string> = []
     // 属性数组
     properties: Array<IPropertySetterMeta> = []
-    // 事件动作 TODO any to Action
-    actions: Array<any> = []
+    // 事件动作
+    actions: Array<Action> = []
 
     // 引用的组件名称，如AButton
     // componentRefName: String
     propsWrapper?: String = ''
     alias?: String = ''
+
+    // 为作命令块组件时，在设计器中，展示的描述该命令块的。
+    // 如：打开第三方网页，地址为：{url}。其中url为属性properties中的其中一直属性，在展示时动态渲染
+    blockContent?: string = ''
 
     constructor() {
     }

@@ -1,7 +1,14 @@
 import {ref} from "vue";
 import {defineStore} from "pinia";
-import {ComponentMaterial, ComponentInstance, ComponentMeta, schema} from "@geelato/gl-ui-schema";
-import {schemaArco} from "../components/schema";
+import {
+    ComponentMaterial,
+    ComponentInstance,
+    ComponentMeta,
+    schema,
+    ComponentMaterialGroup
+} from "@geelato/gl-ui-schema";
+import {schemaArco} from "../components/schemaArco";
+import {schemaBlock} from "../components/schemaBlock";
 
 /**
  *  实现对组件的设置器元数据信息管理
@@ -10,8 +17,11 @@ import {schemaArco} from "../components/schema";
 export const useComponentMaterialStore = defineStore('GlComponentMaterialStore', () => {
     const componentMetas = ref<Array<ComponentMeta>>([])
     const componentMaterials = ref<Array<ComponentMaterial>>([])
+    // key为componentName
     const componentMetaMap: { [key: string]: ComponentMeta } = {}
+    // key为componentName
     const componentMaterialMap: { [key: string]: ComponentMaterial } = {}
+    const componentMaterialGroups = ref(new Array<ComponentMaterialGroup>())
     let inited = false
 
     /**
@@ -85,12 +95,22 @@ export const useComponentMaterialStore = defineStore('GlComponentMaterialStore',
         }
     }
 
+    /**
+     * 获取组件元数据
+     * @param componentName
+     */
+    function findMetaByName(componentName: string) {
+        return componentMetaMap[componentName]
+    }
+
     function initRegisterComponentMetas() {
         if (inited) return
         registerComponentMetas(schema.componentMetas)
         registerComponentMaterials(schema.componentInstances)
         registerComponentMetas(schemaArco.componentMetas)
         registerComponentMaterials(schemaArco.componentInstances)
+        registerComponentMetas(schemaBlock.componentMetas)
+        registerComponentMaterials(schemaBlock.componentInstances)
         inited = true
     }
 
@@ -98,6 +118,7 @@ export const useComponentMaterialStore = defineStore('GlComponentMaterialStore',
         initRegisterComponentMetas,
         componentMetas,
         componentMaterials,
+        findMetaByName,
         registerComponentMeta,
         registerComponentMetas,
         registerComponentMaterial,

@@ -49,7 +49,7 @@ const genKey = () => {
 const componentModel = ref(props.componentInstance)
 const activeKey = ref("1")
 const setInstance = (instance: ComponentInstance, form: String) => {
-  // console.log('GlComponentSetter > set instance:', instance,'form',form)
+  console.log('GlComponentSetter > set instance:', instance,'form',form)
   // // Object.extend(this.componentInstance,instance)
   // componentModel.value = instance
   // if(form==='style'){

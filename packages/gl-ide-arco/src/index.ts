@@ -3,6 +3,7 @@
  */
 import type {App,Plugin} from 'vue'
 import pluginCore from './plugin'
+import pluginBlock from "./blocks";
 import {PluginUtil} from "@geelato/gl-ui";
 import GlIdeArco from './App.vue'
 const component: Plugin = {
@@ -17,6 +18,7 @@ const component: Plugin = {
 
         // @ts-ignore
         app.use(pluginCore)
+        app.use(pluginBlock)
         // pluginCore.install(app)
     }
 }

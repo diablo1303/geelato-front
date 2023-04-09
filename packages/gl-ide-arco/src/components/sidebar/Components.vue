@@ -3,36 +3,36 @@
     <div v-for="componentMaterialGroup in componentMaterialGroups">
       <div class="gl-group-title" @click="componentMaterialGroup.opened=!componentMaterialGroup.opened"
            style="border-bottom: 1px solid #04559f;width: 90%">
-        <span>{{ componentMaterialGroup.text }} {{ toUpperCase(componentMaterialGroup.name) }}</span>
+        <span :title="componentMaterialGroup.name">{{ componentMaterialGroup.text }}</span>
         <span class="gl-tag">{{ componentMaterialGroup.items?.length }}</span>
       </div>
       <div class="gl-group-cards" v-if="componentMaterialGroup.opened">
-          <gl-draggable
-              v-model="componentMaterialGroup.items"
-              handle=".gl-dnd-item-template-handle"
-              :group="{ name: 'layoutItems', pull: 'clone', put: false }"
-              ghostClass="ghost"
-              :sort="false"
-              :clone="($event:any)=>getCloneItem($event,componentMaterialGroup.items)"
-              @start="drag=true"
-              @end="drag=false"
-              @change="onChange"
-              @choose="($event:any)=>onChoose($event,componentMaterialGroup.items)"
-              itemKey="id"
-          >
-            <template #item="{element}">
-              <div class="gl-card"
-                   :class="{'gl-dnd-item-template-handle':element.meta.properties?.length>0}"
-                   :style="{'cursor':element.meta.properties?.length>0?'move':''}"
-                   @mousedown="onStartNodeDrag($event,element)">
-                <div class="gl-image">
-                  <GlIconfont :type="element.iconType"
-                              :iconStyle="{fontSize:'3em',color:(element.meta.properties?.length>0?'#1890ff':'#e7e7e7')}"></GlIconfont>
-                </div>
-                <div class="gl-title">{{ element.title }}</div>
+        <gl-draggable
+            v-model="componentMaterialGroup.items"
+            handle=".gl-dnd-item-template-handle"
+            :group="{ name: 'layoutItems', pull: 'clone', put: false }"
+            ghostClass="ghost"
+            :sort="false"
+            :clone="($event:any)=>getCloneItem($event,componentMaterialGroup.items)"
+            @start="drag=true"
+            @end="drag=false"
+            @change="onChange"
+            @choose="($event:any)=>onChoose($event,componentMaterialGroup.items)"
+            itemKey="id"
+        >
+          <template #item="{element}">
+            <div class="gl-card"
+                 :class="{'gl-dnd-item-template-handle':element.meta.properties?.length>0}"
+                 :style="{'cursor':element.meta.properties?.length>0?'move':''}"
+                 @mousedown="onStartNodeDrag($event,element)">
+              <div class="gl-image">
+                <GlIconfont :type="element.iconType"
+                            :iconStyle="{fontSize,color:(element.meta.properties?.length>0?'#1890ff':'#e7e7e7')}"></GlIconfont>
               </div>
-            </template>
-          </gl-draggable>
+              <div class="gl-title">{{ element.title }}</div>
+            </div>
+          </template>
+        </gl-draggable>
       </div>
     </div>
   </div>
@@ -44,12 +44,25 @@ export default {
 </script>
 
 <script setup lang="ts">
-import {type PropType, ref} from "vue";
+import {computed, type PropType, ref} from "vue";
 import {useIdeStore} from "@geelato/gl-ide";
 import {utils} from "@geelato/gl-ui";
-import  {type ComponentMaterial,ComponentMaterialGroup,type ComponentInstance} from "@geelato/gl-ui-schema";
+import {type ComponentMaterial, ComponentMaterialGroup, type ComponentInstance} from "@geelato/gl-ui-schema";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
+
+const enum SizeType {
+  normal = 'normal',
+  small = 'small',
+  mini = 'mini'
+}
+
 const props = defineProps({
+  size: {
+    type: String as PropType<SizeType>,
+    default() {
+      return 'small'
+    }
+  },
   componentGroups: {
     type: Array as PropType<Array<ComponentMaterialGroup>>,
     default() {
@@ -66,6 +79,19 @@ const props = defineProps({
   }
 })
 
+const fontSize = computed(() => {
+  switch (props.size) {
+    case SizeType.normal:
+      return '3em'
+    case SizeType.small:
+      return '2em'
+    case SizeType.mini:
+      return '1em'
+    default:
+      return '2em'
+  }
+})
+
 const ideStore = useIdeStore()
 const componentMaterialStore = useComponentMaterialStore()
 componentMaterialStore.initRegisterComponentMetas()
@@ -74,6 +100,8 @@ const chooseIndex = ref(-1)
 
 
 const toUpperCase = (str: String) => {
+  if (str.indexOf('_') !== -1)
+    return str
   return str[0].toUpperCase() + str.substring(1)
 }
 
@@ -88,7 +116,7 @@ const componentMaterialGroups = ref(new Array<ComponentMaterialGroup>())
 const resetComponentMaterialGroups = () => {
   componentMaterialGroups.value = []
   for (let index in props.componentGroups) {
-    const componentMaterialItems = componentMaterialStore.componentMaterials.filter((compoentMaterial:ComponentMaterial)=>{
+    const componentMaterialItems = componentMaterialStore.componentMaterials.filter((compoentMaterial: ComponentMaterial) => {
       return compoentMaterial.group === props.componentGroups[index].name
     })
     const componentMaterialGroup = new ComponentMaterialGroup()

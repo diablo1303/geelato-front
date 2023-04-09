@@ -12,7 +12,7 @@ export default class PageUtil {
       return undefined;
     }
     console.log(
-      "geelato-ui-ant > CtxHandler.js > findCurrentPage() > component.$parent):",
+      "gl-ui > CtxHandler.js > findCurrentPage() > component.$parent):",
       component.$parent
     );
     if (component.$parent.glType === "page") {
@@ -32,7 +32,7 @@ export default class PageUtil {
       return undefined;
     }
     console.log(
-      "geelato-ui-ant > CtxHandler.js > findCurrentPage() > component.$parent):",
+      "gl-ui > CtxHandler.js > findCurrentPage() > component.$parent):",
       component.$parent
     );
     if (component.$parent.glType === "component") {

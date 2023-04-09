@@ -2,7 +2,7 @@
   <div>
     <div>
       <a-space>
-        <a-button type="primary">查看协议</a-button>
+<!--        <a-button type="primary">查看协议</a-button>-->
         <a-button type="primary" @click="componentMetaRegisterVisible=true">编辑协议</a-button>
       </a-space>
     </div>
@@ -14,8 +14,9 @@
       <GlComponentBuilder  :componentMeta="componentMeta" :componentInstance="componentInstance" :action="componentMetaAction"></GlComponentBuilder>
       <template #footer>
         <div style="text-align: center">
-          <a-button key="back" type="danger" @click="componentMetaRemove">删除</a-button>
-          <a-button key="submit" type="primary" @click="onComponentMetaRegiste">保存</a-button>
+<!--          <a-button key="back" type="danger" @click="componentMetaRemove">删除</a-button>-->
+<!--          <a-button key="submit" type="primary" @click="onComponentMetaRegiste">保存</a-button>-->
+          <a-button key="submit" type="primary" @click="componentMetaRegisterVisible=false">关闭</a-button>
         </div>
       </template>
     </a-modal>

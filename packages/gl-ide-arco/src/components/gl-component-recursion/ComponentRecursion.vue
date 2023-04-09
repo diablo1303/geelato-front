@@ -17,11 +17,13 @@
              @end="onEnd($event,glComponentInst)"
   >
     <!-- 通过加入空span 解决按钮组件动态slot时，按钮大小不随内容变化的问题-->
-    <template v-for="(slotItem,slotName) in glComponentInst.slots"  v-slot:[slotName]>
+    <template v-for="(slotItem,slotName) in glComponentInst.slots" v-slot:[slotName]>
 
-      <component v-if="slotItem.propsTarget==='v-bind'" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"></component>
-      <component v-else-if="slotItem.propsTarget==='v-model'" :is="slotItem.componentName" v-model="slotItem.props" :style="slotItem.style"></component>
-      <template v-else>不支持的slot props target：{{slotItem.propsTarget}}</template>
+      <component v-if="slotItem.propsTarget==='v-bind'" :is="slotItem.componentName" v-bind="slotItem.props"
+                 :style="slotItem.style"></component>
+      <component v-else-if="slotItem.propsTarget==='v-model'" :is="slotItem.componentName" v-model="slotItem.props"
+                 :style="slotItem.style"></component>
+      <template v-else>不支持的slot props target：{{ slotItem.propsTarget }}</template>
 
       <!--<GlIconfont :type="slotItem.gl_font_class"></GlIconfont>  -->
       <!--      <template v-if="slotItem.handler==='ComponentHandler'">-->
@@ -37,8 +39,8 @@
       <!--      <div v-else-if="slotItem.handler==='HtmlHandler'" v-html="slotItem.props.html">-->
       <!--      </div>-->
     </template>
-    <GlComponentRecursion v-for="childElement in glComponentInst.children"
-                          :glComponentInst="childElement"></GlComponentRecursion>
+    <GlComponentRecursion v-if="childElement" v-for="childElement in glComponentInst.children"
+                          :glComponentInst="childElement" :componentStoreId="componentStoreId"></GlComponentRecursion>
   </component>
 </template>
 <script lang="ts">
@@ -47,27 +49,33 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {type IComponentInstance, mixins} from "@geelato/gl-ui";
-import {useIdeStore} from "@geelato/gl-ide";
-import {emitter} from "@geelato/gl-ui";
+import {emitter,mixins} from "@geelato/gl-ui";
 import {computed, onMounted} from "vue";
+import {Action} from "@geelato/gl-ui-schema";
+import {componentStoreFactory} from "@geelato/gl-ide";
 
 const props = defineProps({
+  componentStoreId:{
+    type:String,
+    default(){
+      return 'useComponentStore'
+    }
+  },
   ...mixins.props
 })
 const emits = defineEmits(['onComponentClick', 'onComponentMounted'])
 
-const componentStore = useIdeStore().componentStore
-
-const slots = computed(()=>{
+const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
+console.log('componentStore:',componentStore)
+const slots = computed(() => {
   // @ts-ignore
-  props.glComponentInst.props.filter((propItem:any)=>{
+  props.glComponentInst.props.filter((propItem: any) => {
 
   })
 })
 
 const onClick = (...args: any[]) => {
-  console.log('gl-component > onClick() > arguments:', args, props.glComponentInst)
+  console.log('gl-component-recursion > onClick() > arguments:', args, props.glComponentInst)
   // 对于一些组件，点击事件可能是优先触发了组件内的点击事件，第一个参数不一定是event，这里对所有参数做统一处理
   for (let i in args) {
     let event = args[i]
@@ -77,6 +85,13 @@ const onClick = (...args: any[]) => {
   }
   componentStore.setCurrentSelectedComponentById(props.glComponentInst.id || '')
   emitter.emit('onComponentClick', {arguments: args, glComponentInst: props.glComponentInst})
+  // 组件配置的动态绑定事件，运行时Runtime
+  if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
+    console.log('click action')
+    props.glComponentInst.actions.forEach((action: Action) => {
+      console.log('click action', action)
+    })
+  }
 }
 const onMouseOver = (...args: any[]) => {
   for (let i in args) {

@@ -229,7 +229,10 @@ function sidebarComponent(){
       text: '脚本组件',
       collapsible: true,
       items: [
-        { text: 'IF条件', link: '/component/script/condition/ifelse' }
+        { text: '脚本块', link: '/component/script/all' }
+        // { text: 'IF条件', link: '/component/script/condition/ifelse' },
+        // { text: '通知', link: '/component/script/notification' },
+        // { text: '打开外部页面', link: '/component/script/openThirdPage' }
       ]
     },
     {

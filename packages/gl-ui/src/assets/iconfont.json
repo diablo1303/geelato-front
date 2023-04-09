@@ -6,6 +6,48 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "2323150",
+      "name": "符号-条件",
+      "font_class": "if",
+      "unicode": "e6d8",
+      "unicode_decimal": 59096
+    },
+    {
+      "icon_id": "33711680",
+      "name": "列表循环",
+      "font_class": "circulate",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "577354",
+      "name": "扫码",
+      "font_class": "scan",
+      "unicode": "e749",
+      "unicode_decimal": 59209
+    },
+    {
+      "icon_id": "4074109",
+      "name": "var",
+      "font_class": "var",
+      "unicode": "e772",
+      "unicode_decimal": 59250
+    },
+    {
+      "icon_id": "5317112",
+      "name": "code",
+      "font_class": "code",
+      "unicode": "e754",
+      "unicode_decimal": 59220
+    },
+    {
+      "icon_id": "16468833",
+      "name": "system-QRcode",
+      "font_class": "qrcode",
+      "unicode": "e667",
+      "unicode_decimal": 58983
+    },
+    {
       "icon_id": "16930082",
       "name": "树状结构",
       "font_class": "tree-structure",

@@ -10,6 +10,7 @@ import GlIde from '@geelato/gl-ide'
 import GlIdeArco from '@geelato/gl-ide-arco'
 import ComponentBuilderExample from '../components/setter/ComponentBuilderExample.vue'
 import SetterExample from '../components/setter/SetterExample.vue'
+import AllBlocks from '../components/setter-block/AllBlocks.vue'
 // import i18n from '../locale/index';
 import {createPinia} from "pinia";
 import ArcoVue, {Modal} from '@arco-design/web-vue';
@@ -31,13 +32,14 @@ export default {
         app.component('gl-draggable', draggable)
         app.component('ComponentBuilderExample', ComponentBuilderExample)
         app.component('SetterExample', SetterExample)
+        app.component(AllBlocks.name, AllBlocks)
         const pinia = createPinia()
         app.use(pinia)
         // app is the Vue 3 app instance from `createApp()`.
         // router is VitePress' custom router. `siteData` is
         // a `ref` of current site-level metadata.
 
-        entityApi.reCreate({baseURL:"https://localhost:8080"})
+        entityApi.reCreate({baseURL: "https://localhost:8080"})
         app.use(ArcoVue)
         Modal._context = app._context;
         app.component('GlModal', Modal)

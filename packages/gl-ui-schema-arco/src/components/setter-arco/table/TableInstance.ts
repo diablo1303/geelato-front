@@ -69,7 +69,8 @@ export default {
         }]
     },
     "slots": {},
-    "children": {},
+    "children": [],
+    "actions": [],
     "componentName": "GlEntityTablePlus",
     "title": "表格",
     "group": "dataDisplay",

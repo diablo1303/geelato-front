@@ -1,5 +1,5 @@
 <template>
-  <div class="gl-designer-sidebar">
+  <div class="gl-ide-sidebar">
     <div class="leftToolBar" :style="{height:`${themeStore.sidebarHeight}px`,width:`${themeStore.sidebarTabWidth}px`}">
       <div class="leftToolBarBtn" v-for="(panel,index) in panels" :key="index"
            :class="{activated:ideStore.activatedSidebarPanelTitle?(ideStore.activatedSidebarPanelTitle===panel.title):index===0}"

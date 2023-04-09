@@ -38,16 +38,17 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {onMounted} from 'vue'
+import {inject, onMounted} from 'vue'
 import mixins from "../mixins";
-import type IComponentInstance from "./IComponentInstance";
+import actionScriptExecutor from "../../m/actions/ActionScriptExecutor";
+import {Action} from "@geelato/gl-ui-schema";
 
 const props = defineProps({
   ...mixins.props
 })
 const emits = defineEmits(['onComponentClick', 'onComponentMounted'])
 
-const onClick = (...args:any[]) => {
+const onClick = (...args: any[]) => {
   console.log('gl-component > onClick() > arguments:', args, props.glComponentInst)
   // 对于一些组件，点击事件可能是优先触发了组件内的点击事件，第一个参数不一定是event，这里对所有参数做统一处理
   for (let i in args) {
@@ -57,8 +58,26 @@ const onClick = (...args:any[]) => {
     }
   }
   emits('onComponentClick', {arguments: args, glComponentInst: props.glComponentInst})
+
+  doAction()
 }
-const onMouseOver = (...args:any[]) => {
+
+/**
+ *  组件配置的动态绑定事件，运行时Runtime
+ */
+const doAction = () => {
+  if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
+    console.log('doAction')
+    props.glComponentInst.actions.forEach((action: Action) => {
+      if (action.name === 'click') {
+        console.log('click action', action)
+        const ctx = inject('$ctx') as object || {}
+        actionScriptExecutor.doAction(action, ctx)
+      }
+    })
+  }
+}
+const onMouseOver = (...args: any[]) => {
   for (let i in args) {
     let event = args[i]
     if (event && typeof event.stopPropagation === 'function') {
@@ -67,7 +86,7 @@ const onMouseOver = (...args:any[]) => {
   }
 
 }
-const onMouseLeave = (...args:any[]) => {
+const onMouseLeave = (...args: any[]) => {
   for (let i in args) {
     let event = args[i]
     if (event && typeof event.stopPropagation === 'function') {
