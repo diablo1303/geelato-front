@@ -7,7 +7,8 @@ import {ConvertUtil, CheckUtil} from "@geelato/gl-ui";
 import type {QueryCol} from "./query";
 
 const {t} = CheckUtil.isBrowser() ? useI18n() : {
-  t: () => {
+  t: (content:string) => {
+    return content
   }
 };
 

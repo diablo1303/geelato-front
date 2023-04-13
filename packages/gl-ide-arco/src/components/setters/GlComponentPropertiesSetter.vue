@@ -7,7 +7,7 @@
 <!--                        :propertyValue="getPropertyValue(propertySetterMeta.name,propertySetterMeta.type||'props')"-->
 <!--                        @update="(val:any)=>{setPropertyValue(propertySetterMeta.name,val,propertySetterMeta.type||'props')}">-->
 <!--      </GlPropertySetter>-->
-      <GlPropertySetter v-if="propertySetterMeta.type&&propertySetterMeta.name"
+      <GlPropertySetter v-if="propertySetterMeta.type&&propertySetterMeta.name&&componentModel[propertySetterMeta.type]"
                         :displayMode="componentMeta.displayMode"
                         :propertySetterMeta="propertySetterMeta"
                         v-model:propertyValue="componentModel[propertySetterMeta.type][propertySetterMeta.name]"
