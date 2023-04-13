@@ -14,7 +14,7 @@ import {AutoCompleteMeta as componentMeta} from "@geelato/gl-ui-schema-arco";
 ## 组件设置器协议
 
 <ComponentBuilderExample :componentMeta="componentMeta"/>
-<<< ../../packages/gl-ui-schema-arco/src/components/setter/autoComplete/autoCompleteMeta.ts
+<<< ../../packages/gl-ui-schema-arco/src/components/setter-arco/autoComplete/autoCompleteMeta.ts
 
 ## 后续
 未完成的属性：

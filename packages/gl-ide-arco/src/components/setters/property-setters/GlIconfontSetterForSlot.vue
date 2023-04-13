@@ -2,7 +2,13 @@
   <div>
     <div>{{modelValue.props}}</div>
     <span style="cursor: pointer" @click="()=>{visible=true}">
-          <GlIconfont :="modelValue.props"></GlIconfont> 选择图标
+          <GlIconfont :="modelValue.props"></GlIconfont>
+    </span>
+    <span v-if="modelValue.props&&modelValue.props.type" style="cursor: pointer" @click="()=>{modelValue.props.type=''}">
+          删除图标
+    </span>
+    <span v-else style="cursor: pointer" @click="()=>{visible=true}">
+          选择图标
     </span>
     <span>
       <a-input style="width: 50%" v-model="modelValue.props.text" placeholder="附加文本"

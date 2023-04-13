@@ -1,7 +1,13 @@
 <template>
   <div class="gl-iconfont-setter">
     <span style="cursor: pointer" @click="showIconSelect">
-          <GlIconfont :type="mv.type"></GlIconfont> 选择图标
+          <GlIconfont :type="mv.type"></GlIconfont>
+    </span>
+    <span v-if="mv.type" style="cursor: pointer" @click="()=>{mv.type=''}">
+          删除图标
+    </span>
+    <span v-else style="cursor: pointer" @click="showIconSelect">
+          选择图标
     </span>
     <span>
       <a-input style="width: 50%" v-model="mv.text" placeholder="附加文本"

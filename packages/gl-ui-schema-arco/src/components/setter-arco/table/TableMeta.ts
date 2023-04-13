@@ -23,7 +23,7 @@ export default {
         "group": "base",
         "type": "props",
         "title": "查询",
-        "_showSub": true,
+        "_showSub": false,
         "properties": [{
             "expanded": true,
             "name": "title",
@@ -41,7 +41,7 @@ export default {
             "group": "base",
             "type": "props",
             "title": "字段",
-            "_showSub": true,
+            "_showSub": false,
             "properties": [{
                 "name": "name",
                 "setterComponentProps": {},
@@ -218,7 +218,7 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "_showSub": false,
+        "_showSub": true,
         "properties": [{
             "name": "title",
             "setterComponentProps": {},
@@ -265,7 +265,8 @@ export default {
             "show": true,
             "expanded": true,
             "title": "插槽名称",
-            "setterComponentName": "AInput"
+            "setterComponentName": "AInput",
+            "placeholder": "操作optional，序号index"
         }, {
             "name": "xRenderScript",
             "setterComponentProps": {},
@@ -279,7 +280,19 @@ export default {
             "setterComponentName": "AInput"
         }],
         "setterComponentName": "GlObjectArraySetter",
-        "title": "数据列",
+        "title": "展示列",
         "titleField": "title"
+    }, {
+        "name": "columnActions",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "_showSub": true,
+        "properties": [],
+        "setterComponentName": "GlArrayComponentSetter",
+        "title": "列操作"
     }]
 }

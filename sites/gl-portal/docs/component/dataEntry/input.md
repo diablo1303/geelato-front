@@ -14,7 +14,7 @@ import {InputMeta as componentMeta} from "@geelato/gl-ui-schema-arco";
 ## 组件设置器协议
 
 <ComponentBuilderExample :componentMeta="componentMeta"/>
-<<< ../../packages/gl-ui-schema-arco/src/components/setter/input/inputMeta.ts
+<<< ../../packages/gl-ui-schema-arco/src/components/setter-arco/input/inputMeta.ts
 
 ## 后续
 无

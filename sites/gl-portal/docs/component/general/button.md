@@ -15,7 +15,7 @@ import {ButtonMeta as componentMeta} from "@geelato/gl-ui-schema-arco";
 ## 组件设置器协议
 
 <ComponentBuilderExample :componentMeta="componentMeta"/>
-<<< ../../packages/gl-ui-schema-arco/src/components/setter/button/ButtonMeta.ts
+<<< ../../packages/gl-ui-schema-arco/src/components/setter-arco/button/ButtonMeta.ts
 
 ## 后续
 待增加属性载入状态。

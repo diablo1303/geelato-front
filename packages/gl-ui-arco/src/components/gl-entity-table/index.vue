@@ -30,6 +30,7 @@ import {
 } from "@geelato/gl-ui";
 import type {Column, TableColumnDataPlus} from "./table";
 import {useGlobal} from "@geelato/gl-ui";
+import {ComponentMeta} from "@/components/gl-toolbar/toolbar";
 
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal;
@@ -55,7 +56,7 @@ const props = defineProps({
    *  列上的操作配置
    */
   columnActions: {
-    type: Array as PropType<Action[]>,
+    type: Array as PropType<ComponentMeta[]>,
     default() {
       return []
     }
@@ -270,12 +271,15 @@ defineExpose({search, popupVisibleChange, handleChange});
       @page-change="onPageChange"
   >
     <template #optional="{ record }">
-      <template v-for="columnAction in columnActions">
-        <a-button size="mini" :status="columnAction.status"
-                  @click="$modal.info({ title: 'Name', content: record.name })">
-          {{ columnAction.title }}
-        </a-button>
+      <a-space>
+      <template v-for="(columnAction,index) in columnActions" :key="index">
+        <GlComponent v-if="columnAction" :glComponentInst="columnAction"></GlComponent>
+        <!--        <a-button size="mini" :status="columnAction.status"-->
+        <!--                  @click="$modal.info({ title: 'Name', content: record.name })">-->
+        <!--          {{ columnAction.title }}-->
+        <!--        </a-button>-->
       </template>
+      </a-space>
     </template>
     <template #enableStatus="{ record, column, rowIndex }">
       {{ evalExpression({record, column, rowIndex}) }}

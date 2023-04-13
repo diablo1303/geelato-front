@@ -14,7 +14,7 @@ import {DatePickerMeta as componentMeta} from "@geelato/gl-ui-schema-arco";
 ## 组件设置器协议
 
 <ComponentBuilderExample :componentMeta="componentMeta"/>
-<<< ../../packages/gl-ui-schema-arco/src/components/setter/datePicker/DatePickerMeta.ts
+<<< ../../packages/gl-ui-schema-arco/src/components/setter-arco/datePicker/DatePickerMeta.ts
 
 ## 后续
 无

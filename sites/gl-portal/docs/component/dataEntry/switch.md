@@ -15,7 +15,7 @@
 ## 组件设置器协议
 
 [//]: # (<ComponentBuilderExample :componentMeta="componentMeta"/>)
-<<< ../../packages/gl-ui-schema-arco/src/components/setter/switch/SwitchMeta.ts
+<<< ../../packages/gl-ui-schema-arco/src/components/setter-arco/switch/SwitchMeta.ts
 
 ## 后续
 示例选中无效。

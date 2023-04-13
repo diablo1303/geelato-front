@@ -16,7 +16,7 @@ import {TimelineItemMeta as componentMeta} from "@geelato/gl-ui-schema-arco";
 ## 组件设置器协议
 
 <ComponentBuilderExample :componentMeta="componentMeta" :componentInstance="componentInstance"/>
-<<< ../../packages/gl-ui-schema-arco/src/components/setter/timeline/TimelineItemMeta.ts
+<<< ../../packages/gl-ui-schema-arco/src/components/setter-arco/timeline/TimelineItemMeta.ts
 
 ## 后续
 

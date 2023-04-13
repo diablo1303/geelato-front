@@ -16,7 +16,7 @@ import {TableMeta as componentMeta} from "@geelato/gl-ui-schema-arco";
 ## 组件设置器协议
 
 <ComponentBuilderExample :componentMeta="componentMeta" :componentInstance="componentInstance"/>
-<<< ../../packages/gl-ui-schema-arco/src/components/setter/table/TableMeta.ts
+<<< ../../packages/gl-ui-schema-arco/src/components/setter-arco/table/TableMeta.ts
 
 ## 后续
 
