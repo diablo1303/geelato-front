@@ -245,8 +245,6 @@ const onRefresh = (event: MouseEvent) => {
 const queryRef = ref(null);
 </script>
 
-
-
 <style scoped lang="less">
 .action-icon {
   margin-left: 12px;

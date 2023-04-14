@@ -17,6 +17,12 @@ const props = {
         default() {
             return []
         }
+    },
+    glCtx: {
+        type: Object,
+        default() {
+            return {}
+        }
     }
 }
 export default {

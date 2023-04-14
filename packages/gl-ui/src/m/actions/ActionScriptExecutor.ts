@@ -3,6 +3,7 @@ import type {Action} from "@geelato/gl-ui-schema";
 import utils from "../utils/Utils";
 import {getCurrentInstance, h} from "vue";
 import DemoPage from './DemoPage.vue'
+
 export class ActionScriptExecutor {
 
     app: App | undefined
@@ -27,6 +28,7 @@ export class ActionScriptExecutor {
                 ...this.app?.config.globalProperties
             }
         }
+        console.log('doAction(),$ctx:', $ctx)
         const result = utils.evalPlus(action.body, $ctx, '$ctx', this.$gl, '$gl')
         if (callback && typeof callback === 'function') {
             callback()

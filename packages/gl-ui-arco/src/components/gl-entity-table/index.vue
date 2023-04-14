@@ -251,6 +251,7 @@ const evalExpression = (data: {
   };
   return MixUtil.evalPlus(ctx.column.xRenderScript, ctx, "ctx");
 };
+
 defineExpose({search, popupVisibleChange, handleChange});
 </script>
 
@@ -273,7 +274,7 @@ defineExpose({search, popupVisibleChange, handleChange});
     <template #optional="{ record }">
       <a-space>
       <template v-for="(columnAction,index) in columnActions" :key="index">
-        <GlComponent v-if="columnAction" :glComponentInst="columnAction"></GlComponent>
+        <GlComponent v-if="columnAction" :glComponentInst="columnAction" :glCtx="{record:record}"></GlComponent>
         <!--        <a-button size="mini" :status="columnAction.status"-->
         <!--                  @click="$modal.info({ title: 'Name', content: record.name })">-->
         <!--          {{ columnAction.title }}-->

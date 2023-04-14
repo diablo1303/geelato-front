@@ -57,21 +57,23 @@ const onClick = (...args: any[]) => {
       event.stopPropagation()
     }
   }
-  emits('onComponentClick', {arguments: args, glComponentInst: props.glComponentInst})
+  emits('onComponentClick', {arguments: args, glComponentInst: props.glComponentInst, glCtx: props.glCtx})
 
-  doAction()
+  doAction('click')
 }
 
 /**
  *  组件配置的动态绑定事件，运行时Runtime
+ *  @actionName 执行的动作名称
  */
-const doAction = () => {
+const doAction = (actionName: string) => {
   if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
     console.log('doAction')
     props.glComponentInst.actions.forEach((action: Action) => {
-      if (action.name === 'click') {
+      if (action.name === actionName) {
         console.log('click action', action)
-        const ctx = inject('$ctx') as object || {}
+        let ctx = inject('$ctx') as object || {}
+        Object.assign(ctx, props.glCtx)
         actionScriptExecutor.doAction(action, ctx)
       }
     })
