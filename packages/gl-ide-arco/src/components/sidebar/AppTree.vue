@@ -1,6 +1,11 @@
 <template>
   <div class="gl-app-tree">
-    <GlEntityTree :treeId="treeId" @selectNode="onSelectNode"></GlEntityTree>
+    <GlEntityTree :treeId="treeId"
+                  extendEntityName="platform_app_page"
+                  @selectNode="onSelectNode"
+                  @deleteNode="onDeleteNode"
+    >
+    </GlEntityTree>
   </div>
 </template>
 <script lang="ts">
@@ -14,14 +19,24 @@ import {ref} from "vue";
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()
-appStore.currentApp.id = '1976169388038462609'
 
 // treeId，即应用的id
 const treeId = ref(appStore.currentApp.id || '')
 
-const onSelectNode = (params:any) => {
-  const dataRef = params.selectedNode
+const onSelectNode = (params: any) => {
+  const dataRef = params
   ideStore.openPage(<Page>{
+    type: dataRef.nodeType,
+    extendId: dataRef.key,
+    title: dataRef.title,
+    iconType: dataRef.iconType
+  })
+}
+
+const onDeleteNode = (params: any) => {
+  console.log('onDeleteNode params:', params)
+  const dataRef = params
+  ideStore.closePage(<Page>{
     type: dataRef.nodeType,
     extendId: dataRef.key,
     title: dataRef.title,

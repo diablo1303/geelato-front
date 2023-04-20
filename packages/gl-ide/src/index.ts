@@ -15,6 +15,7 @@ import Page from "./entity/Page";
 import {PluginUtil} from "@geelato/gl-ui";
 import {useIdeStore} from "./stores/UseIdeStore";
 import {useEntityStore} from "./stores/UseEntityStore";
+import {usePageStore} from "./stores/UsePageStore";
 import {useComponentStore,componentStoreFactory} from "./stores/UseComponentStore";
 import {useThemeStore} from "./stores/UseThemeStore";
 import {useHistoryStore} from "./stores/UseHistoryStore";
@@ -51,6 +52,7 @@ export {
     useAppStore,
     useEntityStore,
     componentStoreFactory,
+    usePageStore,
     useComponentStore,
     useThemeStore,
     useHistoryStore,

@@ -1,3 +1,6 @@
+<!--
+  提供基础的树操作,服务端的操作由外部传入,如addNode属性、deleteNode属性，通该这些属性传入对应的方法，在本组件中执行成功之后，进行组件状态刷新操作，同时触发相应的事件
+-->
 <template>
   <div class="gl-base-tree">
     <ATree v-if="treeData&&treeData.length>0" blockNode
@@ -98,15 +101,15 @@ const props = defineProps({
   loadTreeData: {
     type: Function
   },
-  // 添加node到后台的方法
+  //  服务端添加node的方法
   addNode: {
     type: Function
   },
-  // 删除node到后台的方法
+  // 服务端删除node的方法
   deleteNode: {
     type: Function
   },
-  // 重命名node到后台的方法
+  //  服务端重命名node的方法
   renameNode: {
     type: Function
   }

@@ -1,13 +1,15 @@
-import {defineStore} from 'pinia'
-import Page from "../entity/Page";
-import {entityApi} from "@geelato/gl-ui";
 import {ref} from "vue";
+import {defineStore} from 'pinia'
+import {entityApi, utils} from "@geelato/gl-ui";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import {useComponentStore} from "./UseComponentStore";
+import Page from "../entity/Page";
 
 export const usePageStore = defineStore('GlPageStore', () => {
     /**
      *  最大的页面数
      */
-    const maxPage = ref(20)
+    // const maxPage = ref(20)
     /**
      *  当前打开激活的页面
      */
@@ -21,7 +23,11 @@ export const usePageStore = defineStore('GlPageStore', () => {
      */
     const pages = ref(<Array<Page>>[])
 
+    const componentStore = useComponentStore()
+
+
     function addPage(page: Page) {
+        console.log('push page to pageStore,page:', page)
         pages.value.push(page)
         switchToPage(pages.value.length - 1)
     }
@@ -54,11 +60,18 @@ export const usePageStore = defineStore('GlPageStore', () => {
         return {page: new Page(), index: -1}
     }
 
-
     function switchToPage(index: number) {
-        console.log('setCurrentPageIndex:', index)
-        currentPageIndex.value = index
+        // 在切换页面时，记录原页面当前选中的组件
+        currentPage.value.currentSelectedComponentId = componentStore.currentSelectedComponentId
+        currentPageIndex.value = Number.parseInt(index+'')
         currentPage.value = pages.value[index]
+        // 切换页面之后，重置页面组件状态，并重新选中页面记录的已选组件
+        componentStore.$reset()
+        componentStore.currentComponentTree.push(currentPage.value.sourceContent)
+        if (currentPage.value.currentSelectedComponentId) {
+            componentStore.setCurrentSelectedComponentById(currentPage.value.currentSelectedComponentId)
+        }
+        console.log('switchToPage index:', index, 'currentPage:', currentPage.value,'componentStore:',componentStore)
     }
 
     function getPageLength() {
@@ -70,8 +83,22 @@ export const usePageStore = defineStore('GlPageStore', () => {
      * @param params
      * @return promise
      */
-    function loadPage(params: object) :Promise<any>{
+    function loadPage(params: object): Promise<any> {
+        console.log('loadPage from server by params:', params)
         return entityApi.query('platform_app_page', 'id,extendId,code,sourceContent,description', params, false)
+    }
+
+    /**
+     * 关闭页面
+     * @param index
+     */
+    function closePage(index: number) {
+        if (pages.value.length > index) {
+            pages.value.splice(index, 1)
+        }
+        if (index <= currentPageIndex.value) {
+            currentPageIndex.value -= 1
+        }
     }
 
     /**
@@ -80,8 +107,10 @@ export const usePageStore = defineStore('GlPageStore', () => {
     function saveCurrentPage() {
         entityApi.save('platform_app_page', {
             id: currentPage.value.id,
+            appId: currentPage.value.appId,
             extendId: currentPage.value.extendId,
             code: currentPage.value.code,
+            type: 'GlPageLayout',
             sourceContent: JSON.stringify(currentPage.value.sourceContent),
             releaseContent: JSON.stringify(currentPage.value.releaseContent),
             previewContent: JSON.stringify(currentPage.value.previewContent),
@@ -91,14 +120,42 @@ export const usePageStore = defineStore('GlPageStore', () => {
         })
     }
 
+    function setCurrentSourceContent(content: object) {
+        currentPage.value.sourceContent = content
+    }
+
     return {
         pages,
         currentPageIndex,
         addPage,
+        closePage,
         findPageById,
         findPageByExtendId,
         switchToPage,
+        setCurrentSourceContent,
         saveCurrentPage,
         loadPage
     }
 })
+
+/**
+ *  创建新页面时，默认的页面根实例数据
+ */
+export const defaultPageRoot: ComponentInstance = {
+    componentName: 'GlPage',
+    id: utils.gid('GlPage'),
+    props: {},
+    slots: {},
+    children: [{
+        componentName: 'GlDndPlaceholder',
+        id: utils.gid('pHolder'),
+        props: {
+            info: undefined
+        },
+        slots: {},
+        children: [],
+        actions: []
+    }
+    ],
+    actions: []
+}

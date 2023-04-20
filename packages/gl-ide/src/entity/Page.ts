@@ -20,7 +20,8 @@ export default class Page {
     ideStageComponentName: string = ''
     // 该页面的设计器组件
     ideSetterComponentName: string = 'GlComponentSetter'
-
+    // 页面当前选择中的组件id，用于设计时在切换页面时，记录当前页面选中的id
+    currentSelectedComponentId:string = ''
     /**
      * @param options
      * @param isFromRemote 是否从模板初始化，默认为false，方便打开页面时区分是否要加载模板的配置信息还是从服务器加载配置信息
@@ -96,6 +97,8 @@ export default class Page {
 
 
         this.objectTree = []
+
+        this.currentSelectedComponentId = ''
     }
 
     /**

@@ -9,8 +9,8 @@
     </span>
     <span class="gl-crumb" v-else-if="eventType==='Hover'">{{ componentStore.currentHoverComponentName }}</span>
     <span class="gl-crumb-actions" v-if="!isDeleteAble">
-      <GlIconfont type="gl-save" title="保存为模板片段" />
-      <GlIconfont type="gl-copy" title="复制" />
+<!--      <GlIconfont type="gl-save" title="保存为模板片段" />-->
+<!--      <GlIconfont type="gl-copy" title="复制" />-->
       <GlIconfont type="gl-delete" title="删除"  @click="componentStore.deleteComponentInstById(componentStore.currentSelectedComponentId)" />
     </span>
   </div>
@@ -69,17 +69,18 @@ export default defineComponent({
   position: absolute;
   left: 0;
   top: 0;
-  /*width: 100%;*/
+  /* width: 100%; */
   height: 20px;
-  margin-top: -20px;
+  /* -line-height/2-36-微调值 */
+  margin-top: -48px;
   margin-left: 0;
-  padding: 1px 4px;
+  /* padding: 1px 4px; */
   z-index: 999;
   display: none;
 }
 
 .gl-toolbar-breadcrumbs.gl-hover {
-  /*background-color: #FFF;*/
+  /* background-color: #FFF; */
   color: #176bf7;
   display: inline-block;
 }
@@ -106,7 +107,7 @@ export default defineComponent({
 }
 
 .gl-crumb-actions {
-  margin-left: 0.5em;
+  margin: 0 0.25em;
   border-left: 1px solid #f7f7f7;
 }
 

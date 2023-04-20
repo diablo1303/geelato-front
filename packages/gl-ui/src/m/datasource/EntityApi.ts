@@ -232,6 +232,24 @@ export class EntityApi {
     }
 
     /**
+     * 批量删除
+     * @param items
+     * @param biz
+     */
+    deleteBatch(items: Array<{ entityName: string, keyValues: object }>, biz?: string) {
+        if (!items) {
+            return
+        }
+        let result = undefined
+        let that = this
+        // TODO 需后台服务提供批量删除的方法，暂无事务单个删除
+        items.forEach((item) => {
+            result = that.delete(item.entityName, item.keyValues, biz)
+        })
+        return result
+    }
+
+    /**
      * 通过页面编码获取页面配置信息
      * @param pageCode
      * @returns {*}

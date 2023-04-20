@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import {emitter, utils} from "@geelato/gl-ui";
-import  {ComponentInstance} from "@geelato/gl-ui-schema";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
 // 组件元数据
 // const componentMetaMap: { [key: string]: any } = {}
 
@@ -14,6 +14,7 @@ class ComponentStoreFactory {
     componentStoreMap: { [key: string]: any } = {}
     // 组件元数据，在多个store中共享
     componentMetaMap = new ComponentMetaMap()
+
     /**
      * 从store工厂中获取componentStore,便于在同一运行环境（页面）下，构建多个编辑器
      * @param id
@@ -37,6 +38,11 @@ class ComponentStoreFactory {
                     }
                 },
                 actions: {
+
+                    setComponentTree(componentInst: ComponentInstance) {
+                        this.currentComponentTree.length = 0
+                        this.currentComponentTree.push(componentInst)
+                    },
                     /**
                      * 添加组件元数据
                      * @param componentMetaMap
@@ -88,15 +94,15 @@ class ComponentStoreFactory {
                     /**
                      *  删除当前已选中的组件
                      */
-                    deleteCurrentSelectedComponentInst(){
+                    deleteCurrentSelectedComponentInst() {
                         this.deleteComponentInstById(this.currentSelectedComponentId)
                     },
 
                     /**
                      *  切换组件在启用状态，可用于组件的设计时调试使用
                      */
-                    switchCurrentSelectedComponentStatus(){
-                        if(this.currentSelectedComponentInstance&&this.currentSelectedComponentInstance.id){
+                    switchCurrentSelectedComponentStatus() {
+                        if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
                             this.currentSelectedComponentInstance._disabled = !this.currentSelectedComponentInstance._disabled
                         }
                     },
@@ -111,8 +117,6 @@ class ComponentStoreFactory {
                         let parentDom = this.findParentNode(dom)
                         if (parentDom.id.indexOf('GlRoot') === -1) {
                             this.setCurrentSelectedComponentId(parentDom.id)
-                            // this.currentSelectedComponentId = parentDom.id
-                            // this.currentSelectedComponentName = parentDom.id
                         }
                         console.log('selectParentComponent:', parentDom.id)
                     },
@@ -178,7 +182,7 @@ class ComponentStoreFactory {
                             const foundComponent = this.findComponentFromTreeById(this.currentSelectedComponentId)
                             console.log('findComponentFromTreeById', this.currentSelectedComponentId, 'and get', foundComponent)
                             this.currentSelectedComponentInstance = foundComponent
-                            if (this.currentSelectedComponentInstance&&this.currentSelectedComponentInstance.id) {
+                            if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
                                 // @ts-ignore
                                 this.currentSelectedComponentName = this.currentSelectedComponentInstance.componentName
                                 // TODO 对于Gl-Col内置的组件，查询为null
@@ -203,7 +207,8 @@ class ComponentStoreFactory {
         }
         return this.componentStoreMap[id]
     }
-    useComponentStore(id:string){
+
+    useComponentStore(id: string) {
         return this.getComponentStore(id)()
     }
 }

@@ -80,8 +80,8 @@ emitter.on(EventNames.GlIdeToolbarShowCodeViewer, () => {
  */
 const items: Array<ComponentInstance> = [
   {
-    componentName: 'GlRoot',
-    id: utils.gid('GlRoot'),
+    componentName: 'GlPage',
+    id: utils.gid('GlPage'),
     props: {},
     slots: {},
     children: [{
@@ -91,9 +91,10 @@ const items: Array<ComponentInstance> = [
         info: undefined
       },
       slots: {},
-      children: []
+      children: [],
+      actions:[]
     }
-    ]
+    ],actions:[]
   }
 ]
 

@@ -9,7 +9,6 @@ import {computed, ref, watch} from "vue";
 
 const componentStore = useIdeStore().componentStore
 const componentTree = ref()
-
 /**
  *  tree数据字段和组件树的字段进行转换
  */
@@ -31,6 +30,7 @@ const selectNode = (node: any) => {
   selectedKeys.value.push(node.id)
   console.log('selectedKeys', selectedKeys.value)
   componentStore.setCurrentSelectedComponentById(node.id)
+
   // emits('selectNode', {selectedNode:node})
 }
 

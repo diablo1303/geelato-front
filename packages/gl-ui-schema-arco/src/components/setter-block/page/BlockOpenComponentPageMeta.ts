@@ -36,8 +36,7 @@ export default {
         "expanded": true,
         "title": "页面标题",
         "setterComponentName": "AInput"
-    },
-        {
+    }, {
         "name": "params",
         "setterComponentProps": {},
         "setterComponentVModelName": "",
@@ -48,7 +47,7 @@ export default {
         "title": "参数",
         "_showSub": true,
         "properties": [{
-            "name": "name",
+            "name": "pName",
             "group": "base",
             "type": "props",
             "show": true,
@@ -58,7 +57,7 @@ export default {
             "title": "参数名",
             "setterComponentName": "AInput"
         }, {
-            "name": "value",
+            "name": "pValue",
             "group": "base",
             "type": "props",
             "show": true,

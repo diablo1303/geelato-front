@@ -2,12 +2,13 @@ import {defineStore} from 'pinia'
 import type GlPlugin from "../entity/GlPlugin";
 import type Panel from "../entity/Panel";
 import {useAppStore} from "./UseAppStore";
-import {usePageStore} from "./UsePageStore";
+import {defaultPageRoot, usePageStore} from "./UsePageStore";
 import {useComponentStore} from "./UseComponentStore";
 import {useEntityStore} from "./UseEntityStore";
 import Page from "../entity/Page";
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import {ref} from "vue";
+
 export const useIdeStore = defineStore('GlIdeStore', () => {
     const name = ref('Geelato Ide')
     // 主UI库，如：ant | arco
@@ -17,7 +18,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
     const logo = ref('')
     const activatedSidebarPanelTitle = ref('')
     const plugins = ref<Array<GlPlugin>>([])
-    const currentApp = useAppStore()
+    const appStore = useAppStore()
     const pageStore = usePageStore()
     const entityStore = useEntityStore()
     const componentStore = useComponentStore()
@@ -84,9 +85,12 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
      * @param iconType
      */
     function openPage({type, extendId, title, iconType}: Page) {
+        console.log('try to open page:', {type, extendId, title, iconType})
         // 从已打开的页面中查找，若有若激活
         let foundItem = pageStore.findPageByExtendId(extendId)
         if (foundItem.index >= 0) {
+            console.log('found opened page:', foundItem)
+            // componentStore.setComponentTree(foundItem.page.sourceContent)
             pageStore.switchToPage(<number>foundItem.index)
         } else {
             let items = findPanelsByType('stage')
@@ -96,28 +100,64 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
             if (foundPanel) {
                 // 从后台服务中加载页面，若无则创建新页面
                 pageStore.loadPage({extendId}).then((res) => {
-                    console.log(res.data.data)
+                    console.log('loadedPage:', res.data.data)
                     let page = new Page()
                     if (res.data.data && res.data.data.length > 0) {
+                        // 服务端加载的页面
                         const pageItem = res.data.data[0]
                         page.id = pageItem.id
+                        page.appId = pageItem.appId
                         page.extendId = pageItem.extendId
                         page.title = title
                         page.iconType = iconType
                         page.code = pageItem.code
                         page.description = pageItem.description
-                        page.sourceContent = page.parseContent(pageItem.sourceContent)
+                        page.sourceContent = JSON.parse(pageItem.sourceContent)
                     } else {
+                        // 新页面
                         page.type = type
+                        page.appId = appStore.currentApp.id
                         page.extendId = extendId
                         page.title = title
                         page.iconType = iconType
+                        page.sourceContent = JSON.parse(JSON.stringify(defaultPageRoot))
                     }
+                    componentStore.setComponentTree(page.sourceContent)
                     // @ts-ignore
                     page.ideStageComponentName = foundPanel.componentName
                     pageStore.addPage(page)
                 })
             }
+        }
+    }
+
+    /**
+     *  保存当前舞台中打开的页面
+     */
+    function savePage() {
+        // set page content
+        if (componentStore.currentComponentTree && componentStore.currentComponentTree.length > 0) {
+            pageStore.setCurrentSourceContent(componentStore.currentComponentTree[0])
+        } else {
+            pageStore.setCurrentSourceContent({})
+        }
+        pageStore.saveCurrentPage()
+    }
+
+    /**
+     * 关闭页面
+     * 需要同步删除缓存中的数据
+     * @param type
+     * @param extendId
+     * @param title
+     * @param iconType
+     */
+    function closePage({type, extendId, title, iconType}: Page){
+        console.log('close page:',{type, extendId, title, iconType})
+        let foundItem = pageStore.findPageByExtendId(extendId)
+        if (foundItem.index >= 0) {
+            console.log('found delete page:', foundItem)
+            pageStore.closePage(<number>foundItem.index)
         }
     }
 
@@ -131,7 +171,6 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
         activatedSidebarPanelTitle,
         componentAlias,
         logo,
-        currentApp,
         pageStore,
         componentStore,
         entityStore,
@@ -142,6 +181,8 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
         addComponentMetas,
         findPlugin,
         findPanelsByType,
-        openPage
+        openPage,
+        closePage,
+        savePage
     }
 })

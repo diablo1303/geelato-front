@@ -38,6 +38,9 @@ const showSlot = ()=>{
   console.log('showSlot')
 }
 
+const openDrawer = () => {
+  
+}
 
 </script>
 

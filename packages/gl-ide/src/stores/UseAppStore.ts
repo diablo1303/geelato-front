@@ -6,6 +6,8 @@ import App from "../entity/App";
 export const useAppStore = defineStore('GlAppStore',()=>{
 
     const currentApp = ref(new App())
+    currentApp.value.id = '1976169388038462609'
+
     /**
      * 安装插件
      * 插件title唯一

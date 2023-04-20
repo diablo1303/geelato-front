@@ -1,6 +1,11 @@
 <template>
   <div class="gl-designer-stage">
-    <a-tabs size="small" class="gl-compact" v-model:activeKey="activeKey" @tabClick="tabClick">
+    <a-tabs :editable="true"
+            size="small" 
+            class="gl-compact" 
+            v-model:activeKey="pageStore.currentPageIndex"
+            @delete="onDelete"
+            @tabClick="tabClick">
       <a-tab-pane v-for="(page,index) in pageStore.pages" :key="index">
         <template #[slotName]>
         <span>
@@ -13,52 +18,24 @@
     </a-tabs>
   </div>
 </template>
-
 <script lang="ts">
-import {defineComponent, watch, type SetupContext, ref, nextTick} from 'vue'
-import {useIdeStore} from "../stores/UseIdeStore";
+export default {
+  name: "GlDesignerStage"
+}
+</script>
+<script lang="ts" setup>
 import {usePageStore} from "../stores/UsePageStore";
 import uiLibAdapter from "../utils/UiLibAdapter";
 
-export default defineComponent({
-  name: "GlDesignerStage",
-  setup(props, {emit}: SetupContext) {
-    const activeKey = ref(0)
-    const ideStore = useIdeStore()
-    const pageStore = usePageStore()
-
-    const slotName = uiLibAdapter.getTabSlotName()
-    const tabClick = (index: number) => {
-      console.log(index, typeof index)
-      activeKey.value = index
-      pageStore.switchToPage(index)
-    }
-
-    // watch(() => ideStore.stageRefreshFlag, (flag: Boolean) => {
-    //   nextTick(() => {
-    //     if (!ideStore.stageRefreshFlag) {
-    //       ideStore.stageRefreshFlag = true
-    //     }
-    //   })
-    // })
-    watch(() => pageStore.currentPageIndex, (index: number) => {
-      activeKey.value = Number(index)
-      console.log('activeKey.value', activeKey.value, typeof index)
-    })
-
-    return {
-      slotName,
-      tabClick,
-      activeKey,
-      ideStore,
-      pageStore
-    }
-  }
-})
+const pageStore = usePageStore()
+const slotName = uiLibAdapter.getTabSlotName()
+const tabClick = (index: number) => {
+  pageStore.switchToPage(index)
+}
+const onDelete = (index: number) => {
+  pageStore.closePage(index)
+}
 </script>
 
 <style>
-/*.gl-designer-stage > div > div > div > div > .ant-tabs-tab + .ant-tabs-tab {*/
-/*  margin: 0 0 0 12px;*/
-/*}*/
 </style>
