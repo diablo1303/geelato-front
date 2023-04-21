@@ -67,7 +67,7 @@ const glBaseTree = ref()
 
 
 const loadTreeDataFn = () => {
-  return entityApi.query(props.treeEntityName, 'treeId,id key,title,pid,iconType,type nodeType,seqNo', {treeId: props.treeId}, false)
+  return entityApi.query(props.treeEntityName, 'treeId,id key,title,pid,iconType,type nodeType,flag,seqNo', {treeId: props.treeId}, false)
 }
 
 /**

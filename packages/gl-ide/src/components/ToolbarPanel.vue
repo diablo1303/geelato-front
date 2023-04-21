@@ -74,6 +74,13 @@
       <!--{{$i18n.locale==='zh-CN'?'English':'中文'}}-->
       <!--</a>-->
     </span>
+    <gl-modal :visible="codeViewerVisible"
+              title="生成的配置代码预览"
+              :fullscreen="true"
+              @ok="codeViewerVisible=false"
+              @cancel="codeViewerVisible=false">
+      <VueJsonPretty :data="componentStore.currentComponentTree[0]"></VueJsonPretty>
+    </gl-modal>
   </div>
 </template>
 
@@ -87,14 +94,21 @@ import {usePageStore} from "../stores/UsePageStore";
 import {useThemeStore} from "../stores/UseThemeStore";
 import {emitter, useGlobal} from "@geelato/gl-ui";
 import {useHistoryStore} from "../stores/UseHistoryStore";
+import {useComponentStore} from "../stores/UseComponentStore";
 import {useAppStore} from "../stores/UseAppStore";
 import EventNames from "../entity/Events";
+import VueJsonPretty from "vue-json-pretty";
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()
+const componentStore = useComponentStore()
 const themeStore = useThemeStore()
 const pageStore = usePageStore()
 const historyStore = useHistoryStore()
+
+const codeViewerVisible = ref(false)
+
+const global = useGlobal()
 
 const btnStyle = {background: themeStore.theme.background}
 const isFullscreen = ref(false)
@@ -141,10 +155,11 @@ const projectConfig = ()=>{
 
 const openCodeViewer = () => {
   emitter.emit(EventNames.GlIdeToolbarShowCodeViewer)
+  codeViewerVisible.value = true
 }
 
 const comingSoon = (text: string) => {
-  useGlobal().$message.info(text + '正在努力开发中...')
+  global.$message.info(text + '正在努力开发中...')
 }
 /**
  *  打开插件页面

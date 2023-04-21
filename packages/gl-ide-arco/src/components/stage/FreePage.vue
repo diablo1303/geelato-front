@@ -6,13 +6,13 @@
       <gl-x :glComponentInst="componentStore.currentComponentTree[0]"></gl-x>
       <GlToolbarBreadcrumbs eventType="Hover"></GlToolbarBreadcrumbs>
       <GlToolbarBreadcrumbs eventType="Selected"></GlToolbarBreadcrumbs>
-      <gl-modal :visible="codeViewerVisible"
-                title="生成的配置代码预览"
-                :fullscreen="true"
-                @ok="codeViewerVisible=false"
-                @cancel="codeViewerVisible=false">
-        <VueJsonPretty :data="componentStore.currentComponentTree[0]"></VueJsonPretty>
-      </gl-modal>
+<!--      <gl-modal :visible="codeViewerVisible"-->
+<!--                title="生成的配置代码预览"-->
+<!--                :fullscreen="true"-->
+<!--                @ok="codeViewerVisible=false"-->
+<!--                @cancel="codeViewerVisible=false">-->
+<!--        <VueJsonPretty :data="componentStore.currentComponentTree[0]"></VueJsonPretty>-->
+<!--      </gl-modal>-->
     </div>
   </div>
 </template>
@@ -29,7 +29,7 @@ import VueJsonPretty from "vue-json-pretty";
 
 const global = useGlobal()
 const componentStore = componentStoreFactory.useComponentStore("useComponentStore")
-const codeViewerVisible = ref(false)
+// const codeViewerVisible = ref(false)
 
 /**
  * 设置工具条的位置
@@ -71,9 +71,9 @@ emitter.on('setCurrentHoverComponentId', (data) => {
   setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsHover', componentStore.currentHoverComponentId)
 })
 
-emitter.on(EventNames.GlIdeToolbarShowCodeViewer, () => {
-  codeViewerVisible.value = true
-})
+// emitter.on(EventNames.GlIdeToolbarShowCodeViewer, () => {
+//   codeViewerVisible.value = true
+// })
 
 
 /**

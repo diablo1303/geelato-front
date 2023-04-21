@@ -17,7 +17,7 @@
         <GlIconfont :type="node.iconType" style="font-size: 1.2em;color:#3370ff"></GlIconfont>
       </template>
       <template #extra="nodeData">
-        <a-trigger ref="contextMenu" position="tl" auto-fit-position :show-arrow="true"
+        <a-trigger ref="contextMenu" position="tl" auto-fit-position :click-to-close="true" :show-arrow="true"
                    @popupVisibleChange="()=>onShowContextMenu(nodeData)">
             <span class="gl-more" style="position: absolute; right: 16px; color: #3370ff;">
               <GlIconfont type="gl-more"></GlIconfont>
@@ -189,6 +189,7 @@ type ContextMenuDataType = {
 
 const refreshTree = () => {
   treeData.value = [...treeData.value]
+  console.log('refreshTree',treeData.value)
 }
 
 // const defaultTreeData = [
@@ -212,9 +213,10 @@ const onShowContextMenu = (clickedNodeData: any) => {
     // 基于node节点的show属性作是否展示的检查
     if (item.show) {
       // @ts-ignore
-      console.log('utils.evalPlus(item.show, clickedNodeData)', utils.evalPlus(item.show, clickedNodeData))
+      const isShow = utils.evalPlus(item.show, clickedNodeData)
+      console.log('utils.evalPlus(item.show, clickedNodeData)', isShow,'clickedNodeData',clickedNodeData)
       // @ts-ignore
-      return item.useFor.includes(clickedNodeData.nodeType) && utils.evalPlus(item.show, clickedNodeData)
+      return item.useFor.includes(clickedNodeData.nodeType) && isShow
     } else {
       return item.useFor.includes(clickedNodeData.nodeType)
     }
@@ -245,10 +247,12 @@ const onMenuItemClick = (clickedNodeData: any, contextMenuItemData: ContextMenuD
       Object.keys(contextMenuItemData.actionParams).forEach((key: string) => {
         //@ts-ignore
         currentEditNodeData.value[key] = contextMenuItemData.actionParams[key]
+        //@ts-ignore
+        clickedNodeData[key] =  contextMenuItemData.actionParams[key]
       })
     }
     currentAction.value = {action: 'updateNode', title: '修改节点'}
-    updateNode(currentClickedNodeData.value, currentEditNodeData.value,)
+    updateNode(currentClickedNodeData.value, currentEditNodeData.value)
     console.log('currentAction updateNode', currentEditNodeData, contextMenuItemData)
   } else if (contextMenuItemData.action === 'deleteNode') {
     currentAction.value = {action: 'deleteNode', title: '删除节点'}
@@ -330,15 +334,6 @@ const updateNodeSeqNo = (pid: string) => {
       }
     })
   }
-  // if (props.updateNodeSeqNo) {
-  //   // TODO 需要提供一个批量修改多个的方法，暂时逐个执行
-  //   props.updateNodeSeqNo(params).then((res: any) => {
-  //     refreshTree()
-  //     emits('updateNodeSeqNo', params)
-  //   })
-  // } else {
-  //   emits('updateNodeSeqNo', params)
-  // }
 }
 const addNode = (clickedNodeData: any, addNodeData: any) => {
   const children = clickedNodeData.children || []
@@ -398,7 +393,6 @@ const onDragEnd = (ev: DragEvent, node: TreeNodeData) => {
 }
 const onDragLeave = (ev: DragEvent, node: TreeNodeData) => {
   // console.log('onDragLeave', ev, node)
-  return false
 }
 /**
  * 树节点拖动
@@ -475,7 +469,6 @@ const reloadTreeData = () => {
           return aSeq - bSeq
         }
       }))
-      // console.log('treeData', treeData)
     })
   }
 }
