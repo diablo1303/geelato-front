@@ -34,7 +34,7 @@ export default {
         "expanded": true,
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
-        "title": "内边j距",
+        "title": "内边距",
         "placeholder": "如：14px",
         "setterComponentName": "AInput"
     }],
