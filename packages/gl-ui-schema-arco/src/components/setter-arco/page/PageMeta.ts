@@ -1,9 +1,42 @@
 export default {
     "componentName": "GlPage",
     "displayMode": "Tile",
-    "iconType":"gl-page",
+    "iconType": "gl-page",
     "group": "navigation",
     "title": "页面",
     "useBy": ["freePage"],
-    "properties": [],"actions": [],
+    "properties": [{
+        "name": "title",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "标题",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "margin",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "外边距",
+        "setterComponentName": "AInput",
+        "placeholder": "如16px"
+    }, {
+        "name": "padding",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "内边j距",
+        "placeholder": "如：14px",
+        "setterComponentName": "AInput"
+    }],
+    "actions": []
 }

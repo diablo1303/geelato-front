@@ -6,7 +6,7 @@
       <th style="min-width: 6em">进展</th>
       <th style="min-width: 8em">操作</th>
     </tr>
-    <tr v-for="(componentMeta,index) in schemaBlock.componentMetas" style="margin-bottom: 4px">
+    <tr v-for="(componentMeta,index) in schemaArco.componentMetas" style="margin-bottom: 4px">
       <td>{{ index + 1 }}</td>
       <td><span style="width: 30em">{{ componentMeta.title }} {{
           componentMeta.componentName
@@ -23,13 +23,15 @@
 </template>
 <script lang="ts">
 export default {
-  name: "AllBlocks"
+  name: "AllComponents"
 }
 </script>
 <script lang="ts" setup>
-  import {schemaBlock} from "@geelato/gl-ui-schema-arco";
+import {schemaArco} from "@geelato/gl-ui-schema-arco";
 </script>
 
 <style scoped>
-
+  table th {
+    text-align: center;
+  }
 </style>

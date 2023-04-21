@@ -253,7 +253,7 @@ const onMenuItemClick = (clickedNodeData: any, contextMenuItemData: ContextMenuD
     }
     currentAction.value = {action: 'updateNode', title: '修改节点'}
     updateNode(currentClickedNodeData.value, currentEditNodeData.value)
-    console.log('currentAction updateNode', currentEditNodeData, contextMenuItemData)
+    // console.log('currentAction updateNode', currentEditNodeData, contextMenuItemData)
   } else if (contextMenuItemData.action === 'deleteNode') {
     currentAction.value = {action: 'deleteNode', title: '删除节点'}
     console.log('currentAction deleteNode', clickedNodeData)

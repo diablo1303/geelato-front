@@ -294,5 +294,7 @@ export default {
         "properties": [],
         "setterComponentName": "GlArrayComponentSetter",
         "title": "列操作"
-    }]
+    }],
+    "actions": [
+    ]
 }

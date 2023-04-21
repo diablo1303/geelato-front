@@ -128,123 +128,130 @@ function sidebarComponent(){
         { text: '介绍', link: '/component/introduction' },
       ]
     },
+    // {
+    //   text: '通用',
+    //   collapsible: true,
+    //   items: [
+    //     { text: 'Button 按钮', link: '/component/general/button' },
+    //     { text: 'Icon 图标', link: '/component/general/icon' },
+    //     { text: 'Typography 排版', link: '/component/general/typography' }
+    //   ]
+    // },
+    // {
+    //   text: '布局',
+    //   collapsible: true,
+    //   items: [
+    //     { text: 'Divider 分割线', link: '/component/layout/divider' },
+    //     { text: 'FormRowLayout表单布局', link: '/component/layout/formRowLayout' },
+    //     { text: 'Layout 布局', link: '/component/layout/layout' },
+    //     { text: 'Space 间距', link: '/component/layout/space' }
+    //   ]
+    // },
+    // {
+    //   text: '导航',
+    //   collapsible: true,
+    //   items: [
+    //     { text: 'Affix 固钉', link: '/component/nav/affix' },
+    //     { text: 'Breadcrumb 面包屑', link: '/component/nav/breadcrumb' },
+    //     { text: 'Dropdown 下拉菜单', link: '/component/nav/dropdown' },
+    //     { text: 'Menu 导航菜单', link: '/component/nav/menu' },
+    //     { text: 'PageHeader 页头', link: '/component/nav/pageHeader' },
+    //     { text: 'Pagination 分页', link: '/component/nav/pagination' },
+    //     { text: 'Steps 步骤条', link: '/component/nav/steps' }
+    //   ]
+    // },
+    // {
+    //   text: '数据录入',
+    //   collapsible: true,
+    //   items: [
+    //     { text: 'AutoComplete 自动完成', link: '/component/dataEntry/autoComplete' },
+    //     { text: 'Breadcrumb 面包屑', link: '/component/dataEntry/breadcrumb' },
+    //     { text: 'Cascader 级联选择', link: '/component/dataEntry/cascader' },
+    //     { text: 'Checkbox 多选框', link: '/component/dataEntry/checkbox' },
+    //     { text: 'DatePicker 日期选择框', link: '/component/dataEntry/datePicker' },
+    //     { text: 'Form 表单', link: '/component/dataEntry/form' },
+    //     { text: 'Input 输入框', link: '/component/dataEntry/input' },
+    //     { text: 'InputNumber 数字输入框', link: '/component/dataEntry/inputNumber' },
+    //     { text: 'Radio 单选框', link: '/component/dataEntry/radio' },
+    //     { text: 'Rate 评分', link: '/component/dataEntry/rate' },
+    //     { text: 'Select 选择器', link: '/component/dataEntry/select' },
+    //     { text: 'Slider 滑动输入条', link: '/component/dataEntry/slider' },
+    //     { text: 'Switch 开关', link: '/component/dataEntry/switch' },
+    //     { text: 'TimePicker 时间选择框', link: '/component/dataEntry/timePicker' },
+    //     { text: 'Transfer 穿梭框', link: '/component/dataEntry/transfer' },
+    //     { text: 'TreeSelect 树选择', link: '/component/dataEntry/treeSelect' },
+    //     { text: 'Upload 上传', link: '/component/dataEntry/upload' }
+    //   ]
+    // },
+    // {
+    //   text: '数据展示',
+    //   collapsible: true,
+    //   items: [
+    //     { text: 'Avatar 头像', link: '/component/dataDisplay/avatar' },
+    //     { text: 'Badge 徽标数', link: '/component/dataDisplay/badge' },
+    //     { text: 'Calendar 日历', link: '/component/dataDisplay/calendar' },
+    //     { text: 'Card 卡片', link: '/component/dataDisplay/card' },
+    //     { text: 'Carousel 走马灯', link: '/component/dataDisplay/carousel' },
+    //     { text: 'Collapse 折叠面板', link: '/component/dataDisplay/collapse' },
+    //     { text: 'Comment 评论', link: '/component/dataDisplay/comment' },
+    //     { text: 'Descriptions 描述列表', link: '/component/dataDisplay/descriptions' },
+    //     { text: 'Empty 空状态', link: '/component/dataDisplay/empty' },
+    //     { text: 'Image 图片', link: '/component/dataDisplay/image' },
+    //     { text: 'List 列表', link: '/component/dataDisplay/list' },
+    //     { text: 'Popover 气泡卡片', link: '/component/dataDisplay/popover' },
+    //     { text: 'Statistic 统计数值', link: '/component/dataDisplay/statistic' },
+    //     { text: 'Table 表格', link: '/component/dataDisplay/table' },
+    //     { text: 'Tabs 标签页', link: '/component/dataDisplay/tabs' },
+    //     { text: 'Tag 标签', link: '/component/dataDisplay/tag' },
+    //     { text: 'Timeline 时间轴', link: '/component/dataDisplay/timeline' },
+    //     { text: 'TimelineItem 时间线节点', link: '/component/dataDisplay/timelineItem' },
+    //     { text: 'Tooltip 文字提示', link: '/component/dataDisplay/tooltip' },
+    //     { text: 'Tree 树形控件', link: '/component/dataDisplay/tree' },
+    //   ]
+    // },
+    // {
+    //   text: '反馈',
+    //   collapsible: true,
+    //   items: [
+    //     { text: 'Alert 警告提示', link: '/component/display/alert' },
+    //     { text: 'Drawer 抽屉', link: '/component/display/drawer' },
+    //     { text: 'Message 全局提示', link: '/component/display/message' },
+    //     { text: 'Modal 对话框', link: '/component/display/modal' },
+    //     { text: 'Notification 通知提醒框', link: '/component/display/notification' },
+    //     { text: 'Popconfirm 气泡确认框', link: '/component/display/popconfirm' },
+    //     { text: 'Progress 进度条', link: '/component/display/progress' },
+    //     { text: 'Result 结果', link: '/component/display/result' },
+    //     { text: 'Skeleton 骨架屏', link: '/component/display/skeleton' },
+    //     { text: 'Spin 加载中', link: '/component/display/spin' }
+    //   ]
+    // },
     {
-      text: '通用',
+      text: '页面组件',
       collapsible: true,
       items: [
-        { text: 'Button 按钮', link: '/component/general/button' },
-        { text: 'Icon 图标', link: '/component/general/icon' },
-        { text: 'Typography 排版', link: '/component/general/typography' }
-      ]
-    },
-    {
-      text: '布局',
-      collapsible: true,
-      items: [
-        { text: 'Divider 分割线', link: '/component/layout/divider' },
-        { text: 'FormRowLayout表单布局', link: '/component/layout/formRowLayout' },
-        { text: 'Layout 布局', link: '/component/layout/layout' },
-        { text: 'Space 间距', link: '/component/layout/space' }
-      ]
-    },
-    {
-      text: '导航',
-      collapsible: true,
-      items: [
-        { text: 'Affix 固钉', link: '/component/nav/affix' },
-        { text: 'Breadcrumb 面包屑', link: '/component/nav/breadcrumb' },
-        { text: 'Dropdown 下拉菜单', link: '/component/nav/dropdown' },
-        { text: 'Menu 导航菜单', link: '/component/nav/menu' },
-        { text: 'PageHeader 页头', link: '/component/nav/pageHeader' },
-        { text: 'Pagination 分页', link: '/component/nav/pagination' },
-        { text: 'Steps 步骤条', link: '/component/nav/steps' }
-      ]
-    },
-    {
-      text: '数据录入',
-      collapsible: true,
-      items: [
-        { text: 'AutoComplete 自动完成', link: '/component/dataEntry/autoComplete' },
-        { text: 'Breadcrumb 面包屑', link: '/component/dataEntry/breadcrumb' },
-        { text: 'Cascader 级联选择', link: '/component/dataEntry/cascader' },
-        { text: 'Checkbox 多选框', link: '/component/dataEntry/checkbox' },
-        { text: 'DatePicker 日期选择框', link: '/component/dataEntry/datePicker' },
-        { text: 'Form 表单', link: '/component/dataEntry/form' },
-        { text: 'Input 输入框', link: '/component/dataEntry/input' },
-        { text: 'InputNumber 数字输入框', link: '/component/dataEntry/inputNumber' },
-        { text: 'Radio 单选框', link: '/component/dataEntry/radio' },
-        { text: 'Rate 评分', link: '/component/dataEntry/rate' },
-        { text: 'Select 选择器', link: '/component/dataEntry/select' },
-        { text: 'Slider 滑动输入条', link: '/component/dataEntry/slider' },
-        { text: 'Switch 开关', link: '/component/dataEntry/switch' },
-        { text: 'TimePicker 时间选择框', link: '/component/dataEntry/timePicker' },
-        { text: 'Transfer 穿梭框', link: '/component/dataEntry/transfer' },
-        { text: 'TreeSelect 树选择', link: '/component/dataEntry/treeSelect' },
-        { text: 'Upload 上传', link: '/component/dataEntry/upload' }
-      ]
-    },
-    {
-      text: '数据展示',
-      collapsible: true,
-      items: [
-        { text: 'Avatar 头像', link: '/component/dataDisplay/avatar' },
-        { text: 'Badge 徽标数', link: '/component/dataDisplay/badge' },
-        { text: 'Calendar 日历', link: '/component/dataDisplay/calendar' },
-        { text: 'Card 卡片', link: '/component/dataDisplay/card' },
-        { text: 'Carousel 走马灯', link: '/component/dataDisplay/carousel' },
-        { text: 'Collapse 折叠面板', link: '/component/dataDisplay/collapse' },
-        { text: 'Comment 评论', link: '/component/dataDisplay/comment' },
-        { text: 'Descriptions 描述列表', link: '/component/dataDisplay/descriptions' },
-        { text: 'Empty 空状态', link: '/component/dataDisplay/empty' },
-        { text: 'Image 图片', link: '/component/dataDisplay/image' },
-        { text: 'List 列表', link: '/component/dataDisplay/list' },
-        { text: 'Popover 气泡卡片', link: '/component/dataDisplay/popover' },
-        { text: 'Statistic 统计数值', link: '/component/dataDisplay/statistic' },
-        { text: 'Table 表格', link: '/component/dataDisplay/table' },
-        { text: 'Tabs 标签页', link: '/component/dataDisplay/tabs' },
-        { text: 'Tag 标签', link: '/component/dataDisplay/tag' },
-        { text: 'Timeline 时间轴', link: '/component/dataDisplay/timeline' },
-        { text: 'TimelineItem 时间线节点', link: '/component/dataDisplay/timelineItem' },
-        { text: 'Tooltip 文字提示', link: '/component/dataDisplay/tooltip' },
-        { text: 'Tree 树形控件', link: '/component/dataDisplay/tree' },
-      ]
-    },
-    {
-      text: '反馈',
-      collapsible: true,
-      items: [
-        { text: 'Alert 警告提示', link: '/component/display/alert' },
-        { text: 'Drawer 抽屉', link: '/component/display/drawer' },
-        { text: 'Message 全局提示', link: '/component/display/message' },
-        { text: 'Modal 对话框', link: '/component/display/modal' },
-        { text: 'Notification 通知提醒框', link: '/component/display/notification' },
-        { text: 'Popconfirm 气泡确认框', link: '/component/display/popconfirm' },
-        { text: 'Progress 进度条', link: '/component/display/progress' },
-        { text: 'Result 结果', link: '/component/display/result' },
-        { text: 'Skeleton 骨架屏', link: '/component/display/skeleton' },
-        { text: 'Spin 加载中', link: '/component/display/spin' }
+        { text: '所有页面组件', link: '/component/script/all_components' }
       ]
     },
     {
       text: '脚本组件',
       collapsible: true,
       items: [
-        { text: '脚本块', link: '/component/script/all' }
+        { text: '所有脚本组件', link: '/component/script/all_blocks' }
         // { text: 'IF条件', link: '/component/script/condition/ifelse' },
         // { text: '通知', link: '/component/script/notification' },
         // { text: '打开外部页面', link: '/component/script/openThirdPage' }
       ]
     },
-    {
-      text: '自定义组件',
-      collapsible: true,
-      items: [
-        { text: '表单', link: '/component/gl-form' },
-        { text: '表格', link: '/component/gl-table' },
-        { text: '组织选取', link: '/component/gl-org-selector' },
-        { text: '人员选取', link: '/component/gl-user-selector' }
-      ]
-    }
+    // {
+    //   text: '自定义组件',
+    //   collapsible: true,
+    //   items: [
+    //     { text: '表单', link: '/component/gl-form' },
+    //     { text: '表格', link: '/component/gl-table' },
+    //     { text: '组织选取', link: '/component/gl-org-selector' },
+    //     { text: '人员选取', link: '/component/gl-user-selector' }
+    //   ]
+    // }
   ]
 }
 
