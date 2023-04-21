@@ -146,17 +146,17 @@ export class Utils {
         let uName = utilsName || '$utils'
         let str = this.trim(expression)
         let index = str.indexOf(';')
-        // if (index === -1 || index === str.length - 1) {
-        //     // 单语句
-        //     return new Fn(ctxName, uName, 'return ' + expression)(ctx, $utils || {})
-        // } else {
-        //     // 多语句
-        //     let strAry = str.split(';')
-        //     let lastStr = strAry.pop();
-        //     let preStr = strAry.join(';')
-        //     return new Fn(ctxName, uName, preStr + '; return ' + lastStr)(ctx, $utils || {})
-        // }
-        return new Fn(ctxName, uName,  expression)(ctx, $utils || {})
+        if (index === -1 || index === str.length - 1) {
+            // 单语句
+            return new Fn(ctxName, uName, 'return ' + expression)(ctx, $utils || {})
+        } else {
+            // 多语句
+            let strAry = str.split(';')
+            let lastStr = strAry.pop();
+            let preStr = strAry.join(';')
+            return new Fn(ctxName, uName, preStr + '; return ' + lastStr)(ctx, $utils || {})
+        }
+        // return new Fn(ctxName, uName,  expression)(ctx, $utils || {})
     }
 
     /**

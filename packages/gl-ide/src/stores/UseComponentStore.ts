@@ -100,6 +100,7 @@ class ComponentStoreFactory {
 
                     /**
                      *  切换组件在启用状态，可用于组件的设计时调试使用
+                     *  相当于注释掉代码
                      */
                     switchCurrentSelectedComponentStatus() {
                         if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {

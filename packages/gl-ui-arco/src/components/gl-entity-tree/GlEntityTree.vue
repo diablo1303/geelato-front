@@ -1,9 +1,12 @@
 <template>
   <div class="gl-entity-tree">
     <GlBaseTree :treeId="treeId" ref="glBaseTree"
+                :draggable="draggable"
                 :loadTreeData="loadTreeDataFn"
                 :addNode="addNodeFn"
-                :renameNode="renameNodeFn"
+                :updateNodeName="updateNodeNameFn"
+                :updateNode="updateNodeFn"
+                :updateNodeSeqNo="updateNodeSeqNoFn"
                 :deleteNode="deleteNodeFn"
                 @deleteNode="onDeleteNode"
                 @selectNode="onSelectNode"
@@ -20,11 +23,17 @@ import {entityApi} from "@geelato/gl-ui";
 import {ref, toRaw} from "vue";
 import GlBaseTree from "./GlBaseTree.vue";
 
-const emits = defineEmits(['selectNode', 'addNode', 'updateNode', 'renameNode', 'deleteNode', 'clickContextMenuItem'])
+const emits = defineEmits(['selectNode', 'addNode', 'updateNode', 'updateNodeName', 'deleteNode', 'clickContextMenuItem'])
 const props = defineProps({
   treeId: {
     type: [String, Number],
     required: true
+  },
+  draggable: {
+    type: Boolean,
+    default() {
+      return false
+    }
   },
   /**
    *  树实体名称，默认是平台内置的树
@@ -58,7 +67,7 @@ const glBaseTree = ref()
 
 
 const loadTreeDataFn = () => {
-  return entityApi.query(props.treeEntityName, 'treeId,id key,title,pid,iconType,type nodeType', {treeId: props.treeId}, false)
+  return entityApi.query(props.treeEntityName, 'treeId,id key,title,pid,iconType,type nodeType,seqNo', {treeId: props.treeId}, false)
 }
 
 /**
@@ -77,12 +86,34 @@ const addNodeFn = (params: any) => {
   }
   return entityApi.save(props.treeEntityName, data)
 }
-const renameNodeFn = (params: any) => {
+const updateNodeNameFn = (params: any) => {
   const data = {
     id: params.editNodeData.key,
     title: params.editNodeData.title
   }
-  console.log('renameNode', params)
+  console.log('updateNodeName', params)
+  return entityApi.save(props.treeEntityName, data)
+}
+
+const updateNodeFn = (params: any) => {
+  const data = {
+    id: params.editNodeData.key,
+    title: params.editNodeData.title,
+    flag: params.editNodeData.flag,
+    iconType: params.editNodeData.iconType,
+    type: params.editNodeData.nodeType,
+    pid:params.editNodeData.pid
+  }
+  console.log('updateNode', params)
+  return entityApi.save(props.treeEntityName, data)
+}
+
+const updateNodeSeqNoFn = (params: any) => {
+  const data = {
+    id: params.editNodeData.key,
+    seqNo: params.editNodeData.seqNo
+  }
+  console.log('updateNodeSeqNoFn', params)
   return entityApi.save(props.treeEntityName, data)
 }
 

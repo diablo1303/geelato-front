@@ -1,6 +1,7 @@
 <template>
   <div class="gl-app-tree">
     <GlEntityTree :treeId="treeId"
+                  :draggable="true"
                   extendEntityName="platform_app_page"
                   @selectNode="onSelectNode"
                   @deleteNode="onDeleteNode"

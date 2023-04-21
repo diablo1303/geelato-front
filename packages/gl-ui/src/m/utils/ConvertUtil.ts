@@ -28,23 +28,36 @@ export default class ConvertUtil {
      * @param renamePid  重命名pid字段名，默认为“pid”
      * @returns {Array}
      */
-    static listToTree(data: Array<any>, pid: String | Number, renameId?:String,renamePid?: String) {
+    static listToTree(params: { data: Array<any>, pid: string | number, renameId?: string, renamePid?: string, compareFn: Function }) {
         // console.log('listToTree',data)
+        if (params.data.length === 0) {
+            return []
+        }
         const tree = [];
-        const idName = renameId || 'id'
-        const pidName = renamePid || 'pid'
+        const idName = params.renameId || 'id'
+        const pidName = params.renamePid || 'pid'
         let temp;
-        for (let i = 0; i < data.length; i += 1) {
+        for (let i = 0; i < params.data.length; i += 1) {
             // @ts-ignore
-            if (data[i][pidName] === pid) {
-                const obj = data[i];
+            if (params.data[i][pidName] === params.pid) {
+                const obj = params.data[i];
                 // @ts-ignore
-                temp = this.listToTree(data, data[i][idName],renameId, renamePid);
+                temp = this.listToTree({
+                    data: params.data,
+                    pid: params.data[i][idName],
+                    renameId: params.renameId,
+                    renamePid: params.renamePid,
+                    compareFn: params.compareFn
+                });
                 if (temp.length > 0) {
                     obj.children = temp;
                 }
                 tree.push(obj);
             }
+        }
+        if (params.compareFn) {
+            // @ts-ignore
+            tree.sort(params.compareFn)
         }
         return tree;
     }

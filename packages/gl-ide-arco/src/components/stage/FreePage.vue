@@ -53,7 +53,7 @@ const setToolbarBreadcrumbsPosition = (toolbarBreadcrumbsId: string, moveToTarge
   const stageDom = document.getElementById(componentStore.currentComponentTree[0].id)
   const stageDomRect = stageDom?.getBoundingClientRect()
   const targetRect = target.getBoundingClientRect()
-  console.log('targetRect:', targetRect, 'scrollTop:', scrollTop)
+  // console.log('targetRect:', targetRect, 'scrollTop:', scrollTop)
   // @ts-ignore
   // 对高度低于32的组件进行位置校正 targetRect.height<32?32:targetRect.height
   // - (targetRect.height < 32 ? 32 : targetRect.height) - 2 + "px"
@@ -61,15 +61,13 @@ const setToolbarBreadcrumbsPosition = (toolbarBreadcrumbsId: string, moveToTarge
   // @ts-ignore
   toolbarBreadcrumbsDiv.style.left = (scrollLeft + targetRect.left - stageDomRect.left) + "px";
   // @ts-ignore
-  console.log(toolbarBreadcrumbsDiv?.style,toolbarBreadcrumbsDiv?.style?.top)
+  // console.log(toolbarBreadcrumbsDiv?.style,toolbarBreadcrumbsDiv?.style?.top)
 }
 
 emitter.on('setCurrentSelectedComponentId', (data) => {
-  // TODO 暂不启用，现在定位不太准
   setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsSelected', componentStore.currentSelectedComponentId)
 })
 emitter.on('setCurrentHoverComponentId', (data) => {
-  // TODO 暂不启用，现在定位不太准
   setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsHover', componentStore.currentHoverComponentId)
 })
 

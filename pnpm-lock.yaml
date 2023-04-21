@@ -179,7 +179,7 @@ importers:
 
   packages/gl-ui-arco:
     specifiers:
-      '@arco-design/web-vue': ^2.44.2
+      '@arco-design/web-vue': ^2.45.1
       '@geelato/gl-ui': workspace:^0.0.1
       '@rushstack/eslint-patch': ^1.2.0
       '@types/jsdom': ^21.1.0
@@ -209,7 +209,7 @@ importers:
       vue-router: ^4.1.6
       vue-tsc: ^1.1.5
     dependencies:
-      '@arco-design/web-vue': 2.44.2_vue@3.2.47
+      '@arco-design/web-vue': 2.45.1_vue@3.2.47
       '@geelato/gl-ui': link:../gl-ui
       lodash: 4.17.21
       pinia: 2.0.32_5yi2kxxaqg74pgvs6b75qdtvru
@@ -338,7 +338,7 @@ importers:
 
   webapps/gl-admin-arco:
     specifiers:
-      '@arco-design/web-vue': ^2.44.2
+      '@arco-design/web-vue': ^2.45.1
       '@commitlint/cli': ^17.1.2
       '@commitlint/config-conventional': ^17.1.0
       '@geelato/gl-ui': workspace:^0.0.1
@@ -400,7 +400,7 @@ importers:
       vue-router: ^4.0.14
       vue-tsc: ^1.0.14
     dependencies:
-      '@arco-design/web-vue': 2.44.2_vue@3.2.47
+      '@arco-design/web-vue': 2.45.1_vue@3.2.47
       '@geelato/gl-ui': link:../../packages/gl-ui
       '@geelato/gl-ui-arco': link:../../packages/gl-ui-arco
       '@vueuse/core': 9.13.0_vue@3.2.47
@@ -609,8 +609,8 @@ packages:
       vue: 3.2.47
     dev: false
 
-  /@arco-design/web-vue/2.44.2_vue@3.2.47:
-    resolution: {integrity: sha512-QWVlUcEq5KhVLSb/egH74AbGzzX8Py/Nysk05wb6qj2CJFKO592hKeF4kHARmHxEhgIqiMZbYf3/iPjg/PuGDg==}
+  /@arco-design/web-vue/2.45.1_vue@3.2.47:
+    resolution: {integrity: sha512-+p4wnj0X6UD8ehPaNhX96g3Sm8l9cgZgwsDseVJp1/JHIuG+JuhaIcvg0/3RTCrFl9GpU0j6Cve6J8v2LqpT+A==}
     peerDependencies:
       vue: ^3.1.0
     dependencies:
