@@ -1,8 +1,8 @@
 import type {App, AppContext} from "vue";
 import type {Action} from "@geelato/gl-ui-schema";
 import utils from "../utils/Utils";
-import {getCurrentInstance, h} from "vue";
-import DemoPage from './DemoPage.vue'
+import {h} from "vue";
+import GlPageViewer from '../../components/gl-page-viewer/GlPageViewer.vue'
 
 export class ActionScriptExecutor {
 
@@ -29,7 +29,7 @@ export class ActionScriptExecutor {
             }
         }
         console.log('doAction(),$ctx:', $ctx)
-        const result = utils.evalPlus(action.body, $ctx, '$ctx', this.$gl, '$gl')
+        const result = utils.evalFn(action.body, $ctx, '$ctx', this.$gl, '$gl')
         if (callback && typeof callback === 'function') {
             callback()
         }
@@ -41,8 +41,9 @@ export class ActionScriptExecutor {
      * @param pageId
      */
     loadPage(pageId: string) {
-        // TODO 改成从后台数据服务中取
-        return h(DemoPage)
+        const props = {pageId}
+        console.log('importPage', GlPageViewer)
+        return h(GlPageViewer, props)
     }
 
     /**

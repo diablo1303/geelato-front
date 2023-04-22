@@ -61,17 +61,34 @@ export const usePageStore = defineStore('GlPageStore', () => {
     }
 
     function switchToPage(index: number) {
-        // 在切换页面时，记录原页面当前选中的组件
-        currentPage.value.currentSelectedComponentId = componentStore.currentSelectedComponentId
-        currentPageIndex.value = Number.parseInt(index+'')
-        currentPage.value = pages.value[index]
+        // 如果是由于删除引起的切换，页面长度有时会为0
+        if (pages.value.length === 0) {
+            currentPageIndex.value = -1
+            currentPage.value = new Page()
+            componentStore.$reset()
+            return
+        }
+        const lastPageIndex = currentPageIndex.value
+        // pages页面数量调整时，如做了删除操作，需要重新计算lastPageIndexAfter的值，确保索引到调整的灵数组上
+        const lastPageIndexAfter = lastPageIndex>=pages.value.length?lastPageIndex-1:lastPageIndex
+        const newPageIndex = Number.parseInt(index + '')
+        console.log('switchToPage from index:', lastPageIndex, 'to index', newPageIndex, 'currentPage:', currentPage.value, 'componentStore:', componentStore)
+
+        // 在切换页面时，记录原页面(lastPageIndex>=0)当前选中的组件
+        if (lastPageIndexAfter >= 0) {
+            pages.value[lastPageIndexAfter].currentSelectedComponentId = componentStore.currentSelectedComponentId
+            // currentPage.value.currentSelectedComponentId = componentStore.currentSelectedComponentId
+            // currentPage.value.sourceContent = componentStore.currentSelectedComponent
+        }
+        currentPageIndex.value = newPageIndex
+        currentPage.value = pages.value[newPageIndex]
         // 切换页面之后，重置页面组件状态，并重新选中页面记录的已选组件
         componentStore.$reset()
         componentStore.currentComponentTree.push(currentPage.value.sourceContent)
         if (currentPage.value.currentSelectedComponentId) {
             componentStore.setCurrentSelectedComponentById(currentPage.value.currentSelectedComponentId)
         }
-        console.log('switchToPage index:', index, 'currentPage:', currentPage.value,'componentStore:',componentStore)
+        // console.log('switchToPage index:', index, 'currentPage:', currentPage.value, 'componentStore:', componentStore)
     }
 
     function getPageLength() {
@@ -97,7 +114,11 @@ export const usePageStore = defineStore('GlPageStore', () => {
             pages.value.splice(index, 1)
         }
         if (index <= currentPageIndex.value) {
-            currentPageIndex.value -= 1
+            let toIndex = index - 1
+            if (index - 1 < 0 && pages.value.length > 0) {
+                toIndex = 0
+            }
+            switchToPage(toIndex)
         }
     }
 
@@ -105,6 +126,16 @@ export const usePageStore = defineStore('GlPageStore', () => {
      * 保存当前的页面到后台服务中
      */
     function saveCurrentPage() {
+
+        function convertToRelease(sourceContent: object) {
+            // TODO 待做代码压缩，去掉设计时的或可默认的属性
+            return sourceContent
+        }
+
+        function convertToPreview(sourceContent: object) {
+            return sourceContent
+        }
+
         entityApi.save('platform_app_page', {
             id: currentPage.value.id,
             appId: currentPage.value.appId,
@@ -112,8 +143,8 @@ export const usePageStore = defineStore('GlPageStore', () => {
             code: currentPage.value.code,
             type: 'GlPageLayout',
             sourceContent: JSON.stringify(currentPage.value.sourceContent),
-            releaseContent: JSON.stringify(currentPage.value.releaseContent),
-            previewContent: JSON.stringify(currentPage.value.previewContent),
+            releaseContent: JSON.stringify(convertToRelease(currentPage.value.sourceContent)),
+            previewContent: JSON.stringify(convertToPreview(currentPage.value.sourceContent)),
             description: currentPage.value.description
         }).then((res) => {
             currentPage.value.id = res.data.data
@@ -127,6 +158,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
     return {
         pages,
         currentPageIndex,
+        currentPage,
         addPage,
         closePage,
         findPageById,

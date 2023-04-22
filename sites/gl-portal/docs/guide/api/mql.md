@@ -188,7 +188,7 @@ HAVING SUM(OrderPrice)>1500
 
 {
 	'@biz':'xxxxx',
-	'platform_dev_page':{
+	'platform_app_page':{
 	'code':'IUJDYWGS',
 	'content':''
 	}

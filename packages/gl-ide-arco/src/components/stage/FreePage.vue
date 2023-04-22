@@ -24,7 +24,7 @@ export default {
 <script setup lang="ts">
 import {ref} from 'vue'
 import {componentStoreFactory, EventNames} from "@geelato/gl-ide";
-import {useGlobal, emitter} from "@geelato/gl-ui";
+import {useGlobal, emitter, utils} from "@geelato/gl-ui";
 import VueJsonPretty from "vue-json-pretty";
 
 const global = useGlobal()
@@ -65,10 +65,14 @@ const setToolbarBreadcrumbsPosition = (toolbarBreadcrumbsId: string, moveToTarge
 }
 
 emitter.on('setCurrentSelectedComponentId', (data) => {
-  setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsSelected', componentStore.currentSelectedComponentId)
+  utils.sleep(100).then(()=>{
+    setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsSelected', componentStore.currentSelectedComponentId)
+  })
 })
 emitter.on('setCurrentHoverComponentId', (data) => {
-  setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsHover', componentStore.currentHoverComponentId)
+  utils.sleep(100).then(()=> {
+    setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsHover', componentStore.currentHoverComponentId)
+  })
 })
 
 // emitter.on(EventNames.GlIdeToolbarShowCodeViewer, () => {

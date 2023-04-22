@@ -3,7 +3,7 @@
     <a-tabs :editable="true"
             size="small" 
             class="gl-compact" 
-            v-model:activeKey="pageStore.currentPageIndex"
+            :activeKey="pageStore.currentPageIndex"
             @delete="onDelete"
             @tabClick="tabClick">
       <a-tab-pane v-for="(page,index) in pageStore.pages" :key="index">

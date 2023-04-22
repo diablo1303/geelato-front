@@ -130,7 +130,7 @@ export class Utils {
     }
 
     /**
-     * 直接执行eval
+     * 执行表达式
      * @param expression
      * @param $ctx 用于expression的上下文参数
      * @param ctxName 指定上下文的参数名，默认为$ctx
@@ -156,7 +156,22 @@ export class Utils {
             let preStr = strAry.join(';')
             return new Fn(ctxName, uName, preStr + '; return ' + lastStr)(ctx, $utils || {})
         }
-        // return new Fn(ctxName, uName,  expression)(ctx, $utils || {})
+    }
+
+    /**
+     * 直接执行方法体内容
+     * @param fnBody 方法体的内容
+     * @param $ctx 用于fnBody的上下文参数
+     * @param ctxName 指定上下文的参数名，默认为$ctx
+     * @returns {*}
+     */
+    evalFn(fnBody: string, ctx: object, ctxName = '$ctx', $utils?: object, utilsName?: string) {
+        console.log('gl-ui > utils > evalFn() > blocks: ', fnBody)
+        console.log('gl-ui > utils > evalFn() > ctx: ', ctx)
+        let Fn = Function
+        let uName = utilsName || '$utils'
+        let str = this.trim(fnBody)
+        return new Fn(ctxName, uName,  fnBody)(ctx, $utils || {})
     }
 
     /**

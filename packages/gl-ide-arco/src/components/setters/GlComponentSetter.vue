@@ -4,6 +4,14 @@
       <a-tab-pane key="1" tab="属性" title="属性">
         <!--        <GlComponentPropertiesSetter :componentMeta="componentMeta" v-model:componentInstance="componentInstance"-->
         <!--                                     @update="(val:any)=>{setInstance(val,'props')}" />-->
+        <div class="gl-table" style="margin: 0 0 2px 0;border-bottom: 2px solid #04559f">
+          <div class="gl-table-row">
+            <div class="gl-table-cell gl-label" style="width: 7em">唯一标识</div>
+            <div class="gl-table-cell">{{componentModel.id}}
+              <a-button style="float: right" type="text">复制</a-button>
+            </div>
+          </div>
+        </div>
         <GlComponentPropertiesSetter :componentMeta="componentMeta" :componentInstance="componentModel"/>
       </a-tab-pane>
       <a-tab-pane key="2" tab="样式" title="样式" force-render>

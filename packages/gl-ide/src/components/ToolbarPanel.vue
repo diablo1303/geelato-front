@@ -172,10 +172,12 @@ const showPlugins = () => {
  *  打开预览页面
  */
 const preview = () => {
-  // if (ideStore.editingFile && ideStore.editingFile.id) {
-  //   console.log('this.ideStore.editingFile', this.ideStore.editingFile)
-  //   window.open(window.location.origin + `/#/preview/${this.ideStore.editingFile.id}/${this.ideStore.editingFile.extendId}`, '_blank')
-  // }
+  if (pageStore.currentPage&&pageStore.currentPage.id) {
+    console.log('preview(),currentPage', pageStore.currentPage)
+    window.open(  `${window.location.origin}/showcase/preview.html?pageId=${pageStore.currentPage.id}`, '_blank')
+  }else{
+    global.$message.info('当前无预览的页面。')
+  }
 }
 
 const toggleFullScreen = () => {
@@ -185,7 +187,7 @@ const toggleFullScreen = () => {
 
 const gotoHelpPage = () => {
   if (CheckUtil.isBrowser()) {
-    window.open('https://www.geelato.cn', '_blank');
+    window.open(  `${window.location.origin}`, '_blank')
   }
 }
 

@@ -251,16 +251,16 @@ export class EntityApi {
 
     /**
      * 通过页面编码获取页面配置信息
-     * @param pageCode
+     * @param pageId
      * @returns {*}
      */
-    queryPageByCode(pageCode: string) {
+    queryPageById(pageId: string) {
         // mql查询语句
         const mql = {
-            platform_dev_page: {
+            platform_app_page: {
                 "@p": "1,1",
-                "@fs": "id,code,release_content",
-                code: pageCode,
+                "@fs": "id,code,releaseContent",
+                id: pageId,
             },
         };
         return this.service({

@@ -49,11 +49,11 @@ export default defineConfig({
 function nav() {
   return [
     { text: '指南', link: '/guide/what-is-geelato', activeMatch: '/guide/' },
-    // { text: '协议', link: '/schema/introduction', activeMatch: '/schema/' },
     { text: '组件', link: '/component/introduction', activeMatch: '/component/' },
     { text: '演示', items: [
         {text: 'IDE', link: '/showcase/ide', activeMatch: '/showcase/'},
-        {text: 'Admin', link: '/showcase/admin', activeMatch: '/showcase/'}
+        {text: 'Admin', link: '/showcase/admin', activeMatch: '/showcase/'},
+        {text: 'PagePreview', link: '/showcase/preview', activeMatch: '/showcase/'}
       ] },
     // {
     //   text: version,
