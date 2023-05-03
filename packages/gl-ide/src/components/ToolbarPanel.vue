@@ -80,6 +80,9 @@
               @ok="codeViewerVisible=false"
               @cancel="codeViewerVisible=false">
       <VueJsonPretty :data="componentStore.currentComponentTree[0]"></VueJsonPretty>
+      <template #footer>
+        <a-button type="primary" @click="copyCode">复制</a-button>
+      </template>
     </gl-modal>
   </div>
 </template>
@@ -98,6 +101,7 @@ import {useComponentStore} from "../stores/UseComponentStore";
 import {useAppStore} from "../stores/UseAppStore";
 import EventNames from "../entity/Events";
 import VueJsonPretty from "vue-json-pretty";
+import ClipboardJS from "clipboard";
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()
@@ -149,7 +153,7 @@ const saveFile = () => {
   emitter.emit(EventNames.GlIdeToolbarSaveFile)
 }
 
-const projectConfig = ()=>{
+const projectConfig = () => {
 
 }
 
@@ -172,10 +176,10 @@ const showPlugins = () => {
  *  打开预览页面
  */
 const preview = () => {
-  if (pageStore.currentPage&&pageStore.currentPage.id) {
+  if (pageStore.currentPage && pageStore.currentPage.id) {
     console.log('preview(),currentPage', pageStore.currentPage)
-    window.open(  `${window.location.origin}/showcase/preview.html?pageId=${pageStore.currentPage.id}`, '_blank')
-  }else{
+    window.open(`${window.location.origin}/showcase/preview.html?pageId=${pageStore.currentPage.id}`, '_blank')
+  } else {
     global.$message.info('当前无预览的页面。')
   }
 }
@@ -187,7 +191,7 @@ const toggleFullScreen = () => {
 
 const gotoHelpPage = () => {
   if (CheckUtil.isBrowser()) {
-    window.open(  `${window.location.origin}`, '_blank')
+    window.open(`${window.location.origin}`, '_blank')
   }
 }
 
@@ -199,6 +203,9 @@ const changeLanguages = () => {
   // console.log('this.$i18n.locale:', this.$i18n.locale)
 }
 
+const copyCode = () => {
+  ClipboardJS.copy(JSON.stringify(componentStore.currentComponentTree[0]))
+}
 </script>
 
 <style>

@@ -2,7 +2,7 @@ export default {
     "componentName": "GlDndPlaceholder",
     "displayMode": "Tile",
     "iconType": "gl-button",
-    "group": "general",
+    "group": "other",
     "title": "占位",
     "useBy": ["freePage"],
     "properties": [],

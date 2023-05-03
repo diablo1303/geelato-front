@@ -1,4 +1,9 @@
 import {
+  del,
+  isVue2,
+  set
+} from "./chunk-ESO62AI5.js";
+import {
   setupDevtoolsPlugin
 } from "./chunk-VJW3XOCT.js";
 import {
@@ -6,7 +11,6 @@ import {
   effectScope,
   getCurrentInstance,
   getCurrentScope,
-  init_vue_runtime_esm_bundler,
   inject,
   isReactive,
   isRef,
@@ -22,27 +26,6 @@ import {
   watch
 } from "./chunk-5PJZPTXT.js";
 import "./chunk-AC2VUBZ6.js";
-
-// ../../node_modules/.pnpm/vue-demi@0.13.11_vue@3.2.47/node_modules/vue-demi/lib/index.mjs
-init_vue_runtime_esm_bundler();
-init_vue_runtime_esm_bundler();
-var isVue2 = false;
-function set(target, key, val) {
-  if (Array.isArray(target)) {
-    target.length = Math.max(target.length, key);
-    target.splice(key, 1, val);
-    return val;
-  }
-  target[key] = val;
-  return val;
-}
-function del(target, key) {
-  if (Array.isArray(target)) {
-    target.splice(key, 1);
-    return;
-  }
-  delete target[key];
-}
 
 // ../../node_modules/.pnpm/pinia@2.0.32_vue@3.2.47/node_modules/pinia/dist/pinia.mjs
 var activePinia;

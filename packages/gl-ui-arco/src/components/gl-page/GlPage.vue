@@ -1,12 +1,17 @@
 <template>
-  <div class="gl-page-container">
+  <div class="gl-page-container" :style="style">
     <Breadcrumb :items="breadcrumb"/>
-    <a-card class="gl-page-general-card" :title="pageTitle?$t(pageTitle):pageTitle" @click="showSlot">
-      <slot @openDrawer="openDrawer"></slot>
-    </a-card>
+<!--    <slot></slot>-->
+<!--    <a-card class="gl-page-general-card" :title="pageTitle?$t(pageTitle):pageTitle" @click="showSlot">-->
+<!--    </a-card>-->
   </div>
 </template>
 
+<script lang="ts">
+export default {
+  name: 'GlPage'
+}
+</script>
 <script lang="ts" setup>
 
 const props = defineProps({
@@ -22,8 +27,20 @@ const props = defineProps({
       return ''
     }
   },
+  pageMargin: {
+    type: String,
+    default() {
+      return ''
+    }
+  },
+  pagePadding: {
+    type: String,
+    default() {
+      return ''
+    }
+  },
   /**
-   *  自定义编码
+   *  自定义JS编码
    */
   script: {
     type: String,
@@ -32,14 +49,19 @@ const props = defineProps({
     }
   }
 })
+
+const style = {
+  margin: props.pageMargin || '12px',
+  padding: props.pagePadding || '12px'
+}
 const fnManager = {}
 
-const showSlot = ()=>{
+const showSlot = () => {
   console.log('showSlot')
 }
 
 const openDrawer = () => {
-  
+
 }
 
 </script>

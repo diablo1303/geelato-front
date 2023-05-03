@@ -1,14 +1,17 @@
 <template>
-  <div class="gl-component-setter">
+  <div class="gl-component-setter" v-if="componentModel">
     <a-tabs size="small" v-model:activeKey="activeKey">
       <a-tab-pane key="1" tab="属性" title="属性">
         <!--        <GlComponentPropertiesSetter :componentMeta="componentMeta" v-model:componentInstance="componentInstance"-->
         <!--                                     @update="(val:any)=>{setInstance(val,'props')}" />-->
         <div class="gl-table" style="margin: 0 0 2px 0;border-bottom: 2px solid #04559f">
           <div class="gl-table-row">
-            <div class="gl-table-cell gl-label" style="width: 7em">唯一标识</div>
-            <div class="gl-table-cell">{{componentModel.id}}
-              <a-button style="float: right" type="text">复制</a-button>
+            <div class="gl-table-cell gl-label" style="width: 7em;">唯一标识</div>
+            <div class="gl-table-cell">
+              <span style="font-size: 12px">{{ componentModel.id }}</span>
+              <a-button size="mini" style="float: right;padding: 0 4px;margin: 1px" type="text"
+                        @click="()=>{ClipboardJS.copy(componentModel.id)}">复制
+              </a-button>
             </div>
           </div>
         </div>
@@ -25,13 +28,23 @@
       <a-tab-pane key="4" tab="权限" title="权限">
         <a-alert>Coming Soon...</a-alert>
       </a-tab-pane>
+      <a-tab-pane key="5" tab="多语言" title="多语言">
+        <div style="margin: 0 0 0.5em 0.5em">
+          <GlIconfont type="gl-earth"></GlIconfont>
+          <span style="margin-left: 0.5em">
+            设置该组件的中文-英文对照
+          </span>
+        </div>
+        <GlComponentI18nSetter :componentMeta="componentMeta" :componentInstance="componentModel"></GlComponentI18nSetter>
+      </a-tab-pane>
     </a-tabs>
   </div>
 </template>
 <script lang="ts" setup>
+import {PropType, provide, ref} from "vue";
 import {EntityMeta, utils} from "@geelato/gl-ui";
 import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
-import {PropType, provide, ref} from "vue";
+import ClipboardJS from "clipboard";
 
 const entityMeta = new EntityMeta()
 const ds = ref({entityMeta})
@@ -57,7 +70,7 @@ const genKey = () => {
 const componentModel = ref(props.componentInstance)
 const activeKey = ref("1")
 const setInstance = (instance: ComponentInstance, form: String) => {
-  console.log('GlComponentSetter > set instance:', instance,'form',form)
+  console.log('GlComponentSetter > set instance:', instance, 'form', form)
   // // Object.extend(this.componentInstance,instance)
   // componentModel.value = instance
   // if(form==='style'){

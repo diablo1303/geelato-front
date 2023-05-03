@@ -2,7 +2,7 @@ export default {
     "componentName": "AButton",
     "displayMode": "Tile",
     "iconType": "gl-button",
-    "group": "general",
+    "group": "dataDisplay",
     "title": "按钮",
     "useBy": ["freePage"],
     "properties": [{
@@ -13,7 +13,7 @@ export default {
         "group": "base",
         "placeholder": "",
         "description": "类型",
-        "setterComponentName": "ARadioGroup",
+        "setterComponentName": "ASelect",
         "setterComponentVModelName": "modelValue",
         "setterComponentProps": {
             "options": [{"label": "主要", "value": "primary"}, {
@@ -72,7 +72,7 @@ export default {
             "options": [{"label": "大", "value": "large"}, {
                 "label": "中",
                 "value": "medium"
-            }, {"label": "小", "value": "small"}, {"label": "极小", "value": "mini"}, {"label": "默认", "value": ""}],
+            }, {"label": "小", "value": "small"}, {"label": "极小", "value": "mini"}],
             "type": "radio"
         },
         "type": "props",
@@ -108,7 +108,7 @@ export default {
         "group": "base",
         "placeholder": "",
         "description": "",
-        "setterComponentName": "GlIconfontSetter",
+        "setterComponentName": "GlIconfontTextSetter",
         "setterComponentVModelName": "modelValue",
         "setterComponentProps": {},
         "show": true,

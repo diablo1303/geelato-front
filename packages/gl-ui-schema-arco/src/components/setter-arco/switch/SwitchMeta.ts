@@ -6,6 +6,26 @@ export default {
     "title": "开关",
     "useBy": ["freePage"],
     "properties": [{
+        "name": "label",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "标题",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "bindField",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "绑定字段",
+        "setterComponentName": "GlEntityFieldSelect"
+    }, {
         "name": "autofocus",
         "setterComponentProps": {},
         "setterComponentVModelName": "checked",

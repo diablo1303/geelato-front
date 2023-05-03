@@ -2,6 +2,7 @@ import {defineStore} from 'pinia'
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import {emitter, utils} from "@geelato/gl-ui";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
+import {ref} from "vue";
 // 组件元数据
 // const componentMetaMap: { [key: string]: any } = {}
 
@@ -41,7 +42,9 @@ class ComponentStoreFactory {
 
                     setComponentTree(componentInst: ComponentInstance) {
                         this.currentComponentTree.length = 0
-                        this.currentComponentTree.push(componentInst)
+                        if (componentInst) {
+                            this.currentComponentTree.push(componentInst)
+                        }
                     },
                     /**
                      * 添加组件元数据
@@ -66,7 +69,7 @@ class ComponentStoreFactory {
                         function deleteNodeFromTree(nodeId: String, nodes: Array<any>): any {
                             for (let index in nodes) {
                                 let node = nodes[index]
-                                console.log('compare node.id,componentId', node.id, componentId, node.id === componentId)
+                                // console.log('compare node.id,componentId', node.id, componentId, node.id === componentId)
                                 if (node.id === componentId) {
                                     nodes.splice(Number.parseInt(index), 1)
                                     thisProxy.clearCurrentSelectedComponent()
@@ -114,38 +117,45 @@ class ComponentStoreFactory {
                         if (!this.currentSelectedComponentId) {
                             return
                         }
-                        let dom = document.getElementById(this.currentSelectedComponentId)
-                        let parentDom = this.findParentNode(dom)
-                        if (parentDom.id.indexOf('GlRoot') === -1) {
-                            this.setCurrentSelectedComponentId(parentDom.id)
-                        }
-                        console.log('selectParentComponent:', parentDom.id)
+                        const parentComponent = this.findParentComponentFromTreeById(this.currentSelectedComponentId)
+                        // console.log('selectParentComponent(),found:', parentComponent)
+                        this.setCurrentSelectedComponentById(parentComponent.id)
                     },
 
                     /**
-                     * 基于dom向上找gl-*组件dom
-                     * 特点是上级dom有id，且id长度为16
-                     * @param dom
+                     * 查询指定组件id的父组件
+                     * @param componentId 查找的组件id
+                     * @return 找不到时返回null，找到时返回对应的组件实例
                      */
-                    findParentNode(dom: Element | null): any {
-                        if (dom && dom.parentNode) {
-                            // console.log('dom:', dom, dom.id, dom.parentNode.id)
-                            // @ts-ignore
-                            if (dom.parentNode.id && dom.parentNode.id.length === 16) {
-                                return dom.parentNode
-                            } else {
-                                // @ts-ignore
-                                return this.findParentNode(dom.parentNode)
+                    findParentComponentFromTreeById(componentId: string) {
+                        function findParentNodeFromTree(nodeId: string, node: any): any {
+                            if (node.id === nodeId) {
+                                return null
                             }
+                            if (node.children && node.children.length > 0) {
+                                for (let index in node.children) {
+                                    const subNode = node.children[index]
+                                    if (subNode.id === nodeId) {
+                                        return node
+                                    } else {
+                                        const foundNode = findParentNodeFromTree(nodeId, subNode)
+                                        if (foundNode) return foundNode
+                                    }
+                                }
+                            }
+                            return null
                         }
-                        return dom
+
+                        if (this.currentComponentTree.length === 0) return null
+
+                        return findParentNodeFromTree(componentId, this.currentComponentTree[0]) || {}
                     },
                     findComponentFromTreeById(componentId: string) {
                         function findNodeFromTree(nodeId: string, nodes: Array<any>): any {
                             for (let index in nodes) {
                                 let node = nodes[index]
                                 // console.log('compare node.id,componentId', node.id, componentId, node.id === componentId)
-                                if (node.id === componentId) {
+                                if (node.id === nodeId) {
                                     return node
                                 } else if (node.children && node.children.length > 0) {
                                     const foundNode = findNodeFromTree(nodeId, node.children)
@@ -167,12 +177,13 @@ class ComponentStoreFactory {
                         this.currentHoverComponentId = value;
                         emitter.emit('setCurrentHoverComponentId', payload)
                     },
-                    setCurrentSelectedComponentInstance(instance: any) {
-                        this.currentSelectedComponentInstance = instance
-                    },
+                    // setCurrentSelectedComponentInstance(instance: any) {
+                    //     this.currentSelectedComponentInstance = instance
+                    // },
                     /**
                      * 通过id，从组件实例树中找到该实例
                      * 并设置当前选中组件的信息，包括id、name、componentMeta
+                     * 需在currentComponentTree已push了相应的组件之后才有效，否则找不到对应的组件实例
                      * @param value
                      */
                     setCurrentSelectedComponentById(value: string) {
@@ -181,10 +192,10 @@ class ComponentStoreFactory {
 
                         if (this.currentSelectedComponentId) {
                             const foundComponent = this.findComponentFromTreeById(this.currentSelectedComponentId)
-                            console.log('findComponentFromTreeById', this.currentSelectedComponentId, 'and get', foundComponent)
+                            console.log('findComponentFromTreeById', this.currentSelectedComponentId, 'and get', foundComponent, ',currentComponentTree:', this.currentComponentTree)
                             this.currentSelectedComponentInstance = foundComponent
                             if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
-                                // @ts-ignore
+                                // @ts-ignore  TODO 该操作会导致GL-X内的组件拖拽时，一次可拖一次禁用交替出现??
                                 this.currentSelectedComponentName = this.currentSelectedComponentInstance.componentName
                                 // TODO 对于Gl-Col内置的组件，查询为null
                                 this.currentSelectedComponentMeta = componentStoreFactory.componentMetaMap[this.currentSelectedComponentName]
@@ -194,6 +205,26 @@ class ComponentStoreFactory {
                             // console.log('setCurrentSelectedComponentById > currentSelectedComponentInstance', this.currentSelectedComponentInstance, foundComponent)
                             // console.log('setCurrentSelectedComponentById > currentSelectedComponentMeta', this.currentSelectedComponentMeta)
                             // this.setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsSelected', this.currentSelectedComponentId)
+                        } else {
+                            this.currentSelectedComponentName = ''
+                            this.currentSelectedComponentMeta = undefined
+                            this.currentSelectedComponentInstance = new ComponentInstance()
+                        }
+                    },
+                    setCurrentSelectedComponentByIdFromItems(id: string, insts: Array<ComponentInstance>) {
+                        console.log('setCurrentSelectedComponentByIdFromItems > id:', id)
+                        this.setCurrentSelectedComponentId(id)
+
+                        if (this.currentSelectedComponentId && insts && insts.length > 0) {
+                            const foundComponent = insts.find((inst) => {
+                                return inst.id === id
+                            })
+                            console.log('setCurrentSelectedComponentByIdFromItems', this.currentSelectedComponentId, 'and get', foundComponent, ',insts:', insts)
+                            this.currentSelectedComponentInstance = foundComponent!
+                            if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
+                                this.currentSelectedComponentName = this.currentSelectedComponentInstance.componentName
+                                this.currentSelectedComponentMeta = componentStoreFactory.componentMetaMap[this.currentSelectedComponentName]
+                            }
                         } else {
                             this.currentSelectedComponentName = ''
                             this.currentSelectedComponentMeta = undefined

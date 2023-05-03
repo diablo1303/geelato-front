@@ -79,6 +79,17 @@
               </td>
             </tr>
             <tr>
+              <td class="gl-table-cell gl-label">舞台显示</td>
+              <td class="gl-table-cell">
+                <a-select
+                    v-model="cMeta.displayOnStage"
+                    style="width: 100%"
+                    placeholder="请选择"
+                    :options="[{label:'inline-block',value:'inline-block'},{label:'block',value:'block'}]"
+                ></a-select>
+              </td>
+            </tr>
+            <tr>
               <td class="gl-table-cell gl-label" title="用于生成组件id时，作为id的前缀">别名</td>
               <td class="gl-table-cell">
                 <a-input v-model="cMeta.alias" placeholder="alias"/>
@@ -93,7 +104,7 @@
           </span>
         </div>
         <div>
-          <GlOptions v-model="cMeta.properties" :columns="[{dataIndex: 'name'}]" :allowAddSub="true"
+          <GlOptions v-model="cMeta.properties" :columns="[{dataIndex: 'name',title:'属性名'}]" :allowAddSub="true"
                      @selectedElement="selectProperty"></GlOptions>
         </div>
         <!--<div class="gl-title">-->

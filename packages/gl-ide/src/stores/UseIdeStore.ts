@@ -2,7 +2,7 @@ import {defineStore} from 'pinia'
 import type GlPlugin from "../entity/GlPlugin";
 import type Panel from "../entity/Panel";
 import {useAppStore} from "./UseAppStore";
-import {defaultPageRoot, usePageStore} from "./UsePageStore";
+import {getPageTemplate, usePageStore} from "./UsePageStore";
 import {useComponentStore} from "./UseComponentStore";
 import {useEntityStore} from "./UseEntityStore";
 import Page from "../entity/Page";
@@ -120,7 +120,8 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
                         page.extendId = extendId
                         page.title = title
                         page.iconType = iconType
-                        page.sourceContent = JSON.parse(JSON.stringify(defaultPageRoot))
+                        // TODO 如果type为templatePage，则弹出页面模板选择页面，从模板中创建
+                        page.sourceContent = JSON.parse(JSON.stringify(getPageTemplate(type)))
                     }
                     componentStore.setComponentTree(page.sourceContent)
                     // @ts-ignore

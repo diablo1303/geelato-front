@@ -6,7 +6,7 @@ export default {
     "title": "页面",
     "useBy": ["freePage"],
     "properties": [{
-        "name": "title",
+        "name": "pageTitle",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
@@ -16,7 +16,7 @@ export default {
         "title": "标题",
         "setterComponentName": "AInput"
     }, {
-        "name": "margin",
+        "name": "pageMargin",
         "group": "base",
         "type": "props",
         "show": true,
@@ -27,7 +27,7 @@ export default {
         "setterComponentName": "AInput",
         "placeholder": "如16px"
     }, {
-        "name": "padding",
+        "name": "pagePadding",
         "group": "base",
         "type": "props",
         "show": true,

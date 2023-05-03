@@ -17,6 +17,7 @@ importers:
       '@vue/test-utils': ^2.3.0
       '@vue/tsconfig': ^0.1.3
       axios: ^1.3.4
+      clipboard: ^2.0.11
       eslint: ^8.34.0
       eslint-plugin-vue: ^9.9.0
       jsdom: ^21.1.0
@@ -36,6 +37,7 @@ importers:
       '@geelato/gl-ui': link:../gl-ui
       '@geelato/gl-ui-schema': link:../gl-ui-schema
       axios: 1.3.4
+      clipboard: 2.0.11
       mitt: 3.0.0
       pinia: 2.0.32_5yi2kxxaqg74pgvs6b75qdtvru
       screenfull: 6.0.2
@@ -65,6 +67,7 @@ importers:
 
   packages/gl-ide-arco:
     specifiers:
+      '@ckpack/vue-color': ^1.4.1
       '@geelato/gl-ide': workspace:^0.0.1
       '@geelato/gl-ui': workspace:^0.0.1
       '@geelato/gl-ui-schema': workspace:^0.0.1
@@ -79,13 +82,16 @@ importers:
       '@vue/eslint-config-typescript': ^11.0.2
       '@vue/test-utils': ^2.3.0
       '@vue/tsconfig': ^0.1.3
+      '@vueuse/core': ^9.3.0
       clipboard: ^2.0.11
+      dnd-core: ^16.0.1
       eslint: ^8.34.0
       eslint-plugin-vue: ^9.9.0
       jsdom: ^21.1.0
       npm-run-all: ^4.1.5
       pinia: ^2.0.32
       prettier: ^2.8.4
+      react-dnd-html5-backend: ^16.0.1
       screenfull: ^6.0.2
       splitpanes: ^3.1.5
       typescript: ~4.7.4
@@ -94,17 +100,23 @@ importers:
       vue: ^3.2.47
       vue-json-pretty: ^2.2.3
       vue-tsc: ^1.1.5
+      vue3-dnd: ^2.0.2
     dependencies:
+      '@ckpack/vue-color': 1.4.1_vue@3.2.47
       '@geelato/gl-ide': link:../gl-ide
       '@geelato/gl-ui': link:../gl-ui
       '@geelato/gl-ui-schema': link:../gl-ui-schema
       '@geelato/gl-ui-schema-arco': link:../gl-ui-schema-arco
+      '@vueuse/core': 9.13.0_vue@3.2.47
       clipboard: 2.0.11
+      dnd-core: 16.0.1
       pinia: 2.0.32_5yi2kxxaqg74pgvs6b75qdtvru
+      react-dnd-html5-backend: 16.0.1
       screenfull: 6.0.2
       splitpanes: 3.1.5
       vue: 3.2.47
       vue-json-pretty: 2.2.3_vue@3.2.47
+      vue3-dnd: 2.0.2_vue@3.2.47
     devDependencies:
       '@rushstack/eslint-patch': 1.2.0
       '@types/jsdom': 21.1.0
@@ -128,6 +140,7 @@ importers:
 
   packages/gl-ui:
     specifiers:
+      '@ckpack/vue-color': ^1.4.1
       '@geelato/gl-ui-schema': workspace:^0.0.1
       '@rushstack/eslint-patch': ^1.2.0
       '@types/jsdom': ^21.1.0
@@ -153,6 +166,7 @@ importers:
       vue: ^3.2.47
       vue-tsc: ^1.1.5
     dependencies:
+      '@ckpack/vue-color': 1.4.1_vue@3.2.47
       '@geelato/gl-ui-schema': link:../gl-ui-schema
       axios: 1.3.4
       mitt: 3.0.0
@@ -183,6 +197,7 @@ importers:
     specifiers:
       '@arco-design/web-vue': ^2.45.1
       '@geelato/gl-ui': workspace:^0.0.1
+      '@geelato/gl-ui-schema-arco': workspace:^0.0.1
       '@rushstack/eslint-patch': ^1.2.0
       '@types/jsdom': ^21.1.0
       '@types/lodash': ^4.14.191
@@ -213,6 +228,7 @@ importers:
     dependencies:
       '@arco-design/web-vue': 2.45.1_vue@3.2.47
       '@geelato/gl-ui': link:../gl-ui
+      '@geelato/gl-ui-schema-arco': link:../gl-ui-schema-arco
       lodash: 4.17.21
       pinia: 2.0.32_5yi2kxxaqg74pgvs6b75qdtvru
       sortablejs: 1.15.0
@@ -892,6 +908,13 @@ packages:
       - supports-color
     dev: true
 
+  /@babel/runtime/7.21.0:
+    resolution: {integrity: sha512-xwII0//EObnq89Ji5AKYQaRYiW/nZ3llSv29d49IuxPhKbtJoLP+9QUUZ4nVragQVtaVGeZrpB+ZtG/Pdy/POw==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      regenerator-runtime: 0.13.11
+    dev: false
+
   /@babel/template/7.20.7:
     resolution: {integrity: sha512-8SegXApWe6VoNw0r9JHpSteLKTpTiLZ4rMlGIm9JQ18KiCtyQiAMEazujAHrUS5flrcqYZa75ukev3P6QmUwUw==}
     engines: {node: '>=6.9.0'}
@@ -926,6 +949,17 @@ packages:
       '@babel/helper-string-parser': 7.19.4
       '@babel/helper-validator-identifier': 7.19.1
       to-fast-properties: 2.0.0
+
+  /@ckpack/vue-color/1.4.1_vue@3.2.47:
+    resolution: {integrity: sha512-PPon4lIyKWgwexN4Gf8iRzqWVPWTa1nMoW37cKQbMakY/iBPiPzOtgGinNhD44STbv6GUnPLBCg6yfkXsPuFpw==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      '@ctrl/tinycolor': 3.6.0
+      material-colors: 1.2.6
+      vue: 3.2.47
+    dev: false
 
   /@commitlint/cli/17.4.4:
     resolution: {integrity: sha512-HwKlD7CPVMVGTAeFZylVNy14Vm5POVY0WxPkZr7EXLC/os0LH/obs6z4HRvJtH/nHCMYBvUBQhGwnufKfTjd5g==}
@@ -1112,6 +1146,11 @@ packages:
       postcss: 8.4.21
       postcss-selector-parser: 6.0.11
     dev: true
+
+  /@ctrl/tinycolor/3.6.0:
+    resolution: {integrity: sha512-/Z3l6pXthq0JvMYdUFyX9j0MaCltlIn6mfh9jLyQwg5aPKxkyNa0PTHtU1AlFXLNk55ZuAeJRcpvq+tmLfKmaQ==}
+    engines: {node: '>=10'}
+    dev: false
 
   /@docsearch/css/3.3.3:
     resolution: {integrity: sha512-6SCwI7P8ao+se1TUsdZ7B4XzL+gqeQZnBc+2EONZlcVa0dVrk0NjETxozFKgMv0eEGH8QzP1fkN+A1rH61l4eg==}
@@ -1541,6 +1580,26 @@ packages:
       tiny-glob: 0.2.9
       tslib: 2.5.0
     dev: true
+
+  /@react-dnd/asap/4.0.1:
+    resolution: {integrity: sha512-kLy0PJDDwvwwTXxqTFNAAllPHD73AycE9ypWeln/IguoGBEbvFcPDbCV03G52bEcC5E+YgupBE0VzHGdC8SIXg==}
+    dev: false
+
+  /@react-dnd/asap/5.0.2:
+    resolution: {integrity: sha512-WLyfoHvxhs0V9U+GTsGilGgf2QsPl6ZZ44fnv0/b8T3nQyvzxidxsg/ZltbWssbsRDlYW8UKSQMTGotuTotZ6A==}
+    dev: false
+
+  /@react-dnd/invariant/3.0.1:
+    resolution: {integrity: sha512-blqduwV86oiKw2Gr44wbe3pj3Z/OsXirc7ybCv9F/pLAR+Aih8F3rjeJzK0ANgtYKv5lCpkGVoZAeKitKDaD/g==}
+    dev: false
+
+  /@react-dnd/invariant/4.0.2:
+    resolution: {integrity: sha512-xKCTqAK/FFauOM9Ta2pswIyT3D8AQlfrYdOi/toTPEhqCuAs1v5tcJ3Y08Izh1cJ5Jchwy9SeAXmMg6zrKs2iw==}
+    dev: false
+
+  /@react-dnd/shallowequal/3.0.1:
+    resolution: {integrity: sha512-XjDVbs3ZU16CO1h5Q3Ew2RPJqmZBDE/EVf1LYp6ePEffs3V/MX9ZbL5bJr8qiK5SbGmUMuDoaFgyKacYz8prRA==}
+    dev: false
 
   /@rollup/pluginutils/4.2.1:
     resolution: {integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==}
@@ -3737,6 +3796,22 @@ packages:
       path-type: 4.0.0
     dev: true
 
+  /dnd-core/15.1.2:
+    resolution: {integrity: sha512-EOec1LyJUuGRFg0LDa55rSRAUe97uNVKVkUo8iyvzQlcECYTuPblVQfRWXWj1OyPseFIeebWpNmKFy0h6BcF1A==}
+    dependencies:
+      '@react-dnd/asap': 4.0.1
+      '@react-dnd/invariant': 3.0.1
+      redux: 4.2.1
+    dev: false
+
+  /dnd-core/16.0.1:
+    resolution: {integrity: sha512-HK294sl7tbw6F6IeuK16YSBUoorvHpY8RHO+9yFfaJyCDVb6n7PRcezrOEOa2SBCqiYpemh5Jx20ZcjKdFAVng==}
+    dependencies:
+      '@react-dnd/asap': 5.0.2
+      '@react-dnd/invariant': 4.0.2
+      redux: 4.2.1
+    dev: false
+
   /doctrine/2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
     engines: {node: '>=0.10.0'}
@@ -4955,7 +5030,6 @@ packages:
 
   /fast-deep-equal/3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
-    dev: true
 
   /fast-diff/1.2.0:
     resolution: {integrity: sha512-xJuoT5+L99XlZ8twedaRf6Ax2TgQVxvgZOYoPKqZufmJib0tL2tegPBOZb1pVNgIhlqDlA0eO0c3wBvQcmzx4w==}
@@ -6992,6 +7066,10 @@ packages:
     resolution: {integrity: sha512-1RUZVgQlpJSPWYbFSpmudq5nHY1doEIv89gBtF0s4gW1GF2XorxcA/70M5vq7rLv0a6mhOUccRsqkwhwLCIQ2Q==}
     dev: true
 
+  /material-colors/1.2.6:
+    resolution: {integrity: sha512-6qE4B9deFBIa9YSpOc9O0Sgc43zTeVYbgDT5veRKSlB2+ZuHNoVVxA1L/ckMUayV9Ay9y7Z/SZCLcGteW9i7bg==}
+    dev: false
+
   /mathml-tag-names/2.1.3:
     resolution: {integrity: sha512-APMBEanjybaPzUrfqU0IMU5I0AswKMH7k8OTLs0vvV4KZpExkTkY87nR/zpbuTPj+gARop7aGUbl11pnDfW6xg==}
     dev: true
@@ -8323,6 +8401,12 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /react-dnd-html5-backend/16.0.1:
+    resolution: {integrity: sha512-Wu3dw5aDJmOGw8WjH1I1/yTH+vlXEL4vmjk5p+MHxP8HuHJS1lAGeIdG/hze1AvNeXWo/JgULV87LyQOr+r5jw==}
+    dependencies:
+      dnd-core: 16.0.1
+    dev: false
+
   /react-is/17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
     dev: true
@@ -8431,6 +8515,16 @@ packages:
       indent-string: 4.0.0
       strip-indent: 3.0.0
     dev: true
+
+  /redux/4.2.1:
+    resolution: {integrity: sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==}
+    dependencies:
+      '@babel/runtime': 7.21.0
+    dev: false
+
+  /regenerator-runtime/0.13.11:
+    resolution: {integrity: sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==}
+    dev: false
 
   /regex-not/1.0.2:
     resolution: {integrity: sha512-J6SDjUgDxQj5NusnOtdFxDwN/+HWykR8GELwctJ7mdqhcyy1xEc4SRFHUXvxTp661YaVKAjfRLZ9cCqS6tn32A==}
@@ -10725,6 +10819,21 @@ packages:
       '@vue/runtime-dom': 3.2.47
       '@vue/server-renderer': 3.2.47_vue@3.2.47
       '@vue/shared': 3.2.47
+
+  /vue3-dnd/2.0.2_vue@3.2.47:
+    resolution: {integrity: sha512-DyS6D/LkM2vGFmQy8yhTNvjQfM7wjLO1aDirpM/WGmq3rMWEpzFNg+xrJj+BWxfNPJsmzkY3ZacbaWJUM1OKKg==}
+    peerDependencies:
+      vue: ^3.0.0-0 || ^2.6.0
+    dependencies:
+      '@react-dnd/invariant': 3.0.1
+      '@react-dnd/shallowequal': 3.0.1
+      dnd-core: 15.1.2
+      fast-deep-equal: 3.1.3
+      vue: 3.2.47
+      vue-demi: 0.13.11_vue@3.2.47
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+    dev: false
 
   /vuedraggable/4.1.0_vue@3.2.47:
     resolution: {integrity: sha512-FU5HCWBmsf20GpP3eudURW3WdWTKIbEIQxh9/8GE806hydR9qZqRRxRE3RjqX7PkuLuMQG/A7n3cfj9rCEchww==}

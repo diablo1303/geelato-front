@@ -1,9 +1,10 @@
 <template>
   <gl-draggable
+      ref="dnd"
       v-if="glComponentInst"
-      v-model="glComponentInst.children"
+      :list="glComponentInst.children"
       class="gl-x"
-      animation="700"
+      animation="150"
       handle=".gl-dnd-item"
       itemKey="id"
       ghostClass="gl-dnd-item-ghost"
@@ -17,14 +18,15 @@
       @start="onStart($event,glComponentInst.children)"
       @end="onEnd($event,glComponentInst.children)"
       @clone="onClone($event,glComponentInst.children)"
+      @choose="onChoose($event,glComponentInst.children)"
       @unchoose="onUnchoose"
   >
-    <template #item="{element}">
-      <GlComponentRecursion class="gl-dnd-item gl-x-item" :glComponentInst="element" :componentStoreId="componentStoreId">
+    <template #item="{element,index}">
+      <GlComponentRecursion class="gl-dnd-item gl-x-item" :glComponentInst="element"
+                            :componentStoreId="componentStoreId">
       </GlComponentRecursion>
     </template>
   </gl-draggable>
-
 </template>
 <script lang="ts">
 export default {name: "GlX"}
@@ -32,15 +34,16 @@ export default {name: "GlX"}
 <script setup lang="ts">
 import {getCurrentInstance, nextTick, ref} from 'vue'
 import {type IComponentInstance, mixins, utils, emitter} from "@geelato/gl-ui"
-import {componentStoreFactory, EventNames, useIdeStore} from "@geelato/gl-ide";
+import {componentStoreFactory, EventNames} from "@geelato/gl-ide";
+
 type Event = { item: { classList: any, id: any }, pullMode: string, oldIndex: number, newIndex: number }
 
 const proxy = getCurrentInstance()?.proxy
 
 const props = defineProps({
-  componentStoreId:{
-    type:String,
-    default(){
+  componentStoreId: {
+    type: String,
+    default() {
       return 'useComponentStore'
     }
   },
@@ -50,7 +53,7 @@ const props = defineProps({
 const instRefreshKey = ref(utils.gid('', 16))
 emitter.on(EventNames.GlIdeSetterUpdateComponentInstance, (instance: any) => {
   if (props.glComponentInst.id === instance.id) {
-    console.log('GlIdeSetterUpdateComponentInstance Update',props.glComponentInst.id === instance.id,props.glComponentInst,instance)
+    console.log('GlIdeSetterUpdateComponentInstance Update', props.glComponentInst.id === instance.id, props.glComponentInst, instance)
     instRefreshKey.value = utils.gid('', 16)
     proxy?.$forceUpdate()
   }
@@ -58,13 +61,15 @@ emitter.on(EventNames.GlIdeSetterUpdateComponentInstance, (instance: any) => {
 
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
 const dragging = ref(false)
+const dnd = ref()
 const gid = utils.gid('glx')
 let chooseIndex = -1
 const setData = (dataTransfer: DataTransfer, dragEl: HTMLElement) => {
   console.log('setData>', dataTransfer, dragEl)
 }
 const onAdd = (event: any, items?: Array<IComponentInstance>) => {
-  if (!items) return
+  // 没有添加成功
+  if (!items || items.length <= 1) return;
   // 添加之后去掉占位组件
   if (items.length > 0 && items.length < 3) {
     for (let key in items) {
@@ -87,7 +92,7 @@ const onAdd = (event: any, items?: Array<IComponentInstance>) => {
 }
 const onStart = (event: Event, items?: Array<any>) => {
   if (!items) return;
-  dragging.value = true
+  // dragging.value = true
   let item = items[items.length === 1 ? 0 : event.oldIndex]
   componentStore.currentDragComponentId = item.id
   // console.log('GlX > onStart()', this.gid, event, event.item.classList.contains('gl-drag-start'))
@@ -101,17 +106,17 @@ const onStart = (event: Event, items?: Array<any>) => {
 }
 const onEnd = (event: Event, items?: Array<any>) => {
   if (!items) return
-  dragging.value = false
+  // dragging.value = false
   let item = items[items.length === 1 ? 0 : event.newIndex]
   componentStore.currentDragComponentId = ''
   componentStore.setCurrentSelectedComponentById(event.item.id)
-  console.log('GlX > onEnd()', gid, event)
-  if (event.pullMode === 'clone') {
-    console.log('props.glComponentInst.children:', props.glComponentInst.children)
-    // 存在placeHolder的情况
-    props.glComponentInst.children?.splice(event.oldIndex, 1)
-  }
-  tryAddDndPlaceholder(items)
+  // console.log('GlX > onEnd()', gid, event)
+  // if (event.pullMode === 'clone') {
+  //   console.log('props.glComponentInst.children:', props.glComponentInst.children)
+  //   // 存在placeHolder的情况
+  //   props.glComponentInst.children?.splice(event.oldIndex, 1)
+  // }
+  // tryAddDndPlaceholder(items)
 }
 const onRemove = (event: Event, items?: Array<any>) => {
   console.log('GlX > onRemove()')
@@ -120,16 +125,18 @@ const onChange = () => {
 
 }
 const onChoose = (event: Event, items?: Array<any>) => {
-  console.log('GlX > onChoose()')
+  console.log('GlX > onChoose()', event, items)
   // console.log('gl-ide-plugin-layout > sidebar > onChoose: ', event, event.oldIndex)
   chooseIndex = event.oldIndex
+  console.log('dnd', dnd)
+
 }
 const onUnchoose = (event: Event, items?: Array<any>) => {
-  console.log('GlX > onUnchoose()')
+  console.log('GlX > onUnchoose()', event, items)
 }
 const onClone = (event: Event, items?: Array<any>) => {
   if (!items) return
-  console.log('GlX > clone()')
+  console.log('GlX > clone(),chooseIndex:', chooseIndex)
   if (chooseIndex < 0) {
     return
   }
@@ -188,9 +195,10 @@ const tryAddDndPlaceholder = (items: Array<any>, info?: string) => {
 
 <style>
 
-.gl-x{
+.gl-x {
   width: 100%;
 }
+
 /**
  *  解决有时未能将gl-dnd-item-ghost加到元素上的问题
  *  解决方式： .gl-x > *:nth-last-child(2):first-child:not(.gl-dnd-placeholder)[draggable=true], .gl-dnd-placeholder + *

@@ -12,7 +12,7 @@
               设计
             </template>
             <div style="width: 100%;line-height: 2em;min-height:38em;">
-              <BlockPage :glComponentInst="mv._commandBlock" @update="updateInstance"></BlockPage>
+              <BlockPage :key="mv.id" :glComponentInst="mv._commandBlock" @update="updateInstance"></BlockPage>
             </div>
           </a-tab-pane>
           <a-tab-pane key="2">
@@ -57,7 +57,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import GlCommandEditorSidebar from './Sidebar.vue'
-import {getCurrentInstance, onUpdated, PropType, ref, toRaw, watch} from "vue";
+import {getCurrentInstance, onMounted, onUpdated, PropType, ref, toRaw, watch} from "vue";
 import "./blocks/style.css"
 import {Action, ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import {blocksHandler} from "./blocks/BlockHandler";
@@ -83,15 +83,18 @@ const props = defineProps({
 const componentMaterialStore = useComponentMaterialStore()
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
 const emits = defineEmits(["update:action", 'updateAction'])
-const instance = getCurrentInstance()
-
 
 const mv = ref(props.action)
 
-onUpdated(() => {
-  mv.value = props.action
+onUpdated(()=>{
+  reset()
 })
 
+const reset = ()=>{
+  mv.value = props.action
+}
+
+reset()
 // watch(mv, () => {
 //   console.log('update:action', mv)
 //   emits("update:action", mv.value)
@@ -115,7 +118,7 @@ const findBlockMeta = (componentName: string) => {
 
 const updateInstance = (instance: ComponentInstance) => {
   console.log('updateInstance block:', instance)
-  mv.value._commandBlock = instance
+  mv.value._commandBlock = JSON.parse(JSON.stringify(instance))
   generateScript()
   emits("update:action", mv.value)
   emits("updateAction", mv.value)

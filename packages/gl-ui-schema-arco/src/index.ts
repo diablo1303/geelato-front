@@ -16,7 +16,8 @@ export {default as BlockNotificationMeta} from "./components/setter-block/notifi
 export {default as BlockOpenThirdPageMeta} from "./components/setter-block/page/BlockOpenThirdPageMeta";
 import {useComponentMaterialStore} from "./store/UseComponentMaterialStore";
 import {schemaBlock} from "./components/schemaBlock";
-import {schemaArco} from "./components/schemaArco";
+import {schemaArco, isDataEntry} from "./components/schemaArco";
+
 const component: Plugin = {
     // @ts-ignore
     install: function (app: App) {
@@ -24,6 +25,6 @@ const component: Plugin = {
     }
 }
 
-export {useComponentMaterialStore,schemaBlock,schemaArco}
+export {useComponentMaterialStore, schemaBlock, schemaArco, isDataEntry}
 // 默认导出组件
 export default component

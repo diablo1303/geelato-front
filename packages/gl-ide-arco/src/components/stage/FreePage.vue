@@ -6,30 +6,20 @@
       <gl-x :glComponentInst="componentStore.currentComponentTree[0]"></gl-x>
       <GlToolbarBreadcrumbs eventType="Hover"></GlToolbarBreadcrumbs>
       <GlToolbarBreadcrumbs eventType="Selected"></GlToolbarBreadcrumbs>
-<!--      <gl-modal :visible="codeViewerVisible"-->
-<!--                title="生成的配置代码预览"-->
-<!--                :fullscreen="true"-->
-<!--                @ok="codeViewerVisible=false"-->
-<!--                @cancel="codeViewerVisible=false">-->
-<!--        <VueJsonPretty :data="componentStore.currentComponentTree[0]"></VueJsonPretty>-->
-<!--      </gl-modal>-->
     </div>
   </div>
 </template>
 <script lang="ts">
 export default {
-  name: "GlIdePluginCoreStageFreePage"
+  name: "GlIdeStageFreePage"
 }
 </script>
 <script setup lang="ts">
-import {ref} from 'vue'
 import {componentStoreFactory, EventNames} from "@geelato/gl-ide";
 import {useGlobal, emitter, utils} from "@geelato/gl-ui";
-import VueJsonPretty from "vue-json-pretty";
 
 const global = useGlobal()
 const componentStore = componentStoreFactory.useComponentStore("useComponentStore")
-// const codeViewerVisible = ref(false)
 
 /**
  * 设置工具条的位置
@@ -53,24 +43,19 @@ const setToolbarBreadcrumbsPosition = (toolbarBreadcrumbsId: string, moveToTarge
   const stageDom = document.getElementById(componentStore.currentComponentTree[0].id)
   const stageDomRect = stageDom?.getBoundingClientRect()
   const targetRect = target.getBoundingClientRect()
-  // console.log('targetRect:', targetRect, 'scrollTop:', scrollTop)
   // @ts-ignore
-  // 对高度低于32的组件进行位置校正 targetRect.height<32?32:targetRect.height
-  // - (targetRect.height < 32 ? 32 : targetRect.height) - 2 + "px"
   toolbarBreadcrumbsDiv.style.top = (scrollTop + targetRect.top)+'px';
   // @ts-ignore
   toolbarBreadcrumbsDiv.style.left = (scrollLeft + targetRect.left - stageDomRect.left) + "px";
-  // @ts-ignore
-  // console.log(toolbarBreadcrumbsDiv?.style,toolbarBreadcrumbsDiv?.style?.top)
 }
 
 emitter.on('setCurrentSelectedComponentId', (data) => {
-  utils.sleep(100).then(()=>{
+  utils.sleep(120).then(()=>{
     setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsSelected', componentStore.currentSelectedComponentId)
   })
 })
 emitter.on('setCurrentHoverComponentId', (data) => {
-  utils.sleep(100).then(()=> {
+  utils.sleep(120).then(()=> {
     setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsHover', componentStore.currentHoverComponentId)
   })
 })

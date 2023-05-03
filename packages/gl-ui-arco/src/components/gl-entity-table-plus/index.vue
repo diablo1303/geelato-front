@@ -3,26 +3,20 @@
     <GlQuery ref="queryRef" v-bind="query" @search="onSearch"></GlQuery>
     <a-divider style="margin-top: 16px" />
     <GlToolbar v-bind="toolbar" style="margin-bottom: 8px">
-      <template #leftItems>
-        <a-button type="primary">
-          <template #icon>
-            <icon-plus-circle />
-          </template>
-          新增
-        </a-button>
-        <a-button type="outline">
-          <template #icon>
-            <icon-export />
-          </template>
-          导出
-        </a-button>
-        <!--        <a-button>-->
-        <!--          <template #icon>-->
-        <!--            <icon-download />-->
-        <!--          </template>-->
-        <!--          导出-->
-        <!--        </a-button>-->
-      </template>
+<!--      <template #leftItems>-->
+<!--        <a-button type="primary">-->
+<!--          <template #icon>-->
+<!--            <icon-plus-circle />-->
+<!--          </template>-->
+<!--          新增-->
+<!--        </a-button>-->
+<!--        <a-button type="outline">-->
+<!--          <template #icon>-->
+<!--            <icon-export />-->
+<!--          </template>-->
+<!--          导出-->
+<!--        </a-button>-->
+<!--      </template>-->
       <template #rightItems>
         <a-tooltip :content="t('searchTable.actions.refresh')">
           <div class="action-icon" @click="onRefresh">

@@ -6,6 +6,26 @@ export default {
     "title": "自动完成",
     "useBy": ["freePage"],
     "properties": [{
+        "name": "label",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "标题",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "bindField",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "绑定字段",
+        "setterComponentName": "GlEntityFieldSelect"
+    }, {
         "name": "allowClear",
         "setterComponentProps": {},
         "setterComponentVModelName": "checked",
@@ -96,6 +116,5 @@ export default {
         "description": "自动完成的数据源",
         "title": "数据源"
     }],
-    "diplayMode": "Tile",
     "actions": []
 }

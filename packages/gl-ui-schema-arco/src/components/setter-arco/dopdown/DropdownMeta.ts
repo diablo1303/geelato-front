@@ -3,7 +3,7 @@ export default {
     "displayMode": "Tile",
     "iconType":"gl-dropdown",
     "group": "dataEntry",
-    "title": "下拉选择",
+    "title": "下拉菜单",
     "useBy": ["freePage"],
     "properties": [],"actions": [],
 }

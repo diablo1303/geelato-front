@@ -171,7 +171,7 @@
       </td>
       <td class="gl-table-cell">
         <template v-if="mv.setterComponentProps">
-          <a-switch v-if="defaultValueType==='Boolean'" v-model:checked="mv.setterComponentProps.defaultValue"></a-switch>
+          <a-switch size="small" v-if="defaultValueType==='Boolean'" v-model="mv.setterComponentProps.defaultValue"></a-switch>
           <a-input-number v-else-if="defaultValueType==='Number'"
                           v-model="mv.setterComponentProps.defaultValue"></a-input-number>
           <a-input v-else v-model="mv.setterComponentProps.defaultValue" placeholder="默认值"></a-input>
@@ -301,24 +301,34 @@ const setterItems: Array<PropertySetterSelectOption> = [
     propsSetter: 'GlRadioGroupSetter'
   },
   {
+    name: 'GlOptionsSetter',
+    label: '下拉选项配置器',
+    vModelName: 'modelValue',
+    type: 'String'
+  },
+  {
     name: 'ASelect',
     label: '下拉选项(单选|多选)',
     vModelName: 'modelValue',
     type: 'String',
     propsSetter: 'GlSelectSetter'
   },
-  {name: 'GlIconfontSetter', label: '图标选择器', vModelName: 'modelValue', type: 'object'},
+  {name: 'GlIconfontSetter', label: '图标选择器', vModelName: 'modelValue', type: 'Object'},
+  {name: 'GlIconfontTextSetter', label: '图标文字选择器', vModelName: 'modelValue', type: 'Object'},
   {name: 'GlIconfontSetterForSlot', label: '图标选择器（用于插槽）', vModelName: 'modelValue', type: 'String'},
   {name: 'GlHtmlSetterForSlot', label: 'Html设置（用于插槽）', vModelName: 'modelValue', type: 'String'},
-  {name: 'GlEntitySelect', label: '实体选择器', vModelName: 'modelValue', type: 'String'},
-  {name: 'GlFieldSelect', label: '字段选择器', vModelName: 'modelValue', type: 'String'},
+  {name: 'GlValidateRulesSetter', label: '字段验证规则配置器', vModelName: 'modelValue', type: 'Object'},
+  {name: 'GlEntityReaderSetter', label: '实体数据源（Reader）配置器', vModelName: 'modelValue', type: 'Object'},
+  {name: 'GlAppEntitySelect', label: '应用实体对象选择器', vModelName: 'modelValue', type: 'Object'},
+  {name: 'GlEntityFieldSelect', label: '实体字段对象选择器', vModelName: 'modelValue', type: 'Object'},
+  {name: 'GlEntitySelect', label: '实体名称选择器', vModelName: 'modelValue', type: 'String'},
+  {name: 'GlFieldSelect', label: '字段名称选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlUserSelect', label: '用户选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlGroupSelect', label: '组织选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlJson', label: 'Json编辑器', vModelName: 'modelValue', type: 'String'},
-  {name: 'GlColor', label: '颜色选择器（TODO）', vModelName: 'modelValue', type: 'String'},
+  {name: 'GlColor', label: '颜色选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlComponentSelect', label: '组件选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlSubComponentSetter', label: '子组件设置', vModelName: 'modelValue', type: 'String'},
-  {name: 'GlEntityReaderSetter', label: '实体数据源设置', vModelName: 'modelValue', type: 'Object'},
   {name: 'GlArrayNumberSetter', label: '数组-数值类 [1,2,3...]', vModelName: 'modelValue', type: 'String',propsSetter: 'GlArrayNumberBuilder'},
   {name: 'GlArrayStringSetter', label: '数组-字符串类 ["a","b"...]', vModelName: 'modelValue', type: 'String'},
   {name: 'GlArrayBooleanSetter', label: '数组-布尔类 [true,false...]', vModelName: 'modelValue', type: 'String'},

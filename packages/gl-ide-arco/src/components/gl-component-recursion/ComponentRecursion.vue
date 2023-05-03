@@ -50,7 +50,7 @@ export default {
 </script>
 <script setup lang="ts">
 import {emitter,mixins} from "@geelato/gl-ui";
-import {computed, onMounted} from "vue";
+import {onMounted} from "vue";
 import {Action} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
 
@@ -66,13 +66,13 @@ const props = defineProps({
 const emits = defineEmits(['onComponentClick', 'onComponentMounted'])
 
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
-console.log('componentStore:',componentStore)
-const slots = computed(() => {
-  // @ts-ignore
-  props.glComponentInst.props.filter((propItem: any) => {
-
-  })
-})
+// console.log('componentStore:',componentStore)
+// const slots = computed(() => {
+//   // @ts-ignore
+//   props.glComponentInst.props.filter((propItem: any) => {
+//
+//   })
+// })
 
 const onClick = (...args: any[]) => {
   console.log('gl-component-recursion > onClick() > arguments:', args, props.glComponentInst)
@@ -114,18 +114,20 @@ const onMouseLeave = (...args: any[]) => {
   // componentStore.currentHoverComponentName = ''
 }
 const onStart = (event: any, glComponentInst: any) => {
+  console.log('onStart()')
 }
 const onEnd = (event: any, glComponentInst: any) => {
+  console.log('onEnd()')
 }
 const onDragEnter = (event: any) => {
-  console.log('onDragEnter() > event:', event)
   if (event?.target?.classList.contains('gl-drag-enter')) {
     return
   }
+  // console.log('onDragEnter() > event:', event)
   event.target.classList.add('gl-drag-enter')
 }
 const onDragLeave = (event: any) => {
-  console.log('onDragLeave() > event:', event)
+  // console.log('onDragLeave() > event:', event)
   if (event.target.classList.contains('gl-drag-enter')) {
     event.target.classList.remove('gl-drag-enter')
   }
@@ -161,7 +163,7 @@ onMounted(() => {
 }
 
 .gl-component.gl-hover, .gl-component.gl-selected {
-  border: 1px solid #178df7;
+  /*border: 1px solid #178df7;*/
 }
 
 .gl-component.gl-drag-enter {

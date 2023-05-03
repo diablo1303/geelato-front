@@ -3,11 +3,11 @@
 -->
 <template>
   <table>
-    <tr v-if="items&&items.length>0">
-      <th v-for="(column,index) in columns" style="font-weight: normal;text-align: center"
-          :style="{width: (100/columns.length+'%')}">{{ column.title }}
-      </th>
-    </tr>
+<!--    <tr v-if="items&&items.length>0">-->
+<!--      <th v-for="(column,index) in convertedColumns" style="font-weight: normal;text-align: center"-->
+<!--          :style="{width: (100/convertedColumns.length+'%')}">{{ column.title }}-->
+<!--      </th>-->
+<!--    </tr>-->
     <gl-draggable
         :list="items"
         animation="700"
@@ -22,17 +22,20 @@
           <td style="width: 100%">
             <table>
               <tr>
-                <td v-for="(column,columnIndex) in columns" :key="index+'_'+columnIndex">
+                <td v-for="(column,columnIndex) in convertedColumns" :key="index+'_'+columnIndex">
                   <a-input size="small" v-model="element[column.dataIndex]"
+                           :placeholder="column.title"
                            @change="onChangeElement(element,index,$event)"
-                           @click="onSelectElement(element,index)" style="width: 99%" :key="index+'_'+columnIndex+'_'+column.dataIndex">
+                           @click="onSelectElement(element,index)" style="width: 99%"
+                           :key="index+'_'+columnIndex+'_'+column.dataIndex"
+                  >
                     <template v-if="columnIndex===0" #prepend>
                       <GlIconfont title="拖动" type="gl-drag" class="gl-dnd-item" style="cursor: move"></GlIconfont>
                       <GlIconfont v-if="allowAddSub" :type="element._showSub?'gl-minus-square':'gl-plus-square'"
                                   class="gl-dnd-item" style="margin-left: 4px;cursor: pointer"
                                   @click="element._showSub=!element._showSub" title="添加子项"></GlIconfont>
                     </template>
-                    <template v-if="columnIndex===columns.length-1" #append>
+                    <template v-if="columnIndex===convertedColumns.length-1" #append>
                       <GlIconfont type="gl-delete" @click="removeElement(index)"
                                   style="cursor: pointer;color: red"></GlIconfont>
                     </template>
@@ -41,10 +44,10 @@
               </tr>
               <!--子级-->
               <tr>
-                <td :colspan="columns.length">
+                <td :colspan="convertedColumns.length">
                   <div style="padding-left: 1em" v-if="allowAddSub&&element._showSub">
-                    <GlOptions v-model="element.properties" :columns="columns" :allowAddSub="allowAddSub"
-                                      @selectedElement="popSelectedElement"></GlOptions>
+                    <GlOptions v-model="element.properties" :columns="convertedColumns" :allowAddSub="allowAddSub"
+                               @selectedElement="popSelectedElement"></GlOptions>
                   </div>
                 </td>
               </tr>
@@ -65,7 +68,9 @@
 <script lang="ts">
 // @ts-nocheck
 import {defineComponent, type PropType, reactive} from 'vue'
-type ColumnType = {dataIndex:String,title?:String}
+import {utils} from "@geelato/gl-ui";
+
+type ColumnType = { dataIndex: String, title?: String }
 export default defineComponent({
   name: "GlOptions",
   props: {
@@ -78,7 +83,7 @@ export default defineComponent({
     columns: {
       type: Array as PropType<Array<ColumnType>>,
       default() {
-        return [{dataIndex: 'label', title: '显示名'}, {dataIndex: 'key', title: '值'}]
+        return [{dataIndex: 'label', title: '名称'}, {dataIndex: 'key', title: '值'}]
       }
     },
     /**
@@ -99,24 +104,65 @@ export default defineComponent({
   },
   data() {
     return {
+      hasValueDataIndex: false,
+      columnDataIndexMap: {},
+      convertedColumns: [],
       items: this.modelValue,
       selectedElement: {},
       selectedIndex: -1
     }
   },
+  created() {
+    this.hasValueDataIndex = this.columns.findIndex((col) => {
+      return col.dataIndex === 'value'
+    }) != -1
+    this.columnDataIndexMap = {}
+    this.convertedColumns = this.convertColumns(this.columns)
+    this.items = this.convertValues(this.modelValue)
+  },
   beforeUpdate() {
-    this.items = this.modelValue
   },
   watch: {},
   methods: {
+    // 将dataIndex为value的转成其它，该字段会导致输入卡顿，每输一个字符会失去焦点
+    convertColumns(columns: Array<any>) {
+      let cols = JSON.parse(JSON.stringify(columns))
+      console.log('cols:',cols)
+      for (let index in cols) {
+        const col = cols[index]
+        if (col.dataIndex === 'value') {
+          this.columnDataIndexMap.value = this.columnDataIndexMap.value || 'v_' + utils.gid('')
+          col.dataIndex = this.columnDataIndexMap.value
+          return cols
+        }
+      }
+      return cols
+    },
+    convertValues(items: Array<any>) {
+      let newItems = items
+      if (this.hasValueDataIndex) {
+        this.columnDataIndexMap.value = this.columnDataIndexMap.value || 'v_' + utils.gid('')
+        for (let index in newItems) {
+          const item = newItems[index]
+          item[this.columnDataIndexMap.value] = item.value
+        }
+      }
+      return newItems
+    },
+    convertDataIndex(items: Array<any>) {
+
+    },
     addElement() {
       let element = this.elementTemplate ? JSON.parse(JSON.stringify(this.elementTemplate)) : undefined
       if (!element) {
         element = {}
-        for (let index in this.columns) {
+        for (let index in this.convertedColumns) {
           // @ts-ignore
-          element[this.columns[index].dataIndex] = ''
+          element[this.convertedColumns[index].dataIndex] = ''
         }
+      }
+      if (this.hasValueDataIndex) {
+        element[this.columnDataIndexMap.value] = element.value
       }
       this.items.push(element)
       this.$emit('update:modelValue', this.items)
@@ -128,7 +174,7 @@ export default defineComponent({
     addSubElement() {
 
     },
-    removeElement(index:number) {
+    removeElement(index: number) {
       let element = this.items[index]
       // console.log('removeElement', this.selectedIndex, index, this.selectedElement)
       if (this.selectedIndex === index) {
@@ -142,24 +188,27 @@ export default defineComponent({
       this.$emit('removeElement', {index: index})
       this.emitSelectedElement()
     },
-    onSelectElement(element:any, index:number) {
+    onSelectElement(element: any, index: number) {
       this.selectedElement = element
       this.selectedIndex = index
       this.emitSelectedElement()
     },
-    onChangeElement(element:any, index:number, $event:any) {
+    onChangeElement(element: any, index: number, $event: any) {
+      if (this.hasValueDataIndex) {
+        element.value = element[this.columnDataIndexMap.value]
+      }
       this.selectedElement = element
       this.selectedIndex = index
-      console.log('element>', element, $event.target)
+      console.log('element>', element, $event)
       // $event.target.focus()
-      // this.$emit('update:modelValue', this.items)
+      this.$emit('update:modelValue', this.items)
       // this.emitSelectedElement()
     },
     emitSelectedElement() {
       console.log('selectedElement:', {element: this.selectedElement, index: this.selectedIndex})
       this.$emit('selectedElement', {element: this.selectedElement, index: this.selectedIndex})
     },
-    popSelectedElement(fromSub:{element:any,index:number}) {
+    popSelectedElement(fromSub: { element: any, index: number }) {
       this.$emit('selectedElement', fromSub)
     }
   }

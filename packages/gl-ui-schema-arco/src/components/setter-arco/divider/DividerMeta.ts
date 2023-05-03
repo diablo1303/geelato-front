@@ -59,6 +59,5 @@ export default {
         "description": "水平还是垂直类型",
         "title": "方向类型",
         "setterComponentName": "ARadioGroup"
-    }],
-    "diplayMode": "Tile"
+    }]
 }

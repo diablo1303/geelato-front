@@ -9,6 +9,7 @@ export default interface IComponentInstance {
     slots?: { [key: string]: any }
     children?: Array<IComponentInstance>
     actions?: Array<any>
-    style?: object,
+    style?: object
     propsWrapper?: string
+    _value?: any
 }

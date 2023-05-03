@@ -1,6 +1,6 @@
 {
   "hash": "e8422398",
-  "browserHash": "f2484db9",
+  "browserHash": "f4d9987e",
   "optimized": {
     "vue": {
       "src": "../../../../../../node_modules/.pnpm/vue@3.2.47/node_modules/vue/dist/vue.runtime.esm-bundler.js",
@@ -8,16 +8,16 @@
       "fileHash": "bcffa4f9",
       "needsInterop": false
     },
-    "vuedraggable": {
-      "src": "../../../../../../node_modules/.pnpm/vuedraggable@4.1.0_vue@3.2.47/node_modules/vuedraggable/dist/vuedraggable.umd.js",
-      "file": "vuedraggable.js",
-      "fileHash": "9995e9ed",
-      "needsInterop": true
+    "vue-draggable-next": {
+      "src": "../../../../../../node_modules/.pnpm/vue-draggable-next@2.1.1_vue@3.2.47/node_modules/vue-draggable-next/dist/vue-draggable-next.esm-bundler.js",
+      "file": "vue-draggable-next.js",
+      "fileHash": "d97b7707",
+      "needsInterop": false
     },
     "pinia": {
       "src": "../../../../../../node_modules/.pnpm/pinia@2.0.32_vue@3.2.47/node_modules/pinia/dist/pinia.mjs",
       "file": "pinia.js",
-      "fileHash": "c8fe4e81",
+      "fileHash": "91fa91bb",
       "needsInterop": false
     },
     "@arco-design/web-vue": {
@@ -56,14 +56,8 @@
       "fileHash": "1eb7810d",
       "needsInterop": false
     },
-    "@ant-design/icons-vue": {
-      "src": "../../../../../../node_modules/.pnpm/@ant-design+icons-vue@6.1.0_vue@3.2.47/node_modules/@ant-design/icons-vue/es/index.js",
-      "file": "@ant-design_icons-vue.js",
-      "fileHash": "8447bed0",
-      "needsInterop": false
-    },
     "lodash/cloneDeep": {
-      "src": "../../../../../../packages/gl-ui-arco/node_modules/lodash/cloneDeep.js",
+      "src": "../../../../../../node_modules/.pnpm/lodash@4.17.21/node_modules/lodash/cloneDeep.js",
       "file": "lodash_cloneDeep.js",
       "fileHash": "7689f196",
       "needsInterop": true
@@ -85,9 +79,42 @@
       "file": "sortablejs.js",
       "fileHash": "02bc3729",
       "needsInterop": false
+    },
+    "vuedraggable": {
+      "src": "../../../../../../node_modules/.pnpm/vuedraggable@4.1.0_vue@3.2.47/node_modules/vuedraggable/dist/vuedraggable.umd.js",
+      "file": "vuedraggable.js",
+      "fileHash": "9995e9ed",
+      "needsInterop": true
+    },
+    "vue3-dnd": {
+      "src": "../../../../../../node_modules/.pnpm/vue3-dnd@2.0.2_vue@3.2.47/node_modules/vue3-dnd/dist/esm/index.js",
+      "file": "vue3-dnd.js",
+      "fileHash": "99bf74c1",
+      "needsInterop": false
+    },
+    "react-dnd-html5-backend": {
+      "src": "../../../../../../node_modules/.pnpm/react-dnd-html5-backend@16.0.1/node_modules/react-dnd-html5-backend/dist/index.js",
+      "file": "react-dnd-html5-backend.js",
+      "fileHash": "a4179314",
+      "needsInterop": false
+    },
+    "@vueuse/core": {
+      "src": "../../../../../../node_modules/.pnpm/@vueuse+core@9.13.0_vue@3.2.47/node_modules/@vueuse/core/index.mjs",
+      "file": "@vueuse_core.js",
+      "fileHash": "09cf45ab",
+      "needsInterop": false
+    },
+    "@ckpack/vue-color": {
+      "src": "../../../../../../node_modules/.pnpm/@ckpack+vue-color@1.4.1_vue@3.2.47/node_modules/@ckpack/vue-color/libs/index.js",
+      "file": "@ckpack_vue-color.js",
+      "fileHash": "0dcc57ab",
+      "needsInterop": false
     }
   },
   "chunks": {
+    "chunk-ESO62AI5": {
+      "file": "chunk-ESO62AI5.js"
+    },
     "chunk-VJW3XOCT": {
       "file": "chunk-VJW3XOCT.js"
     },

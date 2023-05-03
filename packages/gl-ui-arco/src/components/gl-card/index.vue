@@ -1,6 +1,6 @@
 <template>
   <a-card :title="title">
-    <GlX :glComponentInst="glComponentInst"></GlX>
+    <GlInsts :glComponentInst="glComponentInst"></GlInsts>
   </a-card>
 </template>
 <script lang="ts">

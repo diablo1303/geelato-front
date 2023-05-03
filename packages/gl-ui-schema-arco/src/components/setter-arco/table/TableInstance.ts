@@ -61,12 +61,7 @@ export default {
             "title": "创建时间",
             "dataIndex": "createAt"
         }, {"title": "操作", "dataIndex": "optional", "slotName": "optional"}],
-        "columnActions": [{"title": "查看", "fn": "read"}, {
-            "title": "删除",
-            "fn": "delete",
-            "ctx": "xxx",
-            "status": "danger"
-        }]
+        "columnActions": []
     },
     "slots": {},
     "children": [],

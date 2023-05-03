@@ -7,7 +7,7 @@
       <span class="gl-crumb-nav" @click="componentStore.selectParentComponent()" title="点击选择上一层"> <GlIconfont type="gl-breadcrumb" /></span>
       <span :title="componentStore.currentSelectedComponentName">{{ componentStore.currentSelectedComponentName }}</span>
     </span>
-    <span class="gl-crumb" v-else-if="eventType==='Hover'">{{ componentStore.currentHoverComponentName }}</span>
+<!--    <span class="gl-crumb" v-else-if="eventType==='Hover'">{{ componentStore.currentHoverComponentName }}</span>-->
     <span class="gl-crumb-actions" v-if="!isDeleteAble">
 <!--      <GlIconfont type="gl-save" title="保存为模板片段" />-->
 <!--      <GlIconfont type="gl-copy" title="复制" />-->

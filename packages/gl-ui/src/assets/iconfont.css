@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2457479 */
-  src: url('iconfont.woff2?t=1680958966661') format('woff2'),
-       url('iconfont.woff?t=1680958966661') format('woff'),
-       url('iconfont.ttf?t=1680958966661') format('truetype');
+  src: url('iconfont.woff2?t=1682610201228') format('woff2'),
+       url('iconfont.woff?t=1682610201228') format('woff'),
+       url('iconfont.ttf?t=1682610201228') format('truetype');
 }
 
 .iconfont {
@@ -43,10 +43,6 @@
 
 .gl-component:before {
   content: "\e652";
-}
-
-.gl-tree:before {
-  content: "\e712";
 }
 
 .gl-more:before {
@@ -285,6 +281,10 @@
   content: "\e62b";
 }
 
+.gl-tree:before {
+  content: "\e6b9";
+}
+
 .gl-mentions:before {
   content: "\e892";
 }
@@ -357,7 +357,7 @@
   content: "\e7c1";
 }
 
-.gl-bg-colors:before {
+.gl-color:before {
   content: "\e800";
 }
 

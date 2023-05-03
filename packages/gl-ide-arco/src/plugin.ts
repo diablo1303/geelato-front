@@ -1,13 +1,15 @@
 import type {App, Plugin} from 'vue'
-import {GlPlugin, Panel, useIdeStore} from '@geelato/gl-ide'
+import {GlPlugin, Panel} from '@geelato/gl-ide'
 import GlIdePluginCoreComponents from './components/sidebar/Components.vue'
 import GlIdePluginCoreAppTree from './components/sidebar/AppTree.vue'
 import GlComponentTree from './components/sidebar/ComponentTree.vue'
-//import GlIdePluginCorePanelLayout from './components/sidebar/Layout.vue'
+import GlIdePluginCoreComponentsDnd from './components/sidebar/components/ComponentsSidebar.vue'
+
 import GlIdePluginCoreHistory from './components/sidebar/History.vue'
-import GlIdeBasePage from './components/stage/BasePage.vue'
-import GlIdeFormPage from './components/stage/FormPage.vue'
-import GlIdePluginCoreStageFreePage from './components/stage/FreePage.vue'
+import GlIdeStageBasePage from './components/stage/BasePage.vue'
+import GlIdeStageFormPage from './components/stage/FormPage.vue'
+import GlIdeStageFreePage from './components/stage/FreePage.vue'
+import GlIdeStageListPage from "./components/stage/ListPage.vue";
 import GlComponentBuilder from "./components/builder/GlComponentBuilder.vue";
 import GlSimpleArrayBuilder from "./components/builder/props-builder/GlSimpleArrayBuilder.vue";
 import GlSimpleArraySetter from "./components/setters/property-setters/GlSimpleArraySetter.vue";
@@ -19,6 +21,7 @@ import GlSimpleObjectSetter from "./components/setters/property-setters/GlSimple
 import GlPropertySetter from './components/setters/GlPropertySetter.vue'
 import GlPropertySetterCard from './components/setters/GlPropertySetterCard.vue'
 import GlIconfontSetter from "./components/setters/property-setters/GlIconfontSetter.vue";
+import GlIconfontTextSetter from "./components/setters/property-setters/GlIconfontTextSetter.vue";
 import GlIconfontSetterForSlot from "./components/setters/property-setters/GlIconfontSetterForSlot.vue";
 import GlHtmlSetter from "./components/setters/property-setters/GlHtmlSetter.vue";
 import GlSelectSetter from "./components/setters/property-setters/GlSelectSetter.vue";
@@ -37,6 +40,14 @@ import GlArrayNumberBuilder from "./components/builder/props-builder/GlArrayNumb
 import GlArrayStringSetter from "./components/setters/property-setters/GlArrayStringSetter.vue";
 import GlArrayBooleanSetter from "./components/setters/property-setters/GlArrayBooleanSetter.vue";
 import GlArrayComponentSetter from "./components/setters/property-setters/GlArrayComponentSetter.vue";
+import GlInst from "./components/dnd/GlInst.vue";
+import GlInsts from "./components/dnd/GlInsts.vue";
+import ComponentDnd from "./components/dnd/ComponentDnd.vue";
+import GlOptionsSetter from "./components/setters/property-setters/GlOptionsSetter.vue";
+import GlEntityFieldSelect from "./components/setters/property-setters/GlEntityFieldSelect.vue";
+import GlAppEntitySelect from "./components/setters/property-setters/GlAppEntitySelect.vue";
+import GlValidateRulesSetter from "./components/setters/property-setters/GlValidateRulesSetter.vue";
+import GlComponentI18nSetter from "./components/setters/GlComponentI18nSetter.vue";
 
 const plugin = new GlPlugin('gl-plugin-arco')
 
@@ -46,11 +57,12 @@ plugin.sidebar.push(new Panel({
     iconType: 'gl-tree',
     componentName: GlIdePluginCoreAppTree.name
 }))
+
 plugin.sidebar.push(new Panel({
     title: '组件',
     name: 'components',
     iconType: 'gl-component',
-    componentName: 'GlIdePluginCoreComponents'
+    componentName: 'GlIdePluginCoreComponentsDnd'
 }))
 
 plugin.sidebar.push(new Panel({
@@ -72,23 +84,29 @@ plugin.stage.push(new Panel({
     title: '页面',
     name: 'freePage',
     iconType: 'LayoutOutlined',
-    componentName: GlIdePluginCoreStageFreePage.name
+    componentName: GlIdeStageFreePage.name
 }))
 
 plugin.stage.push(new Panel({
     title: '页面',
     name: 'formPage',
     iconType: 'LayoutOutlined',
-    componentName: GlIdeFormPage.name
+    componentName: GlIdeStageFormPage.name
 }))
-
 
 plugin.stage.push(new Panel({
     title: '页面',
-    name: 'Page',
+    name: 'listPage',
     iconType: 'LayoutOutlined',
-    componentName: GlIdePluginCoreStageFreePage.name
+    componentName: GlIdeStageListPage.name
 }))
+
+// plugin.stage.push(new Panel({
+//     title: '页面',
+//     name: 'Page',
+//     iconType: 'LayoutOutlined',
+//     componentName: GlIdeStageFreePage.name
+// }))
 
 
 // plugin.setter.push(new Panel({
@@ -114,19 +132,20 @@ const component: Plugin = {
         // }
 
         // 注册组件
-        app.component('GlIdePluginCoreComponents', GlIdePluginCoreComponents)
+        app.component('GlIdePluginCoreComponentsDnd', GlIdePluginCoreComponentsDnd)
         app.component(GlComponentTree.name, GlComponentTree)
         app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
         app.component(GlIdePluginCoreHistory.name, GlIdePluginCoreHistory)
-        // app.component(GlIdePluginCorePanelLayout.name, GlIdePluginCorePanelLayout)
-        app.component(GlIdeBasePage.name, GlIdeBasePage)
-        app.component(GlIdeFormPage.name, GlIdeFormPage)
-        app.component(GlIdePluginCoreStageFreePage.name, GlIdePluginCoreStageFreePage)
-        // app.component(GlIdePluginCoreSettingProperties.name, GlIdePluginCoreSettingProperties)
-        // app.component(GlIdePluginCoreSettingStyle.name, GlIdePluginCoreSettingStyle)
+        app.component(GlIdeStageBasePage.name, GlIdeStageBasePage)
+        app.component(GlIdeStageFormPage.name, GlIdeStageFormPage)
+        app.component(GlIdeStageFreePage.name, GlIdeStageFreePage)
+        app.component(GlIdeStageListPage.name, GlIdeStageListPage)
         app.component(GlToolbarBreadcrumbs.name, GlToolbarBreadcrumbs)
         app.component(GlX.name, GlX)
         app.component(GlComponentRecursion.name, GlComponentRecursion)
+        app.component(GlInsts.name, GlInsts)
+        app.component(GlInst.name, GlInst)
+        app.component(ComponentDnd.name, ComponentDnd)
         // app.config.globalProperties.$ide.usePlugin(plugin)
 
         // 注册组件构建器
@@ -149,16 +168,21 @@ const component: Plugin = {
         // app.component(GlSettingProperty.name, GlSettingProperty)
         app.component(GlPropertySetter.name, GlPropertySetter)
         app.component(GlPropertySetterCard.name, GlPropertySetterCard)
-        app.component('GlIconfontSetter', GlIconfontSetter)
+        app.component(GlIconfontSetter.name, GlIconfontSetter)
+        app.component(GlIconfontTextSetter.name, GlIconfontTextSetter)
         app.component(GlIconfontSetterForSlot.name, GlIconfontSetterForSlot)
         app.component(GlSelectSetter.name, GlSelectSetter)
+        app.component(GlOptionsSetter.name, GlOptionsSetter)
         app.component('GlEntitySelect', GlEntitySelect)
         app.component('GlFieldSelect', GlFieldSelect)
         app.component('GlComponentSelect', GlComponentSelect)
         app.component(GlEntityReaderSetter.name, GlEntityReaderSetter)
         app.component(GlRadioGroupSetter.name, GlRadioGroupSetter)
         app.component(GlHtmlSetter.name, GlHtmlSetter)
-
+        app.component(GlEntityFieldSelect.name, GlEntityFieldSelect)
+        app.component(GlAppEntitySelect.name, GlAppEntitySelect)
+        app.component(GlValidateRulesSetter.name, GlValidateRulesSetter)
+        app.component(GlComponentI18nSetter.name, GlComponentI18nSetter)
         // 注册组件元数据
         // ide.componentMetaManager.registerManyComponentRuntimeMeta(componentMeta.runtimeMeta)
         // ide.componentMetaManager.registerManyComponentDesignMeta(componentMeta.designMeta)

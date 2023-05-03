@@ -8,9 +8,9 @@ import BlockIfInstance from "./setter-block/if-else/BlockIfInstance";
 import BlockElseMeta from "./setter-block/if-else/BlockElseMeta";
 import BlockElseInstance from "./setter-block/if-else/BlockElseInstance";
 import BlockOpenComponentPageMeta from "./setter-block/page/BlockOpenComponentPageMeta";
-
+import BlockRootMeta from "./setter-block/root/BlockRootMeta";
 // @ts-ignore
-const componentMetas:Array<ComponentMeta> = [BlockNotificationMeta,BlockOpenThirdPageMeta,BlockSetVarMeta,BlockIfMeta,BlockElseMeta,BlockOpenComponentPageMeta]
+const componentMetas:Array<ComponentMeta> = [BlockRootMeta,BlockNotificationMeta,BlockOpenThirdPageMeta,BlockSetVarMeta,BlockIfMeta,BlockElseMeta,BlockOpenComponentPageMeta]
 
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [BlockIfInstance,BlockElseInstance]

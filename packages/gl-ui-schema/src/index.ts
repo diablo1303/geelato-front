@@ -1,6 +1,7 @@
 import type {App, Plugin} from 'vue'
 import ComponentMeta from "./entity/ComponentMeta";
 import ComponentInstance from "./entity/ComponentInstance";
+import BlockInstance from "./entity/actions/BlockInstance";
 import ComponentMaterial from "./entity/ComponentMaterial";
 import ComponentMaterialGroup from "./entity/ComponentMaterialGroup";
 import {PropertySetterMetaImpl} from "./entity/IPropertySetterMeta";
@@ -18,6 +19,7 @@ const component: Plugin = {
 }
 export {
     schema,
+    BlockInstance,
     ComponentMaterial,
     ComponentMaterialGroup,
     ComponentMeta,

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-select @change="onEntityChange" v-model="mv">
+    <a-select @change="onEntityChange" v-model="mv" allow-search>
       <a-option v-for="item in entityLiteMetas" :value="item.entityName">{{ item.entityTitle }}</a-option>
     </a-select>
   </div>

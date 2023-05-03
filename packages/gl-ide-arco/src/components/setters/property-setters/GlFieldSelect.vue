@@ -1,12 +1,15 @@
 <template>
   <div>
-    <a-select size="small" v-model="mv" @change="onChange">
+    <a-select size="small" v-model="mv" @change="onChange" allow-search>
       <a-option v-for="item in entityFieldMetas" :value="item.name">{{ item.title + ' ' + item.name }}</a-option>
     </a-select>
   </div>
 </template>
 
 <script lang="ts" setup>
+/**
+ *  基于inject('$entityDS')获取数据源
+ */
 import {inject, ref, watch} from 'vue'
 import type {FieldMeta} from "@geelato/gl-ui";
 const emits = defineEmits(['update:modelValue'])

@@ -6,6 +6,16 @@ export default {
     "title": "数字输入",
     "useBy": ["freePage"],
     "properties": [{
+        "name": "label",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "标题",
+        "setterComponentName": "AInput"
+    }, {
         "name": "bindField",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -14,7 +24,7 @@ export default {
         "show": true,
         "expanded": true,
         "title": "绑定字段",
-        "setterComponentName": "GlFieldSelect"
+        "setterComponentName": "GlEntityFieldSelect"
     }, {
         "name": "defaultValue",
         "setterComponentProps": {},
@@ -64,27 +74,6 @@ export default {
         "show": true,
         "expanded": true
     }, {
-        "name": "disabled",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "title": "禁用",
-        "setterComponentName": "ASwitch",
-        "show": true,
-        "expanded": true
-    }, {
-        "name": "error",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "错误状态",
-        "placeholder": "是否为错误状态",
-        "setterComponentName": "ASwitch"
-    }, {
         "name": "max",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -119,10 +108,15 @@ export default {
         "setterComponentProps": {
             "optionType": "button",
             "buttonStyle": "solid",
-            "options": [{"label": "迷你", "value": "mini"}, {"label": "小", "value": "small"}, {
-                "label": "中",
-                "value": "medium"
-            }, {"label": "大", "value": "large"}]
+            "options": [{"label": "迷你", "value": "mini", "v_Q3KYsgxp5al9vtx3": "mini"}, {
+                "label": "小",
+                "value": "small",
+                "v_Q3KYsgxp5al9vtx3": "small"
+            }, {"label": "中", "value": "medium", "v_Q3KYsgxp5al9vtx3": "medium"}, {
+                "label": "大",
+                "value": "large",
+                "v_Q3KYsgxp5al9vtx3": "large"
+            }]
         },
         "setterComponentVModelName": "modelValue",
         "group": "base",
@@ -131,6 +125,30 @@ export default {
         "setterComponentName": "ARadioGroup",
         "show": true,
         "expanded": true
+    }, {
+        "name": "suffix",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "slots",
+        "show": true,
+        "expanded": true,
+        "title": "后置标签",
+        "setterComponentName": "AInput",
+        "slotComponentName": "GlText",
+        "slotComponentBindTarget": "v-model"
+    }, {
+        "name": "prefix",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "slots",
+        "show": true,
+        "expanded": true,
+        "title": "前置标签",
+        "setterComponentName": "AInput",
+        "slotComponentName": "GlText",
+        "slotComponentBindTarget": "v-model"
     }, {
         "name": "allowClear",
         "setterComponentProps": {},
@@ -143,6 +161,16 @@ export default {
         "title": "允许清空",
         "setterComponentName": "ASwitch"
     }, {
+        "name": "disabled",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "title": "禁用",
+        "setterComponentName": "ASwitch",
+        "show": true,
+        "expanded": true
+    }, {
         "name": "readOnly",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -153,29 +181,15 @@ export default {
         "title": "只读",
         "setterComponentName": "ASwitch"
     }, {
-        "name": "append",
+        "name": "error",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
-        "type": "slots",
+        "type": "props",
         "show": true,
         "expanded": true,
-        "title": "后置标签",
-        "setterComponentName": "AInput",
-        "slotComponentName":"GlText",
-        "slotComponentBindTarget":"v-model"
-    }, {
-        "name": "prepend",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "slots",
-        "show": true,
-        "expanded": true,
-        "title": "前置标签",
-        "setterComponentName": "AInput",
-        "slotComponentName":"GlText",
-        "slotComponentBindTarget":"v-model"
-    }],
-    "diplayMode": "Tile"
+        "title": "错误状态",
+        "placeholder": "是否为错误状态",
+        "setterComponentName": "ASwitch"
+    }]
 }

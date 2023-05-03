@@ -19,11 +19,9 @@ export default {
 </script>
 <script setup lang="ts">
 import {PropType, ref, watch} from 'vue'
-import {utils} from "@geelato/gl-ui";
-import {componentStoreFactory, EventNames} from "@geelato/gl-ide";
-import {emitter} from "@geelato/gl-ui";
+import {componentStoreFactory} from "@geelato/gl-ide";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
-import {useGlobal} from "@geelato/gl-ui";
+import {utils, useGlobal} from "@geelato/gl-ui";
 import VueJsonPretty from "vue-json-pretty";
 
 const emits = defineEmits(['update'])
@@ -38,9 +36,6 @@ const componentStoreId = 'useComponentBlockStore'
 const componentStore = componentStoreFactory.useComponentStore(componentStoreId)
 const codeViewerVisible = ref(false)
 
-
-
-
 // emitter.on(EventNames.GlIdeToolbarShowCodeViewer, () => {
 //   codeViewerVisible.value = true
 // })
@@ -50,10 +45,10 @@ const codeViewerVisible = ref(false)
  *  初始的组件树
  */
 let rootItem = props.glComponentInst
-if(!rootItem||!rootItem.id){
+if (!rootItem || !rootItem.id) {
   rootItem = {
-    componentName: 'GlRoot',
-    id: utils.gid('GlRoot'),
+    componentName: 'GlBlockRoot',
+    id: utils.gid('BR'),
     props: {},
     slots: {},
     children: [{
@@ -67,14 +62,12 @@ if(!rootItem||!rootItem.id){
     actions: []
   }
 }
+componentStore.$reset()
+componentStore.currentComponentTree.length = 0
+componentStore.currentComponentTree.push(rootItem)
+componentStore.setCurrentSelectedComponentById(rootItem.id)
 
-componentStore.setCurrentSelectedComponentInstance(rootItem)
-// 避免update时，重新push items
-if (componentStore.currentComponentTree.length === 0) {
-  componentStore.currentComponentTree.push(rootItem)
-}
-
-watch(()=>{
+watch(() => {
   return componentStore.currentComponentTree
 }, () => {
   console.log('update mv:', componentStore.currentComponentTree[0])

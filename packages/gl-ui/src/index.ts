@@ -2,6 +2,7 @@ import {reactive, type App, type Plugin} from 'vue'
 import emitter from "./m/mix/emitter";
 import GlHtml from './components/gl-html/Index.vue'
 import GlIconfont from './components/gl-iconfont/Index.vue'
+import GlColor from './components/gl-color/Index.vue'
 import GlDndPlaceholder from './components/gl-dnd-placeholder/Index.vue'
 import GlComponent from "./components/gl-component/GlComponent.vue";
 import GlPageViewer from "./components/gl-page-viewer/GlPageViewer.vue";
@@ -47,6 +48,7 @@ const component: Plugin = {
         app.component(GlHtml.name, GlHtml)
         app.component(GlDndPlaceholder.name, GlDndPlaceholder)
         app.component(GlText.name, GlText)
+        app.component(GlColor.name, GlColor)
         app.component(GlComponent.name, GlComponent)
         app.component(GlPageViewer.name, GlPageViewer)
 
@@ -66,6 +68,7 @@ const component: Plugin = {
 }
 
 export {
+    GlIconfont,
     EntityApi,
     entityApi,
     EntityReader,

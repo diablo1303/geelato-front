@@ -13,7 +13,6 @@ export default {
 </script>
 <script lang="ts" setup>
 import {type PropType, ref} from 'vue'
-import {Action, ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import {BlockInstance} from "@geelato/gl-ui-schema";
 import CommandEditor from "./action-setters/CommandEditor"
 const props = defineProps({

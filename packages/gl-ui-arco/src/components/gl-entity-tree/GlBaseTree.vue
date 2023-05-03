@@ -265,7 +265,7 @@ const onMenuItemClick = (clickedNodeData: any, contextMenuItemData: ContextMenuD
   utils.sleep(200).then(() => {
     titleInput.value.focus()
   })
-
+  console.log('currentEditNodeData:', currentEditNodeData.value)
   // 所有的操作都会触发此事件
   emits('clickContextMenuItem', {clickedNodeData, contextMenuItemData})
 }

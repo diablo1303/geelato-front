@@ -1,20 +1,10 @@
 <template>
   <div class="gl-entity-form">
-    <a-form ref="formRef" layout="vertical" :model="formData" :title="title">
-      <a-space direction="vertical" :size="0">
-        <GlX :glComponentInst="glComponentInst"></GlX>
-      </a-space>
-      <div class="gl-entity-form-actions">
-        <a-space>
-          <a-button>
-            {{ $t('groupForm.reset') }}
-          </a-button>
-          <a-button type="primary" :loading="loading" @click="onSubmitClick">
-            {{ $t('groupForm.submit') }}
-          </a-button>
-        </a-space>
-      </div>
+    <a-form ref="formRef" :model="formData" :title="title" :layout="layout"
+            :autoLabelWidth="autoLabelWidth">
+      <GlInsts :glComponentInst="glComponentInst"></GlInsts>
     </a-form>
+    <a-button @click="onSubmitClick">提交</a-button>
   </div>
 </template>
 <script lang="ts">
@@ -26,21 +16,70 @@ export default {
 import {ref} from 'vue';
 import {FormInstance} from '@arco-design/web-vue/es/form';
 import useLoading from '../../hooks/loading';
-import {mixins} from "@geelato/gl-ui";
+import {IComponentInstance, mixins} from "@geelato/gl-ui";
+import {isDataEntry} from "@geelato/gl-ui-schema-arco";
 
-
+const form = ref({})
 const props = defineProps({
   title: String,
+  bindEntity: {
+    type: Object
+  },
+  layout: {
+    type: String,
+    default() {
+      return 'horizontal'
+    }
+  },
+  autoLabelWidth: {
+    type: Boolean,
+    default() {
+      return false
+    }
+  },
   ...mixins.props
 })
 
 const formData = ref({});
+const formItems = ref<Array<any>>([]);
 const formRef = ref<FormInstance>();
+/**
+ * 遍历取得所有表单项的值
+ */
+const buildFieldItems = () => {
+
+  function buildFieldItem(inst: IComponentInstance) {
+    for (let index in inst.children) {
+      // @ts-ignore
+      let subInst = inst.children[index]
+      if (isDataEntry(subInst.componentName)) {
+        let formItem = {
+          fieldName: subInst.props.bindField.fieldName,
+          value: subInst._value
+        }
+        formItems.value.push({formItem})
+        // @ts-ignore
+        formData.value[subInst.props.bindField.fieldName] = subInst._value
+      }
+      if (subInst.children && subInst.children.length > 0) {
+        buildFieldItem(subInst)
+      }
+    }
+  }
+
+  buildFieldItem(props.glComponentInst)
+  console.log('buildFieldItems formItems:', formItems.value, 'formData:', formData.value)
+}
+
 const {loading, setLoading} = useLoading();
 const onSubmitClick = async () => {
   const res = await formRef.value?.validate();
+  console.log('onSubmitClick() validate form:', formRef.value, ' result:', res)
+  buildFieldItems()
   if (!res) {
     setLoading(true);
+  } else {
+
   }
   setTimeout(() => {
     setLoading(false);
@@ -48,10 +87,8 @@ const onSubmitClick = async () => {
 };
 </script>
 
-<style scoped lang="less">
+<style>
 .gl-entity-form {
-  //padding: 0 20px 40px 20px;
-  //overflow: hidden;
 }
 
 .gl-entity-form-actions {

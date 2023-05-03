@@ -6,8 +6,28 @@ export default {
     "title": "评分",
     "useBy": ["freePage"],
     "properties": [{
+        "name": "label",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "标题",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "bindField",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "绑定字段",
+        "setterComponentName": "GlEntityFieldSelect"
+    }, {
         "name": "count",
-        "setterComponentProps": {"defaultValue": 10},
+        "setterComponentProps": {"defaultValue": 5},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
@@ -18,7 +38,7 @@ export default {
         "expanded": true
     }, {
         "name": "defaultValue",
-        "setterComponentProps": {"defaultValue": 5},
+        "setterComponentProps": {"defaultValue": 0},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
@@ -51,7 +71,7 @@ export default {
         "expanded": true
     }, {
         "name": "grading",
-        "setterComponentProps": {},
+        "setterComponentProps": {"defaultValue": true},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
@@ -89,7 +109,7 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "setterComponentName": "AInput",
+        "setterComponentName": "GlColorSetter",
         "title": "颜色"
     }, {
         "name": "character",
@@ -102,6 +122,5 @@ export default {
         "title": "符号",
         "setterComponentName": "AInput",
         "slotComponentBindTarget": "v-model"
-    }],
-    "diplayMode": "Tile"
+    }]
 }

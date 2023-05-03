@@ -6,6 +6,26 @@ export default {
     "title": "字符输入",
     "useBy": ["freePage"],
     "properties": [{
+        "name": "label",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "标题",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "bindField",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "绑定字段",
+        "setterComponentName": "GlEntityFieldSelect"
+    }, {
         "name": "size",
         "setterComponentProps": {
             "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
@@ -19,31 +39,31 @@ export default {
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
-        "title": "控件大小",
+        "title": "大小",
         "setterComponentName": "ARadioGroup",
         "show": true,
         "expanded": true
     }, {
-        "name": "prepend",
+        "name": "prefix",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "slots",
         "show": true,
         "expanded": true,
-        "title": "前置标签",
+        "title": "前缀",
         "setterComponentName": "AInput",
         "slotComponentName": "GlText",
         "slotComponentBindTarget": "v-model"
     }, {
-        "name": "append",
+        "name": "suffix",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "slots",
         "show": true,
         "expanded": true,
-        "title": "后置标签",
+        "title": "后缀",
         "setterComponentName": "AInput",
         "slotComponentName": "GlText",
         "slotComponentBindTarget": "v-model"
@@ -120,16 +140,16 @@ export default {
         "show": true,
         "expanded": true
     }, {
-        "name": "fieldName",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
+        "name": "rules",
         "group": "base",
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "绑定字段",
-        "setterComponentName": "GlFieldSelect"
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "验证规则",
+        "setterComponentName": "GlValidateRulesSetter"
     }],
-    "diplayMode": "Tile",
-    "actions": []
+    "actions": [],
+    "displayOnStage": "inline-block"
 }

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="componentInstance">
     <div class="gl-table">
       <div class="gl-table-row" v-for="(actionMeta) in componentMeta.actions">
         <div class="gl-table-cell gl-label" style="position: relative;width: 8em">{{ actionMeta.name }} {{
@@ -31,7 +31,7 @@
              :width="1360"
              body-style="padding:0"
     >
-      <CommandEditor v-model:action="currentAction"></CommandEditor>
+      <CommandEditor v-if="currentAction" :key="currentAction.id" v-model:action="currentAction"></CommandEditor>
     </a-modal>
   </div>
 
@@ -80,7 +80,7 @@ const openActionSetter = (action: Action, actionIndex: number, actionMeta: Actio
   if (!action.id) {
     action.id = utils.gid('act', 16)
   }
-  currentAction.value = action
+  currentAction.value = action?JSON.parse(JSON.stringify(action)):new Action()
   currentActionIndex.value = actionIndex
   actionCodeEditorVisible.value = true
 }
@@ -92,7 +92,7 @@ const onUpdateAction = (action: Action) => {
 
 const closeActionCodeEditor = () => {
   actionCodeEditorVisible.value = false
-  onUpdateAction(currentAction.value)
+  onUpdateAction(JSON.parse(JSON.stringify(currentAction.value)))
   generateScript()
 }
 

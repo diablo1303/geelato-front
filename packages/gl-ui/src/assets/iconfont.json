@@ -62,13 +62,6 @@
       "unicode_decimal": 58962
     },
     {
-      "icon_id": "7674877",
-      "name": "权限/结构",
-      "font_class": "tree",
-      "unicode": "e712",
-      "unicode_decimal": 59154
-    },
-    {
       "icon_id": "663142",
       "name": "more",
       "font_class": "more",
@@ -482,6 +475,13 @@
       "unicode_decimal": 58923
     },
     {
+      "icon_id": "17365805",
+      "name": "tree",
+      "font_class": "tree",
+      "unicode": "e6b9",
+      "unicode_decimal": 59065
+    },
+    {
       "icon_id": "18126055",
       "name": "mentions",
       "font_class": "mentions",
@@ -610,7 +610,7 @@
     {
       "icon_id": "4767106",
       "name": "bg-colors",
-      "font_class": "bg-colors",
+      "font_class": "color",
       "unicode": "e800",
       "unicode_decimal": 59392
     },

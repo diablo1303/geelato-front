@@ -5,5 +5,27 @@ export default {
     "group": "dataEntry",
     "title": "时间选择",
     "useBy": ["freePage"],
-    "properties": [],"actions": [],
+    "properties": [
+        {
+            "name": "label",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "show": true,
+            "expanded": true,
+            "title": "标题",
+            "setterComponentName": "AInput"
+        }, {
+            "name": "bindField",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "show": true,
+            "expanded": true,
+            "title": "绑定字段",
+            "setterComponentName": "GlEntityFieldSelect"
+        }
+    ],"actions": [],
 }

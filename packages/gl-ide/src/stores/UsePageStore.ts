@@ -70,15 +70,13 @@ export const usePageStore = defineStore('GlPageStore', () => {
         }
         const lastPageIndex = currentPageIndex.value
         // pages页面数量调整时，如做了删除操作，需要重新计算lastPageIndexAfter的值，确保索引到调整的灵数组上
-        const lastPageIndexAfter = lastPageIndex>=pages.value.length?lastPageIndex-1:lastPageIndex
+        const lastPageIndexAfter = lastPageIndex >= pages.value.length ? lastPageIndex - 1 : lastPageIndex
         const newPageIndex = Number.parseInt(index + '')
-        console.log('switchToPage from index:', lastPageIndex, 'to index', newPageIndex, 'currentPage:', currentPage.value, 'componentStore:', componentStore)
+        console.log('switchToPage from index:', lastPageIndex, 'to index', newPageIndex, 'lastPage:', currentPage.value, 'componentStore:', componentStore)
 
         // 在切换页面时，记录原页面(lastPageIndex>=0)当前选中的组件
         if (lastPageIndexAfter >= 0) {
             pages.value[lastPageIndexAfter].currentSelectedComponentId = componentStore.currentSelectedComponentId
-            // currentPage.value.currentSelectedComponentId = componentStore.currentSelectedComponentId
-            // currentPage.value.sourceContent = componentStore.currentSelectedComponent
         }
         currentPageIndex.value = newPageIndex
         currentPage.value = pages.value[newPageIndex]
@@ -88,7 +86,6 @@ export const usePageStore = defineStore('GlPageStore', () => {
         if (currentPage.value.currentSelectedComponentId) {
             componentStore.setCurrentSelectedComponentById(currentPage.value.currentSelectedComponentId)
         }
-        // console.log('switchToPage index:', index, 'currentPage:', currentPage.value, 'componentStore:', componentStore)
     }
 
     function getPageLength() {
@@ -170,10 +167,8 @@ export const usePageStore = defineStore('GlPageStore', () => {
     }
 })
 
-/**
- *  创建新页面时，默认的页面根实例数据
- */
-export const defaultPageRoot: ComponentInstance = {
+let pageTemplates: { [key: string]: any } = {formPage: ''}
+pageTemplates.freePage = {
     componentName: 'GlPage',
     id: utils.gid('GlPage'),
     props: {},
@@ -191,3 +186,91 @@ export const defaultPageRoot: ComponentInstance = {
     ],
     actions: []
 }
+pageTemplates.formPage = {
+    "componentName": "GlPage",
+    "id": utils.gid('page'),
+    "props": {},
+    "slots": {},
+    "children": [{
+        "id": utils.gid('form'),
+        "componentName": "GlEntityForm",
+        "title": "实体表单",
+        "props": {
+            "title": "实体表单",
+            "layout":"vertical",
+            "autoLabelWidth":true
+        },
+        "slots": {},
+        "children": [{
+            "id": utils.gid('card'),
+            "componentName": "GlCard",
+            "title": "卡片",
+            "props": {"title": "卡片", "bordered": false},
+            "slots": {},
+            "children": [
+                {
+                    "id": utils.gid('rc'),
+                    "componentName": "GlRowColLayout",
+                    "title": "栅格布局",
+                    "props": {"title": "栅格布局", "spans": [8, 8, 8]},
+                    "slots": {},
+                    "children": [{
+                        "id": utils.gid('virtual'),
+                        "componentName": "GlVirtual",
+                        "title": "项",
+                        "props": {},
+                        "slots": {},
+                        "children": [{
+                            "id": utils.gid('ph'),
+                            "componentName": "GlDndPlaceholder",
+                            "title": "占位符",
+                            "props": {},
+                            "slots": {},
+                            "children": []
+                        }]
+                    }, {
+                        "id": utils.gid('virtual_'),
+                        "componentName": "GlVirtual",
+                        "title": "项",
+                        "props": {},
+                        "slots": {},
+                        "children": [{
+                            "id": utils.gid('ph'),
+                            "componentName": "GlDndPlaceholder",
+                            "title": "占位符",
+                            "props": {},
+                            "slots": {},
+                            "children": []
+                        }]
+                    }, {
+                        "id": utils.gid('virtual_'),
+                        "componentName": "GlVirtual",
+                        "title": "项",
+                        "props": {},
+                        "slots": {},
+                        "children": [{
+                            "id": utils.gid('ph'),
+                            "componentName": "GlDndPlaceholder",
+                            "title": "占位符",
+                            "props": {},
+                            "slots": {},
+                            "children": []
+                        }]
+                    }],
+                    "style": {}
+                }],
+            "style": {},
+
+        }]
+
+    }],
+    "actions": []
+}
+pageTemplates.listPage = pageTemplates.freePage
+/**
+ *  创建新页面时，默认的页面根实例数据
+ */
+export const getPageTemplate = (pageType: string): ComponentInstance => {
+    return JSON.parse(JSON.stringify(pageTemplates[pageType]))
+}
+

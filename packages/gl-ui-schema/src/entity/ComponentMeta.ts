@@ -1,11 +1,21 @@
 import type IPropertySetterMeta from "./IPropertySetterMeta";
 import Action from "./actions/Action";
 
+/**
+ *  记录组件中哪些信息需要进行多语言配置
+ *  同时定义多语言信息
+ */
+export class ComponentI18nMeta {
+    props?: Object = {}
+}
+
 export default class ComponentMeta {
     // 组件英文名称，注册到全局环境的名称GlButton
     componentName: string = ''
     // 组件中文名称
     title: string = ''
+    // 在舞台中是以块状还是行内样式进行展示
+    displayOnStage?: string = 'inline-block'
     // 在属性配置面板中，是以哪种模式来展示属性，值为：Tile|Collapse
     displayMode: string = ''
     // 组件图标
@@ -16,6 +26,10 @@ export default class ComponentMeta {
     useBy: Array<string> = []
     // 属性数组
     properties: Array<IPropertySetterMeta> = []
+    // 记录需要进行多语言翻译的字段
+    i18n?: ComponentI18nMeta = {
+        props: {}
+    }
     // 事件动作
     actions: Array<Action> = []
 

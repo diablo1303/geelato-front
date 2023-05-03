@@ -7,6 +7,8 @@ export default {
 import {useIdeStore} from "@geelato/gl-ide";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
 import {plugin} from "./plugin";
+import { DndProvider } from 'vue3-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 const ideStore = useIdeStore()
 // 安装插件
@@ -16,7 +18,9 @@ ideStore.setUiLibName('arco')
 
 </script>
 <template>
-  <GlIde/>
+  <DndProvider :backend="HTML5Backend">
+    <GlIde/>
+  </DndProvider>
 </template>
 <style>
 </style>

@@ -1,21 +1,17 @@
-<template>
-  <div class="gl-form-page">
-    <GlIdeBasePage><gl-x :glComponentInst="componentStore.currentComponentTree[0]"></gl-x>
-    </GlIdeBasePage>
-  </div>
-</template>
 <script lang="ts">
 export default {
-  name: "GlIdeFormPage"
+  name: "GlIdeStageFormPage"
 }
 </script>
-<script setup lang="ts">
-import {useComponentStore} from "@geelato/gl-ide";
-
-const componentStore = useComponentStore()
+<script lang="ts" setup>
+import GlIdeStageBasePage from "./BasePage.vue";
+import {utils} from "@geelato/gl-ui";
 
 </script>
 
+<template>
+  <GlIdeStageBasePage :key="utils.gid('p')" componentStoreId="useComponentStore"></GlIdeStageBasePage>
+</template>
 <style>
 .gl-ide-arco-stage-main {
   padding: 10px 10px 2em 10px;

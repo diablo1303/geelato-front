@@ -1,5 +1,7 @@
 import {inBrowser} from 'vitepress';
 import DefaultTheme from 'vitepress/theme'
+import ArcoVue, {Modal} from '@arco-design/web-vue';
+import '@arco-design/web-vue/dist/arco.css';
 import draggable from 'vuedraggable'
 import GlUi from '@geelato/gl-ui'
 import {entityApi} from "@geelato/gl-ui";
@@ -15,8 +17,7 @@ import AllComponents from '../components/setter-component/AllComponents.vue'
 
 // import i18n from '../locale/index';
 import {createPinia} from "pinia";
-import ArcoVue, {Modal} from '@arco-design/web-vue';
-import '@arco-design/web-vue/dist/arco.css';
+
 import './custom.css'
 import {createI18n} from "vue-i18n";
 import en from "../locale/en-US";

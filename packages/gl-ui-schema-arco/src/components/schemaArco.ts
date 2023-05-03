@@ -7,10 +7,6 @@ import AutoCompleteInstance from "./setter-arco/autoComplete/AutoCompleteInstanc
 import DividerMeta from "./setter-arco/divider/DividerMeta";
 import IconMeta from "./setter-arco/icon/IconMeta";
 import TypographyMeta from "./setter-arco/typography/TypographyMeta";
-import GridMeta from "./setter-arco/grid/GridMeta";
-import FormRowMeta from "./setter-arco/layout/FormRowMeta";
-import FormRowInstance from "./setter-arco/layout/FormRowInstance";
-import SpaceMeta from "./setter-arco/space/SpaceMeta";
 import AffixMeta from "./setter-arco/affix/AffixMeta";
 import AffixInstance from "./setter-arco/affix/AffixInstance";
 import BreadcrumbMeta from "./setter-arco/breadcrumb/BreadcrumbMeta";
@@ -22,12 +18,10 @@ import StepsMeta from "./setter-arco/steps/StepsMeta";
 import CascaderMeta from "./setter-arco/cascader/CascaderMeta";
 import CheckboxMeta from "./setter-arco/checkbox/CheckboxMeta";
 import DatePickerMeta from "./setter-arco/datePicker/DatePickerMeta";
-import FormMeta from "./setter-arco/form/FormMeta";
 import FormInstance from "./setter-arco/form/FormInstance";
 import InputMeta from "./setter-arco/input/InputMeta";
 import InputNumberMeta from "./setter-arco/inputNumber/InputNumberMeta";
 import MentionsMeta from "./setter-arco/mentions/MentionsMeta";
-import RadioMeta from "./setter-arco/radio/RadioMeta";
 import SelectMeta from "./setter-arco/select/SelectMeta";
 import SliderMeta from "./setter-arco/slider/SliderMeta";
 import TimePickerMeta from "./setter-arco/timePicker/TimePickerMeta";
@@ -59,34 +53,54 @@ import TreeMeta from "./setter-arco/tree/TreeMeta";
 import {ComponentMeta, ComponentInstance, ComponentMaterial} from "@geelato/gl-ui-schema";
 import PageMeta from "./setter-arco/page/PageMeta";
 import DndPlaceholderMeta from "./setter-arco/dndPlaceholder/DndPlaceholderMeta";
-
+import FormMeta from "./setter-arco/form/FormMeta";
+import TextAreaMeta from "./setter-arco/textarea/TextAreaMeta";
+import ColorMeta from "./setter-arco/color/ColorMeta";
+import RowColLayoutMeta from "./setter-arco/row-col-layout/RowColLayoutMeta";
+import RowColLayoutInstance from "./setter-arco/row-col-layout/RowColLayoutInstance";
+import RadioGroupMeta from "./setter-arco/radio/RadioGroupMeta";
+import UserSelectMeta from "./setter-arco/user-select/UserSelectMeta";
+import RadioGroupInstance from "./setter-arco/radio/RadioGroupInstance";
 
 // @ts-ignore
-const componentMetas:Array<ComponentMeta> = [ButtonMeta, IconMeta,InputMeta, InputNumberMeta, RateMeta,TableMeta, TypographyMeta, DividerMeta, GridMeta, FormRowMeta, SpaceMeta,
+const componentMetas: Array<ComponentMeta> = [ButtonMeta, IconMeta, FormMeta, InputMeta, InputNumberMeta, TextAreaMeta, RateMeta, RadioGroupMeta, UserSelectMeta, ColorMeta, TableMeta, TypographyMeta, DividerMeta, RowColLayoutMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
-    CascaderMeta, CheckboxMeta, DatePickerMeta, FormMeta,  MentionsMeta, RadioMeta,
+    CascaderMeta, CheckboxMeta, DatePickerMeta, MentionsMeta,
     SelectMeta, SliderMeta, SwitchMeta, TimePickerMeta, TransferMeta, TreeSelectMeta, UploadMeta, AvatarMeta, BadgeMeta,
     CalendarMeta, CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
-    StatisticMeta,  TabsMeta, TagMeta, TimelineMeta,TimelineItemMeta, TooltipMeta, TreeMeta,PageMeta,DndPlaceholderMeta]
+    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, TreeMeta, PageMeta, DndPlaceholderMeta]
 
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [ButtonInstance,TableInstance,CardInstance,FormInstance,FormRowInstance]
+const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, CardInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance]
 const componentInstances: Array<ComponentInstance> = []
+const dataEntryNameMap: { [key: string]: boolean } = {}
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {
+    const meta = componentMetas[index]
     const foundInstance = customInstances.find((item: ComponentInstance) => {
-        return item.componentName === componentMetas[index].componentName
+        return item.componentName === meta.componentName
     })
     if (foundInstance) {
         componentInstances.push(foundInstance)
     } else {
         const componentInstance = new ComponentInstance()
-        componentInstance.componentName = componentMetas[index].componentName
+        componentInstance.componentName = meta.componentName
         componentInstance.props = {}
         componentInstance.slots = {}
         componentInstance.children = []
         componentInstances.push(componentInstance)
     }
+    // 设置input表单项
+    if (meta.group === 'dataEntry') {
+        dataEntryNameMap[meta.componentName] = true
+    }
 }
-const schemaArco = {componentMetas,componentInstances}
-export {schemaArco}
+/**
+ * 检查组件是否为表单输入项
+ * @param componentName
+ */
+const isDataEntry = (componentName: string) => {
+    return !!dataEntryNameMap[componentName]
+}
+const schemaArco = {componentMetas, componentInstances}
+export {schemaArco, isDataEntry}

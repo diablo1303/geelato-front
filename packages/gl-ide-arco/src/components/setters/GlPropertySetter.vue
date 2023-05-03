@@ -183,7 +183,7 @@ const setPropertyModel = () => {
       }
     }
   }
-  console.log('setPropertyModel>', props.propertySetterMeta, props.propertyValue, propertyModel.value)
+  // console.log('setPropertyModel>', props.propertySetterMeta, props.propertyValue, propertyModel.value)
 }
 setPropertyModel()
 

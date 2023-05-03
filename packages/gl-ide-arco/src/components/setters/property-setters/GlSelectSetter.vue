@@ -1,10 +1,24 @@
 <template>
   <table class="gl-table">
     <tr>
-      <td class="gl-table-cell gl-label" style="width: 6em" title="">
-        模式</td>
+      <td class="gl-table-cell gl-label" style="width: 3em" title="">选项</td>
       <td class="gl-table-cell">
-        <a-switch  v-model="mv.multiple">
+                <GlOptions v-model="mv.options" :columns="[{dataIndex: 'label',title:'名'},{dataIndex: 'value',title:'值'}]"></GlOptions>
+<!--        <GlArrayBaseSetter v-slot:default="slotProps" v-model="mv.options" :defaultItemForAdd="{label:'',value:''}" @addItem="update"-->
+<!--                           @removeItem="update">-->
+<!--            <span>-->
+<!--              <span><a-input v-model="mv.options[slotProps.index].label" @change="update"></a-input></span>-->
+<!--              <span><a-input v-model="mv.options[slotProps.index].value" @change="update"></a-input></span>-->
+<!--            </span>-->
+<!--        </GlArrayBaseSetter>-->
+      </td>
+    </tr>
+    <tr>
+      <td>
+        模式
+      </td>
+      <td class="gl-table-cell">
+        <a-switch v-model="mv.multiple">
           <template #checked>
             多选
           </template>
@@ -16,9 +30,10 @@
     </tr>
     <tr>
       <td class="gl-table-cell gl-label">
-        清除</td>
+        清除
+      </td>
       <td class="gl-table-cell">
-        <a-switch  v-model="mv.allowClear">
+        <a-switch v-model="mv.allowClear">
           <template #checked>
             可以
           </template>
@@ -28,52 +43,43 @@
         </a-switch>
       </td>
     </tr>
-    <tr>
-      <td class="gl-table-cell gl-label">选项</td>
-      <td class="gl-table-cell">
-        <GlOptions v-model="mv.options"
-                            :columns="[{dataIndex: 'label'},{dataIndex: 'value'}]"></GlOptions>
-      </td>
-    </tr>
   </table>
 </template>
-
 <script lang="ts">
-import {defineComponent} from 'vue'
+export default {
+  name: "GlSelectSetter"
+}
+</script>
+<script lang="ts" setup>
+import {defineComponent, ref, watch} from 'vue'
 import GlOptions from "../GlOptions.vue";
 
-export default defineComponent({
-  name: "GlSelectSetter",
-  components:{GlOptions},
-  props: {
-    modelValue: {
-      type: Object,
-      default() {
-        return {
-          multiple: false,
-          allowClear:true,
-          options:[]
-        }
+const props = defineProps({
+  modelValue: {
+    type: Object,
+    default() {
+      return {
+        multiple: false,
+        allowClear: true,
+        options: []
       }
-    }
-  },
-  beforeUpdate() {
-    this.mv = this.modelValue
-  },
-  data() {
-    return {
-      mv:this.modelValue
-    }
-  },
-  watch:{
-    'mv':{
-      handler:function (val){
-        this.$emit('update',val)
-      },
-      deep:true
     }
   }
 })
+const emits = defineEmits(['update'])
+const mv = ref(props.modelValue)
+watch(
+    () => mv,
+    (val: any) => {
+      emits('update', val)
+    },
+    {deep: true}
+)
+
+const items = ref(props.modelValue.options)
+const update = () => {
+}
+
 </script>
 
 <style scoped>
