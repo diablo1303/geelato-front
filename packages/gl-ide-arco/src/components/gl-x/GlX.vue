@@ -33,8 +33,9 @@ export default {name: "GlX"}
 </script>
 <script setup lang="ts">
 import {getCurrentInstance, nextTick, ref} from 'vue'
-import {type IComponentInstance, mixins, utils, emitter} from "@geelato/gl-ui"
+import {mixins, utils, emitter} from "@geelato/gl-ui"
 import {componentStoreFactory, EventNames} from "@geelato/gl-ide";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 type Event = { item: { classList: any, id: any }, pullMode: string, oldIndex: number, newIndex: number }
 
@@ -67,7 +68,7 @@ let chooseIndex = -1
 const setData = (dataTransfer: DataTransfer, dragEl: HTMLElement) => {
   console.log('setData>', dataTransfer, dragEl)
 }
-const onAdd = (event: any, items?: Array<IComponentInstance>) => {
+const onAdd = (event: any, items?: Array<ComponentInstance>) => {
   // 没有添加成功
   if (!items || items.length <= 1) return;
   // 添加之后去掉占位组件

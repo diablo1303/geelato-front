@@ -41,7 +41,7 @@ export default {
 import {inject, onMounted} from 'vue'
 import mixins from "../mixins";
 import actionScriptExecutor from "../../m/actions/ActionScriptExecutor";
-import {Action} from "@geelato/gl-ui-schema";
+import type {Action} from "@geelato/gl-ui-schema";
 
 const props = defineProps({
   ...mixins.props

@@ -6,12 +6,17 @@ export default {
 <script setup lang="ts">
 
 import {mixins, utils} from "@geelato/gl-ui";
-import {nextTick, onMounted, onUpdated, ref, watch} from "vue";
+import {nextTick, onMounted, onUpdated,type PropType, ref} from "vue";
 
 const emits = defineEmits(['update:items'])
+
+class TabItem{
+  title:string = ''
+  iconType:string = ''
+}
 const props = defineProps({
   items: {
-    type: Array
+    type: Array as PropType<Array<TabItem>>
   },
   defaultActiveKey: {
     type: Number,

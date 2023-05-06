@@ -1,4 +1,4 @@
-import Action from "./actions/Action";
+import type Action from "./actions/Action";
 
 export class ComponentInstanceProps {
     [key: string]: any
@@ -11,6 +11,13 @@ export class ComponentInstanceProps {
     rules?: Array<any>
 }
 
+export class I18nItem {
+    [key: string]: any
+
+    'zh-CN': string
+    'en-US': string
+}
+
 export default class ComponentInstance {
     id: string = ''
     title?: string = ''
@@ -19,11 +26,10 @@ export default class ComponentInstance {
     slots: { [key: string]: any } = {}
     children: Array<ComponentInstance> = []
     actions: Array<Action> = []
+    style?: Object = {}
+    propsWrapper?: string = ''
     // 多语言，表单配置中默认的为zh-CN，这里只需配置en-US，如果需要繁体，则可配置增加zh-TW或zh-HK
-    i18n?: Object = {
-        props: {},
-        'en-US': {}
-    }
+    i18n?: Array<I18nItem> = []
     // 运行时的值，如对于input等表单组件，可用于v-model绑定值
     _value?: undefined
     // 是否禁用，默认为启用，用于设计时

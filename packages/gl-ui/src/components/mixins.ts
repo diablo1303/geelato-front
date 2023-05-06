@@ -1,6 +1,5 @@
 import type {PropType} from "vue";
-import type IComponentInstance from "./gl-component/IComponentInstance";
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const props = {
     parentId: {
@@ -9,7 +8,7 @@ const props = {
     glComponentInst: {
         type: Object as PropType<ComponentInstance>,
         default() {
-            return {}
+            return new ComponentInstance()
         }
     },
     glChildren: {

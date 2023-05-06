@@ -4,27 +4,27 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {computed, nextTick, onUpdated, PropType, ref} from "vue";
+import {nextTick, onUpdated, type PropType} from "vue";
 import {mixins, utils} from "@geelato/gl-ui";
 
 
 const props = defineProps({
   spans: {
-    type: Array as PropType<Array<Number>>,
+    type: Array as PropType<Array<number>>,
     default() {
       return [8, 8, 8];
     },
   },
   offsets: {
-    type: Array as PropType<Array<Number>>,
+    type: Array as PropType<Array<number>>,
     default() {
       return [0, 0, 0];
     },
   },
   gutter: {
-    type: String,
+    type: Number,
     default() {
-      return "16";
+      return 16;
     },
   },
   /**

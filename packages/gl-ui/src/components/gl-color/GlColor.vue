@@ -4,9 +4,9 @@ export default {
 }
 </script>
 <script setup lang="ts">
+// @ts-nocheck
 import {Sketch} from '@ckpack/vue-color';
 import {ref, watch} from "vue";
-
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: {

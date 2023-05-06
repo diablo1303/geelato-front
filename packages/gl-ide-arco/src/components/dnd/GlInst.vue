@@ -111,6 +111,35 @@ const isFormItem = computed(() => {
     return block === props.glComponentInst.componentName
   }) === -1
 })
+
+// 示例
+// "i18n":
+// [
+//   {
+//     "zh-CN":
+//         "公司全称",
+//     "en-US":
+//         "FullName"
+//   }
+// ]
+const defaultLocal = 'zh-CN'
+const i18n = props.glComponentInst.i18n
+const i18nConvert = (value: string) => {
+  const currentLocaleValue = localStorage.getItem('gl-locale') || defaultLocal
+  // 如果是默认语言（zh-CN），则直接返回
+  if (currentLocaleValue === defaultLocal) {
+    return value
+  }
+  if (i18n) {
+    for (let i18nKey in i18n) {
+      if (i18n[i18nKey]['zh-CN'] === value) {
+        return i18n[i18nKey][currentLocaleValue]
+      }
+    }
+  }
+  // 如果没有匹配的字典信息，则直接返回
+  return value
+}
 </script>
 
 <template>
@@ -123,17 +152,17 @@ const isFormItem = computed(() => {
       <template v-if="isFormItem">
         {{ glComponentInst?.props?.bindFiled }}
         <a-form-item class="gl-form-item" :field="glComponentInst?.props?.bindField?.fieldName"
-                     :tooltip="glComponentInst?.props?.tooltip" :label="glComponentInst?.props?.label"
-                     :rules="glComponentInst?.rules"
+                     :tooltip="i18nConvert(glComponentInst?.props?.tooltip)" :label="i18nConvert(glComponentInst?.props?.label)"
+                     :rules="glComponentInst?.props?.rules"
                      :validate-trigger="['change','input']">
           <GlComponentDnd class="gl-dnd-item gl-x-item"
                           :glComponentInst="glComponentInst"
                           :componentStoreId="componentStoreId">
           </GlComponentDnd>
-          <template v-if="glComponentInst?.props?.extra" #extra>
+          <template v-if="i18nConvert(glComponentInst?.props?.extra)" #extra>
             <div>{{ glComponentInst?.props?.extra }}</div>
           </template>
-          <template v-if="glComponentInst?.props?.help" #help>
+          <template v-if="i18nConvert(glComponentInst?.props?.help)" #help>
             <div>{{ glComponentInst?.props?.help }}</div>
           </template>
         </a-form-item>

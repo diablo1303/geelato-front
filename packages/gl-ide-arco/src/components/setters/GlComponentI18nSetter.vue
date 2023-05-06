@@ -20,12 +20,12 @@ const props = defineProps({
 
 const mv = ref(props.componentInstance!.i18n)
 
-// watch(mv, () => {
+watch(mv, (val) => {
+  props.componentInstance!.i18n = val
+}, {deep: true})
+// const update = () => {
 //   emits('update:modelValue', mv.value)
-// }, {deep: true})
-const update = () => {
-  emits('update:modelValue', mv.value)
-}
+// }
 </script>
 
 <template>
