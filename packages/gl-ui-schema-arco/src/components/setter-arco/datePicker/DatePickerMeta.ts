@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-datePicker",
     "group": "dataEntry",
     "title": "日期选择",
+    "alias": "date",
     "useBy": ["freePage"],
     "properties": [
         {

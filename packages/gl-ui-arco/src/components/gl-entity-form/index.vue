@@ -2,7 +2,12 @@
   <div class="gl-entity-form">
     <a-form ref="formRef" :model="formData" :title="title" :layout="layout"
             :autoLabelWidth="autoLabelWidth">
-      <GlInsts :glComponentInst="glComponentInst"></GlInsts>
+      <template v-if="glIsRuntime">
+        <slot></slot>
+      </template>
+      <template v-else>
+        <GlInsts :glComponentInst="glComponentInst"></GlInsts>
+      </template>
     </a-form>
     <a-button @click="onSubmitClick">提交</a-button>
   </div>
@@ -91,6 +96,7 @@ const onSubmitClick = async () => {
 
 <style>
 .gl-entity-form {
+  width: 100%;
 }
 
 .gl-entity-form-actions {

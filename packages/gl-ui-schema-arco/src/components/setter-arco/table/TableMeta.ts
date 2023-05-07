@@ -5,6 +5,7 @@ export default {
     "group": "dataDisplay",
     "title": "表格",
     "useBy": ["freePage"],
+    "alias": "table",
     "properties": [{
         "name": "entityName",
         "setterComponentProps": {},
@@ -295,6 +296,5 @@ export default {
         "setterComponentName": "GlArrayComponentSetter",
         "title": "列操作"
     }],
-    "actions": [
-    ]
+    "actions": []
 }

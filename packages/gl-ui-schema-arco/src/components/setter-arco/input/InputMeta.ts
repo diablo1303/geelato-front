@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-input",
     "group": "dataEntry",
     "title": "字符输入",
+    "alias": "input",
     "useBy": ["freePage"],
     "properties": [{
         "name": "label",

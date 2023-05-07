@@ -4,6 +4,7 @@ export default {
     "iconType":"gl-comment",
     "group": "dataDisplay",
     "title": "评论",
+    "alias": "comment",
     "useBy": ["freePage"],
     "properties": [],"actions": [],
 }

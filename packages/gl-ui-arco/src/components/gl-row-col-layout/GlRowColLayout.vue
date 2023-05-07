@@ -6,6 +6,7 @@ export default {
 <script setup lang="ts">
 import {nextTick, onUpdated, type PropType} from "vue";
 import {mixins, utils} from "@geelato/gl-ui";
+import {I18nItem} from "@geelato/gl-ui-schema/src/entity/ComponentInstance";
 
 
 const props = defineProps({
@@ -86,11 +87,58 @@ onUpdated(() => {
 
 updateInst()
 
+const defaultLocal = 'zh-CN'
+const i18nConvert = (value: string, i18n: I18nItem) => {
+  const currentLocaleValue = localStorage.getItem('gl-locale') || defaultLocal
+  // 如果是默认语言（zh-CN），则直接返回
+  if (currentLocaleValue === defaultLocal) {
+    return value
+  }
+  if (i18n) {
+    for (let i18nKey in i18n) {
+      if (i18n[i18nKey]['zh-CN'] === value) {
+        return i18n[i18nKey][currentLocaleValue]
+      }
+    }
+  }
+  // 如果没有匹配的字典信息，则直接返回
+  return value
+}
 
 </script>
 
 <template>
-  <a-row :gutter="gutter">
+  <a-row :gutter="gutter" v-if="glIsRuntime">
+    <a-col
+        v-for="(span, index) in spans"
+        :key="index"
+        :span="span"
+    >
+      <template v-for="childComponentInst in glComponentInst.children[index].children">
+        <a-form-item v-if="childComponentInst" class="gl-form-item"
+                     :field="childComponentInst.props?.bindField?.fieldName"
+                     :tooltip="i18nConvert(childComponentInst.props?.tooltip,childComponentInst.i18n)"
+                     :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"
+                     :rules="childComponentInst.props?.rules"
+                     :validate-trigger="['change','input']">
+          <GlComponent :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime"></GlComponent>
+          <template v-if="childComponentInst.props?.extra" #extra>
+            <div>{{
+                i18nConvert(childComponentInst.props?.extra, childComponentInst.i18n)
+              }}
+            </div>
+          </template>
+          <template v-if="childComponentInst.props?.help" #help>
+            <div>{{
+                i18nConvert(childComponentInst.props?.help, childComponentInst.i18n)
+              }}
+            </div>
+          </template>
+        </a-form-item>
+      </template>
+    </a-col>
+  </a-row>
+  <a-row :gutter="gutter" v-else>
     <a-col
         v-for="(span, index) in spans"
         :key="index"
@@ -99,6 +147,7 @@ updateInst()
       <GlInsts :glComponentInst="glComponentInst.children[index]"/>
     </a-col>
   </a-row>
+
 </template>
 
 <style scoped></style>

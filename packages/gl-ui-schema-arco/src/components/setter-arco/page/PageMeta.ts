@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-page",
     "group": "navigation",
     "title": "页面",
+    "alias": "page",
     "useBy": ["freePage"],
     "properties": [{
         "name": "pageTitle",

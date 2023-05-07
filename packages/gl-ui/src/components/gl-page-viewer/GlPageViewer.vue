@@ -1,6 +1,6 @@
 <template>
   <div>
-    <GlComponent :glComponentInst="glComponentInst"></GlComponent>
+    <GlComponent :glComponentInst="glComponentInst" :glIsRuntime="true"></GlComponent>
   </div>
 </template>
 
@@ -33,5 +33,4 @@ loadedPage.then((resp: any) => {
 </script>
 
 <style scoped>
-
 </style>

@@ -4,6 +4,7 @@ export default {
     "iconType":"gl-tooltip",
     "group": "dataDisplay",
     "title": "文字提示",
+    "alias": "tooltip",
     "useBy": ["freePage"],
     "properties": [],"actions": [],
 }

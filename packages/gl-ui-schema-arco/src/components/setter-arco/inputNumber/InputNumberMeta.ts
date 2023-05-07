@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-inputNumber",
     "group": "dataEntry",
     "title": "数字输入",
+    "alias": "number",
     "useBy": ["freePage"],
     "properties": [{
         "name": "label",

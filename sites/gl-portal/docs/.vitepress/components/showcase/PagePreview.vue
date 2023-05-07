@@ -17,7 +17,7 @@ pageId.value = params.get('pageId')
   <div>
     <div v-if="!pageId">
       <a-alert>
-        请在url中传入pageId参数，如：http://localhost:8000/showcase/preview.html?pageId=xxxxxx.
+        请在url中传入pageId参数，如：http://localhost:8000/showcase/preview.html?pageId=xxxxxxxxxxxxxxxxxxx.
       </a-alert>
     </div>
     <GlPageViewer v-if="pageId" :pageId="pageId"></GlPageViewer>

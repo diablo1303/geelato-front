@@ -4,6 +4,7 @@ export default {
     "iconType":"gl-image",
     "group": "dataDisplay",
     "title": "图片",
+    "alias": "image",
     "useBy": ["freePage"],
     "properties": [],"actions": [],
 }

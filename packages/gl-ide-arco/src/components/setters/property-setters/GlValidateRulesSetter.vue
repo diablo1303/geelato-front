@@ -39,19 +39,20 @@ watch(mv, (val) => {
 const update = () => {
 
 }
-
-const rules = [
-  {label: '验证长度', name: 'length', setter: 'ANumber'},
-  {label: '最大长度', name: 'maxLength', setter: 'ANumber'}
+type ruleType = 'string' | 'number' | 'boolean' | 'array' | 'object' | 'email' | 'url' | 'ip'
+const ruleOptions = [
+  {label: '验证长度', name: 'length', type:'number', setter: 'ANumber'},
+  {label: '最大长度', name: 'maxLength', type:'number', setter: 'ANumber'},
+  {label: '最小长度', name: 'minLength', type:'number', setter: 'ANumber'}
 ]
 const getRuleSetter = (ruleName: string) => {
-  return rules.find((rule: any) => {
+  return ruleOptions.find((rule: any) => {
     return rule.name === ruleName
   })!.setter
 }
-const addRule = (newRule: any) => {
+const addRule = (ruleOption: any) => {
   const foundRule = mv.value.find((rule: any) => {
-    return rule[newRule.name] !== undefined
+    return rule[ruleOption.name] !== undefined
   })
   // 避免重复加同一规则
   if (!foundRule) {
@@ -101,7 +102,7 @@ const addRule = (newRule: any) => {
         </div>
       </GlArrayBaseSetter>
       <a-select placeholder="选择添加规则" @change="addRule">
-        <a-option v-for="rule of rules" :value="rule" :label="rule.label"/>
+        <a-option v-for="ruleOption of ruleOptions" :value="ruleOption" :label="ruleOption.label"/>
       </a-select>
     </div>
   </div>

@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-color",
     "group": "dataEntry",
     "title": "颜色",
+    "alias": "color",
     "useBy": ["freePage"],
     "properties": [{
         "name": "mode",

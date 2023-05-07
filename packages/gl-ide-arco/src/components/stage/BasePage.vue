@@ -7,8 +7,7 @@ export default {
 
 import {componentStoreFactory} from "@geelato/gl-ide";
 import {useGlobal, emitter, utils} from "@geelato/gl-ui";
-import {PropType} from "vue";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
+import GlInst from "../dnd/GlInst.vue";
 
 const props = defineProps({
   componentStoreId: {
@@ -69,20 +68,24 @@ emitter.on('setCurrentHoverComponentId', (data) => {
 </script>
 
 <template>
-  <div class="gl-ide-arco-stage-main" v-if="componentStore.currentComponentTree.length>0"
-       :id="componentStore.currentComponentTree[0].id"
-       style="padding-top: 2em">
+  <div class="gl-base-page" v-if="componentStore.currentComponentTree.length>0"
+       :id="componentStore.currentComponentTree[0].id">
     <GlToolbarBreadcrumbs eventType="Hover"></GlToolbarBreadcrumbs>
     <GlToolbarBreadcrumbs eventType="Selected"></GlToolbarBreadcrumbs>
-    <GlInsts :glComponentInst="componentStore.currentComponentTree[0]">
-    </GlInsts>
+    <GlInst :id="componentStore.currentComponentTree[0].id"
+            :key="componentStore.currentComponentTree[0].id"
+            :text="componentStore.currentComponentTree[0].id"
+            :index="0"
+            :glComponentInst="componentStore.currentComponentTree[0]"
+            :componentStoreId="componentStoreId">
+      <GlInsts :glComponentInst="componentStore.currentComponentTree[0]">
+      </GlInsts>
+    </GlInst>
   </div>
 </template>
 <style>
-.gl-ide-arco-stage-main {
-  padding: 10px 10px 2em 10px;
+.gl-base-page {
+  padding: 0 1em 0 0;
   overflow: hidden;
 }
-
-
 </style>

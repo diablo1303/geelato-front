@@ -76,8 +76,8 @@ watch(() => {
 </script>
 
 <style>
-.gl-ide-arco-stage-main {
-  padding: 10px 10px 2em 10px;
-  overflow: hidden;
-}
+/*.gl-ide-arco-stage-main {*/
+/*  padding: 10px 10px 2em 10px;*/
+/*  overflow: hidden;*/
+/*}*/
 </style>

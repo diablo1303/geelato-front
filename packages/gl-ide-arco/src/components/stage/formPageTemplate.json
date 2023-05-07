@@ -1,0 +1,78 @@
+{
+  "componentName": "GlPage",
+  "id": "",
+  "props": {},
+  "slots": {},
+  "children": [{
+    "id": "",
+    "componentName": "GlEntityForm",
+    "title": "实体表单",
+    "props": {
+      "title": "实体表单",
+      "layout":"vertical",
+      "autoLabelWidth":true
+    },
+    "slots": {},
+    "children": [{
+      "id": "",
+      "componentName": "GlCard",
+      "title": "卡片",
+      "props": {"title": "卡片", "bordered": false},
+      "slots": {},
+      "children": [
+        {
+          "id": "",
+          "componentName": "GlRowColLayout",
+          "title": "栅格布局",
+          "props": {"title": "栅格布局", "spans": [8, 8, 8]},
+          "slots": {},
+          "children": [{
+            "id": "",
+            "componentName": "GlVirtual",
+            "title": "项",
+            "props": {},
+            "slots": {},
+            "children": [{
+              "id": "",
+              "componentName": "GlDndPlaceholder",
+              "title": "占位符",
+              "props": {},
+              "slots": {},
+              "children": []
+            }]
+          }, {
+            "id": "",
+            "componentName": "GlVirtual",
+            "title": "项",
+            "props": {},
+            "slots": {},
+            "children": [{
+              "id": "",
+              "componentName": "GlDndPlaceholder",
+              "title": "占位符",
+              "props": {},
+              "slots": {},
+              "children": []
+            }]
+          }, {
+            "id": "",
+            "componentName": "GlVirtual",
+            "title": "项",
+            "props": {},
+            "slots": {},
+            "children": [{
+              "id": "",
+              "componentName": "GlDndPlaceholder",
+              "title": "占位符",
+              "props": {},
+              "slots": {},
+              "children": []
+            }]
+          }],
+          "style": {}
+        }],
+      "style": {}
+    }]
+  }],
+  "actions": []
+}

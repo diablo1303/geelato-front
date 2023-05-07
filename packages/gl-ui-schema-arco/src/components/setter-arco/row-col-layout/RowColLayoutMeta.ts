@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-layout",
     "group": "layout",
     "title": "行列布局",
+    "alias": "rclayout",
     "useBy": ["freePage"],
     "properties": [{
         "name": "spans",

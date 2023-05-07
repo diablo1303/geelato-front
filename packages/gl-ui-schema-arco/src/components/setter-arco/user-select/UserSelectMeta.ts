@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-user",
     "group": "dataEntry",
     "title": "人员选择",
+    "alias": "userselect",
     "useBy": ["freePage"],
     "properties": [{
         "name": "label",

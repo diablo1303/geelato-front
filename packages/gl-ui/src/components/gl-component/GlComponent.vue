@@ -4,31 +4,20 @@
              :is="glComponentInst.componentName"
              v-bind="glComponentInst.propsWrapper?{[glComponentInst.propsWrapper]:glComponentInst.props}:glComponentInst.props"
              :style="glComponentInst.style"
-             :glComponentInst="glComponentInst"
              :parentId="glComponentInst.id"
              :glChildren="glComponentInst.children"
              @click="onClick"
+             :glIsRuntime="glIsRuntime"
+             :glIndex="glIndex"
+             :glComponentInst="glComponentInst"
   >
     <!-- 通过加入空span 解决按钮组件动态slot时，按钮大小不随内容变化的问题-->
     <template v-for="(slotItem,slotName) in glComponentInst.slots">
       <component v-if="slotItem" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"
                  v-slot:[slotName]></component>
-      <!--<GlIconfont :type="slotItem.gl_font_class"></GlIconfont>  -->
-      <!--      <template v-if="slotItem.handler==='ComponentHandler'">-->
-      <!--        <component :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"-->
-      <!--                   v-slot:[slotName]></component>-->
-      <!--        &lt;!&ndash; 用于按钮附加文本 &ndash;&gt;-->
-      <!--        &lt;!&ndash; {{slotItem.props.gl_text}} &ndash;&gt;-->
-      <!--      </template>-->
-      <!--      <template v-else-if="slotItem.handler==='FunctionHandler'">-->
-      <!--        TODO FunctionHandler-->
-      <!--      </template>-->
-      <!--      &lt;!&ndash;  在组件内直接插入html&ndash;&gt;-->
-      <!--      <div v-else-if="slotItem.handler==='HtmlHandler'" v-html="slotItem.props.html">-->
-      <!--      </div>-->
     </template>
-    <GlComponent v-for="childComponentInst in glComponentInst.children"
-                 :glComponentInst="childComponentInst"></GlComponent>
+    <GlComponent v-for="(childComponentInst,childIndex) in glComponentInst.children"
+                 :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glIndex="childIndex"></GlComponent>
   </component>
 </template>
 
@@ -103,21 +92,6 @@ onMounted(() => {
 })
 
 
-/**
- *  由于部分组件，如AStep，采用template两层嵌套迭代用component渲染时，样式名称渲染为undefined
- *  在这里改成取出最终的迭代元素组成一层数据组，直接在component上迭代
- */
-// const getChildComponentInsts = (glComponentInst: IComponentInstance) => {
-//   let result: Array<any> = []
-//   for (let key in glComponentInst.children) {
-//     console.log('getChildElements getChildComponentInsts:',glComponentInst)
-//     // @ts-ignore
-//     for (let childElement of glComponentInst.children[key]) {
-//       result.push(childElement)
-//     }
-//   }
-//   return result
-// }
 </script>
 
 <style>

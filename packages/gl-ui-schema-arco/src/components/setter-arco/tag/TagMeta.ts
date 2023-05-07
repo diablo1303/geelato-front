@@ -4,6 +4,7 @@ export default {
     "iconType":"gl-tag",
     "group": "dataDisplay",
     "title": "标签",
+    "alias": "tag",
     "useBy": ["freePage"],
     "properties": [],
     "actions": []

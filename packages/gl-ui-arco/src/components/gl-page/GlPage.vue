@@ -1,9 +1,14 @@
 <template>
-  <div class="gl-page-container" :style="style">
+  <div class="gl-page" :style="style">
     <Breadcrumb :items="breadcrumb"/>
-<!--    <slot></slot>-->
-<!--    <a-card class="gl-page-general-card" :title="pageTitle?$t(pageTitle):pageTitle" @click="showSlot">-->
-<!--    </a-card>-->
+    <template v-if="glIsRuntime">
+      <slot></slot>
+    </template>
+    <template v-else>
+      <GlInsts :glComponentInst="glComponentInst"></GlInsts>
+    </template>
+    <!--        <a-card class="gl-page-general-card" :title="pageTitle?$t(pageTitle):pageTitle" @click="showSlot">-->
+    <!--        </a-card>-->
   </div>
 </template>
 
@@ -13,6 +18,8 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+
+import {mixins} from "@geelato/gl-ui";
 
 const props = defineProps({
   breadcrumb: {
@@ -47,7 +54,8 @@ const props = defineProps({
     default() {
       return ''
     }
-  }
+  },
+  ...mixins.props
 })
 
 const style = {
@@ -68,8 +76,9 @@ const openDrawer = () => {
 
 
 <style lang="less">
-.gl-page-container {
-  padding: 0 20px 20px 20px;
+.gl-page {
+  width: 100%;
+  //padding: 0 20px 20px 20px;
 }
 
 .gl-page-general-card > .arco-card-header {

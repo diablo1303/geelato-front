@@ -18,9 +18,6 @@ const app = createApp(App);
 
 
 app.use(ArcoVue, {});
-// Modal._context = app._context;
-// app.component('GlModal', Modal)
-
 app.use(ArcoVueIcon);
 app.use(geelatoMain)
 

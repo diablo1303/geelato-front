@@ -61,6 +61,7 @@ import RowColLayoutInstance from "./setter-arco/row-col-layout/RowColLayoutInsta
 import RadioGroupMeta from "./setter-arco/radio/RadioGroupMeta";
 import UserSelectMeta from "./setter-arco/user-select/UserSelectMeta";
 import RadioGroupInstance from "./setter-arco/radio/RadioGroupInstance";
+import VirtualMeta from "./setter-arco/virtual/VirtualMeta";
 
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [ButtonMeta, IconMeta, FormMeta, InputMeta, InputNumberMeta, TextAreaMeta, RateMeta, RadioGroupMeta, UserSelectMeta, ColorMeta, TableMeta, TypographyMeta, DividerMeta, RowColLayoutMeta,
@@ -68,7 +69,7 @@ const componentMetas: Array<ComponentMeta> = [ButtonMeta, IconMeta, FormMeta, In
     CascaderMeta, CheckboxMeta, DatePickerMeta, MentionsMeta,
     SelectMeta, SliderMeta, SwitchMeta, TimePickerMeta, TransferMeta, TreeSelectMeta, UploadMeta, AvatarMeta, BadgeMeta,
     CalendarMeta, CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
-    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, TreeMeta, PageMeta, DndPlaceholderMeta]
+    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, TreeMeta, PageMeta, DndPlaceholderMeta,VirtualMeta]
 
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, CardInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance]

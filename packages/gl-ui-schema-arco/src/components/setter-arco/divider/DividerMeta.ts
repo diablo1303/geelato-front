@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-divider",
     "group": "layout",
     "title": "分割线",
+    "alias": "divider",
     "useBy": ["freePage"],
     "properties": [{
         "name": "dashed",

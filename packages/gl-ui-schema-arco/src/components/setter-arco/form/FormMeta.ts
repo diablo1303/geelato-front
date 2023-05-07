@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-form",
     "group": "dataEntry",
     "title": "实体表单",
+    "alias": "form",
     "useBy": ["freePage"],
     "properties": [{
         "expanded": true,

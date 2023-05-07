@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-card",
     "group": "layout",
     "title": "卡片",
+    "alias": "card",
     "useBy": ["freePage"],
     "properties": [{
         "expanded": true,
