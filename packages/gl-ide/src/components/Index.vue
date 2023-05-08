@@ -11,10 +11,12 @@
             :style="{height:`${themeStore.ideMainHeight}px`}" style="overflow-y: auto">
         <DesignerSidebarPanel @switchPanel="onSwitchSidebarPanel"></DesignerSidebarPanel>
       </pane>
-      <pane :size="themeStore.stageWidthPercent">
+      <pane :size="themeStore.stageWidthPercent"
+            :style="{height:`${themeStore.ideMainHeight}px`}" style="overflow-y: auto">
         <DesignerStagePanel></DesignerStagePanel>
       </pane>
-      <pane :size="themeStore.setterWidthPercent">
+      <pane :size="themeStore.setterWidthPercent"
+            :style="{height:`${themeStore.ideMainHeight}px`}" style="overflow-y: auto">
         <DesignerSetterPanel @update="updateSetter"></DesignerSetterPanel>
       </pane>
     </splitpanes>
@@ -51,7 +53,7 @@ export default defineComponent({
   setup(props, context) {
     const stagePanels = ref([])
     const themeStore = useThemeStore()
-    if(AllUtils.CheckUtil.isBrowser()) {
+    if (AllUtils.CheckUtil.isBrowser()) {
       if (typeof window !== 'undefined') {
         window.onresize = () => {
           return (() => {
@@ -61,7 +63,7 @@ export default defineComponent({
       }
     }
 
-    const onSwitchSidebarPanel = ({showPanel}:{showPanel:boolean}) => {
+    const onSwitchSidebarPanel = ({showPanel}: { showPanel: boolean }) => {
       if (!showPanel) {
         console.log('showPanel>', showPanel)
         themeStore.sidebarWidth = themeStore.sidebarTabWidth

@@ -24,6 +24,9 @@ import useLoading from '../../hooks/loading';
 import {mixins} from "@geelato/gl-ui";
 import {isDataEntry} from "@geelato/gl-ui-schema-arco";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import {useGlobal} from "@geelato/gl-ui";
+
+const global = useGlobal()
 
 type LayoutType = "inline" | "horizontal" | "vertical"
 const form = ref({})
@@ -54,11 +57,12 @@ const formRef = ref<FormInstance>();
  * 遍历取得所有表单项的值
  */
 const buildFieldItems = () => {
-
+  formItems.value.length = 0
   function buildFieldItem(inst: ComponentInstance) {
     for (let index in inst.children) {
       // @ts-ignore
       let subInst = inst.children[index]
+      console.log('isDataEntry:', subInst.componentName, isDataEntry(subInst.componentName), ' subInst:', subInst)
       if (isDataEntry(subInst.componentName)) {
         let formItem = {
           fieldName: subInst.props.bindField.fieldName,
@@ -80,9 +84,12 @@ const buildFieldItems = () => {
 
 const {loading, setLoading} = useLoading();
 const onSubmitClick = async () => {
+  // checkConfig()
+  // 构建表单数据项，设置值
+  buildFieldItems()
+  // 再进一步进行表单数据项值校验
   const res = await formRef.value?.validate();
   console.log('onSubmitClick() validate form:', formRef.value, ' result:', res)
-  buildFieldItems()
   if (!res) {
     setLoading(true);
   } else {
@@ -92,6 +99,27 @@ const onSubmitClick = async () => {
     setLoading(false);
   }, 1000);
 };
+
+/**
+ *  检查配置是否正常
+ *  用于设计时
+ */
+const checkConfig = () => {
+  function checkFieldItem(inst: ComponentInstance) {
+    for (let index in inst.children) {
+      let subInst = inst.children[index]
+      if (isDataEntry(subInst.componentName)) {
+        if(!subInst.props.bindField){
+          global.$notification.error(`组件[${subInst.componentName}],标题：${subInst.props.label},未绑定模型字段。`)
+        }
+      }
+      if (subInst.children && subInst.children.length > 0) {
+        checkFieldItem(subInst)
+      }
+    }
+  }
+  checkFieldItem(props.glComponentInst)
+}
 </script>
 
 <style>

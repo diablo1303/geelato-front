@@ -112,6 +112,16 @@ export default {
         "setterComponentVModelName": "modelValue",
         "title": "禁用",
         "setterComponentName": "ASwitch"
+    }, {
+        "name": "rules",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "验证规则",
+        "setterComponentName": "GlValidateRulesSetter"
     }],
     "actions": []
 }

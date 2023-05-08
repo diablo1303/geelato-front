@@ -37,6 +37,7 @@ const setToolbarBreadcrumbsPosition = (toolbarBreadcrumbsId: string, moveToTarge
   const target = typeof moveToTargetId === 'string' ? document.getElementById(moveToTargetId) : moveToTargetId
   if (!target) {
     // 对于虚拟节点，找不到停靠的对象是正常的情况
+    // ！！！注意，这里对虚拟节点做了特殊处理，id命名规则为virtual_开头
     if (moveToTargetId.indexOf('virtual_') === -1) {
       console.error('通过moveToTargetId(' + moveToTargetId + ')找不到停靠的对象。')
     }

@@ -40,7 +40,7 @@ const moveCard = (dragIndex: number, hoverIndex: number, dragItemId: string, dro
   const dropItemParentComponent = componentStore.findParentComponentFromTreeById(dropItemId)
   console.log('findParentComponentFromTreeById，dropItemParentComponent:', dropItemParentComponent)
 
-  if (!dragItemParentComponent || !dropItemParentComponent || !dragItemParentComponent.children||!dropItemParentComponent.children) {
+  if (!dragItemParentComponent || !dropItemParentComponent || !dragItemParentComponent.children || !dropItemParentComponent.children) {
     return
   }
   const dragItem = dragItemParentComponent.children![dragIndex]
@@ -59,8 +59,8 @@ const moveCard = (dragIndex: number, hoverIndex: number, dragItemId: string, dro
 }
 
 const addItem = (hoverIndex: number, item: ComponentInstance) => {
-  console.log('addItem', hoverIndex, item)
-  item.id = utils.gid('id', 16)
+  // console.log('addItem', hoverIndex, item)
+  item.id = utils.gid(componentStore.getAlias(item.componentName) || 'id')
   props.glComponentInst.children!.splice(hoverIndex, 0, item)
   tryRemoveDndPlaceholder(props.glComponentInst.children)
   componentStore.currentDragComponentId = ''

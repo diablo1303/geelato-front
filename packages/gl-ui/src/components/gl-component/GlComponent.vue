@@ -2,6 +2,7 @@
   <component v-if="glComponentInst" :id="glComponentInst.id" :ref="glComponentInst.id"
              class="gl-component"
              :is="glComponentInst.componentName"
+             v-model="glComponentInst._value"
              v-bind="glComponentInst.propsWrapper?{[glComponentInst.propsWrapper]:glComponentInst.props}:glComponentInst.props"
              :style="glComponentInst.style"
              :parentId="glComponentInst.id"
@@ -11,6 +12,7 @@
              :glIndex="glIndex"
              :glComponentInst="glComponentInst"
   >
+    <!--    :modelValue="glComponentInst._value"-->
     <!-- 通过加入空span 解决按钮组件动态slot时，按钮大小不随内容变化的问题-->
     <template v-for="(slotItem,slotName) in glComponentInst.slots">
       <component v-if="slotItem" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"

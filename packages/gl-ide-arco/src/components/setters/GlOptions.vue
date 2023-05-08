@@ -3,11 +3,11 @@
 -->
 <template>
   <table>
-<!--    <tr v-if="items&&items.length>0">-->
-<!--      <th v-for="(column,index) in convertedColumns" style="font-weight: normal;text-align: center"-->
-<!--          :style="{width: (100/convertedColumns.length+'%')}">{{ column.title }}-->
-<!--      </th>-->
-<!--    </tr>-->
+    <!--    <tr v-if="items&&items.length>0">-->
+    <!--      <th v-for="(column,index) in convertedColumns" style="font-weight: normal;text-align: center"-->
+    <!--          :style="{width: (100/convertedColumns.length+'%')}">{{ column.title }}-->
+    <!--      </th>-->
+    <!--    </tr>-->
     <gl-draggable
         :list="items"
         animation="700"
@@ -67,7 +67,7 @@
 
 <script lang="ts">
 // @ts-nocheck
-import {defineComponent, type PropType, reactive} from 'vue'
+import {defineComponent, type PropType} from 'vue'
 import {utils} from "@geelato/gl-ui";
 
 type ColumnType = { dataIndex: String, title?: String }
@@ -104,6 +104,7 @@ export default defineComponent({
   },
   data() {
     return {
+      // 数据项中，是否有value字段
       hasValueDataIndex: false,
       columnDataIndexMap: {},
       convertedColumns: [],
@@ -127,23 +128,33 @@ export default defineComponent({
     // 将dataIndex为value的转成其它，该字段会导致输入卡顿，每输一个字符会失去焦点
     convertColumns(columns: Array<any>) {
       let cols = JSON.parse(JSON.stringify(columns))
-      console.log('cols:',cols)
+      console.log('cols:', cols)
       for (let index in cols) {
         const col = cols[index]
         if (col.dataIndex === 'value') {
-          this.columnDataIndexMap.value = this.columnDataIndexMap.value || 'v_' + utils.gid('')
+          this.columnDataIndexMap.value = this.columnDataIndexMap.value || utils.gid('_')
           col.dataIndex = this.columnDataIndexMap.value
           return cols
         }
       }
       return cols
     },
+    /**
+     * 初始化转换值
+     * @param items
+     */
     convertValues(items: Array<any>) {
       let newItems = items
       if (this.hasValueDataIndex) {
-        this.columnDataIndexMap.value = this.columnDataIndexMap.value || 'v_' + utils.gid('')
+        this.columnDataIndexMap.value = this.columnDataIndexMap.value || utils.gid('_')
         for (let index in newItems) {
           const item = newItems[index]
+          // 删除为了转换value字段而创建的列（历史数据），该列以__开头
+          Object.keys(item).forEach((key) => {
+            if (key.startsWith("__")) {
+              delete item[key]
+            }
+          })
           item[this.columnDataIndexMap.value] = item.value
         }
       }

@@ -27,7 +27,7 @@
     </gl-draggable>
   </div>
 
-  <a @click="addItem" style="line-height: 2em;cursor: pointer">
+  <a v-if="addAble" @click="addItem" style="line-height: 2em;cursor: pointer">
     <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加</a>
 
 </template>
@@ -47,7 +47,16 @@ export default defineComponent({
       }
     },
     defaultItemForAdd: {
-      type: [Object, Function]
+      type: [Object, Function],
+      default() {
+        return {}
+      }
+    },
+    addAble: {
+      type: Boolean,
+      default() {
+        return true
+      }
     }
   },
   data() {
@@ -65,7 +74,8 @@ export default defineComponent({
   },
   methods: {
     getDefaultItem() {
-      console.log('........', typeof this.defaultItemForAdd,this.defaultItemForAdd)
+
+      console.log('........', typeof this.defaultItemForAdd, this.defaultItemForAdd)
       const template = typeof this.defaultItemForAdd === 'function' ? this.defaultItemForAdd() : this.defaultItemForAdd
       try {
         return JSON.parse(JSON.stringify(template))

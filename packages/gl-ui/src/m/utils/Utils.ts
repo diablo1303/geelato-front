@@ -92,13 +92,13 @@ export class Utils {
 
     /**
      * @param prefix 用于区分gid的类型，如node、div、component
-     * @param maxLength 加上prefix和连接符“_”总的gid长度，默认为16
+     * @param maxLength 加上prefix和连接符“_”总的gid长度，默认为20
      */
     gid(prefix?: string, maxLength?: number) {
         if (prefix) {
-            return `${prefix}_${this.uuid(maxLength || 16 - prefix.length - 1)}`
+            return `${prefix}_${this.uuid((maxLength || 20) - prefix.length - 1)}`
         }
-        return this.uuid(16)
+        return this.uuid(20)
     }
 
     uuid(len: number, radix?: number) {
@@ -171,7 +171,7 @@ export class Utils {
         let Fn = Function
         let uName = utilsName || '$utils'
         let str = this.trim(fnBody)
-        return new Fn(ctxName, uName,  fnBody)(ctx, $utils || {})
+        return new Fn(ctxName, uName, fnBody)(ctx, $utils || {})
     }
 
     /**

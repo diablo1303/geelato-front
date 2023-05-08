@@ -1,9 +1,11 @@
 <template>
   <div>
     <a-select @change="onEntityChange" v-model="mv.entityName" allow-search placeholder="选择实体">
+      <template #prefix>实体</template>
       <a-option v-for="item in entityLiteMetas" :value="item.entityName">{{ item.entityTitle }}</a-option>
     </a-select>
     <a-select size="small" v-model="mv.fieldName" @change="onFieldChange" allow-search placeholder="选择字段">
+      <template #prefix>字段</template>
       <a-option v-for="item in entityFieldMetas" :value="item.name">{{ item.title + ' ' + item.name }}</a-option>
     </a-select>
   </div>

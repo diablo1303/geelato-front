@@ -192,5 +192,15 @@ export default {
         "title": "错误状态",
         "placeholder": "是否为错误状态",
         "setterComponentName": "ASwitch"
+    }, {
+        "name": "rules",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "验证规则",
+        "setterComponentName": "GlValidateRulesSetter"
     }]
 }
