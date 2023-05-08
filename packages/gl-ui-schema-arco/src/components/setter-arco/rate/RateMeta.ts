@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-rate",
     "group": "dataEntry",
     "title": "评分",
+    "alias": "rate",
     "useBy": ["freePage"],
     "properties": [{
         "name": "label",

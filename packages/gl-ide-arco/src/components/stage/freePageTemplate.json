@@ -1,0 +1,17 @@
+{
+  "componentName": "GlPage",
+  "id": "",
+  "props": {},
+  "slots": {},
+  "children": [
+    {
+      "id": "",
+      "componentName": "GlDndPlaceholder",
+      "title": "占位符",
+      "props": {},
+      "slots": {},
+      "children": []
+    }
+  ],
+  "actions": []
+}

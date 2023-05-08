@@ -33,7 +33,7 @@ const searchName = ref('')
 const selectedItems = ref<Array<any>>(props.modelValue)
 const selectedNames = ref('')
 // 所有的人员清单
-const userDataItems = ref([])
+const userDataItems = ref<Array<any>>([])
 
 
 const searchResult = computed(() => {

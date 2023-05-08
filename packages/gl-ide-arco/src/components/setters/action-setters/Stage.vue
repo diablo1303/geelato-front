@@ -76,7 +76,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import mixin from '../../../../mixin-designer'
 
   export default {

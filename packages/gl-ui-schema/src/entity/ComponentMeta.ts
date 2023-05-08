@@ -1,5 +1,5 @@
 import type IPropertySetterMeta from "./IPropertySetterMeta";
-import Action from "./actions/Action";
+import type Action from "./actions/Action";
 
 /**
  *  记录组件中哪些信息需要进行多语言配置
@@ -36,6 +36,7 @@ export default class ComponentMeta {
     // 引用的组件名称，如AButton
     // componentRefName: String
     propsWrapper?: String = ''
+    // 别名简称，用于在生成id时作为前缀
     alias?: String = ''
 
     // 为作命令块组件时，在设计器中，展示的描述该命令块的。

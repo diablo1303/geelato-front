@@ -2,12 +2,14 @@ import {defineStore} from 'pinia'
 import type GlPlugin from "../entity/GlPlugin";
 import type Panel from "../entity/Panel";
 import {useAppStore} from "./UseAppStore";
-import {getPageTemplate, usePageStore} from "./UsePageStore";
+import {usePageStore} from "./UsePageStore";
 import {useComponentStore} from "./UseComponentStore";
 import {useEntityStore} from "./UseEntityStore";
 import Page from "../entity/Page";
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import {ref} from "vue";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import {utils} from "@geelato/gl-ui";
 
 export const useIdeStore = defineStore('GlIdeStore', () => {
     const name = ref('Geelato Ide')
@@ -120,8 +122,19 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
                         page.extendId = extendId
                         page.title = title
                         page.iconType = iconType
-                        // TODO 如果type为templatePage，则弹出页面模板选择页面，从模板中创建
-                        page.sourceContent = JSON.parse(JSON.stringify(getPageTemplate(type)))
+                        // TODO 如果type为templatePage，则弹出页面模板选择页面，从模板中创建，这样可以支持更多模板页面
+                        const pageTemplate = pageStore.getPageTemplate(type)
+                        function genComponentId(inst: ComponentInstance) {
+                            inst.id = utils.gid(componentStore.getAlias(inst.componentName), 16)
+                            if(inst.children){
+                                inst.children.forEach((subInst:ComponentInstance)=>{
+                                    genComponentId(subInst)
+                                })
+                            }
+                        }
+                        genComponentId(pageTemplate)
+                        console.log('pageTemplate',pageTemplate)
+                        page.sourceContent = pageTemplate
                     }
                     componentStore.setComponentTree(page.sourceContent)
                     // @ts-ignore
@@ -153,8 +166,8 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
      * @param title
      * @param iconType
      */
-    function closePage({type, extendId, title, iconType}: Page){
-        console.log('close page:',{type, extendId, title, iconType})
+    function closePage({type, extendId, title, iconType}: Page) {
+        console.log('close page:', {type, extendId, title, iconType})
         let foundItem = pageStore.findPageByExtendId(extendId)
         if (foundItem.index >= 0) {
             console.log('found delete page:', foundItem)

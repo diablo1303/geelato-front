@@ -1,5 +1,5 @@
 import type {App, Plugin} from 'vue'
-import {GlPlugin, Panel} from '@geelato/gl-ide'
+import {GlPlugin, Panel, usePageStore} from '@geelato/gl-ide'
 import GlIdePluginCoreComponents from './components/sidebar/Components.vue'
 import GlIdePluginCoreAppTree from './components/sidebar/AppTree.vue'
 import GlComponentTree from './components/sidebar/ComponentTree.vue'
@@ -48,6 +48,9 @@ import GlEntityFieldSelect from "./components/setters/property-setters/GlEntityF
 import GlAppEntitySelect from "./components/setters/property-setters/GlAppEntitySelect.vue";
 import GlValidateRulesSetter from "./components/setters/property-setters/GlValidateRulesSetter.vue";
 import GlComponentI18nSetter from "./components/setters/GlComponentI18nSetter.vue";
+import {utils} from "@geelato/gl-ui";
+
+// import formPageTemplate from "./components/stage/formPageTemplate.json";
 
 const plugin = new GlPlugin('gl-plugin-arco')
 
@@ -191,8 +194,11 @@ const component: Plugin = {
         app.config.globalProperties.$gl.alias[GlX.name] = 'glx'
         app.config.globalProperties.$gl.alias[GlToolbarBreadcrumbs.name] = 'crumbs'
 
-        // 安装插件
-        // useIdeStore().usePlugin(plugin)
+        // 配置页面模板
+        const pageStore = usePageStore()
+        pageStore.addPageTemplate("formPage", import("./components/stage/formPageTemplate.json"))
+        pageStore.addPageTemplate("freePage", import("./components/stage/freePageTemplate.json"))
+        pageStore.addPageTemplate("listPage", import("./components/stage/listPageTemplate.json"))
     }
 }
 

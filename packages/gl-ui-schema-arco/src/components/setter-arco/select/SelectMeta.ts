@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-select",
     "group": "dataEntry",
     "title": "选择器",
+    "alias": "select",
     "useBy": ["freePage"],
     "properties": [{
         "name": "label",

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <GlComponent :glComponentInst="glComponentInst"></GlComponent>
+    <GlComponent :glComponentInst="glComponentInst" :glIsRuntime="true"></GlComponent>
   </div>
 </template>
 
@@ -13,6 +13,7 @@ export default {
 import {entityApi} from "../../m/datasource/EntityApi";
 import GlComponent from "../gl-component/GlComponent.vue";
 import {ref} from "vue";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const props = defineProps({
   pageId: {
@@ -23,7 +24,7 @@ const props = defineProps({
     type: Object
   }
 })
-const glComponentInst = ref({})
+const glComponentInst = ref(new ComponentInstance())
 const loadedPage = entityApi.queryPageById(props.pageId)
 loadedPage.then((resp: any) => {
   console.log('loadedPage', resp?.data?.data)
@@ -32,5 +33,4 @@ loadedPage.then((resp: any) => {
 </script>
 
 <style scoped>
-
 </style>

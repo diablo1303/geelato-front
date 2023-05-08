@@ -7,9 +7,10 @@ export default {
 import {computed, PropType, ref, unref} from 'vue'
 import {useDrag, useDrop} from 'vue3-dnd'
 import {ItemTypes} from './DndItemTypes'
-import type {XYCoord, Identifier} from 'dnd-core'
+import type {Identifier} from 'dnd-core'
 import {toRefs} from '@vueuse/core'
-import {mixins} from "@geelato/gl-ui";
+import {mixins} from "@geelato/gl-ui"
+import {componentStoreFactory} from "@geelato/gl-ide";
 
 const props = defineProps({
   id: [String],
@@ -25,6 +26,8 @@ const props = defineProps({
   },
   ...mixins.props
 })
+
+const componentStore = componentStoreFactory.getComponentStore(props.componentStoreId)()
 
 interface DragItem {
   index: number
@@ -93,24 +96,55 @@ const setRef = (el: HTMLDivElement) => {
   card.value = drag(drop(el)) as HTMLDivElement
 }
 
-const blocks = ['GlEntityForm', 'GlFormRow', 'GlFormCol', 'GlDndPlaceholder', 'GlCard', 'GlTabs', 'GlRowColLayout']
+/**
+ *  数据输入组件作为表单项，除了表单组件本身
+ */
+const isFormItem = computed(() => {
+  // 排除特定的组件，如表单组件
+  if (props.glComponentInst.componentName === 'GlEntityForm') {
+    return false
+  }
+  return componentStore.isDataEntryComponent(props.glComponentInst.componentName)
+})
+const blocks = ['GlPage', 'GlEntityForm', 'GlFormRow', 'GlFormCol', 'GlDndPlaceholder', 'GlCard', 'GlTabs', 'GlRowColLayout']
 const style = ref({
   display: function () {
-    if (blocks.findIndex((block) => {
-      return block === props.glComponentInst.componentName
-    }) > -1) {
-      return false
-    } else {
+    if (componentStore.isDataEntryComponent(props.glComponentInst.componentName)) {
       return 'inline-block'
     }
+    return false
   }()
 })
 
-const isFormItem = computed(() => {
-  return blocks.findIndex((block) => {
-    return block === props.glComponentInst.componentName
-  }) === -1
-})
+
+// 示例
+// "i18n":
+// [
+//   {
+//     "zh-CN":
+//         "公司全称",
+//     "en-US":
+//         "FullName"
+//   }
+// ]
+const defaultLocal = 'zh-CN'
+const i18n = props.glComponentInst.i18n
+const i18nConvert = (value: string) => {
+  const currentLocaleValue = localStorage.getItem('gl-locale') || defaultLocal
+  // 如果是默认语言（zh-CN），则直接返回
+  if (currentLocaleValue === defaultLocal) {
+    return value
+  }
+  if (i18n) {
+    for (let i18nKey in i18n) {
+      if (i18n[i18nKey]['zh-CN'] === value) {
+        return i18n[i18nKey][currentLocaleValue]
+      }
+    }
+  }
+  // 如果没有匹配的字典信息，则直接返回
+  return value
+}
 </script>
 
 <template>
@@ -121,20 +155,20 @@ const isFormItem = computed(() => {
          :data-handler-id="handlerId"
     >
       <template v-if="isFormItem">
-        {{ glComponentInst?.props?.bindFiled }}
         <a-form-item class="gl-form-item" :field="glComponentInst?.props?.bindField?.fieldName"
-                     :tooltip="glComponentInst?.props?.tooltip" :label="glComponentInst?.props?.label"
-                     :rules="glComponentInst?.rules"
+                     :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"
+                     :label="i18nConvert(glComponentInst?.props?.label)"
+                     :rules="glComponentInst?.props?.rules"
                      :validate-trigger="['change','input']">
           <GlComponentDnd class="gl-dnd-item gl-x-item"
                           :glComponentInst="glComponentInst"
                           :componentStoreId="componentStoreId">
           </GlComponentDnd>
           <template v-if="glComponentInst?.props?.extra" #extra>
-            <div>{{ glComponentInst?.props?.extra }}</div>
+            <div>{{ i18nConvert(glComponentInst?.props?.extra) }}</div>
           </template>
           <template v-if="glComponentInst?.props?.help" #help>
-            <div>{{ glComponentInst?.props?.help }}</div>
+            <div>{{ i18nConvert(glComponentInst?.props?.help) }}</div>
           </template>
         </a-form-item>
       </template>
@@ -147,7 +181,6 @@ const isFormItem = computed(() => {
     </div>
     <div v-if="isShallowOver && !isDragging" :class="['indicator', { first: props.index === 0 }]"></div>
   </div>
-
 </template>
 
 <style lang="less" scoped>

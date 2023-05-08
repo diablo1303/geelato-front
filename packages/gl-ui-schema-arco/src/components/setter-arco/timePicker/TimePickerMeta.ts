@@ -4,6 +4,7 @@ export default {
     "iconType":"gl-timePicker",
     "group": "dataEntry",
     "title": "时间选择",
+    "alias": "time",
     "useBy": ["freePage"],
     "properties": [
         {

@@ -4,6 +4,7 @@ export default {
     "iconType":"gl-dropdown",
     "group": "dataEntry",
     "title": "下拉菜单",
+    "alias": "dropdown",
     "useBy": ["freePage"],
     "properties": [],"actions": [],
 }

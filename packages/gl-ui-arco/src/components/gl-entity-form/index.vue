@@ -2,7 +2,12 @@
   <div class="gl-entity-form">
     <a-form ref="formRef" :model="formData" :title="title" :layout="layout"
             :autoLabelWidth="autoLabelWidth">
-      <GlInsts :glComponentInst="glComponentInst"></GlInsts>
+      <template v-if="glIsRuntime">
+        <slot></slot>
+      </template>
+      <template v-else>
+        <GlInsts :glComponentInst="glComponentInst"></GlInsts>
+      </template>
     </a-form>
     <a-button @click="onSubmitClick">提交</a-button>
   </div>
@@ -13,12 +18,14 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {ref} from 'vue';
-import {FormInstance} from '@arco-design/web-vue/es/form';
+import {type PropType, ref} from 'vue';
+import type {FormInstance} from '@arco-design/web-vue/es/form';
 import useLoading from '../../hooks/loading';
-import {IComponentInstance, mixins} from "@geelato/gl-ui";
+import {mixins} from "@geelato/gl-ui";
 import {isDataEntry} from "@geelato/gl-ui-schema-arco";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
+type LayoutType = "inline" | "horizontal" | "vertical"
 const form = ref({})
 const props = defineProps({
   title: String,
@@ -26,7 +33,7 @@ const props = defineProps({
     type: Object
   },
   layout: {
-    type: String,
+    type: String as PropType<LayoutType>,
     default() {
       return 'horizontal'
     }
@@ -48,7 +55,7 @@ const formRef = ref<FormInstance>();
  */
 const buildFieldItems = () => {
 
-  function buildFieldItem(inst: IComponentInstance) {
+  function buildFieldItem(inst: ComponentInstance) {
     for (let index in inst.children) {
       // @ts-ignore
       let subInst = inst.children[index]
@@ -89,6 +96,7 @@ const onSubmitClick = async () => {
 
 <style>
 .gl-entity-form {
+  width: 100%;
 }
 
 .gl-entity-form-actions {

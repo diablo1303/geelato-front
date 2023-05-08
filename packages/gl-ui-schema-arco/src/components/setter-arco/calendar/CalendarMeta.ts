@@ -4,6 +4,7 @@ export default {
     "iconType":"gl-calendar",
     "group": "dataDisplay",
     "title": "日历",
+    "alias": "cal",
     "useBy": ["freePage"],
     "properties": [],"actions": [],
 }

@@ -4,6 +4,7 @@ export default {
     "iconType":"gl-breadcrumb",
     "group": "navigation",
     "title": "面包屑",
+    "alias": "bc",
     "useBy": ["freePage"],
     "properties": [],"actions": [],
 }

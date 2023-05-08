@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-timeline",
     "group": "dataDisplay",
     "title": "时间轴",
+    "alias": "timeline",
     "useBy": ["freePage"],
     "properties": [{
         "name": "children",

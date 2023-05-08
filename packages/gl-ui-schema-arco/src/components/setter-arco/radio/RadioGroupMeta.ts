@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-radio",
     "group": "dataEntry",
     "title": "单选框",
+    "alias": "radio",
     "useBy": ["freePage"],
     "properties": [{
         "name": "label",

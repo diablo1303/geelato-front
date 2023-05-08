@@ -2,13 +2,12 @@ import {defineStore} from 'pinia'
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import {emitter, utils} from "@geelato/gl-ui";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
-import {ref} from "vue";
-// 组件元数据
-// const componentMetaMap: { [key: string]: any } = {}
+
 
 class ComponentMetaMap {
     [key: string]: any
 }
+
 
 class ComponentStoreFactory {
 
@@ -54,6 +53,30 @@ class ComponentStoreFactory {
                         componentMetas.forEach((meta) => {
                             componentStoreFactory.componentMetaMap[meta.componentName] = meta
                         })
+                    },
+                    /**
+                     * 基于组件元数据，获取组件别名，若无别名，返回空：''
+                     * @param componentName
+                     */
+                    getAlias(componentName: string, defaultName?: string) {
+                        const defaultAlias = defaultName || ''
+                        const meta = componentStoreFactory.componentMetaMap[componentName]
+                        if (meta) {
+                            return meta.alias || defaultAlias
+                        } else {
+                            return defaultAlias
+                        }
+                    },
+                    /**
+                     * 是否数据输入组件（表单项）
+                     * @param componentName
+                     */
+                    isDataEntryComponent(componentName: string,) {
+                        const meta = componentStoreFactory.componentMetaMap[componentName]
+                        if (meta) {
+                            return meta.group === 'dataEntry'
+                        }
+                        return false
                     },
                     /**
                      * 从组件实体树中删除组件

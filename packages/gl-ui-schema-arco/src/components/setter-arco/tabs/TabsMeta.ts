@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-tabs",
     "group": "layout",
     "title": "标签页",
+    "alias": "tabs",
     "useBy": ["freePage"],
     "properties": [{
         "name": "items",

@@ -4,6 +4,7 @@ export default {
     "iconType":"gl-switch",
     "group": "dataEntry",
     "title": "开关",
+    "alias": "switch",
     "useBy": ["freePage"],
     "properties": [{
         "name": "label",

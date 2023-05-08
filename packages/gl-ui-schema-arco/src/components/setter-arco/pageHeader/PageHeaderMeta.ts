@@ -4,6 +4,7 @@ export default {
     "iconType":"gl-pageHeader",
     "group": "navigation",
     "title": "页头",
+    "alias": "pheader",
     "useBy": ["freePage"],
     "properties": [],"actions": [],
 }

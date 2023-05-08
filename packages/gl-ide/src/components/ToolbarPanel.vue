@@ -51,6 +51,9 @@
 
 
     <span style="float: right;padding-right: 1em">
+      <span class="gl-item">
+        <GlIconfont v-if="currentLocalOption" type="gl-earth" :text="currentLocalOption.label" @click="switchLanguages"></GlIconfont>
+      </span>
       <span class="gl-item" v-if="isLogined">
         <GlIconfont type="gl-logout" text="退出"></GlIconfont>
       </span>
@@ -195,17 +198,34 @@ const gotoHelpPage = () => {
   }
 }
 
-const changeLanguages = () => {
+const LOCALE_OPTIONS = [
+  {label: '中文', value: 'zh-CN'},
+  {label: 'English', value: 'en-US'},
+]
+const getLocalOption = (value: string) => {
+  return LOCALE_OPTIONS.find((option) => {
+    return option.value === value
+  })
+}
+const currentLocaleValue = localStorage.getItem('gl-locale') || 'zh-CN';
+const currentLocalOption = ref(getLocalOption(currentLocaleValue))
+const switchLanguages = () => {
   // console.log('this.$i18n:', this.$i18n)
   // console.log('this.$i18n.locale:', this.$i18n.locale)
   // this.currentLanguage = this.currentLanguage.locale === 'zh-CN' ? this.en : this.zh
   // this.setI18nLanguage(this.currentLanguage.locale)
   // console.log('this.$i18n.locale:', this.$i18n.locale)
+  const localValue = localStorage.getItem('gl-locale') || 'zh-CN';
+  const newLocalValue = localValue === 'zh-CN' ? 'en-US' : 'zh-CN'
+  currentLocalOption.value = getLocalOption(newLocalValue)
+  localStorage.setItem('gl-locale', newLocalValue);
 }
 
 const copyCode = () => {
   ClipboardJS.copy(JSON.stringify(componentStore.currentComponentTree[0]))
 }
+
+
 </script>
 
 <style>

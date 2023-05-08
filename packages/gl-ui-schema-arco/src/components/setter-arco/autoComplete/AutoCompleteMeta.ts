@@ -4,6 +4,7 @@ export default {
     "iconType":"gl-autoComplete",
     "group": "dataEntry",
     "title": "自动完成",
+    "alias": "autoc",
     "useBy": ["freePage"],
     "properties": [{
         "name": "label",

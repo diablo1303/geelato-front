@@ -1,6 +1,11 @@
 <template>
   <a-card :title="title">
-    <GlInsts :glComponentInst="glComponentInst"></GlInsts>
+    <template v-if="glIsRuntime">
+      <slot></slot>
+    </template>
+    <template v-else>
+      <GlInsts :glComponentInst="glComponentInst"></GlInsts>
+    </template>
   </a-card>
 </template>
 <script lang="ts">

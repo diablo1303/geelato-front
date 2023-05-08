@@ -4,6 +4,7 @@ export default {
     "iconType":"gl-slider",
     "group": "dataEntry",
     "title": "滑动输入条",
+    "alias": "slider",
     "useBy": ["freePage"],
     "properties": [],"actions": [],
 }

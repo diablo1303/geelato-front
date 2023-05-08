@@ -29,7 +29,7 @@
                       breakpoint="xl">
                 <a-menu-item class="gl-context-menu-item"
                              v-for="(contextMenuItem,contextMenuItemIndex) in filterContextMenuData"
-                             :key="contextMenuItemIndex"
+                             :key="contextMenuItemIndex+''"
                              @click="() => onMenuItemClick(nodeData,contextMenuItem)">
                   <template #icon>
                     <GlIconfont :type="contextMenuItem.iconType"
@@ -60,9 +60,10 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {entityApi, useGlobal, utils, Utils,} from "@geelato/gl-ui";
-import {PropType, ref} from "vue";
-import {TreeNodeData} from "@arco-design/web-vue";
+// @ts-nocheck
+import {useGlobal, utils, Utils,} from "@geelato/gl-ui";
+import {type PropType, ref} from "vue";
+import type {TreeNodeData} from "@arco-design/web-vue";
 
 // onlyToFolder:叶子节点只能放在目录下
 enum DragModeType {
@@ -163,8 +164,8 @@ const emits = defineEmits(['selectNode', 'addNode', 'updateNode', 'updateNodeSeq
 const selectedKeys = ref([])
 const treeData = ref(new Array<any>())
 const contextMenu = ref()
-const currentClickedNodeData = ref({})
-const currentEditNodeData = ref({})
+const currentClickedNodeData = ref({title:''})
+const currentEditNodeData = ref({title:'',iconType: '', nodeType: ''})
 const currentAction = ref({action: '', title: ''})
 const titleInput = ref()
 
@@ -173,18 +174,18 @@ enum NodeType {
 }
 
 type ContextMenuDataType = {
-  title: String,
-  iconType: String,
-  iconColor?: String,
-  nodeType: String,
-  useFor: Array<String>,
-  action: String,
+  title: string,
+  iconType: string,
+  iconColor?: string,
+  nodeType: string,
+  useFor: Array<string>,
+  action: string,
   // 节点操作的参数，如action为updateNode,actionsParams为：{flag:'menuItem'}，则处理之后，节点的flag属性，值为'menuItem'
   actionParams?: Object,
   // 节点标识，如用于区分是否为菜单项
   flag?: Object,
   // 基于node节点的show属性作是否展示的检查，这里的show是个表达式
-  show?: String
+  show?: string
 }
 
 const refreshTree = () => {

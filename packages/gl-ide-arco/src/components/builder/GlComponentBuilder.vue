@@ -266,7 +266,7 @@
 </template>
 
 <script lang="ts">
-import {type IComponentInstance, utils} from "@geelato/gl-ui";
+import {utils} from "@geelato/gl-ui";
 import {Splitpanes, Pane} from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import {defineComponent, nextTick, type PropType} from 'vue'
@@ -310,7 +310,7 @@ export default defineComponent({
       }
     },
     componentInstance: {
-      type: Object as PropType<IComponentInstance>,
+      type: Object as PropType<ComponentInstance>,
       default() {
         return new ComponentInstance()
       }
@@ -441,7 +441,7 @@ export default defineComponent({
       //   }
       // }
     },
-    setInstance(instance: IComponentInstance) {
+    setInstance(instance: ComponentInstance) {
       let that = this
       // console.log('set instance:', instance,this.cInstance)
       this.cInstance = instance
@@ -455,7 +455,7 @@ export default defineComponent({
       console.log('updateGlActionSetter>', mv)
       this.refreshInstance()
     },
-    copyJson(json?: ComponentMeta | IComponentInstance) {
+    copyJson(json?: ComponentMeta | ComponentInstance) {
       if (!json) return
       ClipboardJS.copy(JSON.stringify(json))
     }

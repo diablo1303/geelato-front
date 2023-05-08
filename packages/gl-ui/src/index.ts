@@ -2,12 +2,11 @@ import {reactive, type App, type Plugin} from 'vue'
 import emitter from "./m/mix/emitter";
 import GlHtml from './components/gl-html/Index.vue'
 import GlIconfont from './components/gl-iconfont/Index.vue'
-import GlColor from './components/gl-color/Index.vue'
+import GlColor from './components/gl-color/GlColor.vue'
 import GlDndPlaceholder from './components/gl-dnd-placeholder/Index.vue'
 import GlComponent from "./components/gl-component/GlComponent.vue";
 import GlPageViewer from "./components/gl-page-viewer/GlPageViewer.vue";
 import GlText from './components/gl-text/Index.vue'
-import type IComponentInstance from "./components/gl-component/IComponentInstance";
 import {LooseObject} from "./m/mix/LooseObject";
 import {default as iconsJson} from './assets/iconfont.json'
 import {IconsJson} from "./components/gl-iconfont/IconsJson";
@@ -90,7 +89,6 @@ export {
     Utils,
     PluginUtil,
     useGlobal,
-    IComponentInstance,
     actionScriptExecutor,
 }
 // 默认导出组件

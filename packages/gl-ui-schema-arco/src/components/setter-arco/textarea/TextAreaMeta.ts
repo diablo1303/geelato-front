@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-textarea",
     "group": "dataEntry",
     "title": "多行文本",
+    "alias": "textarea",
     "useBy": ["freePage"],
     "properties": [{
         "name": "label",

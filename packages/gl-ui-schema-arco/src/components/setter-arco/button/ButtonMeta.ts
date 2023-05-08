@@ -4,6 +4,7 @@ export default {
     "iconType": "gl-button",
     "group": "dataDisplay",
     "title": "按钮",
+    "alias": "btn",
     "useBy": ["freePage"],
     "properties": [{
         "expanded": true,
