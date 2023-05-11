@@ -1,54 +1,64 @@
-import { computed} from 'vue';
-import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
-import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
+import {computed} from 'vue';
+import type {SelectOptionData} from '@arco-design/web-vue/es/select/interface';
+import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 
 const columns = computed<TableColumnData[]>(() => [
   {
-    title: '序号',
+    title: 'sercurity.org.index.form.index',
     dataIndex: 'index',
-    slotName: 'index',
+    slotName: 'index'
   },
   {
-    title: '部门名称',
-    dataIndex: 'name',
+    title: 'sercurity.org.index.form.name',
+    dataIndex: 'name'
   },
   {
-    title: '部门编码',
-    dataIndex: 'code',
+    title: 'sercurity.org.index.form.code',
+    dataIndex: 'code'
   },
   {
-    title: '部门类型',
-    dataIndex: 'type',
+    title: 'sercurity.org.index.form.type',
+    dataIndex: 'type'
   },
   {
-    title: '排序',
-    dataIndex: 'seq_no',
+    title: 'sercurity.org.index.form.seqNo',
+    dataIndex: 'seqNo'
   },
   {
-    title: '状态',
+    title: 'sercurity.org.index.form.status',
     dataIndex: 'status',
-    slotName: 'status',
+    slotName: 'status'
   },
   {
-    title: '创建时间',
-    dataIndex: 'create_at',
+    title: 'sercurity.org.index.form.createAt',
+    dataIndex: 'createAt'
   },
   {
-    title: '操作',
+    title: 'sercurity.org.index.form.operations',
     dataIndex: 'operations',
-    slotName: 'operations',
+    slotName: 'operations'
   }
 ]);
 
 const statusOptions = computed<SelectOptionData[]>(() => [
   {
-    label: '启用',
-    value: 'enabled',
+    label: 'sercurity.org.index.form.status.1',
+    value: 1,
   },
   {
-    label: '禁用',
-    value: 'disabled',
+    label: "sercurity.org.index.form.status.0",
+    value: 0,
+  },
+]);
+const typeOptions = computed<SelectOptionData[]>(() => [
+  {
+    label: 'sercurity.org.index.form.type.inside',
+    value: 'inside',
+  },
+  {
+    label: 'sercurity.org.index.form.type.outside',
+    value: 'outside',
   },
 ]);
 
-  export {columns,statusOptions};
+export {columns, statusOptions, typeOptions};

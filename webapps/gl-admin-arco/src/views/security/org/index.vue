@@ -1,134 +1,95 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.list', 'menu.list.searchTable']" />
-    <a-card class="general-card" :title="$t('menu.list.searchTable')">
+    <Breadcrumb :items="['sercurity.org.index.menu.list', 'sercurity.org.index.menu.list.searchTable']"/>
+    <a-card class="general-card" :title="$t('sercurity.org.index.menu.list.searchTable')">
       <a-row>
         <a-col :flex="1">
-          <a-form
-            :model="formModel"
-            :label-col-props="{ span: 6 }"
-            :wrapper-col-props="{ span: 18 }"
-            label-align="left"
-          >
+          <a-form :model="filterData" :label-col-props="{ span: 6 }" :wrapper-col-props="{ span: 18 }" label-align="left">
             <a-row :gutter="16">
               <a-col :span="8">
-                <a-form-item
-                  field="name"
-                  :label="'部门名称'"
-                >
-                  <a-input
-                    v-model="formModel.name"
-                  />
+                <a-form-item field="name" :label="$t('sercurity.org.index.form.name')">
+                  <a-input v-model="filterData.name"/>
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item field="code" :label="'部门编码'">
-                  <a-input
-                    v-model="formModel.code"
-                  />
+                <a-form-item field="code" :label="$t('sercurity.org.index.form.code')">
+                  <a-input v-model="filterData.code"/>
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item
-                  field="create_at"
-                  :label="'创建时间'"
-                >
-                  <a-range-picker
-                    v-model="formModel.create_at"
-                    style="width: 100%"
-                  />
+                <a-form-item field="createAt" :label="$t('sercurity.org.index.form.createAt')">
+                  <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item
-                  field="status"
-                  :label="'状态'"
-                >
-                  <a-select
-                    v-model="formModel.status"
-                    :options="statusOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
-                  />
+                <a-form-item field="status" :label="$t('sercurity.org.index.form.status')">
+                  <a-select v-model="filterData.status" :placeholder="$t('searchTable.form.selectDefault')">
+                    <a-option v-for="item of statusOptions" :key="item.value" :value="item.value" :label="$t(`${item.label}`)"/>
+                  </a-select>
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item
-                  field="type"
-                  :label="'类型'"
-                >
-                  <a-select
-                    v-model="formModel.type"
-                  />
+                <a-form-item field="type" :label="$t('sercurity.org.index.form.type')">
+                  <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
+                    <a-option v-for="item of typeOptions" :key="item.value" :value="item.value" :label="$t(`${item.label}`)"/>
+                  </a-select>
                 </a-form-item>
               </a-col>
             </a-row>
           </a-form>
         </a-col>
-        <a-divider style="height: 84px" direction="vertical" />
+        <a-divider style="height: 84px" direction="vertical"/>
         <a-col :flex="'86px'" style="text-align: right">
           <a-space direction="vertical" :size="18">
             <a-button type="primary" @click="search">
               <template #icon>
-                <icon-search />
+                <icon-search/>
               </template>
               {{ $t('searchTable.form.search') }}
             </a-button>
             <a-button @click="reset">
               <template #icon>
-                <icon-refresh />
+                <icon-refresh/>
               </template>
               {{ $t('searchTable.form.reset') }}
             </a-button>
           </a-space>
         </a-col>
       </a-row>
-      <a-divider style="margin-top: 0" />
+      <a-divider style="margin-top: 0"/>
       <a-row style="margin-bottom: 16px">
         <a-col :span="12">
           <a-space>
-            <a-button type="primary">
+            <a-button type="primary" @click="addTable">
               <template #icon>
-                <icon-plus />
+                <icon-plus/>
               </template>
               {{ $t('searchTable.operation.create') }}
             </a-button>
           </a-space>
         </a-col>
-        <a-col
-          :span="12"
-          style="display: flex; align-items: center; justify-content: end"
-        >
+        <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
           <a-tooltip :content="$t('searchTable.actions.refresh')">
-            <div class="action-icon" @click="search"
-              ><icon-refresh size="18"
-            /></div>
+            <div class="action-icon" @click="search">
+              <icon-refresh size="18"/>
+            </div>
           </a-tooltip>
           <a-tooltip :content="$t('searchTable.actions.columnSetting')">
-            <a-popover
-              trigger="click"
-              position="bl"
-              @popup-visible-change="popupVisibleChange"
-            >
-              <div class="action-icon"><icon-settings size="18" /></div>
+            <a-popover trigger="click" position="bl" @popup-visible-change="popupVisibleChange">
+              <div class="action-icon">
+                <icon-settings size="18"/>
+              </div>
               <template #content>
                 <div id="tableSetting">
-                  <div
-                    v-for="(item, index) in showColumns"
-                    :key="item.dataIndex"
-                    class="setting"
-                  >
+                  <div v-for="(item, index) in showColumns" :key="item.dataIndex" class="setting">
                     <div style="margin-right: 4px; cursor: move">
-                      <icon-drag-arrow />
+                      <icon-drag-arrow/>
                     </div>
                     <div>
-                      <a-checkbox
-                        v-model="item.checked"
-                        @change="handleChange($event, item as TableColumnData, index)"
-                      >
-                      </a-checkbox>
+                      <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                     </div>
                     <div class="title">
-                      {{ item.title === '#' ? '序列号' : item.title }}
+                      {{ item.title === '#' ? $t('sercurity.org.index.form.index') : $t(`${item.title}`) }}
                     </div>
                   </div>
                 </div>
@@ -138,192 +99,300 @@
         </a-col>
       </a-row>
       <a-table
-        row-key="id"
-        :loading="loading"
-        :pagination="pagination"
-        :columns="(cloneColumns as TableColumnData[])"
-        :data="renderData"
-        :bordered="false"
-        @page-change="onPageChange"
-      >
-        <template #index="{ rowIndex }">
-          {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
-        </template>
-        <template #status="{ record }">
-          {{ $t(`${record.status}`) }}
-        </template>
-        <template #operations>
-          <a-button v-permission="['admin']" type="text" size="small">
-            {{ $t('searchTable.columns.operations.view') }}
-          </a-button>
+          v-model:selectedKeys="selectedKeys"
+          row-key="id" column-resizable
+          :loading="loading"
+          :pagination="pagination"
+          :columns="(cloneColumns as TableColumnData[])"
+          :data="renderData"
+          :bordered="{cell:true}"
+          :row-selection="rowSelection"
+          :stripe="true"
+          @page-change="onPageChange">
+        <template #columns>
+          <a-table-column :title="$t('sercurity.org.index.form.index')" data-index="index" width="80" align="center">
+            <template #cell="{  rowIndex }">
+              {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
+            </template>
+          </a-table-column>
+          <a-table-column :title="$t('sercurity.org.index.form.name')" data-index="name" width="150" ellipsis="true" tooltip="true"></a-table-column>
+          <a-table-column :title="$t('sercurity.org.index.form.code')" data-index="code" width="150" ellipsis="true" tooltip="true"></a-table-column>
+          <a-table-column :title="$t('sercurity.org.index.form.type')" data-index="type" width="120">
+            <template #cell="{ record }">
+              {{ $t(`sercurity.org.index.form.type.${record.type}`) }}
+            </template>
+          </a-table-column>
+          <a-table-column :title="$t('sercurity.org.index.form.seqNo')" data-index="seqNo" width="100"></a-table-column>
+          <a-table-column :title="$t('sercurity.org.index.form.status')" data-index="status" width="120">
+            <template #cell="{ record }">
+              {{ $t(`sercurity.org.index.form.status.${record.status}`) }}
+            </template>
+          </a-table-column>
+          <a-table-column :title="$t('sercurity.org.index.form.createAt')" data-index="createAt" width="180"></a-table-column>
+          <a-table-column :title="$t('sercurity.org.index.form.operations')" data-index="operations" width="230" align="center" fixed="right">
+            <template #cell="{ record }">
+              <a-button v-permission="['admin']" type="text" size="small" @click="viewTable(record.id)">
+                {{ $t('searchTable.columns.operations.view') }}
+              </a-button>
+              <a-button v-permission="['admin']" type="text" size="small" @click="editTable(record.id)">
+                {{ $t('searchTable.columns.operations.edit') }}
+              </a-button>
+              <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
+                <a-button v-permission="['admin']" type="text" size="small">
+                  {{ $t('searchTable.columns.operations.delete') }}
+                </a-button>
+              </a-popconfirm>
+            </template>
+          </a-table-column>
         </template>
       </a-table>
     </a-card>
   </div>
+  <a-modal
+      v-model:visible="visibleModel"
+      width="50%"
+      :title="$t(`${modelAttr.title}`)"
+      :footer="modelAttr.footer"
+      :cancel-text="$t(`${modelAttr.cancelText}`)"
+      :ok-text="$t('sercurity.org.index.model.ok.text')"
+      @cancel="handleModelCancel"
+      @before-ok="handleModelOk">
+    <a-form :model="formData">
+      <a-form-item v-show="false">
+        <a-input v-show="false" v-model="formData.id"/>
+        <a-input v-show="false" v-model="formData.pid"/>
+      </a-form-item>
+      <a-form-item field="name" :label="$t('sercurity.org.index.form.name')">
+        <a-input v-if="modelAttr.footer" v-model="formData.name" :max-length="32"/>
+        <a-span v-else>{{ formData.name }}</a-span>
+      </a-form-item>
+      <a-form-item field="code" :label="$t('sercurity.org.index.form.code')">
+        <a-input v-if="modelAttr.footer" v-model="formData.code" :max-length="32"/>
+        <a-span v-else>{{ formData.code }}</a-span>
+      </a-form-item>
+      <a-form-item field="type" :label="$t('sercurity.org.index.form.type')">
+        <a-select v-if="modelAttr.footer" v-model="formData.type">
+          <a-option v-for="item of typeOptions" :key="item.value" :value="item.value" :label="$t(`${item.label}`)"/>
+        </a-select>
+        <a-span v-else>{{ $t(`sercurity.org.index.form.type.${formData.type}`) }}</a-span>
+      </a-form-item>
+      <a-form-item field="status" :label="$t('sercurity.org.index.form.status')">
+        <a-select v-if="modelAttr.footer" v-model="formData.status">
+          <a-option v-for="item of statusOptions" :key="item.value" :value="item.value" :label="$t(`${item.label}`)"/>
+        </a-select>
+        <a-span v-else>{{ $t(`sercurity.org.index.form.status.${formData.status}`) }}</a-span>
+      </a-form-item>
+      <a-form-item field="seqNo" :label="$t('sercurity.org.index.form.seqNo')">
+        <a-input-number v-if="modelAttr.footer" v-model="formData.seqNo" :precision="0" :max="999999" :min="1" placeholder="length[1,999999]"/>
+        <a-span v-else>{{ formData.seqNo }}</a-span>
+      </a-form-item>
+      <a-form-item field="description" :label="$t('sercurity.org.index.form.description')">
+        <a-textarea v-if="modelAttr.footer" v-model="formData.description" :max-length="512" :auto-size="{minRows:3,maxRows:6}" show-word-limit/>
+        <a-span v-else :title="formData.description">{{ formData.description }}</a-span>
+      </a-form-item>
+    </a-form>
+  </a-modal>
 </template>
 
 <script lang="ts" setup>
-  import {  ref, reactive, watch, nextTick } from 'vue';
-  import useLoading from '@/hooks/loading';
-  import {OrgRecord,OrgListParams,queryOrgList} from '@/api/sercurity_service'
-  import { Pagination } from '@/types/global';
-  import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
-  import {columns,statusOptions} from '@/views/security/org/searchTable'
-  import cloneDeep from 'lodash/cloneDeep';
-  import Sortable from 'sortablejs';
+import {nextTick, reactive, ref, watch} from 'vue';
+import useLoading from '@/hooks/loading';
+import {createOrUpdateOrg, deleteOrg, getOrg, PageQueryFilter, pageQueryOrg, PageQueryRequest, QueryOrgForm} from '@/api/sercurity_service'
+import {Pagination} from '@/types/global';
+import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
+import {columns, statusOptions, typeOptions} from '@/views/security/org/searchTable'
+import cloneDeep from 'lodash/cloneDeep';
+import Sortable from 'sortablejs';
 
+type Column = TableColumnData & { checked?: true };
+/* 列表 */
+const generateFilterData = () => {
+  return {id: '', name: '', code: '', status: '', type: '', createAt: []};
+};
+const {loading, setLoading} = useLoading(true);
+const renderData = ref<PageQueryFilter[]>([]);
+const filterData = ref(generateFilterData());
+const cloneColumns = ref<Column[]>([]);
+const showColumns = ref<Column[]>([]);
+const selectedKeys = ref([]);
+const rowSelection = reactive({type: 'checkbox', showCheckedAll: true, onlyCurrent: false});
+const basePagination: Pagination = {current: 1, pageSize: 10};
+const pagination = reactive({...basePagination,});
 
-  type Column = TableColumnData & { checked?: true };
-
-  const generateFormModel = () => {
-    return {
-      id:'',
-      name: '',
-      code: '',
-      status: '',
-      type: '',
-      seq_np: '',
-      create_at:[],
-    };
-  };
-  const { loading, setLoading } = useLoading(true);
-  const renderData = ref<OrgRecord[]>([]);
-  const formModel = ref(generateFormModel());
-  const cloneColumns = ref<Column[]>([]);
-  const showColumns = ref<Column[]>([]);
-  
-  const basePagination: Pagination = {
-    current: 1,
-    pageSize: 20,
-  };
-  const pagination = reactive({
+const fetchData = async (params: PageQueryRequest = {current: 1, pageSize: 10}) => {
+  setLoading(true);
+  try {
+    const {data} = await pageQueryOrg(params);
+    renderData.value = data.items;
+    pagination.current = params.current;
+    pagination.total = data.total;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    setLoading(false);
+  }
+};
+const search = () => {
+  fetchData({
     ...basePagination,
-  });
-  
-  const fetchData = async (
-    params: OrgListParams = { current: 1, pageSize: 20 }
-  ) => {
-    setLoading(true);
-    try {
-      const { data } = await queryOrgList(params);
-      renderData.value = data.list;
-      pagination.current = params.current;
-      pagination.total = data.total;
-    } catch (err) {
-      // you can report use errorHandler or other
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const search = () => {
-    fetchData({
-      ...basePagination,
-      ...formModel.value,
-    } as unknown as OrgListParams);
-  };
-  const onPageChange = (current: number) => {
-    fetchData({ ...basePagination, current });
-  };
-
-  fetchData();
-  const reset = () => {
-    formModel.value = generateFormModel();
-  };
-
-
-  const handleChange = (
-    checked: boolean | (string | boolean | number)[],
-    column: Column,
-    index: number
-  ) => {
-    if (!checked) {
-      cloneColumns.value = showColumns.value.filter(
-        (item) => item.dataIndex !== column.dataIndex
-      );
-    } else {
-      cloneColumns.value.splice(index, 0, column);
-    }
-  };
-
-  const exchangeArray = <T extends Array<any>>(
-    array: T,
-    beforeIdx: number,
-    newIdx: number,
-    isDeep = false
-  ): T => {
-    const newArray = isDeep ? cloneDeep(array) : array;
-    if (beforeIdx > -1 && newIdx > -1) {
-      // 先替换后面的，然后拿到替换的结果替换前面的
-      newArray.splice(
-        beforeIdx,
-        1,
-        newArray.splice(newIdx, 1, newArray[beforeIdx]).pop()
-      );
-    }
-    return newArray;
-  };
-
-  const popupVisibleChange = (val: boolean) => {
-    if (val) {
-      nextTick(() => {
-        const el = document.getElementById('tableSetting') as HTMLElement;
-        const sortable = new Sortable(el, {
-          onEnd(e: any) {
-            const { oldIndex, newIndex } = e;
-            exchangeArray(cloneColumns.value, oldIndex, newIndex);
-            exchangeArray(showColumns.value, oldIndex, newIndex);
-          },
-        });
+    ...filterData.value,
+  } as unknown as PageQueryRequest);
+};
+const reset = () => {
+  filterData.value = generateFilterData();
+  search();
+};
+/* 获取列表数据 */
+fetchData();
+const onPageChange = (current: number) => {
+  fetchData({...basePagination, current});
+};
+const handleChange = (checked: boolean | (string | boolean | number)[], column: Column, index: number) => {
+  if (!checked) {
+    cloneColumns.value = showColumns.value.filter((item) => item.dataIndex !== column.dataIndex);
+  } else {
+    cloneColumns.value.splice(index, 0, column);
+  }
+};
+const exchangeArray = <T extends Array<any>>(array: T, beforeIdx: number, newIdx: number, isDeep = false): T => {
+  const newArray = isDeep ? cloneDeep(array) : array;
+  if (beforeIdx > -1 && newIdx > -1) {
+    // 先替换后面的，然后拿到替换的结果替换前面的
+    newArray.splice(beforeIdx, 1, newArray.splice(newIdx, 1, newArray[beforeIdx]).pop());
+  }
+  return newArray;
+};
+const popupVisibleChange = (val: boolean) => {
+  if (val) {
+    nextTick(() => {
+      const el = document.getElementById('tableSetting') as HTMLElement;
+      const sortable = new Sortable(el, {
+        onEnd(e: any) {
+          const {oldIndex, newIndex} = e;
+          exchangeArray(cloneColumns.value, oldIndex, newIndex);
+          exchangeArray(showColumns.value, oldIndex, newIndex);
+        }
       });
-    }
-  };
+    });
+  }
+};
 
-  watch(
-    () => columns.value,
-    (val) => {
+watch(() => columns.value, (val) => {
       cloneColumns.value = cloneDeep(val);
       cloneColumns.value.forEach((item, index) => {
         item.checked = true;
       });
       showColumns.value = cloneDeep(cloneColumns.value);
     },
-    { deep: true, immediate: true }
-  );
+    {deep: true, immediate: true}
+);
+
+/* 表单 */
+const generateFormData = () => {
+  return {id: '', pid: '', name: '', code: new Date().getTime().toString(), status: 1, type: 'outside', seqNo: 999, description: ''};
+}
+const visibleModel = ref(false);
+const formData = ref(generateFormData());
+const modelAdd = {title: 'sercurity.org.index.model.title.add', cancelText: 'sercurity.org.index.model.cancel.text', footer: true};
+const modelEdit = {title: 'sercurity.org.index.model.title.edit', cancelText: 'sercurity.org.index.model.cancel.text', footer: true};
+const modelView = {title: 'sercurity.org.index.model.title.view', cancelText: 'sercurity.org.index.model.close.text', footer: false};
+let modelAttr = modelAdd;
+
+/* 列表，按钮、操作列 */
+const addTable = () => {
+  formData.value = generateFormData();
+  modelAttr = modelAdd;
+  visibleModel.value = true;
+};
+const viewTable = (id: string) => {
+  formData.value = generateFormData();
+  modelAttr = modelView;
+  getData(id);
+}
+const editTable = (id: string) => {
+  formData.value = generateFormData();
+  modelAttr = modelEdit;
+  getData(id);
+}
+const deleteTable = (id: string) => {
+  deleteData(id);
+}
+/* 表单 */
+const handleModelOk = (done: any) => {
+  createOrUpdateData(formData.value, done);
+};
+const handleModelCancel = () => {
+  visibleModel.value = false;
+}
+
+const createOrUpdateData = async (params: QueryOrgForm, done: any) => {
+  try {
+    const {data} = await createOrUpdateOrg(params);
+    done();
+    reset();
+  } catch (err) {
+    console.log(err);
+  } finally {
+    setLoading(false);
+  }
+};
+const getData = async (id: string) => {
+  try {
+    const {data} = await getOrg(id);
+    data.seqNo = Number(data.seqNo);
+    formData.value = data;
+    visibleModel.value = true;
+  } catch (err) {
+    console.log(err);
+  }
+};
+const deleteData = async (id: string) => {
+  try {
+    const {data} = await deleteOrg(id);
+    reset();
+  } catch (err) {
+    console.log(err);
+  }
+};
 </script>
 
 <script lang="ts">
-  export default {
-    name: 'SearchTable',
-  };
+export default {
+  name: 'SearchTable',
+};
 </script>
 
 <style scoped lang="less">
-  .container {
-    padding: 0 20px 20px 20px;
-  }
-  :deep(.arco-table-th) {
-    &:last-child {
-      .arco-table-th-item-title {
-        margin-left: 16px;
-      }
+.container {
+  padding: 0 20px 20px 20px;
+}
+
+:deep(.arco-table-th) {
+  &:last-child {
+    .arco-table-th-item-title {
+      margin-left: 16px;
     }
   }
-  .action-icon {
+}
+
+.action-icon {
+  margin-left: 12px;
+  cursor: pointer;
+}
+
+.active {
+  color: #0960bd;
+  background-color: #e3f4fc;
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+  width: 200px;
+
+  .title {
     margin-left: 12px;
     cursor: pointer;
   }
-  .active {
-    color: #0960bd;
-    background-color: #e3f4fc;
-  }
-  .setting {
-    display: flex;
-    align-items: center;
-    width: 200px;
-    .title {
-      margin-left: 12px;
-      cursor: pointer;
-    }
-  }
+}
 </style>

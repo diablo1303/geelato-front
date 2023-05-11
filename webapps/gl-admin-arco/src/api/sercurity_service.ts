@@ -1,32 +1,111 @@
 import axios from 'axios';
 import qs from 'query-string';
 
+/* 过滤条件 */
+export interface PageQueryFilter {
+  id: string;
+  number: number;
+  name: string;
+  count: number;
+  status: 'online' | 'offline';
+  createdTime: string;
+}
 
-export interface OrgRecord {
-    id: string;
-    number: number;
-    name: string;
-    count: number;
-    status: 'online' | 'offline';
-    createdTime: string;
-  }
-  
-export interface OrgListParams extends Partial<OrgRecord> {
-    current: number;
-    pageSize: number;
-  }
-  
-  export interface OrgListRes {
-    list: OrgRecord[];
-    total: number;
-  }
-  
-  export function queryOrgList(params: OrgListParams) {
-    return axios.get<OrgListRes>('/api/list/org', {
-      params,
-      paramsSerializer: (obj) => {
-        return qs.stringify(obj);
-      },
-    });
-  }
-  
+/* 列表参数 */
+export interface PageQueryRequest extends Partial<PageQueryFilter> {
+  current: number;
+  pageSize: number;
+}
+
+/* 列表返回结果 */
+export interface PageQueryResponse {
+  items: PageQueryFilter[];
+  total: number;
+}
+
+/* 部门分页查询 */
+export function pageQueryOrg(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/org/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+/* 用户分页查询 */
+export function pageQueryUser(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/user/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+/* 返回结果 */
+export interface QueryResult {
+  data: any;
+  msg: string;
+  code: number;
+  status: string;
+}
+
+/* -----------------------------部门管理--------------------------- */
+export interface QueryOrgForm {
+  id: string;
+  pid: string;
+  seqNo: number;
+  name: string;
+  code: string;
+  type: string;
+  status: number;
+  description: string;
+}
+
+export function getOrg(id: string) {
+  return axios.get<QueryOrgForm>(`/api/security/org/get/${id}`);
+}
+
+export function createOrUpdateOrg(params: QueryOrgForm) {
+  return axios.post<QueryResult>('/api/security/org/createOrUpdate', params);
+}
+
+export function deleteOrg(id: string) {
+  return axios.delete<QueryResult>(`/api/security/org/isDelete/${id}`);
+}
+
+/* -----------------------------用户管理--------------------------- */
+export interface QueryUserForm {
+  id: string;
+  name: string;
+  loginName: string;
+  seqNo: number;
+  sex: number;
+  salt: string;
+  avatar: string;
+  password: string;
+  plainPassword: string;
+  mobilePhone: string;
+  telephone: string;
+  orgId: string;
+  orgName: string;
+  email: string;
+  post: string;
+  provinceCode: string;
+  cityCode: string;
+  type: number;
+  source: number;
+  description: string;
+  createAt: string;
+}
+
+export function getUser(id: string) {
+  return axios.get<QueryUserForm>(`/api/security/user/get/${id}`);
+}
+
+export function createOrUpdateUser(params: QueryUserForm) {
+  return axios.post<QueryResult>('/api/security/user/createOrUpdate', params);
+}
+
+export function deleteUser(id: string) {
+  return axios.delete<QueryResult>(`/api/security/user/isDelete/${id}`);
+}
