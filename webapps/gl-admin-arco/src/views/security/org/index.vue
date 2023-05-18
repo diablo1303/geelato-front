@@ -148,61 +148,19 @@
       </a-table>
     </a-card>
   </div>
-  <a-modal
-      v-model:visible="visibleModel"
-      width="50%"
-      :title="$t(`${modelAttr.title}`)"
-      :footer="modelAttr.footer"
-      :cancel-text="$t(`${modelAttr.cancelText}`)"
-      :ok-text="$t('sercurity.org.index.model.ok.text')"
-      @cancel="handleModelCancel"
-      @before-ok="handleModelOk">
-    <a-form :model="formData">
-      <a-form-item v-show="false">
-        <a-input v-show="false" v-model="formData.id"/>
-        <a-input v-show="false" v-model="formData.pid"/>
-      </a-form-item>
-      <a-form-item field="name" :label="$t('sercurity.org.index.form.name')">
-        <a-input v-if="modelAttr.footer" v-model="formData.name" :max-length="32"/>
-        <a-span v-else>{{ formData.name }}</a-span>
-      </a-form-item>
-      <a-form-item field="code" :label="$t('sercurity.org.index.form.code')">
-        <a-input v-if="modelAttr.footer" v-model="formData.code" :max-length="32"/>
-        <a-span v-else>{{ formData.code }}</a-span>
-      </a-form-item>
-      <a-form-item field="type" :label="$t('sercurity.org.index.form.type')">
-        <a-select v-if="modelAttr.footer" v-model="formData.type">
-          <a-option v-for="item of typeOptions" :key="item.value" :value="item.value" :label="$t(`${item.label}`)"/>
-        </a-select>
-        <a-span v-else>{{ $t(`sercurity.org.index.form.type.${formData.type}`) }}</a-span>
-      </a-form-item>
-      <a-form-item field="status" :label="$t('sercurity.org.index.form.status')">
-        <a-select v-if="modelAttr.footer" v-model="formData.status">
-          <a-option v-for="item of statusOptions" :key="item.value" :value="item.value" :label="$t(`${item.label}`)"/>
-        </a-select>
-        <a-span v-else>{{ $t(`sercurity.org.index.form.status.${formData.status}`) }}</a-span>
-      </a-form-item>
-      <a-form-item field="seqNo" :label="$t('sercurity.org.index.form.seqNo')">
-        <a-input-number v-if="modelAttr.footer" v-model="formData.seqNo" :precision="0" :max="999999" :min="1" placeholder="length[1,999999]"/>
-        <a-span v-else>{{ formData.seqNo }}</a-span>
-      </a-form-item>
-      <a-form-item field="description" :label="$t('sercurity.org.index.form.description')">
-        <a-textarea v-if="modelAttr.footer" v-model="formData.description" :max-length="512" :auto-size="{minRows:3,maxRows:6}" show-word-limit/>
-        <a-span v-else :title="formData.description">{{ formData.description }}</a-span>
-      </a-form-item>
-    </a-form>
-  </a-modal>
+  <OrgForm ref="orgFormRef"></OrgForm>
 </template>
 
 <script lang="ts" setup>
 import {nextTick, reactive, ref, watch} from 'vue';
 import useLoading from '@/hooks/loading';
-import {createOrUpdateOrg, deleteOrg, getOrg, PageQueryFilter, pageQueryOrg, PageQueryRequest, QueryOrgForm} from '@/api/sercurity_service'
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
+import {deleteOrg, PageQueryFilter, pageQueryOrg, PageQueryRequest} from '@/api/sercurity_service'
 import {columns, statusOptions, typeOptions} from '@/views/security/org/searchTable'
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
+import OrgForm from './form.vue';
 
 type Column = TableColumnData & { checked?: true };
 /* 列表 */
@@ -218,6 +176,7 @@ const selectedKeys = ref([]);
 const rowSelection = reactive({type: 'checkbox', showCheckedAll: true, onlyCurrent: false});
 const basePagination: Pagination = {current: 1, pageSize: 10};
 const pagination = reactive({...basePagination,});
+const orgFormRef = ref(null);
 
 const fetchData = async (params: PageQueryRequest = {current: 1, pageSize: 10}) => {
   setLoading(true);
@@ -287,69 +246,31 @@ watch(() => columns.value, (val) => {
     {deep: true, immediate: true}
 );
 
-/* 表单 */
-const generateFormData = () => {
-  return {id: '', pid: '', name: '', code: new Date().getTime().toString(), status: 1, type: 'outside', seqNo: 999, description: ''};
-}
-const visibleModel = ref(false);
-const formData = ref(generateFormData());
-const modelAdd = {title: 'sercurity.org.index.model.title.add', cancelText: 'sercurity.org.index.model.cancel.text', footer: true};
-const modelEdit = {title: 'sercurity.org.index.model.title.edit', cancelText: 'sercurity.org.index.model.cancel.text', footer: true};
-const modelView = {title: 'sercurity.org.index.model.title.view', cancelText: 'sercurity.org.index.model.close.text', footer: false};
-let modelAttr = modelAdd;
-
 /* 列表，按钮、操作列 */
 const addTable = () => {
-  formData.value = generateFormData();
-  modelAttr = modelAdd;
-  visibleModel.value = true;
+  if (orgFormRef.value) {
+    orgFormRef.value?.openForm('add', null, reset);
+  }
 };
 const viewTable = (id: string) => {
-  formData.value = generateFormData();
-  modelAttr = modelView;
-  getData(id);
+  if (orgFormRef.value) {
+    orgFormRef.value?.openForm('view', id);
+  }
 }
 const editTable = (id: string) => {
-  formData.value = generateFormData();
-  modelAttr = modelEdit;
-  getData(id);
+  if (orgFormRef.value) {
+    orgFormRef.value?.openForm('edit', id, reset);
+  }
 }
 const deleteTable = (id: string) => {
-  deleteData(id);
-}
-/* 表单 */
-const handleModelOk = (done: any) => {
-  createOrUpdateData(formData.value, done);
-};
-const handleModelCancel = () => {
-  visibleModel.value = false;
-}
-
-const createOrUpdateData = async (params: QueryOrgForm, done: any) => {
-  try {
-    const {data} = await createOrUpdateOrg(params);
-    done();
+  deleteData(id, function () {
     reset();
-  } catch (err) {
-    console.log(err);
-  } finally {
-    setLoading(false);
-  }
-};
-const getData = async (id: string) => {
-  try {
-    const {data} = await getOrg(id);
-    data.seqNo = Number(data.seqNo);
-    formData.value = data;
-    visibleModel.value = true;
-  } catch (err) {
-    console.log(err);
-  }
-};
-const deleteData = async (id: string) => {
+  });
+}
+const deleteData = async (id: string, successBack: any) => {
   try {
     const {data} = await deleteOrg(id);
-    reset();
+    successBack();
   } catch (err) {
     console.log(err);
   }
@@ -358,7 +279,7 @@ const deleteData = async (id: string) => {
 
 <script lang="ts">
 export default {
-  name: 'SearchTable',
+  name: 'SearchTable'
 };
 </script>
 

@@ -1,5 +1,5 @@
-import { DEFAULT_LAYOUT } from '../base';
-import { AppRouteRecordRaw } from '../types';
+import {DEFAULT_LAYOUT} from '../base';
+import {AppRouteRecordRaw} from '../types';
 
 const USER: AppRouteRecordRaw = {
   path: '/role',
@@ -38,6 +38,24 @@ const USER: AppRouteRecordRaw = {
         locale: '角色管理',
         requiresAuth: true,
         roles: ['*'],
+      },
+    },
+    {
+      path: 'permissionList',
+      name: 'permissionList',
+      component: () => import('@/views/security/permission/index.vue'),
+      meta: {
+        locale: '权限管理',
+        requiresAuth: true
+      },
+    },
+    {
+      path: 'dictList',
+      name: 'dictList',
+      component: () => import('@/views/security/dict/index.vue'),
+      meta: {
+        locale: '字典管理',
+        requiresAuth: true
       },
     },
   ],

@@ -41,6 +41,24 @@ export function pageQueryUser(params: PageQueryRequest) {
   });
 }
 
+/* 字典分页查询 */
+export function pageQueryDict(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/dict/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+/* 字典项分页查询 */
+export function pageQueryDictItem(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/dict/item/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 /* 返回结果 */
 export interface QueryResult {
   data: any;
@@ -95,7 +113,6 @@ export interface QueryUserForm {
   type: number;
   source: number;
   description: string;
-  createAt: string;
 }
 
 export function getUser(id: string) {
@@ -108,4 +125,54 @@ export function createOrUpdateUser(params: QueryUserForm) {
 
 export function deleteUser(id: string) {
   return axios.delete<QueryResult>(`/api/security/user/isDelete/${id}`);
+}
+
+/* -----------------------------字典管理 - 字典--------------------------- */
+export interface QueryDictForm {
+  id: string;
+  tenantCode: string;
+  dicName: string;
+  dicCode: string;
+  dicRemark: string;
+  enableStatus: number;
+  seqNo: number;
+}
+
+export function queryDicts(dicName: string) {
+  return axios.get<QueryDictForm>('/api/dict/query');
+}
+
+export function getDict(id: string) {
+  return axios.get<QueryDictForm>(`/api/dict/get/${id}`);
+}
+
+export function createOrUpdateDict(params: QueryDictForm) {
+  return axios.post<QueryResult>('/api/dict/createOrUpdate', params);
+}
+
+export function deleteDict(id: string) {
+  return axios.delete<QueryResult>(`/api/dict/isDelete/${id}`);
+}
+
+/* -----------------------------字典管理 - 字典项--------------------------- */
+export interface QueryDictItemForm {
+  id: string;
+  dictId: string;
+  itemText: string;
+  itemCode: string;
+  dataRemark: string;
+  enableStatus: number;
+  seqNo: number;
+}
+
+export function getDictItem(id: string) {
+  return axios.get<QueryDictItemForm>(`/api/dict/item/get/${id}`);
+}
+
+export function createOrUpdateDictItem(params: QueryDictItemForm) {
+  return axios.post<QueryResult>('/api/dict/item/createOrUpdate', params);
+}
+
+export function deleteDictItem(id: string) {
+  return axios.delete<QueryResult>(`/api/dict/item/isDelete/${id}`);
 }
