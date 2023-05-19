@@ -17,7 +17,6 @@
             <a-input v-show="false" v-model="formData.avatar"/>
             <a-input v-show="false" v-model="formData.password"/>
             <a-input v-show="false" v-model="formData.plainPassword"/>
-            <a-input v-show="false" v-model="formData.orgId"/>
           </a-form-item>
         </a-col>
         <a-col :span="12">
@@ -33,8 +32,8 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item field="orgName" :label="$t('sercurity.user.index.form.orgName')">
-            <a-input v-if="modelAttr.footer" v-model="formData.orgName" :max-length="32"/>
+          <a-form-item field="orgId" :label="$t('sercurity.user.index.form.orgName')">
+            <a-cascader v-if="modelAttr.footer" v-model="formData.orgId" :options="orgSelectOptions" check-strictly/>
             <a-span v-else>{{ formData.orgName }}</a-span>
           </a-form-item>
         </a-col>
@@ -120,7 +119,7 @@
 import {ref} from "vue";
 import {Modal} from "@arco-design/web-vue";
 import {sexOptions, sourceOptions, typeOptions} from "@/views/security/user/searchTable";
-import {createOrUpdateUser, getUser, QueryUserForm} from '@/api/sercurity_service'
+import {createOrUpdateUser, getUser, QueryOrgForm, queryOrgs, QueryUserForm, SelectOption} from '@/api/sercurity_service'
 
 const generateFormData = (): QueryUserForm => {
   return {
@@ -148,12 +147,41 @@ const generateFormData = (): QueryUserForm => {
 }
 const visibleModel = ref(false);
 const formData = ref(generateFormData());
+const orgSelectOptions = ref<SelectOption[]>([]);
 const modelAdd = {title: 'sercurity.user.index.model.title.add', cancelText: 'sercurity.user.index.model.cancel.text', footer: true};
 const modelEdit = {title: 'sercurity.user.index.model.title.edit', cancelText: 'sercurity.user.index.model.cancel.text', footer: true};
 const modelView = {title: 'sercurity.user.index.model.title.view', cancelText: 'sercurity.user.index.model.close.text', footer: false};
 let modelAttr = modelAdd;
 // 页面响应
 let okSuccessBack: any;
+const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[]): SelectOption[] => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const data of defaultData) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of totalData) {
+      if (item.pid === data.value) {
+        data.children.push({value: item.id, label: item.name, children: []});
+      }
+    }
+    if (data.children.length > 0) {
+      buildOrgOptions(data.children, totalData);
+    } else {
+      delete data.children;
+    }
+  }
+
+  return defaultData;
+}
+const getOrgOptions = async () => {
+  try {
+    const {data} = await queryOrgs();
+    orgSelectOptions.value = buildOrgOptions([{value: '0', label: '根目录', children: []}], data);
+    orgSelectOptions.value = orgSelectOptions.value[0].children;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 const createOrUpdateData = async (params: QueryUserForm, done: any) => {
   try {
     const {data} = await createOrUpdateUser(params);
@@ -173,6 +201,7 @@ const getData = async (id: string, successBack: any) => {
 };
 
 const openForm = (action: string, id: string, okBack?: any) => {
+  getOrgOptions();
   if (action === "add") {
     formData.value = generateFormData();
     modelAttr = modelAdd;

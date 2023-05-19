@@ -106,6 +106,8 @@ export default {
   'sercurity.user.index.menu.list': 'System Management',
   'sercurity.user.index.menu.list.searchTable': 'User Management',
   // webapps/gl-admin-arco/src/views/security/user - list|form
+  'sercurity.user.forml.tab.title.one': 'User Basic Info',
+  'sercurity.user.forml.tab.title.two': 'User Of Department',
   'sercurity.user.index.form.index': 'index',
   'sercurity.user.index.form.name': 'name',
   'sercurity.user.index.form.loginName': 'loginName',
@@ -198,4 +200,45 @@ export default {
   'sercurity.dictItem.index.model.cancel.text': 'Cancel',
   'sercurity.dictItem.index.model.close.text': 'Close',
   'sercurity.dictItem.index.model.ok.text': 'Confirm',
+  // webapps/gl-admin-arco/src/views/security/permission
+  'sercurity.permission.index.menu.list': 'System Management',
+  'sercurity.permission.index.menu.list.searchTable': 'Permission Management',
+  // webapps/gl-admin-arco/src/views/security/permission - list|form
+  'sercurity.permission.index.form.index': 'index',
+  'sercurity.permission.index.form.name': 'name',
+  'sercurity.permission.index.form.text': 'text',
+  'sercurity.permission.index.form.description': 'description',
+  'sercurity.permission.index.form.createAt': 'createTime',
+  'sercurity.permission.index.form.operations': 'operation',
+  // webapps/gl-admin-arco/src/views/security/permission - list.operation
+  // 同 org
+  // webapps/gl-admin-arco/src/views/security/permission - form.operation
+  'sercurity.permission.index.model.title.add': 'Add Permission',
+  'sercurity.permission.index.model.title.edit': 'Edit Permission',
+  'sercurity.permission.index.model.title.view': 'View Permission',
+  'sercurity.permission.index.model.cancel.text': 'Cancel',
+  'sercurity.permission.index.model.close.text': 'Close',
+  'sercurity.permission.index.model.ok.text': 'Confirm',
+
+  // webapps/gl-admin-arco/src/views/security/user/org
+  'sercurity.orgUser.index.menu.list': 'System Management',
+  'sercurity.orgUser.index.menu.list.searchTable': 'User Of Department Management',
+  // webapps/gl-admin-arco/src/views/security/user/org - list|form
+  'sercurity.orgUser.index.form.index': 'index',
+  'sercurity.orgUser.index.form.userName': 'userName',
+  'sercurity.orgUser.index.form.orgName': 'orgName',
+  'sercurity.orgUser.index.form.defaultOrg': 'isDefaultOrg',
+  'sercurity.orgUser.index.form.defaultOrg.0': 'NO',
+  'sercurity.orgUser.index.form.defaultOrg.1': 'YES',
+  'sercurity.orgUser.index.form.createAt': 'createTime',
+  'sercurity.orgUser.index.form.operations': 'operation',
+  // webapps/gl-admin-arco/src/views/security/user/org - list.operation
+  // 同 org
+  // webapps/gl-admin-arco/src/views/security/user/org - form.operation
+  'sercurity.orgUser.index.model.title.add': 'Add User Of Department',
+  'sercurity.orgUser.index.model.title.edit': 'Edit User Of Department',
+  'sercurity.orgUser.index.model.title.view': 'View User Of Department',
+  'sercurity.orgUser.index.model.cancel.text': 'Cancel',
+  'sercurity.orgUser.index.model.close.text': 'Close',
+  'sercurity.orgUser.index.model.ok.text': 'Confirm',
 };

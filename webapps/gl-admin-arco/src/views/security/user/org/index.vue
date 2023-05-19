@@ -1,44 +1,30 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['sercurity.user.index.menu.list', 'sercurity.user.index.menu.list.searchTable']"/>
-    <a-card class="general-card" :title="$t('sercurity.user.index.menu.list.searchTable')">
+    <Breadcrumb :items="['sercurity.orgUser.index.menu.list', 'sercurity.orgUser.index.menu.list.searchTable']"/>
+    <a-card class="general-card" :title="$t('sercurity.orgUser.index.menu.list.searchTable')">
       <a-row>
         <a-col :flex="1">
           <a-form :model="filterData" :label-col-props="{ span: 6 }" :wrapper-col-props="{ span: 18 }" label-align="left">
             <a-row :gutter="16">
               <a-col :span="8">
-                <a-form-item field="name" :label="$t('sercurity.user.index.form.name')">
-                  <a-input v-model="filterData.name"/>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="code" :label="$t('sercurity.user.index.form.orgName')">
+                <a-form-item field="orgName" :label="$t('sercurity.orgUser.index.form.orgName')">
                   <a-input v-model="filterData.orgName"/>
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item field="createAt" :label="$t('sercurity.user.index.form.createAt')">
+                <a-form-item field="userName" :label="$t('sercurity.orgUser.index.form.userName')">
+                  <a-input v-model="filterData.userName"/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-item field="createAt" :label="$t('sercurity.orgUser.index.form.createAt')">
                   <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item field="sex" :label="$t('sercurity.user.index.form.sex')">
-                  <a-select v-model="filterData.sex" :placeholder="$t('searchTable.form.selectDefault')">
-                    <a-option v-for="item of sexOptions" :key="item.value" :value="item.value" :label="$t(`${item.label}`)"/>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="type" :label="$t('sercurity.user.index.form.type')">
-                  <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
-                    <a-option v-for="item of typeOptions" :key="item.value" :value="item.value" :label="$t(`${item.label}`)"/>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="source" :label="$t('sercurity.user.index.form.source')">
-                  <a-select v-model="filterData.source" :placeholder="$t('searchTable.form.selectDefault')">
-                    <a-option v-for="item of sourceOptions" :key="item.value" :value="item.value" :label="$t(`${item.label}`)"/>
+                <a-form-item field="defaultOrg" :label="$t('sercurity.orgUser.index.form.defaultOrg')">
+                  <a-select v-model="filterData.defaultOrg" :placeholder="$t('searchTable.form.selectDefault')">
+                    <a-option v-for="item of defaultOrgOptions" :key="item.value" :value="item.value" :label="$t(`${item.label}`)"/>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -96,7 +82,7 @@
                       <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                     </div>
                     <div class="title">
-                      {{ item.title === '#' ? $t('sercurity.user.index.form.index') : $t(`${item.title}`) }}
+                      {{ item.title === '#' ? $t('sercurity.orgUser.index.form.index') : $t(`${item.title}`) }}
                     </div>
                   </div>
                 </div>
@@ -109,56 +95,35 @@
           v-model:selectedKeys="selectedKeys"
           row-key="id" column-resizable
           :loading="loading"
+          :pagination="pagination"
           :columns="(cloneColumns as TableColumnData[])"
           :data="renderData"
-          :pagination="pagination"
           :bordered="{cell:true}"
-          :scroll="scroll" :scrollbar="scrollbar"
           :row-selection="rowSelection"
-          :stripe="true" @page-change="onPageChange">
+          :stripe="true"
+          @page-change="onPageChange">
         <template #columns>
-          <a-table-column :title="$t('sercurity.user.index.form.index')" data-index="index" width="80" align="center">
-            <template #cell="{  rowIndex }">
-              {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
-            </template>
+          <a-table-column :title="$t('sercurity.orgUser.index.form.index')" data-index="index" width="80" align="center">
+            <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
           </a-table-column>
-          <a-table-column :title="$t('sercurity.user.index.form.name')" data-index="name" width="120" ellipsis="true" tooltip="true"></a-table-column>
-          <a-table-column :title="$t('sercurity.user.index.form.orgName')" data-index="orgName" width="200" ellipsis="true" tooltip="true"></a-table-column>
-          <a-table-column :title="$t('sercurity.user.index.form.mobilePhone')" data-index="mobilePhone" width="150"></a-table-column>
-          <a-table-column :title="$t('sercurity.user.index.form.email')" data-index="email" width="200" ellipsis="true" tooltip="true"></a-table-column>
-          <a-table-column :title="$t('sercurity.user.index.form.post')" data-index="post" width="120"></a-table-column>
-          <a-table-column :title="$t('sercurity.user.index.form.address')" data-index="address" width="200" ellipsis="true" tooltip="true">
-            <template #cell="{  record }">
-              {{ record.provinceCode }} - {{ record.cityCode }}
-            </template>
-          </a-table-column>
-          <a-table-column :title="$t('sercurity.user.index.form.sex')" data-index="sex" width="100">
+          <a-table-column :title="$t('sercurity.orgUser.index.form.orgName')" data-index="orgName" width="150" ellipsis="true" tooltip="true"/>
+          <a-table-column :title="$t('sercurity.orgUser.index.form.userName')" data-index="userName" width="150" ellipsis="true" tooltip="true"/>
+          <a-table-column :title="$t('sercurity.orgUser.index.form.defaultOrg')" data-index="defaultOrg" width="100">
             <template #cell="{ record }">
-              {{ $t(`sercurity.user.index.form.sex.${record.sex}`) }}
+              {{ $t(`sercurity.org.index.form.defaultOrg.${record.defaultOrg}`) }}
             </template>
           </a-table-column>
-          <a-table-column :title="$t('sercurity.user.index.form.type')" data-index="status" width="120">
+          <a-table-column :title="$t('sercurity.orgUser.index.form.createAt')" data-index="createAt" width="180"/>
+          <a-table-column :title="$t('sercurity.orgUser.index.form.operations')" data-index="operations" width="230" align="center" fixed="right">
             <template #cell="{ record }">
-              {{ $t(`sercurity.user.index.form.type.${record.type}`) }}
-            </template>
-          </a-table-column>
-          <a-table-column :title="$t('sercurity.user.index.form.source')" data-index="status" width="120">
-            <template #cell="{ record }">
-              {{ $t(`sercurity.user.index.form.source.${record.source}`) }}
-            </template>
-          </a-table-column>
-          <a-table-column :title="$t('sercurity.user.index.form.seqNo')" data-index="seqNo" width="100"></a-table-column>
-          <a-table-column :title="$t('sercurity.user.index.form.createAt')" data-index="createAt" width="180"></a-table-column>
-          <a-table-column :title="$t('sercurity.user.index.form.operations')" data-index="operations" width="230" align="center" fixed="right">
-            <template #cell="{ record }">
-              <a-button v-permission="['admin']" type="text" size="small" @click="viewTable(record.id)">
+              <a-button v-orgUser="['admin']" type="text" size="small" @click="viewTable(record.id)">
                 {{ $t('searchTable.columns.operations.view') }}
               </a-button>
-              <a-button v-permission="['admin']" type="text" size="small" @click="editTable(record.id)">
+              <a-button v-orgUser="['admin']" type="text" size="small" @click="editTable(record.id)">
                 {{ $t('searchTable.columns.operations.edit') }}
               </a-button>
               <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-                <a-button v-permission="['admin']" type="text" size="small">
+                <a-button v-orgUser="['admin']" type="text" size="small">
                   {{ $t('searchTable.columns.operations.delete') }}
                 </a-button>
               </a-popconfirm>
@@ -168,26 +133,24 @@
       </a-table>
     </a-card>
   </div>
-  <UserTabForm ref="userTabFormRef"></UserTabForm>
-  <UserForm ref="userFormRef"></UserForm>
+  <OrgUserForm ref="orgUserFormRef"></OrgUserForm>
 </template>
 
 <script lang="ts" setup>
 import {nextTick, reactive, ref, watch} from 'vue';
 import useLoading from '@/hooks/loading';
-import {deleteUser, PageQueryFilter, PageQueryRequest, pageQueryUser} from '@/api/sercurity_service'
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
-import {columns, sexOptions, sourceOptions, typeOptions} from '@/views/security/user/searchTable'
+import {deleteOrgUser, PageQueryFilter, pageQueryOrgUser, PageQueryRequest} from '@/api/sercurity_service'
+import {columns, defaultOrgOptions} from '@/views/security/user/org/searchTable'
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
-import UserForm from './form.vue';
-import UserTabForm from './forml.vue';
+import OrgUserForm from './form.vue';
 
 type Column = TableColumnData & { checked?: true };
 /* 列表 */
 const generateFilterData = () => {
-  return {id: '', name: '', orgName: '', sex: '', source: '', type: '', createAt: []};
+  return {id: '', orgName: '', username: '', defaultOrg: '', createAt: []};
 };
 const {loading, setLoading} = useLoading(true);
 const renderData = ref<PageQueryFilter[]>([]);
@@ -198,18 +161,14 @@ const selectedKeys = ref([]);
 const rowSelection = reactive({type: 'checkbox', showCheckedAll: true, onlyCurrent: false});
 const basePagination: Pagination = {current: 1, pageSize: 10};
 const pagination = reactive({...basePagination,});
-const scrollbar = ref(true);
-const scroll = {x: 2000};
-const userFormRef = ref(null);
-const userTabFormRef = ref(null);
+const orgUserFormRef = ref(null);
 
 const fetchData = async (params: PageQueryRequest = {current: 1, pageSize: 10}) => {
   setLoading(true);
   try {
-    const {data} = await pageQueryUser(params);
+    const {data} = await pageQueryOrgUser(params);
     renderData.value = data.items;
     pagination.current = params.current;
-    pagination.pageSize = params.pageSize;
     pagination.total = data.total;
   } catch (err) {
     console.log(err);
@@ -274,18 +233,18 @@ watch(() => columns.value, (val) => {
 
 /* 列表，按钮、操作列 */
 const addTable = () => {
-  if (userFormRef.value) {
-    userFormRef.value?.openForm('add', null, reset);
+  if (orgUserFormRef.value) {
+    orgUserFormRef.value?.openForm('add', null, reset);
   }
 };
 const viewTable = (id: string) => {
-  if (userTabFormRef.value) {
-    userTabFormRef.value?.openForm('view', id, reset);
+  if (orgUserFormRef.value) {
+    orgUserFormRef.value?.openForm('view', id);
   }
 }
 const editTable = (id: string) => {
-  if (userTabFormRef.value) {
-    userTabFormRef.value?.openForm('edit', id, reset);
+  if (orgUserFormRef.value) {
+    orgUserFormRef.value?.openForm('edit', id, reset);
   }
 }
 const deleteTable = (id: string) => {
@@ -295,7 +254,7 @@ const deleteTable = (id: string) => {
 }
 const deleteData = async (id: string, successBack: any) => {
   try {
-    const {data} = await deleteUser(id);
+    const {data} = await deleteOrgUser(id);
     successBack();
   } catch (err) {
     console.log(err);
@@ -305,7 +264,7 @@ const deleteData = async (id: string, successBack: any) => {
 
 <script lang="ts">
 export default {
-  name: 'SearchTable',
+  name: 'SearchTable'
 };
 </script>
 

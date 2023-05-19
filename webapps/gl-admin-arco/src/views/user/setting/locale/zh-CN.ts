@@ -149,6 +149,8 @@ export default {
   'sercurity.dict.index.menu.list.searchTable': '字典管理',
   'sercurity.dict.index.menu.list.searchTable1': '字典基本信息',
   // webapps/gl-admin-arco/src/views/security/dict - list|form
+  'sercurity.user.forml.tab.title.one': '用户基本信息',
+  'sercurity.user.forml.tab.title.two': '组织用户关联',
   'sercurity.dict.index.form.index': '序列号',
   'sercurity.dict.index.form.tenantCode': '租户',
   'sercurity.dict.index.form.dicName': '名称',
@@ -198,4 +200,45 @@ export default {
   'sercurity.dictItem.index.model.cancel.text': '取消',
   'sercurity.dictItem.index.model.close.text': '关闭',
   'sercurity.dictItem.index.model.ok.text': '确认',
+  // webapps/gl-admin-arco/src/views/security/permission
+  'sercurity.permission.index.menu.list': '系统管理',
+  'sercurity.permission.index.menu.list.searchTable': '权限管理',
+  // webapps/gl-admin-arco/src/views/security/permission - list|form
+  'sercurity.permission.index.form.index': '序列号',
+  'sercurity.permission.index.form.name': '名称',
+  'sercurity.permission.index.form.text': '权限描述符',
+  'sercurity.permission.index.form.description': '描述',
+  'sercurity.permission.index.form.createAt': '创建时间',
+  'sercurity.permission.index.form.operations': '操作',
+  // webapps/gl-admin-arco/src/views/security/permission - list.operation
+  // 同 org
+  // webapps/gl-admin-arco/src/views/security/permission - form.operation
+  'sercurity.permission.index.model.title.add': '新建权限',
+  'sercurity.permission.index.model.title.edit': '编辑权限',
+  'sercurity.permission.index.model.title.view': '查看权限',
+  'sercurity.permission.index.model.cancel.text': '取消',
+  'sercurity.permission.index.model.close.text': '关闭',
+  'sercurity.permission.index.model.ok.text': '确认',
+
+  // webapps/gl-admin-arco/src/views/security/user/org
+  'sercurity.orgUser.index.menu.list': '系统管理',
+  'sercurity.orgUser.index.menu.list.searchTable': '组织用户管理',
+  // webapps/gl-admin-arco/src/views/security/user/org - list|form
+  'sercurity.orgUser.index.form.index': '序列号',
+  'sercurity.orgUser.index.form.userName': '用户名称',
+  'sercurity.orgUser.index.form.orgName': '部门名称',
+  'sercurity.orgUser.index.form.defaultOrg': '是否默认组织',
+  'sercurity.orgUser.index.form.defaultOrg.0': '否',
+  'sercurity.orgUser.index.form.defaultOrg.1': '是',
+  'sercurity.orgUser.index.form.createAt': '创建时间',
+  'sercurity.orgUser.index.form.operations': '操作',
+  // webapps/gl-admin-arco/src/views/security/user/org - list.operation
+  // 同 org
+  // webapps/gl-admin-arco/src/views/security/user/org - form.operation
+  'sercurity.orgUser.index.model.title.add': '新建组织用户关联',
+  'sercurity.orgUser.index.model.title.edit': '编辑组织用户关联',
+  'sercurity.orgUser.index.model.title.view': '查看组织用户关联',
+  'sercurity.orgUser.index.model.cancel.text': '取消',
+  'sercurity.orgUser.index.model.close.text': '关闭',
+  'sercurity.orgUser.index.model.ok.text': '确认',
 };

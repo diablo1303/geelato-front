@@ -1,6 +1,12 @@
 import axios from 'axios';
 import qs from 'query-string';
 
+export interface SelectOption {
+  value: string;
+  label: string;
+  children?: SelectOption[]
+};
+
 /* 过滤条件 */
 export interface PageQueryFilter {
   id: string;
@@ -59,6 +65,24 @@ export function pageQueryDictItem(params: PageQueryRequest) {
   });
 }
 
+/* 权限分页查询 */
+export function pageQueryPermission(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/permission/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+/* 组织用户查询 */
+export function pageQueryOrgUser(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/org/user/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 /* 返回结果 */
 export interface QueryResult {
   data: any;
@@ -77,6 +101,10 @@ export interface QueryOrgForm {
   type: string;
   status: number;
   description: string;
+}
+
+export function queryOrgs() {
+  return axios.get<QueryOrgForm[]>('/api/security/org/query');
 }
 
 export function getOrg(id: string) {
@@ -175,4 +203,46 @@ export function createOrUpdateDictItem(params: QueryDictItemForm) {
 
 export function deleteDictItem(id: string) {
   return axios.delete<QueryResult>(`/api/dict/item/isDelete/${id}`);
+}
+
+/* -----------------------------权限管理--------------------------- */
+export interface QueryPermissionForm {
+  id: string;
+  name: string;
+  text: string;
+  description: string;
+}
+
+export function getPermission(id: string) {
+  return axios.get<QueryPermissionForm>(`/api/security/permission/get/${id}`);
+}
+
+export function createOrUpdatePermission(params: QueryPermissionForm) {
+  return axios.post<QueryResult>('/api/security/permission/createOrUpdate', params);
+}
+
+export function deletePermission(id: string) {
+  return axios.delete<QueryResult>(`/api/security/permission/isDelete/${id}`);
+}
+
+/* -----------------------------权限管理--------------------------- */
+export interface QueryOrgUserForm {
+  id: string;
+  userId: string;
+  userName: string;
+  orgId: string;
+  orgName: string;
+  defaultOrg: number;
+}
+
+export function getOrgUser(id: string) {
+  return axios.get<QueryOrgUserForm>(`/api/security/org/user/get/${id}`);
+}
+
+export function insertOrgUser(params: QueryOrgUserForm) {
+  return axios.post<QueryResult>('/api/security/org/user/insert', params);
+}
+
+export function deleteOrgUser(id: string) {
+  return axios.delete<QueryResult>(`/api/security/org/user/isDelete/${id}`);
 }
