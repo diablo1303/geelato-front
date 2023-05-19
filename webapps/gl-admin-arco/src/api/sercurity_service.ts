@@ -5,15 +5,11 @@ export interface SelectOption {
   value: string;
   label: string;
   children?: SelectOption[]
-};
+}
 
 /* 过滤条件 */
 export interface PageQueryFilter {
   id: string;
-  number: number;
-  name: string;
-  count: number;
-  status: 'online' | 'offline';
   createdTime: string;
 }
 
@@ -101,6 +97,16 @@ export interface QueryOrgForm {
   type: string;
   status: number;
   description: string;
+}
+
+export interface FilterOrgForm {
+  id: string;
+  pid: string;
+  name: string;
+  code: string;
+  type: string;
+  status: string;
+  createAt: string[];
 }
 
 export function queryOrgs() {
