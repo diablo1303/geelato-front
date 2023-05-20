@@ -159,6 +159,9 @@ export const usePageStore = defineStore('GlPageStore', () => {
 
         function convertToRelease(sourceContent: object) {
             // TODO 待做代码压缩，去掉设计时的或可默认的属性
+            // 去掉属性
+            // 去掉指定属性：_commandBlock
+            // 去掉设计时属性：以“__”开头命名的属性
             return sourceContent
         }
 

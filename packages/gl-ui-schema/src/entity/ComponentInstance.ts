@@ -23,7 +23,11 @@ export default class ComponentInstance {
     title?: string = ''
     componentName: string = ''
     props: ComponentInstanceProps = {}
+    // 属性值表达式，通过变量绑定、函数计算等，动态计算属性的值
+    propsExpress?:ComponentInstanceProps = {}
     slots: { [key: string]: any } = {}
+    // 插槽值表达式，通过变量绑定、函数计算等，动态计算属性的值
+    slotsExpress?:ComponentInstanceProps = {}
     children: Array<ComponentInstance> = []
     actions: Array<Action> = []
     style?: Object = {}
@@ -32,6 +36,8 @@ export default class ComponentInstance {
     i18n?: Array<I18nItem> = []
     // 运行时的值，如对于input等表单组件，可用于v-model绑定值
     value?: undefined
+    // 值表达式，用于结合上下文的信息、相关逻辑计算得出value
+    valueExpress?: string = ''
     // 是否禁用，默认为启用，用于设计时
     _disabled?: boolean
     // 是否为模板实例

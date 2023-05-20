@@ -51,6 +51,7 @@ import GlValidateRulesSetter from "./components/setters/property-setters/GlValid
 import GlComponentI18nSetter from "./components/setters/GlComponentI18nSetter.vue";
 import GlPageComponentSelect from "./components/setters/property-setters/GlPageComponentSelect.vue";
 import GlPageComponentSelectBuilder from "./components/builder/props-builder/GlPageComponentSelectBuilder.vue";
+import GlInputSetter from "./components/setters/property-setters/GlInputSetter.vue";
 
 // import formPageTemplate from "./components/stage/formPageTemplate.json";
 
@@ -191,6 +192,7 @@ const component: Plugin = {
         app.component(GlAppEntitySelect.name, GlAppEntitySelect)
         app.component(GlValidateRulesSetter.name, GlValidateRulesSetter)
         app.component(GlComponentI18nSetter.name, GlComponentI18nSetter)
+        app.component(GlInputSetter.name, GlInputSetter)
         // 注册组件元数据
         // ide.componentMetaManager.registerManyComponentRuntimeMeta(componentMeta.runtimeMeta)
         // ide.componentMetaManager.registerManyComponentDesignMeta(componentMeta.designMeta)

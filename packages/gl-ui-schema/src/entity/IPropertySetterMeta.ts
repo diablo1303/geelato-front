@@ -1,5 +1,6 @@
 import type StyleSetterMeta from "./StyleSetterMeta";
-import  {SetterComponentPropsMetaImpl} from "./SetterComponentPropsMetaImpl";
+import {SetterComponentPropsMetaImpl} from "./SetterComponentPropsMetaImpl";
+
 export default interface IPropertySetterMeta {
     // 属性名
     name: String
@@ -47,16 +48,20 @@ export default interface IPropertySetterMeta {
     defaultValue?: any
 
     // 在属性设置器中，若该属性为数组对象属性时，指定数组中对象的某一属性作为标题
-    titleField?:String
+    titleField?: String
 
     // type为slots时有值
-    slotComponentName?:String
+    slotComponentName?: String
 
     // 将配置该的结果绑定到槽渲染组件的v-model中还是v-bind中,默认为v-model
-    slotComponentBindTarget?:String
+    slotComponentBindTarget?: String
 
-    subComponentName?:String;
-    subComponentCount?:Number
+    subComponentName?: String;
+
+    subComponentCount?: Number
+
+    // 是否启用值表达式，用于结合上下文的信息、相关逻辑计算得出value
+    enableValueExpress?: Boolean
 
 }
 
@@ -70,16 +75,17 @@ export class PropertySetterMetaImpl implements IPropertySetterMeta {
     show: Boolean;
     title: String;
     setterComponentVModelName: String;
-    dataItems:Array<any>;
+    dataItems: Array<any>;
     properties: Array<any>;
-    titleField:String;
-    slotComponentName:String;
-    slotComponentBindTarget:String;
-    subComponentName?:String;
-    subComponentCount?:Number
-    placeholder?:String
+    titleField: String;
+    slotComponentName: String;
+    slotComponentBindTarget: String;
+    subComponentName?: String;
+    subComponentCount?: Number
+    placeholder?: String
     style?: StyleSetterMeta
-    description?:String
+    description?: String
+    enableValueExpress?:Boolean
 
     constructor() {
         this.expanded = true
@@ -94,10 +100,11 @@ export class PropertySetterMetaImpl implements IPropertySetterMeta {
         this.properties = []
         this.dataItems = []
         this.titleField = 'title'
-        this.slotComponentName  =''
+        this.slotComponentName = ''
         this.slotComponentBindTarget = 'v-model'
         this.placeholder = ''
         this.style = {}
+        this.enableValueExpress = false
     }
 
 }

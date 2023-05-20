@@ -110,7 +110,7 @@ const generateScript = () => {
   const action = props.componentInstance?.actions[currentActionIndex.value]
   console.log('generateScript action:', action)
   if (action) {
-    action.body = blocksHandler.parseToScript(action._commandBlock)
+    action.body = blocksHandler.parseToScript(action.__commandBlock)
   }
 }
 </script>

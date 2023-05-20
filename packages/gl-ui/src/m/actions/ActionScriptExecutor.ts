@@ -66,12 +66,22 @@ export class ActionScriptExecutor {
     }
 
     /**
-     *
+     * 点击等事件
      * @param action 组件中的事件配置信息
      * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
      * @param callback
      */
     doAction(action: Action, ctx: object, callback?: Function) {
+        return this.executeScript(action.body, ctx, callback)
+    }
+
+    /**
+     * 执行脚本的基础方法，在些构建上下文信息，工具方法等信息
+     * @param bodyScript 脚本信息，方法体
+     * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
+     * @param callback
+     */
+    executeScript(bodyScript: string, ctx: object, callback?: Function) {
         const $ctx = {
             ...ctx
         }
@@ -83,8 +93,8 @@ export class ActionScriptExecutor {
                 ...this.app?.config.globalProperties
             }
         }
-        console.log('doAction(),$ctx:', $ctx, 'action.body:', action.body)
-        const result = utils.evalFn(action.body, $ctx, '$ctx', this.$gl, '$gl')
+        // console.log('executeScript(),$ctx:', $ctx, 'script:', script)
+        const result = utils.evalFn(bodyScript, $ctx, '$ctx', this.$gl, '$gl')
         if (callback && typeof callback === 'function') {
             callback()
         }

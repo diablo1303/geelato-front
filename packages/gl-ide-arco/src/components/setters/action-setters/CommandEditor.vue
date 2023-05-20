@@ -12,7 +12,7 @@
               设计
             </template>
             <div style="width: 100%;line-height: 2em;min-height:38em;">
-              <BlockPage :key="mv.id" :glComponentInst="mv._commandBlock" @update="updateInstance"></BlockPage>
+              <BlockPage :key="mv.id" :glComponentInst="mv.__commandBlock" @update="updateInstance"></BlockPage>
             </div>
           </a-tab-pane>
           <a-tab-pane key="2">
@@ -119,7 +119,7 @@ const findBlockMeta = (componentName: string) => {
 
 const updateInstance = (instance: ComponentInstance) => {
   console.log('updateInstance block:', instance)
-  mv.value._commandBlock = JSON.parse(JSON.stringify(instance))
+  mv.value.__commandBlock = JSON.parse(JSON.stringify(instance))
   generateScript()
   emits("update:action", mv.value)
   emits("updateAction", mv.value)

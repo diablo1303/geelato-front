@@ -33,7 +33,6 @@ import mixins from "../mixins";
 import actionScriptExecutor from "../../m/actions/ActionScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
 import PageProvideProxy from "../PageProvideProxy";
-import glComponent from "@/components/gl-component/GlComponent.vue";
 
 const pageProvideProxy: PageProvideProxy = inject('pageProvideProxy')!
 
@@ -45,6 +44,20 @@ if (props.glComponentInst.componentName === 'GlUserSelect') {
   console.log('glComponentInst', props.glComponentInst)
 }
 const emits = defineEmits(['onComponentClick', 'onComponentMounted'])
+
+/**
+ *   执行propsExpress，计算出props的值，并合并到props中
+ */
+const executePropsExpress = () => {
+  if (props.glComponentInst.propsExpress) {
+    Object.keys(props.glComponentInst.propsExpress).forEach((key: string) => {
+      // @ts-ignore
+      const propExpress = props.glComponentInst.propsExpress[key]
+      props.glComponentInst.props[key] = actionScriptExecutor.executeScript(propExpress, {})
+      console.log('propExpress:', propExpress, actionScriptExecutor.executeScript(propExpress, {}))
+    })
+  }
+}
 
 const onClick = (...args: any[]) => {
   // console.log('gl-component > onClick() > arguments:', args, props.glComponentInst)
@@ -108,7 +121,7 @@ onMounted(() => {
 
 })
 
-
+executePropsExpress()
 defineExpose([onMouseLeave, onMouseOver])
 
 </script>

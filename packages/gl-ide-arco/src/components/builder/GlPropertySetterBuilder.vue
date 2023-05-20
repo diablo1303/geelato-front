@@ -44,6 +44,16 @@
       </td>
     </tr>
     <tr>
+      <td class="gl-table-cell gl-label" title="若启用，则在属性的配置面板中，可以对该属性的值绑定变量">
+        <GlIconfont type="gl-info-circle"></GlIconfont>
+        启用表达式
+      </td>
+      <td class="gl-table-cell">
+        <template v-if="mv.enableValueExpress=(mv.enableValueExpress===true?true:false)"></template>
+        <a-switch size="small" default="false" v-model="mv.enableValueExpress"></a-switch>
+      </td>
+    </tr>
+    <tr>
       <td class="gl-table-cell gl-label" title="">
         占位信息
       </td>
@@ -291,6 +301,7 @@ const emits = defineEmits(['updateSetter'])
 const setterItems: Array<PropertySetterSelectOption> = [
   {name: 'GlEmpty', label: '空（不需配置）', vModelName: 'modelValue', type: 'String'},
   {name: 'AInput', label: '单行文本', vModelName: 'modelValue', type: 'String'},
+  {name: 'GlInputSetter', label: '单行文本（支持表达式）', vModelName: 'modelValue', type: 'Object | String'},
   {name: 'AInputNumber', label: '数值', vModelName: 'modelValue', type: 'Number'},
   {name: 'ASwitch', label: '开关(是/否)', vModelName: 'modelValue', type: 'Boolean'},
   {
