@@ -1,10 +1,11 @@
 <!--
-  组件的属性配置器
+  组件的属性的通用配置器
 -->
 <template>
   <div class="gl-property-setter gl-table-row"
        v-if="propertySetterMeta.setterComponentName!=='GlEmptySetter'&&propertySetterMeta.show!==false">
-    <div :class="cellDisplayModeClass" class="gl-label" style="position: relative;" :style="{width: isCollapseDisplayMode?'100%':'7em'}"
+    <div :class="cellDisplayModeClass" class="gl-label" style="position: relative;"
+         :style="{width: isCollapseDisplayMode?'100%':'7em'}"
          @dblclick.ctrl="tryClearProp(propertySetterMeta.name)" title="按住Ctrl，双击清除该属性，恢复初始状态">
       <template v-if="isCollapseDisplayMode">
         <GlIconfont type="gl-left-circle" style="cursor: pointer;margin-left: 0.5em"
@@ -17,7 +18,9 @@
           <GlIconfont type="gl-info-circle" :title="propertySetterMeta.description"></GlIconfont>
         </span>
         <span style="cursor:pointer;font-weight: 580"
-              @click="propertySetterMeta.expanded=!propertySetterMeta.expanded">&nbsp;{{ propertySetterMeta.title }}</span>
+              @click="propertySetterMeta.expanded=!propertySetterMeta.expanded">&nbsp;{{
+            propertySetterMeta.title
+          }}</span>
       </template>
       <template v-if="!isCollapseDisplayMode">
          <span v-if="propertySetterMeta.description">
@@ -121,9 +124,11 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {computed, onMounted, onUpdated, type PropType, reactive, ref, watch} from 'vue'
+import {computed, inject, onMounted, onUpdated, type PropType, reactive, ref, watch} from 'vue'
 import type {PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
-import {utils} from "@geelato/gl-ui";
+import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "./ComponentSetterProvideProxy";
+
+const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 
 const emits = defineEmits(['update', 'update:propertyValue'])
 const props = defineProps({
@@ -157,8 +162,9 @@ watch(() => {
 }, (val, oval) => {
   console.log('update property', props.propertySetterMeta?.name, ' and set value as ', val)
   emits("update:propertyValue", val)
+  componentSetterProvideProxy.setPropValue(props.propertySetterMeta?.name, val?.value)
   // emits("update", val)
-}, {deep: true})
+}, {deep: true, immediate: true})
 
 const setPropertyModel = () => {
   // @ts-ignore

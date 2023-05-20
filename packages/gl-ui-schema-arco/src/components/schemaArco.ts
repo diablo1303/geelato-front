@@ -62,17 +62,19 @@ import RadioGroupMeta from "./setter-arco/radio/RadioGroupMeta";
 import UserSelectMeta from "./setter-arco/user-select/UserSelectMeta";
 import RadioGroupInstance from "./setter-arco/radio/RadioGroupInstance";
 import VirtualMeta from "./setter-arco/virtual/VirtualMeta";
+import HiddenAreaMeta from "./setter-arco/hidden-area/HiddenAreaMeta";
+import HiddenAreaInstance from "./setter-arco/hidden-area/HiddenAreaInstance";
 
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [ButtonMeta, IconMeta, FormMeta, InputMeta, InputNumberMeta, TextAreaMeta, RateMeta, RadioGroupMeta, UserSelectMeta, ColorMeta, TableMeta, TypographyMeta, DividerMeta, RowColLayoutMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, CheckboxMeta, DatePickerMeta, MentionsMeta,
     SelectMeta, SliderMeta, SwitchMeta, TimePickerMeta, TransferMeta, TreeSelectMeta, UploadMeta, AvatarMeta, BadgeMeta,
-    CalendarMeta, CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
+    CalendarMeta, CardMeta, HiddenAreaMeta,CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
     StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, TreeMeta, PageMeta, DndPlaceholderMeta,VirtualMeta]
 
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, CardInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance]
+const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, CardInstance, HiddenAreaInstance,FormInstance, RowColLayoutInstance, RadioGroupInstance]
 const componentInstances: Array<ComponentInstance> = []
 const dataEntryNameMap: { [key: string]: boolean } = {}
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息

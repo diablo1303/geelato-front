@@ -1,5 +1,5 @@
 <template>
-  <div class="gl-dnd-placeholder" @dragenter="onDragEnter" @dragleave="onDragLeave">
+  <div v-if="!glIsRuntime" class="gl-dnd-placeholder" @dragenter="onDragEnter" @dragleave="onDragLeave">
     <slot></slot>
     <span>{{ info }}</span>
   </div>
@@ -7,6 +7,7 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
+import mixins from "../mixins";
 
 export default defineComponent({
   name: "GlDndPlaceholder",
@@ -16,17 +17,18 @@ export default defineComponent({
       default() {
         return '拖放到此'
       }
-    }
+    },
+    ...mixins.props
   },
   methods: {
-    onDragEnter(event:any) {
+    onDragEnter(event: any) {
       // console.log('onDragEnter() > event:', event)
       if (event.target.classList.contains('gl-drag-enter')) {
         return
       }
       event.target.classList.add('gl-drag-enter')
     },
-    onDragLeave(event:any) {
+    onDragLeave(event: any) {
       // console.log('onDragLeave() > event:', event)
       if (event.target.classList.contains('gl-drag-enter')) {
         event.target.classList.remove('gl-drag-enter')

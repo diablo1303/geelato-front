@@ -31,7 +31,7 @@ export default class ComponentInstance {
     // 多语言，表单配置中默认的为zh-CN，这里只需配置en-US，如果需要繁体，则可配置增加zh-TW或zh-HK
     i18n?: Array<I18nItem> = []
     // 运行时的值，如对于input等表单组件，可用于v-model绑定值
-    _value?: undefined
+    value?: undefined
     // 是否禁用，默认为启用，用于设计时
     _disabled?: boolean
     // 是否为模板实例

@@ -9,11 +9,13 @@ import BlockElseMeta from "./setter-block/if-else/BlockElseMeta";
 import BlockElseInstance from "./setter-block/if-else/BlockElseInstance";
 import BlockOpenComponentPageMeta from "./setter-block/page/BlockOpenComponentPageMeta";
 import BlockRootMeta from "./setter-block/root/BlockRootMeta";
+import BlockComponentInvokeMeta from "./setter-block/page/BlockComponentInvokeMeta";
+import BlockConfirmMeta from "./setter-block/page/BlockConfirmMeta";
 // @ts-ignore
-const componentMetas:Array<ComponentMeta> = [BlockRootMeta,BlockNotificationMeta,BlockOpenThirdPageMeta,BlockSetVarMeta,BlockIfMeta,BlockElseMeta,BlockOpenComponentPageMeta]
+const componentMetas: Array<ComponentMeta> = [BlockRootMeta, BlockNotificationMeta, BlockOpenThirdPageMeta, BlockSetVarMeta, BlockIfMeta, BlockElseMeta, BlockOpenComponentPageMeta, BlockComponentInvokeMeta, BlockConfirmMeta]
 
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [BlockIfInstance,BlockElseInstance]
+const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance]
 const componentInstances: Array<ComponentInstance> = []
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {
@@ -31,5 +33,5 @@ for (const index in componentMetas) {
         componentInstances.push(componentInstance)
     }
 }
-const schemaBlock = {componentMetas,componentInstances}
+const schemaBlock = {componentMetas, componentInstances}
 export {schemaBlock}

@@ -29,7 +29,11 @@
     </a-modal>
   </div>
 </template>
-
+<script lang="ts">
+export default {
+  name: 'GlComponentSelect'
+}
+</script>
 <script lang="ts" setup>
 import {onUpdated, type PropType, ref, watch} from "vue";
 import GlComponentSetter from "../GlComponentSetter.vue";

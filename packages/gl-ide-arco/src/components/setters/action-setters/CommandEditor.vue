@@ -86,7 +86,8 @@ const emits = defineEmits(["update:action", 'updateAction'])
 
 const mv = ref(props.action)
 
-onUpdated(()=>{
+
+onMounted(()=>{
   reset()
 })
 

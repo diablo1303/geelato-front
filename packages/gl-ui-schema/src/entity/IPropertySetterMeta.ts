@@ -63,7 +63,7 @@ export default interface IPropertySetterMeta {
 export class PropertySetterMetaImpl implements IPropertySetterMeta {
     expanded: Boolean;
     group: String;
-    name: String;
+    name: string;
     type: String;
     setterComponentName: String;
     setterComponentProps: SetterComponentPropsMetaImpl;

@@ -28,6 +28,7 @@ import GlSelectSetter from "./components/setters/property-setters/GlSelectSetter
 import GlRadioGroupSetter from "./components/setters/property-setters/GlRadioGroupSetter.vue";
 import GlFieldSelect from "./components/setters/property-setters/GlFieldSelect.vue";
 import GlEntitySelect from "./components/setters/property-setters/GlEntitySelect.vue";
+import GlPageSelect from "./components/setters/property-setters/GlPageSelect.vue";
 import GlComponentSelect from "./components/setters/property-setters/GlComponentSelect.vue";
 import GlEntityReaderSetter from "./components/setters/property-setters/entity-reader-setter/GlEntityReaderSetter.vue";
 import GlToolbarBreadcrumbs from './components/gl-toolbar-breadcrumbs/Index.vue'
@@ -48,7 +49,8 @@ import GlEntityFieldSelect from "./components/setters/property-setters/GlEntityF
 import GlAppEntitySelect from "./components/setters/property-setters/GlAppEntitySelect.vue";
 import GlValidateRulesSetter from "./components/setters/property-setters/GlValidateRulesSetter.vue";
 import GlComponentI18nSetter from "./components/setters/GlComponentI18nSetter.vue";
-import {utils} from "@geelato/gl-ui";
+import GlPageComponentSelect from "./components/setters/property-setters/GlPageComponentSelect.vue";
+import GlPageComponentSelectBuilder from "./components/builder/props-builder/GlPageComponentSelectBuilder.vue";
 
 // import formPageTemplate from "./components/stage/formPageTemplate.json";
 
@@ -154,6 +156,7 @@ const component: Plugin = {
         // 注册组件构建器
         app.component(GlComponentBuilder.name, GlComponentBuilder)
         app.component(GlSimpleArrayBuilder.name, GlSimpleArrayBuilder)
+        app.component(GlPageComponentSelectBuilder.name, GlPageComponentSelectBuilder)
         // 注册属性设置组件
         app.component('GlComponentSetter', GlComponentSetter)
         app.component(GlComponentPropertiesSetter.name, GlComponentPropertiesSetter)
@@ -176,9 +179,11 @@ const component: Plugin = {
         app.component(GlIconfontSetterForSlot.name, GlIconfontSetterForSlot)
         app.component(GlSelectSetter.name, GlSelectSetter)
         app.component(GlOptionsSetter.name, GlOptionsSetter)
-        app.component('GlEntitySelect', GlEntitySelect)
-        app.component('GlFieldSelect', GlFieldSelect)
-        app.component('GlComponentSelect', GlComponentSelect)
+        app.component(GlPageSelect.name, GlPageSelect)
+        app.component(GlPageComponentSelect.name, GlPageComponentSelect)
+        app.component(GlEntitySelect.name, GlEntitySelect)
+        app.component(GlFieldSelect.name, GlFieldSelect)
+        app.component(GlComponentSelect.name, GlComponentSelect)
         app.component(GlEntityReaderSetter.name, GlEntityReaderSetter)
         app.component(GlRadioGroupSetter.name, GlRadioGroupSetter)
         app.component(GlHtmlSetter.name, GlHtmlSetter)

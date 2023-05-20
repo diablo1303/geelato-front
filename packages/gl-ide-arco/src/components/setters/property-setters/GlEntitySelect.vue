@@ -5,7 +5,11 @@
     </a-select>
   </div>
 </template>
-
+<script lang="ts">
+export default {
+  name: 'GlEntitySelect'
+}
+</script>
 <script lang="ts" setup>
 import {inject, ref, watch} from 'vue'
 import {useEntityStore} from "@geelato/gl-ide";

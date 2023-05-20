@@ -5,7 +5,7 @@ export default {
     "group": "block_page",
     "title": "打开组件页面",
     "useBy": ["freePage"],
-    "blockContent": "打开组件页面，应用为：${appId},页面为:${pageId}",
+    "blockContent": "打开组件页面，应用Id为：${appId},页面为:${title}",
     "properties": [{
         "name": "appId",
         "setterComponentProps": {},
@@ -15,26 +15,37 @@ export default {
         "show": true,
         "expanded": true,
         "title": "应用ID",
-        "setterComponentName": "AInput"
+        "setterComponentName": "AInput",
+        "placeholder": "不填写表示当前应用"
     }, {
-        "name": "pageId",
+        "name": "extendId",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "页面ID",
-        "setterComponentName": "AInput"
+        "title": "打开的页面",
+        "setterComponentName": "GlPageSelect"
     }, {
         "name": "title",
-        "setterComponentProps": {},
+        "setterComponentProps": {"value": "默认为1024px"},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
         "show": true,
         "expanded": true,
         "title": "页面标题",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "width",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "页面宽度",
         "setterComponentName": "AInput"
     }, {
         "name": "params",
@@ -44,8 +55,8 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "参数",
-        "_showSub": true,
+        "title": "页面参数",
+        "_showSub": false,
         "properties": [{
             "name": "pName",
             "group": "base",
@@ -66,9 +77,108 @@ export default {
             "setterComponentVModelName": "modelValue",
             "title": "参数值",
             "setterComponentName": "AInput"
+        }, {
+            "name": "pType",
+            "setterComponentProps": {
+                "allowClear": true,
+                "options": [{"label": "字符串", "value": "string"}, {
+                    "label": "布尔",
+                    "value": "boolean"
+                }, {"label": "表达式", "value": "express"}, {"label": "数值", "value": "number"}, {
+                    "label": "数组",
+                    "value": "array"
+                }, {"label": "对象", "value": "object"}]
+            },
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "show": true,
+            "expanded": true,
+            "title": "类型",
+            "setterComponentName": "ASelect"
         }],
         "setterComponentName": "GlObjectArraySetter",
-        "titleField": "name"
+        "titleField": "pName"
+    }, {
+        "name": "okText",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "确认按钮文字",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "beforeOkInvokeComponentId",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "确认前调组件",
+        "setterComponentName": "GlPageComponentSelect"
+    }, {
+        "name": "beforeOkInvokeMethodName",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "确认前调方法",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "cancelText",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "取消按钮文字",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "hideCancel",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "隐藏取消按钮",
+        "setterComponentName": "ASwitch"
+    }, {
+        "name": "closeInvokePageExtendId",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "关闭后调页面",
+        "setterComponentName": "GlPageSelect"
+    }, {
+        "name": "closeInvokeComponentId",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {"pageExtendIdName": "closeInvokePageExtendId"},
+        "setterComponentVModelName": "modelValue",
+        "title": "关闭后调组件",
+        "setterComponentName": "GlPageComponentSelect"
+    }, {
+        "name": "closeInvokeMethodName",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "关闭后调方法",
+        "setterComponentName": "AInput"
     }],
     "actions": []
 }

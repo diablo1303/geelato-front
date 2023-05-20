@@ -36,11 +36,6 @@ const componentStoreId = 'useComponentBlockStore'
 const componentStore = componentStoreFactory.useComponentStore(componentStoreId)
 const codeViewerVisible = ref(false)
 
-// emitter.on(EventNames.GlIdeToolbarShowCodeViewer, () => {
-//   codeViewerVisible.value = true
-// })
-
-
 /**
  *  初始的组件树
  */

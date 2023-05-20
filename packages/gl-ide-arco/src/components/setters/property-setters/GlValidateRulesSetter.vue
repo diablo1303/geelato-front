@@ -253,7 +253,11 @@ const removeRule = (args: any) => {
           <div class="gl-table-cell gl-label" style="width: 4em">必填</div>
           <div class="gl-table-cell">
             <a-switch v-model="item.required"></a-switch>
-            <a-input v-model="item.message"/>
+            <a-input v-model="item.message">
+              <template #prepend>
+                <span title="验证失败时的提示信息">提醒</span>
+              </template>
+            </a-input>
           </div>
         </div>
       </template>

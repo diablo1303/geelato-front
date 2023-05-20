@@ -1,6 +1,6 @@
 import {inBrowser} from 'vitepress';
 import DefaultTheme from 'vitepress/theme'
-import ArcoVue, {Modal} from '@arco-design/web-vue';
+import ArcoVue, {Modal,Drawer} from '@arco-design/web-vue';
 import '@arco-design/web-vue/dist/arco.css';
 import draggable from 'vuedraggable'
 import GlUi from '@geelato/gl-ui'
@@ -32,6 +32,7 @@ export default {
     NotFound: () => 'custom 404',
 
     enhanceApp({app, router, siteData}) {
+
         app.component('gl-draggable', draggable)
         app.component('ComponentBuilderExample', ComponentBuilderExample)
         app.component('SetterExample', SetterExample)
@@ -45,9 +46,10 @@ export default {
 
         entityApi.reCreate({baseURL: "https://localhost:8080"})
         app.use(ArcoVue)
+        Drawer._context = app._context
         Modal._context = app._context;
         app.component('GlModal', Modal)
-
+        app.component('GlDrawer', Drawer)
         app.use(GlUi)
         app.use(GlUiArco)
         app.use(GlUiSchemaCore)

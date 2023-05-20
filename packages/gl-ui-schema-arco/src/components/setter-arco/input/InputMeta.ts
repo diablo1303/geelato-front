@@ -31,11 +31,11 @@ export default {
         "setterComponentProps": {
             "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
             "optionType": "button",
-            "options": [{"label": "大", "value": "large"}, {"label": "默认", "value": "default"}, {
+            "options": [{"label": "大", "value": "large"}, {"label": "默认", "value": "medium"}, {
                 "label": "小",
                 "value": "small"
-            }],
-            "defaultValue": "default"
+            }, {"label": "迷你", "value": "mini"}],
+            "defaultValue": "medium"
         },
         "setterComponentVModelName": "modelValue",
         "group": "base",
@@ -70,7 +70,7 @@ export default {
         "slotComponentBindTarget": "v-model"
     }, {
         "name": "allowClear",
-        "setterComponentProps": {},
+        "setterComponentProps": {"defaultChecked": false},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
@@ -129,17 +129,6 @@ export default {
         "expanded": true,
         "title": "显示字数",
         "setterComponentName": "ASwitch"
-    }, {
-        "name": "defaultValue",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "description": "输入框默认内容",
-        "title": "默认内容",
-        "setterComponentName": "AInput",
-        "show": true,
-        "expanded": true
     }, {
         "name": "rules",
         "group": "base",

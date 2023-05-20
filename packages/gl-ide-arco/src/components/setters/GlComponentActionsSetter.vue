@@ -31,7 +31,8 @@
              :width="1360"
              body-style="padding:0"
     >
-      <CommandEditor v-if="currentAction" :key="currentAction.id" v-model:action="currentAction"></CommandEditor>
+      <CommandEditor v-if="refreshFlag&&currentAction" :key="currentAction.id"
+                     v-model:action="currentAction"></CommandEditor>
     </a-modal>
   </div>
 
@@ -42,7 +43,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {type PropType, ref} from 'vue'
+import {nextTick, type PropType, ref} from 'vue'
 import {Action, ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import GlArrayBaseSetter from "./property-setters/GlArrayBaseSetter.vue";
 import CommandEditor from "./action-setters/CommandEditor.vue";
@@ -66,6 +67,8 @@ const update = () => {
 
 }
 
+const refreshFlag = ref(true)
+
 const currentAction = ref(new Action())
 const currentActionIndex = ref(-1)
 const actionCodeEditorVisible = ref(false)
@@ -80,9 +83,13 @@ const openActionSetter = (action: Action, actionIndex: number, actionMeta: Actio
   if (!action.id) {
     action.id = utils.gid('act', 16)
   }
-  currentAction.value = action?JSON.parse(JSON.stringify(action)):new Action()
+  currentAction.value = action ? JSON.parse(JSON.stringify(action)) : new Action()
   currentActionIndex.value = actionIndex
   actionCodeEditorVisible.value = true
+  refreshFlag.value = false
+  nextTick(() => {
+    refreshFlag.value = true
+  })
 }
 const onUpdateAction = (action: Action) => {
   console.log('onUpdateAction', action)

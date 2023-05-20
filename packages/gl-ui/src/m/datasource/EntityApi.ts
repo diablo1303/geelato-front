@@ -60,7 +60,7 @@ export class EntityApi {
      * @param withMeta 是否需同时查询出各列表字段的元数据信息
      * @returns {*}
      */
-    queryByGql(mql: object | Array<object>, withMeta: boolean) {
+    queryByGql(mql: object | Array<object>, withMeta?: boolean) {
         const path = Array.isArray(mql)
             ? this.url.metaMultiList
             : this.url.metaList;
@@ -133,7 +133,7 @@ export class EntityApi {
         entityName: string,
         fieldNames: string,
         params: object,
-        withMeta: boolean
+        withMeta?: boolean
     ) {
         if (!fieldNames) {
             // eslint-disable-next-line no-throw-literal
@@ -250,7 +250,7 @@ export class EntityApi {
     }
 
     /**
-     * 通过页面编码获取页面配置信息
+     * 通过页面ID获取页面配置信息
      * @param pageId
      * @returns {*}
      */
@@ -261,6 +261,27 @@ export class EntityApi {
                 "@p": "1,1",
                 "@fs": "id,code,releaseContent",
                 id: pageId,
+            },
+        };
+        return this.service({
+            url: this.url.metaList,
+            method: "POST",
+            data: mql,
+        });
+    }
+
+    /**
+     * 通过应用页面树节点ID获取页面配置信息
+     * @param extendId
+     * @returns {*}
+     */
+    queryPageByExtendId(extendId: string) {
+        // mql查询语句
+        const mql = {
+            platform_app_page: {
+                "@p": "1,1",
+                "@fs": "id,code,releaseContent",
+                extendId: extendId,
             },
         };
         return this.service({

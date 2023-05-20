@@ -171,7 +171,7 @@
       </td>
       <td class="gl-table-cell">
         <template v-if="mv.setterComponentProps">
-          <a-switch size="small" v-if="defaultValueType==='Boolean'" v-model="mv.setterComponentProps.defaultValue"></a-switch>
+          <a-switch size="small" v-if="defaultValueType==='Boolean'" v-model="mv.setterComponentProps.defaultChecked"></a-switch>
           <a-input-number v-else-if="defaultValueType==='Number'"
                           v-model="mv.setterComponentProps.defaultValue"></a-input-number>
           <a-input v-else v-model="mv.setterComponentProps.defaultValue" placeholder="默认值"></a-input>
@@ -327,6 +327,8 @@ const setterItems: Array<PropertySetterSelectOption> = [
   {name: 'GlGroupSelect', label: '组织选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlJson', label: 'Json编辑器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlColor', label: '颜色选择器', vModelName: 'modelValue', type: 'String'},
+  {name: 'GlPageSelect', label: '应用内的页面选择器', vModelName: 'modelValue', type: 'String'},
+  {name: 'GlPageComponentSelect', label: '页面内的组件选择器', vModelName: 'modelValue', type: 'String',propsSetter: 'GlPageComponentSelectBuilder'},
   {name: 'GlComponentSelect', label: '组件选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlSubComponentSetter', label: '子组件设置', vModelName: 'modelValue', type: 'String'},
   {name: 'GlArrayNumberSetter', label: '数组-数值类 [1,2,3...]', vModelName: 'modelValue', type: 'String',propsSetter: 'GlArrayNumberBuilder'},
