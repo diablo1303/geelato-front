@@ -117,8 +117,9 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "提示文字",
-        "setterComponentName": "AInput"
+        "title": "占位提示",
+        "setterComponentName": "AInput",
+        "enableValueExpress": true
     }, {
         "name": "maxlength",
         "setterComponentProps": {},

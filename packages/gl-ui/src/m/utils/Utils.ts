@@ -171,9 +171,10 @@ export class Utils {
         let Fn = Function
         let uName = utilsName || '$utils'
         let bodyScript = this.trim(fnBody)
-        // TODO 怎么确定是否有为有效的脚本
+        // 去掉头尾分号
+        bodyScript = bodyScript.replace(/^;+|;+$/g, '')
         // 无换行，无“;”的则按表达式处理
-        if (!bodyScript.match(/[\r\n,\n,;]/g) && !bodyScript.toLowerCase().startsWith('return ')) {
+        if (!bodyScript.match(/[\r\n;]/g) && !bodyScript.toLowerCase().startsWith('return ')) {
             bodyScript = 'return ' + bodyScript
         }
         return new Fn(ctxName, uName, bodyScript)(ctx, $utils || {})

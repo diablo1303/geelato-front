@@ -117,7 +117,7 @@
             </GlPropertySetterCard>
           </template>
         </div>
-        <div style="flex: 1">
+        <div v-if="propertySetterMeta.enableValueExpress" style="flex: 1">
           <slot></slot>
         </div>
       </div>

@@ -53,8 +53,10 @@ const executePropsExpress = () => {
     Object.keys(props.glComponentInst.propsExpress).forEach((key: string) => {
       // @ts-ignore
       const propExpress = props.glComponentInst.propsExpress[key]
-      props.glComponentInst.props[key] = actionScriptExecutor.executeScript(propExpress, {})
-      console.log('propExpress:', propExpress, actionScriptExecutor.executeScript(propExpress, {}))
+      if (propExpress) {
+        props.glComponentInst.props[key] = actionScriptExecutor.executeScript(propExpress, {})
+        console.log('propExpress:', propExpress, actionScriptExecutor.executeScript(propExpress, {}))
+      }
     })
   }
 }

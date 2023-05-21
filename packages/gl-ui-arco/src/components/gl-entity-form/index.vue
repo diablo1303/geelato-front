@@ -104,7 +104,14 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
       let subInst = inst.children[index]
       // console.log('isDataEntry:', subInst.componentName, isDataEntry(subInst.componentName), ' subInst:', subInst)
       if (isDataEntry(subInst.componentName)) {
-        subInst.value = dataItem[subInst.props.bindField.fieldName]
+        const value = dataItem[subInst.props.bindField.fieldName]
+        // 由于AInputNumber的值不支持设置字符串，这里对可能的字符串值进行转换
+        if (subInst.componentName === 'AInputNumber') {
+          // @ts-ignore
+          subInst.value = typeof value !== 'number' ? Number(value) : value
+        } else {
+          subInst.value = value
+        }
         let formItem = {
           componentName: subInst.componentName,
           fieldName: subInst.props.bindField.fieldName,
@@ -119,7 +126,9 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
       }
     }
   }
+
   setFieldItemValue(props.glComponentInst)
+  console.log('GlEntityForm > setFormItemValues() > formData:', formData.value)
 }
 
 let entityRecordId = pageProvideProxy.getParamValue('recordId')
@@ -129,7 +138,7 @@ let entityRecordId = pageProvideProxy.getParamValue('recordId')
 const loadForm = () => {
 
   if (!entityRecordId) {
-    if(isRead){
+    if (isRead) {
       global.$notification.error({
         duration: 8000,
         title: '参数不全',

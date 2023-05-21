@@ -55,7 +55,7 @@
     </tr>
     <tr>
       <td class="gl-table-cell gl-label" title="">
-        占位信息
+        占位提示
       </td>
       <td class="gl-table-cell">
         <a-input v-model="mv.placeholder" placeholder="placeholder"></a-input>

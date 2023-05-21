@@ -15,7 +15,8 @@ export default {
         "show": true,
         "expanded": true,
         "title": "标题",
-        "setterComponentName": "AInput"
+        "setterComponentName": "AInput",
+        "enableValueExpress": true
     }, {
         "name": "bindField",
         "setterComponentProps": {},
@@ -25,25 +26,28 @@ export default {
         "show": true,
         "expanded": true,
         "title": "绑定字段",
-        "setterComponentName": "GlEntityFieldSelect"
+        "setterComponentName": "GlEntityFieldSelect",
+        "enableValueExpress": false
     }, {
-        "name": "defaultValue",
+        "name": "placeholder",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
-        "title": "默认值",
-        "setterComponentName": "AInputNumber",
         "show": true,
         "expanded": true,
-        "placeholder": "默认值（非受控模式）"
+        "title": "占位提示",
+        "placeholder": "输入框提示文字",
+        "enableValueExpress": false,
+        "setterComponentName": "AInput"
     }, {
         "name": "mode",
         "setterComponentProps": {
-            "options": [{"label": "按钮内嵌", "value": "embed"}, {
-                "label": "左右按钮",
-                "value": "button"
-            }]
+            "options": [{
+                "label": "按钮内嵌",
+                "value": "embed",
+                "__S2VY4cybNxkOrSfN4C": "embed"
+            }, {"label": "左右按钮", "value": "button", "__S2VY4cybNxkOrSfN4C": "button"}]
         },
         "setterComponentVModelName": "modelValue",
         "group": "base",
@@ -52,7 +56,8 @@ export default {
         "expanded": true,
         "title": "模式",
         "description": "（embed：按钮内嵌模式，button：左右按钮模式）",
-        "setterComponentName": "ARadioGroup"
+        "setterComponentName": "ARadioGroup",
+        "enableValueExpress": false
     }, {
         "name": "precision",
         "setterComponentProps": {},
@@ -62,7 +67,8 @@ export default {
         "title": "数值精度",
         "setterComponentName": "AInputNumber",
         "show": true,
-        "expanded": true
+        "expanded": true,
+        "enableValueExpress": false
     }, {
         "name": "step",
         "setterComponentProps": {},
@@ -73,7 +79,8 @@ export default {
         "title": "步数",
         "setterComponentName": "AInputNumber",
         "show": true,
-        "expanded": true
+        "expanded": true,
+        "enableValueExpress": false
     }, {
         "name": "max",
         "setterComponentProps": {},
@@ -83,7 +90,8 @@ export default {
         "title": "最大值",
         "setterComponentName": "AInputNumber",
         "show": true,
-        "expanded": true
+        "expanded": true,
+        "enableValueExpress": false
     }, {
         "name": "min",
         "setterComponentProps": {},
@@ -93,31 +101,29 @@ export default {
         "title": "最小值",
         "setterComponentName": "AInputNumber",
         "show": true,
-        "expanded": true
-    }, {
-        "name": "placeholder",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "",
-        "group": "base",
-        "type": "props",
-        "show": true,
         "expanded": true,
-        "title": "占位提示",
-        "placeholder": "输入框提示文字"
+        "enableValueExpress": false
     }, {
         "name": "size",
         "setterComponentProps": {
             "optionType": "button",
             "buttonStyle": "solid",
-            "options": [{"label": "迷你", "value": "mini", "v_Q3KYsgxp5al9vtx3": "mini"}, {
+            "options": [{
+                "label": "迷你",
+                "value": "mini",
+                "v_Q3KYsgxp5al9vtx3": "mini",
+                "__9gVrjp624mDjD95IHQ": "mini"
+            }, {
                 "label": "小",
                 "value": "small",
-                "v_Q3KYsgxp5al9vtx3": "small"
-            }, {"label": "中", "value": "medium", "v_Q3KYsgxp5al9vtx3": "medium"}, {
-                "label": "大",
-                "value": "large",
-                "v_Q3KYsgxp5al9vtx3": "large"
-            }]
+                "v_Q3KYsgxp5al9vtx3": "small",
+                "__9gVrjp624mDjD95IHQ": "small"
+            }, {
+                "label": "中",
+                "value": "medium",
+                "v_Q3KYsgxp5al9vtx3": "medium",
+                "__9gVrjp624mDjD95IHQ": "medium"
+            }, {"label": "大", "value": "large", "v_Q3KYsgxp5al9vtx3": "large", "__9gVrjp624mDjD95IHQ": "large"}]
         },
         "setterComponentVModelName": "modelValue",
         "group": "base",
@@ -125,7 +131,8 @@ export default {
         "title": "大小",
         "setterComponentName": "ARadioGroup",
         "show": true,
-        "expanded": true
+        "expanded": true,
+        "enableValueExpress": false
     }, {
         "name": "suffix",
         "setterComponentProps": {},
@@ -137,7 +144,8 @@ export default {
         "title": "后置标签",
         "setterComponentName": "AInput",
         "slotComponentName": "GlText",
-        "slotComponentBindTarget": "v-model"
+        "slotComponentBindTarget": "v-model",
+        "enableValueExpress": false
     }, {
         "name": "prefix",
         "setterComponentProps": {},
@@ -149,7 +157,8 @@ export default {
         "title": "前置标签",
         "setterComponentName": "AInput",
         "slotComponentName": "GlText",
-        "slotComponentBindTarget": "v-model"
+        "slotComponentBindTarget": "v-model",
+        "enableValueExpress": false
     }, {
         "name": "allowClear",
         "setterComponentProps": {},
@@ -160,7 +169,8 @@ export default {
         "expanded": true,
         "placeholder": "是否允许清空输入框",
         "title": "允许清空",
-        "setterComponentName": "ASwitch"
+        "setterComponentName": "ASwitch",
+        "enableValueExpress": false
     }, {
         "name": "disabled",
         "setterComponentProps": {},
@@ -170,7 +180,8 @@ export default {
         "title": "禁用",
         "setterComponentName": "ASwitch",
         "show": true,
-        "expanded": true
+        "expanded": true,
+        "enableValueExpress": true
     }, {
         "name": "readOnly",
         "setterComponentProps": {},
@@ -180,18 +191,8 @@ export default {
         "show": true,
         "expanded": true,
         "title": "只读",
-        "setterComponentName": "ASwitch"
-    }, {
-        "name": "error",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "错误状态",
-        "placeholder": "是否为错误状态",
-        "setterComponentName": "ASwitch"
+        "setterComponentName": "ASwitch",
+        "enableValueExpress": true
     }, {
         "name": "rules",
         "group": "base",
@@ -201,6 +202,7 @@ export default {
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "title": "验证规则",
-        "setterComponentName": "GlValidateRulesSetter"
+        "setterComponentName": "GlValidateRulesSetter",
+        "enableValueExpress": false
     }]
 }

@@ -15,11 +15,12 @@
                       :type="componentModel[propertySetterMeta.type+'Express'][propertySetterMeta.name]?'primary':''"
                       style="padding: 0 0.1em;height: 2.6em;font-weight: 700">{ / }
             </a-button>
-            <a-modal :key="index" title="变量绑定" v-model:visible="valueExpressModalVisible"
+            <a-modal title="变量绑定" v-model:visible="valueExpressModalVisible"
+                     :mask-style="{background:'rgba(0, 0, 0, 0.25)'}"
                      @ok="handleOk"
                      @cancel="handleCancel">
               <a-textarea v-model="valueExpress" placeholder="在此输入..."></a-textarea>
-              <a-button style="float: right" type="outline" size="mini"
+              <a-button style="float: right" type="outline" size="mini" status="danger"
                         @click="clearValueExpress">清除绑定
               </a-button>
               <div>
@@ -27,12 +28,12 @@
                 如果设置了该变量绑定，则以该变量绑定计算的结果为优先。
                 <h4 style="font-weight: 600">用法</h4>
                 输入框内默认支持变量，写法和 JS 写法完全一致。
-                <li>变量: state.xxx</li>
-                <li>字符串: "string"</li>
+                <li>变量: $gl.xxx</li>
+                <li>字符串: "我是字符串，我有引号"</li>
                 <li>数字: 123</li>
                 <li>布尔值: true / false</li>
-                <li>对象: {`{ name: "张三" }`}</li>
-                <li>数组: ["1", "2"]</li>
+                <li>对象: { name: "王一" }</li>
+                <li>数组: ["1", "2"]或[1, 2]</li>
                 <li>空值: null</li>
               </div>
             </a-modal>
@@ -191,4 +192,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
+/*.bax{*/
+/*  background-color: rgba(231, 231, 231, 0.50);*/
+/*}*/
 </style>

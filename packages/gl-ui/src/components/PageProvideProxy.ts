@@ -73,13 +73,13 @@ export default class PageProvideProxy {
     }
 
 
-    setCtx(ctx: object) {
-        this.pageCtx = ctx
-    }
-
-    getCtx() {
-        return this.pageCtx
-    }
+    // setCtx(ctx: object) {
+    //     this.pageCtx = ctx
+    // }
+    //
+    // getCtx() {
+    //     return this.pageCtx
+    // }
 
     setComponentValue(componentId: string, value: any) {
         console.log('setComponentValue', componentId, value, this.pageInst, this.componentMap)

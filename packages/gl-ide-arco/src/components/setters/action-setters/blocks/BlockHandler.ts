@@ -47,7 +47,7 @@ export class BlocksHandler {
         console.log('BlocksHandler > parseOne() > block:', block)
         if (block) {
             const handler: IBlockHandler = this.handlers[block.componentName]
-            console.log('parseToScript blocks, get handler:', handler, 'by nane:', block.componentName, 'from handlers:', this.handlers)
+            console.log('BlocksHandler > parseOne() > parse blocks and get handler:', handler, 'by nane:', block.componentName, ',handlers:', this.handlers)
             const parseResult = handler?.parseToScript(block.props) || new ParseResult()
             for (const key in block.children) {
                 const subBlock = block.children[key]

@@ -95,23 +95,6 @@ const reset = ()=>{
   mv.value = props.action
 }
 
-reset()
-// watch(mv, () => {
-//   console.log('update:action', mv)
-//   emits("update:action", mv.value)
-//   emits('updateAction', mv.value)
-// }, {deep: true})
-// const currentSelectedBlockId = ref('')
-// // 当前组件元数据
-// const currentSelectedBlockMeta = ref(new ComponentMeta())
-// // 当前组件实例
-// const currentSelectedComponentInstance = ref(new ComponentInstance())
-// // 选择block组件
-// const selectBlock = (block: ComponentInstance) => {
-//   currentSelectedComponentInstance.value = block
-//   currentSelectedBlockId.value = block.id
-//   currentSelectedBlockMeta.value = findBlockMeta(block.componentName)
-// }
 
 const findBlockMeta = (componentName: string) => {
   return componentMaterialStore.findMetaByName(componentName)
@@ -133,6 +116,7 @@ const deleteBlock = () => {
   componentStore.deleteCurrentSelectedComponentInst()
 }
 
+reset()
 </script>
 
 <style>
