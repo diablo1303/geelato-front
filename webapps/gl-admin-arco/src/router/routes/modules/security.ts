@@ -6,8 +6,8 @@ const USER: AppRouteRecordRaw = {
   name: 'role',
   component: DEFAULT_LAYOUT,
   meta: {
-    locale: '系统管理',
-    icon: 'icon-user',
+    locale: 'sercurity.org.index.menu.list',
+    icon: 'icon-settings',
     requiresAuth: true,
     order: 7,
   },
@@ -17,7 +17,7 @@ const USER: AppRouteRecordRaw = {
       name: 'orgList',
       component: () => import('@/views/security/org/index.vue'),
       meta: {
-        locale: '部门管理',
+        locale: 'sercurity.org.index.menu.list.searchTable',
         requiresAuth: true,
       },
     },
@@ -26,7 +26,7 @@ const USER: AppRouteRecordRaw = {
       name: 'userList',
       component: () => import('@/views/security/user/index.vue'),
       meta: {
-        locale: '用户管理',
+        locale: 'sercurity.user.index.menu.list.searchTable',
         requiresAuth: true,
       },
     },
@@ -35,7 +35,7 @@ const USER: AppRouteRecordRaw = {
       name: 'roleList',
       component: () => import('@/views/security/role/index.vue'),
       meta: {
-        locale: '角色管理',
+        locale: 'sercurity.role.index.menu.list.searchTable',
         requiresAuth: true,
         roles: ['*'],
       },
@@ -45,7 +45,7 @@ const USER: AppRouteRecordRaw = {
       name: 'permissionList',
       component: () => import('@/views/security/permission/index.vue'),
       meta: {
-        locale: '权限管理',
+        locale: 'sercurity.permission.index.menu.list.searchTable',
         requiresAuth: true
       },
     },
@@ -54,7 +54,7 @@ const USER: AppRouteRecordRaw = {
       name: 'dictList',
       component: () => import('@/views/security/dict/index.vue'),
       meta: {
-        locale: '字典管理',
+        locale: 'sercurity.dict.index.menu.list.searchTable',
         requiresAuth: true
       },
     },

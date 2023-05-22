@@ -75,12 +75,13 @@ export default {
   'userSetting.certification.button.check': 'Check',
   'userSetting.certification.button.withdraw': 'Withdraw',
   // webapps/gl-admin-arco/src/views/security/org
-  'sercurity.org.index.menu.list': 'System Management',
-  'sercurity.org.index.menu.list.searchTable': 'Department Management',
+  'sercurity.org.index.menu.list': 'System',
+  'sercurity.org.index.menu.list.searchTable': 'Department',
   // webapps/gl-admin-arco/src/views/security/org - list|form
   'sercurity.org.index.form.index': 'index',
   'sercurity.org.index.form.name': 'name',
   'sercurity.org.index.form.code': 'code',
+  'sercurity.org.index.form.pid': 'superior',
   'sercurity.org.index.form.status': 'status',
   'sercurity.org.index.form.status.0': 'disabled',
   'sercurity.org.index.form.status.1': 'enabled',
@@ -103,8 +104,8 @@ export default {
   'sercurity.org.index.model.close.text': 'Close',
   'sercurity.org.index.model.ok.text': 'Confirm',
   // webapps/gl-admin-arco/src/views/security/user
-  'sercurity.user.index.menu.list': 'System Management',
-  'sercurity.user.index.menu.list.searchTable': 'User Management',
+  'sercurity.user.index.menu.list': 'System',
+  'sercurity.user.index.menu.list.searchTable': 'User',
   // webapps/gl-admin-arco/src/views/security/user - list|form
   'sercurity.user.forml.tab.title.one': 'User Basic Info',
   'sercurity.user.forml.tab.title.two': 'User Of Department',
@@ -147,8 +148,8 @@ export default {
   'sercurity.user.index.model.close.text': 'Close',
   'sercurity.user.index.model.ok.text': 'Confirm',
   // webapps/gl-admin-arco/src/views/security/dic
-  'sercurity.dict.index.menu.list': 'System Management',
-  'sercurity.dict.index.menu.list.searchTable': 'Dictionary Management',
+  'sercurity.dict.index.menu.list': 'System',
+  'sercurity.dict.index.menu.list.searchTable': 'Dictionary',
   'sercurity.dict.index.menu.list.searchTable1': 'Dictionary Basic Info',
   // webapps/gl-admin-arco/src/views/security/dict - list|form
   'sercurity.dict.index.form.index': 'index',
@@ -180,8 +181,8 @@ export default {
   'sercurity.dict.index.modal.cancel.text': 'Cancel',
   'sercurity.dict.index.modal.ok.text': 'Submit',
   // webapps/gl-admin-arco/src/views/security/dic/item
-  'sercurity.dictItem.index.menu.list': 'System Management',
-  'sercurity.dictItem.index.menu.list.searchTable': 'Dictionary Item Management',
+  'sercurity.dictItem.index.menu.list': 'System',
+  'sercurity.dictItem.index.menu.list.searchTable': 'Dictionary Item',
   // webapps/gl-admin-arco/src/views/security/dict/item - list|form
   'sercurity.dictItem.index.form.index': 'index',
   'sercurity.dictItem.index.form.itemText': 'text',
@@ -201,8 +202,8 @@ export default {
   'sercurity.dictItem.index.model.close.text': 'Close',
   'sercurity.dictItem.index.model.ok.text': 'Confirm',
   // webapps/gl-admin-arco/src/views/security/permission
-  'sercurity.permission.index.menu.list': 'System Management',
-  'sercurity.permission.index.menu.list.searchTable': 'Permission Management',
+  'sercurity.permission.index.menu.list': 'System',
+  'sercurity.permission.index.menu.list.searchTable': 'Permission',
   // webapps/gl-admin-arco/src/views/security/permission - list|form
   'sercurity.permission.index.form.index': 'index',
   'sercurity.permission.index.form.name': 'name',
@@ -221,8 +222,8 @@ export default {
   'sercurity.permission.index.model.ok.text': 'Confirm',
 
   // webapps/gl-admin-arco/src/views/security/user/org
-  'sercurity.orgUser.index.menu.list': 'System Management',
-  'sercurity.orgUser.index.menu.list.searchTable': 'User Of Department Management',
+  'sercurity.orgUser.index.menu.list': 'System',
+  'sercurity.orgUser.index.menu.list.searchTable': 'User Of Department',
   // webapps/gl-admin-arco/src/views/security/user/org - list|form
   'sercurity.orgUser.index.form.index': 'index',
   'sercurity.orgUser.index.form.userName': 'userName',
@@ -244,8 +245,8 @@ export default {
 
   /* 角色管理 */
   // webapps/gl-admin-arco/src/views/security/role/app
-  'sercurity.role.index.menu.list': 'System Management',
-  'sercurity.role.index.menu.list.searchTable': 'Role Management',
+  'sercurity.role.index.menu.list': 'System',
+  'sercurity.role.index.menu.list.searchTable': 'Role',
   'sercurity.role.form.tab.title.one': 'Role Basic Info',
   'sercurity.role.form.tab.title.two': 'Role Of App',
   'sercurity.role.form.tab.title.three': 'Role Of Permission',
@@ -273,8 +274,8 @@ export default {
   'sercurity.role.index.model.ok.text': 'Confirm',
 
   // webapps/gl-admin-arco/src/views/security/role/app
-  'sercurity.roleApp.index.menu.list': 'System Management',
-  'sercurity.roleApp.index.menu.list.searchTable': 'Role Of App Management',
+  'sercurity.roleApp.index.menu.list': 'System',
+  'sercurity.roleApp.index.menu.list.searchTable': 'Role Of App',
   // webapps/gl-admin-arco/src/views/security/role/app - list|form
   'sercurity.roleApp.index.form.index': 'index',
   'sercurity.roleApp.index.form.roleName': 'roleName',
@@ -289,8 +290,8 @@ export default {
   'sercurity.roleApp.index.model.ok.text': 'Confirm',
 
   // webapps/gl-admin-arco/src/views/security/role/Permission
-  'sercurity.rolePermission.index.menu.list': 'System Management',
-  'sercurity.rolePermission.index.menu.list.searchTable': 'Role Of Permission Management',
+  'sercurity.rolePermission.index.menu.list': 'System',
+  'sercurity.rolePermission.index.menu.list.searchTable': 'Role Of Permission',
   // webapps/gl-admin-arco/src/views/security/role/Permission - list|form
   'sercurity.rolePermission.index.form.index': 'index',
   'sercurity.rolePermission.index.form.roleName': 'roleName',
@@ -305,8 +306,8 @@ export default {
   'sercurity.rolePermission.index.model.ok.text': 'Confirm',
 
   // webapps/gl-admin-arco/src/views/security/role/TreeNode
-  'sercurity.roleTreeNode.index.menu.list': 'System Management',
-  'sercurity.roleTreeNode.index.menu.list.searchTable': 'Role Of TreeNode Management',
+  'sercurity.roleTreeNode.index.menu.list': 'System',
+  'sercurity.roleTreeNode.index.menu.list.searchTable': 'Role Of TreeNode',
   // webapps/gl-admin-arco/src/views/security/role/TreeNode - list|form
   'sercurity.roleTreeNode.index.form.index': 'index',
   'sercurity.roleTreeNode.index.form.title': 'title',
@@ -322,8 +323,8 @@ export default {
   'sercurity.roleTreeNode.index.model.ok.text': 'Confirm',
 
   // webapps/gl-admin-arco/src/views/security/role/User
-  'sercurity.roleUser.index.menu.list': 'System Management',
-  'sercurity.roleUser.index.menu.list.searchTable': 'Role Of User Management',
+  'sercurity.roleUser.index.menu.list': 'System',
+  'sercurity.roleUser.index.menu.list.searchTable': 'Role Of User',
   // webapps/gl-admin-arco/src/views/security/role/User - list|form
   'sercurity.roleUser.index.form.index': 'index',
   'sercurity.roleUser.index.form.roleName': 'roleName',
@@ -338,5 +339,5 @@ export default {
   'sercurity.roleUser.index.model.ok.text': 'Confirm',
   /* 验证 */
   'sercurity.form.rules.match.required': 'this is required',
-  'sercurity.form.rules.match.length.title':'length',
+  'sercurity.form.rules.match.length.title': 'length',
 };

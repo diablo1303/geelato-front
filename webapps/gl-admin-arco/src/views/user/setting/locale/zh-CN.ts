@@ -81,6 +81,7 @@ export default {
   'sercurity.org.index.form.index': '序列号',
   'sercurity.org.index.form.name': '名称',
   'sercurity.org.index.form.code': '编码',
+  'sercurity.org.index.form.pid': '上级部门',
   'sercurity.org.index.form.type': '类型',
   'sercurity.org.index.form.status': '状态',
   'sercurity.org.index.form.status.0': '禁用',
