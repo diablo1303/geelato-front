@@ -10,7 +10,6 @@
     <a-form ref="validateForm" :model="formData">
       <a-form-item v-show="false">
         <a-input v-show="false" v-model="formData.id"/>
-        <a-input v-show="false" v-model="formData.pid"/>
       </a-form-item>
       <a-form-item
           :label="$t('sercurity.org.index.form.name')"
@@ -25,6 +24,11 @@
           field="code">
         <a-input v-if="pageData.button" v-model="formData.code" :max-length="32"/>
         <span v-else>{{ formData.code }}</span>
+      </a-form-item>
+      <a-form-item
+          :label="$t('sercurity.org.index.form.pid')"
+          field="pid">
+        <a-cascader :disabled="!pageData.button" v-model="formData.pid" :options="orgSelectOptions" allow-clear allow-search check-strictly/>
       </a-form-item>
       <a-form-item
           :label="$t('sercurity.org.index.form.type')"
@@ -48,7 +52,8 @@
           :label="$t('sercurity.org.index.form.seqNo')"
           :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
           field="seqNo">
-        <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1" :placeholder="$t('sercurity.form.rules.match.length.title')+'[0,999999]'"
+        <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
+                        :placeholder="$t('sercurity.form.rules.match.length.title')+'[0,999999]'"
                         :precision="0"/>
         <span v-else>{{ formData.seqNo }}</span>
       </a-form-item>
@@ -64,20 +69,61 @@
 import {ref} from 'vue';
 import {Modal} from "@arco-design/web-vue";
 import {statusOptions, typeOptions} from "@/views/security/org/searchTable";
-import {createOrUpdateOrg as createOrUpdateForm, getOrg as getForm, ListUrlParams, QueryOrgForm as QueryForm} from '@/api/sercurity_service'
+import {
+  createOrUpdateOrg as createOrUpdateForm,
+  getOrg as getForm,
+  ListUrlParams,
+  QueryOrgForm,
+  QueryOrgForm as QueryForm,
+  queryOrgs,
+  SelectOption
+} from '@/api/sercurity_service'
 import {FormInstance} from "@arco-design/web-vue/es/form";
 
 const pageData = ref({formState: 'add', button: true});
 const validateForm = ref<FormInstance>();
+const orgSelectOptions = ref<SelectOption[]>([]);
 // 显示隐藏
 const visibleModel = ref(false);
 // 表单数据
 const generateFormData = (): QueryForm => {
-  return {id: '', pid: '', name: '', code: new Date().getTime().toString(), status: 1, type: 'outside', seqNo: 999, description: ''};
+  return {id: '', pid: '', name: '', code: new Date().getTime().toString(), status: 1, type: 'inside', seqNo: 999, description: ''};
 }
 const formData = ref(generateFormData());
 // 页面响应
 let okSuccessBack: any;
+
+const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[]): SelectOption[] => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const data of defaultData) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of totalData) {
+      if (item.id === formData.value.id) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+      if (item.pid === data.value) {
+        data.children.push({value: item.id, label: item.name, children: []});
+      }
+    }
+    if (data.children.length > 0) {
+      buildOrgOptions(data.children, totalData);
+    } else {
+      delete data.children;
+    }
+  }
+
+  return defaultData;
+}
+const getOrgOptions = async (params: QueryOrgForm = {}) => {
+  try {
+    const {data} = await queryOrgs(params);
+    orgSelectOptions.value = buildOrgOptions([{value: '0', label: '根目录', children: []}], data);
+    orgSelectOptions.value = orgSelectOptions.value[0].children;
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 /**
  * 创建、更新
@@ -134,6 +180,9 @@ const openForm = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action;
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
   formData.value = generateFormData();
+  formData.value.id = urlParams.id || '';
+  // 组织加载
+  getOrgOptions();
   // 重置验证
   resetValidate();
   // 特色
