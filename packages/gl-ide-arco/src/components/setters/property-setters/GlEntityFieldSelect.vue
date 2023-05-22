@@ -22,6 +22,7 @@ export default {
 export class EntityFieldSelectResult {
   appCode: string = ''
   fieldName: string = ''
+  filedName1?: string
   entityName: string = ''
 }
 </script>
@@ -40,6 +41,12 @@ const props = defineProps({
     type: Object as PropType<EntityFieldSelectResult>,
     default() {
       return new EntityFieldSelectResult()
+    }
+  },
+  bindFieldCount: {
+    type: Number,
+    default() {
+      return 1
     }
   }
 })
@@ -110,7 +117,7 @@ if (!props.modelValue.entityName) {
   if (lastEntityFieldSelectResult.entityName) {
     onEntityChange(lastEntityFieldSelectResult.entityName)
   }
-}else{
+} else {
   setEntityAndLoadFieldMetas(props.modelValue.entityName)
 }
 

@@ -9,6 +9,10 @@ export class ComponentI18nMeta {
     props?: Object = {}
 }
 
+export class ComponentMethod {
+
+}
+
 export default class ComponentMeta {
     // 组件英文名称，注册到全局环境的名称GlButton
     componentName: string = ''
@@ -33,9 +37,13 @@ export default class ComponentMeta {
     // 事件动作
     actions: Array<Action> = []
 
+    // 组件方法，对应组件defineExpose的内容
+    methods: Array<Action> = []
+
     // 引用的组件名称，如AButton
     // componentRefName: String
     propsWrapper?: String = ''
+
     // 别名简称，用于在生成id时作为前缀
     alias?: String = ''
 

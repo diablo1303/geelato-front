@@ -2,3 +2,12 @@
 .arco-card-header-title{
     font-weight: 600;
 }
+
+.arco-picker input[disabled] {
+    -webkit-text-fill-color: rgb(119 121 124);
+}
+
+.arco-input-wrapper .arco-input[disabled] {
+    -webkit-text-fill-color: rgb(119 121 124);
+}
+

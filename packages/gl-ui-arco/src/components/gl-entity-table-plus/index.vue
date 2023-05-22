@@ -1,32 +1,32 @@
 <template>
   <div>
     <GlQuery ref="queryRef" v-bind="query" @search="onSearch"></GlQuery>
-    <a-divider style="margin-top: 16px" />
+    <a-divider style="margin-top: 16px"/>
     <GlToolbar v-bind="toolbar" style="margin-bottom: 8px">
-<!--      <template #leftItems>-->
-<!--        <a-button type="primary">-->
-<!--          <template #icon>-->
-<!--            <icon-plus-circle />-->
-<!--          </template>-->
-<!--          新增-->
-<!--        </a-button>-->
-<!--        <a-button type="outline">-->
-<!--          <template #icon>-->
-<!--            <icon-export />-->
-<!--          </template>-->
-<!--          导出-->
-<!--        </a-button>-->
-<!--      </template>-->
+      <!--      <template #leftItems>-->
+      <!--        <a-button type="primary">-->
+      <!--          <template #icon>-->
+      <!--            <icon-plus-circle />-->
+      <!--          </template>-->
+      <!--          新增-->
+      <!--        </a-button>-->
+      <!--        <a-button type="outline">-->
+      <!--          <template #icon>-->
+      <!--            <icon-export />-->
+      <!--          </template>-->
+      <!--          导出-->
+      <!--        </a-button>-->
+      <!--      </template>-->
       <template #rightItems>
         <a-tooltip :content="t('searchTable.actions.refresh')">
-          <div class="action-icon" @click="onRefresh">
-            <icon-refresh size="18" />
+          <div class="action-icon" @click="refresh">
+            <icon-refresh size="18"/>
           </div>
         </a-tooltip>
         <a-dropdown @select="handleSelectDensity">
           <a-tooltip :content="t('searchTable.actions.density')">
             <div class="action-icon">
-              <icon-line-height size="18" />
+              <icon-line-height size="18"/>
             </div>
           </a-tooltip>
           <template #content>
@@ -47,7 +47,7 @@
               @popup-visible-change="popupVisibleChange"
           >
             <div class="action-icon">
-              <icon-settings size="18" />
+              <icon-settings size="18"/>
             </div>
             <template #content>
               <div id="tableSetting">
@@ -57,7 +57,7 @@
                     class="setting"
                 >
                   <div style="margin-right: 4px; cursor: move">
-                    <icon-drag-arrow />
+                    <icon-drag-arrow/>
                   </div>
                   <div>
                     <a-checkbox
@@ -87,6 +87,11 @@
   </div>
 </template>
 
+<script lang="ts">
+export default {
+  name: "GlEntityTablePlus"
+}
+</script>
 <script setup lang="ts">
 // @ts-nocheck
 /**
@@ -95,9 +100,9 @@
 import GlQuery from "../gl-query/index.vue";
 import GlToolbar from "../gl-toolbar/index.vue";
 import GlEntityTable from "../gl-entity-table/index.vue";
-import {computed, onMounted, type PropType, ref} from "vue";
-import type { EntityReader, EntityReaderParam } from "@geelato/gl-ui";
-import { type Query, defaultQuery } from "../gl-query/query";
+import {computed, inject, onMounted, type PropType, ref} from "vue";
+import type {EntityReaderParam} from "@geelato/gl-ui";
+import {type Query, defaultQuery} from "../gl-query/query";
 import cloneDeep from "lodash/cloneDeep";
 import {
   type SizeProps,
@@ -105,17 +110,19 @@ import {
   defaultTable,
   type TableColumnDataPlus,
 } from "../gl-entity-table/table";
-import { type Toolbar, defaultToolbar } from "../gl-toolbar/toolbar";
-import { useI18n } from "vue-i18n";
-import { CheckUtil } from "@geelato/gl-ui";
+import {type Toolbar, defaultToolbar} from "../gl-toolbar/toolbar";
+import {useI18n} from "vue-i18n";
+import {CheckUtil, entityApi, PageProvideProxy} from "@geelato/gl-ui";
 import type {Action} from "../../types/global";
-const { t } = CheckUtil.isBrowser() ? useI18n() : { t: ()=>{} };
+
+const pageProvideProxy: PageProvideProxy = inject('pageProvideProxy')!
+
+const {t} = CheckUtil.isBrowser() ? useI18n() : {
+  t: () => {
+  }
+};
 
 const props = defineProps({
-  // entityReaderInfo: {
-  //   type: Object as PropType<EntityReader>,
-  //   required: true,
-  // },
   entityName: {
     type: String,
     required: true,
@@ -144,9 +151,9 @@ const props = defineProps({
   /**
    *  列上的操作配置
    */
-  columnActions:{
-    type:Array as PropType<Action[]>,
-    default(){
+  columnActions: {
+    type: Array as PropType<Action[]>,
+    default() {
       return []
     }
   },
@@ -155,7 +162,7 @@ const props = defineProps({
   },
 });
 // 数据预处理
-onMounted(()=>{
+onMounted(() => {
   props.columns.forEach((item, index) => {
     if (item.xRenderFnBody) {
       const fn = `(record,column,rowIndex)=>{return ${item.xRenderFnBody}}`;
@@ -187,26 +194,26 @@ const densityList = computed(() => [
   },
 ]);
 const exchangeArray = <T extends Array<any>>(
-  array: T,
-  beforeIdx: number,
-  newIdx: number,
-  isDeep = false
+    array: T,
+    beforeIdx: number,
+    newIdx: number,
+    isDeep = false
 ): T => {
   const newArray = isDeep ? cloneDeep(array) : array;
   if (beforeIdx > -1 && newIdx > -1) {
     // 先替换后面的，然后拿到替换的结果替换前面的
     newArray.splice(
-      beforeIdx,
-      1,
-      newArray.splice(newIdx, 1, newArray[beforeIdx]).pop()
+        beforeIdx,
+        1,
+        newArray.splice(newIdx, 1, newArray[beforeIdx]).pop()
     );
   }
   return newArray;
 };
 
 const handleSelectDensity = (
-  val: string | number | Record<string, any> | undefined,
-  e: Event
+    val: string | number | Record<string, any> | undefined,
+    e: Event
 ) => {
   size.value = val as SizeProps;
 };
@@ -232,11 +239,20 @@ const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
   tableRef.value.search(entityReaderParams);
   lastEntityReaderParams = entityReaderParams;
 };
-const onRefresh = (event: MouseEvent) => {
+const refresh = (event?: MouseEvent) => {
   onSearch(lastEntityReaderParams);
 };
 
 const queryRef = ref(null);
+
+const deleteRow = (params: any) => {
+  const id = params[0].id
+  entityApi.delete(props.entityName, {id: id}).then(() => {
+    refresh()
+  })
+  console.log('GlEntityTablePlus > deleteRow() > params:', params)
+}
+defineExpose([deleteRow, refresh])
 </script>
 
 <style scoped lang="less">

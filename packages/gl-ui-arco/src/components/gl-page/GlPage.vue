@@ -7,8 +7,6 @@
     <template v-else>
       <GlInsts :glComponentInst="glComponentInst"></GlInsts>
     </template>
-    <!--        <a-card class="gl-page-general-card" :title="pageTitle?$t(pageTitle):pageTitle" @click="showSlot">-->
-    <!--        </a-card>-->
   </div>
 </template>
 
@@ -19,13 +17,25 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {mixins} from "@geelato/gl-ui";
+import {getCurrentInstance, onUnmounted, PropType, provide, ref} from "vue";
+import {PageParamType, PageProvideProxy, actionScriptExecutor, mixins} from "@geelato/gl-ui";
 
+const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
   breadcrumb: {
     type: Array,
     default() {
       return []
+    }
+  },
+  /**
+   *  数据库中的页面字段id
+   *  注：不是前端的组件id
+   */
+  pageId: {
+    type: String,
+    default() {
+      return ''
     }
   },
   pageTitle: {
@@ -46,6 +56,12 @@ const props = defineProps({
       return ''
     }
   },
+  params: {
+    type: Array as PropType<Array<PageParamType>>,
+    default() {
+      return []
+    }
+  },
   /**
    *  自定义JS编码
    */
@@ -62,15 +78,22 @@ const style = {
   margin: props.pageMargin || '12px',
   padding: props.pagePadding || '12px'
 }
-const fnManager = {}
 
 const showSlot = () => {
   console.log('showSlot')
 }
 
-const openDrawer = () => {
-
-}
+const pageProvideProxy = new PageProvideProxy(props.glComponentInst, getCurrentInstance())
+pageProvideProxy.pageId = props.pageId
+pageProvideProxy.setVueInst(props.glComponentInst.id, getCurrentInstance())
+pageProvideProxy.setParams(props.params)
+actionScriptExecutor.addPageProxy(props.glComponentInst.id, pageProvideProxy)
+// 整个页面组件级注入
+provide('pageProvideProxy', pageProvideProxy)
+console.log('GlPage > provide > pageProvideProxy:', pageProvideProxy)
+onUnmounted(() => {
+  actionScriptExecutor.removePageProxy(props.glComponentInst.id)
+})
 
 </script>
 

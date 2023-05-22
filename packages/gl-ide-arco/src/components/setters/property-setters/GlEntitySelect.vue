@@ -5,7 +5,11 @@
     </a-select>
   </div>
 </template>
-
+<script lang="ts">
+export default {
+  name: 'GlEntitySelect'
+}
+</script>
 <script lang="ts" setup>
 import {inject, ref, watch} from 'vue'
 import {useEntityStore} from "@geelato/gl-ide";
@@ -52,7 +56,7 @@ const onEntityChange = (entityName: string) => {
     }
   }
   entityStore.loadFieldMetas('', entityName).then((fieldMetas)=>{
-    console.log('fieldMetas',fieldMetas)
+    // console.log('fieldMetas',fieldMetas)
     // @ts-ignore
     ds.value.entityMeta = {entityName:entityName,
 
@@ -61,7 +65,7 @@ const onEntityChange = (entityName: string) => {
     }
     // @ts-ignore
     ds.value.fieldMetas = fieldMetas
-    console.log('inject ds:',ds)
+    // console.log('inject ds:',ds)
   })
 }
 

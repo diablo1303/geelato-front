@@ -1,6 +1,7 @@
 {
   "componentName": "GlPage",
   "id": "",
+  "title": "页面",
   "props": {},
   "slots": {},
   "children": [

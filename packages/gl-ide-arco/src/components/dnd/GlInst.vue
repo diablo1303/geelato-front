@@ -158,7 +158,8 @@ const i18nConvert = (value: string) => {
         <a-form-item class="gl-form-item" :field="glComponentInst?.props?.bindField?.fieldName"
                      :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"
                      :label="i18nConvert(glComponentInst?.props?.label)"
-                     :rules="glComponentInst?.props?.rules">
+                     :rules="glComponentInst?.props?.rules"
+                     :validate-trigger="[]">
           <GlComponentDnd class="gl-dnd-item gl-x-item"
                           :glComponentInst="glComponentInst"
                           :componentStoreId="componentStoreId">

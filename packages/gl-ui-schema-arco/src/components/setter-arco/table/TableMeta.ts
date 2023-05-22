@@ -267,7 +267,8 @@ export default {
             "expanded": true,
             "title": "插槽名称",
             "setterComponentName": "AInput",
-            "placeholder": "操作optional，序号index"
+            "placeholder": "配合显示脚本使用",
+            "description": "配合显示脚本使用，可任意取英文名称（除了“#”特指操作列），不重复即可",
         }, {
             "name": "xRenderScript",
             "setterComponentProps": {},
@@ -276,12 +277,12 @@ export default {
             "type": "props",
             "show": true,
             "expanded": true,
-            "description": "对字段值进行处理，示例：\"ctx.record.enableStatus === 1 ? '已启用' : '未启用'\"",
+            "description": "对字段值进行处理，示例：\"$ctx.record.enableStatus === 1 ? '已启用' : '未启用'\"。当插槽名称为“#”时，特指操作列，此时本显示脚本的内容无效。",
             "title": "显示脚本",
             "setterComponentName": "AInput"
         }],
         "setterComponentName": "GlObjectArraySetter",
-        "title": "展示列",
+        "title": "表格列",
         "titleField": "title"
     }, {
         "name": "columnActions",

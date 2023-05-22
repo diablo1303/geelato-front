@@ -160,18 +160,24 @@ export class Utils {
 
     /**
      * 直接执行方法体内容
-     * @param fnBody 方法体的内容
+     * @param fnBody 方法体的内容，如果内容
      * @param $ctx 用于fnBody的上下文参数
      * @param ctxName 指定上下文的参数名，默认为$ctx
      * @returns {*}
      */
     evalFn(fnBody: string, ctx: object, ctxName = '$ctx', $utils?: object, utilsName?: string) {
-        console.log('gl-ui > utils > evalFn() > blocks: ', fnBody)
+        console.log('gl-ui > utils > evalFn() > blocks: ', fnBody, typeof fnBody)
         console.log('gl-ui > utils > evalFn() > ctx: ', ctx)
         let Fn = Function
         let uName = utilsName || '$utils'
-        let str = this.trim(fnBody)
-        return new Fn(ctxName, uName, fnBody)(ctx, $utils || {})
+        let bodyScript = this.trim(fnBody)
+        // 去掉头尾分号
+        bodyScript = bodyScript.replace(/^;+|;+$/g, '')
+        // 无换行，无“;”的则按表达式处理
+        if (!bodyScript.match(/[\r\n;]/g) && !bodyScript.toLowerCase().startsWith('return ')) {
+            bodyScript = 'return ' + bodyScript
+        }
+        return new Fn(ctxName, uName, bodyScript)(ctx, $utils || {})
     }
 
     /**

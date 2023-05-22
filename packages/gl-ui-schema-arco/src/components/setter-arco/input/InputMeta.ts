@@ -15,7 +15,8 @@ export default {
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "title": "标题",
-        "setterComponentName": "AInput"
+        "setterComponentName": "AInput",
+        "enableValueExpress": true
     }, {
         "name": "bindField",
         "setterComponentProps": {},
@@ -25,17 +26,23 @@ export default {
         "show": true,
         "expanded": true,
         "title": "绑定字段",
-        "setterComponentName": "GlEntityFieldSelect"
+        "setterComponentName": "GlEntityFieldSelect",
+        "enableValueExpress": false
     }, {
         "name": "size",
         "setterComponentProps": {
             "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
             "optionType": "button",
-            "options": [{"label": "大", "value": "large"}, {"label": "默认", "value": "default"}, {
-                "label": "小",
-                "value": "small"
+            "options": [{"label": "大", "value": "large", "__LlZ1Rnur2LSKVgPC2B": "large"}, {
+                "label": "默认",
+                "value": "medium",
+                "__LlZ1Rnur2LSKVgPC2B": "medium"
+            }, {"label": "小", "value": "small", "__LlZ1Rnur2LSKVgPC2B": "small"}, {
+                "label": "迷你",
+                "value": "mini",
+                "__LlZ1Rnur2LSKVgPC2B": "mini"
             }],
-            "defaultValue": "default"
+            "defaultValue": "medium"
         },
         "setterComponentVModelName": "modelValue",
         "group": "base",
@@ -43,7 +50,8 @@ export default {
         "title": "大小",
         "setterComponentName": "ARadioGroup",
         "show": true,
-        "expanded": true
+        "expanded": true,
+        "enableValueExpress": false
     }, {
         "name": "prefix",
         "setterComponentProps": {},
@@ -55,7 +63,8 @@ export default {
         "title": "前缀",
         "setterComponentName": "AInput",
         "slotComponentName": "GlText",
-        "slotComponentBindTarget": "v-model"
+        "slotComponentBindTarget": "v-model",
+        "enableValueExpress": true
     }, {
         "name": "suffix",
         "setterComponentProps": {},
@@ -67,10 +76,11 @@ export default {
         "title": "后缀",
         "setterComponentName": "AInput",
         "slotComponentName": "GlText",
-        "slotComponentBindTarget": "v-model"
+        "slotComponentBindTarget": "v-model",
+        "enableValueExpress": true
     }, {
         "name": "allowClear",
-        "setterComponentProps": {},
+        "setterComponentProps": {"defaultChecked": false},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
@@ -107,8 +117,9 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "提示文字",
-        "setterComponentName": "AInput"
+        "title": "占位提示",
+        "setterComponentName": "AInput",
+        "enableValueExpress": true
     }, {
         "name": "maxlength",
         "setterComponentProps": {},
@@ -129,17 +140,6 @@ export default {
         "expanded": true,
         "title": "显示字数",
         "setterComponentName": "ASwitch"
-    }, {
-        "name": "defaultValue",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "description": "输入框默认内容",
-        "title": "默认内容",
-        "setterComponentName": "AInput",
-        "show": true,
-        "expanded": true
     }, {
         "name": "rules",
         "group": "base",

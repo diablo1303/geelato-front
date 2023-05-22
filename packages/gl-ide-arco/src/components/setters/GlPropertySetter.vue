@@ -1,10 +1,11 @@
 <!--
-  组件的属性配置器
+  组件的属性的通用配置器
 -->
 <template>
   <div class="gl-property-setter gl-table-row"
        v-if="propertySetterMeta.setterComponentName!=='GlEmptySetter'&&propertySetterMeta.show!==false">
-    <div :class="cellDisplayModeClass" class="gl-label" style="position: relative;" :style="{width: isCollapseDisplayMode?'100%':'7em'}"
+    <div :class="cellDisplayModeClass" class="gl-label" style="position: relative;"
+         :style="{width: isCollapseDisplayMode?'100%':'7em'}"
          @dblclick.ctrl="tryClearProp(propertySetterMeta.name)" title="按住Ctrl，双击清除该属性，恢复初始状态">
       <template v-if="isCollapseDisplayMode">
         <GlIconfont type="gl-left-circle" style="cursor: pointer;margin-left: 0.5em"
@@ -17,7 +18,9 @@
           <GlIconfont type="gl-info-circle" :title="propertySetterMeta.description"></GlIconfont>
         </span>
         <span style="cursor:pointer;font-weight: 580"
-              @click="propertySetterMeta.expanded=!propertySetterMeta.expanded">&nbsp;{{ propertySetterMeta.title }}</span>
+              @click="propertySetterMeta.expanded=!propertySetterMeta.expanded">&nbsp;{{
+            propertySetterMeta.title
+          }}</span>
       </template>
       <template v-if="!isCollapseDisplayMode">
          <span v-if="propertySetterMeta.description">
@@ -27,90 +30,97 @@
       </template>
     </div>
     <div :class="cellDisplayModeClass" v-if="propertySetterMeta.expanded!==false">
-      <!-- 1 ========================type为props或默认为空========================-->
-      <template v-if="propertySetterMeta.type==='props'||!propertySetterMeta.type">
-        <!-- 1.1 ========================GlObjectArraySetter========================-->
-        <template v-if="propertySetterMeta.setterComponentName==='GlObjectArraySetter'">
-          <!--  若有子属性properties，则迭代子属性 -->
-          <GlPropertySetterCard v-slot:default="slotProps" v-model="propertyModel"
-                                :maxCount="propertySetterMeta.setterComponentProps.maxCount"
-                                :titleField="propertySetterMeta.titleField"
-                                :autoAddWhenEmpty="false"
-                                :elementTemplate="createChildObjectTemplate()"
-                                @selectedElement="selectChildElement"
-          >
-            <!-- 通过属性元数据，定义每张卡片的内容  -->
-            <div class="gl-table" :class="{'gl-table-as-tree':false}">
-              <template v-for="property in propertySetterMeta.properties">
-                <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
-                                  v-model:propertyValue="slotProps.item[property.name]"
-                                  @update="($event:any)=>{slotProps.item[property.name]=$event}"></GlPropertySetter>
-              </template>
-            </div>
-          </GlPropertySetterCard>
+      <div style="display: flex">
+        <div style="flex: auto">
+          <!-- 1 ========================type为props或默认为空========================-->
+          <template v-if="propertySetterMeta.type==='props'||!propertySetterMeta.type">
+            <!-- 1.1 ========================GlObjectArraySetter========================-->
+            <template v-if="propertySetterMeta.setterComponentName==='GlObjectArraySetter'">
+              <!--  若有子属性properties，则迭代子属性 -->
+              <GlPropertySetterCard v-slot:default="slotProps" v-model="propertyModel"
+                                    :maxCount="propertySetterMeta.setterComponentProps.maxCount"
+                                    :titleField="propertySetterMeta.titleField"
+                                    :autoAddWhenEmpty="false"
+                                    :elementTemplate="createChildObjectTemplate()"
+                                    @selectedElement="selectChildElement"
+              >
+                <!-- 通过属性元数据，定义每张卡片的内容  -->
+                <div class="gl-table" :class="{'gl-table-as-tree':false}">
+                  <template v-for="property in propertySetterMeta.properties">
+                    <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
+                                      v-model:propertyValue="slotProps.item[property.name]"
+                                      @update="($event:any)=>{slotProps.item[property.name]=$event}"></GlPropertySetter>
+                  </template>
+                </div>
+              </GlPropertySetterCard>
 
-          <!--          <template v-if="propertySetterMeta.properties&&propertySetterMeta.properties.length>0">-->
-          <!--            <div class="gl-table" :class="{'gl-table-as-tree':false}" style="margin: 1px;border: 1px solid #e4e4e4">-->
-          <!--              <template v-for="property in propertySetterMeta.properties">-->
-          <!--                <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"-->
-          <!--                                  :propertyValue="propertyModel[property.name]"-->
-          <!--                                  @update="onSubPropertyUpdate(property.name,$event)"></GlPropertySetter>-->
-          <!--              </template>-->
-          <!--            </div>-->
-          <!--          </template>-->
-        </template>
-        <!-- 1.2 ========================GlJsonObjectSetter========================-->
-        <template v-else-if="propertySetterMeta.setterComponentName==='GlSimpleObjectSetter'">
-          <template v-if="propertySetterMeta.properties&&propertySetterMeta.properties.length>0">
-            <div class="gl-table" :class="{'gl-table-as-tree':false}" style="margin: 1px;border: 1px solid #e4e4e4">
-              <template v-for="subPropertySetterMeta in propertySetterMeta.properties">
-                <GlPropertySetter v-if="propertyModel" :propertySetterMeta="subPropertySetterMeta"
-                                  v-model:propertyValue="propertyModel[subPropertySetterMeta.name]"
-                                  @update="onSubPropertyUpdate(subPropertySetterMeta.name,$event)"></GlPropertySetter>
-              </template>
-            </div>
-          </template>
-        </template>
-        <!-- 1.3 ========================其它Setter,大部分的为该类========================-->
-        <!--        v-model:[propertySetterMeta.setterComponentVModelName]-->
-        <template v-else>
-          <component :is="propertySetterMeta.setterComponentName"
-                     v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel"
-                     v-bind="propertySetterMeta.setterComponentProps"
-                     :style="propertySetterMeta.style"
-                     :placeholder="propertySetterMeta.placeholder"
-          >
-          </component>
-        </template>
-      </template>
-      <!-- 2 ========================type为slots========================-->
-      <template v-else-if="propertySetterMeta.type==='slots'">
-        <component v-if="propertyModel" :is="propertySetterMeta.setterComponentName"
-                   v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel.props"
-                   v-bind="propertySetterMeta.setterComponentProps"
-                   :style="propertySetterMeta.style"
-                   :placeholder="propertySetterMeta.placeholder"
-        ></component>
-      </template>
-      <!-- 3 ========================type为children========================-->
-      <template v-else-if="propertySetterMeta.type==='children'">
-        <GlPropertySetterCard v-slot:default="slotProps" v-model="propertyModel"
-                              :maxCount="propertySetterMeta.setterComponentProps.maxCount"
-                              :titleField="propertySetterMeta.titleField"
-                              :elementTemplate="createChildElementTemplate(propertySetterMeta.name,propertySetterMeta.setterComponentProps.ChildComponentName)"
-                              @selectedElement="selectChildElement"
-        >
-          <!-- 通过属性元数据，定义每张卡片的内容  -->
-          <div class="gl-table" :class="{'gl-table-as-tree':false}">
-            <template v-for="property in propertySetterMeta.properties">
-              {{ slotProps.item.props }}{{ propertyModel }}
-              <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
-                                v-model:propertyValue="slotProps.item.props[property.name]"
-                                @update="($event:any)=>{slotProps.item.props[property.name]=$event}"></GlPropertySetter>
+              <!--          <template v-if="propertySetterMeta.properties&&propertySetterMeta.properties.length>0">-->
+              <!--            <div class="gl-table" :class="{'gl-table-as-tree':false}" style="margin: 1px;border: 1px solid #e4e4e4">-->
+              <!--              <template v-for="property in propertySetterMeta.properties">-->
+              <!--                <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"-->
+              <!--                                  :propertyValue="propertyModel[property.name]"-->
+              <!--                                  @update="onSubPropertyUpdate(property.name,$event)"></GlPropertySetter>-->
+              <!--              </template>-->
+              <!--            </div>-->
+              <!--          </template>-->
             </template>
-          </div>
-        </GlPropertySetterCard>
-      </template>
+            <!-- 1.2 ========================GlJsonObjectSetter========================-->
+            <template v-else-if="propertySetterMeta.setterComponentName==='GlSimpleObjectSetter'">
+              <template v-if="propertySetterMeta.properties&&propertySetterMeta.properties.length>0">
+                <div class="gl-table" :class="{'gl-table-as-tree':false}" style="margin: 1px;border: 1px solid #e4e4e4">
+                  <template v-for="subPropertySetterMeta in propertySetterMeta.properties">
+                    <GlPropertySetter v-if="propertyModel" :propertySetterMeta="subPropertySetterMeta"
+                                      v-model:propertyValue="propertyModel[subPropertySetterMeta.name]"
+                                      @update="onSubPropertyUpdate(subPropertySetterMeta.name,$event)"></GlPropertySetter>
+                  </template>
+                </div>
+              </template>
+            </template>
+            <!-- 1.3 ========================其它Setter,大部分的为该类========================-->
+            <!--        v-model:[propertySetterMeta.setterComponentVModelName]-->
+            <template v-else>
+              <component :is="propertySetterMeta.setterComponentName"
+                         v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel"
+                         v-bind="propertySetterMeta.setterComponentProps"
+                         :style="propertySetterMeta.style"
+                         :placeholder="propertySetterMeta.placeholder"
+              >
+              </component>
+            </template>
+          </template>
+          <!-- 2 ========================type为slots========================-->
+          <template v-else-if="propertySetterMeta.type==='slots'">
+            <component v-if="propertyModel" :is="propertySetterMeta.setterComponentName"
+                       v-model:[propertySetterMeta.setterComponentVModelName]="propertyModel.props"
+                       v-bind="propertySetterMeta.setterComponentProps"
+                       :style="propertySetterMeta.style"
+                       :placeholder="propertySetterMeta.placeholder"
+            ></component>
+          </template>
+          <!-- 3 ========================type为children========================-->
+          <template v-else-if="propertySetterMeta.type==='children'">
+            <GlPropertySetterCard v-slot:default="slotProps" v-model="propertyModel"
+                                  :maxCount="propertySetterMeta.setterComponentProps.maxCount"
+                                  :titleField="propertySetterMeta.titleField"
+                                  :elementTemplate="createChildElementTemplate(propertySetterMeta.name,propertySetterMeta.setterComponentProps.ChildComponentName)"
+                                  @selectedElement="selectChildElement"
+            >
+              <!-- 通过属性元数据，定义每张卡片的内容  -->
+              <div class="gl-table" :class="{'gl-table-as-tree':false}">
+                <template v-for="property in propertySetterMeta.properties">
+                  {{ slotProps.item.props }}{{ propertyModel }}
+                  <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
+                                    v-model:propertyValue="slotProps.item.props[property.name]"
+                                    @update="($event:any)=>{slotProps.item.props[property.name]=$event}"></GlPropertySetter>
+                </template>
+              </div>
+            </GlPropertySetterCard>
+          </template>
+        </div>
+        <div v-if="propertySetterMeta.enableValueExpress" style="flex: 1">
+          <slot></slot>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -121,9 +131,11 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {computed, onMounted, onUpdated, type PropType, reactive, ref, watch} from 'vue'
+import {computed, inject, onMounted, onUpdated, type PropType, reactive, ref, watch} from 'vue'
 import type {PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
-import {utils} from "@geelato/gl-ui";
+import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "./ComponentSetterProvideProxy";
+
+const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 
 const emits = defineEmits(['update', 'update:propertyValue'])
 const props = defineProps({
@@ -157,8 +169,9 @@ watch(() => {
 }, (val, oval) => {
   console.log('update property', props.propertySetterMeta?.name, ' and set value as ', val)
   emits("update:propertyValue", val)
+  componentSetterProvideProxy.setPropValue(props.propertySetterMeta?.name, val?.value)
   // emits("update", val)
-}, {deep: true})
+}, {deep: true, immediate: true})
 
 const setPropertyModel = () => {
   // @ts-ignore

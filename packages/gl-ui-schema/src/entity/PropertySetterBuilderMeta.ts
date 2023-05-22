@@ -9,7 +9,7 @@ export class PropertySetterBuilderMeta {
     title:string = ''
     // 属性分组，用于在设置器页面面进行分组展示
     group:string = 'base'
-    // 占位信息
+    // 占位提示
     placeholder:string = ''
     //
     description:string = ''

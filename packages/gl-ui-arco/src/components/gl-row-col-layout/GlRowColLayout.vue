@@ -119,7 +119,8 @@ const i18nConvert = (value: string, i18n: I18nItem) => {
                      :field="childComponentInst.props?.bindField?.fieldName"
                      :tooltip="i18nConvert(childComponentInst.props?.tooltip,childComponentInst.i18n)"
                      :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"
-                     :rules="childComponentInst.props?.rules">
+                     :rules="childComponentInst.props?.rules"
+                     :validate-trigger="[]">
           <GlComponent :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime"></GlComponent>
           <template v-if="childComponentInst.props?.extra" #extra>
             <div>{{

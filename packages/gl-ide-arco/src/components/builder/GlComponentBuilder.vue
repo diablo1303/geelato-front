@@ -44,14 +44,16 @@
                 <a-input v-model="cMeta.iconType" placeholder="alias"/>
               </td>
             </tr>
-<!--            <tr>-->
-<!--              <td class="gl-table-cell gl-label" title="进属性进行打包">包名</td>-->
-<!--              <td class="gl-table-cell">-->
-<!--                <a-input v-model="cMeta.propsWrapper"/>-->
-<!--              </td>-->
-<!--            </tr>-->
+            <!--            <tr>-->
+            <!--              <td class="gl-table-cell gl-label" title="进属性进行打包">包名</td>-->
+            <!--              <td class="gl-table-cell">-->
+            <!--                <a-input v-model="cMeta.propsWrapper"/>-->
+            <!--              </td>-->
+            <!--            </tr>-->
             <tr>
-              <td class="gl-table-cell gl-label" title="作为命令块组件(CommandBlockComponent)时，显示的内容，如：打开第三方页面，页面地址为：${url}">命令内容</td>
+              <td class="gl-table-cell gl-label"
+                  title="作为命令块组件(CommandBlockComponent)时，显示的内容，如：打开第三方页面，页面地址为：${url}">命令内容
+              </td>
               <td class="gl-table-cell">
                 <a-input v-model="cMeta.blockContent"/>
               </td>
@@ -107,16 +109,6 @@
           <GlOptions v-model="cMeta.properties" :columns="[{dataIndex: 'name',title:'属性名'}]" :allowAddSub="true"
                      @selectedElement="selectProperty"></GlOptions>
         </div>
-        <!--<div class="gl-title">-->
-        <!--<span>-->
-        <!--<GlIconfont type="gl-unorderedlist"></GlIconfont>-->
-        <!--组件【子组件】元数据-->
-        <!--</span>-->
-        <!--</div>-->
-        <!--<div>-->
-        <!--<GlOptions v-model="cMeta.children" :columns="[{dataIndex: 'name'}]"-->
-        <!--@selectedElement="selectChild"></GlOptions>-->
-        <!--</div>-->
         <div class="gl-title">
           <span>
             <GlIconfont type="gl-thunderbolt"></GlIconfont>
@@ -125,6 +117,16 @@
         </div>
         <div>
           <GlOptions v-model="cMeta.actions" :columns="[{dataIndex: 'name'}]"
+                     @selectedElement="selectAction"></GlOptions>
+        </div>
+        <div class="gl-title">
+          <span>
+            <GlIconfont type="gl-thunderbolt"></GlIconfont>
+          组件方法（Methods）
+          </span>
+        </div>
+        <div>
+          <GlOptions v-model="cMeta.methods" :columns="[{dataIndex: 'name'}]"
                      @selectedElement="selectAction"></GlOptions>
         </div>
       </pane>
@@ -185,6 +187,9 @@
                   </template>
                   <div style="background-color: #fafafa;padding: 0 0.5em;min-height: 4em">
                     <a-button type="" shape="round" size="small" style="float: right" @click="copyJson(cMeta)">复制
+                    </a-button>
+                    <a-button type="" shape="round" size="small" style="float: right"
+                              @click="copyJson(cMeta,'export default ')">复制（+export）
                     </a-button>
                     <VueJsonPretty v-if="refreshFlag" :data="cMeta"></VueJsonPretty>
                   </div>
@@ -270,7 +275,7 @@ import {utils} from "@geelato/gl-ui";
 import {Splitpanes, Pane} from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import {defineComponent, nextTick, type PropType} from 'vue'
-import GlPropertySetterBuilder from './props-builder/GlPropertySetterBuilder.vue'
+import GlPropertySetterBuilder from './GlPropertySetterBuilder.vue'
 import GlActionSetterBuilder from "./actions-builder/GlActionSetterBuilder.vue";
 import GlOptions from "../setters/GlOptions.vue";
 import ClipboardJS from "clipboard";
@@ -455,9 +460,9 @@ export default defineComponent({
       console.log('updateGlActionSetter>', mv)
       this.refreshInstance()
     },
-    copyJson(json?: ComponentMeta | ComponentInstance) {
+    copyJson(json?: ComponentMeta | ComponentInstance, pre?: string) {
       if (!json) return
-      ClipboardJS.copy(JSON.stringify(json))
+      ClipboardJS.copy((pre ? pre : '') + JSON.stringify(json))
     }
   }
 })

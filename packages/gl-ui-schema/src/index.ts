@@ -12,6 +12,7 @@ import type IActionSetterMeta from "./entity/actions/ActionSetterMeta";
 import {ActionSetterMeta} from "./entity/actions/ActionSetterMeta";
 import {schema} from "./components/schema";
 import Action from './entity/actions/Action';
+import BlockMetaGroup from './entity/actions/BlockMetaGroup';
 const component: Plugin = {
     install: function (app: App) {
         console.log('gl-ui-schema > install()', app)
@@ -20,6 +21,7 @@ const component: Plugin = {
 export {
     schema,
     BlockInstance,
+    BlockMetaGroup,
     ComponentMaterial,
     ComponentMaterialGroup,
     ComponentMeta,

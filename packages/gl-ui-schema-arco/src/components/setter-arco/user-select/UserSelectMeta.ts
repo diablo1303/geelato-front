@@ -27,15 +27,17 @@ export default {
         "title": "绑定字段",
         "setterComponentName": "GlEntityFieldSelect"
     }, {
-        "name": "multipleSelect",
-        "setterComponentProps": {"defaultValue": false},
+        "name": "nameFieldBindComponentId",
+        "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "是否多选",
-        "setterComponentName": "ASwitch"
+        "title": "名称组件",
+        "setterComponentName": "AInput",
+        "description": "人员选择时，人员id绑定到本组件，人员名称需绑定到另一个组件，在此设置目标组件的唯一标识。",
+        "placeholder": "名称组件的唯一标识"
     }],
     "actions": []
 }

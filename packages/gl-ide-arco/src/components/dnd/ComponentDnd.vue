@@ -5,7 +5,7 @@
              :class="{'gl-hover':componentStore.currentHoverComponentId===glComponentInst.id,'gl-selected':componentStore.currentSelectedComponentId===glComponentInst.id}"
              class="gl-component"
              :is="glComponentInst.componentName"
-             v-model="glComponentInst._value"
+             v-model="glComponentInst.value"
              v-bind="glComponentInst.propsWrapper?{[glComponentInst.propsWrapper]:glComponentInst.props}:glComponentInst.props"
              :style="glComponentInst.style"
              :glComponentInst="glComponentInst"
@@ -49,10 +49,13 @@ export default {
 </script>
 <script setup lang="ts">
 import {emitter, mixins} from "@geelato/gl-ui";
-import {onMounted, PropType} from "vue";
+import {getCurrentInstance, inject, onMounted, PropType} from "vue";
 import {Action} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
 import GlInsts from "./GlInsts.vue";
+import {PageProvideProxy} from "@geelato/gl-ui";
+const pageProvideProxy: PageProvideProxy = inject('pageProvideProxy')!
+
 
 const props = defineProps({
   moveCard: Function as PropType<(dragIndex: number, hoverIndex: number, sourceId: number, targetId: number) => void>,
@@ -132,25 +135,15 @@ onMounted(() => {
   emitter.emit('onComponentMounted', {})
 })
 
+
 /**
- *  由于部分组件，如AStep，采用template两层嵌套迭代用component渲染时，样式名称渲染为undefined
- *  在这里改成取出最终的迭代元素组成一层数据组，直接在component上迭代
+ *  将页面内的子组件通过map进行引用，便于后续基于页面进行组件事件调用
  */
-// const getChildElements = (glComponentInst: IComponentInstance) => {
-//   let result: Array<any> = []
-//   result.push()
-//   for (let key in glComponentInst.children) {
-//     // console.log('getChildElements glComponentInst:', glComponentInst, 'key:', key)
-//     // @ts-ignore
-//     for (let childElement of glComponentInst.children[key]) {
-//       result.push(childElement)
-//     }
-//   }
-//
-//
-//   // console.log('getChildElements> result:', result)
-//   return result
-// }
+if (pageProvideProxy) {
+  const inst = getCurrentInstance()
+  pageProvideProxy.setVueInst(props.glComponentInst.id, inst)
+}
+
 </script>
 
 <style>

@@ -35,7 +35,8 @@
             设置该组件的中文-英文对照
           </span>
         </div>
-        <GlComponentI18nSetter :componentMeta="componentMeta" :componentInstance="componentModel"></GlComponentI18nSetter>
+        <GlComponentI18nSetter :componentMeta="componentMeta"
+                               :componentInstance="componentModel"></GlComponentI18nSetter>
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -45,11 +46,15 @@ import {PropType, provide, ref} from "vue";
 import {EntityMeta, utils} from "@geelato/gl-ui";
 import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import ClipboardJS from "clipboard";
+import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "./ComponentSetterProvideProxy";
 
+const componentSetterProvideProxy = new ComponentSetterProvideProxy()
 const entityMeta = new EntityMeta()
 const ds = ref({entityMeta})
+componentSetterProvideProxy.setEntityDsRef(ds)
+provide(ComponentSetterProvideKey, componentSetterProvideProxy)
 provide('$entityDS', ds)
-console.log('provide ds:', ds)
+
 const emits = defineEmits(['update']);
 const props = defineProps({
   componentMeta: {
@@ -60,23 +65,12 @@ const props = defineProps({
     type: Object as PropType<ComponentInstance>
   }
 })
-/**
- *  每次创建不同的key,确保对应的组件每次能重新渲染，避免单列下的变量污染,但这会导致输入一个字符即失去焦点 TODO
- */
-const genKey = () => {
-  return utils.gid('', 16)
-}
+
 // 组件实例值
 const componentModel = ref(props.componentInstance)
 const activeKey = ref("1")
 const setInstance = (instance: ComponentInstance, form: String) => {
   console.log('GlComponentSetter > set instance:', instance, 'form', form)
-  // // Object.extend(this.componentInstance,instance)
-  // componentModel.value = instance
-  // if(form==='style'){
-  //   // TODO
-  // }
-  // emits('update',instance)
 }
 </script>
 

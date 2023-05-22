@@ -100,7 +100,7 @@ const renderData = ref([]);
 
 const basePagination: Pagination = {
   current: 1,
-  pageSize: 20,
+  pageSize: 5,
 };
 const pagination = reactive({
   ...basePagination,
@@ -249,8 +249,18 @@ const evalExpression = (data: {
     column: toRaw(data.column),
     rowIndex: toRaw(data.rowIndex),
   };
-  return MixUtil.evalPlus(ctx.column.xRenderScript, ctx, "ctx");
+  return MixUtil.evalPlus(ctx.column.xRenderScript, ctx, "$ctx");
 };
+
+/**
+ *  带有插槽的列
+ *  除了操作列，操作需作处理
+ */
+const slotColumns = computed(() => {
+  return cloneColumns.value.filter((column) => {
+    return column.slotName && column.slotName !== '#'
+  })
+})
 
 defineExpose({search, popupVisibleChange, handleChange});
 </script>
@@ -271,18 +281,15 @@ defineExpose({search, popupVisibleChange, handleChange});
       :scroll="{}"
       @page-change="onPageChange"
   >
-    <template #optional="{ record }">
+    <template ##="{ record }">
       <a-space>
-      <template v-for="(columnAction,index) in columnActions" :key="index">
-        <GlComponent v-if="columnAction" :glComponentInst="columnAction" :glCtx="{record:record}"></GlComponent>
-        <!--        <a-button size="mini" :status="columnAction.status"-->
-        <!--                  @click="$modal.info({ title: 'Name', content: record.name })">-->
-        <!--          {{ columnAction.title }}-->
-        <!--        </a-button>-->
-      </template>
+        <template v-for="(columnAction,index) in columnActions" :key="index">
+          <GlComponent v-if="columnAction" :glComponentInst="columnAction" :glCtx="{record:record}"></GlComponent>
+        </template>
       </a-space>
     </template>
-    <template #enableStatus="{ record, column, rowIndex }">
+    <template v-for="slotColumn in slotColumns"
+              v-slot:[slotColumn.slotName]="{ record, column, rowIndex }">
       {{ evalExpression({record, column, rowIndex}) }}
     </template>
   </a-table>

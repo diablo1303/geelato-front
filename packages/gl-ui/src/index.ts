@@ -1,5 +1,7 @@
 import {reactive, type App, type Plugin} from 'vue'
 import emitter from "./m/mix/emitter";
+import PageProvideProxy from "./components/PageProvideProxy";
+import type {PageParamType} from "./components/PageProvideProxy";
 import GlHtml from './components/gl-html/Index.vue'
 import GlIconfont from './components/gl-iconfont/Index.vue'
 import GlColor from './components/gl-color/GlColor.vue'
@@ -31,9 +33,7 @@ import useGlobal from "./m/hooks/useGlobal";
 import './assets/style.css'
 import actionScriptExecutor from "./m/actions/ActionScriptExecutor";
 
-
 const Utils = AllUtils
-
 
 const component: Plugin = {
     install: function (app: App) {
@@ -67,6 +67,8 @@ const component: Plugin = {
 }
 
 export {
+    PageParamType,
+    PageProvideProxy,
     GlIconfont,
     EntityApi,
     entityApi,

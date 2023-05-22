@@ -1,11 +1,16 @@
 <template>
   <div>
-    <a-select size="small" v-model="mv" @change="onChange" allow-search>
+    <a-select size="small" v-model="mv" @change="onChange" allow-search allow-clear>
       <a-option v-for="item in entityFieldMetas" :value="item.name">{{ item.title + ' ' + item.name }}</a-option>
     </a-select>
   </div>
 </template>
 
+<script lang="ts">
+export default {
+  name: 'GlFieldSelect'
+}
+</script>
 <script lang="ts" setup>
 /**
  *  基于inject('$entityDS')获取数据源

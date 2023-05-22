@@ -12,7 +12,7 @@
               设计
             </template>
             <div style="width: 100%;line-height: 2em;min-height:38em;">
-              <BlockPage :key="mv.id" :glComponentInst="mv._commandBlock" @update="updateInstance"></BlockPage>
+              <BlockPage :key="mv.id" :glComponentInst="mv.__commandBlock" @update="updateInstance"></BlockPage>
             </div>
           </a-tab-pane>
           <a-tab-pane key="2">
@@ -86,7 +86,8 @@ const emits = defineEmits(["update:action", 'updateAction'])
 
 const mv = ref(props.action)
 
-onUpdated(()=>{
+
+onMounted(()=>{
   reset()
 })
 
@@ -94,23 +95,6 @@ const reset = ()=>{
   mv.value = props.action
 }
 
-reset()
-// watch(mv, () => {
-//   console.log('update:action', mv)
-//   emits("update:action", mv.value)
-//   emits('updateAction', mv.value)
-// }, {deep: true})
-// const currentSelectedBlockId = ref('')
-// // 当前组件元数据
-// const currentSelectedBlockMeta = ref(new ComponentMeta())
-// // 当前组件实例
-// const currentSelectedComponentInstance = ref(new ComponentInstance())
-// // 选择block组件
-// const selectBlock = (block: ComponentInstance) => {
-//   currentSelectedComponentInstance.value = block
-//   currentSelectedBlockId.value = block.id
-//   currentSelectedBlockMeta.value = findBlockMeta(block.componentName)
-// }
 
 const findBlockMeta = (componentName: string) => {
   return componentMaterialStore.findMetaByName(componentName)
@@ -118,7 +102,7 @@ const findBlockMeta = (componentName: string) => {
 
 const updateInstance = (instance: ComponentInstance) => {
   console.log('updateInstance block:', instance)
-  mv.value._commandBlock = JSON.parse(JSON.stringify(instance))
+  mv.value.__commandBlock = JSON.parse(JSON.stringify(instance))
   generateScript()
   emits("update:action", mv.value)
   emits("updateAction", mv.value)
@@ -132,6 +116,7 @@ const deleteBlock = () => {
   componentStore.deleteCurrentSelectedComponentInst()
 }
 
+reset()
 </script>
 
 <style>

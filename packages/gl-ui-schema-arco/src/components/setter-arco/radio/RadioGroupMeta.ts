@@ -55,16 +55,6 @@ export default {
         "title": "选项",
         "setterComponentName": "GlOptionsSetter"
     }, {
-        "name": "defaultValue",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "默认值",
-        "setterComponentName": "AInput"
-    }, {
         "name": "size",
         "setterComponentProps": {
             "options": [{

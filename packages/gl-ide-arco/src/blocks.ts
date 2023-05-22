@@ -1,6 +1,7 @@
 import type {App, Plugin} from 'vue'
 import GlCommandBlockOne from "./components/setters/action-setters/blocks/CommandBlockOne.vue";
 import GlCommandBlockTwo from "./components/setters/action-setters/blocks/CommandBlockTwo.vue";
+
 const component: Plugin = {
     install: function (app: App) {
         // 注册组件
@@ -18,6 +19,8 @@ const component: Plugin = {
         app.component('GlBlockSetVar', GlCommandBlockOne)
         app.component('GlBlockIf', GlCommandBlockTwo)
         app.component('GlBlockElse', GlCommandBlockTwo)
+        app.component('GlBlockComponentInvoke', GlCommandBlockOne)
+        app.component('GlBlockConfirm', GlCommandBlockOne)
 
         // 注册组件构建器
 

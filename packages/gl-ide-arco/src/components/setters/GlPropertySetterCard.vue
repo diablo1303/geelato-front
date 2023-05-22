@@ -27,7 +27,7 @@
       </template>
     </gl-draggable>
     <div v-if="!(maxCount>0&&items.length === maxCount)&&maxCount!==1">
-      <a @click="addElement" style="line-height: 2em;cursor: pointer">
+      <a @click="addElement" style="line-height: 2em;cursor: pointer;padding-left: 1em">
         <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加</a>
     </div>
   </div>

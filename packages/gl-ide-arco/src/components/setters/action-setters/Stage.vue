@@ -77,11 +77,10 @@
 </template>
 
 <script lang="ts">
-  import mixin from '../../../../mixin-designer'
 
   export default {
     name: "GlIdePluginFormDesignerLogicAndRuleStage",
-    mixins: [mixin],
+    mixins: [],
     props: {
       opts: {
         type: Object,
