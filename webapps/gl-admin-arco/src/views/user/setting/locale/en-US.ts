@@ -173,7 +173,7 @@ export default {
   'sercurity.dict.index.model.save.text': 'Save',
   'sercurity.dict.index.model.delete.text': 'Delete',
   'sercurity.dict.index.notice.success': 'Operate Successfully!',
-  'sercurity.dict.index.notice.warning1': 'Select the dictionary you want to delete from the list on the left',
+  'sercurity.dict.index.notice.warning1': 'Selected the dictionary you want to delete from the list on the left',
   'sercurity.dict.index.notice.warning2': 'In the list on the left, select the dictionary to which you want to add a dictionary item',
   'sercurity.dict.index.modal.title': 'Hint',
   'sercurity.dict.index.modal.content': 'Whether to delete the selected datas?',
@@ -241,4 +241,102 @@ export default {
   'sercurity.orgUser.index.model.cancel.text': 'Cancel',
   'sercurity.orgUser.index.model.close.text': 'Close',
   'sercurity.orgUser.index.model.ok.text': 'Confirm',
+
+  /* 角色管理 */
+  // webapps/gl-admin-arco/src/views/security/role/app
+  'sercurity.role.index.menu.list': 'System Management',
+  'sercurity.role.index.menu.list.searchTable': 'Role Management',
+  'sercurity.role.form.tab.title.one': 'Role Basic Info',
+  'sercurity.role.form.tab.title.two': 'Role Of App',
+  'sercurity.role.form.tab.title.three': 'Role Of Permission',
+  'sercurity.role.form.tab.title.four': 'Role Of TreeNode',
+  'sercurity.role.form.tab.title.five': 'Role Of User',
+  // webapps/gl-admin-arco/src/views/security/role/app - list|form
+  'sercurity.role.index.form.index': 'index',
+  'sercurity.role.index.form.name': 'name',
+  'sercurity.role.index.form.code': 'code',
+  'sercurity.role.index.form.type': 'type',
+  'sercurity.role.index.form.type.app': 'app',
+  'sercurity.role.index.form.type.platform': 'platform',
+  'sercurity.role.index.form.enableStatus': 'status',
+  'sercurity.role.index.form.enableStatus.0': 'disabled',
+  'sercurity.role.index.form.enableStatus.1': 'enabled',
+  'sercurity.role.index.form.description': 'description',
+  'sercurity.role.index.form.seqNo': 'sequence',
+  'sercurity.role.index.form.createAt': 'createTime',
+  'sercurity.role.index.form.operations': 'operation',
+  // webapps/gl-admin-arco/src/views/security/role/app - form.operation
+  'sercurity.role.index.model.title.add': 'Add Role',
+  'sercurity.role.index.model.title.edit': 'Edit Role',
+  'sercurity.role.index.model.title.view': 'View Role',
+  'sercurity.role.index.model.cancel.text': 'Cancel',
+  'sercurity.role.index.model.ok.text': 'Confirm',
+
+  // webapps/gl-admin-arco/src/views/security/role/app
+  'sercurity.roleApp.index.menu.list': 'System Management',
+  'sercurity.roleApp.index.menu.list.searchTable': 'Role Of App Management',
+  // webapps/gl-admin-arco/src/views/security/role/app - list|form
+  'sercurity.roleApp.index.form.index': 'index',
+  'sercurity.roleApp.index.form.roleName': 'roleName',
+  'sercurity.roleApp.index.form.appName': 'appName',
+  'sercurity.roleApp.index.form.createAt': 'createTime',
+  'sercurity.roleApp.index.form.operations': 'operation',
+  // webapps/gl-admin-arco/src/views/security/role/app - form.operation
+  'sercurity.roleApp.index.model.title.add': 'Add Role Of App',
+  'sercurity.roleApp.index.model.title.edit': 'Edit Role Of App',
+  'sercurity.roleApp.index.model.title.view': 'View Role Of App',
+  'sercurity.roleApp.index.model.cancel.text': 'Cancel',
+  'sercurity.roleApp.index.model.ok.text': 'Confirm',
+
+  // webapps/gl-admin-arco/src/views/security/role/Permission
+  'sercurity.rolePermission.index.menu.list': 'System Management',
+  'sercurity.rolePermission.index.menu.list.searchTable': 'Role Of Permission Management',
+  // webapps/gl-admin-arco/src/views/security/role/Permission - list|form
+  'sercurity.rolePermission.index.form.index': 'index',
+  'sercurity.rolePermission.index.form.roleName': 'roleName',
+  'sercurity.rolePermission.index.form.permissionName': 'permissionName',
+  'sercurity.rolePermission.index.form.createAt': 'createTime',
+  'sercurity.rolePermission.index.form.operations': 'operation',
+  // webapps/gl-admin-arco/src/views/security/role/Permission - form.operation
+  'sercurity.rolePermission.index.model.title.add': 'Add Role Of Permission',
+  'sercurity.rolePermission.index.model.title.edit': 'Edit Role Of Permission',
+  'sercurity.rolePermission.index.model.title.view': 'View Role Of Permission',
+  'sercurity.rolePermission.index.model.cancel.text': 'Cancel',
+  'sercurity.rolePermission.index.model.ok.text': 'Confirm',
+
+  // webapps/gl-admin-arco/src/views/security/role/TreeNode
+  'sercurity.roleTreeNode.index.menu.list': 'System Management',
+  'sercurity.roleTreeNode.index.menu.list.searchTable': 'Role Of TreeNode Management',
+  // webapps/gl-admin-arco/src/views/security/role/TreeNode - list|form
+  'sercurity.roleTreeNode.index.form.index': 'index',
+  'sercurity.roleTreeNode.index.form.title': 'title',
+  'sercurity.roleTreeNode.index.form.roleName': 'roleName',
+  'sercurity.roleTreeNode.index.form.treeNodeText': 'treeNodeText',
+  'sercurity.roleTreeNode.index.form.createAt': 'createTime',
+  'sercurity.roleTreeNode.index.form.operations': 'operation',
+  // webapps/gl-admin-arco/src/views/security/role/TreeNode - form.operation
+  'sercurity.roleTreeNode.index.model.title.add': 'Add Role Of TreeNode',
+  'sercurity.roleTreeNode.index.model.title.edit': 'Edit Role Of TreeNode',
+  'sercurity.roleTreeNode.index.model.title.view': 'View Role Of TreeNode',
+  'sercurity.roleTreeNode.index.model.cancel.text': 'Cancel',
+  'sercurity.roleTreeNode.index.model.ok.text': 'Confirm',
+
+  // webapps/gl-admin-arco/src/views/security/role/User
+  'sercurity.roleUser.index.menu.list': 'System Management',
+  'sercurity.roleUser.index.menu.list.searchTable': 'Role Of User Management',
+  // webapps/gl-admin-arco/src/views/security/role/User - list|form
+  'sercurity.roleUser.index.form.index': 'index',
+  'sercurity.roleUser.index.form.roleName': 'roleName',
+  'sercurity.roleUser.index.form.userName': 'userName',
+  'sercurity.roleUser.index.form.createAt': 'createTime',
+  'sercurity.roleUser.index.form.operations': 'operation',
+  // webapps/gl-admin-arco/src/views/security/role/User - form.operation
+  'sercurity.roleUser.index.model.title.add': 'Add Role Of User',
+  'sercurity.roleUser.index.model.title.edit': 'Edit Role Of User',
+  'sercurity.roleUser.index.model.title.view': 'View Role Of User',
+  'sercurity.roleUser.index.model.cancel.text': 'Cancel',
+  'sercurity.roleUser.index.model.ok.text': 'Confirm',
+  /* 验证 */
+  'sercurity.form.rules.match.required': 'this is required',
+  'sercurity.form.rules.match.length.title':'length',
 };

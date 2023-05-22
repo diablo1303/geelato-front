@@ -1,265 +1,28 @@
 <template>
   <div class="container">
     <Breadcrumb :items="['sercurity.orgUser.index.menu.list', 'sercurity.orgUser.index.menu.list.searchTable']"/>
-    <a-card class="general-card" :title="$t('sercurity.orgUser.index.menu.list.searchTable')">
-      <a-row>
-        <a-col :flex="1">
-          <a-form :model="filterData" :label-col-props="{ span: 6 }" :wrapper-col-props="{ span: 18 }" label-align="left">
-            <a-row :gutter="16">
-              <a-col :span="8">
-                <a-form-item field="orgName" :label="$t('sercurity.orgUser.index.form.orgName')">
-                  <a-input v-model="filterData.orgName"/>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="userName" :label="$t('sercurity.orgUser.index.form.userName')">
-                  <a-input v-model="filterData.userName"/>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="createAt" :label="$t('sercurity.orgUser.index.form.createAt')">
-                  <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="defaultOrg" :label="$t('sercurity.orgUser.index.form.defaultOrg')">
-                  <a-select v-model="filterData.defaultOrg" :placeholder="$t('searchTable.form.selectDefault')">
-                    <a-option v-for="item of defaultOrgOptions" :key="item.value" :value="item.value" :label="$t(`${item.label}`)"/>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-            </a-row>
-          </a-form>
-        </a-col>
-        <a-divider style="height: 84px" direction="vertical"/>
-        <a-col :flex="'86px'" style="text-align: right">
-          <a-space direction="vertical" :size="18">
-            <a-button type="primary" @click="search">
-              <template #icon>
-                <icon-search/>
-              </template>
-              {{ $t('searchTable.form.search') }}
-            </a-button>
-            <a-button @click="reset">
-              <template #icon>
-                <icon-refresh/>
-              </template>
-              {{ $t('searchTable.form.reset') }}
-            </a-button>
-          </a-space>
-        </a-col>
-      </a-row>
-      <a-divider style="margin-top: 0"/>
-      <a-row style="margin-bottom: 16px">
-        <a-col :span="12">
-          <a-space>
-            <a-button type="primary" @click="addTable">
-              <template #icon>
-                <icon-plus/>
-              </template>
-              {{ $t('searchTable.operation.create') }}
-            </a-button>
-          </a-space>
-        </a-col>
-        <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
-          <a-tooltip :content="$t('searchTable.actions.refresh')">
-            <div class="action-icon" @click="search">
-              <icon-refresh size="18"/>
-            </div>
-          </a-tooltip>
-          <a-tooltip :content="$t('searchTable.actions.columnSetting')">
-            <a-popover trigger="click" position="bl" @popup-visible-change="popupVisibleChange">
-              <div class="action-icon">
-                <icon-settings size="18"/>
-              </div>
-              <template #content>
-                <div id="tableSetting">
-                  <div v-for="(item, index) in showColumns" :key="item.dataIndex" class="setting">
-                    <div style="margin-right: 4px; cursor: move">
-                      <icon-drag-arrow/>
-                    </div>
-                    <div>
-                      <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
-                    </div>
-                    <div class="title">
-                      {{ item.title === '#' ? $t('sercurity.orgUser.index.form.index') : $t(`${item.title}`) }}
-                    </div>
-                  </div>
-                </div>
-              </template>
-            </a-popover>
-          </a-tooltip>
-        </a-col>
-      </a-row>
-      <a-table
-          v-model:selectedKeys="selectedKeys"
-          row-key="id" column-resizable
-          :loading="loading"
-          :pagination="pagination"
-          :columns="(cloneColumns as TableColumnData[])"
-          :data="renderData"
-          :bordered="{cell:true}"
-          :row-selection="rowSelection"
-          :stripe="true"
-          @page-change="onPageChange">
-        <template #columns>
-          <a-table-column :title="$t('sercurity.orgUser.index.form.index')" data-index="index" width="80" align="center">
-            <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
-          </a-table-column>
-          <a-table-column :title="$t('sercurity.orgUser.index.form.orgName')" data-index="orgName" width="150" ellipsis="true" tooltip="true"/>
-          <a-table-column :title="$t('sercurity.orgUser.index.form.userName')" data-index="userName" width="150" ellipsis="true" tooltip="true"/>
-          <a-table-column :title="$t('sercurity.orgUser.index.form.defaultOrg')" data-index="defaultOrg" width="100">
-            <template #cell="{ record }">
-              {{ $t(`sercurity.org.index.form.defaultOrg.${record.defaultOrg}`) }}
-            </template>
-          </a-table-column>
-          <a-table-column :title="$t('sercurity.orgUser.index.form.createAt')" data-index="createAt" width="180"/>
-          <a-table-column :title="$t('sercurity.orgUser.index.form.operations')" data-index="operations" width="230" align="center" fixed="right">
-            <template #cell="{ record }">
-              <a-button v-orgUser="['admin']" type="text" size="small" @click="viewTable(record.id)">
-                {{ $t('searchTable.columns.operations.view') }}
-              </a-button>
-              <a-button v-orgUser="['admin']" type="text" size="small" @click="editTable(record.id)">
-                {{ $t('searchTable.columns.operations.edit') }}
-              </a-button>
-              <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-                <a-button v-orgUser="['admin']" type="text" size="small">
-                  {{ $t('searchTable.columns.operations.delete') }}
-                </a-button>
-              </a-popconfirm>
-            </template>
-          </a-table-column>
-        </template>
-      </a-table>
+    <a-card :title="$t('sercurity.orgUser.index.menu.list.searchTable')" class="general-card">
+      <!-- list   -->
+      <OrgUserList ref="orgUserListRef"></OrgUserList>
     </a-card>
   </div>
-  <OrgUserForm ref="orgUserFormRef"></OrgUserForm>
 </template>
 
 <script lang="ts" setup>
-import {nextTick, reactive, ref, watch} from 'vue';
-import useLoading from '@/hooks/loading';
-import {Pagination} from '@/types/global';
-import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
-import {deleteOrgUser, PageQueryFilter, pageQueryOrgUser, PageQueryRequest} from '@/api/sercurity_service'
-import {columns, defaultOrgOptions} from '@/views/security/user/org/searchTable'
-import cloneDeep from 'lodash/cloneDeep';
-import Sortable from 'sortablejs';
-import OrgUserForm from './form.vue';
+import {onMounted, ref} from 'vue';
+import OrgUserList from "@/views/security/user/org/list.vue";
 
-type Column = TableColumnData & { checked?: true };
-/* 列表 */
-const generateFilterData = () => {
-  return {id: '', orgName: '', username: '', defaultOrg: '', createAt: []};
-};
-const {loading, setLoading} = useLoading(true);
-const renderData = ref<PageQueryFilter[]>([]);
-const filterData = ref(generateFilterData());
-const cloneColumns = ref<Column[]>([]);
-const showColumns = ref<Column[]>([]);
-const selectedKeys = ref([]);
-const rowSelection = reactive({type: 'checkbox', showCheckedAll: true, onlyCurrent: false});
-const basePagination: Pagination = {current: 1, pageSize: 10};
-const pagination = reactive({...basePagination,});
-const orgUserFormRef = ref(null);
+const orgUserListRef = ref(null);
 
-const fetchData = async (params: PageQueryRequest = {current: 1, pageSize: 10}) => {
-  setLoading(true);
-  try {
-    const {data} = await pageQueryOrgUser(params);
-    renderData.value = data.items;
-    pagination.current = params.current;
-    pagination.total = data.total;
-  } catch (err) {
-    console.log(err);
-  } finally {
-    setLoading(false);
-  }
-};
-const search = () => {
-  fetchData({
-    ...basePagination,
-    ...filterData.value,
-  } as unknown as PageQueryRequest);
-};
-const reset = () => {
-  filterData.value = generateFilterData();
-  search();
-};
-/* 获取列表数据 */
-fetchData();
-const onPageChange = (current: number) => {
-  fetchData({...basePagination, current});
-};
-const handleChange = (checked: boolean | (string | boolean | number)[], column: Column, index: number) => {
-  if (!checked) {
-    cloneColumns.value = showColumns.value.filter((item) => item.dataIndex !== column.dataIndex);
-  } else {
-    cloneColumns.value.splice(index, 0, column);
-  }
-};
-const exchangeArray = <T extends Array<any>>(array: T, beforeIdx: number, newIdx: number, isDeep = false): T => {
-  const newArray = isDeep ? cloneDeep(array) : array;
-  if (beforeIdx > -1 && newIdx > -1) {
-    // 先替换后面的，然后拿到替换的结果替换前面的
-    newArray.splice(beforeIdx, 1, newArray.splice(newIdx, 1, newArray[beforeIdx]).pop());
-  }
-  return newArray;
-};
-const popupVisibleChange = (val: boolean) => {
-  if (val) {
-    nextTick(() => {
-      const el = document.getElementById('tableSetting') as HTMLElement;
-      const sortable = new Sortable(el, {
-        onEnd(e: any) {
-          const {oldIndex, newIndex} = e;
-          exchangeArray(cloneColumns.value, oldIndex, newIndex);
-          exchangeArray(showColumns.value, oldIndex, newIndex);
-        }
-      });
-    });
-  }
-};
-
-watch(() => columns.value, (val) => {
-    cloneColumns.value = cloneDeep(val);
-    cloneColumns.value.forEach((item, index) => {
-      item.checked = true;
-    });
-    showColumns.value = cloneDeep(cloneColumns.value);
-  },
-  {deep: true, immediate: true}
-);
-
-/* 列表，按钮、操作列 */
-const addTable = () => {
-  if (orgUserFormRef.value) {
-    orgUserFormRef.value?.openForm('add', null, reset);
-  }
-};
-const viewTable = (id: string) => {
-  if (orgUserFormRef.value) {
-    orgUserFormRef.value?.openForm('view', id);
+const loadIndex = () => {
+  if (orgUserListRef.value) {
+    orgUserListRef.value?.loadList({action: 'edit'});
   }
 }
-const editTable = (id: string) => {
-  if (orgUserFormRef.value) {
-    orgUserFormRef.value?.openForm('edit', id, reset);
-  }
-}
-const deleteTable = (id: string) => {
-  deleteData(id, function () {
-    reset();
-  });
-}
-const deleteData = async (id: string, successBack: any) => {
-  try {
-    const {data} = await deleteOrgUser(id);
-    successBack();
-  } catch (err) {
-    console.log(err);
-  }
-};
+
+onMounted(() => {
+  loadIndex();
+});
 </script>
 
 <script lang="ts">
@@ -268,37 +31,8 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .container {
   padding: 0 20px 20px 20px;
-}
-
-:deep(.arco-table-th) {
-  &:last-child {
-    .arco-table-th-item-title {
-      margin-left: 16px;
-    }
-  }
-}
-
-.action-icon {
-  margin-left: 12px;
-  cursor: pointer;
-}
-
-.active {
-  color: #0960bd;
-  background-color: #e3f4fc;
-}
-
-.setting {
-  display: flex;
-  align-items: center;
-  width: 200px;
-
-  .title {
-    margin-left: 12px;
-    cursor: pointer;
-  }
 }
 </style>

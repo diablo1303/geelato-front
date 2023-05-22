@@ -241,4 +241,102 @@ export default {
   'sercurity.orgUser.index.model.cancel.text': '取消',
   'sercurity.orgUser.index.model.close.text': '关闭',
   'sercurity.orgUser.index.model.ok.text': '确认',
+
+  /* 角色管理 */
+  // webapps/gl-admin-arco/src/views/security/role/app
+  'sercurity.role.index.menu.list': '系统管理',
+  'sercurity.role.index.menu.list.searchTable': '角色管理',
+  'sercurity.role.form.tab.title.one': '用户基本信息',
+  'sercurity.role.form.tab.title.two': '角色应用关联',
+  'sercurity.role.form.tab.title.three': '角色权限关联',
+  'sercurity.role.form.tab.title.four': '角色菜单关联',
+  'sercurity.role.form.tab.title.five': '角色用户关联',
+  // webapps/gl-admin-arco/src/views/security/role/app - list|form
+  'sercurity.role.index.form.index': '序列号',
+  'sercurity.role.index.form.name': '名称',
+  'sercurity.role.index.form.code': '编码',
+  'sercurity.role.index.form.type': '类型',
+  'sercurity.role.index.form.type.app': '应用级角色',
+  'sercurity.role.index.form.type.platform': '平台级角色',
+  'sercurity.role.index.form.enableStatus': '状态',
+  'sercurity.role.index.form.enableStatus.0': '禁用',
+  'sercurity.role.index.form.enableStatus.1': '启用',
+  'sercurity.role.index.form.description': '描述',
+  'sercurity.role.index.form.seqNo': '排序',
+  'sercurity.role.index.form.createAt': '创建时间',
+  'sercurity.role.index.form.operations': '操作',
+  // webapps/gl-admin-arco/src/views/security/role/app - form.operation
+  'sercurity.role.index.model.title.add': '新建角色',
+  'sercurity.role.index.model.title.edit': '编辑角色',
+  'sercurity.role.index.model.title.view': '查看角色',
+  'sercurity.role.index.model.cancel.text': '取消',
+  'sercurity.role.index.model.ok.text': '确认',
+
+  // webapps/gl-admin-arco/src/views/security/role/app
+  'sercurity.roleApp.index.menu.list': '系统管理',
+  'sercurity.roleApp.index.menu.list.searchTable': '角色应用关联管理',
+  // webapps/gl-admin-arco/src/views/security/role/app - list|form
+  'sercurity.roleApp.index.form.index': '序列号',
+  'sercurity.roleApp.index.form.roleName': '角色名称',
+  'sercurity.roleApp.index.form.appName': '应用名称',
+  'sercurity.roleApp.index.form.createAt': '创建时间',
+  'sercurity.roleApp.index.form.operations': '操作',
+  // webapps/gl-admin-arco/src/views/security/role/app - form.operation
+  'sercurity.roleApp.index.model.title.add': '新建角色应用关联',
+  'sercurity.roleApp.index.model.title.edit': '编辑角色应用关联',
+  'sercurity.roleApp.index.model.title.view': '查看角色应用关联',
+  'sercurity.roleApp.index.model.cancel.text': '取消',
+  'sercurity.roleApp.index.model.ok.text': '确认',
+
+  // webapps/gl-admin-arco/src/views/security/role/Permission
+  'sercurity.rolePermission.index.menu.list': '系统管理',
+  'sercurity.rolePermission.index.menu.list.searchTable': '角色权限关联管理',
+  // webapps/gl-admin-arco/src/views/security/role/Permission - list|form
+  'sercurity.rolePermission.index.form.index': '序列号',
+  'sercurity.rolePermission.index.form.roleName': '角色名称',
+  'sercurity.rolePermission.index.form.permissionName': '权限名称',
+  'sercurity.rolePermission.index.form.createAt': '创建时间',
+  'sercurity.rolePermission.index.form.operations': '操作',
+  // webapps/gl-admin-arco/src/views/security/role/Permission - form.operation
+  'sercurity.rolePermission.index.model.title.add': '新建角色权限关联',
+  'sercurity.rolePermission.index.model.title.edit': '编辑角色权限关联',
+  'sercurity.rolePermission.index.model.title.view': '查看角色权限关联',
+  'sercurity.rolePermission.index.model.cancel.text': '取消',
+  'sercurity.rolePermission.index.model.ok.text': '确认',
+
+  // webapps/gl-admin-arco/src/views/security/role/TreeNode
+  'sercurity.roleTreeNode.index.menu.list': '系统管理',
+  'sercurity.roleTreeNode.index.menu.list.searchTable': '角色菜单关联管理',
+  // webapps/gl-admin-arco/src/views/security/role/TreeNode - list|form
+  'sercurity.roleTreeNode.index.form.index': '序列号',
+  'sercurity.roleTreeNode.index.form.title': '名称',
+  'sercurity.roleTreeNode.index.form.roleName': '角色名称',
+  'sercurity.roleTreeNode.index.form.treeNodeText': '菜单名称',
+  'sercurity.roleTreeNode.index.form.createAt': '创建时间',
+  'sercurity.roleTreeNode.index.form.operations': '操作',
+  // webapps/gl-admin-arco/src/views/security/role/TreeNode - form.operation
+  'sercurity.roleTreeNode.index.model.title.add': '新建角色菜单关联',
+  'sercurity.roleTreeNode.index.model.title.edit': '编辑角色菜单关联',
+  'sercurity.roleTreeNode.index.model.title.view': '查看角色菜单关联',
+  'sercurity.roleTreeNode.index.model.cancel.text': '取消',
+  'sercurity.roleTreeNode.index.model.ok.text': '确认',
+
+  // webapps/gl-admin-arco/src/views/security/role/User
+  'sercurity.roleUser.index.menu.list': '系统管理',
+  'sercurity.roleUser.index.menu.list.searchTable': '角色用户关联管理',
+  // webapps/gl-admin-arco/src/views/security/role/User - list|form
+  'sercurity.roleUser.index.form.index': '序列号',
+  'sercurity.roleUser.index.form.roleName': '角色名称',
+  'sercurity.roleUser.index.form.userName': '用户名称',
+  'sercurity.roleUser.index.form.createAt': '创建时间',
+  'sercurity.roleUser.index.form.operations': '操作',
+  // webapps/gl-admin-arco/src/views/security/role/User - form.operation
+  'sercurity.roleUser.index.model.title.add': '新建角色用户关联',
+  'sercurity.roleUser.index.model.title.edit': '编辑角色用户关联',
+  'sercurity.roleUser.index.model.title.view': '查看角色用户关联',
+  'sercurity.roleUser.index.model.cancel.text': '取消',
+  'sercurity.roleUser.index.model.ok.text': '确认',
+  /* 验证 */
+  'sercurity.form.rules.match.required':'这是必填项',
+  'sercurity.form.rules.match.length.title':'长度'
 };

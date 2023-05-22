@@ -3,7 +3,7 @@
     <!-- 面包屑 Breadcrumb 是辅助导航模式，用于识别页面在层次结构内的位置，并根据需要向上返回。-->
     <Breadcrumb :items="['sercurity.org.index.menu.list', 'sercurity.org.index.menu.list.searchTable']"/>
     <!-- 卡片 Card 将信息分类后分标题、详情等区域聚合展现，一般作为简洁介绍或者信息的大盘和入口。   -->
-    <a-card class="general-card" :title="$t('sercurity.org.index.menu.list.searchTable')">
+    <a-card :title="$t('sercurity.org.index.menu.list.searchTable')" class="general-card">
       <!-- list   -->
       <OrgList ref="orgListRef"></OrgList>
     </a-card>
@@ -18,7 +18,7 @@ const orgListRef = ref(null);
 
 const loadIndex = () => {
   if (orgListRef.value) {
-    orgListRef.value?.loadList('view');
+    orgListRef.value?.loadList({action: 'edit'});
   }
 }
 
@@ -33,7 +33,7 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .container {
   padding: 0 20px 20px 20px;
 }

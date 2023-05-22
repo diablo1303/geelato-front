@@ -1,24 +1,24 @@
 <template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      :cancel-text="$t('sercurity.user.index.model.cancel.text')"
+      :cancel-text="$t('sercurity.role.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.user.index.model.ok.text')"
-      :title="$t(`sercurity.user.index.model.title.${pageData.formState}`)"
+      :ok-text="$t('sercurity.role.index.model.ok.text')"
+      :title="$t(`sercurity.role.index.model.title.${pageData.formState}`)"
       width="65%"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
-    <UserModel ref="userModelRef"></UserModel>
+    <RoleModel ref="roleModelRef"></RoleModel>
   </a-modal>
 </template>
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import UserModel from '@/views/security/user/model.vue'
-import {ListUrlParams, QueryUserForm} from "@/api/sercurity_service";
+import RoleModel from '@/views/security/role/model.vue'
+import {ListUrlParams, QueryRoleForm} from "@/api/sercurity_service";
 
 const pageData = ref({formState: 'add', button: true});
-const userModelRef = ref(null);
+const roleModelRef = ref(null);
 // 显示隐藏
 const visibleModel = ref(false);
 // 页面响应
@@ -26,8 +26,8 @@ let okSuccessBack: any;
 
 /* 表单 */
 const handleModelOk = (done: any) => {
-  if (userModelRef.value) {
-    userModelRef.value?.submitModel(done, () => {
+  if (roleModelRef.value) {
+    roleModelRef.value?.submitModel(done, () => {
       done();
       okSuccessBack();
     }, () => {
@@ -46,13 +46,13 @@ const openForm = (urlParams: ListUrlParams) => {
   urlParams.loadFailBack = () => {
     pageData.value.button = false;
   }
-  urlParams.loadSuccessBack = (data: QueryUserForm) => {
+  urlParams.loadSuccessBack = (data: QueryRoleForm) => {
     // eslint-disable-next-line no-console
     console.log(data);
   }
   // 加载页面
-  if (userModelRef.value) {
-    userModelRef.value?.loadModel(urlParams);
+  if (roleModelRef.value) {
+    roleModelRef.value?.loadModel(urlParams);
   }
   // 显示
   visibleModel.value = true;

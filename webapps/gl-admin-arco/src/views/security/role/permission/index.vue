@@ -1,22 +1,22 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['sercurity.dictItem.index.menu.list', 'sercurity.dictItem.index.menu.list.searchTable']"/>
-    <a-card :title="$t('sercurity.dictItem.index.menu.list.searchTable')" class="general-card">
+    <Breadcrumb :items="['sercurity.rolePermission.index.menu.list', 'sercurity.rolePermission.index.menu.list.searchTable']"/>
+    <a-card :title="$t('sercurity.rolePermission.index.menu.list.searchTable')" class="general-card">
       <!-- list   -->
-      <DictItemList ref="dictItemListRef"></DictItemList>
+      <RolePermissionList ref="rolePermissionListRef"></RolePermissionList>
     </a-card>
   </div>
 </template>
 
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue';
-import DictItemList from "@/views/security/dict/item/list.vue";
+import RolePermissionList from "@/views/security/role/permission/list.vue";
 
-const dictItemListRef = ref(null);
+const rolePermissionListRef = ref(null);
 
 const loadIndex = () => {
-  if (dictItemListRef.value) {
-    dictItemListRef.value?.loadList({action: 'edit'});
+  if (rolePermissionListRef.value) {
+    rolePermissionListRef.value?.loadList({action: 'edit'});
   }
 }
 

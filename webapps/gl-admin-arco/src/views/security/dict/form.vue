@@ -1,33 +1,30 @@
 <template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      :cancel-text="$t('sercurity.user.index.model.cancel.text')"
+      :cancel-text="$t('sercurity.dict.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.user.index.model.ok.text')"
-      :title="$t(`sercurity.user.index.model.title.${pageData.formState}`)"
-      width="65%"
+      :ok-text="$t('sercurity.dict.index.model.ok.text')"
+      :title="$t(`sercurity.dict.index.model.title.${pageData.formState}`)"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
-    <UserModel ref="userModelRef"></UserModel>
+    <DictModel ref="dictModelRef"></DictModel>
   </a-modal>
 </template>
-
 <script lang="ts" setup>
 import {ref} from "vue";
-import UserModel from '@/views/security/user/model.vue'
-import {ListUrlParams, QueryUserForm} from "@/api/sercurity_service";
+import DictModel from "@/views/security/dict/model.vue";
+import {ListUrlParams, QueryDictForm} from '@/api/sercurity_service'
 
 const pageData = ref({formState: 'add', button: true});
-const userModelRef = ref(null);
+const dictModelRef = ref(null);
 // 显示隐藏
 const visibleModel = ref(false);
 // 页面响应
 let okSuccessBack: any;
-
 /* 表单 */
 const handleModelOk = (done: any) => {
-  if (userModelRef.value) {
-    userModelRef.value?.submitModel(done, () => {
+  if (dictModelRef.value) {
+    dictModelRef.value?.submitModel(done, () => {
       done();
       okSuccessBack();
     }, () => {
@@ -46,13 +43,13 @@ const openForm = (urlParams: ListUrlParams) => {
   urlParams.loadFailBack = () => {
     pageData.value.button = false;
   }
-  urlParams.loadSuccessBack = (data: QueryUserForm) => {
+  urlParams.loadSuccessBack = (data: QueryDictForm) => {
     // eslint-disable-next-line no-console
     console.log(data);
   }
   // 加载页面
-  if (userModelRef.value) {
-    userModelRef.value?.loadModel(urlParams);
+  if (dictModelRef.value) {
+    dictModelRef.value?.loadModel(urlParams);
   }
   // 显示
   visibleModel.value = true;

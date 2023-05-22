@@ -1,27 +1,33 @@
-<template>
+<template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      :title="$t(`${modelAttr.title}`)"
-      :footer="modelAttr.footer"
-      :cancel-text="$t(`${modelAttr.cancelText}`)"
+      :cancel-text="$t('sercurity.permission.index.model.cancel.text')"
+      :footer="pageData.button"
       :ok-text="$t('sercurity.permission.index.model.ok.text')"
+      :title="$t(`sercurity.permission.index.model.title.${pageData.formState}`)"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
-    <a-form :model="formData">
+    <a-form ref="validateForm" :model="formData">
       <a-form-item v-show="false">
         <a-input v-show="false" v-model="formData.id"/>
       </a-form-item>
-      <a-form-item field="name" :label="$t('sercurity.permission.index.form.name')">
-        <a-input v-if="modelAttr.footer" v-model="formData.name" :max-length="32"/>
-        <a-span v-else>{{ formData.name }}</a-span>
+      <a-form-item
+          :label="$t('sercurity.permission.index.form.name')"
+          :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+          field="name">
+        <a-input v-if="pageData.button" v-model="formData.name" :max-length="32"/>
+        <span v-else>{{ formData.name }}</span>
       </a-form-item>
-      <a-form-item field="text" :label="$t('sercurity.permission.index.form.text')">
-        <a-input v-if="modelAttr.footer" v-model="formData.text" :max-length="32"/>
-        <a-span v-else>{{ formData.text }}</a-span>
+      <a-form-item
+          :label="$t('sercurity.permission.index.form.text')"
+          :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+          field="text">
+        <a-input v-if="pageData.button" v-model="formData.text" :max-length="32"/>
+        <span v-else>{{ formData.text }}</span>
       </a-form-item>
-      <a-form-item field="description" :label="$t('sercurity.permission.index.form.description')">
-        <a-textarea v-if="modelAttr.footer" v-model="formData.description" :max-length="512" :auto-size="{minRows:3,maxRows:6}" show-word-limit/>
-        <a-span v-else :title="formData.description" @click="openModal(`${formData.description}`)">{{ formData.description }}</a-span>
+      <a-form-item :label="$t('sercurity.permission.index.form.description')" field="description">
+        <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+        <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -30,20 +36,23 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import {Modal} from "@arco-design/web-vue";
-import {createOrUpdatePermission, getPermission, QueryPermissionForm} from '@/api/sercurity_service'
+import {
+  createOrUpdatePermission as createOrUpdateForm,
+  getPermission as getForm,
+  ListUrlParams,
+  QueryPermissionForm as QueryForm
+} from '@/api/sercurity_service'
+import {FormInstance} from "@arco-design/web-vue/es/form";
 
-const generateFormData = () => {
-  return {id: '', name: '', text: '', description: ''};
-}
+const pageData = ref({formState: 'add', button: true});
+const validateForm = ref<FormInstance>();
 // 显示隐藏
 const visibleModel = ref(false);
 // 表单数据
+const generateFormData = (): QueryForm => {
+  return {id: '', name: '', text: '', description: ''};
+}
 const formData = ref(generateFormData());
-// 不同 action 表单显示
-const modelAdd = {title: 'sercurity.permission.index.model.title.add', cancelText: 'sercurity.permission.index.model.cancel.text', footer: true};
-const modelEdit = {title: 'sercurity.permission.index.model.title.edit', cancelText: 'sercurity.permission.index.model.cancel.text', footer: true};
-const modelView = {title: 'sercurity.permission.index.model.title.view', cancelText: 'sercurity.permission.index.model.close.text', footer: false};
-let modelAttr = modelAdd;
 // 页面响应
 let okSuccessBack: any;
 
@@ -52,13 +61,18 @@ let okSuccessBack: any;
  * @param params
  * @param done
  */
-const createOrUpdateData = async (params: QueryPermissionForm, done: any) => {
-  try {
-    const {data} = await createOrUpdatePermission(params);
-    done();
-    okSuccessBack();
-  } catch (err) {
-    console.log(err);
+const createOrUpdateData = async (params: QueryForm, done: any) => {
+  const res = await validateForm.value?.validate();
+  if (!res) {
+    try {
+      await createOrUpdateForm(params);
+      done();
+      okSuccessBack();
+    } catch (err) {
+      done(false);
+    }
+  } else {
+    done(false);
   }
 };
 
@@ -69,36 +83,13 @@ const createOrUpdateData = async (params: QueryPermissionForm, done: any) => {
  */
 const getData = async (id: string, successBack: any) => {
   try {
-    const {data} = await getPermission(id);
+    const {data} = await getForm(id);
     successBack(data);
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err);
   }
 };
-
-/**
- * 打开表单
- * @param action 状态
- * @param id  数据id
- * @param okBack 响应方法
- */
-const openForm = (action: string, id: string, okBack?: any) => {
-  if (action === "add") {
-    formData.value = generateFormData();
-    modelAttr = modelAdd;
-    visibleModel.value = true;
-  } else {
-    formData.value = generateFormData();
-    modelAttr = (action === "edit") ? modelEdit : modelView;
-
-    getData(id, function (data: QueryPermissionForm) {
-      formData.value = data;
-      visibleModel.value = true;
-    });
-  }
-
-  okSuccessBack = okBack || null;
-}
 
 /* 表单 */
 const handleModelOk = (done: any) => {
@@ -111,18 +102,42 @@ const handleModelCancel = () => {
 const openModal = (content: string) => {
   Modal.open({'content': content, 'footer': false, 'simple': true});
 }
+const resetValidate = async () => {
+  await validateForm.value?.resetFields();
+};
+
+/* 对外调用方法 */
+const openForm = (urlParams: ListUrlParams) => {
+  // 全局
+  pageData.value.formState = urlParams.action;
+  pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
+  formData.value = generateFormData();
+  // 重置验证
+  resetValidate();
+  // 特色
+  if (urlParams.action === "add") {
+    visibleModel.value = true;
+  } else if (urlParams.id) {
+    getData(urlParams.id, (data: QueryForm) => {
+      formData.value = data;
+      visibleModel.value = true;
+    });
+  }
+
+  okSuccessBack = urlParams.closeBack || null;
+}
 
 // 将方法暴露出去
 defineExpose({openForm});
 </script>
 
-<style scoped lang="less">
-div.arco-form-item-content > a-span {
+<style lang="less" scoped>
+div.arco-form-item-content > span.textarea-span {
   cursor: pointer;
   display: -webkit-box;
   overflow: hidden;
   text-overflow: ellipsis;
-  -webkit-line-clamp: 6;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
 }
 </style>

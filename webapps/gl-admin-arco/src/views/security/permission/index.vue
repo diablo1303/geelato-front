@@ -1,32 +1,32 @@
-<template>
+<template v-model="pageData">
   <div class="container">
     <Breadcrumb :items="['sercurity.permission.index.menu.list', 'sercurity.permission.index.menu.list.searchTable']"/>
-    <a-card class="general-card" :title="$t('sercurity.permission.index.menu.list.searchTable')">
+    <a-card :title="$t('sercurity.permission.index.menu.list.searchTable')" class="general-card">
       <a-row>
         <a-col :flex="1">
-          <a-form :model="filterData" :label-col-props="{ span: 6 }" :wrapper-col-props="{ span: 18 }" label-align="left">
+          <a-form :label-col-props="{ span: 6 }" :model="filterData" :wrapper-col-props="{ span: 18 }" label-align="left">
             <a-row :gutter="16">
               <a-col :span="8">
-                <a-form-item field="name" :label="$t('sercurity.permission.index.form.name')">
+                <a-form-item :label="$t('sercurity.permission.index.form.name')" field="name">
                   <a-input v-model="filterData.name"/>
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item field="text" :label="$t('sercurity.permission.index.form.text')">
+                <a-form-item :label="$t('sercurity.permission.index.form.text')" field="text">
                   <a-input v-model="filterData.text"/>
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item field="createAt" :label="$t('sercurity.permission.index.form.createAt')">
+                <a-form-item :label="$t('sercurity.permission.index.form.createAt')" field="createAt">
                   <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
                 </a-form-item>
               </a-col>
             </a-row>
           </a-form>
         </a-col>
-        <a-divider style="height: 84px" direction="vertical"/>
+        <a-divider direction="vertical" style="height: 84px"/>
         <a-col :flex="'86px'" style="text-align: right">
-          <a-space direction="vertical" :size="18">
+          <a-space :size="18" direction="vertical">
             <a-button type="primary" @click="search">
               <template #icon>
                 <icon-search/>
@@ -46,7 +46,7 @@
       <a-row style="margin-bottom: 16px">
         <a-col :span="12">
           <a-space>
-            <a-button type="primary" @click="addTable">
+            <a-button v-show="pageData.formState==='edit'" type="primary" @click="addTable">
               <template #icon>
                 <icon-plus/>
               </template>
@@ -61,7 +61,7 @@
             </div>
           </a-tooltip>
           <a-tooltip :content="$t('searchTable.actions.columnSetting')">
-            <a-popover trigger="click" position="bl" @popup-visible-change="popupVisibleChange">
+            <a-popover position="bl" trigger="click" @popup-visible-change="popupVisibleChange">
               <div class="action-icon">
                 <icon-settings size="18"/>
               </div>
@@ -84,35 +84,33 @@
           </a-tooltip>
         </a-col>
       </a-row>
-      <a-table
-          v-model:selectedKeys="selectedKeys"
-          row-key="id" column-resizable
-          :loading="loading"
-          :pagination="pagination"
-          :columns="(cloneColumns as TableColumnData[])"
-          :data="renderData"
-          :bordered="{cell:true}"
-          :row-selection="rowSelection"
-          :stripe="true"
-          @page-change="onPageChange">
+      <a-table :bordered="{cell:true}" :columns="(cloneColumns as TableColumnData[])"
+               :data="renderData"
+               :loading="loading"
+               :pagination="pagination"
+               :stripe="true"
+               column-resizable
+               row-key="id"
+               @page-change="onPageChange">
         <template #columns>
-          <a-table-column :title="$t('sercurity.permission.index.form.index')" data-index="index" width="80" align="center">
+          <a-table-column :title="$t('sercurity.permission.index.form.index')" align="center" data-index="index" width="80">
             <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
           </a-table-column>
-          <a-table-column :title="$t('sercurity.permission.index.form.name')" data-index="name" width="150" ellipsis="true" tooltip="true"/>
-          <a-table-column :title="$t('sercurity.permission.index.form.text')" data-index="text" width="150" ellipsis="true" tooltip="true"/>
-          <a-table-column :title="$t('sercurity.permission.index.form.description')" data-index="description" width="200" ellipsis="true" tooltip="true"/>
+          <a-table-column :title="$t('sercurity.permission.index.form.name')" data-index="name" ellipsis="true" tooltip="true" width="150"/>
+          <a-table-column :title="$t('sercurity.permission.index.form.text')" data-index="text" ellipsis="true" tooltip="true" width="150"/>
+          <a-table-column :title="$t('sercurity.permission.index.form.description')" data-index="description" ellipsis="true" tooltip="true" width="200"/>
           <a-table-column :title="$t('sercurity.permission.index.form.createAt')" data-index="createAt" width="180"/>
-          <a-table-column :title="$t('sercurity.permission.index.form.operations')" data-index="operations" width="230" align="center" fixed="right">
+          <a-table-column :title="$t('sercurity.permission.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
+                          fixed="right">
             <template #cell="{ record }">
-              <a-button v-permission="['admin']" type="text" size="small" @click="viewTable(record.id)">
+              <a-button v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">
                 {{ $t('searchTable.columns.operations.view') }}
               </a-button>
-              <a-button v-permission="['admin']" type="text" size="small" @click="editTable(record.id)">
+              <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
                 {{ $t('searchTable.columns.operations.edit') }}
               </a-button>
               <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-                <a-button v-permission="['admin']" type="text" size="small">
+                <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text">
                   {{ $t('searchTable.columns.operations.delete') }}
                 </a-button>
               </a-popconfirm>
@@ -126,60 +124,118 @@
 </template>
 
 <script lang="ts" setup>
+/* 导入 */
 import {nextTick, reactive, ref, watch} from 'vue';
+import {useI18n} from 'vue-i18n';
 import useLoading from '@/hooks/loading';
+// 分页列表
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
-import {deletePermission, PageQueryFilter, pageQueryPermission, PageQueryRequest} from '@/api/sercurity_service'
-import {columns} from '@/views/security/permission/searchTable'
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
-import PermissionForm from './form.vue';
+// 引用其他对象、方法
+import {deletePermission as deleteList, PageQueryFilter, pageQueryPermission as pageQueryList, PageQueryRequest} from '@/api/sercurity_service'
+import {columns} from '@/views/security/permission/searchTable'
+// 引用其他页面
+import PermissionForm from '@/views/security/permission/form.vue';
 
+/* 列表 */
 type Column = TableColumnData & { checked?: true };
+const pageData = ref({current: 1, pageSize: 10, formState: 'edit'});
+const permissionFormRef = ref(null);
+// 国际化
+const {t} = useI18n();
+// 加载
+const {loading, setLoading} = useLoading(true);
+// 分页列表参数
+const cloneColumns = ref<Column[]>([]);
+const showColumns = ref<Column[]>([]);
+const basePagination: Pagination = {current: pageData.value.current, pageSize: pageData.value.pageSize};
+const pagination = reactive({...basePagination,});
+const renderData = ref<PageQueryFilter[]>([]);
+
 /* 列表 */
 const generateFilterData = () => {
   return {id: '', name: '', text: '', createAt: []};
 };
-const {loading, setLoading} = useLoading(true);
-const renderData = ref<PageQueryFilter[]>([]);
 const filterData = ref(generateFilterData());
-const cloneColumns = ref<Column[]>([]);
-const showColumns = ref<Column[]>([]);
-const selectedKeys = ref([]);
-const rowSelection = reactive({type: 'checkbox', showCheckedAll: true, onlyCurrent: false});
-const basePagination: Pagination = {current: 1, pageSize: 10};
-const pagination = reactive({...basePagination,});
-const permissionFormRef = ref(null);
-
-const fetchData = async (params: PageQueryRequest = {current: 1, pageSize: 10}) => {
+/**
+ * 分页查询方法
+ * @param params
+ */
+const fetchData = async (params: PageQueryRequest = {current: pageData.value.current, pageSize: pageData.value.pageSize}) => {
   setLoading(true);
   try {
-    const {data} = await pageQueryPermission(params);
+    const {data} = await pageQueryList(params);
     renderData.value = data.items;
     pagination.current = params.current;
+    pagination.pageSize = basePagination.pageSize;
     pagination.total = data.total;
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err);
   } finally {
     setLoading(false);
   }
 };
+/* 获取列表数据 */
+fetchData();
+/**
+ * 条件查询 - 搜索
+ */
 const search = () => {
-  fetchData({
-    ...basePagination,
-    ...filterData.value,
-  } as unknown as PageQueryRequest);
+  fetchData({...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
 };
+/**
+ * 条件查询 - 重置
+ */
 const reset = () => {
+  basePagination.current = pageData.value.current;
   filterData.value = generateFilterData();
   search();
 };
-/* 获取列表数据 */
-fetchData();
+/**
+ * 分页 - 页面跳转
+ * @param current
+ */
 const onPageChange = (current: number) => {
-  fetchData({...basePagination, current});
+  basePagination.current = current;
+  search();
 };
+
+/* 列表，按钮、操作列 */
+const addTable = () => {
+  if (permissionFormRef.value) {
+    permissionFormRef.value?.openForm({action: 'add', closeBack: reset});
+  }
+};
+const viewTable = (id: string) => {
+  if (permissionFormRef.value) {
+    permissionFormRef.value?.openForm({action: 'view', 'id': id});
+  }
+}
+const editTable = (id: string) => {
+  if (permissionFormRef.value) {
+    permissionFormRef.value?.openForm({action: 'edit', 'id': id, closeBack: reset});
+  }
+}
+
+const deleteTable = (id: string) => {
+  deleteData(id, () => {
+    reset();
+  });
+}
+const deleteData = async (id: string, successBack: any) => {
+  try {
+    await deleteList(id);
+    successBack();
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+};
+
+/* 分页功能区 - 固定方法 */
 const handleChange = (checked: boolean | (string | boolean | number)[], column: Column, index: number) => {
   if (!checked) {
     cloneColumns.value = showColumns.value.filter((item) => item.dataIndex !== column.dataIndex);
@@ -209,7 +265,6 @@ const popupVisibleChange = (val: boolean) => {
     });
   }
 };
-
 watch(() => columns.value, (val) => {
     cloneColumns.value = cloneDeep(val);
     cloneColumns.value.forEach((item, index) => {
@@ -219,36 +274,6 @@ watch(() => columns.value, (val) => {
   },
   {deep: true, immediate: true}
 );
-
-/* 列表，按钮、操作列 */
-const addTable = () => {
-  if (permissionFormRef.value) {
-    permissionFormRef.value?.openForm('add', null, reset);
-  }
-};
-const viewTable = (id: string) => {
-  if (permissionFormRef.value) {
-    permissionFormRef.value?.openForm('view', id);
-  }
-}
-const editTable = (id: string) => {
-  if (permissionFormRef.value) {
-    permissionFormRef.value?.openForm('edit', id, reset);
-  }
-}
-const deleteTable = (id: string) => {
-  deleteData(id, function () {
-    reset();
-  });
-}
-const deleteData = async (id: string, successBack: any) => {
-  try {
-    const {data} = await deletePermission(id);
-    successBack();
-  } catch (err) {
-    console.log(err);
-  }
-};
 </script>
 
 <script lang="ts">
@@ -257,7 +282,7 @@ export default {
 };
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .container {
   padding: 0 20px 20px 20px;
 }

@@ -3,37 +3,30 @@
     <a-col :flex="1">
       <a-form :label-col-props="{ span: 6 }" :model="filterData" :wrapper-col-props="{ span: 18 }" label-align="left">
         <a-row :gutter="16">
-          <a-col :span="24">
-            <a-form-item v-show="false">
-              <a-input v-show="false" v-model="filterData.pid"/>
+          <a-col :span="8">
+            <a-form-item :label="$t('sercurity.dict.index.form.dicName')" field="dicName">
+              <a-input v-model="filterData.dicName"/>
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item :label="$t('sercurity.org.index.form.name')" field="name">
-              <a-input v-model="filterData.name"/>
+            <a-form-item :label="$t('sercurity.dict.index.form.dicCode')" field="dicCode">
+              <a-input v-model="filterData.dicCode"/>
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item :label="$t('sercurity.org.index.form.code')" field="code">
-              <a-input v-model="filterData.code"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="8">
-            <a-form-item :label="$t('sercurity.org.index.form.createAt')" field="createAt">
+            <a-form-item :label="$t('sercurity.dict.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item :label="$t('sercurity.org.index.form.status')" field="status">
-              <a-select v-model="filterData.status" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of statusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
-              </a-select>
+            <a-form-item :label="$t('sercurity.dict.index.form.tenantCode')" field="tenantCode">
+              <a-input v-model="filterData.tenantCode"/>
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item :label="$t('sercurity.org.index.form.type')" field="type">
-              <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of typeOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-form-item :label="$t('sercurity.dict.index.form.enableStatus')" field="enableStatus">
+              <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
@@ -91,7 +84,7 @@
                   <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                 </div>
                 <div class="title">
-                  {{ item.title === '#' ? $t('sercurity.org.index.form.index') : $t(`${item.title}`) }}
+                  {{ item.title === '#' ? $t('sercurity.dict.index.form.index') : $t(`${item.title}`) }}
                 </div>
               </div>
             </div>
@@ -100,35 +93,36 @@
       </a-tooltip>
     </a-col>
   </a-row>
-  <a-table :bordered="{cell:true}" :columns="(cloneColumns as TableColumnData[])"
-           :data="renderData"
-           :loading="loading"
-           :pagination="pagination"
-           :stripe="true"
-           column-resizable
-           row-key="id"
-           @page-change="onPageChange">
+  <a-table
+      v-model:selectedKeys="selectedKeys"
+      :bordered="{cell:true}" :columns="(cloneColumns as TableColumnData[])"
+      :data="renderData"
+      :loading="loading"
+      :pagination="pagination"
+      :row-selection="rowSelection"
+      :stripe="true"
+      column-resizable
+      row-key="id"
+      @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('sercurity.org.index.form.index')" align="center" data-index="index" width="80">
+      <a-table-column :title="$t('sercurity.dict.index.form.index')" align="center" data-index="index" width="80">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.org.index.form.name')" data-index="name" ellipsis="true" tooltip="true" width="150"></a-table-column>
-      <a-table-column :title="$t('sercurity.org.index.form.code')" data-index="code" ellipsis="true" tooltip="true" width="150"></a-table-column>
-      <a-table-column :title="$t('sercurity.org.index.form.type')" data-index="type" width="120">
+      <a-table-column :title="$t('sercurity.dict.index.form.dicName')" data-index="dicName" ellipsis="true" tooltip="true" width="150"></a-table-column>
+      <a-table-column :title="$t('sercurity.dict.index.form.dicCode')" data-index="dicCode" ellipsis="true" tooltip="true" width="150"></a-table-column>
+      <a-table-column :title="$t('sercurity.dict.index.form.tenantCode')" data-index="tenantCode" width="120"></a-table-column>
+      <a-table-column :title="$t('sercurity.dict.index.form.seqNo')" data-index="seqNo" width="100"></a-table-column>
+      <a-table-column :title="$t('sercurity.dict.index.form.enableStatus')" data-index="enableStatus" width="120">
         <template #cell="{ record }">
-          {{ $t(`sercurity.org.index.form.type.${record.type}`) }}
+          {{ $t(`sercurity.dict.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.org.index.form.seqNo')" data-index="seqNo" width="100"></a-table-column>
-      <a-table-column :title="$t('sercurity.org.index.form.status')" data-index="status" width="120">
-        <template #cell="{ record }">
-          {{ $t(`sercurity.org.index.form.status.${record.status}`) }}
-        </template>
-      </a-table-column>
-      <a-table-column :title="$t('sercurity.org.index.form.createAt')" data-index="createAt" width="180"></a-table-column>
-      <a-table-column :title="$t('sercurity.org.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
+      <a-table-column :title="$t('sercurity.dict.index.form.createAt')" data-index="createAt" width="180"></a-table-column>
+      <a-table-column :title="$t('sercurity.dict.index.form.dicRemark')" :tooltip="{position:'right'}" data-index="dicRemark" ellipsis="true"
+                      width="200"></a-table-column>
+      <a-table-column :title="$t('sercurity.dict.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">
           <a-button v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">
@@ -146,13 +140,12 @@
       </a-table-column>
     </template>
   </a-table>
-  <OrgForm ref="orgFormRef"></OrgForm>
+  <DictForm ref="dictFormRef"></DictForm>
 </template>
 
 <script lang="ts" setup>
 /* 导入 */
 import {nextTick, reactive, ref, watch} from 'vue';
-import {useI18n} from 'vue-i18n';
 import useLoading from '@/hooks/loading';
 // 分页列表
 import {Pagination} from '@/types/global';
@@ -160,24 +153,22 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
-import {columns, statusOptions, typeOptions} from "@/views/security/org/searchTable";
+import {columns, enableStatusOptions} from "@/views/security/dict/searchTable";
 import {
-  deleteOrg as deleteList,
-  FilterOrgForm as FilterForm,
+  deleteDict as deleteList,
+  FilterDictForm as FilterForm,
   ListUrlParams,
+  pageQueryDict as pageQueryList,
   PageQueryFilter,
-  pageQueryOrg as pageQueryList,
   PageQueryRequest
 } from '@/api/sercurity_service'
 // 引用其他页面
-import OrgForm from "@/views/security/org/form.vue";
+import DictForm from "@/views/security/dict/form.vue";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
 const pageData = ref({current: 1, pageSize: 10, formState: 'edit'});
-const orgFormRef = ref(null);
-// 国际化
-const {t} = useI18n();
+const dictFormRef = ref(null);
 // 加载
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
@@ -188,7 +179,7 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', pid: '', name: '', code: '', type: '', status: '', createAt: []};
+  return {id: '', dicName: '', dicCode: '', enableStatus: '', tenantCode: '', createAt: []};
 };
 const filterData = ref(generateFilterData());
 
@@ -205,6 +196,7 @@ const fetchData = async (params: PageQueryRequest = {current: pageData.value.cur
     pagination.pageSize = basePagination.pageSize;
     pagination.total = data.total;
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err);
   } finally {
     setLoading(false);
@@ -235,18 +227,18 @@ const onPageChange = (current: number) => {
 
 /* 列表，按钮、操作列 */
 const addTable = () => {
-  if (orgFormRef.value) {
-    orgFormRef.value?.openForm({action: 'add', closeBack: reset});
+  if (dictFormRef.value) {
+    dictFormRef.value?.openForm({action: 'add', closeBack: reset});
   }
 };
 const viewTable = (id: string) => {
-  if (orgFormRef.value) {
-    orgFormRef.value?.openForm({action: 'view', 'id': id});
+  if (dictFormRef.value) {
+    dictFormRef.value?.openForm({action: 'view', 'id': id});
   }
 }
 const editTable = (id: string) => {
-  if (orgFormRef.value) {
-    orgFormRef.value?.openForm({action: 'edit', 'id': id, closeBack: reset});
+  if (dictFormRef.value) {
+    dictFormRef.value?.openForm({action: 'edit', 'id': id, closeBack: reset});
   }
 }
 const deleteTable = (id: string) => {

@@ -2,9 +2,23 @@ import axios from 'axios';
 import qs from 'query-string';
 
 export interface SelectOption {
-  value: string;
+  value: string | number | Record<string, any>;
   label: string;
+  isLeaf?: boolean; // 是否是叶子节点
+  disabled?: boolean; // 是否不可选
   children?: SelectOption[]
+}
+
+/* 页面传递参数 */
+export interface ListUrlParams {
+  action: 'add' | 'edit' | 'view';
+  isModal?: boolean;
+  pageSize?: 5 | 10 | 20 | 50 | 100;
+  id?: string;
+  params?: Record<string, any>;
+  closeBack?: any;
+  loadSuccessBack?: any;
+  loadFailBack?: any;
 }
 
 /* 过滤条件 */
@@ -79,6 +93,47 @@ export function pageQueryOrgUser(params: PageQueryRequest) {
   });
 }
 
+/* 角色分页查询 */
+export function pageQueryRole(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/role/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function pageQueryRoleApp(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/role/app/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function pageQueryRolePermission(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/role/permission/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function pageQueryRoleTreeNode(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/role/tree/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function pageQueryRoleUser(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/role/user/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 /* 返回结果 */
 export interface QueryResult {
   data: any;
@@ -109,8 +164,12 @@ export interface FilterOrgForm {
   createAt: string[];
 }
 
-export function queryOrgs() {
-  return axios.get<QueryOrgForm[]>('/api/security/org/query');
+export function queryOrgs(params: QueryOrgForm) {
+  return axios.get<QueryOrgForm[]>('/api/security/org/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
 }
 
 export function getOrg(id: string) {
@@ -149,6 +208,21 @@ export interface QueryUserForm {
   description: string;
 }
 
+export interface FilterUserForm {
+  id: string;
+  name: string;
+  sex: string;
+  orgId: string;
+  orgName: string;
+  type: string;
+  source: string;
+  createAt: string[]
+}
+
+export function queryUsers() {
+  return axios.get<QueryUserForm[]>('/api/security/user/query');
+}
+
 export function getUser(id: string) {
   return axios.get<QueryUserForm>(`/api/security/user/get/${id}`);
 }
@@ -172,8 +246,17 @@ export interface QueryDictForm {
   seqNo: number;
 }
 
-export function queryDicts(dicName: string) {
-  return axios.get<QueryDictForm>('/api/dict/query');
+export interface FilterDictForm {
+  id: string;
+  tenantCode: string;
+  dicName: string;
+  dicCode: string;
+  enableStatus: string;
+  createAt: string[];
+}
+
+export function queryDicts() {
+  return axios.get<QueryDictForm[]>('/api/dict/query');
 }
 
 export function getDict(id: string) {
@@ -199,6 +282,15 @@ export interface QueryDictItemForm {
   seqNo: number;
 }
 
+export interface FilterDictItemForm {
+  id: string;
+  dictId: string;
+  itemText: string;
+  itemCode: string;
+  enableStatus: string;
+  createAt: string[];
+}
+
 export function getDictItem(id: string) {
   return axios.get<QueryDictItemForm>(`/api/dict/item/get/${id}`);
 }
@@ -219,6 +311,17 @@ export interface QueryPermissionForm {
   description: string;
 }
 
+export interface FilterPermissionForm {
+  id: string;
+  name: string;
+  text: string;
+  createAt: string[]
+}
+
+export function queryPermissions() {
+  return axios.get<QueryPermissionForm[]>('/api/security/permission/query');
+}
+
 export function getPermission(id: string) {
   return axios.get<QueryPermissionForm>(`/api/security/permission/get/${id}`);
 }
@@ -231,7 +334,7 @@ export function deletePermission(id: string) {
   return axios.delete<QueryResult>(`/api/security/permission/isDelete/${id}`);
 }
 
-/* -----------------------------权限管理--------------------------- */
+/* -----------------------------用户组织关联表--------------------------- */
 export interface QueryOrgUserForm {
   id: string;
   userId: string;
@@ -239,6 +342,16 @@ export interface QueryOrgUserForm {
   orgId: string;
   orgName: string;
   defaultOrg: number;
+}
+
+export interface FilterOrgUserForm {
+  id: string;
+  userId: string;
+  userName: string;
+  orgId: string;
+  orgName: string;
+  defaultOrg: string;
+  createAt: string[]
 }
 
 export function getOrgUser(id: string) {
@@ -251,4 +364,186 @@ export function insertOrgUser(params: QueryOrgUserForm) {
 
 export function deleteOrgUser(id: string) {
   return axios.delete<QueryResult>(`/api/security/org/user/isDelete/${id}`);
+}
+
+/* -----------------------------角色管理--------------------------- */
+export interface QueryRoleForm {
+  id: string;
+  name: string;
+  code: string;
+  type: string;
+  enableStatus: number;
+  seqNo: number;
+  description: string;
+}
+
+export interface FilterRoleForm {
+  id: string;
+  name: string;
+  code: string;
+  type: string;
+  enableStatus: string;
+  createAt: string[]
+}
+
+export function getRole(id: string) {
+  return axios.get<QueryRoleForm>(`/api/security/role/get/${id}`);
+}
+
+export function createOrUpdateRole(params: QueryRoleForm) {
+  return axios.post<QueryResult>('/api/security/role/createOrUpdate', params);
+}
+
+export function deleteRole(id: string) {
+  return axios.delete<QueryResult>(`/api/security/role/isDelete/${id}`);
+}
+
+/* -----------------------------user app--------------------------- */
+export interface QueryRoleAppForm {
+  id: string;
+  roleId: string;
+  roleName: string;
+  appId: string;
+  appName: string;
+}
+
+export interface QueryAppForm {
+  id: string;
+  name: string;
+}
+
+export interface FilterRoleAppForm {
+  id: string;
+  roleId: string;
+  roleName: string;
+  appId: string;
+  appName: string;
+  createAt: string[]
+}
+
+export function queryApps() {
+  return axios.get<QueryAppForm[]>('/api/app/query');
+}
+
+export function getRoleApp(id: string) {
+  return axios.get<QueryRoleAppForm>(`/api/security/role/app/get/${id}`);
+}
+
+export function insertRoleApp(params: QueryRoleAppForm) {
+  return axios.post<QueryResult>('/api/security/role/app/insert', params);
+}
+
+export function deleteRoleApp(id: string) {
+  return axios.delete<QueryResult>(`/api/security/role/app/isDelete/${id}`);
+}
+
+/* -----------------------------role permission--------------------------- */
+export interface QueryRolePermissionForm {
+  id: string;
+  roleId: string;
+  roleName: string;
+  permissionId: string;
+  permissionName: string;
+}
+
+export interface FilterRolePermissionForm {
+  id: string;
+  roleId: string;
+  roleName: string;
+  permissionId: string;
+  permissionName: string;
+  createAt: string[]
+}
+
+export function getRolePermission(id: string) {
+  return axios.get<QueryRolePermissionForm>(`/api/security/role/permission/get/${id}`);
+}
+
+export function insertRolePermission(params: QueryRolePermissionForm) {
+  return axios.post<QueryResult>('/api/security/role/permission/insert', params);
+}
+
+export function deleteRolePermission(id: string) {
+  return axios.delete<QueryResult>(`/api/security/role/permission/isDelete/${id}`);
+}
+
+/* -----------------------------role tree node--------------------------- */
+export interface QueryRoleTreeNodeForm {
+  id: string;
+  roleId: string;
+  roleName: string;
+  treeNodeId: string;
+  treeNodeText: string;
+  title: string;
+}
+
+export interface FilterRoleTreeNodeForm {
+  id: string;
+  roleId: string;
+  roleName: string;
+  treeNodeId: string;
+  treeNodeText: string;
+  title: string;
+  createAt: string[]
+}
+
+export interface QueryTreeNodeForm {
+  id: string;
+  treeEntity: string;
+  treeId: string;
+  parent: string;
+  type: string;
+  title: string;
+  iconType: string;
+  extendEntity: string;
+  extendId: string;
+  meta: string;
+  flag: string;
+  description: string;
+}
+
+export function queryTreeNodes() {
+  return axios.get<QueryResult[]>('/api/treeNode/query');
+}
+
+export function getRoleTreeNode(id: string) {
+  return axios.get<QueryRoleTreeNodeForm>(`/api/security/role/tree/get/${id}`);
+}
+
+export function insertRoleTreeNode(params: QueryRoleTreeNodeForm) {
+  return axios.post<QueryResult>('/api/security/role/tree/insert', params);
+}
+
+export function deleteRoleTreeNode(id: string) {
+  return axios.delete<QueryResult>(`/api/security/role/tree/isDelete/${id}`);
+}
+
+/* -----------------------------role user--------------------------- */
+export interface QueryRoleUserForm {
+  id: string;
+  roleId: string;
+  roleName: string;
+  userId: string;
+  userName: string;
+}
+
+export interface FilterRoleUserForm {
+  id: string;
+  roleId: string;
+  roleName: string;
+  userId: string;
+  userName: string;
+  createAt: string[]
+}
+
+export function getRoleUser(id: string) {
+  return axios.get<QueryRoleUserForm>(`/api/security/role/user/get/${id}`);
+}
+
+export function insertRoleUser(params: QueryRoleUserForm) {
+  return axios.post<QueryResult>('/api/security/role/user/insert', params);
+}
+
+export function deleteRoleUser(id: string) {
+  return axios.delete<QueryResult>(`/api/security/role/user/isDelete/${id}`);
 }

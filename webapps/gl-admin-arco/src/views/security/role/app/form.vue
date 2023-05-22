@@ -1,35 +1,26 @@
 <template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      :cancel-text="$t('sercurity.orgUser.index.model.cancel.text')"
+      :cancel-text="$t('sercurity.roleApp.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.orgUser.index.model.ok.text')"
-      :title="$t(`sercurity.orgUser.index.model.title.${pageData.formState}`)"
-      width="600px"
+      :ok-text="$t('sercurity.roleApp.index.model.ok.text')"
+      :title="$t(`sercurity.roleApp.index.model.title.${pageData.formState}`)"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
     <a-form ref="validateForm" :model="formData">
       <a-form-item v-show="false">
         <a-input v-show="false" v-model="formData.id"/>
-        <a-input v-show="false" v-model="formData.userId"/>
-        <a-input v-show="false" v-model="formData.userName"/>
-        <a-input v-show="false" v-model="formData.orgName"/>
+        <a-input v-show="false" v-model="formData.roleId"/>
+        <a-input v-show="false" v-model="formData.roleName"/>
+        <a-input v-show="false" v-model="formData.appName"/>
       </a-form-item>
       <a-form-item
-          :label="$t('sercurity.orgUser.index.form.orgName')"
+          :label="$t('sercurity.roleApp.index.form.appName')"
           :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
-          field="orgId">
-        <a-cascader v-if="pageData.button" v-model="formData.orgId" :options="orgSelectOptions" allow-clear allow-search check-strictly/>
-        <span v-else>{{ formData.orgName }}</span>
-      </a-form-item>
-      <a-form-item
-          :label="$t('sercurity.orgUser.index.form.defaultOrg')"
-          :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
-          field="defaultOrg">
-        <a-select v-if="pageData.button" v-model="formData.defaultOrg">
-          <a-option v-for="item of defaultOrgOptions" :key="item.value" :disabled="true" :label="$t(`${item.label}`)" :value="item.value"/>
-        </a-select>
-        <span v-else>{{ $t(`sercurity.orgUser.index.form.defaultOrg.${formData.defaultOrg}`) }}</span>
+          field="appId">
+        <a-select v-if="pageData.button" v-model="formData.appId" :field-names="{value: 'id', label: 'name'}" :options="selectOptions"
+                  allow-clear allow-search/>
+        <span v-else>{{ formData.appName }}</span>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -38,54 +29,34 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import {
-  getOrgUser as getForm,
-  insertOrgUser as createOrUpdateForm,
+  getRoleApp as getForm,
+  insertRoleApp as createOrUpdateForm,
   ListUrlParams,
-  QueryOrgForm,
-  queryOrgs,
-  QueryOrgUserForm as QueryForm,
-  SelectOption
+  QueryAppForm as QuerySelectForm,
+  queryApps as querySelectOptions,
+  QueryRoleAppForm as QueryForm
 } from '@/api/sercurity_service'
-import {defaultOrgOptions} from "@/views/security/user/org/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 
 const pageData = ref({formState: 'add', button: true});
 const validateForm = ref<FormInstance>();
-const orgSelectOptions = ref<SelectOption[]>([]);
+const selectOptions = ref<QuerySelectForm[]>([]);
 // 显示隐藏
 const visibleModel = ref(false);
 // 表单数据
-const generateFormData = () => {
-  return {id: '', userId: '', userName: '', orgId: '', orgName: '', defaultOrg: 0};
+const generateFormData = (): QueryForm => {
+  return {id: '', roleId: '', roleName: '', appId: '', appName: ''};
 }
 const formData = ref(generateFormData());
 // 页面响应
 let okSuccessBack: any;
 
-const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[]): SelectOption[] => {
-  // eslint-disable-next-line no-restricted-syntax
-  for (const data of defaultData) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of totalData) {
-      if (item.pid === data.value) {
-        data.children.push({value: item.id, label: item.name, children: []});
-      }
-    }
-    if (data.children.length > 0) {
-      buildOrgOptions(data.children, totalData);
-    } else {
-      delete data.children;
-    }
-  }
-
-  return defaultData;
-}
-const getOrgOptions = async (params: QueryOrgForm = {status: 1}) => {
+const getSelectOptions = async () => {
   try {
-    const {data} = await queryOrgs(params);
-    orgSelectOptions.value = buildOrgOptions([{value: '0', label: '根目录', children: []}], data);
-    orgSelectOptions.value = orgSelectOptions.value[0].children;
+    const {data} = await querySelectOptions();
+    selectOptions.value = data || [];
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err);
   }
 }
@@ -139,13 +110,13 @@ const resetValidate = async () => {
 
 const openForm = (urlParams: ListUrlParams) => {
   // 组织加载
-  getOrgOptions();
+  getSelectOptions();
   // 全局
   pageData.value.formState = urlParams.action;
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
   formData.value = generateFormData();
-  formData.value.userId = urlParams.params?.userId || '';
-  formData.value.userName = urlParams.params?.userName || '';
+  formData.value.roleId = urlParams.params?.roleId || '';
+  formData.value.roleName = urlParams.params?.roleName || '';
   // 重置验证
   resetValidate();
   // 特色
