@@ -32,9 +32,9 @@ import {getCurrentInstance, inject, onMounted, ref, watch} from 'vue'
 import mixins from "../mixins";
 import actionScriptExecutor from "../../m/actions/ActionScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
-import PageProvideProxy from "../PageProvideProxy";
+import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
 
-const pageProvideProxy: PageProvideProxy = inject('pageProvideProxy')!
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const props = defineProps({
   ...mixins.props

@@ -1,25 +1,28 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
 
-export default class ConformBlockHandler implements IBlockHandler {
+export default class ConfirmBlockHandler implements IBlockHandler {
     parseToScript(props: any): ParseResult {
 
         return new ParseResult(
             `
+            let varName = '${props.varName}' || 'confirm'
             let vars = {};
             $gl.$modal.open({
                 width:'15em',
                 title: "${props.title}",
                 content: "${props.content}",
                 onOk: ()=>{
-                  vars.${props.varName} = true
+                  vars[varName] = true;
+                  #{onOk}
                 },
                 onCancel: ()=>{
-                  vars.${props.varName} = false
+                  vars[varName] = false;
+                  #{onCancel}
                 }
             })
             `
-        );
+        ).setBlockName('ConfirmBlock');
     }
 }
 

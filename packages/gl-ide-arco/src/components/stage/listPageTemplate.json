@@ -2,7 +2,9 @@
   "componentName": "GlPage",
   "id": "",
   "title": "页面",
-  "props": {},
+  "props": {
+    "pageMargin":"0"
+  },
   "slots": {},
   "children": [
     {
@@ -16,53 +18,51 @@
       "id": "",
       "props": {
         "entityName": "platform_demo_entity",
-        "query": {
-          "items": [
-            {
-              "id": "name",
-              "name": "名称",
-              "cop": "contains",
-              "isAdvanceQuery": false,
-              "colspan": 6,
-              "component": {
-                "componentName": "AInput",
-                "props": {}
-              }
-            },
-            {
-              "id": "code",
-              "name": "编码",
-              "isAdvanceQuery": false,
-              "colspan": 6,
-              "component": {
-                "componentName": "AInput",
-                "props": {}
-              }
-            },
-            {
-              "id": "delStatus",
-              "name": "状态",
-              "isAdvanceQuery": false,
-              "colspan": 6,
-              "component": {
-                "componentName": "ASelect",
-                "props": {
-                  "options": [
-                    {
-                      "value": 1,
-                      "label": "已启用"
-                    },
-                    {
-                      "value": 0,
-                      "label": "已停用"
-                    }
-                  ],
-                  "allowClear": true
-                }
+        "query": [
+          {
+            "id": "name",
+            "name": "名称",
+            "cop": "contains",
+            "isAdvanceQuery": false,
+            "colspan": 6,
+            "component": {
+              "componentName": "AInput",
+              "props": {}
+            }
+          },
+          {
+            "id": "code",
+            "name": "编码",
+            "isAdvanceQuery": false,
+            "colspan": 6,
+            "component": {
+              "componentName": "AInput",
+              "props": {}
+            }
+          },
+          {
+            "id": "delStatus",
+            "name": "状态",
+            "isAdvanceQuery": false,
+            "colspan": 6,
+            "component": {
+              "componentName": "ASelect",
+              "props": {
+                "options": [
+                  {
+                    "value": 1,
+                    "label": "已启用"
+                  },
+                  {
+                    "value": 0,
+                    "label": "已停用"
+                  }
+                ],
+                "allowClear": true
               }
             }
-          ]
-        },
+          }
+        ],
         "toolbar": {
           "leftColSpan": 12,
           "centerColSpan": 0,

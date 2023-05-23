@@ -4,7 +4,7 @@
     <span style="cursor: pointer" @click="()=>{visible=true}">
           <GlIconfont :="modelValue.props"></GlIconfont>
     </span>
-    <span v-if="modelValue.props&&modelValue.props.type" style="cursor: pointer" @click="()=>{modelValue.props.type=''}">
+    <span v-if="modelValue.props&&modelValue.props.type" style="cursor: pointer" @click="()=>{modelValue.props.type=''}" title="点击删除该图标">
           删除图标
     </span>
     <span v-else style="cursor: pointer" @click="()=>{visible=true}">

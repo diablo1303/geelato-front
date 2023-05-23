@@ -17,13 +17,14 @@ class ComponentStoreFactory {
 
     /**
      * 从store工厂中获取componentStore,便于在同一运行环境（页面）下，构建多个编辑器
-     * @param id
+     * @param storeId
      */
-    getComponentStore(id: string) {
-        if (!this.componentStoreMap[id]) {
-            this.componentStoreMap[id] = defineStore(id, {
+    getComponentStore(storeId: string) {
+        if (!this.componentStoreMap[storeId]) {
+            this.componentStoreMap[storeId] = defineStore(storeId, {
                 state: () => {
                     return {
+                        storeId: storeId,
                         currentSelectedComponentId: '',
                         currentSelectedComponentName: '',
                         // 当前组件元数据
@@ -82,7 +83,7 @@ class ComponentStoreFactory {
                      * 从组件实体树中删除组件
                      * @param componentId
                      */
-                    deleteComponentInstById(componentId: String) {
+                    deleteComponentInstById(componentId: String, fromPageId: string) {
                         if (!componentId) {
                             return
                         }
@@ -95,7 +96,7 @@ class ComponentStoreFactory {
                                 // console.log('compare node.id,componentId', node.id, componentId, node.id === componentId)
                                 if (node.id === componentId) {
                                     nodes.splice(Number.parseInt(index), 1)
-                                    thisProxy.clearCurrentSelectedComponent()
+                                    thisProxy.clearCurrentSelectedComponent(fromPageId)
                                     // 如果nodes下已无组件，则加入占位符
                                     if (nodes.length === 0) {
                                         nodes.push(
@@ -120,8 +121,8 @@ class ComponentStoreFactory {
                     /**
                      *  删除当前已选中的组件
                      */
-                    deleteCurrentSelectedComponentInst() {
-                        this.deleteComponentInstById(this.currentSelectedComponentId)
+                    deleteCurrentSelectedComponentInst(fromPageId: string) {
+                        this.deleteComponentInstById(this.currentSelectedComponentId, fromPageId)
                     },
 
                     /**
@@ -136,13 +137,13 @@ class ComponentStoreFactory {
                     /**
                      *  选中上一级组件
                      */
-                    selectParentComponent() {
+                    selectParentComponent(fromPageId: string) {
                         if (!this.currentSelectedComponentId) {
                             return
                         }
                         const parentComponent = this.findParentComponentFromTreeById(this.currentSelectedComponentId)
-                        // console.log('selectParentComponent(),found:', parentComponent)
-                        this.setCurrentSelectedComponentById(parentComponent.id)
+                        // console.log('storeId:', storeId, 'selectParentComponent(),found:', parentComponent)
+                        this.setCurrentSelectedComponentById(parentComponent.id, fromPageId)
                     },
 
                     /**
@@ -190,8 +191,8 @@ class ComponentStoreFactory {
                         return findNodeFromTree(componentId, this.currentComponentTree) || {}
                     },
 
-                    setCurrentSelectedComponentId(componentId: string) {
-                        const payload = {old: this.currentSelectedComponentId, new: componentId}
+                    setCurrentSelectedComponentId(componentId: string, fromPageId: string) {
+                        const payload = {old: this.currentSelectedComponentId, new: componentId, fromPageId}
                         this.currentSelectedComponentId = componentId;
                         emitter.emit('setCurrentSelectedComponentId', payload)
                     },
@@ -209,18 +210,16 @@ class ComponentStoreFactory {
                      * 需在currentComponentTree已push了相应的组件之后才有效，否则找不到对应的组件实例
                      * @param value
                      */
-                    setCurrentSelectedComponentById(value: string) {
-                        console.log('setCurrentSelectedComponentById > value:', value)
-                        this.setCurrentSelectedComponentId(value)
-
+                    setCurrentSelectedComponentById(value: string, fromPageId: string) {
+                        // console.log('storeId:', storeId, 'setCurrentSelectedComponentById > value:', value)
+                        this.setCurrentSelectedComponentId(value, fromPageId)
                         if (this.currentSelectedComponentId) {
                             const foundComponent = this.findComponentFromTreeById(this.currentSelectedComponentId)
-                            console.log('findComponentFromTreeById', this.currentSelectedComponentId, 'and get', foundComponent, ',currentComponentTree:', this.currentComponentTree)
+                            console.log('storeId:', storeId, 'findComponentFromTreeById', this.currentSelectedComponentId, 'and get', foundComponent, ',currentComponentTree:', this.currentComponentTree)
                             this.currentSelectedComponentInstance = foundComponent
                             if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
                                 // @ts-ignore  TODO 该操作会导致GL-X内的组件拖拽时，一次可拖一次禁用交替出现??
                                 this.currentSelectedComponentName = this.currentSelectedComponentInstance.componentName
-                                // TODO 对于Gl-Col内置的组件，查询为null
                                 this.currentSelectedComponentMeta = componentStoreFactory.componentMetaMap[this.currentSelectedComponentName]
                                 // this.currentSelectedComponentMeta.props = foundComponent.props
                             }
@@ -234,15 +233,15 @@ class ComponentStoreFactory {
                             this.currentSelectedComponentInstance = new ComponentInstance()
                         }
                     },
-                    setCurrentSelectedComponentByIdFromItems(id: string, insts: Array<ComponentInstance>) {
-                        console.log('setCurrentSelectedComponentByIdFromItems > id:', id)
-                        this.setCurrentSelectedComponentId(id)
+                    setCurrentSelectedComponentByIdFromItems(id: string, insts: Array<ComponentInstance>, formPageId: string) {
+                        console.log('storeId:', storeId, 'setCurrentSelectedComponentByIdFromItems > id:', id)
+                        this.setCurrentSelectedComponentId(id, formPageId)
 
                         if (this.currentSelectedComponentId && insts && insts.length > 0) {
                             const foundComponent = insts.find((inst) => {
                                 return inst.id === id
                             })
-                            console.log('setCurrentSelectedComponentByIdFromItems', this.currentSelectedComponentId, 'and get', foundComponent, ',insts:', insts)
+                            console.log('storeId:', storeId, 'setCurrentSelectedComponentByIdFromItems', this.currentSelectedComponentId, 'and get', foundComponent, ',insts:', insts)
                             this.currentSelectedComponentInstance = foundComponent!
                             if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
                                 this.currentSelectedComponentName = this.currentSelectedComponentInstance.componentName
@@ -254,17 +253,17 @@ class ComponentStoreFactory {
                             this.currentSelectedComponentInstance = new ComponentInstance()
                         }
                     },
-                    clearCurrentSelectedComponent() {
-                        this.setCurrentSelectedComponentById('')
+                    clearCurrentSelectedComponent(fromPageId: string) {
+                        this.setCurrentSelectedComponentById('', fromPageId)
                     }
                 }
             })
         }
-        return this.componentStoreMap[id]
+        return this.componentStoreMap[storeId]
     }
 
-    useComponentStore(id: string) {
-        return this.getComponentStore(id)()
+    useComponentStore(storeId: string) {
+        return this.getComponentStore(storeId)()
     }
 }
 

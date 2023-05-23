@@ -7,9 +7,9 @@ export default {
 <script setup lang="ts">
 
 import {computed, inject, onUpdated, ref} from "vue";
-import {entityApi, EntityReader, EntityReaderParam, FieldMeta,PageProvideProxy} from "@geelato/gl-ui";
+import {entityApi, EntityReader, EntityReaderParam, FieldMeta, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 
-const pageProvideProxy: PageProvideProxy = inject('pageProvideProxy')!
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 /**
  *  需各loadUserDataItems方法中加载的数据列保持一致

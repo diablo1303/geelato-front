@@ -1,28 +1,15 @@
-<template>
-  <div class="gl-ide-arco-stage-main" v-if="componentStore.currentComponentTree.length>0"
-       :id="componentStore.currentComponentTree[0].id"
-       style="padding-top: 2em">
-    <gl-x :glComponentInst="componentStore.currentComponentTree[0]" :componentStoreId="componentStoreId"></gl-x>
-    <gl-modal :visible="codeViewerVisible"
-              title="生成的配置代码预览"
-              :fullscreen="true"
-              @ok="codeViewerVisible=false"
-              @cancel="codeViewerVisible=false">
-      <VueJsonPretty :data="componentStore.currentComponentTree[0]"></VueJsonPretty>
-    </gl-modal>
-  </div>
-</template>
 <script lang="ts">
 export default {
   name: "GlIdeBlockPage"
 }
 </script>
-<script setup lang="ts">
-import {PropType, ref, watch} from 'vue'
+<script lang="ts" setup>
+import GlIdeStageBasePage from "./BasePage.vue";
+import {useGlobal, utils} from "@geelato/gl-ui";
+import {PropType, watch} from "vue";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
-import {utils, useGlobal} from "@geelato/gl-ui";
-import VueJsonPretty from "vue-json-pretty";
+
 
 const emits = defineEmits(['update'])
 const props = defineProps({
@@ -34,7 +21,6 @@ const props = defineProps({
 const global = useGlobal()
 const componentStoreId = 'useComponentBlockStore'
 const componentStore = componentStoreFactory.useComponentStore(componentStoreId)
-const codeViewerVisible = ref(false)
 
 /**
  *  初始的组件树
@@ -42,9 +28,13 @@ const codeViewerVisible = ref(false)
 let rootItem = props.glComponentInst
 if (!rootItem || !rootItem.id) {
   rootItem = {
-    componentName: 'GlBlockRoot',
-    id: utils.gid('BR'),
-    props: {},
+    componentName: 'GlPage',
+    id: utils.gid('br'),
+    props: {
+      pageTitle: "指令",
+      pageMargin: "0",
+      pagePadding: "0"
+    },
     slots: {},
     children: [{
       componentName: 'GlDndPlaceholder',
@@ -52,9 +42,11 @@ if (!rootItem || !rootItem.id) {
       props: {},
       slots: {},
       children: [],
-      actions: []
+      actions: [],
+      style: {}
     }],
-    actions: []
+    actions: [],
+    style: {}
   }
 }
 componentStore.$reset()
@@ -62,17 +54,18 @@ componentStore.currentComponentTree.length = 0
 componentStore.currentComponentTree.push(rootItem)
 componentStore.setCurrentSelectedComponentById(rootItem.id)
 
-watch(() => {
-  return componentStore.currentComponentTree
-}, () => {
-  console.log('update mv:', componentStore.currentComponentTree[0])
-  emits("update", componentStore.currentComponentTree[0])
-}, {deep: true})
+// watch(() => {
+//   return componentStore.currentComponentTree
+// }, () => {
+//   console.log('update mv:', componentStore.currentComponentTree[0])
+//   emits("update", componentStore.currentComponentTree[0])
+// }, {deep: true})
+
 </script>
 
+<template>
+  <GlIdeStageBasePage :key="utils.gid('p')" :componentStoreId="componentStoreId"
+                      :enableToolbar="false"></GlIdeStageBasePage>
+</template>
 <style>
-/*.gl-ide-arco-stage-main {*/
-/*  padding: 10px 10px 2em 10px;*/
-/*  overflow: hidden;*/
-/*}*/
 </style>

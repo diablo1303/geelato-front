@@ -48,13 +48,12 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {emitter, mixins} from "@geelato/gl-ui";
+import {emitter, mixins, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 import {getCurrentInstance, inject, onMounted, PropType} from "vue";
 import {Action} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
-import GlInsts from "./GlInsts.vue";
-import {PageProvideProxy} from "@geelato/gl-ui";
-const pageProvideProxy: PageProvideProxy = inject('pageProvideProxy')!
+
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 
 const props = defineProps({
@@ -73,7 +72,11 @@ const emits = defineEmits(['onComponentClick', 'onComponentMounted'])
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
 
 const onClick = (...args: any[]) => {
-  console.log('gl-component-recursion > onClick() > arguments:', args, props.glComponentInst)
+  console.log('gl-component-dnd > onClick() > arguments:', args, props.glComponentInst)
+  // 特殊处理，点击组件GlDndPlaceholder，不做响应
+  // if (props.glComponentInst.componentName === 'GlDndPlaceholder') {
+  //   return
+  // }
   // 对于一些组件，点击事件可能是优先触发了组件内的点击事件，第一个参数不一定是event，这里对所有参数做统一处理
   for (let i in args) {
     let event = args[i]
@@ -81,7 +84,8 @@ const onClick = (...args: any[]) => {
       event.stopPropagation()
     }
   }
-  componentStore.setCurrentSelectedComponentById(props.glComponentInst.id || '')
+  const fromPageId = pageProvideProxy?.pageInst.id || props.glComponentInst.id
+  componentStore.setCurrentSelectedComponentById(props.glComponentInst.id || '', fromPageId)
   emitter.emit('onComponentClick', {arguments: args, glComponentInst: props.glComponentInst})
   // 组件配置的动态绑定事件，运行时Runtime
   if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {

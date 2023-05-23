@@ -7,6 +7,17 @@ export default {
     "useBy": ["freePage"],
     "alias": "table",
     "properties": [{
+        "name": "tableTitle",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "标题",
+        "setterComponentName": "AInput"
+    }, {
         "name": "entityName",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -15,9 +26,9 @@ export default {
         "title": "绑定数据源",
         "setterComponentName": "GlEntitySelect",
         "show": true,
-        "expanded": true
+        "expanded": true,
+        "enableValueExpress": false
     }, {
-        "expanded": false,
         "name": "query",
         "setterComponentProps": {},
         "setterComponentVModelName": "",
@@ -26,104 +37,84 @@ export default {
         "title": "查询",
         "_showSub": false,
         "properties": [{
-            "expanded": true,
+            "name": "name",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "setterComponentName": "GlFieldSelect",
+            "title": "绑定字段",
+            "show": true,
+            "expanded": true
+        }, {
             "name": "title",
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
             "group": "base",
             "type": "props",
-            "title": "查询标题",
-            "setterComponentName": "AInput",
-            "show": true
-        }, {
-            "name": "items",
-            "setterComponentProps": {},
-            "setterComponentVModelName": "",
-            "group": "base",
-            "type": "props",
-            "title": "字段",
-            "_showSub": false,
-            "properties": [{
-                "name": "name",
-                "setterComponentProps": {},
-                "setterComponentVModelName": "modelValue",
-                "group": "base",
-                "type": "props",
-                "setterComponentName": "GlFieldSelect",
-                "title": "绑定字段",
-                "show": true,
-                "expanded": true
-            }, {
-                "name": "title",
-                "setterComponentProps": {},
-                "setterComponentVModelName": "modelValue",
-                "group": "base",
-                "type": "props",
-                "show": true,
-                "expanded": true,
-                "title": "标题",
-                "setterComponentName": "AInput"
-            }, {
-                "name": "cop",
-                "setterComponentProps": {
-                    "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
-                    "options": [{"label": "等于", "value": "eq"}, {"label": "不等于", "value": "neq"}, {
-                        "label": "小于",
-                        "value": "lt"
-                    }, {"label": "小于等于", "value": "lte"}, {"label": "大于", "value": "gt"}, {
-                        "label": "大于等于",
-                        "value": "gte"
-                    }, {"label": "开头包括", "value": "sw"}, {"label": "结尾包括", "value": "ew"}, {
-                        "label": "包括",
-                        "value": "contains"
-                    }],
-                    "buttonStyle": "solid"
-                },
-                "setterComponentVModelName": "modelValue",
-                "group": "base",
-                "type": "props",
-                "title": "操作",
-                "setterComponentName": "ASelect",
-                "show": true,
-                "expanded": true
-            }, {
-                "name": "colspan",
-                "setterComponentProps": {},
-                "setterComponentVModelName": "modelValue",
-                "group": "base",
-                "type": "props",
-                "setterComponentName": "AInputNumber",
-                "title": "列间距",
-                "show": true,
-                "expanded": true
-            }, {
-                "name": "isAdvanceQuery",
-                "setterComponentProps": {},
-                "setterComponentVModelName": "modelValue",
-                "group": "base",
-                "type": "props",
-                "title": "高级查询",
-                "expanded": true,
-                "setterComponentName": "ASwitch",
-                "show": true
-            }, {
-                "name": "component",
-                "setterComponentProps": {},
-                "setterComponentVModelName": "modelValue",
-                "group": "base",
-                "type": "props",
-                "setterComponentName": "GlComponentSelect",
-                "title": "选择组件",
-                "show": true,
-                "expanded": true
-            }],
-            "setterComponentName": "GlObjectArraySetter",
             "show": true,
             "expanded": true,
-            "titleField": "title"
+            "title": "标题",
+            "setterComponentName": "AInput"
+        }, {
+            "name": "cop",
+            "setterComponentProps": {
+                "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
+                "options": [{"label": "等于", "value": "eq"}, {"label": "不等于", "value": "neq"}, {
+                    "label": "小于",
+                    "value": "lt"
+                }, {"label": "小于等于", "value": "lte"}, {"label": "大于", "value": "gt"}, {
+                    "label": "大于等于",
+                    "value": "gte"
+                }, {"label": "开头包括", "value": "sw"}, {"label": "结尾包括", "value": "ew"}, {
+                    "label": "包括",
+                    "value": "contains"
+                }],
+                "buttonStyle": "solid"
+            },
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "title": "操作",
+            "setterComponentName": "ASelect",
+            "show": true,
+            "expanded": true
+        }, {
+            "name": "colspan",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "setterComponentName": "AInputNumber",
+            "title": "列间距",
+            "show": true,
+            "expanded": true
+        }, {
+            "name": "isAdvanceQuery",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "title": "高级查询",
+            "expanded": true,
+            "setterComponentName": "ASwitch",
+            "show": true
+        }, {
+            "name": "component",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "setterComponentName": "GlComponentSelect",
+            "title": "选择组件",
+            "show": true,
+            "expanded": true
         }],
-        "setterComponentName": "GlSimpleObjectSetter",
-        "show": true
+        "setterComponentName": "GlObjectArraySetter",
+        "show": true,
+        "expanded": true,
+        "titleField": "title",
+        "enableValueExpress": false
     }, {
         "name": "toolbar",
         "setterComponentProps": {},
@@ -132,7 +123,7 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "_showSub": true,
+        "_showSub": false,
         "properties": [{
             "name": "leftColSpan",
             "setterComponentProps": {"defaultValue": 12},
@@ -141,7 +132,7 @@ export default {
             "type": "props",
             "show": true,
             "expanded": true,
-            "title": "左边栅格数",
+            "title": "左栅格数",
             "setterComponentName": "AInputNumber",
             "placeholder": "12",
             "description": "一行按24栅格划分，占的栅格数"
@@ -153,7 +144,7 @@ export default {
             "type": "props",
             "show": true,
             "expanded": true,
-            "title": "中间栅格数",
+            "title": "中间栅格",
             "setterComponentName": "AInputNumber",
             "description": "一行按24栅格划分，占的栅格数"
         }, {
@@ -164,7 +155,7 @@ export default {
             "type": "props",
             "show": true,
             "expanded": true,
-            "title": "右边栅格数",
+            "title": "右栅格数",
             "placeholder": "12",
             "setterComponentName": "AInputNumber",
             "description": "一行按24栅格划分，占的栅格数"
@@ -210,7 +201,8 @@ export default {
         }],
         "title": "工具条",
         "setterComponentName": "GlSimpleObjectSetter",
-        "titleField": ""
+        "titleField": "",
+        "enableValueExpress": false
     }, {
         "name": "columns",
         "setterComponentProps": {},
@@ -268,7 +260,7 @@ export default {
             "title": "插槽名称",
             "setterComponentName": "AInput",
             "placeholder": "配合显示脚本使用",
-            "description": "配合显示脚本使用，可任意取英文名称（除了“#”特指操作列），不重复即可",
+            "description": "配合显示脚本使用，可任意取英文名称（除了“#”特指操作列），不重复即可"
         }, {
             "name": "xRenderScript",
             "setterComponentProps": {},
@@ -280,10 +272,59 @@ export default {
             "description": "对字段值进行处理，示例：\"$ctx.record.enableStatus === 1 ? '已启用' : '未启用'\"。当插槽名称为“#”时，特指操作列，此时本显示脚本的内容无效。",
             "title": "显示脚本",
             "setterComponentName": "AInput"
+        }, {
+            "name": "sortable",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "",
+            "_showSub": true,
+            "properties": [{
+                "name": "sortDirections",
+                "group": "base",
+                "type": "props",
+                "enableValueExpress": false,
+                "show": true,
+                "expanded": true,
+                "setterComponentProps": {
+                    "options": [{
+                        "label": "升序",
+                        "value": "ascend",
+                        "__tIT53h6CwaIY5gI5Tg": "ascend"
+                    }, {"label": "降序", "value": "descend", "__tIT53h6CwaIY5gI5Tg": "descend"}], "multiple": true
+                },
+                "setterComponentVModelName": "modelValue",
+                "title": "支持的排序",
+                "setterComponentName": "ASelect"
+            }, {
+                "name": "sortOrder",
+                "group": "base",
+                "type": "props",
+                "enableValueExpress": false,
+                "show": true,
+                "expanded": true,
+                "setterComponentProps": {
+                    "options": [{
+                        "label": "升序",
+                        "value": "ascend",
+                        "__ZdVwo6BfhrvLj0GlaI": "ascend"
+                    }, {"label": "降序", "value": "descend", "__ZdVwo6BfhrvLj0GlaI": "descend"}, {"label": "无"}],
+                    "type": "radio"
+                },
+                "setterComponentVModelName": "modelValue",
+                "title": "排序方向",
+                "setterComponentName": "ARadioGroup"
+            }],
+            "setterComponentName": "GlSimpleObjectSetter",
+            "title": "排序"
         }],
         "setterComponentName": "GlObjectArraySetter",
         "title": "表格列",
-        "titleField": "title"
+        "titleField": "title",
+        "enableValueExpress": false
     }, {
         "name": "columnActions",
         "group": "base",
@@ -292,10 +333,11 @@ export default {
         "expanded": true,
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
-        "_showSub": true,
+        "_showSub": false,
         "properties": [],
         "setterComponentName": "GlArrayComponentSetter",
-        "title": "列操作"
+        "title": "列操作",
+        "enableValueExpress": false
     }],
     "actions": []
 }

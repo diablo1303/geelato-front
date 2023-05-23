@@ -4,25 +4,28 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {computed, nextTick, PropType, ref, unref} from 'vue'
+import {computed, inject, nextTick, PropType, ref, unref} from 'vue'
 import {mixins, utils} from "@geelato/gl-ui";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
+import {PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const emits = defineEmits(['update:items'])
 
 const props = defineProps({
-  // glComponentInst:Object as PropType<ComponentInstance>,
-  // items: Array as PropType<Array<ComponentInstance>>,
   componentStoreId: {
-    type: String,
-    default() {
-      return 'useComponentStore'
-    }
+    type: String
   },
   ...mixins.props
 })
-const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
+
+const componentStoreId = props.componentStoreId || inject('componentStoreId')
+if (!componentStoreId) {
+  console.error('组件GlInsts未设置componentStoreId')
+}
+// @ts-ignore
+const componentStore = componentStoreFactory.useComponentStore(componentStoreId)
 
 const freshFlag = ref(true)
 
@@ -53,18 +56,18 @@ const moveCard = (dragIndex: number, hoverIndex: number, dragItemId: string, dro
     tryRemoveDndPlaceholder(dropItemParentComponent.children)
 
     componentStore.currentDragComponentId = ''
-    componentStore.setCurrentSelectedComponentByIdFromItems(dragItem.id, dropItemParentComponent.children)
+    componentStore.setCurrentSelectedComponentByIdFromItems(dragItem.id, dropItemParentComponent.children, pageProvideProxy.pageInst.id)
     refresh()
   }
 }
 
 const addItem = (hoverIndex: number, item: ComponentInstance) => {
-  // console.log('addItem', hoverIndex, item)
+  console.log('GlInsts > addItem() > hoverIndex:', hoverIndex, 'item:', item)
   item.id = utils.gid(componentStore.getAlias(item.componentName) || 'id')
   props.glComponentInst.children!.splice(hoverIndex, 0, item)
   tryRemoveDndPlaceholder(props.glComponentInst.children)
   componentStore.currentDragComponentId = ''
-  componentStore.setCurrentSelectedComponentByIdFromItems(item.id, props.glComponentInst.children)
+  componentStore.setCurrentSelectedComponentByIdFromItems(item.id, props.glComponentInst.children, pageProvideProxy.pageInst.id)
   refresh()
 }
 
@@ -118,6 +121,7 @@ const tryAddDndPlaceholder = (items?: Array<any>, info?: string) => {
 
 <template>
   <GlInst v-if="freshFlag&&glComponentInst" v-for="(inst, index) in glComponentInst.children"
+          :parentId=glComponentInst.id
           :id="inst.id"
           :key="inst.id"
           :text="inst.id"

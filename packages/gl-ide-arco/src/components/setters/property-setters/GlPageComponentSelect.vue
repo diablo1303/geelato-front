@@ -72,11 +72,11 @@ const loadPage = () => {
     const pages = resp.data.result || resp.data.data
     if (pages && pages.length > 0) {
       const page = pages[0]
-      console.log('pageConfig', page)
+      // console.log('pageConfig', page)
       const pageConfig = page.releaseContent ? JSON.parse(page.releaseContent) : undefined
       treeData.value.length = 0
       pageConfig ? treeData.value.push(pageConfig) : null
-      console.log('pageConfig', pageConfig)
+      // console.log('pageConfig', pageConfig)
     }
   })
 }

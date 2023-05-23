@@ -17,10 +17,10 @@
         </div>
         <GlComponentPropertiesSetter :componentMeta="componentMeta" :componentInstance="componentModel"/>
       </a-tab-pane>
-      <a-tab-pane key="2" tab="样式" title="样式" force-render>
-        <GlComponentStyleSetter :componentMeta="componentMeta" :componentInstance="componentInstance"
-                                @update="(val:any)=>{setInstance(val,'style')}"/>
-      </a-tab-pane>
+<!--      <a-tab-pane key="2" tab="样式" title="样式" force-render>-->
+<!--        <GlComponentStyleSetter :componentMeta="componentMeta" :componentInstance="componentInstance"-->
+<!--                                @update="(val:any)=>{setInstance(val,'style')}"/>-->
+<!--      </a-tab-pane>-->
       <a-tab-pane key="3" tab="动作" title="动作">
         <GlComponentActionsSetter :componentMeta="componentMeta" :componentInstance="componentInstance"
                                   @update="(val:any)=>{setInstance(val,'actions')}"/>
@@ -42,18 +42,11 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {PropType, provide, ref} from "vue";
+import {onUnmounted, PropType, provide, ref} from "vue";
 import {EntityMeta, utils} from "@geelato/gl-ui";
 import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import ClipboardJS from "clipboard";
 import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "./ComponentSetterProvideProxy";
-
-const componentSetterProvideProxy = new ComponentSetterProvideProxy()
-const entityMeta = new EntityMeta()
-const ds = ref({entityMeta})
-componentSetterProvideProxy.setEntityDsRef(ds)
-provide(ComponentSetterProvideKey, componentSetterProvideProxy)
-provide('$entityDS', ds)
 
 const emits = defineEmits(['update']);
 const props = defineProps({
@@ -65,6 +58,14 @@ const props = defineProps({
     type: Object as PropType<ComponentInstance>
   }
 })
+console.log('GlComponentSetter > init ...', props.componentInstance?.componentName, props.componentInstance?.id)
+const componentSetterProvideProxy = new ComponentSetterProvideProxy()
+const entityMeta = new EntityMeta()
+const ds = ref({entityMeta})
+componentSetterProvideProxy.setEntityDsRef(ds)
+provide(ComponentSetterProvideKey, componentSetterProvideProxy)
+provide('$entityDS', ds)
+
 
 // 组件实例值
 const componentModel = ref(props.componentInstance)
@@ -72,6 +73,9 @@ const activeKey = ref("1")
 const setInstance = (instance: ComponentInstance, form: String) => {
   console.log('GlComponentSetter > set instance:', instance, 'form', form)
 }
+onUnmounted(() => {
+  console.log('GlComponentSetter > onUnmounted ...', props.componentInstance?.componentName, props.componentInstance?.id)
+})
 </script>
 
 <style scoped>

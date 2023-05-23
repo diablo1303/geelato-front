@@ -32,6 +32,7 @@ import ConvertUtil from "./m/utils/ConvertUtil";
 import useGlobal from "./m/hooks/useGlobal";
 import './assets/style.css'
 import actionScriptExecutor from "./m/actions/ActionScriptExecutor";
+import {PageProvideKey} from "./components/PageProvideProxy";
 
 const Utils = AllUtils
 
@@ -69,6 +70,7 @@ const component: Plugin = {
 export {
     PageParamType,
     PageProvideProxy,
+    PageProvideKey,
     GlIconfont,
     EntityApi,
     entityApi,

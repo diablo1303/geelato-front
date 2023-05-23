@@ -5,7 +5,7 @@ export default {
     "group": "block_page",
     "title": "调用组件方法",
     "useBy": ["freePage"],
-    "blockContent": "调用组件的方法,组件为:${componentName}，方法名为:${methodName}",
+    "blockContent": "调用组件的方法,组件为:${componentId}，方法名为:${methodName}",
     "properties": [{
         "name": "appId",
         "setterComponentProps": {},
@@ -26,7 +26,8 @@ export default {
         "show": true,
         "expanded": true,
         "title": "页面",
-        "setterComponentName": "GlPageSelect"
+        "setterComponentName": "GlPageSelect",
+        "enableValueExpress": false
     }, {
         "name": "componentId",
         "setterComponentProps": {},
@@ -36,7 +37,8 @@ export default {
         "show": true,
         "expanded": true,
         "title": "调用的组件",
-        "setterComponentName": "GlPageComponentSelect"
+        "setterComponentName": "GlPageComponentSelect",
+        "enableValueExpress": false
     }, {
         "name": "methodName",
         "setterComponentProps": {},
@@ -84,13 +86,10 @@ export default {
                 "options": [{"label": "字符串", "value": "string"}, {
                     "label": "布尔",
                     "value": "boolean"
-                }, {"label": "表达式", "value": "express"}, {
-                    "label": "数值",
-                    "value": "number"
-                }, {"label": "数组", "value": "array"}, {
-                    "label": "对象",
-                    "value": "object"
-                }]
+                }, {"label": "表达式", "value": "express"}, {"label": "数值", "value": "number"}, {
+                    "label": "数组",
+                    "value": "array"
+                }, {"label": "对象", "value": "object"}]
             },
             "setterComponentVModelName": "modelValue",
             "group": "base",

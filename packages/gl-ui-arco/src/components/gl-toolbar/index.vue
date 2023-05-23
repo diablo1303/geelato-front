@@ -46,7 +46,7 @@ defineProps({
 <template>
   <a-row>
     <a-col :span="leftColSpan">
-      <a-space>
+      <a-space style="margin-left: -8px">
         <slot name="leftItems"></slot>
         <span></span>
         <template v-for="(item, index) in leftItems" :key="index">

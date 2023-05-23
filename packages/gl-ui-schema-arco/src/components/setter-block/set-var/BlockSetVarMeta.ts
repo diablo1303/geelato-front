@@ -2,7 +2,7 @@ export default {
     "componentName": "GlBlockSetVar",
     "displayMode": "Tile",
     "iconType": "gl-var",
-    "group": "block_feedback",
+    "group": "block_var",
     "title": "变量-基于组件",
     "useBy": ["freePage"],
     "blockContent": "设置变量名为：${varName}，值为对象：${componentType}的属性值：${propertyName}",

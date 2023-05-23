@@ -8,19 +8,32 @@ export default {
 import {componentStoreFactory} from "@geelato/gl-ide";
 import {useGlobal, emitter, utils} from "@geelato/gl-ui";
 import GlInst from "../dnd/GlInst.vue";
+import {onUnmounted, provide} from "vue";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const props = defineProps({
   componentStoreId: {
     type: String,
+    required: true
+  },
+  /**
+   *  是否启用选择中组件后，显示工具条
+   */
+  enableToolbar: {
+    type: Boolean,
     default() {
-      return 'useComponentStore'
+      return false
     }
   }
 })
-
+provide('componentStoreId', props.componentStoreId)
 const global = useGlobal()
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
-
+const pageInstId = componentStore.currentComponentTree[0].id
+// 特殊处理，解决历史数据问题GlBlockRoot->GlPage
+if (componentStore.currentComponentTree[0].componentName === 'GlBlockRoot') {
+  componentStore.currentComponentTree[0].componentName = 'GlPage'
+}
 /**
  * 设置工具条的位置
  * @param toolbarBreadcrumbsId 一般该Id值为'glToolbarBreadcrumbsHover'或'glToolbarBreadcrumbsSelected'
@@ -53,19 +66,44 @@ const setToolbarBreadcrumbsPosition = (toolbarBreadcrumbsId: string, moveToTarge
   toolbarBreadcrumbsDiv.style.left = (scrollLeft + targetRect.left - stageDomRect.left) + "px";
 }
 
-emitter.on('setCurrentSelectedComponentId', (data) => {
-  utils.sleep(120).then(() => {
-    setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsSelected', componentStore.currentSelectedComponentId)
-  })
-})
-emitter.on('setCurrentHoverComponentId', (data) => {
-  utils.sleep(120).then(() => {
-    if (componentStore.currentSelectedComponentId != componentStore.currentHoverComponentId) {
-      setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsHover', componentStore.currentHoverComponentId)
-    }
-  })
+const onSetCurrentSelectedComponentId = (data: any) => {
+  // console.log('setCurrentSelectedComponentId data:', data, pageInstId === data.fromPageId)
+  if (pageInstId === data.fromPageId) {
+    utils.sleep(120).then(() => {
+      setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsSelected', componentStore.currentSelectedComponentId)
+    })
+  }
+}
+const onSetCurrentHoverComponentId = (data: any) => {
+  if (pageInstId === data.fromPageId) {
+    utils.sleep(120).then(() => {
+      if (componentStore.currentSelectedComponentId != componentStore.currentHoverComponentId) {
+        setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsHover', componentStore.currentHoverComponentId)
+      }
+    })
+  }
+}
+if (props.enableToolbar) {
+  emitter.on('setCurrentSelectedComponentId', onSetCurrentSelectedComponentId)
+  emitter.on('setCurrentHoverComponentId', onSetCurrentHoverComponentId)
+}
+
+onUnmounted(() => {
+  if (props.enableToolbar) {
+    emitter.off('setCurrentSelectedComponentId', onSetCurrentSelectedComponentId)
+    emitter.off('setCurrentSelectedComponentId', onSetCurrentHoverComponentId)
+  }
 })
 
+const addItem = (hoverIndex: number, item: ComponentInstance) => {
+  // console.log('GlInsts > addItem() > hoverIndex:', hoverIndex, 'item:', item)
+  // item.id = utils.gid(componentStore.getAlias(item.componentName) || 'id')
+  // props.glComponentInst.children!.splice(hoverIndex, 0, item)
+  // tryRemoveDndPlaceholder(props.glComponentInst.children)
+  // componentStore.currentDragComponentId = ''
+  // componentStore.setCurrentSelectedComponentByIdFromItems(item.id, props.glComponentInst.children, pageProvideProxy.pageInst.id)
+  // refresh()
+}
 </script>
 
 <template>
@@ -79,7 +117,7 @@ emitter.on('setCurrentHoverComponentId', (data) => {
             :index="0"
             :glComponentInst="componentStore.currentComponentTree[0]"
             :componentStoreId="componentStoreId">
-      <GlInsts :glComponentInst="componentStore.currentComponentTree[0]">
+      <GlInsts :glComponentInst="componentStore.currentComponentTree[0]" :componentStoreId="componentStoreId">
       </GlInsts>
     </GlInst>
   </div>

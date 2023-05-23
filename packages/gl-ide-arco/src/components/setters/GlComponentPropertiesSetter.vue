@@ -3,7 +3,6 @@
     <!--需保障currentSelectedComponentMeta有且有正确的数据，否则该属性值会马上影响舞台上的组件展示-->
     <template v-if="componentMeta">
       <template v-for="(propertySetterMeta,index) in componentMeta.properties">
-
         <GlPropertySetter
             v-if="propertySetterMeta.type&&propertySetterMeta.name&&componentModel[propertySetterMeta.type]"
             :displayMode="componentMeta.displayMode"

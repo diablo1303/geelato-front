@@ -9,9 +9,9 @@ export default class MixUtil {
      * @returns {*}
      */
     static evalPlus(expression: string, ctx: object, ctxName = "$ctx") {
-        console.log("MixUtil > evalPlus() > expression: ", expression);
-        console.log("MixUtil > evalPlus() > ctx: ", ctx);
-        console.log("MixUtil > evalPlus() > ctxName: ", ctxName);
+        // console.log("MixUtil > evalPlus() > expression: ", expression);
+        // console.log("MixUtil > evalPlus() > ctx: ", ctx);
+        // console.log("MixUtil > evalPlus() > ctxName: ", ctxName);
         if (!expression || expression.indexOf(ctxName) === -1) {
             return expression;
         }

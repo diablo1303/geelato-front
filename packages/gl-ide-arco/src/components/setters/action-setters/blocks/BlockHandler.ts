@@ -31,7 +31,7 @@ export class BlocksHandler {
     }
 
     parseToScript(block: ComponentInstance): string {
-        console.log('BlocksHandler > parseToScript() > block:', block)
+        // console.log('BlocksHandler > parseToScript() > block:', block)
         if (!block) return ''
         const commandLines: Array<string> = []
         if (!block._disabled) {
@@ -43,21 +43,23 @@ export class BlocksHandler {
         return commandLines.join(";").replace(/};/g, '}').replace(/;}/g, '}').replace(/{;/g, '{')
     }
 
-    parseOne(block: ComponentInstance): ParseResult {
-        console.log('BlocksHandler > parseOne() > block:', block)
+    parseOne(block: ComponentInstance, parentBlock?: ComponentInstance, parentParseResult?: ParseResult): ParseResult {
+        // console.log('BlocksHandler > parseOne() > block:', block)
         if (block) {
             const handler: IBlockHandler = this.handlers[block.componentName]
-            console.log('BlocksHandler > parseOne() > parse blocks and get handler:', handler, 'by nane:', block.componentName, ',handlers:', this.handlers)
-            const parseResult = handler?.parseToScript(block.props) || new ParseResult()
-            for (const key in block.children) {
-                const subBlock = block.children[key]
+            // console.log('BlocksHandler > parseOne() > parse blocks and get handler:', handler, 'by nane:', block.componentName, ',handlers:', this.handlers)
+            const parseResult = handler?.parseToScript(block.props) || new ParseResult().setBlockName(block.componentName)
+            parseResult!.invokeBlockNames = block?.props.invokeBlocks || []
+            for (const index in block.children) {
+                const subBlock = block.children[index]
+                // 禁用的指令块不处理
                 if (!subBlock._disabled) {
-                    parseResult.children.push(this.parseOne(subBlock))
+                    parseResult.children.push(this.parseOne(subBlock, block, parseResult))
                 }
             }
             return parseResult;
         }
-        return new ParseResult()
+        return new ParseResult().setBlockName('Block is empty!!!')
     }
 }
 

@@ -6,26 +6,52 @@
       </div>
       <div class="gl-right">
         <div class="gl-title">
-          <span>{{glComponentInst._disabled?'【已停用】':''}}</span>
+          <span>{{ glComponentInst._disabled ? '【已停用】' : '' }}</span>
           <span>{{ blockMeta.title }}</span>
         </div>
-        <div class="gl-content">
+        <div class="gl-description">
           <span v-html="highlightedStr"></span>
         </div>
       </div>
     </div>
+    <div class="gl-command-block-callback" v-if="foundInvokeBlocksMeta&&invokeBlocks.length>0">
+      <div class="gl-title">
+        <span>调用指令</span>
+      </div>
+      <div class="gl-items">
+        <div class="gl-item" v-for="(invokeBlock,invokeBlockIndex) in invokeBlocks">
+          <div class="gl-description">
+            <span v-html="invokeBlock.label"></span>
+          </div>
+          <GlInsts :glComponentInst="glComponentInst.children[invokeBlockIndex]"
+                   :componentStoreId="componentStoreId"></GlInsts>
+        </div>
+      </div>
+    </div>
   </div>
+
 </template>
 
 <script lang="ts" setup>
 
-import {PropType, ref, watch} from "vue";
+import {computed, onUnmounted, PropType, ref, watch} from "vue";
 import {ComponentMeta} from "@geelato/gl-ui-schema";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
-import {mixins} from "@geelato/gl-ui";
+import {mixins, utils} from "@geelato/gl-ui";
 import BlockUtils from "./BlockUtils";
 import "./style.css"
+import GlInsts from "../../../dnd/GlInsts.vue";
+import IPropertySetterMeta from "@geelato/gl-ui-schema/src/entity/IPropertySetterMeta";
+
+// 注意，需在组件元数据中配置了属性invokeBlocks，本组件的回调组件设置才生效
+const INVOKE_BLOCK_NAME = 'invokeBlocks'
 const props = defineProps({
+  componentStoreId: {
+    type: String,
+    default() {
+      return 'useComponentBlockStore'
+    }
+  },
   componentMeta: {
     type: Object as PropType<ComponentMeta>,
     required: true
@@ -34,15 +60,67 @@ const props = defineProps({
 })
 
 const componentMaterialStore = useComponentMaterialStore()
-const blockMeta = props.componentMeta||componentMaterialStore.findMetaByName(props.glComponentInst.componentName)
+const blockMeta = props.componentMeta || componentMaterialStore.findMetaByName(props.glComponentInst.componentName)
 const blockInfoVarStr = blockMeta.blockContent
 const highlightedVarStr = BlockUtils.highlightVariables(blockInfoVarStr);
 // 在新的窗口打开页面地址<span style='color: blue'>${url}</span>
 const highlightedStr = ref('')
 
+const foundInvokeBlocksMeta = blockMeta.properties.find((p: IPropertySetterMeta) => {
+  return p.name === INVOKE_BLOCK_NAME
+})
+
+const invokeBlocks = computed(() => {
+  const items: Array<{ key: string, label: string }> = []
+  if (foundInvokeBlocksMeta && props.glComponentInst.props.invokeBlocks) {
+    props.glComponentInst.props.invokeBlocks.forEach((invokeBlockKey: string, index: number) => {
+      items.push({key: invokeBlockKey, label: getInvokeBlockLabel(invokeBlockKey)})
+      // 如果
+      if (props.glComponentInst.children.length < props.glComponentInst.props.invokeBlocks.length) {
+        props.glComponentInst.children.push({
+          componentName: 'GlVirtual',
+          id: utils.gid('v'),
+          props: {},
+          slots: {},
+          children: [
+            {
+              componentName: 'GlDndPlaceholder',
+              id: utils.gid('pHolder'),
+              props: {},
+              slots: {},
+              children: [],
+              actions: [],
+              style: {}
+            }
+          ],
+          actions: [],
+          style: {}
+        })
+      }
+    })
+  }
+  return items
+})
+
+const getInvokeBlockLabel = (invokeBlockKey: string) => {
+  if (foundInvokeBlocksMeta) {
+    const foundOption = foundInvokeBlocksMeta.setterComponentProps.options.find((option: { label: string, value: string }) => {
+      return option.value === invokeBlockKey
+    })
+    if (foundOption) {
+      return foundOption.label
+    }
+  }
+  return invokeBlockKey
+}
+
 watch(props.glComponentInst, () => {
   highlightedStr.value = BlockUtils.replaceVariables(highlightedVarStr, props.glComponentInst.props)
 }, {immediate: true, deep: true})
+
+onUnmounted(() => {
+  // 在退出时，才最终设置invokeBlocks的children，配置过程不删减，避免误操作
+})
 </script>
 <style>
 

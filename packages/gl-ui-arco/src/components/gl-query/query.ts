@@ -1,24 +1,12 @@
-export interface QueryCol {
-  id: string;
-  title: "";
-  name: "";
-  colspan: number;
-  // 操作
-  cop: string;
-  isAdvanceQuery: boolean;
-  component:{
-    componentName: string;
-    props: { placeholder: "" };
-  }
-}
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
-export interface Query {
-  title: string;
-  items: QueryCol[];
+export default class QueryItem {
+    id: string = '';
+    title: string = "";
+    name: string = "";
+    colspan: number = 6;
+    // 操作
+    cop: string = 'eq';
+    isAdvanceQuery: boolean = false;
+    component: ComponentInstance | undefined = undefined
 }
-
-const defaultQuery: Query = {
-  title: "标题",
-  items: [],
-};
-export { defaultQuery };

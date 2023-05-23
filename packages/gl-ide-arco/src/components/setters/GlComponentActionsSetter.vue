@@ -43,13 +43,14 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {nextTick, type PropType, ref} from 'vue'
+import {h, nextTick, type PropType, ref} from 'vue'
 import {Action, ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import GlArrayBaseSetter from "./property-setters/GlArrayBaseSetter.vue";
 import CommandEditor from "./action-setters/CommandEditor.vue";
-import {utils} from "@geelato/gl-ui";
+import {useGlobal, utils} from "@geelato/gl-ui";
 import {blocksHandler} from "./action-setters/blocks/BlockHandler";
 
+const global = useGlobal()
 const props = defineProps({
   componentMeta: {
     type: Object as PropType<ComponentMeta>,
@@ -66,7 +67,7 @@ const handleSelect = (val: Action) => {
 const update = () => {
 
 }
-
+console.log('GlComponentActionsSetter > props:', props)
 const refreshFlag = ref(true)
 
 const currentAction = ref(new Action())
@@ -86,6 +87,14 @@ const openActionSetter = (action: Action, actionIndex: number, actionMeta: Actio
   currentAction.value = action ? JSON.parse(JSON.stringify(action)) : new Action()
   currentActionIndex.value = actionIndex
   actionCodeEditorVisible.value = true
+  // global.$modal.open({
+  //   title: "动作（事件）编排",
+  //   content: h(CommandEditor, {key: currentAction.value.id, action: currentAction.value}),
+  //   width: 1360,
+  //   bodyStyle: "padding:0",
+  //   onOk: openActionSetter,
+  //   onCancel: closeActionCodeEditor
+  // })
   refreshFlag.value = false
   nextTick(() => {
     refreshFlag.value = true

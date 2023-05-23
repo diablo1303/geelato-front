@@ -10,7 +10,7 @@ export default class OpenThirdPageBlockHandler implements IBlockHandler {
             })
         }
         const paramsStr = paramsAry.join('&')
-        return new ParseResult(`window.open(\`${props.url}?${paramsStr}\`)`);
+        return new ParseResult(`window.open(\`${props.url}?${paramsStr}\`)`).setBlockName('OpenThirdPageBlock');
     }
 }
 

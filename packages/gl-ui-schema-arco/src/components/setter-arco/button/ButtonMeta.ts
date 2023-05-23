@@ -27,6 +27,21 @@ export default {
         },
         "type": "props",
         "show": true
+    },{
+        "type": "slots",
+        "expanded": true,
+        "style": "",
+        "name": "icon",
+        "title": "图标文字",
+        "group": "base",
+        "placeholder": "",
+        "description": "",
+        "setterComponentName": "GlIconfontTextSetter",
+        "setterComponentVModelName": "modelValue",
+        "setterComponentProps": {},
+        "show": true,
+        "slotComponentName": "GlIconfont",
+        "slotComponentBindTarget": "v-bind"
     }, {
         "name": "shape",
         "setterComponentProps": {
@@ -100,22 +115,7 @@ export default {
         "description": "按钮是否为加载中状态",
         "title": "加载状态",
         "setterComponentName": "ASwitch"
-    }, {
-        "type": "slots",
-        "expanded": true,
-        "style": "",
-        "name": "icon",
-        "title": "图标文字",
-        "group": "base",
-        "placeholder": "",
-        "description": "",
-        "setterComponentName": "GlIconfontTextSetter",
-        "setterComponentVModelName": "modelValue",
-        "setterComponentProps": {},
-        "show": true,
-        "slotComponentName": "GlIconfont",
-        "slotComponentBindTarget": "v-bind"
-    }, {
+    },  {
         "expanded": true,
         "style": "",
         "name": "disabled",

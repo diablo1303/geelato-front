@@ -6,6 +6,62 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1555790",
+      "name": "refresh",
+      "font_class": "refresh",
+      "unicode": "e6a0",
+      "unicode_decimal": 59040
+    },
+    {
+      "icon_id": "4767083",
+      "name": "line-height",
+      "font_class": "line-height",
+      "unicode": "e7fe",
+      "unicode_decimal": 59390
+    },
+    {
+      "icon_id": "34061411",
+      "name": "drag-arrow",
+      "font_class": "drag-arrow",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "587163",
+      "name": "virtual-d",
+      "font_class": "virtual",
+      "unicode": "e831",
+      "unicode_decimal": 59441
+    },
+    {
+      "icon_id": "18724124",
+      "name": "占位符",
+      "font_class": "placeholder",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "34453031",
+      "name": "hide",
+      "font_class": "hide",
+      "unicode": "e83d",
+      "unicode_decimal": 59453
+    },
+    {
+      "icon_id": "6151301",
+      "name": "search",
+      "font_class": "search",
+      "unicode": "e82e",
+      "unicode_decimal": 59438
+    },
+    {
+      "icon_id": "13990891",
+      "name": "reset",
+      "font_class": "reset",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
       "icon_id": "2323150",
       "name": "符号-条件",
       "font_class": "if",

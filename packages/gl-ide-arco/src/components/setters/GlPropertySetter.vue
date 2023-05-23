@@ -117,7 +117,7 @@
             </GlPropertySetterCard>
           </template>
         </div>
-        <div v-if="propertySetterMeta.enableValueExpress" style="flex: 1">
+        <div v-if="propertySetterMeta.enableValueExpress" style="flex: 1;max-width: 2em;min-width: 2em">
           <slot></slot>
         </div>
       </div>
@@ -167,7 +167,7 @@ onUpdated(() => {
 watch(() => {
   return propertyModel
 }, (val, oval) => {
-  console.log('update property', props.propertySetterMeta?.name, ' and set value as ', val)
+  // console.log('update property', props.propertySetterMeta?.name, ' and set value as ', val)
   emits("update:propertyValue", val)
   componentSetterProvideProxy.setPropValue(props.propertySetterMeta?.name, val?.value)
   // emits("update", val)

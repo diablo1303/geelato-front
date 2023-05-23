@@ -1,40 +1,41 @@
 export default {
     "props": {
         "entityName": "platform_role",
-        "query": {
-            "items": [{
-                "id": "name",
-                "name": "名称",
-                "cop": "contains",
-                "isAdvanceQuery": false,
-                "colspan": 6,
-                "component": {
-                    "componentName": "AInput",
-                    "props": {}
+        "query": [{
+            "id": "",
+            "name": "name",
+            "title": "名称",
+            "cop": "contains",
+            "isAdvanceQuery": false,
+            "colspan": 6,
+            "component": {
+                "componentName": "AInput",
+                "props": {}
+            }
+        }, {
+            "id": "",
+            "name": "code",
+            "title": "编码",
+            "isAdvanceQuery": false,
+            "colspan": 6,
+            "component": {
+                "componentName": "AInput",
+                "props": {}
+            }
+        }, {
+            "id": "",
+            "name": "enableStatus",
+            "title": "编码",
+            "isAdvanceQuery": false,
+            "colspan": 6,
+            "component": {
+                "componentName": "ASelect",
+                "props": {
+                    "options": [{"value": 1, "label": "已启用"}, {"value": 0, "label": "已停用"}],
+                    "allowClear": true
                 }
-            }, {
-                "id": "code",
-                "name": "编码",
-                "isAdvanceQuery": false,
-                "colspan": 6,
-                "component": {
-                    "componentName": "AInput",
-                    "props": {}
-                }
-            }, {
-                "id": "enableStatus",
-                "name": "启用状态",
-                "isAdvanceQuery": false,
-                "colspan": 6,
-                "component": {
-                    "componentName": "ASelect",
-                    "props": {
-                        "options": [{"value": 1, "label": "已启用"}, {"value": 0, "label": "已停用"}],
-                        "allowClear": true
-                    }
-                }
-            }]
-        },
+            }
+        }],
         "toolbar": {
             "leftColSpan": 12,
             "centerColSpan": 0,

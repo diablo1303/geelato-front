@@ -10,15 +10,15 @@
           <span>{{glComponentInst._disabled?'【已停用】':''}}</span>
           <span>{{ blockMeta.title }}</span>
         </div>
-        <div class="gl-content">
+        <div class="gl-description">
           <span v-html="highlightedStr"></span>
         </div>
       </div>
     </div>
     <div class="gl-command-block-children">
-      <GlX :glComponentInst="glComponentInst" :componentStoreId="componentStoreId"></GlX>
+      <GlInsts :glComponentInst="glComponentInst" :componentStoreId="componentStoreId"></GlInsts>
     </div>
-    <div class="gl-command-block-start">
+    <div class="gl-command-block-end">
       <div class="gl-left">
         <GlIconfont :type="blockMeta.iconType"></GlIconfont>
       </div>
@@ -27,7 +27,7 @@
           <span>{{ glComponentInst._disabled ? '【已停用】' : '' }}</span>
           <span>结束 {{ blockMeta.title }}</span>
         </div>
-        <div class="gl-content">
+        <div class="gl-description">
           <span>&nbsp;</span>
         </div>
       </div>

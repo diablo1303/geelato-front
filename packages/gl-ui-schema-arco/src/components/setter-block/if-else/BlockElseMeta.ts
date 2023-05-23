@@ -2,7 +2,7 @@ export default {
     "componentName": "GlBlockElse",
     "displayMode": "Tile",
     "iconType": "gl-if",
-    "group": "block_page",
+    "group": "block_condition",
     "title": "Else 其它",
     "useBy": ["freePage"],
     "blockContent": "${description}",

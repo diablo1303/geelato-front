@@ -16,7 +16,8 @@ export default {
         "expanded": true,
         "title": "应用ID",
         "setterComponentName": "AInput",
-        "placeholder": "不填写表示当前应用"
+        "placeholder": "不填写表示当前应用",
+        "enableValueExpress": false
     }, {
         "name": "extendId",
         "setterComponentProps": {},
@@ -36,7 +37,8 @@ export default {
         "show": true,
         "expanded": true,
         "title": "页面标题",
-        "setterComponentName": "AInput"
+        "setterComponentName": "AInput",
+        "enableValueExpress": false
     }, {
         "name": "width",
         "setterComponentProps": {},
@@ -46,7 +48,8 @@ export default {
         "show": true,
         "expanded": true,
         "title": "页面宽度",
-        "setterComponentName": "AInput"
+        "setterComponentName": "AInput",
+        "enableValueExpress": false
     }, {
         "name": "params",
         "setterComponentProps": {},
@@ -98,7 +101,8 @@ export default {
             "setterComponentName": "ASelect"
         }],
         "setterComponentName": "GlObjectArraySetter",
-        "titleField": "pName"
+        "titleField": "pName",
+        "enableValueExpress": false
     }, {
         "name": "okText",
         "setterComponentProps": {},
@@ -108,27 +112,8 @@ export default {
         "show": true,
         "expanded": true,
         "title": "确认按钮文字",
-        "setterComponentName": "AInput"
-    }, {
-        "name": "beforeOkInvokeComponentId",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "确认前调组件",
-        "setterComponentName": "GlPageComponentSelect"
-    }, {
-        "name": "beforeOkInvokeMethodName",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "确认前调方法",
-        "setterComponentName": "AInput"
+        "setterComponentName": "AInput",
+        "enableValueExpress": false
     }, {
         "name": "cancelText",
         "setterComponentProps": {},
@@ -138,7 +123,8 @@ export default {
         "show": true,
         "expanded": true,
         "title": "取消按钮文字",
-        "setterComponentName": "AInput"
+        "setterComponentName": "AInput",
+        "enableValueExpress": false
     }, {
         "name": "hideCancel",
         "setterComponentProps": {},
@@ -148,37 +134,31 @@ export default {
         "show": true,
         "expanded": true,
         "title": "隐藏取消按钮",
-        "setterComponentName": "ASwitch"
+        "setterComponentName": "ASwitch",
+        "enableValueExpress": false
     }, {
-        "name": "closeInvokePageExtendId",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
+        "name": "invokeBlocks",
         "group": "base",
         "type": "props",
+        "enableValueExpress": false,
         "show": true,
         "expanded": true,
-        "title": "关闭后调页面",
-        "setterComponentName": "GlPageSelect"
-    }, {
-        "name": "closeInvokeComponentId",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "setterComponentProps": {"pageExtendIdName": "closeInvokePageExtendId"},
+        "setterComponentProps": {
+            "options": [{
+                "label": "确认操作前触发，如可做些表单验证等工作",
+                "value": "onBeforeOk",
+                "__YJe434P13sWjPAcCS1": "onBeforeOk"
+            }, {
+                "label": "页面关闭后（动画结束）触发",
+                "value": "onClose",
+                "__YJe434P13sWjPAcCS1": "onClose"
+            }, {"label": "页面打开后（动画结束）触发", "value": "onOpen", "__YJe434P13sWjPAcCS1": "onOpen"}],
+            "multiple": true,
+            "allowClear": false
+        },
         "setterComponentVModelName": "modelValue",
-        "title": "关闭后调组件",
-        "setterComponentName": "GlPageComponentSelect"
-    }, {
-        "name": "closeInvokeMethodName",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "title": "关闭后调方法",
-        "setterComponentName": "AInput"
+        "title": "开启指令调用",
+        "setterComponentName": "ASelect"
     }],
     "actions": []
 }

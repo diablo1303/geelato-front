@@ -1,6 +1,5 @@
 import type {App, Plugin} from 'vue'
 import {GlPlugin, Panel, usePageStore} from '@geelato/gl-ide'
-import GlIdePluginCoreComponents from './components/sidebar/Components.vue'
 import GlIdePluginCoreAppTree from './components/sidebar/AppTree.vue'
 import GlComponentTree from './components/sidebar/ComponentTree.vue'
 import GlIdePluginCoreComponentsDnd from './components/sidebar/components/ComponentsSidebar.vue'
