@@ -214,7 +214,8 @@ defineExpose([deleteRow, refresh])
                     class="setting"
                 >
                   <div style="margin-right: 4px; cursor: move">
-                    <icon-drag-arrow/>
+                    <!--   TODO 待支持拖拽排序 -->
+<!--                    <GlIconfont type="gl-drag-arrow"></GlIconfont>-->
                   </div>
                   <div>
                     <a-checkbox

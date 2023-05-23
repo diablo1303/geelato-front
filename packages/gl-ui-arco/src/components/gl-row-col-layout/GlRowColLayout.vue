@@ -6,8 +6,7 @@ export default {
 <script setup lang="ts">
 import {nextTick, onUpdated, type PropType} from "vue";
 import {mixins, utils} from "@geelato/gl-ui";
-import {I18nItem} from "@geelato/gl-ui-schema/src/entity/ComponentInstance";
-
+import {I18nItem} from "@geelato/gl-ui-schema";
 
 const props = defineProps({
   spans: {
@@ -49,6 +48,7 @@ const props = defineProps({
   ...mixins.props
 });
 
+console.log('props.glIsRuntime,props.glRuntimeFlag',props.glIsRuntime,props.glRuntimeFlag)
 
 const colTemplate = () => {
   return {
@@ -121,7 +121,7 @@ const i18nConvert = (value: string, i18n: I18nItem) => {
                      :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"
                      :rules="childComponentInst.props?.rules"
                      :validate-trigger="[]">
-          <GlComponent :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime"></GlComponent>
+          <GlComponent :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></GlComponent>
           <template v-if="childComponentInst.props?.extra" #extra>
             <div>{{
                 i18nConvert(childComponentInst.props?.extra, childComponentInst.i18n)
@@ -144,7 +144,7 @@ const i18nConvert = (value: string, i18n: I18nItem) => {
         :key="index"
         :span="span"
     >
-      <GlInsts :glComponentInst="glComponentInst.children[index]"/>
+      <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst.children[index]" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"/>
     </a-col>
   </a-row>
 

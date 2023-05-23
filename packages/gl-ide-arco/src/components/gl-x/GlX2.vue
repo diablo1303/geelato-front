@@ -43,12 +43,6 @@ type Event = { item: { classList: any, id: any }, pullMode: string, oldIndex: nu
 const proxy = getCurrentInstance()?.proxy
 
 const props = defineProps({
-  componentStoreId: {
-    type: String,
-    default() {
-      return 'useComponentStore'
-    }
-  },
   ...mixins.props
 })
 

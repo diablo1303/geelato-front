@@ -80,6 +80,17 @@ class ComponentStoreFactory {
                         return false
                     },
                     /**
+                     * 获取组件分组名称，基于元数据
+                     * @param componentName
+                     */
+                    getComponentGroupName(componentName: string,) {
+                        const meta = componentStoreFactory.componentMetaMap[componentName]
+                        if (meta) {
+                            return meta.group
+                        }
+                        return undefined
+                    },
+                    /**
                      * 从组件实体树中删除组件
                      * @param componentId
                      */

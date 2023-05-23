@@ -32,8 +32,24 @@ const props = {
             return false
         }
     },
+    /**
+     *  如果是runtime，则值为‘Runtime’
+     *  该属性和glIsRuntime需对应
+     */
+    glRuntimeFlag: {
+        type: String,
+        default() {
+            return ''
+        }
+    },
     glIndex: {
         type: Number
+    },
+    componentStoreId: {
+        type: String,
+        default() {
+            return 'useComponentStore'
+        }
     }
 }
 export default {

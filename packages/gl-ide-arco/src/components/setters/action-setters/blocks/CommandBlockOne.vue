@@ -46,12 +46,6 @@ import IPropertySetterMeta from "@geelato/gl-ui-schema/src/entity/IPropertySette
 // 注意，需在组件元数据中配置了属性invokeBlocks，本组件的回调组件设置才生效
 const INVOKE_BLOCK_NAME = 'invokeBlocks'
 const props = defineProps({
-  componentStoreId: {
-    type: String,
-    default() {
-      return 'useComponentBlockStore'
-    }
-  },
   componentMeta: {
     type: Object as PropType<ComponentMeta>,
     required: true

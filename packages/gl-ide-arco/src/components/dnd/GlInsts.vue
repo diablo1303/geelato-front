@@ -4,7 +4,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {computed, inject, nextTick, PropType, ref, unref} from 'vue'
+import { inject, nextTick, ref} from 'vue'
 import {mixins, utils} from "@geelato/gl-ui";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
@@ -14,9 +14,6 @@ const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const emits = defineEmits(['update:items'])
 
 const props = defineProps({
-  componentStoreId: {
-    type: String
-  },
   ...mixins.props
 })
 
@@ -64,6 +61,7 @@ const moveCard = (dragIndex: number, hoverIndex: number, dragItemId: string, dro
 const addItem = (hoverIndex: number, item: ComponentInstance) => {
   console.log('GlInsts > addItem() > hoverIndex:', hoverIndex, 'item:', item)
   item.id = utils.gid(componentStore.getAlias(item.componentName) || 'id')
+  item.group = componentStore.getComponentGroupName(item.componentName)
   props.glComponentInst.children!.splice(hoverIndex, 0, item)
   tryRemoveDndPlaceholder(props.glComponentInst.children)
   componentStore.currentDragComponentId = ''

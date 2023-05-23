@@ -59,12 +59,6 @@ const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const props = defineProps({
   moveCard: Function as PropType<(dragIndex: number, hoverIndex: number, sourceId: number, targetId: number) => void>,
   addItem: Function,
-  componentStoreId: {
-    type: String,
-    default() {
-      return 'useComponentStore'
-    }
-  },
   ...mixins.props
 })
 const emits = defineEmits(['onComponentClick', 'onComponentMounted'])

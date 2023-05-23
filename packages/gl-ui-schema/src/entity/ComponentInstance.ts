@@ -22,6 +22,8 @@ export default class ComponentInstance {
     id: string = ''
     title?: string = ''
     componentName: string = ''
+    // 如dataEntry，可以来用区分是否为表单输入项，在渲染时展示label
+    group?:string = ''
     props: ComponentInstanceProps = {}
     // 属性值表达式，通过变量绑定、函数计算等，动态计算属性的值
     propsExpress?: ComponentInstanceProps = {}

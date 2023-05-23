@@ -112,7 +112,7 @@ export default {
         }],
         "setterComponentName": "GlObjectArraySetter",
         "show": true,
-        "expanded": true,
+        "expanded": false,
         "titleField": "title",
         "enableValueExpress": false
     }, {
@@ -122,7 +122,7 @@ export default {
         "group": "base",
         "type": "props",
         "show": true,
-        "expanded": true,
+        "expanded": false,
         "_showSub": false,
         "properties": [{
             "name": "leftColSpan",
@@ -213,16 +213,6 @@ export default {
         "expanded": true,
         "_showSub": true,
         "properties": [{
-            "name": "title",
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "title": "字段标题",
-            "setterComponentName": "AInput"
-        }, {
             "name": "dataIndex",
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
@@ -232,7 +222,17 @@ export default {
             "expanded": true,
             "title": "绑定字段",
             "setterComponentName": "GlFieldSelect"
-        }, {
+        },{
+            "name": "title",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "show": true,
+            "expanded": true,
+            "title": "字段标题",
+            "setterComponentName": "AInput"
+        },  {
             "name": "fixed",
             "setterComponentProps": {
                 "type": "button",

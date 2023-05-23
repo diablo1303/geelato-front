@@ -20,9 +20,6 @@ const props = defineProps({
   index: Number,
   moveCard: Function as PropType<(dragIndex: number, hoverIndex: number, dragItemId: string, dropItemId: string) => void>,
   addItem: Function,
-  componentStoreId: {
-    type: String
-  },
   ...mixins.props
 })
 
@@ -115,7 +112,7 @@ const isFormItem = computed(() => {
   }
   return componentStore.isDataEntryComponent(props.glComponentInst.componentName)
 })
-const blocks = ['GlPage', 'GlEntityForm', 'GlFormRow', 'GlFormCol', 'GlDndPlaceholder', 'GlCard', 'GlTabs', 'GlRowColLayout']
+// const blocks = ['GlPage', 'GlEntityForm', 'GlFormRow', 'GlFormCol', 'GlDndPlaceholder', 'GlCard', 'GlTabs', 'GlRowColLayout']
 const style = ref({
   display: function () {
     if (componentStore.isDataEntryComponent(props.glComponentInst.componentName)) {

@@ -10,6 +10,7 @@
              :glChildren="glComponentInst.children"
              @click="onClick"
              :glIsRuntime="glIsRuntime"
+             :glRuntimeFlag="glRuntimeFlag"
              :glIndex="glIndex"
              :glComponentInst="glComponentInst"
   >
@@ -18,7 +19,7 @@
                  v-slot:[slotName]></component>
     </template>
     <GlComponent v-for="(childComponentInst,childIndex) in glComponentInst.children"
-                 :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glIndex="childIndex"></GlComponent>
+                 :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag" :glIndex="childIndex"></GlComponent>
   </component>
 </template>
 
