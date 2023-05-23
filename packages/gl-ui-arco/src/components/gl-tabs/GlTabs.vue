@@ -92,10 +92,8 @@ const xx = false
         <GlIconfont v-if="item.iconType" :type="item.iconType"/>
       {{ item.title }}
       </span>
-      </template>{{glRuntimeFlag}}
-<!--      <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst.children[index]" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></component>-->
+      </template>
       <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst.children[index]" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></component>
-
     </a-tab-pane>
   </a-tabs>
 </template>
