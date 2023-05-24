@@ -32,7 +32,7 @@
               生成脚本JS
             </template>
             <div style="padding: 2px 4px ">
-              {{mv.body}}
+              {{ mv.body }}
             </div>
           </a-tab-pane>
         </a-tabs>
@@ -50,7 +50,7 @@
                         title="点击启用或停用该指令块">
                 {{ componentStore.currentSelectedComponentInstance?._disabled === true ? '点击启用' : '点击停用' }}
               </a-button>
-              <a-button status="danger" @click="deleteBlock">删除</a-button>
+              <a-button status="danger" @click="componentStore.deleteCurrentSelectedComponentInst">删除</a-button>
             </a-button-group>
           </div>
           <GlComponentPropertiesSetter
@@ -94,6 +94,7 @@ const props = defineProps({
   }
 })
 
+console.log('componentStoreId:::::::::::::::', props.componentStoreId)
 const componentMaterialStore = useComponentMaterialStore()
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
 const emits = defineEmits(["update:action", 'updateAction'])
@@ -125,9 +126,6 @@ const generateScript = () => {
   mv.value.body = blocksHandler.parseToScript(componentStore.currentComponentTree[0])
 }
 
-const deleteBlock = () => {
-  componentStore.deleteCurrentSelectedComponentInst()
-}
 
 
 onMounted(() => {

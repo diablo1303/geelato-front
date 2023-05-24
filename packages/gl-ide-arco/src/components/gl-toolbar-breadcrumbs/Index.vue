@@ -3,16 +3,16 @@
        :class="clazz"
        @mouseover="componentStore.setCurrentHoverComponentId('glToolbarBreadcrumbs')"
        @mouseleave="componentStore.setCurrentHoverComponentId('')">
-    <span class="gl-crumb" v-if="eventType==='Selected'">
-      <span class="gl-crumb-nav" @click="componentStore.selectParentComponent()" title="点击选择上一层"> <GlIconfont type="gl-breadcrumb" /></span>
-      <span :title="componentStore.currentSelectedComponentName">{{ componentStore.currentSelectedComponentName }}</span>
-    </span>
-<!--    <span class="gl-crumb" v-else-if="eventType==='Hover'">{{ componentStore.currentHoverComponentName }}</span>-->
-    <span class="gl-crumb-actions" v-if="!isDeleteAble">
-<!--      <GlIconfont type="gl-save" title="保存为模板片段" />-->
-<!--      <GlIconfont type="gl-copy" title="复制" />-->
-      <GlIconfont type="gl-delete" title="删除"  @click="componentStore.deleteComponentInstById(componentStore.currentSelectedComponentId)" />
-    </span>
+<!--    <span class="gl-crumb" v-if="eventType==='Selected'">-->
+<!--      <span class="gl-crumb-nav" @click="componentStore.selectParentComponent()" title="点击选择上一层"> <GlIconfont type="gl-breadcrumb" /></span>-->
+<!--      <span :title="componentStore.currentSelectedComponentName">{{ componentStore.currentSelectedComponentName }}</span>-->
+<!--    </span>-->
+<!--&lt;!&ndash;    <span class="gl-crumb" v-else-if="eventType==='Hover'">{{ componentStore.currentHoverComponentName }}</span>&ndash;&gt;-->
+<!--    <span class="gl-crumb-actions" v-if="!isDeleteAble">-->
+<!--&lt;!&ndash;      <GlIconfont type="gl-save" title="保存为模板片段" />&ndash;&gt;-->
+<!--&lt;!&ndash;      <GlIconfont type="gl-copy" title="复制" />&ndash;&gt;-->
+<!--&lt;!&ndash;      <GlIconfont type="gl-delete" title="删除"  @click="componentStore.deleteComponentInstById(componentStore.currentSelectedComponentId)" />&ndash;&gt;-->
+<!--    </span>-->
   </div>
 </template>
 

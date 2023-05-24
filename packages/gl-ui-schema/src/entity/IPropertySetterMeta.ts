@@ -56,6 +56,9 @@ export default interface IPropertySetterMeta {
     // 将配置该的结果绑定到槽渲染组件的v-model中还是v-bind中,默认为v-model
     slotComponentBindTarget?: String
 
+    // 绑定的名称xxxName，结合slotComponentBindTarget使用，如v-bind:xxxName，v-model:xxxName
+    slotComponentBindName?: String
+
     subComponentName?: String;
 
     subComponentCount?: Number
@@ -80,12 +83,13 @@ export class PropertySetterMetaImpl implements IPropertySetterMeta {
     titleField: String;
     slotComponentName: String;
     slotComponentBindTarget: String;
+    slotComponentBindName?: String;
     subComponentName?: String;
     subComponentCount?: Number
     placeholder?: String
     style?: StyleSetterMeta
     description?: String
-    enableValueExpress?:Boolean
+    enableValueExpress?: Boolean
 
     constructor() {
         this.expanded = true
@@ -102,6 +106,7 @@ export class PropertySetterMetaImpl implements IPropertySetterMeta {
         this.titleField = 'title'
         this.slotComponentName = ''
         this.slotComponentBindTarget = 'v-model'
+        this.slotComponentBindName = ''
         this.placeholder = ''
         this.style = {}
         this.enableValueExpress = false

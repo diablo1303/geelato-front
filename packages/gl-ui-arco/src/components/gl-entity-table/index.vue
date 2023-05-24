@@ -100,6 +100,12 @@ const props = defineProps({
       }
     }
   },
+  showPagination: {
+    type: Boolean,
+    default() {
+      return true
+    }
+  },
   tableSettingId: {
     type: String,
     required: true

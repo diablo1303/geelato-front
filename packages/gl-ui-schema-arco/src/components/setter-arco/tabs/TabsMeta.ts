@@ -16,7 +16,7 @@ export default {
         "expanded": true,
         "title": "子项",
         "setterComponentName": "GlObjectArraySetter",
-        "_showSub": true,
+        "_showSub": false,
         "properties": [{
             "name": "title",
             "group": "base",
@@ -36,9 +36,25 @@ export default {
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
             "title": "图标",
-            "setterComponentName": "GlIconfontSetter"
+            "setterComponentName": "GlIconfontSetter",
+            "enableValueExpress": false
         }],
-        "titleField": "title"
+        "titleField": "title",
+        "enableValueExpress": false
+    }, {
+        "name": "extra",
+        "group": "base",
+        "type": "slots",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "额外",
+        "setterComponentName": "GlComponentSelect",
+        "slotComponentName": "GlComponent",
+        "slotComponentBindTarget": "v-model",
+        "slotComponentBindName": "glComponentInst"
     }],
     "actions": []
 }

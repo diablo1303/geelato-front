@@ -7,34 +7,93 @@ export default {
     "useBy": ["freePage"],
     "alias": "table",
     "properties": [{
-        "name": "tableTitle",
+        "name": "base",
         "group": "base",
         "type": "props",
-        "enableValueExpress": true,
+        "enableValueExpress": false,
         "show": true,
         "expanded": true,
         "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "title": "标题",
-        "setterComponentName": "AInput"
-    }, {
-        "name": "entityName",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "title": "绑定数据源",
-        "setterComponentName": "GlEntitySelect",
-        "show": true,
-        "expanded": true,
-        "enableValueExpress": false
+        "setterComponentVModelName": "",
+        "_showSub": true,
+        "properties": [{
+            "name": "tableTitle",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": true,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "_showSub": false,
+            "title": "标题",
+            "setterComponentName": "AInput"
+        }, {
+            "name": "entityName",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "title": "绑定数据源",
+            "setterComponentName": "GlEntitySelect"
+        }, {
+            "name": "showQuery",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {"defaultChecked": true},
+            "setterComponentVModelName": "modelValue",
+            "title": "显示查询",
+            "setterComponentName": "ASwitch"
+        }, {
+            "name": "showPagination",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "title": "显示分页",
+            "setterComponentName": "ASwitch"
+        }, {
+            "name": "showToolbar",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {"defaultChecked": true},
+            "setterComponentVModelName": "modelValue",
+            "title": "显示工具条",
+            "setterComponentName": "ASwitch"
+        }, {
+            "name": "tablePadding",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "title": "外框间距",
+            "setterComponentName": "AInput",
+            "placeholder": "如：0px、8px"
+        }],
+        "title": "基础",
+        "setterComponentName": "GlSimpleObjectSetter"
     }, {
         "name": "query",
         "setterComponentProps": {},
         "setterComponentVModelName": "",
         "group": "base",
         "type": "props",
-        "title": "查询",
+        "title": "查询条件",
         "_showSub": false,
         "properties": [{
             "name": "name",
@@ -211,7 +270,7 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "_showSub": true,
+        "_showSub": false,
         "properties": [{
             "name": "dataIndex",
             "setterComponentProps": {},
@@ -222,7 +281,7 @@ export default {
             "expanded": true,
             "title": "绑定字段",
             "setterComponentName": "GlFieldSelect"
-        },{
+        }, {
             "name": "title",
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
@@ -232,7 +291,7 @@ export default {
             "expanded": true,
             "title": "字段标题",
             "setterComponentName": "AInput"
-        },  {
+        }, {
             "name": "fixed",
             "setterComponentProps": {
                 "type": "button",

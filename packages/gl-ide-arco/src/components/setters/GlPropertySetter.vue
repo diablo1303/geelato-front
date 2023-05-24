@@ -182,7 +182,8 @@ const setPropertyModel = () => {
       propertyModel.value = {
         componentName: props.propertySetterMeta.slotComponentName,
         props: undefined,
-        propsTarget: props.propertySetterMeta.slotComponentBindTarget
+        propsTarget: props.propertySetterMeta.slotComponentBindTarget,
+        propsName:props.propertySetterMeta.slotComponentBindName
       }
     } else {
       if (props.propertySetterMeta.properties && props.propertySetterMeta.properties.length > 0) {

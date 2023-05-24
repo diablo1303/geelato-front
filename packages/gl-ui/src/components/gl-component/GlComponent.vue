@@ -14,9 +14,18 @@
              :glIndex="glIndex"
              :glComponentInst="glComponentInst"
   >
-    <template v-for="(slotItem,slotName) in glComponentInst.slots">
-      <component v-if="slotItem" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"
-                 v-slot:[slotName]></component>
+    <template v-for="(slotItem,slotName) in glComponentInst.slots" v-slot:[slotName]>
+<!--      <component v-if="slotItem" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"-->
+<!--                 v-slot:[slotName] :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>-->
+      <component v-if="slotItem.propsTarget==='v-bind'" :is="slotItem.componentName" v-bind="slotItem.props"
+                 :style="slotItem.style" :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>
+      <component v-else-if="slotItem.propsTarget==='v-model'&&slotItem.propsName" :is="slotItem.componentName"
+                 v-model:[slotItem.propsName]="slotItem.props"
+                 :style="slotItem.style" :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>
+      <component v-else-if="slotItem.propsTarget==='v-model'&&!slotItem.propsName" :is="slotItem.componentName"
+                 v-model="slotItem.props"
+                 :style="slotItem.style" :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>
+      <template v-else>不支持的slot props target：{{ slotItem.propsTarget }}，请检查组件定义配置。</template>
     </template>
     <GlComponent v-for="(childComponentInst,childIndex) in glComponentInst.children"
                  :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag" :glIndex="childIndex"></GlComponent>
