@@ -18,7 +18,7 @@ export default {
 <script lang="ts" setup>
 
 import {getCurrentInstance, onUnmounted, PropType, provide, ref} from "vue";
-import {PageParamType, PageProvideProxy, actionScriptExecutor, mixins} from "@geelato/gl-ui";
+import {PageParamType, PageProvideProxy, actionScriptExecutor, mixins, PageProvideKey} from "@geelato/gl-ui";
 
 const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
@@ -89,10 +89,11 @@ pageProvideProxy.setVueInst(props.glComponentInst.id, getCurrentInstance())
 pageProvideProxy.setParams(props.params)
 actionScriptExecutor.addPageProxy(props.glComponentInst.id, pageProvideProxy)
 // 整个页面组件级注入
-provide('pageProvideProxy', pageProvideProxy)
-console.log('GlPage > provide > pageProvideProxy:', pageProvideProxy)
+provide(PageProvideKey, pageProvideProxy)
+// console.log('GlPage > provide() > pageProvideProxy:', pageProvideProxy)
 onUnmounted(() => {
   actionScriptExecutor.removePageProxy(props.glComponentInst.id)
+  // console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
 })
 
 </script>

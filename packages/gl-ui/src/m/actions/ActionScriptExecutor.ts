@@ -32,7 +32,7 @@ export class ActionScriptExecutor {
      */
     addPageProxy(pageComponentId: string, pageProxy: PageProvideProxy) {
         pageProxyMap[pageComponentId] = pageProxy
-        console.log('addPageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
+        // console.log('addPageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
     }
 
     /**
@@ -42,7 +42,7 @@ export class ActionScriptExecutor {
      */
     removePageProxy(pageComponentId: string) {
         delete pageProxyMap[pageComponentId]
-        console.log('removePageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
+        // console.log('removePageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
     }
 
     /**

@@ -1,18 +1,35 @@
 <template>
-  <div class="gl-iconfont-text-setter">
-    <span style="cursor: pointer" @click="showIconSelect">
+  <div class="gl-iconfont-text-setter" style="padding-left: 4px">
+    <div style="display: flex">
+      <div style="flex: 1;min-width: 6em;max-width:6em;line-height: 2.2em">
+        <span style="cursor: pointer" @click="showIconSelect" title="点击重新选择图标">
           <GlIconfont :type="mv.type"></GlIconfont>
-    </span>
-    <span v-if="mv.type" style="cursor: pointer" @click="()=>{mv.type=''}">
+        </span>
+        <span v-if="mv.type" style="cursor: pointer" @click="()=>{mv.type=''}" title="点击删除该图标">
           删除图标
-    </span>
-    <span v-else style="cursor: pointer" @click="showIconSelect">
+        </span>
+        <span v-else style="cursor: pointer" @click="showIconSelect">
           选择图标
-    </span>
-    <span>
-      <a-input style="width: 50%" v-model="mv.text" placeholder="附加文本"
+        </span>
+      </div>
+      <div style="flex: auto">
+        <a-input style="width: 100%" v-model="mv.text" placeholder="按钮文字"
                @change="onChangeText"></a-input>
-    </span>
+      </div>
+    </div>
+<!--    <span style="cursor: pointer" @click="showIconSelect" title="点击重新选择图标">-->
+<!--          <GlIconfont :type="mv.type"></GlIconfont>-->
+<!--    </span>-->
+<!--    <span v-if="mv.type" style="cursor: pointer" @click="()=>{mv.type=''}" title="点击删除该图标">-->
+<!--          删除图标-->
+<!--    </span>-->
+<!--    <span v-else style="cursor: pointer" @click="showIconSelect">-->
+<!--          选择图标-->
+<!--    </span>-->
+<!--    <span>-->
+<!--      <a-input style="width: 50%" v-model="mv.text" placeholder="附加文本"-->
+<!--               @change="onChangeText"></a-input>-->
+<!--    </span>-->
     <a-modal v-model:visible="visible" title="选择图标" @ok="showIconSelect" :width="1024" style="top: 20px">
       <div style="height:640px;overflow-y: scroll;padding:1em;margin:-24px">
         <div v-for="item in json.glyphs" class="gl-iconfont-setter-icon-item" @click="onSelected(item)">

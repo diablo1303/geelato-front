@@ -1,7 +1,7 @@
 export default {
     "componentName": "GlHiddenArea",
     "displayMode": "Tile",
-    "iconType": "gl-hidden-area",
+    "iconType": "gl-hide",
     "group": "layout",
     "title": "隐藏区域",
     "alias": "hidden",

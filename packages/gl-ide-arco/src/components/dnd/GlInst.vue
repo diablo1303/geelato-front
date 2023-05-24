@@ -4,30 +4,31 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {computed, PropType, ref, unref} from 'vue'
+import {computed, inject, PropType, ref, unref} from 'vue'
 import {useDrag, useDrop} from 'vue3-dnd'
 import {ItemTypes} from './DndItemTypes'
 import type {Identifier} from 'dnd-core'
 import {toRefs} from '@vueuse/core'
 import {mixins} from "@geelato/gl-ui"
 import {componentStoreFactory} from "@geelato/gl-ide";
+import {PageProvideProxy, PageProvideKey} from "@geelato/gl-ui";
 
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const props = defineProps({
   id: [String],
   text: String,
   index: Number,
   moveCard: Function as PropType<(dragIndex: number, hoverIndex: number, dragItemId: string, dropItemId: string) => void>,
   addItem: Function,
-  componentStoreId: {
-    type: String,
-    default() {
-      return 'useComponentStore'
-    }
-  },
   ...mixins.props
 })
 
-const componentStore = componentStoreFactory.getComponentStore(props.componentStoreId)()
+const componentStoreId = props.componentStoreId || inject('componentStoreId')
+if (!componentStoreId) {
+  console.error('组件GlInst未设置componentStoreId')
+}
+// @ts-ignore
+const componentStore = componentStoreFactory.getComponentStore(componentStoreId)()
 
 interface DragItem {
   index: number
@@ -59,7 +60,7 @@ const [dropCollect, drop] = useDrop<DragItem,
     if (didDrop) {
       return
     }
-    console.log('drop(),dragItem:', dragItem, ',dropTargetMonitor:', dropTargetMonitor)
+    console.log('drop() > dragItem:', dragItem, ',dropTargetMonitor:', dropTargetMonitor)
     const dropItemId = props.id!
     const dragIndex = dragItem.index
     const hoverIndex = props.index
@@ -68,7 +69,12 @@ const [dropCollect, drop] = useDrop<DragItem,
     // 可通过_isTemplateInst来进行检测
     if (dragItem._isTemplateInst) {
       delete dragItem._isTemplateInst
-      props.addItem!(hoverIndex, JSON.parse(JSON.stringify(dragItem)))
+      if (props.addItem) {
+        props.addItem!(hoverIndex, JSON.parse(JSON.stringify(dragItem)))
+      } else {
+        // 未绑定addItem方法，可能目前拖入的目标是根，根节点不可以施入平级的组件
+        console.log('未添加组件', props.parentId, props.glComponentInst)
+      }
     } else {
       // 移动时
       props.moveCard!(dragIndex, hoverIndex!, dragItem.id, dropItemId)
@@ -106,7 +112,7 @@ const isFormItem = computed(() => {
   }
   return componentStore.isDataEntryComponent(props.glComponentInst.componentName)
 })
-const blocks = ['GlPage', 'GlEntityForm', 'GlFormRow', 'GlFormCol', 'GlDndPlaceholder', 'GlCard', 'GlTabs', 'GlRowColLayout']
+// const blocks = ['GlPage', 'GlEntityForm', 'GlFormRow', 'GlFormCol', 'GlDndPlaceholder', 'GlCard', 'GlTabs', 'GlRowColLayout']
 const style = ref({
   display: function () {
     if (componentStore.isDataEntryComponent(props.glComponentInst.componentName)) {

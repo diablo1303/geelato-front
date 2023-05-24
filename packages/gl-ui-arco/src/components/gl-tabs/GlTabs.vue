@@ -6,14 +6,15 @@ export default {
 <script setup lang="ts">
 
 import {mixins, utils} from "@geelato/gl-ui";
-import {nextTick, onMounted, onUpdated,type PropType, ref} from "vue";
+import {nextTick, onMounted, onUpdated, type PropType, ref} from "vue";
 
 const emits = defineEmits(['update:items'])
 
-class TabItem{
-  title:string = ''
-  iconType:string = ''
+class TabItem {
+  title: string = ''
+  iconType: string = ''
 }
+
 const props = defineProps({
   items: {
     type: Array as PropType<Array<TabItem>>
@@ -81,6 +82,7 @@ const onTabClick = (key: any) => {
 onMounted(() => {
   onTabClick(0)
 })
+const xx = false
 </script>
 <template>
   <a-tabs :active-key="activeKey">
@@ -91,14 +93,8 @@ onMounted(() => {
       {{ item.title }}
       </span>
       </template>
-      <GlInsts :glComponentInst="glComponentInst.children[index]"/>
+      <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst.children[index]" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></component>
     </a-tab-pane>
-
-    <!--    <GlInsts v-for="(item,index) in tabItems" :key="index" :glComponentInst="glComponentInst.children[index]"/>-->
-
-    <!--    <GlTab v-for="(item,index) in tabItems" :key="index" :title="item.title" :iconType="item.iconType"-->
-    <!--           :glComponentInst="glComponentInst.children[index]" @tabClick="onTabClick(index)">-->
-    <!--    </GlTab>-->
   </a-tabs>
 </template>
 

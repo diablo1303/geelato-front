@@ -38,7 +38,25 @@ export default {
         "title": "变量名",
         "placeholder": "结果回写变量名称",
         "description": "点确认或取消时，值回写的变量，若点确认，值为true，则点取消或关闭，值为false",
-        "setterComponentName": "AInput"
+        "setterComponentName": "AInput",
+        "enableValueExpress": false
+    }, {
+        "name": "invokeBlocks",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {
+            "options": [{
+                "label": "确认时触发",
+                "__x0jZAUg6KzxyPrBkaf": "onOk",
+                "value": "onOk"
+            }, {"label": "取消时触发", "__x0jZAUg6KzxyPrBkaf": "onCancel", "value": "onCancel"}], "multiple": true
+        },
+        "setterComponentVModelName": "modelValue",
+        "setterComponentName": "ASelect",
+        "title": "开启指令调用"
     }],
     "actions": []
 }

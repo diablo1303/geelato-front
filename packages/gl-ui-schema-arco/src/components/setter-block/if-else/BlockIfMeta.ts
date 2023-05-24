@@ -2,7 +2,7 @@ export default {
     "componentName": "GlBlockIf",
     "displayMode": "Tile",
     "iconType": "gl-if",
-    "group": "block_page",
+    "group": "block_condition",
     "title": "IF 条件",
     "useBy": ["freePage"],
     "blockContent": "如果满足条件：${target1} ${relationship} ${target2}",

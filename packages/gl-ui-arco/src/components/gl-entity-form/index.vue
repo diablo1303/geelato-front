@@ -25,9 +25,9 @@ import type {FormInstance} from '@arco-design/web-vue/es/form';
 import useLoading from '../../hooks/loading';
 import {isDataEntry} from "@geelato/gl-ui-schema-arco";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
-import {entityApi, mixins, useGlobal, PageProvideProxy, PageParamType} from "@geelato/gl-ui";
+import {entityApi, mixins, useGlobal, PageProvideProxy, PageParamType, PageProvideKey} from "@geelato/gl-ui";
 
-const pageProvideProxy: PageProvideProxy = inject('pageProvideProxy')!
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 console.log('GlEntityForm > inject pageProvideProxy:', pageProvideProxy)
 const isRead = pageProvideProxy.getParamValue('formState') === 'read'
 

@@ -1,10 +1,3 @@
-<template>
-  <div>
-    <GlComponent v-if="glComponentInst" :key="glComponentInst.id" :glComponentInst="glComponentInst"
-                 :glIsRuntime="true" v-bind="pageProps"></GlComponent>
-  </div>
-</template>
-
 <script lang="ts">
 export default {
   name: "GlPageViewer"
@@ -68,6 +61,11 @@ if (loadedPage) {
 }
 
 </script>
-
+<template>
+  <div>
+    <GlComponent v-if="glComponentInst" :key="glComponentInst.id" :glComponentInst="glComponentInst"
+                 :glIsRuntime="true" glRuntimeFlag="Runtime" v-bind="pageProps"></GlComponent>
+  </div>
+</template>
 <style scoped>
 </style>

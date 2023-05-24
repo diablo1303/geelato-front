@@ -1,11 +1,13 @@
 <template>
   <div class="gl-command-editor-sidebar gl-ide-sidebar">
-    <GlComponents size="mini" :componentGroups="componentGroups"></GlComponents>
+    <KeepAlive>
+      <GlComponents size="mini" :componentGroups="componentGroups"></GlComponents>
+    </KeepAlive>
   </div>
 </template>
 
 <script lang="ts" setup>
-import GlComponents from "../../sidebar/Components.vue";
+import GlComponents from "../../sidebar/Components/ComponentsSidebar.vue";
 
 const componentGroups = [
   {name: 'block_var', text: '变量', opened: true},

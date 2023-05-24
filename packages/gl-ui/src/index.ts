@@ -7,6 +7,8 @@ import GlIconfont from './components/gl-iconfont/Index.vue'
 import GlColor from './components/gl-color/GlColor.vue'
 import GlDndPlaceholder from './components/gl-dnd-placeholder/Index.vue'
 import GlComponent from "./components/gl-component/GlComponent.vue";
+import GlInstRuntime from "./components/gl-component/GlInstRuntime.vue";
+import GlInstsRuntime from "./components/gl-component/GlInstsRuntime.vue";
 import GlPageViewer from "./components/gl-page-viewer/GlPageViewer.vue";
 import GlText from './components/gl-text/Index.vue'
 import {LooseObject} from "./m/mix/LooseObject";
@@ -32,6 +34,7 @@ import ConvertUtil from "./m/utils/ConvertUtil";
 import useGlobal from "./m/hooks/useGlobal";
 import './assets/style.css'
 import actionScriptExecutor from "./m/actions/ActionScriptExecutor";
+import {PageProvideKey} from "./components/PageProvideProxy";
 
 const Utils = AllUtils
 
@@ -49,6 +52,8 @@ const component: Plugin = {
         app.component(GlText.name, GlText)
         app.component(GlColor.name, GlColor)
         app.component(GlComponent.name, GlComponent)
+        app.component(GlInstRuntime.name,GlInstRuntime)
+        app.component(GlInstsRuntime.name,GlInstsRuntime)
         app.component(GlPageViewer.name, GlPageViewer)
 
         if (!app.config.globalProperties.$gl) {
@@ -69,6 +74,7 @@ const component: Plugin = {
 export {
     PageParamType,
     PageProvideProxy,
+    PageProvideKey,
     GlIconfont,
     EntityApi,
     entityApi,

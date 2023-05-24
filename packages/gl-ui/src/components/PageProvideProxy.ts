@@ -5,13 +5,13 @@ import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import type {ComponentInternalInstance} from "vue";
 
 export type PageParamType = { pName: string, pValue: any, pType: string }
-
+export const PageProvideKey = 'PageProvideKey'
 export default class PageProvideProxy {
     // 数据库中的字段，页面id
     pageId: string = ''
     pageInst: ComponentInstance
     pageVueInst: ComponentInternalInstance | null
-    pageParams: Array<{[key:string]:any}> = []
+    pageParams: Array<{ [key: string]: any }> = []
     pageCtx: object = {}
     componentMap: { [key: string]: ComponentInternalInstance | null } = {}
 
@@ -39,7 +39,7 @@ export default class PageProvideProxy {
         return null
     }
 
-    setParams(params: Array<{[key:string]:any}>) {
+    setParams(params: Array<{ [key: string]: any }>) {
         this.pageParams = params || []
     }
 
@@ -54,12 +54,12 @@ export default class PageProvideProxy {
      *  获取在动作面板中配置的页面参数值
      */
     getParamValue(paramName: string) {
-        let pName=''
-        const foundParam = this.pageParams?.find((param: {[key:string]:any}) => {
-            const foundKey = Object.keys(param).find((key:string)=>{
-                return key===paramName
+        let pName = ''
+        const foundParam = this.pageParams?.find((param: { [key: string]: any }) => {
+            const foundKey = Object.keys(param).find((key: string) => {
+                return key === paramName
             })
-            if(foundKey){
+            if (foundKey) {
                 pName = foundKey
                 return true
             }

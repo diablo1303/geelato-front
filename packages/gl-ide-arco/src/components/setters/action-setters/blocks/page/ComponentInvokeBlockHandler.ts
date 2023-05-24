@@ -16,7 +16,7 @@ export default class ComponentInvokeBlockHandler implements IBlockHandler {
             const params = ${BlockUtils.paramStringify(params)};
             method(params);
             `
-        );
+        ).setBlockName('ComponentInvokeBlock');
     }
 }
 

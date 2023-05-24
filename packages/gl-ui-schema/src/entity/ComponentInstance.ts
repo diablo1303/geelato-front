@@ -22,12 +22,14 @@ export default class ComponentInstance {
     id: string = ''
     title?: string = ''
     componentName: string = ''
+    // 如dataEntry，可以来用区分是否为表单输入项，在渲染时展示label
+    group?:string = ''
     props: ComponentInstanceProps = {}
     // 属性值表达式，通过变量绑定、函数计算等，动态计算属性的值
-    propsExpress?:ComponentInstanceProps = {}
+    propsExpress?: ComponentInstanceProps = {}
     slots: { [key: string]: any } = {}
     // 插槽值表达式，通过变量绑定、函数计算等，动态计算属性的值
-    slotsExpress?:ComponentInstanceProps = {}
+    slotsExpress?: ComponentInstanceProps = {}
     children: Array<ComponentInstance> = []
     actions: Array<Action> = []
     style?: Object = {}
@@ -42,4 +44,10 @@ export default class ComponentInstance {
     _disabled?: boolean
     // 是否为模板实例
     _isTemplateInst?: boolean
+
+    // 运行时产生，用于指令块组件
+    // 是否为被调用的指令块
+    __isInvokeBlock?: boolean
+    // 作为被调用的指令块占位符
+    __invokeBlockPlaceholder?: string
 }

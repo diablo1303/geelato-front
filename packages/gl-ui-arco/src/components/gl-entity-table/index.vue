@@ -2,7 +2,7 @@
 // @ts-nocheck
 import {
   computed,
-  nextTick, onMounted,
+  nextTick,
   type PropType,
   reactive,
   ref,
@@ -16,8 +16,6 @@ import type {
 } from "@arco-design/web-vue/es/table/interface";
 import useLoading from "../../hooks/loading";
 import {useI18n} from "vue-i18n";
-import type {Action, Pagination} from "../../types/global";
-// import { SelectOptionData } from "@arco-design/web-vue/es/select/interface";
 import cloneDeep from "lodash/cloneDeep";
 import Sortable from "sortablejs";
 import {
@@ -31,6 +29,7 @@ import {
 import type {Column, TableColumnDataPlus} from "./table";
 import {useGlobal} from "@geelato/gl-ui";
 import {ComponentMeta} from "@/components/gl-toolbar/toolbar";
+import {PaginationProps} from "@arco-design/web-vue";
 
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal;
@@ -89,6 +88,22 @@ const props = defineProps({
       return "medium";
     },
   },
+  pagination: {
+    type: Object as PropType<PaginationProps>,
+    default() {
+      return {
+        current: 1,
+        pageSize: 15,
+        showTotal: true,
+        showPageSize: true,
+        pageSizeOptions: [5, 10, 15, 20, 30, 40, 50],
+      }
+    }
+  },
+  tableSettingId: {
+    type: String,
+    required: true
+  }
 });
 
 const {loading, setLoading} = useLoading(true);
@@ -98,12 +113,8 @@ const {t} = CheckUtil.isBrowser() ? useI18n() : {
 };
 const renderData = ref([]);
 
-const basePagination: Pagination = {
-  current: 1,
-  pageSize: 5,
-};
 const pagination = reactive({
-  ...basePagination,
+  ...props.pagination,
 });
 
 const columns = computed<TableColumnData[]>(() => {
@@ -144,17 +155,21 @@ const createEntityReader = () => {
 };
 
 const fetchData = async (readerInfo?: {
-  pageNo?: number;
-  params?: Array<EntityReaderParam>;
+  pageSize?: number,
+  pageNo?: number,
+  params?: Array<EntityReaderParam>
 }) => {
   setLoading(true);
   try {
     const entityReader = createEntityReader();
     // @ts-ignore
     entityReader.params = readerInfo?.params;
+    // @ts-ignore
+    entityReader.pageSize = readerInfo?.pageSize || pagination.pageSize
     const response = await entityApi.queryByEntityReader(entityReader);
-    console.log('table > fetch data and response:', response)
+    console.log('GlEntityTable > fetchData() > response:', response)
     renderData.value = response.data.data;
+    pagination.pageSize = readerInfo?.pageSize || pagination.pageSize
     pagination.current = readerInfo?.pageNo || 1;
     pagination.total = response.data.total;
   } catch (err) {
@@ -174,9 +189,10 @@ const onPageChange = (pageNo: number) => {
   fetchData({pageNo});
 };
 
-onMounted(() => {
-  fetchData();
-})
+const onPageSizeChange = (pageSize: number) => {
+  fetchData({pageSize})
+}
+
 const exchangeArray = <T extends Array<any>>(
     array: T,
     beforeIdx: number,
@@ -213,7 +229,7 @@ const handleChange = (
 const popupVisibleChange = (val: boolean) => {
   if (val) {
     nextTick(() => {
-      const el = document.getElementById("tableSetting") as HTMLElement;
+      const el = document.getElementById(props.tableSettingId) as HTMLElement;
       const sortable = new Sortable(el, {
         onEnd(e: any) {
           const {oldIndex, newIndex} = e;
@@ -253,8 +269,8 @@ const evalExpression = (data: {
 };
 
 /**
- *  带有插槽的列
- *  除了操作列，操作需作处理
+ *  计算出带有插槽的列
+ *  这些列中，不包括操作列（即slotName为#的列）
  */
 const slotColumns = computed(() => {
   return cloneColumns.value.filter((column) => {
@@ -280,6 +296,7 @@ defineExpose({search, popupVisibleChange, handleChange});
       :size="size"
       :scroll="{}"
       @page-change="onPageChange"
+      @page-size-change="onPageSizeChange"
   >
     <template ##="{ record }">
       <a-space>

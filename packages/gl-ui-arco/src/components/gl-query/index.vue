@@ -1,62 +1,74 @@
 <script setup lang="ts">
 // @ts-nocheck
-import {useI18n} from "vue-i18n";
-import {type PropType, ref} from "vue";
+import {onMounted, type PropType, ref} from "vue";
 import type {EntityReaderParam} from "@geelato/gl-ui";
-import {ConvertUtil, CheckUtil} from "@geelato/gl-ui";
-import type {QueryCol} from "./query";
-
-const {t} = CheckUtil.isBrowser() ? useI18n() : {
-  t: (content:string) => {
-    return content
-  }
-};
+import {ConvertUtil} from "@geelato/gl-ui";
+import QueryItem from "./query";
+import {GlIconfont} from "@geelato/gl-ui";
 
 const emit = defineEmits(["search"]);
 const props = defineProps({
   items: {
-    type: Array as PropType<QueryCol[]>,
+    type: Array as PropType<QueryItem[]>,
     default() {
       return [];
     },
   },
 });
 
-const generateDefaultFormModel = () => {
-  const defaultFormModel: any = {};
-  props.items?.forEach((item, index) => {
-    if (item.name) {
-      defaultFormModel[index] = undefined;
-    }
+const generateFormModel = () => {
+  const fModel: any = {};
+  props.items?.forEach((item: QueryItem) => {
+    fModel[item.id] = item.component?.value;
   });
-  return defaultFormModel;
+  console.log('GlQuery > generateFormModel() > fModel:', fModel)
+  return fModel;
 };
-const formModel = ref(generateDefaultFormModel());
+const defaultValue = generateFormModel()
 
+const formModel = ref(defaultValue);
+
+/**
+ *  创建查询参数
+ */
 const getEntityReaderParams = () => {
   const entityReaderParams: Array<EntityReaderParam> = [];
-  console.log("formModel", formModel.value);
-  props.items?.forEach((item: QueryCol, index) => {
+  props.items?.forEach((item: QueryItem) => {
     if (
-        formModel.value[index] !== undefined &&
-        ConvertUtil.trim(`${formModel.value[index]}`).length > 0
+        formModel.value[item.id] !== undefined &&
+        ConvertUtil.trim(`${formModel.value[item.id]}`).length > 0
     ) {
       entityReaderParams.push({
-        name: item.id,
+        name: item.name,
         cop: item.cop,
-        value: formModel.value[index],
+        value: formModel.value[item.id],
       });
     }
   });
   return entityReaderParams;
 };
+/**
+ *  基于页面的组件，设置form表单的值
+ */
 
 const onSearch = () => {
+  formModel.value = generateFormModel()
   emit("search", getEntityReaderParams(), formModel.value);
 };
 const reset = () => {
-  formModel.value = generateDefaultFormModel();
+  props.items?.forEach((item: QueryItem) => {
+    if (item.component?.value) {
+      item.component.value = defaultValue[item.id]
+    }
+  });
+  onSearch()
 };
+const t = (value: any) => {
+  return value
+}
+onMounted(() => {
+  onSearch()
+})
 defineExpose({getEntityReaderParams, reset});
 </script>
 
@@ -64,7 +76,6 @@ defineExpose({getEntityReaderParams, reset});
   <a-row>
     <a-col :flex="1">
       <a-form
-          :model="formModel"
           :label-col-props="{ span: 6 }"
           :wrapper-col-props="{ span: 18 }"
           label-align="left"
@@ -76,13 +87,8 @@ defineExpose({getEntityReaderParams, reset});
               :span="item.colspan"
           >
             <a-form-item :field="item.id" :label="item.title ? t(item.title) : t(item.name)">
-              <GlComponent v-if="item.component" :glComponentInst="item.component"></GlComponent>
-<!--              <component v-if="item.component"-->
-              <!--                         :is="item.component.componentName"-->
-              <!--                         v-bind="item.component.props"-->
-              <!--                         v-model="formModel[index]"-->
-              <!--                         :placeholder="t(item.component.props?.placeholder || '')"-->
-              <!--                         @keyup.enter="onSearch"/>-->
+              <GlComponent v-if="item.component" :glComponentInst="item.component"
+                           @change="onSearch"></GlComponent>
             </a-form-item>
           </a-col>
         </a-row>
@@ -93,15 +99,15 @@ defineExpose({getEntityReaderParams, reset});
       <a-space direction="vertical" :size="18">
         <a-button type="primary" @click="onSearch">
           <template #icon>
-            <icon-search/>
+            <GlIconfont type="gl-search"></GlIconfont>
           </template>
-          {{ t("searchTable.form.search") }}
+          查询
         </a-button>
         <a-button @click="reset">
           <template #icon>
-            <icon-refresh/>
+            <GlIconfont type="gl-reset"></GlIconfont>
           </template>
-          {{ t("searchTable.form.reset") }}
+          重置
         </a-button>
       </a-space>
     </a-col>

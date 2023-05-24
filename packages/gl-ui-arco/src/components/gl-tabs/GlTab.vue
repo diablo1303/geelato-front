@@ -26,7 +26,7 @@ const tabClick = (key: any) => {
       {{ title }}
       </span>
     </template>
-    <GlInsts :glComponentInst="glComponentInst"/>
+    <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst" :componentStoreId="componentStoreId" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"/>
   </a-tab-pane>
 </template>
 

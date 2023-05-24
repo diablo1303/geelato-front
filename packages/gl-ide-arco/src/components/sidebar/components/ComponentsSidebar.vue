@@ -130,8 +130,7 @@ const createTemplateInst = (element:ComponentMaterial) => {
         // console.log('gl-runtime > gl-x > clone > child item:', item.children[i])
       }
     }
-    console.log('gl-runtime > gl-x > createTemplateInst return', item)
-    // console.log(JSON.stringify(item))
+    // console.log('GlIdePluginCoreComponents > createTemplateInst() > return', item)
     return item
   }
 

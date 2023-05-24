@@ -7,13 +7,41 @@ import type {PageParamType} from "@geelato/gl-ui";
 export default class OpenComponentPageBlockHandler implements IBlockHandler {
 
     parseToScript(props: Props): ParseResult {
-        console.log("OpenComponentPageBlockHandler > parseToScript > props:", props)
+        // console.log("OpenComponentPageBlockHandler > parseToScript > props:", props)
         const width = props.width || "1024px"
         const okText = props.okText || "确定"
         const cancelText = props.cancelText || "取消"
         const hideCancel = props.hideCancel === true ? true : false
         const params = props.params || []
         return new ParseResult(
+            // `
+            // const content = $gl.loadPage("${props.pageId || ''}","${props.extendId}",{params:${BlockUtils.paramStringify(params)}});
+            // $gl.$drawer.open({
+            //     title: "${props.title}",
+            //     content: content,
+            //     width:"${width}",
+            //     okText:"${okText}",
+            //     onBeforeOk: async ()=>{
+            //       const method = $gl.getComponentMethod("${props.beforeOkInvokeComponentId}","${props.beforeOkInvokeMethodName}");
+            //       if(method){
+            //         const result = await method();
+            //         return result;
+            //       }
+            //       return true;
+            //     },
+            //     onClose:async ()=>{
+            //         const method = $gl.getComponentMethod("${props.closeInvokeComponentId}","${props.closeInvokeMethodName}");
+            //         if(method){
+            //             const result = await method();
+            //             return result;
+            //         }
+            //         return true
+            //     },
+            //     cancelText:"${cancelText}",
+            //     hideCancel:${hideCancel}
+            // })
+            // `
+
             `
             const content = $gl.loadPage("${props.pageId || ''}","${props.extendId}",{params:${BlockUtils.paramStringify(params)}});
             $gl.$drawer.open({
@@ -22,26 +50,19 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
                 width:"${width}",
                 okText:"${okText}",
                 onBeforeOk: async ()=>{
-                  const method = $gl.getComponentMethod("${props.beforeOkInvokeComponentId}","${props.beforeOkInvokeMethodName}");
-                  if(method){
-                    const result = await method();
-                    return result;
-                  }
-                  return true;
+                    #{onBeforeOk}
+                },
+                onOpen:async ()=>{
+                    #{onOpen}
                 },
                 onClose:async ()=>{
-                    const method = $gl.getComponentMethod("${props.closeInvokeComponentId}","${props.closeInvokeMethodName}");
-                    if(method){
-                        const result = await method();
-                        return result;
-                    }
-                    return true
+                    #{onClose}
                 },
                 cancelText:"${cancelText}",
                 hideCancel:${hideCancel}
             })
             `
-        );
+        ).setBlockName('OpenComponentPageBlock');
     }
 
 

@@ -1,4 +1,4 @@
-.gl-block-title{
+.gl-block-title {
     font-weight: 700;
 }
 
@@ -10,36 +10,46 @@
     background-color: rgb(246, 246, 246);
 }
 
-.gl-command-block  .gl-left {
+.gl-command-block-start, gl-command-block-callback, gl-command-block-end {
+    display: flex;
+}
+
+.gl-command-block .gl-left {
+    flex:1;
     display: inline-block;
+    min-width: 2em;
+    max-width: 2em;
     vertical-align: top;
-    padding: 0 0.5em
+    padding: 0 0.5em;
 }
 
-.gl-command-block  .gl-right {
+.gl-command-block .gl-right {
+    flex:auto;
     display: inline-block;
 }
 
-.gl-command-block  .gl-right > .gl-title {
+.gl-command-block .gl-right > .gl-title,.gl-command-block-callback > .gl-title {
     font-weight: 600;
 }
 
 
-.gl-command-block  .gl-right > .gl-content {
+.gl-command-block .gl-right > .gl-description,.gl-command-block-callback .gl-description {
     color: #8f8f8f;
 }
 
-.gl-command-block  .gl-right > .gl-content .gl-var {
+.gl-command-block .gl-right > .gl-description .gl-var,.gl-command-block-callback  .gl-description .gl-var {
     color: #165DFF;
     background-color: #ecf5ff;
 }
 
-.gl-command-block.gl-disabled .gl-title{
+.gl-command-block.gl-disabled .gl-title {
     font-weight: 500;
     color: #cccccc !important;
 }
 
-.gl-command-block-children{
+.gl-command-block-children,.gl-command-block-callback {
     border-left: 1px solid #e3e2e2;
     margin-left: 2em;
 }
+
+

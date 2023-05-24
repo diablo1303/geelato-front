@@ -10,6 +10,7 @@
              :glChildren="glComponentInst.children"
              @click="onClick"
              :glIsRuntime="glIsRuntime"
+             :glRuntimeFlag="glRuntimeFlag"
              :glIndex="glIndex"
              :glComponentInst="glComponentInst"
   >
@@ -18,7 +19,7 @@
                  v-slot:[slotName]></component>
     </template>
     <GlComponent v-for="(childComponentInst,childIndex) in glComponentInst.children"
-                 :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glIndex="childIndex"></GlComponent>
+                 :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag" :glIndex="childIndex"></GlComponent>
   </component>
 </template>
 
@@ -32,9 +33,9 @@ import {getCurrentInstance, inject, onMounted, ref, watch} from 'vue'
 import mixins from "../mixins";
 import actionScriptExecutor from "../../m/actions/ActionScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
-import PageProvideProxy from "../PageProvideProxy";
+import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
 
-const pageProvideProxy: PageProvideProxy = inject('pageProvideProxy')!
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const props = defineProps({
   ...mixins.props

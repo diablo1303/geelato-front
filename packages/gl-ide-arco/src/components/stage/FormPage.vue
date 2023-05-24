@@ -9,7 +9,9 @@ import {utils} from "@geelato/gl-ui";
 </script>
 
 <template>
-  <GlIdeStageBasePage :key="utils.gid('p')" componentStoreId="useComponentStore"></GlIdeStageBasePage>
+  <GlIdeStageBasePage :key="utils.gid('p')"
+                      :enableToolbar="true"
+                      componentStoreId="useComponentStore"></GlIdeStageBasePage>
 </template>
 <style>
 </style>

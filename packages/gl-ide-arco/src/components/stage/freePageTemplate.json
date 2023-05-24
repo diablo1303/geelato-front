@@ -2,7 +2,9 @@
   "componentName": "GlPage",
   "id": "",
   "title": "页面",
-  "props": {},
+  "props": {
+    "pageMargin":"0"
+  },
   "slots": {},
   "children": [
     {

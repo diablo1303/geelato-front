@@ -27,6 +27,8 @@ export interface Pagination {
     current: number;
     pageSize: number;
     total?: number;
+    showPageSize: boolean;
+    pageSizeOptions: Array<number>
 }
 
 export type Status = 'normal' | 'warning' | 'success' | 'danger'

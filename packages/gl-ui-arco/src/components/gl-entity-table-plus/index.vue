@@ -1,92 +1,3 @@
-<template>
-  <div>
-    <GlQuery ref="queryRef" v-bind="query" @search="onSearch"></GlQuery>
-    <a-divider style="margin-top: 16px"/>
-    <GlToolbar v-bind="toolbar" style="margin-bottom: 8px">
-      <!--      <template #leftItems>-->
-      <!--        <a-button type="primary">-->
-      <!--          <template #icon>-->
-      <!--            <icon-plus-circle />-->
-      <!--          </template>-->
-      <!--          新增-->
-      <!--        </a-button>-->
-      <!--        <a-button type="outline">-->
-      <!--          <template #icon>-->
-      <!--            <icon-export />-->
-      <!--          </template>-->
-      <!--          导出-->
-      <!--        </a-button>-->
-      <!--      </template>-->
-      <template #rightItems>
-        <a-tooltip :content="t('searchTable.actions.refresh')">
-          <div class="action-icon" @click="refresh">
-            <icon-refresh size="18"/>
-          </div>
-        </a-tooltip>
-        <a-dropdown @select="handleSelectDensity">
-          <a-tooltip :content="t('searchTable.actions.density')">
-            <div class="action-icon">
-              <icon-line-height size="18"/>
-            </div>
-          </a-tooltip>
-          <template #content>
-            <a-doption
-                v-for="item in densityList"
-                :key="item.value"
-                :value="item.value"
-                :class="{ active: item.value === size }"
-            >
-              <span>{{ item.name }}</span>
-            </a-doption>
-          </template>
-        </a-dropdown>
-        <a-tooltip :content="t('searchTable.actions.columnSetting')">
-          <a-popover
-              trigger="click"
-              position="bl"
-              @popup-visible-change="popupVisibleChange"
-          >
-            <div class="action-icon">
-              <icon-settings size="18"/>
-            </div>
-            <template #content>
-              <div id="tableSetting">
-                <div
-                    v-for="(item, index) in showColumns"
-                    :key="item.dataIndex"
-                    class="setting"
-                >
-                  <div style="margin-right: 4px; cursor: move">
-                    <icon-drag-arrow/>
-                  </div>
-                  <div>
-                    <a-checkbox
-                        v-model="item.checked"
-                        @change="handleChange($event, item, index)"
-                    >
-                    </a-checkbox>
-                  </div>
-                  <div class="title">
-                    {{ item.title === "#" ? "序列号" : item.title }}
-                  </div>
-                </div>
-              </div>
-            </template>
-          </a-popover>
-        </a-tooltip>
-      </template>
-    </GlToolbar>
-    <GlEntityTable
-        ref="tableRef"
-        :entityName="entityName"
-        :columns="columns"
-        :columnActions="columnActions"
-        :size="size"
-        @updateColumns="onUpdateColumns"
-    ></GlEntityTable>
-  </div>
-</template>
-
 <script lang="ts">
 export default {
   name: "GlEntityTablePlus"
@@ -102,7 +13,7 @@ import GlToolbar from "../gl-toolbar/index.vue";
 import GlEntityTable from "../gl-entity-table/index.vue";
 import {computed, inject, onMounted, type PropType, ref} from "vue";
 import type {EntityReaderParam} from "@geelato/gl-ui";
-import {type Query, defaultQuery} from "../gl-query/query";
+import QueryItem from "../gl-query/query";
 import cloneDeep from "lodash/cloneDeep";
 import {
   type SizeProps,
@@ -112,10 +23,10 @@ import {
 } from "../gl-entity-table/table";
 import {type Toolbar, defaultToolbar} from "../gl-toolbar/toolbar";
 import {useI18n} from "vue-i18n";
-import {CheckUtil, entityApi, PageProvideProxy} from "@geelato/gl-ui";
+import {CheckUtil, entityApi, PageProvideKey, PageProvideProxy, GlIconfont, utils} from "@geelato/gl-ui";
 import type {Action} from "../../types/global";
 
-const pageProvideProxy: PageProvideProxy = inject('pageProvideProxy')!
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const {t} = CheckUtil.isBrowser() ? useI18n() : {
   t: () => {
@@ -123,15 +34,18 @@ const {t} = CheckUtil.isBrowser() ? useI18n() : {
 };
 
 const props = defineProps({
+  tableTitle: {
+    type: String
+  },
   entityName: {
     type: String,
     required: true,
   },
   query: {
-    type: Object as PropType<Query>,
+    type: Array as PropType<Array<QueryItem>>,
     required: true,
     default() {
-      return defaultQuery;
+      return [];
     },
   },
   toolbar: {
@@ -173,7 +87,7 @@ onMounted(() => {
   console.log("转换后的table:", props.columns);
 })
 
-
+const tableSettingId = utils.gid('tSetting',16)
 const size = ref<SizeProps>(props.size || "medium");
 const densityList = computed(() => [
   {
@@ -254,6 +168,82 @@ const deleteRow = (params: any) => {
 }
 defineExpose([deleteRow, refresh])
 </script>
+
+<template>
+  <a-card class="general-card" :title="tableTitle">
+    <GlQuery v-if="query" ref="queryRef" :items="query" @search="onSearch"></GlQuery>
+    <a-divider style="margin-top: 16px"/>
+    <GlToolbar v-bind="toolbar" style="margin-bottom: 8px">
+      <template #rightItems>
+        <a-tooltip content="刷新">
+          <div class="action-icon" @click="refresh">
+            <GlIconfont type="gl-refresh"></GlIconfont>
+          </div>
+        </a-tooltip>
+        <a-dropdown @select="handleSelectDensity">
+          <a-tooltip content="行高调整">
+            <div class="action-icon">
+              <GlIconfont type="gl-line-height"></GlIconfont>
+            </div>
+          </a-tooltip>
+          <template #content>
+            <a-doption
+                v-for="item in densityList"
+                :key="item.value"
+                :value="item.value"
+                :class="{ active: item.value === size }"
+            >
+              <span>{{ item.name }}</span>
+            </a-doption>
+          </template>
+        </a-dropdown>
+        <a-tooltip :content="t('searchTable.actions.columnSetting')">
+          <a-popover
+              trigger="click"
+              position="bl"
+              @popup-visible-change="popupVisibleChange"
+          >
+            <div class="action-icon">
+              <GlIconfont type="gl-setting"></GlIconfont>
+            </div>
+            <template #content>
+              <div :id="tableSettingId">
+                <div
+                    v-for="(item, index) in showColumns"
+                    :key="item.dataIndex"
+                    class="setting"
+                >
+                  <div style="margin-right: 4px; cursor: move">
+                    <!--   TODO 待支持拖拽排序 -->
+<!--                    <GlIconfont type="gl-drag-arrow"></GlIconfont>-->
+                  </div>
+                  <div>
+                    <a-checkbox
+                        v-model="item.checked"
+                        @change="handleChange($event, item, index)"
+                    >
+                    </a-checkbox>
+                  </div>
+                  <div class="title">
+                    {{ item.title === "#" ? "序列号" : item.title }}
+                  </div>
+                </div>
+              </div>
+            </template>
+          </a-popover>
+        </a-tooltip>
+      </template>
+    </GlToolbar>
+    <GlEntityTable
+        ref="tableRef"
+        :entityName="entityName"
+        :columns="columns"
+        :columnActions="columnActions"
+        :size="size"
+        @updateColumns="onUpdateColumns"
+    ></GlEntityTable>
+  </a-card>
+</template>
 
 <style scoped lang="less">
 .action-icon {

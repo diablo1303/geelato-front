@@ -13,7 +13,7 @@ export default class ComponentSetterProvideProxy {
     // TODO 需考虑弹出多层GlComponentSetter的时，属性覆盖的场景
     setPropValue(propName: string, value: any) {
         this._propsValue.value[propName] = value
-        console.log('ComponentSetterProvideProxy > _propsValue:', this._propsValue.value)
+        // console.log('ComponentSetterProvideProxy > _propsValue:', this._propsValue.value)
         this.propValueChangeCallbacks.forEach((item:{callback: Function, propName: string}) => {
             item.callback(propName, value)
         })
