@@ -226,7 +226,7 @@ class ComponentStoreFactory {
                         this.setCurrentSelectedComponentId(value, fromPageId)
                         if (this.currentSelectedComponentId) {
                             const foundComponent = this.findComponentFromTreeById(this.currentSelectedComponentId)
-                            console.log('storeId:', storeId, 'findComponentFromTreeById', this.currentSelectedComponentId, 'and get', foundComponent, ',currentComponentTree:', this.currentComponentTree)
+                            console.log('setCurrentSelectedComponentById () > storeId:', storeId, 'findComponentFromTreeById', this.currentSelectedComponentId, 'and get', foundComponent, ',currentComponentTree:', this.currentComponentTree)
                             this.currentSelectedComponentInstance = foundComponent
                             if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
                                 // @ts-ignore  TODO 该操作会导致GL-X内的组件拖拽时，一次可拖一次禁用交替出现??
@@ -245,7 +245,7 @@ class ComponentStoreFactory {
                         }
                     },
                     setCurrentSelectedComponentByIdFromItems(id: string, insts: Array<ComponentInstance>, formPageId: string) {
-                        console.log('storeId:', storeId, 'setCurrentSelectedComponentByIdFromItems > id:', id)
+                        console.log('setCurrentSelectedComponentByIdFromItems() > storeId:', storeId, 'setCurrentSelectedComponentByIdFromItems > id:', id)
                         this.setCurrentSelectedComponentId(id, formPageId)
 
                         if (this.currentSelectedComponentId && insts && insts.length > 0) {

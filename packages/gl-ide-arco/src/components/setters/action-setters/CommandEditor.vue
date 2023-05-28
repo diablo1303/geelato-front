@@ -95,8 +95,8 @@ const props = defineProps({
 })
 
 console.log('componentStoreId:::::::::::::::', props.componentStoreId)
-const componentMaterialStore = useComponentMaterialStore()
-const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
+// const componentMaterialStore = useComponentMaterialStore()
+const componentStore = componentStoreFactory.useComponentStore('useComponentBlockStore')
 const emits = defineEmits(["update:action", 'updateAction'])
 
 const mv = ref(props.action)
@@ -110,9 +110,9 @@ const reset = () => {
   mv.value = props.action
 }
 
-const findBlockMeta = (componentName: string) => {
-  return componentMaterialStore.findMetaByName(componentName)
-}
+// const findBlockMeta = (componentName: string) => {
+//   return componentMaterialStore.findMetaByName(componentName)
+// }
 
 const updateInstance = (instance: ComponentInstance) => {
   console.log('updateInstance() > block:', instance)

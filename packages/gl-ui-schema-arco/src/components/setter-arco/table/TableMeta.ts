@@ -12,7 +12,7 @@ export default {
         "type": "props",
         "enableValueExpress": false,
         "show": true,
-        "expanded": true,
+        "expanded": false,
         "setterComponentProps": {},
         "setterComponentVModelName": "",
         "_showSub": true,
@@ -84,6 +84,17 @@ export default {
             "title": "外框间距",
             "setterComponentName": "AInput",
             "placeholder": "如：0px、8px"
+        }, {
+            "name": "enableEdit",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "title": "启用表格编辑",
+            "setterComponentName": "ASwitch"
         }],
         "title": "基础",
         "setterComponentName": "GlSimpleObjectSetter"
@@ -157,7 +168,20 @@ export default {
             "title": "高级查询",
             "expanded": true,
             "setterComponentName": "ASwitch",
-            "show": true
+            "show": true,
+            "enableValueExpress": false
+        }, {
+            "name": "isHidden",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "title": "是否隐藏",
+            "setterComponentName": "ASwitch",
+            "description": "是否隐藏该查询条件，一般用于设置内置的参数"
         }, {
             "name": "component",
             "setterComponentProps": {},
@@ -270,7 +294,7 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "_showSub": false,
+        "_showSub": true,
         "properties": [{
             "name": "dataIndex",
             "setterComponentProps": {},
@@ -309,18 +333,6 @@ export default {
             "title": "固定列",
             "setterComponentName": "ARadioGroup"
         }, {
-            "name": "slotName",
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "title": "插槽名称",
-            "setterComponentName": "AInput",
-            "placeholder": "配合显示脚本使用",
-            "description": "配合显示脚本使用，可任意取英文名称（除了“#”特指操作列），不重复即可"
-        }, {
             "name": "xRenderScript",
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
@@ -340,7 +352,7 @@ export default {
             "expanded": true,
             "setterComponentProps": {},
             "setterComponentVModelName": "",
-            "_showSub": true,
+            "_showSub": false,
             "properties": [{
                 "name": "sortDirections",
                 "group": "base",
@@ -379,6 +391,19 @@ export default {
             }],
             "setterComponentName": "GlSimpleObjectSetter",
             "title": "排序"
+        }, {
+            "name": "xEditComponent",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "show": true,
+            "expanded": true,
+            "title": "编辑组件",
+            "setterComponentName": "GlComponentSelect",
+            "placeholder": "",
+            "description": "若表格启用编辑，则该列选择此组件进行编辑；若该表格不需编辑，则可不选。",
+            "enableValueExpress": false
         }],
         "setterComponentName": "GlObjectArraySetter",
         "title": "表格列",

@@ -113,7 +113,7 @@ const xx = false
       {{ item.title }}
       </span>
       </template>
-      <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst.children[index]"
+      <component v-if="glComponentInst.children[index]" :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst.children[index]"
                  :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></component>
     </a-tab-pane>
   </a-tabs>

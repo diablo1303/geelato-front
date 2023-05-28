@@ -69,6 +69,7 @@ const props = defineProps({
 })
 const emits = defineEmits(['onComponentClick', 'onComponentMounted'])
 
+// console.log('ComponentDnD > props.componentStoreId:',props.componentStoreId)
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
 
 const onClick = (...args: any[]) => {

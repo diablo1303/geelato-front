@@ -158,7 +158,9 @@ const refresh = (event?: MouseEvent) => {
 };
 
 const queryRef = ref(null);
-
+const addRow = () => {
+  tableRef.value.addRow()
+}
 const deleteRow = (params: any) => {
   const id = params[0].id
   entityApi.delete(props.base.entityName, {id: id}).then(() => {
@@ -166,14 +168,22 @@ const deleteRow = (params: any) => {
   })
   console.log('GlEntityTablePlus > deleteRow() > params:', params)
 }
+const saveRow = () => {
+
+}
 defineExpose([deleteRow, refresh])
 </script>
 
 <template>
   <a-card class="general-card" :title="base.tableTitle" :body-style="{padding:base.tablePadding}">
-    <GlQuery v-if="query" v-show="base.showQuery" ref="queryRef" :items="query" @search="onSearch"></GlQuery>
-    <a-divider v-show="base.showQuery" style="margin-top: 16px"/>
-    <GlToolbar v-show="base.showToolbar" v-bind="toolbar" style="margin-bottom: 8px">
+    <GlQuery v-if="query" v-show="base.showQuery!==false" ref="queryRef" :items="query" @search="onSearch"></GlQuery>
+    <a-divider v-show="base.showQuery!==false" style="margin-top: 16px"/>
+    <GlToolbar v-show="base.showToolbar!==false" v-bind="toolbar" style="margin-bottom: 8px">
+      <template #leftItems>
+        <div v-if="base.enableEdit" class="action-icon">
+          <a-button @click="addRow" shape="round" type="text" size="small">添加一行</a-button>
+        </div>
+      </template>
       <template #rightItems>
         <a-tooltip content="刷新">
           <div class="action-icon" @click="refresh">
@@ -242,6 +252,7 @@ defineExpose([deleteRow, refresh])
         :size="size"
         @updateColumns="onUpdateColumns"
         :showPagination=base.showPagination
+        :enableEdit="base.enableEdit"
     ></GlEntityTable>
   </a-card>
 </template>

@@ -77,6 +77,11 @@ const buildFieldItems = () => {
       let subInst = inst.children[index]
       // console.log('isDataEntry:', subInst.componentName, isDataEntry(subInst.componentName), ' subInst:', subInst)
       if (isDataEntry(subInst.componentName)) {
+        if (!subInst.props.bindField) {
+          console.error('GlEntityForm > 组件未进行数据绑定，组件为：', subInst)
+          global.$notification.error({content: `组件未进行数据绑定，组件标识为：${subInst.id}`})
+          continue
+        }
         let formItem = {
           componentName: subInst.componentName,
           fieldName: subInst.props.bindField.fieldName,

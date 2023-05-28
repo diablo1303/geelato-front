@@ -78,7 +78,7 @@ const i18nConvert = (value: string) => {
                      :label="i18nConvert(glComponentInst?.props?.label)"
                      :rules="glComponentInst?.props?.rules"
                      :validate-trigger="[]">
-          <GlComponent class="gl-dnd-item gl-x-item"
+          <GlComponent v-if="glComponentInst" class="gl-dnd-item gl-x-item"
                        :glComponentInst="glComponentInst"
                        :componentStoreId="componentStoreId"
                        :glRuntimeFlag="glRuntimeFlag"
@@ -94,7 +94,7 @@ const i18nConvert = (value: string) => {
         </a-form-item>
       </template>
       <template v-else>
-        <GlComponent class="gl-dnd-item gl-x-item"
+        <GlComponent v-if="glComponentInst" class="gl-dnd-item gl-x-item"
                      :glComponentInst="glComponentInst"
                      :componentStoreId="componentStoreId"
                      :glRuntimeFlag="glRuntimeFlag"

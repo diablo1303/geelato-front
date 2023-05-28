@@ -14,7 +14,7 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "子项",
+        "title": "标签项",
         "setterComponentName": "GlObjectArraySetter",
         "_showSub": false,
         "properties": [{

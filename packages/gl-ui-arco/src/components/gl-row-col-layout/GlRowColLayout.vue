@@ -121,7 +121,7 @@ const i18nConvert = (value: string, i18n: I18nItem) => {
                      :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"
                      :rules="childComponentInst.props?.rules"
                      :validate-trigger="[]">
-          <GlComponent :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></GlComponent>
+          <GlComponent v-if="childComponentInst" :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></GlComponent>
           <template v-if="childComponentInst.props?.extra" #extra>
             <div>{{
                 i18nConvert(childComponentInst.props?.extra, childComponentInst.i18n)

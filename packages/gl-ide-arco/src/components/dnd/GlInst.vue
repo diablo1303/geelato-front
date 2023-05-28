@@ -27,6 +27,7 @@ const componentStoreId = props.componentStoreId || inject('componentStoreId')
 if (!componentStoreId) {
   console.error('组件GlInst未设置componentStoreId')
 }
+// console.log('inject(\'componentStoreId\'):', inject('componentStoreId'))
 // @ts-ignore
 const componentStore = componentStoreFactory.getComponentStore(componentStoreId)()
 

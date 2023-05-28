@@ -1,6 +1,6 @@
 <template>
   <div class="gl-page" :style="style">
-    <Breadcrumb :items="breadcrumb"/>
+<!--    <ABreadcrumb :items="breadcrumb"/>-->
     <template v-if="glIsRuntime">
       <slot></slot>
     </template>

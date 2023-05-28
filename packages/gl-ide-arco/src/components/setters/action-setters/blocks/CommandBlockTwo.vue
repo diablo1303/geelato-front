@@ -7,7 +7,7 @@
       </div>
       <div class="gl-right">
         <div class="gl-title">
-          <span>{{glComponentInst._disabled?'【已停用】':''}}</span>
+          <span>{{ glComponentInst._disabled ? '【已停用】' : '' }}</span>
           <span>{{ blockMeta.title }}</span>
         </div>
         <div class="gl-description">
@@ -46,19 +46,12 @@ import "./style.css"
 import {componentStoreFactory} from "@geelato/gl-ide";
 
 const props = defineProps({
-  componentStoreId:{
-    type:String,
-    default(){
-      return 'useComponentBlockStore'
-    }
-  },
   componentMeta: {
     type: Object as PropType<ComponentMeta>,
     required: true
   },
   ...mixins.props
 })
-
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
 // const message: string = '在新的窗口打开页面地址${url}，输入参数为：{url}';
 // const params: Params = { url: 'https://www.baidu.com' };
@@ -69,7 +62,7 @@ const findBlockMeta = (componentName: string) => {
   return componentMaterialStore.findMetaByName(componentName)
 }
 
-const blockMeta = props.componentMeta||componentMaterialStore.findMetaByName(props.glComponentInst.componentName)
+const blockMeta = props.componentMeta || componentMaterialStore.findMetaByName(props.glComponentInst.componentName)
 const blockInfoVarStr = blockMeta.blockContent
 const highlightedVarStr = BlockUtils.highlightVariables(blockInfoVarStr);
 // 在新的窗口打开页面地址<span style='color: blue'>${url}</span>

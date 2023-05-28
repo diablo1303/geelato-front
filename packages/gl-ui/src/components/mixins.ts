@@ -48,7 +48,7 @@ const props = {
     componentStoreId: {
         type: String,
         default() {
-            return 'useComponentStore'
+            return ''
         }
     }
 }

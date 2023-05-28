@@ -2,7 +2,7 @@
   <component v-if="glComponentInst" :id="glComponentInst.id" :ref="glComponentInst.id"
              class="gl-component"
              :is="glComponentInst.componentName"
-             v-model="glComponentInst.value"
+             v-model="mv"
              :userId="glComponentInst.componentName"
              v-bind="glComponentInst.propsWrapper?{[glComponentInst.propsWrapper]:glComponentInst.props}:glComponentInst.props"
              :style="glComponentInst.style"
@@ -15,8 +15,8 @@
              :glComponentInst="glComponentInst"
   >
     <template v-for="(slotItem,slotName) in glComponentInst.slots" v-slot:[slotName]>
-<!--      <component v-if="slotItem" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"-->
-<!--                 v-slot:[slotName] :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>-->
+      <!--      <component v-if="slotItem" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"-->
+      <!--                 v-slot:[slotName] :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>-->
       <component v-if="slotItem.propsTarget==='v-bind'" :is="slotItem.componentName" v-bind="slotItem.props"
                  :style="slotItem.style" :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>
       <component v-else-if="slotItem.propsTarget==='v-model'&&slotItem.propsName" :is="slotItem.componentName"
@@ -28,7 +28,8 @@
       <template v-else>不支持的slot props target：{{ slotItem.propsTarget }}，请检查组件定义配置。</template>
     </template>
     <GlComponent v-for="(childComponentInst,childIndex) in glComponentInst.children"
-                 :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag" :glIndex="childIndex"></GlComponent>
+                 :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"
+                 :glIndex="childIndex"></GlComponent>
   </component>
 </template>
 
@@ -44,16 +45,37 @@ import actionScriptExecutor from "../../m/actions/ActionScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
 import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
 
+const emits = defineEmits(['update:modelValue', 'update', 'onComponentClick', 'onComponentMounted'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const props = defineProps({
+  modelValue: {
+    type: [String, Number, Boolean, Array, Object]
+  },
+  // /**
+  //  *  使用modelValue作为组件值绑定，否则使用glComponentInst.value
+  //  */
+  // useModelValue: {
+  //   type: Boolean,
+  //   default() {
+  //     return false
+  //   }
+  // },
   ...mixins.props
 })
 
-if (props.glComponentInst.componentName === 'GlUserSelect') {
-  console.log('glComponentInst', props.glComponentInst)
-}
-const emits = defineEmits(['onComponentClick', 'onComponentMounted'])
+const mv = ref(props.modelValue || props.glComponentInst.value)
+watch(mv, () => {
+  // @ts-ignore
+  props.glComponentInst.value = mv.value
+  // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
+  emits('update:modelValue', mv.value)
+  emits('update', mv.value)
+})
+
+// if (props.glComponentInst.componentName === 'GlUserSelect') {
+//   console.log('glComponentInst', props.glComponentInst)
+// }
 
 /**
  *   执行propsExpress，计算出props的值，并合并到props中
