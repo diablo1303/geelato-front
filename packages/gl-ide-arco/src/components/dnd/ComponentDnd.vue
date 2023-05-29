@@ -41,7 +41,7 @@
             :key="inst.id"
             :text="inst.id"
             :index="index"
-            :moveCard="moveCard"
+            :moveItem="moveItem"
             :addItem="addItem"
             :glComponentInst="inst"
             :componentStoreId="componentStoreId"
@@ -63,7 +63,7 @@ const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 
 const props = defineProps({
-  moveCard: Function as PropType<(dragIndex: number, hoverIndex: number, sourceId: number, targetId: number) => void>,
+  moveItem: Function as PropType<(dragIndex: number, hoverIndex: number, sourceId: number, targetId: number) => void>,
   addItem: Function,
   ...mixins.props
 })

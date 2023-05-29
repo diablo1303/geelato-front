@@ -40,12 +40,13 @@
       </a-col>
       <a-col :span="7" style="border-right: 1px solid #F2F2F2;padding: 0.5em">
         <template
-            v-if="componentStore.currentSelectedComponentId&&componentStore.currentSelectedComponentMeta?.componentName!=='GlDndPlaceholder'">
+            v-if="componentStore.currentSelectedComponentId&&!['GlDndPlaceholder','GlPage'].includes(componentStore.currentSelectedComponentName)">
           <div style="border-bottom: 1px solid #F2F2F2;padding: 0.5em;">
           <span style="font-weight: 600">
             {{ componentStore.currentSelectedComponentMeta?.title }}
           </span>
-            <a-button-group style="float: right" type="primary" size="mini" shape="round">
+            <a-button-group style="float: right"
+                            type="primary" size="mini" shape="round">
               <a-button @click="componentStore.switchCurrentSelectedComponentStatus()"
                         title="点击启用或停用该指令块">
                 {{ componentStore.currentSelectedComponentInstance?._disabled === true ? '点击启用' : '点击停用' }}
@@ -69,11 +70,10 @@ export default {
 </script>
 <script lang="ts" setup>
 import GlCommandEditorSidebar from './GlCommandEditorSidebar.vue'
-import {getCurrentInstance, onMounted, onUpdated, PropType, ref, toRaw, watch} from "vue";
+import {onMounted, onUpdated, PropType, ref, toRaw, watch} from "vue";
 import "./blocks/style.css"
 import {Action, ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import {blocksHandler} from "./blocks/BlockHandler";
-import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
 import {componentStoreFactory} from "@geelato/gl-ide";
 import BlockPage from "../../../components/stage/BlockPage.vue";
 import VueJsonPretty from "vue-json-pretty";
@@ -125,7 +125,6 @@ const updateInstance = (instance: ComponentInstance) => {
 const generateScript = () => {
   mv.value.body = blocksHandler.parseToScript(componentStore.currentComponentTree[0])
 }
-
 
 
 onMounted(() => {

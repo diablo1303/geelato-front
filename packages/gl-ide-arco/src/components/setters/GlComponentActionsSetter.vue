@@ -107,9 +107,9 @@ const onUpdateAction = (action: Action) => {
 }
 
 const closeActionCodeEditor = () => {
-  actionCodeEditorVisible.value = false
   onUpdateAction(JSON.parse(JSON.stringify(currentAction.value)))
   generateScript()
+  actionCodeEditorVisible.value = false
 }
 
 /**

@@ -1,10 +1,10 @@
 export default {
-    "componentName": "AInput",
+    "componentName": "GlDict",
     "displayMode": "Tile",
-    "iconType": "gl-input",
+    "iconType": "gl-select",
     "group": "dataEntry",
-    "title": "字符输入",
-    "alias": "input",
+    "title": "数据选项",
+    "alias": "dict",
     "useBy": ["freePage"],
     "properties": [{
         "name": "label",
@@ -29,6 +29,18 @@ export default {
         "setterComponentName": "GlEntityFieldSelect",
         "enableValueExpress": false
     }, {
+        "name": "dictId",
+        "setterComponentProps": {"entityName": "platform_dict", "labelFieldName": "dicName", "valueFieldName": "id"},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "title": "选项集",
+        "description": "数据字典",
+        "setterComponentName": "GlOptionsDynamicSetter"
+    }, {
         "name": "size",
         "setterComponentProps": {
             "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
@@ -52,32 +64,6 @@ export default {
         "show": true,
         "expanded": true,
         "enableValueExpress": false
-    }, {
-        "name": "prefix",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "slots",
-        "show": true,
-        "expanded": true,
-        "title": "前缀",
-        "setterComponentName": "AInput",
-        "slotComponentName": "GlText",
-        "slotComponentBindTarget": "v-model",
-        "enableValueExpress": true
-    }, {
-        "name": "suffix",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "slots",
-        "show": true,
-        "expanded": true,
-        "title": "后缀",
-        "setterComponentName": "AInput",
-        "slotComponentName": "GlText",
-        "slotComponentBindTarget": "v-model",
-        "enableValueExpress": true
     }, {
         "name": "allowClear",
         "setterComponentProps": {"defaultChecked": false},
@@ -121,26 +107,6 @@ export default {
         "setterComponentName": "AInput",
         "enableValueExpress": true
     }, {
-        "name": "maxlength",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "title": "最大长度",
-        "setterComponentName": "AInputNumber",
-        "show": true,
-        "expanded": true
-    }, {
-        "name": "showWordLimit",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "显示字数",
-        "setterComponentName": "ASwitch"
-    }, {
         "name": "rules",
         "group": "base",
         "type": "props",
@@ -151,6 +117,6 @@ export default {
         "title": "验证规则",
         "setterComponentName": "GlValidateRulesSetter"
     }],
-    "actions": [{"name": "change", "description": "仅在输入框失焦或按下回车时触发", "title": "值改变"}],
+    "actions": [{"name": "change", "description": "", "title": "值改变"}],
     "displayOnStage": "inline-block"
 }

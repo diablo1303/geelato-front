@@ -52,4 +52,7 @@ export default class ComponentInstance {
     __invokeBlockPlaceholder?: string
     // 字段验证之后的错误信息
     __validateError? = null
+
+    // 拖动标识，通过监控该标识的变化，可以判断整个页面是否有变化
+    __dragFlag? = ''
 }

@@ -11,6 +11,7 @@ import GlInstRuntime from "./components/gl-component/GlInstRuntime.vue";
 import GlInstsRuntime from "./components/gl-component/GlInstsRuntime.vue";
 import GlPageViewer from "./components/gl-page-viewer/GlPageViewer.vue";
 import GlText from './components/gl-text/Index.vue'
+import GlDict from "./components/gl-dict/GlDict.vue";
 import {LooseObject} from "./m/mix/LooseObject";
 import {default as iconsJson} from './assets/iconfont.json'
 import {IconsJson} from "./components/gl-iconfont/IconsJson";
@@ -51,6 +52,7 @@ const component: Plugin = {
         app.component(GlHtml.name, GlHtml)
         app.component(GlDndPlaceholder.name, GlDndPlaceholder)
         app.component(GlText.name, GlText)
+        app.component(GlDict.name, GlDict)
         app.component(GlColor.name, GlColor)
         app.component(GlComponent.name, GlComponent)
         app.component(GlInstRuntime.name, GlInstRuntime)
@@ -78,6 +80,7 @@ export {
     PageProvideProxy,
     PageProvideKey,
     GlIconfont,
+    GlDict,
     EntityApi,
     entityApi,
     EntityReader,

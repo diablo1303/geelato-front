@@ -9,6 +9,7 @@
              :parentId="glComponentInst.id"
              :glChildren="glComponentInst.children"
              @click="onClick"
+             @change="onChange"
              :glIsRuntime="glIsRuntime"
              :glRuntimeFlag="glRuntimeFlag"
              :glIndex="glIndex"
@@ -45,22 +46,13 @@ import actionScriptExecutor from "../../m/actions/ActionScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
 import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
 
-const emits = defineEmits(['update:modelValue', 'update', 'onComponentClick', 'onComponentMounted'])
+const emits = defineEmits(['update:modelValue', 'update', 'onComponentClick', 'onComponentChange','onComponentMounted'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const props = defineProps({
   modelValue: {
     type: [String, Number, Boolean, Array, Object]
   },
-  // /**
-  //  *  使用modelValue作为组件值绑定，否则使用glComponentInst.value
-  //  */
-  // useModelValue: {
-  //   type: Boolean,
-  //   default() {
-  //     return false
-  //   }
-  // },
   ...mixins.props
 })
 
@@ -71,7 +63,7 @@ watch(mv, () => {
   // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
   emits('update:modelValue', mv.value)
   emits('update', mv.value)
-})
+}, {immediate: true})
 
 // if (props.glComponentInst.componentName === 'GlUserSelect') {
 //   console.log('glComponentInst', props.glComponentInst)
@@ -107,6 +99,19 @@ const onClick = (...args: any[]) => {
   doAction('click')
 }
 
+const onChange = (...args: any[]) => {
+  // console.log('gl-component > onChange() > arguments:', args, props.glComponentInst)
+  // 对于一些组件，事件可能是优先触发了组件内的事件，第一个参数不一定是event，这里对所有参数做统一处理
+  for (let i in args) {
+    let event = args[i]
+    if (event && typeof event.stopPropagation === 'function') {
+      event.stopPropagation()
+    }
+  }
+  emits('onComponentChange', {arguments: args, glComponentInst: props.glComponentInst, glCtx: props.glCtx})
+
+  doAction('change')
+}
 /**
  *  组件配置的动态绑定事件，运行时Runtime
  *  调用actionScriptExecutor.doAction

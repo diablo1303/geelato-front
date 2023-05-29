@@ -11,6 +11,8 @@ import GlInst from "../dnd/GlInst.vue";
 import {onUnmounted, provide} from "vue";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
 
+const emits = defineEmits(['drop'])
+
 const props = defineProps({
   componentStoreId: {
     type: String,
@@ -95,15 +97,6 @@ onUnmounted(() => {
   }
 })
 
-const addItem = (hoverIndex: number, item: ComponentInstance) => {
-  // console.log('GlInsts > addItem() > hoverIndex:', hoverIndex, 'item:', item)
-  // item.id = utils.gid(componentStore.getAlias(item.componentName) || 'id')
-  // props.glComponentInst.children!.splice(hoverIndex, 0, item)
-  // tryRemoveDndPlaceholder(props.glComponentInst.children)
-  // componentStore.currentDragComponentId = ''
-  // componentStore.setCurrentSelectedComponentByIdFromItems(item.id, props.glComponentInst.children, pageProvideProxy.pageInst.id)
-  // refresh()
-}
 </script>
 
 <template>
@@ -116,7 +109,8 @@ const addItem = (hoverIndex: number, item: ComponentInstance) => {
             :text="componentStore.currentComponentTree[0].id"
             :index="0"
             :glComponentInst="componentStore.currentComponentTree[0]"
-            :componentStoreId="componentStoreId">
+            :componentStoreId="componentStoreId"
+    >
       <GlInsts :glComponentInst="componentStore.currentComponentTree[0]" :componentStoreId="componentStoreId">
       </GlInsts>
     </GlInst>

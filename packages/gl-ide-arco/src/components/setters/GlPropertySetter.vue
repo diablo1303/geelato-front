@@ -6,7 +6,7 @@
        v-if="propertySetterMeta.setterComponentName!=='GlEmptySetter'&&propertySetterMeta.show!==false">
     <div :class="cellDisplayModeClass" class="gl-label" style="position: relative;"
          :style="{width: isCollapseDisplayMode?'100%':'7em'}"
-         @dblclick.ctrl="tryClearProp(propertySetterMeta.name)" title="按住Ctrl，双击清除该属性，恢复初始状态">
+         @dblclick.ctrl="tryClearProp(propertySetterMeta.name)" title="">
       <template v-if="isCollapseDisplayMode">
         <GlIconfont type="gl-left-circle" style="cursor: pointer;margin-left: 0.5em"
                     v-if="propertySetterMeta.expanded!==false"

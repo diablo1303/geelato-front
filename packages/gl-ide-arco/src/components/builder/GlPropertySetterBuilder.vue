@@ -284,10 +284,8 @@ export default {
 </script>
 <script lang="ts" setup>
 import {computed, defineComponent, getCurrentInstance, onBeforeUpdate, reactive, ref, watch} from 'vue'
-// import GlSelectSetter from "../setters/property-setters/GlSelectSetter.vue";
-// import GlSimpleArrayBuilder from "./props-builder/GlSimpleArrayBuilder.vue";
 import {PropertySetterMetaImpl, PropertySetterSelectOption} from "@geelato/gl-ui-schema";
-import {emitter} from "@geelato/gl-ui";
+
 
 // const builders = {
 //   GlSimpleArrayBuilder
@@ -325,9 +323,15 @@ const setterItems: Array<PropertySetterSelectOption> = [
   },
   {
     name: 'GlOptionsSetter',
-    label: '下拉选项配置器',
+    label: '下拉选项配置器（静态）',
     vModelName: 'modelValue',
     type: 'String'
+  },{
+    name: 'GlOptionsDynamicSetter',
+    label: '下拉选项配置器(动态实体)',
+    vModelName: 'modelValue',
+    type: 'Object',
+    propsSetter: 'GlOptionsDynamicBuilder'
   },
   {
     name: 'ASelect',

@@ -67,7 +67,7 @@ const glBaseTree = ref()
 
 
 const loadTreeDataFn = () => {
-  return entityApi.query(props.treeEntityName, 'treeId,id key,title,pid,iconType,type nodeType,flag,seqNo', {treeId: props.treeId}, false)
+  return entityApi.query(props.treeEntityName, 'treeId,id key,text title,pid,iconType,type nodeType,flag,seqNo', {treeId: props.treeId}, false)
 }
 
 /**
@@ -81,7 +81,7 @@ const addNodeFn = (params: any) => {
     iconType: params.addNodeData.iconType,
     type: params.addNodeData.nodeType,
     treeId: params.addNodeData.treeId,
-    title: params.addNodeData.title,
+    text: params.addNodeData.title,
     pid: params.clickedNodeData.key
   }
   return entityApi.save(props.treeEntityName, data)
@@ -89,7 +89,7 @@ const addNodeFn = (params: any) => {
 const updateNodeNameFn = (params: any) => {
   const data = {
     id: params.editNodeData.key,
-    title: params.editNodeData.title
+    text: params.editNodeData.title
   }
   console.log('updateNodeName', params)
   return entityApi.save(props.treeEntityName, data)
@@ -98,7 +98,7 @@ const updateNodeNameFn = (params: any) => {
 const updateNodeFn = (params: any) => {
   const data = {
     id: params.editNodeData.key,
-    title: params.editNodeData.title,
+    text: params.editNodeData.title,
     flag: params.editNodeData.flag,
     iconType: params.editNodeData.iconType,
     type: params.editNodeData.nodeType,

@@ -35,10 +35,10 @@ export default class ComponentMeta {
         props: {}
     }
     // 事件动作
-    actions: Array<Action> = []
+    actions?: Array<Action> = []
 
     // 组件方法，对应组件defineExpose的内容
-    methods: Array<Action> = []
+    methods?: Array<Action> = []
 
     // 引用的组件名称，如AButton
     // componentRefName: String
