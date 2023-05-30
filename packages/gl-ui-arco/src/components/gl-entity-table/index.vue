@@ -446,7 +446,7 @@ defineExpose({search, popupVisibleChange, handleChange, validateRecord, addRow})
     <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">
       <div :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">
         <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="validateRecord(record,rowIndex)"
-                     :glComponentInst="column.xEditComponent"></GlComponent>
+                     :glComponentInst="cloneDeep(column.xEditComponent)"></GlComponent>
         <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>
       </div>
     </template>
