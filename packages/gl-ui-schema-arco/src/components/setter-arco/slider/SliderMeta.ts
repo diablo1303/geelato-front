@@ -6,5 +6,6 @@ export default {
     "title": "滑动输入条",
     "alias": "slider",
     "useBy": ["freePage"],
-    "properties": [],"actions": [],
+    "properties": [],
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

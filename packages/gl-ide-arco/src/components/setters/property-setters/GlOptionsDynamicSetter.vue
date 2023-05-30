@@ -1,5 +1,5 @@
 <template>
-  <a-select v-model="mv">
+  <a-select v-model="mv" allow-clear allow-search>
     <a-option v-for="item in selectOptions" :value="item[valueFiledName]">{{ item[labelFieldName] }}</a-option>
   </a-select>
 </template>
@@ -48,11 +48,11 @@ watch(mv,
 )
 const selectOptions = ref([])
 const loadData = () => {
-  entityApi.query(props.entityName, `"${props.valueFiledName},${props.labelFieldName}"`, {}).then((resp: any) => {
+  entityApi.query(props.entityName, `${props.valueFiledName},${props.labelFieldName}`, {}).then((resp: any) => {
     selectOptions.value = resp.data?.data || []
   })
 }
-
+loadData()
 </script>
 
 <style scoped>

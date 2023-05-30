@@ -10,6 +10,7 @@ import GlHidden from "./components/gl-hidden-area/GlHiddenArea.vue";
 import GlTab from "./components/gl-tabs/GlTab.vue";
 import GlTabs from "./components/gl-tabs/GlTabs.vue";
 import GlUserSelect from "./components/gl-user-select/GlUserSelect.vue";
+import GlDict from "./components/gl-dict/GlDict.vue";
 import en from "./locale/en-US";
 import cn from "./locale/zh-CN";
 import {PluginUtil} from "@geelato/gl-ui";
@@ -24,6 +25,7 @@ const component: Plugin = {
             return;
         }
 
+        app.component(GlDict.name,GlDict)
         app.component(GlPage.name, GlPage);
         app.component("GlEntityTablePlus", GlEntityTablePlus);
         app.component(GlEntityTree.name, GlEntityTree)

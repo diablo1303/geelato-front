@@ -204,5 +204,6 @@ export default {
         "title": "验证规则",
         "setterComponentName": "GlValidateRulesSetter",
         "enableValueExpress": false
-    }]
+    }],
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

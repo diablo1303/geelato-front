@@ -23,7 +23,7 @@ export default class PageProvideProxy {
     /**
      * 页面内子组件引用
      * @param componentId
-     * @param vueInst
+     * @param vueInst vue实组件实例
      */
     setVueInst(componentId: string, vueInst: ComponentInternalInstance | null) {
         // console.log('setVueInst(),componentId:', componentId, ',vueInst:', vueInst)
@@ -32,6 +32,16 @@ export default class PageProvideProxy {
         }
     }
 
+    removeVueInst(componentId: string) {
+        if (componentId) {
+            this.componentMap[componentId] = null
+        }
+    }
+
+    /**
+     * 基于组件获取页面内的vue组件实例
+     * @param componentId
+     */
     getVueInst(componentId: string) {
         if (componentId) {
             return this.componentMap[componentId]
@@ -39,6 +49,10 @@ export default class PageProvideProxy {
         return null
     }
 
+    /**
+     * 设置页面参数
+     * @param params
+     */
     setParams(params: Array<{ [key: string]: any }>) {
         this.pageParams = params || []
     }
@@ -81,16 +95,61 @@ export default class PageProvideProxy {
     //     return this.pageCtx
     // }
 
+    /**
+     * 设置组件值glComponentInst.value
+     * @param componentId
+     * @param value
+     */
     setComponentValue(componentId: string, value: any) {
-        console.log('setComponentValue', componentId, value, this.pageInst, this.componentMap)
-        const vueInst = this.componentMap[componentId]
-        console.log('setComponentValue(), vueInst:', vueInst)
+        // console.log('setComponentValue', componentId, value, this.pageInst, this.componentMap)
+        const vueInst = this.getVueInst(componentId)
         const proxy = vueInst?.proxy
         if (proxy) {
             // @ts-ignore
             proxy.glComponentInst.value = value
-            // proxy.$forceUpdate()
         }
+        return proxy
+    }
+
+    /**
+     * 获取组件值glComponentInst.value
+     * @param componentId
+     */
+    getComponentValue(componentId: string) {
+        const vueInst = this.getVueInst(componentId)
+        const proxy = vueInst?.proxy
+        if (proxy) {
+            // @ts-ignore
+            return proxy.glComponentInst.value
+        }
+        return undefined
+    }
+
+    /**
+     * 设置组件GlComponent的属性，即glComponentInst.props
+     * @param componentId
+     * @param props 按一个个的属性值进行设置
+     */
+    setComponentProps(componentId: string, props: { [key: string]: any }) {
+        const vueInst = this.getVueInst(componentId)
+        // console.log('setComponentProps() > vueInst:', vueInst, 'props:', props)
+        // @ts-ignore
+        const vueProps = vueInst?.props?.glComponentInst?.props
+        if (vueProps) {
+            Object.assign(vueProps, props)
+            return vueProps
+        }
+        return null
+    }
+
+    /**
+     * 获取组件属性
+     * @param componentId
+     */
+    getComponentProps(componentId: string) {
+        const vueInst = this.getVueInst(componentId)
+        // @ts-ignore
+        return vueInst?.props?.glComponentInst?.props
     }
 
     /**

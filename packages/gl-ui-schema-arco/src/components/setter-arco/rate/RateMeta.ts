@@ -123,5 +123,6 @@ export default {
         "title": "符号",
         "setterComponentName": "AInput",
         "slotComponentBindTarget": "v-model"
-    }]
+    }],
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

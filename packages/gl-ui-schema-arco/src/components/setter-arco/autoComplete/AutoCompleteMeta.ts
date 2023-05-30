@@ -117,5 +117,5 @@ export default {
         "description": "自动完成的数据源",
         "title": "数据源"
     }],
-    "actions": []
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

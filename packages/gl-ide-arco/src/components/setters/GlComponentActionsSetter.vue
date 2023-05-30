@@ -1,14 +1,12 @@
 <template>
   <div v-if="componentInstance">
-    <div class="gl-table">
-      <div class="gl-table-row" v-for="(actionMeta) in componentMeta.actions">
-        <div class="gl-table-cell gl-label" style="position: relative;width: 8em">{{ actionMeta.name }} {{
-            actionMeta.title
-          }}
-        </div>
-        <div class="gl-table-cell">
+    <a-collapse :default-active-key="defaultActiveKey" expand-icon-position="right">
+      <a-collapse-item v-for="(actionMeta,actionMetaIndex) in componentMeta.actions"
+                       :header="actionMeta.name+' '+actionMeta.title" :key="actionMetaIndex"
+      >
+        <div style="padding: 0 1em">
           <GlArrayBaseSetter v-slot:default="slotProps" v-model="componentInstance.actions"
-                             :defaultItemForAdd="new Action({id:utils.uuid('act',16),name:actionMeta.name,title:actionMeta.title})"
+                             :defaultItemForAdd="new Action({id:utils.uuid('act',16),name:actionMeta.name,eventName:actionMeta.name,title:actionMeta.title})"
                              @addItem="update"
                              @removeItem="update">
             <div style="width:100%;display: flex;margin-bottom: 1px">
@@ -23,8 +21,33 @@
             </div>
           </GlArrayBaseSetter>
         </div>
-      </div>
-    </div>
+      </a-collapse-item>
+    </a-collapse>
+    <!--    <div class="gl-table">-->
+    <!--      <div class="gl-table-row" v-for="(actionMeta) in componentMeta.actions">-->
+    <!--        <div class="gl-table-cell gl-label" style="position: relative;width: 8em">{{ actionMeta.name }} {{-->
+    <!--            actionMeta.title-->
+    <!--          }}-->
+    <!--        </div>-->
+    <!--        <div class="gl-table-cell">-->
+    <!--          <GlArrayBaseSetter v-slot:default="slotProps" v-model="componentInstance.actions"-->
+    <!--                             :defaultItemForAdd="new Action({id:utils.uuid('act',16),name:actionMeta.name,title:actionMeta.title})"-->
+    <!--                             @addItem="update"-->
+    <!--                             @removeItem="update">-->
+    <!--            <div style="width:100%;display: flex;margin-bottom: 1px">-->
+    <!--              <div style="flex:auto">-->
+    <!--                <a-input v-model="componentInstance.actions[slotProps.index].name"></a-input>-->
+    <!--              </div>-->
+    <!--              <div style="flex: 0 0 2em;text-align: center;line-height: 2em">-->
+    <!--                <GlIconfont type="gl-setting"-->
+    <!--                            @click="openActionSetter(componentInstance.actions[slotProps.index],slotProps.index,actionMeta)"-->
+    <!--                            style="cursor: pointer"></GlIconfont>-->
+    <!--              </div>-->
+    <!--            </div>-->
+    <!--          </GlArrayBaseSetter>-->
+    <!--        </div>-->
+    <!--      </div>-->
+    <!--    </div>-->
     <a-modal draggable :visible="actionCodeEditorVisible" title="动作（事件）编排"
              @ok="closeActionCodeEditor"
              @cancel="closeActionCodeEditor"
@@ -61,6 +84,13 @@ const props = defineProps({
   }
 })
 
+const defaultActiveKey = ref<Array<number>>([])
+if (props.componentMeta.actions && props.componentMeta.actions.length > 0) {
+  props.componentMeta.actions.forEach((action: Action, index: number) => {
+    defaultActiveKey.value.push(index)
+  })
+}
+
 const handleSelect = (val: Action) => {
   console.log('handleSelect action:', val)
 }
@@ -80,6 +110,9 @@ const openActionSetter = (action: Action, actionIndex: number, actionMeta: Actio
   }
   if (!action.name) {
     action.name = actionMeta.name
+  }
+  if (!action.eventName) {
+    action.eventName = actionMeta.name
   }
   if (!action.id) {
     action.id = utils.gid('act', 16)

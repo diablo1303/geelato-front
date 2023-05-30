@@ -166,7 +166,7 @@ export class Utils {
      * @returns {*}
      */
     evalFn(fnBody: string, ctx: object, ctxName = '$ctx', $utils?: object, utilsName?: string) {
-        console.log('gl-ui > utils > evalFn() > blocks: ', fnBody, typeof fnBody)
+        console.log('gl-ui > utils > evalFn() > blocks: ', fnBody)
         console.log('gl-ui > utils > evalFn() > ctx: ', ctx)
         let Fn = Function
         let uName = utilsName || '$utils'

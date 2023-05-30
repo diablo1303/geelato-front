@@ -20,12 +20,12 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {computed, inject, nextTick, type PropType, ref} from 'vue';
+import {inject, nextTick, type PropType, ref} from 'vue';
 import type {FormInstance} from '@arco-design/web-vue/es/form';
 import useLoading from '../../hooks/loading';
 import {isDataEntry} from "@geelato/gl-ui-schema-arco";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
-import {entityApi, mixins, useGlobal, PageProvideProxy, PageParamType, PageProvideKey} from "@geelato/gl-ui";
+import {entityApi, mixins, useGlobal, PageProvideProxy, PageProvideKey} from "@geelato/gl-ui";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 console.log('GlEntityForm > inject pageProvideProxy:', pageProvideProxy)
@@ -107,7 +107,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
   function setFieldItemValue(inst: ComponentInstance) {
     for (let index in inst.children) {
       let subInst = inst.children[index]
-      // console.log('isDataEntry:', subInst.componentName, isDataEntry(subInst.componentName), ' subInst:', subInst)
+      console.log('setFieldItemValue() > isDataEntry:', subInst.componentName, isDataEntry(subInst.componentName), ' subInst:', subInst)
       if (isDataEntry(subInst.componentName)) {
         const value = dataItem[subInst.props.bindField.fieldName]
         // 由于AInputNumber的值不支持设置字符串，这里对可能的字符串值进行转换
@@ -141,7 +141,6 @@ let entityRecordId = pageProvideProxy.getParamValue('recordId')
  *  加载表单数据
  */
 const loadForm = () => {
-
   if (!entityRecordId) {
     if (isRead) {
       global.$notification.error({
@@ -202,7 +201,7 @@ const submitForm = async () => {
   buildFieldItems()
   // 再进一步进行表单数据项值校验
   const res = await formRef.value?.validate();
-  console.log('submitForm() validate form:', formRef.value, ' result:', res)
+  console.log('submitForm() > validate form:', formRef.value, ' result:', res)
   if (!res) {
     setLoading(true);
     const saveResult = await saveForm()

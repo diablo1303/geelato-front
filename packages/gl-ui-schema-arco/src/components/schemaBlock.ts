@@ -11,11 +11,19 @@ import BlockOpenComponentPageMeta from "./setter-block/page/BlockOpenComponentPa
 import BlockRootMeta from "./setter-block/root/BlockRootMeta";
 import BlockComponentInvokeMeta from "./setter-block/page/BlockComponentInvokeMeta";
 import BlockConfirmMeta from "./setter-block/page/BlockConfirmMeta";
+import BlockSetVisibleMeta from "./setter-block/page/BlockSetVisibleMeta";
+import IfComponentValueBlockMeta from "./setter-block/if-else/IfComponentValueBlockMeta";
+import IfComponentValueBlockInstance from "./setter-block/if-else/IfComponentValueBlockInstance";
+import TriggerComponentActionMeta from "./setter-block/page/TriggerComponentActionBlockMeta";
+import LogBlockMeta from "./setter-block/other/LogBlockMeta";
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [BlockRootMeta, BlockNotificationMeta, BlockOpenThirdPageMeta, BlockSetVarMeta, BlockIfMeta, BlockElseMeta, BlockOpenComponentPageMeta, BlockComponentInvokeMeta, BlockConfirmMeta]
+const componentMetas: Array<ComponentMeta> = [BlockRootMeta, BlockNotificationMeta, BlockOpenThirdPageMeta,
+    BlockSetVisibleMeta, BlockSetVarMeta, BlockIfMeta, IfComponentValueBlockMeta, BlockElseMeta,
+    BlockOpenComponentPageMeta, BlockComponentInvokeMeta, BlockConfirmMeta, TriggerComponentActionMeta,
+    LogBlockMeta]
 
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance]
+const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance]
 const componentInstances: Array<ComponentInstance> = []
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {

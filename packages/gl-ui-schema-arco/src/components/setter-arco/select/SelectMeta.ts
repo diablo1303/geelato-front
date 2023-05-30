@@ -128,6 +128,6 @@ export default {
         "show": true,
         "expanded": true
     }],
-    "actions": [],
+    "actions": [{"name": "change", "description": "", "title": "值改变"}],
     "displayOnStage": "inline-block"
 }

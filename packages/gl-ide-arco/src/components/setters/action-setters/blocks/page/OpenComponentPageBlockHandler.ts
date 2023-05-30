@@ -14,34 +14,6 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
         const hideCancel = props.hideCancel === true ? true : false
         const params = props.params || []
         return new ParseResult(
-            // `
-            // const content = $gl.loadPage("${props.pageId || ''}","${props.extendId}",{params:${BlockUtils.paramStringify(params)}});
-            // $gl.$drawer.open({
-            //     title: "${props.title}",
-            //     content: content,
-            //     width:"${width}",
-            //     okText:"${okText}",
-            //     onBeforeOk: async ()=>{
-            //       const method = $gl.getComponentMethod("${props.beforeOkInvokeComponentId}","${props.beforeOkInvokeMethodName}");
-            //       if(method){
-            //         const result = await method();
-            //         return result;
-            //       }
-            //       return true;
-            //     },
-            //     onClose:async ()=>{
-            //         const method = $gl.getComponentMethod("${props.closeInvokeComponentId}","${props.closeInvokeMethodName}");
-            //         if(method){
-            //             const result = await method();
-            //             return result;
-            //         }
-            //         return true
-            //     },
-            //     cancelText:"${cancelText}",
-            //     hideCancel:${hideCancel}
-            // })
-            // `
-
             `
             const content = $gl.loadPage("${props.pageId || ''}","${props.extendId}",{params:${BlockUtils.paramStringify(params)}});
             $gl.$drawer.open({

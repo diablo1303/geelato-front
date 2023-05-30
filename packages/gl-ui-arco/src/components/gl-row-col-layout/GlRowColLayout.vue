@@ -115,7 +115,7 @@ const i18nConvert = (value: string, i18n: I18nItem) => {
         :span="span"
     >
       <template v-for="childComponentInst in glComponentInst.children[index].children">
-        <a-form-item v-if="childComponentInst" class="gl-form-item"
+        <a-form-item v-if="childComponentInst&&(childComponentInst.props.unRender!==true)" class="gl-form-item"
                      :field="childComponentInst.props?.bindField?.fieldName"
                      :tooltip="i18nConvert(childComponentInst.props?.tooltip,childComponentInst.i18n)"
                      :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"

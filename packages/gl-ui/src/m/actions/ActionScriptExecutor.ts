@@ -28,6 +28,7 @@ export class ActionScriptExecutor {
     /**
      * 设置当前执行页面的代理对象
      * 一般在执行页面中调用该方法
+     * @param pageComponentId 组件名为GlPage的组件id
      * @param pageProxy
      */
     addPageProxy(pageComponentId: string, pageProxy: PageProvideProxy) {
@@ -38,7 +39,7 @@ export class ActionScriptExecutor {
     /**
      * 删除当前执行页面的代理对象
      * 一般在页面关闭时执行
-     * @param pageProxy
+     * @param pageComponentId 组件名为GlPage的组件id
      */
     removePageProxy(pageComponentId: string) {
         delete pageProxyMap[pageComponentId]
@@ -66,6 +67,85 @@ export class ActionScriptExecutor {
     }
 
     /**
+     * 设置组件属性
+     * @param componentId
+     * @param props
+     */
+    setComponentProps(componentId: string, props: { [key: string]: any }) {
+        if (componentId && props && typeof props === 'object' && Object.keys(props).length > 0) {
+            for (const pageComponentId in pageProxyMap) {
+                const pageProxy = pageProxyMap[pageComponentId]
+                if (pageProxy) {
+                    pageProxy.setComponentProps(componentId, props)
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取组件属性
+     * @param componentId
+     */
+    getComponentProps(componentId: string) {
+        for (const pageComponentId in pageProxyMap) {
+            const pageProxy = pageProxyMap[pageComponentId]
+            if (pageProxy) {
+                const vueInst = pageProxy.getVueInst(componentId)
+                if (vueInst) {
+                    // @ts-ignore
+                    return vueInst?.props?.glComponentInst?.props
+                }
+                continue
+            }
+        }
+        return undefined
+    }
+
+    /**
+     * 触发组件的动作事件
+     * @param actionName
+     */
+    triggerComponentAction(componentId: string, actionName: string, ctx?: {}, callback?: Function) {
+        for (const pageComponentId in pageProxyMap) {
+            const pageProxy = pageProxyMap[pageComponentId]
+            if (pageProxy) {
+                const vueInst = pageProxy.getVueInst(componentId)
+                if (vueInst) {
+                    // @ts-ignore
+                    const actions = vueInst?.props?.glComponentInst?.actions
+                    if (actions) {
+                        for (const actionsKey in actions) {
+                            const action = actions[actionsKey]
+                            if (action.name === actionName) {
+                                actionScriptExecutor.doAction(action, ctx = {}, callback)
+                            }
+                        }
+                    }
+                }
+                continue
+            }
+        }
+    }
+
+    /**
+     * 获取组件值
+     * @param componentId
+     */
+    getComponentValue(componentId: string) {
+        for (const pageComponentId in pageProxyMap) {
+            const pageProxy = pageProxyMap[pageComponentId]
+            if (pageProxy) {
+                const vueInst = pageProxy.getVueInst(componentId)
+                if (vueInst) {
+                    return pageProxy.getComponentValue(componentId)
+                }
+                continue
+            }
+        }
+        return undefined
+    }
+
+    /**
      * 点击等事件
      * @param action 组件中的事件配置信息
      * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
@@ -89,6 +169,10 @@ export class ActionScriptExecutor {
             this.$gl = {
                 loadPage: this.loadPage,
                 getComponentMethod: this.getComponentMethod,
+                getComponentValue: this.getComponentValue,
+                getComponentProps: this.getComponentProps,
+                setComponentProps: this.setComponentProps,
+                triggerComponentAction: this.triggerComponentAction,
                 ...utils,
                 ...this.app?.config.globalProperties
             }

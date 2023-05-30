@@ -6,5 +6,6 @@ export default {
     "title": "多选框",
     "alias": "cb",
     "useBy": ["freePage"],
-    "properties": [],"actions": [],
+    "properties": [],
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

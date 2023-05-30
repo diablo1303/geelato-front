@@ -6,5 +6,6 @@ export default {
     "title": "图片",
     "alias": "image",
     "useBy": ["freePage"],
-    "properties": [],"actions": [],
+    "properties": [],
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

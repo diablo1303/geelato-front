@@ -88,6 +88,6 @@ export default {
         "title": "禁用",
         "setterComponentName": "ASwitch"
     }],
-    "actions": [],
+    "actions": [{"name": "change", "description": "", "title": "值改变"}],
     "displayOnStage": "inline-block"
 }

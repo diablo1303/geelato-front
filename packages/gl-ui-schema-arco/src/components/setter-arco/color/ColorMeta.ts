@@ -27,5 +27,6 @@ export default {
         "title": "格式",
         "setterComponentName": "ARadioGroup"
     }],
-    "displayOnStage": "inline-block"
+    "displayOnStage": "inline-block",
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

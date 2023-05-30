@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import {entityApi} from "../../m/datasource/EntityApi";
+import {entityApi} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -13,7 +13,7 @@ const props = defineProps({
   /**
    *  数据字典名称，即数据选择集名称
    */
-  dictGroup: {
+  dictId: {
     type: String
   }
 })
@@ -26,10 +26,22 @@ let options = ref([])
 
 const loadData = () => {
   // TODO 增加多租户支持
-  entityApi.query('platform_dict', 'id,dicCode,dicName', {dicCode: '', enableStatus: 1}).then((resp: any) => {
-    options.value = resp.data.data
-  })
+  if (props.dictId) {
+    entityApi.query('platform_dict_item', 'id,itemCode,itemText', {
+      dictId: props.dictId,
+      enableStatus: 1
+    }).then((resp: any) => {
+      options.value = resp.data.data
+    })
+  }
 }
+
+watch(() => {
+  return props.dictId
+}, () => {
+  loadData()
+}, {immediate: true})
+
 </script>
 <script lang="ts">
 export default {
@@ -37,8 +49,8 @@ export default {
 }
 </script>
 <template>
-  <a-select placeholder="请选择" v-model="mv" allow-clear>
-    <a-option v-for="opt in options" :value="opt.dicCode">{{ opt.dicName }}</a-option>
+  <a-select placeholder="请选择" v-model="mv" allow-clear @clear="mv=''">
+    <a-option v-for="opt in options" :value="opt.itemCode">{{ opt.itemText }}({{ opt.itemCode }})</a-option>
   </a-select>
 </template>
 

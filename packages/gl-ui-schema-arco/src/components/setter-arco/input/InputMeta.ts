@@ -110,6 +110,17 @@ export default {
         "title": "只读",
         "setterComponentName": "ASwitch"
     }, {
+        "name": "unRender",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "不渲染",
+        "setterComponentName": "ASwitch",
+        "enableValueExpress": true
+    }, {
         "name": "placeholder",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",

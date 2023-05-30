@@ -46,5 +46,5 @@ export default {
         "title": "验证规则",
         "setterComponentName": "GlValidateRulesSetter"
     }],
-    "actions": []
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

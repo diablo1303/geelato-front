@@ -6,5 +6,6 @@ export default {
     "title": "图标",
     "alias": "icon",
     "useBy": ["freePage"],
-    "properties": [],"actions": [],
+    "properties": [],
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

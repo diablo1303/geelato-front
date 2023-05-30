@@ -4,10 +4,13 @@ export default class Action {
 
     id: string;
 
-    // 属性名
+    // 动作挂载的事件，有统一的命名规范，用户不可修改，如change、click
+    eventName: string;
+
+    // 动作名，这个名称可以自定义
     name: string
 
-    // 属性标题
+    // 动作标题
     title: string
 
     // 方法体
@@ -18,6 +21,7 @@ export default class Action {
 
     constructor(option?: Action) {
         this.id = option?.id || ''
+        this.eventName = option?.eventName || ''
         this.name = option?.name || ''
         this.title = option?.title || ''
         this.body = option?.body || ''

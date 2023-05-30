@@ -89,12 +89,12 @@ const onClick = (...args: any[]) => {
   componentStore.setCurrentSelectedComponentById(props.glComponentInst.id || '', fromPageId)
   emitter.emit('onComponentClick', {arguments: args, glComponentInst: props.glComponentInst})
   // 组件配置的动态绑定事件，运行时Runtime
-  if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
-    console.log('click action')
-    props.glComponentInst.actions.forEach((action: Action) => {
-      console.log('click action', action)
-    })
-  }
+  // if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
+  //   console.log('click action')
+  //   props.glComponentInst.actions.forEach((action: Action) => {
+  //     console.log('click action', action)
+  //   })
+  // }
 }
 const onMouseOver = (...args: any[]) => {
   for (let i in args) {
