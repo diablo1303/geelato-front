@@ -96,13 +96,13 @@
             v-model="mv.setterComponentName"
             style="width: 100%"
             ref="select"
-            title="指定该属性采用什么组件进行配置"
+            title=""
         >
-          <a-option v-if="hasNoSub" v-for="item in setterItems" :value="item.name">{{ item.label }}
+          <a-option v-if="hasNoSub" v-for="item in setterItems" :value="item.name">{{ item.label }}-{{item.name}}
           </a-option>
           <template v-else>
             <a-option v-if="mv.type==='children'" v-for="item in setterItemsForSubComponent"
-                      :value="item.name">{{ item.label }}
+                      :value="item.name" :title="item.name">{{ item.label }}-{{item.name}}
             </a-option>
             <a-option v-else v-for="item in setterItemsForObject" :value="item.name">{{ item.label }}
             </a-option>
@@ -327,7 +327,7 @@ const setterItems: Array<PropertySetterSelectOption> = [
     vModelName: 'modelValue',
     type: 'String'
   },{
-    name: 'GlOptionsDynamicSetter',
+    name: 'GlDynamicSelect',
     label: '下拉选项配置器(动态实体)',
     vModelName: 'modelValue',
     type: 'Object',

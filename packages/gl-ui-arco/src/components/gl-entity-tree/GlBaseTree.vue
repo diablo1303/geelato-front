@@ -383,7 +383,7 @@ const selectNode = (node: any) => {
 }
 
 const onSelect = (selectedKeys: any, data: any) => {
-  console.log('onSelect', selectedKeys, data.node)
+  // console.log('onSelect', selectedKeys, data.node)
   selectNode(data.node)
 }
 

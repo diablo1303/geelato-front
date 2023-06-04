@@ -17,7 +17,7 @@ import BlockMetaGroup from './entity/actions/BlockMetaGroup';
 
 const component: Plugin = {
     install: function (app: App) {
-        console.log('gl-ui-schema > install()', app)
+        // console.log('gl-ui-schema > install()', app)
     }
 }
 export {

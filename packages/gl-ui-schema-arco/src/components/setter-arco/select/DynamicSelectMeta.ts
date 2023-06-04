@@ -1,22 +1,22 @@
 export default {
-    "componentName": "GlDict",
-    "displayMode": "Tile",
+    "componentName": "GlDynamicSelect",
+    "displayMode": "tile",
     "iconType": "gl-select",
     "group": "dataEntry",
-    "title": "数据字典",
-    "alias": "dict",
+    "title": "实体选择器",
+    "alias": "select",
     "useBy": ["freePage"],
     "properties": [{
         "name": "label",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
         "show": true,
         "expanded": true,
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
         "title": "标题",
         "setterComponentName": "AInput",
-        "enableValueExpress": true
+        "enableValueExpress": false
     }, {
         "name": "bindField",
         "setterComponentProps": {},
@@ -29,32 +29,53 @@ export default {
         "setterComponentName": "GlEntityFieldSelect",
         "enableValueExpress": false
     }, {
-        "name": "dictId",
-        "setterComponentProps": {"entityName": "platform_dict", "labelFieldName": "dicName", "valueFieldName": "id"},
-        "setterComponentVModelName": "modelValue",
+        "name": "entityName",
         "group": "base",
         "type": "props",
         "enableValueExpress": false,
         "show": true,
         "expanded": true,
-        "title": "数据字典名",
-        "description": "数据字典选项集",
-        "setterComponentName": "GlDynamicSelect"
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "选项源实体",
+        "setterComponentName": "GlEntitySelect"
+    }, {
+        "name": "labelFieldName",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "description": "在下拉列表中显示的实体字段名",
+        "placeholder": "在下拉列表中显示的实体字段名",
+        "title": "显示字段",
+        "setterComponentName": "GlFieldSelect"
+    }, {
+        "name": "valueFiledName",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "值字段",
+        "description": "实体中，用于作为值的字段名",
+        "placeholder": "实体值字段名",
+        "setterComponentName": "GlFieldSelect"
     }, {
         "name": "size",
         "setterComponentProps": {
             "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
             "optionType": "button",
-            "options": [{"label": "大", "value": "large", "__LlZ1Rnur2LSKVgPC2B": "large"}, {
+            "options": [{"label": "大", "value": "large", "__TjjKdG3HMXO3v7kSND": "large"}, {
                 "label": "默认",
-                "value": "medium",
-                "__LlZ1Rnur2LSKVgPC2B": "medium"
-            }, {"label": "小", "value": "small", "__LlZ1Rnur2LSKVgPC2B": "small"}, {
-                "label": "迷你",
-                "value": "mini",
-                "__LlZ1Rnur2LSKVgPC2B": "mini"
-            }],
-            "defaultValue": "medium"
+                "value": "default",
+                "__TjjKdG3HMXO3v7kSND": "default"
+            }, {"label": "小", "value": "small", "__TjjKdG3HMXO3v7kSND": "small"}],
+            "defaultValue": "default"
         },
         "setterComponentVModelName": "modelValue",
         "group": "base",
@@ -65,15 +86,27 @@ export default {
         "expanded": true,
         "enableValueExpress": false
     }, {
+        "name": "allowSearch",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "允许搜索",
+        "setterComponentName": "ASwitch",
+        "enableValueExpress": false
+    }, {
         "name": "allowClear",
-        "setterComponentProps": {"defaultChecked": false},
+        "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
         "title": "点击清除",
         "setterComponentName": "ASwitch",
         "show": true,
-        "expanded": true
+        "expanded": true,
+        "enableValueExpress": false
     }, {
         "name": "disabled",
         "setterComponentProps": {},
@@ -84,7 +117,8 @@ export default {
         "title": "是否禁用",
         "setterComponentName": "ASwitch",
         "show": true,
-        "expanded": true
+        "expanded": true,
+        "enableValueExpress": false
     }, {
         "name": "readonly",
         "setterComponentProps": {},
@@ -96,17 +130,6 @@ export default {
         "title": "只读",
         "setterComponentName": "ASwitch"
     }, {
-        "name": "unRender",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "不渲染",
-        "setterComponentName": "ASwitch",
-        "enableValueExpress": true
-    }, {
         "name": "placeholder",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -114,9 +137,9 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "占位提示",
+        "title": "提示文字",
         "setterComponentName": "AInput",
-        "enableValueExpress": true
+        "enableValueExpress": false
     }, {
         "name": "rules",
         "group": "base",

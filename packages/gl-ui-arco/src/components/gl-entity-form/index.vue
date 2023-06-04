@@ -20,7 +20,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, nextTick, type PropType, ref} from 'vue';
+import {inject, nextTick, type PropType, ref, VueElement, VueElementConstructor} from 'vue';
 import type {FormInstance} from '@arco-design/web-vue/es/form';
 import useLoading from '../../hooks/loading';
 import {isDataEntry} from "@geelato/gl-ui-schema-arco";
@@ -64,18 +64,21 @@ const props = defineProps({
 })
 const formData = ref({});
 const formItems = ref<Array<FormItem>>([]);
+const subFormTableInstIds = ref<Array<string>>([])
 const formRef = ref<FormInstance>();
 /**
  * 遍历取得所有表单项的值
  */
 const buildFieldItems = () => {
   formItems.value.length = 0
+  subFormTableInstIds.value.length = 0
 
   function buildFieldItem(inst: ComponentInstance) {
     for (let index in inst.children) {
       // @ts-ignore
       let subInst = inst.children[index]
       // console.log('isDataEntry:', subInst.componentName, isDataEntry(subInst.componentName), ' subInst:', subInst)
+      // 处理主表字段
       if (isDataEntry(subInst.componentName)) {
         if (!subInst.props.bindField) {
           console.error('GlEntityForm > 组件未进行数据绑定，组件为：', subInst)
@@ -90,6 +93,19 @@ const buildFieldItems = () => {
         formItems.value.push(formItem)
         // @ts-ignore
         formData.value[subInst.props.bindField.fieldName] = subInst.value
+      } else if (subInst.componentName === 'GlEntityTablePlus' && subInst.props?.base?.isFormSubTable) {
+        // 处理从表信息，只有明确是子表的才算
+        // let formItem = {
+        //   componentName: subInst.componentName,
+        //   fieldName: '',
+        //   value: {
+        //     instId: subInst.id,
+        //   }, // 在保存时才获取表格的值
+        //   isFormSubTable: true
+        // }
+        //
+        // formItems.value.push(formItem)
+        subFormTableInstIds.value.push(subInst.id)
       }
       if (subInst.children && subInst.children.length > 0) {
         buildFieldItem(subInst)
@@ -103,6 +119,8 @@ const buildFieldItems = () => {
 
 const setFormItemValues = (dataItem: { [key: string]: any }) => {
   formItems.value.length = 0
+
+  // subFormTableInstIds.value.length = 0
 
   function setFieldItemValue(inst: ComponentInstance) {
     for (let index in inst.children) {
@@ -120,7 +138,8 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
         let formItem = {
           componentName: subInst.componentName,
           fieldName: subInst.props.bindField.fieldName,
-          value: subInst.value
+          value: subInst.value,
+          isFormSubTable: false
         }
         formItems.value.push(formItem)
         // @ts-ignore
@@ -136,12 +155,12 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
   console.log('GlEntityForm > setFormItemValues() > formData:', formData.value)
 }
 
-let entityRecordId = pageProvideProxy.getParamValue('recordId')
+let entityRecordId = ref(pageProvideProxy.getParamValue('recordId'))
 /**
  *  加载表单数据
  */
 const loadForm = () => {
-  if (!entityRecordId) {
+  if (!entityRecordId.value) {
     if (isRead) {
       global.$notification.error({
         duration: 8000,
@@ -160,7 +179,7 @@ const loadForm = () => {
     fieldNames.push(item.fieldName)
   })
   if (checkBindEntity()) {
-    entityApi.query(props.bindEntity.entityName, fieldNames.join(','), {id: entityRecordId}).then((resp) => {
+    entityApi.query(props.bindEntity.entityName, fieldNames.join(','), {id: entityRecordId.value}).then((resp) => {
       const items = resp?.data?.data
       if (items && items.length > 0) {
         setFormItemValues(items[0])
@@ -186,12 +205,47 @@ const checkBindEntity = () => {
  */
 const saveForm = async () => {
   if (checkBindEntity()) {
+    // 先设置主表单部分
+    const entityKeyValues = {id: entityRecordId.value, ...JSON.parse(JSON.stringify(formData.value))}
+    // 获取子表单值信息，并设置到保存表单中
+    subFormTableInstIds.value.forEach((instId: string) => {
+      const componentInst: ComponentInstance = pageProvideProxy.getComponentInst(instId)
+      const getRenderColumnsFn = pageProvideProxy.getMethod(instId, 'getRenderColumns')
+      // console.log('GlEntityForm > submitForm() > getRenderColumnsFn', getRenderColumnsFn)
+      if (typeof getRenderColumnsFn === 'function') {
+        const renderColumns = getRenderColumnsFn()
+        console.log('GlEntityForm > submitForm() > subFormTableColumns', renderColumns)
+        const getRenderDataFn = pageProvideProxy.getMethod(instId, 'getRenderData')
+        // console.log('GlEntityForm > submitForm() > getRenderDataFn', getRenderDataFn)
+        if (typeof getRenderDataFn === 'function') {
+          const subFormTableData = getRenderDataFn()
+          console.log('GlEntityForm > submitForm() > subFormTableData', subFormTableData)
+          if (subFormTableData && subFormTableData.length > 0) {
+            // 子表中，对应主表单ID的字段名
+            const subTablePidName = componentInst.props?.base?.subTablePidName
+            subFormTableData.forEach((record: any) => {
+              // 设置主表父ID
+              // 如果是新增，则采用变量，在后台保存主表单后，更换该值 $parent.id
+              // 如果是修改，则直接获取当前的entityRecordId
+              record[subTablePidName] = entityRecordId.value || '$parent.id'
+            })
+            const subEntityFlag = '#'
+            const subEntityKey = subEntityFlag + componentInst.props?.base?.entityName
+
+            entityKeyValues[subEntityKey] = subFormTableData
+          }
+        }
+      }
+    })
     console.log('saveForm props.bindEntity:', props.bindEntity)
-    return await entityApi.save(props.bindEntity.entityName, {id: entityRecordId, ...formData.value})
+    return await entityApi.save(props.bindEntity.entityName, entityKeyValues)
   }
 }
 
 const {loading, setLoading} = useLoading();
+const hasSubFormTable = () => {
+  return subFormTableInstIds.value.length > 0
+}
 /**
  *  提交表单：构建表单项、校验、保存到服务端
  */
@@ -201,11 +255,33 @@ const submitForm = async () => {
   buildFieldItems()
   // 再进一步进行表单数据项值校验
   const res = await formRef.value?.validate();
+  // 验证子表单，若存在则验证
+  let subFormTableValidError = false
+  subFormTableInstIds.value.forEach((instId: string) => {
+    const validateTableFn = pageProvideProxy.getMethod(instId, 'validateTable')
+    if (typeof validateTableFn === 'function') {
+      const validateTableData = validateTableFn()
+      // console.log('GlEntityForm > submitForm() > validateTableData', validateTableData)
+      if (validateTableData.error) {
+        subFormTableValidError = true
+      }
+    }
+  })
+
   console.log('submitForm() > validate form:', formRef.value, ' result:', res)
-  if (!res) {
+  if (!res && !subFormTableValidError) {
     setLoading(true);
     const saveResult = await saveForm()
-    entityRecordId = saveResult?.data.data
+    entityRecordId.value = saveResult?.data.data
+    if (hasSubFormTable()) {
+      // 保存之后刷新子表
+      subFormTableInstIds.value.forEach((instId: string) => {
+        const refreshFn = pageProvideProxy.getMethod(instId, 'refresh')
+        if (typeof refreshFn === 'function') {
+          refreshFn()
+        }
+      })
+    }
     console.log('saveResult:', saveResult)
     setLoading(false)
     return true

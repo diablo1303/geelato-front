@@ -8,7 +8,7 @@ import {PluginUtil} from "@geelato/gl-ui";
 import GlIdeArco from './App.vue'
 const component: Plugin = {
     install: function (app: App) {
-        console.log('gl-ide-arco:gl-ide-arco:gl-ide-arco')
+        // console.log('gl-ide-arco:gl-ide-arco:gl-ide-arco')
         // @ts-ignore
         if(PluginUtil.markInstalledPlugin(app,'gl-ide-arco')){
             return

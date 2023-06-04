@@ -14,12 +14,16 @@
           <div style="flex: 0 0 2em;text-align: center;line-height: 2em">
             <GlIconfont title="拖动" type="gl-drag" class="gl-dnd-item" style="cursor: move"></GlIconfont>
           </div>
-          <div style="flex:auto" @click="onSelectItem(element,index)">
-            <slot :item="element" :index="index"></slot>
+          <div :key="index" style="flex:auto" @click="onSelectItem(element,index)">
+            <slot key="index" :item="element" :index="index"></slot>
           </div>
           <div style="flex: 0 0 2em;text-align: center;line-height: 2em">
-            <GlIconfont type="gl-delete" @click="removeItem(index)"
-                        style="cursor: pointer;color: red"></GlIconfont>
+            <a-button type="text" style="padding:0 5px 4px">
+              <GlIconfont type="gl-delete" @click="removeItem(index)"
+                          style="cursor: pointer;color: red"></GlIconfont>
+            </a-button>
+<!--            <GlIconfont type="gl-delete" @click="removeItem(index)"-->
+<!--                        style="cursor: pointer;color: red"></GlIconfont>-->
           </div>
         </div>
 
@@ -74,8 +78,7 @@ export default defineComponent({
   },
   methods: {
     getDefaultItem() {
-
-      console.log('........', typeof this.defaultItemForAdd, this.defaultItemForAdd)
+      // console.log('........', typeof this.defaultItemForAdd, this.defaultItemForAdd)
       const template = typeof this.defaultItemForAdd === 'function' ? this.defaultItemForAdd() : this.defaultItemForAdd
       try {
         return JSON.parse(JSON.stringify(template))
@@ -121,10 +124,10 @@ export default defineComponent({
       this.selectedItem = element
       // this.selectedIndex = index
       // this.items[index] = this.selectedItem
-      console.log('element>', element, $event)
+      // console.log('element>', element, $event)
     },
     emitSelectedItem() {
-      console.log('selectedItem:', {element: this.selectedItem, index: this.selectedIndex})
+      // console.log('selectedItem:', {element: this.selectedItem, index: this.selectedIndex})
       this.$emit('selectedItem', {element: this.selectedItem, index: this.selectedIndex})
     }
   }

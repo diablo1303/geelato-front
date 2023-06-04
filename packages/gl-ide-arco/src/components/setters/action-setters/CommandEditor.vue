@@ -94,7 +94,6 @@ const props = defineProps({
   }
 })
 
-console.log('componentStoreId:::::::::::::::', props.componentStoreId)
 // const componentMaterialStore = useComponentMaterialStore()
 const componentStore = componentStoreFactory.useComponentStore('useComponentBlockStore')
 const emits = defineEmits(["update:action", 'updateAction'])

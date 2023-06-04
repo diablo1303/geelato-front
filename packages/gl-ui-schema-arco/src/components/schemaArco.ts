@@ -50,7 +50,7 @@ import TimelineMeta from "./setter-arco/timeLine/TimelineMeta";
 import TimelineItemMeta from "./setter-arco/timeLine/TimelineItemMeta";
 import TooltipMeta from "./setter-arco/tooltip/TooltipMeta";
 import TreeMeta from "./setter-arco/tree/TreeMeta";
-import {ComponentMeta, ComponentInstance, ComponentMaterial} from "@geelato/gl-ui-schema";
+import {ComponentMeta, ComponentInstance} from "@geelato/gl-ui-schema";
 import PageMeta from "./setter-arco/page/PageMeta";
 import DndPlaceholderMeta from "./setter-arco/dndPlaceholder/DndPlaceholderMeta";
 import FormMeta from "./setter-arco/form/FormMeta";
@@ -65,12 +65,11 @@ import VirtualMeta from "./setter-arco/virtual/VirtualMeta";
 import HiddenAreaMeta from "./setter-arco/hidden-area/HiddenAreaMeta";
 import HiddenAreaInstance from "./setter-arco/hidden-area/HiddenAreaInstance";
 import DictMeta from "./setter-arco/dict/dictMeta";
-
+import DynamicSelectMeta from "./setter-arco/select/DynamicSelectMeta";
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [ButtonMeta, IconMeta, FormMeta, InputMeta, InputNumberMeta, DictMeta, TextAreaMeta, RateMeta, RadioGroupMeta, UserSelectMeta, ColorMeta, TableMeta, TypographyMeta, DividerMeta, RowColLayoutMeta,
+const componentMetas: Array<ComponentMeta> = [ButtonMeta, IconMeta, FormMeta, InputMeta, InputNumberMeta, DictMeta, DynamicSelectMeta,SelectMeta, TextAreaMeta, RateMeta, RadioGroupMeta, UserSelectMeta, ColorMeta, TableMeta, TypographyMeta, DividerMeta, RowColLayoutMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
-    CascaderMeta, CheckboxMeta, DatePickerMeta, MentionsMeta,
-    SelectMeta, SliderMeta, SwitchMeta, TimePickerMeta, TransferMeta, TreeSelectMeta, UploadMeta, AvatarMeta, BadgeMeta,
+    CascaderMeta, CheckboxMeta, DatePickerMeta, MentionsMeta,SliderMeta, SwitchMeta, TimePickerMeta, TransferMeta, TreeSelectMeta, UploadMeta, AvatarMeta, BadgeMeta,
     CalendarMeta, CardMeta, HiddenAreaMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
     StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, TreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta]
 

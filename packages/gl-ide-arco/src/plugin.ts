@@ -52,7 +52,6 @@ import GlPageComponentSelect from "./components/setters/property-setters/GlPageC
 import GlPageComponentSelectBuilder from "./components/builder/props-builder/GlPageComponentSelectBuilder.vue";
 import GlInputSetter from "./components/setters/property-setters/GlInputSetter.vue";
 import GlOptionsDynamicBuilder from "./components/builder/props-builder/GlOptionsDynamicBuilder.vue";
-import GlOptionsDynamicSetter from "./components/setters/property-setters/GlOptionsDynamicSetter.vue";
 
 // import formPageTemplate from "./components/stage/formPageTemplate.json";
 
@@ -182,7 +181,6 @@ const component: Plugin = {
         app.component(GlIconfontSetterForSlot.name, GlIconfontSetterForSlot)
         app.component(GlSelectSetter.name, GlSelectSetter)
         app.component(GlOptionsSetter.name, GlOptionsSetter)
-        app.component(GlOptionsDynamicSetter.name,GlOptionsDynamicSetter)
         app.component(GlPageSelect.name, GlPageSelect)
         app.component(GlPageComponentSelect.name, GlPageComponentSelect)
         app.component(GlEntitySelect.name, GlEntitySelect)

@@ -40,7 +40,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
             return
         }
         plugins.value.push(plugin)
-        console.log('use plugin', plugin)
+        // console.log('use plugin', plugin)
     }
 
     function findPlugin(pluginName: string) {
@@ -87,7 +87,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
      * @param iconType
      */
     function openPage({type, extendId, title, iconType}: Page) {
-        console.log('try to open page:', {type, extendId, title, iconType})
+        // console.log('try to open page:', {type, extendId, title, iconType})
         // 从已打开的页面中查找，若有若激活
         let foundItem = pageStore.findPageByExtendId(extendId)
         if (foundItem.index >= 0) {
@@ -102,7 +102,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
             if (foundPanel) {
                 // 从后台服务中加载页面，若无则创建新页面
                 pageStore.loadPage({extendId}).then((res) => {
-                    console.log('loadedPage:', res.data.data)
+                    // console.log('loadedPage:', res.data.data)
                     let page = new Page()
                     if (res.data.data && res.data.data.length > 0) {
                         // 服务端加载的页面

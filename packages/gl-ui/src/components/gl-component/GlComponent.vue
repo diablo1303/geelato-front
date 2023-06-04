@@ -146,6 +146,8 @@ watch(() => {
   mv.value = props.glComponentInst.value
 })
 
+// @ts-ignore
+props.glComponentInst.value = mv.value
 watch(mv, () => {
   // @ts-ignore
   props.glComponentInst.value = mv.value
@@ -154,7 +156,7 @@ watch(mv, () => {
   // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
   emits('update:modelValue', mv.value)
   emits('update', mv.value)
-}, {immediate: true})
+})
 
 onMounted(() => {
   emits('onComponentMounted', {})

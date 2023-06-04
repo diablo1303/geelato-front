@@ -1,31 +1,32 @@
 <template>
-  <!--  <div style="display: flex">-->
-  <!--    <div>-->
-  <!--      <a-select v-model="mv">-->
-  <!--        <a-option v-for="item in options" :value="item.componentName">{{ item.title }}</a-option>-->
-  <!--      </a-select>-->
-  <!--    </div>-->
-  <!--    <div>-->
-  <!--      <a-button type="text" title="设置组件信息">-->
-  <!--        <gl-iconfont type="gl-setting"></gl-iconfont>-->
-  <!--      </a-button>-->
-  <!--    </div>-->
-  <!--  </div>-->
   <div>
     <a-row>
       <a-col flex="auto">
         <a-select v-model="mv.componentName" @change="changeComponent">
-          <a-option v-for="item in options" :value="item.componentName">{{ item.title }}</a-option>
+          <a-option v-for="item in options"  :value="item.componentName">{{ item.title }}{{
+              getTitle(item.componentName)
+            }}
+          </a-option>
         </a-select>
       </a-col>
       <a-col flex="2em" v-if="mv.componentName">
-        <a-button type="text" title="设置组件信息" @click="openComponentSetterModal">
-          <gl-iconfont type="gl-setting"></gl-iconfont>
-        </a-button>
+        <a-button-group>
+          <a-button type="text" title="设置属性" @click="openComponentSetterModal('1')" style="padding:0 5px">
+            <gl-iconfont type="gl-setting"></gl-iconfont>
+          </a-button>
+          <a-button type="text" title="设置动作" @click="openComponentSetterModal('2')" style="padding:0 5px">
+            <gl-iconfont type="gl-thunderbolt"></gl-iconfont>
+          </a-button>
+        </a-button-group>
       </a-col>
     </a-row>
-    <a-modal draggable :visible="visible" title="设置组件" @ok="()=>{visible=false}" @cancel="()=>{visible=false}" :width="600" style="top: 20px">
-      <GlComponentSetter :componentMeta="componentMeta" :componentInstance="mv" @update="(val)=>{updateInstance(val)}"/>
+    <a-modal v-if="visible" draggable :visible="visible" title="设置组件" @ok="()=>{visible=false}"
+             @cancel="()=>{visible=false}"
+             :width="600" style="top: 20px" :hide-cancel="true" ok-text="关闭">
+      <GlComponentSetter :componentMeta="componentMeta"
+                         :componentInstance="mv"
+                         :defaultActiveKey="defaultActiveKey"
+                         @update="(val)=>{updateInstance(val)}"/>
     </a-modal>
   </div>
 </template>
@@ -68,12 +69,22 @@ const visible = ref(false)
 const componentMeta = ref(new ComponentMeta())
 const componentInstance = ref(new ComponentInstance())
 const ideStore = useIdeStore()
+// 依据不同的组件类型获取实体化标题
+const getTitle = (componentName: string) => {
+  let name = ''
+  if (componentName === 'AButton') {
+    name = mv.value?.slots?.icon?.props?.text
+  }
+  return name ? "-" + name : ''
+}
 
 
 watch(mv, (val) => {
   emits('update:modelValue', val)
 }, {deep: true})
-const openComponentSetterModal = () => {
+let defaultActiveKey = ref("1")
+const openComponentSetterModal = (activeKey: string) => {
+  defaultActiveKey.value = activeKey
   visible.value = true
 }
 const findComponentMeta = (componentName: string) => {

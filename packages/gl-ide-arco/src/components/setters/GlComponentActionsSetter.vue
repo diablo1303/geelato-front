@@ -14,7 +14,7 @@
                 <a-input v-model="componentInstance.actions[slotProps.index].name"></a-input>
               </div>
               <div style="flex: 0 0 2em;text-align: center;line-height: 2em">
-                <GlIconfont type="gl-setting"
+                <GlIconfont type="gl-thunderbolt"
                             @click="openActionSetter(componentInstance.actions[slotProps.index],slotProps.index,actionMeta)"
                             style="cursor: pointer"></GlIconfont>
               </div>
@@ -23,35 +23,12 @@
         </div>
       </a-collapse-item>
     </a-collapse>
-    <!--    <div class="gl-table">-->
-    <!--      <div class="gl-table-row" v-for="(actionMeta) in componentMeta.actions">-->
-    <!--        <div class="gl-table-cell gl-label" style="position: relative;width: 8em">{{ actionMeta.name }} {{-->
-    <!--            actionMeta.title-->
-    <!--          }}-->
-    <!--        </div>-->
-    <!--        <div class="gl-table-cell">-->
-    <!--          <GlArrayBaseSetter v-slot:default="slotProps" v-model="componentInstance.actions"-->
-    <!--                             :defaultItemForAdd="new Action({id:utils.uuid('act',16),name:actionMeta.name,title:actionMeta.title})"-->
-    <!--                             @addItem="update"-->
-    <!--                             @removeItem="update">-->
-    <!--            <div style="width:100%;display: flex;margin-bottom: 1px">-->
-    <!--              <div style="flex:auto">-->
-    <!--                <a-input v-model="componentInstance.actions[slotProps.index].name"></a-input>-->
-    <!--              </div>-->
-    <!--              <div style="flex: 0 0 2em;text-align: center;line-height: 2em">-->
-    <!--                <GlIconfont type="gl-setting"-->
-    <!--                            @click="openActionSetter(componentInstance.actions[slotProps.index],slotProps.index,actionMeta)"-->
-    <!--                            style="cursor: pointer"></GlIconfont>-->
-    <!--              </div>-->
-    <!--            </div>-->
-    <!--          </GlArrayBaseSetter>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--    </div>-->
-    <a-modal draggable :visible="actionCodeEditorVisible" title="动作（事件）编排"
+    <a-modal v-if="actionCodeEditorVisible" draggable :visible="actionCodeEditorVisible" title="动作（事件）编排"
              @ok="closeActionCodeEditor"
              @cancel="closeActionCodeEditor"
              :width="1360"
+             :hide-cancel="true"
+             ok-text="关闭"
              body-style="padding:0"
     >
       <CommandEditor v-if="refreshFlag&&currentAction" :key="currentAction.id"

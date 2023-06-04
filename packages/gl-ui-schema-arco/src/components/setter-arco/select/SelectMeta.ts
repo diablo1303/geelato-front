@@ -3,7 +3,7 @@ export default {
     "displayMode": "tile",
     "iconType": "gl-select",
     "group": "dataEntry",
-    "title": "选择器",
+    "title": "自定义选择",
     "alias": "select",
     "useBy": ["freePage"],
     "properties": [{
@@ -34,7 +34,7 @@ export default {
         "expanded": true,
         "setterComponentProps": {"multiple": false, "allowClear": false, "options": []},
         "setterComponentVModelName": "modelValue",
-        "title": "选项",
+        "title": "自定义选项",
         "setterComponentName": "GlOptionsSetter"
     }, {
         "name": "size",

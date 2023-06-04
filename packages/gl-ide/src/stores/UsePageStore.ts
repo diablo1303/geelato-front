@@ -36,11 +36,11 @@ export const usePageStore = defineStore('GlPageStore', () => {
      * @param template
      */
     function addPageTemplate(pageType: string, template: any) {
-        console.log('addPageTemplate', pageType, template)
+        // console.log('addPageTemplate', pageType, template)
         if (!template || pageTemplates[pageType] !== undefined) return
         if (typeof template.then === "function") {
             template.then((result: any) => {
-                console.log('addPageTemplate template.then result.default:', result.default)
+                // console.log('addPageTemplate template.then result.default:', result.default)
                 pageTemplates[pageType] = result.default
             })
         } else {
@@ -60,7 +60,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
     }
 
     function addPage(page: Page) {
-        console.log('push page to pageStore,page:', page)
+        // console.log('push page to pageStore,page:', page)
         pages.value.push(page)
         switchToPage(pages.value.length - 1)
     }
@@ -105,7 +105,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
         // pages页面数量调整时，如做了删除操作，需要重新计算lastPageIndexAfter的值，确保索引到调整的灵数组上
         const lastPageIndexAfter = lastPageIndex >= pages.value.length ? lastPageIndex - 1 : lastPageIndex
         const newPageIndex = Number.parseInt(index + '')
-        console.log('switchToPage from index:', lastPageIndex, 'to index', newPageIndex, 'lastPage:', currentPage.value, 'componentStore:', componentStore)
+        // console.log('switchToPage from index:', lastPageIndex, 'to index', newPageIndex, 'lastPage:', currentPage.value, 'componentStore:', componentStore)
 
         // 在切换页面时，记录原页面(lastPageIndex>=0)当前选中的组件
         if (lastPageIndexAfter >= 0) {
@@ -131,7 +131,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
      * @return promise
      */
     function loadPage(params: object): Promise<any> {
-        console.log('loadPage from server by params:', params)
+        // console.log('loadPage from server by params:', params)
         return entityApi.query('platform_app_page', 'id,extendId,code,sourceContent,description', params, false)
     }
 

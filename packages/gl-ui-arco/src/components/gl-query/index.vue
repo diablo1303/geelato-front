@@ -21,7 +21,7 @@ const generateFormModel = () => {
   props.items?.forEach((item: QueryItem) => {
     fModel[item.id] = item.component?.value;
   });
-  console.log('GlQuery > generateFormModel() > fModel:', fModel)
+  // console.log('GlQuery > generateFormModel() > fModel:', fModel)
   return fModel;
 };
 const defaultValue = generateFormModel()

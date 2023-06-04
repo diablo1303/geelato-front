@@ -30,6 +30,16 @@ export class BaseInfo {
     tablePadding?: string | number
     // 启用表格编辑（表格内编辑）
     enableEdit?: boolean = false
+    // 作为表单的子表
+    isFormSubTable?:boolean = false
+    // 显示序号
+    showSeqNo?: boolean = false
+    // 左边固定数
+    leftFixedCount: number = 0
+
+    checkType: 'checkbox' | 'radio' | undefined = undefined
+    // checkType 为checkbox时，showCheckAll才有效
+    showCheckAll?: boolean = false
 }
 
 const defaultTable: TableMeta = {

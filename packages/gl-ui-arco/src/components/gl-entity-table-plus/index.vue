@@ -26,6 +26,10 @@ import {useI18n} from "vue-i18n";
 import {CheckUtil, entityApi, PageProvideKey, PageProvideProxy, GlIconfont, utils} from "@geelato/gl-ui";
 import type {Action} from "../../types/global";
 
+/**
+ *  change:在表格编辑状态时，更换表格数据时触发
+ */
+const emits = defineEmits(['change'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const {t} = CheckUtil.isBrowser() ? useI18n() : {
@@ -84,7 +88,7 @@ onMounted(() => {
       item.render = eval(fn);
     }
   });
-  console.log("转换后的table:", props.columns);
+  // console.log("转换后的table:", props.columns);
 })
 
 const tableSettingId = utils.gid('tSetting', 16)
@@ -146,10 +150,14 @@ const handleChange = (event: any, item: any, index: number) => {
 const onUpdateColumns = (showColumnsValue: any) => {
   showColumns.value = showColumnsValue;
 };
+const onUpdateRow = (data: { record: object, rowIndex: number }) => {
+  console.log('GlEntityTablePlus > onUpdateRow() > data:', data)
+  emits('change', data)
+}
 
 let lastEntityReaderParams: Array<EntityReaderParam>;
 const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
-  console.log("onSearch() > entityReaderParams:", entityReaderParams);
+  // console.log("onSearch() > entityReaderParams:", entityReaderParams);
   tableRef.value.search(entityReaderParams);
   lastEntityReaderParams = entityReaderParams;
 };
@@ -171,7 +179,26 @@ const deleteRow = (params: any) => {
 const saveRow = () => {
 
 }
-defineExpose([deleteRow, refresh])
+const rowSelection = computed(() => {
+  return props.base.checkType === 'checkbox' || props.base.checkType === 'radio' ? {
+    type: props.base.checkType,
+    showCheckedAll: props.base.showCheckAll && props.base.checkType === 'checkbox'
+  } : undefined
+})
+
+const getRenderData = () => {
+  return tableRef.value.getRenderData()
+}
+
+const getRenderColumns = () => {
+  return tableRef.value.getRenderColumns()
+}
+
+
+const validateTable = () => {
+  return tableRef.value.validateTable()
+}
+defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, validateTable])
 </script>
 
 <template>
@@ -181,7 +208,8 @@ defineExpose([deleteRow, refresh])
     <GlToolbar v-show="base.showToolbar!==false" v-bind="toolbar" style="margin-bottom: 8px">
       <template #leftItems>
         <div v-if="base.enableEdit" class="action-icon">
-          <a-button @click="addRow" shape="round" type="text" size="small">添加一行</a-button>
+          <a-button @click="addRow" shape="round" type="text" size="small">
+            <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加一行</a-button>
         </div>
       </template>
       <template #rightItems>
@@ -251,8 +279,10 @@ defineExpose([deleteRow, refresh])
         :columnActions="columnActions"
         :size="size"
         @updateColumns="onUpdateColumns"
+        @updateRow="onUpdateRow"
         :showPagination=base.showPagination
         :enableEdit="base.enableEdit"
+        :rowSelection="rowSelection"
     ></GlEntityTable>
   </a-card>
 </template>

@@ -7,8 +7,9 @@
 </template>
 <script lang="ts">
 export default {
-  name:'GlAppEntitySelect'
+  name: 'GlAppEntitySelect'
 }
+
 export class AppEntitySelectResult {
   appCode: string = ''
   entityName: string = ''
@@ -18,7 +19,8 @@ export class AppEntitySelectResult {
 <script lang="ts" setup>
 import {inject, PropType, ref, watch} from 'vue'
 import {useEntityStore} from "@geelato/gl-ide";
-import type {EntityLiteMeta, EntityMeta} from "@geelato/gl-ui";
+import {EntityMeta, type EntityLiteMeta} from "@geelato/gl-ui";
+import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "../ComponentSetterProvideProxy";
 
 const props = defineProps({
   modelValue: {
@@ -26,20 +28,31 @@ const props = defineProps({
     default() {
       return new AppEntitySelectResult()
     }
+  },
+  /**
+   *  将选择加载的完整实体源数据信息设置到ComponentSetterProvideProxy的正下文环境变量中
+   */
+  entityMetaVarName: {
+    type: String,
+    default() {
+      return 'entityMate'
+    }
   }
 })
 const emits = defineEmits(['update:modelValue'])
 const entityStore = useEntityStore()
 const entityLiteMetas = ref(new Array<EntityLiteMeta>)
-const ds = inject('$entityDS')
-if (!ds) {
-  console.error('未注入实体数据源：$entityDS，请检查是否已从服务端加载数据源。')
-}
+// const ds = inject('$entityDS')
+// if (!ds) {
+//   console.error('未注入实体数据源：$entityDS，请检查是否已从服务端加载数据源。')
+// }
+const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 const res = entityStore.loadEntityLiteMetas('')
 res.then((data: Array<EntityLiteMeta>) => {
   entityLiteMetas.value = data
 })
 
+const ds = ref({entityMeta: new EntityMeta()})
 const mv = ref(props.modelValue)
 watch(mv, (val) => {
   emits('update:modelValue', val)
@@ -68,8 +81,11 @@ const onEntityChange = (entityName: string) => {
       fieldMetas
     }
     // @ts-ignore
-    ds.value.fieldMetas = fieldMetas
-    console.log('inject ds:', ds)
+    // ds.value.fieldMetas = fieldMetas
+    // console.log('inject ds:', ds)
+    // componentSetterProvideProxy.setEntityDsRef(ds)
+    componentSetterProvideProxy.setVar(props.entityMetaVarName, ds.value.entityMeta)
+
   })
 }
 

@@ -152,7 +152,7 @@ export class ActionScriptExecutor {
      * @param callback
      */
     doAction(action: Action, ctx: object, callback?: Function) {
-        return this.executeScript(action.body, ctx, callback)
+        return this.executeScript(action.body!, ctx, callback)
     }
 
     /**

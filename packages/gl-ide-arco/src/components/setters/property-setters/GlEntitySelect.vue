@@ -13,7 +13,8 @@ export default {
 <script lang="ts" setup>
 import {inject, ref, watch} from 'vue'
 import {useEntityStore} from "@geelato/gl-ide";
-import type {EntityLiteMeta, EntityMeta} from "@geelato/gl-ui";
+import {type EntityLiteMeta, EntityMeta} from "@geelato/gl-ui";
+import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "../ComponentSetterProvideProxy";
 
 const props = defineProps({
   modelValue: {
@@ -21,20 +22,27 @@ const props = defineProps({
     default() {
       return ''
     }
+  },
+  /**
+   *  将选择加载的完整实体源数据信息设置到ComponentSetterProvideProxy的正下文环境变量中
+   */
+  entityMetaVarName: {
+    type: String,
+    default() {
+      return 'entityMeta'
+    }
   }
 })
 const emits = defineEmits(['update:modelValue'])
 const entityStore = useEntityStore()
-const entityLiteMetas= ref(new Array<EntityLiteMeta>)
-const ds = inject('$entityDS')
-if(!ds){
-  console.error('未注入实体数据源：$entityDS，请检查是否已从服务端加载数据源。')
-}
+const entityLiteMetas = ref(new Array<EntityLiteMeta>)
+
+const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 const res = entityStore.loadEntityLiteMetas('')
-res.then((data:Array<EntityLiteMeta>)=>{
+res.then((data: Array<EntityLiteMeta>) => {
   entityLiteMetas.value = data
 })
-
+const ds = ref({entityMeta: new EntityMeta()})
 const mv = ref('')
 mv.value = props.modelValue
 watch(mv, (val) => {
@@ -46,31 +54,30 @@ const setEntityAndLoadFieldMetas = (entityName: string) => {
   entityStore.loadFieldMetas('', entityName)
 }
 const onEntityChange = (entityName: string) => {
-  console.log('onEntityChange', entityName,entityLiteMetas)
-  let entityLiteMeta = {entityTitle:''}
-  for(let i in entityLiteMetas.value){
+  console.log('onEntityChange', entityName, entityLiteMetas)
+  let entityLiteMeta = {entityTitle: ''}
+  for (let i in entityLiteMetas.value) {
     // @ts-ignore
-    if(entityLiteMetas.value[i].entityName===entityName){
+    if (entityLiteMetas.value[i].entityName === entityName) {
       // @ts-ignore
       entityLiteMeta = entityLiteMetas.value[i]
     }
   }
-  entityStore.loadFieldMetas('', entityName).then((fieldMetas)=>{
-    // console.log('fieldMetas',fieldMetas)
-    // @ts-ignore
-    ds.value.entityMeta = {entityName:entityName,
-
-      entityTitle:entityLiteMeta.entityTitle,
+  entityStore.loadFieldMetas('', entityName).then((fieldMetas) => {
+    ds.value.entityMeta = {
+      entityName: entityName,
+      entityTitle: entityLiteMeta.entityTitle,
       fieldMetas
     }
     // @ts-ignore
-    ds.value.fieldMetas = fieldMetas
-    // console.log('inject ds:',ds)
+    // ds.value.fieldMetas = fieldMetas
+    componentSetterProvideProxy.setEntityDsRef(ds)
+    componentSetterProvideProxy.setVar(props.entityMetaVarName, ds.value.entityMeta)
   })
 }
 
 // 初始化，加载实体列表及相应的实体元数据
-if(props.modelValue){
+if (props.modelValue) {
   onEntityChange(props.modelValue)
 }
 </script>

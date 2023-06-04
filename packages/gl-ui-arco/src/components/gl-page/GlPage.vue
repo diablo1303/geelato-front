@@ -98,11 +98,14 @@ onUnmounted(() => {
 })
 
 onMounted(() => {
-  props.glComponentInst.actions.forEach((action: Action) => {
-    if (action.name === 'onMounted') {
-      actionScriptExecutor.doAction(action, {})
-    }
-  })
+  //  触发页面配置的事件，只限运行时
+  if (props.glIsRuntime) {
+    props.glComponentInst.actions.forEach((action: Action) => {
+      if (action.name === 'onMounted') {
+        actionScriptExecutor.doAction(action, {})
+      }
+    })
+  }
 })
 
 </script>

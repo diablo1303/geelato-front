@@ -112,17 +112,25 @@ export default class PageProvideProxy {
     }
 
     /**
-     * 获取组件值glComponentInst.value
+     * 获取组件实例信息glComponentInst
      * @param componentId
      */
-    getComponentValue(componentId: string) {
+    getComponentInst(componentId: string) {
         const vueInst = this.getVueInst(componentId)
         const proxy = vueInst?.proxy
         if (proxy) {
             // @ts-ignore
-            return proxy.glComponentInst.value
+            return proxy.glComponentInst
         }
         return undefined
+    }
+
+    /**
+     * 获取组件值glComponentInst.value
+     * @param componentId
+     */
+    getComponentValue(componentId: string) {
+        return this.getComponentInst(componentId)?.value
     }
 
     /**
@@ -159,13 +167,13 @@ export default class PageProvideProxy {
      */
     getMethod(componentId: string, methodName: string) {
         const vueInst = this.getVueInst(componentId)
-        console.log('getMethod(),vueInst:', vueInst, 'methodName:', methodName)
+        console.log('PageProvideProxy > getMethod() > vueInst:', vueInst, 'methodName:', methodName)
         if (vueInst) {
             for (let exposedKey in vueInst.subTree.component?.exposed) {
                 const exposedObject = vueInst.subTree.component?.exposed[exposedKey]
-                console.log('getMethod(),test exposedObject.name:', exposedObject.name, typeof exposedObject)
+                // console.log('getMethod(),test exposedObject.name:', exposedObject.name, typeof exposedObject)
                 if (exposedObject.name === methodName && typeof exposedObject === 'function') {
-                    console.log('getMethod(),return exposedObject:', exposedObject)
+                    // console.log('getMethod(),return exposedObject:', exposedObject)
                     return exposedObject
                 }
             }

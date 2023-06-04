@@ -1,40 +1,41 @@
 <template>
-  <GlArrayBaseSetter v-slot:default="slotProps" v-model="items" :defaultItemForAdd="getTemplateInst()" @addItem="update"
+  <GlArrayBaseSetter v-slot:default="slotProps" v-model="mv" :defaultItemForAdd="getTemplateInst" @addItem="update"
                      @removeItem="update">
-    <GlComponentSelect v-model="items[slotProps.index]"></GlComponentSelect>
+    <GlComponentSelect :key="mv[slotProps.index].id" v-model="mv[slotProps.index]"></GlComponentSelect>
   </GlArrayBaseSetter>
 </template>
-
 <script lang="ts">
-import {defineComponent, type PropType} from 'vue'
+export default {
+  name: "GlArrayComponentSetter"
+}
+</script>
+<script lang="ts" setup>
+import {type PropType, ref} from 'vue'
 import GlComponentSelect from "./GlComponentSelect.vue";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
+import {utils} from "@geelato/gl-ui";
 
-export default defineComponent({
-  name: "GlArrayComponentSetter",
-  components: {GlComponentSelect},
-  props: {
-    modelValue: {
-      type: Array as PropType<Array<ComponentInstance>>,
-      default() {
-        return []
-      }
-    }
-  },
-  data() {
-    return {
-      items: this.modelValue,
-    }
-  },
-  methods: {
-    getTemplateInst() {
-      return new ComponentInstance();
-    },
-    update() {
-      this.$emit('update:modelValue', this.items)
+const emits = defineEmits(['update:modelValue'])
+const props = defineProps({
+  modelValue: {
+    type: Array as PropType<Array<ComponentInstance>>,
+    default() {
+      return []
     }
   }
 })
+const mv = ref(props.modelValue)
+// 处理历史数据，确保都有id
+mv.value.forEach((item: any) => item.id = item.id ? item.id : utils.gid('', 16))
+
+const getTemplateInst = () => {
+  const inst = new ComponentInstance();
+  inst.id = utils.gid('', 16)
+  return inst
+}
+const update = () => {
+  emits('update:modelValue', mv.value)
+}
 </script>
 
 <style scoped>

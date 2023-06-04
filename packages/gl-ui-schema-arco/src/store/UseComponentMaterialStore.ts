@@ -33,7 +33,7 @@ export const useComponentMaterialStore = defineStore('GlComponentMaterialStore',
             console.error('注册组件元数据失败，已存在组件元数据：', componentMeta.componentName, componentMeta)
             return
         } else {
-            console.info('注册组件元数据成功：', componentMeta.componentName)
+            // console.info('注册组件元数据成功：', componentMeta.componentName)
         }
         componentMetaMap[componentMeta.componentName] = componentMeta
         componentMetas.value.push(componentMeta)
@@ -75,7 +75,7 @@ export const useComponentMaterialStore = defineStore('GlComponentMaterialStore',
         componentMaterial.useBy = (options && options.useBy) || componentMetaMap[name].useBy
         componentMaterialMap[name] = componentMaterial
         componentMaterials.value.push(componentMaterial)
-        console.info('注册组件物料成功：', name)
+        // console.info('注册组件物料成功：', name)
     }
 
     /**

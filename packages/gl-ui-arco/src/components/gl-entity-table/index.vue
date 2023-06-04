@@ -33,7 +33,7 @@ import {PaginationProps} from "@arco-design/web-vue";
 import {Schema} from "b-validate";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal;
-const emit = defineEmits(["updateColumns"]);
+const emits = defineEmits(["updateColumns", "updateRow"]);
 const props = defineProps({
   /**
    *  绑定的实体名称
@@ -84,11 +84,7 @@ const props = defineProps({
   rowSelection: {
     type: Object as PropType<TableRowSelection>,
     default() {
-      return {
-        showCheckedAll: true,
-        // checkbox | radio | undefined
-        type: "",
-      };
+      return undefined
     },
   },
   size: {
@@ -131,7 +127,7 @@ let recordSchema = new Schema({})
 watch(() => props.enableEdit,
     () => {
       const editSlotNameFlag = '__edit'
-      console.log('GlEntityTable > props.enableEdit:', props.enableEdit)
+      // console.log('GlEntityTable > props.enableEdit:', props.enableEdit)
       if (props.enableEdit) {
         // 如果启用，需将column中没有设置插槽的，生成插槽
         props.columns.forEach((col: Column) => {
@@ -147,15 +143,15 @@ watch(() => props.enableEdit,
           } else {
             col.slotName = undefined
           }
-          console.log('GlEntityTable > col:', col, col.slotName)
+          // console.log('GlEntityTable > col:', col, col.slotName)
         })
       } else {
         props.columns.forEach((col: Column) => {
           col.slotName = col.slotName && col.slotName.startsWith(editSlotNameFlag) ? "" : col.slotName
-          console.log('GlEntityTable > col:', col)
+          // console.log('GlEntityTable > col:', col)
         })
       }
-      console.log('GlEntityTable > columns after convert:', recordSchema)
+      // console.log('GlEntityTable > columns after convert:', recordSchema)
     },
     {immediate: true}
 )
@@ -221,7 +217,7 @@ const fetchData = async (readerInfo?: {
     // @ts-ignore
     entityReader.pageSize = readerInfo?.pageSize || pagination.pageSize
     const response = await entityApi.queryByEntityReader(entityReader);
-    console.log('GlEntityTable > fetchData() > response:', response)
+    // console.log('GlEntityTable > fetchData() > response:', response)
     renderData.value = response.data.data;
     pagination.pageSize = readerInfo?.pageSize || pagination.pageSize
     pagination.current = readerInfo?.pageNo || 1;
@@ -235,7 +231,7 @@ const fetchData = async (readerInfo?: {
 };
 
 const search = (entityReaderParams: Array<EntityReaderParam>) => {
-  console.log('search entityReaderParams:', entityReaderParams)
+  // console.log('search entityReaderParams:', entityReaderParams)
 
   fetchData({params: entityReaderParams});
 };
@@ -289,7 +285,7 @@ const popupVisibleChange = (val: boolean) => {
           const {oldIndex, newIndex} = e;
           exchangeArray(cloneColumns.value, oldIndex, newIndex);
           exchangeArray(showColumns.value, oldIndex, newIndex);
-          emit("updateColumns", showColumns.value);
+          emits("updateColumns", showColumns.value);
         },
       });
     });
@@ -297,7 +293,10 @@ const popupVisibleChange = (val: boolean) => {
 };
 
 
-const optColumn = {title: '操作', slotName: '#', fixed: 'right'}
+const optColumn = {title: '操作', slotName: '#', fixed: 'right', width: 140}
+const scroll = {
+  x: "100%"
+}
 watch(() => columns.value,
     (val) => {
       // @ts-ignore
@@ -307,8 +306,8 @@ watch(() => columns.value,
       });
       cloneColumns.value.push(optColumn as Column)
       showColumns.value = cloneDeep(cloneColumns.value);
-      console.log('GlEntityTable > update cloneColumns:', cloneColumns)
-      emit("updateColumns", showColumns.value);
+      // console.log('GlEntityTable > update cloneColumns:', cloneColumns)
+      emits("updateColumns", showColumns.value);
     },
     {deep: true, immediate: true}
 )
@@ -348,14 +347,14 @@ const validateRecord = (record: object, rowIndex: number) => {
   })
   let times = 1000
   while (validateStatus === 'start') {
-    console.log('sleep 5ms and validate status:', validateStatus)
+    // console.log('sleep 5ms and validate status:', validateStatus)
     utils.sleep(5)
     times--
     if (times <= 0) {
       break
     }
   }
-  console.log('validate record:', toRaw(record), 'rowIndex:', rowIndex, 'and get result:', result, 'cloneColumns:', cloneColumns.value)
+  // console.log('validate record:', toRaw(record), 'rowIndex:', rowIndex, 'and get result:', result, 'cloneColumns:', cloneColumns.value)
   setError(record, rowIndex, result)
   return result
 }
@@ -363,7 +362,6 @@ const validateRecord = (record: object, rowIndex: number) => {
 const tableErrors = ref<Array<object | null>>([])
 tableErrors.value.length = cloneColumns.value.length
 const setError = (record: object, rowIndex: number, err: { [key: string]: any },) => {
-  console.log()
   if (!err) {
     tableErrors.value[rowIndex] = null
     return
@@ -397,21 +395,62 @@ const addRow = () => {
  */
 const saveRow = (record: object, rowIndex: number) => {
   const result = validateRecord(record, rowIndex)
-  if (Object.keys(result).length > 0) {
+  if (result && Object.keys(result).length > 0) {
     // 有异常
 
+    return false
+  } else {
     // 无异常
 
+    return true
   }
+}
+
+/**
+ *  表格在编辑模式下，验证表格数据
+ */
+const validateTable = () => {
+  const resultList: Array<any> = []
+  let error = false
+  renderData.value.forEach((record, rowIndex) => {
+    const result = validateRecord(record, rowIndex)
+    resultList.push({record, rowIndex, result})
+    if (result && Object.keys(result).length > 0) {
+      // 有异常
+      error = true
+    } else {
+      // 无异常
+    }
+  })
+  return {error, resultList}
+}
+
+const updateRow = (record: object, rowIndex: number) => {
+  validateRecord(record, rowIndex)
+  emits('updateRow', {record, rowIndex})
 }
 
 const removeRecord = (record: object, rowIndex: number) => {
   renderData.value.splice(rowIndex, 1)
 }
-console.log('props.columns:', props.columns)
-console.log('cloneColumns', cloneColumns, 'columnActions:', props.columnActions)
-
-defineExpose({search, popupVisibleChange, handleChange, validateRecord, addRow});
+// console.log('props.columns:', props.columns)
+// console.log('cloneColumns', cloneColumns, 'columnActions:', props.columnActions)
+const getRenderData = () => {
+  return renderData.value
+}
+const getRenderColumns = () => {
+  return cloneColumns.value
+}
+defineExpose({
+  search,
+  popupVisibleChange,
+  handleChange,
+  validateTable,
+  validateRecord,
+  addRow,
+  getRenderData,
+  getRenderColumns
+});
 </script>
 
 <template>
@@ -426,7 +465,7 @@ defineExpose({search, popupVisibleChange, handleChange, validateRecord, addRow})
            :stripe="true"
            :column-resizable="columnResizable"
            :size="size"
-           :scroll="{}"
+           :scroll="scroll"
            @page-change="onPageChange"
            @page-size-change="onPageSizeChange"
   >
@@ -434,8 +473,10 @@ defineExpose({search, popupVisibleChange, handleChange, validateRecord, addRow})
       <a-space :size="0" class="gl-entity-table-cols-opt">
         <template v-if="enableEdit">
           <!-- 在编辑模式下，默认的操作：保存、删除 -->
-          <a-button type="text" size="small" @click="saveRow(record,rowIndex)">保存</a-button>
-          <a-button type="text" status="danger" size="small" @click="removeRecord(record,rowIndex)">删除</a-button>
+          <!--          <a-button type="text" size="small" @click="saveRow(record,rowIndex)">保存</a-button>-->
+          <a-popconfirm content="Are you sure you want to delete?">
+            <a-button type="text" status="danger" size="small" @click="removeRecord(record,rowIndex)">删除</a-button>
+          </a-popconfirm>
         </template>
         <template v-for="(columnAction,index) in columnActions" :key="index">
           <GlComponent v-if="columnAction" :glComponentInst="columnAction" :glCtx="{record:record,rowIndex:rowIndex}"
@@ -445,7 +486,7 @@ defineExpose({search, popupVisibleChange, handleChange, validateRecord, addRow})
     </template>
     <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">
       <div :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">
-        <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="validateRecord(record,rowIndex)"
+        <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="updateRow(record,rowIndex)"
                      :glComponentInst="cloneDeep(column.xEditComponent)"></GlComponent>
         <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>
       </div>

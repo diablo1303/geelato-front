@@ -12,7 +12,7 @@ export default {
         "type": "props",
         "enableValueExpress": false,
         "show": true,
-        "expanded": false,
+        "expanded": true,
         "setterComponentProps": {},
         "setterComponentVModelName": "",
         "_showSub": true,
@@ -39,6 +39,37 @@ export default {
             "setterComponentVModelName": "modelValue",
             "title": "绑定数据源",
             "setterComponentName": "GlEntitySelect"
+        }, {
+            "name": "isFormSubTable",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {
+                "type": "button",
+                "options": [{
+                    "label": "子表",
+                    "__jjwIsJ7EGd7amCHBHU": "subTable",
+                    "value": "subTable"
+                }, {"label": "普通表单"}]
+            },
+            "setterComponentVModelName": "modelValue",
+            "title": "是否为子表",
+            "setterComponentName": "ASwitch",
+            "description": "表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容"
+        }, {
+            "name": "subTablePidName",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "title": "主表ID字段",
+            "description": "子表中，对应主表单主键ID的字段",
+            "setterComponentName": "GlFieldSelect"
         }, {
             "name": "showQuery",
             "group": "base",
@@ -95,8 +126,70 @@ export default {
             "expanded": true,
             "title": "启用表格编辑",
             "setterComponentName": "ASwitch"
+        }, {
+            "name": "showSeqNo",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": false,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "title": "显示序号",
+            "setterComponentName": "ASwitch"
+        }, {
+            "name": "leftFixedCount",
+            "setterComponentProps": {
+                "options": [{
+                    "label": "0",
+                    "value": "0",
+                    "__G12mDt0WMK0DpquHK1": "0"
+                }, {"label": "1", "value": "1", "__G12mDt0WMK0DpquHK1": "1"}, {
+                    "label": "2",
+                    "value": "2",
+                    "__G12mDt0WMK0DpquHK1": "2"
+                }, {"label": "3", "value": "3", "__G12mDt0WMK0DpquHK1": "3"}], "type": "button"
+            },
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": false,
+            "expanded": true,
+            "title": "左侧冻结列数",
+            "setterComponentName": "ARadioGroup"
+        }, {
+            "name": "checkType",
+            "setterComponentProps": {
+                "type": "button",
+                "options": [{"label": "无", "value": "null", "__xJvT8pskAbMdRLoi7C": "null"}, {
+                    "label": "单选",
+                    "value": "radio",
+                    "__xJvT8pskAbMdRLoi7C": "radio"
+                }, {"label": "复选", "value": "checkbox", "__xJvT8pskAbMdRLoi7C": "checkbox"}]
+            },
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "title": "选择类型",
+            "setterComponentName": "ARadioGroup"
+        }, {
+            "name": "showCheckAll",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "title": "显示全选",
+            "setterComponentName": "ASwitch",
+            "description": "该属性在选择类型为复选时有效"
         }],
-        "title": "基础",
+        "title": "基本设置",
         "setterComponentName": "GlSimpleObjectSetter"
     }, {
         "name": "query",
@@ -314,24 +407,8 @@ export default {
             "show": true,
             "expanded": true,
             "title": "字段标题",
-            "setterComponentName": "AInput"
-        }, {
-            "name": "fixed",
-            "setterComponentProps": {
-                "type": "button",
-                "options": [{"label": "向左", "value": "left"}, {"label": "向右", "value": "right"}, {
-                    "label": "不固定",
-                    "value": ""
-                }],
-                "defaultValue": ""
-            },
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "title": "固定列",
-            "setterComponentName": "ARadioGroup"
+            "setterComponentName": "AInput",
+            "enableValueExpress": false
         }, {
             "name": "xRenderScript",
             "setterComponentProps": {},
@@ -342,7 +419,8 @@ export default {
             "expanded": true,
             "description": "对字段值进行处理，示例：\"$ctx.record.enableStatus === 1 ? '已启用' : '未启用'\"。当插槽名称为“#”时，特指操作列，此时本显示脚本的内容无效。",
             "title": "显示脚本",
-            "setterComponentName": "AInput"
+            "setterComponentName": "AInput",
+            "enableValueExpress": false
         }, {
             "name": "sortable",
             "group": "base",
@@ -404,6 +482,17 @@ export default {
             "placeholder": "",
             "description": "若表格启用编辑，则该列选择此组件进行编辑；若该表格不需编辑，则可不选。",
             "enableValueExpress": false
+        }, {
+            "name": "width",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "title": "宽度",
+            "setterComponentName": "AInputNumber"
         }],
         "setterComponentName": "GlObjectArraySetter",
         "title": "表格列",
@@ -423,5 +512,5 @@ export default {
         "title": "列操作",
         "enableValueExpress": false
     }],
-    "actions": []
+    "actions": [{"name": "change", "title": "值改变"}]
 }
