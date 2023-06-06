@@ -25,6 +25,7 @@ export default {
 import {inject, onUpdated, ref, watch} from "vue";
 import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "../ComponentSetterProvideProxy";
 import {entityApi, useGlobal, Utils} from "@geelato/gl-ui";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 
@@ -75,12 +76,36 @@ const loadPage = () => {
       // console.log('pageConfig', page)
       const pageConfig = page.releaseContent ? JSON.parse(page.releaseContent) : undefined
       treeData.value.length = 0
+      convertTitle(pageConfig)
       pageConfig ? treeData.value.push(pageConfig) : null
-      // console.log('pageConfig', pageConfig)
+      console.log('pageConfig', pageConfig)
+      // 转换页面数据
+
     }
   })
 }
 
+const convertTitle = (componentInst: ComponentInstance, title?: string) => {
+  componentInst.title = title || componentInst.title || componentInst.componentName
+
+
+  if (componentInst.group === 'dataEntry') {
+    componentInst.title = componentInst.props.label || componentInst.title || componentInst.componentName
+    componentInst.title += "【表单字段】"
+  }
+  if (componentInst.children) {
+    componentInst.children.forEach((childComponentInst: ComponentInstance, index: number) => {
+      if (componentInst.componentName === 'GlTabs') {
+        componentInst.title = 'GlTabs【标签页】'
+        convertTitle(childComponentInst, componentInst.props?.items[index].title + '【标签项】')
+      } else if (componentInst.componentName === 'GlRowColLayout') {
+        convertTitle(childComponentInst, '单元格')
+      } else {
+        convertTitle(childComponentInst)
+      }
+    })
+  }
+}
 loadPage()
 // onUpdated(() => {
 //   loadPage()

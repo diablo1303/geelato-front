@@ -55,5 +55,5 @@ export default {
             "title": "尺寸",
             "setterComponentName": "ARadioGroup"
         }],
-    "actions": []
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

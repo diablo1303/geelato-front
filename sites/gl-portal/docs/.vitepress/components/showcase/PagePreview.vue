@@ -11,7 +11,7 @@ const pageId = ref('')
 const url = window.location.href
 let paramInfo = url.split('?')[1]
 let params = new URLSearchParams('?'+paramInfo)
-pageId.value = params.get('pageId')
+pageId.value = params.get('pageId') || ''
 </script>
 <template>
   <div>

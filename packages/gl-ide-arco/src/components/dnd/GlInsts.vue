@@ -4,7 +4,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { inject, nextTick, ref} from 'vue'
+import {inject, nextTick, ref} from 'vue'
 import {mixins, utils} from "@geelato/gl-ui";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
@@ -31,25 +31,50 @@ const freshFlag = ref(true)
  * @param dragIndex
  * @param hoverIndex
  */
-const moveCard = (dragIndex: number, hoverIndex: number, dragItemId: string, dropItemId: string) => {
-  console.log(`moveCard,dragIndex:${dragIndex}, hoverIndex:${hoverIndex}, dragItemId:${dragItemId}, dropItemId:${dropItemId}`, props.glComponentInst.children)
+const moveItem = (dragIndex: number, hoverIndex: number, dragItemId: string, dropItemId: string) => {
+
+  console.log(`moveItem() > dragIndex:${dragIndex}, hoverIndex:${hoverIndex}, dragItemId:${dragItemId}, dropItemId:${dropItemId}`, props.glComponentInst.children)
   // 获取拖动项的上级组件
   const dragItemParentComponent = componentStore.findParentComponentFromTreeById(dragItemId)
-  console.log('findParentComponentFromTreeById，dragItemParentComponent:', dragItemParentComponent)
+  // console.log('findParentComponentFromTreeById，dragItemParentComponent:', dragItemParentComponent)
   // 获取放置目标项的上级组件
   const dropItemParentComponent = componentStore.findParentComponentFromTreeById(dropItemId)
-  console.log('findParentComponentFromTreeById，dropItemParentComponent:', dropItemParentComponent)
+  // console.log('findParentComponentFromTreeById，dropItemParentComponent:', dropItemParentComponent)
 
   if (!dragItemParentComponent || !dropItemParentComponent || !dragItemParentComponent.children || !dropItemParentComponent.children) {
     return
   }
+  const isMoveInSameList = dragItemParentComponent.id === dropItemParentComponent.id
+  let isMoveDownInSameList = undefined
+  let isMoveUpInSameList = undefined
+  if (isMoveInSameList) {
+    const isValidMove = dragIndex !== hoverIndex && dragIndex - hoverIndex !== -1
+    console.log('moveItem() > ', isValidMove ? '有效拖放' : '无效拖放')
+    if (!isValidMove) {
+      return
+    }
+
+    if (dragIndex < hoverIndex) {
+      isMoveDownInSameList = true
+    } else {
+      isMoveUpInSameList = true
+    }
+  }
+  console.log('moveItem() > isMoveInSameList:', isMoveInSameList)
+
+
   const dragItem = dragItemParentComponent.children![dragIndex]
 
   if (dragItem) {
     dragItemParentComponent.children!.splice(dragIndex, 1)
     tryAddDndPlaceholder(dragItemParentComponent.children)
 
-    dropItemParentComponent.children!.splice(hoverIndex, 0, dragItem)
+    if (isMoveDownInSameList) {
+      // 如果是从上向下移动，需要做个补偿，在拖动时，原有的被删除，此时放置的位置应-1
+      dropItemParentComponent.children!.splice(hoverIndex - 1, 0, dragItem)
+    } else {
+      dropItemParentComponent.children!.splice(hoverIndex, 0, dragItem)
+    }
     tryRemoveDndPlaceholder(dropItemParentComponent.children)
 
     componentStore.currentDragComponentId = ''
@@ -124,7 +149,7 @@ const tryAddDndPlaceholder = (items?: Array<any>, info?: string) => {
           :key="inst.id"
           :text="inst.id"
           :index="index"
-          :moveCard="moveCard"
+          :moveItem="moveItem"
           :addItem="addItem"
           :glComponentInst="inst"
           :componentStoreId="componentStoreId"

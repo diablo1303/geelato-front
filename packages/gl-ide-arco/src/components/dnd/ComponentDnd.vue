@@ -11,6 +11,8 @@
              :glComponentInst="glComponentInst"
              :parentId="glComponentInst.id"
              :glChildren="glComponentInst.children"
+             :glIsRuntime="glIsRuntime"
+             :glRuntimeFlag="glRuntimeFlag"
              @click="onClick"
              @mouseover="onMouseOver"
              @mouseleave="onMouseLeave"
@@ -21,10 +23,14 @@
   >
     <template v-for="(slotItem,slotName) in glComponentInst.slots" v-slot:[slotName]>
       <component v-if="slotItem.propsTarget==='v-bind'" :is="slotItem.componentName" v-bind="slotItem.props"
-                 :style="slotItem.style"></component>
-      <component v-else-if="slotItem.propsTarget==='v-model'" :is="slotItem.componentName" v-model="slotItem.props"
-                 :style="slotItem.style"></component>
-      <template v-else>不支持的slot props target：{{ slotItem.propsTarget }}</template>
+                 :style="slotItem.style" :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>
+      <component v-else-if="slotItem.propsTarget==='v-model'&&slotItem.propsName" :is="slotItem.componentName"
+                 v-model:[slotItem.propsName]="slotItem.props"
+                 :style="slotItem.style" :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>
+      <component v-else-if="slotItem.propsTarget==='v-model'&&!slotItem.propsName" :is="slotItem.componentName"
+                 v-model="slotItem.props"
+                 :style="slotItem.style" :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>
+      <template v-else>不支持的slot props target：{{ slotItem.propsTarget }}，请检查组件定义配置。</template>
     </template>
     <!--    <GlComponentDnd v-if="childElement" v-for="childElement in glComponentInst.children"-->
     <!--                          :glComponentInst="childElement" :componentStoreId="componentStoreId"></GlComponentDnd>-->
@@ -35,7 +41,7 @@
             :key="inst.id"
             :text="inst.id"
             :index="index"
-            :moveCard="moveCard"
+            :moveItem="moveItem"
             :addItem="addItem"
             :glComponentInst="inst"
             :componentStoreId="componentStoreId"
@@ -57,16 +63,17 @@ const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 
 const props = defineProps({
-  moveCard: Function as PropType<(dragIndex: number, hoverIndex: number, sourceId: number, targetId: number) => void>,
+  moveItem: Function as PropType<(dragIndex: number, hoverIndex: number, sourceId: number, targetId: number) => void>,
   addItem: Function,
   ...mixins.props
 })
 const emits = defineEmits(['onComponentClick', 'onComponentMounted'])
 
+// console.log('ComponentDnD > props.componentStoreId:',props.componentStoreId)
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
 
 const onClick = (...args: any[]) => {
-  console.log('gl-component-dnd > onClick() > arguments:', args, props.glComponentInst)
+  // console.log('gl-component-dnd > onClick() > arguments:', args, props.glComponentInst)
   // 特殊处理，点击组件GlDndPlaceholder，不做响应
   // if (props.glComponentInst.componentName === 'GlDndPlaceholder') {
   //   return
@@ -82,12 +89,12 @@ const onClick = (...args: any[]) => {
   componentStore.setCurrentSelectedComponentById(props.glComponentInst.id || '', fromPageId)
   emitter.emit('onComponentClick', {arguments: args, glComponentInst: props.glComponentInst})
   // 组件配置的动态绑定事件，运行时Runtime
-  if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
-    console.log('click action')
-    props.glComponentInst.actions.forEach((action: Action) => {
-      console.log('click action', action)
-    })
-  }
+  // if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
+  //   console.log('click action')
+  //   props.glComponentInst.actions.forEach((action: Action) => {
+  //     console.log('click action', action)
+  //   })
+  // }
 }
 const onMouseOver = (...args: any[]) => {
   for (let i in args) {

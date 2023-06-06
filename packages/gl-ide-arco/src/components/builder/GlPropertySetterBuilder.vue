@@ -96,13 +96,13 @@
             v-model="mv.setterComponentName"
             style="width: 100%"
             ref="select"
-            title="指定该属性采用什么组件进行配置"
+            title=""
         >
-          <a-option v-if="hasNoSub" v-for="item in setterItems" :value="item.name">{{ item.label }}
+          <a-option v-if="hasNoSub" v-for="item in setterItems" :value="item.name">{{ item.label }}-{{item.name}}
           </a-option>
           <template v-else>
             <a-option v-if="mv.type==='children'" v-for="item in setterItemsForSubComponent"
-                      :value="item.name">{{ item.label }}
+                      :value="item.name" :title="item.name">{{ item.label }}-{{item.name}}
             </a-option>
             <a-option v-else v-for="item in setterItemsForObject" :value="item.name">{{ item.label }}
             </a-option>
@@ -181,7 +181,8 @@
       </td>
       <td class="gl-table-cell">
         <template v-if="mv.setterComponentProps">
-          <a-switch size="small" v-if="defaultValueType==='Boolean'" v-model="mv.setterComponentProps.defaultChecked"></a-switch>
+          <a-switch size="small" v-if="defaultValueType==='Boolean'"
+                    v-model="mv.setterComponentProps.defaultChecked"></a-switch>
           <a-input-number v-else-if="defaultValueType==='Number'"
                           v-model="mv.setterComponentProps.defaultValue"></a-input-number>
           <a-input v-else v-model="mv.setterComponentProps.defaultValue" placeholder="默认值"></a-input>
@@ -189,7 +190,8 @@
       </td>
     </tr>
     <tr v-if="hasNoSub&&mv.type==='slots'">
-      <td class="gl-table-cell gl-label" title="在运行时应用于该插槽的组件名称，属性配置器配置后的v-model值，需要适用于该插槽渲染组件">
+      <td class="gl-table-cell gl-label"
+          title="在运行时应用于该插槽的组件名称，属性配置器配置后的v-model值，需要适用于该插槽渲染组件">
         <GlIconfont type="gl-info-circle"></GlIconfont>
         插槽渲染组件名
       </td>
@@ -203,6 +205,7 @@
         属性值绑定目标
       </td>
       <td class="gl-table-cell">
+        <template v-if="mv.slotComponentBindTarget = mv.slotComponentBindTarget || 'v-model'"></template>
         <a-switch v-model="mv.slotComponentBindTarget" checkedValue="v-bind" uncheckedValue="v-model">
           <template #checked>
             v-bind
@@ -211,6 +214,15 @@
             v-model
           </template>
         </a-switch>
+      </td>
+    </tr>
+    <tr v-if="hasNoSub&&mv.type==='slots'">
+      <td class="gl-table-cell gl-label" title="将配置该的结果绑定到槽渲染组件的v-model:xxxName中还是v-bind:xxxName中">
+        <GlIconfont type="gl-info-circle"></GlIconfont>
+        值绑定目标名称
+      </td>
+      <td class="gl-table-cell">
+        <a-input v-model="mv.slotComponentBindName" placeholder=""></a-input>
       </td>
     </tr>
     <template v-if="mv.type==='children'">
@@ -267,15 +279,13 @@
 
 <script lang="ts">
 export default {
-  name:'GlPropertySetterBuilder'
+  name: 'GlPropertySetterBuilder'
 }
 </script>
 <script lang="ts" setup>
 import {computed, defineComponent, getCurrentInstance, onBeforeUpdate, reactive, ref, watch} from 'vue'
-// import GlSelectSetter from "../setters/property-setters/GlSelectSetter.vue";
-// import GlSimpleArrayBuilder from "./props-builder/GlSimpleArrayBuilder.vue";
 import {PropertySetterMetaImpl, PropertySetterSelectOption} from "@geelato/gl-ui-schema";
-import {emitter} from "@geelato/gl-ui";
+
 
 // const builders = {
 //   GlSimpleArrayBuilder
@@ -313,9 +323,15 @@ const setterItems: Array<PropertySetterSelectOption> = [
   },
   {
     name: 'GlOptionsSetter',
-    label: '下拉选项配置器',
+    label: '下拉选项配置器（静态）',
     vModelName: 'modelValue',
     type: 'String'
+  },{
+    name: 'GlDynamicSelect',
+    label: '下拉选项配置器(动态实体)',
+    vModelName: 'modelValue',
+    type: 'Object',
+    propsSetter: 'GlOptionsDynamicBuilder'
   },
   {
     name: 'ASelect',
@@ -339,13 +355,30 @@ const setterItems: Array<PropertySetterSelectOption> = [
   {name: 'GlJson', label: 'Json编辑器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlColor', label: '颜色选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlPageSelect', label: '应用内的页面选择器', vModelName: 'modelValue', type: 'String'},
-  {name: 'GlPageComponentSelect', label: '页面内的组件选择器', vModelName: 'modelValue', type: 'String',propsSetter: 'GlPageComponentSelectBuilder'},
+  {
+    name: 'GlPageComponentSelect',
+    label: '页面内的组件选择器',
+    vModelName: 'modelValue',
+    type: 'String',
+    propsSetter: 'GlPageComponentSelectBuilder'
+  },
   {name: 'GlComponentSelect', label: '组件选择器', vModelName: 'modelValue', type: 'String'},
   {name: 'GlSubComponentSetter', label: '子组件设置', vModelName: 'modelValue', type: 'String'},
-  {name: 'GlArrayNumberSetter', label: '数组-数值类 [1,2,3...]', vModelName: 'modelValue', type: 'String',propsSetter: 'GlArrayNumberBuilder'},
+  {
+    name: 'GlArrayNumberSetter',
+    label: '数组-数值类 [1,2,3...]',
+    vModelName: 'modelValue',
+    type: 'String',
+    propsSetter: 'GlArrayNumberBuilder'
+  },
   {name: 'GlArrayStringSetter', label: '数组-字符串类 ["a","b"...]', vModelName: 'modelValue', type: 'String'},
   {name: 'GlArrayBooleanSetter', label: '数组-布尔类 [true,false...]', vModelName: 'modelValue', type: 'String'},
-  {name: 'GlArrayComponentSetter', label: '数组-组件类 [{componentName,props,slots...}...]', vModelName: 'modelValue', type: 'String'}
+  {
+    name: 'GlArrayComponentSetter',
+    label: '数组-组件类 [{componentName,props,slots...}...]',
+    vModelName: 'modelValue',
+    type: 'String'
+  }
 ]
 const setterItemsForObject = [
   {name: 'GlObjectArraySetter', label: '对象数组-[{}]'},

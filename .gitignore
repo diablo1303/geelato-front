@@ -28,3 +28,4 @@ pnpm-lock.yaml
 *.njsproj
 *.sln
 *.sw?
+/sites/gl-portal/docs/.vitepress/cache/

@@ -37,6 +37,17 @@ if (tabItems.value.length === 0) {
     title: '标题2', iconType: ''
   }])
 }
+
+const placeholderTemplate = () => {
+  return {
+    "id": utils.gid('ph'),
+    "componentName": "GlDndPlaceholder",
+    "title": "占位符",
+    "props": {},
+    "slots": {},
+    "children": []
+  }
+}
 const itemTemplate = () => {
   return {
     "id": utils.gid('virtual'),
@@ -61,6 +72,10 @@ onUpdated(() => {
   updateInst()
 })
 
+// if (!props.glIsRuntime) {
+//   props.glComponentInst.slots = props.glComponentInst.slots || {}
+//   props.glComponentInst.slots.extra = props.glComponentInst.slots.extra || JSON.parse(JSON.stringify(placeholderTemplate()))
+// }
 const updateInst = () => {
   if (props.glComponentInst.children && props.glComponentInst.children.length != tabItems.value.length) {
     while (props.glComponentInst.children.length < tabItems.value.length) {
@@ -86,6 +101,11 @@ const xx = false
 </script>
 <template>
   <a-tabs :active-key="activeKey">
+    <template #extra>
+      <div>
+        <slot name="extra"></slot>
+      </div>
+    </template>
     <a-tab-pane v-for="(item,index) in tabItems" :key="index">
       <template #title>
       <span @click="onTabClick(index)">
@@ -93,7 +113,8 @@ const xx = false
       {{ item.title }}
       </span>
       </template>
-      <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst.children[index]" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></component>
+      <component v-if="glComponentInst.children[index]" :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst.children[index]"
+                 :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></component>
     </a-tab-pane>
   </a-tabs>
 </template>

@@ -7,5 +7,5 @@ export default {
     "alias": "statistic",
     "useBy": ["freePage"],
     "properties": [],
-    "actions": []
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

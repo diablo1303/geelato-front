@@ -23,7 +23,7 @@ export default class ComponentInstance {
     title?: string = ''
     componentName: string = ''
     // 如dataEntry，可以来用区分是否为表单输入项，在渲染时展示label
-    group?:string = ''
+    group?: string = ''
     props: ComponentInstanceProps = {}
     // 属性值表达式，通过变量绑定、函数计算等，动态计算属性的值
     propsExpress?: ComponentInstanceProps = {}
@@ -50,4 +50,9 @@ export default class ComponentInstance {
     __isInvokeBlock?: boolean
     // 作为被调用的指令块占位符
     __invokeBlockPlaceholder?: string
+    // 字段验证之后的错误信息
+    __validateError? = null
+
+    // 拖动标识，通过监控该标识的变化，可以判断整个页面是否有变化
+    __dragFlag? = ''
 }

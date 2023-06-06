@@ -20,9 +20,9 @@
 
 <script lang="ts">
 
-import {defineComponent, nextTick, ref} from 'vue'
+import {defineComponent, nextTick} from 'vue'
 import {componentMeta, componentInstance} from "./ComponentSetterStepsData.ts";
-import {LooseObject} from "geelato/gl-ui";
+import {LooseObject} from "@geelato/gl-ui";
 
 export default defineComponent({
   name: "ComponentSetterSteps",

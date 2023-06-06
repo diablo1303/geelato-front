@@ -21,7 +21,7 @@ import {schemaArco, isDataEntry} from "./components/schemaArco";
 const component: Plugin = {
     // @ts-ignore
     install: function (app: App) {
-        console.log('gl-ui-schema-arco > install()')
+        // console.log('gl-ui-schema-arco > install()')
     }
 }
 

@@ -73,12 +73,13 @@ const i18nConvert = (value: string) => {
   <div class="gl-dnd-wrapper" :style="style">
     <div class="gl-component-wrapper">
       <template v-if="isFormItem">
-        <a-form-item class="gl-form-item" :field="glComponentInst?.props?.bindField?.fieldName"
+        <a-form-item v-show="glComponentInst.props.unRender!==true" class="gl-form-item" :field="glComponentInst?.props?.bindField?.fieldName"
                      :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"
                      :label="i18nConvert(glComponentInst?.props?.label)"
                      :rules="glComponentInst?.props?.rules"
                      :validate-trigger="[]">
-          <GlComponent class="gl-dnd-item gl-x-item"
+          <GlComponent v-if="glComponentInst"
+                       class="gl-dnd-item gl-x-item"
                        :glComponentInst="glComponentInst"
                        :componentStoreId="componentStoreId"
                        :glRuntimeFlag="glRuntimeFlag"
@@ -94,7 +95,8 @@ const i18nConvert = (value: string) => {
         </a-form-item>
       </template>
       <template v-else>
-        <GlComponent class="gl-dnd-item gl-x-item"
+        <GlComponent v-if="glComponentInst"
+                     class="gl-dnd-item gl-x-item"
                      :glComponentInst="glComponentInst"
                      :componentStoreId="componentStoreId"
                      :glRuntimeFlag="glRuntimeFlag"

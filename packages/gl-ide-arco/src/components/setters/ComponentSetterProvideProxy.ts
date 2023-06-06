@@ -6,15 +6,19 @@ import {ref} from "vue";
 export const ComponentSetterProvideKey = 'ComponentSetterProvideKey'
 export default class ComponentSetterProvideProxy {
 
-    private _propsValue: any = ref({})
+    // 在组件配置时，组件的属性值
+    private _propsValue: { [key: string]: any } = ref({})
+    // 在配置组件的属性时，为了实现各属性之间的信息共享，将配置属性时一些有用的变量共享出来组件
+    private _vars: { [key: string]: any } = ref({})
     private _entityDsRef: any
     private propValueChangeCallbacks: Array<{ callback: Function, propName: string }> = []
+    private _varChangeCallbacks = {}
 
     // TODO 需考虑弹出多层GlComponentSetter的时，属性覆盖的场景
     setPropValue(propName: string, value: any) {
         this._propsValue.value[propName] = value
         // console.log('ComponentSetterProvideProxy > _propsValue:', this._propsValue.value)
-        this.propValueChangeCallbacks.forEach((item:{callback: Function, propName: string}) => {
+        this.propValueChangeCallbacks.forEach((item: { callback: Function, propName: string }) => {
             item.callback(propName, value)
         })
     }
@@ -23,6 +27,21 @@ export default class ComponentSetterProvideProxy {
         return this._propsValue.value[propName]
     }
 
+    getPropsRef() {
+        return this._propsValue
+    }
+
+    setVar(varName: string, value: any) {
+        this._vars.value[varName] = value
+    }
+
+    getVar(varName: string) {
+        return this._vars.value[varName]
+    }
+
+    getVarsRef() {
+        return this._vars
+    }
 
     getEntityDsRef(): any {
         return this._entityDsRef;

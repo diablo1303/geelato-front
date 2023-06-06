@@ -9,7 +9,9 @@ import GlCard from "./components/gl-card/index.vue";
 import GlHidden from "./components/gl-hidden-area/GlHiddenArea.vue";
 import GlTab from "./components/gl-tabs/GlTab.vue";
 import GlTabs from "./components/gl-tabs/GlTabs.vue";
+import GlDynamicSelect from "./components/gl-dynamic-select/GlDynamicSelect.vue";
 import GlUserSelect from "./components/gl-user-select/GlUserSelect.vue";
+import GlDict from "./components/gl-dict/GlDict.vue";
 import en from "./locale/en-US";
 import cn from "./locale/zh-CN";
 import {PluginUtil} from "@geelato/gl-ui";
@@ -24,6 +26,7 @@ const component: Plugin = {
             return;
         }
 
+        app.component(GlDict.name, GlDict)
         app.component(GlPage.name, GlPage);
         app.component("GlEntityTablePlus", GlEntityTablePlus);
         app.component(GlEntityTree.name, GlEntityTree)
@@ -34,6 +37,7 @@ const component: Plugin = {
         app.component(GlTab.name, GlTab)
         app.component(GlTabs.name, GlTabs)
         app.component(GlUserSelect.name, GlUserSelect)
+        app.component(GlDynamicSelect.name, GlDynamicSelect)
         // const i18n = createI18n({
         //   locale: localStorage.getItem("arco-locale") || "zh-CN",
         //   fallbackLocale: "en-US",

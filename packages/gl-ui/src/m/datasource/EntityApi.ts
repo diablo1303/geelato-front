@@ -36,9 +36,7 @@ export class EntityApi {
     }
 
     reCreate(options?: AxiosRequestConfig) {
-
-
-        this.service = axios.create({
+        const opts = {
             baseURL: (options && options.baseURL) || (this.VITE_API_BASE_URL || ''), // api base url，在env文件中配置
             timeout: (options && options.timeout) || 6000, // 请求超时时间
             headers: (options && options.headers) || {
@@ -50,7 +48,9 @@ export class EntityApi {
             },
             withCredentials: true,
             // crossDomain: true
-        });
+        }
+        this.service = axios.create(opts);
+        // console.log('EntityApi > reCreate() > service options:', opts)
         return this.service
     }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="gl-page" :style="style">
-    <Breadcrumb :items="breadcrumb"/>
+    <!--    <ABreadcrumb :items="breadcrumb"/>-->
     <template v-if="glIsRuntime">
       <slot></slot>
     </template>
@@ -17,8 +17,9 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {getCurrentInstance, onUnmounted, PropType, provide, ref} from "vue";
+import {getCurrentInstance, onMounted, onUnmounted, PropType, provide, ref} from "vue";
 import {PageParamType, PageProvideProxy, actionScriptExecutor, mixins, PageProvideKey} from "@geelato/gl-ui";
+import {Action} from "@geelato/gl-ui-schema";
 
 const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
@@ -96,9 +97,18 @@ onUnmounted(() => {
   // console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
 })
 
+onMounted(() => {
+  //  触发页面配置的事件，只限运行时
+  if (props.glIsRuntime) {
+    props.glComponentInst.actions.forEach((action: Action) => {
+      if (action.name === 'onMounted') {
+        actionScriptExecutor.doAction(action, {})
+      }
+    })
+  }
+})
+
 </script>
-
-
 <style lang="less">
 .gl-page {
   width: 100%;

@@ -1,0 +1,88 @@
+<template>
+  <a-select v-model="mv"
+            :allow-clear="allowClear"
+            :allow-search="allowSearch"
+            :readonly="readonly"
+            :size="size"
+            :disabled="disabled"
+            :placeholder="placeholder"
+  >
+    <a-option v-for="item in selectOptions" :value="item[valueFiledName]">{{ item[labelFieldName] }}</a-option>
+  </a-select>
+</template>
+<script lang="ts">
+/**
+ *  基于数据库实体的动态数据选择器
+ */
+export default {
+  name: "GlDynamicSelect"
+}
+</script>
+<script lang="ts" setup>
+import {ref, watch} from 'vue'
+import {entityApi} from "@geelato/gl-ui";
+
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default() {
+      return ''
+    }
+  },
+  entityName: {
+    type: String,
+    required: true
+  },
+  labelFieldName: {
+    type: String,
+    required: true
+  },
+  valueFiledName: {
+    type: String,
+    default() {
+      return 'id'
+    }
+  },
+  allowClear: {
+    type: Boolean,
+    default() {
+      return false
+    }
+  },
+  allowSearch: {
+    type: Boolean,
+    default() {
+      return false
+    }
+  },
+  readonly: Boolean,
+  size: String,
+  placeholder: String,
+  disabled: Boolean
+})
+const emits = defineEmits(['update:modelValue'])
+const mv = ref(props.modelValue)
+watch(mv,
+    (val: any) => {
+      emits('update:modelValue', val)
+    },
+    {deep: true}
+)
+const selectOptions = ref([])
+const loadData = () => {
+  if (props.entityName && props.valueFiledName && props.labelFieldName) {
+    entityApi.query(props.entityName, `${props.valueFiledName},${props.labelFieldName}`, {}).then((resp: any) => {
+      selectOptions.value = resp.data?.data || []
+    })
+  }
+}
+watch(() => {
+  return props.entityName + props.valueFiledName + props.labelFieldName
+}, () => {
+  loadData()
+}, {immediate: true})
+</script>
+
+<style scoped>
+
+</style>

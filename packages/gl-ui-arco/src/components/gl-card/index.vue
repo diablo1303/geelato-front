@@ -1,11 +1,13 @@
 <template>
   <a-card :title="title">
-    <template v-if="glIsRuntime">
-      <slot></slot>
-    </template>
-    <template v-else>
-      <GlInsts :glComponentInst="glComponentInst"></GlInsts>
-    </template>
+<!--    <template v-if="glIsRuntime">-->
+<!--&lt;!&ndash;      <slot></slot>&ndash;&gt;-->
+<!--      <GlInstsRuntime :glComponentInst="glComponentInst"  :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></GlInstsRuntime>-->
+<!--    </template>-->
+<!--    <template v-else>-->
+<!--      <GlInsts :glComponentInst="glComponentInst"></GlInsts>-->
+<!--    </template>-->
+    <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"/>
   </a-card>
 </template>
 <script lang="ts">

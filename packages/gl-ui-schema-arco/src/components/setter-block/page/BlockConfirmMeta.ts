@@ -56,7 +56,7 @@ export default {
         },
         "setterComponentVModelName": "modelValue",
         "setterComponentName": "ASelect",
-        "title": "开启指令调用"
+        "title": "调用指令"
     }],
     "actions": []
 }

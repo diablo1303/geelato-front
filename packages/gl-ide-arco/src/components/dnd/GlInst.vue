@@ -9,7 +9,7 @@ import {useDrag, useDrop} from 'vue3-dnd'
 import {ItemTypes} from './DndItemTypes'
 import type {Identifier} from 'dnd-core'
 import {toRefs} from '@vueuse/core'
-import {mixins} from "@geelato/gl-ui"
+import {mixins, utils} from "@geelato/gl-ui"
 import {componentStoreFactory} from "@geelato/gl-ide";
 import {PageProvideProxy, PageProvideKey} from "@geelato/gl-ui";
 
@@ -18,7 +18,7 @@ const props = defineProps({
   id: [String],
   text: String,
   index: Number,
-  moveCard: Function as PropType<(dragIndex: number, hoverIndex: number, dragItemId: string, dropItemId: string) => void>,
+  moveItem: Function as PropType<(dragIndex: number, hoverIndex: number, dragItemId: string, dropItemId: string) => void>,
   addItem: Function,
   ...mixins.props
 })
@@ -27,6 +27,7 @@ const componentStoreId = props.componentStoreId || inject('componentStoreId')
 if (!componentStoreId) {
   console.error('组件GlInst未设置componentStoreId')
 }
+// console.log('inject(\'componentStoreId\'):', inject('componentStoreId'))
 // @ts-ignore
 const componentStore = componentStoreFactory.getComponentStore(componentStoreId)()
 
@@ -60,15 +61,15 @@ const [dropCollect, drop] = useDrop<DragItem,
     if (didDrop) {
       return
     }
-    console.log('drop() > dragItem:', dragItem, ',dropTargetMonitor:', dropTargetMonitor)
     const dropItemId = props.id!
     const dragIndex = dragItem.index
-    const hoverIndex = props.index
-
+    const hoverIndex = props.index || 0
+    console.log('drop() > dragIndex:', dragIndex, 'hoverIndex:', hoverIndex, 'dragItem:', dragItem, 'dropTargetMonitor:', dropTargetMonitor)
     // 从组件库新增时,item是模板实例对象
     // 可通过_isTemplateInst来进行检测
     if (dragItem._isTemplateInst) {
       delete dragItem._isTemplateInst
+      // 添加时
       if (props.addItem) {
         props.addItem!(hoverIndex, JSON.parse(JSON.stringify(dragItem)))
       } else {
@@ -76,11 +77,13 @@ const [dropCollect, drop] = useDrop<DragItem,
         console.log('未添加组件', props.parentId, props.glComponentInst)
       }
     } else {
-      // 移动时
-      props.moveCard!(dragIndex, hoverIndex!, dragItem.id, dropItemId)
+      // 尝试移动时(不一定会移动，如在同一位置拖、放)
+      props.moveItem!(dragIndex, hoverIndex!, dragItem.id, dropItemId)
     }
     // TODO 改成依据鼠标的位置来区分是需要放置到上方还是下方
     dragItem.index = hoverIndex!
+    // 拖动标识，通过监控该标识的变化，可以判断整个页面是否有变化
+    componentStore.currentSelectedComponentInstance.__dragFlag = utils.gid('dragFlag', 20)
   }
 })
 
@@ -199,15 +202,15 @@ const i18nConvert = (value: string) => {
 
 .indicator {
   position: absolute;
-  bottom: 0;
+  top: 0;
   width: 100%;
   height: 2px;
   background: #cc3636;
 
-  &.first {
-    top: 0;
-    bottom: unset;
-  }
+  //&.first {
+  //  top: 0;
+  //  bottom: unset;
+  //}
 }
 
 .gl-component-wrapper {

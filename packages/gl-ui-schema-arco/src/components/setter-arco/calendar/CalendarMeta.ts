@@ -6,5 +6,6 @@ export default {
     "title": "日历",
     "alias": "cal",
     "useBy": ["freePage"],
-    "properties": [],"actions": [],
+    "properties": [],
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

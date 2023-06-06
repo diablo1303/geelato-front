@@ -13,7 +13,8 @@ const props = defineProps({
 </script>
 
 <template>
-  <GlInstRuntime v-if="glComponentInst" v-for="(inst, index) in glComponentInst.children"
+  <GlInstRuntime v-if="glComponentInst"
+                 v-for="(inst, index) in glComponentInst.children"
                  :parentId=glComponentInst.id
                  :id="inst.id"
                  :key="inst.id"
@@ -22,7 +23,6 @@ const props = defineProps({
                  :glComponentInst="inst"
                  :glIsRuntime="glIsRuntime"
                  :glRuntimeFlag="glRuntimeFlag"
-
   />
 </template>
 

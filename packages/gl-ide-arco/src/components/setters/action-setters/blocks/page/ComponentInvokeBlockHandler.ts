@@ -14,7 +14,7 @@ export default class ComponentInvokeBlockHandler implements IBlockHandler {
             `
             const method = $gl.getComponentMethod("${props.componentId}","${props.methodName}");
             const params = ${BlockUtils.paramStringify(params)};
-            method(params);
+            return method(params);
             `
         ).setBlockName('ComponentInvokeBlock');
     }

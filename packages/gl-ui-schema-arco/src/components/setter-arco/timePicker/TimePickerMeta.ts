@@ -28,5 +28,6 @@ export default {
             "title": "绑定字段",
             "setterComponentName": "GlEntityFieldSelect"
         }
-    ],"actions": [],
+    ],
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

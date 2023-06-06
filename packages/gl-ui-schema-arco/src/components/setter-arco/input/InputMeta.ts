@@ -110,6 +110,17 @@ export default {
         "title": "只读",
         "setterComponentName": "ASwitch"
     }, {
+        "name": "unRender",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "不渲染",
+        "setterComponentName": "ASwitch",
+        "enableValueExpress": true
+    }, {
         "name": "placeholder",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -151,6 +162,6 @@ export default {
         "title": "验证规则",
         "setterComponentName": "GlValidateRulesSetter"
     }],
-    "actions": [],
+    "actions": [{"name": "change", "description": "仅在输入框失焦或按下回车时触发", "title": "值改变"}],
     "displayOnStage": "inline-block"
 }

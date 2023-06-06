@@ -19,9 +19,12 @@ const component: Plugin = {
         app.component('GlBlockSetVar', GlCommandBlockOne)
         app.component('GlBlockIf', GlCommandBlockTwo)
         app.component('GlBlockElse', GlCommandBlockTwo)
+        app.component('GlIfComponentValueBlock', GlCommandBlockTwo)
         app.component('GlBlockComponentInvoke', GlCommandBlockOne)
         app.component('GlBlockConfirm', GlCommandBlockOne)
-
+        app.component('GlBlockSetVisible', GlCommandBlockOne)
+        app.component('GlTriggerComponentActionBlock', GlCommandBlockOne)
+        app.component('GlLogBlock', GlCommandBlockOne)
         // 注册组件构建器
 
         // 注册属性设置组件

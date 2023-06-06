@@ -6,5 +6,6 @@ export default {
     "title": "步骤条",
     "alias": "steps",
     "useBy": ["freePage"],
-    "properties": [],"actions": [],
+    "properties": [],
+    "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

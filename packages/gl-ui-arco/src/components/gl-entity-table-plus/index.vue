@@ -19,13 +19,17 @@ import {
   type SizeProps,
   type Column,
   defaultTable,
-  type TableColumnDataPlus,
+  type TableColumnDataPlus, BaseInfo,
 } from "../gl-entity-table/table";
 import {type Toolbar, defaultToolbar} from "../gl-toolbar/toolbar";
 import {useI18n} from "vue-i18n";
 import {CheckUtil, entityApi, PageProvideKey, PageProvideProxy, GlIconfont, utils} from "@geelato/gl-ui";
 import type {Action} from "../../types/global";
 
+/**
+ *  change:在表格编辑状态时，更换表格数据时触发
+ */
+const emits = defineEmits(['change'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const {t} = CheckUtil.isBrowser() ? useI18n() : {
@@ -33,13 +37,13 @@ const {t} = CheckUtil.isBrowser() ? useI18n() : {
   }
 };
 
+
 const props = defineProps({
-  tableTitle: {
-    type: String
-  },
-  entityName: {
-    type: String,
-    required: true,
+  base: {
+    type: Object as PropType<BaseInfo>,
+    default() {
+      return new BaseInfo()
+    }
   },
   query: {
     type: Array as PropType<Array<QueryItem>>,
@@ -84,10 +88,10 @@ onMounted(() => {
       item.render = eval(fn);
     }
   });
-  console.log("转换后的table:", props.columns);
+  // console.log("转换后的table:", props.columns);
 })
 
-const tableSettingId = utils.gid('tSetting',16)
+const tableSettingId = utils.gid('tSetting', 16)
 const size = ref<SizeProps>(props.size || "medium");
 const densityList = computed(() => [
   {
@@ -146,10 +150,14 @@ const handleChange = (event: any, item: any, index: number) => {
 const onUpdateColumns = (showColumnsValue: any) => {
   showColumns.value = showColumnsValue;
 };
+const onUpdateRow = (data: { record: object, rowIndex: number }) => {
+  console.log('GlEntityTablePlus > onUpdateRow() > data:', data)
+  emits('change', data)
+}
 
 let lastEntityReaderParams: Array<EntityReaderParam>;
 const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
-  console.log("onSearch() > entityReaderParams:", entityReaderParams);
+  // console.log("onSearch() > entityReaderParams:", entityReaderParams);
   tableRef.value.search(entityReaderParams);
   lastEntityReaderParams = entityReaderParams;
 };
@@ -158,22 +166,52 @@ const refresh = (event?: MouseEvent) => {
 };
 
 const queryRef = ref(null);
-
+const addRow = () => {
+  tableRef.value.addRow()
+}
 const deleteRow = (params: any) => {
   const id = params[0].id
-  entityApi.delete(props.entityName, {id: id}).then(() => {
+  entityApi.delete(props.base.entityName, {id: id}).then(() => {
     refresh()
   })
   console.log('GlEntityTablePlus > deleteRow() > params:', params)
 }
-defineExpose([deleteRow, refresh])
+const saveRow = () => {
+
+}
+const rowSelection = computed(() => {
+  return props.base.checkType === 'checkbox' || props.base.checkType === 'radio' ? {
+    type: props.base.checkType,
+    showCheckedAll: props.base.showCheckAll && props.base.checkType === 'checkbox'
+  } : undefined
+})
+
+const getRenderData = () => {
+  return tableRef.value.getRenderData()
+}
+
+const getRenderColumns = () => {
+  return tableRef.value.getRenderColumns()
+}
+
+
+const validateTable = () => {
+  return tableRef.value.validateTable()
+}
+defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, validateTable])
 </script>
 
 <template>
-  <a-card class="general-card" :title="tableTitle">
-    <GlQuery v-if="query" ref="queryRef" :items="query" @search="onSearch"></GlQuery>
-    <a-divider style="margin-top: 16px"/>
-    <GlToolbar v-bind="toolbar" style="margin-bottom: 8px">
+  <a-card class="general-card" :title="base.tableTitle" :body-style="{padding:base.tablePadding}">
+    <GlQuery v-if="query" v-show="base.showQuery!==false" ref="queryRef" :items="query" @search="onSearch"></GlQuery>
+    <a-divider v-show="base.showQuery!==false" style="margin-top: 16px"/>
+    <GlToolbar v-show="base.showToolbar!==false" v-bind="toolbar" style="margin-bottom: 8px">
+      <template #leftItems>
+        <div v-if="base.enableEdit" class="action-icon">
+          <a-button @click="addRow" shape="round" type="text" size="small">
+            <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加一行</a-button>
+        </div>
+      </template>
       <template #rightItems>
         <a-tooltip content="刷新">
           <div class="action-icon" @click="refresh">
@@ -215,7 +253,7 @@ defineExpose([deleteRow, refresh])
                 >
                   <div style="margin-right: 4px; cursor: move">
                     <!--   TODO 待支持拖拽排序 -->
-<!--                    <GlIconfont type="gl-drag-arrow"></GlIconfont>-->
+                    <!--                    <GlIconfont type="gl-drag-arrow"></GlIconfont>-->
                   </div>
                   <div>
                     <a-checkbox
@@ -236,11 +274,15 @@ defineExpose([deleteRow, refresh])
     </GlToolbar>
     <GlEntityTable
         ref="tableRef"
-        :entityName="entityName"
+        :entityName="base.entityName"
         :columns="columns"
         :columnActions="columnActions"
         :size="size"
         @updateColumns="onUpdateColumns"
+        @updateRow="onUpdateRow"
+        :showPagination=base.showPagination
+        :enableEdit="base.enableEdit"
+        :rowSelection="rowSelection"
     ></GlEntityTable>
   </a-card>
 </template>

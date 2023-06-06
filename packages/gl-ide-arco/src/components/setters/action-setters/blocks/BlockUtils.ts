@@ -16,7 +16,7 @@ export default class BlockUtils {
     static replaceVariables = (message: string, params: Params): string => {
         let result: string = message;
         Object.keys(params).forEach((key: string) => {
-            if (params[key]) {
+            if (params[key] !== undefined) {
                 result = result.replace(new RegExp('\\${' + key + '}', 'g'), params[key]);
                 result = result.replace(new RegExp('{' + key + '}', 'g'), `"${params[key]}"`);
             }

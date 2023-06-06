@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // @ts-nocheck
-import {onMounted, type PropType, ref} from "vue";
+import {computed, onMounted, type PropType, ref} from "vue";
 import type {EntityReaderParam} from "@geelato/gl-ui";
 import {ConvertUtil} from "@geelato/gl-ui";
 import QueryItem from "./query";
@@ -21,7 +21,7 @@ const generateFormModel = () => {
   props.items?.forEach((item: QueryItem) => {
     fModel[item.id] = item.component?.value;
   });
-  console.log('GlQuery > generateFormModel() > fModel:', fModel)
+  // console.log('GlQuery > generateFormModel() > fModel:', fModel)
   return fModel;
 };
 const defaultValue = generateFormModel()
@@ -63,6 +63,12 @@ const reset = () => {
   });
   onSearch()
 };
+
+const renderItems = computed(() => {
+  return props.items.filter((item: QueryItem) => {
+    return item.isHidden !== true
+  })
+})
 const t = (value: any) => {
   return value
 }
@@ -82,7 +88,7 @@ defineExpose({getEntityReaderParams, reset});
       >
         <a-row :gutter="16">
           <a-col
-              v-for="(item, index) in items"
+              v-for="(item, index) in renderItems"
               :key="index"
               :span="item.colspan"
           >

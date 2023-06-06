@@ -24,16 +24,16 @@ import {
   EntityReader,
   EntityReaderParam,
   MixUtil,
-  CheckUtil,
+  CheckUtil, utils,
 } from "@geelato/gl-ui";
 import type {Column, TableColumnDataPlus} from "./table";
 import {useGlobal} from "@geelato/gl-ui";
 import {ComponentMeta} from "@/components/gl-toolbar/toolbar";
 import {PaginationProps} from "@arco-design/web-vue";
-
+import {Schema} from "b-validate";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal;
-const emit = defineEmits(["updateColumns"]);
+const emits = defineEmits(["updateColumns", "updateRow"]);
 const props = defineProps({
   /**
    *  绑定的实体名称
@@ -46,7 +46,7 @@ const props = defineProps({
    * 展示的列配置
    */
   columns: {
-    type: Array as PropType<TableColumnData[]>,
+    type: Array as PropType<TableColumnDataPlus[]>,
     default() {
       return [];
     },
@@ -72,14 +72,19 @@ const props = defineProps({
       return true;
     },
   },
+  /**
+   *  启用表格内编辑
+   */
+  enableEdit: {
+    type: Boolean,
+    default() {
+      return false
+    }
+  },
   rowSelection: {
     type: Object as PropType<TableRowSelection>,
     default() {
-      return {
-        showCheckedAll: true,
-        // checkbox | radio | undefined
-        type: "",
-      };
+      return undefined
     },
   },
   size: {
@@ -100,18 +105,63 @@ const props = defineProps({
       }
     }
   },
+  showPagination: {
+    type: Boolean,
+    default() {
+      return true
+    }
+  },
   tableSettingId: {
     type: String,
     required: true
   }
 });
 
+
+let recordSchema = new Schema({})
+
+/**
+ *  基于是否启用编辑功能，进行插槽信息的转换
+ *  基于
+ */
+watch(() => props.enableEdit,
+    () => {
+      const editSlotNameFlag = '__edit'
+      // console.log('GlEntityTable > props.enableEdit:', props.enableEdit)
+      if (props.enableEdit) {
+        // 如果启用，需将column中没有设置插槽的，生成插槽
+        props.columns.forEach((col: Column) => {
+          if (col.xRenderScript) {
+            col.slotName = col.slotName || utils.gid(editSlotNameFlag, 16)
+          }
+          if (col.xEditComponent) {
+            col.slotName = col.slotName || utils.gid(editSlotNameFlag, 16)
+            // 验证信息
+            if (col.xEditComponent.props.rules) {
+              recordSchema.schema[col.dataIndex!] = toRaw(col.xEditComponent.props.rules)
+            }
+          } else {
+            col.slotName = undefined
+          }
+          // console.log('GlEntityTable > col:', col, col.slotName)
+        })
+      } else {
+        props.columns.forEach((col: Column) => {
+          col.slotName = col.slotName && col.slotName.startsWith(editSlotNameFlag) ? "" : col.slotName
+          // console.log('GlEntityTable > col:', col)
+        })
+      }
+      // console.log('GlEntityTable > columns after convert:', recordSchema)
+    },
+    {immediate: true}
+)
+
 const {loading, setLoading} = useLoading(true);
 const {t} = CheckUtil.isBrowser() ? useI18n() : {
   t: () => {
   }
 };
-const renderData = ref([]);
+const renderData = ref<Array<object>>([]);
 
 const pagination = reactive({
   ...props.pagination,
@@ -128,7 +178,7 @@ const columns = computed<TableColumnData[]>(() => {
       item.title = item.title ? t(item.title + "") : "";
     });
   } else {
-    columnData = props.columns as Array<TableColumnData>;
+    columnData = props.columns
   }
   return columnData;
 });
@@ -167,7 +217,7 @@ const fetchData = async (readerInfo?: {
     // @ts-ignore
     entityReader.pageSize = readerInfo?.pageSize || pagination.pageSize
     const response = await entityApi.queryByEntityReader(entityReader);
-    console.log('GlEntityTable > fetchData() > response:', response)
+    // console.log('GlEntityTable > fetchData() > response:', response)
     renderData.value = response.data.data;
     pagination.pageSize = readerInfo?.pageSize || pagination.pageSize
     pagination.current = readerInfo?.pageNo || 1;
@@ -181,7 +231,7 @@ const fetchData = async (readerInfo?: {
 };
 
 const search = (entityReaderParams: Array<EntityReaderParam>) => {
-  console.log('search entityReaderParams:', entityReaderParams)
+  // console.log('search entityReaderParams:', entityReaderParams)
 
   fetchData({params: entityReaderParams});
 };
@@ -235,25 +285,32 @@ const popupVisibleChange = (val: boolean) => {
           const {oldIndex, newIndex} = e;
           exchangeArray(cloneColumns.value, oldIndex, newIndex);
           exchangeArray(showColumns.value, oldIndex, newIndex);
-          emit("updateColumns", showColumns.value);
+          emits("updateColumns", showColumns.value);
         },
       });
     });
   }
 };
 
-watch(
-    () => columns.value,
+
+const optColumn = {title: '操作', slotName: '#', fixed: 'right', width: 140}
+const scroll = {
+  x: "100%"
+}
+watch(() => columns.value,
     (val) => {
+      // @ts-ignore
       cloneColumns.value = cloneDeep(val);
       cloneColumns.value.forEach((item, index) => {
         item.checked = true;
       });
+      cloneColumns.value.push(optColumn as Column)
       showColumns.value = cloneDeep(cloneColumns.value);
-      emit("updateColumns", showColumns.value);
+      // console.log('GlEntityTable > update cloneColumns:', cloneColumns)
+      emits("updateColumns", showColumns.value);
     },
     {deep: true, immediate: true}
-);
+)
 
 const evalExpression = (data: {
   record: TableData;
@@ -278,28 +335,180 @@ const slotColumns = computed(() => {
   })
 })
 
-defineExpose({search, popupVisibleChange, handleChange});
+/**
+ *  在表格修改状态下，验证表格的一行数据
+ */
+const validateRecord = (record: object, rowIndex: number) => {
+  let validateStatus = 'start'
+  let result: { [key: string]: any } = {}
+  recordSchema.validate(record, (err: any) => {
+    result = err
+    validateStatus = 'end'
+  })
+  let times = 1000
+  while (validateStatus === 'start') {
+    // console.log('sleep 5ms and validate status:', validateStatus)
+    utils.sleep(5)
+    times--
+    if (times <= 0) {
+      break
+    }
+  }
+  // console.log('validate record:', toRaw(record), 'rowIndex:', rowIndex, 'and get result:', result, 'cloneColumns:', cloneColumns.value)
+  setError(record, rowIndex, result)
+  return result
+}
+// 对应整个数据表，构建对应的检查错误信息表
+const tableErrors = ref<Array<object | null>>([])
+tableErrors.value.length = cloneColumns.value.length
+const setError = (record: object, rowIndex: number, err: { [key: string]: any },) => {
+  if (!err) {
+    tableErrors.value[rowIndex] = null
+    return
+  }
+  tableErrors.value[rowIndex] = tableErrors.value[rowIndex] = {}
+  cloneColumns.value.forEach((col: Column) => {
+    // console.log('tableErrors.value[rowIndex]:', tableErrors.value[rowIndex])
+    Object.keys(err).forEach((errKey: string) => {
+      if (col.dataIndex === errKey) {
+        // @ts-ignore
+        tableErrors.value[rowIndex][errKey] = toRaw(err[errKey])
+      }
+    })
+    // console.log('col.dataIndex', col.dataIndex, tableErrors.value[rowIndex])
+  })
+}
+
+/**
+ *  表格在编辑模式下，添加行
+ */
+const addRow = () => {
+  const newRow = {}
+  props.columns.forEach((col: Column) => {
+    //@ts-ignore
+    newRow[col.dataIndex] = col.xEditComponent?.value
+  })
+  renderData.value.push(newRow)
+}
+/**
+ *  表格在编辑模式下，保存行
+ */
+const saveRow = (record: object, rowIndex: number) => {
+  const result = validateRecord(record, rowIndex)
+  if (result && Object.keys(result).length > 0) {
+    // 有异常
+
+    return false
+  } else {
+    // 无异常
+
+    return true
+  }
+}
+
+/**
+ *  表格在编辑模式下，验证表格数据
+ */
+const validateTable = () => {
+  const resultList: Array<any> = []
+  let error = false
+  renderData.value.forEach((record, rowIndex) => {
+    const result = validateRecord(record, rowIndex)
+    resultList.push({record, rowIndex, result})
+    if (result && Object.keys(result).length > 0) {
+      // 有异常
+      error = true
+    } else {
+      // 无异常
+    }
+  })
+  return {error, resultList}
+}
+
+const updateRow = (record: object, rowIndex: number) => {
+  validateRecord(record, rowIndex)
+  emits('updateRow', {record, rowIndex})
+}
+
+const removeRecord = (record: object, rowIndex: number) => {
+  renderData.value.splice(rowIndex, 1)
+}
+// console.log('props.columns:', props.columns)
+// console.log('cloneColumns', cloneColumns, 'columnActions:', props.columnActions)
+const getRenderData = () => {
+  return renderData.value
+}
+const getRenderColumns = () => {
+  return cloneColumns.value
+}
+defineExpose({
+  search,
+  popupVisibleChange,
+  handleChange,
+  validateTable,
+  validateRecord,
+  addRow,
+  getRenderData,
+  getRenderColumns
+});
 </script>
 
 <template>
-  <a-table
-      row-key="id"
-      :loading="loading"
-      :pagination="pagination"
-      :row-selection="rowSelection"
-      :columns="cloneColumns"
-      :data="renderData"
-      :bordered="{ cell: true }"
-      :hoverable="true"
-      :stripe="true"
-      :column-resizable="columnResizable"
-      :size="size"
-      :scroll="{}"
-      @page-change="onPageChange"
-      @page-size-change="onPageSizeChange"
+  <a-table class="gl-entity-table" v-if="enableEdit" row-key="id"
+           :loading="loading"
+           :pagination="pagination"
+           :row-selection="rowSelection"
+           :columns="cloneColumns"
+           :data="renderData"
+           :bordered="{ cell: true }"
+           :hoverable="true"
+           :stripe="true"
+           :column-resizable="columnResizable"
+           :size="size"
+           :scroll="scroll"
+           @page-change="onPageChange"
+           @page-size-change="onPageSizeChange"
+  >
+    <template ##="{ record,rowIndex }">
+      <a-space :size="0" class="gl-entity-table-cols-opt">
+        <template v-if="enableEdit">
+          <!-- 在编辑模式下，默认的操作：保存、删除 -->
+          <!--          <a-button type="text" size="small" @click="saveRow(record,rowIndex)">保存</a-button>-->
+          <a-popconfirm content="Are you sure you want to delete?">
+            <a-button type="text" status="danger" size="small" @click="removeRecord(record,rowIndex)">删除</a-button>
+          </a-popconfirm>
+        </template>
+        <template v-for="(columnAction,index) in columnActions" :key="index">
+          <GlComponent v-if="columnAction" :glComponentInst="columnAction" :glCtx="{record:record,rowIndex:rowIndex}"
+          ></GlComponent>
+        </template>
+      </a-space>
+    </template>
+    <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">
+      <div :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">
+        <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="updateRow(record,rowIndex)"
+                     :glComponentInst="cloneDeep(column.xEditComponent)"></GlComponent>
+        <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>
+      </div>
+    </template>
+  </a-table>
+  <a-table class="gl-entity-table" v-else row-key="id"
+           :loading="loading"
+           :pagination="pagination"
+           :row-selection="rowSelection"
+           :columns="cloneColumns"
+           :data="renderData"
+           :bordered="{ cell: true }"
+           :hoverable="true"
+           :stripe="true"
+           :column-resizable="columnResizable"
+           :size="size"
+           :scroll="{}"
+           @page-change="onPageChange"
+           @page-size-change="onPageSizeChange"
   >
     <template ##="{ record }">
-      <a-space>
+      <a-space :size="0" class="gl-entity-table-cols-opt">
         <template v-for="(columnAction,index) in columnActions" :key="index">
           <GlComponent v-if="columnAction" :glComponentInst="columnAction" :glCtx="{record:record}"></GlComponent>
         </template>
@@ -312,4 +521,25 @@ defineExpose({search, popupVisibleChange, handleChange});
   </a-table>
 </template>
 
-<style scoped></style>
+<style>
+.gl-entity-table-cols-opt .arco-btn-icon {
+  margin: 0 4px 0 0 !important;
+}
+
+.gl-entity-table-cols-opt .arco-btn-size-small {
+  padding: 0 4px !important;
+}
+
+.gl-entity-table .gl-validate-message {
+  display: none;
+}
+
+.gl-entity-table .gl-validate-error .gl-component {
+  background-color: #fde5e5
+}
+
+.gl-entity-table .gl-validate-error .gl-validate-message {
+  display: inline-block;
+  color: red;
+}
+</style>

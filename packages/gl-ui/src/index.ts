@@ -35,6 +35,7 @@ import useGlobal from "./m/hooks/useGlobal";
 import './assets/style.css'
 import actionScriptExecutor from "./m/actions/ActionScriptExecutor";
 import {PageProvideKey} from "./components/PageProvideProxy";
+import {Schema} from "b-validate";
 
 const Utils = AllUtils
 
@@ -52,8 +53,8 @@ const component: Plugin = {
         app.component(GlText.name, GlText)
         app.component(GlColor.name, GlColor)
         app.component(GlComponent.name, GlComponent)
-        app.component(GlInstRuntime.name,GlInstRuntime)
-        app.component(GlInstsRuntime.name,GlInstsRuntime)
+        app.component(GlInstRuntime.name, GlInstRuntime)
+        app.component(GlInstsRuntime.name, GlInstsRuntime)
         app.component(GlPageViewer.name, GlPageViewer)
 
         if (!app.config.globalProperties.$gl) {
@@ -72,6 +73,7 @@ const component: Plugin = {
 }
 
 export {
+    Schema,
     PageParamType,
     PageProvideProxy,
     PageProvideKey,

@@ -157,7 +157,7 @@ export default {
             "allowClear": false
         },
         "setterComponentVModelName": "modelValue",
-        "title": "开启指令调用",
+        "title": "调用指令",
         "setterComponentName": "ASelect"
     }],
     "actions": []

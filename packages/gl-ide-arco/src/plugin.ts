@@ -51,6 +51,7 @@ import GlComponentI18nSetter from "./components/setters/GlComponentI18nSetter.vu
 import GlPageComponentSelect from "./components/setters/property-setters/GlPageComponentSelect.vue";
 import GlPageComponentSelectBuilder from "./components/builder/props-builder/GlPageComponentSelectBuilder.vue";
 import GlInputSetter from "./components/setters/property-setters/GlInputSetter.vue";
+import GlOptionsDynamicBuilder from "./components/builder/props-builder/GlOptionsDynamicBuilder.vue";
 
 // import formPageTemplate from "./components/stage/formPageTemplate.json";
 
@@ -157,6 +158,7 @@ const component: Plugin = {
         app.component(GlComponentBuilder.name, GlComponentBuilder)
         app.component(GlSimpleArrayBuilder.name, GlSimpleArrayBuilder)
         app.component(GlPageComponentSelectBuilder.name, GlPageComponentSelectBuilder)
+        app.component(GlOptionsDynamicBuilder.name, GlOptionsDynamicBuilder)
         // 注册属性设置组件
         app.component('GlComponentSetter', GlComponentSetter)
         app.component(GlComponentPropertiesSetter.name, GlComponentPropertiesSetter)

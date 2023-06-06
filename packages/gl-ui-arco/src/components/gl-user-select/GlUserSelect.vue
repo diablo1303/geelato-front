@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 
-import {computed, inject, onUpdated, ref} from "vue";
+import {computed, inject, onUpdated, ref, watch} from "vue";
 import {entityApi, EntityReader, EntityReaderParam, FieldMeta, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
@@ -57,7 +57,7 @@ const props = defineProps({
     }
   },
 })
-console.log('GlUserSelect > props:', props)
+
 const visible = ref(false)
 const searchName = ref('')
 const selectingItems = ref<Array<UserDataItem>>([])
@@ -118,6 +118,7 @@ const loadUserDataItems = (ids?: Array<any>) => {
   return entityApi.queryByEntityReader(reader)
 }
 
+
 const init = () => {
   // 基于输入的参数，或当前控件已选中的信息，设置弹出面板中的选择人员信息
   selectedIds.value = props.modelValue
@@ -132,6 +133,7 @@ const init = () => {
     })
   }
 }
+
 
 /**
  *  打开选人窗口前
@@ -178,7 +180,9 @@ const clearOneSelected = (userDataItem: any) => {
 }
 
 init()
-onUpdated(()=>{
+watch(() => {
+  return props.modelValue
+}, () => {
   init()
 })
 </script>

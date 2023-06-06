@@ -7,6 +7,10 @@ import ElseBlockHandler from "./logic/ElseBlockHandler";
 import OpenComponentPageBlockHandler from "./page/OpenComponentPageBlockHandler";
 import ComponentInvokeBlockHandler from "./page/ComponentInvokeBlockHandler";
 import ConfirmBlockHandler from "./feedback/ConfirmBlockHandler";
+import SetVisibleBlockHandler from "./page/SetVisibleBlockHandler";
+import IfComponentValueBlockHandler from "./logic/IfComponentValueBlockHandler";
+import TriggerComponentActionBlockHandler from "./logic/TriggerComponentActionBlockHandler";
+import LogBlockHandler from "./other/LogBlockHandler";
 
 export default interface IBlockHandler {
     parseToScript(props: Object): ParseResult;
@@ -20,13 +24,17 @@ export class BlocksHandler {
 
     constructor() {
         this.handlers = {
+            GlBlockSetVisible: new SetVisibleBlockHandler(),
             GlBlockOpenThirdPage: new OpenThirdPageBlockHandler(),
             GlBlockOpenComponentPage: new OpenComponentPageBlockHandler(),
             GlBlockComponentInvoke: new ComponentInvokeBlockHandler(),
             GlBlockNotification: new NotificationBlockHandler(),
             GlBlockConfirm: new ConfirmBlockHandler(),
             GlBlockIf: new IfBlockHandler(),
-            GlBlockElse: new ElseBlockHandler()
+            GlBlockElse: new ElseBlockHandler(),
+            GlIfComponentValueBlock: new IfComponentValueBlockHandler(),
+            GlTriggerComponentActionBlock: new TriggerComponentActionBlockHandler(),
+            GlLogBlock: new LogBlockHandler()
         }
     }
 
