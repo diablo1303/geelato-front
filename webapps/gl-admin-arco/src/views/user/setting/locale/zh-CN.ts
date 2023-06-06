@@ -75,13 +75,13 @@ export default {
   'userSetting.certification.button.check': '查看',
   'userSetting.certification.button.withdraw': '撤回',
   // webapps/gl-admin-arco/src/views/security/org
-  'sercurity.org.index.menu.list': '系统管理',
-  'sercurity.org.index.menu.list.searchTable': '部门管理',
+  'sercurity.org.index.menu.list': '应用管理',
+  'sercurity.org.index.menu.list.searchTable': '组织管理',
   // webapps/gl-admin-arco/src/views/security/org - list|form
   'sercurity.org.index.form.index': '序列号',
   'sercurity.org.index.form.name': '名称',
   'sercurity.org.index.form.code': '编码',
-  'sercurity.org.index.form.pid': '上级部门',
+  'sercurity.org.index.form.pid': '上级组织',
   'sercurity.org.index.form.type': '类型',
   'sercurity.org.index.form.status': '状态',
   'sercurity.org.index.form.status.0': '禁用',
@@ -92,19 +92,20 @@ export default {
   'sercurity.org.index.form.description': '描述',
   'sercurity.org.index.form.createAt': '创建时间',
   'sercurity.org.index.form.operations': '操作',
+  'sercurity.org.index.form.root': '没有上级组织',
   // webapps/gl-admin-arco/src/views/security/org - list.operation
   'searchTable.columns.operations.edit': '编辑',
   'searchTable.columns.operations.delete': '删除',
   'searchTable.columns.operations.deleteMsg': '是否删除该条数据？',
   // webapps/gl-admin-arco/src/views/security/org - form.operation
-  'sercurity.org.index.model.title.add': '新建部门',
-  'sercurity.org.index.model.title.edit': '编辑部门',
-  'sercurity.org.index.model.title.view': '查看部门',
+  'sercurity.org.index.model.title.add': '新建组织',
+  'sercurity.org.index.model.title.edit': '编辑组织',
+  'sercurity.org.index.model.title.view': '查看组织',
   'sercurity.org.index.model.cancel.text': '取消',
   'sercurity.org.index.model.close.text': '关闭',
   'sercurity.org.index.model.ok.text': '确认',
   // webapps/gl-admin-arco/src/views/security/user
-  'sercurity.user.index.menu.list': '系统管理',
+  'sercurity.user.index.menu.list': '应用管理',
   'sercurity.user.index.menu.list.searchTable': '用户管理',
   // webapps/gl-admin-arco/src/views/security/org - list|form
   'sercurity.user.index.form.index': '序列号',
@@ -119,7 +120,8 @@ export default {
   'sercurity.user.index.form.plainPassword': '明文密码',
   'sercurity.user.index.form.mobilePhone': '手机',
   'sercurity.user.index.form.telephone': '电话',
-  'sercurity.user.index.form.orgName': '部门',
+  'sercurity.user.index.form.orgName': '默认组织',
+  'sercurity.user.index.form.partOrgName': '兼职组织',
   'sercurity.user.index.form.email': '邮箱',
   'sercurity.user.index.form.post': '职务',
   'sercurity.user.index.form.address': '地址',
@@ -146,7 +148,7 @@ export default {
   'sercurity.user.index.model.close.text': '关闭',
   'sercurity.user.index.model.ok.text': '确认',
   // webapps/gl-admin-arco/src/views/security/dic
-  'sercurity.dict.index.menu.list': '系统管理',
+  'sercurity.dict.index.menu.list': '应用管理',
   'sercurity.dict.index.menu.list.searchTable': '字典管理',
   'sercurity.dict.index.menu.list.searchTable1': '字典基本信息',
   // webapps/gl-admin-arco/src/views/security/dict - list|form
@@ -168,6 +170,7 @@ export default {
   'sercurity.dict.index.model.title.add': '新建字典',
   'sercurity.dict.index.model.title.edit': '编辑字典',
   'sercurity.dict.index.model.title.view': '查看字典',
+  'sercurity.dict.index.model.title.delete': '删除字典',
   'sercurity.dict.index.model.cancel.text': '取消',
   'sercurity.dict.index.model.close.text': '关闭',
   'sercurity.dict.index.model.ok.text': '确认',
@@ -177,15 +180,16 @@ export default {
   'sercurity.dict.index.notice.warning1': '请在左侧列表选择需要删除的字典',
   'sercurity.dict.index.notice.warning2': '请在左侧列表选择需要新增字典项的字典',
   'sercurity.dict.index.modal.title': '提示',
+  'sercurity.dict.index.modal.more': '功能菜单',
   'sercurity.dict.index.modal.content': '是否删除选中的数据？',
   'sercurity.dict.index.modal.cancel.text': '取消',
   'sercurity.dict.index.modal.ok.text': '提交',
   // webapps/gl-admin-arco/src/views/security/dic
-  'sercurity.dictItem.index.menu.list': '系统管理',
+  'sercurity.dictItem.index.menu.list': '应用管理',
   'sercurity.dictItem.index.menu.list.searchTable': '字典项管理',
   // webapps/gl-admin-arco/src/views/security/dict/item - list|form
   'sercurity.dictItem.index.form.index': '序列号',
-  'sercurity.dictItem.index.form.itemText': '文本',
+  'sercurity.dictItem.index.form.itemText': '名称',
   'sercurity.dictItem.index.form.itemCode': '编码',
   'sercurity.dictItem.index.form.enableStatus': '状态',
   'sercurity.dictItem.index.form.enableStatus.0': '禁用',
@@ -202,7 +206,7 @@ export default {
   'sercurity.dictItem.index.model.close.text': '关闭',
   'sercurity.dictItem.index.model.ok.text': '确认',
   // webapps/gl-admin-arco/src/views/security/permission
-  'sercurity.permission.index.menu.list': '系统管理',
+  'sercurity.permission.index.menu.list': '应用管理',
   'sercurity.permission.index.menu.list.searchTable': '权限管理',
   // webapps/gl-admin-arco/src/views/security/permission - list|form
   'sercurity.permission.index.form.index': '序列号',
@@ -222,13 +226,14 @@ export default {
   'sercurity.permission.index.model.ok.text': '确认',
 
   // webapps/gl-admin-arco/src/views/security/user/org
-  'sercurity.orgUser.index.menu.list': '系统管理',
+  'sercurity.orgUser.index.menu.list': '应用管理',
   'sercurity.orgUser.index.menu.list.searchTable': '组织用户管理',
   // webapps/gl-admin-arco/src/views/security/user/org - list|form
   'sercurity.orgUser.index.form.index': '序列号',
   'sercurity.orgUser.index.form.userName': '用户名称',
-  'sercurity.orgUser.index.form.orgName': '部门名称',
+  'sercurity.orgUser.index.form.orgName': '组织名称',
   'sercurity.orgUser.index.form.defaultOrg': '是否默认组织',
+  'sercurity.orgUser.index.form.default': '默认',
   'sercurity.orgUser.index.form.defaultOrg.0': '否',
   'sercurity.orgUser.index.form.defaultOrg.1': '是',
   'sercurity.orgUser.index.form.createAt': '创建时间',
@@ -245,7 +250,7 @@ export default {
 
   /* 角色管理 */
   // webapps/gl-admin-arco/src/views/security/role/app
-  'sercurity.role.index.menu.list': '系统管理',
+  'sercurity.role.index.menu.list': '应用管理',
   'sercurity.role.index.menu.list.searchTable': '角色管理',
   'sercurity.role.form.tab.title.one': '用户基本信息',
   'sercurity.role.form.tab.title.two': '角色应用关联',
@@ -274,7 +279,7 @@ export default {
   'sercurity.role.index.model.ok.text': '确认',
 
   // webapps/gl-admin-arco/src/views/security/role/app
-  'sercurity.roleApp.index.menu.list': '系统管理',
+  'sercurity.roleApp.index.menu.list': '应用管理',
   'sercurity.roleApp.index.menu.list.searchTable': '角色应用关联管理',
   // webapps/gl-admin-arco/src/views/security/role/app - list|form
   'sercurity.roleApp.index.form.index': '序列号',
@@ -290,7 +295,7 @@ export default {
   'sercurity.roleApp.index.model.ok.text': '确认',
 
   // webapps/gl-admin-arco/src/views/security/role/Permission
-  'sercurity.rolePermission.index.menu.list': '系统管理',
+  'sercurity.rolePermission.index.menu.list': '应用管理',
   'sercurity.rolePermission.index.menu.list.searchTable': '角色权限关联管理',
   // webapps/gl-admin-arco/src/views/security/role/Permission - list|form
   'sercurity.rolePermission.index.form.index': '序列号',
@@ -306,7 +311,7 @@ export default {
   'sercurity.rolePermission.index.model.ok.text': '确认',
 
   // webapps/gl-admin-arco/src/views/security/role/TreeNode
-  'sercurity.roleTreeNode.index.menu.list': '系统管理',
+  'sercurity.roleTreeNode.index.menu.list': '应用管理',
   'sercurity.roleTreeNode.index.menu.list.searchTable': '角色菜单关联管理',
   // webapps/gl-admin-arco/src/views/security/role/TreeNode - list|form
   'sercurity.roleTreeNode.index.form.index': '序列号',
@@ -323,7 +328,7 @@ export default {
   'sercurity.roleTreeNode.index.model.ok.text': '确认',
 
   // webapps/gl-admin-arco/src/views/security/role/User
-  'sercurity.roleUser.index.menu.list': '系统管理',
+  'sercurity.roleUser.index.menu.list': '应用管理',
   'sercurity.roleUser.index.menu.list.searchTable': '角色用户关联管理',
   // webapps/gl-admin-arco/src/views/security/role/User - list|form
   'sercurity.roleUser.index.form.index': '序列号',
@@ -338,6 +343,157 @@ export default {
   'sercurity.roleUser.index.model.cancel.text': '取消',
   'sercurity.roleUser.index.model.ok.text': '确认',
   /* 验证 */
-  'sercurity.form.rules.match.required':'这是必填项',
-  'sercurity.form.rules.match.length.title':'长度'
+  'sercurity.form.rules.match.required': '这是必填项',
+  'sercurity.form.rules.match.length.title': '长度',
+
+  // webapps/gl-admin-arco/src/views/model/connect - list|form
+  'model.connect.index.menu.list': '模型管理',
+  'model.dataBase.index.menu.list': '数据模型',
+  'model.connect.index.menu.list.searchTable': '数据连接',
+  // webapps/gl-admin-arco/src/views/model/connect - list|form
+  'model.connect.index.form.index': '序列号',
+  'model.connect.index.form.dbConnectName': '连接名称',
+  'model.connect.index.form.dbSchema': '数据库模式',
+  'model.connect.index.form.dbType': '数据库类型',
+  'model.connect.index.form.dbName': '数据库名',
+  'model.connect.index.form.dbHostnameIp': '主机名或IP',
+  'model.connect.index.form.dbPort': '连接端口',
+  'model.connect.index.form.dbUserName': '用户名',
+  'model.connect.index.form.dbPassword': '密码',
+  'model.connect.index.form.enableStatus': '状态',
+  'model.connect.index.form.enableStatus.0': '禁用',
+  'model.connect.index.form.enableStatus.1': '启用',
+  'model.connect.index.form.createAt': '创建时间',
+  'model.connect.index.form.operations': '操作',
+  // webapps/gl-admin-arco/src/views/model/connect - form.operation
+  'model.connect.index.model.title.add': '新建数据连接',
+  'model.connect.index.model.title.edit': '编辑数据连接',
+  'model.connect.index.model.title.view': '查看数据连接',
+  'model.connect.index.model.title.delete': '删除数据连接',
+  'model.connect.index.model.title.link': '连接测试',
+  'model.connect.index.model.sync.model': '从数据库同步至模型',
+  'model.connect.index.model.sync.table': '从模型同步至数据库',
+  'model.connect.index.model.info.refresh': '刷新成功！',
+  'model.connect.index.model.info.swap': '交换成功！',
+  'model.connect.index.model.cancel.text': '取消',
+  'model.connect.index.model.ok.text': '确认',
+
+  // webapps/gl-admin-arco/src/views/model/table - list|form
+  'model.table.index.menu.list': '模型管理',
+  'model.table.index.menu.list.searchTable': '数据表单',
+  // webapps/gl-admin-arco/src/views/model/table - list|form
+  'model.table.index.form.index': '序列号',
+  'model.table.index.form.title': '名称(中文)',
+  'model.table.index.form.tableName': '表名',
+  'model.table.index.form.entityName': '实体名称',
+  'model.table.index.form.linked': '连接状态',
+  'model.table.index.form.linked.1': '已连接',
+  'model.table.index.form.linked.0': '未连接',
+  'model.table.index.form.tableType': '表格类型',
+  'model.table.index.form.tableType.entity': '实体',
+  'model.table.index.form.tableType.view': '视图',
+  'model.table.index.form.enableStatus': '状态',
+  'model.table.index.form.enableStatus.0': '禁用',
+  'model.table.index.form.enableStatus.1': '启用',
+  'model.table.index.form.seqNo': '排序',
+  'model.table.index.form.viewSql': '视图语句',
+  'model.table.index.form.tableComment': '备注',
+  'model.table.index.form.description': '补充描述',
+  'model.table.index.form.createAt': '创建时间',
+  'model.table.index.form.operations': '操作',
+  'model.table.index.form.viewSql.edit': '编辑视图语句',
+  // webapps/gl-admin-arco/src/views/model/table - form.operation
+  'model.table.index.model.title.add': '新建数据表',
+  'model.table.index.model.title.edit': '编辑数据表',
+  'model.table.index.model.title.view': '查看数据表',
+  'model.table.index.model.title.delete': '删除数据表',
+  'model.table.index.model.title.sync.data': '更新数据模型',
+  'model.table.index.model.title.sync.model': '更新数据库表单',
+  'model.table.index.model.cancel.text': '取消',
+  'model.table.index.model.ok.text': '确认',
+
+  // webapps/gl-admin-arco/src/views/model/foreign - list|form
+  'model.foreign.index.menu.list': '模型管理',
+  'model.foreign.index.menu.list.searchTable': '表单外键',
+  // webapps/gl-admin-arco/src/views/model/foreign - list|form
+  'model.foreign.index.form.index': '序列号',
+  'model.foreign.index.form.mainTable': '主表表名',
+  'model.foreign.index.form.mainTableCol': '主表字段',
+  'model.foreign.index.form.foreignTable': '外表表名',
+  'model.foreign.index.form.foreignTableCol': '外表字段',
+  'model.foreign.index.form.enableStatus': '状态',
+  'model.foreign.index.form.enableStatus.0': '禁用',
+  'model.foreign.index.form.enableStatus.1': '启用',
+  'model.foreign.index.form.seqNo': '排序',
+  'model.foreign.index.form.description': '备注',
+  'model.foreign.index.form.createAt': '创建时间',
+  'model.foreign.index.form.operations': '操作',
+  // webapps/gl-admin-arco/src/views/model/foreign - form.operation
+  'model.foreign.index.model.title.add': '新建数据表',
+  'model.foreign.index.model.title.edit': '编辑数据表',
+  'model.foreign.index.model.title.view': '查看数据表',
+  'model.foreign.index.model.cancel.text': '取消',
+  'model.foreign.index.model.ok.text': '确认',
+
+  // webapps/gl-admin-arco/src/views/model/column - list|form
+  'model.column.index.menu.list': '模型管理',
+  'model.column.index.menu.list.searchTable': '表格字段',
+  // webapps/gl-admin-arco/src/views/model/column - list|form
+  'model.column.index.form.index': '序列号',
+  'model.column.index.form.title': '字段名称',
+  'model.column.index.form.fieldName': '列名',
+  'model.column.index.form.tableSchema': '数据模式',
+  'model.column.index.form.tableName': '表名',
+  'model.column.index.form.tableCatalog': '表目录',
+  'model.column.index.form.name': '字段标识',
+  'model.column.index.form.comment': '备注',
+  'model.column.index.form.ordinalPosition': '次序',
+  'model.column.index.form.defaultValue': '默认值',
+  'model.column.index.form.type': '类型',
+  'model.column.index.form.key': '是否主键',
+  'model.column.index.form.key.1': '是',
+  'model.column.index.form.key.0': '否',
+  'model.column.index.form.nullable': '是否可空',
+  'model.column.index.form.nullable.1': '是',
+  'model.column.index.form.nullable.0': '否',
+  'model.column.index.form.dataType': '数据类型',
+  'model.column.index.form.extra': '特别',
+  'model.column.index.form.autoIncrement': '特别',
+  'model.column.index.form.unique': '表名',
+  'model.column.index.form.charMaxLength': '长度',
+  'model.column.index.form.numericPrecision': '整数位',
+  'model.column.index.form.numericScale': '小数位',
+  'model.column.index.form.numericSigned': '是否有符号',
+  'model.column.index.form.numericSigned.1': '是',
+  'model.column.index.form.numericSigned.0': '否',
+  'model.column.index.form.datetimePrecision': '日期长度',
+  'model.column.index.form.isRefColumn': '是否是外键',
+  'model.column.index.form.refLocalCol': '本表字段',
+  'model.column.index.form.refTables': '外表表名',
+  'model.column.index.form.refColName': '外表字段',
+  'model.column.index.form.linked': '连接状态',
+  'model.column.index.form.linked.1': '已连接',
+  'model.column.index.form.linked.0': '未连接',
+  'model.column.index.form.enableStatus': '状态',
+  'model.column.index.form.enableStatus.0': '禁用',
+  'model.column.index.form.enableStatus.1': '启用',
+  'model.column.index.form.seqNo': '排序',
+  'model.column.index.form.description': '字段描述',
+  'model.column.index.form.createAt': '创建时间',
+  'model.column.index.form.operations': '操作',
+  'model.column.index.form.operations.disabled': '系统字段不可编辑',
+  'model.column.index.form.name.key': '主键',
+  // webapps/gl-admin-arco/src/views/model/column - form.operation
+  'model.column.index.model.title.add': '新建数据表',
+  'model.column.index.model.title.edit': '编辑数据表',
+  'model.column.index.model.title.view': '查看数据表',
+  'model.column.index.model.cancel.text': '取消',
+  'model.column.index.model.ok.text': '确认',
+  /* 是否 */
+  'model.column.index.form.yes': '是',
+  'model.column.index.form.no': '否',
+  'searchTable.actions.swap': '交换',
+  /* 验证 */
+  'model.form.rules.match.required': '这是必填项',
+  'model.form.rules.match.length.title': '长度',
 };

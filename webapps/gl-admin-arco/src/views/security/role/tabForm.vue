@@ -8,11 +8,12 @@
           :ok-text="$t('sercurity.role.index.model.ok.text')"
           :title="$t(`sercurity.role.index.model.title.${pageData.formState}`)"
           width="80%"
+          height="80%"
           @cancel="handleModelCancel"
           @before-ok="handleModelOk">
         <a-row>
           <a-col :span="24">
-            <a-tabs v-model:active-key="pageData.tabKey" :default-active-tab="1" :position="'left'" type="rounded" @tab-click="tabsChange">
+            <a-tabs v-model:active-key="pageData.tabKey" :default-active-tab="1" :position="'top'" type="line" @tab-click="tabsChange">
               <a-tab-pane key="1" :title="$t('sercurity.role.form.tab.title.one')">
                 <RoleModel ref="roleModelRef"></RoleModel>
               </a-tab-pane>
@@ -46,7 +47,8 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {ListUrlParams, QueryRoleForm} from "@/api/sercurity_service";
+import {QueryRoleForm} from "@/api/service/sercurity_service";
+import {ListUrlParams} from '@/api/service/base_service';
 import RoleModel from '@/views/security/role/model.vue'
 import RoleAppList from '@/views/security/role/app/list.vue'
 import RolePermissionList from '@/views/security/role/permission/list.vue'

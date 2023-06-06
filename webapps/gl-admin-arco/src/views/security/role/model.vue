@@ -51,7 +51,8 @@
             :label="$t('sercurity.role.index.form.seqNo')"
             :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
             field="seqNo">
-          <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1" :placeholder="$t('sercurity.form.rules.match.length.title')+'[0,999999]'"
+          <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
+                          :placeholder="$t('sercurity.form.rules.match.length.title')+'[0,999999]'"
                           :precision="0"/>
           <span v-else>{{ formData.seqNo }}</span>
         </a-form-item>
@@ -70,7 +71,8 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import {Modal} from "@arco-design/web-vue";
-import {createOrUpdateRole as createOrUpdateForm, getRole as getForm, ListUrlParams, QueryRoleForm as QueryForm} from '@/api/sercurity_service'
+import {createOrUpdateRole as createOrUpdateForm, getRole as getForm, QueryRoleForm as QueryForm} from '@/api/service/sercurity_service';
+import {ListUrlParams} from '@/api/service/base_service';
 import {enableStatusOptions, typeOptions} from "@/views/security/role/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 

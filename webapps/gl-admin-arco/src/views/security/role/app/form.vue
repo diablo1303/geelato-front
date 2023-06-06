@@ -31,11 +31,11 @@ import {ref} from 'vue';
 import {
   getRoleApp as getForm,
   insertRoleApp as createOrUpdateForm,
-  ListUrlParams,
   QueryAppForm as QuerySelectForm,
   queryApps as querySelectOptions,
   QueryRoleAppForm as QueryForm
-} from '@/api/sercurity_service'
+} from '@/api/service/sercurity_service';
+import {ListUrlParams} from '@/api/service/base_service';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 
 const pageData = ref({formState: 'add', button: true});

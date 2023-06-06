@@ -8,11 +8,6 @@
               <a-input v-show="false" v-model="filterData.itemText"/>
             </a-form-item>
           </a-col>
-          <a-col v-if="pageData.isModal" :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.dict.index.form.dicName1')" field="dictName">
-              <a-input v-model="pageData.params.dictName" :readonly="pageData.isModal"/>
-            </a-form-item>
-          </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('sercurity.dictItem.index.form.itemText')" field="name">
               <a-input v-model="filterData.itemText"/>
@@ -24,15 +19,15 @@
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.dictItem.index.form.createAt')" field="createAt">
-              <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('sercurity.dictItem.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="pageData.isModal?12:8">
+            <a-form-item :label="$t('sercurity.dictItem.index.form.createAt')" field="createAt">
+              <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -53,17 +48,11 @@
           </template>
           {{ $t('searchTable.form.reset') }}
         </a-button>
-        <a-button v-if="pageData.isModal && pageData.formState==='edit'" type="primary" @click="addTable">
-          <template #icon>
-            <icon-plus/>
-          </template>
-          {{ $t('searchTable.operation.create') }}
-        </a-button>
       </a-space>
     </a-col>
   </a-row>
-  <a-divider v-show="!isForm" style="margin-top: 0"/>
-  <a-row v-if="!pageData.isModal" style="margin-bottom: 16px">
+  <a-divider style="margin-top: 0"/>
+  <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
         <a-button v-show="pageData.formState==='edit'" type="primary" @click="addTable">
@@ -105,10 +94,11 @@
     </a-col>
   </a-row>
   <a-table
-      :bordered="{cell:true}" :columns="(cloneColumns as TableColumnData[])"
+      :bordered="{cell:true}"
+      :columns="(cloneColumns as TableColumnData[])"
       :data="renderData"
       :loading="loading"
-      :pagination="pagination"
+      :pagination="basePagination.pageSize>1000?false:pagination"
       :stripe="true"
       column-resizable
       row-key="id"
@@ -119,30 +109,24 @@
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.dictItem.index.form.itemText')" data-index="itemText" ellipsis="true" tooltip="true"
-                      width="140"></a-table-column>
-      <a-table-column :title="$t('sercurity.dictItem.index.form.itemCode')" data-index="itemCode" ellipsis="true" tooltip="true"
-                      width="140"></a-table-column>
-      <a-table-column :title="$t('sercurity.dictItem.index.form.seqNo')" data-index="seqNo" width="100"></a-table-column>
+      <a-table-column :title="$t('sercurity.dictItem.index.form.itemText')" data-index="itemText" ellipsis="true" tooltip="true" width="140"/>
+      <a-table-column :title="$t('sercurity.dictItem.index.form.itemCode')" data-index="itemCode" ellipsis="true" tooltip="true" width="140"/>
+      <a-table-column :title="$t('sercurity.dictItem.index.form.seqNo')" data-index="seqNo" width="100"/>
       <a-table-column :title="$t('sercurity.dictItem.index.form.enableStatus')" data-index="enableStatus" width="100">
         <template #cell="{ record }">
           {{ $t(`sercurity.dictItem.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.dictItem.index.form.createAt')" data-index="createAt" width="170"></a-table-column>
-      <!--          <a-table-column :title="$t('sercurity.dictItem.index.form.dataRemark')" data-index="dataRemark" width="200" ellipsis="true"
-                                tooltip="true"></a-table-column>-->
-      <a-table-column :title="$t('sercurity.dictItem.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
-                      fixed="right">
+      <a-table-column :title="$t('sercurity.dictItem.index.form.createAt')" data-index="createAt" width="170"/>
+      <a-table-column :title="$t('sercurity.dictItem.index.form.dataRemark')" data-index="dataRemark" width="200" ellipsis="true" tooltip="true"/>
+      <a-table-column v-show="pageData.formState==='edit'" :title="$t('sercurity.dictItem.index.form.operations')" :width="170" align="center"
+                      data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-button v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">
-            {{ $t('searchTable.columns.operations.view') }}
-          </a-button>
-          <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
+          <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text">
+            <a-button v-permission="['admin']" size="small" type="text" status="danger">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -150,7 +134,7 @@
       </a-table-column>
     </template>
   </a-table>
-  <DictItemForm ref="dictItemFormRef"></DictItemForm>
+  <DictItemDrawer ref="dictItemDrawerRef"></DictItemDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -166,21 +150,15 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, enableStatusOptions} from "@/views/security/dict/item/searchTable";
-import {
-  deleteDictItem as deleteList,
-  FilterDictItemForm as FilterForm,
-  ListUrlParams,
-  pageQueryDictItem as pageQueryList,
-  PageQueryFilter,
-  PageQueryRequest
-} from '@/api/sercurity_service'
+import {deleteDictItem as deleteList, FilterDictItemForm as FilterForm, pageQueryDictItem as pageQueryList} from '@/api/service/sercurity_service';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
-import DictItemForm from "@/views/security/dict/item/form.vue";
+import DictItemDrawer from "@/views/security/dict/item/drawer.vue";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
-const pageData = ref({current: 1, pageSize: 10, formState: 'edit', isModal: false, params: {dictId: '', dictName: ''}});
-const dictItemFormRef = ref(null);
+const pageData = ref({current: 1, pageSize: 10, formState: 'edit', isModal: false, params: {pId: '', pName: ''}});
+const dictItemDrawerRef = ref(null);
 // 国际化
 const {t} = useI18n();
 // 加载
@@ -227,7 +205,7 @@ const search = () => {
 const reset = () => {
   basePagination.current = pageData.value.current;
   filterData.value = generateFilterData();
-  filterData.value.dictId = pageData.value.params.dictId || '';
+  filterData.value.dictId = pageData.value.params.pId || '';
   search();
 };
 /**
@@ -241,23 +219,23 @@ const onPageChange = (current: number) => {
 
 /* 列表，按钮、操作列 */
 const addTable = () => {
-  if (pageData.value.isModal && !pageData.value.params.dictId) {
+  if (pageData.value.isModal && !pageData.value.params.pId) {
     Notification.warning(t('sercurity.dict.index.notice.warning2'));
     return;
   }
-  if (dictItemFormRef.value) {
-    dictItemFormRef.value?.openForm({action: 'add', params: pageData.value.params, closeBack: reset});
+  if (dictItemDrawerRef.value) {
+    dictItemDrawerRef.value?.openForm({action: 'add', params: pageData.value.params, closeBack: reset});
   }
 
 };
 const viewTable = (id: string) => {
-  if (dictItemFormRef.value) {
-    dictItemFormRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
+  if (dictItemDrawerRef.value) {
+    dictItemDrawerRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
   }
 }
 const editTable = (id: string) => {
-  if (dictItemFormRef.value) {
-    dictItemFormRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
+  if (dictItemDrawerRef.value) {
+    dictItemDrawerRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
   }
 }
 const deleteTable = (id: string) => {
@@ -319,7 +297,7 @@ watch(() => columns.value, (val) => {
 const loadList = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action || 'edit';
   pageData.value.isModal = urlParams.isModal || false;
-  pageData.value.params = urlParams.params || {dictId: '', dictName: ''};
+  pageData.value.params = urlParams.params || {pId: '', pName: ''};
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
   reset();
 }

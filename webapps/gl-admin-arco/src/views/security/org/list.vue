@@ -100,7 +100,8 @@
       </a-tooltip>
     </a-col>
   </a-row>
-  <a-table :bordered="{cell:true}" :columns="(cloneColumns as TableColumnData[])"
+  <a-table :bordered="{cell:true}"
+           :columns="(cloneColumns as TableColumnData[])"
            :data="renderData"
            :loading="loading"
            :pagination="pagination"
@@ -138,7 +139,7 @@
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text">
+            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text" status="danger">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -161,14 +162,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, statusOptions, typeOptions} from "@/views/security/org/searchTable";
-import {
-  deleteOrg as deleteList,
-  FilterOrgForm as FilterForm,
-  ListUrlParams,
-  PageQueryFilter,
-  pageQueryOrg as pageQueryList,
-  PageQueryRequest
-} from '@/api/sercurity_service'
+import {deleteOrg as deleteList, FilterOrgForm as FilterForm, pageQueryOrg as pageQueryList} from '@/api/service/sercurity_service';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import OrgForm from "@/views/security/org/form.vue";
 

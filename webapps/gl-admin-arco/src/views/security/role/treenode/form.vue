@@ -38,11 +38,11 @@ import {ref} from 'vue';
 import {
   getRoleTreeNode as getForm,
   insertRoleTreeNode as createOrUpdateForm,
-  ListUrlParams,
   QueryRoleTreeNodeForm as QueryForm,
   QueryTreeNodeForm as QuerySelectForm,
   queryTreeNodes as querySelectOptions
-} from '@/api/sercurity_service'
+} from '@/api/service/sercurity_service';
+import {ListUrlParams} from '@/api/service/base_service';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 
 const pageData = ref({formState: 'add', button: true});

@@ -8,36 +8,36 @@
               <a-input v-show="false" v-model="filterData.orgId"/>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('sercurity.user.index.form.name')" field="name">
               <a-input v-model="filterData.name"/>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('sercurity.user.index.form.orgName')" field="code">
               <a-input v-model="filterData.orgName"/>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('sercurity.user.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('sercurity.user.index.form.sex')" field="sex">
               <a-select v-model="filterData.sex" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of sexOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('sercurity.user.index.form.type')" field="type">
               <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of typeOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('sercurity.user.index.form.source')" field="source">
               <a-select v-model="filterData.source" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of sourceOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
@@ -107,7 +107,8 @@
       </a-tooltip>
     </a-col>
   </a-row>
-  <a-table :bordered="{cell:true}" :columns="(cloneColumns as TableColumnData[])"
+  <a-table :bordered="{cell:true}"
+           :columns="(cloneColumns as TableColumnData[])"
            :data="renderData"
            :loading="loading"
            :pagination="pagination"
@@ -158,7 +159,7 @@
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text">
+            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text" status="danger">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -168,6 +169,7 @@
   </a-table>
 
   <UserTabForm ref="userTabFormRef"></UserTabForm>
+  <UserDrawer ref="userDrawerRef"></UserDrawer>
   <UserForm ref="userFormRef"></UserForm>
 </template>
 
@@ -183,23 +185,19 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, sexOptions, sourceOptions, typeOptions} from '@/views/security/user/searchTable'
-import {
-  deleteUser as deleteList,
-  FilterUserForm as FilterForm,
-  ListUrlParams,
-  PageQueryFilter,
-  PageQueryRequest,
-  pageQueryUser as pageQueryList
-} from '@/api/sercurity_service'
+import {deleteUser as deleteList, FilterUserForm as FilterForm, pageQueryUser as pageQueryList} from '@/api/service/sercurity_service';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import UserForm from '@/views/security/user/form.vue';
+import UserDrawer from '@/views/security/user/drawer.vue';
 import UserTabForm from '@/views/security/user/tabForm.vue';
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
-const pageData = ref({current: 1, pageSize: 10, formState: 'edit'});
+const pageData = ref({current: 1, pageSize: 10, formState: 'edit', isModal: false, params: {orgId: '', orgName: ''}});
 const userFormRef = ref(null);
 const userTabFormRef = ref(null);
+const userDrawerRef = ref(null);
 // 国际化
 const {t} = useI18n();
 // 加载
@@ -248,6 +246,8 @@ const search = () => {
 const reset = () => {
   basePagination.current = pageData.value.current;
   filterData.value = generateFilterData();
+  filterData.value.orgId = pageData.value.params.orgId || '';
+  filterData.value.orgName = pageData.value.params.orgName || '';
   search();
 };
 /**
@@ -261,18 +261,18 @@ const onPageChange = (current: number) => {
 
 /* 列表，按钮、操作列 */
 const addTable = () => {
-  if (userFormRef.value) {
-    userFormRef.value?.openForm({action: 'add', closeBack: reset});
+  if (userDrawerRef.value) {
+    userDrawerRef.value?.openForm({action: 'add', closeBack: reset});
   }
 };
 const viewTable = (id: string) => {
-  if (userTabFormRef.value) {
-    userTabFormRef.value?.openForm({action: 'view', 'id': id, pageSize: 5, isModal: true});
+  if (userDrawerRef.value) {
+    userDrawerRef.value?.openForm({action: 'view', 'id': id, pageSize: 5, isModal: true});
   }
 }
 const editTable = (id: string) => {
-  if (userTabFormRef.value) {
-    userTabFormRef.value?.openForm({action: 'edit', 'id': id, pageSize: 5, isModal: true, closeBack: reset});
+  if (userDrawerRef.value) {
+    userDrawerRef.value?.openForm({action: 'edit', 'id': id, pageSize: 5, isModal: true, closeBack: reset});
   }
 }
 const deleteTable = (id: string) => {
@@ -332,6 +332,8 @@ watch(() => columns.value, (val) => {
 /* 对外调用方法 */
 const loadList = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action || 'edit';
+  pageData.value.isModal = urlParams.isModal || false;
+  pageData.value.params = urlParams.params || {orgId: '', orgName: ''};
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
   reset();
 }

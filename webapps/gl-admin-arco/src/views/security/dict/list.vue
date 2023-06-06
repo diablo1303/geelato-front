@@ -3,27 +3,22 @@
     <a-col :flex="1">
       <a-form :label-col-props="{ span: 6 }" :model="filterData" :wrapper-col-props="{ span: 18 }" label-align="left">
         <a-row :gutter="16">
-          <a-col :span="8">
+          <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('sercurity.dict.index.form.dicName')" field="dicName">
               <a-input v-model="filterData.dicName"/>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('sercurity.dict.index.form.dicCode')" field="dicCode">
               <a-input v-model="filterData.dicCode"/>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
-            <a-form-item :label="$t('sercurity.dict.index.form.createAt')" field="createAt">
-              <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="8">
+          <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('sercurity.dict.index.form.tenantCode')" field="tenantCode">
               <a-input v-model="filterData.tenantCode"/>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('sercurity.dict.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
@@ -94,12 +89,10 @@
     </a-col>
   </a-row>
   <a-table
-      v-model:selectedKeys="selectedKeys"
       :bordered="{cell:true}" :columns="(cloneColumns as TableColumnData[])"
       :data="renderData"
       :loading="loading"
       :pagination="pagination"
-      :row-selection="rowSelection"
       :stripe="true"
       column-resizable
       row-key="id"
@@ -122,17 +115,14 @@
       <a-table-column :title="$t('sercurity.dict.index.form.createAt')" data-index="createAt" width="180"></a-table-column>
       <a-table-column :title="$t('sercurity.dict.index.form.dicRemark')" :tooltip="{position:'right'}" data-index="dicRemark" ellipsis="true"
                       width="200"></a-table-column>
-      <a-table-column :title="$t('sercurity.dict.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
-                      fixed="right">
+      <a-table-column v-show="pageData.formState==='edit'" :title="$t('sercurity.dict.index.form.operations')" :width="170" align="center"
+                      data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-button v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">
-            {{ $t('searchTable.columns.operations.view') }}
-          </a-button>
-          <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
+          <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text">
+            <a-button v-permission="['admin']" size="small" type="text" status="danger">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -141,6 +131,7 @@
     </template>
   </a-table>
   <DictForm ref="dictFormRef"></DictForm>
+  <DictDrawer ref="dictDrawerRef"></DictDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -154,21 +145,23 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, enableStatusOptions} from "@/views/security/dict/searchTable";
-import {
-  deleteDict as deleteList,
-  FilterDictForm as FilterForm,
-  ListUrlParams,
-  pageQueryDict as pageQueryList,
-  PageQueryFilter,
-  PageQueryRequest
-} from '@/api/sercurity_service'
+import {deleteDict as deleteList, FilterDictForm as FilterForm, pageQueryDict as pageQueryList,} from '@/api/service/sercurity_service'
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import DictForm from "@/views/security/dict/form.vue";
+import DictDrawer from "@/views/security/dict/drawer.vue";
+import {QueryConnectForm as QueryForm} from "@/api/service/model_service";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
-const pageData = ref({current: 1, pageSize: 10, formState: 'edit'});
+const pageData = ref({
+  current: 1, pageSize: 10, formState: 'edit', isModal: false, modalAddBack: (data: QueryForm) => {
+  }, modalEditBack: (data: QueryForm) => {
+  }, modalDeleteBack: (id: string) => {
+  }
+});
 const dictFormRef = ref(null);
+const dictDrawerRef = ref(null);
 // 加载
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
@@ -227,23 +220,34 @@ const onPageChange = (current: number) => {
 
 /* 列表，按钮、操作列 */
 const addTable = () => {
-  if (dictFormRef.value) {
-    dictFormRef.value?.openForm({action: 'add', closeBack: reset});
+  if (dictDrawerRef.value) {
+    dictDrawerRef.value?.openForm({
+      action: 'add', closeBack: (data: QueryForm) => {
+        reset();
+        pageData.value.modalAddBack(data);
+      }
+    });
   }
 };
 const viewTable = (id: string) => {
-  if (dictFormRef.value) {
-    dictFormRef.value?.openForm({action: 'view', 'id': id});
+  if (dictDrawerRef.value) {
+    dictDrawerRef.value?.openForm({action: 'view', 'id': id});
   }
 }
 const editTable = (id: string) => {
-  if (dictFormRef.value) {
-    dictFormRef.value?.openForm({action: 'edit', 'id': id, closeBack: reset});
+  if (dictDrawerRef.value) {
+    dictDrawerRef.value?.openForm({
+      action: 'edit', 'id': id, closeBack: (data: QueryForm) => {
+        reset();
+        pageData.value.modalEditBack(data);
+      }
+    });
   }
 }
 const deleteTable = (id: string) => {
   deleteData(id, () => {
     reset();
+    pageData.value.modalDeleteBack(id);
   });
 }
 const deleteData = async (id: string, successBack: any) => {
@@ -298,8 +302,15 @@ watch(() => columns.value, (val) => {
 
 /* 对外调用方法 */
 const loadList = (urlParams: ListUrlParams) => {
+  // 参数设置
   pageData.value.formState = urlParams.action || 'edit';
+  pageData.value.isModal = urlParams.isModal || false;
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
+  // 方法反馈 新增、编辑、删除
+  pageData.value.modalAddBack = urlParams.modalAddBack ? urlParams.modalAddBack : pageData.value.modalAddBack;
+  pageData.value.modalEditBack = urlParams.modalEditBack ? urlParams.modalEditBack : pageData.value.modalEditBack;
+  pageData.value.modalDeleteBack = urlParams.modalDeleteBack ? urlParams.modalDeleteBack : pageData.value.modalDeleteBack;
+  // 初始化
   reset();
 }
 // 将方法暴露出去

@@ -121,7 +121,8 @@
         </template>
       </a-table-column>
       <a-table-column :title="$t('sercurity.orgUser.index.form.createAt')" data-index="createAt" width="180"/>
-      <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('sercurity.orgUser.index.form.operations')" :width="(pageData.formState==='edit'&&!pageData.isModal)?230:100"
+      <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('sercurity.orgUser.index.form.operations')"
+                      :width="(pageData.formState==='edit'&&!pageData.isModal)?230:100"
                       align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">
@@ -155,14 +156,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, defaultOrgOptions} from '@/views/security/user/org/searchTable'
-import {
-  deleteOrgUser as deleteList,
-  FilterOrgUserForm as FilterForm,
-  ListUrlParams,
-  PageQueryFilter,
-  pageQueryOrgUser as pageQueryList,
-  PageQueryRequest
-} from '@/api/sercurity_service'
+import {deleteOrgUser as deleteList, FilterOrgUserForm as FilterForm, pageQueryOrgUser as pageQueryList} from '@/api/service/sercurity_service';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import OrgUserForm from '@/views/security/user/org/form.vue';
 

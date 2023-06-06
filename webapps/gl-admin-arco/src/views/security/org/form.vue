@@ -27,8 +27,10 @@
       </a-form-item>
       <a-form-item
           :label="$t('sercurity.org.index.form.pid')"
+          :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
           field="pid">
-        <a-cascader :disabled="!pageData.button" v-model="formData.pid" :options="orgSelectOptions" allow-clear allow-search check-strictly/>
+        <a-cascader v-if="pageData.button" v-model="formData.pid" :options="orgSelectOptions" allow-clear allow-search check-strictly/>
+        <span v-else>{{ pageData.orgName }}</span>
       </a-form-item>
       <a-form-item
           :label="$t('sercurity.org.index.form.type')"
@@ -52,9 +54,13 @@
           :label="$t('sercurity.org.index.form.seqNo')"
           :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
           field="seqNo">
-        <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
-                        :placeholder="$t('sercurity.form.rules.match.length.title')+'[0,999999]'"
-                        :precision="0"/>
+        <a-input-number
+            v-if="pageData.button"
+            v-model="formData.seqNo"
+            :max="999999"
+            :min="1"
+            :placeholder="$t('sercurity.form.rules.match.length.title')+'[0,999999]'"
+            :precision="0"/>
         <span v-else>{{ formData.seqNo }}</span>
       </a-form-item>
       <a-form-item :label="$t('sercurity.org.index.form.description')" field="description">
@@ -67,31 +73,28 @@
 
 <script lang="ts" setup>
 import {ref} from 'vue';
+import {useI18n} from 'vue-i18n';
 import {Modal} from "@arco-design/web-vue";
 import {statusOptions, typeOptions} from "@/views/security/org/searchTable";
-import {
-  createOrUpdateOrg as createOrUpdateForm,
-  getOrg as getForm,
-  ListUrlParams,
-  QueryOrgForm,
-  QueryOrgForm as QueryForm,
-  queryOrgs,
-  SelectOption
-} from '@/api/sercurity_service'
+import {createOrUpdateOrg as createOrUpdateForm, getOrg as getForm, QueryOrgForm, QueryOrgForm as QueryForm, queryOrgs} from '@/api/service/sercurity_service'
+import {ListUrlParams, SelectOption} from '@/api/service/base_service';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 
-const pageData = ref({formState: 'add', button: true});
+const pageData = ref({formState: 'add', button: true, orgName: ''});
 const validateForm = ref<FormInstance>();
 const orgSelectOptions = ref<SelectOption[]>([]);
+const orgOptions = ref<QueryForm[]>([]);
 // 显示隐藏
 const visibleModel = ref(false);
 // 表单数据
 const generateFormData = (): QueryForm => {
-  return {id: '', pid: '', name: '', code: new Date().getTime().toString(), status: 1, type: 'inside', seqNo: 999, description: ''};
+  return {id: '', pid: '0', name: '', code: new Date().getTime().toString(), status: 1, type: 'inside', seqNo: 999, description: ''};
 }
 const formData = ref(generateFormData());
 // 页面响应
 let okSuccessBack: any;
+// 国际化
+const {t} = useI18n();
 
 const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[]): SelectOption[] => {
   // eslint-disable-next-line no-restricted-syntax
@@ -103,10 +106,10 @@ const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[])
         continue;
       }
       if (item.pid === data.value) {
-        data.children.push({value: item.id, label: item.name, children: []});
+        data.children?.push({value: item.id, label: item.name, children: []});
       }
     }
-    if (data.children.length > 0) {
+    if (data.children && data.children.length > 0) {
       buildOrgOptions(data.children, totalData);
     } else {
       delete data.children;
@@ -115,12 +118,17 @@ const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[])
 
   return defaultData;
 }
-const getOrgOptions = async (params: QueryOrgForm = {}) => {
+const getOrgOptions = async (params: QueryOrgForm = {} as unknown as QueryOrgForm) => {
+  const rootName = t('sercurity.org.index.form.root');
   try {
     const {data} = await queryOrgs(params);
-    orgSelectOptions.value = buildOrgOptions([{value: '0', label: '根目录', children: []}], data);
-    orgSelectOptions.value = orgSelectOptions.value[0].children;
+    orgOptions.value = data;
+    orgSelectOptions.value = buildOrgOptions([{value: '0', label: rootName, children: []}], data);
+    orgSelectOptions.value = orgSelectOptions.value[0].children || [];
+    orgSelectOptions.value.push({value: '0', label: rootName});
+    orgOptions.value.push({id: '0', name: rootName} as unknown as QueryForm);
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err);
   }
 }
@@ -179,6 +187,7 @@ const openForm = (urlParams: ListUrlParams) => {
   // 全局
   pageData.value.formState = urlParams.action;
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
+  pageData.value.orgName = '';
   formData.value = generateFormData();
   formData.value.id = urlParams.id || '';
   // 组织加载
@@ -192,6 +201,13 @@ const openForm = (urlParams: ListUrlParams) => {
     getData(urlParams.id, (data: QueryForm) => {
       data.seqNo = Number(data.seqNo);
       formData.value = data;
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of orgOptions.value) {
+        if (item.id === data.pid) {
+          pageData.value.orgName = item.name;
+          break;
+        }
+      }
       visibleModel.value = true;
     });
   }

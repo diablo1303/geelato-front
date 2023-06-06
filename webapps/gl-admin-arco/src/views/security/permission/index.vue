@@ -100,7 +100,8 @@
           <a-table-column :title="$t('sercurity.permission.index.form.text')" data-index="text" ellipsis="true" tooltip="true" width="150"/>
           <a-table-column :title="$t('sercurity.permission.index.form.description')" data-index="description" ellipsis="true" tooltip="true" width="200"/>
           <a-table-column :title="$t('sercurity.permission.index.form.createAt')" data-index="createAt" width="180"/>
-          <a-table-column :title="$t('sercurity.permission.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
+          <a-table-column :title="$t('sercurity.permission.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center"
+                          data-index="operations"
                           fixed="right">
             <template #cell="{ record }">
               <a-button v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">
@@ -110,7 +111,7 @@
                 {{ $t('searchTable.columns.operations.edit') }}
               </a-button>
               <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-                <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text">
+                <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text" status="danger">
                   {{ $t('searchTable.columns.operations.delete') }}
                 </a-button>
               </a-popconfirm>
@@ -134,8 +135,9 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
-import {deletePermission as deleteList, PageQueryFilter, pageQueryPermission as pageQueryList, PageQueryRequest} from '@/api/sercurity_service'
-import {columns} from '@/views/security/permission/searchTable'
+import {deletePermission as deleteList, pageQueryPermission as pageQueryList} from '@/api/service/sercurity_service';
+import {PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
+import {columns} from '@/views/security/permission/searchTable';
 // 引用其他页面
 import PermissionForm from '@/views/security/permission/form.vue';
 

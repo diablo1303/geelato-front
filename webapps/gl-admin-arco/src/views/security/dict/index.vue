@@ -3,150 +3,170 @@
     <Breadcrumb :items="['sercurity.dict.index.menu.list', 'sercurity.dict.index.menu.list.searchTable']"/>
     <a-card class="general-card general-card1">
       <a-row>
-        <a-col :span="4">
+        <a-col :span="6">
           <a-spin>{{ $t('sercurity.dict.index.menu.list.searchTable') }}</a-spin>
         </a-col>
-        <a-col :span="20">
-          <a-spin>{{ pageData.params.dictName ? pageData.params.dictName : $t('sercurity.dictItem.index.menu.list.searchTable') }}</a-spin>
+        <a-col :span="18">
+          <a-spin>{{ pageData.treeTitle ? pageData.treeTitle : $t('sercurity.dictItem.index.menu.list.searchTable') }}</a-spin>
         </a-col>
       </a-row>
       <a-row>
-        <a-col :span="4">
-          <a-space style="padding-bottom: 10px;">
-            <a-button :disabled="pageData.formState!=='edit'" type="outline" @click="addDict">
-              <template #icon>
-                <icon-plus/>
+        <a-col :span="6">
+          <a-input-search v-model="searchKey" style="margin-left:6%;max-width:88%" allow-clear/>
+          <a-scrollbar style="height:470px;overflow:auto;">
+            <a-tree
+                v-model:selected-keys="selectedKeys"
+                v-model:expanded-keys="expandedKeys"
+                :data="originTreeData"
+                :show-line="true"
+                @select="treeClickSelected">
+              <template #title="nodeData">
+                <template v-if="getMatchIndex(nodeData?.title) < 0">{{ nodeData?.title }}</template>
+                <span v-else>{{ nodeData?.title?.substr(0, getMatchIndex(nodeData?.title)) }}
+                  <span style="color: var(--color-primary-light-4);">{{ nodeData?.title?.substr(getMatchIndex(nodeData?.title), searchKey.length) }}</span>
+                  {{ nodeData?.title?.substr(getMatchIndex(nodeData?.title) + searchKey.length) }}
+                </span>
               </template>
-              {{ $t('searchTable.operation.create') }}
-            </a-button>
-            <a-button type="outline" @click="refreshDict">
-              <template #icon>
-                <icon-refresh/>
+              <template #extra="nodeData">
+                <a-dropdown trigger="click" position="right">
+                  <a-tooltip :content="$t('sercurity.dict.index.modal.more')">
+                    <IconMore class="tree-extra-icon1" @click="treeSelected(nodeData.key,nodeData)"/>
+                  </a-tooltip>
+                  <template #content>
+                    <a-doption v-if="nodeData.level===0" @click="dropOptionDictRefresh(nodeData)">
+                      <template #icon>
+                        <icon-refresh/>
+                      </template>
+                      <template #default>{{ $t('searchTable.actions.refresh') }}</template>
+                    </a-doption>
+                    <a-divider v-if="nodeData.level===0" margin="0px 0px"/>
+                    <a-doption v-if="nodeData.level===0" @click="dropOptionDictAdd(nodeData)">
+                      <template #icon>
+                        <icon-plus/>
+                      </template>
+                      <template #default>{{ $t('sercurity.dict.index.model.title.add') }}</template>
+                    </a-doption>
+                    <a-doption v-if="nodeData.level===1" @click="dropOptionDictEdit(nodeData)">
+                      <template #icon>
+                        <icon-edit/>
+                      </template>
+                      <template #default>{{ $t('sercurity.dict.index.model.title.edit') }}</template>
+                    </a-doption>
+                    <a-doption v-if="nodeData.level===1" @click="dropOptionDictDelete(nodeData)">
+                      <template #icon>
+                        <icon-delete/>
+                      </template>
+                      <template #default>{{ $t('sercurity.dict.index.model.title.delete') }}</template>
+                    </a-doption>
+                    <a-divider v-if="nodeData.level===1" margin="0px 0px"/>
+                    <a-doption v-if="nodeData.level===1" @click="dropOptionDictItemAdd(nodeData)">
+                      <template #icon>
+                        <icon-plus/>
+                      </template>
+                      <template #default>{{ $t('sercurity.dictItem.index.model.title.add') }}</template>
+                    </a-doption>
+                  </template>
+                </a-dropdown>
               </template>
-              {{ $t('searchTable.form.reset') }}
-            </a-button>
-          </a-space>
-          <a-list :loading="loading" :max-height="480" :scrollbar="scrollbar">
-            <a-list-item v-for="item of listData" :id="item.id" :key="item.id" class="list-item1" @click="selectedList(`${item.id}`)">
-              {{ item.dicName }}
-            </a-list-item>
-          </a-list>
+            </a-tree>
+          </a-scrollbar>
         </a-col>
-        <a-col :span="20">
-          <a-tabs v-model:active-key="pageData.tabKey" :default-active-tab="1" :position="'top'" type="rounded" @tab-click="tabsChange">
-            <a-tab-pane key="1" :title="$t('sercurity.dict.index.menu.list.searchTable1')">
-              <DictModel ref="dictModelRef"></DictModel>
-              <a-space v-show="pageData.formState==='edit'" style="padding-left: 128px;">
-                <a-button :loading="loading" type="primary" @click="saveForm">{{ $t('sercurity.dict.index.model.save.text') }}</a-button>
-                <a-button type="primary" @click="deleteForm">{{ $t('sercurity.dict.index.model.delete.text') }}</a-button>
-              </a-space>
-            </a-tab-pane>
-            <a-tab-pane key="2" :title="$t('sercurity.dictItem.index.menu.list.searchTable')">
-              <a-card class="general-card">
-                <DictItemList ref="dictItemListRef"></DictItemList>
-              </a-card>
-            </a-tab-pane>
-          </a-tabs>
+        <a-col :span="18">
+          <a-card v-if="pageData.level===0" class="general-card">
+            <DictList ref="dictListRef"></DictList>
+          </a-card>
+          <a-card v-if="pageData.level===1" class="general-card">
+            <DictItemList ref="dictItemListRef"></DictItemList>
+          </a-card>
         </a-col>
       </a-row>
     </a-card>
+    <DictDrawer ref="dictDrawerRef"></DictDrawer>
+    <DictItemDrawer ref="dictItemDrawerRef"></DictItemDrawer>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue';
+import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {Modal, Notification} from '@arco-design/web-vue';
-import useLoading from '@/hooks/loading';
-import {deleteDict, getDict, QueryDictForm, queryDicts} from '@/api/sercurity_service'
-import DictModel from '@/views/security/dict/model.vue'
-import DictItemList from '@/views/security/dict/item/list.vue'
+import {Modal, Notification, TreeNodeData} from "@arco-design/web-vue";
+import {TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
+import {deleteDict, QueryDictForm as QueryForm, queryDicts} from '@/api/service/sercurity_service';
+import DictList from '@/views/security/dict/list.vue';
+import DictDrawer from "@/views/security/dict/drawer.vue";
+import DictItemList from '@/views/security/dict/item/list.vue';
+import DictItemDrawer from "@/views/security/dict/item/drawer.vue";
 
-const {loading, setLoading} = useLoading(true);
-const dictModelRef = ref(null);
-const dictItemListRef = ref(null);
+// 国际化
 const {t} = useI18n();
-const pageData = ref({formState: 'edit', tabKey: '1', isModal: true, params: {dictId: '', dictName: ''}});
-/* 字典列表 */
-const listData = ref<QueryDictForm[]>([]);
-const scrollbar = ref(true);
-/* 字典列表 */
-const queryDictList = async (dicName: string, successBack?: any) => {
-  setLoading(true);
+// 全局变量
+const pageData = ref({formState: 'edit', isModal: true, level: 0, treeKey: '0', treeTitle: ''});
+const dictListRef = ref(null);
+const dictDrawerRef = ref(null);
+const dictItemListRef = ref(null);
+const dictItemDrawerRef = ref(null);
+// Tree
+const treeData = ref<TreeNodeProps[]>([]);
+const searchKey = ref('');
+const expandedKeys = ref<string[]>([]);
+const selectedKeys = ref<string[]>([]);
+/**
+ * 树tree，搜索
+ * @param keyword
+ */
+const searchData = (keyword: string) => {
+  const loop = (data: TreeNodeData[]) => {
+    const result: TreeNodeData[] = [];
+    data.forEach(item => {
+      if (item.title && item.title.toLowerCase().indexOf(keyword.toLowerCase()) > -1) {
+        result.push({...item});
+      } else if (item.children) {
+        const filterData = loop(item.children);
+        if (filterData.length) {
+          result.push({
+            ...item,
+            children: filterData
+          })
+        }
+      }
+    })
+    return result;
+  }
+
+  return loop(treeData.value);
+}
+const getMatchIndex = (title: string) => {
+  if (!searchKey.value) return -1;
+  return title.toLowerCase().indexOf(searchKey.value.toLowerCase());
+}
+const originTreeData = computed(() => {
+  if (!searchKey.value) return treeData.value;
+  return searchData(searchKey.value);
+});
+/**
+ * 接口，从数据库获取字典信息
+ */
+const fetchDictionary = async (): Promise<TreeNodeProps[]> => {
+  let treeOptions: TreeNodeProps[] = [];
   try {
     const {data} = await queryDicts();
-    listData.value = data;
-    successBack();
-  } catch (err) {
-    console.log(err);
-  } finally {
-    setLoading(false);
-  }
-};
-
-const selectedActive = (id?: string) => {
-  const list = document.getElementsByClassName("list-item1");
-  for (let i = 0; i < list.length; i += 1) {
-    let classVal = list[i].className;
-    classVal = classVal.replace(/active/g, '');
-    if (list[i].id === id) {
-      classVal = classVal.concat(" active");
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      treeOptions.push({title: item.dicName, key: item.id, level: 1} as TreeNodeProps);
     }
-    list[i].setAttribute("class", classVal);
+  } catch (err) {
+    treeOptions = [];
   }
+  return treeOptions;
 }
 /**
- * 新增字典
+ * 接口，从数据库中删除字典
+ * @param id
+ * @param successBack
  */
-const addDict = () => {
-  // 基础信息清空、页面信息复原、重置字典项、跳至基本信息
-  pageData.value.tabKey = '1';
-  selectedActive();
-  // 页面信息
-  pageData.value.params.dictId = '';
-  pageData.value.params.dictName = '';
-  // 刷新表单、列表
-  loadModelAndList();
-}
-const refreshDict = () => {
-  // 基础信息清空、页面信息复原、重置字典项、重置字典
-  selectedActive();
-  queryDictList('');
-  // 页面信息
-  pageData.value.params.dictId = '';
-  pageData.value.params.dictName = '';
-  // 刷新表单、列表
-  loadModelAndList();
-}
-const selectedList = (id: string) => {
-  if (id && id !== pageData.value.params.dictId) {
-    getData(id, (data: QueryDictForm) => {
-      selectedActive(data.id);
-      // 页面信息
-      pageData.value.params.dictId = data.id;
-      pageData.value.params.dictName = data.dicName;
-      // 重置字典项
-      loadModelAndList();
-    });
-  }
-}
-
-const tabsChange = (key: string) => {
-  pageData.value.tabKey = key;
-}
-/* 字典表单 */
-const getData = async (id: string, successBack: any) => {
-  try {
-    const {data} = await getDict(id);
-    successBack(data);
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
-};
 const deleteData = async (id: string, successBack: any) => {
   try {
-    const {data} = await deleteDict(id);
+    await deleteDict(id);
     successBack();
   } catch (err) {
     // eslint-disable-next-line no-console
@@ -154,62 +174,181 @@ const deleteData = async (id: string, successBack: any) => {
   }
 };
 
-const saveForm = () => {
-  if (dictModelRef.value) {
-    setLoading(true);
-    dictModelRef.value?.submitModel(null, (data: QueryDictForm) => {
-      // 成功提示、复写数据、重置字典、设置页面信息、重置字典项
-      Notification.info(t('sercurity.dict.index.notice.success'));
-      queryDictList('', () => {
-        const saveSuccess = setTimeout(() => {
-          // 页面信息
-          pageData.value.params.dictId = data.id;
-          pageData.value.params.dictName = data.dicName;
-          // 重新加载页面
-          loadModelAndList();
-          setLoading(false);
-          // 选中
-          selectedActive(data.id);
-        }, 250);
-      });
-    }, () => {
-      setLoading(false);
-    });
-  }
+/**
+ * 刷新第一层树，根目录
+ * @param data TreeNodeProps[]
+ */
+const refreshTreeOne = (data: TreeNodeProps[]) => {
+  treeData.value = [{title: t('sercurity.dict.index.menu.list.searchTable'), key: '0', level: 0, children: data} as unknown as TreeNodeProps];
+  const nodeData: TreeNodeProps = treeData.value[0];
+  pageData.value.level = treeData.value[0].level;
+  pageData.value.treeKey = nodeData.key ? nodeData.key.toString() : '';
+  pageData.value.treeTitle = nodeData.title || '';
+  // 清理搜索框
+  searchKey.value = '';
+  // 选中、展开
+  expandedKeys.value = [pageData.value.treeKey];
+  selectedKeys.value = [pageData.value.treeKey];
 }
-const deleteForm = () => {
-  const formId = pageData.value.params.dictId;
-  if (formId && formId.trim().length > 0) {
-    Modal.open({
-      title: t('sercurity.dict.index.modal.title'),
-      titleAlign: 'start',
-      content: t('sercurity.dict.index.modal.content'),
-      cancelText: t('sercurity.dict.index.modal.cancel.text'),
-      okText: t('sercurity.dict.index.modal.ok.text'), onOk() {
-        deleteData(formId, () => {
-          refreshDict();
+
+/**
+ * 页面加载完成后
+ */
+const loadedPage = () => {
+  fetchDictionary().then((data) => {
+    refreshTreeOne(data);
+    setTimeout(() => {
+      loadDictList();
+    }, 200);
+  });
+}
+loadedPage();
+
+/**
+ * 加载，字典列表
+ */
+const loadDictList = () => {
+  if (dictListRef.value) {
+    dictListRef.value?.loadList({
+      action: pageData.value.formState, pageSize: 5,
+      isModal: pageData.value.isModal, modalAddBack: () => {
+        fetchDictionary().then((data) => {
+          refreshTreeOne(data);
+        });
+      }, modalEditBack: (data: QueryForm) => {
+        const parentData: TreeNodeData = treeData.value[0];
+        // eslint-disable-next-line no-restricted-syntax
+        for (const item of parentData.children || []) {
+          if (item.key === data.id) {
+            item.title = data.dicName;
+          }
+        }
+      }, modalDeleteBack: () => {
+        fetchDictionary().then((data) => {
+          refreshTreeOne(data);
         });
       }
     });
-  } else {
-    Notification.warning(t('sercurity.dict.index.notice.warning1'));
+  }
+}
+/**
+ * 加载，字典项列表
+ * @param dictId string
+ * @param dictName string
+ */
+const loadDictItemList = (dictId: string, dictName: string) => {
+  if (dictItemListRef.value) {
+    dictItemListRef.value?.loadList({
+      action: pageData.value.formState, pageSize: 10000,
+      isModal: pageData.value.isModal,
+      params: {pId: dictId, pName: dictName}
+    });
   }
 }
 
-// 初始页面加载
-queryDictList('', () => {
-  loadModelAndList();
-});
+/**
+ * 树tree，选中节点
+ * @param selectedKey string
+ * @param data TreeNodeProps
+ */
+const treeSelected = (selectedKey: string, data: TreeNodeProps) => {
+  // 全局变量
+  pageData.value.level = data.level || 0;
+  pageData.value.treeKey = data.key ? data.key.toString() : '';
+  pageData.value.treeTitle = data.title || '';
+  // 选中
+  selectedKeys.value = [pageData.value.treeKey];
+  // 加载列表
+  setTimeout(() => {
+    loadDictList();
+    loadDictItemList(pageData.value.treeKey, pageData.value.treeTitle);
+  }, 200);
+}
+/**
+ * 树tree，点击事件，选中节点
+ * @param selectedKey string
+ * @param data TreeNodeProps
+ */
+const treeClickSelected = (selectedKey: string[], data: any) => {
+  treeSelected(selectedKey[0], data.node);
+}
 
-const loadModelAndList = () => {
-  // 表单
-  if (dictModelRef.value) {
-    dictModelRef.value?.loadModel({action: pageData.value.formState, 'id': pageData.value.params.dictId});
+/**
+ * 下拉菜单，第一层，刷新
+ * @param nodeData TreeNodeProps
+ */
+const dropOptionDictRefresh = (nodeData: TreeNodeProps) => {
+  fetchDictionary().then((data) => {
+    refreshTreeOne(data);
+    setTimeout(() => {
+      loadDictList();
+    }, 200);
+    Notification.info(t('model.connect.index.model.info.refresh'));
+  });
+}
+/**
+ * 下拉菜单，第一层，新增字典
+ * @param nodeData TreeNodeProps
+ */
+const dropOptionDictAdd = (nodeData: TreeNodeProps) => {
+  if (dictDrawerRef.value) {
+    dictDrawerRef.value?.openForm({
+      action: 'add', closeBack: (data: QueryForm) => {
+        loadedPage();
+      }
+    });
   }
-  // 列表
-  if (dictItemListRef.value) {
-    dictItemListRef.value?.loadList({action: pageData.value.formState, pageSize: 5, params: pageData.value.params, isModal: pageData.value.isModal});
+}
+/**
+ * 下拉菜单，第二层，新增字典项
+ * @param nodeData TreeNodeProps
+ */
+const dropOptionDictItemAdd = (nodeData: TreeNodeProps) => {
+  const dictId = nodeData.key ? nodeData.key.toString() : '';
+  const dictName = nodeData.title || '';
+  if (dictItemDrawerRef.value) {
+    dictItemDrawerRef.value?.openForm({
+      action: 'add', params: {pId: dictId, pName: dictName}, closeBack: () => {
+        setTimeout(() => {
+          loadDictItemList(dictId, dictName);
+        }, 200);
+      }
+    });
   }
+}
+/**
+ * 下拉菜单，第二层，编辑字典
+ * @param nodeData TreeNodeProps
+ */
+const dropOptionDictEdit = (nodeData: TreeNodeProps) => {
+  const dictId = nodeData.key ? nodeData.key.toString() : '';
+  if (dictDrawerRef.value) {
+    dictDrawerRef.value?.openForm({
+      action: 'edit', 'id': dictId, closeBack: (data: QueryForm) => {
+        nodeData.title = data.dicName;
+        pageData.value.treeTitle = data.dicName;
+      }
+    });
+  }
+}
+/**
+ * 下拉菜单，第二层，删除字典
+ * @param nodeData TreeNodeProps
+ */
+const dropOptionDictDelete = (nodeData: TreeNodeProps) => {
+  const dictId = nodeData.key ? nodeData.key.toString() : '';
+  Modal.open({
+    title: t('sercurity.dict.index.modal.title'),
+    width: '300px',
+    titleAlign: 'start',
+    content: t('sercurity.dict.index.modal.content'),
+    cancelText: t('sercurity.dict.index.modal.cancel.text'),
+    okText: t('sercurity.dict.index.modal.ok.text'), onOk() {
+      deleteData(dictId, () => {
+        loadedPage();
+      });
+    }
+  });
 }
 </script>
 
@@ -243,7 +382,7 @@ export default {
 }
 
 .general-card > .arco-tabs-content {
-  padding: 10px 0px 0px 10px;
+  padding: 10px 0 0 10px;
 }
 
 .general-card1 > .arco-card-body > .arco-row:first-child {
@@ -274,5 +413,19 @@ export default {
   align-items: center;
   padding: 64px 0;
   background-color: var(--color-bg-2);
+}
+
+.tree-extra-icon {
+  font-size: 16px;
+  margin-left: 10px;
+  color: #3370ff;
+}
+
+.tree-extra-icon1 {
+  position: initial;
+  font-size: 18px;
+  color: #3370ff;
+  width: 42px;
+  margin-right: 15px;
 }
 </style>

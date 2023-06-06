@@ -1,0 +1,136 @@
+<template v-model="pageData">
+  <a-drawer
+      v-model:visible="visibleModel"
+      width="32%"
+      :cancel-text="$t('sercurity.role.index.model.cancel.text')"
+      :footer="pageData.button"
+      :ok-text="$t('sercurity.role.index.model.ok.text')"
+      :title="$t(`sercurity.role.index.model.title.${pageData.formState}`)"
+      @cancel="handleModelCancel"
+      @before-ok="handleModelOk">
+    <RoleModel ref="roleModelRef"></RoleModel>
+    <a-divider v-if="pageData.formState!=='add'" orientation="left">
+      <strong>{{ $t('sercurity.role.form.tab.title.two') }}</strong>
+      <a-select v-model="pageData.appId" :options="selectAppOptions" :field-names="{value: 'id', label: 'name'}"
+                @change="addOrgUser">
+        <template #trigger>
+          <a-tooltip position="top" :content="$t('sercurity.orgUser.index.model.title.add')">
+            <icon-plus v-if="pageData.formState==='edit'" class="tree-extra-icon"/>
+          </a-tooltip>
+        </template>
+      </a-select>
+    </a-divider>
+    <a-list v-if="pageData.formState!=='add'">
+      <a-list-item v-for="(item,index) in orgUserOptions" :key="item.id" style="padding: 5px 20px;">
+        <a-list-item-meta :title="item.orgName">
+          <template #avatar>
+            <a-avatar shape="square" style="width: 20px;height: 20px;font-size: 16px;">
+              {{ index + 1 }}
+            </a-avatar>
+          </template>
+        </a-list-item-meta>
+        <template #actions>
+          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteOrgUser(item.id)">
+            <icon-delete v-if="pageData.formState==='edit'&&item.defaultOrg!==1" class="icon-danger"/>
+          </a-popconfirm>
+        </template>
+      </a-list-item>
+    </a-list>
+  </a-drawer>
+</template>
+
+<script lang="ts" setup>
+import {ref} from "vue";
+import {QueryAppForm, queryApps, QueryOrgUserForm, QueryUserForm} from "@/api/service/sercurity_service";
+import {ListUrlParams, SelectOption} from '@/api/service/base_service';
+import {FormInstance} from "@arco-design/web-vue/es/form";
+import RoleModel from "@/views/security/role/model.vue";
+
+const pageData = ref({formState: 'add', button: true, orgId: '', userId: ''});
+const validateForm = ref<FormInstance>();
+const orgUserOptions = ref<QueryOrgUserForm[]>([]);
+const orgSelectOptions = ref<SelectOption[]>([]);
+const selectAppOptions = ref<QueryAppForm[]>([]);
+const roleModelRef = ref(null);
+// 显示隐藏
+const visibleModel = ref(false);
+// 页面响应
+let okSuccessBack: any;
+
+const getSelectOptions = async () => {
+  try {
+    const {data} = await queryApps();
+    selectAppOptions.value = data || [];
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+/* 表单 */
+const handleModelOk = (done: any) => {
+  if (roleModelRef.value) {
+    roleModelRef.value?.submitModel(done, () => {
+      done();
+      okSuccessBack();
+    }, () => {
+      done(false);
+    });
+  }
+};
+const handleModelCancel = () => {
+  visibleModel.value = false;
+}
+
+
+const addOrgUser = () => {
+}
+
+const openForm = (urlParams: ListUrlParams) => {
+  // 全局
+  pageData.value.formState = urlParams.action;
+  pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
+  pageData.value.userId = urlParams.id || "";
+  urlParams.loadFailBack = () => {
+    pageData.value.button = false;
+  }
+  urlParams.loadSuccessBack = (data: QueryUserForm) => {
+    // eslint-disable-next-line no-console
+    console.log(data);
+  }
+
+  // 加载页面
+  if (roleModelRef.value) {
+    urlParams.formCol = 1;
+    roleModelRef.value?.loadModel(urlParams);
+  }
+  // 显示
+  visibleModel.value = true;
+  okSuccessBack = urlParams.closeBack || null;
+}
+
+// 将方法暴露出去
+defineExpose({openForm});
+</script>
+
+<style lang="less" scoped>
+.tree-extra-icon {
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 10px;
+  color: #3370ff;
+}
+
+.icon-danger {
+  color: rgb(245, 63, 63);
+}
+
+.list-action-button-default {
+  cursor: auto;
+  height: 20px;
+  font-size: 12px;
+  border-radius: 5px;
+  line-height: 20px;
+  padding: 0 5px;
+  margin-right: -20px;
+}
+</style>

@@ -2,7 +2,7 @@
   "componentName": "GlPage",
   "props": {
     "breadcrumb": [
-      "系统管理",
+      "应用管理",
       "角色列表"
     ],
     "pageTitle": "角色列表"

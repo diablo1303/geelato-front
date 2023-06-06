@@ -18,7 +18,7 @@
     private int delStatus = 0;
     // 单位Id
     private Long buId;
-    // 部门Id
+    // 组织Id
     private Long deptId;
 
 

@@ -37,7 +37,8 @@
         :label="$t('sercurity.dict.index.form.seqNo')"
         :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
         field="seqNo">
-      <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1" :placeholder="$t('sercurity.form.rules.match.length.title')+'[0,999999]'"
+      <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
+                      :placeholder="$t('sercurity.form.rules.match.length.title')+'[0,999999]'"
                       :precision="0"/>
       <span v-else>{{ formData.seqNo }}</span>
     </a-form-item>
@@ -51,11 +52,12 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import {Modal} from "@arco-design/web-vue";
-import {createOrUpdateDict as createOrUpdateForm, getDict as getForm, ListUrlParams, QueryDictForm as QueryForm} from '@/api/sercurity_service'
-import {enableStatusOptions} from "@/views/security/dict/item/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";
+import {ListUrlParams} from '@/api/service/base_service';
+import {createOrUpdateDict as createOrUpdateForm, getDict as getForm, QueryDictForm as QueryForm} from '@/api/service/sercurity_service'
+import {enableStatusOptions} from "@/views/security/dict/item/searchTable";
 
-const pageData = ref({formState: 'add', button: true});
+const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
 /* 表单 */
 const generateFormData = (): QueryForm => {
@@ -99,6 +101,7 @@ const loadModel = (urlParams: ListUrlParams) => {
   // 全局
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
+  pageData.value.formCol = urlParams.formCol || 1;
   formData.value = generateFormData();
   // 重置验证
   resetValidate();

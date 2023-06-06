@@ -11,7 +11,7 @@
           <a-input v-show="false" v-model="formData.plainPassword"/>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('sercurity.user.index.form.name')"
             :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
@@ -20,7 +20,7 @@
           <span v-else>{{ formData.name }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('sercurity.user.index.form.loginName')"
             :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
@@ -29,16 +29,20 @@
           <span v-else>{{ formData.loginName }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('sercurity.user.index.form.orgName')"
             :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
             field="orgId">
-          <a-cascader v-if="pageData.button" v-model="formData.orgId" :options="orgSelectOptions" allow-clear allow-search check-strictly/>
+          <a-tree-select v-if="pageData.button"
+                         v-model="formData.orgId"
+                         :data="orgSelectOptions"
+                         :field-names="{key:'value',title:'label'}" allow-clear allow-search/>
+          <!-- <a-cascader v-if="pageData.button" v-model="formData.orgId" :options="orgSelectOptions" allow-clear allow-search check-strictly/>-->
           <span v-else>{{ formData.orgName }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('sercurity.user.index.form.sex')"
             :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
@@ -49,7 +53,7 @@
           <span v-else>{{ $t(`sercurity.user.index.form.sex.${formData.sex}`) }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('sercurity.user.index.form.mobilePhone')"
             :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
@@ -58,37 +62,37 @@
           <span v-else>{{ formData.mobilePhone }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item :label="$t('sercurity.user.index.form.telephone')" field="telephone">
           <a-input v-if="pageData.button" v-model="formData.telephone" :max-length="32"/>
           <span v-else>{{ formData.telephone }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item :label="$t('sercurity.user.index.form.email')" field="email">
           <a-input v-if="pageData.button" v-model="formData.email" :max-length="32"/>
           <span v-else>{{ formData.email }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item :label="$t('sercurity.user.index.form.post')" field="post">
           <a-input v-if="pageData.button" v-model="formData.post" :max-length="32"/>
           <span v-else>{{ formData.post }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item :label="$t('sercurity.user.index.form.provinceCode')" field="provinceCode">
           <a-input v-if="pageData.button" v-model="formData.provinceCode" :max-length="32"/>
           <span v-else>{{ formData.provinceCode }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item :label="$t('sercurity.user.index.form.cityCode')" field="cityCode">
           <a-input v-if="pageData.button" v-model="formData.cityCode" :max-length="32"/>
           <span v-else>{{ formData.cityCode }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('sercurity.user.index.form.type')"
             :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
@@ -99,7 +103,7 @@
           <span v-else>{{ $t(`sercurity.user.index.form.type.${formData.type}`) }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('sercurity.user.index.form.source')"
             :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
@@ -110,19 +114,21 @@
           <span v-else>{{ $t(`sercurity.user.index.form.source.${formData.source}`) }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="12">
+      <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('sercurity.user.index.form.seqNo')"
             :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
             field="seqNo">
-          <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1" :placeholder="$t('sercurity.form.rules.match.length.title')+'[0,999999]'"
+          <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
+                          :placeholder="$t('sercurity.form.rules.match.length.title')+'[0,999999]'"
                           :precision="0"/>
           <span v-else>{{ formData.seqNo }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24">
-        <a-form-item :label="$t('sercurity.user.index.form.description')" :label-col-props="{ span: 3 }"
-                     :wrapper-col-props="{ span: 21 }" field="description">
+        <a-form-item :label="$t('sercurity.user.index.form.description')"
+                     :label-col-props="{ span: 6/pageData.formCol }"
+                     :wrapper-col-props="{ span: pageData.formCol===2?21:18 }" field="description">
           <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
           <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
         </a-form-item>
@@ -137,17 +143,16 @@ import {Modal} from "@arco-design/web-vue";
 import {
   createOrUpdateUser as createOrUpdateForm,
   getUser as getForm,
-  ListUrlParams,
   QueryOrgForm,
   queryOrgs,
   QueryUserForm as QueryForm,
-  SelectOption
-} from '@/api/sercurity_service'
+} from '@/api/service/sercurity_service';
+import {ListUrlParams, SelectOption} from '@/api/service/base_service';
 import {sexOptions, sourceOptions, typeOptions} from "@/views/security/user/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 
-const pageData = ref({formState: 'add', button: true});
-const validateForm = ref<FormInstance>()
+const pageData = ref({formState: 'add', button: true, formCol: 2});
+const validateForm = ref<FormInstance>();
 const orgSelectOptions = ref<SelectOption[]>([]);
 const generateFormData = (): QueryForm => {
   return {
@@ -238,6 +243,7 @@ const loadModel = (urlParams: ListUrlParams) => {
   // 全局
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
+  pageData.value.formCol = urlParams.formCol || 2;
   formData.value = generateFormData();
   // 重置验证
   resetValidate();

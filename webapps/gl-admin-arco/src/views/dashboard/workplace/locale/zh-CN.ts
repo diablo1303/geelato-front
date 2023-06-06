@@ -29,7 +29,7 @@ export default {
   'workplace.viewMore': '查看更多',
   'workplace.contentData': '内容数据',
   'workplace.popularContent': '线上热门内容',
-  'workplace.popularContent.text': '文本',
+  'workplace.popularContent.text': '',
   'workplace.popularContent.image': '图片',
   'workplace.popularContent.video': '视频',
   'workplace.categoriesPercent': '内容类型占比',

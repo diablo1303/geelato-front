@@ -36,12 +36,8 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import {Modal} from "@arco-design/web-vue";
-import {
-  createOrUpdatePermission as createOrUpdateForm,
-  getPermission as getForm,
-  ListUrlParams,
-  QueryPermissionForm as QueryForm
-} from '@/api/sercurity_service'
+import {createOrUpdatePermission as createOrUpdateForm, getPermission as getForm, QueryPermissionForm as QueryForm} from '@/api/service/sercurity_service';
+import {ListUrlParams} from '@/api/service/base_service';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 
 const pageData = ref({formState: 'add', button: true});

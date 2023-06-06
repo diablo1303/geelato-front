@@ -109,7 +109,8 @@
       <a-table-column v-if="pageData.params.roleName===''" :title="$t('sercurity.roleUser.index.form.roleName')" data-index="roleName" ellipsis="true"
                       tooltip="true" width="150"/>
       <a-table-column :title="$t('sercurity.roleUser.index.form.createAt')" data-index="createAt" width="180"/>
-      <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('sercurity.roleUser.index.form.operations')" :width="(pageData.formState==='edit'&&!pageData.isModal)?230:100"
+      <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('sercurity.roleUser.index.form.operations')"
+                      :width="(pageData.formState==='edit'&&!pageData.isModal)?230:100"
                       align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">
@@ -120,7 +121,7 @@
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text">
+            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text" status="danger">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -143,14 +144,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns} from '@/views/security/role/user/searchTable'
-import {
-  deleteRoleUser as deleteList,
-  FilterRoleUserForm as FilterForm,
-  ListUrlParams,
-  PageQueryFilter,
-  PageQueryRequest,
-  pageQueryRoleUser as pageQueryList
-} from '@/api/sercurity_service'
+import {deleteRoleUser as deleteList, FilterRoleUserForm as FilterForm, pageQueryRoleUser as pageQueryList} from '@/api/service/sercurity_service';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import RoleUserForm from '@/views/security/role/user/form.vue';
 

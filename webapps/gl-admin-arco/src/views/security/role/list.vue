@@ -136,7 +136,7 @@
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text">
+            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text" status="danger">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -146,6 +146,7 @@
   </a-table>
 
   <RoleTabForm ref="roleTabFormRef"></RoleTabForm>
+  <RoleDrawer ref="roleDrawerRef"></RoleDrawer>
   <RoleForm ref="roleFormRef"></RoleForm>
 </template>
 
@@ -161,22 +162,18 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, enableStatusOptions, typeOptions} from '@/views/security/role/searchTable'
-import {
-  deleteRole as deleteList,
-  FilterRoleForm as FilterForm,
-  ListUrlParams,
-  PageQueryFilter,
-  PageQueryRequest,
-  pageQueryRole as pageQueryList
-} from '@/api/sercurity_service'
+import {deleteRole as deleteList, FilterRoleForm as FilterForm, pageQueryRole as pageQueryList} from '@/api/service/sercurity_service';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import RoleForm from '@/views/security/role/form.vue';
+import RoleDrawer from '@/views/security/role/drawer.vue';
 import RoleTabForm from '@/views/security/role/tabForm.vue';
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
 const pageData = ref({current: 1, pageSize: 10, formState: 'edit'});
 const roleFormRef = ref(null);
+const roleDrawerRef = ref(null);
 const roleTabFormRef = ref(null);
 // 国际化
 const {t} = useI18n();
@@ -238,8 +235,8 @@ const onPageChange = (current: number) => {
 
 /* 列表，按钮、操作列 */
 const addTable = () => {
-  if (roleFormRef.value) {
-    roleFormRef.value?.openForm({action: 'add', closeBack: reset});
+  if (roleDrawerRef.value) {
+    roleDrawerRef.value?.openForm({action: 'add', closeBack: reset});
   }
 };
 const viewTable = (id: string) => {
