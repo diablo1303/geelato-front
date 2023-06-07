@@ -2,6 +2,7 @@
   <a-form ref="validateForm" :label-col-props="{ span: 6 }" :model="formData" :wrapper-col-props="{ span: 18 }" class="form">
     <a-form-item v-show="false">
       <a-input v-show="false" v-model="formData.id"/>
+      <a-input v-show="false" v-model="formData.appId"/>
     </a-form-item>
     <a-form-item
         :label="$t('security.dict.index.form.dicName')"
@@ -61,7 +62,7 @@ const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
 /* 表单 */
 const generateFormData = (): QueryForm => {
-  return {id: '', tenantCode: '', dicName: '', dicCode: '', dicRemark: '', enableStatus: 1, seqNo: 999};
+  return {id: '', tenantCode: '',appId: '', dicName: '', dicCode: '', dicRemark: '', enableStatus: 1, seqNo: 999};
 }
 const formData = ref(generateFormData());
 

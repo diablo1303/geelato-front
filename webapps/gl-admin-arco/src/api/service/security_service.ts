@@ -198,6 +198,7 @@ export function deleteUser(id: string) {
 export interface QueryDictForm {
   id: string;
   tenantCode: string;
+  appId: string;
   dicName: string;
   dicCode: string;
   dicRemark: string;
@@ -208,6 +209,7 @@ export interface QueryDictForm {
 export interface FilterDictForm {
   id: string;
   tenantCode: string;
+  appId: string;
   dicName: string;
   dicCode: string;
   enableStatus: string;

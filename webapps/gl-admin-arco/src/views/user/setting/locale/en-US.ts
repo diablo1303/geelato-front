@@ -160,6 +160,7 @@ export default {
   // webapps/gl-admin-arco/src/views/security/dict - list|form
   'security.dict.index.form.index': 'index',
   'security.dict.index.form.tenantCode': 'tenant',
+  'security.dict.index.form.appId': 'app',
   'security.dict.index.form.dicName': 'name',
   'security.dict.index.form.dicName1': 'dictionary',
   'security.dict.index.form.dicCode': 'code',

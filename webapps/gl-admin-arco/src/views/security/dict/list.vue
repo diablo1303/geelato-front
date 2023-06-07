@@ -105,32 +105,24 @@
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.dicName')" data-index="dicName" ellipsis="true"
-                      tooltip="true" width="150"></a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.dicCode')" data-index="dicCode" ellipsis="true"
-                      tooltip="true" width="150"></a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.tenantCode')" data-index="tenantCode"
-                      width="120"></a-table-column>
+      <a-table-column :title="$t('security.dict.index.form.dicName')" data-index="dicName" ellipsis="true" tooltip="true" width="150"></a-table-column>
+      <a-table-column :title="$t('security.dict.index.form.dicCode')" data-index="dicCode" ellipsis="true" tooltip="true" width="150"></a-table-column>
+      <a-table-column :title="$t('security.dict.index.form.tenantCode')" data-index="tenantCode" width="120"></a-table-column>
       <a-table-column :title="$t('security.dict.index.form.seqNo')" data-index="seqNo" width="100"></a-table-column>
       <a-table-column :title="$t('security.dict.index.form.enableStatus')" data-index="enableStatus" width="120">
         <template #cell="{ record }">
           {{ $t(`security.dict.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.createAt')" data-index="createAt"
-                      width="180"></a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.dicRemark')" :tooltip="{position:'right'}"
-                      data-index="dicRemark" ellipsis="true"
-                      width="200"></a-table-column>
-      <a-table-column v-show="pageData.formState==='edit'" :title="$t('security.dict.index.form.operations')"
-                      :width="170" align="center"
+      <a-table-column :title="$t('security.dict.index.form.createAt')" data-index="createAt" width="180"></a-table-column>
+      <a-table-column :title="$t('security.dict.index.form.dicRemark')" :tooltip="{position:'right'}" data-index="dicRemark" ellipsis="true" width="200"/>
+      <a-table-column v-show="pageData.formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="170" align="center"
                       data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
-          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
-                        @ok="deleteTable(record.id)">
+          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
             <a-button v-permission="['admin']" size="small" type="text" status="danger">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
@@ -154,11 +146,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, enableStatusOptions} from "@/views/security/dict/searchTable";
-import {
-  deleteDict as deleteList,
-  FilterDictForm as FilterForm,
-  pageQueryDict as pageQueryList,
-} from '@/api/service/security_service'
+import {deleteDict as deleteList, FilterDictForm as FilterForm, pageQueryDict as pageQueryList,} from '@/api/service/security_service'
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import DictForm from "@/views/security/dict/form.vue";
@@ -185,7 +173,7 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', dicName: '', dicCode: '', enableStatus: '', tenantCode: '', createAt: []};
+  return {id: '', dicName: '', dicCode: '', enableStatus: '', tenantCode: '', appId: '', createAt: []};
 };
 const filterData = ref(generateFilterData());
 
