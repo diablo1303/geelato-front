@@ -52,13 +52,27 @@ const statusOptions = computed<SelectOptionData[]>(() => [
 ]);
 const typeOptions = computed<SelectOptionData[]>(() => [
   {
-    label: 'security.org.index.form.type.inside',
+    label: 'security.org.index.form.type.company',
+    value: 'company',
+  },
+  {
+    label: 'security.org.index.form.type.department',
+    value: 'department',
+  },
+]);
+const categoryOptions = computed<SelectOptionData[]>(() => [
+  {
+    label: 'security.org.index.form.category.inside',
     value: 'inside',
   },
   {
-    label: 'security.org.index.form.type.outside',
+    label: 'security.org.index.form.category.outside',
     value: 'outside',
+  },
+  {
+    label: 'security.org.index.form.category.virtual',
+    value: 'virtual',
   },
 ]);
 
-export {columns, statusOptions, typeOptions};
+export {columns, statusOptions, typeOptions, categoryOptions};

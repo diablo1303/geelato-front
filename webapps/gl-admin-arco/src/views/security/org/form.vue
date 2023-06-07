@@ -42,6 +42,15 @@
         <span v-else>{{ $t(`security.org.index.form.type.${formData.type}`) }}</span>
       </a-form-item>
       <a-form-item
+          :label="$t('security.org.index.form.category')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          field="category">
+        <a-select v-if="pageData.button" v-model="formData.category">
+          <a-option v-for="item of categoryOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+        </a-select>
+        <span v-else>{{ $t(`security.org.index.form.category.${formData.category}`) }}</span>
+      </a-form-item>
+      <a-form-item
           :label="$t('security.org.index.form.status')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="status">
@@ -75,7 +84,7 @@
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {Modal} from "@arco-design/web-vue";
-import {statusOptions, typeOptions} from "@/views/security/org/searchTable";
+import {categoryOptions, statusOptions, typeOptions} from "@/views/security/org/searchTable";
 import {createOrUpdateOrg as createOrUpdateForm, getOrg as getForm, QueryOrgForm, QueryOrgForm as QueryForm, queryOrgs} from '@/api/service/security_service'
 import {ListUrlParams, SelectOption} from '@/api/service/base_service';
 import {FormInstance} from "@arco-design/web-vue/es/form";
@@ -88,7 +97,7 @@ const orgOptions = ref<QueryForm[]>([]);
 const visibleModel = ref(false);
 // 表单数据
 const generateFormData = (): QueryForm => {
-  return {id: '', pid: '0', name: '', code: new Date().getTime().toString(), status: 1, type: 'inside', seqNo: 999, description: ''};
+  return {id: '', pid: '0', name: '', code: new Date().getTime().toString(), status: 1, type: '', category: 'inside', seqNo: 999, description: ''};
 }
 const formData = ref(generateFormData());
 // 页面响应

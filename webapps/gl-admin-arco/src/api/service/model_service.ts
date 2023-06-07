@@ -174,6 +174,10 @@ export function queryTableColumns(params: PageQueryRequest) {
   });
 }
 
+export function queryDefaultMeta() {
+  return axios.get<QueryTableColumnForm[]>('/api/model/table/column/queryDefaultMeta');
+}
+
 export function getTableColumn(id: string) {
   return axios.get<QueryTableColumnForm>(`/api/model/table/column/get/${id}`);
 }
@@ -236,3 +240,22 @@ export function createOrUpdateTableForeign(params: QueryTableForeignForm) {
 export function deleteTableForeign(id: string) {
   return axios.delete<QueryResult>(`/api/model/table/foreign/isDelete/${id}`);
 }
+
+/* --------------------- 方法 ------------------- */
+const queryDefaultMetas = async () => {
+  let defaultMetas: string[] = [];
+  try {
+    const {data} = await queryDefaultMeta();
+    if (data != null && data.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of data) {
+        defaultMetas.push(item.name);
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    defaultMetas = [];
+  }
+  return defaultMetas;
+}
+export {queryDefaultMetas};

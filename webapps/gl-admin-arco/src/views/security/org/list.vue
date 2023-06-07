@@ -37,6 +37,13 @@
               </a-select>
             </a-form-item>
           </a-col>
+          <a-col :span="8">
+            <a-form-item :label="$t('security.org.index.form.category')" field="category">
+              <a-select v-model="filterData.category" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="item of categoryOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+              </a-select>
+            </a-form-item>
+          </a-col>
         </a-row>
       </a-form>
     </a-col>
@@ -119,13 +126,18 @@
       <a-table-column :title="$t('security.org.index.form.code')" data-index="code" ellipsis="true" tooltip="true" width="150"></a-table-column>
       <a-table-column :title="$t('security.org.index.form.type')" data-index="type" width="120">
         <template #cell="{ record }">
-          {{ $t(`security.org.index.form.type.${record.type}`) }}
+          {{ record.type ? $t(`security.org.index.form.type.${record.type}`) : '' }}
+        </template>
+      </a-table-column>
+      <a-table-column :title="$t('security.org.index.form.category')" data-index="category" width="120">
+        <template #cell="{ record }">
+          {{ record.category ? $t(`security.org.index.form.category.${record.category}`) : '' }}
         </template>
       </a-table-column>
       <a-table-column :title="$t('security.org.index.form.seqNo')" data-index="seqNo" width="100"></a-table-column>
       <a-table-column :title="$t('security.org.index.form.status')" data-index="status" width="120">
         <template #cell="{ record }">
-          {{ $t(`security.org.index.form.status.${record.status}`) }}
+          {{ record.status ? $t(`security.org.index.form.status.${record.status}`) : '' }}
         </template>
       </a-table-column>
       <a-table-column :title="$t('security.org.index.form.createAt')" data-index="createAt" width="180"></a-table-column>
@@ -161,7 +173,7 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
-import {columns, statusOptions, typeOptions} from "@/views/security/org/searchTable";
+import {categoryOptions, columns, statusOptions, typeOptions} from "@/views/security/org/searchTable";
 import {deleteOrg as deleteList, FilterOrgForm as FilterForm, pageQueryOrg as pageQueryList} from '@/api/service/security_service';
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
@@ -183,7 +195,7 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', pid: '', name: '', code: '', type: '', status: '', createAt: []};
+  return {id: '', pid: '', name: '', code: '', type: '', category: '', status: '', createAt: []};
 };
 const filterData = ref(generateFilterData());
 

@@ -106,7 +106,8 @@ export interface QueryOrgForm {
   seqNo: number;
   name: string;
   code: string;
-  type: string;
+  type: string; // 组织类型：department-部门，company-公司
+  category: string; // 组织类别：inside-内部，outside-外部，virtule-虚拟
   status: number;
   description: string;
 }
@@ -117,6 +118,7 @@ export interface FilterOrgForm {
   name: string;
   code: string;
   type: string;
+  category: string;
   status: string;
   createAt: string[];
 }
