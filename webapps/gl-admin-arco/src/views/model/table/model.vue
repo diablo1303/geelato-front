@@ -1,11 +1,12 @@
 <template v-model="pageData">
-  <a-form ref="validateForm" :model="formData" :label-col-props="{ span: 6 }" :wrapper-col-props="{ span: 18 }" class="form">
+  <a-form ref="validateForm" :model="formData" :label-col-props="{ span: 6 }" :wrapper-col-props="{ span: 18 }"
+          class="form">
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item v-show="false">
           <a-input v-show="false" v-model="formData.id"/>
           <a-input v-show="false" v-model="formData.connectId"/>
-          <a-input v-show="false" v-model="formData.entityName"/>
+          <a-input v-show="false" v-model="formData.tableName"/>
           <a-input v-show="false" v-model="formData.viewSql"/>
         </a-form-item>
       </a-col>
@@ -21,18 +22,18 @@
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.table.index.form.tableName')"
-            :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
             field="tableName">
-          <a-input v-if="pageData.formState==='add'" v-model="formData.tableName" :max-length="32"/>
-          <span v-else>{{ formData.tableName }}</span>
+          <!--          <a-input v-if="pageData.formState==='add'" v-model="formData.tableName" :max-length="32"/>-->
+          <span>{{ formData.tableName }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.table.index.form.entityName')"
+            :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
             field="entityName">
-          <!--          <a-input v-if="pageData.button" v-model="formData.entityName" :max-length="32" readonly/>-->
-          <span>{{ formData.entityName }}</span>
+          <a-input v-if="pageData.button" v-model="formData.entityName" :max-length="32" readonly/>
+          <span v-else>{{ formData.entityName }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
@@ -52,7 +53,8 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="tableType">
           <a-select v-if="pageData.button" v-model="formData.tableType">
-            <a-option v-for="item of tableTypeOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of tableTypeOptions" :key="item.value" :label="$t(`${item.label}`)"
+                      :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.tableType.${formData.tableType}`) }}</span>
         </a-form-item>
@@ -72,7 +74,8 @@
               </template>
             </a-button>
             <template #content>
-              <div class="trigger-demo-translate" :style="{width:`${pageStyle.width}px`,height:`${pageStyle.height}px`}">
+              <div class="trigger-demo-translate"
+                   :style="{width:`${pageStyle.width}px`,height:`${pageStyle.height}px`}">
                 <MonacoEditor
                     v-model="formData.viewSql"
                     :language="'sql'"
@@ -90,7 +93,8 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="enableStatus">
           <a-select v-if="pageData.button" v-model="formData.enableStatus">
-            <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                      :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.enableStatus.${formData.enableStatus}`) }}</span>
         </a-form-item>
@@ -124,8 +128,10 @@
             :label-col-props="{ span: (pageData.formCol===1?6:3) }"
             :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
             field="description">
-          <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
-          <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+          <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
+                      :max-length="512" show-word-limit/>
+          <span v-else :title="formData.description" class="textarea-span"
+                @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
         </a-form-item>
       </a-col>
     </a-row>
@@ -134,10 +140,14 @@
 
 <script lang="ts" setup>
 import {ref} from 'vue';
-import {Message, Modal} from "@arco-design/web-vue";
+import {Modal} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/service/base_service';
-import {createOrUpdateTable as createOrUpdateForm, getTable as getForm, QueryTableForm as QueryForm} from '@/api/service/model_service';
+import {
+  createOrUpdateTable as createOrUpdateForm,
+  getTable as getForm,
+  QueryTableForm as QueryForm
+} from '@/api/service/model_service';
 import {enableStatusOptions, linkedOptions, tableTypeOptions} from "@/views/model/table/searchTable";
 import MonacoEditor from '@/components/monaco/index.vue';
 

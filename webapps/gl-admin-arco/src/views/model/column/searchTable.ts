@@ -3,6 +3,7 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
 import {querySelectOptions} from "@/api/service/security_service";
 import {RadioOption} from "@arco-design/web-vue/es/radio/interface";
+import {queryDefaultMetas} from "@/api/service/model_service";
 
 const columns = computed<TableColumnData[]>(() => [
   {
@@ -93,5 +94,18 @@ const dataTypeOptions = ref<SelectOptionData[]>([]);
 querySelectOptions("dbColumnDataType").then((data) => {
   dataTypeOptions.value = data;
 });
+// 主键、、单位、部门、创建时间、创建人员、更新时间、更新人员、是否删除、排序
+const defaultColumnMetas = ref<string[]>([]);
+queryDefaultMetas().then((data) => {
+  defaultColumnMetas.value = data;
+});
 
-export {columns, enableStatusOptions, keyOptions, nullableOptions, dataTypeOptions, numericSignedOptions};
+export {
+  columns,
+  enableStatusOptions,
+  keyOptions,
+  nullableOptions,
+  dataTypeOptions,
+  numericSignedOptions,
+  defaultColumnMetas
+};

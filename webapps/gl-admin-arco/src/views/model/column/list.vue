@@ -148,7 +148,7 @@
       <a-table-column :title="$t('model.column.index.form.createAt')" data-index="createAt" width="180"/>
       <a-table-column v-show="pageData.formState==='edit'" :title="$t('model.column.index.form.operations')"
                       align="center" data-index="operations" fixed="right" :width="170">
-        <template #cell="{ record,isDefault = defaultForm.includes(record.name)}">
+        <template #cell="{ record,isDefault = defaultColumnMetas.includes(record.name)}">
           <a-tooltip v-if="isDefault" :content="$t('model.column.index.form.operations.disabled')">
             <a-button v-permission="['admin']" size="small" type="text" class="button-disabled">
               {{ $t('searchTable.columns.operations.edit') }}
@@ -189,7 +189,7 @@ import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 import {deleteTableColumn as deleteList, pageQueryTableColumns as pageQueryList} from '@/api/service/model_service';
-import {columns, enableStatusOptions} from '@/views/model/column/searchTable';
+import {columns, enableStatusOptions,defaultColumnMetas} from '@/views/model/column/searchTable';
 // 引用其他页面
 import ColumnForm from '@/views/model/column/form.vue';
 import ColumnDrawer from '@/views/model/column/drawer.vue';
@@ -211,8 +211,6 @@ const showColumns = ref<Column[]>([]);
 const basePagination: Pagination = {current: pageData.value.current, pageSize: pageData.value.pageSize};
 const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
-/* 主键、、单位、部门、创建时间、创建人员、更新时间、更新人员、是否删除、排序 */
-const defaultForm = ref(['id', 'bu', 'bu_id', 'dept_id', 'create_At', 'creator', 'update_At', 'updater', 'del_status', 'seq_no']);
 const isDefault = ref(false);
 /* 列表 */
 const generateFilterData = () => {
