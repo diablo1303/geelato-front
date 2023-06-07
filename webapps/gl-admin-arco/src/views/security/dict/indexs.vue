@@ -1,13 +1,13 @@
 <template v-model="pageData">
   <div class="container">
-    <Breadcrumb :items="['sercurity.dict.index.menu.list', 'sercurity.dict.index.menu.list.searchTable']"/>
+    <Breadcrumb :items="['security.dict.index.menu.list', 'security.dict.index.menu.list.searchTable']"/>
     <a-card class="general-card general-card1">
       <a-row>
         <a-col :span="4">
-          <a-spin>{{ $t('sercurity.dict.index.menu.list.searchTable') }}</a-spin>
+          <a-spin>{{ $t('security.dict.index.menu.list.searchTable') }}</a-spin>
         </a-col>
         <a-col :span="20">
-          <a-spin>{{ pageData.params.dictName ? pageData.params.dictName : $t('sercurity.dictItem.index.menu.list.searchTable') }}</a-spin>
+          <a-spin>{{ pageData.params.dictName ? pageData.params.dictName : $t('security.dictItem.index.menu.list.searchTable') }}</a-spin>
         </a-col>
       </a-row>
       <a-row>
@@ -34,14 +34,14 @@
         </a-col>
         <a-col :span="20">
           <a-tabs v-model:active-key="pageData.tabKey" :default-active-tab="1" :position="'top'" type="rounded" @tab-click="tabsChange">
-            <a-tab-pane key="1" :title="$t('sercurity.dict.index.menu.list.searchTable1')">
+            <a-tab-pane key="1" :title="$t('security.dict.index.menu.list.searchTable1')">
               <DictModel ref="dictModelRef"></DictModel>
               <a-space v-show="pageData.formState==='edit'" style="padding-left: 128px;">
-                <a-button :loading="loading" type="primary" @click="saveForm">{{ $t('sercurity.dict.index.model.save.text') }}</a-button>
-                <a-button type="primary" @click="deleteForm">{{ $t('sercurity.dict.index.model.delete.text') }}</a-button>
+                <a-button :loading="loading" type="primary" @click="saveForm">{{ $t('security.dict.index.model.save.text') }}</a-button>
+                <a-button type="primary" @click="deleteForm">{{ $t('security.dict.index.model.delete.text') }}</a-button>
               </a-space>
             </a-tab-pane>
-            <a-tab-pane key="2" :title="$t('sercurity.dictItem.index.menu.list.searchTable')">
+            <a-tab-pane key="2" :title="$t('security.dictItem.index.menu.list.searchTable')">
               <a-card class="general-card">
                 <DictItemList ref="dictItemListRef"></DictItemList>
               </a-card>
@@ -58,7 +58,7 @@ import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {Modal, Notification} from '@arco-design/web-vue';
 import useLoading from '@/hooks/loading';
-import {deleteDict, getDict, QueryDictForm, queryDicts} from '@/api/service/sercurity_service';
+import {deleteDict, getDict, QueryDictForm, queryDicts} from '@/api/service/security_service';
 import DictModel from '@/views/security/dict/model.vue'
 import DictItemList from '@/views/security/dict/item/list.vue'
 
@@ -157,9 +157,10 @@ const deleteData = async (id: string, successBack: any) => {
 const saveForm = () => {
   if (dictModelRef.value) {
     setLoading(true);
+    // @ts-ignore
     dictModelRef.value?.submitModel(null, (data: QueryDictForm) => {
       // 成功提示、复写数据、重置字典、设置页面信息、重置字典项
-      Notification.info(t('sercurity.dict.index.notice.success'));
+      Notification.info(t('security.dict.index.notice.success'));
       queryDictList('', () => {
         const saveSuccess = setTimeout(() => {
           // 页面信息
@@ -181,18 +182,18 @@ const deleteForm = () => {
   const formId = pageData.value.params.dictId;
   if (formId && formId.trim().length > 0) {
     Modal.open({
-      title: t('sercurity.dict.index.modal.title'),
+      title: t('security.dict.index.modal.title'),
       titleAlign: 'start',
-      content: t('sercurity.dict.index.modal.content'),
-      cancelText: t('sercurity.dict.index.modal.cancel.text'),
-      okText: t('sercurity.dict.index.modal.ok.text'), onOk() {
+      content: t('security.dict.index.modal.content'),
+      cancelText: t('security.dict.index.modal.cancel.text'),
+      okText: t('security.dict.index.modal.ok.text'), onOk() {
         deleteData(formId, () => {
           refreshDict();
         });
       }
     });
   } else {
-    Notification.warning(t('sercurity.dict.index.notice.warning1'));
+    Notification.warning(t('security.dict.index.notice.warning1'));
   }
 }
 
@@ -204,6 +205,7 @@ queryDictList('', () => {
 const loadModelAndList = () => {
   // 表单
   if (dictModelRef.value) {
+    // @ts-ignore
     dictModelRef.value?.loadModel({
       action: pageData.value.formState, 'id': pageData.value.params.dictId, loadFailBack: () => {
       }, loadSuccessBack: () => {
@@ -212,6 +214,7 @@ const loadModelAndList = () => {
   }
   // 列表
   if (dictItemListRef.value) {
+    // @ts-ignore
     dictItemListRef.value?.loadList({action: pageData.value.formState, pageSize: 5, params: pageData.value.params, isModal: pageData.value.isModal});
   }
 }

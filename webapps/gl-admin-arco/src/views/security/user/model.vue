@@ -13,8 +13,8 @@
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
-            :label="$t('sercurity.user.index.form.name')"
-            :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+            :label="$t('security.user.index.form.name')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="name">
           <a-input v-if="pageData.button" v-model="formData.name" :max-length="32"/>
           <span v-else>{{ formData.name }}</span>
@@ -22,8 +22,8 @@
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
-            :label="$t('sercurity.user.index.form.loginName')"
-            :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+            :label="$t('security.user.index.form.loginName')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="loginName">
           <a-input v-if="pageData.button" v-model="formData.loginName" :max-length="32"/>
           <span v-else>{{ formData.loginName }}</span>
@@ -31,8 +31,8 @@
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
-            :label="$t('sercurity.user.index.form.orgName')"
-            :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+            :label="$t('security.user.index.form.orgName')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="orgId">
           <a-tree-select v-if="pageData.button"
                          v-model="formData.orgId"
@@ -44,93 +44,95 @@
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
-            :label="$t('sercurity.user.index.form.sex')"
-            :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+            :label="$t('security.user.index.form.sex')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="sex">
           <a-select v-if="pageData.button" v-model="formData.sex">
             <a-option v-for="item of sexOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
-          <span v-else>{{ $t(`sercurity.user.index.form.sex.${formData.sex}`) }}</span>
+          <span v-else>{{ $t(`security.user.index.form.sex.${formData.sex}`) }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
-            :label="$t('sercurity.user.index.form.mobilePhone')"
-            :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+            :label="$t('security.user.index.form.mobilePhone')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="mobilePhone">
           <a-input v-if="pageData.button" v-model="formData.mobilePhone" :max-length="32"/>
           <span v-else>{{ formData.mobilePhone }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('sercurity.user.index.form.telephone')" field="telephone">
+        <a-form-item :label="$t('security.user.index.form.telephone')" field="telephone">
           <a-input v-if="pageData.button" v-model="formData.telephone" :max-length="32"/>
           <span v-else>{{ formData.telephone }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('sercurity.user.index.form.email')" field="email">
+        <a-form-item :label="$t('security.user.index.form.email')" field="email">
           <a-input v-if="pageData.button" v-model="formData.email" :max-length="32"/>
           <span v-else>{{ formData.email }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('sercurity.user.index.form.post')" field="post">
+        <a-form-item :label="$t('security.user.index.form.post')" field="post">
           <a-input v-if="pageData.button" v-model="formData.post" :max-length="32"/>
           <span v-else>{{ formData.post }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('sercurity.user.index.form.provinceCode')" field="provinceCode">
+        <a-form-item :label="$t('security.user.index.form.provinceCode')" field="provinceCode">
           <a-input v-if="pageData.button" v-model="formData.provinceCode" :max-length="32"/>
           <span v-else>{{ formData.provinceCode }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('sercurity.user.index.form.cityCode')" field="cityCode">
+        <a-form-item :label="$t('security.user.index.form.cityCode')" field="cityCode">
           <a-input v-if="pageData.button" v-model="formData.cityCode" :max-length="32"/>
           <span v-else>{{ formData.cityCode }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
-            :label="$t('sercurity.user.index.form.type')"
-            :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+            :label="$t('security.user.index.form.type')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="type">
           <a-select v-if="pageData.button" v-model="formData.type">
             <a-option v-for="item of typeOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
-          <span v-else>{{ $t(`sercurity.user.index.form.type.${formData.type}`) }}</span>
+          <span v-else>{{ $t(`security.user.index.form.type.${formData.type}`) }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
-            :label="$t('sercurity.user.index.form.source')"
-            :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+            :label="$t('security.user.index.form.source')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="source">
           <a-select v-if="pageData.button" v-model="formData.source">
             <a-option v-for="item of sourceOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
-          <span v-else>{{ $t(`sercurity.user.index.form.source.${formData.source}`) }}</span>
+          <span v-else>{{ $t(`security.user.index.form.source.${formData.source}`) }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
-            :label="$t('sercurity.user.index.form.seqNo')"
-            :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+            :label="$t('security.user.index.form.seqNo')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="seqNo">
           <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
-                          :placeholder="$t('sercurity.form.rules.match.length.title')+'[0,999999]'"
+                          :placeholder="$t('security.form.rules.match.length.title')+'[0,999999]'"
                           :precision="0"/>
           <span v-else>{{ formData.seqNo }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24">
-        <a-form-item :label="$t('sercurity.user.index.form.description')"
+        <a-form-item :label="$t('security.user.index.form.description')"
                      :label-col-props="{ span: 6/pageData.formCol }"
                      :wrapper-col-props="{ span: pageData.formCol===2?21:18 }" field="description">
-          <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
-          <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+          <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
+                      :max-length="512" show-word-limit/>
+          <span v-else :title="formData.description" class="textarea-span"
+                @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
         </a-form-item>
       </a-col>
     </a-row>
@@ -146,7 +148,7 @@ import {
   QueryOrgForm,
   queryOrgs,
   QueryUserForm as QueryForm,
-} from '@/api/service/sercurity_service';
+} from '@/api/service/security_service';
 import {ListUrlParams, SelectOption} from '@/api/service/base_service';
 import {sexOptions, sourceOptions, typeOptions} from "@/views/security/user/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";
@@ -186,10 +188,10 @@ const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[])
     // eslint-disable-next-line no-restricted-syntax
     for (const item of totalData) {
       if (item.pid === data.value) {
-        data.children.push({value: item.id, label: item.name, children: []});
+        data.children?.push({value: item.id, label: item.name, children: []});
       }
     }
-    if (data.children.length > 0) {
+    if (data.children && data.children.length > 0) {
       buildOrgOptions(data.children, totalData);
     } else {
       delete data.children;
@@ -198,11 +200,11 @@ const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[])
 
   return defaultData;
 }
-const getOrgOptions = async (params: QueryOrgForm = {status: 1}) => {
+const getOrgOptions = async (params: QueryOrgForm = {status: 1} as unknown as QueryOrgForm) => {
   try {
     const {data} = await queryOrgs(params);
     orgSelectOptions.value = buildOrgOptions([{value: '0', label: '根目录', children: []}], data);
-    orgSelectOptions.value = orgSelectOptions.value[0].children;
+    orgSelectOptions.value = orgSelectOptions.value[0].children || [];
   } catch (err) {
     console.log(err);
   }

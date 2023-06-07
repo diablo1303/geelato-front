@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['sercurity.roleUser.index.menu.list', 'sercurity.roleUser.index.menu.list.searchTable']"/>
-    <a-card :title="$t('sercurity.roleUser.index.menu.list.searchTable')" class="general-card">
+    <Breadcrumb :items="['security.roleUser.index.menu.list', 'security.roleUser.index.menu.list.searchTable']"/>
+    <a-card :title="$t('security.roleUser.index.menu.list.searchTable')" class="general-card">
       <!-- list   -->
       <RoleUserList ref="roleUserListRef"></RoleUserList>
     </a-card>
@@ -16,6 +16,7 @@ const roleUserListRef = ref(null);
 
 const loadIndex = () => {
   if (roleUserListRef.value) {
+    // @ts-ignore
     roleUserListRef.value?.loadList({action: 'edit'});
   }
 }

@@ -10,17 +10,17 @@
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.roleUser.index.form.roleName')" field="roleName">
+            <a-form-item :label="$t('security.roleUser.index.form.roleName')" field="roleName">
               <a-input v-model="filterData.roleName" :readonly="pageData.params.roleName!=''"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.roleUser.index.form.userName')" field="userName">
+            <a-form-item :label="$t('security.roleUser.index.form.userName')" field="userName">
               <a-input v-model="filterData.userName"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.roleUser.index.form.createAt')" field="createAt">
+            <a-form-item :label="$t('security.roleUser.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
@@ -84,7 +84,7 @@
                   <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                 </div>
                 <div class="title">
-                  {{ item.title === '#' ? $t('sercurity.roleUser.index.form.index') : $t(`${item.title}`) }}
+                  {{ item.title === '#' ? $t('security.roleUser.index.form.index') : $t(`${item.title}`) }}
                 </div>
               </div>
             </div>
@@ -102,14 +102,14 @@
            row-key="id"
            @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('sercurity.roleUser.index.form.index')" align="center" data-index="index" width="80">
+      <a-table-column :title="$t('security.roleUser.index.form.index')" align="center" data-index="index" width="80">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.roleUser.index.form.userName')" data-index="userName" ellipsis="true" tooltip="true" width="150"/>
-      <a-table-column v-if="pageData.params.roleName===''" :title="$t('sercurity.roleUser.index.form.roleName')" data-index="roleName" ellipsis="true"
+      <a-table-column :title="$t('security.roleUser.index.form.userName')" data-index="userName" ellipsis="true" tooltip="true" width="150"/>
+      <a-table-column v-if="pageData.params.roleName===''" :title="$t('security.roleUser.index.form.roleName')" data-index="roleName" ellipsis="true"
                       tooltip="true" width="150"/>
-      <a-table-column :title="$t('sercurity.roleUser.index.form.createAt')" data-index="createAt" width="180"/>
-      <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('sercurity.roleUser.index.form.operations')"
+      <a-table-column :title="$t('security.roleUser.index.form.createAt')" data-index="createAt" width="180"/>
+      <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('security.roleUser.index.form.operations')"
                       :width="(pageData.formState==='edit'&&!pageData.isModal)?230:100"
                       align="center" data-index="operations"
                       fixed="right">
@@ -144,7 +144,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns} from '@/views/security/role/user/searchTable'
-import {deleteRoleUser as deleteList, FilterRoleUserForm as FilterForm, pageQueryRoleUser as pageQueryList} from '@/api/service/sercurity_service';
+import {deleteRoleUser as deleteList, FilterRoleUserForm as FilterForm, pageQueryRoleUser as pageQueryList} from '@/api/service/security_service';
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import RoleUserForm from '@/views/security/role/user/form.vue';
@@ -217,16 +217,19 @@ const onPageChange = (current: number) => {
 /* 列表，按钮、操作列 */
 const addTable = () => {
   if (roleUserFormRef.value) {
+    // @ts-ignore
     roleUserFormRef.value?.openForm({action: 'add', params: pageData.value.params, closeBack: reset});
   }
 };
 const viewTable = (id: string) => {
   if (roleUserFormRef.value) {
+    // @ts-ignore
     roleUserFormRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
   }
 }
 const editTable = (id: string) => {
   if (roleUserFormRef.value) {
+    // @ts-ignore
     roleUserFormRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
   }
 }
@@ -289,7 +292,8 @@ watch(() => columns.value, (val) => {
 const loadList = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action || 'edit';
   pageData.value.isModal = urlParams.isModal || false;
-  pageData.value.params = urlParams.params || {roleId: '', roleName: ''};
+  pageData.value.params.roleId = urlParams.params?.roleId || '';
+  pageData.value.params.roleName = urlParams.params?.roleName || '';
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
 
   reset();

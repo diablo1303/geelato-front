@@ -1,5 +1,6 @@
 <template v-model="pageData">
-  <a-form ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }" class="form">
+  <a-form ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }"
+          class="form">
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item v-show="false">
@@ -39,7 +40,8 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="enableStatus">
           <a-select v-model="formData.enableStatus">
-            <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                      :value="item.value"/>
           </a-select>
         </a-form-item>
       </a-col>
@@ -62,7 +64,8 @@
             :label-col-props="{ span: (pageData.formCol===1?8:4) }"
             :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
             field="description">
-          <a-textarea v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+          <a-textarea v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512"
+                      show-word-limit/>
         </a-form-item>
       </a-col>
 
@@ -185,7 +188,12 @@ import {
   QueryTableColumnForm as QueryForm,
   QueryTableForm
 } from '@/api/service/model_service';
-import {dataTypeOptions, enableStatusOptions, nullableOptions, numericSignedOptions} from "@/views/model/column/searchTable";
+import {
+  dataTypeOptions,
+  enableStatusOptions,
+  nullableOptions,
+  numericSignedOptions
+} from "@/views/model/column/searchTable";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1, mainTable: ''});
 const validateForm = ref<FormInstance>();

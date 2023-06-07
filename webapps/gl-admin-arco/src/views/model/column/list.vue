@@ -27,14 +27,16 @@
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('model.column.index.form.nullable')" field="nullable">
               <a-select v-model="filterData.nullable" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+                <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                          :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('model.column.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+                <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                          :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
@@ -90,7 +92,8 @@
                   <icon-drag-arrow/>
                 </div>
                 <div>
-                  <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
+                  <a-checkbox v-model="item.checked"
+                              @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                 </div>
                 <div class="title">
                   {{ item.title === '#' ? $t('model.column.index.form.index') : $t(`${item.title}`) }}
@@ -116,17 +119,23 @@
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
       <a-table-column v-if="pageData.params.pId===''"
-                      :title="$t('model.column.index.form.tableName')" data-index="tableName" ellipsis="true" tooltip="true" width="200"/>
-      <a-table-column :title="$t('model.column.index.form.title')" data-index="title" ellipsis="true" tooltip="true" width="150"/>
-      <a-table-column :title="$t('model.column.index.form.name')" data-index="name" ellipsis="true" tooltip="true" width="150">
+                      :title="$t('model.column.index.form.tableName')" data-index="tableName" ellipsis="true"
+                      tooltip="true" width="200"/>
+      <a-table-column :title="$t('model.column.index.form.title')" data-index="title" ellipsis="true" tooltip="true"
+                      width="150"/>
+      <a-table-column :title="$t('model.column.index.form.name')" data-index="name" ellipsis="true" tooltip="true"
+                      width="150">
         <template #cell="{record}">
           {{ record.name }}
-          <a-button v-if="record.name==='id'" type="outline" class="list-action-button-default">{{ $t('model.column.index.form.name.key') }}</a-button>
+          <a-button v-if="record.name==='id'" type="outline" class="list-action-button-default">
+            {{ $t('model.column.index.form.name.key') }}
+          </a-button>
         </template>
       </a-table-column>
       <a-table-column :title="$t('model.column.index.form.dataType')" data-index="dataType" width="100"/>
       <a-table-column :title="$t('model.column.index.form.charMaxLength')" data-index="charMaxLength" width="100"/>
-      <a-table-column :title="$t('model.column.index.form.numericPrecision')" data-index="numericPrecision" width="100"/>
+      <a-table-column :title="$t('model.column.index.form.numericPrecision')" data-index="numericPrecision"
+                      width="100"/>
       <a-table-column :title="$t('model.column.index.form.numericScale')" data-index="numericScale" width="100"/>
       <a-table-column :title="$t('model.column.index.form.key')" data-index="key" width="100"/>
       <a-table-column :title="$t('model.column.index.form.nullable')" data-index="nullable" width="100"/>
@@ -153,7 +162,8 @@
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-tooltip>
-          <a-popconfirm v-else :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
+          <a-popconfirm v-else :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
+                        @ok="deleteTable(record.id)">
             <a-button v-permission="['admin']" size="small" type="text" status="danger">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
@@ -224,7 +234,10 @@ const filterData = ref(generateFilterData());
  * 分页查询方法
  * @param params
  */
-const fetchData = async (params: PageQueryRequest = {current: pageData.value.current, pageSize: pageData.value.pageSize}) => {
+const fetchData = async (params: PageQueryRequest = {
+  current: pageData.value.current,
+  pageSize: pageData.value.pageSize
+}) => {
   setLoading(true);
   try {
     const {data} = await pageQueryList(params);
@@ -269,20 +282,23 @@ const onPageChange = (current: number) => {
 /* 列表，按钮、操作列 */
 const addTable = () => {
   if (pageData.value.isModal && !pageData.value.params.pId) {
-    Notification.warning(t('sercurity.dict.index.notice.warning2'));
+    Notification.warning(t('security.dict.index.notice.warning2'));
     return;
   }
   if (columnDrawerRef.value) {
+    // @ts-ignore
     columnDrawerRef.value?.openForm({action: 'add', params: pageData.value.params, closeBack: reset});
   }
 };
 const viewTable = (id: string) => {
   if (columnDrawerRef.value) {
+    // @ts-ignore
     columnDrawerRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
   }
 }
 const editTable = (id: string) => {
   if (columnDrawerRef.value) {
+    // @ts-ignore
     columnDrawerRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
   }
 }
@@ -346,7 +362,8 @@ watch(() => columns.value, (val) => {
 const loadList = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action || 'edit';
   pageData.value.isModal = urlParams.isModal || false;
-  pageData.value.params = urlParams.params || {pId: '', pName: ''};
+  pageData.value.params.pId = urlParams.params?.pId || '';
+  pageData.value.params.pName = urlParams.params?.pName || '';
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
   reset();
 }

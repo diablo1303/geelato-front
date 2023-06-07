@@ -2,19 +2,19 @@
   <a-drawer
       v-model:visible="visibleModel"
       width="32%"
-      :cancel-text="$t('sercurity.user.index.model.cancel.text')"
+      :cancel-text="$t('security.user.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.user.index.model.ok.text')"
-      :title="$t(`sercurity.user.index.model.title.${pageData.formState}`)"
+      :ok-text="$t('security.user.index.model.ok.text')"
+      :title="$t(`security.user.index.model.title.${pageData.formState}`)"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
     <UserModel ref="userModelRef"></UserModel>
     <a-divider v-if="pageData.formState!=='add'" orientation="left">
-      <strong>{{ $t('sercurity.user.index.form.partOrgName') }}</strong>
+      <strong>{{ $t('security.user.index.form.partOrgName') }}</strong>
       <a-tree-select v-model="pageData.orgId" :data="orgSelectOptions" :field-names="{key:'value',title:'label'}"
                      @change="addOrgUser">
         <template #trigger>
-          <a-tooltip position="top" :content="$t('sercurity.orgUser.index.model.title.add')">
+          <a-tooltip position="top" :content="$t('security.orgUser.index.model.title.add')">
             <icon-plus v-if="pageData.formState==='edit'" class="tree-extra-icon"/>
           </a-tooltip>
         </template>
@@ -30,8 +30,11 @@
           </template>
         </a-list-item-meta>
         <template #actions>
-          <a-button v-if="item.defaultOrg===1" type="outline" class="list-action-button-default">{{ $t('sercurity.orgUser.index.form.default') }}</a-button>
-          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteOrgUser(item.id)">
+          <a-button v-if="item.defaultOrg===1" type="outline" class="list-action-button-default">
+            {{ $t('security.orgUser.index.form.default') }}
+          </a-button>
+          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
+                        @ok="deleteOrgUser(item.id)">
             <icon-delete v-if="pageData.formState==='edit'&&item.defaultOrg!==1" class="icon-danger"/>
           </a-popconfirm>
         </template>
@@ -41,8 +44,9 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue";
+import {ref, shallowRef} from "vue";
 import UserModel from '@/views/security/user/model.vue'
+import {ListUrlParams, PageQueryRequest, SelectOption} from '@/api/service/base_service';
 import {
   deleteOrgUser as deleteList,
   insertOrgUser as createOrUpdateForm,
@@ -51,12 +55,11 @@ import {
   QueryOrgUserForm,
   queryOrgUsers,
   QueryUserForm
-} from "@/api/service/sercurity_service";
-import {ListUrlParams, PageQueryRequest, SelectOption} from '@/api/service/base_service';
+} from "@/api/service/security_service";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 
 const pageData = ref({formState: 'add', button: true, orgId: '', userId: ''});
-const userModelRef = ref(null);
+const userModelRef = shallowRef(UserModel);
 const orgUserOptions = ref<QueryOrgUserForm[]>([]);
 const validateForm = ref<FormInstance>();
 const orgSelectOptions = ref<SelectOption[]>([]);
@@ -70,10 +73,10 @@ const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[])
     // eslint-disable-next-line no-restricted-syntax
     for (const item of totalData) {
       if (item.pid === data.value) {
-        data.children.push({value: item.id, label: item.name, children: []});
+        data.children?.push({value: item.id, label: item.name, children: []});
       }
     }
-    if (data.children.length > 0) {
+    if (data.children && data.children.length > 0) {
       buildOrgOptions(data.children, totalData);
     } else {
       delete data.children;
@@ -124,7 +127,7 @@ const createOrUpdateData = async (params: QueryOrgUserForm) => {
 /* 表单 */
 const handleModelOk = (done: any) => {
   if (userModelRef.value) {
-    userModelRef.value?.submitModel(done, () => {
+    userModelRef.value.submitModel(done, () => {
       done();
       okSuccessBack();
     }, () => {
@@ -170,7 +173,7 @@ const openForm = (urlParams: ListUrlParams) => {
   // 加载页面
   if (userModelRef.value) {
     urlParams.formCol = 1;
-    userModelRef.value?.loadModel(urlParams);
+    userModelRef.value.loadModel(urlParams);
   }
   // 显示
   visibleModel.value = true;

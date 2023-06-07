@@ -472,7 +472,7 @@ export interface QueryTreeNodeForm {
 }
 
 export function queryTreeNodes() {
-  return axios.get<QueryResult[]>('/api/treeNode/query');
+  return axios.get<QueryTreeNodeForm[]>('/api/treeNode/query');
 }
 
 export function getRoleTreeNode(id: string) {

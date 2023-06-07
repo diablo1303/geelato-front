@@ -8,29 +8,29 @@
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item :label="$t('sercurity.role.index.form.name')" field="name">
+            <a-form-item :label="$t('security.role.index.form.name')" field="name">
               <a-input v-model="filterData.name"/>
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item :label="$t('sercurity.role.index.form.code')" field="code">
+            <a-form-item :label="$t('security.role.index.form.code')" field="code">
               <a-input v-model="filterData.code"/>
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item :label="$t('sercurity.role.index.form.createAt')" field="createAt">
+            <a-form-item :label="$t('security.role.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item :label="$t('sercurity.role.index.form.enableStatus')" field="enableStatus">
+            <a-form-item :label="$t('security.role.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item :label="$t('sercurity.role.index.form.type')" field="type">
+            <a-form-item :label="$t('security.role.index.form.type')" field="type">
               <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of typeOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
@@ -90,7 +90,7 @@
                   <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                 </div>
                 <div class="title">
-                  {{ item.title === '#' ? $t('sercurity.role.index.form.index') : $t(`${item.title}`) }}
+                  {{ item.title === '#' ? $t('security.role.index.form.index') : $t(`${item.title}`) }}
                 </div>
               </div>
             </div>
@@ -107,26 +107,26 @@
            column-resizable
            row-key="id" @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('sercurity.role.index.form.index')" align="center" data-index="index" width="80">
+      <a-table-column :title="$t('security.role.index.form.index')" align="center" data-index="index" width="80">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.role.index.form.name')" data-index="name" ellipsis="true" tooltip="true" width="150"></a-table-column>
-      <a-table-column :title="$t('sercurity.role.index.form.code')" data-index="code" ellipsis="true" tooltip="true" width="150"></a-table-column>
-      <a-table-column :title="$t('sercurity.role.index.form.type')" data-index="status" width="100">
+      <a-table-column :title="$t('security.role.index.form.name')" data-index="name" ellipsis="true" tooltip="true" width="150"></a-table-column>
+      <a-table-column :title="$t('security.role.index.form.code')" data-index="code" ellipsis="true" tooltip="true" width="150"></a-table-column>
+      <a-table-column :title="$t('security.role.index.form.type')" data-index="status" width="100">
         <template #cell="{ record }">
-          {{ $t(`sercurity.role.index.form.type.${record.type}`) }}
+          {{ $t(`security.role.index.form.type.${record.type}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.role.index.form.enableStatus')" data-index="enableStatus" width="100">
+      <a-table-column :title="$t('security.role.index.form.enableStatus')" data-index="enableStatus" width="100">
         <template #cell="{ record }">
-          {{ $t(`sercurity.role.index.form.enableStatus.${record.enableStatus}`) }}
+          {{ $t(`security.role.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.role.index.form.seqNo')" data-index="seqNo" width="80"></a-table-column>
-      <a-table-column :title="$t('sercurity.role.index.form.createAt')" data-index="createAt" width="150"></a-table-column>
-      <a-table-column :title="$t('sercurity.role.index.form.operations')" :width="pageData.formState==='edit'?200:100" align="center" data-index="operations"
+      <a-table-column :title="$t('security.role.index.form.seqNo')" data-index="seqNo" width="80"></a-table-column>
+      <a-table-column :title="$t('security.role.index.form.createAt')" data-index="createAt" width="150"></a-table-column>
+      <a-table-column :title="$t('security.role.index.form.operations')" :width="pageData.formState==='edit'?200:100" align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">
           <a-button v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">
@@ -162,7 +162,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, enableStatusOptions, typeOptions} from '@/views/security/role/searchTable'
-import {deleteRole as deleteList, FilterRoleForm as FilterForm, pageQueryRole as pageQueryList} from '@/api/service/sercurity_service';
+import {deleteRole as deleteList, FilterRoleForm as FilterForm, pageQueryRole as pageQueryList} from '@/api/service/security_service';
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import RoleForm from '@/views/security/role/form.vue';
@@ -236,16 +236,19 @@ const onPageChange = (current: number) => {
 /* 列表，按钮、操作列 */
 const addTable = () => {
   if (roleDrawerRef.value) {
+    // @ts-ignore
     roleDrawerRef.value?.openForm({action: 'add', closeBack: reset});
   }
 };
 const viewTable = (id: string) => {
   if (roleTabFormRef.value) {
+    // @ts-ignore
     roleTabFormRef.value?.openForm({action: 'view', 'id': id, pageSize: 5, isModal: true});
   }
 }
 const editTable = (id: string) => {
   if (roleTabFormRef.value) {
+    // @ts-ignore
     roleTabFormRef.value?.openForm({action: 'edit', 'id': id, pageSize: 5, isModal: true, closeBack: reset});
   }
 }

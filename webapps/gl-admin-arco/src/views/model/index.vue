@@ -7,7 +7,10 @@
           <a-spin>{{ $t('model.dataBase.index.menu.list') }}</a-spin>
         </a-col>
         <a-col :span="18">
-          <a-spin>{{ pageData.treeTitle !== '' ? pageData.treeTitle : $t('model.connect.index.menu.list.searchTable') }}</a-spin>
+          <a-spin>{{
+              pageData.treeTitle !== '' ? pageData.treeTitle : $t('model.connect.index.menu.list.searchTable')
+            }}
+          </a-spin>
         </a-col>
       </a-row>
       <a-row>
@@ -24,7 +27,9 @@
               <template #title="nodeData">
                 <template v-if="getMatchIndex(nodeData?.title) < 0">{{ nodeData?.title }}</template>
                 <span v-else>{{ nodeData?.title?.substr(0, getMatchIndex(nodeData?.title)) }}
-                  <span style="color: var(--color-primary-light-4);">{{ nodeData?.title?.substr(getMatchIndex(nodeData?.title), searchKey.length) }}</span>
+                  <span style="color: var(--color-primary-light-4);">{{
+                      nodeData?.title?.substr(getMatchIndex(nodeData?.title), searchKey.length)
+                    }}</span>
                   {{ nodeData?.title?.substr(getMatchIndex(nodeData?.title) + searchKey.length) }}
                 </span>
               </template>
@@ -46,7 +51,8 @@
           <a-card v-if="pageData.level===1" class="general-card">
             <TableList ref="tableListRef"></TableList>
           </a-card>
-          <a-tabs v-if="pageData.level===2" v-model:active-key="pageData.tabKey" :default-active-tab="1" :position="'top'" type="line">
+          <a-tabs v-if="pageData.level===2" v-model:active-key="pageData.tabKey" :default-active-tab="1"
+                  :position="'top'" type="line">
             <a-tab-pane key="1" class="a-tabs-three" :title="$t('model.column.index.menu.list.searchTable')">
               <a-card class="general-card">
                 <ColumnList ref="columnListRef"></ColumnList>
@@ -84,7 +90,7 @@ import {computed, h, ref} from "vue";
 import {useI18n} from 'vue-i18n';
 import {Notification} from "@arco-design/web-vue";
 import {IconFolder, IconLink} from '@arco-design/web-vue/es/icon';
-import {TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
+import {TreeNodeData, TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
 import {QueryConnectForm, queryConnects, QueryTableForm, queryTables} from "@/api/service/model_service";
 import {PageQueryRequest} from "@/api/service/base_service";
 // 引用其他页面
@@ -146,8 +152,8 @@ const getMatchIndex = (title: string) => {
   return title.toLowerCase().indexOf(searchKey.value.toLowerCase());
 }
 const originTreeData = computed(() => {
-  if (!searchKey.value) return treeData.value;
-  return searchData(searchKey.value);
+  if (!searchKey.value) return (treeData.value as TreeNodeData[]);
+  return (searchData(searchKey.value) as TreeNodeData[]);
 });
 
 /**
@@ -281,6 +287,7 @@ const refreshTreeTwo = (connectId: string, data: TreeNode[]) => {
  */
 const loadConnectList = () => {
   if (connectListRef.value) {
+    // @ts-ignore
     connectListRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal, modalAddBack: () => {
@@ -310,6 +317,7 @@ const loadConnectList = () => {
  */
 const loadTableList = (connectId: string, connectName: string) => {
   if (tableListRef.value) {
+    // @ts-ignore
     tableListRef.value?.loadList({
       action: pageData.value.formState, pageSize: 5,
       isModal: pageData.value.isModal,
@@ -345,6 +353,7 @@ const loadTableList = (connectId: string, connectName: string) => {
  */
 const loadColumnAndForeignList = (tableId: string, tableName: string) => {
   if (columnListRef.value) {
+    // @ts-ignore
     columnListRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
@@ -352,6 +361,7 @@ const loadColumnAndForeignList = (tableId: string, tableName: string) => {
     });
   }
   if (foreignListRef.value) {
+    // @ts-ignore
     foreignListRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['sercurity.dict.index.menu.list', 'sercurity.dict.index.menu.list.searchTable']"/>
-    <a-card :title="$t('sercurity.dict.index.menu.list.searchTable')" class="general-card">
+    <Breadcrumb :items="['security.dict.index.menu.list', 'security.dict.index.menu.list.searchTable']"/>
+    <a-card :title="$t('security.dict.index.menu.list.searchTable')" class="general-card">
       <!-- list   -->
       <DictList ref="dictListRef"></DictList>
     </a-card>
@@ -16,6 +16,7 @@ const dictListRef = ref(null);
 
 const loadIndex = () => {
   if (dictListRef.value) {
+    // @ts-ignore
     dictListRef.value?.loadList({action: 'edit'});
   }
 }

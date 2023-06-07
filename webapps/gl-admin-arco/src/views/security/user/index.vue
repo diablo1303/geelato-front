@@ -1,13 +1,13 @@
 <template v-model="pageData">
   <div class="container">
-    <Breadcrumb :items="['sercurity.user.index.menu.list', 'sercurity.user.index.menu.list.searchTable']"/>
+    <Breadcrumb :items="['security.user.index.menu.list', 'security.user.index.menu.list.searchTable']"/>
     <a-card class="general-card general-card1">
       <a-row>
         <a-col :span="6">
-          <a-spin>{{ $t('sercurity.org.index.menu.list.searchTable') }}</a-spin>
+          <a-spin>{{ $t('security.org.index.menu.list.searchTable') }}</a-spin>
         </a-col>
         <a-col :span="18">
-          <a-spin>{{ pageData.treeTitle ? pageData.treeTitle : $t('sercurity.user.index.menu.list.searchTable') }}</a-spin>
+          <a-spin>{{ pageData.treeTitle ? pageData.treeTitle : $t('security.user.index.menu.list.searchTable') }}</a-spin>
         </a-col>
       </a-row>
       <a-row>
@@ -51,8 +51,8 @@ import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {Notification} from "@arco-design/web-vue";
 import {TreeNodeData, TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
-import {QueryOrgForm, queryOrgs} from '@/api/service/sercurity_service';
 import UserList from '@/views/security/user/list.vue';
+import {QueryOrgForm, queryOrgs} from '@/api/service/security_service';
 
 // 国际化
 const {t} = useI18n();
@@ -127,7 +127,7 @@ const loadMore = (nodeData: TreeNodeData) => {
  * @param data TreeNodeProps[]
  */
 const refreshTreeOne = (data: TreeNodeProps[]) => {
-  treeData.value = [{title: t('sercurity.org.index.menu.list.searchTable'), key: '0', level: 0, children: data} as unknown as TreeNodeProps];
+  treeData.value = [{title: t('security.org.index.menu.list.searchTable'), key: '0', level: 0, children: data} as unknown as TreeNodeProps];
   const nodeData: TreeNodeData = treeData.value[0];
   pageData.value.level = treeData.value[0].level;
   pageData.value.treeKey = nodeData.key ? nodeData.key.toString() : '';
@@ -166,6 +166,7 @@ const loadUserList = (orgId: string, orgName: string) => {
   orgName = orgId === '0' ? '' : orgName;
   orgId = orgId === '0' ? '' : orgId;
   if (userListRef.value) {
+    // @ts-ignore
     userListRef.value?.loadList({
       action: pageData.value.formState, pageSize: 5,
       isModal: pageData.value.isModal,

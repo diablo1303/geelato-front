@@ -5,38 +5,38 @@
       <a-input v-show="false" v-model="formData.dictId"/>
     </a-form-item>
     <a-form-item
-        :label="$t('sercurity.dictItem.index.form.itemText')"
-        :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+        :label="$t('security.dictItem.index.form.itemText')"
+        :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="itemText">
       <a-input v-if="pageData.button" v-model="formData.itemText" :max-length="32"/>
       <span v-else>{{ formData.itemText }}</span>
     </a-form-item>
     <a-form-item
-        :label="$t('sercurity.dictItem.index.form.itemCode')"
-        :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+        :label="$t('security.dictItem.index.form.itemCode')"
+        :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="itemCode">
       <a-input v-if="pageData.button" v-model="formData.itemCode" :max-length="32"/>
       <span v-else>{{ formData.itemCode }}</span>
     </a-form-item>
     <a-form-item
-        :label="$t('sercurity.dictItem.index.form.enableStatus')"
-        :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+        :label="$t('security.dictItem.index.form.enableStatus')"
+        :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="enableStatus">
       <a-select v-if="pageData.button" v-model="formData.enableStatus">
         <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
       </a-select>
-      <span v-else>{{ $t(`sercurity.dictItem.index.form.enableStatus.${formData.enableStatus}`) }}</span>
+      <span v-else>{{ $t(`security.dictItem.index.form.enableStatus.${formData.enableStatus}`) }}</span>
     </a-form-item>
     <a-form-item
-        :label="$t('sercurity.dictItem.index.form.seqNo')"
-        :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+        :label="$t('security.dictItem.index.form.seqNo')"
+        :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="seqNo">
       <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
-                      :placeholder="$t('sercurity.form.rules.match.length.title')+'[0,999999]'"
+                      :placeholder="$t('security.form.rules.match.length.title')+'[0,999999]'"
                       :precision="0"/>
       <span v-else>{{ formData.seqNo }}</span>
     </a-form-item>
-    <a-form-item :label="$t('sercurity.dictItem.index.form.dataRemark')" field="dataRemark">
+    <a-form-item :label="$t('security.dictItem.index.form.dataRemark')" field="dataRemark">
       <a-textarea v-if="pageData.button" v-model="formData.dataRemark" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
       <span v-else :title="formData.dataRemark" class="textarea-span" @click="openModal(`${formData.dataRemark}`)">{{ formData.dataRemark }}</span>
     </a-form-item>
@@ -47,7 +47,7 @@ import {ref} from "vue";
 import {Modal} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/service/base_service';
-import {createOrUpdateDictItem as createOrUpdateForm, getDictItem as getForm, QueryDictItemForm as QueryForm} from '@/api/service/sercurity_service'
+import {createOrUpdateDictItem as createOrUpdateForm, getDictItem as getForm, QueryDictItemForm as QueryForm} from '@/api/service/security_service'
 import {enableStatusOptions} from "@/views/security/dict/item/searchTable";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1});

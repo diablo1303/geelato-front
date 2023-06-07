@@ -4,28 +4,28 @@ import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
 
 const columns = computed<TableColumnData[]>(() => [
   {
-    title: 'sercurity.orgUser.index.form.index',
+    title: 'security.orgUser.index.form.index',
     dataIndex: 'index',
     slotName: 'index'
   },
   {
-    title: 'sercurity.orgUser.index.form.orgName',
+    title: 'security.orgUser.index.form.orgName',
     dataIndex: 'orgName'
   },
   {
-    title: 'sercurity.orgUser.index.form.userName',
+    title: 'security.orgUser.index.form.userName',
     dataIndex: 'userName'
   },
   {
-    title: 'sercurity.orgUser.index.form.defaultOrg',
+    title: 'security.orgUser.index.form.defaultOrg',
     dataIndex: 'defaultOrg'
   },
   {
-    title: 'sercurity.orgUser.index.form.createAt',
+    title: 'security.orgUser.index.form.createAt',
     dataIndex: 'createAt'
   },
   {
-    title: 'sercurity.orgUser.index.form.operations',
+    title: 'security.orgUser.index.form.operations',
     dataIndex: 'operations',
     slotName: 'operations'
   }
@@ -33,11 +33,11 @@ const columns = computed<TableColumnData[]>(() => [
 
 const defaultOrgOptions = computed<SelectOptionData[]>(() => [
   {
-    label: 'sercurity.orgUser.index.form.defaultOrg.1',
+    label: 'security.orgUser.index.form.defaultOrg.1',
     value: 1,
   },
   {
-    label: "sercurity.orgUser.index.form.defaultOrg.0",
+    label: "security.orgUser.index.form.defaultOrg.0",
     value: 0,
   },
 ]);

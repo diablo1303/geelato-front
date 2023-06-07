@@ -17,6 +17,7 @@ const connectListRef = ref(null);
 
 const loadIndex = () => {
   if (connectListRef.value) {
+    // @ts-ignore
     connectListRef.value?.loadList({action: 'edit'});
   }
 }

@@ -3,20 +3,21 @@
     <a-card class="general-card general-card1">
       <a-modal
           v-model:visible="visibleModel"
-          :cancel-text="$t('sercurity.user.index.model.cancel.text')"
+          :cancel-text="$t('security.user.index.model.cancel.text')"
           :footer="pageData.button"
-          :ok-text="$t('sercurity.user.index.model.ok.text')"
-          :title="$t(`sercurity.user.index.model.title.${pageData.formState}`)"
+          :ok-text="$t('security.user.index.model.ok.text')"
+          :title="$t(`security.user.index.model.title.${pageData.formState}`)"
           width="80%"
           @cancel="handleModelCancel"
           @before-ok="handleModelOk">
         <a-row>
           <a-col :span="24">
-            <a-tabs v-model:active-key="pageData.tabKey" :default-active-tab="1" :position="'left'" type="rounded" @tab-click="tabsChange">
-              <a-tab-pane key="1" :title="$t('sercurity.user.forml.tab.title.one')">
+            <a-tabs v-model:active-key="pageData.tabKey" :default-active-tab="1" :position="'left'" type="rounded"
+                    @tab-click="tabsChange">
+              <a-tab-pane key="1" :title="$t('security.user.forml.tab.title.one')">
                 <UserModel ref="userModelRef"></UserModel>
               </a-tab-pane>
-              <a-tab-pane key="2" :title="$t('sercurity.user.forml.tab.title.two')">
+              <a-tab-pane key="2" :title="$t('security.user.forml.tab.title.two')">
                 <a-card class="general-card">
                   <OrgUserList ref="orgUserListRef"></OrgUserList>
                 </a-card>
@@ -30,14 +31,14 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue";
-import {QueryUserForm} from "@/api/service/sercurity_service";
+import {ref, shallowRef} from "vue";
+import {QueryUserForm} from "@/api/service/security_service";
 import {ListUrlParams} from '@/api/service/base_service';
 import UserModel from '@/views/security/user/model.vue'
 import OrgUserList from '@/views/security/user/org/list.vue'
 
 const pageData = ref({formState: 'add', button: true, tabKey: '1'});
-const userModelRef = ref(null);
+const userModelRef = shallowRef(UserModel);
 const orgUserListRef = ref(null);
 // 显示隐藏
 const visibleModel = ref(false);
@@ -51,7 +52,7 @@ const tabsChange = (key: string) => {
 const handleModelOk = (done: any) => {
   pageData.value.tabKey = '1';
   if (userModelRef.value) {
-    userModelRef.value?.submitModel(done, () => {
+    userModelRef.value.submitModel(done, () => {
       done();
       okSuccessBack();
     }, () => {
@@ -74,6 +75,7 @@ const openForm = (urlParams: ListUrlParams) => {
   urlParams.loadSuccessBack = (data: QueryUserForm) => {
     if (orgUserListRef.value) {
       urlParams.params = {userId: data.id, userName: data.name};
+      // @ts-ignore
       orgUserListRef.value?.loadList(urlParams);
     }
   }

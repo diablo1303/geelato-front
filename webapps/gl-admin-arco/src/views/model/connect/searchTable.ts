@@ -1,7 +1,7 @@
 import {computed, ref} from 'vue';
 import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
-import {querySelectOptions} from "@/api/service/sercurity_service";
+import {querySelectOptions} from "@/api/service/security_service";
 
 const columns = computed<TableColumnData[]>(() => [
   {

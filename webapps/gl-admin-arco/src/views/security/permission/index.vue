@@ -1,23 +1,23 @@
 <template v-model="pageData">
   <div class="container">
-    <Breadcrumb :items="['sercurity.permission.index.menu.list', 'sercurity.permission.index.menu.list.searchTable']"/>
-    <a-card :title="$t('sercurity.permission.index.menu.list.searchTable')" class="general-card">
+    <Breadcrumb :items="['security.permission.index.menu.list', 'security.permission.index.menu.list.searchTable']"/>
+    <a-card :title="$t('security.permission.index.menu.list.searchTable')" class="general-card">
       <a-row>
         <a-col :flex="1">
           <a-form :label-col-props="{ span: 6 }" :model="filterData" :wrapper-col-props="{ span: 18 }" label-align="left">
             <a-row :gutter="16">
               <a-col :span="8">
-                <a-form-item :label="$t('sercurity.permission.index.form.name')" field="name">
+                <a-form-item :label="$t('security.permission.index.form.name')" field="name">
                   <a-input v-model="filterData.name"/>
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item :label="$t('sercurity.permission.index.form.text')" field="text">
+                <a-form-item :label="$t('security.permission.index.form.text')" field="text">
                   <a-input v-model="filterData.text"/>
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item :label="$t('sercurity.permission.index.form.createAt')" field="createAt">
+                <a-form-item :label="$t('security.permission.index.form.createAt')" field="createAt">
                   <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
                 </a-form-item>
               </a-col>
@@ -75,7 +75,7 @@
                       <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                     </div>
                     <div class="title">
-                      {{ item.title === '#' ? $t('sercurity.permission.index.form.index') : $t(`${item.title}`) }}
+                      {{ item.title === '#' ? $t('security.permission.index.form.index') : $t(`${item.title}`) }}
                     </div>
                   </div>
                 </div>
@@ -93,14 +93,14 @@
                row-key="id"
                @page-change="onPageChange">
         <template #columns>
-          <a-table-column :title="$t('sercurity.permission.index.form.index')" align="center" data-index="index" width="80">
+          <a-table-column :title="$t('security.permission.index.form.index')" align="center" data-index="index" width="80">
             <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
           </a-table-column>
-          <a-table-column :title="$t('sercurity.permission.index.form.name')" data-index="name" ellipsis="true" tooltip="true" width="150"/>
-          <a-table-column :title="$t('sercurity.permission.index.form.text')" data-index="text" ellipsis="true" tooltip="true" width="150"/>
-          <a-table-column :title="$t('sercurity.permission.index.form.description')" data-index="description" ellipsis="true" tooltip="true" width="200"/>
-          <a-table-column :title="$t('sercurity.permission.index.form.createAt')" data-index="createAt" width="180"/>
-          <a-table-column :title="$t('sercurity.permission.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center"
+          <a-table-column :title="$t('security.permission.index.form.name')" data-index="name" ellipsis="true" tooltip="true" width="150"/>
+          <a-table-column :title="$t('security.permission.index.form.text')" data-index="text" ellipsis="true" tooltip="true" width="150"/>
+          <a-table-column :title="$t('security.permission.index.form.description')" data-index="description" ellipsis="true" tooltip="true" width="200"/>
+          <a-table-column :title="$t('security.permission.index.form.createAt')" data-index="createAt" width="180"/>
+          <a-table-column :title="$t('security.permission.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center"
                           data-index="operations"
                           fixed="right">
             <template #cell="{ record }">
@@ -135,7 +135,7 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
-import {deletePermission as deleteList, pageQueryPermission as pageQueryList} from '@/api/service/sercurity_service';
+import {deletePermission as deleteList, pageQueryPermission as pageQueryList} from '@/api/service/security_service';
 import {PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 import {columns} from '@/views/security/permission/searchTable';
 // 引用其他页面
@@ -208,16 +208,19 @@ const onPageChange = (current: number) => {
 /* 列表，按钮、操作列 */
 const addTable = () => {
   if (permissionFormRef.value) {
+    // @ts-ignore
     permissionFormRef.value?.openForm({action: 'add', closeBack: reset});
   }
 };
 const viewTable = (id: string) => {
   if (permissionFormRef.value) {
+    // @ts-ignore
     permissionFormRef.value?.openForm({action: 'view', 'id': id});
   }
 }
 const editTable = (id: string) => {
   if (permissionFormRef.value) {
+    // @ts-ignore
     permissionFormRef.value?.openForm({action: 'edit', 'id': id, closeBack: reset});
   }
 }

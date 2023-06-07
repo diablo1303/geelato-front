@@ -1,10 +1,10 @@
 <template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      :cancel-text="$t('sercurity.roleUser.index.model.cancel.text')"
+      :cancel-text="$t('security.roleUser.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.roleUser.index.model.ok.text')"
-      :title="$t(`sercurity.roleUser.index.model.title.${pageData.formState}`)"
+      :ok-text="$t('security.roleUser.index.model.ok.text')"
+      :title="$t(`security.roleUser.index.model.title.${pageData.formState}`)"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
     <a-form ref="validateForm" :model="formData">
@@ -15,8 +15,8 @@
         <a-input v-show="false" v-model="formData.userName"/>
       </a-form-item>
       <a-form-item
-          :label="$t('sercurity.roleUser.index.form.userName')"
-          :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+          :label="$t('security.roleUser.index.form.userName')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="userId">
         <a-select v-if="pageData.button" v-model="formData.userId" :field-names="{value: 'id', label: 'name'}" :options="selectOptions"
                   allow-clear allow-search/>
@@ -34,7 +34,7 @@ import {
   QueryRoleUserForm as QueryForm,
   QueryUserForm as QuerySelectForm,
   queryUsers as querySelectOptions
-} from '@/api/service/sercurity_service';
+} from '@/api/service/security_service';
 import {ListUrlParams} from '@/api/service/base_service';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 

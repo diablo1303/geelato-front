@@ -27,6 +27,7 @@ let okSuccessBack: any;
 /* 表单 */
 const handleModelOk = (done: any) => {
   if (foreignModelRef.value) {
+    // @ts-ignore
     foreignModelRef.value?.submitModel(done, () => {
       done();
       okSuccessBack();
@@ -53,6 +54,7 @@ const openForm = (urlParams: ListUrlParams) => {
   // 加载页面
   if (foreignModelRef.value) {
     urlParams.formCol = 1;
+    // @ts-ignore
     foreignModelRef.value?.loadModel(urlParams);
   }
   // 显示

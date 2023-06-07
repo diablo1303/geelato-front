@@ -17,6 +17,7 @@ const columnListRef = ref(null);
 
 const loadIndex = () => {
   if (columnListRef.value) {
+    // @ts-ignore
     columnListRef.value?.loadList({action: 'edit'});
   }
 }

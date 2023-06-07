@@ -279,10 +279,11 @@ const onPageChange = (current: number) => {
 /* 列表，按钮、操作列 */
 const addTable = () => {
   if (pageData.value.isModal && !pageData.value.params.pId) {
-    Notification.warning(t('sercurity.dict.index.notice.warning2'));
+    Notification.warning(t('security.dict.index.notice.warning2'));
     return;
   }
   if (tableDrawerRef.value) {
+    // @ts-ignore
     tableDrawerRef.value?.openForm({
       action: 'add', params: pageData.value.params, closeBack: (data: QueryForm) => {
         reset();
@@ -293,11 +294,13 @@ const addTable = () => {
 };
 const viewTable = (id: string) => {
   if (tableDrawerRef.value) {
+    // @ts-ignore
     tableDrawerRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
   }
 }
 const editTable = (id: string) => {
   if (tableDrawerRef.value) {
+    // @ts-ignore
     tableDrawerRef.value?.openForm({
       action: 'edit', 'id': id, params: pageData.value.params, closeBack: (data: QueryForm) => {
         reset();
@@ -368,7 +371,8 @@ const loadList = (urlParams: ListUrlParams) => {
   // 参数设置
   pageData.value.formState = urlParams.action || 'edit';
   pageData.value.isModal = urlParams.isModal || false;
-  pageData.value.params = urlParams.params || {pId: '', pName: ''};
+  pageData.value.params.pId = urlParams.params?.pId || '';
+  pageData.value.params.pName = urlParams.params?.pName || '';
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
   // 方法反馈 新增、编辑、删除
   pageData.value.modalAddBack = urlParams.modalAddBack ? urlParams.modalAddBack : pageData.value.modalAddBack;

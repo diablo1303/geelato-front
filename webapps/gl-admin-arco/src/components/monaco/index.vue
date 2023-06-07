@@ -9,8 +9,10 @@
 <script lang="ts">
 import {defineComponent, onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import * as monaco from 'monaco-editor'
+// @ts-ignore
 // eslint-disable-next-line import/extensions
 import {language as sqlLanguage} from 'monaco-editor/esm/vs/basic-languages/sql/sql.js';
+// @ts-ignore
 // eslint-disable-next-line import/extensions
 import {language as yamlLanguage} from 'monaco-editor/esm/vs/basic-languages/yaml/yaml.js';
 import 'monaco-editor/esm/vs/basic-languages/sql/sql.contribution'

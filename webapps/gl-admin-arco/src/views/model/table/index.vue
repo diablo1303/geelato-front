@@ -17,6 +17,7 @@ const tableListRef = ref(null);
 
 const loadIndex = () => {
   if (tableListRef.value) {
+    // @ts-ignore
     tableListRef.value?.loadList({action: 'edit'});
   }
 }

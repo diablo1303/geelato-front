@@ -231,6 +231,7 @@ const onPageChange = (current: number) => {
 /* 列表，按钮、操作列 */
 const addTable = () => {
   if (connectDrawerRef.value) {
+    // @ts-ignore
     connectDrawerRef.value?.openForm({
       action: 'add', closeBack: (data: QueryForm) => {
         reset();
@@ -241,11 +242,13 @@ const addTable = () => {
 };
 const viewTable = (id: string) => {
   if (connectDrawerRef.value) {
+    // @ts-ignore
     connectDrawerRef.value?.openForm({action: 'view', 'id': id});
   }
 }
 const editTable = (id: string) => {
   if (connectDrawerRef.value) {
+    // @ts-ignore
     connectDrawerRef.value?.openForm({
       action: 'edit', 'id': id, closeBack: (data: QueryForm) => {
         reset();

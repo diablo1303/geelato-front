@@ -1,10 +1,10 @@
 <template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      :cancel-text="$t('sercurity.dict.index.model.cancel.text')"
+      :cancel-text="$t('security.dict.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.dict.index.model.ok.text')"
-      :title="$t(`sercurity.dict.index.model.title.${pageData.formState}`)"
+      :ok-text="$t('security.dict.index.model.ok.text')"
+      :title="$t(`security.dict.index.model.title.${pageData.formState}`)"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
     <DictModel ref="dictModelRef"></DictModel>
@@ -13,7 +13,7 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import DictModel from "@/views/security/dict/model.vue";
-import {QueryDictForm} from '@/api/service/sercurity_service';
+import {QueryDictForm} from '@/api/service/security_service';
 import {ListUrlParams} from '@/api/service/base_service';
 
 const pageData = ref({formState: 'add', button: true});
@@ -25,6 +25,7 @@ let okSuccessBack: any;
 /* 表单 */
 const handleModelOk = (done: any) => {
   if (dictModelRef.value) {
+    // @ts-ignore
     dictModelRef.value?.submitModel(done, () => {
       done();
       okSuccessBack();
@@ -50,6 +51,7 @@ const openForm = (urlParams: ListUrlParams) => {
   }
   // 加载页面
   if (dictModelRef.value) {
+    // @ts-ignore
     dictModelRef.value?.loadModel(urlParams);
   }
   // 显示

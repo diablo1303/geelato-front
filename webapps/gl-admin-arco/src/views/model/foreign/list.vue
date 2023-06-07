@@ -239,20 +239,23 @@ const onPageChange = (current: number) => {
 /* 列表，按钮、操作列 */
 const addTable = () => {
   if (pageData.value.isModal && !pageData.value.params.pId) {
-    Notification.warning(t('sercurity.dict.index.notice.warning2'));
+    Notification.warning(t('security.dict.index.notice.warning2'));
     return;
   }
   if (foreignDrawerRef.value) {
+    // @ts-ignore
     foreignDrawerRef.value?.openForm({action: 'add', params: pageData.value.params, closeBack: reset});
   }
 };
 const viewTable = (id: string) => {
   if (foreignDrawerRef.value) {
+    // @ts-ignore
     foreignDrawerRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
   }
 }
 const editTable = (id: string) => {
   if (foreignDrawerRef.value) {
+    // @ts-ignore
     foreignDrawerRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
   }
 }
@@ -316,7 +319,8 @@ watch(() => columns.value, (val) => {
 const loadList = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action || 'edit';
   pageData.value.isModal = urlParams.isModal || false;
-  pageData.value.params = urlParams.params || {pId: '', pName: ''};
+  pageData.value.params.pId = urlParams.params?.pId || '';
+  pageData.value.params.pName = urlParams.params?.pName || '';
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
   reset();
 }

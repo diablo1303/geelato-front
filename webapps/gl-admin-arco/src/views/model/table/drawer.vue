@@ -28,6 +28,7 @@ const visibleModel = ref(false);
 /* 表单 */
 const handleModelOk = (done: any) => {
   if (tableModelRef.value) {
+    // @ts-ignore
     tableModelRef.value?.submitModel(done, (data: QueryModel) => {
       done();
       pageData.value.okBack(data);
@@ -54,6 +55,7 @@ const openForm = (urlParams: ListUrlParams) => {
   // 加载页面
   if (tableModelRef.value) {
     urlParams.formCol = 1;
+    // @ts-ignore
     tableModelRef.value?.loadModel(urlParams);
   }
   // 显示

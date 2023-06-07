@@ -3,28 +3,28 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 
 const columns = computed<TableColumnData[]>(() => [
   {
-    title: 'sercurity.roleTreeNode.index.form.index',
+    title: 'security.roleTreeNode.index.form.index',
     dataIndex: 'index',
     slotName: 'index'
   },
   {
-    title: 'sercurity.roleTreeNode.index.form.title',
+    title: 'security.roleTreeNode.index.form.title',
     dataIndex: 'title'
   },
   {
-    title: 'sercurity.roleTreeNode.index.form.treeNodeText',
+    title: 'security.roleTreeNode.index.form.treeNodeText',
     dataIndex: 'treeNodeText'
   },
   {
-    title: 'sercurity.roleTreeNode.index.form.roleName',
+    title: 'security.roleTreeNode.index.form.roleName',
     dataIndex: 'roleName'
   },
   {
-    title: 'sercurity.roleTreeNode.index.form.createAt',
+    title: 'security.roleTreeNode.index.form.createAt',
     dataIndex: 'createAt'
   },
   {
-    title: 'sercurity.roleTreeNode.index.form.operations',
+    title: 'security.roleTreeNode.index.form.operations',
     dataIndex: 'operations',
     slotName: 'operations'
   }

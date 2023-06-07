@@ -1,10 +1,10 @@
 <template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      :cancel-text="$t('sercurity.permission.index.model.cancel.text')"
+      :cancel-text="$t('security.permission.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.permission.index.model.ok.text')"
-      :title="$t(`sercurity.permission.index.model.title.${pageData.formState}`)"
+      :ok-text="$t('security.permission.index.model.ok.text')"
+      :title="$t(`security.permission.index.model.title.${pageData.formState}`)"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
     <a-form ref="validateForm" :model="formData">
@@ -12,20 +12,20 @@
         <a-input v-show="false" v-model="formData.id"/>
       </a-form-item>
       <a-form-item
-          :label="$t('sercurity.permission.index.form.name')"
-          :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+          :label="$t('security.permission.index.form.name')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="name">
         <a-input v-if="pageData.button" v-model="formData.name" :max-length="32"/>
         <span v-else>{{ formData.name }}</span>
       </a-form-item>
       <a-form-item
-          :label="$t('sercurity.permission.index.form.text')"
-          :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+          :label="$t('security.permission.index.form.text')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="text">
         <a-input v-if="pageData.button" v-model="formData.text" :max-length="32"/>
         <span v-else>{{ formData.text }}</span>
       </a-form-item>
-      <a-form-item :label="$t('sercurity.permission.index.form.description')" field="description">
+      <a-form-item :label="$t('security.permission.index.form.description')" field="description">
         <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
         <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
       </a-form-item>
@@ -36,7 +36,7 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import {Modal} from "@arco-design/web-vue";
-import {createOrUpdatePermission as createOrUpdateForm, getPermission as getForm, QueryPermissionForm as QueryForm} from '@/api/service/sercurity_service';
+import {createOrUpdatePermission as createOrUpdateForm, getPermission as getForm, QueryPermissionForm as QueryForm} from '@/api/service/security_service';
 import {ListUrlParams} from '@/api/service/base_service';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 

@@ -27,6 +27,7 @@ let okSuccessBack: any;
 /* 表单 */
 const handleModelOk = (done: any) => {
   if (tableModelRef.value) {
+    // @ts-ignore
     tableModelRef.value?.submitModel(done, () => {
       done();
       okSuccessBack();
@@ -53,6 +54,7 @@ const openForm = (urlParams: ListUrlParams) => {
   // 加载页面
   if (tableModelRef.value) {
     urlParams.formCol = 2;
+    // @ts-ignore
     tableModelRef.value?.loadModel(urlParams);
   }
   // 显示

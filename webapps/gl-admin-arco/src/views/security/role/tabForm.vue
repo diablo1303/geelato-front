@@ -3,10 +3,10 @@
     <a-card class="general-card general-card1">
       <a-modal
           v-model:visible="visibleModel"
-          :cancel-text="$t('sercurity.role.index.model.cancel.text')"
+          :cancel-text="$t('security.role.index.model.cancel.text')"
           :footer="pageData.button"
-          :ok-text="$t('sercurity.role.index.model.ok.text')"
-          :title="$t(`sercurity.role.index.model.title.${pageData.formState}`)"
+          :ok-text="$t('security.role.index.model.ok.text')"
+          :title="$t(`security.role.index.model.title.${pageData.formState}`)"
           width="80%"
           height="80%"
           @cancel="handleModelCancel"
@@ -14,25 +14,25 @@
         <a-row>
           <a-col :span="24">
             <a-tabs v-model:active-key="pageData.tabKey" :default-active-tab="1" :position="'top'" type="line" @tab-click="tabsChange">
-              <a-tab-pane key="1" :title="$t('sercurity.role.form.tab.title.one')">
+              <a-tab-pane key="1" :title="$t('security.role.form.tab.title.one')">
                 <RoleModel ref="roleModelRef"></RoleModel>
               </a-tab-pane>
-              <a-tab-pane key="2" :title="$t('sercurity.role.form.tab.title.two')">
+              <a-tab-pane key="2" :title="$t('security.role.form.tab.title.two')">
                 <a-card class="general-card">
                   <RoleAppList ref="roleAppListRef"></RoleAppList>
                 </a-card>
               </a-tab-pane>
-              <a-tab-pane key="3" :title="$t('sercurity.role.form.tab.title.three')">
+              <a-tab-pane key="3" :title="$t('security.role.form.tab.title.three')">
                 <a-card class="general-card">
                   <RolePermissionList ref="rolePermissionListRef"></RolePermissionList>
                 </a-card>
               </a-tab-pane>
-              <a-tab-pane key="4" :title="$t('sercurity.role.form.tab.title.four')">
+              <a-tab-pane key="4" :title="$t('security.role.form.tab.title.four')">
                 <a-card class="general-card">
                   <RoleTreeNodeList ref="roleTreeNodeListRef"></RoleTreeNodeList>
                 </a-card>
               </a-tab-pane>
-              <a-tab-pane key="5" :title="$t('sercurity.role.form.tab.title.five')">
+              <a-tab-pane key="5" :title="$t('security.role.form.tab.title.five')">
                 <a-card class="general-card">
                   <RoleUserList ref="roleUserListRef"></RoleUserList>
                 </a-card>
@@ -47,7 +47,7 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {QueryRoleForm} from "@/api/service/sercurity_service";
+import {QueryRoleForm} from "@/api/service/security_service";
 import {ListUrlParams} from '@/api/service/base_service';
 import RoleModel from '@/views/security/role/model.vue'
 import RoleAppList from '@/views/security/role/app/list.vue'
@@ -73,6 +73,7 @@ const tabsChange = (key: string) => {
 const handleModelOk = (done: any) => {
   pageData.value.tabKey = '1';
   if (roleModelRef.value) {
+    // @ts-ignore
     roleModelRef.value?.submitModel(done, () => {
       done();
       okSuccessBack();
@@ -96,20 +97,25 @@ const openForm = (urlParams: ListUrlParams) => {
   urlParams.loadSuccessBack = (data: QueryRoleForm) => {
     urlParams.params = {roleId: data.id, roleName: data.name};
     if (roleAppListRef.value) {
+      // @ts-ignore
       roleAppListRef.value?.loadList(urlParams);
     }
     if (rolePermissionListRef.value) {
+      // @ts-ignore
       rolePermissionListRef.value?.loadList(urlParams);
     }
     if (roleTreeNodeListRef.value) {
+      // @ts-ignore
       roleTreeNodeListRef.value?.loadList(urlParams);
     }
     if (roleUserListRef.value) {
+      // @ts-ignore
       roleUserListRef.value?.loadList(urlParams);
     }
   }
   // 加载页面
   if (roleModelRef.value) {
+    // @ts-ignore
     roleModelRef.value?.loadModel(urlParams);
   }
   // 显示

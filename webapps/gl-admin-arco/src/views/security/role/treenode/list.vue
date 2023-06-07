@@ -10,22 +10,22 @@
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.roleTreeNode.index.form.roleName')" field="roleName">
+            <a-form-item :label="$t('security.roleTreeNode.index.form.roleName')" field="roleName">
               <a-input v-model="filterData.roleName" :readonly="pageData.params.roleName!=''"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.roleTreeNode.index.form.treeNodeText')" field="treeNodeText">
+            <a-form-item :label="$t('security.roleTreeNode.index.form.treeNodeText')" field="treeNodeText">
               <a-input v-model="filterData.treeNodeText"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.roleTreeNode.index.form.title')" field="title">
+            <a-form-item :label="$t('security.roleTreeNode.index.form.title')" field="title">
               <a-input v-model="filterData.title"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.roleTreeNode.index.form.createAt')" field="createAt">
+            <a-form-item :label="$t('security.roleTreeNode.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
@@ -89,7 +89,7 @@
                   <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                 </div>
                 <div class="title">
-                  {{ item.title === '#' ? $t('sercurity.roleTreeNode.index.form.index') : $t(`${item.title}`) }}
+                  {{ item.title === '#' ? $t('security.roleTreeNode.index.form.index') : $t(`${item.title}`) }}
                 </div>
               </div>
             </div>
@@ -107,15 +107,15 @@
            row-key="id"
            @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('sercurity.roleTreeNode.index.form.index')" align="center" data-index="index" width="80">
+      <a-table-column :title="$t('security.roleTreeNode.index.form.index')" align="center" data-index="index" width="80">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.roleTreeNode.index.form.title')" data-index="title" ellipsis="true" tooltip="true" width="150"/>
-      <a-table-column :title="$t('sercurity.roleTreeNode.index.form.treeNodeText')" data-index="treeNodeText" ellipsis="true" tooltip="true" width="150"/>
-      <a-table-column v-if="pageData.params.roleName===''" :title="$t('sercurity.roleTreeNode.index.form.roleName')" data-index="roleName" ellipsis="true"
+      <a-table-column :title="$t('security.roleTreeNode.index.form.title')" data-index="title" ellipsis="true" tooltip="true" width="150"/>
+      <a-table-column :title="$t('security.roleTreeNode.index.form.treeNodeText')" data-index="treeNodeText" ellipsis="true" tooltip="true" width="150"/>
+      <a-table-column v-if="pageData.params.roleName===''" :title="$t('security.roleTreeNode.index.form.roleName')" data-index="roleName" ellipsis="true"
                       tooltip="true" width="150"/>
-      <a-table-column :title="$t('sercurity.roleTreeNode.index.form.createAt')" data-index="createAt" width="180"/>
-      <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('sercurity.roleTreeNode.index.form.operations')"
+      <a-table-column :title="$t('security.roleTreeNode.index.form.createAt')" data-index="createAt" width="180"/>
+      <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('security.roleTreeNode.index.form.operations')"
                       :width="(pageData.formState==='edit'&&!pageData.isModal)?230:100" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button v-show="!pageData.isModal" v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">
@@ -148,7 +148,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns} from '@/views/security/role/treenode/searchTable'
-import {deleteRoleTreeNode as deleteList, FilterRoleTreeNodeForm as FilterForm, pageQueryRoleTreeNode as pageQueryList} from '@/api/service/sercurity_service';
+import {deleteRoleTreeNode as deleteList, FilterRoleTreeNodeForm as FilterForm, pageQueryRoleTreeNode as pageQueryList} from '@/api/service/security_service';
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import RoleTreeNodeForm from '@/views/security/role/treenode/form.vue';
@@ -221,16 +221,19 @@ const onPageChange = (current: number) => {
 /* 列表，按钮、操作列 */
 const addTable = () => {
   if (roleTreeNodeFormRef.value) {
+    // @ts-ignore
     roleTreeNodeFormRef.value?.openForm({action: 'add', params: pageData.value.params, closeBack: reset});
   }
 };
 const viewTable = (id: string) => {
   if (roleTreeNodeFormRef.value) {
+    // @ts-ignore
     roleTreeNodeFormRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
   }
 }
 const editTable = (id: string) => {
   if (roleTreeNodeFormRef.value) {
+    // @ts-ignore
     roleTreeNodeFormRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
   }
 }
@@ -293,7 +296,8 @@ watch(() => columns.value, (val) => {
 const loadList = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action || 'edit';
   pageData.value.isModal = urlParams.isModal || false;
-  pageData.value.params = urlParams.params || {roleId: '', roleName: ''};
+  pageData.value.params.roleId = urlParams.params?.roleId || '';
+  pageData.value.params.roleName = urlParams.params?.roleName || '';
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
 
   reset();

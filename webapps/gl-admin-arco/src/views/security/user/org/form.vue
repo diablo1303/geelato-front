@@ -1,10 +1,10 @@
 <template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      :cancel-text="$t('sercurity.orgUser.index.model.cancel.text')"
+      :cancel-text="$t('security.orgUser.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.orgUser.index.model.ok.text')"
-      :title="$t(`sercurity.orgUser.index.model.title.${pageData.formState}`)"
+      :ok-text="$t('security.orgUser.index.model.ok.text')"
+      :title="$t(`security.orgUser.index.model.title.${pageData.formState}`)"
       width="600px"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
@@ -16,20 +16,22 @@
         <a-input v-show="false" v-model="formData.orgName"/>
       </a-form-item>
       <a-form-item
-          :label="$t('sercurity.orgUser.index.form.orgName')"
-          :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+          :label="$t('security.orgUser.index.form.orgName')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="orgId">
-        <a-cascader v-if="pageData.button" v-model="formData.orgId" :options="orgSelectOptions" allow-clear allow-search check-strictly/>
+        <a-cascader v-if="pageData.button" v-model="formData.orgId" :options="orgSelectOptions" allow-clear allow-search
+                    check-strictly/>
         <span v-else>{{ formData.orgName }}</span>
       </a-form-item>
       <a-form-item
-          :label="$t('sercurity.orgUser.index.form.defaultOrg')"
-          :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+          :label="$t('security.orgUser.index.form.defaultOrg')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="defaultOrg">
         <a-select v-if="pageData.button" v-model="formData.defaultOrg">
-          <a-option v-for="item of defaultOrgOptions" :key="item.value" :disabled="true" :label="$t(`${item.label}`)" :value="item.value"/>
+          <a-option v-for="item of defaultOrgOptions" :key="item.value" :disabled="true" :label="$t(`${item.label}`)"
+                    :value="item.value"/>
         </a-select>
-        <span v-else>{{ $t(`sercurity.orgUser.index.form.defaultOrg.${formData.defaultOrg}`) }}</span>
+        <span v-else>{{ $t(`security.orgUser.index.form.defaultOrg.${formData.defaultOrg}`) }}</span>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -37,7 +39,13 @@
 
 <script lang="ts" setup>
 import {ref} from 'vue';
-import {getOrgUser as getForm, insertOrgUser as createOrUpdateForm, QueryOrgForm, queryOrgs, QueryOrgUserForm as QueryForm} from '@/api/service/sercurity_service';
+import {
+  getOrgUser as getForm,
+  insertOrgUser as createOrUpdateForm,
+  QueryOrgForm,
+  queryOrgs,
+  QueryOrgUserForm as QueryForm
+} from '@/api/service/security_service';
 import {ListUrlParams, SelectOption} from '@/api/service/base_service';
 import {defaultOrgOptions} from "@/views/security/user/org/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";
@@ -61,10 +69,10 @@ const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[])
     // eslint-disable-next-line no-restricted-syntax
     for (const item of totalData) {
       if (item.pid === data.value) {
-        data.children.push({value: item.id, label: item.name, children: []});
+        data.children?.push({value: item.id, label: item.name, children: []});
       }
     }
-    if (data.children.length > 0) {
+    if (data.children && data.children.length > 0) {
       buildOrgOptions(data.children, totalData);
     } else {
       delete data.children;
@@ -73,11 +81,11 @@ const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[])
 
   return defaultData;
 }
-const getOrgOptions = async (params: QueryOrgForm = {status: 1}) => {
+const getOrgOptions = async (params: QueryOrgForm = {status: 1} as unknown as QueryOrgForm) => {
   try {
     const {data} = await queryOrgs(params);
     orgSelectOptions.value = buildOrgOptions([{value: '0', label: '根目录', children: []}], data);
-    orgSelectOptions.value = orgSelectOptions.value[0].children;
+    orgSelectOptions.value = orgSelectOptions.value[0].children || [];
   } catch (err) {
     console.log(err);
   }

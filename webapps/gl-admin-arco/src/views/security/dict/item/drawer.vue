@@ -2,10 +2,10 @@
   <a-drawer
       v-model:visible="visibleModel"
       width="30%"
-      :cancel-text="$t('sercurity.dictItem.index.model.cancel.text')"
+      :cancel-text="$t('security.dictItem.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.dictItem.index.model.ok.text')"
-      :title="$t(`sercurity.dictItem.index.model.title.${pageData.formState}`)"
+      :ok-text="$t('security.dictItem.index.model.ok.text')"
+      :title="$t(`security.dictItem.index.model.title.${pageData.formState}`)"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
     <DictItemModel ref="dictItemModelRef"></DictItemModel>
@@ -15,9 +15,9 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {QueryDictForm as QueryModel} from '@/api/service/sercurity_service';
 import {ListUrlParams} from '@/api/service/base_service';
 import DictItemModel from "@/views/security/dict/item/model.vue";
+import {QueryDictForm as QueryModel} from "@/api/service/security_service";
 
 const pageData = ref({
   formState: 'add', button: true, okBack: (data: QueryModel) => {
@@ -29,6 +29,7 @@ const visibleModel = ref(false);
 /* 表单 */
 const handleModelOk = (done: any) => {
   if (dictItemModelRef.value) {
+    // @ts-ignore
     dictItemModelRef.value?.submitModel(done, (data: QueryModel) => {
       visibleModel.value = false;
       pageData.value.okBack(data);
@@ -53,6 +54,7 @@ const openForm = (urlParams: ListUrlParams) => {
   // 加载页面
   if (dictItemModelRef.value) {
     urlParams.formCol = 1;
+    // @ts-ignore
     dictItemModelRef.value?.loadModel(urlParams);
   }
   // 显示

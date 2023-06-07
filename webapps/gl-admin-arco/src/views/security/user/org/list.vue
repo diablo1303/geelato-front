@@ -10,22 +10,22 @@
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.orgUser.index.form.userName')" field="userName">
+            <a-form-item :label="$t('security.orgUser.index.form.userName')" field="userName">
               <a-input v-model="filterData.userName" :readonly="pageData.params.userName!=''"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.orgUser.index.form.orgName')" field="orgName">
+            <a-form-item :label="$t('security.orgUser.index.form.orgName')" field="orgName">
               <a-input v-model="filterData.orgName"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.orgUser.index.form.createAt')" field="createAt">
+            <a-form-item :label="$t('security.orgUser.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.orgUser.index.form.defaultOrg')" field="defaultOrg">
+            <a-form-item :label="$t('security.orgUser.index.form.defaultOrg')" field="defaultOrg">
               <a-select v-model="filterData.defaultOrg" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of defaultOrgOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
@@ -91,7 +91,7 @@
                   <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                 </div>
                 <div class="title">
-                  {{ item.title === '#' ? $t('sercurity.orgUser.index.form.index') : $t(`${item.title}`) }}
+                  {{ item.title === '#' ? $t('security.orgUser.index.form.index') : $t(`${item.title}`) }}
                 </div>
               </div>
             </div>
@@ -109,19 +109,19 @@
            row-key="id"
            @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('sercurity.orgUser.index.form.index')" align="center" data-index="index" width="80">
+      <a-table-column :title="$t('security.orgUser.index.form.index')" align="center" data-index="index" width="80">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.orgUser.index.form.orgName')" data-index="orgName" ellipsis="true" tooltip="true" width="150"/>
-      <a-table-column v-if="pageData.params.userName===''" :title="$t('sercurity.orgUser.index.form.userName')" data-index="userName" ellipsis="true"
+      <a-table-column :title="$t('security.orgUser.index.form.orgName')" data-index="orgName" ellipsis="true" tooltip="true" width="150"/>
+      <a-table-column v-if="pageData.params.userName===''" :title="$t('security.orgUser.index.form.userName')" data-index="userName" ellipsis="true"
                       tooltip="true" width="150"/>
-      <a-table-column :title="$t('sercurity.orgUser.index.form.defaultOrg')" data-index="defaultOrg" width="100">
+      <a-table-column :title="$t('security.orgUser.index.form.defaultOrg')" data-index="defaultOrg" width="100">
         <template #cell="{ record }">
-          {{ $t(`sercurity.orgUser.index.form.defaultOrg.${record.defaultOrg}`) }}
+          {{ $t(`security.orgUser.index.form.defaultOrg.${record.defaultOrg}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.orgUser.index.form.createAt')" data-index="createAt" width="180"/>
-      <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('sercurity.orgUser.index.form.operations')"
+      <a-table-column :title="$t('security.orgUser.index.form.createAt')" data-index="createAt" width="180"/>
+      <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('security.orgUser.index.form.operations')"
                       :width="(pageData.formState==='edit'&&!pageData.isModal)?230:100"
                       align="center" data-index="operations"
                       fixed="right">
@@ -156,7 +156,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, defaultOrgOptions} from '@/views/security/user/org/searchTable'
-import {deleteOrgUser as deleteList, FilterOrgUserForm as FilterForm, pageQueryOrgUser as pageQueryList} from '@/api/service/sercurity_service';
+import {deleteOrgUser as deleteList, FilterOrgUserForm as FilterForm, pageQueryOrgUser as pageQueryList} from '@/api/service/security_service';
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import OrgUserForm from '@/views/security/user/org/form.vue';
@@ -228,16 +228,19 @@ const onPageChange = (current: number) => {
 /* 列表，按钮、操作列 */
 const addTable = () => {
   if (orgUserFormRef.value) {
+    // @ts-ignore
     orgUserFormRef.value?.openForm({action: 'add', params: pageData.value.params, closeBack: reset});
   }
 };
 const viewTable = (id: string) => {
   if (orgUserFormRef.value) {
+    // @ts-ignore
     orgUserFormRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
   }
 }
 const editTable = (id: string) => {
   if (orgUserFormRef.value) {
+    // @ts-ignore
     orgUserFormRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
   }
 }
@@ -299,7 +302,8 @@ watch(() => columns.value, (val) => {
 const loadList = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action || 'edit';
   pageData.value.isModal = urlParams.isModal || false;
-  pageData.value.params = urlParams.params || {userId: '', userName: ''};
+  pageData.value.params.userId = urlParams.params?.userId || '';
+  pageData.value.params.userName = urlParams.params?.userName || '';
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
 
   reset();

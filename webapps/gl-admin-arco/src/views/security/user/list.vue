@@ -9,36 +9,36 @@
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.user.index.form.name')" field="name">
+            <a-form-item :label="$t('security.user.index.form.name')" field="name">
               <a-input v-model="filterData.name"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.user.index.form.orgName')" field="code">
+            <a-form-item :label="$t('security.user.index.form.orgName')" field="code">
               <a-input v-model="filterData.orgName"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.user.index.form.createAt')" field="createAt">
+            <a-form-item :label="$t('security.user.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.user.index.form.sex')" field="sex">
+            <a-form-item :label="$t('security.user.index.form.sex')" field="sex">
               <a-select v-model="filterData.sex" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of sexOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.user.index.form.type')" field="type">
+            <a-form-item :label="$t('security.user.index.form.type')" field="type">
               <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of typeOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.user.index.form.source')" field="source">
+            <a-form-item :label="$t('security.user.index.form.source')" field="source">
               <a-select v-model="filterData.source" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of sourceOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
@@ -98,7 +98,7 @@
                   <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                 </div>
                 <div class="title">
-                  {{ item.title === '#' ? $t('sercurity.user.index.form.index') : $t(`${item.title}`) }}
+                  {{ item.title === '#' ? $t('security.user.index.form.index') : $t(`${item.title}`) }}
                 </div>
               </div>
             </div>
@@ -117,39 +117,39 @@
            :stripe="true" column-resizable
            row-key="id" @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('sercurity.user.index.form.index')" align="center" data-index="index" width="80">
+      <a-table-column :title="$t('security.user.index.form.index')" align="center" data-index="index" width="80">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.user.index.form.name')" data-index="name" ellipsis="true" tooltip="true" width="120"></a-table-column>
-      <a-table-column :title="$t('sercurity.user.index.form.orgName')" data-index="orgName" ellipsis="true" tooltip="true" width="200"></a-table-column>
-      <a-table-column :title="$t('sercurity.user.index.form.mobilePhone')" data-index="mobilePhone" width="150"></a-table-column>
-      <a-table-column :title="$t('sercurity.user.index.form.email')" data-index="email" ellipsis="true" tooltip="true" width="200"></a-table-column>
-      <a-table-column :title="$t('sercurity.user.index.form.post')" data-index="post" width="120"></a-table-column>
-      <a-table-column :title="$t('sercurity.user.index.form.address')" data-index="address" ellipsis="true" tooltip="true" width="200">
+      <a-table-column :title="$t('security.user.index.form.name')" data-index="name" ellipsis="true" tooltip="true" width="120"></a-table-column>
+      <a-table-column :title="$t('security.user.index.form.orgName')" data-index="orgName" ellipsis="true" tooltip="true" width="200"></a-table-column>
+      <a-table-column :title="$t('security.user.index.form.mobilePhone')" data-index="mobilePhone" width="150"></a-table-column>
+      <a-table-column :title="$t('security.user.index.form.email')" data-index="email" ellipsis="true" tooltip="true" width="200"></a-table-column>
+      <a-table-column :title="$t('security.user.index.form.post')" data-index="post" width="120"></a-table-column>
+      <a-table-column :title="$t('security.user.index.form.address')" data-index="address" ellipsis="true" tooltip="true" width="200">
         <template #cell="{  record }">
           {{ record.provinceCode }} - {{ record.cityCode }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.user.index.form.sex')" data-index="sex" width="100">
+      <a-table-column :title="$t('security.user.index.form.sex')" data-index="sex" width="100">
         <template #cell="{ record }">
-          {{ $t(`sercurity.user.index.form.sex.${record.sex}`) }}
+          {{ $t(`security.user.index.form.sex.${record.sex}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.user.index.form.type')" data-index="status" width="120">
+      <a-table-column :title="$t('security.user.index.form.type')" data-index="status" width="120">
         <template #cell="{ record }">
-          {{ $t(`sercurity.user.index.form.type.${record.type}`) }}
+          {{ $t(`security.user.index.form.type.${record.type}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.user.index.form.source')" data-index="status" width="120">
+      <a-table-column :title="$t('security.user.index.form.source')" data-index="status" width="120">
         <template #cell="{ record }">
-          {{ $t(`sercurity.user.index.form.source.${record.source}`) }}
+          {{ $t(`security.user.index.form.source.${record.source}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.user.index.form.seqNo')" data-index="seqNo" width="100"></a-table-column>
-      <a-table-column :title="$t('sercurity.user.index.form.createAt')" data-index="createAt" width="180"></a-table-column>
-      <a-table-column :title="$t('sercurity.user.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
+      <a-table-column :title="$t('security.user.index.form.seqNo')" data-index="seqNo" width="100"></a-table-column>
+      <a-table-column :title="$t('security.user.index.form.createAt')" data-index="createAt" width="180"></a-table-column>
+      <a-table-column :title="$t('security.user.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">
           <a-button v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">
@@ -185,7 +185,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, sexOptions, sourceOptions, typeOptions} from '@/views/security/user/searchTable'
-import {deleteUser as deleteList, FilterUserForm as FilterForm, pageQueryUser as pageQueryList} from '@/api/service/sercurity_service';
+import {deleteUser as deleteList, FilterUserForm as FilterForm, pageQueryUser as pageQueryList} from '@/api/service/security_service';
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import UserForm from '@/views/security/user/form.vue';
@@ -262,16 +262,19 @@ const onPageChange = (current: number) => {
 /* 列表，按钮、操作列 */
 const addTable = () => {
   if (userDrawerRef.value) {
+    // @ts-ignore
     userDrawerRef.value?.openForm({action: 'add', closeBack: reset});
   }
 };
 const viewTable = (id: string) => {
   if (userDrawerRef.value) {
+    // @ts-ignore
     userDrawerRef.value?.openForm({action: 'view', 'id': id, pageSize: 5, isModal: true});
   }
 }
 const editTable = (id: string) => {
   if (userDrawerRef.value) {
+    // @ts-ignore
     userDrawerRef.value?.openForm({action: 'edit', 'id': id, pageSize: 5, isModal: true, closeBack: reset});
   }
 }
@@ -333,7 +336,8 @@ watch(() => columns.value, (val) => {
 const loadList = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action || 'edit';
   pageData.value.isModal = urlParams.isModal || false;
-  pageData.value.params = urlParams.params || {orgId: '', orgName: ''};
+  pageData.value.params.orgId = urlParams.params?.orgId || '';
+  pageData.value.params.orgName = urlParams.params?.orgName || '';
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
   reset();
 }

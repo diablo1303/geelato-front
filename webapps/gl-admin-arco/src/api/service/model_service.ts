@@ -125,7 +125,7 @@ export interface QueryTableColumnForm {
   defaultValue: string; // 默认值
   type: string; // 类型
   key: string; // 列键
-  nullable: number; // 是否可空 YES_OR_NO
+  nullable: number | boolean; // 是否可空 YES_OR_NO
   dataType: string; // 数据类型
   extra: string; // 特别 auto_increment
   autoIncrement: boolean; // auto_increment
@@ -133,7 +133,7 @@ export interface QueryTableColumnForm {
   charMaxLength: number; // 长度
   numericPrecision: number; // 整数位
   numericScale: number; // 小数位
-  numericSigned: number; // 是否有符号，默认有，若无符号，则需在type中增加：unsigned
+  numericSigned: number | boolean; // 是否有符号，默认有，若无符号，则需在type中增加：unsigned
   datetimePrecision: number; // datetime 日期长度
   enableStatus: number; // 状态
   linked: number; // 链接

@@ -17,6 +17,7 @@ const foreignListRef = ref(null);
 
 const loadIndex = () => {
   if (foreignListRef.value) {
+    // @ts-ignore
     foreignListRef.value?.loadList({action: 'edit'});
   }
 }

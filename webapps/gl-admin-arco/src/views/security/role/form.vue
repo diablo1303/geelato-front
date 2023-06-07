@@ -1,10 +1,10 @@
 <template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      :cancel-text="$t('sercurity.role.index.model.cancel.text')"
+      :cancel-text="$t('security.role.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.role.index.model.ok.text')"
-      :title="$t(`sercurity.role.index.model.title.${pageData.formState}`)"
+      :ok-text="$t('security.role.index.model.ok.text')"
+      :title="$t(`security.role.index.model.title.${pageData.formState}`)"
       width="65%"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import RoleModel from '@/views/security/role/model.vue'
-import {QueryRoleForm} from "@/api/service/sercurity_service";
+import {QueryRoleForm} from "@/api/service/security_service";
 import {ListUrlParams} from '@/api/service/base_service';
 
 const pageData = ref({formState: 'add', button: true});
@@ -28,6 +28,7 @@ let okSuccessBack: any;
 /* 表单 */
 const handleModelOk = (done: any) => {
   if (roleModelRef.value) {
+    // @ts-ignore
     roleModelRef.value?.submitModel(done, () => {
       done();
       okSuccessBack();
@@ -53,6 +54,7 @@ const openForm = (urlParams: ListUrlParams) => {
   }
   // 加载页面
   if (roleModelRef.value) {
+    // @ts-ignore
     roleModelRef.value?.loadModel(urlParams);
   }
   // 显示

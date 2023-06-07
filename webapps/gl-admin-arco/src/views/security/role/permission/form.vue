@@ -1,10 +1,10 @@
 <template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      :cancel-text="$t('sercurity.rolePermission.index.model.cancel.text')"
+      :cancel-text="$t('security.rolePermission.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.rolePermission.index.model.ok.text')"
-      :title="$t(`sercurity.rolePermission.index.model.title.${pageData.formState}`)"
+      :ok-text="$t('security.rolePermission.index.model.ok.text')"
+      :title="$t(`security.rolePermission.index.model.title.${pageData.formState}`)"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
     <a-form ref="validateForm" :model="formData">
@@ -15,8 +15,8 @@
         <a-input v-show="false" v-model="formData.permissionName"/>
       </a-form-item>
       <a-form-item
-          :label="$t('sercurity.rolePermission.index.form.permissionName')"
-          :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+          :label="$t('security.rolePermission.index.form.permissionName')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="permissionId">
         <a-select v-if="pageData.button" v-model="formData.permissionId" :field-names="{value: 'id', label: 'name'}" :options="selectOptions"
                   allow-clear allow-search/>
@@ -34,7 +34,7 @@ import {
   QueryPermissionForm as QuerySelectForm,
   queryPermissions as querySelectOptions,
   QueryRolePermissionForm as QueryForm
-} from '@/api/service/sercurity_service';
+} from '@/api/service/security_service';
 import {ListUrlParams} from '@/api/service/base_service';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 

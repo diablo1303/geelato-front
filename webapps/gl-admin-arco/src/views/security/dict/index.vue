@@ -1,13 +1,16 @@
 <template v-model="pageData">
   <div class="container">
-    <Breadcrumb :items="['sercurity.dict.index.menu.list', 'sercurity.dict.index.menu.list.searchTable']"/>
+    <Breadcrumb :items="['security.dict.index.menu.list', 'security.dict.index.menu.list.searchTable']"/>
     <a-card class="general-card general-card1">
       <a-row>
         <a-col :span="6">
-          <a-spin>{{ $t('sercurity.dict.index.menu.list.searchTable') }}</a-spin>
+          <a-spin>{{ $t('security.dict.index.menu.list.searchTable') }}</a-spin>
         </a-col>
         <a-col :span="18">
-          <a-spin>{{ pageData.treeTitle ? pageData.treeTitle : $t('sercurity.dictItem.index.menu.list.searchTable') }}</a-spin>
+          <a-spin>{{
+              pageData.treeTitle ? pageData.treeTitle : $t('security.dictItem.index.menu.list.searchTable')
+            }}
+          </a-spin>
         </a-col>
       </a-row>
       <a-row>
@@ -23,13 +26,15 @@
               <template #title="nodeData">
                 <template v-if="getMatchIndex(nodeData?.title) < 0">{{ nodeData?.title }}</template>
                 <span v-else>{{ nodeData?.title?.substr(0, getMatchIndex(nodeData?.title)) }}
-                  <span style="color: var(--color-primary-light-4);">{{ nodeData?.title?.substr(getMatchIndex(nodeData?.title), searchKey.length) }}</span>
+                  <span style="color: var(--color-primary-light-4);">{{
+                      nodeData?.title?.substr(getMatchIndex(nodeData?.title), searchKey.length)
+                    }}</span>
                   {{ nodeData?.title?.substr(getMatchIndex(nodeData?.title) + searchKey.length) }}
                 </span>
               </template>
               <template #extra="nodeData">
                 <a-dropdown trigger="click" position="right">
-                  <a-tooltip :content="$t('sercurity.dict.index.modal.more')">
+                  <a-tooltip :content="$t('security.dict.index.modal.more')">
                     <IconMore class="tree-extra-icon1" @click="treeSelected(nodeData.key,nodeData)"/>
                   </a-tooltip>
                   <template #content>
@@ -44,26 +49,26 @@
                       <template #icon>
                         <icon-plus/>
                       </template>
-                      <template #default>{{ $t('sercurity.dict.index.model.title.add') }}</template>
+                      <template #default>{{ $t('security.dict.index.model.title.add') }}</template>
                     </a-doption>
                     <a-doption v-if="nodeData.level===1" @click="dropOptionDictEdit(nodeData)">
                       <template #icon>
                         <icon-edit/>
                       </template>
-                      <template #default>{{ $t('sercurity.dict.index.model.title.edit') }}</template>
+                      <template #default>{{ $t('security.dict.index.model.title.edit') }}</template>
                     </a-doption>
                     <a-doption v-if="nodeData.level===1" @click="dropOptionDictDelete(nodeData)">
                       <template #icon>
                         <icon-delete/>
                       </template>
-                      <template #default>{{ $t('sercurity.dict.index.model.title.delete') }}</template>
+                      <template #default>{{ $t('security.dict.index.model.title.delete') }}</template>
                     </a-doption>
                     <a-divider v-if="nodeData.level===1" margin="0px 0px"/>
                     <a-doption v-if="nodeData.level===1" @click="dropOptionDictItemAdd(nodeData)">
                       <template #icon>
                         <icon-plus/>
                       </template>
-                      <template #default>{{ $t('sercurity.dictItem.index.model.title.add') }}</template>
+                      <template #default>{{ $t('security.dictItem.index.model.title.add') }}</template>
                     </a-doption>
                   </template>
                 </a-dropdown>
@@ -87,11 +92,11 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref} from 'vue';
+import {computed, ref, shallowRef} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {Modal, Notification, TreeNodeData} from "@arco-design/web-vue";
 import {TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
-import {deleteDict, QueryDictForm as QueryForm, queryDicts} from '@/api/service/sercurity_service';
+import {deleteDict, QueryDictForm as QueryForm, queryDicts} from '@/api/service/security_service';
 import DictList from '@/views/security/dict/list.vue';
 import DictDrawer from "@/views/security/dict/drawer.vue";
 import DictItemList from '@/views/security/dict/item/list.vue';
@@ -102,9 +107,9 @@ const {t} = useI18n();
 // 全局变量
 const pageData = ref({formState: 'edit', isModal: true, level: 0, treeKey: '0', treeTitle: ''});
 const dictListRef = ref(null);
-const dictDrawerRef = ref(null);
 const dictItemListRef = ref(null);
-const dictItemDrawerRef = ref(null);
+const dictDrawerRef = shallowRef(DictDrawer);
+const dictItemDrawerRef = shallowRef(DictItemDrawer);
 // Tree
 const treeData = ref<TreeNodeProps[]>([]);
 const searchKey = ref('');
@@ -179,7 +184,12 @@ const deleteData = async (id: string, successBack: any) => {
  * @param data TreeNodeProps[]
  */
 const refreshTreeOne = (data: TreeNodeProps[]) => {
-  treeData.value = [{title: t('sercurity.dict.index.menu.list.searchTable'), key: '0', level: 0, children: data} as unknown as TreeNodeProps];
+  treeData.value = [{
+    title: t('security.dict.index.menu.list.searchTable'),
+    key: '0',
+    level: 0,
+    children: data
+  } as unknown as TreeNodeProps];
   const nodeData: TreeNodeProps = treeData.value[0];
   pageData.value.level = treeData.value[0].level;
   pageData.value.treeKey = nodeData.key ? nodeData.key.toString() : '';
@@ -209,7 +219,8 @@ loadedPage();
  */
 const loadDictList = () => {
   if (dictListRef.value) {
-    dictListRef.value?.loadList({
+    // @ts-ignore
+    dictListRef.value.loadList({
       action: pageData.value.formState, pageSize: 5,
       isModal: pageData.value.isModal, modalAddBack: () => {
         fetchDictionary().then((data) => {
@@ -238,7 +249,8 @@ const loadDictList = () => {
  */
 const loadDictItemList = (dictId: string, dictName: string) => {
   if (dictItemListRef.value) {
-    dictItemListRef.value?.loadList({
+    // @ts-ignore
+    dictItemListRef.value.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
       params: {pId: dictId, pName: dictName}
@@ -292,7 +304,7 @@ const dropOptionDictRefresh = (nodeData: TreeNodeProps) => {
  */
 const dropOptionDictAdd = (nodeData: TreeNodeProps) => {
   if (dictDrawerRef.value) {
-    dictDrawerRef.value?.openForm({
+    dictDrawerRef.value.openForm({
       action: 'add', closeBack: (data: QueryForm) => {
         loadedPage();
       }
@@ -307,7 +319,7 @@ const dropOptionDictItemAdd = (nodeData: TreeNodeProps) => {
   const dictId = nodeData.key ? nodeData.key.toString() : '';
   const dictName = nodeData.title || '';
   if (dictItemDrawerRef.value) {
-    dictItemDrawerRef.value?.openForm({
+    dictItemDrawerRef.value.openForm({
       action: 'add', params: {pId: dictId, pName: dictName}, closeBack: () => {
         setTimeout(() => {
           loadDictItemList(dictId, dictName);
@@ -338,12 +350,12 @@ const dropOptionDictEdit = (nodeData: TreeNodeProps) => {
 const dropOptionDictDelete = (nodeData: TreeNodeProps) => {
   const dictId = nodeData.key ? nodeData.key.toString() : '';
   Modal.open({
-    title: t('sercurity.dict.index.modal.title'),
+    title: t('security.dict.index.modal.title'),
     width: '300px',
     titleAlign: 'start',
-    content: t('sercurity.dict.index.modal.content'),
-    cancelText: t('sercurity.dict.index.modal.cancel.text'),
-    okText: t('sercurity.dict.index.modal.ok.text'), onOk() {
+    content: t('security.dict.index.modal.content'),
+    cancelText: t('security.dict.index.modal.cancel.text'),
+    okText: t('security.dict.index.modal.ok.text'), onOk() {
       deleteData(dictId, () => {
         loadedPage();
       });

@@ -1,7 +1,8 @@
 import {computed, ref} from 'vue';
 import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
-import {querySelectOptions} from "@/api/service/sercurity_service";
+import {querySelectOptions} from "@/api/service/security_service";
+import {RadioOption} from "@arco-design/web-vue/es/radio/interface";
 
 const columns = computed<TableColumnData[]>(() => [
   {
@@ -67,7 +68,7 @@ const keyOptions = computed<SelectOptionData[]>(() => [
     value: '0',
   },
 ]);
-const nullableOptions = computed<SelectOptionData[]>(() => [
+const nullableOptions = computed<RadioOption[]>(() => [
   {
     label: 'model.column.index.form.nullable.1',
     value: 1,
@@ -77,7 +78,7 @@ const nullableOptions = computed<SelectOptionData[]>(() => [
     value: 0,
   },
 ]);
-const numericSignedOptions = computed<SelectOptionData[]>(() => [
+const numericSignedOptions = computed<RadioOption[]>(() => [
   {
     label: 'model.column.index.form.numericSigned.1',
     value: 1,
@@ -92,4 +93,5 @@ const dataTypeOptions = ref<SelectOptionData[]>([]);
 querySelectOptions("dbColumnDataType").then((data) => {
   dataTypeOptions.value = data;
 });
+
 export {columns, enableStatusOptions, keyOptions, nullableOptions, dataTypeOptions, numericSignedOptions};

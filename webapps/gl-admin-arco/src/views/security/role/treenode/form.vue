@@ -1,10 +1,10 @@
 <template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      :cancel-text="$t('sercurity.roleTreeNode.index.model.cancel.text')"
+      :cancel-text="$t('security.roleTreeNode.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.roleTreeNode.index.model.ok.text')"
-      :title="$t(`sercurity.roleTreeNode.index.model.title.${pageData.formState}`)"
+      :ok-text="$t('security.roleTreeNode.index.model.ok.text')"
+      :title="$t(`security.roleTreeNode.index.model.title.${pageData.formState}`)"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
     <a-form ref="validateForm" :model="formData">
@@ -15,15 +15,15 @@
         <a-input v-show="false" v-model="formData.treeNodeText"/>
       </a-form-item>
       <a-form-item
-          :label="$t('sercurity.roleTreeNode.index.form.title')"
-          :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+          :label="$t('security.roleTreeNode.index.form.title')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="title">
         <a-input v-if="pageData.button" v-model="formData.title" :max-length="32"/>
         <span v-else>{{ formData.title }}</span>
       </a-form-item>
       <a-form-item
-          :label="$t('sercurity.roleTreeNode.index.form.treeNodeText')"
-          :rules="[{required: true,message: $t('sercurity.form.rules.match.required')}]"
+          :label="$t('security.roleTreeNode.index.form.treeNodeText')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="treeNodeId">
         <a-select v-if="pageData.button" v-model="formData.treeNodeId" :field-names="{value: 'id', label: 'text'}" :options="selectOptions"
                   allow-clear allow-search/>
@@ -41,7 +41,7 @@ import {
   QueryRoleTreeNodeForm as QueryForm,
   QueryTreeNodeForm as QuerySelectForm,
   queryTreeNodes as querySelectOptions
-} from '@/api/service/sercurity_service';
+} from '@/api/service/security_service';
 import {ListUrlParams} from '@/api/service/base_service';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 

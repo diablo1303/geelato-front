@@ -2,19 +2,19 @@
   <a-drawer
       v-model:visible="visibleModel"
       width="32%"
-      :cancel-text="$t('sercurity.role.index.model.cancel.text')"
+      :cancel-text="$t('security.role.index.model.cancel.text')"
       :footer="pageData.button"
-      :ok-text="$t('sercurity.role.index.model.ok.text')"
-      :title="$t(`sercurity.role.index.model.title.${pageData.formState}`)"
+      :ok-text="$t('security.role.index.model.ok.text')"
+      :title="$t(`security.role.index.model.title.${pageData.formState}`)"
       @cancel="handleModelCancel"
       @before-ok="handleModelOk">
     <RoleModel ref="roleModelRef"></RoleModel>
     <a-divider v-if="pageData.formState!=='add'" orientation="left">
-      <strong>{{ $t('sercurity.role.form.tab.title.two') }}</strong>
+      <strong>{{ $t('security.role.form.tab.title.two') }}</strong>
       <a-select v-model="pageData.appId" :options="selectAppOptions" :field-names="{value: 'id', label: 'name'}"
                 @change="addOrgUser">
         <template #trigger>
-          <a-tooltip position="top" :content="$t('sercurity.orgUser.index.model.title.add')">
+          <a-tooltip position="top" :content="$t('security.orgUser.index.model.title.add')">
             <icon-plus v-if="pageData.formState==='edit'" class="tree-extra-icon"/>
           </a-tooltip>
         </template>
@@ -41,7 +41,7 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {QueryAppForm, queryApps, QueryOrgUserForm, QueryUserForm} from "@/api/service/sercurity_service";
+import {QueryAppForm, queryApps, QueryOrgUserForm, QueryUserForm} from "@/api/service/security_service";
 import {ListUrlParams, SelectOption} from '@/api/service/base_service';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import RoleModel from "@/views/security/role/model.vue";
@@ -69,6 +69,7 @@ const getSelectOptions = async () => {
 /* 表单 */
 const handleModelOk = (done: any) => {
   if (roleModelRef.value) {
+    // @ts-ignore
     roleModelRef.value?.submitModel(done, () => {
       done();
       okSuccessBack();
@@ -101,6 +102,7 @@ const openForm = (urlParams: ListUrlParams) => {
   // 加载页面
   if (roleModelRef.value) {
     urlParams.formCol = 1;
+    // @ts-ignore
     roleModelRef.value?.loadModel(urlParams);
   }
   // 显示

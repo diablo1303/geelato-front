@@ -9,24 +9,24 @@
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.dictItem.index.form.itemText')" field="name">
+            <a-form-item :label="$t('security.dictItem.index.form.itemText')" field="name">
               <a-input v-model="filterData.itemText"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.dictItem.index.form.itemCode')" field="code">
+            <a-form-item :label="$t('security.dictItem.index.form.itemCode')" field="code">
               <a-input v-model="filterData.itemCode"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.dictItem.index.form.enableStatus')" field="enableStatus">
+            <a-form-item :label="$t('security.dictItem.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('sercurity.dictItem.index.form.createAt')" field="createAt">
+            <a-form-item :label="$t('security.dictItem.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
@@ -84,7 +84,7 @@
                   <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                 </div>
                 <div class="title">
-                  {{ item.title === '#' ? $t('sercurity.dictItem.index.form.index') : $t(`${item.title}`) }}
+                  {{ item.title === '#' ? $t('security.dictItem.index.form.index') : $t(`${item.title}`) }}
                 </div>
               </div>
             </div>
@@ -104,22 +104,22 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('sercurity.dictItem.index.form.index')" align="center" data-index="index" width="80">
+      <a-table-column :title="$t('security.dictItem.index.form.index')" align="center" data-index="index" width="80">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.dictItem.index.form.itemText')" data-index="itemText" ellipsis="true" tooltip="true" width="140"/>
-      <a-table-column :title="$t('sercurity.dictItem.index.form.itemCode')" data-index="itemCode" ellipsis="true" tooltip="true" width="140"/>
-      <a-table-column :title="$t('sercurity.dictItem.index.form.seqNo')" data-index="seqNo" width="100"/>
-      <a-table-column :title="$t('sercurity.dictItem.index.form.enableStatus')" data-index="enableStatus" width="100">
+      <a-table-column :title="$t('security.dictItem.index.form.itemText')" data-index="itemText" ellipsis="true" tooltip="true" width="140"/>
+      <a-table-column :title="$t('security.dictItem.index.form.itemCode')" data-index="itemCode" ellipsis="true" tooltip="true" width="140"/>
+      <a-table-column :title="$t('security.dictItem.index.form.seqNo')" data-index="seqNo" width="100"/>
+      <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" data-index="enableStatus" width="100">
         <template #cell="{ record }">
-          {{ $t(`sercurity.dictItem.index.form.enableStatus.${record.enableStatus}`) }}
+          {{ $t(`security.dictItem.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('sercurity.dictItem.index.form.createAt')" data-index="createAt" width="170"/>
-      <a-table-column :title="$t('sercurity.dictItem.index.form.dataRemark')" data-index="dataRemark" width="200" ellipsis="true" tooltip="true"/>
-      <a-table-column v-show="pageData.formState==='edit'" :title="$t('sercurity.dictItem.index.form.operations')" :width="170" align="center"
+      <a-table-column :title="$t('security.dictItem.index.form.createAt')" data-index="createAt" width="170"/>
+      <a-table-column :title="$t('security.dictItem.index.form.dataRemark')" data-index="dataRemark" width="200" ellipsis="true" tooltip="true"/>
+      <a-table-column v-show="pageData.formState==='edit'" :title="$t('security.dictItem.index.form.operations')" :width="170" align="center"
                       data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
@@ -150,7 +150,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, enableStatusOptions} from "@/views/security/dict/item/searchTable";
-import {deleteDictItem as deleteList, FilterDictItemForm as FilterForm, pageQueryDictItem as pageQueryList} from '@/api/service/sercurity_service';
+import {deleteDictItem as deleteList, FilterDictItemForm as FilterForm, pageQueryDictItem as pageQueryList} from '@/api/service/security_service';
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import DictItemDrawer from "@/views/security/dict/item/drawer.vue";
@@ -220,21 +220,24 @@ const onPageChange = (current: number) => {
 /* 列表，按钮、操作列 */
 const addTable = () => {
   if (pageData.value.isModal && !pageData.value.params.pId) {
-    Notification.warning(t('sercurity.dict.index.notice.warning2'));
+    Notification.warning(t('security.dict.index.notice.warning2'));
     return;
   }
   if (dictItemDrawerRef.value) {
+    // @ts-ignore
     dictItemDrawerRef.value?.openForm({action: 'add', params: pageData.value.params, closeBack: reset});
   }
 
 };
 const viewTable = (id: string) => {
   if (dictItemDrawerRef.value) {
+    // @ts-ignore
     dictItemDrawerRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
   }
 }
 const editTable = (id: string) => {
   if (dictItemDrawerRef.value) {
+    // @ts-ignore
     dictItemDrawerRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
   }
 }
@@ -297,7 +300,8 @@ watch(() => columns.value, (val) => {
 const loadList = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action || 'edit';
   pageData.value.isModal = urlParams.isModal || false;
-  pageData.value.params = urlParams.params || {pId: '', pName: ''};
+  pageData.value.params.pId = urlParams.params?.pId || '';
+  pageData.value.params.pName = urlParams.params?.pName || '';
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
   reset();
 }

@@ -4,37 +4,37 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 
 const columns = computed<TableColumnData[]>(() => [
   {
-    title: 'sercurity.org.index.form.index',
+    title: 'security.org.index.form.index',
     dataIndex: 'index',
     slotName: 'index'
   },
   {
-    title: 'sercurity.org.index.form.name',
+    title: 'security.org.index.form.name',
     dataIndex: 'name'
   },
   {
-    title: 'sercurity.org.index.form.code',
+    title: 'security.org.index.form.code',
     dataIndex: 'code'
   },
   {
-    title: 'sercurity.org.index.form.type',
+    title: 'security.org.index.form.type',
     dataIndex: 'type'
   },
   {
-    title: 'sercurity.org.index.form.seqNo',
+    title: 'security.org.index.form.seqNo',
     dataIndex: 'seqNo'
   },
   {
-    title: 'sercurity.org.index.form.status',
+    title: 'security.org.index.form.status',
     dataIndex: 'status',
     slotName: 'status'
   },
   {
-    title: 'sercurity.org.index.form.createAt',
+    title: 'security.org.index.form.createAt',
     dataIndex: 'createAt'
   },
   {
-    title: 'sercurity.org.index.form.operations',
+    title: 'security.org.index.form.operations',
     dataIndex: 'operations',
     slotName: 'operations'
   }
@@ -42,21 +42,21 @@ const columns = computed<TableColumnData[]>(() => [
 
 const statusOptions = computed<SelectOptionData[]>(() => [
   {
-    label: 'sercurity.org.index.form.status.1',
+    label: 'security.org.index.form.status.1',
     value: 1,
   },
   {
-    label: "sercurity.org.index.form.status.0",
+    label: "security.org.index.form.status.0",
     value: 0,
   },
 ]);
 const typeOptions = computed<SelectOptionData[]>(() => [
   {
-    label: 'sercurity.org.index.form.type.inside',
+    label: 'security.org.index.form.type.inside',
     value: 'inside',
   },
   {
-    label: 'sercurity.org.index.form.type.outside',
+    label: 'security.org.index.form.type.outside',
     value: 'outside',
   },
 ]);

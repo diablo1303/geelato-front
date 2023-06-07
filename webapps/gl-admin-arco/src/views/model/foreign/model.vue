@@ -1,5 +1,6 @@
 <template v-model="pageData">
-  <a-form ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }" class="form">
+  <a-form ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }"
+          class="form">
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item v-show="false">
@@ -11,7 +12,8 @@
             :label="$t('model.foreign.index.form.mainTable')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="mainTable">
-          <a-select v-if="pageData.button" v-model="formData.mainTable" @change="mainTableChange" allow-search :disabled="pageData.mainTable!==''">
+          <a-select v-if="pageData.button" v-model="formData.mainTable" @change="mainTableChange" allow-search
+                    :disabled="pageData.mainTable!==''">
             <a-option v-for="item of tableOptions" :key="item.id" :label="item.entityName" :value="item.entityName"/>
           </a-select>
           <span v-else>{{ formData.mainTable }}</span>
@@ -56,7 +58,8 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="enableStatus">
           <a-select v-if="pageData.button" v-model="formData.enableStatus">
-            <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                      :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.foreign.index.form.enableStatus.${formData.enableStatus}`) }}</span>
         </a-form-item>
@@ -82,8 +85,10 @@
             :label-col-props="{ span: (pageData.formCol===1?8:4) }"
             :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
             field="description">
-          <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
-          <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+          <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
+                      :max-length="512" show-word-limit/>
+          <span v-else :title="formData.description" class="textarea-span"
+                @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
         </a-form-item>
       </a-col>
     </a-row>
@@ -150,7 +155,10 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
   }
 };
 
-const fetchTables = async (params: PageQueryRequest = {enableStatus: 1, tableType: 'entity'}) => {
+const fetchTables = async (params: PageQueryRequest = {
+  enableStatus: 1,
+  tableType: 'entity'
+} as unknown as PageQueryRequest) => {
   try {
     const {data} = await queryTables(params);
     tableOptions.value = data;
@@ -158,7 +166,7 @@ const fetchTables = async (params: PageQueryRequest = {enableStatus: 1, tableTyp
     tableOptions.value = [];
   }
 }
-const fetchTableColumns = async (params: PageQueryRequest = {enableStatus: 1}): Promise<QueryTableColumnForm[]> => {
+const fetchTableColumns = async (params: PageQueryRequest = {enableStatus: 1} as unknown as PageQueryRequest): Promise<QueryTableColumnForm[]> => {
   let columnOptions: QueryTableColumnForm[] = [];
   try {
     const {data} = await queryTableColumns(params);
@@ -172,7 +180,7 @@ const fetchTableColumns = async (params: PageQueryRequest = {enableStatus: 1}): 
 
 const mainTableChange = (value: string) => {
   if (value) {
-    fetchTableColumns({enableStatus: 0, tableName: value}).then((data) => {
+    fetchTableColumns({enableStatus: 0, tableName: value} as unknown as PageQueryRequest).then((data) => {
       mainTableColOptions.value = data;
     });
   } else {
@@ -181,7 +189,7 @@ const mainTableChange = (value: string) => {
 }
 const foreignTableChange = (value: any) => {
   if (value) {
-    fetchTableColumns({enableStatus: 0, tableName: value}).then((data) => {
+    fetchTableColumns({enableStatus: 0, tableName: value} as unknown as PageQueryRequest).then((data) => {
       foreignTableColOptions.value = data;
     });
   } else {

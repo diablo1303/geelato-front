@@ -4,42 +4,42 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 
 const columns = computed<TableColumnData[]>(() => [
   {
-    title: 'sercurity.dict.index.form.index',
+    title: 'security.dict.index.form.index',
     dataIndex: 'index',
     slotName: 'index'
   },
   {
-    title: 'sercurity.dict.index.form.dicName',
+    title: 'security.dict.index.form.dicName',
     dataIndex: 'dicName'
   },
   {
-    title: 'sercurity.dict.index.form.dicCode',
+    title: 'security.dict.index.form.dicCode',
     dataIndex: 'dicCode'
   },
   {
-    title: 'sercurity.dict.index.form.tenantCode',
+    title: 'security.dict.index.form.tenantCode',
     dataIndex: 'tenantCode'
   },
   {
-    title: 'sercurity.dict.index.form.seqNo',
+    title: 'security.dict.index.form.seqNo',
     dataIndex: 'seqNo'
   },
   {
-    title: 'sercurity.dict.index.form.enableStatus',
+    title: 'security.dict.index.form.enableStatus',
     dataIndex: 'enableStatus',
     slotName: 'enableStatus'
   },
   {
-    title: 'sercurity.dict.index.form.createAt',
+    title: 'security.dict.index.form.createAt',
     dataIndex: 'createAt'
   },
 
   {
-    title: 'sercurity.dict.index.form.dicRemark',
+    title: 'security.dict.index.form.dicRemark',
     dataIndex: 'dicRemark'
   },
   {
-    title: 'sercurity.dict.index.form.operations',
+    title: 'security.dict.index.form.operations',
     dataIndex: 'operations',
     slotName: 'operations'
   }
@@ -47,11 +47,11 @@ const columns = computed<TableColumnData[]>(() => [
 
 const enableStatusOptions = computed<SelectOptionData[]>(() => [
   {
-    label: 'sercurity.dict.index.form.enableStatus.1',
+    label: 'security.dict.index.form.enableStatus.1',
     value: 1,
   },
   {
-    label: "sercurity.dict.index.form.enableStatus.0",
+    label: "security.dict.index.form.enableStatus.0",
     value: 0,
   },
 ]);
