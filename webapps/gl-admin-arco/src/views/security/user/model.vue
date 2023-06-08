@@ -34,7 +34,8 @@
             :label="$t('security.user.index.form.orgName')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="orgId">
-          <a-tree-select v-if="pageData.button"
+          <a-tree-select
+v-if="pageData.button"
                          v-model="formData.orgId"
                          :data="orgSelectOptions"
                          :field-names="{key:'value',title:'label'}" allow-clear allow-search/>
@@ -119,19 +120,23 @@
             :label="$t('security.user.index.form.seqNo')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="seqNo">
-          <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
+          <a-input-number
+v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
                           :placeholder="$t('security.form.rules.match.length.title')+'[0,999999]'"
                           :precision="0"/>
           <span v-else>{{ formData.seqNo }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24">
-        <a-form-item :label="$t('security.user.index.form.description')"
+        <a-form-item
+:label="$t('security.user.index.form.description')"
                      :label-col-props="{ span: 6/pageData.formCol }"
                      :wrapper-col-props="{ span: pageData.formCol===2?21:18 }" field="description">
-          <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
+          <a-textarea
+v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
                       :max-length="512" show-word-limit/>
-          <span v-else :title="formData.description" class="textarea-span"
+          <span
+v-else :title="formData.description" class="textarea-span"
                 @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
         </a-form-item>
       </a-col>

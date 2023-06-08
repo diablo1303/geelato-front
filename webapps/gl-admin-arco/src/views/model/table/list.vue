@@ -155,7 +155,8 @@
       <a-table-column :title="$t('model.table.index.form.createAt')" data-index="createAt" width="180"/>
       <a-table-column :title="$t('model.table.index.form.tableComment')" data-index="tableComment" ellipsis="true" tooltip="true" width="200"/>
       <a-table-column :title="$t('model.table.index.form.description')" data-index="description" ellipsis="true" tooltip="true" width="200"/>
-      <a-table-column v-show="pageData.formState==='edit'" :title="$t('model.table.index.form.operations')"
+      <a-table-column
+v-show="pageData.formState==='edit'" :title="$t('model.table.index.form.operations')"
                       align="center" data-index="operations" fixed="right" :width="170">
         <template #cell="{ record }">
           <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">

@@ -84,7 +84,8 @@
           </a-tooltip>
         </a-col>
       </a-row>
-      <a-table :bordered="{cell:true}" :columns="(cloneColumns as TableColumnData[])"
+      <a-table
+:bordered="{cell:true}" :columns="(cloneColumns as TableColumnData[])"
                :data="renderData"
                :loading="loading"
                :pagination="pagination"
@@ -100,7 +101,8 @@
           <a-table-column :title="$t('security.permission.index.form.text')" data-index="text" ellipsis="true" tooltip="true" width="150"/>
           <a-table-column :title="$t('security.permission.index.form.description')" data-index="description" ellipsis="true" tooltip="true" width="200"/>
           <a-table-column :title="$t('security.permission.index.form.createAt')" data-index="createAt" width="180"/>
-          <a-table-column :title="$t('security.permission.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center"
+          <a-table-column
+:title="$t('security.permission.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center"
                           data-index="operations"
                           fixed="right">
             <template #cell="{ record }">

@@ -100,7 +100,8 @@
       </a-tooltip>
     </a-col>
   </a-row>
-  <a-table :bordered="{cell:true}" :columns="(cloneColumns as TableColumnData[])"
+  <a-table
+:bordered="{cell:true}" :columns="(cloneColumns as TableColumnData[])"
            :data="renderData"
            :loading="loading"
            :pagination="pagination"
@@ -113,7 +114,8 @@
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
       <a-table-column :title="$t('security.orgUser.index.form.orgName')" data-index="orgName" ellipsis="true" tooltip="true" width="150"/>
-      <a-table-column v-if="pageData.params.userName===''" :title="$t('security.orgUser.index.form.userName')" data-index="userName" ellipsis="true"
+      <a-table-column
+v-if="pageData.params.userName===''" :title="$t('security.orgUser.index.form.userName')" data-index="userName" ellipsis="true"
                       tooltip="true" width="150"/>
       <a-table-column :title="$t('security.orgUser.index.form.defaultOrg')" data-index="defaultOrg" width="100">
         <template #cell="{ record }">
@@ -121,7 +123,8 @@
         </template>
       </a-table-column>
       <a-table-column :title="$t('security.orgUser.index.form.createAt')" data-index="createAt" width="180"/>
-      <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('security.orgUser.index.form.operations')"
+      <a-table-column
+v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('security.orgUser.index.form.operations')"
                       :width="(pageData.formState==='edit'&&!pageData.isModal)?230:100"
                       align="center" data-index="operations"
                       fixed="right">

@@ -1,5 +1,6 @@
 <template v-model="pageData">
-  <a-form ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }"
+  <a-form
+ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }"
           class="form">
     <a-row :gutter="16">
       <a-col :span="24">
@@ -12,8 +13,9 @@
             :label="$t('model.foreign.index.form.mainTable')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="mainTable">
-          <a-select v-if="pageData.button" v-model="formData.mainTable" @change="mainTableChange" allow-search
-                    :disabled="pageData.mainTable!==''">
+          <a-select
+v-if="pageData.button" v-model="formData.mainTable" allow-search :disabled="pageData.mainTable!==''"
+                    @change="mainTableChange">
             <a-option v-for="item of tableOptions" :key="item.id" :label="item.entityName" :value="item.entityName"/>
           </a-select>
           <span v-else>{{ formData.mainTable }}</span>
@@ -35,7 +37,7 @@
             :label="$t('model.foreign.index.form.foreignTable')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="foreignTable">
-          <a-select v-if="pageData.button" v-model="formData.foreignTable" @change="foreignTableChange" allow-search>
+          <a-select v-if="pageData.button" v-model="formData.foreignTable" allow-search @change="foreignTableChange">
             <a-option v-for="item of tableOptions" :key="item.id" :label="item.entityName" :value="item.entityName"/>
           </a-select>
           <span v-else>{{ formData.foreignTable }}</span>
@@ -58,7 +60,8 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="enableStatus">
           <a-select v-if="pageData.button" v-model="formData.enableStatus">
-            <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+            <a-option
+v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
                       :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.foreign.index.form.enableStatus.${formData.enableStatus}`) }}</span>
@@ -85,9 +88,11 @@
             :label-col-props="{ span: (pageData.formCol===1?8:4) }"
             :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
             field="description">
-          <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
+          <a-textarea
+v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
                       :max-length="512" show-word-limit/>
-          <span v-else :title="formData.description" class="textarea-span"
+          <span
+v-else :title="formData.description" class="textarea-span"
                 @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
         </a-form-item>
       </a-col>

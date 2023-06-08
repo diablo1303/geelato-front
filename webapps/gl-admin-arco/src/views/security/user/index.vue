@@ -118,8 +118,11 @@ const fetchOrgs = async (params: QueryOrgForm = {pid: '0'} as unknown as QueryOr
  * @param nodeData TreeNodeData
  */
 const loadMore = (nodeData: TreeNodeData) => {
-  fetchOrgs({pid: `${nodeData.key}`} as unknown as QueryOrgForm).then((data) => {
-    nodeData.children = data;
+  return new Promise<void>((resolve) => {
+    fetchOrgs({pid: `${nodeData.key}`} as unknown as QueryOrgForm).then((data) => {
+      nodeData.children = data;
+    });
+    resolve();
   });
 }
 /**
@@ -210,8 +213,13 @@ const treeSelected = (selectedKey: string, data: TreeNodeProps) => {
  * @param selectedKey string
  * @param data TreeNodeProps
  */
-const treeClickSelected = (selectedKey: string[], data: any) => {
-  treeSelected(selectedKey[0], data.node);
+const treeClickSelected = (selectedKey: (string | number)[], data: {
+  selected?: boolean | undefined;
+  selectedNodes: TreeNodeProps[];
+  node?: TreeNodeProps | undefined;
+  e?: Event | undefined;
+}) => {
+  treeSelected(selectedKey[0].toString(), data.node as unknown as TreeNodeProps);
 }
 </script>
 

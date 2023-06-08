@@ -31,7 +31,8 @@
         :label="$t('security.dictItem.index.form.seqNo')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="seqNo">
-      <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
+      <a-input-number
+v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
                       :placeholder="$t('security.form.rules.match.length.title')+'[0,999999]'"
                       :precision="0"/>
       <span v-else>{{ formData.seqNo }}</span>
@@ -42,6 +43,7 @@
     </a-form-item>
   </a-form>
 </template>
+
 <script setup lang="ts">
 import {ref} from "vue";
 import {Modal} from "@arco-design/web-vue";

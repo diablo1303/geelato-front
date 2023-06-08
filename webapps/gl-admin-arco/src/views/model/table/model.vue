@@ -1,5 +1,6 @@
 <template v-model="pageData">
-  <a-form ref="validateForm" :model="formData" :label-col-props="{ span: 6 }" :wrapper-col-props="{ span: 18 }"
+  <a-form
+ref="validateForm" :model="formData" :label-col-props="{ span: 6 }" :wrapper-col-props="{ span: 18 }"
           class="form">
     <a-row :gutter="16">
       <a-col :span="24">
@@ -53,7 +54,8 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="tableType">
           <a-select v-if="pageData.button" v-model="formData.tableType">
-            <a-option v-for="item of tableTypeOptions" :key="item.value" :label="$t(`${item.label}`)"
+            <a-option
+v-for="item of tableTypeOptions" :key="item.value" :label="$t(`${item.label}`)"
                       :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.tableType.${formData.tableType}`) }}</span>
@@ -74,7 +76,8 @@
               </template>
             </a-button>
             <template #content>
-              <div class="trigger-demo-translate"
+              <div
+class="trigger-demo-translate"
                    :style="{width:`${pageStyle.width}px`,height:`${pageStyle.height}px`}">
                 <MonacoEditor
                     v-model="formData.viewSql"
@@ -93,7 +96,8 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="enableStatus">
           <a-select v-if="pageData.button" v-model="formData.enableStatus">
-            <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+            <a-option
+v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
                       :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.enableStatus.${formData.enableStatus}`) }}</span>
@@ -128,9 +132,11 @@
             :label-col-props="{ span: (pageData.formCol===1?6:3) }"
             :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
             field="description">
-          <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
+          <a-textarea
+v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
                       :max-length="512" show-word-limit/>
-          <span v-else :title="formData.description" class="textarea-span"
+          <span
+v-else :title="formData.description" class="textarea-span"
                 @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
         </a-form-item>
       </a-col>

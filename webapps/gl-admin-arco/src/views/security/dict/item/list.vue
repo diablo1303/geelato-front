@@ -119,7 +119,8 @@
       </a-table-column>
       <a-table-column :title="$t('security.dictItem.index.form.createAt')" data-index="createAt" width="170"/>
       <a-table-column :title="$t('security.dictItem.index.form.dataRemark')" data-index="dataRemark" width="200" ellipsis="true" tooltip="true"/>
-      <a-table-column v-show="pageData.formState==='edit'" :title="$t('security.dictItem.index.form.operations')" :width="170" align="center"
+      <a-table-column
+v-show="pageData.formState==='edit'" :title="$t('security.dictItem.index.form.operations')" :width="170" align="center"
                       data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">

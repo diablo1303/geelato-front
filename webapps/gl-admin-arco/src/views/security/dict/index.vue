@@ -281,8 +281,13 @@ const treeSelected = (selectedKey: string, data: TreeNodeProps) => {
  * @param selectedKey string
  * @param data TreeNodeProps
  */
-const treeClickSelected = (selectedKey: string[], data: any) => {
-  treeSelected(selectedKey[0], data.node);
+const treeClickSelected = (selectedKey: (string | number)[], data: {
+  selected?: boolean | undefined;
+  selectedNodes: TreeNodeProps[];
+  node?: TreeNodeProps | undefined;
+  e?: Event | undefined;
+}) => {
+  treeSelected(selectedKey[0].toString(), data.node as unknown as TreeNodeProps);
 }
 
 /**

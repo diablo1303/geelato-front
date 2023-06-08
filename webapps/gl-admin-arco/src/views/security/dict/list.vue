@@ -21,7 +21,8 @@
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('security.dict.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                <a-option
+v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
                           :value="item.value"/>
               </a-select>
             </a-form-item>
@@ -77,7 +78,8 @@
                   <icon-drag-arrow/>
                 </div>
                 <div>
-                  <a-checkbox v-model="item.checked"
+                  <a-checkbox
+v-model="item.checked"
                               @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                 </div>
                 <div class="title">
@@ -116,7 +118,8 @@
       </a-table-column>
       <a-table-column :title="$t('security.dict.index.form.createAt')" data-index="createAt" width="180"></a-table-column>
       <a-table-column :title="$t('security.dict.index.form.dicRemark')" :tooltip="{position:'right'}" data-index="dicRemark" ellipsis="true" width="200"/>
-      <a-table-column v-show="pageData.formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="170" align="center"
+      <a-table-column
+v-show="pageData.formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="170" align="center"
                       data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">

@@ -12,7 +12,8 @@
           @before-ok="handleModelOk">
         <a-row>
           <a-col :span="24">
-            <a-tabs v-model:active-key="pageData.tabKey" :default-active-tab="1" :position="'left'" type="rounded"
+            <a-tabs
+v-model:active-key="pageData.tabKey" :default-active-tab="1" :position="'left'" type="rounded"
                     @tab-click="tabsChange">
               <a-tab-pane key="1" :title="$t('security.user.forml.tab.title.one')">
                 <UserModel ref="userModelRef"></UserModel>

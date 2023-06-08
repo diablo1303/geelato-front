@@ -107,7 +107,8 @@
       </a-tooltip>
     </a-col>
   </a-row>
-  <a-table :bordered="{cell:true}"
+  <a-table
+:bordered="{cell:true}"
            :columns="(cloneColumns as TableColumnData[])"
            :data="renderData"
            :loading="loading"
@@ -149,7 +150,8 @@
       </a-table-column>
       <a-table-column :title="$t('security.user.index.form.seqNo')" data-index="seqNo" width="100"></a-table-column>
       <a-table-column :title="$t('security.user.index.form.createAt')" data-index="createAt" width="180"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
+      <a-table-column
+:title="$t('security.user.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">
           <a-button v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">

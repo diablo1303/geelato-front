@@ -10,6 +10,7 @@
     <DictModel ref="dictModelRef"></DictModel>
   </a-modal>
 </template>
+
 <script lang="ts" setup>
 import {ref} from "vue";
 import DictModel from "@/views/security/dict/model.vue";

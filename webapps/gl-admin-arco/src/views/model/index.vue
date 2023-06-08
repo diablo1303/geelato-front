@@ -23,7 +23,7 @@
                 :data="originTreeData"
                 :show-line="true"
                 :load-more="loadMore"
-                @select="treeSelected">
+                @select="treeClickSelected">
               <template #title="nodeData">
                 <template v-if="getMatchIndex(nodeData?.title) < 0">{{ nodeData?.title }}</template>
                 <span v-else>{{ nodeData?.title?.substr(0, getMatchIndex(nodeData?.title)) }}
@@ -51,7 +51,8 @@
           <a-card v-if="pageData.level===1" class="general-card">
             <TableList ref="tableListRef"></TableList>
           </a-card>
-          <a-tabs v-if="pageData.level===2" v-model:active-key="pageData.tabKey" :default-active-tab="1"
+          <a-tabs
+v-if="pageData.level===2" v-model:active-key="pageData.tabKey" :default-active-tab="1"
                   :position="'top'" type="line">
             <a-tab-pane key="1" class="a-tabs-three" :title="$t('model.column.index.menu.list.searchTable')">
               <a-card class="general-card">
@@ -65,13 +66,13 @@
             </a-tab-pane>
             <template #extra>
               <a-space>
-                <a-button v-if="pageData.level===2" type="outline">
+                <a-button v-if="pageData.level===2" type="outline" @click="syncFromTableToModel">
                   <template #icon>
                     <icon-sync/>
                   </template>
                   {{ $t('model.connect.index.model.sync.model') }}
                 </a-button>
-                <a-button v-if="pageData.level===2" type="outline">
+                <a-button v-if="pageData.level===2" type="outline" @click="syncFromModelToTable">
                   <template #icon>
                     <icon-sync/>
                   </template>
@@ -85,6 +86,7 @@
     </a-card>
   </div>
 </template>
+
 <script setup lang="ts">
 import {computed, h, ref} from "vue";
 import {useI18n} from 'vue-i18n';
@@ -222,11 +224,14 @@ const fetchTables = async (params: PageQueryRequest = {current: 1, pageSize: 100
 
 /**
  * 树事件，加载更多
- * @param nodeData TreeNode
+ * @param nodeData TreeNodeData
  */
-const loadMore = (nodeData: TreeNode) => {
-  fetchTables({connectId: `${nodeData.key}`} as unknown as PageQueryRequest).then((data) => {
-    nodeData.children = data;
+const loadMore = (nodeData: TreeNodeData) => {
+  return new Promise<void>((resolve) => {
+    fetchTables({connectId: `${nodeData.key}`} as unknown as PageQueryRequest).then((data) => {
+      nodeData.children = data;
+    });
+    resolve();
   });
 }
 
@@ -400,12 +405,11 @@ const treeIconSwapOne = (nodeData: TreeNode) => {
   });
 }
 /**
- * 树操作，选中事件，单选
+ * 树tree，选中节点
  * @param selectedKey string
- * @param data data.node=>TreeNode
+ * @param nodeData TreeNodeProps
  */
-const treeSelected = (selectedKey: string, data: any) => {
-  const nodeData: TreeNode = data.node;
+const treeSelected = (selectedKey: string, nodeData: TreeNode) => {
   // 全局属性
   pageData.value.level = nodeData.level || 0;
   pageData.value.treeKey = nodeData.key ? nodeData.key.toString() : '';
@@ -429,6 +433,20 @@ const treeSelected = (selectedKey: string, data: any) => {
     loadColumnAndForeignList(pageData.value.treeKey, tableName);
   }, 200);
 }
+/**
+ * 树tree，点击事件，选中节点
+ * @param selectedKey string
+ * @param data TreeNode
+ */
+const treeClickSelected = (selectedKey: (string | number)[], data: {
+  selected?: boolean | undefined;
+  selectedNodes: TreeNode[];
+  node?: TreeNode | undefined;
+  e?: Event | undefined;
+}) => {
+  treeSelected(selectedKey[0].toString(), data.node as unknown as TreeNode);
+}
+
 
 fetchConnects().then((data) => {
   refreshTreeOne(data);
@@ -436,6 +454,17 @@ fetchConnects().then((data) => {
     loadConnectList();
   }, 200);
 });
+
+const syncFromTableToModel = () => {
+  if (pageData.value.level === 2) {
+    // todo
+  }
+}
+const syncFromModelToTable = () => {
+  if (pageData.value.level === 2) {
+    // todo
+  }
+}
 </script>
 
 <style lang="less" scoped>

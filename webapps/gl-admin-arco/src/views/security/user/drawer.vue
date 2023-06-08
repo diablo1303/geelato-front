@@ -11,8 +11,9 @@
     <UserModel ref="userModelRef"></UserModel>
     <a-divider v-if="pageData.formState!=='add'" orientation="left">
       <strong>{{ $t('security.user.index.form.partOrgName') }}</strong>
-      <a-tree-select v-model="pageData.orgId" :data="orgSelectOptions" :field-names="{key:'value',title:'label'}"
-                     @change="addOrgUser">
+      <a-tree-select
+          v-model="pageData.orgId" :data="orgSelectOptions" :field-names="{key:'value',title:'label'}"
+          @change="addOrgUser">
         <template #trigger>
           <a-tooltip position="top" :content="$t('security.orgUser.index.model.title.add')">
             <icon-plus v-if="pageData.formState==='edit'" class="tree-extra-icon"/>
@@ -33,8 +34,9 @@
           <a-button v-if="item.defaultOrg===1" type="outline" class="list-action-button-default">
             {{ $t('security.orgUser.index.form.default') }}
           </a-button>
-          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
-                        @ok="deleteOrgUser(item.id)">
+          <a-popconfirm
+              :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
+              @ok="deleteOrgUser(item.id)">
             <icon-delete v-if="pageData.formState==='edit'&&item.defaultOrg!==1" class="icon-danger"/>
           </a-popconfirm>
         </template>
@@ -144,7 +146,8 @@ const deleteOrgUser = (id: string) => {
     orgUserRefresh();
   });
 }
-const addOrgUser = () => {
+
+const addOrgUser = (value: any) => {
   if (pageData.value.orgId && pageData.value.userId) {
     createOrUpdateData({
       userId: pageData.value.userId,

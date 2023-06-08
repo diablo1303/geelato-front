@@ -19,7 +19,8 @@
           :label="$t('security.orgUser.index.form.orgName')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="orgId">
-        <a-cascader v-if="pageData.button" v-model="formData.orgId" :options="orgSelectOptions" allow-clear allow-search
+        <a-cascader
+v-if="pageData.button" v-model="formData.orgId" :options="orgSelectOptions" allow-clear allow-search
                     check-strictly/>
         <span v-else>{{ formData.orgName }}</span>
       </a-form-item>
@@ -28,7 +29,8 @@
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="defaultOrg">
         <a-select v-if="pageData.button" v-model="formData.defaultOrg">
-          <a-option v-for="item of defaultOrgOptions" :key="item.value" :disabled="true" :label="$t(`${item.label}`)"
+          <a-option
+v-for="item of defaultOrgOptions" :key="item.value" :disabled="true" :label="$t(`${item.label}`)"
                     :value="item.value"/>
         </a-select>
         <span v-else>{{ $t(`security.orgUser.index.form.defaultOrg.${formData.defaultOrg}`) }}</span>

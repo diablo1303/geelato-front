@@ -94,7 +94,8 @@
       </a-tooltip>
     </a-col>
   </a-row>
-  <a-table :bordered="{cell:true}"
+  <a-table
+:bordered="{cell:true}"
            :columns="(cloneColumns as TableColumnData[])"
            :data="renderData"
            :loading="loading"
@@ -120,7 +121,8 @@
         </template>
       </a-table-column>
       <a-table-column :title="$t('model.connect.index.form.createAt')" data-index="createAt" width="180"/>
-      <a-table-column v-show="pageData.formState==='edit'" :title="$t('model.connect.index.form.operations')" data-index="operations"
+      <a-table-column
+v-show="pageData.formState==='edit'" :title="$t('model.connect.index.form.operations')" data-index="operations"
                       align="center" fixed="right" :width="170">
         <template #cell="{ record }">
           <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">

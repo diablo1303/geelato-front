@@ -1,5 +1,6 @@
 <template v-model="pageData">
-  <a-form ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }"
+  <a-form
+ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }"
           class="form">
     <a-row :gutter="16">
       <a-col :span="24">
@@ -40,7 +41,8 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="enableStatus">
           <a-select v-model="formData.enableStatus">
-            <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+            <a-option
+v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
                       :value="item.value"/>
           </a-select>
         </a-form-item>
@@ -64,7 +66,8 @@
             :label-col-props="{ span: (pageData.formCol===1?8:4) }"
             :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
             field="description">
-          <a-textarea v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512"
+          <a-textarea
+v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512"
                       show-word-limit/>
         </a-form-item>
       </a-col>
@@ -92,7 +95,8 @@
         </a-form-item>
       </a-col>
       <a-col v-if="formData.dataType==='数字'" :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.numericPrecision')"
+        <a-form-item
+:label="$t('model.column.index.form.numericPrecision')"
                      :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
                      field="numericPrecision">
           <a-input-number
@@ -104,7 +108,8 @@
         </a-form-item>
       </a-col>
       <a-col v-if="formData.dataType==='数字'" :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.numericScale')"
+        <a-form-item
+:label="$t('model.column.index.form.numericScale')"
                      :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
                      field="numericScale">
           <a-input-number
