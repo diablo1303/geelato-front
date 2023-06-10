@@ -24,6 +24,7 @@ import GlIconfontTextSetter from "./components/setters/property-setters/GlIconfo
 import GlIconfontSetterForSlot from "./components/setters/property-setters/GlIconfontSetterForSlot.vue";
 import GlHtmlSetter from "./components/setters/property-setters/GlHtmlSetter.vue";
 import GlSelectSetter from "./components/setters/property-setters/GlSelectSetter.vue";
+import SwitchPropsBuilder from "./components/builder/props-builder/SwitchPropsBuilder.vue";
 import GlRadioGroupSetter from "./components/setters/property-setters/GlRadioGroupSetter.vue";
 import GlFieldSelect from "./components/setters/property-setters/GlFieldSelect.vue";
 import GlEntitySelect from "./components/setters/property-setters/GlEntitySelect.vue";
@@ -52,6 +53,11 @@ import GlPageComponentSelect from "./components/setters/property-setters/GlPageC
 import GlPageComponentSelectBuilder from "./components/builder/props-builder/GlPageComponentSelectBuilder.vue";
 import GlInputSetter from "./components/setters/property-setters/GlInputSetter.vue";
 import GlOptionsDynamicBuilder from "./components/builder/props-builder/GlOptionsDynamicBuilder.vue";
+import GlValueTypes from "./components/setters/property-setters/GlValueTypes.vue";
+import GlCompareValueSetter from "./components/setters/property-setters/GlCompareValueSetter.vue";
+import GlComponentMethodSelect from "./components/setters/property-setters/GlComponentMethodSelect.vue";
+import GlComponentActionSelect from "./components/setters/property-setters/GlComponentActionSelect.vue";
+
 
 // import formPageTemplate from "./components/stage/formPageTemplate.json";
 
@@ -159,6 +165,7 @@ const component: Plugin = {
         app.component(GlSimpleArrayBuilder.name, GlSimpleArrayBuilder)
         app.component(GlPageComponentSelectBuilder.name, GlPageComponentSelectBuilder)
         app.component(GlOptionsDynamicBuilder.name, GlOptionsDynamicBuilder)
+        app.component(SwitchPropsBuilder.name, SwitchPropsBuilder)
         // 注册属性设置组件
         app.component('GlComponentSetter', GlComponentSetter)
         app.component(GlComponentPropertiesSetter.name, GlComponentPropertiesSetter)
@@ -172,6 +179,10 @@ const component: Plugin = {
         app.component(GlArrayComponentSetter.name, GlArrayComponentSetter)
         app.component(GlArrayBooleanSetter.name, GlArrayBooleanSetter)
         app.component(GlSimpleObjectSetter.name, GlSimpleObjectSetter)
+        app.component(GlValueTypes.name, GlValueTypes)
+        app.component(GlCompareValueSetter.name, GlCompareValueSetter)
+        app.component(GlComponentMethodSelect.name, GlComponentMethodSelect)
+        app.component(GlComponentActionSelect.name, GlComponentActionSelect)
         // app.component(GlSettingOptions.name, GlSettingOptions)
         // app.component(GlSettingProperty.name, GlSettingProperty)
         app.component(GlPropertySetter.name, GlPropertySetter)

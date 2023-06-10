@@ -26,10 +26,10 @@
     <a-modal v-if="actionCodeEditorVisible" draggable :visible="actionCodeEditorVisible" title="动作（事件）编排"
              @ok="closeActionCodeEditor"
              @cancel="closeActionCodeEditor"
-             :width="1360"
              :hide-cancel="true"
              ok-text="关闭"
              body-style="padding:0"
+             fullscreen
     >
       <CommandEditor v-if="refreshFlag&&currentAction" :key="currentAction.id"
                      v-model:action="currentAction"></CommandEditor>

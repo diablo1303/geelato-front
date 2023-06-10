@@ -2,7 +2,7 @@ export default {
     "componentName": "GlBlockConfirm",
     "displayMode": "Tile",
     "iconType": "gl-file",
-    "group": "block_page",
+    "group": "block_feedback",
     "title": "弹出确认",
     "useBy": ["freePage"],
     "blockContent": "弹出确认框，标题为:${title}，内容为:${content}",

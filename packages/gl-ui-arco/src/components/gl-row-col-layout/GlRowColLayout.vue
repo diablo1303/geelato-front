@@ -48,8 +48,6 @@ const props = defineProps({
   ...mixins.props
 });
 
-console.log('props.glIsRuntime,props.glRuntimeFlag',props.glIsRuntime,props.glRuntimeFlag)
-
 const colTemplate = () => {
   return {
     "id": utils.gid('virtual'),

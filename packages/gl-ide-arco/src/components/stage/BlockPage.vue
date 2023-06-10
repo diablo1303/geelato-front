@@ -6,7 +6,7 @@ export default {
 <script lang="ts" setup>
 import GlIdeStageBasePage from "./BasePage.vue";
 import {useGlobal, utils} from "@geelato/gl-ui";
-import {PropType, watch} from "vue";
+import {onUnmounted, PropType, watch} from "vue";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
 
@@ -29,8 +29,9 @@ let rootItem = props.glComponentInst
 if (!rootItem || !rootItem.id) {
   rootItem = {
     componentName: 'GlPage',
-    id: utils.gid('br'),
+    id: utils.gid('blockPage',),
     props: {
+      pageType: 'blockPage',
       pageTitle: "指令",
       pageMargin: "0",
       pagePadding: "0"
@@ -61,11 +62,11 @@ watch(() => {
   console.log('update mv:', componentStore.currentComponentTree[0])
   emits("update", componentStore.currentComponentTree[0])
 }, {deep: true})
-
+const key = utils.gid('p')
 </script>
 
 <template>
-  <GlIdeStageBasePage :key="utils.gid('p')" :componentStoreId="componentStoreId"
+  <GlIdeStageBasePage :key="key" :componentStoreId="componentStoreId"
                       :enableToolbar="false"></GlIdeStageBasePage>
 </template>
 <style>

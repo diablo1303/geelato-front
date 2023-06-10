@@ -23,7 +23,11 @@ const props = defineProps({
       return ''
     }
   },
-  entityMetaVarName: {
+  /**
+   *  依赖于inject进来的componentSetterProvideProxy中的变量
+   *  一般不需要配置，当在同一个ComponentSetter中有多个entityMeta时，需要明确依赖哪一个
+   */
+  dependVarEntityMeta: {
     type: String,
     default() {
       return 'entityMeta'
@@ -34,10 +38,10 @@ const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(Componen
 
 
 const entityFieldMetas = ref(new Array<FieldMeta>())
-const mv = ref('')
-mv.value = props.modelValue
-watch(mv, (val) => {
-  emits('update:modelValue', val)
+const mv = ref(props.modelValue)
+
+watch(mv, () => {
+  emits('update:modelValue', mv.value)
 })
 
 const onChange = () => {
@@ -49,10 +53,10 @@ const onClick = () => {
 
 const setData = () => {
   // console.log('componentSetterProvideProxy.getVarsRef():', componentSetterProvideProxy.getVarsRef())
-  // console.log('componentSetterProvideProxy.getVar(props.entityMetaVarName):', componentSetterProvideProxy.getVar(props.entityMetaVarName))
+  // console.log('componentSetterProvideProxy.getVar(props.dependVarEntityMeta):', componentSetterProvideProxy.getVar(props.dependVarEntityMeta))
 
   // entityFieldMetas.value = componentSetterProvideProxy.getEntityDsRef()?.value?.entityMeta?.fieldMetas
-  entityFieldMetas.value = componentSetterProvideProxy.getVar(props.entityMetaVarName)?.fieldMetas
+  entityFieldMetas.value = componentSetterProvideProxy.getVarValue(props.dependVarEntityMeta)?.fieldMetas
 
 }
 onMounted(() => {

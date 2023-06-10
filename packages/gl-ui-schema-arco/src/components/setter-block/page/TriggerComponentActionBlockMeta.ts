@@ -47,8 +47,9 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "组件的动作",
-        "setterComponentName": "AInput"
+        "title": "触发组件动作",
+        "setterComponentName": "GlComponentActionSelect",
+        "enableValueExpress": false
     }],
     "actions": []
 }

@@ -24,9 +24,9 @@ const props = defineProps({
     }
   },
   /**
-   *  将选择加载的完整实体源数据信息设置到ComponentSetterProvideProxy的正下文环境变量中
+   *  将选择加载的完整实体源数据信息设置到ComponentSetterProvideProxy的上下文环境变量中
    */
-  entityMetaVarName: {
+  exposeVarEntityMeta: {
     type: String,
     default() {
       return 'entityMeta'
@@ -72,7 +72,7 @@ const onEntityChange = (entityName: string) => {
     // @ts-ignore
     // ds.value.fieldMetas = fieldMetas
     componentSetterProvideProxy.setEntityDsRef(ds)
-    componentSetterProvideProxy.setVar(props.entityMetaVarName, ds.value.entityMeta)
+    componentSetterProvideProxy.setVarValue(props.exposeVarEntityMeta, ds.value.entityMeta)
   })
 }
 

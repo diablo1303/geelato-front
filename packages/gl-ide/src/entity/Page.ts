@@ -1,14 +1,16 @@
 /**
  *  动态页面结构定义
+ *  对应数据库中的页面模型
  */
+import type {PageType} from "@geelato/gl-ui";
+
 export default class Page {
     isInitFromTemplate: boolean;
     id: string = '';
     appId: string = '';
     extendId: any;
     title: string = '';
-    // type: Canvas | FreePage | Dbm
-    type: string = '';
+    type: PageType = '';
     iconType:string = '';
     code: string = '';
     description: string = '';

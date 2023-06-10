@@ -9,7 +9,7 @@ export default {
     "properties": [{
         "expanded": true,
         "style": "",
-        "name": "title",
+        "name": "label",
         "title": "标题",
         "group": "base",
         "placeholder": "",
@@ -58,5 +58,6 @@ export default {
         "setterComponentName": "ASwitch",
         "description": "设置 auto-label-width 开启自动标签宽度。仅在 layout=\"horizontal\" 布局下生效。"
     }],
-    "actions": []
+    "actions": [],
+    "methods": [{"name": "submitForm", "title": "提交表单", "description": "", "params": []}]
 }

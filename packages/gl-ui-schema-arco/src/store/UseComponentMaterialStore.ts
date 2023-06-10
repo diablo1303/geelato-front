@@ -52,7 +52,7 @@ export const useComponentMaterialStore = defineStore('GlComponentMaterialStore',
     }
 
     /**
-     * 注册单个组件实例，在注册实例的同时会同步注册对应的组件物料
+     * 注册单个组件实例，在注册实例的同时会同步注册对应的组件物料（包括元数据信息）
      * 在注册前，需先注册元数据componentMeta
      * @param componentInstance: ComponentInstance
      */

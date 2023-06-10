@@ -35,9 +35,8 @@ import DesignerStagePanel from './StagePanel.vue'
 import DesignerSetterPanel from './SetterPanel.vue'
 import DesignerStatusPanel from './StatusPanel.vue'
 import {useThemeStore} from "../stores/UseThemeStore";
-import {CheckUtil} from "@geelato/gl-ui";
 import AllUtils from "@geelato/gl-ui/src/m/utils/AllUtils";
-// DesignerSidebar, DesignerStage, DesignerSettings
+
 export default defineComponent({
   name: "GlIde",
   components: {
@@ -69,6 +68,7 @@ export default defineComponent({
         themeStore.sidebarWidth = themeStore.sidebarTabWidth
       }
     }
+
     return {
       stagePanels,
       themeStore,

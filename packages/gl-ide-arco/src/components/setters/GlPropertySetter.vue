@@ -18,9 +18,9 @@
           <GlIconfont type="gl-info-circle" :title="propertySetterMeta.description"></GlIconfont>
         </span>
         <span style="cursor:pointer;font-weight: 580"
-              @click="propertySetterMeta.expanded=!propertySetterMeta.expanded">&nbsp;{{
-            propertySetterMeta.title
-          }}</span>
+              @click="propertySetterMeta.expanded=!propertySetterMeta.expanded">&nbsp;
+          {{ propertySetterMeta.title }}
+        </span>
       </template>
       <template v-if="!isCollapseDisplayMode">
          <span v-if="propertySetterMeta.description">
@@ -29,7 +29,8 @@
         <span>&nbsp;{{ propertySetterMeta.title }}</span>
       </template>
     </div>
-    <div :class="cellDisplayModeClass" v-if="propertySetterMeta.expanded!==false">
+    <!-- 这里需用 v-show，确保各属性都初始化，属性之间的数据依赖才能正常   -->
+    <div :class="cellDisplayModeClass" v-show="propertySetterMeta.expanded!==false">
       <div style="display: flex">
         <div style="flex: auto">
           <!-- 1 ========================type为props或默认为空========================-->
@@ -150,7 +151,7 @@ const props = defineProps({
   propertyValue: [String, Number, Boolean, Array, Object, Date, Function, Symbol]
 })
 
-const propertyModel = ref(props.propertyValue)
+const propertyModel = ref<any>(props.propertyValue)
 const isCollapseDisplayMode = props.displayMode === 'collapse'
 const displayModeClass = computed(() => {
   return {["gl-display-mode-" + props.displayMode || 'default']: true}
@@ -174,25 +175,27 @@ watch(() => {
 }, {deep: true, immediate: true})
 
 const setPropertyModel = () => {
-  // @ts-ignore
   propertyModel.value = props.propertyValue
   if (!propertyModel.value) {
     if (props.propertySetterMeta.type === 'slots') {
-      // @ts-ignore
       propertyModel.value = {
         componentName: props.propertySetterMeta.slotComponentName,
         props: undefined,
         propsTarget: props.propertySetterMeta.slotComponentBindTarget,
-        propsName:props.propertySetterMeta.slotComponentBindName
+        propsName: props.propertySetterMeta.slotComponentBindName
       }
     } else {
-      if (props.propertySetterMeta.properties && props.propertySetterMeta.properties.length > 0) {
-        if (props.propertySetterMeta.type === 'children' || props.propertySetterMeta.setterComponentName === 'GlObjectArraySetter') {
-          // @ts-ignore
-          propertyModel.value = []
-        } else {
-          // @ts-ignore
-          propertyModel.value = {}
+      if (props.propertySetterMeta.setterDefaultValue!==undefined) {
+        // 若组件配置了默认值，则设置默认值
+        propertyModel.value = props.propertySetterMeta.setterDefaultValue
+      }else{
+        // 若组件未配置默认值，则按类型进行设置值设置
+        if (props.propertySetterMeta.properties && props.propertySetterMeta.properties.length > 0) {
+          if (props.propertySetterMeta.type === 'children' || props.propertySetterMeta.setterComponentName === 'GlObjectArraySetter') {
+            propertyModel.value = []
+          } else {
+            propertyModel.value = {}
+          }
         }
       }
     }

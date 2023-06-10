@@ -30,7 +30,13 @@ export default {
         "enableValueExpress": false
     }, {
         "name": "dictId",
-        "setterComponentProps": {"entityName": "platform_dict", "labelFieldName": "dicName", "valueFieldName": "id"},
+        "setterComponentProps": {
+            "entityName": "platform_dict",
+            "labelFieldName": "dicName",
+            "valueFieldName": "id",
+            "ascOrDesc": "+",
+            "orderFieldName": "seq_no"
+        },
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
@@ -40,6 +46,27 @@ export default {
         "title": "数据字典名",
         "description": "数据字典选项集",
         "setterComponentName": "GlDynamicSelect"
+    }, {
+        "name": "dictAscOrDesc",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {
+            "type": "button",
+            "options": [{"label": "升序 asc", "__FuNUUHKrAdsec1H3gt": "+", "value": "+"}, {
+                "label": "降序 desc",
+                "__FuNUUHKrAdsec1H3gt": "-",
+                "value": "-"
+            }],
+            "defaultValue": "+"
+        },
+        "setterComponentVModelName": "modelValue",
+        "title": "字典排序",
+        "setterComponentName": "ARadioGroup",
+        "placeholder": "",
+        "description": "依据字典表的seqNo字段进行排序"
     }, {
         "name": "size",
         "setterComponentProps": {

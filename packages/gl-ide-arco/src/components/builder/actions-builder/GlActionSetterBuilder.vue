@@ -1,7 +1,7 @@
 <template>
   <table class="gl-table">
     <tr>
-      <td class="gl-table-cell gl-label" title="显示名称。显示在设计器中">
+      <td class="gl-table-cell gl-label" style="width: 8em" title="显示名称，用于配置触发组件动作时显示">
         <GlIconfont type="gl-info-circle"></GlIconfont>
         动作标题
       </td>
@@ -28,11 +28,10 @@ export default {
 <script lang="ts" setup>
 import {PropType, ref, watch} from 'vue'
 import {ActionSetterMeta} from "@geelato/gl-ui-schema";
-import {IActionSetterMeta} from "@geelato/gl-ui-schema";
 
 const props = defineProps({
   modelValue: {
-    type: Object as PropType<IActionSetterMeta>,
+    type: Object as PropType<ActionSetterMeta>,
     default() {
       return new ActionSetterMeta()
     }
@@ -41,13 +40,9 @@ const props = defineProps({
 const emits = defineEmits(['updateSetter'])
 
 const mv = ref(props.modelValue)
-// onBeforeUpdate(() => {
-//   mv.value = props.modelValue
-// })
 
 watch(mv, (val, oval) => {
-  console.log('mv:', val, oval)
-  emits('updateSetter', mv)
+  emits('updateSetter', mv.value)
 }, {immediate: true, deep: true})
 
 </script>

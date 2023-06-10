@@ -5,7 +5,7 @@
         页面属性名
       </td>
       <td class="gl-table-cell">
-        <a-input v-model="mv.pageExtendIdName" placeholder="该值应和Props中表示“页面extendId”的属性名称一致"/>
+        <a-input v-model="mv.dependPropPageIdFieldName" placeholder="该值应和Props中表示“页面extendId”的属性名称一致"/>
       </td>
     </tr>
   </table>
@@ -24,7 +24,7 @@ const props = defineProps({
     type: Object,
     default() {
       return {
-        pageExtendIdName: ''
+        dependPropPageIdFieldName: ''
       }
     }
   }

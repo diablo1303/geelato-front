@@ -15,7 +15,9 @@ const props = defineProps({
       return {
         entityName: '',
         labelFieldName: '',
-        valueFieldName: ''
+        valueFieldName: '',
+        orderFieldName: '',
+        ascOrDesc: '+'
       }
     }
   }
@@ -25,7 +27,7 @@ watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
 
-const handleSubmit = (data:any) => {
+const handleSubmit = (data: any) => {
   console.log(data);
 };
 </script>
@@ -40,6 +42,19 @@ const handleSubmit = (data:any) => {
     </a-form-item>
     <a-form-item field="valueFieldName" label="值字段">
       <a-input v-model="mv.valueFieldName"/>
+    </a-form-item>
+    <a-form-item field="valueFieldName" label="排序字段">
+      <a-input v-model="mv.orderFieldName"/>
+    </a-form-item>
+    <a-form-item field="valueFieldName" label="升序降序">
+      <a-switch v-model="mv.ascOrDesc" checked-value="+" unchecked-value="-">
+        <template #checked>
+          升序 asc(+)
+        </template>
+        <template #unchecked>
+          降序 desc(-)
+        </template>
+      </a-switch>
     </a-form-item>
   </a-form>
 </template>

@@ -17,7 +17,7 @@ export default class Action {
     body?: string
 
     // 命令块，可基于命令块生成body的内容，在最终发布版中，可以压缩去掉该字段
-    __commandBlock: ComponentInstance
+    __commandBlock?: ComponentInstance
 
     constructor(option?: Action) {
         this.id = option?.id || ''

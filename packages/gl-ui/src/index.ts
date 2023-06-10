@@ -35,7 +35,12 @@ import useGlobal from "./m/hooks/useGlobal";
 import './assets/style.css'
 import actionScriptExecutor from "./m/actions/ActionScriptExecutor";
 import {PageProvideKey} from "./components/PageProvideProxy";
+import AppProvideProxy from "./components/AppProvideProxy";
+import {AppProvideKey} from "./components/AppProvideProxy";
+import FormProvideProxy from "./components/FormProvideProxy";
+import {FormProvideKey} from "./components/FormProvideProxy";
 import {Schema} from "b-validate";
+import type {PageType} from "./m/types/global";
 
 const Utils = AllUtils
 
@@ -73,10 +78,15 @@ const component: Plugin = {
 }
 
 export {
+    AppProvideKey,
+    AppProvideProxy,
+    PageProvideKey,
+    PageProvideProxy,
+    FormProvideKey,
+    FormProvideProxy,
+    PageType,
     Schema,
     PageParamType,
-    PageProvideProxy,
-    PageProvideKey,
     GlIconfont,
     EntityApi,
     entityApi,

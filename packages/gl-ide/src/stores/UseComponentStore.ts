@@ -56,6 +56,13 @@ class ComponentStoreFactory {
                         })
                     },
                     /**
+                     * 获取组件元数据
+                     * @param componentName
+                     */
+                    getComponentMeta(componentName: string) {
+                        return componentStoreFactory.componentMetaMap[componentName]
+                    },
+                    /**
                      * 基于组件元数据，获取组件别名，若无别名，返回空：''
                      * @param componentName
                      */

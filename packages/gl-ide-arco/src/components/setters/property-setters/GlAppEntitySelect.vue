@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <a-select @change="onEntityChange" v-model="mv.entityName" allow-search>
-      <a-option v-for="item in entityLiteMetas" :value="item.entityName">{{ item.entityTitle }}</a-option>
-    </a-select>
-  </div>
+  <a-select @change="onEntityChange" v-model="mv.entityName" allow-search>
+    <a-option v-for="item in entityLiteMetas" :value="item.entityName">{{ item.entityTitle }}</a-option>
+  </a-select>
 </template>
 <script lang="ts">
 export default {
@@ -32,7 +30,7 @@ const props = defineProps({
   /**
    *  将选择加载的完整实体源数据信息设置到ComponentSetterProvideProxy的正下文环境变量中
    */
-  entityMetaVarName: {
+  exposeVarEntityMeta: {
     type: String,
     default() {
       return 'entityMate'
@@ -84,7 +82,7 @@ const onEntityChange = (entityName: string) => {
     // ds.value.fieldMetas = fieldMetas
     // console.log('inject ds:', ds)
     // componentSetterProvideProxy.setEntityDsRef(ds)
-    componentSetterProvideProxy.setVar(props.entityMetaVarName, ds.value.entityMeta)
+    componentSetterProvideProxy.setVarValue(props.exposeVarEntityMeta, ds.value.entityMeta)
 
   })
 }

@@ -9,6 +9,7 @@ export default {
 <script lang="ts" setup>
 
 import {ref, watch} from "vue";
+import {useValueTypeOptions, ValueTypes} from "@geelato/gl-ui-schema";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -24,16 +25,7 @@ watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
 
-const options = [{"label": "字符串", "value": "string"}, {
-  "label": "布尔",
-  "value": "boolean"
-}, {"label": "表达式", "value": "express"}, {
-  "label": "数值",
-  "value": "number"
-}, {"label": "数组", "value": "array"}, {
-  "label": "对象",
-  "value": "object"
-}]
+const options = useValueTypeOptions()
 </script>
 
 <template>

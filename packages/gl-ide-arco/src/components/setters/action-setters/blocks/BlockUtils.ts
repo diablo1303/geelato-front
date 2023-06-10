@@ -1,4 +1,7 @@
 import type {PageParamType} from "@geelato/gl-ui";
+import type {PageProvideProxy} from "@geelato/gl-ui";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import {actionScriptExecutor} from "@geelato/gl-ui";
 
 export interface Params {
     [key: string]: string;
@@ -12,13 +15,23 @@ export default class BlockUtils {
         return str.replace(regex, "<span class='gl-var'>$&</span>");
     }
 
-
     static replaceVariables = (message: string, params: Params): string => {
         let result: string = message;
-        Object.keys(params).forEach((key: string) => {
-            if (params[key] !== undefined) {
-                result = result.replace(new RegExp('\\${' + key + '}', 'g'), params[key]);
-                result = result.replace(new RegExp('{' + key + '}', 'g'), `"${params[key]}"`);
+        Object.keys(params).forEach((paramKey: string) => {
+            let paramValue = params[paramKey]
+            if (paramValue !== undefined) {
+                // 尝试看是不是组件，如果是否组件，取组件label进行展示
+                const componentInst: ComponentInstance = actionScriptExecutor.getComponentInst(paramValue)
+                console.log('BlockUtils > try to find inst by paramKey:', paramKey, ' paramValue:', paramValue, ',and get', componentInst)
+                if (componentInst) {
+                    if (componentInst.componentName === 'GlEntityTablePlus') {
+                        paramValue = componentInst.props.base.tableTitle;
+                    } else {
+                        paramValue = componentInst.props.label || componentInst.id
+                    }
+                }
+                result = result.replace(new RegExp('\\${' + paramKey + '}', 'g'), paramValue);
+                result = result.replace(new RegExp('{' + paramKey + '}', 'g'), `"${paramValue}"`);
             }
         });
         return result;

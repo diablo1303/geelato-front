@@ -7,6 +7,11 @@
  * 各组件的专用设置页面面板的样式
  *************************************/
 
-.gl-component-setter .arco-collapse-item-content,.gl-component-setter .arco-collapse-item-content-box {
-    padding:0;
+.gl-component-setter .arco-collapse-item-content, .gl-component-setter .arco-collapse-item-content-box {
+    padding: 0;
+}
+
+/* 属性值上下居中 */
+.gl-component-setter .gl-table-cell:not(.gl-label) {
+    vertical-align: middle;
 }

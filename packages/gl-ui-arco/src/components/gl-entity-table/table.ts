@@ -31,7 +31,9 @@ export class BaseInfo {
     // 启用表格编辑（表格内编辑）
     enableEdit?: boolean = false
     // 作为表单的子表
-    isFormSubTable?:boolean = false
+    isFormSubTable?: boolean = false
+    // 外键，对应主表ID字段
+    subTablePidName?: string = ''
     // 显示序号
     showSeqNo?: boolean = false
     // 左边固定数
@@ -40,6 +42,8 @@ export class BaseInfo {
     checkType: 'checkbox' | 'radio' | undefined = undefined
     // checkType 为checkbox时，showCheckAll才有效
     showCheckAll?: boolean = false
+    // 数据删除模式是否为逻辑删除模式
+    isLogicDeleteMode?: boolean = true
 }
 
 const defaultTable: TableMeta = {
@@ -47,3 +51,6 @@ const defaultTable: TableMeta = {
     entityReaderInfo: {} as EntityReader,
 };
 export {defaultTable};
+
+// 强制约定，实体需要有逻辑删除字段delStatus
+export const logicDeleteFieldName = 'delStatus'

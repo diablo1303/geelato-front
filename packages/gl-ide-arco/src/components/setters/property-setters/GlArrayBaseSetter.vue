@@ -10,7 +10,7 @@
         itemKey="value"
     >
       <template #item="{element, index}">
-        <div style="width:100%;display: flex;margin-bottom: 1px">
+        <div style="width:100%;display: flex;margin-bottom: 1px" :style="wrapperStyle">
           <div style="flex: 0 0 2em;text-align: center;line-height: 2em">
             <GlIconfont title="拖动" type="gl-drag" class="gl-dnd-item" style="cursor: move"></GlIconfont>
           </div>
@@ -22,8 +22,8 @@
               <GlIconfont type="gl-delete" @click="removeItem(index)"
                           style="cursor: pointer;color: red"></GlIconfont>
             </a-button>
-<!--            <GlIconfont type="gl-delete" @click="removeItem(index)"-->
-<!--                        style="cursor: pointer;color: red"></GlIconfont>-->
+            <!--            <GlIconfont type="gl-delete" @click="removeItem(index)"-->
+            <!--                        style="cursor: pointer;color: red"></GlIconfont>-->
           </div>
         </div>
 
@@ -60,6 +60,12 @@ export default defineComponent({
       type: Boolean,
       default() {
         return true
+      }
+    },
+    wrapperStyle: {
+      type: Object,
+      default(){
+        return {}
       }
     }
   },

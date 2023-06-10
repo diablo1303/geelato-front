@@ -2,7 +2,7 @@ export default {
     "componentName": "GlLogBlock",
     "displayMode": "Tile",
     "iconType": "gl-file",
-    "group": "block_page",
+    "group": "block_other",
     "title": "输出日志",
     "useBy": ["freePage"],
     "blockContent": "控制台输出日志内容${content}",

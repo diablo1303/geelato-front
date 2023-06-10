@@ -47,8 +47,9 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "组件的方法",
-        "setterComponentName": "AInput"
+        "title": "调用组件方法",
+        "setterComponentName": "GlComponentMethodSelect",
+        "enableValueExpress": false
     }, {
         "name": "params",
         "setterComponentProps": {},

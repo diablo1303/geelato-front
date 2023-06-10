@@ -1,5 +1,6 @@
 <!--
   提供基础的树操作,服务端的操作由外部传入,如addNode属性、deleteNode属性，通该这些属性传入对应的方法，在本组件中执行成功之后，进行组件状态刷新操作，同时触发相应的事件
+  TODO 待改成通用版本，目前默认数据用了页面树
 -->
 <template>
   <div class="gl-base-tree">
@@ -164,8 +165,8 @@ const emits = defineEmits(['selectNode', 'addNode', 'updateNode', 'updateNodeSeq
 const selectedKeys = ref([])
 const treeData = ref(new Array<any>())
 const contextMenu = ref()
-const currentClickedNodeData = ref({title:''})
-const currentEditNodeData = ref({title:'',iconType: '', nodeType: ''})
+const currentClickedNodeData = ref({title: ''})
+const currentEditNodeData = ref({title: '', iconType: '', nodeType: ''})
 const currentAction = ref({action: '', title: ''})
 const titleInput = ref()
 
@@ -190,7 +191,7 @@ type ContextMenuDataType = {
 
 const refreshTree = () => {
   treeData.value = [...treeData.value]
-  console.log('refreshTree',treeData.value)
+  console.log('refreshTree', treeData.value)
 }
 
 // const defaultTreeData = [
@@ -215,7 +216,7 @@ const onShowContextMenu = (clickedNodeData: any) => {
     if (item.show) {
       // @ts-ignore
       const isShow = utils.evalPlus(item.show, clickedNodeData)
-      console.log('utils.evalPlus(item.show, clickedNodeData)', isShow,'clickedNodeData',clickedNodeData)
+      console.log('utils.evalPlus(item.show, clickedNodeData)', isShow, 'clickedNodeData', clickedNodeData)
       // @ts-ignore
       return item.useFor.includes(clickedNodeData.nodeType) && isShow
     } else {
@@ -249,7 +250,7 @@ const onMenuItemClick = (clickedNodeData: any, contextMenuItemData: ContextMenuD
         //@ts-ignore
         currentEditNodeData.value[key] = contextMenuItemData.actionParams[key]
         //@ts-ignore
-        clickedNodeData[key] =  contextMenuItemData.actionParams[key]
+        clickedNodeData[key] = contextMenuItemData.actionParams[key]
       })
     }
     currentAction.value = {action: 'updateNode', title: '修改节点'}

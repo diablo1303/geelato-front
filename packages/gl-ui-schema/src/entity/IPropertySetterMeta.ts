@@ -23,6 +23,9 @@ export default interface IPropertySetterMeta {
     // 配置器组件属性
     setterComponentProps: SetterComponentPropsMetaImpl
 
+    // 配置器组件默认值
+    setterDefaultValue?: any
+
     // 是否在设置面板中展示，不显示时，常与默认值配合使用
     show?: Boolean
 
@@ -75,6 +78,7 @@ export class PropertySetterMetaImpl implements IPropertySetterMeta {
     type: String;
     setterComponentName: String;
     setterComponentProps: SetterComponentPropsMetaImpl;
+    setterDefaultValue: undefined;
     show: Boolean;
     title: String;
     setterComponentVModelName: String;

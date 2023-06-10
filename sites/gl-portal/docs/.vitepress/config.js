@@ -237,9 +237,6 @@ function sidebarComponent(){
       collapsible: true,
       items: [
         { text: '所有脚本组件', link: '/component/script/all_blocks' }
-        // { text: 'IF条件', link: '/component/script/condition/ifelse' },
-        // { text: '通知', link: '/component/script/notification' },
-        // { text: '打开外部页面', link: '/component/script/openThirdPage' }
       ]
     },
     // {

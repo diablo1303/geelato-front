@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // @ts-nocheck
 import {
-  computed,
+  computed, inject,
   nextTick,
   type PropType,
   reactive,
@@ -24,13 +24,13 @@ import {
   EntityReader,
   EntityReaderParam,
   MixUtil,
-  CheckUtil, utils,
+  CheckUtil, utils, useGlobal, FormProvideProxy, FormProvideKey
 } from "@geelato/gl-ui";
+import {ComponentMeta} from "../gl-toolbar/toolbar";
 import type {Column, TableColumnDataPlus} from "./table";
-import {useGlobal} from "@geelato/gl-ui";
-import {ComponentMeta} from "@/components/gl-toolbar/toolbar";
 import {PaginationProps} from "@arco-design/web-vue";
 import {Schema} from "b-validate";
+import {logicDeleteFieldName} from "./table";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal;
 const emits = defineEmits(["updateColumns", "updateRow"]);
@@ -81,6 +81,21 @@ const props = defineProps({
       return false
     }
   },
+  isFormSubTable: {
+    type: Boolean,
+    default() {
+      return false
+    }
+  },
+  isLogicDeleteMode: {
+    type: Boolean,
+    default() {
+      return true
+    }
+  },
+  subTablePidName: {
+    type: String
+  },
   rowSelection: {
     type: Object as PropType<TableRowSelection>,
     default() {
@@ -117,6 +132,7 @@ const props = defineProps({
   }
 });
 
+const formProvideProxy: FormProvideProxy | undefined = inject(FormProvideKey)
 
 let recordSchema = new Schema({})
 
@@ -156,13 +172,19 @@ watch(() => props.enableEdit,
     {immediate: true}
 )
 
-const {loading, setLoading} = useLoading(true);
+const {loading, setLoading} = useLoading(false);
 const {t} = CheckUtil.isBrowser() ? useI18n() : {
   t: () => {
   }
 };
+// 渲染展示的数据
 const renderData = ref<Array<object>>([]);
 
+// 编辑状态时删除的数据，
+const deleteDataWhenEnableEdit = ref<Array<{ id: string, [logicDeleteFieldName]: number }>>([]);
+const resetDeleteDataWhenEnableEdit = () => {
+  deleteDataWhenEnableEdit.value = []
+}
 const pagination = reactive({
   ...props.pagination,
 });
@@ -204,18 +226,41 @@ const createEntityReader = () => {
   return entityReader;
 };
 
+/**
+ * 加载数据的最终方法，在查询、切换分页等场景中调用
+ * @param readerInfo
+ */
 const fetchData = async (readerInfo?: {
   pageSize?: number,
   pageNo?: number,
   params?: Array<EntityReaderParam>
 }) => {
+  resetDeleteDataWhenEnableEdit()
+  // 绑定了有效的实体才发起查询
+  // 作为子表时，必须指定子表外键，即对应主表ID的字段
+  if (!props.entityName || (props.isFormSubTable && !props.subTablePidName)) {
+    return
+  }
   setLoading(true);
   try {
     const entityReader = createEntityReader();
-    // @ts-ignore
-    entityReader.params = readerInfo?.params;
-    // @ts-ignore
-    entityReader.pageSize = readerInfo?.pageSize || pagination.pageSize
+    entityReader.params = readerInfo?.params || [];
+
+    // 如果是子查询
+    // 增加父表单主键，作为查询字段，若父表单无该主健id，则返回，不知查询
+    if (props.isFormSubTable) {
+      const pid = formProvideProxy?.getRecordId()
+      if (!pid) {
+        return
+      }
+      entityReader.params.push(new EntityReaderParam(props.subTablePidName, 'eq', pid))
+    }
+
+    // 逻辑删除模式下，增加逻辑删除的数据过滤条件
+    if (props.isLogicDeleteMode) {
+      entityReader.params.push(new EntityReaderParam(logicDeleteFieldName, 'eq', 0))
+    }
+    entityReader.pageSize = readerInfo?.pageSize || pagination.pageSize!
     const response = await entityApi.queryByEntityReader(entityReader);
     // console.log('GlEntityTable > fetchData() > response:', response)
     renderData.value = response.data.data;
@@ -224,7 +269,6 @@ const fetchData = async (readerInfo?: {
     pagination.total = response.data.total;
   } catch (err) {
     console.error(err)
-    // you can report use errorHandler or other
   } finally {
     setLoading(false);
   }
@@ -232,7 +276,6 @@ const fetchData = async (readerInfo?: {
 
 const search = (entityReaderParams: Array<EntityReaderParam>) => {
   // console.log('search entityReaderParams:', entityReaderParams)
-
   fetchData({params: entityReaderParams});
 };
 const onPageChange = (pageNo: number) => {
@@ -430,13 +473,25 @@ const updateRow = (record: object, rowIndex: number) => {
   emits('updateRow', {record, rowIndex})
 }
 
-const removeRecord = (record: object, rowIndex: number) => {
-  renderData.value.splice(rowIndex, 1)
+
+const deleteRecord = (record: object, rowIndex: number) => {
+  const records = renderData.value.splice(rowIndex, 1)
+  if (records && records.length > 0) {
+    const record: { [key: string]: any } = records[0]
+    // 如可该记录没有id，即表示新添加且未保存的，在点删除时，直接删除，不需要再记录到待删除组数中
+    if (record.id) {
+      deleteDataWhenEnableEdit.value.push({id: record.id, [logicDeleteFieldName]: 1})
+    }
+  }
+  console.log('deleteDataWhenEnableEdit:', deleteDataWhenEnableEdit)
 }
 // console.log('props.columns:', props.columns)
 // console.log('cloneColumns', cloneColumns, 'columnActions:', props.columnActions)
 const getRenderData = () => {
   return renderData.value
+}
+const getDeleteData = () => {
+  return deleteDataWhenEnableEdit.value
 }
 const getRenderColumns = () => {
   return cloneColumns.value
@@ -449,7 +504,8 @@ defineExpose({
   validateRecord,
   addRow,
   getRenderData,
-  getRenderColumns
+  getRenderColumns,
+  getDeleteData
 });
 </script>
 
@@ -472,10 +528,11 @@ defineExpose({
     <template ##="{ record,rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
         <template v-if="enableEdit">
-          <!-- 在编辑模式下，默认的操作：保存、删除 -->
+          <!-- 在编辑模式下，默认的操作：复制、删除 -->
           <!--          <a-button type="text" size="small" @click="saveRow(record,rowIndex)">保存</a-button>-->
-          <a-popconfirm content="Are you sure you want to delete?">
-            <a-button type="text" status="danger" size="small" @click="removeRecord(record,rowIndex)">删除</a-button>
+          <!--          在这里popconfirm无效 TODO-->
+          <a-popconfirm content="确定是否删除?">
+            <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)">删除</a-button>
           </a-popconfirm>
         </template>
         <template v-for="(columnAction,index) in columnActions" :key="index">

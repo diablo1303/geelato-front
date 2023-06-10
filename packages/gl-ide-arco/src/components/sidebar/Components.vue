@@ -129,7 +129,6 @@ const resetComponentMaterialGroups = () => {
 }
 resetComponentMaterialGroups()
 const onStartNodeDrag = (e: MouseEvent, element: Object) => {
-  // this.$gl.bus.$emit('GlPluginCore_onStartNodeDrag', {e: e, element: element})
 }
 
 /**

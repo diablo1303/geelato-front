@@ -91,7 +91,6 @@ updateInst()
 
 const activeKey = ref(props.defaultActiveKey || 0)
 const onTabClick = (key: any) => {
-  console.log(typeof key, key)
   activeKey.value = key
 }
 onMounted(() => {

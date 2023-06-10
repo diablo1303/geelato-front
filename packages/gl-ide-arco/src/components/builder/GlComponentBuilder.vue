@@ -127,14 +127,14 @@
         </div>
         <div>
           <GlOptions v-model="cMeta.methods" :columns="[{dataIndex: 'name'}]"
-                     @selectedElement="selectAction"></GlOptions>
+                     @selectedElement="selectMethod"></GlOptions>
         </div>
       </pane>
       <!--
        ========================================================================================
        -->
       <pane :size="paneSize.B" style="overflow-y: auto">
-        <template v-if="currentSetterTarget === setterTarget.props">
+        <template v-if="currentSetterTarget == setterTarget.props">
           <div class="gl-title">
               <span>
                 <GlIconfont type="gl-setting"/>
@@ -144,15 +144,24 @@
           <GlPropertySetterBuilder v-model:modelValue="currentProperty"
                                    @updateSetter="updateGlPropertySetter"></GlPropertySetterBuilder>
         </template>
-        <template v-else-if="currentSetterTarget===setterTarget.actions">
+        <template v-else-if="currentSetterTarget==setterTarget.actions">
           <div class="gl-title">
               <span>
                 <GlIconfont type="gl-setting"/>
               组件动作设置 (当前动作：{{ (currentAction.name || '未设置') }})
               </span>
           </div>
-          <GlActionSetterBuilder v-model:modelValue="currentAction"
+          <GlActionSetterBuilder :key="currentActionIndex"  v-model:modelValue="currentAction"
                                  @updateSetter="updateGlActionSetter"></GlActionSetterBuilder>
+        </template>
+        <template v-else-if="currentSetterTarget==setterTarget.methods">
+          <div class="gl-title">
+              <span><GlIconfont type="gl-setting"/>
+              组件方法设置 (当前方法：{{ (currentMethod.name || '未设置') }})
+              </span>
+          </div>
+          <GlMethodSetterBuilder :key="currentMethodIndex" v-model:modelValue="currentMethod"
+                                 @updateSetter="updateGlMethodSetter"></GlMethodSetterBuilder>
         </template>
         <template v-else>
           <div style="text-align: center;padding: 2em;background-color: #fafafa">请先从左边面板添加属性或事件动作</div>
@@ -277,22 +286,31 @@ import 'splitpanes/dist/splitpanes.css'
 import {defineComponent, nextTick, type PropType} from 'vue'
 import GlPropertySetterBuilder from './GlPropertySetterBuilder.vue'
 import GlActionSetterBuilder from "./actions-builder/GlActionSetterBuilder.vue";
+import GlMethodSetterBuilder from "./method-builder/GlMethodSetterBuilder.vue";
 import GlOptions from "../setters/GlOptions.vue";
 import ClipboardJS from "clipboard";
 import VueJsonPretty from 'vue-json-pretty'
-import {ComponentMeta} from "@geelato/gl-ui-schema";
+import {ComponentMeta, ActionSetterMeta, MethodSetterMeta} from "@geelato/gl-ui-schema";
 import {ComponentInstance, PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
-import {ActionSetterMeta} from "@geelato/gl-ui-schema/src/entity/actions/ActionSetterMeta";
 
 enum SetterTarget {
   actions = 'actions',
   props = 'props',
+  methods = 'methods',
   none = 'none'
 }
 
 export default defineComponent({
   name: "GlComponentBuilder",
-  components: {GlPropertySetterBuilder, GlActionSetterBuilder, Splitpanes, Pane, GlOptions, VueJsonPretty},
+  components: {
+    GlPropertySetterBuilder,
+    GlActionSetterBuilder,
+    GlMethodSetterBuilder,
+    Splitpanes,
+    Pane,
+    GlOptions,
+    VueJsonPretty
+  },
   props: {
     modelValue: {
       type: Object,
@@ -332,6 +350,8 @@ export default defineComponent({
       currentIndex: -1,
       currentAction: new ActionSetterMeta(),
       currentActionIndex: -1,
+      currentMethod: new MethodSetterMeta(),
+      currentMethodIndex: -1,
       paneSize: {
         A: 18,
         B: 35
@@ -424,8 +444,13 @@ export default defineComponent({
         this.currentAction = new ActionSetterMeta()
       }
     },
-    selectChild() {
-
+    selectMethod({element, index}: { element: any, index: number }) {
+      this.currentSetterTarget = SetterTarget.methods
+      this.currentMethod = element
+      this.currentMethodIndex = index
+      if (this.currentMethodIndex === -1) {
+        this.currentMethod = new MethodSetterMeta()
+      }
     },
     emitUpdate() {
       this.$emit('update:modelValue', {runtimeMeta: this.cInstance, designMeta: this.cMeta})
@@ -459,6 +484,9 @@ export default defineComponent({
     updateGlActionSetter(mv: any) {
       console.log('updateGlActionSetter>', mv)
       this.refreshInstance()
+    },
+    updateGlMethodSetter(mv: any) {
+      // this.refreshInstance()
     },
     copyJson(json?: ComponentMeta | ComponentInstance, pre?: string) {
       if (!json) return

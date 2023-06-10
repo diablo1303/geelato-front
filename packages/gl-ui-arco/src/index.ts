@@ -29,6 +29,8 @@ const component: Plugin = {
         app.component(GlDict.name, GlDict)
         app.component(GlPage.name, GlPage);
         app.component("GlEntityTablePlus", GlEntityTablePlus);
+        // 表格注册多一个，作为子表单，在配置时减少一些不必要的配置项
+        app.component("GlEntityTableSub", GlEntityTablePlus);
         app.component(GlEntityTree.name, GlEntityTree)
         app.component(GlEntityForm.name, GlEntityForm)
         app.component(GlCard.name, GlCard)

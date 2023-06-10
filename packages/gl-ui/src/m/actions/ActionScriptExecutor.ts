@@ -28,12 +28,13 @@ export class ActionScriptExecutor {
     /**
      * 设置当前执行页面的代理对象
      * 一般在执行页面中调用该方法
+     * 支持多页面嵌套场景，每个页面是一个pageProxy，以pageComponentId进行标识区分
      * @param pageComponentId 组件名为GlPage的组件id
      * @param pageProxy
      */
     addPageProxy(pageComponentId: string, pageProxy: PageProvideProxy) {
         pageProxyMap[pageComponentId] = pageProxy
-        // console.log('addPageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
+        console.log('addPageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
     }
 
     /**
@@ -43,7 +44,36 @@ export class ActionScriptExecutor {
      */
     removePageProxy(pageComponentId: string) {
         delete pageProxyMap[pageComponentId]
-        // console.log('removePageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
+        console.log('removePageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
+    }
+
+    /**
+     * 获取组件配置实例信息
+     * @param componentId
+     */
+    getComponentInst(componentId: string) {
+        if (componentId) {
+            // console.log('pageProxyMap:', pageProxyMap)
+            for (const pageComponentId in pageProxyMap) {
+                const pageProxy = pageProxyMap[pageComponentId]
+                if (pageProxy) {
+                    const inst = pageProxy.getComponentInst(componentId)
+                    // console.log('getComponentInst() by componentId:', componentId, 'get', inst)
+                    if (inst) {
+                        return inst
+                    }
+                }
+            }
+        }
+        return null
+    }
+
+    /**
+     * 获取组件名称
+     * @param componentId
+     */
+    getComponentName(componentId: string) {
+        return this.getComponentInst(componentId)?.componentName
     }
 
     /**

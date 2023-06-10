@@ -6,16 +6,17 @@
         <GlIconfont :type="blockMeta.iconType"></GlIconfont>
       </div>
       <div class="gl-right">
-        <div class="gl-title">
+        <div class="gl-title" @click="show=!show" style="cursor: pointer" title="点击折叠/展开">
           <span>{{ glComponentInst._disabled ? '【已停用】' : '' }}</span>
           <span>{{ blockMeta.title }}</span>
+          <span v-if="!show" style="color: #8f19ff;float: right">【点击展开】</span>
         </div>
         <div class="gl-description">
           <span v-html="highlightedStr"></span>
         </div>
       </div>
     </div>
-    <div class="gl-command-block-children">
+    <div class="gl-command-block-children" v-show="show">
       <GlInsts :glComponentInst="glComponentInst" :componentStoreId="componentStoreId"></GlInsts>
     </div>
     <div class="gl-command-block-end">
@@ -37,14 +38,15 @@
 
 <script lang="ts" setup>
 
-import {PropType, ref, watch} from "vue";
+import {inject, PropType, ref, watch} from "vue";
 import {ComponentMeta} from "@geelato/gl-ui-schema";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
-import {mixins} from "@geelato/gl-ui";
+import {mixins, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 import BlockUtils from "./BlockUtils";
 import "./style.css"
 import {componentStoreFactory} from "@geelato/gl-ide";
 
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const props = defineProps({
   componentMeta: {
     type: Object as PropType<ComponentMeta>,
@@ -71,6 +73,8 @@ const highlightedStr = ref('')
 watch(props.glComponentInst, () => {
   highlightedStr.value = BlockUtils.replaceVariables(highlightedVarStr, props.glComponentInst.props)
 }, {immediate: true, deep: true})
+
+const show = ref(true)
 
 </script>
 <style>

@@ -53,7 +53,7 @@ export class EntityReaderParam {
     cop: string = 'eq';
     value: string | number | Array<string | number>;
 
-    constructor(name: string, cop: string, value: string | number | Array<string | number>) {
+    constructor(name: string = '', cop: string = 'eq', value: string | number | Array<string | number>) {
         this.name = name
         this.cop = cop
         this.value = value

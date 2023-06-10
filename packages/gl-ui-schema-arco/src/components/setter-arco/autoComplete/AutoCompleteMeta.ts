@@ -116,6 +116,16 @@ export default {
         "setterComponentName": "GlObjectArraySetter",
         "description": "自动完成的数据源",
         "title": "数据源"
+    }, {
+        "name": "rules",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "验证规则",
+        "setterComponentName": "GlValidateRulesSetter"
     }],
     "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

@@ -145,7 +145,7 @@ export default {
         "expanded": true,
         "setterComponentProps": {
             "options": [{
-                "label": "确认操作前触发，如可做些表单验证等工作",
+                "label": "确认操作时触发，如可做表单保存工作",
                 "value": "onBeforeOk",
                 "__YJe434P13sWjPAcCS1": "onBeforeOk"
             }, {

@@ -1,6 +1,6 @@
-import {ComponentMeta, ComponentInstance, ComponentMaterial} from "@geelato/gl-ui-schema";
+import {ComponentMeta, ComponentInstance} from "@geelato/gl-ui-schema";
 
-import BlockNotificationMeta from "./setter-block/notification/BlockNotificationMeta";
+import BlockNotificationMeta from "./setter-block/feedback/BlockNotificationMeta";
 import BlockOpenThirdPageMeta from "./setter-block/page/BlockOpenThirdPageMeta";
 import BlockSetVarMeta from "./setter-block/set-var/BlockSetVarMeta";
 import BlockIfMeta from "./setter-block/if-else/BlockIfMeta";
@@ -10,16 +10,16 @@ import BlockElseInstance from "./setter-block/if-else/BlockElseInstance";
 import BlockOpenComponentPageMeta from "./setter-block/page/BlockOpenComponentPageMeta";
 import BlockRootMeta from "./setter-block/root/BlockRootMeta";
 import BlockComponentInvokeMeta from "./setter-block/page/BlockComponentInvokeMeta";
-import BlockConfirmMeta from "./setter-block/page/BlockConfirmMeta";
+import BlockConfirmMeta from "./setter-block/feedback/BlockConfirmMeta";
 import BlockSetVisibleMeta from "./setter-block/page/BlockSetVisibleMeta";
 import IfComponentValueBlockMeta from "./setter-block/if-else/IfComponentValueBlockMeta";
 import IfComponentValueBlockInstance from "./setter-block/if-else/IfComponentValueBlockInstance";
 import TriggerComponentActionMeta from "./setter-block/page/TriggerComponentActionBlockMeta";
 import LogBlockMeta from "./setter-block/other/LogBlockMeta";
-// @ts-ignore
+
 const componentMetas: Array<ComponentMeta> = [BlockRootMeta, BlockNotificationMeta, BlockOpenThirdPageMeta,
-    BlockSetVisibleMeta, BlockSetVarMeta, BlockIfMeta, IfComponentValueBlockMeta, BlockElseMeta,
-    BlockOpenComponentPageMeta, BlockComponentInvokeMeta, BlockConfirmMeta, TriggerComponentActionMeta,
+    BlockOpenComponentPageMeta, BlockSetVisibleMeta, BlockSetVarMeta, BlockIfMeta, IfComponentValueBlockMeta, BlockElseMeta,
+    BlockComponentInvokeMeta, BlockConfirmMeta, TriggerComponentActionMeta,
     LogBlockMeta]
 
 // @ts-ignore
