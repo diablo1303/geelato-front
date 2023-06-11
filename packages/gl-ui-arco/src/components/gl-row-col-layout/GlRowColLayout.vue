@@ -6,7 +6,7 @@ export default {
 <script setup lang="ts">
 import {nextTick, onUpdated, type PropType} from "vue";
 import {mixins, utils} from "@geelato/gl-ui";
-import {I18nItem} from "@geelato/gl-ui-schema";
+import type {I18nItem} from "@geelato/gl-ui-schema";
 
 const props = defineProps({
   spans: {
@@ -86,7 +86,7 @@ onUpdated(() => {
 updateInst()
 
 const defaultLocal = 'zh-CN'
-const i18nConvert = (value: string, i18n: I18nItem) => {
+const i18nConvert = (value?: string, i18n?: Array<I18nItem>) => {
   const currentLocaleValue = localStorage.getItem('gl-locale') || defaultLocal
   // 如果是默认语言（zh-CN），则直接返回
   if (currentLocaleValue === defaultLocal) {

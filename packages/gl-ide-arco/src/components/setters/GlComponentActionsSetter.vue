@@ -39,11 +39,14 @@
 </template>
 <script lang="ts">
 export default {
-  name: "GlComponentActionsSetter"
+  name: "GlComponentsSidebar"
 }
 </script>
 <script lang="ts" setup>
-import {h, nextTick, type PropType, ref} from 'vue'
+// @ts-nocheck
+// error TS2532: Object is possibly 'undefined'.
+// componentInstance.actions
+import {nextTick, type PropType, ref} from 'vue'
 import {Action, ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import GlArrayBaseSetter from "./property-setters/GlArrayBaseSetter.vue";
 import CommandEditor from "./action-setters/CommandEditor.vue";

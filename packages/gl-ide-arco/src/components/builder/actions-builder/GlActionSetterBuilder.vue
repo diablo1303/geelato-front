@@ -26,7 +26,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {PropType, ref, watch} from 'vue'
+import {type PropType, ref, watch} from 'vue'
 import {ActionSetterMeta} from "@geelato/gl-ui-schema";
 
 const props = defineProps({

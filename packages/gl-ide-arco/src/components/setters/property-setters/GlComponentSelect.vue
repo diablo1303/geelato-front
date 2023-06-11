@@ -35,7 +35,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {onUpdated, type PropType, ref, watch} from "vue";
+import {type PropType, ref, watch} from "vue";
 import GlComponentSetter from "../GlComponentSetter.vue";
 import {useIdeStore} from "@geelato/gl-ide";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";

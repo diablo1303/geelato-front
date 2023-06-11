@@ -5,14 +5,14 @@ import type ComponentMaterial from "./ComponentMaterial";
 
 export default class ComponentMaterialGroup {
 
-    name:String = 'default'
+    name:string = 'default'
 
-    text:String = '默认'
+    text:string = '默认'
 
     // 展开状态
-    opened:Boolean = true;
+    opened:boolean = true;
 
-    items:Array<ComponentMaterial> = []
+    items?:Array<ComponentMaterial> = []
 
     constructor() {
     }

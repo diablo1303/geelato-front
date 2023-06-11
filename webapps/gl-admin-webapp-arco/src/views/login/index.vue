@@ -3,9 +3,10 @@
     <div class="logo">
       <img
         alt="logo"
-        src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/dfdba5317c0c20ce20e64fac803d52bc.svg~tplv-49unhts6dw-image.image"
+        style="width: 14%"
+        src="/src/assets/favicon.ico"
       />
-      <div class="logo-text">Arco Design Pro</div>
+      <div class="logo-text">Geelato Admin</div>
     </div>
     <LoginBanner />
     <div class="content">

@@ -6,7 +6,7 @@ export default {
 <script lang="ts" setup>
 import {inject, nextTick, ref} from 'vue'
 import {mixins, utils} from "@geelato/gl-ui";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
 import {PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 

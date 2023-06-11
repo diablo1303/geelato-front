@@ -7,7 +7,8 @@
         <span class="gl-tag">{{ componentMaterialGroup.items?.length }}</span>
       </div>
       <div class="gl-group-cards" v-if="componentMaterialGroup.opened">
-        <ComponentsDndItem v-for="element in componentMaterialGroup.items" :element="element" :templateInst="createTemplateInst(element)" :size="size">
+        <ComponentsDndItem v-for="element in componentMaterialGroup.items" :element="element"
+                           :templateInst="createTemplateInst(element)" :size="size">
         </ComponentsDndItem>
       </div>
     </div>
@@ -26,18 +27,14 @@ import {utils} from "@geelato/gl-ui";
 import {type ComponentMaterial, ComponentMaterialGroup, type ComponentInstance} from "@geelato/gl-ui-schema";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
 import ComponentsDndItem from "../../dnd/ComponentDndItem.vue";
+import {SizeType} from "../../setters/Types";
 
-const enum SizeType {
-  normal = 'normal',
-  small = 'small',
-  mini = 'mini'
-}
 
 const props = defineProps({
   size: {
     type: String as PropType<SizeType>,
     default() {
-      return 'small'
+      return SizeType.small
     }
   },
   componentGroups: {
@@ -87,7 +84,7 @@ const onChoose = (event: any, fromItems: Array<ComponentMaterial>) => {
 }
 const onChange = () => {
 }
-const componentMaterialGroups = ref(new Array<ComponentMaterialGroup>())
+const componentMaterialGroups = ref<Array<ComponentMaterialGroup>>([])
 
 const resetComponentMaterialGroups = () => {
   componentMaterialGroups.value = []

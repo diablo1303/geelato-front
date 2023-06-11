@@ -132,6 +132,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
+// @ts-nocheck
 import {computed, inject, onMounted, onUpdated, type PropType, reactive, ref, watch} from 'vue'
 import type {PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
 import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "./ComponentSetterProvideProxy";

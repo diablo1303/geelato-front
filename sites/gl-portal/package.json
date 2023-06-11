@@ -19,6 +19,7 @@
     "@geelato/gl-ui-schema-arco": "workspace:^0.0.1",
     "b-validate": "^1.4.6",
     "clipboard": "^2.0.11",
+    "splitpanes": "^3.1.5",
     "dnd-core": "^16.0.1",
     "echarts": "^5.3.3",
     "monaco-editor": "0.38.0",

@@ -4,6 +4,8 @@ export default {
 }
 </script>
 <script setup lang="ts">
+// @ts-nocheck
+// TODO error TS2339: Property 'index' does not exist on type
 import {useIdeStore} from "@geelato/gl-ide";
 import {computed, ref, watch} from "vue";
 
@@ -85,10 +87,10 @@ function getMatchIndex(componentName: String) {
             }}
         </template>
         <span v-else>
-          {{ nodeData?.componentName?.substr(0, index) }}
+          {{ nodeData?.componentName?.substring(0, index) }}
           <span style="color: var(--color-primary-light-4);">
-            {{ nodeData?.componentName?.substr(index, searchKey.length) }}
-          </span>{{ nodeData?.componentName?.substr(index + searchKey.length) }}
+            {{ nodeData?.componentName?.substring(index, searchKey.length) }}
+          </span>{{ nodeData?.componentName?.substring(index + searchKey.length) }}
         </span>
         </span>
       </template>

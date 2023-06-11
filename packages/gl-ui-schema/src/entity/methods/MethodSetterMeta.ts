@@ -1,4 +1,4 @@
-import MethodParamMeta from "./MethodParamMeta";
+import type MethodParamMeta from "./MethodParamMeta";
 
 export class MethodSetterMeta {
     // 方法名

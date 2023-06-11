@@ -4,6 +4,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+
 import mixins from "../mixins";
 
 const props = defineProps({

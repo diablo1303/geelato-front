@@ -1,5 +1,5 @@
 <template>
-  <GlOptions v-model="mv" :columns="columns"></GlOptions>
+  <GlOptions v-if="columns" v-model="mv" :columns="columns"></GlOptions>
 </template>
 <script lang="ts">
 export default {
@@ -7,8 +7,9 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {defineComponent, ref, watch} from 'vue'
+import {type PropType, ref, watch} from 'vue'
 import GlOptions from "../GlOptions.vue";
+import type {ColumnType} from "@/components/setters/Types";
 
 const props = defineProps({
   modelValue: {
@@ -18,7 +19,7 @@ const props = defineProps({
     }
   },
   columns: {
-    type: Array,
+    type: Array as PropType<Array<ColumnType>>,
     default() {
       return [{dataIndex: 'label', title: '名'}, {dataIndex: 'value', title: '值'}]
     }

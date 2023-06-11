@@ -17,16 +17,16 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {getCurrentInstance, inject, onMounted, onUnmounted, PropType, provide} from "vue";
+import {type PropType, getCurrentInstance, onMounted, onUnmounted, provide} from "vue";
 import {
-  PageParamType,
+  type PageParamType,
+  type PageType,
   PageProvideProxy,
   actionScriptExecutor,
   mixins,
   PageProvideKey,
-  PageType,
 } from "@geelato/gl-ui";
-import {Action} from "@geelato/gl-ui-schema";
+import type {Action} from "@geelato/gl-ui-schema";
 
 const proxy = getCurrentInstance()?.proxy
 const props = defineProps({

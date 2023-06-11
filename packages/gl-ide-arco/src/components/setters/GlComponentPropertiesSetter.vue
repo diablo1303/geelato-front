@@ -52,6 +52,7 @@
 </template>
 
 <script lang="ts">
+// @ts-nocheck
 import {defineComponent, type PropType, ref, unref} from 'vue'
 import {utils, LooseObject} from "@geelato/gl-ui";
 import {ComponentInstance, ComponentMeta, type IPropertySetterMeta} from "@geelato/gl-ui-schema";

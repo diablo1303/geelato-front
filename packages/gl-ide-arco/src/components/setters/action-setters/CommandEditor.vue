@@ -70,7 +70,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import GlCommandEditorSidebar from './GlCommandEditorSidebar.vue'
-import {onMounted, onUpdated, PropType, ref, toRaw, watch} from "vue";
+import {onMounted, onUpdated, type PropType, ref, toRaw, watch} from "vue";
 import "./blocks/style.css"
 import {Action, ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import {blocksHandler} from "./blocks/BlockHandler";

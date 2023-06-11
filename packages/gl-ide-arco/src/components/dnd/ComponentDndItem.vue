@@ -4,26 +4,24 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+import {computed, type PropType} from "vue";
 import {useDrag} from 'vue3-dnd'
-import {computed, PropType} from "vue";
 import {ItemTypes} from "./DndItemTypes";
+import {SizeType} from "../setters/Types";
 
 const props = defineProps({
-  element: Object,
+  element: {
+    type: Object,
+    required: true
+  },
   templateInst: Object,
   size: {
     type: String as PropType<SizeType>,
     default() {
-      return 'small'
+      return SizeType.small
     }
   },
 })
-
-const enum SizeType {
-  normal = 'normal',
-  small = 'small',
-  mini = 'mini'
-}
 
 const fontSize = computed(() => {
   switch (props.size) {

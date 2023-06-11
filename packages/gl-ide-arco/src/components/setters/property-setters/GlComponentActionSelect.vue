@@ -17,6 +17,7 @@ export default {
 <script lang="ts" setup>
 import {inject, onUnmounted, ref, watch} from "vue";
 import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "../ComponentSetterProvideProxy";
+import {ComponentMeta} from "@geelato/gl-ui-schema";
 
 const emits = defineEmits(['update:modelValue'])
 
@@ -47,7 +48,8 @@ watch(mv, () => {
 })
 
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
-const componentMeta = ref({})
+// const componentMeta = ref({})
+const componentMeta = ref(new ComponentMeta())
 const setData = () => {
   componentMeta.value = componentSetterProvideProxy.getVarValue(props.dependVarComponentMeta)
 }

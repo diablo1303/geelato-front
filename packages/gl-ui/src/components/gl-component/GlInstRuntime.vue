@@ -4,9 +4,10 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {computed, inject, PropType, ref} from 'vue'
-import {mixins, PageProvideKey} from "../../index";
+import {computed, inject, type PropType, ref} from 'vue'
+import {PageProvideKey} from "../PageProvideProxy";
 import PageProvideProxy from "../PageProvideProxy";
+import mixins from "../mixins";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const props = defineProps({
@@ -51,7 +52,7 @@ const style = ref({
 // ]
 const defaultLocal = 'zh-CN'
 const i18n = props.glComponentInst.i18n
-const i18nConvert = (value: string) => {
+const i18nConvert = (value?: string) => {
   const currentLocaleValue = localStorage.getItem('gl-locale') || defaultLocal
   // 如果是默认语言（zh-CN），则直接返回
   if (currentLocaleValue === defaultLocal) {
@@ -73,7 +74,8 @@ const i18nConvert = (value: string) => {
   <div class="gl-dnd-wrapper" :style="style">
     <div class="gl-component-wrapper">
       <template v-if="isFormItem">
-        <a-form-item v-show="glComponentInst.props.unRender!==true" class="gl-form-item" :field="glComponentInst?.props?.bindField?.fieldName"
+        <a-form-item v-show="glComponentInst.props.unRender!==true" class="gl-form-item"
+                     :field="glComponentInst?.props?.bindField?.fieldName"
                      :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"
                      :label="i18nConvert(glComponentInst?.props?.label)"
                      :rules="glComponentInst?.props?.rules"

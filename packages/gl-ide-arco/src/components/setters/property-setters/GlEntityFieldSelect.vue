@@ -30,10 +30,9 @@ export class EntityFieldSelectResult {
 /**
  *  基于当前实体选择、字段选择
  */
-import {PropType, ref, watch} from 'vue'
-import type {FieldMeta} from "@geelato/gl-ui";
+import {type PropType, ref, watch} from 'vue'
+import type {FieldMeta,EntityLiteMeta} from "@geelato/gl-ui";
 import {useEntityStore} from "@geelato/gl-ide";
-import {EntityLiteMeta} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({

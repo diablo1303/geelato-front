@@ -20,7 +20,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, nextTick, type PropType, provide, ref, VueElement, VueElementConstructor} from 'vue';
+import {inject, type PropType, provide, ref} from 'vue';
 import type {FormInstance} from '@arco-design/web-vue/es/form';
 import useLoading from '../../hooks/loading';
 import {isDataEntry} from "@geelato/gl-ui-schema-arco";

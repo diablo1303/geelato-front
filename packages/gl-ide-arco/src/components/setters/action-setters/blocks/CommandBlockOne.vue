@@ -34,8 +34,8 @@
 
 <script lang="ts" setup>
 
-import {computed, inject, onUnmounted, PropType, ref, watch} from "vue";
-import {ComponentMeta,IPropertySetterMeta} from "@geelato/gl-ui-schema";
+import {computed, inject, onUnmounted, type PropType, ref, watch} from "vue";
+import type{ ComponentMeta, IPropertySetterMeta} from "@geelato/gl-ui-schema";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
 import {mixins, PageProvideKey, PageProvideProxy, utils} from "@geelato/gl-ui";
 import BlockUtils from "./BlockUtils";

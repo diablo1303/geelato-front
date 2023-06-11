@@ -7,9 +7,10 @@
       <a-radio value="tags">标签</a-radio>
     </a-radio-group>
     <span>&nbsp;&nbsp;可选项：</span>
-<!--    <GlOptions v-model="options"-->
-<!--               :columns="[{dataIndex: 'label'},{dataIndex: 'value'}]"></GlOptions>-->
-    <GlArrayBaseSetter v-slot:default="slotProps" v-model="items" :defaultItemForAdd="{label:'',value:''}" @addItem="update"
+    <!--    <GlOptions v-model="options"-->
+    <!--               :columns="[{dataIndex: 'label'},{dataIndex: 'value'}]"></GlOptions>-->
+    <GlArrayBaseSetter v-slot:default="slotProps" v-model="items" :defaultItemForAdd="{label:'',value:''}"
+                       @addItem="update"
                        @removeItem="update">
       <span>
         <span><a-input v-model="items[slotProps.index].label" @change="update"></a-input></span>
@@ -24,7 +25,7 @@
 export default {name: "SelectPropsSetter"}
 </script>
 <script setup lang="ts">
-import GlOptions from "../../setters/GlOptions.vue";
+// @ts-nocheck
 import {ref} from "vue";
 
 const emits = defineEmits(['update:options'])
@@ -38,8 +39,8 @@ const props = defineProps({
   }
 })
 const items = ref(props.options)
-const update = () =>{
-  console.log('items.value',items.value)
+const update = () => {
+  console.log('items.value', items.value)
   emits('update:options', items.value)
 }
 </script>

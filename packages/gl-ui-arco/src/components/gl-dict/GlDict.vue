@@ -37,7 +37,7 @@ watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
 
-let options = ref([])
+let options = ref<Array<{ itemCode: string, itemText: string }>>([])
 
 const loadData = () => {
   // TODO 增加多租户支持

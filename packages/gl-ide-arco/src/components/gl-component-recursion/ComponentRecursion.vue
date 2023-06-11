@@ -39,8 +39,12 @@
       <!--      <div v-else-if="slotItem.handler==='HtmlHandler'" v-html="slotItem.props.html">-->
       <!--      </div>-->
     </template>
-    <GlComponentRecursion v-if="childElement" v-for="childElement in glComponentInst.children"
-                          :glComponentInst="childElement" :componentStoreId="componentStoreId"></GlComponentRecursion>
+    <!--    <GlComponentRecursion v-if="childElement" v-for="childElement in glComponentInst.children"-->
+    <!--                          :glComponentInst="childElement" :componentStoreId="componentStoreId"></GlComponentRecursion>-->
+    <template v-for="childElement in glComponentInst.children">
+      <GlComponentRecursion v-if="childElement"
+                            :glComponentInst="childElement" :componentStoreId="componentStoreId"></GlComponentRecursion>
+    </template>
   </component>
 </template>
 <script lang="ts">
@@ -49,18 +53,12 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {emitter,mixins} from "@geelato/gl-ui";
+import {emitter, mixins} from "@geelato/gl-ui";
 import {onMounted} from "vue";
-import {Action} from "@geelato/gl-ui-schema";
+import type {Action} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
 
 const props = defineProps({
-  componentStoreId:{
-    type:String,
-    default(){
-      return 'useComponentStore'
-    }
-  },
   ...mixins.props
 })
 const emits = defineEmits(['onComponentClick', 'onComponentMounted'])

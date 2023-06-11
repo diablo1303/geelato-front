@@ -15,7 +15,7 @@ export class AppEntitySelectResult {
 </script>
 
 <script lang="ts" setup>
-import {inject, PropType, ref, watch} from 'vue'
+import {inject, type PropType, ref, watch} from 'vue'
 import {useEntityStore} from "@geelato/gl-ide";
 import {EntityMeta, type EntityLiteMeta} from "@geelato/gl-ui";
 import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "../ComponentSetterProvideProxy";

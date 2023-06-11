@@ -16,6 +16,7 @@ import en from "./locale/en-US";
 import cn from "./locale/zh-CN";
 import {PluginUtil} from "@geelato/gl-ui";
 import './assets/style.css'
+import GlColor from "./components/gl-color/GlColor.vue";
 
 const i18nMessage = {en, cn};
 
@@ -25,7 +26,6 @@ const component: Plugin = {
         if (PluginUtil.markInstalledPlugin(app, "gl-ui-arco")) {
             return;
         }
-
         app.component(GlDict.name, GlDict)
         app.component(GlPage.name, GlPage);
         app.component("GlEntityTablePlus", GlEntityTablePlus);
@@ -40,6 +40,7 @@ const component: Plugin = {
         app.component(GlTabs.name, GlTabs)
         app.component(GlUserSelect.name, GlUserSelect)
         app.component(GlDynamicSelect.name, GlDynamicSelect)
+        app.component(GlColor.name, GlColor)
         // const i18n = createI18n({
         //   locale: localStorage.getItem("arco-locale") || "zh-CN",
         //   fallbackLocale: "en-US",

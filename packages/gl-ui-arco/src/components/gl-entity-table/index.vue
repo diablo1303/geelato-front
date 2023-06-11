@@ -13,7 +13,8 @@ import type {
   TableColumnData,
   TableData,
   TableRowSelection,
-} from "@arco-design/web-vue/es/table/interface";
+  PaginationProps
+} from "@arco-design/web-vue";
 import useLoading from "../../hooks/loading";
 import {useI18n} from "vue-i18n";
 import cloneDeep from "lodash/cloneDeep";
@@ -28,7 +29,6 @@ import {
 } from "@geelato/gl-ui";
 import {ComponentMeta} from "../gl-toolbar/toolbar";
 import type {Column, TableColumnDataPlus} from "./table";
-import {PaginationProps} from "@arco-design/web-vue";
 import {Schema} from "b-validate";
 import {logicDeleteFieldName} from "./table";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义

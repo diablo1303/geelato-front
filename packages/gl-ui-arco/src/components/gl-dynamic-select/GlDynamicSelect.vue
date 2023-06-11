@@ -19,7 +19,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {ref, watch} from 'vue'
+import {type PropType, ref, watch} from 'vue'
 import {entityApi} from "@geelato/gl-ui";
 
 const props = defineProps({
@@ -71,7 +71,7 @@ const props = defineProps({
     }
   },
   readonly: Boolean,
-  size: String,
+  size: String as PropType<"medium" | "small" | "mini" | "large" | undefined>,
   placeholder: String,
   disabled: Boolean
 })

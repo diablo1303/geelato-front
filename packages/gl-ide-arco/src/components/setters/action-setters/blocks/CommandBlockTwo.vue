@@ -38,8 +38,8 @@
 
 <script lang="ts" setup>
 
-import {inject, PropType, ref, watch} from "vue";
-import {ComponentMeta} from "@geelato/gl-ui-schema";
+import {inject, type PropType, ref, watch} from "vue";
+import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
 import {mixins, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 import BlockUtils from "./BlockUtils";

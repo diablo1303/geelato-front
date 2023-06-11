@@ -23,10 +23,10 @@ export default {
  *  页面内的组件选择器
  *  获取页面结构，列出页面内的组件，便于选择组件
  */
-import {inject, onUpdated, ref, watch} from "vue";
+import {inject, ref, watch} from "vue";
 import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "../ComponentSetterProvideProxy";
-import {entityApi, useGlobal, Utils} from "@geelato/gl-ui";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
+import {entityApi} from "@geelato/gl-ui";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {useComponentStore} from "@geelato/gl-ide";
 
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!

@@ -2,7 +2,7 @@ import type {App, Plugin} from 'vue'
 import {GlPlugin, Panel, usePageStore} from '@geelato/gl-ide'
 import GlIdePluginCoreAppTree from './components/sidebar/AppTree.vue'
 import GlComponentTree from './components/sidebar/ComponentTree.vue'
-import GlIdePluginCoreComponentsDnd from './components/sidebar/components/ComponentsSidebar.vue'
+import GlComponentsSidebar from './components/sidebar/components/ComponentsSidebar.vue'
 
 import GlIdePluginCoreHistory from './components/sidebar/History.vue'
 import GlIdeStageBasePage from './components/stage/BasePage.vue'
@@ -74,7 +74,7 @@ plugin.sidebar.push(new Panel({
     title: '组件',
     name: 'components',
     iconType: 'gl-component',
-    componentName: 'GlIdePluginCoreComponentsDnd'
+    componentName: 'GlComponentsSidebar'
 }))
 
 plugin.sidebar.push(new Panel({
@@ -144,7 +144,7 @@ const component: Plugin = {
         // }
 
         // 注册组件
-        app.component('GlIdePluginCoreComponentsDnd', GlIdePluginCoreComponentsDnd)
+        app.component('GlComponentsSidebar', GlComponentsSidebar)
         app.component(GlComponentTree.name, GlComponentTree)
         app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
         app.component(GlIdePluginCoreHistory.name, GlIdePluginCoreHistory)

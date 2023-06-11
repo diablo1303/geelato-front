@@ -38,7 +38,7 @@ export class BlocksHandler {
         }
     }
 
-    parseToScript(block: ComponentInstance): string {
+    parseToScript(block: ComponentInstance | undefined): string {
         // console.log('BlocksHandler > parseToScript() > block:', block)
         if (!block) return ''
         const commandLines: Array<string> = []
