@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import mixins from "../mixins";
+import {mixins} from "@geelato/gl-ui";
 
 const props = defineProps({
   ...mixins.props

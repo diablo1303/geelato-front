@@ -17,6 +17,8 @@ import cn from "./locale/zh-CN";
 import {PluginUtil} from "@geelato/gl-ui";
 import './assets/style.css'
 import GlColor from "./components/gl-color/GlColor.vue";
+import GlInstRuntime from "./components/gl-inst-runtime/GlInstRuntime.vue";
+import GlInstsRuntime from "./components/gl-inst-runtime/GlInstsRuntime.vue";
 
 const i18nMessage = {en, cn};
 
@@ -41,6 +43,8 @@ const component: Plugin = {
         app.component(GlUserSelect.name, GlUserSelect)
         app.component(GlDynamicSelect.name, GlDynamicSelect)
         app.component(GlColor.name, GlColor)
+        app.component(GlInstRuntime.name, GlInstRuntime)
+        app.component(GlInstsRuntime.name, GlInstsRuntime)
         // const i18n = createI18n({
         //   locale: localStorage.getItem("arco-locale") || "zh-CN",
         //   fallbackLocale: "en-US",

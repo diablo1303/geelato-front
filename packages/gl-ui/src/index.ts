@@ -38,8 +38,6 @@ import FormProvideProxy from "./components/FormProvideProxy";
 import {FormProvideKey} from "./components/FormProvideProxy";
 import {Schema} from "b-validate";
 import type {PageType} from "./m/types/global";
-import GlInstsRuntime from "./components/gl-component/GlInstsRuntime.vue";
-import GlInstRuntime from "./components/gl-component/GlInstRuntime.vue";
 
 const Utils = AllUtils
 
@@ -57,8 +55,6 @@ const component: Plugin = {
         app.component(GlText.name, GlText)
         app.component(GlComponent.name, GlComponent)
         app.component(GlPageViewer.name, GlPageViewer)
-        app.component(GlInstRuntime.name, GlInstRuntime)
-        app.component(GlInstsRuntime.name, GlInstsRuntime)
 
         if (!app.config.globalProperties.$gl) {
             app.config.globalProperties.$gl = reactive({

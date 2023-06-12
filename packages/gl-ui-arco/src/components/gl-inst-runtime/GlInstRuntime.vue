@@ -5,9 +5,9 @@ export default {
 </script>
 <script lang="ts" setup>
 import {computed, inject, type PropType, ref} from 'vue'
-import {PageProvideKey} from "../PageProvideProxy";
-import type PageProvideProxy from "../PageProvideProxy";
-import mixins from "../mixins";
+import {PageProvideKey} from "@geelato/gl-ui";
+import type {PageProvideProxy} from "@geelato/gl-ui";
+import {mixins} from "@geelato/gl-ui";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const props = defineProps({
