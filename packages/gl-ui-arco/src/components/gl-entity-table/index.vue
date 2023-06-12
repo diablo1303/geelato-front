@@ -27,7 +27,7 @@ import {
   MixUtil,
   CheckUtil, utils, useGlobal, FormProvideProxy, FormProvideKey
 } from "@geelato/gl-ui";
-import {ComponentMeta} from "../gl-toolbar/toolbar";
+import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import type {Column, TableColumnDataPlus} from "./table";
 import {Schema} from "b-validate";
 import {logicDeleteFieldName} from "./table";
@@ -346,6 +346,8 @@ watch(() => columns.value,
       cloneColumns.value = cloneDeep(val);
       cloneColumns.value.forEach((item, index) => {
         item.checked = true;
+        item.width = item.width || 200
+        item.align = item.align || 'center'
       });
       cloneColumns.value.push(optColumn as Column)
       showColumns.value = cloneDeep(cloneColumns.value);

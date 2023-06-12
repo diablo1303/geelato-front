@@ -39,7 +39,7 @@
 </template>
 <script lang="ts">
 export default {
-  name: "GlComponentsSidebar"
+  name: "GlComponentActionsSetter"
 }
 </script>
 <script lang="ts" setup>

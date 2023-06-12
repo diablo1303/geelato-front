@@ -21,7 +21,7 @@ import {
   defaultTable,
   type TableColumnDataPlus, BaseInfo, logicDeleteFieldName,
 } from "../gl-entity-table/table";
-import {type Toolbar, defaultToolbar} from "../gl-toolbar/toolbar";
+import Toolbar, {defaultToolbar} from "../gl-toolbar/toolbar";
 import {useI18n} from "vue-i18n";
 import {CheckUtil, entityApi, PageProvideKey, PageProvideProxy, GlIconfont, utils} from "@geelato/gl-ui";
 import type {Action} from "../../types/global";

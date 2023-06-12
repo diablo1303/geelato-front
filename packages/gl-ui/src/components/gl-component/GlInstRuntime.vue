@@ -6,7 +6,7 @@ export default {
 <script lang="ts" setup>
 import {computed, inject, type PropType, ref} from 'vue'
 import {PageProvideKey} from "../PageProvideProxy";
-import PageProvideProxy from "../PageProvideProxy";
+import type PageProvideProxy from "../PageProvideProxy";
 import mixins from "../mixins";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
@@ -30,14 +30,22 @@ const isFormItem = computed(() => {
   }
   return props.glComponentInst.group === 'dataEntry'
 })
-const style = ref({
-  display: function () {
-    if (props.glComponentInst.group === 'dataEntry') {
-      return 'inline-block'
-    }
-    return false
-  }()
-})
+// const style = ref({
+//   display: function () {
+//     if (props.glComponentInst.group === 'dataEntry') {
+//       return 'inline-block'
+//     }
+//     return false
+//   }()
+// })
+
+const displayStyle = ref(function () {
+  if (props.glComponentInst.group === 'dataEntry') {
+    return 'inline-block'
+  }
+  // false
+  return ''
+}())
 
 
 // 示例
@@ -71,7 +79,7 @@ const i18nConvert = (value?: string) => {
 </script>
 
 <template>
-  <div class="gl-dnd-wrapper" :style="style">
+  <div class="gl-dnd-wrapper" :style="{display:displayStyle}">
     <div class="gl-component-wrapper">
       <template v-if="isFormItem">
         <a-form-item v-show="glComponentInst.props.unRender!==true" class="gl-form-item"

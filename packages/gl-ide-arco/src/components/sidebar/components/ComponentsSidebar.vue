@@ -16,7 +16,7 @@
 </template>
 <script lang="ts">
 export default {
-  name: 'GlIdePluginCoreComponents'
+  name: 'GlComponentsSidebar'
 }
 </script>
 

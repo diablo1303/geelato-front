@@ -3,7 +3,6 @@ import {GlPlugin, Panel, usePageStore} from '@geelato/gl-ide'
 import GlIdePluginCoreAppTree from './components/sidebar/AppTree.vue'
 import GlComponentTree from './components/sidebar/ComponentTree.vue'
 import GlComponentsSidebar from './components/sidebar/components/ComponentsSidebar.vue'
-
 import GlIdePluginCoreHistory from './components/sidebar/History.vue'
 import GlIdeStageBasePage from './components/stage/BasePage.vue'
 import GlIdeStageFormPage from './components/stage/FormPage.vue'
@@ -144,7 +143,7 @@ const component: Plugin = {
         // }
 
         // 注册组件
-        app.component('GlComponentsSidebar', GlComponentsSidebar)
+        app.component(GlComponentsSidebar.name, GlComponentsSidebar)
         app.component(GlComponentTree.name, GlComponentTree)
         app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
         app.component(GlIdePluginCoreHistory.name, GlIdePluginCoreHistory)
