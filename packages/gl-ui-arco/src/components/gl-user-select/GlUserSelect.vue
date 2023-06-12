@@ -6,7 +6,7 @@ export default {
 
 <script setup lang="ts">
 
-import {computed, inject, onUpdated, ref, watch} from "vue";
+import {computed, inject, ref, watch} from "vue";
 import {entityApi, EntityReader, EntityReaderParam, FieldMeta, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
@@ -221,7 +221,7 @@ watch(() => {
           <div style="flex: 1;padding: 0 0.5em">
             <div style="line-height: 2.4em">
               <span>已选择({{ selectingItems.length }})</span>
-              <a-button type="text" style="float: right">清空</a-button>
+<!--              <a-button type="text" style="float: right">清空</a-button>-->
             </div>
             <div style="margin-top: 4px">
               <span v-for="item in selectingItems">
