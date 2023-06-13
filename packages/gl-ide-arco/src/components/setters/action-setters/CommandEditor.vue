@@ -1,12 +1,12 @@
 <template>
   <div class="gl-ide-plugin-form-designer" style="width:100%;min-height: 500px">
     <a-row>
-      <a-col :span="5" style="border-right: 1px solid #F2F2F2;padding: 0.5em">
+      <a-col :span="5" style="border-right: 1px solid #F2F2F2;padding: 0.5em;overflow-y: auto" :style="sidebarStyle">
         <KeepAlive>
           <GlCommandEditorSidebar></GlCommandEditorSidebar>
         </KeepAlive>
       </a-col>
-      <a-col :span="12" style="border-right: 1px solid #F2F2F2;padding: 0.5em">
+      <a-col :span="12" style="border-right: 1px solid #F2F2F2;padding: 0.5em;overflow-y: auto" :style="mainStyle">
         <a-tabs @change="generateScript">
           <a-tab-pane key="1">
             <template #title>
@@ -38,7 +38,7 @@
         </a-tabs>
 
       </a-col>
-      <a-col :span="7" style="border-right: 1px solid #F2F2F2;padding: 0.5em">
+      <a-col :span="7" style="border-right: 1px solid #F2F2F2;padding: 0.5em;overflow-y: auto" :style="settingStyle">
         <template
             v-if="componentStore.currentSelectedComponentId&&!['GlDndPlaceholder','GlPage'].includes(componentStore.currentSelectedComponentName)">
           <div style="border-bottom: 1px solid #F2F2F2;padding: 0.5em;">
@@ -70,11 +70,11 @@ export default {
 </script>
 <script lang="ts" setup>
 import GlCommandEditorSidebar from './GlCommandEditorSidebar.vue'
-import {onMounted, onUpdated, PropType, ref, toRaw, watch} from "vue";
+import {onMounted, onUpdated, type PropType, ref, toRaw, watch} from "vue";
 import "./blocks/style.css"
 import {Action, ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import {blocksHandler} from "./blocks/BlockHandler";
-import {componentStoreFactory} from "@geelato/gl-ide";
+import {componentStoreFactory, useThemeStore} from "@geelato/gl-ide";
 import BlockPage from "../../../components/stage/BlockPage.vue";
 import VueJsonPretty from "vue-json-pretty";
 // import {editor} from "monaco-editor"
@@ -92,6 +92,25 @@ const props = defineProps({
       return new Action()
     }
   }
+})
+
+const themeStore = useThemeStore()
+
+const mainHeight = themeStore.modalBodyHeight+'px'
+const sidebarStyle = ref({
+  height: mainHeight,
+  'min-height': mainHeight,
+  'max-height': mainHeight
+})
+const mainStyle = ref({
+  height: mainHeight,
+  'min-height': mainHeight,
+  'max-height': mainHeight
+})
+const settingStyle = ref({
+  height: mainHeight,
+  'min-height': mainHeight,
+  'max-height': mainHeight
 })
 
 // const componentMaterialStore = useComponentMaterialStore()
@@ -134,4 +153,5 @@ reset()
 </script>
 
 <style>
+
 </style>

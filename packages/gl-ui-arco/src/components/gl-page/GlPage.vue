@@ -17,9 +17,16 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {getCurrentInstance, onMounted, onUnmounted, PropType, provide, ref} from "vue";
-import {PageParamType, PageProvideProxy, actionScriptExecutor, mixins, PageProvideKey} from "@geelato/gl-ui";
-import {Action} from "@geelato/gl-ui-schema";
+import {type PropType, getCurrentInstance, onMounted, onUnmounted, provide} from "vue";
+import {
+  type PageParamType,
+  type PageType,
+  PageProvideProxy,
+  actionScriptExecutor,
+  mixins,
+  PageProvideKey,
+} from "@geelato/gl-ui";
+import type {Action} from "@geelato/gl-ui-schema";
 
 const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
@@ -38,6 +45,12 @@ const props = defineProps({
     default() {
       return ''
     }
+  },
+  /**
+   *  页面类型
+   */
+  pageType: {
+    type: String as PropType<PageType>
   },
   pageTitle: {
     type: String,
@@ -94,7 +107,7 @@ provide(PageProvideKey, pageProvideProxy)
 // console.log('GlPage > provide() > pageProvideProxy:', pageProvideProxy)
 onUnmounted(() => {
   actionScriptExecutor.removePageProxy(props.glComponentInst.id)
-  // console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
+  console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
 })
 
 onMounted(() => {

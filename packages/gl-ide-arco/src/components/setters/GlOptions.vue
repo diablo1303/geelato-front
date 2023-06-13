@@ -69,8 +69,8 @@
 // @ts-nocheck
 import {defineComponent, type PropType} from 'vue'
 import {utils} from "@geelato/gl-ui";
+import type {ColumnType} from "@/components/setters/Types";
 
-type ColumnType = { dataIndex: String, title?: String }
 export default defineComponent({
   name: "GlOptions",
   props: {

@@ -34,15 +34,15 @@
 
 <script lang="ts" setup>
 
-import {computed, onUnmounted, PropType, ref, watch} from "vue";
-import {ComponentMeta} from "@geelato/gl-ui-schema";
+import {computed, inject, onUnmounted, type PropType, ref, watch} from "vue";
+import type{ ComponentMeta, IPropertySetterMeta} from "@geelato/gl-ui-schema";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
-import {mixins, utils} from "@geelato/gl-ui";
+import {mixins, PageProvideKey, PageProvideProxy, utils} from "@geelato/gl-ui";
 import BlockUtils from "./BlockUtils";
-import "./style.css"
 import GlInsts from "../../../dnd/GlInsts.vue";
-import IPropertySetterMeta from "@geelato/gl-ui-schema/src/entity/IPropertySetterMeta";
+import "./style.css"
 
+const pageProvideProxy:PageProvideProxy = inject(PageProvideKey)!
 // 注意，需在组件元数据中配置了属性invokeBlocks，本组件的回调组件设置才生效
 const INVOKE_BLOCK_NAME = 'invokeBlocks'
 const props = defineProps({

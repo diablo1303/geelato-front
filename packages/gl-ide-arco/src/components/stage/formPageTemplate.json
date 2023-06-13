@@ -3,7 +3,8 @@
   "id": "",
   "title": "页面",
   "props": {
-    "pageMargin":"0"
+    "pageMargin":"0",
+    "pageType":"formPage"
   },
   "slots": {},
   "children": [{

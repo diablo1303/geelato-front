@@ -8,6 +8,7 @@ export default class ParseResult {
     // 占位符名称格式为#{xxxKey}
     invokeBlockNames: Array<string> = []
 
+
     constructor(startLine?: string, endLine?: string) {
         this.startLine = startLine || ''
         this.endLine = endLine || ''
@@ -21,6 +22,7 @@ export default class ParseResult {
 
     toString(): string {
         const lines = []
+        let result = ''
         // console.log('ParseResult > toString() > blockName:', this.blockName)
         // console.log('ParseResult > toString() > invokeBlockNames:', this.invokeBlockNames)
         if (this.invokeBlockNames.length > 0) {
@@ -46,7 +48,7 @@ export default class ParseResult {
                 }
                 lines.push(this.replaceUnUsePlaceholder(eLine))
             }
-            return lines.length > 0 ? lines.join(';') : ''
+            result = lines.length > 0 ? lines.join(';') : ''
 
         } else {
             // 无占位符替换的情况
@@ -60,11 +62,15 @@ export default class ParseResult {
             if (this.endLine) {
                 lines.push(this.replaceUnUsePlaceholder(this.endLine))
             }
-            return lines.length > 0 ? lines.join(';') : ''
+            result = lines.length > 0 ? lines.join(';') : ''
         }
+        return result.replace(/;;{1,}/g, ';')
     }
 
     replaceUnUsePlaceholder(str: string) {
-        return str.replace(/#\{[a-zA-Z]+\}/g, '')
+        // 去掉没用的占位符#{xxx}
+        // 去掉每行最后一个";" replace(/;$/g,'')
+        // console.log('replaceUnUsePlaceholder:', str.trim())
+        return str.trim().replace(/#\{[a-zA-Z]+\}/g, '')
     }
 }

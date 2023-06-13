@@ -17,6 +17,18 @@ export default {
         "title": "标题",
         "setterComponentName": "AInput"
     }, {
+        "name": "pageType",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "title": "页面类型-临时",
+        "description": "后续将去提该属性",
+        "setterComponentName": "AInput"
+    }, {
         "name": "pageMargin",
         "group": "base",
         "type": "props",
@@ -39,5 +51,5 @@ export default {
         "placeholder": "如：14px",
         "setterComponentName": "AInput"
     }],
-    "actions": [{"name": "onMounted", "description": "页面加载完时触发，和Vue的onMounted一致", "title": "加载完"}],
+    "actions": [{"name": "onMounted", "description": "页面加载完时触发，和Vue的onMounted一致", "title": "加载完"}]
 }

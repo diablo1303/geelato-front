@@ -1,4 +1,4 @@
-import type {PropType} from "vue";
+import {type PropType} from "vue";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const props = {

@@ -1,13 +1,13 @@
 <script lang="ts">
+/**
+ *  整合gl-query、gl-toolbar、gl-table形成完整可直接使用的table应用
+ */
 export default {
   name: "GlEntityTablePlus"
 }
 </script>
 <script setup lang="ts">
 // @ts-nocheck
-/**
- * 整合gl-query、gl-toolbar、gl-table形成完整可直接使用的table应用
- */
 import GlQuery from "../gl-query/index.vue";
 import GlToolbar from "../gl-toolbar/index.vue";
 import GlEntityTable from "../gl-entity-table/index.vue";
@@ -19,9 +19,9 @@ import {
   type SizeProps,
   type Column,
   defaultTable,
-  type TableColumnDataPlus, BaseInfo,
+  type TableColumnDataPlus, BaseInfo, logicDeleteFieldName,
 } from "../gl-entity-table/table";
-import {type Toolbar, defaultToolbar} from "../gl-toolbar/toolbar";
+import Toolbar, {defaultToolbar} from "../gl-toolbar/toolbar";
 import {useI18n} from "vue-i18n";
 import {CheckUtil, entityApi, PageProvideKey, PageProvideProxy, GlIconfont, utils} from "@geelato/gl-ui";
 import type {Action} from "../../types/global";
@@ -156,11 +156,12 @@ const onUpdateRow = (data: { record: object, rowIndex: number }) => {
 }
 
 let lastEntityReaderParams: Array<EntityReaderParam>;
+// 在初始化（init）时，GlQuery组件的事件会触发：@search="onSearch"
 const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
   // console.log("onSearch() > entityReaderParams:", entityReaderParams);
   tableRef.value.search(entityReaderParams);
   lastEntityReaderParams = entityReaderParams;
-};
+}
 const refresh = (event?: MouseEvent) => {
   onSearch(lastEntityReaderParams);
 };
@@ -169,11 +170,22 @@ const queryRef = ref(null);
 const addRow = () => {
   tableRef.value.addRow()
 }
+/**
+ * 删除行，并刷新
+ * 默认为逻辑删除，依据属性base.isLogicDeleteMode进行区分
+ * @param params
+ */
 const deleteRow = (params: any) => {
   const id = params[0].id
-  entityApi.delete(props.base.entityName, {id: id}).then(() => {
-    refresh()
-  })
+  if (props.base.isLogicDeleteMode === false) {
+    entityApi.delete(props.base.entityName, {id: id}).then(() => {
+      refresh()
+    })
+  } else {
+    entityApi.save(props.base.entityName, {id, [logicDeleteFieldName]: 1}).then(() => {
+      refresh()
+    })
+  }
   console.log('GlEntityTablePlus > deleteRow() > params:', params)
 }
 const saveRow = () => {
@@ -193,12 +205,14 @@ const getRenderData = () => {
 const getRenderColumns = () => {
   return tableRef.value.getRenderColumns()
 }
-
+const getDeleteData = () => {
+  return tableRef.value.getDeleteData()
+}
 
 const validateTable = () => {
   return tableRef.value.validateTable()
 }
-defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, validateTable])
+defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData, validateTable])
 </script>
 
 <template>
@@ -209,7 +223,8 @@ defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, validateTable
       <template #leftItems>
         <div v-if="base.enableEdit" class="action-icon">
           <a-button @click="addRow" shape="round" type="text" size="small">
-            <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加一行</a-button>
+            <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加一行
+          </a-button>
         </div>
       </template>
       <template #rightItems>
@@ -282,6 +297,9 @@ defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, validateTable
         @updateRow="onUpdateRow"
         :showPagination=base.showPagination
         :enableEdit="base.enableEdit"
+        :isFormSubTable="base.isFormSubTable"
+        :subTablePidName="base.subTablePidName"
+        :isLogicDeleteMode="base.isLogicDeleteMode"
         :rowSelection="rowSelection"
     ></GlEntityTable>
   </a-card>

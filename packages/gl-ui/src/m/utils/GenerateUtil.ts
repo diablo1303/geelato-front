@@ -6,10 +6,10 @@ export default class GenerateUtil {
   static gid(prefix?: string, maxLength?: number) {
     if (prefix) {
       return `${prefix}_${GenerateUtil.uuid(
-        maxLength || 16 - prefix.length - 1
+        maxLength || 20 - prefix.length - 1
       )}`;
     }
-    return GenerateUtil.uuid(16);
+    return GenerateUtil.uuid(20);
   }
 
   static uuid(len: number, radix?: number) {

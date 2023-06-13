@@ -1,41 +1,12 @@
 export default {
     "props": {
-        "entityName": "platform_role",
-        "query": [{
-            "id": "",
-            "name": "name",
-            "title": "名称",
-            "cop": "contains",
-            "isAdvanceQuery": false,
-            "colspan": 6,
-            "component": {
-                "componentName": "AInput",
-                "props": {}
-            }
-        }, {
-            "id": "",
-            "name": "code",
-            "title": "编码",
-            "isAdvanceQuery": false,
-            "colspan": 6,
-            "component": {
-                "componentName": "AInput",
-                "props": {}
-            }
-        }, {
-            "id": "",
-            "name": "enableStatus",
-            "title": "编码",
-            "isAdvanceQuery": false,
-            "colspan": 6,
-            "component": {
-                "componentName": "ASelect",
-                "props": {
-                    "options": [{"value": 1, "label": "已启用"}, {"value": 0, "label": "已停用"}],
-                    "allowClear": true
-                }
-            }
-        }],
+        "id": "",
+        "componentName": "GlEntityTablePlus",
+        "title": "表格",
+        "group": "dataDisplay",
+        "useBy": ["freePage"],
+        "style": {},
+        "query": [],
         "toolbar": {
             "leftColSpan": 12,
             "centerColSpan": 0,
@@ -61,16 +32,10 @@ export default {
         }, {"title": "描述", "dataIndex": "description"}, {
             "title": "创建时间",
             "dataIndex": "createAt"
-        }, {"title": "操作", "dataIndex": "optional", "slotName": "optional"}],
+        }],
         "columnActions": []
     },
     "slots": {},
     "children": [],
-    "actions": [],
-    "componentName": "GlEntityTablePlus",
-    "title": "表格",
-    "group": "dataDisplay",
-    "useBy": ["freePage"],
-    "style": {},
-    "id": "dXcmbHQxujC9dKAR"
+    "actions": []
 }

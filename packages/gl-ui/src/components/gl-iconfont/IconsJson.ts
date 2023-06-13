@@ -7,7 +7,7 @@ export class IconsJson {
     glyphs:Array<IconFont> = []
 }
 
-class IconFont{
+export class IconFont{
     icon_id:string = ''
     name:string = ''
     font_class:string = ''

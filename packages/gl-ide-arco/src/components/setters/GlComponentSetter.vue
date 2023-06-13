@@ -48,12 +48,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {nextTick, onMounted, onUnmounted, PropType, provide, ref} from "vue";
-import {EntityMeta, utils} from "@geelato/gl-ui";
-import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
+import {onUnmounted, type PropType, provide, ref} from "vue";
+import {ComponentInstance, type ComponentMeta} from "@geelato/gl-ui-schema";
 import ClipboardJS from "clipboard";
 import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "./ComponentSetterProvideProxy";
-import GlPropertySetterToolbar from './GlPropertySetterToolbar.vue'
 import {componentStoreFactory} from "@geelato/gl-ide";
 
 const emits = defineEmits(['update']);
@@ -63,7 +61,12 @@ const props = defineProps({
     required: true
   },
   componentInstance: {
-    type: Object as PropType<ComponentInstance>
+    type: Object as PropType<ComponentInstance>,
+    // TODO 解决componentModel.id error TS2532: Object is possibly 'undefined'.
+    // 时引入默认值，后续需再确认是否保留
+    default() {
+      return new ComponentInstance()
+    }
   },
   /**
    *  默认Tabs选中项，从1开始

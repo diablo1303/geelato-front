@@ -1,0 +1,46 @@
+{
+  "componentName": "GlPage",
+  "props": {
+    "breadcrumb": [
+      "客户信息管理",
+      "客户列表"
+    ],
+    "pageTitle": "客户列表"
+  },
+  "children": [
+    {
+      "componentName": "GlEntityForm",
+      "props": {
+        "entityName": "crm_customer"
+      },
+      "children": [
+        {
+          "componentName": "GlCard",
+          "props": {
+            "title": "title",
+            "class": "general-card"
+          },
+          "children": [
+            {
+              "componentName": "GlRowLayout",
+              "props": {
+              },
+              "children": [
+                {
+                  "componentName": "ASelect",
+                  "props": {
+                  }
+                },
+                {
+                  "componentName": "AInput",
+                  "props": {
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import type {ComponentInternalInstance} from "vue";
 
 export type PageParamType = { pName: string, pValue: any, pType: string }
 export const PageProvideKey = 'PageProvideKey'
+export const PageProvideKeyNotBlockPage = 'PageProvideKeyNotBlockPage'
 export default class PageProvideProxy {
     // 数据库中的字段，页面id
     pageId: string = ''
@@ -44,6 +45,7 @@ export default class PageProvideProxy {
      */
     getVueInst(componentId: string) {
         if (componentId) {
+            // console.log('getVueInst() > componentMap:', this.componentMap)
             return this.componentMap[componentId]
         }
         return null

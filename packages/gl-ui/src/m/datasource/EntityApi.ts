@@ -227,7 +227,23 @@ export class EntityApi {
         });
     }
 
+    /**
+     * 物理删除
+     * @param entityName
+     * @param keyValues
+     * @param biz
+     */
     delete(entityName: string, keyValues: object, biz?: string) {
+        return this.update(this.url.apiMetaDelete, entityName, keyValues, biz);
+    }
+
+    /**
+     * 逻辑删除
+     * @param entityName
+     * @param keyValues
+     * @param biz
+     */
+    deleteLogic(entityName: string, keyValues: object, biz?: string) {
         return this.update(this.url.apiMetaDelete, entityName, keyValues, biz);
     }
 

@@ -46,17 +46,28 @@ export default {
         "show": true,
         "expanded": true,
         "setterComponentProps": {
-            "options": [{"label": "等于(==)", "value": "=="}, {"label": "恒等于(===)", "value": "==="}, {
-                "label": "不等于(!=)",
-                "value": "!="
-            }, {"label": "大于(>)", "value": ">"}, {"label": "大于等于(>=)", "value": ">="}, {
-                "label": "小于(<)",
-                "value": "<"
-            }, {"label": "小于等于(<=)", "value": "<="}]
+            "options": [{"label": "等于(==)", "value": "=="}, {
+                "label": "恒等于(===)",
+                "value": "==="
+            }, {"label": "不等于(!=)", "value": "!="}, {"label": "大于(>)", "value": ">"}, {
+                "label": "大于等于(>=)",
+                "value": ">="
+            }, {"label": "小于(<)", "value": "<"}, {"label": "小于等于(<=)", "value": "<="}]
         },
         "setterComponentVModelName": "modelValue",
         "title": "比较关系",
         "setterComponentName": "ASelect"
+    }, {
+        "name": "valueType",
+        "setterComponentProps": {"allowClear": true, "options": []},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "值类型",
+        "setterComponentName": "GlValueTypes",
+        "enableValueExpress": false
     }, {
         "name": "compareValue",
         "setterComponentProps": {},
@@ -66,26 +77,8 @@ export default {
         "show": true,
         "expanded": true,
         "title": "比较值",
-        "setterComponentName": "AInput"
-    }, {
-        "name": "valueType",
-        "setterComponentProps": {
-            "allowClear": true,
-            "options": [{"label": "字符串", "value": "string"}, {
-                "label": "布尔",
-                "value": "boolean"
-            }, {"label": "表达式", "value": "express"}, {"label": "数值", "value": "number"}, {
-                "label": "数组",
-                "value": "array"
-            }, {"label": "对象", "value": "object"}]
-        },
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "值类型",
-        "setterComponentName": "ASelect"
+        "setterComponentName": "GlCompareValueSetter",
+        "enableValueExpress": false
     }],
     "actions": []
 }

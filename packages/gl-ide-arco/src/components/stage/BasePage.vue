@@ -9,7 +9,6 @@ import {componentStoreFactory} from "@geelato/gl-ide";
 import {useGlobal, emitter, utils} from "@geelato/gl-ui";
 import GlInst from "../dnd/GlInst.vue";
 import {onUnmounted, provide} from "vue";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const emits = defineEmits(['drop'])
 
@@ -95,6 +94,7 @@ onUnmounted(() => {
     emitter.off('setCurrentSelectedComponentId', onSetCurrentSelectedComponentId)
     emitter.off('setCurrentSelectedComponentId', onSetCurrentHoverComponentId)
   }
+  console.log('BasePage > onUnmounted()')
 })
 
 </script>

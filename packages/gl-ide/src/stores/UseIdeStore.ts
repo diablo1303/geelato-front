@@ -6,9 +6,8 @@ import {usePageStore} from "./UsePageStore";
 import {useComponentStore} from "./UseComponentStore";
 import {useEntityStore} from "./UseEntityStore";
 import Page from "../entity/Page";
-import type {ComponentMeta} from "@geelato/gl-ui-schema";
+import type {ComponentMeta,ComponentInstance} from "@geelato/gl-ui-schema";
 import {ref} from "vue";
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {utils} from "@geelato/gl-ui";
 
 export const useIdeStore = defineStore('GlIdeStore', () => {
@@ -87,7 +86,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
      * @param iconType
      */
     function openPage({type, extendId, title, iconType}: Page) {
-        // console.log('try to open page:', {type, extendId, title, iconType})
+        console.log('try to open page:', {type, extendId, title, iconType})
         // 从已打开的页面中查找，若有若激活
         let foundItem = pageStore.findPageByExtendId(extendId)
         if (foundItem.index >= 0) {
@@ -133,7 +132,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
                             }
                         }
                         genComponentId(pageTemplate)
-                        console.log('pageTemplate',pageTemplate)
+                        // console.log('pageTemplate',pageTemplate)
                         page.sourceContent = pageTemplate
                     }
                     componentStore.setComponentTree(page.sourceContent)

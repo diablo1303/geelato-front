@@ -4,7 +4,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {PropType, ref, watch} from "vue";
+import {type PropType, ref, watch} from "vue";
 import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 
 const emits = defineEmits(['update:modelValue'])
@@ -14,18 +14,19 @@ const props = defineProps({
     required: true
   },
   componentInstance: {
-    type: ComponentInstance
+    type: ComponentInstance,
+    required: true
   }
 })
 
-const mv = ref(props.componentInstance!.i18n)
+const mv = ref(props.componentInstance.i18n||[])
 
 watch(mv, (val) => {
-  props.componentInstance!.i18n = val
+  props.componentInstance.i18n = val
 }, {deep: true})
-// const update = () => {
+const update = () => {
 //   emits('update:modelValue', mv.value)
-// }
+}
 </script>
 
 <template>

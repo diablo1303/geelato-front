@@ -4,7 +4,8 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {computed, inject, PropType, ref, unref} from 'vue'
+// @ts-nocheck
+import {computed, inject, type PropType, ref, unref} from 'vue'
 import {useDrag, useDrop} from 'vue3-dnd'
 import {ItemTypes} from './DndItemTypes'
 import type {Identifier} from 'dnd-core'
@@ -101,6 +102,7 @@ const {handlerId, isShallowOver} = toRefs(dropCollect)
 const {isDragging} = toRefs(collect)
 const opacity = computed(() => (unref(isDragging) ? 0 : 1))
 
+// TODO  error TS2322: Type '(el: HTMLDivElement) => void' is not assignable to type 'VNodeRef | undefined'.
 const setRef = (el: HTMLDivElement) => {
   card.value = drag(drop(el)) as HTMLDivElement
 }
@@ -116,14 +118,21 @@ const isFormItem = computed(() => {
   return componentStore.isDataEntryComponent(props.glComponentInst.componentName)
 })
 // const blocks = ['GlPage', 'GlEntityForm', 'GlFormRow', 'GlFormCol', 'GlDndPlaceholder', 'GlCard', 'GlTabs', 'GlRowColLayout']
-const style = ref({
-  display: function () {
-    if (componentStore.isDataEntryComponent(props.glComponentInst.componentName)) {
-      return 'inline-block'
-    }
-    return false
-  }()
-})
+// const style = ref({
+//   display: function () {
+//     if (componentStore.isDataEntryComponent(props.glComponentInst.componentName)) {
+//       return 'inline-block'
+//     }
+//     return false
+//   }()
+// })
+
+const styleDisplay = ref(function () {
+  if (componentStore.isDataEntryComponent(props.glComponentInst.componentName)) {
+    return 'inline-block'
+  }
+  return false
+}())
 
 
 // 示例
@@ -138,7 +147,7 @@ const style = ref({
 // ]
 const defaultLocal = 'zh-CN'
 const i18n = props.glComponentInst.i18n
-const i18nConvert = (value: string) => {
+const i18nConvert = (value?: string) => {
   const currentLocaleValue = localStorage.getItem('gl-locale') || defaultLocal
   // 如果是默认语言（zh-CN），则直接返回
   if (currentLocaleValue === defaultLocal) {
@@ -157,7 +166,7 @@ const i18nConvert = (value: string) => {
 </script>
 
 <template>
-  <div class="gl-dnd-wrapper" :style="style">
+  <div class="gl-dnd-wrapper" :style="{display:styleDisplay}">
     <div :ref="setRef"
          class="gl-component-wrapper"
          :style="{ opacity }"

@@ -14,25 +14,18 @@
       </div>
       <div style="flex: auto">
         <a-input style="width: 100%" v-model="mv.text" placeholder="按钮文字"
-               @change="onChangeText"></a-input>
+                 @change="onChangeText"></a-input>
       </div>
     </div>
-<!--    <span style="cursor: pointer" @click="showIconSelect" title="点击重新选择图标">-->
-<!--          <GlIconfont :type="mv.type"></GlIconfont>-->
-<!--    </span>-->
-<!--    <span v-if="mv.type" style="cursor: pointer" @click="()=>{mv.type=''}" title="点击删除该图标">-->
-<!--          删除图标-->
-<!--    </span>-->
-<!--    <span v-else style="cursor: pointer" @click="showIconSelect">-->
-<!--          选择图标-->
-<!--    </span>-->
-<!--    <span>-->
-<!--      <a-input style="width: 50%" v-model="mv.text" placeholder="附加文本"-->
-<!--               @change="onChangeText"></a-input>-->
-<!--    </span>-->
-    <a-modal v-model:visible="visible" title="选择图标" @ok="showIconSelect" :width="1024" style="top: 20px">
-      <div style="height:640px;overflow-y: scroll;padding:1em;margin:-24px">
-        <div v-for="item in json.glyphs" class="gl-iconfont-setter-icon-item" @click="onSelected(item)">
+    <a-modal v-model:visible="visible"  @ok="showIconSelect" :width="1124" style="top: 20px">
+      <template #title>
+        选择图标
+        <a-input-search v-model="searchText" style="width: 18em;margin-left: 0.5em"
+                        placeholder="输入查询过滤图标"></a-input-search>
+      </template>
+      <div style="height:640px;overflow-y: scroll;padding:1em 1em 0 1em;margin:-24px 0">
+        <div v-for="item in items" class="gl-iconfont-setter-icon-item"
+             :class="{'gl-selected':mv.type===json.css_prefix_text + item.font_class}" @click="onSelected(item)">
           <div style="font-size: 2em;">
             <GlIconfont :type="json.css_prefix_text+item.font_class"></GlIconfont>
           </div>
@@ -50,7 +43,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {iconsJson, IconsJson} from "@geelato/gl-ui"
-import {ref} from 'vue'
+import {computed, ref} from 'vue'
 
 const props = defineProps({
   modelValue: {
@@ -64,6 +57,18 @@ const mv = ref(props.modelValue || {
   type: '',
   text: '',
   rotate: 0
+})
+
+const searchText = ref('')
+
+const items = computed(() => {
+  const text = searchText.value.trim()
+  if (!text) {
+    return json.glyphs
+  }
+  return json.glyphs.filter((glyph: any) => {
+    return (json.css_prefix_text + glyph.font_class).indexOf(text) != -1
+  })
 })
 
 const onChangeText = (x: string) => {
@@ -91,13 +96,14 @@ const emitUpdate = () => {
   padding: 0.5em;
   text-align: center;
   cursor: pointer;
-  min-width: 9em;
-  max-width: 9em;
-  height: 9em;
+  min-width: 10em;
+  max-width: 10em;
+  height: 7em;
   vertical-align: top;
 }
 
-.gl-iconfont-setter-icon-item:hover {
+.gl-iconfont-setter-icon-item:hover, .gl-iconfont-setter-icon-item.gl-selected {
   box-shadow: 0px 0px 4px #1890FF;
 }
+
 </style>

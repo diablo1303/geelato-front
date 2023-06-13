@@ -51,11 +51,11 @@ export class EntityMeta extends EntityLiteMeta {
 export class EntityReaderParam {
     name: string = '';
     cop: string = 'eq';
-    value: string | number | Array<string | number>;
+    value: string | number | Array<string | number> | undefined;
 
-    constructor(name: string, cop: string, value: string | number | Array<string | number>) {
-        this.name = name
-        this.cop = cop
+    constructor(name?: string, cop?: string, value?: string | number | Array<string | number>) {
+        this.name = name || ''
+        this.cop = cop || 'eq'
         this.value = value
     }
 }

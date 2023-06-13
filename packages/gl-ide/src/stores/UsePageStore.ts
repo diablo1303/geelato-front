@@ -1,6 +1,6 @@
 import {ref} from "vue";
 import {defineStore} from 'pinia'
-import {entityApi, utils} from "@geelato/gl-ui";
+import {entityApi, type PageType} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {useComponentStore} from "./UseComponentStore";
 import Page from "../entity/Page";
@@ -53,7 +53,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
      * @param pageType
      * @param template
      */
-    function getPageTemplate(pageType: string): ComponentInstance {
+    function getPageTemplate(pageType: PageType): ComponentInstance {
         const template: ComponentInstance = JSON.parse(JSON.stringify(pageTemplates[pageType]))
 
         return template

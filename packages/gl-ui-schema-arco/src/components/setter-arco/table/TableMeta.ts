@@ -15,7 +15,7 @@ export default {
         "expanded": true,
         "setterComponentProps": {},
         "setterComponentVModelName": "",
-        "_showSub": true,
+        "_showSub": false,
         "properties": [{
             "name": "tableTitle",
             "group": "base",
@@ -39,37 +39,6 @@ export default {
             "setterComponentVModelName": "modelValue",
             "title": "绑定数据源",
             "setterComponentName": "GlEntitySelect"
-        }, {
-            "name": "isFormSubTable",
-            "group": "base",
-            "type": "props",
-            "enableValueExpress": false,
-            "show": true,
-            "expanded": true,
-            "setterComponentProps": {
-                "type": "button",
-                "options": [{
-                    "label": "子表",
-                    "__jjwIsJ7EGd7amCHBHU": "subTable",
-                    "value": "subTable"
-                }, {"label": "普通表单"}]
-            },
-            "setterComponentVModelName": "modelValue",
-            "title": "是否为子表",
-            "setterComponentName": "ASwitch",
-            "description": "表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容"
-        }, {
-            "name": "subTablePidName",
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "enableValueExpress": false,
-            "show": true,
-            "expanded": true,
-            "title": "主表ID字段",
-            "description": "子表中，对应主表单主键ID的字段",
-            "setterComponentName": "GlFieldSelect"
         }, {
             "name": "showQuery",
             "group": "base",
@@ -301,41 +270,6 @@ export default {
         "expanded": false,
         "_showSub": false,
         "properties": [{
-            "name": "leftColSpan",
-            "setterComponentProps": {"defaultValue": 12},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "title": "左栅格数",
-            "setterComponentName": "AInputNumber",
-            "placeholder": "12",
-            "description": "一行按24栅格划分，占的栅格数"
-        }, {
-            "name": "centerColSpan",
-            "setterComponentProps": {"defaultValue": 0},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "title": "中间栅格",
-            "setterComponentName": "AInputNumber",
-            "description": "一行按24栅格划分，占的栅格数"
-        }, {
-            "name": "rightColSpan",
-            "setterComponentProps": {"defaultValue": 12},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "title": "右栅格数",
-            "placeholder": "12",
-            "setterComponentName": "AInputNumber",
-            "description": "一行按24栅格划分，占的栅格数"
-        }, {
             "name": "leftItems",
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
@@ -349,19 +283,6 @@ export default {
             "titleField": "componentName",
             "title": "左边组件"
         }, {
-            "name": "centerItems",
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "_showSub": false,
-            "properties": [],
-            "setterComponentName": "GlArrayComponentSetter",
-            "titleField": "",
-            "title": "中间组件"
-        }, {
             "name": "rightItems",
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
@@ -374,6 +295,30 @@ export default {
             "title": "左边组件",
             "setterComponentName": "GlArrayComponentSetter",
             "titleField": ""
+        }, {
+            "name": "leftColSpan",
+            "setterComponentProps": {"defaultValue": 12},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "show": true,
+            "expanded": true,
+            "title": "左栅格数",
+            "setterComponentName": "AInputNumber",
+            "placeholder": "12",
+            "description": "一行按24栅格划分，占的栅格数"
+        }, {
+            "name": "rightColSpan",
+            "setterComponentProps": {"defaultValue": 12},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "show": true,
+            "expanded": true,
+            "title": "右栅格数",
+            "placeholder": "12",
+            "setterComponentName": "AInputNumber",
+            "description": "一行按24栅格划分，占的栅格数"
         }],
         "title": "工具条",
         "setterComponentName": "GlSimpleObjectSetter",
@@ -417,7 +362,7 @@ export default {
             "type": "props",
             "show": true,
             "expanded": true,
-            "description": "对字段值进行处理，示例：\"$ctx.record.enableStatus === 1 ? '已启用' : '未启用'\"。当插槽名称为“#”时，特指操作列，此时本显示脚本的内容无效。",
+            "description": "对字段值进行处理，示例：\"$ctx.record.enableStatus == 1 ? '已启用' : '未启用'\"。",
             "title": "显示脚本",
             "setterComponentName": "AInput",
             "enableValueExpress": false
@@ -492,7 +437,8 @@ export default {
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
             "title": "宽度",
-            "setterComponentName": "AInputNumber"
+            "setterComponentName": "AInputNumber",
+            "placeholder": "单位象素(px)"
         }],
         "setterComponentName": "GlObjectArraySetter",
         "title": "表格列",
@@ -512,5 +458,16 @@ export default {
         "title": "列操作",
         "enableValueExpress": false
     }],
-    "actions": [{"name": "change", "title": "值改变"}]
+    "actions": [{"name": "change", "title": "值改变"}],
+    "methods": [{"name": "refresh", "title": "刷新", "description": "刷新表格", "params": []}, {
+        "name": "deleteRow",
+        "title": "删除行",
+        "params": [{
+            "name": "id",
+            "type": "String",
+            "description": "在表格行操作中，值示例：$ctx.record.id",
+            "title": "记录ID",
+            "defaultValue": ""
+        }]
+    }]
 }

@@ -55,7 +55,7 @@ export default {
 </script>
 <script setup lang="ts">
 import {emitter, mixins, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
-import {getCurrentInstance, inject, onMounted, PropType} from "vue";
+import {getCurrentInstance, inject, onMounted, type PropType} from "vue";
 import {Action} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
 

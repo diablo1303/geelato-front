@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {PropType} from "vue";
-import type {ComponentMeta} from "./toolbar";
+import type {ComponentMeta} from "@geelato/gl-ui-schema";
 
 defineProps({
   leftColSpan: {

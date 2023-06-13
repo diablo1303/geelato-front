@@ -1,4 +1,4 @@
-import BlockMeta from "./BlockMeta";
+import type BlockMeta from "./BlockMeta";
 
 export default class BlockMetaGroup {
     name: string = 'default'

@@ -1,6 +1,10 @@
 import type {LooseObject} from "../mix/LooseObject";
+import type {I18nItem} from "@geelato/gl-ui-schema";
+
+const defaultLocal = 'zh-CN'
 
 export default class ConvertUtil {
+
     /**
      * 'false' -> false ,'0' -> false
      * @param v
@@ -151,5 +155,22 @@ export default class ConvertUtil {
             }
         }
         return fmt;
+    }
+
+    static i18nConvert(value?: string, i18n?: Array<I18nItem>) {
+        const currentLocaleValue = localStorage.getItem('gl-locale') || defaultLocal
+        // 如果是默认语言（zh-CN），则直接返回
+        if (currentLocaleValue === defaultLocal) {
+            return value
+        }
+        if (i18n) {
+            for (let i18nKey in i18n) {
+                if (i18n[i18nKey]['zh-CN'] === value) {
+                    return i18n[i18nKey][currentLocaleValue]
+                }
+            }
+        }
+        // 如果没有匹配的字典信息，则直接返回
+        return value
     }
 }

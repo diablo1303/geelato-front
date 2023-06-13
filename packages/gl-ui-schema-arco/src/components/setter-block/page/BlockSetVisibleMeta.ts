@@ -3,9 +3,9 @@ export default {
     "displayMode": "Tile",
     "iconType": "gl-hide",
     "group": "block_page",
-    "title": "设置组件可见",
+    "title": "设置组件隐藏",
     "useBy": ["freePage"],
-    "blockContent": "设置组件:${componentId}，是否为不渲染（不可见）:${unRender}",
+    "blockContent": "设置组件:${componentId}，是否隐藏（不渲染）:${unRender}",
     "properties": [{
         "name": "appId",
         "setterComponentProps": {},
@@ -39,7 +39,7 @@ export default {
         "title": "调用的组件",
         "setterComponentName": "GlPageComponentSelect",
         "enableValueExpress": false
-    },{
+    }, {
         "name": "unRender",
         "group": "base",
         "type": "props",
@@ -47,8 +47,11 @@ export default {
         "expanded": true,
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
-        "title": "不渲染",
-        "setterComponentName": "ASwitch"
+        "title": "是否隐藏",
+        "setterComponentName": "ASwitch",
+        "enableValueExpress": false,
+        "placeholder": "这里的隐藏即不渲染",
+        "setterDefaultValue": false
     }],
     "actions": []
 }

@@ -16,6 +16,9 @@ import en from "./locale/en-US";
 import cn from "./locale/zh-CN";
 import {PluginUtil} from "@geelato/gl-ui";
 import './assets/style.css'
+import GlColor from "./components/gl-color/GlColor.vue";
+import GlInstRuntime from "./components/gl-inst-runtime/GlInstRuntime.vue";
+import GlInstsRuntime from "./components/gl-inst-runtime/GlInstsRuntime.vue";
 
 const i18nMessage = {en, cn};
 
@@ -25,10 +28,11 @@ const component: Plugin = {
         if (PluginUtil.markInstalledPlugin(app, "gl-ui-arco")) {
             return;
         }
-
         app.component(GlDict.name, GlDict)
         app.component(GlPage.name, GlPage);
         app.component("GlEntityTablePlus", GlEntityTablePlus);
+        // 表格注册多一个，作为子表单，在配置时减少一些不必要的配置项
+        app.component("GlEntityTableSub", GlEntityTablePlus);
         app.component(GlEntityTree.name, GlEntityTree)
         app.component(GlEntityForm.name, GlEntityForm)
         app.component(GlCard.name, GlCard)
@@ -38,6 +42,9 @@ const component: Plugin = {
         app.component(GlTabs.name, GlTabs)
         app.component(GlUserSelect.name, GlUserSelect)
         app.component(GlDynamicSelect.name, GlDynamicSelect)
+        app.component(GlColor.name, GlColor)
+        app.component(GlInstRuntime.name, GlInstRuntime)
+        app.component(GlInstsRuntime.name, GlInstsRuntime)
         // const i18n = createI18n({
         //   locale: localStorage.getItem("arco-locale") || "zh-CN",
         //   fallbackLocale: "en-US",

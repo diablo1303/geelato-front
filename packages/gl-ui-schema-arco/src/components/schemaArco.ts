@@ -44,6 +44,8 @@ import PopoverMeta from "./setter-arco/popover/PopoverMeta";
 import StatisticMeta from "./setter-arco/statistic/StatisticMeta";
 import TableMeta from "./setter-arco/table/TableMeta";
 import TableInstance from "./setter-arco/table/TableInstance";
+import TableSubMeta from "./setter-arco/table/TableSubMeta";
+import TableSubInstance from "./setter-arco/table/TableSubInstance";
 import TabsMeta from "./setter-arco/tabs/TabsMeta";
 import TagMeta from "./setter-arco/tag/TagMeta";
 import TimelineMeta from "./setter-arco/timeLine/TimelineMeta";
@@ -67,19 +69,26 @@ import HiddenAreaInstance from "./setter-arco/hidden-area/HiddenAreaInstance";
 import DictMeta from "./setter-arco/dict/dictMeta";
 import DynamicSelectMeta from "./setter-arco/select/DynamicSelectMeta";
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [ButtonMeta, IconMeta, FormMeta, InputMeta, InputNumberMeta, DictMeta, DynamicSelectMeta,SelectMeta, TextAreaMeta, RateMeta, RadioGroupMeta, UserSelectMeta, ColorMeta, TableMeta, TypographyMeta, DividerMeta, RowColLayoutMeta,
+const componentMetas: Array<ComponentMeta> = [ButtonMeta, FormMeta, InputMeta, InputNumberMeta, DictMeta, DynamicSelectMeta, SelectMeta, DatePickerMeta, TimePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, RadioGroupMeta, ColorMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
-    CascaderMeta, CheckboxMeta, DatePickerMeta, MentionsMeta,SliderMeta, SwitchMeta, TimePickerMeta, TransferMeta, TreeSelectMeta, UploadMeta, AvatarMeta, BadgeMeta,
-    CalendarMeta, CardMeta, HiddenAreaMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
-    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, TreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta]
-
+    CascaderMeta, CheckboxMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta,
+    CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
+    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, TreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta, DividerMeta]
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance]
+const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance]
 const componentInstances: Array<ComponentInstance> = []
 const dataEntryNameMap: { [key: string]: boolean } = {}
+// 不在sidebar中出现的组件
+const ignoreInstances: Array<ComponentMeta> = [DndPlaceholderMeta, VirtualMeta, TimelineMeta, TimelineItemMeta, CascaderMeta]
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {
     const meta = componentMetas[index]
+    if (ignoreInstances.findIndex((componentMeta: ComponentMeta) => {
+        return meta.componentName === componentMeta.componentName
+    }) !== -1) {
+        continue
+    }
+    console.log('meta:', meta)
     const foundInstance = customInstances.find((item: ComponentInstance) => {
         return item.componentName === meta.componentName
     })

@@ -26,10 +26,10 @@
     <a-modal v-if="actionCodeEditorVisible" draggable :visible="actionCodeEditorVisible" title="动作（事件）编排"
              @ok="closeActionCodeEditor"
              @cancel="closeActionCodeEditor"
-             :width="1360"
              :hide-cancel="true"
              ok-text="关闭"
              body-style="padding:0"
+             fullscreen
     >
       <CommandEditor v-if="refreshFlag&&currentAction" :key="currentAction.id"
                      v-model:action="currentAction"></CommandEditor>
@@ -43,7 +43,10 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {h, nextTick, type PropType, ref} from 'vue'
+// @ts-nocheck
+// error TS2532: Object is possibly 'undefined'.
+// componentInstance.actions
+import {nextTick, type PropType, ref} from 'vue'
 import {Action, ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import GlArrayBaseSetter from "./property-setters/GlArrayBaseSetter.vue";
 import CommandEditor from "./action-setters/CommandEditor.vue";

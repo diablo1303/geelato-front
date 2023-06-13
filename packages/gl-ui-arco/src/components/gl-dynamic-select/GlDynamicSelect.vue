@@ -19,7 +19,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {ref, watch} from 'vue'
+import {type PropType, ref, watch} from 'vue'
 import {entityApi} from "@geelato/gl-ui";
 
 const props = defineProps({
@@ -43,6 +43,21 @@ const props = defineProps({
       return 'id'
     }
   },
+  orderFiledName: {
+    type: String,
+    default() {
+      return ''
+    }
+  },
+  /**
+   * asc or desc
+   */
+  ascOrDesc: {
+    type: String,
+    default() {
+      return '+'
+    }
+  },
   allowClear: {
     type: Boolean,
     default() {
@@ -52,11 +67,11 @@ const props = defineProps({
   allowSearch: {
     type: Boolean,
     default() {
-      return false
+      return true
     }
   },
   readonly: Boolean,
-  size: String,
+  size: String as PropType<"medium" | "small" | "mini" | "large" | undefined>,
   placeholder: String,
   disabled: Boolean
 })
@@ -71,7 +86,9 @@ watch(mv,
 const selectOptions = ref([])
 const loadData = () => {
   if (props.entityName && props.valueFiledName && props.labelFieldName) {
-    entityApi.query(props.entityName, `${props.valueFiledName},${props.labelFieldName}`, {}).then((resp: any) => {
+    const params = props.orderFiledName ? {'@order': props.orderFiledName + '|' + props.ascOrDesc} : {}
+    console.log('GlDynamicSelect > loadData() > params:', params)
+    entityApi.query(props.entityName, `${props.valueFiledName},${props.labelFieldName}`, params).then((resp: any) => {
       selectOptions.value = resp.data?.data || []
     })
   }
