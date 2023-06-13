@@ -14,13 +14,13 @@
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('model.table.index.form.tableName')" field="tableName">
-              <a-input v-model="filterData.tableName"/>
+            <a-form-item :label="$t('model.table.index.form.entityName')" field="entityName">
+              <a-input v-model="filterData.entityName"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('model.table.index.form.entityName')" field="entityName">
-              <a-input v-model="filterData.entityName"/>
+            <a-form-item :label="$t('model.table.index.form.tableName')" field="tableName">
+              <a-input v-model="filterData.tableName"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
@@ -134,8 +134,8 @@
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
       <a-table-column :title="$t('model.table.index.form.title')" data-index="title" ellipsis="true" tooltip="true" width="200"/>
-      <a-table-column :title="$t('model.table.index.form.tableName')" data-index="tableName" ellipsis="true" tooltip="true" width="200"/>
       <a-table-column :title="$t('model.table.index.form.entityName')" data-index="entityName" ellipsis="true" tooltip="true" width="200"/>
+      <a-table-column :title="$t('model.table.index.form.tableName')" data-index="tableName" ellipsis="true" tooltip="true" width="200"/>
       <a-table-column :title="$t('model.table.index.form.tableType')" data-index="tableType" width="100">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.tableType.${record.tableType}`) }}

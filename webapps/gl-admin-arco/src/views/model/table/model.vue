@@ -1,7 +1,7 @@
 <template v-model="pageData">
   <a-form
-ref="validateForm" :model="formData" :label-col-props="{ span: 6 }" :wrapper-col-props="{ span: 18 }"
-          class="form">
+      ref="validateForm" :model="formData" :label-col-props="{ span: 6 }" :wrapper-col-props="{ span: 18 }"
+      class="form">
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item v-show="false">
@@ -9,6 +9,7 @@ ref="validateForm" :model="formData" :label-col-props="{ span: 6 }" :wrapper-col
           <a-input v-show="false" v-model="formData.connectId"/>
           <a-input v-show="false" v-model="formData.tableName"/>
           <a-input v-show="false" v-model="formData.viewSql"/>
+          <a-input v-show="false" v-model="formData.seqNo"/>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
@@ -22,41 +23,28 @@ ref="validateForm" :model="formData" :label-col-props="{ span: 6 }" :wrapper-col
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
-            :label="$t('model.table.index.form.tableName')"
-            field="tableName">
-          <!--          <a-input v-if="pageData.formState==='add'" v-model="formData.tableName" :max-length="32"/>-->
-          <span>{{ formData.tableName }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
             :label="$t('model.table.index.form.entityName')"
             :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
             field="entityName">
-          <a-input v-if="pageData.button" v-model="formData.entityName" :max-length="32" readonly/>
+          <a-input v-if="pageData.button" v-model="formData.entityName" :max-length="32"/>
           <span v-else>{{ formData.entityName }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
-            :label="$t('model.table.index.form.linked')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="linked">
-          <a-select v-if="pageData.button" v-model="formData.linked">
-            <a-option v-for="item of linkedOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
-          </a-select>
-          <span v-else>{{ $t(`model.table.index.form.linked.${formData.linked}`) }}</span>
+            :label="$t('model.table.index.form.tableName')"
+            field="tableName">
+          <!-- <a-input v-if="pageData.formState==='add'" v-model="formData.tableName" :max-length="32"/>-->
+          <span>{{ formData.tableName }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.table.index.form.tableType')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
             field="tableType">
-          <a-select v-if="pageData.button" v-model="formData.tableType">
-            <a-option
-v-for="item of tableTypeOptions" :key="item.value" :label="$t(`${item.label}`)"
-                      :value="item.value"/>
+          <a-select v-if="pageData.formState==='add'" v-model="formData.tableType">
+            <a-option v-for="item of tableTypeOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.tableType.${formData.tableType}`) }}</span>
         </a-form-item>
@@ -77,8 +65,8 @@ v-for="item of tableTypeOptions" :key="item.value" :label="$t(`${item.label}`)"
             </a-button>
             <template #content>
               <div
-class="trigger-demo-translate"
-                   :style="{width:`${pageStyle.width}px`,height:`${pageStyle.height}px`}">
+                  class="trigger-demo-translate"
+                  :style="{width:`${pageStyle.width}px`,height:`${pageStyle.height}px`}">
                 <MonacoEditor
                     v-model="formData.viewSql"
                     :language="'sql'"
@@ -97,33 +85,50 @@ class="trigger-demo-translate"
             field="enableStatus">
           <a-select v-if="pageData.button" v-model="formData.enableStatus">
             <a-option
-v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
-                      :value="item.value"/>
+                v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.enableStatus.${formData.enableStatus}`) }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
-            :label="$t('model.table.index.form.seqNo')"
+            :label="$t('model.table.index.form.linked')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="seqNo">
-          <a-input-number
-              v-if="pageData.button"
-              v-model="formData.seqNo"
-              :max="999999"
-              :min="1"
-              :placeholder="$t('model.form.rules.match.length.title')+'[0,999999]'"
-              :precision="0"/>
-          <span v-else>{{ formData.seqNo }}</span>
+            field="linked">
+          <a-select v-if="pageData.button" v-model="formData.linked">
+            <a-option v-for="item of linkedOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+          </a-select>
+          <span v-else>{{ $t(`model.table.index.form.linked.${formData.linked}`) }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="24/pageData.formCol">
+      <!--      <a-col :span="24/pageData.formCol">
+              <a-form-item
+                  :label="$t('model.table.index.form.seqNo')"
+                  :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                  field="seqNo">
+                <a-input-number
+                    v-if="pageData.button"
+                    v-model="formData.seqNo"
+                    :max="999999"
+                    :min="1"
+                    :placeholder="$t('model.form.rules.match.length.title')+'[0,999999]'"
+                    :precision="0"/>
+                <span v-else>{{ formData.seqNo }}</span>
+              </a-form-item>
+            </a-col>-->
+      <a-col :span="24">
         <a-form-item
             :label="$t('model.table.index.form.tableComment')"
+            :label-col-props="{ span: (pageData.formCol===1?6:3) }"
+            :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
             field="tableComment">
-          <a-input v-if="pageData.button" v-model="formData.tableComment" :max-length="32"/>
-          <span v-else>{{ formData.tableComment }}</span>
+          <a-textarea
+              v-if="pageData.button" v-model="formData.tableComment" :auto-size="{minRows:2,maxRows:4}"
+              :max-length="512" show-word-limit/>
+          <span
+              v-else :title="formData.tableComment" class="textarea-span"
+              @click="openModal(`${formData.tableComment}`)">{{ formData.tableComment }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24">
@@ -133,11 +138,11 @@ v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`
             :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
             field="description">
           <a-textarea
-v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
-                      :max-length="512" show-word-limit/>
+              v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
+              :max-length="512" show-word-limit/>
           <span
-v-else :title="formData.description" class="textarea-span"
-                @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+              v-else :title="formData.description" class="textarea-span"
+              @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
         </a-form-item>
       </a-col>
     </a-row>
@@ -149,11 +154,7 @@ import {ref} from 'vue';
 import {Modal} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/service/base_service';
-import {
-  createOrUpdateTable as createOrUpdateForm,
-  getTable as getForm,
-  QueryTableForm as QueryForm
-} from '@/api/service/model_service';
+import {createOrUpdateTable as createOrUpdateForm, getTable as getForm, QueryTableForm as QueryForm} from '@/api/service/model_service';
 import {enableStatusOptions, linkedOptions, tableTypeOptions} from "@/views/model/table/searchTable";
 import MonacoEditor from '@/components/monaco/index.vue';
 
@@ -186,7 +187,7 @@ const generateFormData = (): QueryForm => {
     tableName: '', // 数据库中的表名
     entityName: '', // 实体名称
     linked: 0, // 已链接
-    tableType: 'entity', // 表格类型 entity:实体;view:视图
+    tableType: 'table', // 表格类型 entity:实体;view:视图
     viewSql: '',
     enableStatus: 1, // 状态
     seqNo: 999, // 排序

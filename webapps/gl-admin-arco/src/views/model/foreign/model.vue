@@ -1,7 +1,7 @@
 <template v-model="pageData">
   <a-form
-ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }"
-          class="form">
+      ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }"
+      class="form">
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item v-show="false">
@@ -14,8 +14,8 @@ ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="mainTable">
           <a-select
-v-if="pageData.button" v-model="formData.mainTable" allow-search :disabled="pageData.mainTable!==''"
-                    @change="mainTableChange">
+              v-if="pageData.button" v-model="formData.mainTable" allow-search :disabled="pageData.mainTable!==''"
+              @change="mainTableChange">
             <a-option v-for="item of tableOptions" :key="item.id" :label="item.entityName" :value="item.entityName"/>
           </a-select>
           <span v-else>{{ formData.mainTable }}</span>
@@ -55,14 +55,38 @@ v-if="pageData.button" v-model="formData.mainTable" allow-search :disabled="page
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
+        <a-form-item :label="$t('model.foreign.index.form.updateAction')"
+                     :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                     :tooltip="$t('model.foreign.index.form.action.tip')" field="updateAction">
+          <a-select v-model="formData.updateAction">
+            <a-option value="RESTRICT">RESTRICT</a-option>
+            <a-option value="NO ACTION">NO ACTION</a-option>
+            <a-option value="SET NULL">SET NULL</a-option>
+            <a-option value="CASCADE">CASCADE</a-option>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col :span="24/pageData.formCol">
+        <a-form-item :label="$t('model.foreign.index.form.deleteAction')"
+                     :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                     :tooltip="$t('model.foreign.index.form.action.tip')" field="deleteAction">
+          <a-select v-model="formData.deleteAction">
+            <a-option value="RESTRICT">RESTRICT</a-option>
+            <a-option value="NO ACTION">NO ACTION</a-option>
+            <a-option value="SET NULL">SET NULL</a-option>
+            <a-option value="CASCADE">CASCADE</a-option>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.foreign.index.form.enableStatus')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="enableStatus">
           <a-select v-if="pageData.button" v-model="formData.enableStatus">
             <a-option
-v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
-                      :value="item.value"/>
+                v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.foreign.index.form.enableStatus.${formData.enableStatus}`) }}</span>
         </a-form-item>
@@ -89,11 +113,11 @@ v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`
             :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
             field="description">
           <a-textarea
-v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
-                      :max-length="512" show-word-limit/>
+              v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
+              :max-length="512" show-word-limit/>
           <span
-v-else :title="formData.description" class="textarea-span"
-                @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+              v-else :title="formData.description" class="textarea-span"
+              @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
         </a-form-item>
       </a-col>
     </a-row>
@@ -102,6 +126,7 @@ v-else :title="formData.description" class="textarea-span"
 
 <script lang="ts" setup>
 import {ref} from 'vue';
+import {useI18n} from 'vue-i18n';
 import {Modal} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams, PageQueryRequest} from '@/api/service/base_service';
@@ -121,6 +146,9 @@ const validateForm = ref<FormInstance>();
 const tableOptions = ref<QueryTableForm[]>([]);
 const mainTableColOptions = ref<QueryTableColumnForm[]>([]);
 const foreignTableColOptions = ref<QueryTableColumnForm[]>([]);
+const actionTooltip = ref("");
+// 国际化
+const {t} = useI18n();
 /* 表单 */
 const generateFormData = (): QueryForm => {
   return {
@@ -129,6 +157,8 @@ const generateFormData = (): QueryForm => {
     mainTableCol: '', // 主表表名字段
     foreignTable: '', // 外键关联表表名
     foreignTableCol: '', // 外键关联表字段
+    updateAction: 'NO ACTION',
+    deleteAction: 'NO ACTION',
     enableStatus: 1, // 状态
     description: '',
     seqNo: 999
@@ -185,7 +215,7 @@ const fetchTableColumns = async (params: PageQueryRequest = {enableStatus: 1} as
 
 const mainTableChange = (value: string) => {
   if (value) {
-    fetchTableColumns({enableStatus: 0, tableName: value} as unknown as PageQueryRequest).then((data) => {
+    fetchTableColumns({enableStatus: 1, tableName: value} as unknown as PageQueryRequest).then((data) => {
       mainTableColOptions.value = data;
     });
   } else {
@@ -194,11 +224,11 @@ const mainTableChange = (value: string) => {
 }
 const foreignTableChange = (value: any) => {
   if (value) {
-    fetchTableColumns({enableStatus: 0, tableName: value} as unknown as PageQueryRequest).then((data) => {
+    formData.value.foreignTableCol = '';
+    foreignTableColOptions.value = [];
+    fetchTableColumns({enableStatus: 1, tableName: value} as unknown as PageQueryRequest).then((data) => {
       foreignTableColOptions.value = data;
     });
-  } else {
-    foreignTableColOptions.value = [];
   }
 }
 

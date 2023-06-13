@@ -107,7 +107,7 @@ import {ref} from 'vue';
 import {Modal} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/service/base_service';
-import {createOrUpdateConnect as createOrUpdateForm, getConnect as getForm, QueryConnectForm as QueryForm} from '@/api/service/model_service';
+import {createOrUpdateConnect as createOrUpdateForm, getConnect as getForm, jdbcConnect, QueryConnectForm as QueryForm} from '@/api/service/model_service';
 import {dbTypeOptions, enableStatusOptions} from "@/views/model/connect/searchTable";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1});
@@ -135,6 +135,19 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
     try {
       await createOrUpdateForm(params);
       successBack(params);
+    } catch (err) {
+      failBack(err);
+    }
+  } else {
+    failBack();
+  }
+};
+const connectionTest = async (params: QueryForm, successBack?: any, failBack?: any) => {
+  const res = await validateForm.value?.validate();
+  if (!res) {
+    try {
+      const {data} = await jdbcConnect(params);
+      successBack(data);
     } catch (err) {
       failBack(err);
     }
@@ -180,9 +193,12 @@ const loadModel = (urlParams: ListUrlParams) => {
 const submitModel = (done: any, successBack?: any, failBack?: any) => {
   createOrUpdateData(formData.value, successBack, failBack);
 };
+const connectModel = (successBack?: any, failBack?: any) => {
+  connectionTest(formData.value, successBack, failBack);
+};
 
 // 将方法暴露出去
-defineExpose({loadModel, submitModel});
+defineExpose({loadModel, submitModel, connectModel});
 </script>
 
 <style lang="less" scoped>

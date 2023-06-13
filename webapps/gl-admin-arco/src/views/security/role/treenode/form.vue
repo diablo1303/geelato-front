@@ -25,7 +25,8 @@
           :label="$t('security.roleTreeNode.index.form.treeNodeText')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="treeNodeId">
-        <a-select v-if="pageData.button" v-model="formData.treeNodeId" :field-names="{value: 'id', label: 'text'}" :options="selectOptions"
+        <a-select
+v-if="pageData.button" v-model="formData.treeNodeId" :field-names="{value: 'id', label: 'text'}" :options="selectOptions"
                   allow-clear allow-search/>
         <span v-else>{{ formData.treeNodeText }}</span>
       </a-form-item>

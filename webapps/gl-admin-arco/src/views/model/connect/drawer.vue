@@ -21,15 +21,19 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
+import {useI18n} from 'vue-i18n';
 import {QueryConnectForm as QueryModel} from '@/api/service/model_service';
 import {ListUrlParams} from '@/api/service/base_service';
 import ConnectModel from "@/views/model/connect/model.vue";
+import {Notification} from "@arco-design/web-vue";
 
 const pageData = ref({
   formState: 'add', button: true, okBack: (data: QueryModel) => {
   }
 });
 const connectModelRef = ref(null);
+// 国际化
+const {t} = useI18n();
 // 显示隐藏
 const visibleModel = ref(false);
 /* 表单 */
@@ -46,7 +50,16 @@ const handleModelCancel = () => {
   visibleModel.value = false;
 }
 const connectLinkTest = () => {
-
+  if (connectModelRef.value) {
+    // @ts-ignore
+    connectModelRef.value?.connectModel(function (result: boolean) {
+      if (result === true) {
+        Notification.success(t('model.connect.index.model.title.link.success'));
+      } else {
+        Notification.error(t('model.connect.index.model.title.link.fail'));
+      }
+    });
+  }
 }
 
 const openForm = (urlParams: ListUrlParams) => {

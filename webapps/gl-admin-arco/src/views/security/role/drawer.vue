@@ -11,8 +11,9 @@
     <RoleModel ref="roleModelRef"></RoleModel>
     <a-divider v-if="pageData.formState!=='add'" orientation="left">
       <strong>{{ $t('security.role.form.tab.title.two') }}</strong>
-      <a-select v-model="pageData.appId" :options="selectAppOptions" :field-names="{value: 'id', label: 'name'}"
-                @change="addOrgUser">
+      <a-select
+          v-model="pageData.appId" :options="selectAppOptions" :field-names="{value: 'id', label: 'name'}"
+          @change="addOrgUser">
         <template #trigger>
           <a-tooltip position="top" :content="$t('security.orgUser.index.model.title.add')">
             <icon-plus v-if="pageData.formState==='edit'" class="tree-extra-icon"/>
@@ -30,7 +31,7 @@
           </template>
         </a-list-item-meta>
         <template #actions>
-          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteOrgUser(item.id)">
+          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning">
             <icon-delete v-if="pageData.formState==='edit'&&item.defaultOrg!==1" class="icon-danger"/>
           </a-popconfirm>
         </template>
@@ -46,7 +47,7 @@ import {ListUrlParams, SelectOption} from '@/api/service/base_service';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import RoleModel from "@/views/security/role/model.vue";
 
-const pageData = ref({formState: 'add', button: true, orgId: '', userId: ''});
+const pageData = ref({formState: 'add', button: true, appId: '', orgId: '', userId: ''});
 const validateForm = ref<FormInstance>();
 const orgUserOptions = ref<QueryOrgUserForm[]>([]);
 const orgSelectOptions = ref<SelectOption[]>([]);

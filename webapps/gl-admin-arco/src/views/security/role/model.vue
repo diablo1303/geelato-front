@@ -51,14 +51,16 @@
             :label="$t('security.role.index.form.seqNo')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="seqNo">
-          <a-input-number v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
+          <a-input-number
+v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
                           :placeholder="$t('security.form.rules.match.length.title')+'[0,999999]'"
                           :precision="0"/>
           <span v-else>{{ formData.seqNo }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24">
-        <a-form-item :label="$t('security.role.index.form.description')" :label-col-props="{ span: 3 }"
+        <a-form-item
+:label="$t('security.role.index.form.description')" :label-col-props="{ span: 3 }"
                      :wrapper-col-props="{ span: 21 }" field="description">
           <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
           <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>

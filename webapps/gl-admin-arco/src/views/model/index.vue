@@ -7,9 +7,7 @@
           <a-spin>{{ $t('model.dataBase.index.menu.list') }}</a-spin>
         </a-col>
         <a-col :span="18">
-          <a-spin>{{
-              pageData.treeTitle !== '' ? pageData.treeTitle : $t('model.connect.index.menu.list.searchTable')
-            }}
+          <a-spin>{{ pageData.treeTitle !== '' ? pageData.treeTitle : $t('model.connect.index.menu.list.searchTable') }}
           </a-spin>
         </a-col>
       </a-row>
@@ -45,14 +43,13 @@
           </a-scrollbar>
         </a-col>
         <a-col :span="18">
-          <a-card v-if="pageData.level===0" class="general-card">
+          <a-card v-show="pageData.level===0" class="general-card">
             <ConnectList ref="connectListRef"></ConnectList>
           </a-card>
-          <a-card v-if="pageData.level===1" class="general-card">
+          <a-card v-show="pageData.level===1" class="general-card">
             <TableList ref="tableListRef"></TableList>
           </a-card>
-          <a-tabs
-v-if="pageData.level===2" v-model:active-key="pageData.tabKey" :default-active-tab="1"
+          <a-tabs v-show="pageData.level===2" v-model:active-key="pageData.tabKey" :default-active-tab="1"
                   :position="'top'" type="line">
             <a-tab-pane key="1" class="a-tabs-three" :title="$t('model.column.index.menu.list.searchTable')">
               <a-card class="general-card">
@@ -90,10 +87,10 @@ v-if="pageData.level===2" v-model:active-key="pageData.tabKey" :default-active-t
 <script setup lang="ts">
 import {computed, h, ref} from "vue";
 import {useI18n} from 'vue-i18n';
-import {Notification} from "@arco-design/web-vue";
+import {Modal, Notification} from "@arco-design/web-vue";
 import {IconFolder, IconLink} from '@arco-design/web-vue/es/icon';
 import {TreeNodeData, TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
-import {QueryConnectForm, queryConnects, QueryTableForm, queryTables} from "@/api/service/model_service";
+import {createOrUpdateModelToTable, QueryConnectForm, queryConnects, QueryTableForm, queryTables} from "@/api/service/model_service";
 import {PageQueryRequest} from "@/api/service/base_service";
 // 引用其他页面
 import TableList from '@/views/model/table/list.vue';
@@ -104,7 +101,7 @@ import ForeignList from '@/views/model/foreign/list.vue';
 const pageData = ref({
   formState: 'edit', isModal: true, swap: true,
   tabKey: '1',
-  level: 0, treeKey: '0', treeTitle: ''
+  level: 0, treeKey: '0', treeTitle: '', treeEntity: ''
 });
 
 interface TreeNode extends TreeNodeProps {
@@ -271,6 +268,7 @@ const refreshTreeOne = (data: TreeNode[]) => {
  * @param data TreeNode[]
  */
 const refreshTreeTwo = (connectId: string, data: TreeNode[]) => {
+  debugger;
   const parentData: TreeNode = treeData.value[0];
   parentData.key = parentData.key ? parentData.key.toString() : '';
   // eslint-disable-next-line no-restricted-syntax
@@ -282,7 +280,7 @@ const refreshTreeTwo = (connectId: string, data: TreeNode[]) => {
       selectedKeys.value = [item.key];
       pageData.value.level = 1;
       pageData.value.treeKey = item.key;
-      pageData.value.treeTitle = swapConnectTitle(item as unknown as QueryConnectForm);
+      pageData.value.treeTitle = swapConnectTitle(item.formData as unknown as QueryConnectForm);
     }
   }
 }
@@ -404,15 +402,19 @@ const treeIconSwapOne = (nodeData: TreeNode) => {
     Notification.info(t('model.connect.index.model.info.swap'));
   });
 }
+
 /**
- * 树tree，选中节点
+ * 树tree，点击事件，选中节点
  * @param selectedKey string
- * @param nodeData TreeNodeProps
+ * @param nodeData TreeNode
  */
 const treeSelected = (selectedKey: string, nodeData: TreeNode) => {
   // 全局属性
   pageData.value.level = nodeData.level || 0;
   pageData.value.treeKey = nodeData.key ? nodeData.key.toString() : '';
+  // tab页面
+  pageData.value.tabKey = pageData.value.level === 2 ? '1' : pageData.value.tabKey;
+  pageData.value.treeEntity = '';
   let tableName = nodeData.title || '';
   if (pageData.value.level === 1) {
     nodeData.formData = (nodeData.formData as unknown as QueryConnectForm);
@@ -421,18 +423,22 @@ const treeSelected = (selectedKey: string, nodeData: TreeNode) => {
     nodeData.formData = (nodeData.formData as unknown as QueryTableForm);
     pageData.value.treeTitle = swapTableTitle(nodeData.formData);
     tableName = nodeData.formData.entityName || nodeData.formData.tableName;
+    pageData.value.treeEntity = tableName;
   } else {
     pageData.value.treeTitle = nodeData.title || '';
   }
-  // tab页面
-  pageData.value.tabKey = pageData.value.level === 2 ? '1' : pageData.value.tabKey;
   // 加载列表页面
   setTimeout(() => {
-    loadConnectList();
-    loadTableList(pageData.value.treeKey, '');
-    loadColumnAndForeignList(pageData.value.treeKey, tableName);
+    if (pageData.value.level === 0) {
+      loadConnectList();
+    } else if (pageData.value.level === 1) {
+      loadTableList(pageData.value.treeKey, '');
+    } else if (pageData.value.level === 2) {
+      loadColumnAndForeignList(pageData.value.treeKey, tableName);
+    }
   }, 200);
 }
+
 /**
  * 树tree，点击事件，选中节点
  * @param selectedKey string
@@ -455,16 +461,51 @@ fetchConnects().then((data) => {
   }, 200);
 });
 
+const createOrUpdateTable = async (entityName: string, successBack: any, failBack: any) => {
+  try {
+    await createOrUpdateModelToTable(entityName);
+    successBack();
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    failBack(err);
+  }
+}
+
 const syncFromTableToModel = () => {
-  if (pageData.value.level === 2) {
-    // todo
+  if (pageData.value.level === 2 && pageData.value.treeEntity) {
+    Modal.open({
+      title: t('security.dict.index.modal.title'),
+      titleAlign: 'start',
+      content: `是否将数据库表【${pageData.value.treeEntity}】同步至模型中？`,
+      cancelText: t('security.dict.index.modal.cancel.text'),
+      okText: t('security.dict.index.modal.ok.text'), onOk() {
+
+      }
+    });
   }
 }
 const syncFromModelToTable = () => {
-  if (pageData.value.level === 2) {
-    // todo
+  if (pageData.value.level === 2 && pageData.value.treeEntity) {
+    Modal.open({
+      title: t('security.dict.index.modal.title'),
+      titleAlign: 'start',
+      content: `是否将模型【${pageData.value.treeEntity}】同步至数据库中？`,
+      cancelText: t('security.dict.index.modal.cancel.text'),
+      okText: t('security.dict.index.modal.ok.text'), onOk() {
+        createOrUpdateTable(pageData.value.treeEntity, () => {
+          Notification.success({content: "更新成功"});
+          setTimeout(() => {
+            loadColumnAndForeignList(pageData.value.treeKey, pageData.value.treeEntity);
+          }, 200);
+        }, () => {
+          Notification.error({content: "更新失败"});
+        });
+      }
+    });
   }
 }
+
 </script>
 
 <style lang="less" scoped>

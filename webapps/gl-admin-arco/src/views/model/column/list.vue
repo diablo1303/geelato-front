@@ -19,17 +19,21 @@
               <a-input v-model="filterData.name"/>
             </a-form-item>
           </a-col>
-          <!-- <a-col :span="pageData.isModal?12:8">
-                      <a-form-item :label="$t('model.column.index.form.dataType')" field="dataType">
-                        <a-input v-model="filterData.dataType"/>
-                      </a-form-item>
-                    </a-col>-->
+          <a-col :span="pageData.isModal?12:8">
+            <a-form-item :label="$t('model.column.index.form.dataType')" field="dataType">
+              <a-select v-model="filterData.dataType" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option
+                    v-for="item of dataTypeOptions" :key="item.value" :label="$t(`${item.label}`)"
+                    :value="item.value"/>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('model.column.index.form.nullable')" field="nullable">
               <a-select v-model="filterData.nullable" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option
-v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
-                          :value="item.value"/>
+                    v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                    :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
@@ -37,12 +41,16 @@ v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`
             <a-form-item :label="$t('model.column.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option
-v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
-                          :value="item.value"/>
+                    v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                    :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
-
+          <a-col :span="pageData.isModal?12:8">
+            <a-form-item :label="$t('security.org.index.form.createAt')" field="createAt">
+              <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
+            </a-form-item>
+          </a-col>
         </a-row>
       </a-form>
     </a-col>
@@ -95,8 +103,8 @@ v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`
                 </div>
                 <div>
                   <a-checkbox
-v-model="item.checked"
-                              @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
+                      v-model="item.checked"
+                      @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                 </div>
                 <div class="title">
                   {{ item.title === '#' ? $t('model.column.index.form.index') : $t(`${item.title}`) }}
@@ -109,44 +117,46 @@ v-model="item.checked"
     </a-col>
   </a-row>
   <a-table
-:bordered="{cell:true}"
-           :columns="(cloneColumns as TableColumnData[])"
-           :data="renderData"
-           :loading="loading"
-           :pagination="basePagination.pageSize>1000?false:pagination"
-           :stripe="true"
-           column-resizable
-           row-key="id"
-           @page-change="onPageChange">
+      :bordered="{cell:true}"
+      :columns="(cloneColumns as TableColumnData[])"
+      :data="renderData"
+      :loading="loading"
+      :pagination="basePagination.pageSize>1000?false:pagination"
+      :stripe="true"
+      column-resizable
+      row-key="id"
+      @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('model.column.index.form.index')" align="center" data-index="index" width="80">
+      <a-table-column :title="$t('model.column.index.form.index')" align="center" data-index="index" width="80" fixed="left">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
       <a-table-column
-v-if="pageData.params.pId===''"
-                      :title="$t('model.column.index.form.tableName')" data-index="tableName" ellipsis="true"
-                      tooltip="true" width="200"/>
-      <a-table-column
-:title="$t('model.column.index.form.title')" data-index="title" ellipsis="true" tooltip="true"
-                      width="150"/>
-      <a-table-column
-:title="$t('model.column.index.form.name')" data-index="name" ellipsis="true" tooltip="true"
-                      width="150">
+          :title="$t('model.column.index.form.name')" data-index="name" ellipsis="true" tooltip="true" fixed="left"
+          width="150">
         <template #cell="{record}">
           {{ record.name }}
-          <a-button v-if="record.name==='id'" type="outline" class="list-action-button-default">
+          <a-button v-if="record.key===true" type="outline" class="list-action-button-default">
             {{ $t('model.column.index.form.name.key') }}
           </a-button>
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.column.index.form.dataType')" data-index="dataType" width="100"/>
-      <a-table-column :title="$t('model.column.index.form.charMaxLength')" data-index="charMaxLength" width="100"/>
-      <a-table-column
-:title="$t('model.column.index.form.numericPrecision')" data-index="numericPrecision"
-                      width="100"/>
-      <a-table-column :title="$t('model.column.index.form.numericScale')" data-index="numericScale" width="100"/>
-      <a-table-column :title="$t('model.column.index.form.key')" data-index="key" width="100"/>
-      <a-table-column :title="$t('model.column.index.form.nullable')" data-index="nullable" width="100"/>
+      <a-table-column :title="$t('model.column.index.form.title')" data-index="title" ellipsis="true" tooltip="true" width="150"/>
+      <a-table-column :title="$t('model.column.index.form.fieldName')" data-index="fieldName" ellipsis="true" tooltip="true" width="150"/>
+      <a-table-column v-if="pageData.params.pId===''" :title="$t('model.column.index.form.tableName')" data-index="tableName" ellipsis="true" tooltip="true"
+                      width="200"/>
+      <a-table-column :title="$t('model.column.index.form.dataType')" data-index="dataType" ellipsis="true" tooltip="true" width="120">
+        <template #cell="{ record }">
+          {{ $t(`model.column.index.form.dataType.${record.dataType}`) }}
+        </template>
+      </a-table-column>
+      <a-table-column :title="$t('model.column.index.form.type')" data-index="type" ellipsis="true" tooltip="true" width="120"/>
+      <a-table-column :title="$t('model.column.index.form.charMaxLength')" data-index="charMaxLength" width="130"/>
+      <a-table-column :title="$t('model.column.index.form.numericPrecision')" data-index="numericPrecision" width="130"/>
+      <a-table-column :title="$t('model.column.index.form.numericScale')" data-index="numericScale" width="130"/>
+      <a-table-column :title="$t('model.column.index.form.key')" data-index="key" width="110"/>
+      <a-table-column :title="$t('model.column.index.form.nullable')" data-index="nullable" width="110"/>
+      <a-table-column :title="$t('model.column.index.form.uniqued')" data-index="uniqued" width="110"/>
+      <a-table-column :title="$t('model.column.index.form.autoIncrement')" data-index="autoIncrement" width="110"/>
       <a-table-column :title="$t('model.column.index.form.enableStatus')" data-index="enableStatus" width="100">
         <template #cell="{ record }">
           {{ $t(`model.column.index.form.enableStatus.${record.enableStatus}`) }}
@@ -154,9 +164,10 @@ v-if="pageData.params.pId===''"
       </a-table-column>
       <a-table-column :title="$t('model.column.index.form.ordinalPosition')" data-index="ordinalPosition" width="100"/>
       <a-table-column :title="$t('model.column.index.form.createAt')" data-index="createAt" width="180"/>
+      <a-table-column :title="$t('model.column.index.form.comment')" data-index="comment" ellipsis="true" tooltip="true" width="200"/>
       <a-table-column
-v-show="pageData.formState==='edit'" :title="$t('model.column.index.form.operations')"
-                      align="center" data-index="operations" fixed="right" :width="170">
+          v-show="pageData.formState==='edit'" :title="$t('model.column.index.form.operations')"
+          align="center" data-index="operations" fixed="right" :width="170">
         <template #cell="{ record,isDefault = defaultColumnMetas.includes(record.name)}">
           <a-tooltip v-if="isDefault" :content="$t('model.column.index.form.operations.disabled')">
             <a-button v-permission="['admin']" size="small" type="text" class="button-disabled">
@@ -172,8 +183,8 @@ v-show="pageData.formState==='edit'" :title="$t('model.column.index.form.operati
             </a-button>
           </a-tooltip>
           <a-popconfirm
-v-else :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
-                        @ok="deleteTable(record.id)">
+              v-else :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
+              @ok="deleteTable(record.id)">
             <a-button v-permission="['admin']" size="small" type="text" status="danger">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
@@ -199,7 +210,7 @@ import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 import {deleteTableColumn as deleteList, pageQueryTableColumns as pageQueryList} from '@/api/service/model_service';
-import {columns, enableStatusOptions,defaultColumnMetas} from '@/views/model/column/searchTable';
+import {columns, dataTypeOptions, defaultColumnMetas, enableStatusOptions} from '@/views/model/column/searchTable';
 // 引用其他页面
 import ColumnForm from '@/views/model/column/form.vue';
 import ColumnDrawer from '@/views/model/column/drawer.vue';
@@ -242,10 +253,7 @@ const filterData = ref(generateFilterData());
  * 分页查询方法
  * @param params
  */
-const fetchData = async (params: PageQueryRequest = {
-  current: pageData.value.current,
-  pageSize: pageData.value.pageSize
-}) => {
+const fetchData = async (params: PageQueryRequest = {current: pageData.value.current, pageSize: pageData.value.pageSize}) => {
   setLoading(true);
   try {
     const {data} = await pageQueryList(params);
@@ -373,6 +381,7 @@ const loadList = (urlParams: ListUrlParams) => {
   pageData.value.params.pId = urlParams.params?.pId || '';
   pageData.value.params.pName = urlParams.params?.pName || '';
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
+
   reset();
 }
 

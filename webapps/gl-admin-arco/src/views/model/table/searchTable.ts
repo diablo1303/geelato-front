@@ -55,6 +55,10 @@ const columns = computed<TableColumnData[]>(() => [
 
 const tableTypeOptions = computed<SelectOptionData[]>(() => [
   {
+    label: 'model.table.index.form.tableType.table',
+    value: 'table',
+  },
+  {
     label: 'model.table.index.form.tableType.entity',
     value: 'entity',
   },

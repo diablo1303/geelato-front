@@ -33,6 +33,9 @@ const handleModelOk = (done: any) => {
     dictItemModelRef.value?.submitModel(done, (data: QueryModel) => {
       visibleModel.value = false;
       pageData.value.okBack(data);
+      done();
+    }, () => {
+      done(false);
     });
   }
 };

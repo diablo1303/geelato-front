@@ -18,7 +18,8 @@
           :label="$t('security.rolePermission.index.form.permissionName')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="permissionId">
-        <a-select v-if="pageData.button" v-model="formData.permissionId" :field-names="{value: 'id', label: 'name'}" :options="selectOptions"
+        <a-select
+v-if="pageData.button" v-model="formData.permissionId" :field-names="{value: 'id', label: 'name'}" :options="selectOptions"
                   allow-clear allow-search/>
         <span v-else>{{ formData.permissionName }}</span>
       </a-form-item>

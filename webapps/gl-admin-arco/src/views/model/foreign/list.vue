@@ -99,25 +99,27 @@
     </a-col>
   </a-row>
   <a-table
-:bordered="{cell:true}"
-           :columns="(cloneColumns as TableColumnData[])"
-           :data="renderData"
-           :loading="loading"
-           :pagination="basePagination.pageSize>1000?false:pagination"
-           :stripe="true"
-           column-resizable
-           row-key="id"
-           @page-change="onPageChange">
+      :bordered="{cell:true}"
+      :columns="(cloneColumns as TableColumnData[])"
+      :data="renderData"
+      :loading="loading"
+      :pagination="basePagination.pageSize>1000?false:pagination"
+      :stripe="true"
+      column-resizable
+      row-key="id"
+      @page-change="onPageChange">
     <template #columns>
       <a-table-column :title="$t('model.foreign.index.form.index')" align="center" data-index="index" width="80">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
       <a-table-column
-v-if="pageData.params.pId===''" :title="$t('model.foreign.index.form.mainTable')" data-index="mainTable" ellipsis="true" tooltip="true"
-                      width="250"/>
+          v-if="pageData.params.pId===''" :title="$t('model.foreign.index.form.mainTable')" data-index="mainTable" ellipsis="true" tooltip="true"
+          width="250"/>
       <a-table-column :title="$t('model.foreign.index.form.mainTableCol')" data-index="mainTableCol" ellipsis="true" tooltip="true" width="150"/>
       <a-table-column :title="$t('model.foreign.index.form.foreignTable')" data-index="foreignTable" ellipsis="true" tooltip="true" width="250"/>
       <a-table-column :title="$t('model.foreign.index.form.foreignTableCol')" data-index="foreignTableCol" ellipsis="true" tooltip="true" width="150"/>
+      <a-table-column :title="$t('model.foreign.index.form.deleteAction')" data-index="deleteAction" width="120"/>
+      <a-table-column :title="$t('model.foreign.index.form.updateAction')" data-index="updateAction" width="120"/>
       <a-table-column :title="$t('model.foreign.index.form.enableStatus')" data-index="enableStatus" width="100">
         <template #cell="{ record }">
           {{ $t(`model.foreign.index.form.enableStatus.${record.enableStatus}`) }}
@@ -126,8 +128,8 @@ v-if="pageData.params.pId===''" :title="$t('model.foreign.index.form.mainTable')
       <a-table-column :title="$t('model.foreign.index.form.seqNo')" data-index="seqNo" width="100"/>
       <a-table-column :title="$t('model.foreign.index.form.createAt')" data-index="createAt" width="180"/>
       <a-table-column
-v-show="pageData.formState==='edit'" :title="$t('model.foreign.index.form.operations')"
-                      align="center" data-index="operations" fixed="right" :width="170">
+          v-show="pageData.formState==='edit'" :title="$t('model.foreign.index.form.operations')"
+          align="center" data-index="operations" fixed="right" :width="170">
         <template #cell="{ record }">
           <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}

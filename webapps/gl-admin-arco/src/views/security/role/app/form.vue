@@ -18,7 +18,8 @@
           :label="$t('security.roleApp.index.form.appName')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="appId">
-        <a-select v-if="pageData.button" v-model="formData.appId" :field-names="{value: 'id', label: 'name'}" :options="selectOptions"
+        <a-select
+v-if="pageData.button" v-model="formData.appId" :field-names="{value: 'id', label: 'name'}" :options="selectOptions"
                   allow-clear allow-search/>
         <span v-else>{{ formData.appName }}</span>
       </a-form-item>
