@@ -1,12 +1,12 @@
 <template v-model="pageData">
   <a-drawer
       v-model:visible="visibleModel"
-      width="30%"
       :cancel-text="$t('security.dictItem.index.model.cancel.text')"
       :footer="pageData.button"
       :ok-text="$t('security.dictItem.index.model.ok.text')"
       :title="$t(`security.dictItem.index.model.title.${pageData.formState}`)"
-      @cancel="handleModelCancel"
+      width="30%"
+      @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <DictItemModel ref="dictItemModelRef"></DictItemModel>
   </a-drawer>
@@ -39,7 +39,7 @@ const handleModelOk = (done: any) => {
     });
   }
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
 }
 

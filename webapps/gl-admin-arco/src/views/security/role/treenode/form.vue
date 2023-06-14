@@ -5,7 +5,7 @@
       :footer="pageData.button"
       :ok-text="$t('security.roleTreeNode.index.model.ok.text')"
       :title="$t(`security.roleTreeNode.index.model.title.${pageData.formState}`)"
-      @cancel="handleModelCancel"
+      @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <a-form ref="validateForm" :model="formData">
       <a-form-item v-show="false">
@@ -26,8 +26,8 @@
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="treeNodeId">
         <a-select
-v-if="pageData.button" v-model="formData.treeNodeId" :field-names="{value: 'id', label: 'text'}" :options="selectOptions"
-                  allow-clear allow-search/>
+            v-if="pageData.button" v-model="formData.treeNodeId" :field-names="{value: 'id', label: 'text'}" :options="selectOptions"
+            allow-clear allow-search/>
         <span v-else>{{ formData.treeNodeText }}</span>
       </a-form-item>
     </a-form>
@@ -109,7 +109,7 @@ const getData = async (id: string, successBack: any) => {
 const handleModelOk = (done: any) => {
   createOrUpdateData(formData.value, done);
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
 }
 const resetValidate = async () => {

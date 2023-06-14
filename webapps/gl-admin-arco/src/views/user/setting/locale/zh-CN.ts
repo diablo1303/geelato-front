@@ -392,6 +392,8 @@ export default {
   'model.table.index.form.index': '序列号',
   'model.table.index.form.title': '名称(中文)',
   'model.table.index.form.tableName': '数据库表名',
+  'model.table.index.form.tableName.yes': '已同步',
+  'model.table.index.form.tableName.no': '未同步',
   'model.table.index.form.entityName': '实体名称',
   'model.table.index.form.linked': '连接状态',
   'model.table.index.form.linked.1': '已连接',
@@ -422,7 +424,8 @@ export default {
 
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
   'model.foreign.index.menu.list': '模型管理',
-  'model.foreign.index.menu.list.searchTable': '表单外键',
+  'model.foreign.index.menu.list.searchTable': '表格外键',
+  'model.foreign.index.menu.list.tab.tip': '仅展示表格之间的关联，不同步至数据表中。',
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
   'model.foreign.index.form.index': '序列号',
   'model.foreign.index.form.mainTable': '主表表名',

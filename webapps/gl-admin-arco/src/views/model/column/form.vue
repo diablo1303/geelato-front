@@ -1,12 +1,12 @@
 <template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      width="28%"
       :cancel-text="$t('model.column.index.model.cancel.text')"
       :footer="pageData.button"
       :ok-text="$t('model.column.index.model.ok.text')"
       :title="$t(`model.column.index.model.title.${pageData.formState}`)"
-      @cancel="handleModelCancel"
+      width="28%"
+      @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <ColumnModel ref="columnModelRef"></ColumnModel>
   </a-modal>
@@ -36,7 +36,7 @@ const handleModelOk = (done: any) => {
     });
   }
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
 }
 

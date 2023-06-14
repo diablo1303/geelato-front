@@ -126,7 +126,7 @@ export interface QueryTableColumnForm {
   name: string; // 列名
   comment: string; // 备注
   ordinalPosition: number; // 次序
-  defaultValue: string; // 默认值
+  defaultValue: string | number; // 默认值
   type: string; // 类型
   key: number | boolean; // 列键
   nullable: number | boolean; // 是否可空 YES_OR_NO
@@ -142,7 +142,7 @@ export interface QueryTableColumnForm {
   enableStatus: number; // 状态
   linked: number; // 链接
   description: string; // 描述
-  isRefColumn: boolean;  // 1-外表字段，默认0
+  isRefColumn: boolean | number;  // 1-外表字段，默认0
   refLocalCol: string; // isRefColumn为true时，需要通过本表引用字段
   refTables: string; // 外表表名
   refColName: string; // 外表字段名称
@@ -156,7 +156,9 @@ export interface FilterTableColumnForm {
   title: string; // 实体属性中文,中文名
   name: string; // 列名
   dataType: string; // 数据类型
+  key: string; // 列键
   nullable: string; // 是否可空 YES_OR_NO
+  uniqued: string; // 唯一约束
   enableStatus: string; // 状态
   createAt: string[];
 }

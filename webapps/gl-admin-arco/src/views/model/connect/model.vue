@@ -1,5 +1,5 @@
 <template v-model="pageData">
-  <a-form ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }" class="form">
+  <a-form ref="validateForm" :label-col-props="{ span: 8 }" :model="formData" :wrapper-col-props="{ span: 16 }" class="form">
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item v-show="false">
@@ -83,8 +83,8 @@
           <a-input-password
               v-if="pageData.button"
               v-model="formData.dbPassword"
-              :max-length="25"
-              :invisible-button="false" allow-clear/>
+              :invisible-button="false"
+              :max-length="25" allow-clear/>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
@@ -93,7 +93,7 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="enableStatus">
           <a-select v-if="pageData.button" v-model="formData.enableStatus">
-            <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.connect.index.form.enableStatus.${formData.enableStatus}`) }}</span>
         </a-form-item>

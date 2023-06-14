@@ -12,14 +12,14 @@
       </a-row>
       <a-row>
         <a-col :span="6">
-          <a-input-search v-model="searchKey" style="margin-left:6%;max-width:88%" allow-clear/>
+          <a-input-search v-model="searchKey" allow-clear style="margin-left:6%;max-width:88%"/>
           <a-scrollbar style="height:470px;overflow:auto;">
             <a-tree
-                v-model:selected-keys="selectedKeys"
                 v-model:expanded-keys="expandedKeys"
+                v-model:selected-keys="selectedKeys"
                 :data="originTreeData"
-                :show-line="true"
                 :load-more="loadMore"
+                :show-line="true"
                 @select="treeClickSelected">
               <template #title="nodeData">
                 <template v-if="getMatchIndex(nodeData?.title) < 0">{{ nodeData?.title }}</template>

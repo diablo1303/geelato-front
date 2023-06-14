@@ -6,7 +6,7 @@
       :ok-text="$t('security.role.index.model.ok.text')"
       :title="$t(`security.role.index.model.title.${pageData.formState}`)"
       width="65%"
-      @cancel="handleModelCancel"
+      @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <RoleModel ref="roleModelRef"></RoleModel>
   </a-modal>
@@ -37,7 +37,7 @@ const handleModelOk = (done: any) => {
     });
   }
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
 }
 

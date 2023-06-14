@@ -7,9 +7,9 @@
           :footer="pageData.button"
           :ok-text="$t('security.role.index.model.ok.text')"
           :title="$t(`security.role.index.model.title.${pageData.formState}`)"
-          width="80%"
           height="80%"
-          @cancel="handleModelCancel"
+          width="80%"
+          @cancel="handleModelCancel($event)"
           @before-ok="handleModelOk">
         <a-row>
           <a-col :span="24">
@@ -82,7 +82,7 @@ const handleModelOk = (done: any) => {
     });
   }
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
   okSuccessBack();
 }

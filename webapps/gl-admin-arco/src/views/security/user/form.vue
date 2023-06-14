@@ -6,7 +6,7 @@
       :ok-text="$t('security.user.index.model.ok.text')"
       :title="$t(`security.user.index.model.title.${pageData.formState}`)"
       width="65%"
-      @cancel="handleModelCancel"
+      @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <UserModel ref="userModelRef"></UserModel>
   </a-modal>
@@ -37,7 +37,7 @@ const handleModelOk = (done: any) => {
     });
   }
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
 }
 

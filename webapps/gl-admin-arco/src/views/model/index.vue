@@ -7,20 +7,27 @@
           <a-spin>{{ $t('model.dataBase.index.menu.list') }}</a-spin>
         </a-col>
         <a-col :span="18">
-          <a-spin>{{ pageData.treeTitle !== '' ? pageData.treeTitle : $t('model.connect.index.menu.list.searchTable') }}
+          <a-spin>
+            {{ pageData.treeTitle !== '' ? pageData.treeTitle : $t('model.connect.index.menu.list.searchTable') }}
+          </a-spin>
+          <a-spin>
+            <a-button v-show="pageData.level===2" :disabled="!pageData.isSync" class="list-action-button-default" type="primary">
+              <a-spin v-if="pageData.isSync">{{ $t('model.table.index.form.tableName.yes') }}</a-spin>
+              <a-spin v-else>{{ $t('model.table.index.form.tableName.no') }}</a-spin>
+            </a-button>
           </a-spin>
         </a-col>
       </a-row>
       <a-row>
         <a-col :span="6">
-          <a-input-search v-model="searchKey" style="margin-left:6%;max-width:88%" allow-clear/>
+          <a-input-search v-model="searchKey" allow-clear style="margin-left:6%;max-width:88%"/>
           <a-scrollbar style="height:510px;overflow:auto;">
             <a-tree
-                v-model:selected-keys="selectedKeys"
                 v-model:expanded-keys="expandedKeys"
+                v-model:selected-keys="selectedKeys"
                 :data="originTreeData"
-                :show-line="true"
                 :load-more="loadMore"
+                :show-line="true"
                 @select="treeClickSelected">
               <template #title="nodeData">
                 <template v-if="getMatchIndex(nodeData?.title) < 0">{{ nodeData?.title }}</template>
@@ -51,25 +58,33 @@
           </a-card>
           <a-tabs v-show="pageData.level===2" v-model:active-key="pageData.tabKey" :default-active-tab="1"
                   :position="'top'" type="line">
-            <a-tab-pane key="1" class="a-tabs-three" :title="$t('model.column.index.menu.list.searchTable')">
+            <a-tab-pane key="1" :title="$t('model.column.index.menu.list.searchTable')" class="a-tabs-three">
               <a-card class="general-card">
                 <ColumnList ref="columnListRef"></ColumnList>
               </a-card>
             </a-tab-pane>
-            <a-tab-pane key="2" class="a-tabs-four" :title="$t('model.foreign.index.menu.list.searchTable')">
-              <a-card class="general-card">
-                <ForeignList ref="foreignListRef"></ForeignList>
-              </a-card>
-            </a-tab-pane>
+            <a-tooltip :content="$t('model.foreign.index.menu.list.tab.tip')" position="top">
+              <a-tab-pane key="2" :title="$t('model.foreign.index.menu.list.searchTable')" class="a-tabs-four">
+                <template #title>
+                  <a-tooltip :content="$t('model.foreign.index.menu.list.tab.tip')" position="right">
+                    {{ $t('model.foreign.index.menu.list.searchTable') }}
+                    <icon-question-circle/>
+                  </a-tooltip>
+                </template>
+                <a-card class="general-card">
+                  <ForeignList ref="foreignListRef"></ForeignList>
+                </a-card>
+              </a-tab-pane>
+            </a-tooltip>
             <template #extra>
               <a-space>
-                <a-button v-if="pageData.level===2" type="outline" @click="syncFromTableToModel">
+                <a-button v-if="pageData.level===2" type="outline" @click="syncFromTableToModel($event)">
                   <template #icon>
                     <icon-sync/>
                   </template>
                   {{ $t('model.connect.index.model.sync.model') }}
                 </a-button>
-                <a-button v-if="pageData.level===2" type="outline" @click="syncFromModelToTable">
+                <a-button v-if="pageData.level===2" type="outline" @click="syncFromModelToTable($event)">
                   <template #icon>
                     <icon-sync/>
                   </template>
@@ -84,7 +99,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {computed, h, ref} from "vue";
 import {useI18n} from 'vue-i18n';
 import {Modal, Notification} from "@arco-design/web-vue";
@@ -101,7 +116,8 @@ import ForeignList from '@/views/model/foreign/list.vue';
 const pageData = ref({
   formState: 'edit', isModal: true, swap: true,
   tabKey: '1',
-  level: 0, treeKey: '0', treeTitle: '', treeEntity: ''
+  level: 0, treeKey: '0', treeTitle: '', treeEntity: '',
+  isSync: false
 });
 
 interface TreeNode extends TreeNodeProps {
@@ -170,6 +186,7 @@ const swapTable = (item: QueryTableForm): string => {
   return pageData.value.swap ? (item.entityName || item.tableName) : item.title;
 }
 const swapTableTitle = (item: QueryTableForm): string => {
+  pageData.value.isSync = item.tableName != null && item.tableName.length > 0;
   return `${item.title}（${item.entityName || item.tableName}）`;
 }
 /**
@@ -322,7 +339,7 @@ const loadTableList = (connectId: string, connectName: string) => {
   if (tableListRef.value) {
     // @ts-ignore
     tableListRef.value?.loadList({
-      action: pageData.value.formState, pageSize: 5,
+      action: pageData.value.formState, pageSize: 6,
       isModal: pageData.value.isModal,
       params: {pId: connectId, pName: connectName}, modalAddBack: () => {
         fetchTables({connectId: `${connectId}`} as unknown as PageQueryRequest).then((data) => {
@@ -472,7 +489,7 @@ const createOrUpdateTable = async (entityName: string, successBack: any, failBac
   }
 }
 
-const syncFromTableToModel = () => {
+const syncFromTableToModel = (ev: MouseEvent) => {
   if (pageData.value.level === 2 && pageData.value.treeEntity) {
     Modal.open({
       title: t('security.dict.index.modal.title'),
@@ -485,7 +502,7 @@ const syncFromTableToModel = () => {
     });
   }
 }
-const syncFromModelToTable = () => {
+const syncFromModelToTable = (ev: MouseEvent) => {
   if (pageData.value.level === 2 && pageData.value.treeEntity) {
     Modal.open({
       title: t('security.dict.index.modal.title'),
@@ -570,5 +587,14 @@ const syncFromModelToTable = () => {
   font-size: 16px;
   margin-left: 10px;
   color: #3370ff;
+}
+
+.list-action-button-default {
+  cursor: auto;
+  height: 20px;
+  font-size: 12px;
+  border-radius: 5px;
+  line-height: 20px;
+  padding: 0 5px;
 }
 </style>

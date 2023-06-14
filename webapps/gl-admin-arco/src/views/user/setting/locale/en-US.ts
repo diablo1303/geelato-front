@@ -392,6 +392,8 @@ export default {
   'model.table.index.form.index': 'index',
   'model.table.index.form.title': 'title',
   'model.table.index.form.tableName': 'tableName',
+  'model.table.index.form.tableName.yes': 'synchronized',
+  'model.table.index.form.tableName.no': 'unSynchronized',
   'model.table.index.form.entityName': 'entityName',
   'model.table.index.form.linked': 'linked',
   'model.table.index.form.linked.1': 'YES',
@@ -423,6 +425,7 @@ export default {
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
   'model.foreign.index.menu.list': 'Model',
   'model.foreign.index.menu.list.searchTable': 'Table Foreign',
+  'model.foreign.index.menu.list.tab.tip': 'Only the associations between tables are displayed and are not synchronized to the data table.',
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
   'model.foreign.index.form.index': 'index',
   'model.foreign.index.form.mainTable': 'mainTable',
@@ -460,7 +463,7 @@ export default {
   'model.column.index.form.fieldName': 'fieldName',
   'model.column.index.form.fieldName.placeholder': 'Generated based on "name"',
   'model.column.index.form.name': 'name',
-  'model.column.index.form.comment': 'columnComment',
+  'model.column.index.form.comment': 'comment',
   'model.column.index.form.ordinalPosition': 'order',
   'model.column.index.form.defaultValue': 'defaultValue',
   'model.column.index.form.type': 'restraint',

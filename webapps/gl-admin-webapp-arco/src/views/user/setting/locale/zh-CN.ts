@@ -414,7 +414,7 @@ export default {
 
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
   'model.foreign.index.menu.list': '模型管理',
-  'model.foreign.index.menu.list.searchTable': '表单外键',
+  'model.foreign.index.menu.list.searchTable': '表格外键',
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
   'model.foreign.index.form.index': '序列号',
   'model.foreign.index.form.mainTable': '主表表名',

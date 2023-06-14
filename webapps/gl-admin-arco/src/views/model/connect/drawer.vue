@@ -1,19 +1,19 @@
 <template v-model="pageData">
   <a-drawer
       v-model:visible="visibleModel"
-      width="32%"
       :footer="pageData.button"
-      :title="$t(`model.connect.index.model.title.${pageData.formState}`)">
+      :title="$t(`model.connect.index.model.title.${pageData.formState}`)"
+      width="32%">
     <ConnectModel ref="connectModelRef"></ConnectModel>
     <template #footer>
       <a-space style="float: left;">
-        <a-button type="outline" @click="connectLinkTest">
+        <a-button type="outline" @click="connectLinkTest($event)">
           {{ $t('model.connect.index.model.title.link') }}
         </a-button>
       </a-space>
       <a-space>
-        <a-button @click="handleModelCancel">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
-        <a-button type="primary" @click="handleModelOk">{{ $t('model.connect.index.model.ok.text') }}</a-button>
+        <a-button @click="handleModelCancel($event)">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
+        <a-button type="primary" @click="handleModelOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
       </a-space>
     </template>
   </a-drawer>
@@ -37,7 +37,7 @@ const {t} = useI18n();
 // 显示隐藏
 const visibleModel = ref(false);
 /* 表单 */
-const handleModelOk = (done: any) => {
+const handleModelOk = (ev: MouseEvent, done?: any) => {
   if (connectModelRef.value) {
     // @ts-ignore
     connectModelRef.value?.submitModel(done, (data: QueryModel) => {
@@ -46,10 +46,10 @@ const handleModelOk = (done: any) => {
     });
   }
 };
-const handleModelCancel = () => {
+const handleModelCancel = (ev: MouseEvent) => {
   visibleModel.value = false;
 }
-const connectLinkTest = () => {
+const connectLinkTest = (ev: MouseEvent) => {
   if (connectModelRef.value) {
     // @ts-ignore
     connectModelRef.value?.connectModel(function (result: boolean) {

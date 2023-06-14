@@ -5,7 +5,7 @@
       :footer="pageData.button"
       :ok-text="$t('security.org.index.model.ok.text')"
       :title="$t(`security.org.index.model.title.${pageData.formState}`)"
-      @cancel="handleModelCancel"
+      @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <a-form ref="validateForm" :model="formData">
       <a-form-item v-show="false">
@@ -37,7 +37,7 @@
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="type">
         <a-select v-if="pageData.button" v-model="formData.type">
-          <a-option v-for="item of typeOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+          <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
         </a-select>
         <span v-else>{{ $t(`security.org.index.form.type.${formData.type}`) }}</span>
       </a-form-item>
@@ -46,7 +46,7 @@
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="category">
         <a-select v-if="pageData.button" v-model="formData.category">
-          <a-option v-for="item of categoryOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+          <a-option v-for="item of categoryOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
         </a-select>
         <span v-else>{{ $t(`security.org.index.form.category.${formData.category}`) }}</span>
       </a-form-item>
@@ -55,7 +55,7 @@
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="status">
         <a-select v-if="pageData.button" v-model="formData.status">
-          <a-option v-for="item of statusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+          <a-option v-for="item of statusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
         </a-select>
         <span v-else>{{ $t(`security.org.index.form.status.${formData.status}`) }}</span>
       </a-form-item>
@@ -181,7 +181,7 @@ const getData = async (id: string, successBack: any) => {
 const handleModelOk = (done: any) => {
   createOrUpdateData(formData.value, done);
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
 }
 const openModal = (content: string) => {

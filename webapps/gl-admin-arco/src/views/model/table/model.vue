@@ -1,6 +1,6 @@
 <template v-model="pageData">
   <a-form
-      ref="validateForm" :model="formData" :label-col-props="{ span: 6 }" :wrapper-col-props="{ span: 18 }"
+      ref="validateForm" :label-col-props="{ span: 6 }" :model="formData" :wrapper-col-props="{ span: 18 }"
       class="form">
     <a-row :gutter="16">
       <a-col :span="24">
@@ -9,7 +9,7 @@
           <a-input v-show="false" v-model="formData.connectId"/>
           <a-input v-show="false" v-model="formData.tableName"/>
           <a-input v-show="false" v-model="formData.viewSql"/>
-          <a-input v-show="false" v-model="formData.seqNo"/>
+          <a-input-number v-show="false" v-model="formData.seqNo"/>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
@@ -27,7 +27,7 @@
             :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')},
             {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')}]"
             field="entityName">
-          <a-input v-if="pageData.button" v-model="formData.entityName" :max-length="32"/>
+          <a-input v-if="pageData.formState==='add'" v-model="formData.entityName" :max-length="32"/>
           <span v-else>{{ formData.entityName }}</span>
         </a-form-item>
       </a-col>
@@ -45,7 +45,7 @@
             :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
             field="tableType">
           <a-select v-if="pageData.formState==='add'" v-model="formData.tableType">
-            <a-option v-for="item of tableTypeOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of tableTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.tableType.${formData.tableType}`) }}</span>
         </a-form-item>
@@ -54,10 +54,10 @@
         <a-form-item
             :label="$t('model.table.index.form.viewSql')"
             :label-col-props="{ span: (pageData.formCol===1?6:3) }"
-            :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
             :rules="[{required: formData.tableType==='view',message: $t('model.form.rules.match.required')}]"
+            :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
             field="viewSql">
-          <a-trigger position="left" trigger="click" :popup-offset="5" :unmount-on-close="false" show-arrow>
+          <a-trigger :popup-offset="5" :unmount-on-close="false" position="left" show-arrow trigger="click">
             <a-button>
               {{ $t('model.table.index.form.viewSql.edit') }}
               <template #icon>
@@ -66,8 +66,8 @@
             </a-button>
             <template #content>
               <div
-                  class="trigger-demo-translate"
-                  :style="{width:`${pageStyle.width}px`,height:`${pageStyle.height}px`}">
+                  :style="{width:`${pageStyle.width}px`,height:`${pageStyle.height}px`}"
+                  class="trigger-demo-translate">
                 <MonacoEditor
                     v-model="formData.viewSql"
                     :language="'sql'"
@@ -86,7 +86,7 @@
             field="enableStatus">
           <a-select v-if="pageData.button" v-model="formData.enableStatus">
             <a-option
-                v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)"
                 :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.enableStatus.${formData.enableStatus}`) }}</span>
@@ -98,7 +98,7 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="linked">
           <a-select v-if="pageData.button" v-model="formData.linked">
-            <a-option v-for="item of linkedOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of linkedOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.linked.${formData.linked}`) }}</span>
         </a-form-item>

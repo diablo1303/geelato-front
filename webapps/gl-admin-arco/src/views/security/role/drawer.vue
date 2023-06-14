@@ -1,21 +1,21 @@
 <template v-model="pageData">
   <a-drawer
       v-model:visible="visibleModel"
-      width="32%"
       :cancel-text="$t('security.role.index.model.cancel.text')"
       :footer="pageData.button"
       :ok-text="$t('security.role.index.model.ok.text')"
       :title="$t(`security.role.index.model.title.${pageData.formState}`)"
-      @cancel="handleModelCancel"
+      width="32%"
+      @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <RoleModel ref="roleModelRef"></RoleModel>
     <a-divider v-if="pageData.formState!=='add'" orientation="left">
       <strong>{{ $t('security.role.form.tab.title.two') }}</strong>
       <a-select
-          v-model="pageData.appId" :options="selectAppOptions" :field-names="{value: 'id', label: 'name'}"
+          v-model="pageData.appId" :field-names="{value: 'id', label: 'name'}" :options="selectAppOptions"
           @change="addOrgUser">
         <template #trigger>
-          <a-tooltip position="top" :content="$t('security.orgUser.index.model.title.add')">
+          <a-tooltip :content="$t('security.orgUser.index.model.title.add')" position="top">
             <icon-plus v-if="pageData.formState==='edit'" class="tree-extra-icon"/>
           </a-tooltip>
         </template>
@@ -79,7 +79,7 @@ const handleModelOk = (done: any) => {
     });
   }
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
 }
 

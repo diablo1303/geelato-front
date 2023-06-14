@@ -1,12 +1,12 @@
 <template v-model="pageData">
   <a-modal
       v-model:visible="visibleModel"
-      width="28%"
       :cancel-text="$t('model.foreign.index.model.cancel.text')"
       :footer="pageData.button"
       :ok-text="$t('model.foreign.index.model.ok.text')"
       :title="$t(`model.foreign.index.model.title.${pageData.formState}`)"
-      @cancel="handleModelCancel"
+      width="28%"
+      @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <ForeignModel ref="foreignModelRef"></ForeignModel>
   </a-modal>
@@ -36,7 +36,7 @@ const handleModelOk = (done: any) => {
     });
   }
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
 }
 

@@ -5,7 +5,7 @@
       :footer="pageData.button"
       :ok-text="$t('security.dictItem.index.model.ok.text')"
       :title="$t(`security.dictItem.index.model.title.${pageData.formState}`)"
-      @cancel="handleModelCancel"
+      @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
   </a-modal>
   <DictItemModel ref="dictItemModelRef"></DictItemModel>
@@ -34,7 +34,7 @@ const handleModelOk = (done: any) => {
     });
   }
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
 }
 

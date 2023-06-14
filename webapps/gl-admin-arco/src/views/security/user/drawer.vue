@@ -1,12 +1,12 @@
 <template v-model="pageData">
   <a-drawer
       v-model:visible="visibleModel"
-      width="32%"
       :cancel-text="$t('security.user.index.model.cancel.text')"
       :footer="pageData.button"
       :ok-text="$t('security.user.index.model.ok.text')"
       :title="$t(`security.user.index.model.title.${pageData.formState}`)"
-      @cancel="handleModelCancel"
+      width="32%"
+      @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <UserModel ref="userModelRef"></UserModel>
     <a-divider v-if="pageData.formState!=='add'" orientation="left">
@@ -15,7 +15,7 @@
           v-model="pageData.orgId" :data="orgSelectOptions" :field-names="{key:'value',title:'label'}"
           @change="addOrgUser">
         <template #trigger>
-          <a-tooltip position="top" :content="$t('security.orgUser.index.model.title.add')">
+          <a-tooltip :content="$t('security.orgUser.index.model.title.add')" position="top">
             <icon-plus v-if="pageData.formState==='edit'" class="tree-extra-icon"/>
           </a-tooltip>
         </template>
@@ -31,7 +31,7 @@
           </template>
         </a-list-item-meta>
         <template #actions>
-          <a-button v-if="item.defaultOrg===1" type="outline" class="list-action-button-default">
+          <a-button v-if="item.defaultOrg===1" class="list-action-button-default" type="outline">
             {{ $t('security.orgUser.index.form.default') }}
           </a-button>
           <a-popconfirm
@@ -137,7 +137,7 @@ const handleModelOk = (done: any) => {
     });
   }
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
 }
 

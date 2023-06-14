@@ -1,11 +1,13 @@
 <template v-model="pageData">
   <a-form
-      ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }"
+      ref="validateForm" :label-col-props="{ span: 8 }" :model="formData" :wrapper-col-props="{ span: 16 }"
       class="form">
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item v-show="false">
           <a-input v-show="false" v-model="formData.id"/>
+          <a-input v-show="false" v-model="formData.updateAction"/>
+          <a-input v-show="false" v-model="formData.deleteAction"/>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
@@ -14,7 +16,7 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="mainTable">
           <a-select
-              v-if="pageData.button" v-model="formData.mainTable" allow-search :disabled="pageData.mainTable!==''"
+              v-if="pageData.button" v-model="formData.mainTable" :disabled="pageData.mainTable!==''" allow-search
               @change="mainTableChange">
             <a-option v-for="item of tableOptions" :key="item.id" :label="item.entityName" :value="item.entityName"/>
           </a-select>
@@ -54,30 +56,30 @@
           <span v-else>{{ formData.foreignTableCol }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.foreign.index.form.updateAction')"
-                     :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-                     :tooltip="$t('model.foreign.index.form.action.tip')" field="updateAction">
-          <a-select v-model="formData.updateAction">
-            <a-option value="RESTRICT">RESTRICT</a-option>
-            <a-option value="NO ACTION">NO ACTION</a-option>
-            <a-option value="SET NULL">SET NULL</a-option>
-            <a-option value="CASCADE">CASCADE</a-option>
-          </a-select>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.foreign.index.form.deleteAction')"
-                     :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-                     :tooltip="$t('model.foreign.index.form.action.tip')" field="deleteAction">
-          <a-select v-model="formData.deleteAction">
-            <a-option value="RESTRICT">RESTRICT</a-option>
-            <a-option value="NO ACTION">NO ACTION</a-option>
-            <a-option value="SET NULL">SET NULL</a-option>
-            <a-option value="CASCADE">CASCADE</a-option>
-          </a-select>
-        </a-form-item>
-      </a-col>
+      <!-- <a-col :span="24/pageData.formCol">
+              <a-form-item :label="$t('model.foreign.index.form.updateAction')"
+                           :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                           :tooltip="$t('model.foreign.index.form.action.tip')" field="updateAction">
+                <a-select v-model="formData.updateAction">
+                  <a-option value="RESTRICT">RESTRICT</a-option>
+                  <a-option value="NO ACTION">NO ACTION</a-option>
+                  <a-option value="SET NULL">SET NULL</a-option>
+                  <a-option value="CASCADE">CASCADE</a-option>
+                </a-select>
+              </a-form-item>
+            </a-col>-->
+      <!-- <a-col :span="24/pageData.formCol">
+              <a-form-item :label="$t('model.foreign.index.form.deleteAction')"
+                           :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                           :tooltip="$t('model.foreign.index.form.action.tip')" field="deleteAction">
+                <a-select v-model="formData.deleteAction">
+                  <a-option value="RESTRICT">RESTRICT</a-option>
+                  <a-option value="NO ACTION">NO ACTION</a-option>
+                  <a-option value="SET NULL">SET NULL</a-option>
+                  <a-option value="CASCADE">CASCADE</a-option>
+                </a-select>
+              </a-form-item>
+            </a-col>-->
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.foreign.index.form.enableStatus')"
@@ -85,7 +87,7 @@
             field="enableStatus">
           <a-select v-if="pageData.button" v-model="formData.enableStatus">
             <a-option
-                v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)"
                 :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.foreign.index.form.enableStatus.${formData.enableStatus}`) }}</span>

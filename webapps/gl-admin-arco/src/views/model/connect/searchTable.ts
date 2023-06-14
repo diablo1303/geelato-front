@@ -1,4 +1,4 @@
-import {computed, ref} from 'vue';
+import {computed} from 'vue';
 import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
 import {querySelectOptions} from "@/api/service/security_service";
@@ -66,9 +66,10 @@ const enableStatusOptions = computed<SelectOptionData[]>(() => [
   },
 ]);
 
-const dbTypeOptions = ref<SelectOptionData[]>([]);
+// eslint-disable-next-line import/no-mutable-exports
+let dbTypeOptions = computed<SelectOptionData[]>(() => []);
 querySelectOptions("dbType").then((data) => {
-  dbTypeOptions.value = data;
+  dbTypeOptions = computed<SelectOptionData[]>(() => data);
 });
 
 export {columns, dbTypeOptions, enableStatusOptions};

@@ -6,7 +6,7 @@
       :ok-text="$t('security.orgUser.index.model.ok.text')"
       :title="$t(`security.orgUser.index.model.title.${pageData.formState}`)"
       width="600px"
-      @cancel="handleModelCancel"
+      @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <a-form ref="validateForm" :model="formData">
       <a-form-item v-show="false">
@@ -20,8 +20,8 @@
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="orgId">
         <a-cascader
-v-if="pageData.button" v-model="formData.orgId" :options="orgSelectOptions" allow-clear allow-search
-                    check-strictly/>
+            v-if="pageData.button" v-model="formData.orgId" :options="orgSelectOptions" allow-clear allow-search
+            check-strictly/>
         <span v-else>{{ formData.orgName }}</span>
       </a-form-item>
       <a-form-item
@@ -30,8 +30,8 @@ v-if="pageData.button" v-model="formData.orgId" :options="orgSelectOptions" allo
           field="defaultOrg">
         <a-select v-if="pageData.button" v-model="formData.defaultOrg">
           <a-option
-v-for="item of defaultOrgOptions" :key="item.value" :disabled="true" :label="$t(`${item.label}`)"
-                    :value="item.value"/>
+              v-for="item of defaultOrgOptions" :key="item.value as string" :disabled="true" :label="$t(`${item.label}`)"
+              :value="item.value"/>
         </a-select>
         <span v-else>{{ $t(`security.orgUser.index.form.defaultOrg.${formData.defaultOrg}`) }}</span>
       </a-form-item>
@@ -133,7 +133,7 @@ const getData = async (id: string, successBack: any) => {
 const handleModelOk = (done: any) => {
   createOrUpdateData(formData.value, done);
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
 }
 const resetValidate = async () => {

@@ -35,10 +35,10 @@
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="orgId">
           <a-tree-select
-v-if="pageData.button"
-                         v-model="formData.orgId"
-                         :data="orgSelectOptions"
-                         :field-names="{key:'value',title:'label'}" allow-clear allow-search/>
+              v-if="pageData.button"
+              v-model="formData.orgId"
+              :data="orgSelectOptions"
+              :field-names="{key:'value',title:'label'}" allow-clear allow-search/>
           <!-- <a-cascader v-if="pageData.button" v-model="formData.orgId" :options="orgSelectOptions" allow-clear allow-search check-strictly/>-->
           <span v-else>{{ formData.orgName }}</span>
         </a-form-item>
@@ -49,7 +49,7 @@ v-if="pageData.button"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="sex">
           <a-select v-if="pageData.button" v-model="formData.sex">
-            <a-option v-for="item of sexOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of sexOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`security.user.index.form.sex.${formData.sex}`) }}</span>
         </a-form-item>
@@ -99,7 +99,7 @@ v-if="pageData.button"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="type">
           <a-select v-if="pageData.button" v-model="formData.type">
-            <a-option v-for="item of typeOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`security.user.index.form.type.${formData.type}`) }}</span>
         </a-form-item>
@@ -110,7 +110,7 @@ v-if="pageData.button"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="source">
           <a-select v-if="pageData.button" v-model="formData.source">
-            <a-option v-for="item of sourceOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of sourceOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`security.user.index.form.source.${formData.source}`) }}</span>
         </a-form-item>
@@ -121,23 +121,23 @@ v-if="pageData.button"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="seqNo">
           <a-input-number
-v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
-                          :placeholder="$t('security.form.rules.match.length.title')+'[0,999999]'"
-                          :precision="0"/>
+              v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
+              :placeholder="$t('security.form.rules.match.length.title')+'[0,999999]'"
+              :precision="0"/>
           <span v-else>{{ formData.seqNo }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24">
         <a-form-item
-:label="$t('security.user.index.form.description')"
-                     :label-col-props="{ span: 6/pageData.formCol }"
-                     :wrapper-col-props="{ span: pageData.formCol===2?21:18 }" field="description">
+            :label="$t('security.user.index.form.description')"
+            :label-col-props="{ span: 6/pageData.formCol }"
+            :wrapper-col-props="{ span: pageData.formCol===2?21:18 }" field="description">
           <a-textarea
-v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
-                      :max-length="512" show-word-limit/>
+              v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
+              :max-length="512" show-word-limit/>
           <span
-v-else :title="formData.description" class="textarea-span"
-                @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+              v-else :title="formData.description" class="textarea-span"
+              @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
         </a-form-item>
       </a-col>
     </a-row>

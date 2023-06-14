@@ -10,20 +10,20 @@
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('model.column.index.form.title')" field="title">
-              <a-input v-model="filterData.title"/>
+            <a-form-item :label="$t('model.column.index.form.name')" field="name">
+              <a-input v-model="filterData.name" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('model.column.index.form.name')" field="name">
-              <a-input v-model="filterData.name"/>
+            <a-form-item :label="$t('model.column.index.form.title')" field="title">
+              <a-input v-model="filterData.title" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('model.column.index.form.dataType')" field="dataType">
               <a-select v-model="filterData.dataType" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option
-                    v-for="item of dataTypeOptions" :key="item.value" :label="$t(`${item.label}`)"
+                    v-for="item of dataTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)"
                     :value="item.value"/>
               </a-select>
             </a-form-item>
@@ -32,7 +32,16 @@
             <a-form-item :label="$t('model.column.index.form.nullable')" field="nullable">
               <a-select v-model="filterData.nullable" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option
-                    v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
+                    v-for="item of nullableOptions" :key="item.value as string" :label="$t(`${item.label}`)"
+                    :value="item.value"/>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="pageData.isModal?12:8">
+            <a-form-item :label="$t('model.column.index.form.uniqued')" field="uniqued">
+              <a-select v-model="filterData.uniqued" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option
+                    v-for="item of uniquedOptions" :key="item.value as string" :label="$t(`${item.label}`)"
                     :value="item.value"/>
               </a-select>
             </a-form-item>
@@ -41,29 +50,28 @@
             <a-form-item :label="$t('model.column.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option
-                    v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)"
-                    :value="item.value"/>
+                    v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('security.org.index.form.createAt')" field="createAt">
-              <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
-            </a-form-item>
-          </a-col>
+          <!-- <a-col :span="pageData.isModal?12:8">
+                      <a-form-item :label="$t('security.org.index.form.createAt')" field="createAt">
+                        <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
+                      </a-form-item>
+                    </a-col>-->
         </a-row>
       </a-form>
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
       <a-space :size="18" direction="vertical">
-        <a-button type="primary" @click="search">
+        <a-button type="primary" @click="search($event)">
           <template #icon>
             <icon-search/>
           </template>
           {{ $t('searchTable.form.search') }}
         </a-button>
-        <a-button @click="reset">
+        <a-button @click="reset($event)">
           <template #icon>
             <icon-refresh/>
           </template>
@@ -76,7 +84,7 @@
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button v-show="pageData.formState==='edit'" type="primary" @click="addTable">
+        <a-button v-show="pageData.formState==='edit'" type="primary" @click="addTable($event)">
           <template #icon>
             <icon-plus/>
           </template>
@@ -86,7 +94,7 @@
     </a-col>
     <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
       <a-tooltip :content="$t('searchTable.actions.refresh')">
-        <div class="action-icon" @click="search">
+        <div class="action-icon" @click="search($event)">
           <icon-refresh size="18"/>
         </div>
       </a-tooltip>
@@ -127,50 +135,50 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('model.column.index.form.index')" align="center" data-index="index" width="80" fixed="left">
+      <a-table-column :title="$t('model.column.index.form.index')" align="center" data-index="index" fixed="left" :width="80">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
       <a-table-column
-          :title="$t('model.column.index.form.name')" data-index="name" ellipsis="true" tooltip="true" fixed="left"
-          width="150">
+          :title="$t('model.column.index.form.name')" data-index="name" :ellipsis="true" fixed="left" :tooltip="true" :width="150">
         <template #cell="{record}">
           {{ record.name }}
-          <a-button v-if="record.key===true" type="outline" class="list-action-button-default">
+          <a-button v-if="record.key===true" class="list-action-button-default" type="outline">
             {{ $t('model.column.index.form.name.key') }}
           </a-button>
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.column.index.form.title')" data-index="title" ellipsis="true" tooltip="true" width="150"/>
-      <a-table-column :title="$t('model.column.index.form.fieldName')" data-index="fieldName" ellipsis="true" tooltip="true" width="150"/>
-      <a-table-column v-if="pageData.params.pId===''" :title="$t('model.column.index.form.tableName')" data-index="tableName" ellipsis="true" tooltip="true"
-                      width="200"/>
-      <a-table-column :title="$t('model.column.index.form.dataType')" data-index="dataType" ellipsis="true" tooltip="true" width="120">
+      <a-table-column :title="$t('model.column.index.form.title')" data-index="title" :ellipsis="true" :tooltip="true" :width="150"/>
+      <a-table-column :title="$t('model.column.index.form.fieldName')" data-index="fieldName" :ellipsis="true" :tooltip="true" :width="150"/>
+      <a-table-column v-if="pageData.params.pId===''" :title="$t('model.column.index.form.tableName')" data-index="tableName" :ellipsis="true" :tooltip="true"
+                      :width="200"/>
+      <a-table-column :title="$t('model.column.index.form.dataType')" data-index="dataType" :ellipsis="true" :tooltip="true" :width="120">
         <template #cell="{ record }">
           {{ $t(`model.column.index.form.dataType.${record.dataType}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.column.index.form.type')" data-index="type" ellipsis="true" tooltip="true" width="120"/>
-      <a-table-column :title="$t('model.column.index.form.charMaxLength')" data-index="charMaxLength" width="130"/>
-      <a-table-column :title="$t('model.column.index.form.numericPrecision')" data-index="numericPrecision" width="130"/>
-      <a-table-column :title="$t('model.column.index.form.numericScale')" data-index="numericScale" width="130"/>
-      <a-table-column :title="$t('model.column.index.form.key')" data-index="key" width="110"/>
-      <a-table-column :title="$t('model.column.index.form.nullable')" data-index="nullable" width="110"/>
-      <a-table-column :title="$t('model.column.index.form.uniqued')" data-index="uniqued" width="110"/>
-      <a-table-column :title="$t('model.column.index.form.autoIncrement')" data-index="autoIncrement" width="110"/>
-      <a-table-column :title="$t('model.column.index.form.enableStatus')" data-index="enableStatus" width="100">
+      <a-table-column :title="$t('model.column.index.form.type')" data-index="type" :ellipsis="true" :tooltip="true" :width="120"/>
+      <a-table-column :title="$t('model.column.index.form.charMaxLength')" data-index="charMaxLength" :width="130"/>
+      <a-table-column :title="$t('model.column.index.form.numericPrecision')" data-index="numericPrecision" :width="130"/>
+      <a-table-column :title="$t('model.column.index.form.numericScale')" data-index="numericScale" :width="130"/>
+      <a-table-column :title="$t('model.column.index.form.key')" data-index="key" :width="110"/>
+      <a-table-column :title="$t('model.column.index.form.nullable')" data-index="nullable" :width="110"/>
+      <a-table-column :title="$t('model.column.index.form.uniqued')" data-index="uniqued" :width="110"/>
+      <a-table-column :title="$t('model.column.index.form.numericScale')" data-index="numericScale" :width="130"/>
+      <a-table-column :title="$t('model.column.index.form.defaultValue')" data-index="defaultValue" :ellipsis="true" :tooltip="true" :width="130"/>
+      <a-table-column :title="$t('model.column.index.form.enableStatus')" data-index="enableStatus" :width="100">
         <template #cell="{ record }">
           {{ $t(`model.column.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.column.index.form.ordinalPosition')" data-index="ordinalPosition" width="100"/>
-      <a-table-column :title="$t('model.column.index.form.createAt')" data-index="createAt" width="180"/>
-      <a-table-column :title="$t('model.column.index.form.comment')" data-index="comment" ellipsis="true" tooltip="true" width="200"/>
+      <a-table-column :title="$t('model.column.index.form.ordinalPosition')" data-index="ordinalPosition" :width="100"/>
+      <a-table-column :title="$t('model.column.index.form.createAt')" data-index="createAt" :width="180"/>
+      <a-table-column :title="$t('model.column.index.form.comment')" data-index="comment" :ellipsis="true" :tooltip="true" :width="200"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('model.column.index.form.operations')"
-          align="center" data-index="operations" fixed="right" :width="170">
+          :width="170" align="center" data-index="operations" fixed="right">
         <template #cell="{ record,isDefault = defaultColumnMetas.includes(record.name)}">
           <a-tooltip v-if="isDefault" :content="$t('model.column.index.form.operations.disabled')">
-            <a-button v-permission="['admin']" size="small" type="text" class="button-disabled">
+            <a-button v-permission="['admin']" class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.edit') }}
             </a-button>
           </a-tooltip>
@@ -178,14 +186,14 @@
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-tooltip v-if="isDefault" :content="$t('model.column.index.form.operations.disabled')">
-            <a-button v-permission="['admin']" size="small" type="text" class="button-disabled">
+            <a-button v-permission="['admin']" class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-tooltip>
           <a-popconfirm
               v-else :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
               @ok="deleteTable(record.id)">
-            <a-button v-permission="['admin']" size="small" type="text" status="danger">
+            <a-button v-permission="['admin']" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -209,8 +217,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
-import {deleteTableColumn as deleteList, pageQueryTableColumns as pageQueryList} from '@/api/service/model_service';
-import {columns, dataTypeOptions, defaultColumnMetas, enableStatusOptions} from '@/views/model/column/searchTable';
+import {deleteTableColumn as deleteList, FilterTableColumnForm, pageQueryTableColumns as pageQueryList} from '@/api/service/model_service';
+import {columns, dataTypeOptions, defaultColumnMetas, enableStatusOptions, nullableOptions, uniquedOptions} from '@/views/model/column/searchTable';
 // 引用其他页面
 import ColumnForm from '@/views/model/column/form.vue';
 import ColumnDrawer from '@/views/model/column/drawer.vue';
@@ -234,7 +242,7 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 const isDefault = ref(false);
 /* 列表 */
-const generateFilterData = () => {
+const generateFilterData = (): FilterTableColumnForm => {
   return {
     id: '',
     tableId: '', // 表id
@@ -244,6 +252,7 @@ const generateFilterData = () => {
     dataType: '', // 数据类型
     key: '', // 列键
     nullable: '', // 是否可空 YES_OR_NO
+    uniqued: '',//  // 唯一约束
     enableStatus: '', // 状态
     createAt: []
   };
@@ -273,13 +282,13 @@ fetchData();
 /**
  * 条件查询 - 搜索
  */
-const search = () => {
+const search = (ev?: Event) => {
   fetchData({...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
 };
 /**
  * 条件查询 - 重置
  */
-const reset = () => {
+const reset = (ev?: Event) => {
   basePagination.current = pageData.value.current;
   filterData.value = generateFilterData();
   filterData.value.tableId = pageData.value.params.pId || '';
@@ -288,15 +297,15 @@ const reset = () => {
 };
 /**
  * 分页 - 页面跳转
- * @param current
+ * @param page
  */
-const onPageChange = (current: number) => {
-  basePagination.current = current;
+const onPageChange = (page: number) => {
+  basePagination.current = page;
   search();
 };
 
 /* 列表，按钮、操作列 */
-const addTable = () => {
+const addTable = (ev: MouseEvent) => {
   if (pageData.value.isModal && !pageData.value.params.pId) {
     Notification.warning(t('security.dict.index.notice.warning2'));
     return;
@@ -350,8 +359,8 @@ const exchangeArray = <T extends Array<any>>(array: T, beforeIdx: number, newIdx
   }
   return newArray;
 };
-const popupVisibleChange = (val: boolean) => {
-  if (val) {
+const popupVisibleChange = (visible: boolean) => {
+  if (visible) {
     nextTick(() => {
       const el = document.getElementById('tableSetting') as HTMLElement;
       const sortable = new Sortable(el, {

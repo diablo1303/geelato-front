@@ -13,13 +13,13 @@
       <a-row>
         <a-col :span="4">
           <a-space style="padding-bottom: 10px;">
-            <a-button :disabled="pageData.formState!=='edit'" type="outline" @click="addDict">
+            <a-button :disabled="pageData.formState!=='edit'" type="outline" @click="addDict($event)">
               <template #icon>
                 <icon-plus/>
               </template>
               {{ $t('searchTable.operation.create') }}
             </a-button>
-            <a-button type="outline" @click="refreshDict">
+            <a-button type="outline" @click="refreshDict($event)">
               <template #icon>
                 <icon-refresh/>
               </template>
@@ -37,8 +37,8 @@
             <a-tab-pane key="1" :title="$t('security.dict.index.menu.list.searchTable1')">
               <DictModel ref="dictModelRef"></DictModel>
               <a-space v-show="pageData.formState==='edit'" style="padding-left: 128px;">
-                <a-button :loading="loading" type="primary" @click="saveForm">{{ $t('security.dict.index.model.save.text') }}</a-button>
-                <a-button type="primary" @click="deleteForm">{{ $t('security.dict.index.model.delete.text') }}</a-button>
+                <a-button :loading="loading" type="primary" @click="saveForm($event)">{{ $t('security.dict.index.model.save.text') }}</a-button>
+                <a-button type="primary" @click="deleteForm($event)">{{ $t('security.dict.index.model.delete.text') }}</a-button>
               </a-space>
             </a-tab-pane>
             <a-tab-pane key="2" :title="$t('security.dictItem.index.menu.list.searchTable')">
@@ -98,7 +98,7 @@ const selectedActive = (id?: string) => {
 /**
  * 新增字典
  */
-const addDict = () => {
+const addDict = (ev: MouseEvent) => {
   // 基础信息清空、页面信息复原、重置字典项、跳至基本信息
   pageData.value.tabKey = '1';
   selectedActive();
@@ -108,7 +108,7 @@ const addDict = () => {
   // 刷新表单、列表
   loadModelAndList();
 }
-const refreshDict = () => {
+const refreshDict = (ev?: MouseEvent) => {
   // 基础信息清空、页面信息复原、重置字典项、重置字典
   selectedActive();
   queryDictList('');
@@ -131,8 +131,8 @@ const selectedList = (id: string) => {
   }
 }
 
-const tabsChange = (key: string) => {
-  pageData.value.tabKey = key;
+const tabsChange = (key: string | number, ev: Event) => {
+  pageData.value.tabKey = key.toString();
 }
 /* 字典表单 */
 const getData = async (id: string, successBack: any) => {
@@ -154,7 +154,7 @@ const deleteData = async (id: string, successBack: any) => {
   }
 };
 
-const saveForm = () => {
+const saveForm = (ev: MouseEvent) => {
   if (dictModelRef.value) {
     setLoading(true);
     // @ts-ignore
@@ -178,7 +178,7 @@ const saveForm = () => {
     });
   }
 }
-const deleteForm = () => {
+const deleteForm = (ev: MouseEvent) => {
   const formId = pageData.value.params.dictId;
   if (formId && formId.trim().length > 0) {
     Modal.open({

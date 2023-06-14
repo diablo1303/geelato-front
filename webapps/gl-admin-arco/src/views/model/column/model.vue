@@ -1,6 +1,6 @@
 <template v-model="pageData">
   <a-form
-      ref="validateForm" :model="formData" :label-col-props="{ span: 8 }" :wrapper-col-props="{ span: 16 }"
+      ref="validateForm" :label-col-props="{ span: 8 }" :model="formData" :wrapper-col-props="{ span: 16 }"
       class="form">
     <a-row :gutter="16">
       <a-col :span="24">
@@ -10,7 +10,7 @@
           <a-input v-show="false" v-model="formData.tableSchema"/>
           <a-input v-show="false" v-model="formData.tableName"/>
           <a-input v-show="false" v-model="formData.type"/>
-          <a-input v-show="false" v-model="formData.isRefColumn"/>
+          <a-input-number v-show="false" v-model="formData.isRefColumn"/>
           <a-input v-show="false" v-model="formData.refLocalCol"/>
           <a-input v-show="false" v-model="formData.refTables"/>
           <a-input v-show="false" v-model="formData.refColName"/>
@@ -26,10 +26,11 @@
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item :label="$t('model.column.index.form.fieldName')"
-                     :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                     :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
                      field="fieldName">
-          <a-input v-model="formData.fieldName" :max-length="32"
+          <a-input v-if="pageData.formState==='add'" v-model="formData.fieldName" :max-length="32"
                    :placeholder="$t('model.column.index.form.fieldName.placeholder')" readonly/>
+          <span v-else>{{ formData.fieldName }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
@@ -38,7 +39,7 @@
             :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')},
             {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')}]"
             field="name">
-          <a-input v-if="pageData.formState==='add'" v-model="formData.name" :max-length="32" @blur="columnNameBlur"/>
+          <a-input v-if="pageData.formState==='add'" v-model="formData.name" :max-length="32" @blur="columnNameBlur($event)"/>
           <span v-else>{{ formData.name }}</span>
         </a-form-item>
       </a-col>
@@ -48,7 +49,7 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="enableStatus">
           <a-select v-model="formData.enableStatus">
-            <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
         </a-form-item>
       </a-col>
@@ -91,7 +92,7 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="dataType">
           <a-select v-model="formData.dataType" @change="dataTypeChange">
-            <a-option v-for="item of dataTypeOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of dataTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
         </a-form-item>
         <!-- 字符串 最大长度 -->
@@ -120,7 +121,7 @@
               :max="3"
               :min="1"
               :placeholder="$t('model.form.rules.match.max.title')+': 3'"
-              :precision="0" @blur="numericPrecisionBlur"/>
+              :precision="0" @blur="numericPrecisionBlur($event)"/>
         </a-form-item>
       </a-col>
       <a-col v-if="['INT'].includes(formData.dataType)" :span="24/pageData.formCol">
@@ -133,7 +134,7 @@
               :max="10"
               :min="1"
               :placeholder="$t('model.form.rules.match.max.title')+': 10'"
-              :precision="0" @blur="numericPrecisionBlur"/>
+              :precision="0" @blur="numericPrecisionBlur($event)"/>
         </a-form-item>
       </a-col>
       <a-col v-if="['DECIMAL'].includes(formData.dataType)" :span="24/pageData.formCol">
@@ -146,7 +147,7 @@
               :max="19"
               :min="1"
               :placeholder="$t('model.form.rules.match.max.title')+': 19'"
-              :precision="0" @blur="numericPrecisionBlur"/>
+              :precision="0" @blur="numericPrecisionBlur($event)"/>
         </a-form-item>
       </a-col>
       <a-col v-if="['DECIMAL'].includes(formData.dataType)" :span="24/pageData.formCol">
@@ -159,7 +160,7 @@
               :max="19"
               :min="1"
               :placeholder="$t('model.form.rules.match.max.title')+': 19'"
-              :precision="0" @blur="decimalTotalLength"/>
+              :precision="0" @blur="decimalTotalLengthBlur($event)"/>
         </a-form-item>
       </a-col>
       <a-col v-if="['TINYINT','INT','BIGINT','DECIMAL'].includes(formData.dataType)" :span="24/pageData.formCol">
@@ -194,13 +195,23 @@
           </a-radio-group>
         </a-form-item>
       </a-col>
-      <a-col v-if="['TINYINT','INT','BIGINT','DECIMAL'].includes(formData.dataType)" :span="24/pageData.formCol">
+      <a-col v-if="['TINYINT','INT','BIGINT'].includes(formData.dataType)" :span="24/pageData.formCol">
         <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
           <a-input-number
               v-model="formData.defaultValue"
               :max="pageData.maxNumber"
               :min="0"
               :placeholder="pageData.maxNumber>0?($t('model.form.rules.match.max.title')+`: ${pageData.maxNumber}`):''"
+              :precision="formData.numericScale"/>
+        </a-form-item>
+      </a-col>
+      <a-col v-if="['DECIMAL'].includes(formData.dataType)" :span="24/pageData.formCol">
+        <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
+          <a-input-number
+              v-model="formData.defaultValue"
+              :max="Math.pow(10,formData.numericPrecision)"
+              :min="0"
+              :placeholder="pageData.maxNumber>0?($t('model.form.rules.match.max.title')+`: ${Math.pow(10,formData.numericPrecision)}`):''"
               :precision="formData.numericScale"/>
         </a-form-item>
       </a-col>
@@ -218,8 +229,8 @@
       <a-col :span="24/pageData.formCol">
         <a-form-item :label="$t('model.column.index.form.nullable')" field="nullable">
           <a-radio-group v-model="formData.nullable"
-                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-                         :options="nullableOptions">
+                         :options="nullableOptions"
+                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
             <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
           </a-radio-group>
         </a-form-item>
@@ -227,8 +238,8 @@
       <a-col :span="24/pageData.formCol">
         <a-form-item :label="$t('model.column.index.form.uniqued')" field="key">
           <a-radio-group v-model="formData.uniqued"
-                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-                         :options="uniquedOptions">
+                         :options="uniquedOptions"
+                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
             <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
           </a-radio-group>
         </a-form-item>
@@ -236,8 +247,8 @@
       <a-col :span="24/pageData.formCol">
         <a-form-item :label="$t('model.column.index.form.key')" field="key">
           <a-radio-group v-model="formData.key"
-                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-                         :options="keyOptions">
+                         :options="keyOptions"
+                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
             <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
           </a-radio-group>
         </a-form-item>
@@ -330,7 +341,7 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
 /**
  * 字段名称 生成 字段名称
  */
-const columnNameBlur = () => {
+const columnNameBlur = (ev: FocusEvent) => {
   formData.value.fieldName = toCamelCase(formData.value.name);
 }
 /**
@@ -358,14 +369,16 @@ const dataTypeChange = (value: string) => {
     pageData.value.maxNumber = 2147483647;
   } else if (['BIGINT'].includes(value)) {
     formData.value.numericPrecision = 19;
-    pageData.value.maxNumber = -1;
+    formData.value.charMaxLength = 19;
+    // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
+    pageData.value.maxNumber = 9223372036854775807;
   } else if (['DECIMAL'].includes(value)) {
     formData.value.numericPrecision = 17;
     formData.value.numericScale = 2;
     pageData.value.maxNumber = -1;
   }
 }
-const decimalTotalLength = (type?: string) => {
+const decimalTotalLengthBlur = (ev: FocusEvent, type?: string) => {
   if (['DECIMAL'].includes(formData.value.dataType)) {
     if (formData.value.numericPrecision + formData.value.numericScale > 19) {
       if (type === 'precision') {
@@ -376,7 +389,7 @@ const decimalTotalLength = (type?: string) => {
     }
   }
 }
-const numericPrecisionBlur = () => {
+const numericPrecisionBlur = (ev: FocusEvent) => {
   if (['TINYINT', 'INT', 'BIGINT', 'DECIMAL'].includes(formData.value.dataType)) {
     pageData.value.maxNumber = 10 ** (formData.value.numericPrecision + 1) - 1;
     if (['TINYINT'].includes(formData.value.dataType)) {
@@ -387,7 +400,7 @@ const numericPrecisionBlur = () => {
       // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
       pageData.value.maxNumber = pageData.value.maxNumber > 9223372036854775807 ? 9223372036854775807 : pageData.value.maxNumber;
       if (['DECIMAL'].includes(formData.value.dataType)) {
-        decimalTotalLength('precision');
+        decimalTotalLengthBlur(ev, 'precision');
       }
     }
   }
@@ -424,12 +437,16 @@ const loadModel = (urlParams: ListUrlParams) => {
       data.key = data.key === true ? 1 : 0;
       data.uniqued = data.uniqued === true ? 1 : 0;
       data.autoIncrement = data.autoIncrement === true ? 1 : 0;
-
+      data.isRefColumn = data.isRefColumn === true ? 1 : 0;
+      if (['TINYINT', 'INT', 'BIGINT', 'DECIMAL'].includes(data.dataType)) {
+        data.defaultValue = (data.defaultValue == null || data.defaultValue === '') ? data.defaultValue : Number(data.defaultValue);
+      }
       formData.value = data;
       urlParams.loadSuccessBack(data);
     }, urlParams.loadFailBack);
   }
 }
+
 const submitModel = (done: any, successBack?: any, failBack?: any) => {
   createOrUpdateData(formData.value, successBack, failBack);
 };

@@ -8,13 +8,12 @@
           :ok-text="$t('security.user.index.model.ok.text')"
           :title="$t(`security.user.index.model.title.${pageData.formState}`)"
           width="80%"
-          @cancel="handleModelCancel"
+          @cancel="handleModelCancel($event)"
           @before-ok="handleModelOk">
         <a-row>
           <a-col :span="24">
-            <a-tabs
-v-model:active-key="pageData.tabKey" :default-active-tab="1" :position="'left'" type="rounded"
-                    @tab-click="tabsChange">
+            <a-tabs v-model:active-key="pageData.tabKey"
+                    :default-active-tab="1" position="left" type="rounded" @tab-click="tabsChange">
               <a-tab-pane key="1" :title="$t('security.user.forml.tab.title.one')">
                 <UserModel ref="userModelRef"></UserModel>
               </a-tab-pane>
@@ -61,7 +60,7 @@ const handleModelOk = (done: any) => {
     });
   }
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
   okSuccessBack();
 }

@@ -15,11 +15,11 @@
       </a-row>
       <a-row>
         <a-col :span="6">
-          <a-input-search v-model="searchKey" style="margin-left:6%;max-width:88%" allow-clear/>
+          <a-input-search v-model="searchKey" allow-clear style="margin-left:6%;max-width:88%"/>
           <a-scrollbar style="height:470px;overflow:auto;">
             <a-tree
-                v-model:selected-keys="selectedKeys"
                 v-model:expanded-keys="expandedKeys"
+                v-model:selected-keys="selectedKeys"
                 :data="originTreeData"
                 :show-line="true"
                 @select="treeClickSelected">
@@ -33,7 +33,7 @@
                 </span>
               </template>
               <template #extra="nodeData">
-                <a-dropdown trigger="click" position="right">
+                <a-dropdown position="bl" trigger="click">
                   <a-tooltip :content="$t('security.dict.index.modal.more')">
                     <IconMore class="tree-extra-icon1" @click="treeSelected(nodeData.key,nodeData)"/>
                   </a-tooltip>

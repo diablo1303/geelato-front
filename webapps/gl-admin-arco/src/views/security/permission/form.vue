@@ -5,7 +5,7 @@
       :footer="pageData.button"
       :ok-text="$t('security.permission.index.model.ok.text')"
       :title="$t(`security.permission.index.model.title.${pageData.formState}`)"
-      @cancel="handleModelCancel"
+      @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <a-form ref="validateForm" :model="formData">
       <a-form-item v-show="false">
@@ -91,7 +91,7 @@ const getData = async (id: string, successBack: any) => {
 const handleModelOk = (done: any) => {
   createOrUpdateData(formData.value, done);
 };
-const handleModelCancel = () => {
+const handleModelCancel = (e: Event) => {
   visibleModel.value = false;
 }
 

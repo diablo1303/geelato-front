@@ -30,7 +30,7 @@
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="enableStatus">
           <a-select v-if="pageData.button" v-model="formData.enableStatus">
-            <a-option v-for="item of enableStatusOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`security.role.index.form.enableStatus.${formData.enableStatus}`) }}</span>
         </a-form-item>
@@ -41,7 +41,7 @@
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="type">
           <a-select v-if="pageData.button" v-model="formData.type">
-            <a-option v-for="item of typeOptions" :key="item.value" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`security.role.index.form.type.${formData.type}`) }}</span>
         </a-form-item>
@@ -52,16 +52,16 @@
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="seqNo">
           <a-input-number
-v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
-                          :placeholder="$t('security.form.rules.match.length.title')+'[0,999999]'"
-                          :precision="0"/>
+              v-if="pageData.button" v-model="formData.seqNo" :max="999999" :min="1"
+              :placeholder="$t('security.form.rules.match.length.title')+'[0,999999]'"
+              :precision="0"/>
           <span v-else>{{ formData.seqNo }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24">
         <a-form-item
-:label="$t('security.role.index.form.description')" :label-col-props="{ span: 3 }"
-                     :wrapper-col-props="{ span: 21 }" field="description">
+            :label="$t('security.role.index.form.description')" :label-col-props="{ span: 3 }"
+            :wrapper-col-props="{ span: 21 }" field="description">
           <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
           <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
         </a-form-item>

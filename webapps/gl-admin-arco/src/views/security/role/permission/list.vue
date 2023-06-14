@@ -11,12 +11,12 @@
           </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('security.rolePermission.index.form.roleName')" field="roleName">
-              <a-input v-model="filterData.roleName" :readonly="pageData.params.roleName!=''"/>
+              <a-input v-model="filterData.roleName" :readonly="pageData.params.roleName!=''" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('security.rolePermission.index.form.permissionName')" field="permissionName">
-              <a-input v-model="filterData.permissionName"/>
+              <a-input v-model="filterData.permissionName" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
@@ -30,19 +30,19 @@
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
       <a-space :size="18" direction="vertical">
-        <a-button type="primary" @click="search">
+        <a-button type="primary" @click="search($event)">
           <template #icon>
             <icon-search/>
           </template>
           {{ $t('searchTable.form.search') }}
         </a-button>
-        <a-button @click="reset">
+        <a-button @click="reset($event)">
           <template #icon>
             <icon-refresh/>
           </template>
           {{ $t('searchTable.form.reset') }}
         </a-button>
-        <a-button v-if="pageData.isModal && pageData.formState==='edit'" type="primary" @click="addTable">
+        <a-button v-if="pageData.isModal && pageData.formState==='edit'" type="primary" @click="addTable($event)">
           <template #icon>
             <icon-plus/>
           </template>
@@ -55,7 +55,7 @@
   <a-row v-if="!pageData.isModal" style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button v-show="pageData.formState==='edit'" type="primary" @click="addTable">
+        <a-button v-show="pageData.formState==='edit'" type="primary" @click="addTable($event)">
           <template #icon>
             <icon-plus/>
           </template>
@@ -65,7 +65,7 @@
     </a-col>
     <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
       <a-tooltip :content="$t('searchTable.actions.refresh')">
-        <div class="action-icon" @click="search">
+        <div class="action-icon" @click="search($event)">
           <icon-refresh size="18"/>
         </div>
       </a-tooltip>
@@ -102,13 +102,13 @@
            row-key="id"
            @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('security.rolePermission.index.form.index')" align="center" data-index="index" width="80">
+      <a-table-column :title="$t('security.rolePermission.index.form.index')" align="center" data-index="index" :width="80">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :title="$t('security.rolePermission.index.form.permissionName')" data-index="permissionName" ellipsis="true" tooltip="true" width="150"/>
-      <a-table-column v-if="pageData.params.roleName===''" :title="$t('security.rolePermission.index.form.roleName')" data-index="roleName" ellipsis="true"
-                      tooltip="true" width="150"/>
-      <a-table-column :title="$t('security.rolePermission.index.form.createAt')" data-index="createAt" width="180"/>
+      <a-table-column :title="$t('security.rolePermission.index.form.permissionName')" data-index="permissionName" :ellipsis="true" :tooltip="true" :width="150"/>
+      <a-table-column v-if="pageData.params.roleName===''" :title="$t('security.rolePermission.index.form.roleName')" data-index="roleName" :ellipsis="true"
+                      :tooltip="true" :width="150"/>
+      <a-table-column :title="$t('security.rolePermission.index.form.createAt')" data-index="createAt" :width="180"/>
       <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('security.rolePermission.index.form.operations')"
                       :width="(pageData.formState==='edit'&&!pageData.isModal)?230:100"
                       align="center" data-index="operations"
@@ -121,7 +121,7 @@
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text" status="danger">
+            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -144,7 +144,11 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns} from '@/views/security/role/permission/searchTable'
-import {deleteRolePermission as deleteList, FilterRolePermissionForm as FilterForm, pageQueryRolePermission as pageQueryList} from '@/api/service/security_service';
+import {
+  deleteRolePermission as deleteList,
+  FilterRolePermissionForm as FilterForm,
+  pageQueryRolePermission as pageQueryList
+} from '@/api/service/security_service';
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
 // 引用其他页面
 import RolePermissionForm from '@/views/security/role/permission/form.vue';
@@ -192,13 +196,13 @@ const fetchData = async (params: PageQueryRequest = {current: pageData.value.cur
 /**
  * 条件查询 - 搜索
  */
-const search = () => {
+const search = (ev?: Event) => {
   fetchData({...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
 };
 /**
  * 条件查询 - 重置
  */
-const reset = () => {
+const reset = (ev?: Event) => {
   basePagination.current = pageData.value.current;
   filterData.value = generateFilterData();
   filterData.value.roleId = pageData.value.params.roleId || '';
@@ -215,7 +219,7 @@ const onPageChange = (current: number) => {
 };
 
 /* 列表，按钮、操作列 */
-const addTable = () => {
+const addTable = (ev: MouseEvent) => {
   if (rolePermissionFormRef.value) {
     // @ts-ignore
     rolePermissionFormRef.value?.openForm({action: 'add', params: pageData.value.params, closeBack: reset});

@@ -1,4 +1,4 @@
-import {computed, ref} from 'vue';
+import {computed} from 'vue';
 import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
 import {RadioOption} from "@arco-design/web-vue/es/radio/interface";
@@ -11,25 +11,25 @@ const columns = computed<TableColumnData[]>(() => [
     slotName: 'index'
   },
   {
-    title: 'model.column.index.form.mainTable',
-    dataIndex: 'mainTable'
+    title: 'model.column.index.form.name',
+    dataIndex: 'name'
   },
   {
-    title: 'model.column.index.form.mainTableCol',
-    dataIndex: 'mainTableCol'
+    title: 'model.column.index.form.title',
+    dataIndex: 'title'
   },
 
   {
-    title: 'model.column.index.form.columnTable',
-    dataIndex: 'columnTable'
+    title: 'model.column.index.form.fieldName',
+    dataIndex: 'fieldName'
   },
   {
-    title: 'model.column.index.form.columnTableCol',
-    dataIndex: 'columnTableCol'
+    title: 'model.column.index.form.dataType',
+    dataIndex: 'dataType'
   },
   {
-    title: 'model.column.index.form.seqNo',
-    dataIndex: 'seqNo'
+    title: 'model.column.index.form.type',
+    dataIndex: 'type'
   },
   {
     title: 'model.column.index.form.enableStatus',
@@ -115,7 +115,7 @@ const enableStatusOptions = computed<SelectOptionData[]>(() => [
   },
 ]);
 
-const keyOptions = computed<SelectOptionData[]>(() => [
+const keyOptions = computed<RadioOption[]>(() => [
   {
     label: 'model.column.index.form.key.1',
     value: 1,
@@ -126,7 +126,7 @@ const keyOptions = computed<SelectOptionData[]>(() => [
   },
 ]);
 
-const uniquedOptions = computed<SelectOptionData[]>(() => [
+const uniquedOptions = computed<RadioOption[]>(() => [
   {
     label: 'model.column.index.form.uniqued.1',
     value: 1,
@@ -169,9 +169,10 @@ const numericSignedOptions = computed<RadioOption[]>(() => [
 ]);
 
 // 主键、、单位、部门、创建时间、创建人员、更新时间、更新人员、是否删除、排序
-const defaultColumnMetas = ref<string[]>([]);
+// eslint-disable-next-line import/no-mutable-exports
+let defaultColumnMetas = computed<string[]>(() => []);
 queryDefaultMetas().then((data) => {
-  defaultColumnMetas.value = data;
+  defaultColumnMetas = computed<string[]>(() => data);
 });
 
 export {
