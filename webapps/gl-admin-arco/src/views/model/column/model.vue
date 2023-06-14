@@ -25,19 +25,20 @@
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.fieldName')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="fieldName">
-          <a-input v-model="formData.fieldName" :max-length="32"/>
+        <a-form-item :label="$t('model.column.index.form.fieldName')"
+                     :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                     field="fieldName">
+          <a-input v-model="formData.fieldName" :max-length="32"
+                   :placeholder="$t('model.column.index.form.fieldName.placeholder')" readonly/>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.column.index.form.name')"
-            :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
+            :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')},
+            {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')}]"
             field="name">
-          <a-input v-if="pageData.formState==='add'" v-model="formData.name" :max-length="32"/>
+          <a-input v-if="pageData.formState==='add'" v-model="formData.name" :max-length="32" @blur="columnNameBlur"/>
           <span v-else>{{ formData.name }}</span>
         </a-form-item>
       </a-col>
@@ -197,7 +198,7 @@
         <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
           <a-input-number
               v-model="formData.defaultValue"
-              :max="pageData.maxNumber>0?pageData.maxNumber:''"
+              :max="pageData.maxNumber"
               :min="0"
               :placeholder="pageData.maxNumber>0?($t('model.form.rules.match.max.title')+`: ${pageData.maxNumber}`):''"
               :precision="formData.numericScale"/>
@@ -260,6 +261,7 @@ import {
   uniquedOptions
 } from "@/views/model/column/searchTable";
 import {createOrUpdateTableColumn as createOrUpdateForm, getTableColumn as getForm, QueryTableColumnForm as QueryForm} from '@/api/service/model_service';
+import {toCamelCase} from '@/utils/strings';
 
 const pageData = ref({formState: 'add', button: true, formCol: 1, mainTable: '', maxNumber: -1});
 const validateForm = ref<FormInstance>();
@@ -325,6 +327,12 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
     failBack(err);
   }
 };
+/**
+ * 字段名称 生成 字段名称
+ */
+const columnNameBlur = () => {
+  formData.value.fieldName = toCamelCase(formData.value.name);
+}
 /**
  * 类型变化
  * @param value

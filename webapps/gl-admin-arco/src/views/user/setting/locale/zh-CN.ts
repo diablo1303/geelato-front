@@ -456,6 +456,7 @@ export default {
   'model.column.index.form.tableCatalog': '表目录',
   'model.column.index.form.title': '名称(中文)',
   'model.column.index.form.fieldName': '名称(英文)',
+  'model.column.index.form.fieldName.placeholder': '根据 “字段标识” 生成',
   'model.column.index.form.name': '字段标识',
   'model.column.index.form.comment': '字段注释',
   'model.column.index.form.ordinalPosition': '次序',
@@ -523,6 +524,7 @@ export default {
   'searchTable.actions.swap': '交换',
   /* 验证 */
   'model.form.rules.match.required': '这是必填项',
+  'model.form.rules.match.entityName.match': '匹配：‘a-z’、‘A-Z’、‘0-9’、‘_’',
   'model.form.rules.match.length.title': '长度',
   'model.form.rules.match.max.title': '最大值',
 };

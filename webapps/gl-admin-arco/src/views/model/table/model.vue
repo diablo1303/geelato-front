@@ -24,7 +24,8 @@
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.table.index.form.entityName')"
-            :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
+            :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')},
+            {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')}]"
             field="entityName">
           <a-input v-if="pageData.button" v-model="formData.entityName" :max-length="32"/>
           <span v-else>{{ formData.entityName }}</span>

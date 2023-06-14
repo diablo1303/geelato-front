@@ -458,6 +458,7 @@ export default {
   'model.column.index.form.tableCatalog': 'tableCatalog',
   'model.column.index.form.title': 'title',
   'model.column.index.form.fieldName': 'fieldName',
+  'model.column.index.form.fieldName.placeholder': 'Generated based on "name"',
   'model.column.index.form.name': 'name',
   'model.column.index.form.comment': 'columnComment',
   'model.column.index.form.ordinalPosition': 'order',
@@ -523,6 +524,7 @@ export default {
   'searchTable.actions.swap': 'swap',
   /* 验证 */
   'model.form.rules.match.required': 'this is required',
+  'model.form.rules.match.entityName.match': 'Match：‘a-z’、‘A-Z’、‘0-9’、‘_’',
   'model.form.rules.match.length.title': 'length',
   'model.form.rules.match.max.title': 'maxNumber',
 };
