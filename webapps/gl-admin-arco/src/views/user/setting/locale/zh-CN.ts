@@ -387,7 +387,7 @@ export default {
 
   // webapps/gl-admin-arco/src/views/model/table - list|form
   'model.table.index.menu.list': '模型管理',
-  'model.table.index.menu.list.searchTable': '数据表单',
+  'model.table.index.menu.list.searchTable': '数据表格',
   // webapps/gl-admin-arco/src/views/model/table - list|form
   'model.table.index.form.index': '序列号',
   'model.table.index.form.title': '名称(中文)',
@@ -421,6 +421,47 @@ export default {
   'model.table.index.model.title.sync.model': '更新数据库表单',
   'model.table.index.model.cancel.text': '取消',
   'model.table.index.model.ok.text': '确认',
+
+  // webapps/gl-admin-arco/src/views/model/view - list|form
+  'model.view.index.menu.list': '模型管理',
+  'model.view.index.menu.list.searchTable': '表格视图',
+  // webapps/gl-admin-arco/src/views/model/view - list|form
+  'model.view.index.form.index': '序列号',
+  'model.view.index.form.entityName': '实体名称',
+  'model.view.index.form.entityName.valid': '这是’默认视图‘的名称',
+  'model.view.index.form.title': '名称(中文)',
+  'model.view.index.form.viewName': '名称(英文)',
+  'model.view.index.form.viewType': '视图类型',
+  'model.view.index.form.viewType.default': '默认视图',
+  'model.view.index.form.viewType.custom': '自定义视图',
+  'model.view.index.form.linked': '连接状态',
+  'model.view.index.form.linked.1': '已连接',
+  'model.view.index.form.linked.0': '未连接',
+  'model.view.index.form.enableStatus': '状态',
+  'model.view.index.form.enableStatus.0': '禁用',
+  'model.view.index.form.enableStatus.1': '启用',
+  'model.view.index.form.seqNo': '排序',
+  'model.view.index.form.viewConstruct': '视图语句',
+  'model.view.index.model.viewSql.valid.success': '验证成功！',
+  'model.view.index.model.viewSql.valid.fail': '验证失败，请检查Sql的正确性。',
+  'model.view.index.form.description': '补充描述',
+  'model.view.index.form.createAt': '创建时间',
+  'model.view.index.form.operations': '操作',
+  'model.view.index.form.viewConstruct.edit': '编辑视图语句',
+  'model.view.index.form.viewConstruct.validate': '验证',
+  'model.view.index.form.viewConstruct.validateMsg': '是否验证视图语句有效性？',
+  // webapps/gl-admin-arco/src/views/model/view - form.operation
+  'model.view.index.model.title.add': '新建视图',
+  'model.view.index.model.title.edit': '编辑视图',
+  'model.view.index.model.title.view': '查看视图',
+  'model.view.index.model.title.delete': '删除视图',
+  'model.view.index.model.cancel.text': '取消',
+  'model.view.index.model.ok.text': '确认',
+  'searchTable.columns.operations.release': '发布',
+  'searchTable.columns.operations.releaseMsg': '是否发布该条视图？',
+  'model.view.index.model.info.reset': '重置成功！',
+  'model.view.index.model.info.release': '发布成功！',
+  'model.view.index.form.operations.noRel':'表格未同步至数据库，不能发布！',
 
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
   'model.foreign.index.menu.list': '模型管理',
@@ -528,6 +569,8 @@ export default {
   /* 验证 */
   'model.form.rules.match.required': '这是必填项',
   'model.form.rules.match.entityName.match': '匹配：‘a-z’、‘A-Z’、‘0-9’、‘_’',
+  'model.form.rules.match.viewName.match': '不以‘v_’、‘V_’开头',
+  'model.form.rules.match.viewSql.match': '匹配：’select * from table_name ...‘',
   'model.form.rules.match.length.title': '长度',
   'model.form.rules.match.max.title': '最大值',
 };

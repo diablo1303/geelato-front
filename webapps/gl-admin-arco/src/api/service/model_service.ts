@@ -113,6 +113,14 @@ export function deleteTable(id: string) {
   return axios.delete<QueryResult>(`/api/model/table/isDelete/${id}`);
 }
 
+export function queryDefaultView(entityName: string) {
+  return axios.get<string>(`/api/model/table/queryDefaultView/${entityName}`);
+}
+
+export function resetDefaultView(params: QueryTableForm) {
+  return axios.post<QueryResult>('/api/model/table/resetDefaultView', params);
+}
+
 /* *************************** 字段信息 ****************************** */
 export interface QueryTableColumnForm {
   id: string; // *
@@ -249,6 +257,61 @@ export function deleteTableForeign(id: string) {
   return axios.delete<QueryResult>(`/api/model/table/foreign/isDelete/${id}`);
 }
 
+/* *************************** 实体视图信息 ****************************** */
+export interface QueryViewForm {
+  id: string;
+  connectId: string; // 数据库连接 id
+  entityName: string; // 实体名称
+  title: string; // 名称(中文)
+  viewName: string; // 数据库中的表名
+  viewType: string; // 视图类型 default:默认视图;custom:自定义视图
+  viewConstruct: string;// 视图语句
+  description: string; // 补充描述
+  linked: number; // 已链接
+  enableStatus: number; // 状态
+  seqNo: number; // 排序
+}
+
+export interface FilterViewForm {
+  id: string;
+  connectId: string;
+  entityName: string;
+  title: string;
+  viewName: string;
+  viewType: string;
+  enableStatus: string;
+  linked: string;
+  createAt: string[];
+}
+
+export function pageQueryViews(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/model/view/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function queryViews(params: PageQueryRequest) {
+  return axios.get<QueryViewForm[]>('/api/model/view/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function getView(id: string) {
+  return axios.get<QueryViewForm>(`/api/model/view/get/${id}`);
+}
+
+export function createOrUpdateView(params: QueryViewForm) {
+  return axios.post<QueryResult>('/api/model/view/createOrUpdate', params);
+}
+
+export function deleteView(id: string) {
+  return axios.delete<QueryResult>(`/api/model/view/isDelete/${id}`);
+}
+
 /* --------------------------- 其他方法 --------------------------------- */
 /**
  * 新建或更新表，不删除表字段
@@ -263,8 +326,17 @@ export function createOrUpdateModelToTable(entity: string) {
  * @param view
  * @param viewSql 视图语句
  */
-export function createOrUpdateView(view: string, viewSql: string) {
-  return axios.post<QueryResult>(`/api/meta/ddl/table/${view}`, {sql: viewSql});
+export function releaseMetaView(view: string, viewSql: string) {
+  return axios.post<QueryResult>(`/api/meta/ddl/view/${view}`, {sql: viewSql});
+}
+
+/**
+ * 验证sql语句正确性
+ * @param connectId 数据连接id
+ * @param viewSql 视图语句
+ */
+export function validateMetaView(connectId: string, viewSql: string) {
+  return axios.post<QueryResult>(`/api/meta/ddl/view/valid/${connectId}`, {sql: viewSql});
 }
 
 /* --------------------- 方法，接口调用 ------------------- */

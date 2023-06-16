@@ -58,13 +58,13 @@
           </a-card>
           <a-tabs v-show="pageData.level===2" v-model:active-key="pageData.tabKey" :default-active-tab="1"
                   :position="'top'" type="line">
-            <a-tab-pane key="1" :title="$t('model.column.index.menu.list.searchTable')" class="a-tabs-three">
+            <a-tab-pane key="1" :title="$t('model.column.index.menu.list.searchTable')" class="a-tabs-one">
               <a-card class="general-card">
                 <ColumnList ref="columnListRef"></ColumnList>
               </a-card>
             </a-tab-pane>
             <a-tooltip :content="$t('model.foreign.index.menu.list.tab.tip')" position="top">
-              <a-tab-pane key="2" :title="$t('model.foreign.index.menu.list.searchTable')" class="a-tabs-four">
+              <a-tab-pane key="2" :title="$t('model.foreign.index.menu.list.searchTable')" class="a-tabs-two">
                 <template #title>
                   <a-tooltip :content="$t('model.foreign.index.menu.list.tab.tip')" position="right">
                     {{ $t('model.foreign.index.menu.list.searchTable') }}
@@ -76,6 +76,11 @@
                 </a-card>
               </a-tab-pane>
             </a-tooltip>
+            <a-tab-pane key="3" :title="$t('model.view.index.menu.list.searchTable')" class="a-tabs-three">
+              <a-card class="general-card">
+                <ViewList ref="viewListRef"></ViewList>
+              </a-card>
+            </a-tab-pane>
             <template #extra>
               <a-space>
                 <a-button v-if="pageData.level===2" type="outline" @click="syncFromTableToModel($event)">
@@ -112,11 +117,13 @@ import TableList from '@/views/model/table/list.vue';
 import ColumnList from '@/views/model/column/list.vue';
 import ConnectList from '@/views/model/connect/list.vue';
 import ForeignList from '@/views/model/foreign/list.vue';
+import ViewList from '@/views/model/view/list.vue';
 
 const pageData = ref({
   formState: 'edit', isModal: true, swap: true,
   tabKey: '1',
-  level: 0, treeKey: '0', treeTitle: '', treeEntity: '',
+  level: 0, treeKey: '0', treeTitle: '',
+  treeEntity: '', treeConnect: '',
   isSync: false
 });
 
@@ -132,6 +139,7 @@ const connectListRef = ref(null);
 const tableListRef = ref(null);
 const columnListRef = ref(null);
 const foreignListRef = ref(null);
+const viewListRef = ref(null);
 // Tree
 const treeData = ref<TreeNode[]>([]);
 const searchKey = ref('');
@@ -285,7 +293,6 @@ const refreshTreeOne = (data: TreeNode[]) => {
  * @param data TreeNode[]
  */
 const refreshTreeTwo = (connectId: string, data: TreeNode[]) => {
-  debugger;
   const parentData: TreeNode = treeData.value[0];
   parentData.key = parentData.key ? parentData.key.toString() : '';
   // eslint-disable-next-line no-restricted-syntax
@@ -298,6 +305,7 @@ const refreshTreeTwo = (connectId: string, data: TreeNode[]) => {
       pageData.value.level = 1;
       pageData.value.treeKey = item.key;
       pageData.value.treeTitle = swapConnectTitle(item.formData as unknown as QueryConnectForm);
+
     }
   }
 }
@@ -330,6 +338,32 @@ const loadConnectList = () => {
     });
   }
 }
+
+/**
+ * 反向修改 tree中的表格信息
+ * @param connectId
+ * @param data
+ */
+const tableEditFeedBack = (connectId: string, data: QueryTableForm) => {
+  const parentData: TreeNode = treeData.value[0];
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of parentData.children || []) {
+    if (item.key === connectId) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const child of item.children || []) {
+        if (child.key === data.id) {
+          child.formData = data;
+          child.title = swapTable(data);
+          if (pageData.value.level === 2) {
+            pageData.value.treeTitle = swapTableTitle(data);
+            pageData.value.treeEntity = data.entityName || data.tableName;
+            pageData.value.treeConnect = data.connectId;
+          }
+        }
+      }
+    }
+  }
+}
 /**
  * 加载，数据表单列表
  * @param connectId string
@@ -346,18 +380,7 @@ const loadTableList = (connectId: string, connectName: string) => {
           refreshTreeTwo(connectId, data);
         });
       }, modalEditBack: (data: QueryTableForm) => {
-        const parentData: TreeNode = treeData.value[0];
-        // eslint-disable-next-line no-restricted-syntax
-        for (const item of parentData.children || []) {
-          if (item.key === connectId) {
-            // eslint-disable-next-line no-restricted-syntax
-            for (const child of item.children || []) {
-              if (child.key === data.id) {
-                child.title = swapTable(data);
-              }
-            }
-          }
-        }
+        tableEditFeedBack(connectId, data);
       }, modalDeleteBack: () => {
         fetchTables({connectId: `${connectId}`} as unknown as PageQueryRequest).then((data) => {
           refreshTreeTwo(connectId, data);
@@ -371,7 +394,7 @@ const loadTableList = (connectId: string, connectName: string) => {
  * @param tableId string
  * @param tableName string
  */
-const loadColumnAndForeignList = (tableId: string, tableName: string) => {
+const loadColumnAndForeignList = (tableId: string, tableName: string, connectId: string) => {
   if (columnListRef.value) {
     // @ts-ignore
     columnListRef.value?.loadList({
@@ -386,6 +409,14 @@ const loadColumnAndForeignList = (tableId: string, tableName: string) => {
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
       params: {pId: tableName, pName: tableName}
+    });
+  }
+  if (viewListRef.value) {
+    // @ts-ignore
+    viewListRef.value?.loadList({
+      action: pageData.value.formState, pageSize: 10000,
+      isModal: pageData.value.isModal,
+      params: {pId: connectId, pName: tableName, isSync: pageData.value.isSync}
     });
   }
 }
@@ -436,10 +467,12 @@ const treeSelected = (selectedKey: string, nodeData: TreeNode) => {
   if (pageData.value.level === 1) {
     nodeData.formData = (nodeData.formData as unknown as QueryConnectForm);
     pageData.value.treeTitle = swapConnectTitle(nodeData.formData);
+    pageData.value.treeConnect = nodeData.formData.id;
   } else if (pageData.value.level === 2) {
     nodeData.formData = (nodeData.formData as unknown as QueryTableForm);
     pageData.value.treeTitle = swapTableTitle(nodeData.formData);
     tableName = nodeData.formData.entityName || nodeData.formData.tableName;
+    pageData.value.treeConnect = nodeData.formData.connectId;
     pageData.value.treeEntity = tableName;
   } else {
     pageData.value.treeTitle = nodeData.title || '';
@@ -451,7 +484,7 @@ const treeSelected = (selectedKey: string, nodeData: TreeNode) => {
     } else if (pageData.value.level === 1) {
       loadTableList(pageData.value.treeKey, '');
     } else if (pageData.value.level === 2) {
-      loadColumnAndForeignList(pageData.value.treeKey, tableName);
+      loadColumnAndForeignList(pageData.value.treeKey, tableName, pageData.value.treeConnect);
     }
   }, 200);
 }
@@ -512,9 +545,16 @@ const syncFromModelToTable = (ev: MouseEvent) => {
       okText: t('security.dict.index.modal.ok.text'), onOk() {
         createOrUpdateTable(pageData.value.treeEntity, () => {
           Notification.success({content: "更新成功"});
-          setTimeout(() => {
-            loadColumnAndForeignList(pageData.value.treeKey, pageData.value.treeEntity);
-          }, 200);
+          fetchTables({
+            id: `${pageData.value.treeKey}`,
+            entityName: `${pageData.value.treeEntity}`,
+            connectId: `${pageData.value.treeConnect}`
+          } as unknown as PageQueryRequest).then((data) => {
+            tableEditFeedBack(pageData.value.treeConnect, data[0].formData as QueryTableForm);
+            setTimeout(() => {
+              loadColumnAndForeignList(pageData.value.treeKey, pageData.value.treeEntity, pageData.value.treeConnect);
+            }, 200);
+          });
         }, () => {
           Notification.error({content: "更新失败"});
         });
