@@ -6,6 +6,7 @@ import App from "../entity/App";
 export const useAppStore = defineStore('GlAppStore',()=>{
 
     const currentApp = ref(new App())
+    // TODO
     currentApp.value.id = '1976169388038462609'
 
     /**

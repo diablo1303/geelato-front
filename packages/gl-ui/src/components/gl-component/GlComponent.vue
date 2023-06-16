@@ -9,11 +9,11 @@
              :style="glComponentInst.style"
              :parentId="glComponentInst.id"
              :glChildren="glComponentInst.children"
-             @click="onClick"
              :glIsRuntime="glIsRuntime"
              :glRuntimeFlag="glRuntimeFlag"
              :glIndex="glIndex"
              :glComponentInst="glComponentInst"
+             v-on="onActionsHandler"
   >
     <template v-for="(slotItem,slotName) in glComponentInst.slots" v-slot:[slotName]>
       <!--      <component v-if="slotItem" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"-->
@@ -46,7 +46,7 @@ import actionScriptExecutor from "../../m/actions/ActionScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
 import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
 
-const emits = defineEmits(['update:modelValue', 'update', 'onComponentClick', 'onComponentChange', 'onComponentMounted'])
+const emits = defineEmits(['update:modelValue', 'update', 'onAction', 'onComponentClick', 'onComponentChange', 'onComponentMounted'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const props = defineProps({
@@ -66,42 +66,6 @@ const stopPropagation = (...args: any[]) => {
     }
   }
 }
-const onClick = (...args: any[]) => {
-  // console.log('gl-component > onClick() > arguments:', args, props.glComponentInst)
-  stopPropagation()
-  emits('onComponentClick', {arguments: args, glComponentInst: props.glComponentInst, glCtx: props.glCtx})
-  doAction('click')
-}
-
-const onChange = (...args: any[]) => {
-  // console.log('gl-component > onChange() > arguments:', args, props.glComponentInst)
-  // 对于一些组件，事件可能是优先触发了组件内的事件，第一个参数不一定是event，这里对所有参数做统一处理
-  stopPropagation()
-  emits('onComponentChange', {arguments: args, glComponentInst: props.glComponentInst, glCtx: props.glCtx})
-  doAction('change')
-}
-
-
-// if (props.glComponentInst.componentName === 'GlUserSelect') {
-//   console.log('glComponentInst', props.glComponentInst)
-// }
-
-/**
- *   执行propsExpress，计算出props的值，并合并到props中
- */
-const executePropsExpress = () => {
-  if (props.glComponentInst.propsExpress) {
-    Object.keys(props.glComponentInst.propsExpress).forEach((key: string) => {
-      // @ts-ignore
-      const propExpress = props.glComponentInst.propsExpress[key]
-      if (propExpress) {
-        props.glComponentInst.props[key] = actionScriptExecutor.executeScript(propExpress, {})
-        console.log('propExpress:', propExpress, actionScriptExecutor.executeScript(propExpress, {}))
-      }
-    })
-  }
-}
-
 
 /**
  *  组件配置的动态绑定事件，运行时Runtime
@@ -120,6 +84,46 @@ const doAction = (actionName: string) => {
     })
   }
 }
+
+const createActionHandler = (actionName: string) => {
+  return (...args: any[]) => {
+    stopPropagation()
+    emits('onAction', {arguments: args, glComponentInst: props.glComponentInst, glCtx: props.glCtx})
+    doAction(actionName)
+  }
+}
+
+// 依据组件实体配置的action形成action事件响应对象，匹配不同的事件
+const onActionsHandler: { [key: string]: any } = {}
+props.glComponentInst?.actions?.forEach((action: Action) => {
+  onActionsHandler[action.eventName] = createActionHandler(action.eventName)
+})
+
+const onChange = (...args: any[]) => {
+  // console.log('gl-component > onChange() > arguments:', args, props.glComponentInst)
+  // 对于一些组件，事件可能是优先触发了组件内的事件，第一个参数不一定是event，这里对所有参数做统一处理
+  stopPropagation()
+  emits('onComponentChange', {arguments: args, glComponentInst: props.glComponentInst, glCtx: props.glCtx})
+  doAction('change')
+}
+
+/**
+ *   执行propsExpress，计算出props的值，并合并到props中
+ */
+const executePropsExpress = () => {
+  if (props.glComponentInst.propsExpress) {
+    Object.keys(props.glComponentInst.propsExpress).forEach((key: string) => {
+      // @ts-ignore
+      const propExpress = props.glComponentInst.propsExpress[key]
+      if (propExpress) {
+        props.glComponentInst.props[key] = actionScriptExecutor.executeScript(propExpress, {})
+        console.log('propExpress:', propExpress, actionScriptExecutor.executeScript(propExpress, {}))
+      }
+    })
+  }
+}
+
+
 const onMouseOver = (...args: any[]) => {
   for (let i in args) {
     let event = args[i]

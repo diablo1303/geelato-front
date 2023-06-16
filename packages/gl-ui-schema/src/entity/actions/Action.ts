@@ -1,11 +1,17 @@
 import ComponentInstance from "../ComponentInstance";
 
+export class ActionMeta {
+    name: string = '' //  "fetchSuccess"
+    title: string = ' ' // "成功加载完数据"
+    description = '' // 从服务端成功加数据（0到多条）后触发。
+}
+
 export default class Action {
 
     id?: string;
 
     // 动作挂载的事件，有统一的命名规范，用户不可修改，如change、click
-    eventName?: string;
+    eventName: string;
 
     // 动作名，这个名称可以自定义
     name: string

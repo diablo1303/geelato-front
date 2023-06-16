@@ -29,7 +29,7 @@ import type {Action} from "../../types/global";
 /**
  *  change:在表格编辑状态时，更换表格数据时触发
  */
-const emits = defineEmits(['change'])
+const emits = defineEmits(['changeRecord', 'fetchSuccess'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const {t} = CheckUtil.isBrowser() ? useI18n() : {
@@ -152,7 +152,7 @@ const onUpdateColumns = (showColumnsValue: any) => {
 };
 const onUpdateRow = (data: { record: object, rowIndex: number }) => {
   console.log('GlEntityTablePlus > onUpdateRow() > data:', data)
-  emits('change', data)
+  emits('changeRecord', data)
 }
 
 let lastEntityReaderParams: Array<EntityReaderParam>;
@@ -211,6 +211,9 @@ const getDeleteData = () => {
 
 const validateTable = () => {
   return tableRef.value.validateTable()
+}
+const onFetchSuccess = (args: any) => {
+  emits('fetchSuccess', args)
 }
 defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData, validateTable])
 </script>
@@ -293,14 +296,15 @@ defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
         :columns="columns"
         :columnActions="columnActions"
         :size="size"
-        @updateColumns="onUpdateColumns"
-        @updateRow="onUpdateRow"
         :showPagination=base.showPagination
         :enableEdit="base.enableEdit"
         :isFormSubTable="base.isFormSubTable"
         :subTablePidName="base.subTablePidName"
         :isLogicDeleteMode="base.isLogicDeleteMode"
         :rowSelection="rowSelection"
+        @updateColumns="onUpdateColumns"
+        @updateRow="onUpdateRow"
+        @fetchSuccess="onFetchSuccess"
     ></GlEntityTable>
   </a-card>
 </template>

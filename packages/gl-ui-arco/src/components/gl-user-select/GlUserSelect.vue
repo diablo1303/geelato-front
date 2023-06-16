@@ -193,7 +193,7 @@ watch(() => {
       <template #prefix>
         <a-button type="primary" @click="onOpenModal" style="margin-left: -12px">
           <GlIconfont type="gl-user"></GlIconfont>
-          选择人员
+          人员
         </a-button>
       </template>
     </a-input>

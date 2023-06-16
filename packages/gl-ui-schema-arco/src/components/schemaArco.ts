@@ -88,7 +88,6 @@ for (const index in componentMetas) {
     }) !== -1) {
         continue
     }
-    console.log('meta:', meta)
     const foundInstance = customInstances.find((item: ComponentInstance) => {
         return item.componentName === meta.componentName
     })

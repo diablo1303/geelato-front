@@ -1,5 +1,6 @@
 import type IPropertySetterMeta from "./IPropertySetterMeta";
 import type Action from "./actions/Action";
+import {ActionMeta} from "./actions/Action";
 
 /**
  *  记录组件中哪些信息需要进行多语言配置
@@ -35,7 +36,7 @@ export default class ComponentMeta {
         props: {}
     }
     // 事件动作
-    actions?: Array<Action> = []
+    actions?: Array<ActionMeta> = []
 
     // 组件方法，对应组件defineExpose的内容
     methods?: Array<Action> = []

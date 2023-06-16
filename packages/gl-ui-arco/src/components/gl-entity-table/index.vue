@@ -33,7 +33,8 @@ import {Schema} from "b-validate";
 import {logicDeleteFieldName} from "./table";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal;
-const emits = defineEmits(["updateColumns", "updateRow"]);
+// fetch 加载完成数据之后
+const emits = defineEmits(["updateColumns", "updateRow", "fetchSuccess"]);
 const props = defineProps({
   /**
    *  绑定的实体名称
@@ -267,6 +268,7 @@ const fetchData = async (readerInfo?: {
     pagination.pageSize = readerInfo?.pageSize || pagination.pageSize
     pagination.current = readerInfo?.pageNo || 1;
     pagination.total = response.data.total;
+    emits('fetchSuccess', {data: renderData.value, pagination})
   } catch (err) {
     console.error(err)
   } finally {

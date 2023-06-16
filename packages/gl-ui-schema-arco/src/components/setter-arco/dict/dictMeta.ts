@@ -68,6 +68,35 @@ export default {
         "placeholder": "",
         "description": "依据字典表的seqNo字段进行排序"
     }, {
+        "name": "displayType",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {
+            "options": [{
+                "label": "下拉选择",
+                "__o4MjAffwf6JXJF09HC": "select",
+                "value": "select"
+            }, {"label": "展开选择", "__o4MjAffwf6JXJF09HC": "radio", "value": "radio"}]
+        },
+        "setterComponentVModelName": "modelValue",
+        "title": "显示类型",
+        "setterComponentName": "ARadioGroup",
+        "setterDefaultValue": ""
+    }, {
+        "name": "showValueInLabel",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "显示值字段",
+        "setterComponentName": "ASwitch"
+    }, {
         "name": "size",
         "setterComponentProps": {
             "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
