@@ -81,7 +81,10 @@ watch(() => {
     </a-select>
   </template>
   <template v-else>
-    <a-radio-group>
+    <template v-if="options&&options.length===0">
+      <div>{{dictId?'暂无数据':'未配置字典名'}}</div>
+    </template>
+    <a-radio-group v-model="mv">
       <a-radio v-for="opt in options" :value="opt.itemCode">{{ opt.itemText + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}</a-radio>
     </a-radio-group>
   </template>

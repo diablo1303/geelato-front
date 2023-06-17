@@ -6,9 +6,9 @@
         <GlIconfont :type="blockMeta.iconType"></GlIconfont>
       </div>
       <div class="gl-right">
-        <div class="gl-title" @click="show=!show" style="cursor: pointer" title="点击折叠/展开">
-          <span>{{ glComponentInst._disabled ? '【已停用】' : '' }}</span>
-          <span>{{ blockMeta.title }}</span>
+        <div class="gl-title" title="点击折叠/展开">
+          <span @click="show=!show" style="cursor: pointer" >{{ glComponentInst._disabled ? '【已停用】' : '' }}</span>
+          <span @click="show=!show" style="cursor: pointer" >{{ convertTitle(blockMeta.title) }}</span>
           <span v-if="!show" style="color: #8f19ff;float: right">【点击展开】</span>
         </div>
         <div class="gl-description">
@@ -26,7 +26,7 @@
       <div class="gl-right">
         <div class="gl-title">
           <span>{{ glComponentInst._disabled ? '【已停用】' : '' }}</span>
-          <span>结束 {{ blockMeta.title }}</span>
+          <span>结束 {{ convertTitle(blockMeta.title) }}</span>
         </div>
         <div class="gl-description">
           <span>&nbsp;</span>
@@ -69,6 +69,18 @@ const blockInfoVarStr = blockMeta.blockContent
 const highlightedVarStr = BlockUtils.highlightVariables(blockInfoVarStr);
 // 在新的窗口打开页面地址<span style='color: blue'>${url}</span>
 const highlightedStr = ref('')
+
+/**
+ * 处理IF-IF ELSE特殊的命令
+ * @param title
+ */
+const convertTitle = (title: string) => {
+  if (props.glComponentInst.props.mode === 'else if') {
+    // ELSE IF
+    return title.replace('IF', 'ELSE IF')
+  }
+  return title
+}
 
 watch(props.glComponentInst, () => {
   highlightedStr.value = BlockUtils.replaceVariables(highlightedVarStr, props.glComponentInst.props)

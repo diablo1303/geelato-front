@@ -56,11 +56,9 @@ export default {
 <script setup lang="ts">
 import {emitter, mixins, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 import {getCurrentInstance, inject, onMounted, type PropType} from "vue";
-import {Action} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
-
 
 const props = defineProps({
   moveItem: Function as PropType<(dragIndex: number, hoverIndex: number, sourceId: number, targetId: number) => void>,

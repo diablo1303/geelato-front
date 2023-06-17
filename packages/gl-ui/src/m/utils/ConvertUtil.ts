@@ -33,7 +33,7 @@ export default class ConvertUtil {
      * @returns {Array}
      */
     static listToTree(params: { data: Array<any>, pid: string | number, renameId?: string, renamePid?: string, compareFn: Function }) {
-        console.log('listToTree',params,params.data.length)
+        //  console.log('listToTree',params,params.data.length)
         if (params.data.length === 0) {
             return []
         }
@@ -42,8 +42,7 @@ export default class ConvertUtil {
         const pidName = params.renamePid || 'pid'
         let temp;
         for (let i = 0; i < params.data.length; i += 1) {
-            console.log('listToTree() > params.data[i][pidName] === params.pid:',params.data[i],pidName,params.data[i][pidName],params.pid)
-
+            // console.log('listToTree() > params.data[i][pidName] === params.pid:',params.data[i],pidName,params.data[i][pidName],params.pid)
             // @ts-ignore
             if (params.data[i][pidName] === params.pid) {
                 const obj = params.data[i];
@@ -65,7 +64,7 @@ export default class ConvertUtil {
             // @ts-ignore
             tree.sort(params.compareFn)
         }
-        console.log('listToTree() > return tree:',tree)
+        // console.log('listToTree() > return tree:',tree)
         return tree;
     }
 

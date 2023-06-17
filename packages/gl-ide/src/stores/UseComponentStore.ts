@@ -8,6 +8,27 @@ class ComponentMetaMap {
     [key: string]: any
 }
 
+const changeId = (inst: ComponentInstance) => {
+    let index = inst.id.indexOf('_')
+    let prefix = index > 0 ? inst.id.substring(0, index) : ''
+    inst.id = utils.gid(prefix)
+    if (inst.children && inst.children.length > 0) {
+        inst.children.forEach((subInst) => {
+            changeId(subInst)
+        })
+    }
+}
+
+/**
+ * 深度复制组件
+ * 重新生成组件和各子组件的id
+ * @param inst
+ */
+const copyComponentInst = (inst: ComponentInstance) => {
+    const copyInst = JSON.parse(JSON.stringify(inst))
+    changeId(copyInst)
+    return copyInst
+}
 
 class ComponentStoreFactory {
 
@@ -111,7 +132,7 @@ class ComponentStoreFactory {
                         function deleteNodeFromTree(nodeId: String, nodes: Array<any>): any {
                             for (let index in nodes) {
                                 let node = nodes[index]
-                                // console.log('compare node.id,componentId', node.id, componentId, node.id === componentId)
+                                console.log('compare node.id,componentId', node.id, componentId, node.id === componentId)
                                 if (node.id === componentId) {
                                     nodes.splice(Number.parseInt(index), 1)
                                     thisProxy.clearCurrentSelectedComponent(fromPageId)
@@ -153,6 +174,30 @@ class ComponentStoreFactory {
                         }
                     },
                     /**
+                     *  复制当前选中的组件
+                     *  并重新生成组件及子组件的id
+                     *  组件id的引用不做调整，注意copy之后需自行按需进行重新引用配置
+                     */
+                    copyCurrentSelectedComponent() {
+                        if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
+                            // 找到当前组件树所在的父节点
+                            const parentComponent = this.findParentComponentFromTreeById(this.currentSelectedComponentId)
+                            // 找到当前组件所在的位置
+                            if (parentComponent && parentComponent.children) {
+                                for (const index in parentComponent.children) {
+                                    const componentInst = parentComponent.children[index]
+                                    if (componentInst.id === this.currentSelectedComponentInstance.id) {
+                                        // 复制组件，组件内的id需重新创建
+                                        const newInst = copyComponentInst(componentInst)
+                                        parentComponent.children.splice(Number.parseInt(index) + 1, 0, newInst)
+                                        this.setCurrentSelectedComponentById(newInst.id, '')
+                                        return newInst
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    /**
                      *  选中上一级组件
                      */
                     selectParentComponent(fromPageId: string) {
@@ -161,15 +206,14 @@ class ComponentStoreFactory {
                         }
                         const parentComponent = this.findParentComponentFromTreeById(this.currentSelectedComponentId)
                         // console.log('storeId:', storeId, 'selectParentComponent(),found:', parentComponent)
-                        this.setCurrentSelectedComponentById(parentComponent.id, fromPageId)
+                        this.setCurrentSelectedComponentById(parentComponent!.id, fromPageId)
                     },
-
                     /**
                      * 查询指定组件id的父组件
                      * @param componentId 查找的组件id
                      * @return 找不到时返回null，找到时返回对应的组件实例
                      */
-                    findParentComponentFromTreeById(componentId: string) {
+                    findParentComponentFromTreeById(componentId: string): ComponentInstance | null {
                         function findParentNodeFromTree(nodeId: string, node: any): any {
                             if (node.id === nodeId) {
                                 return null
@@ -208,7 +252,6 @@ class ComponentStoreFactory {
 
                         return findNodeFromTree(componentId, this.currentComponentTree) || {}
                     },
-
                     setCurrentSelectedComponentId(componentId: string, fromPageId: string) {
                         const payload = {old: this.currentSelectedComponentId, new: componentId, fromPageId}
                         this.currentSelectedComponentId = componentId;

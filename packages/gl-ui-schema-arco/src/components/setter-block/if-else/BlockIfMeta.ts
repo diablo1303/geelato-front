@@ -7,6 +7,24 @@ export default {
     "useBy": ["freePage"],
     "blockContent": "如果满足条件：${target1} ${relationship} ${target2}",
     "properties": [{
+        "name": "mode",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {
+            "type": "button",
+            "options": [{"label": "如果IF", "value": "if"}, {
+                "label": "否则如果ELES IF",
+                "value": "else if"
+            }]
+        },
+        "setterComponentVModelName": "modelValue",
+        "title": "模式",
+        "setterComponentName": "ARadioGroup",
+        "setterDefaultValue": "if"
+    }, {
         "name": "target1",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
