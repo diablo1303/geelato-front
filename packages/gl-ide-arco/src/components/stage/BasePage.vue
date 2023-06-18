@@ -84,6 +84,7 @@ const onSetCurrentHoverComponentId = (data: any) => {
     })
   }
 }
+console.log('props:', props)
 if (props.enableToolbar) {
   emitter.on('setCurrentSelectedComponentId', onSetCurrentSelectedComponentId)
   emitter.on('setCurrentHoverComponentId', onSetCurrentHoverComponentId)

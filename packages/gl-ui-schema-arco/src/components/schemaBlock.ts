@@ -18,7 +18,7 @@ import TriggerComponentActionMeta from "./setter-block/page/TriggerComponentActi
 import LogBlockMeta from "./setter-block/other/LogBlockMeta";
 
 const componentMetas: Array<ComponentMeta> = [BlockRootMeta, BlockNotificationMeta, BlockOpenThirdPageMeta,
-    BlockOpenComponentPageMeta, BlockSetVisibleMeta, BlockSetVarMeta, BlockIfMeta, IfComponentValueBlockMeta, BlockElseMeta,
+    BlockOpenComponentPageMeta, BlockSetVisibleMeta, BlockSetVarMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
     BlockComponentInvokeMeta, BlockConfirmMeta, TriggerComponentActionMeta,
     LogBlockMeta]
 

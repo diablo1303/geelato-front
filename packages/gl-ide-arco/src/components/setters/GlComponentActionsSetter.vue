@@ -2,10 +2,10 @@
   <div v-if="componentInstance">
     <a-collapse :default-active-key="defaultActiveKey" expand-icon-position="right">
       <a-collapse-item v-for="(actionMeta,actionMetaIndex) in componentMeta.actions"
-                       :header="actionMeta.name+' '+actionMeta.title" :key="actionMetaIndex"
+                       :header="actionMeta.name+' '+actionMeta.title" :key="actionMetaIndex" :title="actionMeta.description"
       >
         <div style="padding: 0 1em">
-          <GlArrayBaseSetter v-slot:default="slotProps" v-model="componentInstance.actions"
+          <GlArrayBaseSetter v-slot:default="slotProps" v-model="componentInstance.actions" :filter="(action:Action)=>{return action?.eventName===actionMeta.name}"
                              :defaultItemForAdd="new Action({id:utils.uuid('act',16),name:actionMeta.name,eventName:actionMeta.name,title:actionMeta.title})"
                              @addItem="update"
                              @removeItem="update">
@@ -52,6 +52,7 @@ import GlArrayBaseSetter from "./property-setters/GlArrayBaseSetter.vue";
 import CommandEditor from "./action-setters/CommandEditor.vue";
 import {useGlobal, utils} from "@geelato/gl-ui";
 import {blocksHandler} from "./action-setters/blocks/BlockHandler";
+import type {ActionMeta} from "@geelato/gl-ui-schema";
 
 const global = useGlobal()
 const props = defineProps({
@@ -66,7 +67,7 @@ const props = defineProps({
 
 const defaultActiveKey = ref<Array<number>>([])
 if (props.componentMeta.actions && props.componentMeta.actions.length > 0) {
-  props.componentMeta.actions.forEach((action: Action, index: number) => {
+  props.componentMeta.actions.forEach((action: ActionMeta, index: number) => {
     defaultActiveKey.value.push(index)
   })
 }

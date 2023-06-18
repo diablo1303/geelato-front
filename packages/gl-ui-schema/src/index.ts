@@ -12,7 +12,7 @@ import {PropertySetterBuilderMeta, PropertySetterSelectOption} from "./entity/Pr
 import {ActionSetterMeta} from "./entity/actions/ActionSetterMeta";
 import {MethodSetterMeta} from "./entity/methods/MethodSetterMeta";
 import {schema} from "./components/schema";
-import Action from './entity/actions/Action';
+import Action, { ActionMeta } from './entity/actions/Action';
 import BlockMetaGroup from './entity/actions/BlockMetaGroup';
 import {useValueTypeOptions, ValueTypes } from './entity/methods/ValueTypes';
 
@@ -39,7 +39,8 @@ export {
     useValueTypeOptions,
     PropertySetterBuilderMeta,
     PropertySetterSelectOption,
-    Action
+    Action,
+    ActionMeta
 }
 // 默认导出组件
 export default component

@@ -191,9 +191,8 @@ watch(() => {
   <div>
     <a-input :style="{width:'100%'}" allow-clear v-model="selectedNames" @clear="clearMultipleSelected(selectingItems)">
       <template #prefix>
-        <a-button type="primary" @click="onOpenModal" style="margin-left: -12px">
+        <a-button type="primary" @click="onOpenModal" style="margin-left: -12px" title="选择人员">
           <GlIconfont type="gl-user"></GlIconfont>
-          选择人员
         </a-button>
       </template>
     </a-input>

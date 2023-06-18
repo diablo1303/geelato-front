@@ -148,6 +148,9 @@ const convertTitle = (componentInst: ComponentInstance, title?: string) => {
         convertTitle(childComponentInst, componentInst.props?.items[index].title + '【标签项】')
       } else if (componentInst.componentName === 'GlRowColLayout') {
         convertTitle(childComponentInst, '单元格')
+      } else if (componentInst.componentName === 'GlCard') {
+        componentInst.title = componentInst.props.title + '【卡片】'
+        convertTitle(childComponentInst)
       } else {
         convertTitle(childComponentInst)
       }

@@ -3,10 +3,28 @@ export default {
     "displayMode": "Tile",
     "iconType": "gl-if",
     "group": "block_condition",
-    "title": "如果组件值",
+    "title": "IF组件值",
     "useBy": ["freePage"],
     "blockContent": "如果组件${componentId}的值 ${relationship} ${compareValue}",
     "properties": [{
+        "name": "mode",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {
+            "type": "button",
+            "options": [{"label": "如果IF", "value": "if"}, {
+                "label": "否则如果ELES IF",
+                "value": "else if"
+            }]
+        },
+        "setterComponentVModelName": "modelValue",
+        "title": "模式",
+        "setterComponentName": "ARadioGroup",
+        "setterDefaultValue": "if"
+    }, {
         "name": "appId",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -16,7 +34,8 @@ export default {
         "expanded": true,
         "title": "应用",
         "setterComponentName": "AInput",
-        "placeholder": "不填写表示当前应用"
+        "placeholder": "不填写表示当前应用",
+        "enableValueExpress": false
     }, {
         "name": "extendId",
         "setterComponentProps": {},

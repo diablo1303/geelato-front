@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlIfComponentValueBlock",
-    "title": "如果组件值",
+    "title": "IF组件值",
     "props": {},
     "slots": {},
     "children": [

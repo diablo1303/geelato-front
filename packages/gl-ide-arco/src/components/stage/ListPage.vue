@@ -11,7 +11,7 @@ const key = utils.gid('p')
 
 <template>
   <GlIdeStageBasePage :key="key"
-                      :enableToolbar="true"
+                      :enableToolbar="false"
                       componentStoreId="useComponentStore"></GlIdeStageBasePage>
 </template>
 <style>

@@ -51,6 +51,9 @@
                         title="点击启用或停用该指令块">
                 {{ componentStore.currentSelectedComponentInstance?._disabled === true ? '点击启用' : '点击停用' }}
               </a-button>
+              <a-button @click="componentStore.copyCurrentSelectedComponent()">
+                复制
+              </a-button>
               <a-button status="danger" @click="componentStore.deleteCurrentSelectedComponentInst">删除</a-button>
             </a-button-group>
           </div>
@@ -96,7 +99,7 @@ const props = defineProps({
 
 const themeStore = useThemeStore()
 
-const mainHeight = themeStore.modalBodyHeight+'px'
+const mainHeight = themeStore.modalBodyHeight + 'px'
 const sidebarStyle = ref({
   height: mainHeight,
   'min-height': mainHeight,

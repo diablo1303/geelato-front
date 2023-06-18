@@ -163,7 +163,7 @@ const cellDisplayModeClass = computed(() => {
 
 
 onUpdated(() => {
-  setPropertyModel()
+  setPropertyModel(false)
 })
 
 watch(() => {
@@ -175,7 +175,7 @@ watch(() => {
   // emits("update", val)
 }, {deep: true, immediate: true})
 
-const setPropertyModel = () => {
+const setPropertyModel = (isCreate:boolean) => {
   propertyModel.value = props.propertyValue
   if (!propertyModel.value) {
     if (props.propertySetterMeta.type === 'slots') {
@@ -186,7 +186,7 @@ const setPropertyModel = () => {
         propsName: props.propertySetterMeta.slotComponentBindName
       }
     } else {
-      if (props.propertySetterMeta.setterDefaultValue!==undefined) {
+      if (isCreate&&props.propertySetterMeta.setterDefaultValue!==undefined) {
         // 若组件配置了默认值，则设置默认值
         propertyModel.value = props.propertySetterMeta.setterDefaultValue
       }else{
@@ -203,7 +203,7 @@ const setPropertyModel = () => {
   }
   // console.log('setPropertyModel>', props.propertySetterMeta, props.propertyValue, propertyModel.value)
 }
-setPropertyModel()
+setPropertyModel(true)
 
 
 /**

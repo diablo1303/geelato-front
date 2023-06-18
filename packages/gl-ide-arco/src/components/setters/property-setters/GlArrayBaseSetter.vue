@@ -10,7 +10,7 @@
         itemKey="value"
     >
       <template #item="{element, index}">
-        <div style="width:100%;display: flex;margin-bottom: 1px" :style="wrapperStyle">
+        <div v-if="filter(element)" style="width:100%;display: flex;margin-bottom: 1px" :style="wrapperStyle">
           <div style="flex: 0 0 2em;text-align: center;line-height: 2em">
             <GlIconfont title="拖动" type="gl-drag" class="gl-dnd-item" style="cursor: move"></GlIconfont>
           </div>
@@ -26,7 +26,6 @@
             <!--                        style="cursor: pointer;color: red"></GlIconfont>-->
           </div>
         </div>
-
       </template>
     </gl-draggable>
   </div>
@@ -64,8 +63,16 @@ export default defineComponent({
     },
     wrapperStyle: {
       type: Object,
-      default(){
+      default() {
         return {}
+      }
+    },
+    filter: {
+      type: Function,
+      default() {
+        return (item: any) => {
+          return true
+        }
       }
     }
   },

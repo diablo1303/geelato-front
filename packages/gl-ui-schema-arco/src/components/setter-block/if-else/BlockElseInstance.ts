@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlBlockElse",
-    "title": "Else 其它",
+    "title": "ELSE 其它",
     "props": {},
     "slots": {},
     "children": [

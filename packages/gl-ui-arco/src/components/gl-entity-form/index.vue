@@ -101,8 +101,15 @@ const buildFieldItems = () => {
       // 处理主表字段，排除子表单GlEntityTableSub
       if (checkValidDataEntry(subInst.componentName)) {
         if (!subInst.props.bindField) {
-          console.error('GlEntityForm > 组件未进行数据绑定，组件为：', subInst)
-          global.$notification.error({content: `组件未进行数据绑定，组件标识为：${subInst.id}`})
+          // console.error('GlEntityForm > 组件未进行数据绑定，组件为：', subInst)
+          let moreInfo = ''
+          if (subInst.group === 'dataEntry') {
+            moreInfo = subInst.props.label || ''
+            moreInfo = moreInfo ? '，' + moreInfo : ''
+          }
+          const content = `组件未进行数据绑定，组件标识为：${subInst.id}${moreInfo}`
+          global.$notification.error({content: content})
+          console.error('GlEntityForm > ', content)
           continue
         }
         let formItem = {

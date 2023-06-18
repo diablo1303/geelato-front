@@ -69,7 +69,7 @@ import HiddenAreaInstance from "./setter-arco/hidden-area/HiddenAreaInstance";
 import DictMeta from "./setter-arco/dict/dictMeta";
 import DynamicSelectMeta from "./setter-arco/select/DynamicSelectMeta";
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [ButtonMeta, FormMeta, InputMeta, InputNumberMeta, DictMeta, DynamicSelectMeta, SelectMeta, DatePickerMeta, TimePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, RadioGroupMeta, ColorMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
+const componentMetas: Array<ComponentMeta> = [ButtonMeta, FormMeta, InputMeta, InputNumberMeta, DictMeta, DynamicSelectMeta, SelectMeta,RadioGroupMeta,  DatePickerMeta, TimePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, CheckboxMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
@@ -88,7 +88,6 @@ for (const index in componentMetas) {
     }) !== -1) {
         continue
     }
-    console.log('meta:', meta)
     const foundInstance = customInstances.find((item: ComponentInstance) => {
         return item.componentName === meta.componentName
     })

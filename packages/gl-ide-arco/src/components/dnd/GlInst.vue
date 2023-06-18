@@ -10,7 +10,7 @@ import {useDrag, useDrop} from 'vue3-dnd'
 import {ItemTypes} from './DndItemTypes'
 import type {Identifier} from 'dnd-core'
 import {toRefs} from '@vueuse/core'
-import {mixins, utils} from "@geelato/gl-ui"
+import {emitter, mixins, utils} from "@geelato/gl-ui"
 import {componentStoreFactory} from "@geelato/gl-ide";
 import {PageProvideProxy, PageProvideKey} from "@geelato/gl-ui";
 
@@ -163,6 +163,18 @@ const i18nConvert = (value?: string) => {
   // 如果没有匹配的字典信息，则直接返回
   return value
 }
+
+const onClick = (...args: any[]) => {
+  // 对于一些组件，点击事件可能是优先触发了组件内的点击事件，第一个参数不一定是event，这里对所有参数做统一处理
+  for (let i in args) {
+    let event = args[i]
+    if (event && typeof event.stopPropagation === 'function') {
+      event.stopPropagation()
+    }
+  }
+  const fromPageId = pageProvideProxy?.pageInst.id || props.glComponentInst.id
+  componentStore.setCurrentSelectedComponentById(props.glComponentInst.id || '', fromPageId)
+}
 </script>
 
 <template>
@@ -177,7 +189,9 @@ const i18nConvert = (value?: string) => {
                      :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"
                      :label="i18nConvert(glComponentInst?.props?.label)"
                      :rules="glComponentInst?.props?.rules"
-                     :validate-trigger="[]">
+                     :validate-trigger="[]"
+                     @click="onClick"
+        >
           <GlComponentDnd class="gl-dnd-item gl-x-item"
                           :glComponentInst="glComponentInst"
                           :componentStoreId="componentStoreId">

@@ -1,12 +1,18 @@
 <template>
   <div>
-    <a-select @change="onEntityChange" v-model="mv.entityName" allow-search placeholder="选择实体">
+    <a-select size="small" v-model="mv.entityName" @change="onEntityChange" allow-search placeholder="选择实体">
       <template #prefix>实体</template>
-      <a-option v-for="item in entityLiteMetas" :value="item.entityName">{{ item.entityTitle }}</a-option>
+      <a-option v-for="item in entityLiteMetas" :value="item.entityName" :title="item.entityName+' '+item.entityTitle"
+                :style="{background:mv.entityName===item.entityName?'#E8F7FF':''}">
+        {{ item.entityTitle + ' ' + item.entityName }}
+      </a-option>
     </a-select>
     <a-select size="small" v-model="mv.fieldName" @change="onFieldChange" allow-search placeholder="选择字段">
       <template #prefix>字段</template>
-      <a-option v-for="item in entityFieldMetas" :value="item.name">{{ item.title + ' ' + item.name }}</a-option>
+      <a-option v-for="item in entityFieldMetas" :value="item.name" :title="item.name+' '+item.title"
+                :style="{background:mv.fieldName===item.name?'#E8F7FF':''}">
+        {{ item.title + ' ' + item.name }}
+      </a-option>
     </a-select>
   </div>
 </template>
@@ -22,7 +28,6 @@ export default {
 export class EntityFieldSelectResult {
   appCode: string = ''
   fieldName: string = ''
-  filedName1?: string
   entityName: string = ''
 }
 </script>
@@ -31,7 +36,7 @@ export class EntityFieldSelectResult {
  *  基于当前实体选择、字段选择
  */
 import {type PropType, ref, watch} from 'vue'
-import type {FieldMeta,EntityLiteMeta} from "@geelato/gl-ui";
+import type {FieldMeta, EntityLiteMeta} from "@geelato/gl-ui";
 import {useEntityStore} from "@geelato/gl-ide";
 
 const emits = defineEmits(['update:modelValue'])
