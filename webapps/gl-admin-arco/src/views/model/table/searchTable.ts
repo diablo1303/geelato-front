@@ -57,14 +57,17 @@ const tableTypeOptions = computed<SelectOptionData[]>(() => [
   {
     label: 'model.table.index.form.tableType.table',
     value: 'table',
+    disabled: false
   },
   {
     label: 'model.table.index.form.tableType.entity',
     value: 'entity',
+    disabled: true
   },
   {
     label: "model.table.index.form.tableType.view",
     value: 'view',
+    disabled: true
   },
 ]);
 

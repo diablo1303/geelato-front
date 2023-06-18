@@ -421,6 +421,11 @@ export default {
   'model.table.index.model.title.sync.model': '更新数据库表单',
   'model.table.index.model.cancel.text': '取消',
   'model.table.index.model.ok.text': '确认',
+  // eslint-disable-next-line no-template-curly-in-string
+  'model.table.index.modal.table.content': '是否将数据库表同步至模型中？',
+  'model.table.index.modal.model.content': '是否将模型同步至数据库中？',
+  'model.table.index.notice.update.success': '更新成功！',
+  'model.table.index.notice.update.fail': '更新失败！',
 
   // webapps/gl-admin-arco/src/views/model/view - list|form
   'model.view.index.menu.list': '模型管理',
@@ -461,7 +466,7 @@ export default {
   'searchTable.columns.operations.releaseMsg': '是否发布该条视图？',
   'model.view.index.model.info.reset': '重置成功！',
   'model.view.index.model.info.release': '发布成功！',
-  'model.view.index.form.operations.noRel':'表格未同步至数据库，不能发布！',
+  'model.view.index.form.operations.noRel': '表格未同步至数据库，不能发布！',
 
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
   'model.foreign.index.menu.list': '模型管理',

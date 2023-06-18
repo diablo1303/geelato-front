@@ -110,7 +110,7 @@ import {useI18n} from 'vue-i18n';
 import {Modal, Notification} from "@arco-design/web-vue";
 import {IconFolder, IconLink} from '@arco-design/web-vue/es/icon';
 import {TreeNodeData, TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
-import {createOrUpdateModelToTable, QueryConnectForm, queryConnects, QueryTableForm, queryTables} from "@/api/service/model_service";
+import {createOrUpdateModelToTable, QueryConnectForm, queryConnects, QueryTableForm, queryTables, resetModelFormTable} from "@/api/service/model_service";
 import {PageQueryRequest} from "@/api/service/base_service";
 // 引用其他页面
 import TableList from '@/views/model/table/list.vue';
@@ -521,16 +521,40 @@ const createOrUpdateTable = async (entityName: string, successBack: any, failBac
     failBack(err);
   }
 }
+const resetModel = async (entityName: string, successBack: any, failBack: any) => {
+  try {
+    await resetModelFormTable(entityName);
+    successBack();
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    failBack(err);
+  }
+}
 
 const syncFromTableToModel = (ev: MouseEvent) => {
   if (pageData.value.level === 2 && pageData.value.treeEntity) {
     Modal.open({
       title: t('security.dict.index.modal.title'),
       titleAlign: 'start',
-      content: `是否将数据库表【${pageData.value.treeEntity}】同步至模型中？`,
+      content: `${pageData.value.treeEntity}，${t('model.table.index.modal.table.content')}`,
       cancelText: t('security.dict.index.modal.cancel.text'),
       okText: t('security.dict.index.modal.ok.text'), onOk() {
-
+        resetModel(pageData.value.treeKey, () => {
+          Notification.success({content: t("model.table.index.notice.update.success")});
+          fetchTables({
+            id: `${pageData.value.treeKey}`,
+            entityName: `${pageData.value.treeEntity}`,
+            connectId: `${pageData.value.treeConnect}`
+          } as unknown as PageQueryRequest).then((data) => {
+            tableEditFeedBack(pageData.value.treeConnect, data[0].formData as QueryTableForm);
+            setTimeout(() => {
+              loadColumnAndForeignList(pageData.value.treeKey, pageData.value.treeEntity, pageData.value.treeConnect);
+            }, 200);
+          });
+        }, () => {
+          Notification.error({content: t("model.table.index.notice.update.fail")});
+        });
       }
     });
   }
@@ -540,7 +564,7 @@ const syncFromModelToTable = (ev: MouseEvent) => {
     Modal.open({
       title: t('security.dict.index.modal.title'),
       titleAlign: 'start',
-      content: `是否将模型【${pageData.value.treeEntity}】同步至数据库中？`,
+      content: `${pageData.value.treeEntity}，${t('model.table.index.modal.model.content')}`,
       cancelText: t('security.dict.index.modal.cancel.text'),
       okText: t('security.dict.index.modal.ok.text'), onOk() {
         createOrUpdateTable(pageData.value.treeEntity, () => {

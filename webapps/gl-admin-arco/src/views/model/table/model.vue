@@ -45,7 +45,7 @@
             :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
             field="tableType">
           <a-select v-if="pageData.formState==='add'" v-model="formData.tableType">
-            <a-option v-for="item of tableTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of tableTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value" :disabled="item.disabled"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.tableType.${formData.tableType}`) }}</span>
         </a-form-item>

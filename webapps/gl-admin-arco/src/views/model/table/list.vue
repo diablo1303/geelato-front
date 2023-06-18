@@ -26,7 +26,8 @@
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('model.table.index.form.tableType')" field="tableType">
               <a-select v-model="filterData.tableType" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of tableTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+                <a-option v-for="item of tableTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"
+                          :disabled="item.disabled"/>
               </a-select>
             </a-form-item>
           </a-col>
@@ -75,13 +76,13 @@
           </template>
           {{ $t('searchTable.operation.create') }}
         </a-button>
-        <a-button v-show="pageData.formState==='edit'" type="primary">
+        <a-button v-show="pageData.formState==='edit1'" type="primary">
           <template #icon>
             <icon-sync/>
           </template>
           {{ $t('model.connect.index.model.sync.model') }}
         </a-button>
-        <a-button v-show="pageData.formState==='edit'" type="primary">
+        <a-button v-show="pageData.formState==='edit1'" type="primary">
           <template #icon>
             <icon-sync/>
           </template>

@@ -170,13 +170,6 @@
           </a-radio-group>
         </a-form-item>
       </a-col>
-      <a-col v-if="['TINYINT','INT','BIGINT'].includes(formData.dataType)" :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.autoIncrement')" field="autoIncrement">
-          <a-radio-group v-model="formData.autoIncrement" :options="autoIncrementOptions">
-            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
-          </a-radio-group>
-        </a-form-item>
-      </a-col>
       <!-- 默认值 defaultValue -->
       <a-col v-if="['VARCHAR'].includes(formData.dataType)" :span="24">
         <a-form-item
@@ -236,18 +229,25 @@
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.uniqued')" field="key">
-          <a-radio-group v-model="formData.uniqued"
-                         :options="uniquedOptions"
+        <a-form-item :label="$t('model.column.index.form.key')" field="key">
+          <a-radio-group v-model="formData.key"
+                         :options="keyOptions"
                          :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
             <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
           </a-radio-group>
         </a-form-item>
       </a-col>
+      <a-col v-if="['TINYINT','INT','BIGINT'].includes(formData.dataType)&&formData.key===1" :span="24/pageData.formCol">
+        <a-form-item :label="$t('model.column.index.form.autoIncrement')" field="autoIncrement">
+          <a-radio-group v-model="formData.autoIncrement" :options="autoIncrementOptions">
+            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
+          </a-radio-group>
+        </a-form-item>
+      </a-col>
       <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.key')" field="key">
-          <a-radio-group v-model="formData.key"
-                         :options="keyOptions"
+        <a-form-item :label="$t('model.column.index.form.uniqued')" field="key">
+          <a-radio-group v-model="formData.uniqued"
+                         :options="uniquedOptions"
                          :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
             <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
           </a-radio-group>

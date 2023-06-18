@@ -121,6 +121,14 @@ export function resetDefaultView(params: QueryTableForm) {
   return axios.post<QueryResult>('/api/model/table/resetDefaultView', params);
 }
 
+/**
+ * 重置实体模型（从数据库同步至模型）
+ * @param tableId
+ */
+export function resetModelFormTable(tableId: string) {
+  return axios.post<QueryResult>(`/api/model/table/reset/${tableId}`);
+}
+
 /* *************************** 字段信息 ****************************** */
 export interface QueryTableColumnForm {
   id: string; // *
@@ -314,7 +322,7 @@ export function deleteView(id: string) {
 
 /* --------------------------- 其他方法 --------------------------------- */
 /**
- * 新建或更新表，不删除表字段
+ * 新建或更新表，不删除表字段（从模型同步至数据库）
  * @param entity 实体名称
  */
 export function createOrUpdateModelToTable(entity: string) {
