@@ -142,6 +142,9 @@
         </template>
       </a-table-column>
     </template>
+    <template #empty>
+      <a-empty style="width: 78%;"/>
+    </template>
   </a-table>
   <ForeignForm ref="foreignFormRef"></ForeignForm>
   <ForeignDrawer ref="foreignDrawerRef"></ForeignDrawer>

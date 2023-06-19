@@ -171,6 +171,9 @@
         </template>
       </a-table-column>
     </template>
+    <template #empty>
+      <a-empty style="width: 48%;"/>
+    </template>
   </a-table>
   <TableForm ref="tableFormRef"></TableForm>
   <TableDrawer ref="tableDrawerRef"></TableDrawer>

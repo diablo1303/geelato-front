@@ -136,6 +136,9 @@
         </template>
       </a-table-column>
     </template>
+    <template #empty>
+      <a-empty style="width: 60%;"/>
+    </template>
   </a-table>
   <ConnectForm ref="connectFormRef"></ConnectForm>
   <ConnectDrawer ref="connectDrawerRef"></ConnectDrawer>

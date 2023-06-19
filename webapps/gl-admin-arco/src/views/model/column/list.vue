@@ -139,7 +139,7 @@
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
       <a-table-column
-          :title="$t('model.column.index.form.name')" data-index="name" :ellipsis="true" fixed="left" :tooltip="true" :width="150">
+          :title="$t('model.column.index.form.name')" data-index="name" :ellipsis="true" fixed="left" :tooltip="true" :width="180">
         <template #cell="{record}">
           {{ record.name }}
           <a-button v-if="record.key===true" class="list-action-button-default" type="outline">
@@ -147,16 +147,16 @@
           </a-button>
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.column.index.form.title')" data-index="title" :ellipsis="true" :tooltip="true" :width="150"/>
-      <a-table-column :title="$t('model.column.index.form.fieldName')" data-index="fieldName" :ellipsis="true" :tooltip="true" :width="150"/>
+      <a-table-column :title="$t('model.column.index.form.title')" data-index="title" :ellipsis="true" :tooltip="true" :width="180"/>
+      <a-table-column :title="$t('model.column.index.form.fieldName')" data-index="fieldName" :ellipsis="true" :tooltip="true" :width="180"/>
       <a-table-column v-if="pageData.params.pId===''" :title="$t('model.column.index.form.tableName')" data-index="tableName" :ellipsis="true" :tooltip="true"
-                      :width="200"/>
-      <a-table-column :title="$t('model.column.index.form.dataType')" data-index="dataType" :ellipsis="true" :tooltip="true" :width="120">
+                      :width="250"/>
+      <a-table-column :title="$t('model.column.index.form.dataType')" data-index="dataType" :ellipsis="true" :tooltip="true" :width="150">
         <template #cell="{ record }">
           {{ $t(`model.column.index.form.dataType.${record.dataType}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.column.index.form.type')" data-index="type" :ellipsis="true" :tooltip="true" :width="120"/>
+      <a-table-column :title="$t('model.column.index.form.type')" data-index="type" :ellipsis="true" :tooltip="true" :width="150"/>
       <a-table-column :title="$t('model.column.index.form.charMaxLength')" data-index="charMaxLength" :width="130"/>
       <a-table-column :title="$t('model.column.index.form.numericPrecision')" data-index="numericPrecision" :width="130"/>
       <a-table-column :title="$t('model.column.index.form.numericScale')" data-index="numericScale" :width="130"/>
@@ -199,6 +199,9 @@
           </a-popconfirm>
         </template>
       </a-table-column>
+    </template>
+    <template #empty>
+      <a-empty style="width: 33%;"/>
     </template>
   </a-table>
   <ColumnForm ref="columnFormRef"></ColumnForm>
