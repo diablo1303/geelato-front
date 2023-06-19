@@ -78,7 +78,7 @@ export default {
   'security.org.index.menu.list': '应用管理',
   'security.org.index.menu.list.searchTable': '组织管理',
   // webapps/gl-admin-arco/src/views/security/org - list|form
-  'security.org.index.form.index': '序列号',
+  'security.org.index.form.index': '序号',
   'security.org.index.form.name': '名称',
   'security.org.index.form.code': '编码',
   'security.org.index.form.pid': '上级组织',
@@ -108,7 +108,7 @@ export default {
   'security.user.index.menu.list': '应用管理',
   'security.user.index.menu.list.searchTable': '用户管理',
   // webapps/gl-admin-arco/src/views/security/org - list|form
-  'security.user.index.form.index': '序列号',
+  'security.user.index.form.index': '序号',
   'security.user.index.form.name': '名称',
   'security.user.index.form.loginName': '登录名',
   'security.user.index.form.sex': '性别',
@@ -154,7 +154,7 @@ export default {
   // webapps/gl-admin-arco/src/views/security/dict - list|form
   'security.user.forml.tab.title.one': '用户基本信息',
   'security.user.forml.tab.title.two': '组织用户关联',
-  'security.dict.index.form.index': '序列号',
+  'security.dict.index.form.index': '序号',
   'security.dict.index.form.tenantCode': '租户',
   'security.dict.index.form.dicName': '名称',
   'security.dict.index.form.dicName1': '字典名称',
@@ -188,7 +188,7 @@ export default {
   'security.dictItem.index.menu.list': '应用管理',
   'security.dictItem.index.menu.list.searchTable': '字典项管理',
   // webapps/gl-admin-arco/src/views/security/dict/item - list|form
-  'security.dictItem.index.form.index': '序列号',
+  'security.dictItem.index.form.index': '序号',
   'security.dictItem.index.form.itemText': '名称',
   'security.dictItem.index.form.itemCode': '编码',
   'security.dictItem.index.form.enableStatus': '状态',
@@ -209,7 +209,7 @@ export default {
   'security.permission.index.menu.list': '应用管理',
   'security.permission.index.menu.list.searchTable': '权限管理',
   // webapps/gl-admin-arco/src/views/security/permission - list|form
-  'security.permission.index.form.index': '序列号',
+  'security.permission.index.form.index': '序号',
   'security.permission.index.form.name': '名称',
   'security.permission.index.form.text': '权限描述符',
   'security.permission.index.form.description': '描述',
@@ -229,7 +229,7 @@ export default {
   'security.orgUser.index.menu.list': '应用管理',
   'security.orgUser.index.menu.list.searchTable': '组织用户管理',
   // webapps/gl-admin-arco/src/views/security/user/org - list|form
-  'security.orgUser.index.form.index': '序列号',
+  'security.orgUser.index.form.index': '序号',
   'security.orgUser.index.form.userName': '用户名称',
   'security.orgUser.index.form.orgName': '组织名称',
   'security.orgUser.index.form.defaultOrg': '是否默认组织',
@@ -258,7 +258,7 @@ export default {
   'security.role.form.tab.title.four': '角色菜单关联',
   'security.role.form.tab.title.five': '角色用户关联',
   // webapps/gl-admin-arco/src/views/security/role/app - list|form
-  'security.role.index.form.index': '序列号',
+  'security.role.index.form.index': '序号',
   'security.role.index.form.name': '名称',
   'security.role.index.form.code': '编码',
   'security.role.index.form.type': '类型',
@@ -282,7 +282,7 @@ export default {
   'security.roleApp.index.menu.list': '应用管理',
   'security.roleApp.index.menu.list.searchTable': '角色应用关联管理',
   // webapps/gl-admin-arco/src/views/security/role/app - list|form
-  'security.roleApp.index.form.index': '序列号',
+  'security.roleApp.index.form.index': '序号',
   'security.roleApp.index.form.roleName': '角色名称',
   'security.roleApp.index.form.appName': '应用名称',
   'security.roleApp.index.form.createAt': '创建时间',
@@ -298,7 +298,7 @@ export default {
   'security.rolePermission.index.menu.list': '应用管理',
   'security.rolePermission.index.menu.list.searchTable': '角色权限关联管理',
   // webapps/gl-admin-arco/src/views/security/role/Permission - list|form
-  'security.rolePermission.index.form.index': '序列号',
+  'security.rolePermission.index.form.index': '序号',
   'security.rolePermission.index.form.roleName': '角色名称',
   'security.rolePermission.index.form.permissionName': '权限名称',
   'security.rolePermission.index.form.createAt': '创建时间',
@@ -314,7 +314,7 @@ export default {
   'security.roleTreeNode.index.menu.list': '应用管理',
   'security.roleTreeNode.index.menu.list.searchTable': '角色菜单关联管理',
   // webapps/gl-admin-arco/src/views/security/role/TreeNode - list|form
-  'security.roleTreeNode.index.form.index': '序列号',
+  'security.roleTreeNode.index.form.index': '序号',
   'security.roleTreeNode.index.form.title': '名称',
   'security.roleTreeNode.index.form.roleName': '角色名称',
   'security.roleTreeNode.index.form.treeNodeText': '菜单名称',
@@ -331,7 +331,7 @@ export default {
   'security.roleUser.index.menu.list': '应用管理',
   'security.roleUser.index.menu.list.searchTable': '角色用户关联管理',
   // webapps/gl-admin-arco/src/views/security/role/User - list|form
-  'security.roleUser.index.form.index': '序列号',
+  'security.roleUser.index.form.index': '序号',
   'security.roleUser.index.form.roleName': '角色名称',
   'security.roleUser.index.form.userName': '用户名称',
   'security.roleUser.index.form.createAt': '创建时间',
@@ -351,7 +351,7 @@ export default {
   'model.dataBase.index.menu.list': '数据模型',
   'model.connect.index.menu.list.searchTable': '数据连接',
   // webapps/gl-admin-arco/src/views/model/connect - list|form
-  'model.connect.index.form.index': '序列号',
+  'model.connect.index.form.index': '序号',
   'model.connect.index.form.dbConnectName': '连接名称',
   'model.connect.index.form.dbSchema': '数据库模式',
   'model.connect.index.form.dbType': '数据库类型',
@@ -382,7 +382,7 @@ export default {
   'model.table.index.menu.list': '模型管理',
   'model.table.index.menu.list.searchTable': '数据表单',
   // webapps/gl-admin-arco/src/views/model/table - list|form
-  'model.table.index.form.index': '序列号',
+  'model.table.index.form.index': '序号',
   'model.table.index.form.title': '名称(中文)',
   'model.table.index.form.tableName': '表名',
   'model.table.index.form.entityName': '实体名称',
@@ -416,7 +416,7 @@ export default {
   'model.foreign.index.menu.list': '模型管理',
   'model.foreign.index.menu.list.searchTable': '表格外键',
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
-  'model.foreign.index.form.index': '序列号',
+  'model.foreign.index.form.index': '序号',
   'model.foreign.index.form.mainTable': '主表表名',
   'model.foreign.index.form.mainTableCol': '主表字段',
   'model.foreign.index.form.foreignTable': '外表表名',
@@ -439,7 +439,7 @@ export default {
   'model.column.index.menu.list': '模型管理',
   'model.column.index.menu.list.searchTable': '表格字段',
   // webapps/gl-admin-arco/src/views/model/column - list|form
-  'model.column.index.form.index': '序列号',
+  'model.column.index.form.index': '序号',
   'model.column.index.form.title': '字段名称',
   'model.column.index.form.fieldName': '列名',
   'model.column.index.form.tableSchema': '数据模式',

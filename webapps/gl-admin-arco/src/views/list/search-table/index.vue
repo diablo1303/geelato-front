@@ -172,7 +172,7 @@
                       </a-checkbox>
                     </div>
                     <div class="title">
-                      {{ item.title === '#' ? '序列号' : item.title }}
+                      {{ item.title === '#' ? '序号' : item.title }}
                     </div>
                   </div>
                 </div>
