@@ -106,7 +106,7 @@ const i18nConvert = (value?: string, i18n?: Array<I18nItem>) => {
 </script>
 
 <template>
-  <a-row :gutter="gutter" v-if="glIsRuntime">
+  <a-row class="gl-row-col-layout" :gutter="gutter" v-if="glIsRuntime">
     <a-col
         v-for="(span, index) in spans"
         :key="index"
@@ -119,7 +119,8 @@ const i18nConvert = (value?: string, i18n?: Array<I18nItem>) => {
                      :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"
                      :rules="childComponentInst.props?.rules"
                      :validate-trigger="[]">
-          <GlComponent v-if="childComponentInst" :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></GlComponent>
+          <GlComponent v-if="childComponentInst" :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime"
+                       :glRuntimeFlag="glRuntimeFlag"></GlComponent>
           <template v-if="childComponentInst.props?.extra" #extra>
             <div>{{
                 i18nConvert(childComponentInst.props?.extra, childComponentInst.i18n)
@@ -136,16 +137,21 @@ const i18nConvert = (value?: string, i18n?: Array<I18nItem>) => {
       </template>
     </a-col>
   </a-row>
-  <a-row :gutter="gutter" v-else>
+  <a-row class="gl-row-col-layout" :gutter="gutter" v-else>
     <a-col
         v-for="(span, index) in spans"
         :key="index"
         :span="span"
     >
-      <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst.children[index]" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"/>
+      <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst.children[index]"
+                 :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"/>
     </a-col>
   </a-row>
 
 </template>
 
-<style scoped></style>
+<style scoped>
+.gl-row-col-layout > .arco-col {
+  overflow-x: auto;
+}
+</style>
