@@ -16,7 +16,8 @@ import PageHeaderMeta from "./setter-arco/pageHeader/PageHeaderMeta";
 import PaginationMeta from "./setter-arco/pagination/PaginationMeta";
 import StepsMeta from "./setter-arco/steps/StepsMeta";
 import CascaderMeta from "./setter-arco/cascader/CascaderMeta";
-import CheckboxMeta from "./setter-arco/checkbox/CheckboxMeta";
+import CheckboxGroupMeta from "./setter-arco/checkbox/CheckboxGroupMeta";
+import CheckboxGroupGroupInstance from "./setter-arco/checkbox/CheckboxGroupInstance";
 import DatePickerMeta from "./setter-arco/datePicker/DatePickerMeta";
 import FormInstance from "./setter-arco/form/FormInstance";
 import InputMeta from "./setter-arco/input/InputMeta";
@@ -61,21 +62,21 @@ import ColorMeta from "./setter-arco/color/ColorMeta";
 import RowColLayoutMeta from "./setter-arco/row-col-layout/RowColLayoutMeta";
 import RowColLayoutInstance from "./setter-arco/row-col-layout/RowColLayoutInstance";
 import RadioGroupMeta from "./setter-arco/radio/RadioGroupMeta";
-import UserSelectMeta from "./setter-arco/user-select/UserSelectMeta";
 import RadioGroupInstance from "./setter-arco/radio/RadioGroupInstance";
+import UserSelectMeta from "./setter-arco/user-select/UserSelectMeta";
 import VirtualMeta from "./setter-arco/virtual/VirtualMeta";
 import HiddenAreaMeta from "./setter-arco/hidden-area/HiddenAreaMeta";
 import HiddenAreaInstance from "./setter-arco/hidden-area/HiddenAreaInstance";
 import DictMeta from "./setter-arco/dict/dictMeta";
 import DynamicSelectMeta from "./setter-arco/select/DynamicSelectMeta";
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [ButtonMeta, FormMeta, InputMeta, InputNumberMeta, DictMeta, DynamicSelectMeta, SelectMeta,RadioGroupMeta,  DatePickerMeta, TimePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
+const componentMetas: Array<ComponentMeta> = [ButtonMeta, FormMeta, InputMeta, InputNumberMeta, DictMeta, DynamicSelectMeta, SelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
-    CascaderMeta, CheckboxMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta,
+    CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
     StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, TreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta, DividerMeta]
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance]
+const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance]
 const componentInstances: Array<ComponentInstance> = []
 const dataEntryNameMap: { [key: string]: boolean } = {}
 // 不在sidebar中出现的组件
@@ -96,7 +97,9 @@ for (const index in componentMetas) {
     } else {
         const componentInstance = new ComponentInstance()
         componentInstance.componentName = meta.componentName
-        componentInstance.props = {}
+        componentInstance.props = {
+            "label": meta.title,
+        }
         componentInstance.slots = {}
         componentInstance.children = []
         componentInstances.push(componentInstance)

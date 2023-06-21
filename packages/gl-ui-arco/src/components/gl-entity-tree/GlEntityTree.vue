@@ -65,9 +65,11 @@ const props = defineProps({
 
 const glBaseTree = ref()
 
-
 const loadTreeDataFn = () => {
-  return entityApi.query(props.treeEntityName, 'treeId,id key,text title,pid,iconType,type nodeType,flag,seqNo', {treeId: props.treeId}, false)
+  return entityApi.query(props.treeEntityName, 'treeId,id key,text title,pid,iconType,type nodeType,flag,seqNo', {
+    treeId: props.treeId,
+    delStatus: 0
+  }, false)
 }
 
 /**
@@ -102,7 +104,7 @@ const updateNodeFn = (params: any) => {
     flag: params.editNodeData.flag,
     iconType: params.editNodeData.iconType,
     type: params.editNodeData.nodeType,
-    pid:params.editNodeData.pid
+    pid: params.editNodeData.pid
   }
   console.log('updateNode', params)
   return entityApi.save(props.treeEntityName, data)

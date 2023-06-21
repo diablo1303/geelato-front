@@ -1,9 +1,9 @@
 <template>
-  <div>
-    <a-select @change="onEntityChange" v-model="mv" allow-search allow-clear>
-      <a-option v-for="item in entityLiteMetas" :value="item.entityName">{{ item.entityTitle }}</a-option>
-    </a-select>
-  </div>
+  <a-select @change="onEntityChange" v-model="mv" allow-search allow-clear>
+    <a-option v-for="item in entityLiteMetas" :value="item.entityName" :title="item.entityName" :style="{background:mv===item.entityName?'#E8F7FF':''}">
+      {{ item.entityTitle + ' ' + item.entityName }}
+    </a-option>
+  </a-select>
 </template>
 <script lang="ts">
 export default {

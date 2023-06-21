@@ -7,6 +7,8 @@ export default class UrlConfig {
 
     apiMetaDelete = "/api/meta/delete";
 
+    apiMetaDelete2 = "/api/meta/delete2";
+
     apiMetaEntityNames = "/api/meta/entityNames";
 
     apiEntityLiteMetas = "/api/meta/entityLiteMetas";

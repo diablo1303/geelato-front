@@ -1,8 +1,8 @@
 export default {
-    "componentName": "ARadioGroup",
-    "title": "单选框",
+    "componentName": "ACheckboxGroup",
+    "title": "多选框",
     "props": {
-        "label": "单选框",
+        "label": "多选框",
         "options": [{
             "label": "项1",
             "value": "1"

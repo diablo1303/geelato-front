@@ -57,7 +57,7 @@
 </template>
 <script lang="ts">
 export default {
-  name: "GlEntityTree",
+  name: "GlBaseTree",
 };
 </script>
 <script setup lang="ts">

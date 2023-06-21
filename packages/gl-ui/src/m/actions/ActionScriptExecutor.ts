@@ -44,7 +44,7 @@ export class ActionScriptExecutor {
      */
     removePageProxy(pageComponentId: string) {
         delete pageProxyMap[pageComponentId]
-        console.log('removePageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
+        // console.log('removePageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
     }
 
     /**

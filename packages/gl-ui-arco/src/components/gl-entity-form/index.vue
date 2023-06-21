@@ -48,6 +48,7 @@ type LayoutType = "inline" | "horizontal" | "vertical"
 
 class FormItem {
   componentName: string = ''
+  label: string = ''
   fieldName: string = ''
   value?: any
 }
@@ -74,7 +75,7 @@ const props = defineProps({
   ...mixins.props
 })
 // formData中不包括记录id，记录id在entityRecordId中定义
-const formData = ref({});
+const formData = ref<{ [key: string]: any }>({});
 let entityRecordId = ref(pageProvideProxy.getParamValue('recordId'))
 formProvideProxy.setRecordId(entityRecordId.value)
 
@@ -98,7 +99,7 @@ const buildFieldItems = () => {
       // @ts-ignore
       let subInst = inst.children[index]
       // console.log('checkValidDataEntry:', subInst.componentName, checkValidDataEntry(subInst.componentName), ' subInst:', subInst)
-      // 处理主表字段，排除子表单GlEntityTableSub
+      // 处理主表字段，排除子表单GlEntityTableSub，子表单另行处理
       if (checkValidDataEntry(subInst.componentName)) {
         if (!subInst.props.bindField) {
           // console.error('GlEntityForm > 组件未进行数据绑定，组件为：', subInst)
@@ -109,17 +110,30 @@ const buildFieldItems = () => {
           }
           const content = `组件未进行数据绑定，组件标识为：${subInst.id}${moreInfo}`
           global.$notification.error({content: content})
-          console.error('GlEntityForm > ', content)
+          // console.error('GlEntityForm > ', content)
           continue
         }
         let formItem = {
           componentName: subInst.componentName,
+          label: subInst.props.label || '',
           fieldName: subInst.props.bindField.fieldName,
           value: subInst.value
         }
+        const foundSomeBindFiled = formItems.value.find((formItem: any) => {
+          return formItem.fieldName === subInst.props.bindField.fieldName
+        })
+        if (foundSomeBindFiled) {
+          const info = `多组件绑定同字段：${subInst.props.bindField.fieldName}，组件：${foundSomeBindFiled.label}、${subInst.props.label}`
+          console.error(info)
+          global.$notification.error({
+            title: '字段重复',
+            content: info
+          })
+          return
+        } else {
+          formData.value[subInst.props.bindField.fieldName] = subInst.value
+        }
         formItems.value.push(formItem)
-        // @ts-ignore
-        formData.value[subInst.props.bindField.fieldName] = subInst.value
       } else if (subInst.componentName === 'GlEntityTableSub' && subInst.props?.base?.isFormSubTable) {
         // 处理从表信息，只有明确是子表的才算
         // let formItem = {
@@ -215,6 +229,9 @@ const loadForm = () => {
   }
 }
 
+/**
+ *  检查是否已绑定实体
+ */
 const checkBindEntity = () => {
   if (!props.bindEntity || !props.bindEntity.entityName) {
     global.$notification.error({
@@ -227,6 +244,7 @@ const checkBindEntity = () => {
   }
   return true
 }
+
 /**
  *  保存表单数据，将数据保存到服务端
  */
@@ -307,13 +325,13 @@ const submitForm = async () => {
     }
   })
 
-  console.log('submitForm() > validate form:', formRef.value, ' result:', res)
+  // console.log('submitForm() > validate form:', formRef.value, ' result:', res)
   if (!res && !subFormTableValidError) {
     setLoading(true);
     const saveResult = await saveForm()
     entityRecordId.value = saveResult?.data.data
     console.log('formData', formData)
-    // 将表单值，注册到表单的子项中E
+    // 将表单值，注册到表单的子项中
     formProvideProxy.setRecordId(entityRecordId.value)
     if (hasSubFormTable()) {
       // 保存之后刷新子表
@@ -324,7 +342,7 @@ const submitForm = async () => {
         }
       })
     }
-    console.log('saveResult:', saveResult)
+    // console.log('saveResult:', saveResult)
     setLoading(false)
     return true
   } else {
