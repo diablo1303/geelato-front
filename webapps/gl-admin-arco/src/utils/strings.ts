@@ -21,12 +21,9 @@ const isNotEmpty = (s: string): boolean => {
  */
 const isBlank = (s: string): boolean => {
   if (isNotEmpty(s)) {
-    const matches = s.match(/\s+/g);
-    if (matches && matches.length === s.length) {
-      return true;
-    }
+    return s.trim().length === 0;
   }
-  return false;
+  return true;
 }
 /**
  * 字符串不是空白的
@@ -48,4 +45,22 @@ const toCamelCase = (s: string): string => {
   return '';
 }
 
-export {isEmpty, isNotEmpty, isBlank, isNotBlank, toCamelCase};
+/**
+ * 去除字符串中的 se，如‘ zhang he   wang ’ to ‘[zhang,he,wang]’
+ * @param s1 字符串
+ * @param s2 分隔符
+ */
+const formatSeparator = (s1: string, s2: string): string[] => {
+  const cs = isBlank(s1) ? '' : s1;
+  const csArr: string[] = [];
+  const sArr = cs.trim().split(s2);
+  for (let i = 0; i < sArr.length; i += 1) {
+    if (isNotBlank(sArr[i])) {
+      csArr.push(sArr[i]);
+    }
+  }
+
+  return csArr;
+}
+
+export {isEmpty, isNotEmpty, isBlank, isNotBlank, toCamelCase, formatSeparator};

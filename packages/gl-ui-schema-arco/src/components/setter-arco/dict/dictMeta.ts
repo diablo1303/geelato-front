@@ -32,7 +32,7 @@ export default {
         "name": "dictId",
         "setterComponentProps": {
             "entityName": "platform_dict",
-            "labelFieldName": "dicName",
+            "labelFieldName": "dictName",
             "valueFieldName": "id",
             "ascOrDesc": "+",
             "orderFieldName": "seq_no"

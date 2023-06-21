@@ -568,7 +568,7 @@ const syncFromModelToTable = (ev: MouseEvent) => {
       cancelText: t('security.dict.index.modal.cancel.text'),
       okText: t('security.dict.index.modal.ok.text'), onOk() {
         createOrUpdateTable(pageData.value.treeEntity, () => {
-          Notification.success({content: "更新成功"});
+          Notification.success({content: t("model.table.index.notice.update.success")});
           fetchTables({
             id: `${pageData.value.treeKey}`,
             entityName: `${pageData.value.treeEntity}`,
@@ -580,7 +580,7 @@ const syncFromModelToTable = (ev: MouseEvent) => {
             }, 200);
           });
         }, () => {
-          Notification.error({content: "更新失败"});
+          Notification.error({content: t("model.table.index.notice.update.fail")});
         });
       }
     });

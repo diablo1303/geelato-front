@@ -157,7 +157,7 @@ const fetchDictionary = async (): Promise<TreeNodeProps[]> => {
     const {data} = await queryDicts();
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {
-      treeOptions.push({title: item.dicName, key: item.id, level: 1} as TreeNodeProps);
+      treeOptions.push({title: item.dictName, key: item.id, level: 1} as TreeNodeProps);
     }
   } catch (err) {
     treeOptions = [];
@@ -231,7 +231,7 @@ const loadDictList = () => {
         // eslint-disable-next-line no-restricted-syntax
         for (const item of parentData.children || []) {
           if (item.key === data.id) {
-            item.title = data.dicName;
+            item.title = data.dictName;
           }
         }
       }, modalDeleteBack: () => {
@@ -342,8 +342,8 @@ const dropOptionDictEdit = (nodeData: TreeNodeProps) => {
   if (dictDrawerRef.value) {
     dictDrawerRef.value?.openForm({
       action: 'edit', 'id': dictId, closeBack: (data: QueryForm) => {
-        nodeData.title = data.dicName;
-        pageData.value.treeTitle = data.dicName;
+        nodeData.title = data.dictName;
+        pageData.value.treeTitle = data.dictName;
       }
     });
   }

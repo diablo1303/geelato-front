@@ -4,7 +4,7 @@
       <tr class="gl-table-row">
         <td class="gl-table-cell gl-label" style="width: 5em">字典名</td>
         <td>
-          <GlDynamicSelect v-model="dictId" entityName="platform_dict" labelFieldName="dicName" valueFieldName="id"
+          <GlDynamicSelect v-model="dictId" entityName="platform_dict" labelFieldName="dictName" valueFieldName="id"
                            ascOrDesc="+"
                            orderFieldName="seq_no"></GlDynamicSelect>
         </td>

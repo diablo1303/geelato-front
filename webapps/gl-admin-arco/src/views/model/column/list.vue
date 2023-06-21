@@ -20,11 +20,8 @@
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('model.column.index.form.dataType')" field="dataType">
-              <a-select v-model="filterData.dataType" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option
-                    v-for="item of dataTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)"
-                    :value="item.value"/>
+            <a-form-item :label="$t('model.column.index.form.dataType')" field="selectType">
+              <a-select v-model="filterData.selectType" :options="selectTypeOptions" :placeholder="$t('searchTable.form.selectDefault')">
               </a-select>
             </a-form-item>
           </a-col>
@@ -93,6 +90,17 @@
       </a-space>
     </a-col>
     <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
+      <a-tooltip :popup-visible="pageData.visible" :content="$t('searchTable.columns.operations.switch.tip')"
+                 @mouseleave="()=>{pageData.visible=false}" @mouseenter="()=>{pageData.visible=true}">
+        <a-switch v-model="pageData.checked" :before-change="beforeChange">
+          <template #checked-icon>
+            <icon-check/>
+          </template>
+          <template #unchecked-icon>
+            <icon-close/>
+          </template>
+        </a-switch>
+      </a-tooltip>
       <a-tooltip :content="$t('searchTable.actions.refresh')">
         <div class="action-icon" @click="search($event)">
           <icon-refresh size="18"/>
@@ -151,19 +159,19 @@
       <a-table-column :title="$t('model.column.index.form.fieldName')" data-index="fieldName" :ellipsis="true" :tooltip="true" :width="180"/>
       <a-table-column v-if="pageData.params.pId===''" :title="$t('model.column.index.form.tableName')" data-index="tableName" :ellipsis="true" :tooltip="true"
                       :width="250"/>
-      <a-table-column :title="$t('model.column.index.form.dataType')" data-index="dataType" :ellipsis="true" :tooltip="true" :width="150">
-        <template #cell="{ record }">
-          {{ $t(`model.column.index.form.dataType.${record.dataType}`) }}
+      <a-table-column :title="$t('model.column.index.form.dataType')" data-index="selectType" :ellipsis="true" :tooltip="true" :width="150">
+        <template #cell="{record}">
+          {{ formatSelectType(record.selectType) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.column.index.form.type')" data-index="type" :ellipsis="true" :tooltip="true" :width="150"/>
       <a-table-column :title="$t('model.column.index.form.charMaxLength')" data-index="charMaxLength" :width="130"/>
       <a-table-column :title="$t('model.column.index.form.numericPrecision')" data-index="numericPrecision" :width="130"/>
       <a-table-column :title="$t('model.column.index.form.numericScale')" data-index="numericScale" :width="130"/>
-      <a-table-column :title="$t('model.column.index.form.key')" data-index="key" :width="110"/>
       <a-table-column :title="$t('model.column.index.form.nullable')" data-index="nullable" :width="110"/>
+      <a-table-column :title="$t('model.column.index.form.key')" data-index="key" :width="110"/>
       <a-table-column :title="$t('model.column.index.form.uniqued')" data-index="uniqued" :width="110"/>
-      <a-table-column :title="$t('model.column.index.form.numericScale')" data-index="numericScale" :width="130"/>
+      <a-table-column :title="$t('model.column.index.form.numericSigned')" data-index="numericSigned" :width="110"/>
+      <a-table-column :title="$t('model.column.index.form.type')" data-index="type" :ellipsis="true" :tooltip="true" :width="150"/>
       <a-table-column :title="$t('model.column.index.form.defaultValue')" data-index="defaultValue" :ellipsis="true" :tooltip="true" :width="130"/>
       <a-table-column :title="$t('model.column.index.form.enableStatus')" data-index="enableStatus" :width="100">
         <template #cell="{ record }">
@@ -175,8 +183,19 @@
       <a-table-column :title="$t('model.column.index.form.comment')" data-index="comment" :ellipsis="true" :tooltip="true" :width="200"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('model.column.index.form.operations')"
-          :width="170" align="center" data-index="operations" fixed="right">
+          :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record,isDefault = defaultColumnMetas.includes(record.name)}">
+          <a-tooltip v-if="isDefault" :content="$t('model.column.index.form.operations.disabled')">
+            <a-button v-permission="['admin']" class="button-disabled" size="small" type="text">
+              {{ $t('searchTable.columns.operations.alter') }}
+            </a-button>
+          </a-tooltip>
+          <a-tooltip v-else :content="$t('searchTable.columns.operations.alter.warning')">
+            <a-button v-permission="['admin']" size="small" type="text" @click="alterTable(record.id)">
+              {{ $t('searchTable.columns.operations.alter') }}
+            </a-button>
+          </a-tooltip>
+          <!--    编辑      -->
           <a-tooltip v-if="isDefault" :content="$t('model.column.index.form.operations.disabled')">
             <a-button v-permission="['admin']" class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.edit') }}
@@ -185,6 +204,7 @@
           <a-button v-else v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
+          <!--    删除      -->
           <a-tooltip v-if="isDefault" :content="$t('model.column.index.form.operations.disabled')">
             <a-button v-permission="['admin']" class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
@@ -220,8 +240,21 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
-import {deleteTableColumn as deleteList, FilterTableColumnForm, pageQueryTableColumns as pageQueryList} from '@/api/service/model_service';
-import {columns, dataTypeOptions, defaultColumnMetas, enableStatusOptions, nullableOptions, uniquedOptions} from '@/views/model/column/searchTable';
+import {
+  deleteTableColumn as deleteList,
+  FilterTableColumnForm,
+  pageQueryTableColumns as pageQueryList,
+  QueryTableColumnForm
+} from '@/api/service/model_service';
+import {
+  columns,
+  columnSelectType,
+  defaultColumnMetas,
+  enableStatusOptions,
+  nullableOptions,
+  selectTypeOptions,
+  uniquedOptions
+} from '@/views/model/column/searchTable';
 // 引用其他页面
 import ColumnForm from '@/views/model/column/form.vue';
 import ColumnDrawer from '@/views/model/column/drawer.vue';
@@ -229,10 +262,13 @@ import {Notification} from "@arco-design/web-vue";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
-const pageData = ref({current: 1, pageSize: 10, formState: 'edit', isModal: false, params: {pId: '', pName: ''}});
+const pageData = ref({
+  current: 1, pageSize: 10, formState: 'edit',
+  isModal: false, params: {pId: '', pName: ''},
+  checked: true, visible: false
+});
 const columnFormRef = ref(null);
 const columnDrawerRef = ref(null);
-
 // 国际化
 const {t} = useI18n();
 // 加载
@@ -253,6 +289,7 @@ const generateFilterData = (): FilterTableColumnForm => {
     title: '', // 实体属性中文,中文名
     name: '', // 列名
     dataType: '', // 数据类型
+    selectType: '',
     key: '', // 列键
     nullable: '', // 是否可空 YES_OR_NO
     uniqued: '',//  // 唯一约束
@@ -269,7 +306,16 @@ const fetchData = async (params: PageQueryRequest = {current: pageData.value.cur
   setLoading(true);
   try {
     const {data} = await pageQueryList(params);
-    renderData.value = data.items;
+    renderData.value = [];
+    if (pageData.value.checked) {
+      data.items.forEach((item, index) => {
+        if (!defaultColumnMetas.value.includes((item as unknown as QueryTableColumnForm).name)) {
+          renderData.value.push(item);
+        }
+      });
+    } else {
+      renderData.value = data.items;
+    }
     pagination.current = params.current;
     pagination.pageSize = basePagination.pageSize;
     pagination.total = data.total;
@@ -282,6 +328,33 @@ const fetchData = async (params: PageQueryRequest = {current: pageData.value.cur
 };
 /* 获取列表数据 */
 fetchData();
+/**
+ * 删除
+ * @param id
+ * @param successBack
+ */
+const deleteData = async (id: string, successBack: any) => {
+  try {
+    await deleteList(id);
+    successBack();
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+};
+const beforeChange = () => {
+  pageData.value.checked = !pageData.value.checked;
+  search();
+}
+const formatSelectType = (value: string): string => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of columnSelectType) {
+    if (item.value === value) {
+      return item.label;
+    }
+  }
+  return '';
+}
 /**
  * 条件查询 - 搜索
  */
@@ -314,18 +387,32 @@ const addTable = (ev: MouseEvent) => {
     return;
   }
   if (columnDrawerRef.value) {
+    const formParams: Record<string, any> = pageData.value.params || {};
+    formParams.editName = true;
     // @ts-ignore
-    columnDrawerRef.value?.openForm({action: 'add', params: pageData.value.params, closeBack: reset});
+    columnDrawerRef.value?.openForm({action: 'add', params: formParams, closeBack: reset});
   }
 };
 const viewTable = (id: string) => {
   if (columnDrawerRef.value) {
+    const formParams: Record<string, any> = pageData.value.params || {};
+    formParams.editName = false;
     // @ts-ignore
     columnDrawerRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
   }
 }
 const editTable = (id: string) => {
   if (columnDrawerRef.value) {
+    const formParams: Record<string, any> = pageData.value.params || {};
+    formParams.editName = false;
+    // @ts-ignore
+    columnDrawerRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
+  }
+}
+const alterTable = (id: string) => {
+  if (columnDrawerRef.value) {
+    const formParams: Record<string, any> = pageData.value.params || {};
+    formParams.editName = true;
     // @ts-ignore
     columnDrawerRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
   }
@@ -336,15 +423,6 @@ const deleteTable = (id: string) => {
     reset();
   });
 }
-const deleteData = async (id: string, successBack: any) => {
-  try {
-    await deleteList(id);
-    successBack();
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
-};
 
 /* 分页功能区 - 固定方法 */
 const handleChange = (checked: boolean | (string | boolean | number)[], column: Column, index: number) => {
@@ -392,8 +470,11 @@ const loadList = (urlParams: ListUrlParams) => {
   pageData.value.isModal = urlParams.isModal || false;
   pageData.value.params.pId = urlParams.params?.pId || '';
   pageData.value.params.pName = urlParams.params?.pName || '';
+  pageData.value.visible = true;
+  setTimeout(() => {
+    pageData.value.visible = false;
+  }, 1000 * 1);
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
-
   reset();
 }
 

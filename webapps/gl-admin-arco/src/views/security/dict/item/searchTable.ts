@@ -9,16 +9,16 @@ const columns = computed<TableColumnData[]>(() => [
     slotName: 'index'
   },
   {
-    title: 'security.dictItem.index.form.itemText',
-    dataIndex: 'itemText'
+    title: 'security.dictItem.index.form.itemName',
+    dataIndex: 'itemName'
   },
   {
     title: 'security.dictItem.index.form.itemCode',
     dataIndex: 'itemCode'
   },
   {
-    title: 'security.dictItem.index.form.dataRemark',
-    dataIndex: 'dataRemark'
+    title: 'security.dictItem.index.form.itemRemark',
+    dataIndex: 'itemRemark'
   },
   {
     title: 'security.dictItem.index.form.seqNo',

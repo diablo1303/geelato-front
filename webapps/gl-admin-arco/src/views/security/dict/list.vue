@@ -4,13 +4,13 @@
       <a-form :label-col-props="{ span: 6 }" :model="filterData" :wrapper-col-props="{ span: 18 }" label-align="left">
         <a-row :gutter="16">
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('security.dict.index.form.dicName')" field="dicName">
-              <a-input v-model="filterData.dicName" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+            <a-form-item :label="$t('security.dict.index.form.dictName')" field="dictName">
+              <a-input v-model="filterData.dictName" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('security.dict.index.form.dicCode')" field="dicCode">
-              <a-input v-model="filterData.dicCode" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+            <a-form-item :label="$t('security.dict.index.form.dictCode')" field="dictCode">
+              <a-input v-model="filterData.dictCode" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
@@ -107,8 +107,8 @@
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.dicName')" data-index="dicName" :ellipsis="true" :tooltip="true" :width="150"></a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.dicCode')" data-index="dicCode" :ellipsis="true" :tooltip="true" :width="150"></a-table-column>
+      <a-table-column :title="$t('security.dict.index.form.dictName')" data-index="dictName" :ellipsis="true" :tooltip="true" :width="150"></a-table-column>
+      <a-table-column :title="$t('security.dict.index.form.dictCode')" data-index="dictCode" :ellipsis="true" :tooltip="true" :width="150"></a-table-column>
       <a-table-column :title="$t('security.dict.index.form.tenantCode')" data-index="tenantCode" :width="120"></a-table-column>
       <a-table-column :title="$t('security.dict.index.form.seqNo')" data-index="seqNo" :width="100"></a-table-column>
       <a-table-column :title="$t('security.dict.index.form.enableStatus')" data-index="enableStatus" :width="120">
@@ -117,7 +117,7 @@
         </template>
       </a-table-column>
       <a-table-column :title="$t('security.dict.index.form.createAt')" data-index="createAt" :width="180"></a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.dicRemark')" :tooltip="{position:'right'}" data-index="dicRemark" :ellipsis="true" :width="200"/>
+      <a-table-column :title="$t('security.dict.index.form.dictRemark')" :tooltip="{position:'right'}" data-index="dictRemark" :ellipsis="true" :width="200"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="170" align="center"
           data-index="operations" fixed="right">
@@ -176,7 +176,7 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', dicName: '', dicCode: '', enableStatus: '', tenantCode: '', appId: '', createAt: []};
+  return {id: '', dictName: '', dictCode: '', enableStatus: '', tenantCode: '', appId: '', createAt: []};
 };
 const filterData = ref(generateFilterData());
 

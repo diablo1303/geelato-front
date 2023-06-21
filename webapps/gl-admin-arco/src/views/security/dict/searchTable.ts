@@ -9,12 +9,12 @@ const columns = computed<TableColumnData[]>(() => [
     slotName: 'index'
   },
   {
-    title: 'security.dict.index.form.dicName',
-    dataIndex: 'dicName'
+    title: 'security.dict.index.form.dictName',
+    dataIndex: 'dictName'
   },
   {
-    title: 'security.dict.index.form.dicCode',
-    dataIndex: 'dicCode'
+    title: 'security.dict.index.form.dictCode',
+    dataIndex: 'dictCode'
   },
   {
     title: 'security.dict.index.form.tenantCode',
@@ -35,8 +35,8 @@ const columns = computed<TableColumnData[]>(() => [
   },
 
   {
-    title: 'security.dict.index.form.dicRemark',
-    dataIndex: 'dicRemark'
+    title: 'security.dict.index.form.dictRemark',
+    dataIndex: 'dictRemark'
   },
   {
     title: 'security.dict.index.form.operations',

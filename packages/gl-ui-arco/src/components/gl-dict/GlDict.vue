@@ -49,12 +49,12 @@ watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
 
-let options = ref<Array<{ itemCode: string, itemText: string }>>([])
+let options = ref<Array<{ itemCode: string, itemName: string }>>([])
 
 const loadData = () => {
   // TODO 增加多租户支持
   if (props.dictId) {
-    entityApi.query('platform_dict_item', 'id,itemCode,itemText', {
+    entityApi.query('platform_dict_item', 'id,itemCode,itemName', {
       dictId: props.dictId,
       enableStatus: 1,
       '@order': 'seqNo|' + props.dictAscOrDesc
@@ -76,7 +76,7 @@ watch(() => {
   <template v-if="displayType==='select'">
     <a-select placeholder="请选择" v-model="mv" allow-clear @clear="mv=''">
       <a-option v-for="opt in options" :value="opt.itemCode">
-        {{ opt.itemText + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
+        {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
       </a-option>
     </a-select>
   </template>
@@ -85,7 +85,7 @@ watch(() => {
       <div>{{dictId?'暂无数据':'未配置字典名'}}</div>
     </template>
     <a-radio-group v-model="mv">
-      <a-radio v-for="opt in options" :value="opt.itemCode">{{ opt.itemText + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}</a-radio>
+      <a-radio v-for="opt in options" :value="opt.itemCode">{{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}</a-radio>
     </a-radio-group>
   </template>
 

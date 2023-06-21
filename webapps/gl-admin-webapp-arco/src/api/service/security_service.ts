@@ -196,9 +196,9 @@ export function deleteUser(id: string) {
 export interface QueryDictForm {
   id: string;
   tenantCode: string;
-  dicName: string;
-  dicCode: string;
-  dicRemark: string;
+  dictName: string;
+  dictCode: string;
+  dictRemark: string;
   enableStatus: number;
   seqNo: number;
 }
@@ -206,8 +206,8 @@ export interface QueryDictForm {
 export interface FilterDictForm {
   id: string;
   tenantCode: string;
-  dicName: string;
-  dicCode: string;
+  dictName: string;
+  dictCode: string;
   enableStatus: string;
   createAt: string[];
 }
@@ -232,9 +232,9 @@ export function deleteDict(id: string) {
 export interface QueryDictItemForm {
   id: string;
   dictId: string;
-  itemText: string;
+  itemName: string;
   itemCode: string;
-  dataRemark: string;
+  itemRemark: string;
   enableStatus: number;
   seqNo: number;
 }
@@ -242,7 +242,7 @@ export interface QueryDictItemForm {
 export interface FilterDictItemForm {
   id: string;
   dictId: string;
-  itemText: string;
+  itemName: string;
   itemCode: string;
   enableStatus: string;
   createAt: string[];
@@ -260,8 +260,8 @@ export function deleteDictItem(id: string) {
   return axios.delete<QueryResult>(`/api/dict/item/isDelete/${id}`);
 }
 
-export function queryItemByDicCode(dicCode: string) {
-  return axios.get<QueryDictItemForm[]>(`/api/dict/item/queryItemByDicCode/${dicCode}`);
+export function queryItemBydictCode(dictCode: string) {
+  return axios.get<QueryDictItemForm[]>(`/api/dict/item/queryItemBydictCode/${dictCode}`);
 }
 
 /* -----------------------------权限管理--------------------------- */
@@ -517,14 +517,14 @@ export function deleteRoleUser(id: string) {
   return axios.delete<QueryResult>(`/api/security/role/user/isDelete/${id}`);
 }
 
-const querySelectOptions = async (dicCode: string) => {
+const querySelectOptions = async (dictCode: string) => {
   let selectOptions: SelectOptionData[] = [];
   try {
-    const {data} = await queryItemByDicCode(dicCode);
+    const {data} = await queryItemBydictCode(dictCode);
     if (data != null && data.length > 0) {
       // eslint-disable-next-line no-restricted-syntax
       for (const item of data) {
-        selectOptions.push({'value': item.itemCode, 'label': item.itemText, 'disabled': item.enableStatus !== 1});
+        selectOptions.push({'value': item.itemCode, 'label': item.itemName, 'disabled': item.enableStatus !== 1});
       }
     }
   } catch (err) {

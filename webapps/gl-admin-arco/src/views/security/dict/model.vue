@@ -5,18 +5,18 @@
       <a-input v-show="false" v-model="formData.appId"/>
     </a-form-item>
     <a-form-item
-        :label="$t('security.dict.index.form.dicName')"
+        :label="$t('security.dict.index.form.dictName')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-        field="dicName">
-      <a-input v-if="pageData.button" v-model="formData.dicName" :max-length="32"/>
-      <span v-else>{{ formData.dicName }}</span>
+        field="dictName">
+      <a-input v-if="pageData.button" v-model="formData.dictName" :max-length="32"/>
+      <span v-else>{{ formData.dictName }}</span>
     </a-form-item>
     <a-form-item
-        :label="$t('security.dict.index.form.dicCode')"
+        :label="$t('security.dict.index.form.dictCode')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-        field="dicCode">
-      <a-input v-if="pageData.button" v-model="formData.dicCode" :max-length="32"/>
-      <span v-else>{{ formData.dicCode }}</span>
+        field="dictCode">
+      <a-input v-if="pageData.button" v-model="formData.dictCode" :max-length="32"/>
+      <span v-else>{{ formData.dictCode }}</span>
     </a-form-item>
     <a-form-item
         :label="$t('security.dict.index.form.tenantCode')"
@@ -44,9 +44,9 @@
           :precision="0"/>
       <span v-else>{{ formData.seqNo }}</span>
     </a-form-item>
-    <a-form-item :label="$t('security.dict.index.form.dicRemark')" field="dicRemark">
-      <a-textarea v-if="pageData.button" v-model="formData.dicRemark" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
-      <span v-else :title="formData.dicRemark" class="textarea-span" @click="openModal(`${formData.dicRemark}`)">{{ formData.dicRemark }}</span>
+    <a-form-item :label="$t('security.dict.index.form.dictRemark')" field="dictRemark">
+      <a-textarea v-if="pageData.button" v-model="formData.dictRemark" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+      <span v-else :title="formData.dictRemark" class="textarea-span" @click="openModal(`${formData.dictRemark}`)">{{ formData.dictRemark }}</span>
     </a-form-item>
   </a-form>
 </template>
@@ -63,7 +63,7 @@ const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
 /* 表单 */
 const generateFormData = (): QueryForm => {
-  return {id: '', tenantCode: '', appId: '', dicName: '', dicCode: '', dicRemark: '', enableStatus: 1, seqNo: 999};
+  return {id: '', tenantCode: '', appId: '', dictName: '', dictCode: '', dictRemark: '', enableStatus: 1, seqNo: 999};
 }
 const formData = ref(generateFormData());
 

@@ -17,7 +17,7 @@
             field="mainTable">
           <a-select
               v-if="pageData.button" v-model="formData.mainTable" :disabled="pageData.mainTable!==''" allow-search
-              @change="mainTableChange">
+              @change="mainTableChange(formData.mainTable)">
             <a-option v-for="item of tableOptions" :key="item.id" :label="item.entityName" :value="item.entityName"/>
           </a-select>
           <span v-else>{{ formData.mainTable }}</span>
@@ -216,8 +216,9 @@ const fetchTableColumns = async (params: PageQueryRequest = {enableStatus: 1} as
 }
 
 const mainTableChange = (value: string) => {
-  if (value) {
-    fetchTableColumns({enableStatus: 1, tableName: value} as unknown as PageQueryRequest).then((data) => {
+  const name = formData.value.mainTable;
+  if (name) {
+    fetchTableColumns({enableStatus: 1, tableName: name} as unknown as PageQueryRequest).then((data) => {
       mainTableColOptions.value = data;
     });
   } else {

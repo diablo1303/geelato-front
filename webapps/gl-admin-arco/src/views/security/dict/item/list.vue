@@ -5,12 +5,12 @@
         <a-row :gutter="16">
           <a-col :span="24">
             <a-form-item v-show="false">
-              <a-input v-show="false" v-model="filterData.itemText"/>
+              <a-input v-show="false" v-model="filterData.itemName"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('security.dictItem.index.form.itemText')" field="name">
-              <a-input v-model="filterData.itemText" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+            <a-form-item :label="$t('security.dictItem.index.form.itemName')" field="name">
+              <a-input v-model="filterData.itemName" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
@@ -109,7 +109,7 @@
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.dictItem.index.form.itemText')" data-index="itemText" :ellipsis="true" :tooltip="true" :width="140"/>
+      <a-table-column :title="$t('security.dictItem.index.form.itemName')" data-index="itemName" :ellipsis="true" :tooltip="true" :width="140"/>
       <a-table-column :title="$t('security.dictItem.index.form.itemCode')" data-index="itemCode" :ellipsis="true" :tooltip="true" :width="140"/>
       <a-table-column :title="$t('security.dictItem.index.form.seqNo')" data-index="seqNo" :width="100"/>
       <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" data-index="enableStatus" :width="100">
@@ -118,7 +118,7 @@
         </template>
       </a-table-column>
       <a-table-column :title="$t('security.dictItem.index.form.createAt')" data-index="createAt" :width="170"/>
-      <a-table-column :title="$t('security.dictItem.index.form.dataRemark')" data-index="dataRemark" :ellipsis="true" :tooltip="true" :width="200"/>
+      <a-table-column :title="$t('security.dictItem.index.form.itemRemark')" data-index="itemRemark" :ellipsis="true" :tooltip="true" :width="200"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('security.dictItem.index.form.operations')" :width="170" align="center"
           data-index="operations" fixed="right">
@@ -172,7 +172,7 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', dictId: '', itemText: '', itemCode: '', enableStatus: '', createAt: []};
+  return {id: '', dictId: '', itemName: '', itemCode: '', enableStatus: '', createAt: []};
 };
 const filterData = ref(generateFilterData());
 

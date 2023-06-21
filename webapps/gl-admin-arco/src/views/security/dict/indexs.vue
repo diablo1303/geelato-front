@@ -28,7 +28,7 @@
           </a-space>
           <a-list :loading="loading" :max-height="480" :scrollbar="scrollbar">
             <a-list-item v-for="item of listData" :id="item.id" :key="item.id" class="list-item1" @click="selectedList(`${item.id}`)">
-              {{ item.dicName }}
+              {{ item.dictName }}
             </a-list-item>
           </a-list>
         </a-col>
@@ -71,7 +71,7 @@ const pageData = ref({formState: 'edit', tabKey: '1', isModal: true, params: {di
 const listData = ref<QueryDictForm[]>([]);
 const scrollbar = ref(true);
 /* 字典列表 */
-const queryDictList = async (dicName: string, successBack?: any) => {
+const queryDictList = async (dictName: string, successBack?: any) => {
   setLoading(true);
   try {
     const {data} = await queryDicts();
@@ -124,7 +124,7 @@ const selectedList = (id: string) => {
       selectedActive(data.id);
       // 页面信息
       pageData.value.params.dictId = data.id;
-      pageData.value.params.dictName = data.dicName;
+      pageData.value.params.dictName = data.dictName;
       // 重置字典项
       loadModelAndList();
     });
@@ -165,7 +165,7 @@ const saveForm = (ev: MouseEvent) => {
         const saveSuccess = setTimeout(() => {
           // 页面信息
           pageData.value.params.dictId = data.id;
-          pageData.value.params.dictName = data.dicName;
+          pageData.value.params.dictName = data.dictName;
           // 重新加载页面
           loadModelAndList();
           setLoading(false);

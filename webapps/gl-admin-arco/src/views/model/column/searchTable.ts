@@ -1,8 +1,8 @@
 import {computed} from 'vue';
 import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
-import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
+import {SelectOptionData, SelectOptionGroup} from "@arco-design/web-vue/es/select/interface";
 import {RadioOption} from "@arco-design/web-vue/es/radio/interface";
-import {queryDefaultMetas} from "@/api/service/model_service";
+import {ColumnSelectType, getSelectTypes, queryDefaultMetas} from "@/api/service/model_service";
 
 const columns = computed<TableColumnData[]>(() => [
   {
@@ -174,6 +174,30 @@ let defaultColumnMetas = computed<string[]>(() => []);
 queryDefaultMetas().then((data) => {
   defaultColumnMetas = computed<string[]>(() => data);
 });
+// 数据类型选项
+// eslint-disable-next-line import/no-mutable-exports
+let columnSelectType: ColumnSelectType[] = [];
+// eslint-disable-next-line import/no-mutable-exports
+let selectTypeOptions = computed<SelectOptionGroup[]>(() => []);
+getSelectTypes().then((data) => {
+  columnSelectType = data;
+  const optionGroup: SelectOptionGroup[] = [];
+  const groups: string[] = [];
+  for (let i = 0; i < data.length; i += 1) {
+    if (!groups.includes(data[i].group)) {
+      groups.push(data[i].group);
+      const optionDatas: SelectOptionData[] = [];
+      for (let j = 0; j < data.length; j += 1) {
+        if (data[j].group === data[i].group) {
+          optionDatas.push({value: data[j].value, label: data[j].label, disabled: data[j].disabled});
+        }
+      }
+      optionGroup.push({isGroup: true, label: data[i].group, options: optionDatas});
+    }
+  }
+  selectTypeOptions = computed<SelectOptionGroup[]>(() => optionGroup);
+});
+
 
 export {
   columns,
@@ -184,5 +208,7 @@ export {
   autoIncrementOptions,
   dataTypeOptions,
   numericSignedOptions,
-  defaultColumnMetas
+  defaultColumnMetas,
+  columnSelectType,
+  selectTypeOptions
 };

@@ -142,12 +142,13 @@ export interface QueryTableColumnForm {
   name: string; // 列名
   comment: string; // 备注
   ordinalPosition: number; // 次序
-  defaultValue: string | number; // 默认值
+  defaultValue: string | number | string[]; // 默认值
   type: string; // 类型
   key: number | boolean; // 列键
   nullable: number | boolean; // 是否可空 YES_OR_NO
   uniqued: number | boolean; // 唯一约束
   dataType: string; // 数据类型
+  selectType: string;// 数据类型
   extra: string; // 特别 auto_increment
   autoIncrement: number | boolean; // auto_increment
   charMaxLength: number; // 长度
@@ -162,6 +163,8 @@ export interface QueryTableColumnForm {
   refLocalCol: string; // isRefColumn为true时，需要通过本表引用字段
   refTables: string; // 外表表名
   refColName: string; // 外表字段名称
+  autoAdd: number | boolean | string | string[];
+  autoName: string;
   seqNo: number;
 }
 
@@ -172,6 +175,7 @@ export interface FilterTableColumnForm {
   title: string; // 实体属性中文,中文名
   name: string; // 列名
   dataType: string; // 数据类型
+  selectType: string; // 数据类型
   key: string; // 列键
   nullable: string; // 是否可空 YES_OR_NO
   uniqued: string; // 唯一约束
@@ -210,6 +214,29 @@ export function createOrUpdateTableColumn(params: QueryTableColumnForm) {
 
 export function deleteTableColumn(id: string) {
   return axios.delete<QueryResult>(`/api/model/table/column/isDelete/${id}`);
+}
+
+export interface DataTypeRadius {
+  max: number;
+  min: number;
+  digit: number;
+  unDigit: number;
+  precision: number;
+}
+
+export interface ColumnSelectType {
+  group: string;
+  label: string;
+  value: string;
+  mysql: string;
+  disabled: false;
+  fixed: false;
+  extent: number;
+  radius: DataTypeRadius;
+}
+
+export function querySelectType() {
+  return axios.get<ColumnSelectType[]>(`/api/model/table/column/selectType`);
 }
 
 /* *************************** 实体外键关系 ****************************** */
@@ -364,4 +391,15 @@ const queryDefaultMetas = async () => {
   }
   return defaultMetas;
 }
-export {queryDefaultMetas};
+const getSelectTypes = async () => {
+  let selectTypes: ColumnSelectType[] = [];
+  try {
+    const {data} = await querySelectType();
+    selectTypes = data;
+  } catch (err) {
+    console.log(err);
+    selectTypes = [];
+  }
+  return selectTypes;
+}
+export {queryDefaultMetas, getSelectTypes};

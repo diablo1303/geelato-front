@@ -5,11 +5,11 @@
       <a-input v-show="false" v-model="formData.dictId"/>
     </a-form-item>
     <a-form-item
-        :label="$t('security.dictItem.index.form.itemText')"
+        :label="$t('security.dictItem.index.form.itemName')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-        field="itemText">
-      <a-input v-if="pageData.button" v-model="formData.itemText" :max-length="32"/>
-      <span v-else>{{ formData.itemText }}</span>
+        field="itemName">
+      <a-input v-if="pageData.button" v-model="formData.itemName" :max-length="32"/>
+      <span v-else>{{ formData.itemName }}</span>
     </a-form-item>
     <a-form-item
         :label="$t('security.dictItem.index.form.itemCode')"
@@ -37,9 +37,9 @@
           :precision="0"/>
       <span v-else>{{ formData.seqNo }}</span>
     </a-form-item>
-    <a-form-item :label="$t('security.dictItem.index.form.dataRemark')" field="dataRemark">
-      <a-textarea v-if="pageData.button" v-model="formData.dataRemark" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
-      <span v-else :title="formData.dataRemark" class="textarea-span" @click="openModal(`${formData.dataRemark}`)">{{ formData.dataRemark }}</span>
+    <a-form-item :label="$t('security.dictItem.index.form.itemRemark')" field="itemRemark">
+      <a-textarea v-if="pageData.button" v-model="formData.itemRemark" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+      <span v-else :title="formData.itemRemark" class="textarea-span" @click="openModal(`${formData.itemRemark}`)">{{ formData.itemRemark }}</span>
     </a-form-item>
   </a-form>
 </template>
@@ -56,7 +56,7 @@ const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
 /* 表单 */
 const generateFormData = (): QueryForm => {
-  return {id: '', dictId: '', itemText: '', itemCode: '', enableStatus: 1, seqNo: 999, dataRemark: ''};
+  return {id: '', dictId: '', itemName: '', itemCode: '', enableStatus: 1, seqNo: 999, itemRemark: ''};
 }
 const formData = ref(generateFormData());
 
