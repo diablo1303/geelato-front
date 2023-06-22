@@ -51,6 +51,7 @@ class FormItem {
   label: string = ''
   fieldName: string = ''
   value?: any
+  isFormSubTable?: boolean = false
 }
 
 const form = ref({})
@@ -75,8 +76,10 @@ const props = defineProps({
   ...mixins.props
 })
 // formData中不包括记录id，记录id在entityRecordId中定义
-const formData = ref<{ [key: string]: any }>({});
-let entityRecordId = ref(pageProvideProxy.getParamValue('recordId'))
+const formParams = pageProvideProxy.getParamsByPrefixAsObject('form')
+const formData = ref<{ [key: string]: any }>(formParams);
+console.log('formData:', formData)
+let entityRecordId = ref(formParams.id || pageProvideProxy.getParamValue('recordId'))
 formProvideProxy.setRecordId(entityRecordId.value)
 
 const formItems = ref<Array<FormItem>>([]);
@@ -177,8 +180,10 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
         } else {
           subInst.value = value
         }
+
         let formItem = {
           componentName: subInst.componentName,
+          label: subInst.props.label || '',
           fieldName: subInst.props.bindField.fieldName,
           value: subInst.value,
           isFormSubTable: false
@@ -206,10 +211,11 @@ const loadForm = () => {
       global.$notification.error({
         duration: 8000,
         title: '参数不全',
-        content: '当前表单为只读模式，但没有传递参数recordId，请检查表单页面的打开事件配置中，是否已配置了参数，如参数名：recordId，值$ctx.record.id。',
+        content: '当前表单为只读模式，但没有传递参数form.id，请检查表单页面的打开事件配置中，是否已配置了参数，如参数名：form.id，值$ctx.record.id。',
         closable: true
       })
     }
+    setFormItemValues(formData.value)
     return
   }
   // 构建表单数据项

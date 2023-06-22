@@ -67,6 +67,39 @@ export default class PageProvideProxy {
     }
 
     /**
+     *  获取页面参数中，带有开头信息的参数，形成参数数组
+     *  如：prefix为form时，取的是form.xxx的参数，并形成一个对象返回
+     */
+    getParamsByPrefixAsArray(prefix: string) {
+        if (!this.pageParams) return []
+        const ary: Array<{ [key: string]: any }> = []
+        this.pageParams.forEach((param) => {
+            const key = Object.keys(param)[0]
+            if (key.startsWith(prefix + '.')) {
+                ary.push({[key.substring(prefix.length + 1)]: param[key]})
+            }
+        })
+        return ary
+    }
+
+    /**
+     *  获取页面参数中，带有开头信息的参数，形成参数对象
+     *  如：prefix为form时，取的是form.xxx的参数，并形成一个对象返回
+     */
+    getParamsByPrefixAsObject(prefix: string) {
+        if (!this.pageParams) return {}
+        const obj: { [key: string]: any } = []
+        this.pageParams.forEach((param) => {
+            const key = Object.keys(param)[0]
+            if (key.startsWith(prefix + '.')) {
+                obj[key.substring(prefix.length + 1)] = param[key]
+            }
+        })
+        return obj
+    }
+
+
+    /**
      *  获取在动作面板中配置的页面参数值
      */
     getParamValue(paramName: string) {

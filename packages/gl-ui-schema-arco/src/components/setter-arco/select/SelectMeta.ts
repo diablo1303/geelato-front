@@ -97,16 +97,6 @@ export default {
         "show": true,
         "expanded": true
     }, {
-        "name": "readonly",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "只读",
-        "setterComponentName": "ASwitch"
-    }, {
         "name": "placeholder",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",

@@ -10,9 +10,9 @@ import {entityApi} from "@geelato/gl-ui";
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: {
-    type: String,
+    type: [String, Number],
     default() {
-      return ''
+      return undefined
     }
   },
   /**
@@ -43,11 +43,15 @@ const props = defineProps({
     }
   }
 })
-
+console.log('props.modelValue', props.modelValue, props.dictId)
 const mv = ref(props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
+
+const onClear = () => {
+  mv.value = undefined
+}
 
 let options = ref<Array<{ itemCode: string, itemName: string }>>([])
 
@@ -56,7 +60,8 @@ const loadData = () => {
   if (props.dictId) {
     entityApi.query('platform_dict_item', 'id,itemCode,itemName', {
       dictId: props.dictId,
-      enableStatus: 1,
+      enableStatus: 0,
+      delStatus: 0,
       '@order': 'seqNo|' + props.dictAscOrDesc
     }).then((resp: any) => {
       options.value = resp.data.data
@@ -74,7 +79,7 @@ watch(() => {
 
 <template>
   <template v-if="displayType==='select'">
-    <a-select placeholder="请选择" v-model="mv" allow-clear @clear="mv=''">
+    <a-select placeholder="请选择" v-model="mv" allow-clear @clear="onClear">
       <a-option v-for="opt in options" :value="opt.itemCode">
         {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
       </a-option>
@@ -82,10 +87,12 @@ watch(() => {
   </template>
   <template v-else>
     <template v-if="options&&options.length===0">
-      <div>{{dictId?'暂无数据':'未配置字典名'}}</div>
+      <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
     </template>
     <a-radio-group v-model="mv">
-      <a-radio v-for="opt in options" :value="opt.itemCode">{{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}</a-radio>
+      <a-radio v-for="opt in options" :value="opt.itemCode">
+        {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
+      </a-radio>
     </a-radio-group>
   </template>
 
