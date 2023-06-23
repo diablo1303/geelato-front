@@ -26,5 +26,5 @@ const data = [
 
 
 const groupedData = new ListGroupingUtil().groupBySum(data, 'age', ['score', 'height']);
-console.log(groupedData); // [[180], [185], [190]]
+// console.log(groupedData); // [[180], [185], [190]]
 

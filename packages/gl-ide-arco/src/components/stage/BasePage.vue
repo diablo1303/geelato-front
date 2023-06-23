@@ -1,4 +1,8 @@
 <script lang="ts">
+/**
+ *  基于当前选中的页面组件进行渲染，
+ *  当前选中的页面组件为：componentStore.currentComponentTree[0]
+ */
 export default {
   name: "GlIdeStageBasePage"
 }
@@ -112,8 +116,9 @@ onUnmounted(() => {
             :glComponentInst="componentStore.currentComponentTree[0]"
             :componentStoreId="componentStoreId"
     >
-      <GlInsts :glComponentInst="componentStore.currentComponentTree[0]" :componentStoreId="componentStoreId">
-      </GlInsts>
+<!--      TODO 待观察，0624去掉了以下的内容-->
+<!--      <GlInsts :glComponentInst="componentStore.currentComponentTree[0]" :componentStoreId="componentStoreId">-->
+<!--      </GlInsts>-->
     </GlInst>
   </div>
 </template>

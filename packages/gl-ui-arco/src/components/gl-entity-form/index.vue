@@ -39,7 +39,7 @@ const formProvideProxy = new FormProvideProxy()
 provide(FormProvideKey, formProvideProxy)
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
-console.log('GlEntityForm > inject pageProvideProxy:', pageProvideProxy)
+// console.log('GlEntityForm > inject pageProvideProxy:', pageProvideProxy)
 const isRead = pageProvideProxy.getParamValue('formState') === 'read'
 
 const global = useGlobal()
@@ -112,7 +112,7 @@ const buildFieldItems = () => {
             moreInfo = moreInfo ? '，' + moreInfo : ''
           }
           const content = `组件未进行数据绑定，组件标识为：${subInst.id}${moreInfo}`
-          global.$notification.error({content: content})
+          global.$notification.error({title: '组件未绑定', content: content})
           // console.error('GlEntityForm > ', content)
           continue
         }
@@ -171,26 +171,31 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
     for (let index in inst.children) {
       let subInst = inst.children[index]
       // console.log('setFieldItemValue() > checkValidDataEntry:', subInst.componentName, checkValidDataEntry(subInst.componentName), ' subInst:', subInst)
-      if (checkValidDataEntry(subInst.componentName)) {
-        const value = dataItem[subInst.props.bindField.fieldName]
-        // 由于AInputNumber的值不支持设置字符串，这里对可能的字符串值进行转换
-        if (subInst.componentName === 'AInputNumber') {
-          // @ts-ignore
-          subInst.value = typeof value !== 'number' ? Number(value) : value
-        } else {
-          subInst.value = value
-        }
+      if (checkValidDataEntry(subInst.componentName) && subInst.props.bindField) {
+        const foundFieldName = Object.keys(dataItem).find((key: string) => {
+          return key === subInst.props.bindField.fieldName
+        })
+        if (foundFieldName) {
+          const value = dataItem[subInst.props.bindField.fieldName]
+          // 由于AInputNumber的值不支持设置字符串，这里对可能的字符串值进行转换
+          if (subInst.componentName === 'AInputNumber') {
+            // @ts-ignore
+            subInst.value = typeof value !== 'number' ? Number(value) : value
+          } else {
+            subInst.value = value
+          }
 
-        let formItem = {
-          componentName: subInst.componentName,
-          label: subInst.props.label || '',
-          fieldName: subInst.props.bindField.fieldName,
-          value: subInst.value,
-          isFormSubTable: false
+          let formItem = {
+            componentName: subInst.componentName,
+            label: subInst.props.label || '',
+            fieldName: subInst.props.bindField.fieldName,
+            value: subInst.value,
+            isFormSubTable: false
+          }
+          formItems.value.push(formItem)
+          // @ts-ignore
+          formData.value[subInst.props.bindField.fieldName] = subInst.value
         }
-        formItems.value.push(formItem)
-        // @ts-ignore
-        formData.value[subInst.props.bindField.fieldName] = subInst.value
       }
       if (subInst.children && subInst.children.length > 0) {
         setFieldItemValue(subInst)

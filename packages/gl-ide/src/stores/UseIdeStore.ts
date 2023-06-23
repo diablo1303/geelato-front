@@ -6,9 +6,10 @@ import {usePageStore} from "./UsePageStore";
 import {useComponentStore} from "./UseComponentStore";
 import {useEntityStore} from "./UseEntityStore";
 import Page from "../entity/Page";
-import type {ComponentMeta,ComponentInstance} from "@geelato/gl-ui-schema";
+import type {ComponentMeta, ComponentInstance} from "@geelato/gl-ui-schema";
 import {ref} from "vue";
 import {utils} from "@geelato/gl-ui";
+import {useGlobal} from "@geelato/gl-ui";
 
 export const useIdeStore = defineStore('GlIdeStore', () => {
     const name = ref('Geelato Ide')
@@ -21,12 +22,17 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
     const plugins = ref<Array<GlPlugin>>([])
     const appStore = useAppStore()
     const pageStore = usePageStore()
+    // 正在打开的页面extendId，如果在loadPage返回时，发现extendId与当前openingPageExtendId不一致
+    // 则是原因在返回前执行了新的打开页面操作，发起了新的loadPage
+    const openingPageExtendId = ref('')
     const entityStore = useEntityStore()
     const componentStore = useComponentStore()
     const currentComponentTree = ref([])
 
     // 舞台强行更新标识
     const stageRefreshFlag = ref(true)
+
+    const global = useGlobal()
 
     /**
      * 安装插件
@@ -86,61 +92,81 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
      * @param iconType
      */
     function openPage({type, extendId, title, iconType}: Page) {
-        console.log('try to open page:', {type, extendId, title, iconType})
-        // 从已打开的页面中查找，若有若激活
-        let foundItem = pageStore.findPageByExtendId(extendId)
-        if (foundItem.index >= 0) {
-            console.log('found opened page:', foundItem)
-            // componentStore.setComponentTree(foundItem.page.sourceContent)
-            pageStore.switchToPage(<number>foundItem.index)
-        } else {
-            let items = findPanelsByType('stage')
-            let foundPanel = items.find((panel) => {
-                return panel.name === type
-            })
-            if (foundPanel) {
-                // 从后台服务中加载页面，若无则创建新页面
-                pageStore.loadPage({extendId}).then((res) => {
-                    // console.log('loadedPage:', res.data.data)
-                    let page = new Page()
-                    if (res.data.data && res.data.data.length > 0) {
-                        // 服务端加载的页面
-                        const pageItem = res.data.data[0]
-                        page.id = pageItem.id
-                        page.appId = pageItem.appId
-                        page.extendId = pageItem.extendId
-                        page.title = title
-                        page.iconType = iconType
-                        page.code = pageItem.code
-                        page.description = pageItem.description
-                        page.sourceContent = JSON.parse(pageItem.sourceContent)
-                    } else {
-                        // 新页面
-                        page.type = type
-                        page.appId = appStore.currentApp.id
-                        page.extendId = extendId
-                        page.title = title
-                        page.iconType = iconType
-                        // TODO 如果type为templatePage，则弹出页面模板选择页面，从模板中创建，这样可以支持更多模板页面
-                        const pageTemplate = pageStore.getPageTemplate(type)
-                        function genComponentId(inst: ComponentInstance) {
-                            inst.id = utils.gid(componentStore.getAlias(inst.componentName), 16)
-                            if(inst.children){
-                                inst.children.forEach((subInst:ComponentInstance)=>{
-                                    genComponentId(subInst)
-                                })
-                            }
-                        }
-                        genComponentId(pageTemplate)
-                        // console.log('pageTemplate',pageTemplate)
-                        page.sourceContent = pageTemplate
-                    }
-                    componentStore.setComponentTree(page.sourceContent)
-                    // @ts-ignore
-                    page.ideStageComponentName = foundPanel.componentName
-                    pageStore.addPage(page)
-                })
+        console.log('try to open page:', {type, extendId, title, iconType}, openingPageExtendId.value)
+        if (openingPageExtendId.value) {
+            if (openingPageExtendId.value === extendId) {
+                global.$notification.error({title: `打开页面【${title}】失败`, content: `正在加载页面【${title}】，请勿重复打开`})
+            } else {
+                global.$notification.error({title: `打开页面【${title}】失败`, content: `正在加载其它页面，请加载之后再切换页面`})
             }
+            return false
+        }
+        try {
+            openingPageExtendId.value = extendId
+            // 从已打开的页面中查找，若有若激活
+            let foundItem = pageStore.findPageByExtendId(extendId)
+            if (foundItem.index >= 0) {
+                console.log('found opened page:', foundItem)
+                // componentStore.setComponentTree(foundItem.page.sourceContent)
+                pageStore.switchToPage(<number>foundItem.index)
+                openingPageExtendId.value = ''
+            } else {
+                let items = findPanelsByType('stage')
+                let foundPanel = items.find((panel) => {
+                    return panel.name === type
+                })
+                if (foundPanel) {
+                    // 从后台服务中加载页面，若无则创建新页面
+                    pageStore.loadPage({extendId}).then((res) => {
+                        console.log('loadedPage:', res.data.data)
+                        let page = new Page()
+                        if (res.data.data && res.data.data.length > 0) {
+                            // 服务端加载的页面
+                            const pageItem = res.data.data[0]
+                            page.id = pageItem.id
+                            page.appId = pageItem.appId
+                            page.extendId = pageItem.extendId
+                            page.title = title
+                            page.iconType = iconType
+                            page.code = pageItem.code
+                            page.description = pageItem.description
+                            page.sourceContent = JSON.parse(pageItem.sourceContent)
+                        } else {
+                            // 新页面
+                            page.type = type
+                            page.appId = appStore.currentApp.id
+                            page.extendId = extendId
+                            page.title = title
+                            page.iconType = iconType
+                            // TODO 如果type为templatePage，则弹出页面模板选择页面，从模板中创建，这样可以支持更多模板页面
+                            const pageTemplate = pageStore.getPageTemplate(type)
+
+                            function genComponentId(inst: ComponentInstance) {
+                                inst.id = utils.gid(componentStore.getAlias(inst.componentName), 16)
+                                if (inst.children) {
+                                    inst.children.forEach((subInst: ComponentInstance) => {
+                                        genComponentId(subInst)
+                                    })
+                                }
+                            }
+
+                            genComponentId(pageTemplate)
+                            // console.log('pageTemplate',pageTemplate)
+                            page.sourceContent = pageTemplate
+                        }
+                        componentStore.setComponentTree(page.sourceContent)
+                        // @ts-ignore
+                        page.ideStageComponentName = foundPanel.componentName
+                        pageStore.addPage(page)
+                        openingPageExtendId.value = ''
+                    })
+                } else {
+                    openingPageExtendId.value = ''
+                }
+            }
+        } catch (e) {
+            console.error('打开页面失败！', e)
+            openingPageExtendId.value = ''
         }
     }
 

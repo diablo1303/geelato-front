@@ -122,7 +122,7 @@ const loadUserDataItems = (ids?: Array<any>) => {
 const init = () => {
   // 基于输入的参数，或当前控件已选中的信息，设置弹出面板中的选择人员信息
   selectedIds.value = props.modelValue
-  console.log('init(), selectedIds.value is ', selectedIds.value, 'props.modelValue is', props.modelValue)
+  // console.log('init(), selectedIds.value is ', selectedIds.value, 'props.modelValue is', props.modelValue)
   if (selectedIds.value) {
     loadUserDataItems([selectedIds.value]).then((resp: any) => {
       resp.data.data.forEach((dataItem: UserDataItem) => {

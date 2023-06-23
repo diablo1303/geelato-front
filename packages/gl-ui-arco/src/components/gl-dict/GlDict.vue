@@ -43,7 +43,7 @@ const props = defineProps({
     }
   }
 })
-console.log('props.modelValue', props.modelValue, props.dictId)
+// console.log('props.modelValue', props.modelValue, props.dictId)
 const mv = ref(props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
