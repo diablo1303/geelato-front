@@ -46,7 +46,10 @@ const filterTreeNode = (searchValue: string, nodeData: any) => {
 // inject('appId')
 // TODO 需改成基于上下文获取
 const appId = '1976169388038462609'
-entityApi.query('platform_tree_node', 'treeId,id key,text title,pid,iconType,type nodeType,flag,seqNo', {treeId: appId}, false).then((res: any) => {
+entityApi.query('platform_tree_node', 'treeId,id key,text title,pid,iconType,type nodeType,flag,seqNo', {
+  treeId: appId,
+  delStatus: 0
+}, false).then((res: any) => {
   // console.log('platform_tree_node:', res)
   treeData.value = []
   treeData.value.push(...Utils.ConvertUtil.listToTree({

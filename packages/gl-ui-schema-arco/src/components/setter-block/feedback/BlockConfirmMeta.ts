@@ -1,7 +1,7 @@
 export default {
     "componentName": "GlBlockConfirm",
     "displayMode": "Tile",
-    "iconType": "gl-file",
+    "iconType": "gl-checkbox",
     "group": "block_feedback",
     "title": "弹出确认",
     "useBy": ["freePage"],

@@ -44,6 +44,12 @@
                 <a-input v-model="cMeta.iconType" placeholder="alias"/>
               </td>
             </tr>
+            <tr>
+              <td class="gl-table-cell gl-label" title="v-model属性名，默认为modelValue，特殊的，如tab组件为activeKey">绑定属性</td>
+              <td class="gl-table-cell">
+                <a-input v-model="cMeta.vModelName" placeholder="默认为modelValue，特殊的，如tab组件为activeKey"/>
+              </td>
+            </tr>
             <!--            <tr>-->
             <!--              <td class="gl-table-cell gl-label" title="进属性进行打包">包名</td>-->
             <!--              <td class="gl-table-cell">-->

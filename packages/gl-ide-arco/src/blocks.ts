@@ -25,6 +25,7 @@ const component: Plugin = {
         app.component('GlBlockSetVisible', GlCommandBlockOne)
         app.component('GlTriggerComponentActionBlock', GlCommandBlockOne)
         app.component('GlLogBlock', GlCommandBlockOne)
+        app.component('GlSetValueBlock', GlCommandBlockOne)
         // 注册组件构建器
 
         // 注册属性设置组件

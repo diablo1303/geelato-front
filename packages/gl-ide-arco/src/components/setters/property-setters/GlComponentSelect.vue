@@ -40,6 +40,7 @@ import GlComponentSetter from "../GlComponentSetter.vue";
 import {useIdeStore} from "@geelato/gl-ide";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
 import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
+import GlComponentSelectOptions from "./GlComponentSelectOptions";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps(
@@ -53,17 +54,7 @@ const props = defineProps(
       options: {
         type: Object,
         default() {
-          return [
-            {componentName: 'AButton', title: '按钮'},
-            {componentName: 'AInput', title: '单行文本'},
-            {componentName: 'ASwitch', title: '开关'},
-            {componentName: 'ASelect', title: '下拉选择'},
-            {componentName: 'GlDict', title: '数据字典'},
-            {componentName: 'ADatePicker', title: '日期选择器'},
-            {componentName: 'ATimePicker', title: '时间选择器'},
-            {componentName: 'GlUserSelect', title: '人员选择器'},
-            {componentName: 'AUpload', title: '上传'}
-          ]
+          return GlComponentSelectOptions
         }
       }
     }
@@ -101,9 +92,12 @@ const findComponentMeta = (componentName: string) => {
  * @param componentName
  */
 const changeComponent = (componentName: string) => {
-  mv.value.children = []
-  mv.value.props = {}
-  mv.value.slots = {}
+  // mv.value.children = []
+  // mv.value.props = {}
+  // mv.value.slots = {}
+  // 切换组件时，所有的信息重置
+  mv.value = new ComponentInstance()
+  mv.value.componentName = componentName
   // @ts-ignore
   componentMeta.value = findComponentMeta(componentName)
   console.log('findComponentMeta by componentName:', componentName, 'get', componentMeta.value)

@@ -36,7 +36,7 @@ interface DragItem {
   index: number
   id: string
   type: string
-  _isTemplateInst?: boolean
+  __isTemplateInst?: boolean
 }
 
 const card = ref<HTMLDivElement>()
@@ -67,9 +67,9 @@ const [dropCollect, drop] = useDrop<DragItem,
     const hoverIndex = props.index || 0
     console.log('drop() > dragIndex:', dragIndex, 'hoverIndex:', hoverIndex, 'dragItem:', dragItem, 'dropTargetMonitor:', dropTargetMonitor)
     // 从组件库新增时,item是模板实例对象
-    // 可通过_isTemplateInst来进行检测
-    if (dragItem._isTemplateInst) {
-      delete dragItem._isTemplateInst
+    // 可通过__isTemplateInst来进行检测
+    if (dragItem.__isTemplateInst) {
+      delete dragItem.__isTemplateInst
       // 添加时
       if (props.addItem) {
         props.addItem!(hoverIndex, JSON.parse(JSON.stringify(dragItem)))

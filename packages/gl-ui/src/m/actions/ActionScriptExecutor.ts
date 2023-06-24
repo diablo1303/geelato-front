@@ -176,6 +176,24 @@ export class ActionScriptExecutor {
     }
 
     /**
+     * 获取组件值
+     * @param componentId
+     */
+    setComponentValue(componentId: string,value:any) {
+        for (const pageComponentId in pageProxyMap) {
+            const pageProxy = pageProxyMap[pageComponentId]
+            if (pageProxy) {
+                const vueInst = pageProxy.getVueInst(componentId)
+                if (vueInst) {
+                    return pageProxy.setComponentValue(componentId,value)
+                }
+                continue
+            }
+        }
+        return undefined
+    }
+
+    /**
      * 点击等事件
      * @param action 组件中的事件配置信息
      * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
@@ -200,6 +218,7 @@ export class ActionScriptExecutor {
                 loadPage: this.loadPage,
                 getComponentMethod: this.getComponentMethod,
                 getComponentValue: this.getComponentValue,
+                setComponentValue: this.setComponentValue,
                 getComponentProps: this.getComponentProps,
                 setComponentProps: this.setComponentProps,
                 triggerComponentAction: this.triggerComponentAction,
@@ -207,7 +226,7 @@ export class ActionScriptExecutor {
                 ...this.app?.config.globalProperties
             }
         }
-        // console.log('executeScript(),$ctx:', $ctx, 'script:', script)
+        console.log('executeScript(),$ctx:', $ctx)
         const result = utils.evalFn(bodyScript, $ctx, '$ctx', this.$gl, '$gl')
         if (callback && typeof callback === 'function') {
             callback()

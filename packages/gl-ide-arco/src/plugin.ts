@@ -31,8 +31,8 @@ import GlPageSelect from "./components/setters/property-setters/GlPageSelect.vue
 import GlComponentSelect from "./components/setters/property-setters/GlComponentSelect.vue";
 import GlEntityReaderSetter from "./components/setters/property-setters/entity-reader-setter/GlEntityReaderSetter.vue";
 import GlToolbarBreadcrumbs from './components/gl-toolbar-breadcrumbs/Index.vue'
-import GlX from './components/gl-x/GlX.vue'
-import GlComponentRecursion from './components/gl-component-recursion/ComponentRecursion.vue'
+// import GlX from './components/gl-x/GlX.vue'
+// import GlComponentRecursion from './components/gl-component-recursion/ComponentRecursion.vue'
 import "./assets/style.css"
 import GlArrayBaseSetter from "./components/setters/property-setters/GlArrayBaseSetter.vue";
 import GlArrayNumberSetter from "./components/setters/property-setters/GlArrayNumberSetter.vue";
@@ -152,8 +152,8 @@ const component: Plugin = {
         app.component(GlIdeStageFreePage.name, GlIdeStageFreePage)
         app.component(GlIdeStageListPage.name, GlIdeStageListPage)
         app.component(GlToolbarBreadcrumbs.name, GlToolbarBreadcrumbs)
-        app.component(GlX.name, GlX)
-        app.component(GlComponentRecursion.name, GlComponentRecursion)
+        // app.component(GlX.name, GlX)
+        // app.component(GlComponentRecursion.name, GlComponentRecursion)
         app.component(GlInsts.name, GlInsts)
         app.component(GlInst.name, GlInst)
         app.component(ComponentDnd.name, ComponentDnd)
@@ -209,7 +209,7 @@ const component: Plugin = {
         // ide.componentMetaManager.registerManyComponentDesignMeta(componentMeta.designMeta)
 
         // 组件别名
-        app.config.globalProperties.$gl.alias[GlX.name] = 'glx'
+        // app.config.globalProperties.$gl.alias[GlX.name] = 'glx'
         app.config.globalProperties.$gl.alias[GlToolbarBreadcrumbs.name] = 'crumbs'
 
         // 配置页面模板

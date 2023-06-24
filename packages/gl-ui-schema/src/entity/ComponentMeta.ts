@@ -19,6 +19,8 @@ export default class ComponentMeta {
     componentName: string = ''
     // 组件中文名称
     title: string = ''
+    // 组件的值绑定属性名，默认为modelValue,特殊的，如tabs为activeKey
+    vModelName?: string
     // 在舞台中是以块状还是行内样式进行展示
     displayOnStage?: string = 'inline-block'
     // 在属性配置面板中，是以哪种模式来展示属性，值为：Tile|Collapse

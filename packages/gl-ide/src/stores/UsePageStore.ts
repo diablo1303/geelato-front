@@ -156,17 +156,53 @@ export const usePageStore = defineStore('GlPageStore', () => {
      * 保存当前的页面到后台服务中
      */
     function saveCurrentPage() {
+        const deleteProps = ['']
 
-        function convertToRelease(sourceContent: object) {
-            // TODO 待做代码压缩，去掉设计时的或可默认的属性
-            // 去掉属性
-            // 去掉指定属性：_commandBlock
-            // 去掉设计时属性：以“__”开头命名的属性
-            return sourceContent
+        function convertToRelease(sourceContent?: object) {
+            if (!sourceContent) return sourceContent
+            const copyContent = JSON.parse(JSON.stringify(sourceContent))
+
+            // console.log('copyContent:', copyContent)
+
+            function convertObj(obj: object) {
+                // 检测当前的obj是否为组件实例，如果是，则压缩组件实例，则否按通用的对象进行处理
+                // TODO const isComponentInst = true
+                Object.keys(obj).forEach((key: string) => {
+                    // @ts-ignore
+                    let value = obj[key]
+                    // console.log('key', key, 'value:', value)
+                    // 去掉设计时属性：以“__”开头命名的属性
+                    // if (key.startsWith('__') || deleteProps.indexOf(key) >= 0) {
+                    if (key.startsWith('__') ) {
+                        // @ts-ignore
+                        // console.log('delete obj[key]:', obj[key])
+                        // @ts-ignore
+                        delete obj[key]
+                        // console.log('after delete obj:', obj)
+                    } else {
+                        //
+                        if (typeof value === 'object') {
+                            convertObj(value)
+                        }
+                    }
+                    // 待做代码压缩，去掉设计时的或可默认的属性
+                    // TODO 更多属性处理
+                })
+                // @ts-ignore
+                if (obj.children && obj.children.length > 0) {
+                    // @ts-ignore
+                    obj.children.forEach((subInst) => {
+                        convertObj(subInst)
+                    })
+                }
+            }
+
+            convertObj(copyContent)
+            return copyContent
         }
 
-        function convertToPreview(sourceContent: object) {
-            return sourceContent
+        function convertToPreview(sourceContent?: ComponentInstance) {
+            return convertToRelease(sourceContent)
         }
 
         entityApi.save('platform_app_page', {
@@ -184,7 +220,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
         })
     }
 
-    function setCurrentSourceContent(content: object) {
+    function setCurrentSourceContent(content?: ComponentInstance) {
         currentPage.value.sourceContent = content
     }
 

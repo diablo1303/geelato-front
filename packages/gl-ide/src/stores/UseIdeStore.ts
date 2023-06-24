@@ -178,7 +178,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
         if (componentStore.currentComponentTree && componentStore.currentComponentTree.length > 0) {
             pageStore.setCurrentSourceContent(componentStore.currentComponentTree[0])
         } else {
-            pageStore.setCurrentSourceContent({})
+            pageStore.setCurrentSourceContent()
         }
         pageStore.saveCurrentPage()
     }

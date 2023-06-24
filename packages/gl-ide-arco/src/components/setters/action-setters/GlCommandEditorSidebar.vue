@@ -1,7 +1,7 @@
 <template>
   <div class="gl-command-editor-sidebar gl-ide-sidebar">
     <KeepAlive>
-      <GlComponentsSidebar :size="SizeType.mini" :componentGroups="componentGroups"></GlComponentsSidebar>
+      <GlComponentsSidebar :size="SizeType.small" :componentGroups="componentGroups"></GlComponentsSidebar>
     </KeepAlive>
   </div>
 </template>

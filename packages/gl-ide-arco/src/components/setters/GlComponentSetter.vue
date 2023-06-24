@@ -3,7 +3,9 @@
     <a-tabs size="small" :default-active-key="defaultActiveKey">
       <a-tab-pane key="1" tab="属性" title="属性">
         <div style="border-bottom: 1px solid #F2F2F2;padding: 0 0.5em 0.5em;">
-          <span style="font-weight: 600" :title="componentStore.currentSelectedComponentMeta?.componentName">[{{ componentStore.currentSelectedComponentMeta?.title }}]</span>
+          <span style="font-weight: 600" :title="componentStore.currentSelectedComponentMeta?.componentName">[{{
+              componentStore.currentSelectedComponentMeta?.title
+            }}]</span>
           <a-button-group style="float: right" type="primary" size="mini" shape="round">
             <a-button status="primary" @click="componentStore.selectParentComponent">上一层</a-button>
             <a-button status="danger" @click="componentStore.deleteCurrentSelectedComponentInst">删除</a-button>
@@ -78,6 +80,7 @@ const props = defineProps({
     }
   }
 })
+
 const componentStore = componentStoreFactory.useComponentStore('useComponentStore')
 
 console.log('GlComponentSetter > init > componentName:', props.componentInstance?.componentName, ',componentId:', props.componentInstance?.id)
@@ -86,6 +89,9 @@ provide(ComponentSetterProvideKey, componentSetterProvideProxy)
 
 
 // 组件实例值
+if (props.componentMeta.vModelName) {
+  props.componentInstance.vModelName = props.componentMeta.vModelName
+}
 const componentModel = ref(props.componentInstance)
 
 const setInstance = (instance: ComponentInstance, form: String) => {

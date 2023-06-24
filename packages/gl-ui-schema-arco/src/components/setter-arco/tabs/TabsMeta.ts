@@ -56,5 +56,5 @@ export default {
         "slotComponentBindTarget": "v-model",
         "slotComponentBindName": "glComponentInst"
     }],
-    "actions": []
+    "actions": [{"name": "change", "description": "切换选项卡", "title": "切换选项卡"}]
 }

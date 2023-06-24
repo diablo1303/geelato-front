@@ -6,9 +6,9 @@ export default {
 <script setup lang="ts">
 
 import {mixins, utils} from "@geelato/gl-ui";
-import {nextTick, onMounted, onUpdated, type PropType, ref} from "vue";
+import {nextTick, onMounted, onUpdated, type PropType, ref, watch} from "vue";
 
-const emits = defineEmits(['update:items'])
+const emits = defineEmits(['update:modelValue','update:items'])
 
 class TabItem {
   title: string = ''
@@ -16,15 +16,16 @@ class TabItem {
 }
 
 const props = defineProps({
+  modelValue: [String, Number],
   items: {
     type: Array as PropType<Array<TabItem>>
   },
-  defaultActiveKey: {
-    type: Number,
-    default() {
-      return 0
-    }
-  },
+  // defaultActiveKey: {
+  //   type: Number,
+  //   default() {
+  //     return 0
+  //   }
+  // },
   ...mixins.props
 })
 
@@ -72,10 +73,7 @@ onUpdated(() => {
   updateInst()
 })
 
-// if (!props.glIsRuntime) {
-//   props.glComponentInst.slots = props.glComponentInst.slots || {}
-//   props.glComponentInst.slots.extra = props.glComponentInst.slots.extra || JSON.parse(JSON.stringify(placeholderTemplate()))
-// }
+
 const updateInst = () => {
   if (props.glComponentInst.children && props.glComponentInst.children.length != tabItems.value.length) {
     while (props.glComponentInst.children.length < tabItems.value.length) {
@@ -89,33 +87,39 @@ const updateInst = () => {
 
 updateInst()
 
-const activeKey = ref(props.defaultActiveKey || 0)
+const mv = ref(props.modelValue)
 const onTabClick = (key: any) => {
-  activeKey.value = key
+  mv.value = key
 }
+watch(mv, () => {
+  emits('update:modelValue', mv.value)
+})
 onMounted(() => {
   onTabClick(0)
 })
-const xx = false
+
 </script>
 <template>
-  <a-tabs :active-key="activeKey">
-    <template #extra>
-      <div>
-        <slot name="extra"></slot>
-      </div>
-    </template>
-    <a-tab-pane v-for="(item,index) in tabItems" :key="index">
-      <template #title>
+  <div>
+    <a-tabs :active-key="mv">
+      <template #extra>
+        <div>
+          <slot name="extra"></slot>
+        </div>
+      </template>
+      <a-tab-pane v-for="(item,index) in tabItems" :key="index">
+        <template #title>
       <span @click="onTabClick(index)">
         <GlIconfont v-if="item.iconType" :type="item.iconType"/>
       {{ item.title }}
       </span>
-      </template>
-      <component v-if="glComponentInst.children[index]" :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst.children[index]"
-                 :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></component>
-    </a-tab-pane>
-  </a-tabs>
+        </template>
+        <component v-if="glComponentInst.children[index]" :is="'GlInsts'+glRuntimeFlag"
+                   :glComponentInst="glComponentInst.children[index]"
+                   :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></component>
+      </a-tab-pane>
+    </a-tabs>
+  </div>
 </template>
 
 <style scoped>

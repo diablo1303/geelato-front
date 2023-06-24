@@ -92,7 +92,7 @@ const treeData = ref<any>([])
 
 const componentStore = useComponentStore()
 const onChange = (value: any) => {
-  console.log('.............', value)
+  // console.log('.............', value)
   const findInst: any = (inst: any) => {
     if (inst.id === value) {
       return inst
@@ -117,6 +117,7 @@ const onChange = (value: any) => {
     componentSetterProvideProxy.setVarValue(props.exposeVarComponentMeta, componentMeta)
   }
 }
+
 const loadPage = () => {
   entityApi.queryPageByExtendId(componentSetterProvideProxy.getPropValue(props.dependPropPageIdFieldName)).then((resp: any) => {
     const pages = resp.data.result || resp.data.data
@@ -127,15 +128,15 @@ const loadPage = () => {
       treeData.value.length = 0
       convertTitle(pageConfig)
       pageConfig ? treeData.value.push(pageConfig) : null
-      console.log('pageConfig', pageConfig)
+      // console.log('pageConfig', pageConfig)
       // 初始化时，触发change将实例数据、元数据设置到变量中
       onChange(props.modelValue)
     }
   })
 }
+
 const convertTitle = (componentInst: ComponentInstance, title?: string) => {
   componentInst.title = title || componentInst.title || componentInst.componentName
-
 
   if (componentInst.group === 'dataEntry') {
     componentInst.title = componentInst.props.label || componentInst.title || componentInst.componentName

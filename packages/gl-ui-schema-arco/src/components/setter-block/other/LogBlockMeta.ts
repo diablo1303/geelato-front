@@ -1,7 +1,7 @@
 export default {
     "componentName": "GlLogBlock",
     "displayMode": "Tile",
-    "iconType": "gl-file",
+    "iconType": "gl-log",
     "group": "block_other",
     "title": "输出日志",
     "useBy": ["freePage"],

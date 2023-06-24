@@ -11,6 +11,7 @@ import SetVisibleBlockHandler from "./page/SetVisibleBlockHandler";
 import IfComponentValueBlockHandler from "./logic/IfComponentValueBlockHandler";
 import TriggerComponentActionBlockHandler from "./logic/TriggerComponentActionBlockHandler";
 import LogBlockHandler from "./other/LogBlockHandler";
+import SetValueBlockHandler from "./page/SetValueBlockHandler";
 
 export default interface IBlockHandler {
     parseToScript(props: Object): ParseResult;
@@ -34,7 +35,8 @@ export class BlocksHandler {
             GlBlockElse: new ElseBlockHandler(),
             GlIfComponentValueBlock: new IfComponentValueBlockHandler(),
             GlTriggerComponentActionBlock: new TriggerComponentActionBlockHandler(),
-            GlLogBlock: new LogBlockHandler()
+            GlLogBlock: new LogBlockHandler(),
+            GlSetValueBlock: new SetValueBlockHandler()
         }
     }
 

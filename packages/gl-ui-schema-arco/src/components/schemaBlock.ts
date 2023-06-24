@@ -16,9 +16,10 @@ import IfComponentValueBlockMeta from "./setter-block/if-else/IfComponentValueBl
 import IfComponentValueBlockInstance from "./setter-block/if-else/IfComponentValueBlockInstance";
 import TriggerComponentActionMeta from "./setter-block/page/TriggerComponentActionBlockMeta";
 import LogBlockMeta from "./setter-block/other/LogBlockMeta";
+import SetValueBlockMeta from "./setter-block/page/SetValueBlockMeta";
 
 const componentMetas: Array<ComponentMeta> = [BlockRootMeta, BlockNotificationMeta, BlockOpenThirdPageMeta,
-    BlockOpenComponentPageMeta, BlockSetVisibleMeta, BlockSetVarMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
+    BlockOpenComponentPageMeta, BlockSetVisibleMeta, SetValueBlockMeta, BlockSetVarMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
     BlockComponentInvokeMeta, BlockConfirmMeta, TriggerComponentActionMeta,
     LogBlockMeta]
 

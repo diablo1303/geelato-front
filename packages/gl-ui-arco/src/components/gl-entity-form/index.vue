@@ -1,6 +1,6 @@
 <template>
   <div class="gl-entity-form">
-    <a-form ref="formRef" :model="formData" :title="title" :layout="layout"
+    <a-form ref="formRef" :model="formData" :layout="layout"
             :autoLabelWidth="autoLabelWidth" :disabled="isRead">
       <template v-if="glIsRuntime">
         <slot></slot>

@@ -1,11 +1,11 @@
 export default {
-    "componentName": "GlTriggerComponentActionBlock",
+    "componentName": "GlSetValueBlock",
     "displayMode": "Tile",
-    "iconType": "gl-thunderbolt",
+    "iconType": "gl-value-mapper",
     "group": "block_page",
-    "title": "触发组件动作",
+    "title": "设置组件值",
     "useBy": ["freePage"],
-    "blockContent": "触发组件${componentId}的动作事件${actionName}",
+    "blockContent": "设置组件${componentId}的值为${value}",
     "properties": [{
         "name": "appId",
         "setterComponentProps": {},
@@ -40,16 +40,16 @@ export default {
         "setterComponentName": "GlPageComponentSelect",
         "enableValueExpress": false
     }, {
-        "name": "actionName",
+        "name": "value",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "触发组件动作",
-        "setterComponentName": "GlComponentActionSelect",
-        "enableValueExpress": false
+        "title": "设置组件值",
+        "setterComponentName": "AInput",
+        "enableValueExpress": true
     }],
     "actions": []
 }

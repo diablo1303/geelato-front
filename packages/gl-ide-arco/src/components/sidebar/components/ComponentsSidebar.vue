@@ -111,7 +111,7 @@ const onStartNodeDrag = (e: MouseEvent, element: Object) => {
  */
 const createTemplateInst = (element:ComponentMaterial) => {
   const item = JSON.parse(JSON.stringify(element.instance))
-  item._isTemplateInst = true
+  item.__isTemplateInst = true
   // 更改id
   function generateId(item: ComponentInstance) {
     // @ts-ignore
