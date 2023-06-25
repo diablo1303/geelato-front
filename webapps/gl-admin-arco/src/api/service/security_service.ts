@@ -264,8 +264,8 @@ export function deleteDictItem(id: string) {
   return axios.delete<QueryResult>(`/api/dict/item/isDelete/${id}`);
 }
 
-export function queryItemBydictCode(dictCode: string) {
-  return axios.get<QueryDictItemForm[]>(`/api/dict/item/queryItemBydictCode/${dictCode}`);
+export function queryItemByDictCode(dictCode: string) {
+  return axios.get<QueryDictItemForm[]>(`/api/dict/item/queryItemByDictCode/${dictCode}`);
 }
 
 /* -----------------------------权限管理--------------------------- */
@@ -524,7 +524,7 @@ export function deleteRoleUser(id: string) {
 const querySelectOptions = async (dictCode: string) => {
   let selectOptions: SelectOptionData[] = [];
   try {
-    const {data} = await queryItemBydictCode(dictCode);
+    const {data} = await queryItemByDictCode(dictCode);
     if (data != null && data.length > 0) {
       // eslint-disable-next-line no-restricted-syntax
       for (const item of data) {
