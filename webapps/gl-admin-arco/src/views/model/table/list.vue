@@ -158,8 +158,13 @@
       <a-table-column :title="$t('model.table.index.form.description')" data-index="description" :ellipsis="true" :tooltip="true" :width="200"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('model.table.index.form.operations')"
-          :width="170" align="center" data-index="operations" fixed="right">
+          :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
+          <a-tooltip :content="$t('searchTable.tables.operations.alter.warning')">
+            <a-button v-permission="['admin']" size="small" type="text" @click="alterTable(record.id)">
+              {{ $t('searchTable.tables.operations.alter') }}
+            </a-button>
+          </a-tooltip>
           <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
@@ -288,6 +293,8 @@ const addTable = (ev: MouseEvent) => {
     return;
   }
   if (tableDrawerRef.value) {
+    const formParams: Record<string, any> = pageData.value.params || {};
+    formParams.editName = true;
     // @ts-ignore
     tableDrawerRef.value?.openForm({
       action: 'add', params: pageData.value.params, closeBack: (data: QueryForm) => {
@@ -299,12 +306,24 @@ const addTable = (ev: MouseEvent) => {
 };
 const viewTable = (id: string) => {
   if (tableDrawerRef.value) {
+    const formParams: Record<string, any> = pageData.value.params || {};
+    formParams.editName = false;
     // @ts-ignore
     tableDrawerRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
   }
 }
+const alterTable = (id: string) => {
+  if (tableDrawerRef.value) {
+    const formParams: Record<string, any> = pageData.value.params || {};
+    formParams.editName = true;
+    // @ts-ignore
+    tableDrawerRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
+  }
+}
 const editTable = (id: string) => {
   if (tableDrawerRef.value) {
+    const formParams: Record<string, any> = pageData.value.params || {};
+    formParams.editName = false;
     // @ts-ignore
     tableDrawerRef.value?.openForm({
       action: 'edit', 'id': id, params: pageData.value.params, closeBack: (data: QueryForm) => {

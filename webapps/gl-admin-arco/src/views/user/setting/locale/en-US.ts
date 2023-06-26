@@ -421,6 +421,8 @@ export default {
   'model.table.index.model.title.sync.model': 'Update Data Table',
   'model.table.index.model.cancel.text': 'Cancel',
   'model.table.index.model.ok.text': 'Confirm',
+  'searchTable.tables.operations.alter': 'Alter',
+  'searchTable.tables.operations.alter.warning': 'Alter “entityName” and synchronize it to the database',
   // eslint-disable-next-line no-template-curly-in-string
   'model.table.index.modal.table.content': 'Whether the database table synchronization to the model？',
   'model.table.index.modal.model.content': 'Whether to synchronize the model to the database？',

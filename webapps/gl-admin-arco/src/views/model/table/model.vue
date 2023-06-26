@@ -27,15 +27,15 @@
             :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')},
             {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')}]"
             field="entityName">
-          <a-input v-if="pageData.formState==='add'" v-model="formData.entityName" :max-length="32"/>
-          <span v-else>{{ formData.entityName }}</span>
+          <a-input  v-if="pageData.editName" v-model="formData.entityName" :max-length="32"/>
+                    <span v-else>{{ formData.entityName }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.table.index.form.tableName')"
             field="tableName">
-          <!-- <a-input v-if="pageData.formState==='add'" v-model="formData.tableName" :max-length="32"/>-->
+<!--           <a-input v-if="pageData.editName" v-model="formData.tableName" :max-length="32"/>-->
           <span>{{ formData.tableName }}</span>
         </a-form-item>
       </a-col>
@@ -173,7 +173,7 @@ import {createOrUpdateTable as createOrUpdateForm, getTable as getForm, QueryTab
 import {enableStatusOptions, linkedOptions, tableTypeOptions} from "@/views/model/table/searchTable";
 import MonacoEditor from '@/components/monaco/index.vue';
 
-const pageData = ref({formState: 'add', button: true, formCol: 1});
+const pageData = ref({formState: 'add', button: true, formCol: 1, editName: true});
 const validateForm = ref<FormInstance>();
 // 国际化
 const {t} = useI18n();
@@ -275,6 +275,7 @@ const loadModel = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
   pageData.value.formCol = urlParams.formCol || 1;
+  pageData.value.editName = urlParams.params?.editName || false;
   formData.value = generateFormData();
   formData.value.connectId = urlParams.params?.pId || '';
   // 重置验证

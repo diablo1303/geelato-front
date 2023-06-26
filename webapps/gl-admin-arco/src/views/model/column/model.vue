@@ -462,7 +462,7 @@ const loadModel = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
   pageData.value.formCol = urlParams.formCol || 1;
-  pageData.value.editName = urlParams.params?.editName || '';
+  pageData.value.editName = urlParams.params?.editName || false;
   formData.value = generateFormData();
   formData.value.tableId = urlParams.params?.pId || '';
   formData.value.tableName = urlParams.params?.pName || '';

@@ -194,7 +194,7 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
 
 const fetchTables = async (params: PageQueryRequest = {
   enableStatus: 1,
-  tableType: 'entity'
+  tableType: 'table'
 } as unknown as PageQueryRequest) => {
   try {
     const {data} = await queryTables(params);
@@ -256,6 +256,9 @@ const loadModel = (urlParams: ListUrlParams) => {
     mainTableChange(pageData.value.mainTable);
     formData.value.mainTable = pageData.value.mainTable;
   }
+  fetchTableColumns({enableStatus: 1, tableName: formData.value.mainTable} as unknown as PageQueryRequest).then((data) => {
+    mainTableColOptions.value = data;
+  });
 // 重置验证
   resetValidate();
 // 特色

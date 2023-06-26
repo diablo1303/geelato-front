@@ -421,6 +421,8 @@ export default {
   'model.table.index.model.title.sync.model': '更新数据库表单',
   'model.table.index.model.cancel.text': '取消',
   'model.table.index.model.ok.text': '确认',
+  'searchTable.tables.operations.alter': '变更',
+  'searchTable.tables.operations.alter.warning': '变更“实体名称”并同步至数据库',
   // eslint-disable-next-line no-template-curly-in-string
   'model.table.index.modal.table.content': '是否将数据库表同步至模型中？',
   'model.table.index.modal.model.content': '是否将模型同步至数据库中？',
