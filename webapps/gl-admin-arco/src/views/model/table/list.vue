@@ -317,7 +317,12 @@ const alterTable = (id: string) => {
     const formParams: Record<string, any> = pageData.value.params || {};
     formParams.editName = true;
     // @ts-ignore
-    tableDrawerRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
+    tableDrawerRef.value?.openForm({
+      action: 'edit', 'id': id, params: pageData.value.params, closeBack: (data: QueryForm) => {
+        reset();
+        pageData.value.modalEditBack(data);
+      }
+    });
   }
 }
 const editTable = (id: string) => {
