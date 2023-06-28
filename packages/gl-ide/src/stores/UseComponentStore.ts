@@ -62,6 +62,7 @@ class ComponentStoreFactory {
                 actions: {
 
                     setComponentTree(componentInst: ComponentInstance) {
+                        console.log('setComponentTree', componentInst)
                         this.currentComponentTree.length = 0
                         if (componentInst) {
                             this.currentComponentTree.push(componentInst)
@@ -124,7 +125,7 @@ class ComponentStoreFactory {
                      */
                     deleteComponentInstById(componentId: String, fromPageId: string) {
                         if (!componentId) {
-                            return
+                            return false
                         }
                         // console.log("try to deleteComponentById", componentId)
                         const thisProxy = this
@@ -141,7 +142,7 @@ class ComponentStoreFactory {
                                         nodes.push(
                                             {
                                                 componentName: "GlDndPlaceholder",
-                                                id: utils.gid('pHolder', 16),
+                                                id: utils.gid('pHolder', 20),
                                                 props: {},
                                                 slots: {},
                                                 children: []
@@ -156,12 +157,20 @@ class ComponentStoreFactory {
                         }
 
                         deleteNodeFromTree(componentId, this.currentComponentTree)
+                        return true
                     },
                     /**
                      *  删除当前已选中的组件
+                     *  @return 返回当前删除的组件
                      */
-                    deleteCurrentSelectedComponentInst(fromPageId: string) {
-                        this.deleteComponentInstById(this.currentSelectedComponentId, fromPageId)
+                    deleteCurrentSelectedComponentInst(fromPageId: string): ComponentInstance | undefined {
+                        const inst = this.currentSelectedComponentInstance
+                        const isSuccess = this.deleteComponentInstById(this.currentSelectedComponentId, fromPageId)
+                        if (isSuccess) {
+                            return inst
+                        } else {
+                            return
+                        }
                     },
 
                     /**

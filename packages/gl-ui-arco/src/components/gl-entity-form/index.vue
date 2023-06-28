@@ -20,7 +20,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, type PropType, provide, ref} from 'vue';
+import {inject, type PropType, provide, ref, toRaw} from 'vue';
 import type {FormInstance} from '@arco-design/web-vue/es/form';
 import useLoading from '../../hooks/loading';
 import {isDataEntry} from "@geelato/gl-ui-schema-arco";
@@ -78,8 +78,8 @@ const props = defineProps({
 // formData中不包括记录id，记录id在entityRecordId中定义
 const formParams = pageProvideProxy.getParamsByPrefixAsObject('form')
 const formData = ref<{ [key: string]: any }>(formParams);
-console.log('formData:', formData)
-let entityRecordId = ref(formParams.id || pageProvideProxy.getParamValue('recordId'))
+console.log('GlEntityForm > formData:', formData, 'formParams:', formParams)
+let entityRecordId = ref<string>(formParams.id || pageProvideProxy.getParamValue('recordId'))
 formProvideProxy.setRecordId(entityRecordId.value)
 
 const formItems = ref<Array<FormItem>>([]);
@@ -258,17 +258,20 @@ const checkBindEntity = () => {
 
 /**
  *  保存表单数据，将数据保存到服务端
+ *  在submitForm方法内调用此方法
  */
 const saveForm = async () => {
   if (checkBindEntity()) {
     // 先设置主表单部分
-    const entityKeyValues = {id: entityRecordId.value, ...JSON.parse(JSON.stringify(formData.value))}
+    const entityKeyValues: { [key: string]: any } = {id: entityRecordId.value, ...formData.value}
+    // console.log('GlEntityForm > saveForm() > formData:', formData.value, 'entityKeyValues:', entityKeyValues)
+
     // 获取子表单值信息，并设置到保存表单中
     subFormTableInstIds.value.forEach((instId: string) => {
       const componentInst: ComponentInstance = pageProvideProxy.getComponentInst(instId)
       const getRenderColumnsFn = pageProvideProxy.getMethod(instId, 'getRenderColumns')
       const getDeleteDataFn = pageProvideProxy.getMethod(instId, 'getDeleteData')
-      // console.log('GlEntityForm > saveForm() > getRenderColumnsFn', getRenderColumnsFn)
+      console.log('GlEntityForm > saveForm() > getRenderColumnsFn', getRenderColumnsFn)
       const subEntityFlag = '#'
       const subEntityKey = subEntityFlag + componentInst.props?.base?.entityName
       // 处理需保存的子表单数据
@@ -305,7 +308,7 @@ const saveForm = async () => {
         }
       }
     })
-    // console.log('saveForm props.bindEntity:', props.bindEntity)
+    console.log('saveForm props.bindEntity:', props.bindEntity, 'entityKeyValues:', entityKeyValues)
     return await entityApi.save(props.bindEntity.entityName, entityKeyValues)
   }
 }
@@ -339,9 +342,9 @@ const submitForm = async () => {
   // console.log('submitForm() > validate form:', formRef.value, ' result:', res)
   if (!res && !subFormTableValidError) {
     setLoading(true);
+    console.log('submitForm() > formData', formData)
     const saveResult = await saveForm()
     entityRecordId.value = saveResult?.data.data
-    console.log('formData', formData)
     // 将表单值，注册到表单的子项中
     formProvideProxy.setRecordId(entityRecordId.value)
     if (hasSubFormTable()) {

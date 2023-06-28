@@ -6,7 +6,7 @@
       >
         <div style="padding: 0 1em">
           <GlArrayBaseSetter v-slot:default="slotProps" v-model="componentInstance.actions" :filter="(action:Action)=>{return action?.eventName===actionMeta.name}"
-                             :defaultItemForAdd="new Action({id:utils.uuid('act',16),name:actionMeta.name,eventName:actionMeta.name,title:actionMeta.title})"
+                             :defaultItemForAdd="new Action({id:utils.uuid('act',20),name:actionMeta.name,eventName:actionMeta.name,title:actionMeta.title})"
                              @addItem="update"
                              @removeItem="update">
             <div style="width:100%;display: flex;margin-bottom: 1px">
@@ -96,7 +96,7 @@ const openActionSetter = (action: Action, actionIndex: number, actionMeta: Actio
     action.eventName = actionMeta.name
   }
   if (!action.id) {
-    action.id = utils.gid('act', 16)
+    action.id = utils.gid('act', 20)
   }
   currentAction.value = action ? JSON.parse(JSON.stringify(action)) : new Action()
   currentActionIndex.value = actionIndex

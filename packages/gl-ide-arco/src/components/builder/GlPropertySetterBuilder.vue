@@ -99,7 +99,7 @@
             title=""
             allow-search
         >
-          <a-option v-if="hasNoSub" v-for="item in setterItems" :value="item.name">{{ item.label }}-{{ item.name }}
+          <a-option v-if="hasNoSub" v-for="item in setterItems" :value="item.name" :title="item.name">{{ item.label }}-{{ item.name }}
           </a-option>
           <template v-else>
             <a-option v-if="mv.type==='children'" v-for="item in setterItemsForSubComponent"

@@ -1,8 +1,7 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
-import type {PageParamType} from "@geelato/gl-ui";
-import BlockUtils from "../BlockUtils";
-
+import type {PageParamConfigType} from "@geelato/gl-ui";
+import {paramStringify} from "@geelato/gl-ui";
 
 export default class ComponentInvokeBlockHandler implements IBlockHandler {
 
@@ -13,7 +12,7 @@ export default class ComponentInvokeBlockHandler implements IBlockHandler {
         return new ParseResult(
             `
             const method = $gl.getComponentMethod("${props.componentId}","${props.methodName}");
-            const params = ${BlockUtils.paramStringify(params)};
+            const params = ${paramStringify(params)};
             return method(params);
             `
         ).setBlockName('ComponentInvokeBlock');
@@ -27,5 +26,5 @@ export class Props {
     // 组件definedExpose出来的方法名
     methodName: string = "";
     // 调用方法的参数
-    params?: Array<PageParamType>
+    params?: Array<PageParamConfigType>
 }

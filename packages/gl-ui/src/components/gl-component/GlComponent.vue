@@ -111,7 +111,7 @@ const onChange = (...args: any) => {
 }
 
 /**
- *   执行propsExpress，计算出props的值，并合并到props中
+ *   运行各属性的表达式，依据propsExpress设置的key、value，计算出props的值，并合并到props中
  */
 const executePropsExpress = () => {
   if (props.glComponentInst.propsExpress) {
@@ -119,6 +119,7 @@ const executePropsExpress = () => {
       // @ts-ignore
       const propExpress = props.glComponentInst.propsExpress[key]
       if (propExpress) {
+        // TODO ctx需要采用与blockhandler相同的变量体系
         props.glComponentInst.props[key] = actionScriptExecutor.executeScript(propExpress, {})
         console.log('propExpress:', propExpress, actionScriptExecutor.executeScript(propExpress, {}))
       }

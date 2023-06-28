@@ -75,7 +75,7 @@ export default defineComponent({
       console.log('element>', element, $event)
     },
     emitSelectedElement() {
-      console.log('selectedElement:', {element: this.selectedElement, index: this.selectedIndex})
+      // console.log('selectedElement:', {element: this.selectedElement, index: this.selectedIndex})
       this.$emit('selectedElement', {element: this.selectedElement, index: this.selectedIndex})
     }
   }

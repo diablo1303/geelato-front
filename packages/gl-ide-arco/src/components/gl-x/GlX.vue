@@ -45,11 +45,11 @@ const props = defineProps({
   ...mixins.props
 })
 
-const instRefreshKey = ref(utils.gid('', 16))
+const instRefreshKey = ref(utils.gid('', 20))
 emitter.on(EventNames.GlIdeSetterUpdateComponentInstance, (instance: any) => {
   if (props.glComponentInst.id === instance.id) {
     console.log('GlIdeSetterUpdateComponentInstance Update', props.glComponentInst.id === instance.id, props.glComponentInst, instance)
-    instRefreshKey.value = utils.gid('', 16)
+    instRefreshKey.value = utils.gid('', 20)
     proxy?.$forceUpdate()
   }
 })

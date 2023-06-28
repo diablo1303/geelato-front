@@ -6,9 +6,14 @@ export type SizeProps = "mini" | "small" | "medium" | "large";
 export type Column = TableColumnDataPlus & { checked?: true };
 
 export interface TableColumnDataPlus extends TableColumnData {
+    // TODO 和xRenderScript的关系？
     xRenderFnBody: string;
+    // 数据显示的处理脚本
     xRenderScript: string;
+    // 用于编辑该字段的组件，作为子表时用到
     xEditComponent?: ComponentInstance;
+    // 是否显示，用于控制数据查询加载，但不展示，可用于前端列计算或record传值，恒等于false时才不显示
+    xShow?:boolean;
 }
 
 export interface TableMeta {

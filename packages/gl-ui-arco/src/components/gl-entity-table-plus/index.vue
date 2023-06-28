@@ -91,7 +91,7 @@ onMounted(() => {
   // console.log("转换后的table:", props.columns);
 })
 
-const tableSettingId = utils.gid('tSetting', 16)
+const tableSettingId = utils.gid('tSetting', 20)
 const size = ref<SizeProps>(props.size || "medium");
 const densityList = computed(() => [
   {

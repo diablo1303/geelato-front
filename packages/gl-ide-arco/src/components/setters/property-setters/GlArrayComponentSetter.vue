@@ -26,11 +26,11 @@ const props = defineProps({
 })
 const mv = ref(props.modelValue)
 // 处理历史数据，确保都有id
-mv.value.forEach((item: any) => item.id = item.id ? item.id : utils.gid('', 16))
+mv.value.forEach((item: any) => item.id = item.id ? item.id : utils.gid('', 20))
 
 const getTemplateInst = () => {
   const inst = new ComponentInstance();
-  inst.id = utils.gid('', 16)
+  inst.id = utils.gid('', 20)
   return inst
 }
 const update = () => {

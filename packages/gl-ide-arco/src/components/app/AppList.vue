@@ -40,7 +40,7 @@ export default defineComponent({
     const formRef = ref();
     const formState: UnwrapRef<FormState> = reactive({
       name: '',
-      code: utils.gid('', 16),
+      code: utils.gid('', 20),
       icon: '',
       description: '',
     });

@@ -132,6 +132,19 @@ export class ActionScriptExecutor {
     }
 
     /**
+     * 获取页面的参数
+     * @param pageComponentId
+     */
+    getParams(pageComponentId: string) {
+        const pageProxy = pageProxyMap[pageComponentId]
+        if (pageProxy) {
+            return pageProxy.getParams()
+
+        }
+        return null
+    }
+
+    /**
      * 触发组件的动作事件
      * @param actionName
      */
@@ -179,13 +192,13 @@ export class ActionScriptExecutor {
      * 获取组件值
      * @param componentId
      */
-    setComponentValue(componentId: string,value:any) {
+    setComponentValue(componentId: string, value: any) {
         for (const pageComponentId in pageProxyMap) {
             const pageProxy = pageProxyMap[pageComponentId]
             if (pageProxy) {
                 const vueInst = pageProxy.getVueInst(componentId)
                 if (vueInst) {
-                    return pageProxy.setComponentValue(componentId,value)
+                    return pageProxy.setComponentValue(componentId, value)
                 }
                 continue
             }

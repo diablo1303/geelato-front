@@ -4,6 +4,7 @@ import {entityApi, type PageType} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {useComponentStore} from "./UseComponentStore";
 import Page from "../entity/Page";
+import History, {HistoryStep} from "../utils/History";
 
 export const usePageStore = defineStore('GlPageStore', () => {
     /**
@@ -21,7 +22,12 @@ export const usePageStore = defineStore('GlPageStore', () => {
     /**
      *  打开的页面集
      */
-    const pages = ref(<Array<Page>>[])
+    const pages = ref<Array<Page>>([])
+
+    // 以pageExtendId为key，记录每一个page的history
+    const pageHistories: { [key: string]: History } = {}
+
+    const currentPageHistory = ref(new History())
 
     const componentStore = useComponentStore()
 
@@ -62,6 +68,9 @@ export const usePageStore = defineStore('GlPageStore', () => {
     function addPage(page: Page) {
         // console.log('push page to pageStore,page:', page)
         pages.value.push(page)
+        // 为新增的页面创建历史记录对象
+        pageHistories[page.extendId] = new History()
+
         switchToPage(pages.value.length - 1)
     }
 
@@ -98,11 +107,12 @@ export const usePageStore = defineStore('GlPageStore', () => {
         if (pages.value.length === 0) {
             currentPageIndex.value = -1
             currentPage.value = new Page()
+            currentPageHistory.value = new History()
             componentStore.$reset()
             return
         }
         const lastPageIndex = currentPageIndex.value
-        // pages页面数量调整时，如做了删除操作，需要重新计算lastPageIndexAfter的值，确保索引到调整的灵数组上
+        // pages页面数量调整时，如做了删除操作，需要重新计算lastPageIndexAfter的值，确保索引到调整的数组上
         const lastPageIndexAfter = lastPageIndex >= pages.value.length ? lastPageIndex - 1 : lastPageIndex
         const newPageIndex = Number.parseInt(index + '')
         // console.log('switchToPage from index:', lastPageIndex, 'to index', newPageIndex, 'lastPage:', currentPage.value, 'componentStore:', componentStore)
@@ -113,6 +123,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
         }
         currentPageIndex.value = newPageIndex
         currentPage.value = pages.value[newPageIndex]
+        currentPageHistory.value = pageHistories[currentPage.value.extendId]
         // 切换页面之后，重置页面组件状态，并重新选中页面记录的已选组件
         componentStore.$reset()
         componentStore.currentComponentTree.push(currentPage.value.sourceContent)
@@ -141,7 +152,9 @@ export const usePageStore = defineStore('GlPageStore', () => {
      */
     function closePage(index: number) {
         if (pages.value.length > index) {
-            pages.value.splice(index, 1)
+            const page = pages.value.splice(index, 1)[0]
+            // 关闭页面时，删除对应页面的历史记录
+            delete pageHistories[page.extendId]
         }
         if (index <= currentPageIndex.value) {
             let toIndex = index - 1
@@ -156,6 +169,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
      * 保存当前的页面到后台服务中
      */
     function saveCurrentPage() {
+        // 需要删除的属性名
         const deleteProps = ['']
 
         function convertToRelease(sourceContent?: object) {
@@ -165,6 +179,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
             // console.log('copyContent:', copyContent)
 
             function convertObj(obj: object) {
+                if (!obj) return
                 // 检测当前的obj是否为组件实例，如果是，则压缩组件实例，则否按通用的对象进行处理
                 // TODO const isComponentInst = true
                 Object.keys(obj).forEach((key: string) => {
@@ -173,7 +188,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
                     // console.log('key', key, 'value:', value)
                     // 去掉设计时属性：以“__”开头命名的属性
                     // if (key.startsWith('__') || deleteProps.indexOf(key) >= 0) {
-                    if (key.startsWith('__') ) {
+                    if (key.startsWith('__')) {
                         // @ts-ignore
                         // console.log('delete obj[key]:', obj[key])
                         // @ts-ignore
@@ -224,12 +239,50 @@ export const usePageStore = defineStore('GlPageStore', () => {
         currentPage.value.sourceContent = content
     }
 
+    function logInit(title: string, sourceContent: any, targetComponentInst: ComponentInstance) {
+        currentPageHistory.value.init(targetComponentInst.id, `${title}-${targetComponentInst.id}`, sourceContent,
+            `组件ID：${targetComponentInst.id}，组件类型：${targetComponentInst.componentName}`)
+    }
+
+
+    function log(title: string, sourceContent: any, targetComponentInst: ComponentInstance) {
+        currentPageHistory.value.push(targetComponentInst.id, `${title}-${targetComponentInst.id}`, sourceContent,
+            `组件ID：${targetComponentInst.id}，组件类型：${targetComponentInst.componentName}`)
+    }
+
+    function undo() {
+        // const step: HistoryStep | null = currentPageHistory.value.undo()
+        // if (step) {
+        //     componentStore.setComponentTree(step.getValue())
+        //     currentPage.value.resetSourceContent(step.getValue())
+        // }
+        currentPageHistory.value.undo()
+        const step = currentPageHistory.value.getCurrentValue()
+        if (step) {
+            componentStore.setComponentTree(step.getValue())
+            componentStore.setCurrentSelectedComponentById(step.getId())
+            currentPage.value.resetSourceContent(step.getValue())
+        }
+    }
+
+    function redo() {
+        // const steps: Array<HistoryStep> | null = currentPageHistory.value.redo()
+        currentPageHistory.value.redo()
+        const step = currentPageHistory.value.getCurrentValue()
+        if (step) {
+            componentStore.setComponentTree(step.getValue())
+            componentStore.setCurrentSelectedComponentById(step.getId())
+            currentPage.value.resetSourceContent(step.getValue())
+        }
+    }
+
     return {
         addPageTemplate,
         getPageTemplate,
         pages,
         currentPageIndex,
         currentPage,
+        currentPageHistory,
         addPage,
         closePage,
         findPageById,
@@ -237,7 +290,11 @@ export const usePageStore = defineStore('GlPageStore', () => {
         switchToPage,
         setCurrentSourceContent,
         saveCurrentPage,
-        loadPage
+        loadPage,
+        operationLogInit: logInit,
+        operationLog: log,
+        operationUndo: undo,
+        operationRedo: redo
     }
 })
 

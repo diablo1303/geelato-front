@@ -1,4 +1,4 @@
-import type {PageParamType} from "@geelato/gl-ui";
+import type {PageParamConfigType} from "@geelato/gl-ui";
 import type {PageProvideProxy} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {actionScriptExecutor} from "@geelato/gl-ui";
@@ -41,7 +41,7 @@ export default class BlockUtils {
      * 参数据对象序列化，形成代码块
      * @param params
      */
-    static paramStringify = (params: Array<PageParamType>) => {
+    static paramStringify = (params: Array<PageParamConfigType>) => {
         const strArray = []
         strArray.push("[")
         let index = 1

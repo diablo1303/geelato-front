@@ -7,7 +7,7 @@ export default {
 import {inject, nextTick, ref} from 'vue'
 import {mixins, utils} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
-import {componentStoreFactory} from "@geelato/gl-ide";
+import {componentStoreFactory, usePageStore} from "@geelato/gl-ide";
 import {PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
@@ -21,6 +21,7 @@ const componentStoreId = props.componentStoreId || inject('componentStoreId')
 if (!componentStoreId) {
   console.error('组件GlInsts未设置componentStoreId')
 }
+const pageStore = usePageStore()
 // @ts-ignore
 const componentStore = componentStoreFactory.useComponentStore(componentStoreId)
 
@@ -81,6 +82,8 @@ const moveItem = (dragIndex: number, hoverIndex: number, dragItemId: string, dro
     componentStore.setCurrentSelectedComponentByIdFromItems(dragItem.id, dropItemParentComponent.children, pageProvideProxy.pageInst.id)
     refresh()
   }
+  // 记录操作
+  pageStore.operationLog('移组件', pageStore.currentPage.sourceContent, dragItem)
 }
 
 const addItem = (hoverIndex: number, item: ComponentInstance) => {
@@ -91,6 +94,8 @@ const addItem = (hoverIndex: number, item: ComponentInstance) => {
   tryRemoveDndPlaceholder(props.glComponentInst.children)
   componentStore.currentDragComponentId = ''
   componentStore.setCurrentSelectedComponentByIdFromItems(item.id, props.glComponentInst.children, pageProvideProxy.pageInst.id)
+  // 记录操作
+  pageStore.operationLog('加组件', pageStore.currentPage.sourceContent, item)
   refresh()
 }
 

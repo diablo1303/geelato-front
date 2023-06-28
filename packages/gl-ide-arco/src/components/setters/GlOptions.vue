@@ -216,7 +216,7 @@ export default defineComponent({
       // this.emitSelectedElement()
     },
     emitSelectedElement() {
-      console.log('selectedElement:', {element: this.selectedElement, index: this.selectedIndex})
+      // console.log('selectedElement:', {element: this.selectedElement, index: this.selectedIndex})
       this.$emit('selectedElement', {element: this.selectedElement, index: this.selectedIndex})
     },
     popSelectedElement(fromSub: { element: any, index: number }) {

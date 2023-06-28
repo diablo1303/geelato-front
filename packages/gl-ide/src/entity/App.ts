@@ -2,8 +2,8 @@ import {utils} from "@geelato/gl-ui";
 
 export default class App {
     id: string = utils.gid('app', 32)
-    name: string = utils.gid('app', 16)
-    code: string = utils.gid('app', 16)
+    name: string = utils.gid('app', 20)
+    code: string = utils.gid('app', 20)
     icon: string = ''
     key?: string
     token?: string

@@ -50,6 +50,7 @@ export class EntityApi {
             // crossDomain: true
         }
         this.service = axios.create(opts);
+
         // console.log('EntityApi > reCreate() > service options:', opts)
         return this.service
     }

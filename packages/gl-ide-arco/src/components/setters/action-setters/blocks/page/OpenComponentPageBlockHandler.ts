@@ -1,7 +1,7 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
-import BlockUtils from "../BlockUtils";
-import type {PageParamType} from "@geelato/gl-ui";
+import {paramStringify} from "@geelato/gl-ui";
+import type {PageParamConfigType} from "@geelato/gl-ui";
 
 
 export default class OpenComponentPageBlockHandler implements IBlockHandler {
@@ -15,7 +15,7 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
         const params = props.params || []
         return new ParseResult(
             `
-            const content = $gl.loadPage("${props.pageId || ''}","${props.extendId}",{params:${BlockUtils.paramStringify(params)}});
+            const content = $gl.loadPage("${props.pageId || ''}","${props.extendId}",{params:${paramStringify(params)}});
             $gl.$drawer.open({
                 title: "${props.title}",
                 content: content,
@@ -69,7 +69,7 @@ export class Props {
     extendId: string = "";
     width: string = "1024px";
     // 页面参数
-    params?: Array<PageParamType>
+    params?: Array<PageParamConfigType>
     // 确认按钮的内容
     okText?: string
     // 取消按钮的内容

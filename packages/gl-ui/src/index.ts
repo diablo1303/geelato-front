@@ -1,7 +1,7 @@
 import {reactive, type App, type Plugin} from 'vue'
 import emitter from "./m/mix/emitter";
 import PageProvideProxy from "./components/PageProvideProxy";
-import type {PageParamType} from "./components/PageProvideProxy";
+import type {PageParamConfigType} from "./components/PageProvideProxy";
 import GlHtml from './components/gl-html/Index.vue'
 import GlIconfont from './components/gl-iconfont/Index.vue'
 import GlDndPlaceholder from './components/gl-dnd-placeholder/Index.vue'
@@ -39,6 +39,7 @@ import {FormProvideKey} from "./components/FormProvideProxy";
 import {Schema} from "b-validate";
 import type {PageType} from "./m/types/global";
 import {ListGroupingUtil} from "./m/utils/ListGroupingUtil";
+import {paramStringify} from "./components/PageProvideProxy";
 const Utils = AllUtils
 
 const component: Plugin = {
@@ -76,11 +77,12 @@ export {
     AppProvideProxy,
     PageProvideKey,
     PageProvideProxy,
+    paramStringify,
     FormProvideKey,
     FormProvideProxy,
     PageType,
     Schema,
-    PageParamType,
+    PageParamConfigType,
     GlIconfont,
     EntityApi,
     entityApi,

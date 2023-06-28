@@ -22,28 +22,41 @@
 
 
     <span>
-<!--        <a-button size="small" :style="btnStyle" :disabled="!historyStore.prevAble"-->
-      <!--                  :title="historyStore.prevAble?'回撤上一步':'无法回撤'" @click="historyStore.prevStep()">-->
-      <!--           <GlIconfont type="gl-desktop" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"-->
-      <!--                       @click="currentIconSelected='gl-desktop'"></GlIconfont>-->
-      <!--        </a-button>-->
-      <!--       <a-button size="small" :style="btnStyle" :disabled="!historyStore.nextAble"-->
-      <!--                 :title="historyStore.nextAble?'恢复':'无法恢复'" @click="historyStore.nextStep()">-->
-      <!--         <GlIconfont type="gl-desktop" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"-->
-      <!--                     @click="currentIconSelected='gl-desktop'"></GlIconfont>-->
-      <!--       </a-button>-->
-      <span class="gl-item" v-if="isLogined">
-        <GlIconfont type="gl-desktop" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"
-                    @click="currentIconSelected='gl-desktop'"></GlIconfont>
-      </span>
-       <span class="gl-item" v-if="isLogined">
-        <GlIconfont type="gl-tablet" :class="{'gl-selected':currentIconSelected==='gl-tablet'}"
-                    @click="currentIconSelected='gl-tablet'"></GlIconfont>
-      </span>
-      <span class="gl-item" v-if="isLogined">
-       <GlIconfont type="gl-mobile" :class="{'gl-selected':currentIconSelected==='gl-mobile'}"
-                   @click="currentIconSelected='gl-mobile'"></GlIconfont>
-      </span>
+        <a-button size="small" :style="btnStyle" :disabled="!pageStore.currentPageHistory.undoAble"
+                  :title="pageStore.currentPageHistory.undoAble?'回撤上一步':'无法回撤'"
+                  @click="pageStore.operationUndo()">
+                 <GlIconfont type="gl-undo" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"
+                             @click="currentIconSelected='gl-desktop'"></GlIconfont>
+              </a-button>
+             <a-button size="small" :style="btnStyle" :disabled="!pageStore.currentPageHistory.redoAble"
+                       :title="pageStore.currentPageHistory.redoAble?'重做':'无法重做'"
+                       @click="pageStore.operationRedo()">
+               <GlIconfont type="gl-redo" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"
+                           @click="currentIconSelected='gl-desktop'"></GlIconfont>
+             </a-button>
+      <!--      <span class="gl-item" v-if="isLogined">-->
+      <!--        <GlIconfont type="gl-desktop" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"-->
+      <!--                    @click="currentIconSelected='gl-desktop'"></GlIconfont>-->
+      <!--      </span>-->
+      <!--       <span class="gl-item" v-if="isLogined">-->
+      <!--        <GlIconfont type="gl-tablet" :class="{'gl-selected':currentIconSelected==='gl-tablet'}"-->
+      <!--                    @click="currentIconSelected='gl-tablet'"></GlIconfont>-->
+      <!--      </span>-->
+      <!--      <span class="gl-item" v-if="isLogined">-->
+      <!--       <GlIconfont type="gl-mobile" :class="{'gl-selected':currentIconSelected==='gl-mobile'}"-->
+      <!--                   @click="currentIconSelected='gl-mobile'"></GlIconfont>-->
+      <!--      </span><span class="gl-item" v-if="isLogined">-->
+      <!--        <GlIconfont type="gl-desktop" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"-->
+      <!--                    @click="currentIconSelected='gl-desktop'"></GlIconfont>-->
+      <!--      </span>-->
+      <!--       <span class="gl-item" v-if="isLogined">-->
+      <!--        <GlIconfont type="gl-tablet" :class="{'gl-selected':currentIconSelected==='gl-tablet'}"-->
+      <!--                    @click="currentIconSelected='gl-tablet'"></GlIconfont>-->
+      <!--      </span>-->
+      <!--      <span class="gl-item" v-if="isLogined">-->
+      <!--       <GlIconfont type="gl-mobile" :class="{'gl-selected':currentIconSelected==='gl-mobile'}"-->
+      <!--                   @click="currentIconSelected='gl-mobile'"></GlIconfont>-->
+      <!--      </span>-->
        <span class="gl-item" v-if="isLogined">
        <GlIconfont type="gl-json" @click="openCodeViewer"></GlIconfont>
       </span>
@@ -52,7 +65,8 @@
 
     <span style="float: right;padding-right: 1em">
       <span class="gl-item">
-        <GlIconfont v-if="currentLocalOption" type="gl-earth" :text="currentLocalOption.label" @click="switchLanguages"></GlIconfont>
+        <GlIconfont v-if="currentLocalOption" type="gl-earth" :text="currentLocalOption.label"
+                    @click="switchLanguages"></GlIconfont>
       </span>
       <span class="gl-item" v-if="isLogined">
         <GlIconfont type="gl-logout" text="退出"></GlIconfont>
@@ -82,7 +96,7 @@
               :fullscreen="true"
               @ok="codeViewerVisible=false"
               @cancel="codeViewerVisible=false">
-      <VueJsonPretty :data="componentStore.currentComponentTree[0]"></VueJsonPretty>
+      <VueJsonPretty v-if="componentStore.currentComponentTree[0]" :data="componentStore.currentComponentTree[0]"></VueJsonPretty>
       <template #footer>
         <a-button type="primary" @click="copyCode">复制</a-button>
       </template>
@@ -99,7 +113,6 @@ import {useIdeStore} from "../stores/UseIdeStore";
 import {usePageStore} from "../stores/UsePageStore";
 import {useThemeStore} from "../stores/UseThemeStore";
 import {emitter, useGlobal} from "@geelato/gl-ui";
-import {useHistoryStore} from "../stores/UseHistoryStore";
 import {useComponentStore} from "../stores/UseComponentStore";
 import {useAppStore} from "../stores/UseAppStore";
 import EventNames from "../entity/Events";
@@ -111,8 +124,6 @@ const appStore = useAppStore()
 const componentStore = useComponentStore()
 const themeStore = useThemeStore()
 const pageStore = usePageStore()
-const historyStore = useHistoryStore()
-
 const codeViewerVisible = ref(false)
 
 const global = useGlobal()
@@ -222,7 +233,9 @@ const switchLanguages = () => {
 }
 
 const copyCode = () => {
-  ClipboardJS.copy(JSON.stringify(componentStore.currentComponentTree[0]))
+  if (componentStore.currentComponentTree[0]) {
+    ClipboardJS.copy(JSON.stringify(componentStore.currentComponentTree[0]))
+  }
 }
 
 

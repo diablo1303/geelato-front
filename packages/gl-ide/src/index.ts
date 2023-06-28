@@ -18,7 +18,6 @@ import {useEntityStore} from "./stores/UseEntityStore";
 import {usePageStore} from "./stores/UsePageStore";
 import {useComponentStore,componentStoreFactory} from "./stores/UseComponentStore";
 import {useThemeStore} from "./stores/UseThemeStore";
-import {useHistoryStore} from "./stores/UseHistoryStore";
 import {useAppStore} from "./stores/UseAppStore";
 import uiLibAdapter from "./utils/UiLibAdapter";
 import './assets/gl-root.css'
@@ -55,7 +54,6 @@ export {
     usePageStore,
     useComponentStore,
     useThemeStore,
-    useHistoryStore,
     uiLibAdapter
 }
 // 默认导出组件

@@ -1,6 +1,6 @@
 <template>
   <a-select @change="onEntityChange" v-model="mv" allow-search allow-clear>
-    <a-option v-for="item in entityLiteMetas" :value="item.entityName" :title="item.entityName" :style="{background:mv===item.entityName?'#E8F7FF':''}">
+    <a-option v-for="item in entityLiteMetas" :value="item.entityName" :title="item.entityName" :class="{'gl-selected':mv===item.entityName}">
       {{ item.entityTitle + ' ' + item.entityName }}
     </a-option>
   </a-select>

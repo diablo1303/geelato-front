@@ -3,7 +3,8 @@
     <a-row>
       <a-col flex="auto">
         <a-select v-model="mv.componentName" @change="changeComponent" allow-clear>
-          <a-option v-for="item in options" :value="item.componentName" :title="getTitle(item.componentName)">
+          <a-option v-for="item in options" :value="item.componentName" :title="getTitle(item.componentName)"
+          :class="{'gl-selected':mv.componentName===item.componentName}">
             {{ item.title + getTitle(item.componentName, '-') }}
           </a-option>
         </a-select>
