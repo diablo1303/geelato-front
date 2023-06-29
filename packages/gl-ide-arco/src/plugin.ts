@@ -4,10 +4,10 @@ import GlIdePluginCoreAppTree from './components/sidebar/AppTree.vue'
 import GlComponentTree from './components/sidebar/ComponentTree.vue'
 import GlComponentsSidebar from './components/sidebar/components/ComponentsSidebar.vue'
 import GlIdePluginCoreHistory from './components/sidebar/History.vue'
-import GlIdeStageBasePage from './components/stage/BasePage.vue'
-import GlIdeStageFormPage from './components/stage/FormPage.vue'
-import GlIdeStageFreePage from './components/stage/FreePage.vue'
-import GlIdeStageListPage from "./components/stage/ListPage.vue";
+import GlBasePage from './components/stage/BasePage.vue'
+import GlFormPage from './components/stage/FormPage.vue'
+import GlFreePage from './components/stage/FreePage.vue'
+import GlListPage from "./components/stage/ListPage.vue";
 import GlComponentBuilder from "./components/builder/GlComponentBuilder.vue";
 import GlSimpleArrayBuilder from "./components/builder/props-builder/GlSimpleArrayBuilder.vue";
 import GlSimpleArraySetter from "./components/setters/property-setters/GlSimpleArraySetter.vue";
@@ -95,28 +95,28 @@ plugin.stage.push(new Panel({
     title: '页面',
     name: 'freePage',
     iconType: 'LayoutOutlined',
-    componentName: GlIdeStageFreePage.name
+    componentName: GlFreePage.name
 }))
 
 plugin.stage.push(new Panel({
     title: '页面',
     name: 'formPage',
     iconType: 'LayoutOutlined',
-    componentName: GlIdeStageFormPage.name
+    componentName: GlFormPage.name
 }))
 
 plugin.stage.push(new Panel({
     title: '页面',
     name: 'listPage',
     iconType: 'LayoutOutlined',
-    componentName: GlIdeStageListPage.name
+    componentName: GlListPage.name
 }))
 
 // plugin.stage.push(new Panel({
 //     title: '页面',
 //     name: 'Page',
 //     iconType: 'LayoutOutlined',
-//     componentName: GlIdeStageFreePage.name
+//     componentName: GlFreePage.name
 // }))
 
 
@@ -147,10 +147,10 @@ const component: Plugin = {
         app.component(GlComponentTree.name, GlComponentTree)
         app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
         app.component(GlIdePluginCoreHistory.name, GlIdePluginCoreHistory)
-        app.component(GlIdeStageBasePage.name, GlIdeStageBasePage)
-        app.component(GlIdeStageFormPage.name, GlIdeStageFormPage)
-        app.component(GlIdeStageFreePage.name, GlIdeStageFreePage)
-        app.component(GlIdeStageListPage.name, GlIdeStageListPage)
+        app.component(GlBasePage.name, GlBasePage)
+        app.component(GlFormPage.name, GlFormPage)
+        app.component(GlFreePage.name, GlFreePage)
+        app.component(GlListPage.name, GlListPage)
         app.component(GlToolbarBreadcrumbs.name, GlToolbarBreadcrumbs)
         // app.component(GlX.name, GlX)
         // app.component(GlComponentRecursion.name, GlComponentRecursion)

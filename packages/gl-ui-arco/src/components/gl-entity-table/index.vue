@@ -149,10 +149,10 @@ watch(() => props.enableEdit,
         // 如果启用，需将column中没有设置插槽的，生成插槽
         props.columns.forEach((col: Column) => {
           if (col.xRenderScript) {
-            col.slotName = col.slotName || utils.gid(editSlotNameFlag, 16)
+            col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
           }
           if (col.xEditComponent) {
-            col.slotName = col.slotName || utils.gid(editSlotNameFlag, 16)
+            col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
             // 验证信息
             if (col.xEditComponent.props.rules) {
               recordSchema.schema[col.dataIndex!] = toRaw(col.xEditComponent.props.rules)
@@ -338,7 +338,7 @@ const popupVisibleChange = (val: boolean) => {
 };
 
 
-const optColumn = {title: '操作', slotName: '#', fixed: 'right', width: 140}
+const optColumn = {title: '操作', slotName: '#', fixed: 'right', width: 140,align:'center'}
 const scroll = {
   x: "100%"
 }
@@ -546,7 +546,7 @@ defineExpose({
       </a-space>
     </template>
     <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">
-      <div :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">
+      <div class="gl-entity-table-cols-opt" :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">
         <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="updateRow(record,rowIndex)"
                      :glComponentInst="cloneDeep(column.xEditComponent)"></GlComponent>
         <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>
@@ -583,6 +583,10 @@ defineExpose({
 </template>
 
 <style>
+.gl-entity-table-cols-opt {
+  text-align: center;
+}
+
 .gl-entity-table-cols-opt .arco-btn-icon {
   margin: 0 4px 0 0 !important;
 }

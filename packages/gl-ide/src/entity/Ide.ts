@@ -254,7 +254,7 @@ export default class Ide {
         if (dom && dom.parentNode) {
             // console.log('dom:', dom, dom.id, dom.parentNode.id)
             // @ts-ignore
-            if (dom.parentNode.id && dom.parentNode.id.length === 16) {
+            if (dom.parentNode.id && dom.parentNode.id.length === 20) {
                 return dom.parentNode
             } else {
                 // @ts-ignore

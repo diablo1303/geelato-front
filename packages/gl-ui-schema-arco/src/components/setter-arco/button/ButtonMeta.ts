@@ -72,7 +72,7 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "状态",
+        "title": "颜色",
         "setterComponentName": "ASelect"
     }, {
         "expanded": true,

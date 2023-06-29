@@ -6,6 +6,41 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "879141",
+      "name": "prev",
+      "font_class": "prev",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    },
+    {
+      "icon_id": "879157",
+      "name": "next",
+      "font_class": "next",
+      "unicode": "e669",
+      "unicode_decimal": 58985
+    },
+    {
+      "icon_id": "6135295",
+      "name": "redo",
+      "font_class": "redo",
+      "unicode": "e653",
+      "unicode_decimal": 58963
+    },
+    {
+      "icon_id": "7009033",
+      "name": "undo",
+      "font_class": "undo",
+      "unicode": "e739",
+      "unicode_decimal": 59193
+    },
+    {
+      "icon_id": "9229175",
+      "name": "Field-number",
+      "font_class": "encode",
+      "unicode": "e90d",
+      "unicode_decimal": 59661
+    },
+    {
       "icon_id": "4766961",
       "name": "api",
       "font_class": "api",

@@ -4,7 +4,7 @@
  *  当前选中的页面组件为：componentStore.currentComponentTree[0]
  */
 export default {
-  name: "GlIdeStageBasePage"
+  name: "GlBasePage"
 }
 </script>
 <script lang="ts" setup>

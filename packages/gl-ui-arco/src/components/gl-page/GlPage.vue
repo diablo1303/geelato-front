@@ -19,7 +19,7 @@ export default {
 
 import {type PropType, getCurrentInstance, onMounted, onUnmounted, provide} from "vue";
 import {
-  type PageParamType,
+  type PageParamConfigType,
   type PageType,
   PageProvideProxy,
   actionScriptExecutor,
@@ -27,6 +27,7 @@ import {
   PageProvideKey,
 } from "@geelato/gl-ui";
 import type {Action} from "@geelato/gl-ui-schema";
+import {PageParam, PageParamsKey} from "@geelato/gl-ui/src/components/PageProvideProxy";
 
 const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
@@ -70,8 +71,11 @@ const props = defineProps({
       return ''
     }
   },
+  /**
+   *  支持转换前PageParamConfigType和转换后的参数类型PageParam
+   */
   params: {
-    type: Array as PropType<Array<PageParamType>>,
+    type: Array as PropType<Array<PageParamConfigType | PageParam>>,
     default() {
       return []
     }
@@ -97,13 +101,20 @@ const showSlot = () => {
   console.log('showSlot')
 }
 
+// console.log('GlPage > props.params:', props.params, 'id:', props.glComponentInst.id)
 const pageProvideProxy = new PageProvideProxy(props.glComponentInst, getCurrentInstance())
 pageProvideProxy.pageId = props.pageId
 pageProvideProxy.setVueInst(props.glComponentInst.id, getCurrentInstance())
-pageProvideProxy.setParams(props.params)
+if (pageProvideProxy.isParamNeedConvert(props.params)) {
+  // @ts-ignore
+  pageProvideProxy.setParams(JSON.parse(pageProvideProxy.paramStringify(props.params)))
+} else {
+  pageProvideProxy.setParams(props.params)
+}
 actionScriptExecutor.addPageProxy(props.glComponentInst.id, pageProvideProxy)
 // 整个页面组件级注入
 provide(PageProvideKey, pageProvideProxy)
+provide(PageParamsKey, props.params)
 // console.log('GlPage > provide() > pageProvideProxy:', pageProvideProxy)
 onUnmounted(() => {
   actionScriptExecutor.removePageProxy(props.glComponentInst.id)

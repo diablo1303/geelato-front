@@ -7,7 +7,9 @@
             v-if="propertySetterMeta.type&&propertySetterMeta.name&&componentModel[propertySetterMeta.type]"
             :displayMode="componentMeta.displayMode"
             :propertySetterMeta="propertySetterMeta"
-            v-model:propertyValue="componentModel[propertySetterMeta.type][propertySetterMeta.name]"
+            :propertyValue="componentModel[propertySetterMeta.type][propertySetterMeta.name]"
+            @set:propertyValue="newValue=>componentModel[propertySetterMeta.type][propertySetterMeta.name]=newValue"
+            @change:propertyValue="changePropertyValue(propertySetterMeta.type,propertySetterMeta.name,$event)"
         >
           <div v-if="propertySetterMeta.enableValueExpress">
             <a-button size="mini" @click="openValueExpressModal(propertySetterMeta)"
@@ -105,6 +107,10 @@ export default defineComponent({
         this.componentModel.slotsExpress = this.componentModel.slotsExpress || {}
       }
     },
+    /**
+     * 打开值表达式设置窗口
+     * @param propertySetterMeta
+     */
     openValueExpressModal(propertySetterMeta: IPropertySetterMeta) {
       this.currentOpenModalPropertySetterMeta = propertySetterMeta
       this.valueExpressModalVisible = true
@@ -126,67 +132,9 @@ export default defineComponent({
     handleCancel() {
 
     },
-    // getComponentModel(){
-    //   this.componentModel
-    // }
-    /**
-     * 从组件实例值componentModel（componentInstance）中获取指定类型的属性值
-     * @param propertyName
-     * @param type 如props、slots...
-     */
-    // getPropertyValue(propertyName: string, type: string) {
-    //   let properties = Object.getOwnPropertyDescriptor(this.componentModel, type)?.value
-    //   if (!this.componentModel || !properties) {
-    //     console.log('getPropertyValue > type is', type, 'and propertyName is', propertyName, ',return:undefined')
-    //     return undefined
-    //   }
-    //   for (let key in properties) {
-    //     if (key === propertyName) {
-    //       console.log('getPropertyValue > type is', type, 'and propertyName is', propertyName, ',return:', properties[key], 'form properties:', properties)
-    //       return properties[key]
-    //     }
-    //   }
-    // },
-    // setPropertyValue(propertyName: string, value: any, type: string) {
-    //   console.log('setPropertyValue > propertyName:', propertyName, ', value:', value, ', type:', type)
-    //   let properties = Object.getOwnPropertyDescriptor(this.componentModel, type)?.value
-    //   // console.log('setPropertyValue before> properties:', properties)
-    //   let rawProperties = unref(properties)
-    //   if (properties) {
-    //     let isExistProperty = false
-    //     for (let key in rawProperties) {
-    //       // console.log('key:', key, 'propertyName:', propertyName, key === propertyName)
-    //       if (key === propertyName) {
-    //         rawProperties[key] = value
-    //         isExistProperty = true
-    //         break
-    //       }
-    //     }
-    //     // 如果properties存在，但properties中不存在该propertyName
-    //     if (!isExistProperty) {
-    //       rawProperties[propertyName] = value
-    //     }
-    //   } else {
-    //     // 如果properties不存在，初始该类型(如props、slots...)的properties
-    //     properties = ref({[propertyName]: value})
-    //   }
-    //   // @ts-ignore
-    //   this.componentModel[type] = properties
-    //   console.log('setPropertyValue  after> properties:', properties)
-    //   console.log('setPropertyValue update componentModel:', this.componentModel)
-    //   this.$emit("update:componentInstance", this.componentModel)
-    // },
-    // getPropertyArrayValue(type: string) {
-    //   console.log('getPropertyArrayValue', type, Object.getOwnPropertyDescriptor(this.componentModel, type)?.value)
-    //   return Object.getOwnPropertyDescriptor(this.componentModel, type)?.value || []
-    // },
-    // setPropertyArrayValue(propertyName: string, value: any, type: string) {
-    //   let properties = Object.getOwnPropertyDescriptor(this.componentModel, type)?.value
-    //   console.log('setPropertyArrayValue > properties:', properties)
-    //   // @ts-ignore
-    //   this.componentModel[type] = properties
-    //   this.$emit("update:componentInstance", this.componentModel)
-    // },
+    changePropertyValue(type: string, name: string, value: any) {
+      this.$emit('change:propertyValue', {type, name, value})
+    }
   }
 })
 </script>

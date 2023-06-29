@@ -3,16 +3,68 @@
  */
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import type {ComponentInternalInstance} from "vue";
+import {toRaw} from "vue";
 
-export type PageParamType = { pName: string, pValue: any, pType: string }
+export type PageParamConfigType = { pName: string, pValue: any, pType: string }
+export type PageParam = { [key: string]: any }
 export const PageProvideKey = 'PageProvideKey'
+export const PageParamsKey = 'PageParamsKey'
 export const PageProvideKeyNotBlockPage = 'PageProvideKeyNotBlockPage'
+
+/**
+ * 参数据对象序列化，形成代码块
+ * @param params
+ */
+export const paramStringify = (params: Array<PageParamConfigType>) => {
+    const strArray = []
+    strArray.push("[")
+    let index = 1
+    params.forEach((param) => {
+        strArray.push("{")
+        strArray.push(`"${param.pName}":`)
+        switch (param.pType) {
+            case undefined:
+                strArray.push(`"${param.pValue}"`)
+                break
+            case "string" :
+                strArray.push(`"${param.pValue}"`)
+                break
+            case "number" :
+                strArray.push(param.pValue)
+                break
+            case "boolean" :
+                strArray.push(param.pValue)
+                break
+            case "express" :
+                strArray.push(param.pValue)
+                break
+            case "array" :
+                strArray.push(param.pValue)
+                break
+            case "object" :
+                strArray.push(param.pValue)
+                break
+            default:
+                strArray.push(`"${param.pValue}"`)
+                break
+        }
+        strArray.push("}")
+        if (index !== params.length) {
+            strArray.push(",")
+        }
+        index++
+    })
+    strArray.push("]")
+    return strArray.join('')
+}
+
+
 export default class PageProvideProxy {
     // 数据库中的字段，页面id
     pageId: string = ''
     pageInst: ComponentInstance
     pageVueInst: ComponentInternalInstance | null
-    pageParams: Array<{ [key: string]: any }> = []
+    pageParams: Array<PageParam> = []
     pageCtx: object = {}
     componentMap: { [key: string]: ComponentInternalInstance | null } = {}
 
@@ -52,17 +104,28 @@ export default class PageProvideProxy {
     }
 
     /**
-     * 设置页面参数
+     * 检查参数格式，看是否需要进行转换
      * @param params
      */
-    setParams(params: Array<{ [key: string]: any }>) {
+    isParamNeedConvert(params: Array<PageParamConfigType | PageParam>) {
+        if (!params || params && params.length === 0) return false
+        return Object.keys(params[0]).indexOf('pType') >= 0
+    }
+
+    paramStringify = paramStringify
+
+    /**
+     * 设置页面参数，这里设置的是已完成解析的，键值对，不是参数配置信息
+     * @param params
+     */
+    setParams(params: Array<PageParam>) {
         this.pageParams = params || []
     }
 
     /**
      *  在动作面板中配置的页面参数，如formState为'read'
      */
-    getParams() {
+    getParams(): Array<PageParam> {
         return this.pageParams
     }
 
@@ -90,7 +153,8 @@ export default class PageProvideProxy {
         if (!this.pageParams) return {}
         const obj: { [key: string]: any } = []
         this.pageParams.forEach((param) => {
-            const key = Object.keys(param)[0]
+            // console.log('param', param, toRaw(param))
+            const key = Object.keys(toRaw(param))[0]
             if (key.startsWith(prefix + '.')) {
                 obj[key.substring(prefix.length + 1)] = param[key]
             }

@@ -7,8 +7,9 @@
               componentStore.currentSelectedComponentMeta?.title
             }}]</span>
           <a-button-group style="float: right" type="primary" size="mini" shape="round">
-            <a-button status="primary" @click="componentStore.selectParentComponent">上一层</a-button>
-            <a-button status="danger" @click="componentStore.deleteCurrentSelectedComponentInst">删除</a-button>
+            <a-button status="primary" v-if="showSelectParent" @click="componentStore.selectParentComponent">上一层
+            </a-button>
+            <a-button status="danger" v-if="showDelete" @click="deleteCurrentSelectedComponentInst">删除</a-button>
           </a-button-group>
         </div>
         <div class="gl-table" style="margin: 0 0 2px 0;border-bottom: 2px solid #04559f">
@@ -22,7 +23,8 @@
             </div>
           </div>
         </div>
-        <GlComponentPropertiesSetter :componentMeta="componentMeta" :componentInstance="componentModel"/>
+        <GlComponentPropertiesSetter :componentMeta="componentMeta" :componentInstance="componentModel"
+                                     @change:propertyValue="onChangePropertyValue"/>
       </a-tab-pane>
 
       <a-tab-pane key="2" tab="动作" title="动作">
@@ -50,11 +52,11 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {onUnmounted, type PropType, provide, ref} from "vue";
+import {computed, onUnmounted, type PropType, provide, ref, watch} from "vue";
 import {ComponentInstance, type ComponentMeta} from "@geelato/gl-ui-schema";
 import ClipboardJS from "clipboard";
 import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "./ComponentSetterProvideProxy";
-import {componentStoreFactory} from "@geelato/gl-ide";
+import {componentStoreFactory, usePageStore} from "@geelato/gl-ide";
 
 const emits = defineEmits(['update']);
 const props = defineProps({
@@ -81,12 +83,12 @@ const props = defineProps({
   }
 })
 
+const pageStore = usePageStore()
 const componentStore = componentStoreFactory.useComponentStore('useComponentStore')
 
 console.log('GlComponentSetter > init > componentName:', props.componentInstance?.componentName, ',componentId:', props.componentInstance?.id)
 const componentSetterProvideProxy = new ComponentSetterProvideProxy()
 provide(ComponentSetterProvideKey, componentSetterProvideProxy)
-
 
 // 组件实例值
 if (props.componentMeta.vModelName) {
@@ -98,6 +100,27 @@ const setInstance = (instance: ComponentInstance, form: String) => {
   console.log('GlComponentSetter > set instance:', instance, 'form', form)
 }
 
+const showSelectParent = computed(() => {
+  return componentStore.currentSelectedComponentMeta?.componentName !== 'GlPage'
+})
+
+const showDelete = computed(() => {
+  return componentStore.currentSelectedComponentMeta?.componentName !== 'GlPage'
+})
+
+const deleteCurrentSelectedComponentInst = () => {
+  const inst = componentStore.deleteCurrentSelectedComponentInst()
+  if (inst) {
+    pageStore.operationLog('删组件', pageStore.currentPage.sourceContent, inst)
+  }
+}
+/**
+ * 修改属性时触发
+ * @param param
+ */
+const onChangePropertyValue = (param: { type: string, name: string, value: any }) => {
+  pageStore.operationLog('改属性', pageStore.currentPage.sourceContent, componentStore.currentSelectedComponentInstance)
+}
 onUnmounted(() => {
   console.log('GlComponentSetter > onUnmounted ...', props.componentInstance?.componentName, props.componentInstance?.id)
 })

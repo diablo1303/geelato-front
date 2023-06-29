@@ -15,3 +15,11 @@
 .gl-component-setter .gl-table-cell:not(.gl-label) {
     vertical-align: middle;
 }
+
+.arco-select-option.gl-selected {
+    color: #165DFF;
+    font-weight: bold;
+}
+.arco-select-option.gl-selected:before{
+    content: "√";
+}

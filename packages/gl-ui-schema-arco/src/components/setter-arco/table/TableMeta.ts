@@ -355,6 +355,17 @@ export default {
             "setterComponentName": "AInput",
             "enableValueExpress": false
         }, {
+            "name": "xShow",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {"defaultChecked": true},
+            "setterComponentVModelName": "modelValue",
+            "title": "是否显示",
+            "setterComponentName": "ASwitch"
+        },  {
             "name": "xRenderScript",
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
@@ -414,19 +425,6 @@ export default {
             }],
             "setterComponentName": "GlSimpleObjectSetter",
             "title": "排序"
-        }, {
-            "name": "xEditComponent",
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "title": "编辑组件",
-            "setterComponentName": "GlComponentSelect",
-            "placeholder": "",
-            "description": "若表格启用编辑，则该列选择此组件进行编辑；若该表格不需编辑，则可不选。",
-            "enableValueExpress": false
         }, {
             "name": "width",
             "group": "base",

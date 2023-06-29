@@ -110,6 +110,13 @@ export default class Page {
     }
 
     /**
+     *  重置源内容
+     *  场景：在页面历史操作重做时
+     */
+    resetSourceContent(sourceContent:ComponentInstance){
+        this.sourceContent = sourceContent
+    }
+    /**
      * @param content 字符串
      * @returns {*} content 对象
      */

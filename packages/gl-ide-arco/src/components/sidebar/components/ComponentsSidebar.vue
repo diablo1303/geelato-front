@@ -3,7 +3,7 @@
     <div v-for="componentMaterialGroup in componentMaterialGroups">
       <div class="gl-group-title" @click="componentMaterialGroup.opened=!componentMaterialGroup.opened"
            style="border-bottom: 1px solid #04559f;width: 90%">
-        <span :title="componentMaterialGroup.name">{{ componentMaterialGroup.text }}</span>
+        <span :title="componentMaterialGroup.name" style="font-weight: 600;color: #7d7d7f">{{ componentMaterialGroup.text }}</span>
         <span class="gl-tag">{{ componentMaterialGroup.items?.length }}</span>
       </div>
       <div class="gl-group-cards" v-if="componentMaterialGroup.opened">
@@ -40,14 +40,14 @@ const props = defineProps({
   componentGroups: {
     type: Array as PropType<Array<ComponentMaterialGroup>>,
     default() {
+      // {name: 'other', text: '其它', opened: true}
       return [
         {name: 'layout', text: '布局', opened: true},
-        {name: 'navigation', text: '导航', opened: false},
         {name: 'dataEntry', text: '表单', opened: true},
         {name: 'dataDisplay', text: '展示', opened: true},
         {name: 'feedback', text: '反馈', opened: true},
-        {name: 'chart', text: '图表', opened: true},
-        {name: 'other', text: '其它', opened: true}]
+        {name: 'navigation', text: '导航', opened: false},
+        {name: 'chart', text: '图表', opened: true}]
     }
   }
 })

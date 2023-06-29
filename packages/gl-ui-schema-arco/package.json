@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@geelato/gl-ui-schema": "workspace:^0.0.1",
-    "pinia": "^2.0.32",
+    "pinia": "^2.1.4",
     "vue": "^3.2.47"
   },
   "devDependencies": {

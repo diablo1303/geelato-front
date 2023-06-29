@@ -8,8 +8,8 @@ import {useEntityStore} from "./UseEntityStore";
 import Page from "../entity/Page";
 import type {ComponentMeta, ComponentInstance} from "@geelato/gl-ui-schema";
 import {ref} from "vue";
-import {utils} from "@geelato/gl-ui";
-import {useGlobal} from "@geelato/gl-ui";
+import {utils,useGlobal} from "@geelato/gl-ui";
+import History from "../utils/History";
 
 export const useIdeStore = defineStore('GlIdeStore', () => {
     const name = ref('Geelato Ide')
@@ -95,9 +95,15 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
         console.log('try to open page:', {type, extendId, title, iconType}, openingPageExtendId.value)
         if (openingPageExtendId.value) {
             if (openingPageExtendId.value === extendId) {
-                global.$notification.error({title: `打开页面【${title}】失败`, content: `正在加载页面【${title}】，请勿重复打开`})
+                global.$notification.error({
+                    title: `打开页面【${title}】失败`,
+                    content: `正在加载页面【${title}】，请勿重复打开`
+                })
             } else {
-                global.$notification.error({title: `打开页面【${title}】失败`, content: `正在加载其它页面，请加载之后再切换页面`})
+                global.$notification.error({
+                    title: `打开页面【${title}】失败`,
+                    content: `正在加载其它页面，请加载之后再切换页面`
+                })
             }
             return false
         }
@@ -142,7 +148,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
                             const pageTemplate = pageStore.getPageTemplate(type)
 
                             function genComponentId(inst: ComponentInstance) {
-                                inst.id = utils.gid(componentStore.getAlias(inst.componentName), 16)
+                                inst.id = utils.gid(componentStore.getAlias(inst.componentName), 20)
                                 if (inst.children) {
                                     inst.children.forEach((subInst: ComponentInstance) => {
                                         genComponentId(subInst)
@@ -159,6 +165,8 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
                         page.ideStageComponentName = foundPanel.componentName
                         pageStore.addPage(page)
                         openingPageExtendId.value = ''
+                        // 记录操作
+                        pageStore.operationLogInit('初始化', pageStore.currentPage.sourceContent, page.sourceContent!)
                     })
                 } else {
                     openingPageExtendId.value = ''
@@ -203,6 +211,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
     function setStageRefreshFlag(flag: boolean) {
         stageRefreshFlag.value = flag
     }
+
 
     return {
         name,

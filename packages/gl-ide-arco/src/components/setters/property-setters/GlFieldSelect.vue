@@ -1,6 +1,8 @@
 <template>
   <a-select size="small" v-model="mv" @change="onChange" allow-search allow-clear @click="onClick">
-    <a-option v-for="item in entityFieldMetas" :value="item.name">{{ item.title + ' ' + item.name }}</a-option>
+    <a-option v-for="item in entityFieldMetas" :value="item.name" :class="{'gl-selected':mv===item.name}">
+      {{ item.title + ' ' + item.name }}
+    </a-option>
   </a-select>
 </template>
 

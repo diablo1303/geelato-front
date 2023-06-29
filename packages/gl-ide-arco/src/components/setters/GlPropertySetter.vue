@@ -49,7 +49,8 @@
                 <div class="gl-table" :class="{'gl-table-as-tree':false}">
                   <template v-for="property in propertySetterMeta.properties">
                     <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
-                                      v-model:propertyValue="slotProps.item[property.name]"
+                                      :propertyValue="slotProps.item[property.name]"
+                                      @set:propertyValue="newValue=>slotProps.item[property.name]=newValue"
                                       @update="($event:any)=>{slotProps.item[property.name]=$event}"></GlPropertySetter>
                   </template>
                 </div>
@@ -71,7 +72,8 @@
                 <div class="gl-table" :class="{'gl-table-as-tree':false}" style="margin: 1px;border: 1px solid #e4e4e4">
                   <template v-for="subPropertySetterMeta in propertySetterMeta.properties">
                     <GlPropertySetter v-if="propertyModel" :propertySetterMeta="subPropertySetterMeta"
-                                      v-model:propertyValue="propertyModel[subPropertySetterMeta.name]"
+                                      :propertyValue="propertyModel[subPropertySetterMeta.name]"
+                                      @set:propertyValue="newValue=>propertyModel[subPropertySetterMeta.name]=newValue"
                                       @update="onSubPropertyUpdate(subPropertySetterMeta.name,$event)"></GlPropertySetter>
                   </template>
                 </div>
@@ -111,7 +113,8 @@
                 <template v-for="property in propertySetterMeta.properties">
                   {{ slotProps.item.props }}{{ propertyModel }}
                   <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
-                                    v-model:propertyValue="slotProps.item.props[property.name]"
+                                    :propertyValue="slotProps.item.props[property.name]"
+                                    @set:propertyValue="newValue=>slotProps.item.props[property.name]=newValue"
                                     @update="($event:any)=>{slotProps.item.props[property.name]=$event}"></GlPropertySetter>
                 </template>
               </div>
@@ -133,13 +136,15 @@ export default {
 </script>
 <script setup lang="ts">
 // @ts-nocheck
-import {computed, inject, onMounted, onUpdated, type PropType, reactive, ref, watch} from 'vue'
+import {computed, inject, onMounted, onUpdated, type PropType, reactive, ref, toRaw, watch} from 'vue'
 import type {PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
 import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "./ComponentSetterProvideProxy";
 
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
-
-const emits = defineEmits(['update', 'update:propertyValue'])
+let initialized = false
+// set:propertyValue 初始化或后续值改变时会触发该事件：
+// change:propertyValue 初始化之后，值改变时触发，初始化时不触发
+const emits = defineEmits(['update', 'set:propertyValue', 'change:propertyValue'])
 const props = defineProps({
   /**
    *  属性的配置展示模式
@@ -161,7 +166,6 @@ const cellDisplayModeClass = computed(() => {
   return isCollapseDisplayMode ? {"gl-table-cell-collapse": true} : {"gl-table-cell": true}
 })
 
-
 onUpdated(() => {
   setPropertyModel(false)
 })
@@ -169,13 +173,18 @@ onUpdated(() => {
 watch(() => {
   return propertyModel
 }, (val, oval) => {
-  // console.log('update property', props.propertySetterMeta?.name, ' and set value as ', val)
-  emits("update:propertyValue", val)
+  // console.log('set property', props.propertySetterMeta?.name, ' and set value as ', val)
+  emits("set:propertyValue", val)
+  if (initialized) {
+    console.log(`change property "${props.propertySetterMeta?.name}"  val:`, val)
+    console.log(`change property "${props.propertySetterMeta?.name}" oval:`, oval)
+    emits("change:propertyValue", val)
+  }
   componentSetterProvideProxy.setPropValue(props.propertySetterMeta?.name, val?.value)
   // emits("update", val)
 }, {deep: true, immediate: true})
 
-const setPropertyModel = (isCreate:boolean) => {
+const setPropertyModel = (isCreate: boolean) => {
   propertyModel.value = props.propertyValue
   if (!propertyModel.value) {
     if (props.propertySetterMeta.type === 'slots') {
@@ -186,10 +195,10 @@ const setPropertyModel = (isCreate:boolean) => {
         propsName: props.propertySetterMeta.slotComponentBindName
       }
     } else {
-      if (isCreate&&props.propertySetterMeta.setterDefaultValue!==undefined) {
+      if (isCreate && props.propertySetterMeta.setterDefaultValue !== undefined) {
         // 若组件配置了默认值，则设置默认值
         propertyModel.value = props.propertySetterMeta.setterDefaultValue
-      }else{
+      } else {
         // 若组件未配置默认值，则按类型进行设置值设置
         if (props.propertySetterMeta.properties && props.propertySetterMeta.properties.length > 0) {
           if (props.propertySetterMeta.type === 'children' || props.propertySetterMeta.setterComponentName === 'GlObjectArraySetter') {
@@ -243,6 +252,7 @@ const createChildElementTemplate = (childName: String, childComponentName: Strin
 const selectChildElement = () => {
 
 }
+initialized = true
 </script>
 
 <style>

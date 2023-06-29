@@ -22,7 +22,7 @@
     "@geelato/gl-ui-schema-arco": "workspace:^0.0.1",
     "b-validate": "^1.4.6",
     "lodash": "^4.17.21",
-    "pinia": "^2.0.32",
+    "pinia": "^2.1.4",
     "sortablejs": "^1.15.0",
     "vue": "^3.2.47",
     "vue-i18n": "^9.2.2",

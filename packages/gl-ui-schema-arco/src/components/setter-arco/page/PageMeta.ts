@@ -1,8 +1,8 @@
 export default {
     "componentName": "GlPage",
     "displayMode": "Tile",
-    "iconType": "gl-page",
-    "group": "navigation",
+    "iconType": "gl-file",
+    "group": "other",
     "title": "页面",
     "alias": "page",
     "useBy": ["freePage"],
@@ -18,15 +18,15 @@ export default {
         "setterComponentName": "AInput"
     }, {
         "name": "pageType",
-        "setterComponentProps": {},
+        "setterComponentProps": {"readonly": true},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
         "enableValueExpress": false,
         "show": true,
         "expanded": true,
-        "title": "页面类型-临时",
-        "description": "后续将去提该属性",
+        "title": "页面类型",
+        "description": "只读属性",
         "setterComponentName": "AInput"
     }, {
         "name": "pageMargin",
@@ -50,6 +50,61 @@ export default {
         "title": "内边距",
         "placeholder": "如：14px",
         "setterComponentName": "AInput"
+    }, {
+        "name": "params",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "title": "页面参数",
+        "setterComponentName": "GlObjectArraySetter",
+        "_showSub": true,
+        "properties": [{
+            "name": "pName",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "setterComponentName": "AInput",
+            "title": "参数名"
+        }, {
+            "name": "pValue",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": true,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "setterComponentName": "AInput",
+            "title": "参数值"
+        }, {
+            "name": "pType",
+            "setterComponentProps": {
+                "allowClear": true,
+                "options": [{"label": "字符串", "value": "string"}, {
+                    "label": "布尔",
+                    "value": "boolean"
+                }, {"label": "表达式", "value": "express"}, {"label": "数值", "value": "number"}, {
+                    "label": "数组",
+                    "value": "array"
+                }, {"label": "对象", "value": "object"}]
+            },
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "show": true,
+            "expanded": true,
+            "title": "类型",
+            "setterComponentName": "ASelect"
+        }],
+        "titleField": "pName"
     }],
     "actions": [{"name": "onMounted", "description": "页面加载完时触发，和Vue的onMounted一致", "title": "加载完"}]
 }

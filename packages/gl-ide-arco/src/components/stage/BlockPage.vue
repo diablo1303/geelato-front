@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: "GlIdeBlockPage"
+  name: "GlBlockPage"
 }
 </script>
 <script lang="ts" setup>
@@ -8,7 +8,7 @@ import {type PropType, watch} from "vue";
 import {useGlobal, utils} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
-import GlIdeStageBasePage from "./BasePage.vue";
+import GlBasePage from "./BasePage.vue";
 
 
 const emits = defineEmits(['update'])
@@ -66,8 +66,8 @@ const key = utils.gid('p')
 </script>
 
 <template>
-  <GlIdeStageBasePage :key="key" :componentStoreId="componentStoreId"
-                      :enableToolbar="false"></GlIdeStageBasePage>
+  <GlBasePage :key="key" :componentStoreId="componentStoreId"
+                      :enableToolbar="false"></GlBasePage>
 </template>
 <style>
 </style>

@@ -79,12 +79,19 @@ const [dropCollect, drop] = useDrop<DragItem,
       }
     } else {
       // 尝试移动时(不一定会移动，如在同一位置拖、放)
-      props.moveItem!(dragIndex, hoverIndex!, dragItem.id, dropItemId)
+      if (typeof props.moveItem === 'function') {
+        props.moveItem!(dragIndex, hoverIndex!, dragItem.id, dropItemId)
+      }
     }
     // TODO 改成依据鼠标的位置来区分是需要放置到上方还是下方
     dragItem.index = hoverIndex!
     // 拖动标识，通过监控该标识的变化，可以判断整个页面是否有变化
-    componentStore.currentSelectedComponentInstance.__dragFlag = utils.gid('dragFlag', 20)
+    // 注册，在拖动的过程中存在currentSelectedComponentInstance为undefined的情况
+    if (componentStore.currentSelectedComponentInstance) {
+      componentStore.currentSelectedComponentInstance.__dragFlag = utils.gid('dragFlag', 20)
+    } else {
+      console.warn('currentSelectedComponentInstance为undefined')
+    }
   }
 })
 

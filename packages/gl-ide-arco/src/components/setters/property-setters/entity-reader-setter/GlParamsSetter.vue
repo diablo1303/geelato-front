@@ -133,7 +133,7 @@ export default defineComponent({
     onChangeElement($event:any,element:any, index:number) {
       this.selectedElement = element
       this.selectedIndex = index
-      console.log('onChangeElement>', element, $event.target)
+      // console.log('onChangeElement>', element, $event.target)
       this.$emit('update:modelValue', this.mv)
       this.$emit('changeElement', element)
       // $event.target.focus()
@@ -141,7 +141,7 @@ export default defineComponent({
       // this.emitSelectedElement()
     },
     emitSelectedElement() {
-      console.log('selectedElement:', {element: this.selectedElement, index: this.selectedIndex})
+      // console.log('selectedElement:', {element: this.selectedElement, index: this.selectedIndex})
       this.$emit('selectedElement', {element: this.selectedElement, index: this.selectedIndex})
     },
   }
