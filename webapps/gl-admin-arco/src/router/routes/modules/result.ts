@@ -35,4 +35,4 @@ const RESULT: AppRouteRecordRaw = {
   ],
 };
 
-export default RESULT;
+// export default RESULT;
