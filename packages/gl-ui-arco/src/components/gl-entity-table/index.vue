@@ -25,12 +25,13 @@ import {
   EntityReader,
   EntityReaderParam,
   MixUtil,
-  CheckUtil, utils, useGlobal, FormProvideProxy, FormProvideKey
+  CheckUtil, utils, useGlobal, FormProvideProxy, FormProvideKey, jsScriptExecutor
 } from "@geelato/gl-ui";
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import type {Column, TableColumnDataPlus} from "./table";
 import {Schema} from "b-validate";
 import {logicDeleteFieldName} from "./table";
+import {mixins} from "@geelato/gl-ui";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal;
 // fetch 加载完成数据之后
@@ -130,45 +131,67 @@ const props = defineProps({
   tableSettingId: {
     type: String,
     required: true
-  }
+  },
+  ...mixins.props
 });
 
 const formProvideProxy: FormProvideProxy | undefined = inject(FormProvideKey)
 
 let recordSchema = new Schema({})
 
+const editSlotNameFlag = '__editSlot'
+
+const setSlotNames = () => {
+  // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确认列有slotName
+  props.columns.forEach((col: Column) => {
+    if (col.xRenderScript) {
+      col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
+    } else {
+      delete col.slotName
+    }
+  })
+
+  // 对于编辑状态
+  if (props.enableEdit) {
+    // 如果启用编辑，需将column中没有设置插槽的，生成插槽
+    props.columns.forEach((col: Column) => {
+      if (col.xEditComponent) {
+        col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
+        // 验证信息
+        if (col.xEditComponent.props.rules) {
+          recordSchema.schema[col.dataIndex!] = toRaw(col.xEditComponent.props.rules)
+        }
+      } else {
+        col.slotName = undefined
+      }
+      // console.log('GlEntityTable > col:', col, col.slotName)
+    })
+  } else {
+    props.columns.forEach((col: Column) => {
+      // 如果未启用编辑
+      // col.slotName = col.slotName && col.slotName.startsWith(editSlotNameFlag) ? "" : col.slotName
+      // console.log('GlEntityTable > col:', col)
+    })
+  }
+  // console.log('GlEntityTable > columns after convert:', recordSchema)
+}
+
+if (props.glIsRuntime) {
+  setSlotNames()
+} else {
+  watch(() => {
+    return props.columns
+  }, () => {
+    setSlotNames()
+  }, {deep: true})
+}
+
 /**
  *  基于是否启用编辑功能，进行插槽信息的转换
- *  基于
  */
 watch(() => props.enableEdit,
     () => {
-      const editSlotNameFlag = '__edit'
-      // console.log('GlEntityTable > props.enableEdit:', props.enableEdit)
-      if (props.enableEdit) {
-        // 如果启用，需将column中没有设置插槽的，生成插槽
-        props.columns.forEach((col: Column) => {
-          if (col.xRenderScript) {
-            col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
-          }
-          if (col.xEditComponent) {
-            col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
-            // 验证信息
-            if (col.xEditComponent.props.rules) {
-              recordSchema.schema[col.dataIndex!] = toRaw(col.xEditComponent.props.rules)
-            }
-          } else {
-            col.slotName = undefined
-          }
-          // console.log('GlEntityTable > col:', col, col.slotName)
-        })
-      } else {
-        props.columns.forEach((col: Column) => {
-          col.slotName = col.slotName && col.slotName.startsWith(editSlotNameFlag) ? "" : col.slotName
-          // console.log('GlEntityTable > col:', col)
-        })
-      }
-      // console.log('GlEntityTable > columns after convert:', recordSchema)
+      setSlotNames()
     },
     {immediate: true}
 )
@@ -338,7 +361,7 @@ const popupVisibleChange = (val: boolean) => {
 };
 
 
-const optColumn = {title: '操作', slotName: '#', fixed: 'right', width: 140,align:'center'}
+const optColumn = {title: '操作', slotName: '#', fixed: 'right', width: 140, align: 'center'}
 const scroll = {
   x: "100%"
 }
@@ -369,7 +392,7 @@ const evalExpression = (data: {
     column: toRaw(data.column),
     rowIndex: toRaw(data.rowIndex),
   };
-  return MixUtil.evalPlus(ctx.column.xRenderScript, ctx, "$ctx");
+  return jsScriptExecutor.evalExpression(ctx.column.xRenderScript, ctx);
 };
 
 /**
@@ -546,7 +569,8 @@ defineExpose({
       </a-space>
     </template>
     <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">
-      <div class="gl-entity-table-cols-opt" :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">
+      <div class="gl-entity-table-cols-opt"
+           :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">
         <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="updateRow(record,rowIndex)"
                      :glComponentInst="cloneDeep(column.xEditComponent)"></GlComponent>
         <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>

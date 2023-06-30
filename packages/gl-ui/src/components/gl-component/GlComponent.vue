@@ -42,7 +42,7 @@ export default {
 <script lang="ts" setup>
 import {getCurrentInstance, inject, onMounted, ref, watch} from 'vue'
 import mixins from "../mixins";
-import actionScriptExecutor from "../../m/actions/ActionScriptExecutor";
+import jsScriptExecutor from "../../m/actions/JsScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
 import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
 
@@ -82,7 +82,7 @@ const doAction = (actionName: string, ...args: any) => {
         console.log('GlComponent > doAction > action', action)
         let ctx = inject('$ctx') as object || {}
         Object.assign(ctx, props.glCtx, {args: args})
-        actionScriptExecutor.doAction(action, ctx)
+        jsScriptExecutor.doAction(action, ctx)
       }
     })
   }
@@ -111,20 +111,48 @@ const onChange = (...args: any) => {
 }
 
 /**
- *   运行各属性的表达式，依据propsExpress设置的key、value，计算出props的值，并合并到props中
+ *   运行属性表达式
+ *   依据propsExpression设置的各属值的值表达式，计算出值，并合设置到props中，覆盖props中相应属性的值
  */
-const executePropsExpress = () => {
-  if (props.glComponentInst.propsExpress) {
-    Object.keys(props.glComponentInst.propsExpress).forEach((key: string) => {
+const executePropsExpressions = () => {
+  if (props.glComponentInst.propsExpressions) {
+    Object.keys(props.glComponentInst.propsExpressions).forEach((key: string) => {
       // @ts-ignore
-      const propExpress = props.glComponentInst.propsExpress[key]
-      if (propExpress) {
-        // TODO ctx需要采用与blockhandler相同的变量体系
-        props.glComponentInst.props[key] = actionScriptExecutor.executeScript(propExpress, {})
-        console.log('propExpress:', propExpress, actionScriptExecutor.executeScript(propExpress, {}))
+      const propsExpression = props.glComponentInst.propsExpressions[key]
+      if (propsExpression) {
+        props.glComponentInst.props[key] = jsScriptExecutor.evalExpression(propsExpression, {})
       }
     })
   }
+
+  // 对于对象型属性进行转换，如GlEntityTable的{base:{xx:yy,xx2:yy2}}
+  function executeObjectPropsExpressions(obj: any) {
+    // @ts-ignore
+    if (typeof obj === 'object') {
+      if (obj.length !== undefined) {
+        // array
+        for (const objKey in obj) {
+          executeObjectPropsExpressions(obj[objKey])
+        }
+      } else {
+        // object
+        if (obj._propsExpressions) {
+          Object.keys(obj._propsExpressions).forEach((key: string) => {
+            const expression = obj._propsExpressions[key]
+            if (expression) {
+              obj[key] = jsScriptExecutor.evalExpression(expression, {})
+            }
+          })
+        }
+        // 处理对象的子级
+        for (const objKey in obj) {
+          executeObjectPropsExpressions(obj[objKey])
+        }
+      }
+    }
+  }
+
+  executeObjectPropsExpressions(props.glComponentInst.props)
 }
 
 
@@ -174,7 +202,8 @@ onMounted(() => {
   pageProvideProxy?.setVueInst(props.glComponentInst.id, getCurrentInstance())
 })
 
-executePropsExpress()
+executePropsExpressions()
+
 defineExpose([onMouseLeave, onMouseOver])
 
 </script>

@@ -215,7 +215,7 @@ const onShowContextMenu = (clickedNodeData: any) => {
     // 基于node节点的show属性作是否展示的检查
     if (item.show) {
       // @ts-ignore
-      const isShow = utils.evalPlus(item.show, clickedNodeData)
+      const isShow = utils.evalExpression(item.show, clickedNodeData)
       console.log('utils.evalPlus(item.show, clickedNodeData)', isShow, 'clickedNodeData', clickedNodeData)
       // @ts-ignore
       return item.useFor.includes(clickedNodeData.nodeType) && isShow

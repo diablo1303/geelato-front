@@ -14,7 +14,12 @@ import LogBlockHandler from "./other/LogBlockHandler";
 import SetValueBlockHandler from "./page/SetValueBlockHandler";
 
 export default interface IBlockHandler {
-    parseToScript(props: Object): ParseResult;
+    /**
+     * @param props
+     * @param propsExpressions   属性性的表达式，若有配置，与props的实属对应；有配置该值时，以
+     * @param componentInst
+     */
+    parseToScript(props: Object, propsExpressions?: Object, componentInst?: ComponentInstance): ParseResult;
 }
 
 type Handlers = { [key: string]: any }
@@ -58,7 +63,7 @@ export class BlocksHandler {
         if (block) {
             const handler: IBlockHandler = this.handlers[block.componentName]
             // console.log('BlocksHandler > parseOne() > parse blocks and get handler:', handler, 'by nane:', block.componentName, ',handlers:', this.handlers)
-            const parseResult = handler?.parseToScript(block.props) || new ParseResult().setBlockName(block.componentName)
+            const parseResult = handler?.parseToScript(block.props, block.propsExpressions, block) || new ParseResult().setBlockName(block.componentName)
             parseResult!.invokeBlockNames = block?.props.invokeBlocks || []
             for (const index in block.children) {
                 const subBlock = block.children[index]

@@ -6,7 +6,7 @@ export default class OpenThirdPageBlockHandler implements IBlockHandler {
         const paramsAry: Array<string> = []
         if (props.params) {
             props.params.forEach((param) => {
-                paramsAry.push(`${param.pName}=${replace$Ctx(param.pValue)}`)
+                paramsAry.push(`${param.pName}=${replace$gl(param.pValue)}`)
             })
         }
         const paramsStr = paramsAry.join('&')
@@ -19,8 +19,8 @@ export class Props {
     params: Array<{ pName: string, pValue: string }> = []
 }
 
-function replace$Ctx(valueStr: string) {
-    if (valueStr && valueStr.indexOf('$ctx') != -1) {
+function replace$gl(valueStr: string) {
+    if (valueStr && valueStr.indexOf('$gl.') != -1) {
         return '${' + valueStr + '}'
     }
     return ''

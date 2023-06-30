@@ -67,6 +67,7 @@ export default class PageProvideProxy {
     pageParams: Array<PageParam> = []
     pageCtx: object = {}
     componentMap: { [key: string]: ComponentInternalInstance | null } = {}
+    componentInsts: { [key: string]: ComponentInstance } = {}
 
     constructor(pageInst: ComponentInstance, pageVueInst: ComponentInternalInstance | null) {
         this.pageInst = pageInst
@@ -79,15 +80,17 @@ export default class PageProvideProxy {
      * @param vueInst vue实组件实例
      */
     setVueInst(componentId: string, vueInst: ComponentInternalInstance | null) {
-        // console.log('setVueInst(),componentId:', componentId, ',vueInst:', vueInst)
-        if (componentId) {
+        if (componentId && vueInst) {
+            // console.log('setVueInst(),componentId:', componentId, ',vueInst:', vueInst, vueInst.props.glComponentInst)
             this.componentMap[componentId] = vueInst
+            this.componentInsts[componentId] = vueInst.props.glComponentInst as ComponentInstance
         }
     }
 
     removeVueInst(componentId: string) {
         if (componentId) {
-            this.componentMap[componentId] = null
+            delete this.componentMap[componentId]
+            delete this.componentInsts[componentId]
         }
     }
 
@@ -101,6 +104,13 @@ export default class PageProvideProxy {
             return this.componentMap[componentId]
         }
         return null
+    }
+
+    /**
+     *  获取当前页面在下所有的组件配置实例
+     */
+    getInsts(): { [key: string]: ComponentInstance } {
+        return this.componentInsts
     }
 
     /**

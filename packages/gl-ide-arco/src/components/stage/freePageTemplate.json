@@ -1,6 +1,6 @@
 {
-  "componentName": "GlPage",
   "id": "",
+  "componentName": "GlPage",
   "title": "页面",
   "props": {
     "pageMargin":"0",

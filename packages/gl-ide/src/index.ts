@@ -16,10 +16,11 @@ import {PluginUtil} from "@geelato/gl-ui";
 import {useIdeStore} from "./stores/UseIdeStore";
 import {useEntityStore} from "./stores/UseEntityStore";
 import {usePageStore} from "./stores/UsePageStore";
-import {useComponentStore,componentStoreFactory} from "./stores/UseComponentStore";
+import {useComponentStore, componentStoreFactory} from "./stores/UseComponentStore";
 import {useThemeStore} from "./stores/UseThemeStore";
 import {useAppStore} from "./stores/UseAppStore";
 import uiLibAdapter from "./utils/UiLibAdapter";
+import GlMonacoEditor from "./components/monaco/Index.vue"
 import './assets/gl-root.css'
 import './assets/gl-table-form.css'
 
@@ -35,6 +36,7 @@ const component: Plugin = {
         }
         // 注册组件
         app.component(GlIde.name, GlIde)
+        app.component(GlMonacoEditor.name, GlMonacoEditor)
     }
 }
 export {

@@ -3,12 +3,18 @@ import ParseResult from "../ParseResult";
 
 export default class SetValueBlockHandler implements IBlockHandler {
 
-    parseToScript(props: Props): ParseResult {
-        const value = props.value
+    parseToScript(props: Props, propsExpressions: Props): ParseResult {
+        let value
+        if (propsExpressions?.value) {
+            value = `$gl.jsEngine.evalExpression('${propsExpressions.value}', {})`
+        } else {
+            value = `${props.value}`
+        }
+
 
         return new ParseResult(
             `
-            $gl.setComponentValue("${props.componentId}","${value}");
+            $gl.setComponentValue("${props.componentId}",${value});
             `
         ).setBlockName('SetValueBlock');
     }
@@ -21,5 +27,5 @@ export class Props {
     // 设置的值
     value?: any
     // 设置的值表达式，若有设置，则取代value
-    valueExpress?: string
+    valueExpression?: string
 }

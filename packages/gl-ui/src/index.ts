@@ -30,7 +30,7 @@ import CheckUtil from "./m/utils/CheckUtil";
 import ConvertUtil from "./m/utils/ConvertUtil";
 import useGlobal from "./m/hooks/useGlobal";
 import './assets/style.css'
-import actionScriptExecutor from "./m/actions/ActionScriptExecutor";
+import jsScriptExecutor from "./m/actions/JsScriptExecutor";
 import {PageProvideKey} from "./components/PageProvideProxy";
 import AppProvideProxy from "./components/AppProvideProxy";
 import {AppProvideKey} from "./components/AppProvideProxy";
@@ -47,7 +47,7 @@ const component: Plugin = {
         if (PluginUtil.markInstalledPlugin(app, 'gl-ui')) {
             return
         }
-        actionScriptExecutor.setApp(app)
+        jsScriptExecutor.setApp(app)
 
         // 注册图标库组件
         app.component(GlIconfont.name, GlIconfont)
@@ -105,7 +105,7 @@ export {
     Utils,
     PluginUtil,
     useGlobal,
-    actionScriptExecutor,
+    jsScriptExecutor,
 }
 // 默认导出组件
 export default component

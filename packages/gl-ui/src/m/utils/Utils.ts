@@ -63,29 +63,36 @@ export class Utils {
     /**
      * 执行表达式
      * @param expression
-     * @param $ctx 用于expression的上下文参数
-     * @param ctxName 指定上下文的参数名，默认为$ctx
+     * @param $gl 用于expression的上下文参数
+     * @param glName 指定上下文的参数名，默认为$gl
      * @returns {*}
      */
-    evalPlus(expression: string, ctx: object, ctxName = '$ctx', $utils?: object, utilsName?: string) {
-        console.log('gl-ui > utils > eval() > expression: ', expression)
-        console.log('gl-ui > utils > eval() > ctx: ', ctx)
-        // if (expression.indexOf(ctxName) === -1) {
-        //     return expression
-        // }
-        let Fn = Function
-        let uName = utilsName || '$utils'
-        let str = this.trim(expression)
-        let index = str.indexOf(';')
-        if (index === -1 || index === str.length - 1) {
-            // 单语句
-            return new Fn(ctxName, uName, 'return ' + expression)(ctx, $utils || {})
-        } else {
-            // 多语句
-            let strAry = str.split(';')
-            let lastStr = strAry.pop();
-            let preStr = strAry.join(';')
-            return new Fn(ctxName, uName, preStr + '; return ' + lastStr)(ctx, $utils || {})
+    evalExpression(expression: string, $gl: object, glName = '$gl') {
+        try {
+            if (typeof expression === 'number') {
+                console.log('gl-ui > utils > evalExpression() > expression: ', expression, 'result:', expression, '$gl', $gl)
+                return expression
+            }
+
+            let Fn = Function
+            let str = this.trim(expression)
+            let index = str.indexOf(';')
+            let result
+            if (index === -1 || index === str.length - 1) {
+                // 单语句
+                result = new Fn(glName, 'return ' + str)($gl)
+            } else {
+                // 多语句
+                let strAry = str.split(';')
+                let lastStr = strAry.pop();
+                let preStr = strAry.join(';')
+                result = new Fn(glName, preStr + '; return ' + lastStr)($gl)
+            }
+            console.log('gl-ui > utils > evalExpression() > expression: ', expression, 'result:', result, '$gl', $gl)
+            return result
+        } catch (e: any) {
+            console.error('执行脚本出错', e.message, '表达式为：', expression)
+            return ''
         }
     }
 
@@ -96,19 +103,23 @@ export class Utils {
      * @param ctxName 指定上下文的参数名，默认为$ctx
      * @returns {*}
      */
-    evalFn(fnBody: string, ctx: object, ctxName = '$ctx', $utils?: object, utilsName?: string) {
-        // console.log('gl-ui > utils > evalFn() > blocks: ', fnBody)
-        // console.log('gl-ui > utils > evalFn() > ctx: ', ctx)
-        let Fn = Function
-        let uName = utilsName || '$utils'
-        let bodyScript = this.trim(fnBody)
-        // 去掉头尾分号
-        bodyScript = bodyScript.replace(/^;+|;+$/g, '')
-        // 无换行，无“;”的则按表达式处理
-        if (!bodyScript.match(/[\r\n;]/g) && !bodyScript.toLowerCase().startsWith('return ')) {
-            bodyScript = 'return ' + bodyScript
+    evalFn(fnBody: string, $gl: object, glName = '$gl') {
+        try {
+            // console.log('gl-ui > utils > evalFn() > blocks: ', fnBody)
+            // console.log('gl-ui > utils > evalFn() > ctx: ', ctx)
+            let Fn = Function
+            let bodyScript = this.trim(fnBody)
+            // 去掉头尾分号
+            bodyScript = bodyScript.replace(/^;+|;+$/g, '')
+            // 无换行，无“;”的则按表达式处理
+            if (!bodyScript.match(/[\r\n;]/g) && !bodyScript.toLowerCase().startsWith('return ')) {
+                bodyScript = 'return ' + bodyScript
+            }
+            return new Fn(glName, bodyScript)($gl)
+        } catch (e: any) {
+            console.error('执行脚本出错', e.message, '方法体为：', fnBody)
+            return ''
         }
-        return new Fn(ctxName, uName, bodyScript)(ctx, $utils || {})
     }
 
     /**
@@ -124,10 +135,10 @@ export class Utils {
         if (typeof obj === 'string') {
             let expression: string = obj
             if (expression.startsWith(jsFlag)) {
-                return this.evalPlus(expression.replace(jsFlag, '').replace(/@\./g, '$ctx.'), keyValues)
+                return this.evalExpression(expression.replace(jsFlag, '').replace(/@\./g, '$ctx.'), keyValues)
             } else {
                 if (expression.indexOf(keyword) !== -1) {
-                    return this.evalPlus(expression.replace(/@\./g, '$ctx.'), keyValues)
+                    return this.evalExpression(expression.replace(/@\./g, '$ctx.'), keyValues)
                     // return this.compileString(expression, keyValues)
                 } else {
                     return expression
@@ -178,7 +189,7 @@ export class Utils {
      */
     runJs(jsExpression: string, ctx: object, ctxName = 'ctx') {
         if (/^\s*js\s*:/.test(jsExpression)) {
-            return this.evalPlus(jsExpression.replace(/^\s*js\s*:/, ''), ctx, 'ctx')
+            return this.evalExpression(jsExpression.replace(/^\s*js\s*:/, ''), ctx, 'ctx')
         }
         return jsExpression
     }
@@ -207,7 +218,7 @@ export class Utils {
                 return newObj
             } else if (typeof toReplaceObj === 'string') {
                 console.log('this.deepConvertValue() > toReplaceString:', toReplaceObj)
-                let newObj: LooseObject = that.evalPlus(toReplaceObj, ctx)
+                let newObj: LooseObject = that.evalExpression(toReplaceObj, ctx)
                 return newObj
             } else {
                 let newObj: LooseObject = toReplaceObj
@@ -442,6 +453,16 @@ export class Utils {
         }
 
         await sleepMs(ms)
+    }
+
+    dict(key: any, dict: { [key: string]: { en?: [string | number | boolean], cn: [string | number | boolean] } | [string | number | boolean] }) {
+        if (!dict) return key
+        const value: any = dict[key]
+        if (typeof value === 'object' && (value.cn || value.en)) {
+            // TODO 待结合环境获取当前语言
+            return value.cn || value.en
+        }
+        return value
     }
 }
 
