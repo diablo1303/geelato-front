@@ -252,6 +252,35 @@ export class JsScriptExecutor {
         return result
     }
 
+
+    /**
+     *  获取组件实例信息
+     *
+     */
+    getComponentInsts(): { inst: object, insts: object } {
+        const inst: { [key: string]: any } = {}
+        const insts: { [key: string]: any } = {}
+        for (const pageComponentId in pageProxyMap) {
+            const pageProxy = pageProxyMap[pageComponentId]
+            if (pageProxy) {
+                // console.log('pageProxy.getInsts():', pageProxy.getInsts())
+                for (let instKey in pageProxy.getInsts()) {
+                    // 单页面模式，只留第一次出现的组件
+                    if (inst[instKey]) {
+                        // 如果已存在相同的组件id，应是页面引用了多个相同的页面，进行了页面嵌套
+                        // TODO
+                    } else {
+                        inst[instKey] = pageProxy.getInsts()[instKey]
+                    }
+                    // 多页面并存
+                    if (!insts[pageComponentId]) insts[pageComponentId] = {}
+                    insts[pageComponentId][instKey] = pageProxy.getInsts()[instKey]
+                }
+            }
+        }
+        return {inst, insts}
+    }
+
     /**
      * 获取当前环境下，可执行的方法、全局变量
      * @private
@@ -266,29 +295,30 @@ export class JsScriptExecutor {
             getComponentProps: this.getComponentProps,
             setComponentProps: this.setComponentProps,
             triggerComponentAction: this.triggerComponentAction,
-            ...utils,
+
             ...this.app?.config.globalProperties,
-            page: <{ [key: string]: any }>{},
+            page: {},
+            inst: <{ [key: string]: any }>{},
             // 多页面嵌套场景
-            pages: <{ [key: string]: any }>{},
+            insts: <{ [key: string]: any }>{},
             ctx: {},
-            dict:utils.dict
+            fn: utils
         }
         for (const pageComponentId in pageProxyMap) {
             const pageProxy = pageProxyMap[pageComponentId]
             if (pageProxy) {
                 // console.log('pageProxy.getInsts():', pageProxy.getInsts())
-                for (let instsKey in pageProxy.getInsts()) {
+                for (let instKey in pageProxy.getInsts()) {
                     // 单页面模式，只留第一次出现的组件
-                    if ($gl.page[instsKey]) {
+                    if ($gl.inst[instKey]) {
                         // 如果已存在相同的组件id，应是页面引用了多个相同的页面，进行了页面嵌套
                         // TODO
                     } else {
-                        $gl.page[instsKey] = pageProxy.getInsts()[instsKey]
+                        $gl.inst[instKey] = pageProxy.getInsts()[instKey]
                     }
                     // 多页面并存
-                    if (!$gl.pages[pageComponentId]) $gl.pages[pageComponentId] = {}
-                    $gl.pages[pageComponentId][instsKey] = pageProxy.getInsts()[instsKey]
+                    if (!$gl.insts[pageComponentId]) $gl.insts[pageComponentId] = {}
+                    $gl.insts[pageComponentId][instKey] = pageProxy.getInsts()[instKey]
                 }
             }
         }
@@ -308,6 +338,7 @@ export class JsScriptExecutor {
         // }
         return $gl
     }
+
 
     /**
      * 加载页面
