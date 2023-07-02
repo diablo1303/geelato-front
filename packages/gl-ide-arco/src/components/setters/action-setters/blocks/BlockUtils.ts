@@ -1,7 +1,7 @@
 import type {PageParamConfigType} from "@geelato/gl-ui";
 import type {PageProvideProxy} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
-import {actionScriptExecutor} from "@geelato/gl-ui";
+import {jsScriptExecutor} from "@geelato/gl-ui";
 
 export interface Params {
     [key: string]: string;
@@ -21,7 +21,7 @@ export default class BlockUtils {
             let paramValue = params[paramKey]
             if (paramValue !== undefined) {
                 // 尝试看是不是组件，如果是否组件，取组件label进行展示
-                const componentInst: ComponentInstance = actionScriptExecutor.getComponentInst(paramValue)
+                const componentInst: ComponentInstance = jsScriptExecutor.getComponentInst(paramValue)
                 console.log('BlockUtils > try to find inst by paramKey:', paramKey, ' paramValue:', paramValue, ',and get', componentInst)
                 if (componentInst) {
                     if (componentInst.componentName === 'GlEntityTablePlus') {

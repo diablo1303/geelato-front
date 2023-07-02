@@ -365,18 +365,17 @@ export default {
             "setterComponentVModelName": "modelValue",
             "title": "是否显示",
             "setterComponentName": "ASwitch"
-        },  {
+        }, {
             "name": "xRenderScript",
-            "setterComponentProps": {},
+            "setterComponentProps": {"showInput": true},
             "setterComponentVModelName": "modelValue",
             "group": "base",
             "type": "props",
             "show": true,
             "expanded": true,
-            "description": "对字段值进行处理，示例：\"$ctx.record.enableStatus == 1 ? '已启用' : '未启用'\"。",
+            "description": "对字段值进行处理，示例：\"$gl.ctx.record.enableStatus == 1 ? '已启用' : '未启用'\"。",
             "title": "显示脚本",
-            "setterComponentName": "AInput",
-            "enableValueExpress": false
+            "setterComponentName": "GlExpressionSetter"
         }, {
             "name": "sortable",
             "group": "base",

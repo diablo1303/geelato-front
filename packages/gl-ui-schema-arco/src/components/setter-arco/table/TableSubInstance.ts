@@ -32,7 +32,7 @@ export default {
                 "componentName": "AInput",
                 "group": "",
                 "props": {},
-                "propsExpress": {},
+                "propsExpressions": {},
                 "slots": {
                     "prefix": {
                         "componentName": "GlText",
@@ -43,13 +43,13 @@ export default {
                         "propsTarget": "v-model"
                     }
                 },
-                "slotsExpress": {},
+                "slotsExpressions": {},
                 "children": [],
                 "actions": [],
                 "style": {},
                 "propsWrapper": "",
                 "i18n": [],
-                "valueExpress": ""
+                "valueExpression": ""
             },
         }, {
             "title": "描述",

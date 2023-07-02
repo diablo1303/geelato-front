@@ -116,9 +116,6 @@ onUnmounted(() => {
             :glComponentInst="componentStore.currentComponentTree[0]"
             :componentStoreId="componentStoreId"
     >
-<!--      TODO 待观察，0624去掉了以下的内容-->
-<!--      <GlInsts :glComponentInst="componentStore.currentComponentTree[0]" :componentStoreId="componentStoreId">-->
-<!--      </GlInsts>-->
     </GlInst>
   </div>
 </template>

@@ -96,8 +96,12 @@
               :fullscreen="true"
               @ok="codeViewerVisible=false"
               @cancel="codeViewerVisible=false">
-      <VueJsonPretty v-if="componentStore.currentComponentTree[0]" :data="componentStore.currentComponentTree[0]"></VueJsonPretty>
+      <!--      <VueJsonPretty v-if="componentStore.currentComponentTree[0]"-->
+      <!--                     :data="componentStore.currentComponentTree[0]"></VueJsonPretty>-->
+      <GlMonacoEditor v-model="json" :height="themeStore.modalBodyHeight-41"
+                      language="json"></GlMonacoEditor>
       <template #footer>
+        <a-button type="primary" @click="saveCode">保存</a-button>
         <a-button type="primary" @click="copyCode">复制</a-button>
       </template>
     </gl-modal>
@@ -116,8 +120,8 @@ import {emitter, useGlobal} from "@geelato/gl-ui";
 import {useComponentStore} from "../stores/UseComponentStore";
 import {useAppStore} from "../stores/UseAppStore";
 import EventNames from "../entity/Events";
-import VueJsonPretty from "vue-json-pretty";
 import ClipboardJS from "clipboard";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()
@@ -141,6 +145,8 @@ const en = {
   locale: 'en-US',
   toggleTitle: '中文'
 }
+
+const json = ref('')
 const currentLanguage = ref(zh)
 const currentIconSelected = ref('')
 
@@ -173,6 +179,9 @@ const projectConfig = () => {
 
 const openCodeViewer = () => {
   emitter.emit(EventNames.GlIdeToolbarShowCodeViewer)
+  if (componentStore.currentComponentTree[0]) {
+    json.value = JSON.stringify(componentStore.currentComponentTree[0])
+  }
   codeViewerVisible.value = true
 }
 
@@ -230,6 +239,15 @@ const switchLanguages = () => {
   const newLocalValue = localValue === 'zh-CN' ? 'en-US' : 'zh-CN'
   currentLocalOption.value = getLocalOption(newLocalValue)
   localStorage.setItem('gl-locale', newLocalValue);
+}
+
+const saveCode = () => {
+  if (json.value) {
+    const inst: ComponentInstance = JSON.parse(json.value)
+    componentStore.currentComponentTree[0] = inst
+    pageStore.operationLog("改代码", inst, inst)
+    codeViewerVisible.value = false
+  }
 }
 
 const copyCode = () => {

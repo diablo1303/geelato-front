@@ -31,6 +31,7 @@ import GlPageSelect from "./components/setters/property-setters/GlPageSelect.vue
 import GlComponentSelect from "./components/setters/property-setters/GlComponentSelect.vue";
 import GlEntityReaderSetter from "./components/setters/property-setters/entity-reader-setter/GlEntityReaderSetter.vue";
 import GlToolbarBreadcrumbs from './components/gl-toolbar-breadcrumbs/Index.vue'
+import GlExpressionSetter from "./components/setters/expression-setters/GlExpressionSetter.vue";
 // import GlX from './components/gl-x/GlX.vue'
 // import GlComponentRecursion from './components/gl-component-recursion/ComponentRecursion.vue'
 import "./assets/style.css"
@@ -56,6 +57,7 @@ import GlValueTypes from "./components/setters/property-setters/GlValueTypes.vue
 import GlCompareValueSetter from "./components/setters/property-setters/GlCompareValueSetter.vue";
 import GlComponentMethodSelect from "./components/setters/property-setters/GlComponentMethodSelect.vue";
 import GlComponentActionSelect from "./components/setters/property-setters/GlComponentActionSelect.vue";
+import GlExpressionBuilder from "./components/builder/props-builder/GlExpressionBuilder.vue";
 
 
 // import formPageTemplate from "./components/stage/formPageTemplate.json";
@@ -165,6 +167,7 @@ const component: Plugin = {
         app.component(GlPageComponentSelectBuilder.name, GlPageComponentSelectBuilder)
         app.component(GlOptionsDynamicBuilder.name, GlOptionsDynamicBuilder)
         app.component(SwitchPropsBuilder.name, SwitchPropsBuilder)
+        app.component(GlExpressionBuilder.name, GlExpressionBuilder)
         // 注册属性设置组件
         app.component('GlComponentSetter', GlComponentSetter)
         app.component(GlComponentPropertiesSetter.name, GlComponentPropertiesSetter)
@@ -204,6 +207,7 @@ const component: Plugin = {
         app.component(GlValidateRulesSetter.name, GlValidateRulesSetter)
         app.component(GlComponentI18nSetter.name, GlComponentI18nSetter)
         app.component(GlInputSetter.name, GlInputSetter)
+        app.component(GlExpressionSetter.name, GlExpressionSetter)
         // 注册组件元数据
         // ide.componentMetaManager.registerManyComponentRuntimeMeta(componentMeta.runtimeMeta)
         // ide.componentMetaManager.registerManyComponentDesignMeta(componentMeta.designMeta)

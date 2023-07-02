@@ -85,6 +85,7 @@ function sidebarGuide() {
       collapsible: true,
       items: [
         { text: '快速开始', link: '/guide/frontend/getting-started' },
+        { text: '变量', link: '/guide/frontend/vars' },
         // { text: '工程部署', link: '/guide/frontend/configuration' },
       ]
     },

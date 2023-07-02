@@ -8,7 +8,7 @@ import {resolve} from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [vue(), vueJsx(),viteCompression()],
+    plugins: [vue(), vueJsx(), viteCompression()],
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -25,7 +25,7 @@ export default defineConfig({
         rollupOptions: {
             // 确保外部化处理那些你不想打包进库的依赖
             external: ['@geelato/gl-ui', '@geelato/gl-ui-schema', 'axios', 'clipboard', 'mitt',
-                'pinia', 'screenfull', 'splitpanes', 'vue', 'vue-json-pretty'],
+                'pinia', 'screenfull', 'splitpanes', 'vue', 'monaco-editor', 'vue-json-pretty'],
             output: {
                 // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
                 globals: {

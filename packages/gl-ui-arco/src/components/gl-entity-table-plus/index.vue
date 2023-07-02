@@ -23,7 +23,7 @@ import {
 } from "../gl-entity-table/table";
 import Toolbar, {defaultToolbar} from "../gl-toolbar/toolbar";
 import {useI18n} from "vue-i18n";
-import {CheckUtil, entityApi, PageProvideKey, PageProvideProxy, GlIconfont, utils} from "@geelato/gl-ui";
+import {CheckUtil, entityApi, PageProvideKey, PageProvideProxy, GlIconfont, utils, mixins} from "@geelato/gl-ui";
 import type {Action} from "../../types/global";
 
 /**
@@ -78,6 +78,7 @@ const props = defineProps({
   size: {
     type: String as PropType<SizeProps>,
   },
+  ...mixins.props
 });
 // 数据预处理
 onMounted(() => {
@@ -305,6 +306,8 @@ defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
         @updateColumns="onUpdateColumns"
         @updateRow="onUpdateRow"
         @fetchSuccess="onFetchSuccess"
+        :glIsRuntime="glIsRuntime"
+        :glRuntimeFlag="glRuntimeFlag"
     ></GlEntityTable>
   </a-card>
 </template>

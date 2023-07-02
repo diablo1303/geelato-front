@@ -13,7 +13,7 @@ export interface TableColumnDataPlus extends TableColumnData {
     // 用于编辑该字段的组件，作为子表时用到
     xEditComponent?: ComponentInstance;
     // 是否显示，用于控制数据查询加载，但不展示，可用于前端列计算或record传值，恒等于false时才不显示
-    xShow?:boolean;
+    xShow?: boolean;
 }
 
 export interface TableMeta {
@@ -49,6 +49,8 @@ export class BaseInfo {
     showCheckAll?: boolean = false
     // 数据删除模式是否为逻辑删除模式
     isLogicDeleteMode?: boolean = true
+    //  基于表达式计算出来的值，_propsExpression的示例值：{tableTitle:“用户列表”}
+    _propsExpressions? = {}
 }
 
 const defaultTable: TableMeta = {

@@ -22,7 +22,7 @@ import {
   type PageParamConfigType,
   type PageType,
   PageProvideProxy,
-  actionScriptExecutor,
+  jsScriptExecutor,
   mixins,
   PageProvideKey,
 } from "@geelato/gl-ui";
@@ -111,13 +111,13 @@ if (pageProvideProxy.isParamNeedConvert(props.params)) {
 } else {
   pageProvideProxy.setParams(props.params)
 }
-actionScriptExecutor.addPageProxy(props.glComponentInst.id, pageProvideProxy)
+jsScriptExecutor.addPageProxy(props.glComponentInst.id, pageProvideProxy)
 // 整个页面组件级注入
 provide(PageProvideKey, pageProvideProxy)
 provide(PageParamsKey, props.params)
 // console.log('GlPage > provide() > pageProvideProxy:', pageProvideProxy)
 onUnmounted(() => {
-  actionScriptExecutor.removePageProxy(props.glComponentInst.id)
+  jsScriptExecutor.removePageProxy(props.glComponentInst.id)
   console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
 })
 
@@ -126,7 +126,7 @@ onMounted(() => {
   if (props.glIsRuntime) {
     props.glComponentInst.actions.forEach((action: Action) => {
       if (action.name === 'onMounted') {
-        actionScriptExecutor.doAction(action, {})
+        jsScriptExecutor.doAction(action, {})
       }
     })
   }

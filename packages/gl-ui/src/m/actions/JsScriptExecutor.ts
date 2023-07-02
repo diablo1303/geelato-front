@@ -7,7 +7,7 @@ import type PageProvideProxy from "../../components/PageProvideProxy";
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 
-export class ActionScriptExecutor {
+export class JsScriptExecutor {
 
     app: App | undefined
 
@@ -160,7 +160,7 @@ export class ActionScriptExecutor {
                         for (const actionsKey in actions) {
                             const action = actions[actionsKey]
                             if (action.name === actionName) {
-                                actionScriptExecutor.doAction(action, ctx = {}, callback)
+                                jsScriptExecutor.doAction(action, ctx = {}, callback)
                             }
                         }
                     }
@@ -213,39 +213,132 @@ export class ActionScriptExecutor {
      * @param callback
      */
     doAction(action: Action, ctx: object, callback?: Function) {
-        return this.executeScript(action.body!, ctx, callback)
+        return this.evalFn(action.body!, ctx, callback)
     }
 
+    // executeFn(bodyScript: string, ctx: object, callback?: Function) {
+    //     return this.executeScript(bodyScript, ctx, callback, true)
+    // }
+
     /**
-     * 执行脚本的基础方法，在些构建上下文信息，工具方法等信息
-     * @param bodyScript 脚本信息，方法体
+     * 执行表达式
+     * @param expression 脚本信息，方法体
      * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
      * @param callback
      */
-    executeScript(bodyScript: string, ctx: object, callback?: Function) {
-        const $ctx = {
-            ...ctx
-        }
-        if (Object.keys(this.$gl).length === 0) {
-            this.$gl = {
-                loadPage: this.loadPage,
-                getComponentMethod: this.getComponentMethod,
-                getComponentValue: this.getComponentValue,
-                setComponentValue: this.setComponentValue,
-                getComponentProps: this.getComponentProps,
-                setComponentProps: this.setComponentProps,
-                triggerComponentAction: this.triggerComponentAction,
-                ...utils,
-                ...this.app?.config.globalProperties
-            }
-        }
-        console.log('executeScript(),$ctx:', $ctx)
-        const result = utils.evalFn(bodyScript, $ctx, '$ctx', this.$gl, '$gl')
+    evalExpression(expression: string, ctx: object, callback?: Function) {
+        const $gl = this.getGl()
+        $gl.ctx = {...ctx}
+        let result = utils.evalExpression(expression, $gl)
         if (callback && typeof callback === 'function') {
             callback()
         }
         return result
     }
+
+    /**
+     * 执行函数
+     * @param fnBodyScript 脚本信息，方法体
+     * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
+     * @param callback
+     */
+    evalFn(fnBodyScript: string, ctx: object, callback?: Function) {
+        const $gl = this.getGl()
+        $gl.ctx = {...ctx}
+        let result = utils.evalFn(fnBodyScript, $gl)
+        if (callback && typeof callback === 'function') {
+            callback()
+        }
+        return result
+    }
+
+
+    /**
+     *  获取组件实例信息
+     *
+     */
+    getComponentInsts(): { inst: object, insts: object } {
+        const inst: { [key: string]: any } = {}
+        const insts: { [key: string]: any } = {}
+        for (const pageComponentId in pageProxyMap) {
+            const pageProxy = pageProxyMap[pageComponentId]
+            if (pageProxy) {
+                // console.log('pageProxy.getInsts():', pageProxy.getInsts())
+                for (let instKey in pageProxy.getInsts()) {
+                    // 单页面模式，只留第一次出现的组件
+                    if (inst[instKey]) {
+                        // 如果已存在相同的组件id，应是页面引用了多个相同的页面，进行了页面嵌套
+                        // TODO
+                    } else {
+                        inst[instKey] = pageProxy.getInsts()[instKey]
+                    }
+                    // 多页面并存
+                    if (!insts[pageComponentId]) insts[pageComponentId] = {}
+                    insts[pageComponentId][instKey] = pageProxy.getInsts()[instKey]
+                }
+            }
+        }
+        return {inst, insts}
+    }
+
+    /**
+     * 获取当前环境下，可执行的方法、全局变量
+     * @private
+     */
+    private getGl() {
+        let $gl = {
+            loadPage: this.loadPage,
+            jsEngine: this,
+            getComponentMethod: this.getComponentMethod,
+            getComponentValue: this.getComponentValue,
+            setComponentValue: this.setComponentValue,
+            getComponentProps: this.getComponentProps,
+            setComponentProps: this.setComponentProps,
+            triggerComponentAction: this.triggerComponentAction,
+
+            ...this.app?.config.globalProperties,
+            page: {},
+            inst: <{ [key: string]: any }>{},
+            // 多页面嵌套场景
+            insts: <{ [key: string]: any }>{},
+            ctx: {},
+            fn: utils
+        }
+        for (const pageComponentId in pageProxyMap) {
+            const pageProxy = pageProxyMap[pageComponentId]
+            if (pageProxy) {
+                // console.log('pageProxy.getInsts():', pageProxy.getInsts())
+                for (let instKey in pageProxy.getInsts()) {
+                    // 单页面模式，只留第一次出现的组件
+                    if ($gl.inst[instKey]) {
+                        // 如果已存在相同的组件id，应是页面引用了多个相同的页面，进行了页面嵌套
+                        // TODO
+                    } else {
+                        $gl.inst[instKey] = pageProxy.getInsts()[instKey]
+                    }
+                    // 多页面并存
+                    if (!$gl.insts[pageComponentId]) $gl.insts[pageComponentId] = {}
+                    $gl.insts[pageComponentId][instKey] = pageProxy.getInsts()[instKey]
+                }
+            }
+        }
+
+        // if (Object.keys(this.$gl).length === 0) {
+        //     this.$gl = {
+        //         loadPage: this.loadPage,
+        //         getComponentMethod: this.getComponentMethod,
+        //         getComponentValue: this.getComponentValue,
+        //         setComponentValue: this.setComponentValue,
+        //         getComponentProps: this.getComponentProps,
+        //         setComponentProps: this.setComponentProps,
+        //         triggerComponentAction: this.triggerComponentAction,
+        //         ...utils,
+        //         ...this.app?.config.globalProperties
+        //     }
+        // }
+        return $gl
+    }
+
 
     /**
      * 加载页面
@@ -254,7 +347,7 @@ export class ActionScriptExecutor {
      * @param pageProps
      */
     loadPage(pageId: string, extendId: string, pageProps: object) {
-        console.log('ActionScriptExecutor > loadPage > pageId:', pageId, 'extendId:', extendId, 'pageProps:', pageProps)
+        console.log('JsScriptExecutor > loadPage > pageId:', pageId, 'extendId:', extendId, 'pageProps:', pageProps)
         return h(GlPageViewer, {pageId, extendId, pageProps})
     }
 
@@ -266,5 +359,5 @@ export class ActionScriptExecutor {
     // }
 }
 
-const actionScriptExecutor = new ActionScriptExecutor()
-export default actionScriptExecutor
+const jsScriptExecutor = new JsScriptExecutor()
+export default jsScriptExecutor

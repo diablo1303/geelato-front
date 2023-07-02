@@ -9,7 +9,7 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {actionScriptExecutor, mixins} from "@geelato/gl-ui";
+import {jsScriptExecutor, mixins} from "@geelato/gl-ui";
 import {inject} from "vue";
 import {PageParamsKey} from "@geelato/gl-ui/src/components/PageProvideProxy";
 
@@ -47,7 +47,7 @@ const click = () => {
   <div>
     <div class="gl-ref-page-drag-handler" v-if="!glIsRuntime">
       <a-button type="primary" title="拖动页面">
-        <GlIconfont type="gl-drag" text=""></GlIconfont>
+        <GlIconfont type="gl-drag" text="这是引用页面"></GlIconfont>
       </a-button>
     </div>
     <template v-if="pageType==='third'">

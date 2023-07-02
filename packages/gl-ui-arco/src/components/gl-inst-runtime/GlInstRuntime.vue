@@ -5,9 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {computed, inject, type PropType, ref} from 'vue'
-import {PageProvideKey} from "@geelato/gl-ui";
-import type {PageProvideProxy} from "@geelato/gl-ui";
-import {mixins} from "@geelato/gl-ui";
+import {type PageProvideProxy,PageProvideKey,mixins} from "@geelato/gl-ui";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const props = defineProps({
@@ -16,7 +14,14 @@ const props = defineProps({
   index: Number,
   moveCard: Function as PropType<(dragIndex: number, hoverIndex: number, dragItemId: string, dropItemId: string) => void>,
   addItem: Function,
-  ...mixins.props
+  ...mixins.props,
+  // 页面组件需要该属性，便于页面传值
+  pageProps: {
+    type: Object,
+    default() {
+      return {}
+    }
+  }
 })
 
 
@@ -94,6 +99,7 @@ const i18nConvert = (value?: string) => {
                        :componentStoreId="componentStoreId"
                        :glRuntimeFlag="glRuntimeFlag"
                        :glIsRuntime="glIsRuntime"
+                       v-bind="pageProps"
           >
           </GlComponent>
           <template v-if="glComponentInst?.props?.extra" #extra>
@@ -111,6 +117,7 @@ const i18nConvert = (value?: string) => {
                      :componentStoreId="componentStoreId"
                      :glRuntimeFlag="glRuntimeFlag"
                      :glIsRuntime="glIsRuntime"
+                     v-bind="pageProps"
         >
         </GlComponent>
       </template>

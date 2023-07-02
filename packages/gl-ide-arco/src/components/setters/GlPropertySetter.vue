@@ -51,7 +51,16 @@
                     <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
                                       :propertyValue="slotProps.item[property.name]"
                                       @set:propertyValue="newValue=>slotProps.item[property.name]=newValue"
-                                      @update="($event:any)=>{slotProps.item[property.name]=$event}"></GlPropertySetter>
+                                      @update="($event:any)=>{slotProps.item[property.name]=$event}">
+                      <div v-if="property.enableValueExpress">
+                        <!--设置属性表达式_propsExpression的初始值为：{}-->
+                        <template v-if="typeof slotProps.item._propsExpressions==='object'?true:slotProps.item._propsExpressions={}"></template>
+                        <GlExpressionSetter
+                            v-model="slotProps.item._propsExpressions[property.name]"></GlExpressionSetter>
+<!--                        <GlExpressionSetter-->
+<!--                            v-model="slotProps.item[property.type + 'Expression'][property.name]"></GlExpressionSetter>-->
+                      </div>
+                    </GlPropertySetter>
                   </template>
                 </div>
               </GlPropertySetterCard>
@@ -74,7 +83,14 @@
                     <GlPropertySetter v-if="propertyModel" :propertySetterMeta="subPropertySetterMeta"
                                       :propertyValue="propertyModel[subPropertySetterMeta.name]"
                                       @set:propertyValue="newValue=>propertyModel[subPropertySetterMeta.name]=newValue"
-                                      @update="onSubPropertyUpdate(subPropertySetterMeta.name,$event)"></GlPropertySetter>
+                                      @update="onSubPropertyUpdate(subPropertySetterMeta.name,$event)">
+                      <div v-if="subPropertySetterMeta.enableValueExpress">
+                        <!--设置属性表达式_propsExpression的初始值为：{}-->
+                        <template v-if="typeof propertyModel._propsExpressions==='object'?true:propertyModel._propsExpressions={}"></template>
+                        <GlExpressionSetter
+                            v-model="propertyModel._propsExpressions[subPropertySetterMeta.name]"></GlExpressionSetter>
+                      </div>
+                    </GlPropertySetter>
                   </template>
                 </div>
               </template>
@@ -111,11 +127,15 @@
               <!-- 通过属性元数据，定义每张卡片的内容  -->
               <div class="gl-table" :class="{'gl-table-as-tree':false}">
                 <template v-for="property in propertySetterMeta.properties">
-                  {{ slotProps.item.props }}{{ propertyModel }}
                   <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
                                     :propertyValue="slotProps.item.props[property.name]"
                                     @set:propertyValue="newValue=>slotProps.item.props[property.name]=newValue"
-                                    @update="($event:any)=>{slotProps.item.props[property.name]=$event}"></GlPropertySetter>
+                                    @update="($event:any)=>{slotProps.item.props[property.name]=$event}">
+                    <div v-if="propertySetterMeta.enableValueExpress">
+                      <GlExpressionSetter
+                          v-model="slotProps.item[propertySetterMeta.type + 'Expression'][propertySetterMeta.name]"></GlExpressionSetter>
+                    </div>
+                  </GlPropertySetter>
                 </template>
               </div>
             </GlPropertySetterCard>
