@@ -143,17 +143,60 @@
       </a-col>
     </a-row>
   </a-form>
+  <a-divider style="margin:0 0 10px 0;"/>
+  <a-table
+      :bordered="{cell:true}"
+      :columns="columnTitle"
+      :data="(columnData as TableData[])"
+      :pagination="false"
+      :stripe="true"
+      :draggable="{ type: 'handle', width: 40 }"
+      column-resizable
+      row-key="id" @change="handleChange">
+    <template #columns>
+      <a-table-column :title="$t('model.column.index.form.title')" data-index="title" :ellipsis="true" :tooltip="true" :width="120" fixed="left"/>
+      <a-table-column :title="$t('model.column.index.form.fieldName')" data-index="fieldName" :ellipsis="true" :tooltip="true" :width="120"/>
+      <a-table-column :title="$t('model.column.index.form.type')" data-index="type" :ellipsis="true" :tooltip="true" :width="120"/>
+      <a-table-column :title="$t('model.column.index.form.key')" data-index="key" :width="100"/>
+      <a-table-column :title="$t('model.column.index.form.nullable')" data-index="nullable" :width="100"/>
+      <a-table-column :title="$t('model.column.index.form.charMaxLength')" data-index="charMaxLength" :width="100"/>
+      <a-table-column :title="$t('model.column.index.form.precision')" data-index="precision" :width="100"/>
+      <a-table-column :title="$t('model.column.index.form.scale')" data-index="scale" :width="100"/>
+      <a-table-column :title="$t('model.column.index.form.name')" data-index="name" :ellipsis="true" :tooltip="true" :width="120"/>
+      <a-table-column :title="$t('model.column.index.form.tableName')" data-index="tableName" :ellipsis="true" :tooltip="true" :width="150"/>
+      <a-table-column v-show="pageData.formState!=='view'" :title="$t('model.column.index.form.operations')" data-index="operations" :width="80"
+                      align="center" fixed="right">
+        <template #cell="{record}">
+          <a-button type="text" status="danger" @click="deleteViewColumn(record.tableName,record.fieldName)">
+            <template #icon>
+              <icon-delete/>
+            </template>
+          </a-button>
+        </template>
+      </a-table-column>
+    </template>
+    <template #empty>
+      <a-empty style="width: 57%;"/>
+    </template>
+  </a-table>
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue';
+import {reactive, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {Modal, Notification} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/service/base_service';
-import {createOrUpdateView as createOrUpdateForm, getView as getForm, QueryViewForm as QueryForm, validateMetaView} from '@/api/service/model_service';
+import {
+  createOrUpdateView as createOrUpdateForm,
+  getView as getForm,
+  QueryViewColumnForm,
+  QueryViewForm as QueryForm,
+  validateMetaView
+} from '@/api/service/model_service';
 import {enableStatusOptions, linkedOptions} from "@/views/model/view/searchTable";
 import MonacoEditor from '@/components/monaco/index.vue';
+import {TableData} from "@arco-design/web-vue/es/table/interface";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
@@ -186,6 +229,7 @@ const generateFormData = (): QueryForm => {
     viewName: '', // 数据库中的表名
     viewType: 'custom', // 视图类型 default:默认视图;custom:自定义视图
     viewConstruct: '',
+    viewColumn: '',
     enableStatus: 1, // 状态
     seqNo: 1, // 排序
     linked: 0, // 已链接
@@ -193,11 +237,26 @@ const generateFormData = (): QueryForm => {
   };
 }
 const formData = ref(generateFormData());
+// 表单
+const columnData = ref<QueryViewColumnForm[]>([]);
+const handleChange = (_data: any[]) => {
+  columnData.value = _data;
+}
+/* const fetchData = async (params: PageQueryRequest) => {
+  try {
+    const {data} = await queryTableColumns(params);
+    columnData.value = data;
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}; */
 
 const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
   if (!res) {
     params.viewName = pageData.value.formState === 'add' ? `v_${params.viewName}` : params.viewName;
+    params.viewColumn = JSON.stringify(columnData.value) || "";
     try {
       const {data} = await createOrUpdateForm(params);
       successBack(data);
@@ -258,6 +317,16 @@ const validateViewSql = () => {
   });
 }
 
+const deleteViewColumn = (tableName: string, columnName: string) => {
+  let index = -1;
+  for (let i = 0; i < columnData.value.length; i += 1) {
+    if (columnData.value[i].tableName === tableName && columnData.value[i].fieldName === columnName) {
+      index = i;
+    }
+  }
+  columnData.value.splice(index, 1);
+}
+
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {
   // 全局
@@ -274,6 +343,7 @@ const loadModel = (urlParams: ListUrlParams) => {
   if (urlParams.id) {
     getData(urlParams.id, (data: QueryForm) => {
       data.seqNo = Number(data.seqNo);
+      columnData.value = data.viewColumn ? JSON.parse(data.viewColumn as string) : [];
       // data.viewName = data.viewName == null ? '' : data.viewName.replace(/^(v_|V_)*/, "");
       formData.value = data;
       urlParams.loadSuccessBack(data);
@@ -286,6 +356,21 @@ const submitModel = (done: any, successBack?: any, failBack?: any) => {
 
 // 将方法暴露出去
 defineExpose({loadModel, submitModel});
+
+const columnTitle = reactive([
+  {
+    title: '名称',
+    dataIndex: 'title',
+
+  },
+  {
+    title: '标识',
+    dataIndex: 'name',
+  }, {
+    title: '操作',
+    dataIndex: 'operations'
+  }
+]);
 </script>
 
 <style lang="less" scoped>
