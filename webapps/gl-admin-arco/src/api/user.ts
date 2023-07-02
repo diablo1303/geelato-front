@@ -20,9 +20,11 @@ export interface QueryMenuForm {
   pageId: string;// 页面id
   flag: string;// menuItem
   icon: string;
+  iconType: string;
   type: string;// folder formPage listPage freePage
   meta: string;// 路径
-  entity: string;
+  treeEntity: string;
+  extendEntity: string;
   text: string;
   seqNo: number;
   tenantCode: string;
@@ -68,6 +70,7 @@ const getAppId = () => {
   return appId;
 }
 const currentAppId = getAppId();
+const currentFlag = "menuItem";
 
 const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryMenuForm[]): RouteRecordNormalized[] => {
   // eslint-disable-next-line no-restricted-syntax
@@ -84,10 +87,10 @@ const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryM
         // folder formPage listPage freePage
         if (["folder"].includes(item.type)) {
           data.children?.push({
-            path: `${item.entity || item.id}`,
+            path: `${item.treeEntity || item.id}`,
             name: `${item.id}`,
             component: DEFAULT_LAYOUT,
-            meta: {locale: item.text, icon: item.icon, requiresAuth: true, order: item.seqNo},
+            meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: item.seqNo},
             children: [],
             props: item
           });
@@ -96,7 +99,7 @@ const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryM
             path: `?appId=${currentAppId}&pageId=${item.pageId}`,
             name: `${item.id}`,
             component: () => import('@/views/page/PageRuntime.vue'),
-            meta: {locale: item.text, icon: item.icon, requiresAuth: true, order: item.seqNo},
+            meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: item.seqNo},
             children: [],
             props: item
           });
@@ -119,7 +122,7 @@ const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryM
 
 export const formatModules = async (_modules: any, result: RouteRecordNormalized[]) => {
   try {
-    const {data} = await getMenuList1({appId: currentAppId} as unknown as QueryMenuForm);
+    const {data} = await getMenuList1({flag: currentFlag, appId: currentAppId} as unknown as QueryMenuForm);
     // @ts-ignore
     const menuForms = data.data;
     const folderOptions: RouteRecordNormalized[] = [];
@@ -130,7 +133,7 @@ export const formatModules = async (_modules: any, result: RouteRecordNormalized
           path: `/page`,
           name: `${item.id}`,
           component: DEFAULT_LAYOUT,
-          meta: {locale: item.text, icon: item.icon, requiresAuth: true, order: item.seqNo},
+          meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: item.seqNo},
           children: [],
           props: item
         };

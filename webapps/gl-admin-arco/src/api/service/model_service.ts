@@ -293,6 +293,20 @@ export function deleteTableForeign(id: string) {
 }
 
 /* *************************** 实体视图信息 ****************************** */
+export interface QueryViewColumnForm {
+  tableName: string;
+  title: string;
+  name: string;
+  fieldName: string;
+  type: string;
+  comment: string;
+  key: number | boolean;
+  nullable: number | boolean;
+  charMaxLength: number | string;
+  precision: number;
+  scale: number;
+}
+
 export interface QueryViewForm {
   id: string;
   connectId: string; // 数据库连接 id
@@ -301,6 +315,7 @@ export interface QueryViewForm {
   viewName: string; // 数据库中的表名
   viewType: string; // 视图类型 default:默认视图;custom:自定义视图
   viewConstruct: string;// 视图语句
+  viewColumn: string;// 视图字段
   description: string; // 补充描述
   linked: number; // 已链接
   enableStatus: number; // 状态
