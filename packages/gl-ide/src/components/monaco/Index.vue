@@ -16,6 +16,9 @@ export default defineComponent({
 </script>
 <script lang="ts" setup>
 import {defineComponent, onBeforeUnmount, onMounted, ref, watch, defineExpose} from 'vue'
+import prettier from 'prettier/standalone';
+import parserBabel from 'prettier/parser-babel';
+
 import * as monaco from 'monaco-editor'
 // @ts-ignore
 // eslint-disable-next-line import/extensions
@@ -27,18 +30,44 @@ import 'monaco-editor/esm/vs/basic-languages/sql/sql.contribution'
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution'
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution'
 import {editorProps} from './type'
-import prettier from 'prettier/standalone';
-import parserBabel from 'prettier/parser-babel';
-import {utils} from "@geelato/gl-ui";
 
+import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker.js?worker';
+import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker.js?worker';
+import HtmlWorker from 'monaco-editor/esm/vs/language/html/html.worker.js?worker';
+import TypescriptWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker.js?worker';
+import CssWorker from 'monaco-editor/esm/vs/language/css/css.worker.js?worker';
+
+self.MonacoEnvironment = {
+  getWorker(workerId, label) {
+    switch (label) {
+      case 'json':
+        return new JsonWorker();
+      case 'css':
+      case 'scss':
+      case 'less':
+        return new CssWorker();
+      case 'html':
+      case 'handlebars':
+      case 'razor':
+        return new HtmlWorker();
+      case 'typescript':
+      case 'javascript':
+        return new TypescriptWorker();
+      default:
+        return new EditorWorker();
+    }
+  }
+};
 
 const props = defineProps({
   ...editorProps
 })
 const emits = defineEmits(['update:modelValue', 'change', 'editor-mounted'])
+
+
 // eslint-disable-next-line no-restricted-globals
-// (self as any).MonacoEnvironment = {
-//   getWorker: (_: string, label: string) => {
+// self.MonacoEnvironment = {
+//   getWorker: (workerId: string, label: string) => {
 //     // eslint-disable-next-line no-shadow,no-restricted-globals
 //     const getWorkerModule = (moduleUrl: string, label: string) => new Worker((self as any).MonacoEnvironment.getWorkerUrl(moduleUrl), {
 //       name: label,
@@ -46,20 +75,20 @@ const emits = defineEmits(['update:modelValue', 'change', 'editor-mounted'])
 //     });
 //     switch (label) {
 //       case 'json':
-//         return getWorkerModule('/monaco-editor/esm/vs/language/json/json.worker?worker', label);
+//         return getWorkerModule('/monaco-editor/esm/vs/language/json/json.worker.js?worker', label);
 //       case 'css':
 //       case 'scss':
 //       case 'less':
-//         return getWorkerModule('/monaco-editor/esm/vs/language/css/css.worker?worker', label);
+//         return getWorkerModule('/monaco-editor/esm/vs/language/css/css.worker.js?worker', label);
 //       case 'html':
 //       case 'handlebars':
 //       case 'razor':
-//         return getWorkerModule('/monaco-editor/esm/vs/language/html/html.worker?worker', label);
+//         return getWorkerModule('/monaco-editor/esm/vs/language/html/html.worker.js?worker', label);
 //       case 'typescript':
 //       case 'javascript':
-//         return getWorkerModule('/monaco-editor/esm/vs/language/typescript/ts.worker?worker', label);
+//         return getWorkerModule('/monaco-editor/esm/vs/language/typescript/ts.worker.js?worker', label);
 //       default:
-//         return getWorkerModule('/monaco-editor/esm/vs/editor/editor.worker?worker', label);
+//         return getWorkerModule('/monaco-editor/esm/vs/editor/editor.worker.js?worker', label);
 //     }
 //   },
 // }

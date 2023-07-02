@@ -1,3 +1,6 @@
+import {jsScriptExecutor} from "@geelato/gl-ui";
+import {useComponentStore} from "@geelato/gl-ide";
+
 const user = {
     title: '当前用户',
     _code: 'user',
@@ -57,20 +60,95 @@ const device = {
 export const systemVarsTreeData = [user, app, page, device]
 
 
-const inst = {
-    title: '当前组件实例集',
-    _code: 'inst',
-    _type: 'object',
-    children: [
-        {title: '获取组件实例', _code: 'xxxInstId', _type: 'object'},
-    ],
-    _description: 'ComponentInstance'
-}
+// const inst = {
+//     title: '当前组件实例集',
+//     _code: 'inst',
+//     _type: 'object',
+//     children: [
+//         {title: '获取组件实例', _code: 'xxxInstId', _type: 'object'},
+//     ],
+//     _description: 'ComponentInstance'
+// }
+//
+// const ctx = {
+//     title: '当前组件上下文',
+//     _code: 'ctx',
+//     _type: 'object',
+//     children: [
+//         {title: '当前记录', _code: 'record', _type: 'object', _description: '表格的行数据记录'},
+//     ],
+//     _description: 'ComponentInstance'
+// }
+
 
 /**
  *  组件实例
  */
-export const componentInstTreeData = [inst]
+export const useComponentInstTreeData = () => {
+    const useCtxRecord = () => {
+        const record = {
+            title: '当前记录',
+            _code: 'record',
+            _type: 'object',
+            _description: '表格的行数据记录',
+            children: <any>[]
+        }
+        const componentStore = useComponentStore()
+        if (['GlEntityTablePlus', 'GlEntityTableSub'].indexOf(componentStore.currentSelectedComponentInstance.componentName) != -1) {
+            const columns = componentStore.currentSelectedComponentInstance.props.columns
+            if (columns && columns.length > 0) {
+                columns.forEach((col: any) => {
+                    record.children.push({
+                        title: col.title, _code: col.dataIndex, _description: ''
+                    })
+                })
+            }
+        }
+        return record
+    }
+
+    const ctx = {
+        title: '当前组件上下文',
+        _code: 'ctx',
+        _type: 'object',
+        children: [useCtxRecord()],
+        _description: 'ComponentInstance'
+    }
+
+
+    const insts = jsScriptExecutor.getComponentInsts()
+
+    const instTreeItem = {
+        title: '当前组件实例集',
+        _code: 'inst',
+        _type: 'object',
+        children: <any>[],
+        _description: '当前组件的实体集，以组件id为key，通过inst.xxxInstId获取对应的组件'
+    }
+    if (insts.inst) {
+        for (const instKey in insts.inst) {
+            // @ts-ignore
+            const inst = insts.inst[instKey]
+            // {title: '获取组件实例', _code: 'xxxInstId', _type: 'object'},
+            const propItems = []
+            for (const propKey in inst.props) {
+                propItems.push({
+                    title: propKey, _code: propKey, _value: inst.props[propKey]
+                })
+            }
+            instTreeItem.children.push({
+                title: inst.props?.label || inst.title, key: inst.id, _code: inst.id,
+                children: [
+                    {title: '值', _code: 'value', _description: '组件值', _value: inst.value},
+                    {title: '属性', _code: 'props', _type: 'object', _description: '组件属性', children: propItems}
+                ]
+            })
+            console.log('instTreeItem....', instTreeItem)
+        }
+    }
+
+    return [ctx, instTreeItem]
+}
 
 const text = {
     title: '文本',

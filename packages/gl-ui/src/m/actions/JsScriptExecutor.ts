@@ -255,7 +255,7 @@ export class JsScriptExecutor {
 
     /**
      *  获取组件实例信息
-     *
+     *  提供两种组织方式，inst和insts，对于inst,key为组件id，对于insts的key为页面id
      */
     getComponentInsts(): { inst: object, insts: object } {
         const inst: { [key: string]: any } = {}

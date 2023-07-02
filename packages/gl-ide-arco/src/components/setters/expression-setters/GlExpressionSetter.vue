@@ -9,9 +9,8 @@ export default {
 <script lang="ts" setup>
 
 import {ref} from "vue";
-import {systemVarsTreeData, functionalFormulaTreeData, componentInstTreeData} from "./varsMeta";
+import {systemVarsTreeData, functionalFormulaTreeData, useComponentInstTreeData} from "./varsMeta";
 import {jsScriptExecutor, utils} from "@geelato/gl-ui";
-import {useComponentStore} from "@geelato/gl-ide";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -126,44 +125,13 @@ const getKeyPath = (tree: any, key: string): string => {
 
 const _systemVarsTreeData = setKeys(systemVarsTreeData)
 const _functionalFormulaTreeData = setKeys(functionalFormulaTreeData)
+const _componentInstTreeData = setKeys(useComponentInstTreeData())
+
 const selectNode = (selectedKeys: any, data: any, treeData: any) => {
   const path = getKeyPath(treeData, data.node.key)
   monacoEditor.value.replaceSelectOrInsert(path)
   console.log('selectNode:', selectedKeys, 'data:', data, 'path:', path)
 }
-const insts = jsScriptExecutor.getComponentInsts()
-
-const instTreeItem = {
-  title: '当前组件实例集',
-  _code: 'inst',
-  _type: 'object',
-  children: <any>[],
-  _description: 'ComponentInstance'
-}
-if (insts.inst) {
-  for (const instKey in insts.inst) {
-    // @ts-ignore
-    const inst = insts.inst[instKey]
-    // {title: '获取组件实例', _code: 'xxxInstId', _type: 'object'},
-    const propItems = []
-    for (const propKey in inst.props) {
-      propItems.push({
-        title: propKey, _code: propKey, _value: inst.props[propKey]
-      })
-    }
-    instTreeItem.children.push({
-      title: inst.props?.label || inst.title, key: inst.id, _code: inst.id,
-      children: [
-        {title: '值', _code: 'value', _description: '组件值', _value: inst.value},
-        {title: '属性', _code: 'props', _type: 'object', _description: '组件属性', children: propItems}
-      ]
-    })
-    console.log('instTreeItem....', instTreeItem)
-  }
-}
-
-const _componentInstTreeData = setKeys([instTreeItem])
-
 
 </script>
 
@@ -226,11 +194,16 @@ const _componentInstTreeData = setKeys([instTreeItem])
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_componentInstTreeData"
                       @select="(selectedKeys,data)=>selectNode(selectedKeys,data,_componentInstTreeData)">
-                <template #title="{_code,title,_value}">
-                  <span :title="_value">{{ _code }}
-                    <!--  title和_code相同，则只显示_code -->
+                <template #title="{_code,title,_value,_description}">
+                  <a-tooltip background-color="#165DFF">
+                    <template #content>
+                      {{_description}}
+                    </template>
+                    <span>{{ _code }}
+                      <!--  title和_code相同，则只显示_code -->
                     <span class="gl-title" style="margin-left: 0!important;">{{ title === _code ? '' : title }}</span>
                   </span>
+                  </a-tooltip>
                 </template>
                 <template #extra="{_type}">
                   <span class="gl-extra">{{ _type }}</span>
