@@ -1,4 +1,4 @@
-export default {
+const ARCO = {
   path: 'https://arco.design',
   name: 'arcoWebsite',
   meta: {
@@ -6,5 +6,8 @@ export default {
     icon: 'icon-link',
     requiresAuth: true,
     order: 8,
+    hideInMenu: true
   },
 };
+
+// export default ARCO;

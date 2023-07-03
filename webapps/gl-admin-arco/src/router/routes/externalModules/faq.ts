@@ -1,4 +1,4 @@
-export default {
+const FAQ = {
   path: 'https://arco.design/vue/docs/pro/faq',
   name: 'faq',
   meta: {
@@ -6,5 +6,8 @@ export default {
     icon: 'icon-question-circle',
     requiresAuth: true,
     order: 9,
+    hideInMenu: true
   },
 };
+
+// export default FAQ;
