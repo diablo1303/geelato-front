@@ -27,6 +27,7 @@ const app = {
     ],
 }
 
+
 const page = {
     title: '当前页面信息',
     _code: 'page',
@@ -34,7 +35,8 @@ const page = {
     children: [
         {title: '页面ID', _code: 'id', _type: 'string'},
         {title: '页面名称', _code: 'label', _type: 'string'},
-        {title: '页面树节点ID', _code: 'treeNodeId', _type: 'string'},
+        {title: '页面参数', _code: 'params', _type: 'array', children: []},
+        // {title: '页面树节点ID', _code: 'treeNodeId', _type: 'string'},
     ],
 }
 
@@ -57,7 +59,9 @@ const device = {
 /**
  *  系统变量
  */
-export const systemVarsTreeData = [user, app, page, device]
+export const useSystemVarsTreeData = () => {
+    return [user, app, page, device]
+}
 
 
 // const inst = {
@@ -112,7 +116,7 @@ export const useComponentInstTreeData = () => {
         _code: 'ctx',
         _type: 'object',
         children: [useCtxRecord()],
-        _description: 'ComponentInstance'
+        _description: '表格、表单等组件的正下文环境'
     }
 
 
@@ -147,7 +151,23 @@ export const useComponentInstTreeData = () => {
         }
     }
 
-    return [ctx, instTreeItem]
+    const fn = {
+        title: '方法',
+        _code: 'fn',
+        _type: 'object',
+        children: [
+            {
+                title: '页面参数值是否等于某值',
+                _code: 'isPageParamEquals',
+                _type: 'boolean',
+                _brackets: '("参数名",参数值)',
+                _description: '页面参数值是否等于某值',
+            }
+        ],
+        _description: ''
+    }
+
+    return [ctx, instTreeItem, fn]
 }
 
 const text = {
@@ -182,4 +202,23 @@ const text = {
     ],
 }
 
-export const functionalFormulaTreeData = [text]
+const logic = {
+    title: '逻辑',
+    _code: 'logic',
+    _type: 'object',
+    // 在构建path时的内容
+    _pathName: 'fn',
+    children: [
+        // _brackets 对于方法，需要同时生成参数内容
+        {
+            title: '如果',
+            _code: 'if',
+            _type: 'boolean',
+            _brackets: '(表达式,trueValue,falseValue)',
+            _description: '依据表达式执行的结果，若为true返回trueValue，若为false返回falseValue',
+        }
+    ]
+}
+
+
+export const functionalFormulaTreeData = [text, logic]

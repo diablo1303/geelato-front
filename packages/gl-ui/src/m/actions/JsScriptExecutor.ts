@@ -4,6 +4,7 @@ import utils from "../utils/Utils";
 import {h} from "vue";
 import GlPageViewer from '../../components/gl-page-viewer/GlPageViewer.vue'
 import type PageProvideProxy from "../../components/PageProvideProxy";
+import type {Param} from "@/m/types/global";
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 
@@ -11,7 +12,7 @@ export class JsScriptExecutor {
 
     app: App | undefined
 
-
+    pageIds: string[] = []
     $gl = {}
 
     constructor() {
@@ -34,6 +35,7 @@ export class JsScriptExecutor {
      */
     addPageProxy(pageComponentId: string, pageProxy: PageProvideProxy) {
         pageProxyMap[pageComponentId] = pageProxy
+        this.pageIds.push(pageComponentId)
         console.log('addPageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
     }
 
@@ -44,7 +46,15 @@ export class JsScriptExecutor {
      */
     removePageProxy(pageComponentId: string) {
         delete pageProxyMap[pageComponentId]
-        // console.log('removePageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
+        let ids = this.pageIds
+        if (ids && ids.length > 0) {
+            this.pageIds.forEach((id, index) => {
+                if (id === pageComponentId) {
+                    ids.splice(index, 1)
+                }
+            })
+        }
+        console.log('removePageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap, ids)
     }
 
     /**
@@ -96,6 +106,7 @@ export class JsScriptExecutor {
         return null
     }
 
+
     /**
      * 设置组件属性
      * @param componentId
@@ -145,7 +156,33 @@ export class JsScriptExecutor {
     }
 
     /**
-     * 触发组件的动作事件
+     * 获取当前页面所有的参数
+     */
+    getPageParams($gl: any) {
+        const pageProxy: PageProvideProxy = $gl.ctx.pageProxy
+        if (pageProxy) {
+            return pageProxy.getParams()
+        }
+        console.error('在获取页面参数值时，获取不到当前页面信息。')
+        return null
+    }
+
+    /**
+     * 获取当前页面的参数
+     * @param paramName
+     */
+    getPageParam(paramName: string, $gl: any) {
+        const pageProxy: PageProvideProxy = $gl.ctx.pageProxy
+        if (pageProxy) {
+            console.log('pageProxy', pageProxy)
+            return pageProxy.getParamValue(paramName)
+        }
+        console.error('在获取页面参数值时，获取不到当前页面信息。')
+        return null
+    }
+
+    /**
+     * 触发组件的动作事件f
      * @param actionName
      */
     triggerComponentAction(componentId: string, actionName: string, ctx?: {}, callback?: Function) {
@@ -160,7 +197,7 @@ export class JsScriptExecutor {
                         for (const actionsKey in actions) {
                             const action = actions[actionsKey]
                             if (action.name === actionName) {
-                                jsScriptExecutor.doAction(action, ctx = {}, callback)
+                                jsScriptExecutor.doAction(action, ctx = {pageProxy}, callback)
                             }
                         }
                     }
@@ -188,6 +225,66 @@ export class JsScriptExecutor {
         return undefined
     }
 
+    private getLogicFns($gl: any) {
+        let that = this
+        return {
+            if: (expression: string, trueValue: any, falseValue: any) => {
+                return that.evalExpression(expression, $gl?.ctx) ? trueValue : falseValue
+            },
+            isPageParamEquals: (paramName: string, value: any) => {
+                console.log('isPageParamEquals', paramName, value, that.getPageParam(paramName, $gl))
+                return that.getPageParam(paramName, $gl) === value
+            }
+        }
+    }
+
+    private getComponentFns($gl: any) {
+        let that = this
+        return {
+            openWin: (url: string, urlParams: Array<Param>) => {
+                const paramsAry: Array<string> = []
+                urlParams.forEach((param) => {
+                    if (param.valueExpression) {
+                        paramsAry.push(`${param.name}=${that.evalExpression(param.valueExpression, $gl?.ctx)}`)
+                    } else {
+                        paramsAry.push(`${param.name}=${param.value}`)
+                    }
+                })
+                window.open(`${url}?${paramsAry.join('&')}`, '_blank')
+            },
+            loadPage: (pageId: string, extendId: string, params: Array<Param>) => {
+                return that.loadPage(pageId, extendId, that.evalParams(params, $gl.ctx) || [])
+            },
+            /**
+             * 调用组件方法
+             * @param componentId
+             * @param methodName
+             * @param params
+             */
+            invokeComponentMethod: (componentId: string, methodName: string, params: Array<Param>) => {
+                const method = this.getComponentMethod(componentId, methodName)
+                if (method) {
+                    method(that.evalParams(params, $gl.ctx))
+                }
+            },
+            // evalExpression: (expression: string) => {
+            //     return that.evalExpression(expression, $gl.ctx)
+            // },
+            // evalFn: (expression: string, ctx: { pageProxy?: PageProvideProxy, [key: string]: any }, callback?: Function) => {
+            //     return that.evalFn(expression, ctx, callback)
+            // },
+            getPageParams: () => that.getPageParams($gl),
+            getComponentMethod: that.getComponentMethod,
+            getComponentValue: that.getComponentValue,
+            setComponentValue: (componentId: string, valueExpression: any) => {
+                return that.setComponentValue(componentId, that.evalExpression(valueExpression, $gl.ctx))
+            },
+            getComponentProps: that.getComponentProps,
+            setComponentProps: that.setComponentProps,
+            triggerComponentAction: that.triggerComponentAction,
+        }
+    }
+
     /**
      * 获取组件值
      * @param componentId
@@ -213,6 +310,7 @@ export class JsScriptExecutor {
      * @param callback
      */
     doAction(action: Action, ctx: object, callback?: Function) {
+        // console.log('JsScriptExecutor > doAction(),action:', action, 'ctx:', ctx)
         return this.evalFn(action.body!, ctx, callback)
     }
 
@@ -226,9 +324,9 @@ export class JsScriptExecutor {
      * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
      * @param callback
      */
-    evalExpression(expression: string, ctx: object, callback?: Function) {
-        const $gl = this.getGl()
-        $gl.ctx = {...ctx}
+    evalExpression(expression: string, ctx: { pageProxy?: PageProvideProxy, [key: string]: any }, callback?: Function) {
+        const $gl = this.getGl(ctx?.pageProxy)
+        Object.assign($gl.ctx, ctx)
         let result = utils.evalExpression(expression, $gl)
         if (callback && typeof callback === 'function') {
             callback()
@@ -242,9 +340,10 @@ export class JsScriptExecutor {
      * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
      * @param callback
      */
-    evalFn(fnBodyScript: string, ctx: object, callback?: Function) {
-        const $gl = this.getGl()
-        $gl.ctx = {...ctx}
+    evalFn(fnBodyScript: string, ctx: { pageProxy?: PageProvideProxy, [key: string]: any }, callback?: Function) {
+        const $gl = this.getGl(ctx?.pageProxy)
+        Object.assign($gl.ctx, ctx)
+        console.log('$gl.ctx', $gl.ctx)
         let result = utils.evalFn(fnBodyScript, $gl)
         if (callback && typeof callback === 'function') {
             callback()
@@ -252,6 +351,32 @@ export class JsScriptExecutor {
         return result
     }
 
+
+    /**
+     * 执行参数，将参数中的valueExpression值表达式计算结果保存到value中
+     * @param params
+     */
+    evalParams(params: Array<Param>, ctx: object) {
+
+        const newParams: Array<Param> = []
+        if (params && params.length > 0) {
+            for (const index in params) {
+                const param: Param = params[index]
+                console.log('param.value:', param.value)
+                // param.value未设置，且valueExpression有值时
+                if (param.valueExpression && !param.value) {
+                    param.value = this.evalExpression(param.valueExpression, ctx)
+                }
+                newParams.push({
+                    name: param.name,
+                    value: param.value,
+                    valueExpression: ''
+                })
+            }
+        }
+        console.log('evalParams params:', params, 'ctx:', ctx, 'newParams:', newParams)
+        return newParams
+    }
 
     /**
      *  获取组件实例信息
@@ -283,19 +408,17 @@ export class JsScriptExecutor {
 
     /**
      * 获取当前环境下，可执行的方法、全局变量
+     *
      * @private
      */
-    private getGl() {
+    private getGl(pageProxy: PageProvideProxy | undefined) {
         let $gl = {
-            loadPage: this.loadPage,
             jsEngine: this,
-            getComponentMethod: this.getComponentMethod,
             getComponentValue: this.getComponentValue,
             setComponentValue: this.setComponentValue,
             getComponentProps: this.getComponentProps,
             setComponentProps: this.setComponentProps,
             triggerComponentAction: this.triggerComponentAction,
-
             ...this.app?.config.globalProperties,
             page: {},
             inst: <{ [key: string]: any }>{},
@@ -304,6 +427,26 @@ export class JsScriptExecutor {
             ctx: {},
             fn: utils
         }
+        // set logic fns
+        Object.assign($gl.fn, this.getLogicFns($gl))
+        // set components fns
+        Object.assign($gl.fn, this.getComponentFns($gl))
+
+        // set page
+        $gl.page = {
+            id: pageProxy?.pageInst.id,
+            label: pageProxy?.pageInst.title,
+            params: pageProxy?.pageInst.props.params
+        }
+        // if (this.pageIds.length > 0) {
+        //     const pageProxy = pageProxyMap[this.pageIds[0]]!
+        //     $gl.page = {
+        //         id: pageProxy.pageInst.id,
+        //         label: pageProxy.pageInst.title,
+        //         params: pageProxy.pageInst.props.params
+        //     }
+        // }
+
         for (const pageComponentId in pageProxyMap) {
             const pageProxy = pageProxyMap[pageComponentId]
             if (pageProxy) {
@@ -323,22 +466,8 @@ export class JsScriptExecutor {
             }
         }
 
-        // if (Object.keys(this.$gl).length === 0) {
-        //     this.$gl = {
-        //         loadPage: this.loadPage,
-        //         getComponentMethod: this.getComponentMethod,
-        //         getComponentValue: this.getComponentValue,
-        //         setComponentValue: this.setComponentValue,
-        //         getComponentProps: this.getComponentProps,
-        //         setComponentProps: this.setComponentProps,
-        //         triggerComponentAction: this.triggerComponentAction,
-        //         ...utils,
-        //         ...this.app?.config.globalProperties
-        //     }
-        // }
         return $gl
     }
-
 
     /**
      * 加载页面
@@ -346,7 +475,8 @@ export class JsScriptExecutor {
      * @param extendId 应用页面树节点ID
      * @param pageProps
      */
-    loadPage(pageId: string, extendId: string, pageProps: object) {
+    loadPage(pageId: string, extendId: string, params: Array<Param>) {
+        const pageProps = {params: params}
         console.log('JsScriptExecutor > loadPage > pageId:', pageId, 'extendId:', extendId, 'pageProps:', pageProps)
         return h(GlPageViewer, {pageId, extendId, pageProps})
     }
@@ -358,6 +488,7 @@ export class JsScriptExecutor {
     // getCurrentInstance().parent.
     // }
 }
+
 
 const jsScriptExecutor = new JsScriptExecutor()
 export default jsScriptExecutor

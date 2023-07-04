@@ -9,7 +9,7 @@ export default {
 <script lang="ts" setup>
 
 import {ref} from "vue";
-import {systemVarsTreeData, functionalFormulaTreeData, useComponentInstTreeData} from "./varsMeta";
+import {useSystemVarsTreeData, functionalFormulaTreeData, useComponentInstTreeData} from "./varsMeta";
 import {jsScriptExecutor, utils} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue'])
@@ -59,6 +59,7 @@ const clearValueExpress = () => {
 }
 const handleOk = () => {
   inputMv.value = mv.value
+  valueExpressModalVisible.value = false
   emits('update:modelValue', mv.value)
 }
 
@@ -123,7 +124,7 @@ const getKeyPath = (tree: any, key: string): string => {
   }
 }
 
-const _systemVarsTreeData = setKeys(systemVarsTreeData)
+const _systemVarsTreeData = setKeys(useSystemVarsTreeData())
 const _functionalFormulaTreeData = setKeys(functionalFormulaTreeData)
 const _componentInstTreeData = setKeys(useComponentInstTreeData())
 
@@ -190,7 +191,7 @@ const selectNode = (selectedKeys: any, data: any, treeData: any) => {
             <a-collapse-item header="自定义变量" key="2">
               Coming Soon...
             </a-collapse-item>
-            <a-collapse-item header="组件实例" key="3">
+            <a-collapse-item header="组件实例变量" key="3">
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_componentInstTreeData"
                       @select="(selectedKeys,data)=>selectNode(selectedKeys,data,_componentInstTreeData)">

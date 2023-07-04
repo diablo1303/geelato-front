@@ -7,7 +7,7 @@ export default class IfComponentValueBlockHandler implements IBlockHandler {
 
         return new ParseResult(
             `
-            ${props.mode === 'if' ? 'if' : 'else if'}($gl.getComponentValue("${props.componentId}") ${props.relationship} ${props.compareValue}){
+            ${props.mode === 'if' ? 'if' : 'else if'}($gl.fn.getComponentValue("${props.componentId}") ${props.relationship} ${props.compareValue}){
             `
             , "}").setBlockName('IfComponentValueBlock');
     }

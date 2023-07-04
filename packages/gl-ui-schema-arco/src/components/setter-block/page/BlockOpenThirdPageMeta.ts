@@ -27,7 +27,7 @@ export default {
         "title": "参数",
         "_showSub": true,
         "properties": [{
-            "name": "pName",
+            "name": "name",
             "group": "base",
             "type": "props",
             "show": true,
@@ -37,15 +37,15 @@ export default {
             "title": "参数名",
             "setterComponentName": "AInput"
         }, {
-            "name": "pValue",
+            "name": "valueExpression",
             "group": "base",
             "type": "props",
             "show": true,
             "expanded": true,
-            "setterComponentProps": {},
+            "setterComponentProps": {"showInput": true},
             "setterComponentVModelName": "modelValue",
             "title": "参数值",
-            "setterComponentName": "AInput"
+            "setterComponentName": "GlExpressionSetter"
         }],
         "setterComponentName": "GlObjectArraySetter",
         "titleField": "name"

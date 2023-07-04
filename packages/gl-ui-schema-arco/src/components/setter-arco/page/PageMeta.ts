@@ -63,7 +63,7 @@ export default {
         "setterComponentName": "GlObjectArraySetter",
         "_showSub": true,
         "properties": [{
-            "name": "pName",
+            "name": "name",
             "group": "base",
             "type": "props",
             "enableValueExpress": false,
@@ -74,15 +74,14 @@ export default {
             "setterComponentName": "AInput",
             "title": "参数名"
         }, {
-            "name": "pValue",
+            "name": "valueExpression",
             "group": "base",
             "type": "props",
-            "enableValueExpress": true,
             "show": true,
             "expanded": true,
-            "setterComponentProps": {},
+            "setterComponentProps": {"showInput": true},
             "setterComponentVModelName": "modelValue",
-            "setterComponentName": "AInput",
+            "setterComponentName": "GlExpressionSetter",
             "title": "参数值"
         }, {
             "name": "pType",
@@ -104,7 +103,7 @@ export default {
             "title": "类型",
             "setterComponentName": "ASelect"
         }],
-        "titleField": "pName"
+        "titleField": "name"
     }],
     "actions": [{"name": "onMounted", "description": "页面加载完时触发，和Vue的onMounted一致", "title": "加载完"}]
 }

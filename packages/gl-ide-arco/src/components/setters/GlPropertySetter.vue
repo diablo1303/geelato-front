@@ -196,8 +196,8 @@ watch(() => {
   // console.log('set property', props.propertySetterMeta?.name, ' and set value as ', val)
   emits("set:propertyValue", val)
   if (initialized) {
-    console.log(`change property "${props.propertySetterMeta?.name}"  val:`, val)
-    console.log(`change property "${props.propertySetterMeta?.name}" oval:`, oval)
+    // console.log(`change property "${props.propertySetterMeta?.name}"  val:`, val)
+    // console.log(`change property "${props.propertySetterMeta?.name}" oval:`, oval)
     emits("change:propertyValue", val)
   }
   componentSetterProvideProxy.setPropValue(props.propertySetterMeta?.name, val?.value)
@@ -243,7 +243,7 @@ const tryClearProp = (propertyName: String) => {
   // delete props.propertyModel[propertyName]
 }
 const onSubPropertyUpdate = (name: String, value: any) => {
-  console.log('onSubPropertyUpdate>', name, value)
+  // console.log('onSubPropertyUpdate>', name, value)
   // TODO
   // @ts-ignore
   propertyModel.value[name] = value

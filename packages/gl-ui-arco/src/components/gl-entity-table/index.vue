@@ -24,8 +24,7 @@ import {
   FieldMeta,
   EntityReader,
   EntityReaderParam,
-  MixUtil,
-  CheckUtil, utils, useGlobal, FormProvideProxy, FormProvideKey, jsScriptExecutor
+  CheckUtil, utils, useGlobal, FormProvideProxy, FormProvideKey, jsScriptExecutor, PageProvideProxy, PageProvideKey
 } from "@geelato/gl-ui";
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import type {Column, TableColumnDataPlus} from "./table";
@@ -136,7 +135,7 @@ const props = defineProps({
 });
 
 const formProvideProxy: FormProvideProxy | undefined = inject(FormProvideKey)
-
+const pageProvideProxy: PageProvideProxy | undefined = inject(PageProvideKey)
 let recordSchema = new Schema({})
 
 const editSlotNameFlag = '__editSlot'
@@ -300,7 +299,7 @@ const fetchData = async (readerInfo?: {
 };
 
 const search = (entityReaderParams: Array<EntityReaderParam>) => {
-  // console.log('search entityReaderParams:', entityReaderParams)
+  console.log('search entityReaderParams:', entityReaderParams)
   fetchData({params: entityReaderParams});
 };
 const onPageChange = (pageNo: number) => {
@@ -331,7 +330,7 @@ const exchangeArray = <T extends Array<any>>(
 // cloneColumns:TableColumnData[]
 const cloneColumns = ref<Column[]>([]);
 const showColumns = ref<Column[]>([]);
-const handleChange = (
+const changeShowColumns = (
     checked: boolean | (string | boolean | number)[],
     column: Column,
     index: number
@@ -388,6 +387,7 @@ const evalExpression = (data: {
   rowIndex: number;
 }) => {
   const ctx = {
+    pageProxy: pageProvideProxy,
     record: toRaw(data.record),
     column: toRaw(data.column),
     rowIndex: toRaw(data.rowIndex),
@@ -526,7 +526,7 @@ const getRenderColumns = () => {
 defineExpose({
   search,
   popupVisibleChange,
-  handleChange,
+  changeShowColumns,
   validateTable,
   validateRecord,
   addRow,

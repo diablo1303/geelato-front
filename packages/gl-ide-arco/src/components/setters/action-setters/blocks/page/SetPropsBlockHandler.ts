@@ -12,7 +12,7 @@ export default class SetPropsBlockHandler implements IBlockHandler {
         })
         return new ParseResult(
             `
-            $gl.setComponentProps("${props.componentId}","${vueProps}");
+            $gl.fn.setComponentProps("${props.componentId}","${vueProps}");
             `
         ).setBlockName('SetPropsBlock');
     }

@@ -41,15 +41,14 @@ export default {
         "enableValueExpress": false
     }, {
         "name": "value",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
         "show": true,
         "expanded": true,
         "title": "设置组件值",
-        "setterComponentName": "AInput",
-        "enableValueExpress": true
+        "setterComponentProps": {"showInput": true},
+        "setterComponentVModelName": "modelValue",
+        "setterComponentName": "GlExpressionSetter"
     }],
     "actions": []
 }

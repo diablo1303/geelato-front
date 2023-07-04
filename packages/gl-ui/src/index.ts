@@ -37,9 +37,10 @@ import {AppProvideKey} from "./components/AppProvideProxy";
 import FormProvideProxy from "./components/FormProvideProxy";
 import {FormProvideKey} from "./components/FormProvideProxy";
 import {Schema} from "b-validate";
-import type {PageType} from "./m/types/global";
+import type {PageType, Param} from "./m/types/global";
 import {ListGroupingUtil} from "./m/utils/ListGroupingUtil";
 import {paramStringify} from "./components/PageProvideProxy";
+
 const Utils = AllUtils
 
 const component: Plugin = {
@@ -83,6 +84,7 @@ export {
     PageType,
     Schema,
     PageParamConfigType,
+    Param,
     GlIconfont,
     EntityApi,
     entityApi,
