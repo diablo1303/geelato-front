@@ -23,7 +23,7 @@
 </template>
 <script lang="ts">
 export default {
-  name: 'GlIconfontSetter'
+  name: 'GlIconfontSelect'
 }
 </script>
 <script lang="ts" setup>

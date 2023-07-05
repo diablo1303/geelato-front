@@ -21,6 +21,7 @@ import GlEncode from "./components/gl-encode/GlEncode.vue";
 import GlInstRuntime from "./components/gl-inst-runtime/GlInstRuntime.vue";
 import GlInstsRuntime from "./components/gl-inst-runtime/GlInstsRuntime.vue";
 import GlRefPage from "./components/gl-ref-page/GlRefPage.vue";
+import GlIconfontSelect from "./components/gl-iconfont-select/GlIconfontSelect.vue";
 
 const i18nMessage = {en, cn};
 
@@ -30,6 +31,7 @@ const component: Plugin = {
         if (PluginUtil.markInstalledPlugin(app, "gl-ui-arco")) {
             return;
         }
+        app.component(GlIconfontSelect.name, GlIconfontSelect)
         app.component(GlDict.name, GlDict)
         app.component(GlPage.name, GlPage)
         app.component("GlEntityTablePlus", GlEntityTablePlus)
