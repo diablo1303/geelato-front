@@ -19,15 +19,14 @@ export default {
 
 import {type PropType, getCurrentInstance, onMounted, onUnmounted, provide} from "vue";
 import {
-  type PageParamConfigType,
   type PageType,
   PageProvideProxy,
   jsScriptExecutor,
   mixins,
-  PageProvideKey,
+  PageProvideKey, type Param,
 } from "@geelato/gl-ui";
 import type {Action} from "@geelato/gl-ui-schema";
-import {PageParam, PageParamsKey} from "@geelato/gl-ui/src/components/PageProvideProxy";
+import {PageParamsKey} from "@geelato/gl-ui";
 
 const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
@@ -75,7 +74,7 @@ const props = defineProps({
    *  支持转换前PageParamConfigType和转换后的参数类型PageParam
    */
   params: {
-    type: Array as PropType<Array<PageParam>>,
+    type: Array as PropType<Array<Param>>,
     default() {
       return []
     }
@@ -126,7 +125,7 @@ jsScriptExecutor.addPageProxy(props.glComponentInst.id, pageProvideProxy)
 // !!! 注意这里放在jsScriptExecutor.addPageProxy后面执行，是为了确保在计算参数时，可以用到当前页面proxy的相关内容
 if (props.params && props.params.length > 0) {
   for (const index in props.params) {
-    const param: PageParam = props.params[index]
+    const param: Param = props.params[index]
     if (param.valueExpression) {
       param.value = jsScriptExecutor.evalExpression(param.valueExpression, {pageProxy: pageProvideProxy})
     }

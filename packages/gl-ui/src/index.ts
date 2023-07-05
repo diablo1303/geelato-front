@@ -31,7 +31,7 @@ import ConvertUtil from "./m/utils/ConvertUtil";
 import useGlobal from "./m/hooks/useGlobal";
 import './assets/style.css'
 import jsScriptExecutor from "./m/actions/JsScriptExecutor";
-import {PageProvideKey} from "./components/PageProvideProxy";
+import {PageProvideKey, PageParamsKey} from "./components/PageProvideProxy";
 import AppProvideProxy from "./components/AppProvideProxy";
 import {AppProvideKey} from "./components/AppProvideProxy";
 import FormProvideProxy from "./components/FormProvideProxy";
@@ -76,6 +76,7 @@ const component: Plugin = {
 export {
     AppProvideKey,
     AppProvideProxy,
+    PageParamsKey,
     PageProvideKey,
     PageProvideProxy,
     paramStringify,

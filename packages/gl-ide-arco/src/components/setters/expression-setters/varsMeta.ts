@@ -147,7 +147,6 @@ export const useComponentInstTreeData = () => {
                     {title: '属性', _code: 'props', _type: 'object', _description: '组件属性', children: propItems}
                 ]
             })
-            console.log('instTreeItem....', instTreeItem)
         }
     }
 

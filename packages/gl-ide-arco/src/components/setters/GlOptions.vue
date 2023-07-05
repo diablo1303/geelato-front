@@ -69,7 +69,7 @@
 // @ts-nocheck
 import {defineComponent, type PropType} from 'vue'
 import {utils} from "@geelato/gl-ui";
-import type {ColumnType} from "@/components/setters/Types";
+import type {ColumnType} from "../setters/Types";
 
 export default defineComponent({
   name: "GlOptions",

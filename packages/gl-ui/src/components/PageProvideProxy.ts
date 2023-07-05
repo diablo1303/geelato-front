@@ -3,7 +3,7 @@
  */
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import type {ComponentInternalInstance} from "vue";
-import type {Param} from "@/m/types/global";
+import type {Param} from "../m/types/global";
 
 export type PageParamConfigType = { pName: string, pValue: any, pType: string }
 export const PageProvideKey = 'PageProvideKey'

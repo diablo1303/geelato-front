@@ -88,7 +88,7 @@ export class Utils {
                 let preStr = strAry.join(';')
                 result = new Fn(glName, preStr + '; return ' + lastStr)($gl)
             }
-            console.log('gl-ui > utils > evalExpression() > expression: ', expression, 'result:', result, '$gl', $gl)
+            // console.log('gl-ui > utils > evalExpression() > expression: ', expression, 'result:', result, '$gl', $gl)
             return result
         } catch (e: any) {
             console.error('执行脚本出错', e.message, '表达式为：', expression)
@@ -128,57 +128,57 @@ export class Utils {
      * @param keyValues 基本数据类型键值对
      * @returns {*} 如上示例，当id=1jf ,结果为执行1>0即true
      */
-    invoke(obj: object, keyValues: object) {
-        let keyword = '@.'
-        let jsFlag = 'js:'
-        // let objCopy
-        if (typeof obj === 'string') {
-            let expression: string = obj
-            if (expression.startsWith(jsFlag)) {
-                return this.evalExpression(expression.replace(jsFlag, '').replace(/@\./g, '$ctx.'), keyValues)
-            } else {
-                if (expression.indexOf(keyword) !== -1) {
-                    return this.evalExpression(expression.replace(/@\./g, '$ctx.'), keyValues)
-                    // return this.compileString(expression, keyValues)
-                } else {
-                    return expression
-                }
-            }
-        } else if (Array.isArray(obj)) {
-            let arrayCopy: Array<any> = []
-            for (let index in obj) {
-                arrayCopy[index] = this.invoke(obj[index], keyValues)
-            }
-            return arrayCopy
-        } else if (typeof obj === 'object') {
-            let objCopy: LooseObject = {}
-            Object.assign(objCopy, obj)
-            for (let i in objCopy) {
-                // console.log('gl-ui > 解析替换' + i, objCopy[i], keyValues, this.invoke(objCopy[i], keyValues))
-                objCopy[i] = this.invoke(objCopy[i], keyValues)
-            }
-            return objCopy
-        }
-        return obj
-    }
+    // invoke(obj: object, keyValues: object) {
+    //     let keyword = '@.'
+    //     let jsFlag = 'js:'
+    //     // let objCopy
+    //     if (typeof obj === 'string') {
+    //         let expression: string = obj
+    //         if (expression.startsWith(jsFlag)) {
+    //             return this.evalExpression(expression.replace(jsFlag, '').replace(/@\./g, '$ctx.'), keyValues)
+    //         } else {
+    //             if (expression.indexOf(keyword) !== -1) {
+    //                 return this.evalExpression(expression.replace(/@\./g, '$ctx.'), keyValues)
+    //                 // return this.compileString(expression, keyValues)
+    //             } else {
+    //                 return expression
+    //             }
+    //         }
+    //     } else if (Array.isArray(obj)) {
+    //         let arrayCopy: Array<any> = []
+    //         for (let index in obj) {
+    //             arrayCopy[index] = this.invoke(obj[index], keyValues)
+    //         }
+    //         return arrayCopy
+    //     } else if (typeof obj === 'object') {
+    //         let objCopy: LooseObject = {}
+    //         Object.assign(objCopy, obj)
+    //         for (let i in objCopy) {
+    //             // console.log('gl-ui > 解析替换' + i, objCopy[i], keyValues, this.invoke(objCopy[i], keyValues))
+    //             objCopy[i] = this.invoke(objCopy[i], keyValues)
+    //         }
+    //         return objCopy
+    //     }
+    //     return obj
+    // }
 
     /**
      * 依据上下文信息，编译字符串
      * @param expression
      * @returns {*}
      */
-    compileString(expression: string, $ctx: object) {
-        let Fn = Function
-        // console.log(new Fn('$ctx', 'return "' + expression + '"'))
-        return new Fn('$ctx', 'return "' + expression + '"')($ctx)
-    }
+    // compileString(expression: string, $ctx: object) {
+    //     let Fn = Function
+    //     // console.log(new Fn('$ctx', 'return "' + expression + '"'))
+    //     return new Fn('$ctx', 'return "' + expression + '"')($ctx)
+    // }
 
     /**
      * 检查安全性
      */
-    checkJsExpressionSecurity(jsExpression: string) {
-        return true
-    }
+    // checkJsExpressionSecurity(jsExpression: string) {
+    //     return true
+    // }
 
     /**
      *
@@ -187,12 +187,12 @@ export class Utils {
      * @param ctxName 默认为 'ctx'
      * @return 符合格式要求的时，将js:xxx，中的xxx为作脚本执行；不符合时，直接返回当前jsExpression
      */
-    runJs(jsExpression: string, ctx: object, ctxName = 'ctx') {
-        if (/^\s*js\s*:/.test(jsExpression)) {
-            return this.evalExpression(jsExpression.replace(/^\s*js\s*:/, ''), ctx, 'ctx')
-        }
-        return jsExpression
-    }
+    // runJs(jsExpression: string, ctx: object, ctxName = 'ctx') {
+    //     if (/^\s*js\s*:/.test(jsExpression)) {
+    //         return this.evalExpression(jsExpression.replace(/^\s*js\s*:/, ''), ctx, 'ctx')
+    //     }
+    //     return jsExpression
+    // }
 
 
     /**

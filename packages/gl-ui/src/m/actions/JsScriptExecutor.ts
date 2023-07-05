@@ -1,10 +1,10 @@
-import type {App, AppContext} from "vue";
+import type {App} from "vue";
+import {h} from "vue";
 import type {Action} from "@geelato/gl-ui-schema";
 import utils from "../utils/Utils";
-import {h} from "vue";
 import GlPageViewer from '../../components/gl-page-viewer/GlPageViewer.vue'
 import type PageProvideProxy from "../../components/PageProvideProxy";
-import type {Param} from "@/m/types/global";
+import type {Param} from "../types/global";
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 

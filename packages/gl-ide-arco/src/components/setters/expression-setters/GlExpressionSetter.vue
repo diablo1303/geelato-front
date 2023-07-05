@@ -10,7 +10,7 @@ export default {
 
 import {ref} from "vue";
 import {useSystemVarsTreeData, functionalFormulaTreeData, useComponentInstTreeData} from "./varsMeta";
-import {jsScriptExecutor, utils} from "@geelato/gl-ui";
+import {utils} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -179,7 +179,7 @@ const selectNode = (selectedKeys: any, data: any, treeData: any) => {
             <a-collapse-item header="系统变量" key="1">
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_systemVarsTreeData"
-                      @select="(selectedKeys,data)=>selectNode(selectedKeys,data,_systemVarsTreeData)">
+                      @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_systemVarsTreeData)">
                 <template #title="{_code,title}">
                   <span>{{ _code }}<span class="gl-title">{{ title }}</span></span>
                 </template>
@@ -194,7 +194,7 @@ const selectNode = (selectedKeys: any, data: any, treeData: any) => {
             <a-collapse-item header="组件实例变量" key="3">
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_componentInstTreeData"
-                      @select="(selectedKeys,data)=>selectNode(selectedKeys,data,_componentInstTreeData)">
+                      @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_componentInstTreeData)">
                 <template #title="{_code,title,_value,_description}">
                   <a-tooltip background-color="#165DFF">
                     <template #content>
@@ -214,7 +214,7 @@ const selectNode = (selectedKeys: any, data: any, treeData: any) => {
             <a-collapse-item header="函数公式" key="4">
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_functionalFormulaTreeData"
-                      @select="(selectedKeys,data)=>selectNode(selectedKeys,data,_functionalFormulaTreeData)">
+                      @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_functionalFormulaTreeData)">
                 <template #title="{_code,title}">
                   <span>{{ _code }}<span class="gl-title">{{ title }}</span></span>
                 </template>

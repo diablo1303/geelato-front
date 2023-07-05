@@ -1,5 +1,5 @@
 import type {App, Plugin} from "vue";
-import PageProvideProxy from "@geelato/gl-ui/src/components/PageProvideProxy";
+import PageProvideProxy from "@geelato/gl-ui";
 import GlPage from './components/gl-page/GlPage.vue'
 import GlEntityTablePlus from "./components/gl-entity-table-plus/index.vue";
 import GlEntityTree from "./components/gl-entity-tree/GlEntityTree.vue";

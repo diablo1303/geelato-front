@@ -10,7 +10,7 @@ import {ref, watch} from "vue";
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: {
-    type: String,
+    type: Object,
     default() {
       return {
         showInput: false

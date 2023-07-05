@@ -57,7 +57,7 @@ export default {
         }, {
             "title": "状态",
             "dataIndex": "delStatus",
-            "xRenderScript": "$ctx.record.delStatus == 1 ? '已启用' : '未启用'"
+            "xRenderScript": "$gl.ctx.record.delStatus == 1 ? '已启用' : '未启用'"
         }, {
             "title": "创建时间",
             "dataIndex": "createAt"

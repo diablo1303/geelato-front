@@ -83,25 +83,6 @@ export default {
             "setterComponentVModelName": "modelValue",
             "setterComponentName": "GlExpressionSetter",
             "title": "参数值"
-        }, {
-            "name": "pType",
-            "setterComponentProps": {
-                "allowClear": true,
-                "options": [{"label": "字符串", "value": "string"}, {
-                    "label": "布尔",
-                    "value": "boolean"
-                }, {"label": "表达式", "value": "express"}, {"label": "数值", "value": "number"}, {
-                    "label": "数组",
-                    "value": "array"
-                }, {"label": "对象", "value": "object"}]
-            },
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "title": "类型",
-            "setterComponentName": "ASelect"
         }],
         "titleField": "name"
     }],
