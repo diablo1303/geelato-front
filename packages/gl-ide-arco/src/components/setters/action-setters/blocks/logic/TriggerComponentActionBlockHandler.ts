@@ -6,7 +6,7 @@ export default class TriggerComponentActionBlockHandler implements IBlockHandler
     parseToScript(props: Props): ParseResult {
         return new ParseResult(
             `
-            $gl.triggerComponentAction("${props.componentId}","${props.actionName}");
+            $gl.fn.triggerComponentAction("${props.componentId}","${props.actionName}");
             `
         ).setBlockName('TriggerComponentActionBlock');
     }

@@ -3,7 +3,6 @@ import ParseResult from "../ParseResult";
 
 export default class ConfirmBlockHandler implements IBlockHandler {
     parseToScript(props: any): ParseResult {
-
         return new ParseResult(
             `
             let varName = '${props.varName}' || 'confirm'

@@ -107,7 +107,7 @@ const props = defineProps({
           useFor: ['folder', 'freePage', 'formPage', 'listPage'],
           action: 'updateNode',
           actionParams: {flag: 'menuItem'},
-          show: '$ctx.flag!=="menuItem"'
+          show: '$gl.ctx.flag!=="menuItem"'
         },
         {
           title: '取消设置为菜单',
@@ -116,7 +116,7 @@ const props = defineProps({
           useFor: ['folder', 'freePage', 'formPage', 'listPage'],
           action: 'updateNode',
           actionParams: {flag: ''},
-          show: '$ctx.flag==="menuItem"'
+          show: '$gl.ctx.flag==="menuItem"'
         },
         {
           title: '重命名',
@@ -214,9 +214,7 @@ const onShowContextMenu = (clickedNodeData: any) => {
   filterContextMenuData.value = props.contextMenuData.filter((item: ContextMenuDataType) => {
     // 基于node节点的show属性作是否展示的检查
     if (item.show) {
-      // @ts-ignore
-      const isShow = utils.evalExpression(item.show, clickedNodeData)
-      console.log('utils.evalPlus(item.show, clickedNodeData)', isShow, 'clickedNodeData', clickedNodeData)
+      const isShow = utils.evalExpression(item.show, {ctx:clickedNodeData})
       // @ts-ignore
       return item.useFor.includes(clickedNodeData.nodeType) && isShow
     } else {

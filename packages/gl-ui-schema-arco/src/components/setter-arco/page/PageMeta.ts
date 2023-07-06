@@ -63,7 +63,7 @@ export default {
         "setterComponentName": "GlObjectArraySetter",
         "_showSub": true,
         "properties": [{
-            "name": "pName",
+            "name": "name",
             "group": "base",
             "type": "props",
             "enableValueExpress": false,
@@ -74,37 +74,17 @@ export default {
             "setterComponentName": "AInput",
             "title": "参数名"
         }, {
-            "name": "pValue",
+            "name": "valueExpression",
             "group": "base",
             "type": "props",
-            "enableValueExpress": true,
             "show": true,
             "expanded": true,
-            "setterComponentProps": {},
+            "setterComponentProps": {"showInput": true},
             "setterComponentVModelName": "modelValue",
-            "setterComponentName": "AInput",
+            "setterComponentName": "GlExpressionSetter",
             "title": "参数值"
-        }, {
-            "name": "pType",
-            "setterComponentProps": {
-                "allowClear": true,
-                "options": [{"label": "字符串", "value": "string"}, {
-                    "label": "布尔",
-                    "value": "boolean"
-                }, {"label": "表达式", "value": "express"}, {"label": "数值", "value": "number"}, {
-                    "label": "数组",
-                    "value": "array"
-                }, {"label": "对象", "value": "object"}]
-            },
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "title": "类型",
-            "setterComponentName": "ASelect"
         }],
-        "titleField": "pName"
+        "titleField": "name"
     }],
     "actions": [{"name": "onMounted", "description": "页面加载完时触发，和Vue的onMounted一致", "title": "加载完"}]
 }

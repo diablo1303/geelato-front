@@ -35,7 +35,7 @@ import DesignerStagePanel from './StagePanel.vue'
 import DesignerSetterPanel from './SetterPanel.vue'
 import DesignerStatusPanel from './StatusPanel.vue'
 import {useThemeStore} from "../stores/UseThemeStore";
-import AllUtils from "@geelato/gl-ui/src/m/utils/AllUtils";
+import {Utils} from "@geelato/gl-ui";
 
 export default defineComponent({
   name: "GlIde",
@@ -52,7 +52,7 @@ export default defineComponent({
   setup(props, context) {
     const stagePanels = ref([])
     const themeStore = useThemeStore()
-    if (AllUtils.CheckUtil.isBrowser()) {
+    if (Utils.CheckUtil.isBrowser()) {
       if (typeof window !== 'undefined') {
         window.onresize = () => {
           return (() => {

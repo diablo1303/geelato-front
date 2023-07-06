@@ -11,7 +11,7 @@ export default {
 
 import {jsScriptExecutor, mixins} from "@geelato/gl-ui";
 import {inject} from "vue";
-import {PageParamsKey} from "@geelato/gl-ui/src/components/PageProvideProxy";
+import {PageParamsKey} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({

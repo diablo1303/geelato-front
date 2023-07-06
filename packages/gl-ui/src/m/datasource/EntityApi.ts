@@ -229,13 +229,32 @@ export class EntityApi {
     }
 
     /**
-     * 逻辑删除
+     * 逻辑删除（基于参数组合）
      * @param entityName
      * @param keyValues
      * @param biz
      */
     delete(entityName: string, keyValues: object, biz?: string) {
         return this.update(this.url.apiMetaDelete2, entityName, keyValues, biz);
+    }
+
+    /**
+     * 逻辑删除（基于id）
+     */
+    deleteById(entityName: string, id: string, biz?: string) {
+        return this.service({
+            url: `${this.url.apiMetaDelete}/${entityName}/${id}`,
+            method: "POST",
+            data: {}
+        })
+    }
+
+    /**
+     * 逻辑删除（基于多个id）
+     * @param ids id1,id2,id3
+     */
+    deleteByIds(entityName: string, ids: string, biz?: string) {
+
     }
 
     /**

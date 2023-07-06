@@ -24,6 +24,5 @@
 
 ## 新建或更新表，不删除表字段
 !!! 危险，只用于开发环境
-`https://localhost:8080/api/meta/ddl/recreate/{entityName}`
 依据当前实体最新的元数据进行数据库表重建
-如：`https://localhost:8080/api/meta/ddl/recreate/crm_customer
+`https://localhost:8080/api/meta/ddl/recreate/{entityName}`

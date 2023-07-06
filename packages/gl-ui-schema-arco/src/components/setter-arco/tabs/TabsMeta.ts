@@ -36,7 +36,7 @@ export default {
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
             "title": "图标",
-            "setterComponentName": "GlIconfontSetter",
+            "setterComponentName": "GlIconfontSelect",
             "enableValueExpress": false
         }],
         "titleField": "title",

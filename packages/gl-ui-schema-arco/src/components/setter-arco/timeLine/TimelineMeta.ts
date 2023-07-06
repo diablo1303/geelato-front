@@ -109,7 +109,7 @@ export default {
         "show": true,
         "expanded": true,
         "title": "幽灵节点插槽",
-        "setterComponentName": "GlIconfontSetter",
+        "setterComponentName": "GlIconfontSelect",
         "slotComponentName": "GlIconfont",
         "slotComponentBindTarget": "v-bind"
     }],

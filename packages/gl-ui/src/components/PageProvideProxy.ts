@@ -3,13 +3,13 @@
  */
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import type {ComponentInternalInstance} from "vue";
-import {toRaw} from "vue";
+import type {Param} from "../m/types/global";
 
 export type PageParamConfigType = { pName: string, pValue: any, pType: string }
-export type PageParam = { [key: string]: any }
 export const PageProvideKey = 'PageProvideKey'
 export const PageParamsKey = 'PageParamsKey'
 export const PageProvideKeyNotBlockPage = 'PageProvideKeyNotBlockPage'
+
 
 /**
  * 参数据对象序列化，形成代码块
@@ -64,7 +64,7 @@ export default class PageProvideProxy {
     pageId: string = ''
     pageInst: ComponentInstance
     pageVueInst: ComponentInternalInstance | null
-    pageParams: Array<PageParam> = []
+    pageParams: Array<Param> = []
     pageCtx: object = {}
     componentMap: { [key: string]: ComponentInternalInstance | null } = {}
     componentInsts: { [key: string]: ComponentInstance } = {}
@@ -117,8 +117,8 @@ export default class PageProvideProxy {
      * 检查参数格式，看是否需要进行转换
      * @param params
      */
-    isParamNeedConvert(params: Array<PageParamConfigType | PageParam>) {
-        if (!params || params && params.length === 0) return false
+    isParamNeedConvert(params: Array<PageParamConfigType | Param>) {
+        if (!params || (params && params.length === 0)) return false
         return Object.keys(params[0]).indexOf('pType') >= 0
     }
 
@@ -128,14 +128,14 @@ export default class PageProvideProxy {
      * 设置页面参数，这里设置的是已完成解析的，键值对，不是参数配置信息
      * @param params
      */
-    setParams(params: Array<PageParam>) {
+    setParams(params: Array<Param>) {
         this.pageParams = params || []
     }
 
     /**
-     *  在动作面板中配置的页面参数，如formState为'read'
+     *  在动作面板中配置的页面参数，如pageStatus为'read'
      */
-    getParams(): Array<PageParam> {
+    getParams(): Array<Param> {
         return this.pageParams
     }
 
@@ -147,9 +147,9 @@ export default class PageProvideProxy {
         if (!this.pageParams) return []
         const ary: Array<{ [key: string]: any }> = []
         this.pageParams.forEach((param) => {
-            const key = Object.keys(param)[0]
-            if (key.startsWith(prefix + '.')) {
-                ary.push({[key.substring(prefix.length + 1)]: param[key]})
+            // const key:string = Object.keys(param)[0]
+            if (param.name.startsWith(prefix + '.')) {
+                ary.push({[param.name.substring(prefix.length + 1)]: param.value})
             }
         })
         return ary
@@ -164,9 +164,9 @@ export default class PageProvideProxy {
         const obj: { [key: string]: any } = []
         this.pageParams.forEach((param) => {
             // console.log('param', param, toRaw(param))
-            const key = Object.keys(toRaw(param))[0]
-            if (key.startsWith(prefix + '.')) {
-                obj[key.substring(prefix.length + 1)] = param[key]
+            // const key = Object.keys(toRaw(param))[0]
+            if (param.name.startsWith(prefix + '.')) {
+                obj[param.name.substring(prefix.length + 1)] = param.value
             }
         })
         return obj
@@ -177,22 +177,26 @@ export default class PageProvideProxy {
      *  获取在动作面板中配置的页面参数值
      */
     getParamValue(paramName: string) {
-        let pName = ''
-        const foundParam = this.pageParams?.find((param: { [key: string]: any }) => {
-            const foundKey = Object.keys(param).find((key: string) => {
-                return key === paramName
-            })
-            if (foundKey) {
-                pName = foundKey
-                return true
-            }
-            return false
+        const foundParam = this.pageParams?.find((param: Param) => {
+            return param.name === paramName
         })
-
-        if (foundParam) {
-            return foundParam[pName]
-        }
-        return null
+        return foundParam ? foundParam.value : null
+        // let pName = ''
+        // const foundParam = this.pageParams?.find((param: { [key: string]: any }) => {
+        //     const foundKey = Object.keys(param).find((key: string) => {
+        //         return key === paramName
+        //     })
+        //     if (foundKey) {
+        //         pName = foundKey
+        //         return true
+        //     }
+        //     return false
+        // })
+        //
+        // if (foundParam) {
+        //     return foundParam[pName]
+        // }
+        // return null
     }
 
 

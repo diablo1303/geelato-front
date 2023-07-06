@@ -9,7 +9,7 @@ export default {
 <script lang="ts" setup>
 import {type PropType, ref, watch} from 'vue'
 import GlOptions from "../GlOptions.vue";
-import type {ColumnType} from "@/components/setters/Types";
+import type {ColumnType} from "../Types";
 
 const props = defineProps({
   modelValue: {
