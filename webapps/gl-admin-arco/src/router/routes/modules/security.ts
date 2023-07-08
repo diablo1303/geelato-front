@@ -9,7 +9,7 @@ const USER: AppRouteRecordRaw = {
     locale: 'security.org.index.menu.list',
     icon: 'icon-settings',
     requiresAuth: true,
-    order: 7,
+    order: 98,
   },
   children: [
     {

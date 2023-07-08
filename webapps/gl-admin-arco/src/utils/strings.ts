@@ -63,4 +63,35 @@ const formatSeparator = (s1: string, s2: string): string[] => {
   return csArr;
 }
 
-export {isEmpty, isNotEmpty, isBlank, isNotBlank, toCamelCase, formatSeparator};
+const buildUrl = (url: string, params: any): string => {
+  params = params || {};
+  let rootUrl = "";
+  const urlParams = {};
+  if (url) {
+    const qIndex = url.indexOf('?');
+    if (qIndex !== -1) {
+      rootUrl = url.substring(0, qIndex);
+      const u1 = url.substring(qIndex + 1).split("&");
+      for (let i = 0; i < u1.length; i += 1) {
+        const u2 = u1[i].split("=");
+        // @ts-ignore
+        urlParams[u2[0]] = u2[1] === 'null' ? '' : u2[1];
+      }
+    } else {
+      rootUrl = url.endsWith("/") ? url.substring(0, url.length - 1) : url;
+    }
+  }
+  params = Object.assign(urlParams, params);
+  const paramArr = [];
+  // eslint-disable-next-line guard-for-in,no-restricted-syntax
+  for (const key in params) {
+    if (params[key] && params[key].trim() && params[key] !== 'null') {
+      paramArr.push(`${key}=${params[key]}`);
+    }
+  }
+  url = paramArr.length > 0 ? `${rootUrl}?${paramArr.join("&")}` : rootUrl;
+
+  return url;
+}
+
+export {isEmpty, isNotEmpty, isBlank, isNotBlank, toCamelCase, formatSeparator, buildUrl};

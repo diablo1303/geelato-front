@@ -1,13 +1,8 @@
-import { defineStore } from 'pinia';
-import {
-  login as userLogin,
-  logout as userLogout,
-  getUserInfo,
-  LoginData,
-} from '@/api/user';
-import { setToken, clearToken } from '@/utils/auth';
-import { removeRouteListener } from '@/utils/route-listener';
-import { UserState } from './types';
+import {defineStore} from 'pinia';
+import {getUserInfo, login as userLogin, LoginData, logout as userLogout,} from '@/api/user';
+import {clearToken, setToken} from '@/utils/auth';
+import {removeRouteListener} from '@/utils/route-listener';
+import {UserState} from './types';
 import useAppStore from '../app';
 
 const useUserStore = defineStore('user', {
@@ -27,12 +22,13 @@ const useUserStore = defineStore('user', {
     registrationDate: undefined,
     accountId: undefined,
     certification: undefined,
+    tenantCode: undefined,
     role: '',
   }),
 
   getters: {
     userInfo(state: UserState): UserState {
-      return { ...state };
+      return {...state};
     },
   },
 
@@ -67,7 +63,7 @@ const useUserStore = defineStore('user', {
         setToken(res.data.token);
       } catch (err) {
         // eslint-disable-next-line no-console
-        console.error('login fail:',err);
+        console.error('login fail:', err);
         clearToken();
         throw err;
       }

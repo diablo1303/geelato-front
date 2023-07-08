@@ -9,7 +9,7 @@ const MODEL: AppRouteRecordRaw = {
     locale: 'model.connect.index.menu.list',
     icon: 'icon-settings',
     requiresAuth: true,
-    order: 7,
+    order: 97,
   },
   children: [{
     path: 'dataList',

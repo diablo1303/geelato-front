@@ -1,15 +1,20 @@
 <script lang="ts" setup>
 import {ref} from "vue";
+import {useRoute} from 'vue-router';
 
-const pageId = ref('')
-// e.g. http://localhost:8000/showcase/preview.html?pageId=xxxxxxxxxxxxxxxxxxx
-const url = window.location.href
-const qIndex = url.indexOf('?')
-if (qIndex !== -1) {
-  const params = new URLSearchParams(url.substring(qIndex))
-  pageId.value = params.get('pageId') || ''
+const route = useRoute();
+const pageId = ref('');
+// http://localhost:5173/page/preview/:tenantCode/:appId/:pageId
+pageId.value = (route && route.params && route.params.pageId as string) || "";
+
+// http://localhost:8000/page/preview?pageId=xxxxxxxxxxxxxxxxxxx
+if (!pageId.value) {
+  pageId.value = new URL(window.location.href).searchParams.get("pageId") || "";
 }
-
+if (pageId.value) {
+  pageId.value = pageId.value.trim();
+  pageId.value = (pageId.value === null || pageId.value.toUpperCase() === 'null'.toUpperCase()) ? '' : pageId.value;
+}
 </script>
 <script lang="ts">
 export default {
@@ -20,7 +25,7 @@ export default {
   <div>
     <div v-if="!pageId">
       <a-alert>
-        请在url中传入pageId参数，如：http://localhost:8000/showcase/preview.html?pageId=xxxxxxxxxxxxxxxxxxx.
+        请在url中传入pageId参数，如：【http://localhost:8000/page/preview/:tenantCode/:appId/:pageId】。
       </a-alert>
     </div>
     <GlPageViewer v-if="pageId" :pageId="pageId"></GlPageViewer>

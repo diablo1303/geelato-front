@@ -3,23 +3,16 @@
     <!--  头部菜单，左侧菜单，应用图标、应用名称  -->
     <div class="left-side">
       <a-space>
-        <span style="text-align: center">
-          <img
-              alt="logo"
-              style="width: 70%;"
-              src="/src/assets/favicon.ico"
-          />
+        <span style="text-align: center;width: 32px;height: 32px;">
+            <img alt="logo" :src="appInfo.appLogo" style="width: 100%;height: 100%"/>
         </span>
-        <a-typography-title
-            :style="{ margin: 0, fontSize: '18px' }"
-            :heading="5"
-        >
-          Geelato Admin Pro
+        <a-typography-title :style="{ margin: 0, fontSize: '18px' }" :heading="5">
+          {{ appInfo.appName }}
         </a-typography-title>
         <icon-menu-fold
             v-if="!topMenu && appStore.device === 'mobile'"
             style="font-size: 22px; cursor: pointer"
-            @click="toggleDrawerMenu"
+            @click="toggleDrawerMenu($event)"
         />
       </a-space>
     </div>
@@ -46,7 +39,7 @@
               class="nav-btn"
               type="outline"
               :shape="'circle'"
-              @click="setDropDownVisible"
+              @click="setDropDownVisible($event)"
           >
             <template #icon>
               <icon-language/>
@@ -82,7 +75,7 @@
               class="nav-btn"
               type="outline"
               :shape="'circle'"
-              @click="handleToggleTheme"
+              @click="handleToggleTheme($event)"
           >
             <template #icon>
               <icon-moon-fill v-if="theme === 'dark'"/>
@@ -100,7 +93,7 @@
                   class="nav-btn"
                   type="outline"
                   :shape="'circle'"
-                  @click="setPopoverVisible"
+                  @click="setPopoverVisible($event)"
               >
                 <icon-notification/>
               </a-button>
@@ -148,7 +141,7 @@
               class="nav-btn"
               type="outline"
               :shape="'circle'"
-              @click="setVisible"
+              @click="setVisible($event)"
           >
             <template #icon>
               <icon-settings/>
@@ -214,14 +207,17 @@ import {computed, inject, ref} from 'vue';
 import {Message} from '@arco-design/web-vue';
 import {useDark, useFullscreen, useToggle} from '@vueuse/core';
 import {useAppStore, useUserStore} from '@/store';
+import {useRoute} from 'vue-router';
 import {LOCALE_OPTIONS} from '@/locale';
 import useLocale from '@/hooks/locale';
 import useUser from '@/hooks/user';
 import Menu from '@/components/menu/index.vue';
+import {getApp, getDownloadUrlById} from "@/api/service/app_service";
 import MessageBox from '../message-box/index.vue';
 
 const appStore = useAppStore();
 const userStore = useUserStore();
+const route = useRoute();
 const {logout} = useUser();
 const {changeLocale, currentLocale} = useLocale();
 const {isFullscreen, toggle: toggleFullScreen} = useFullscreen();
@@ -245,15 +241,15 @@ const isDark = useDark({
   },
 });
 const toggleTheme = useToggle(isDark);
-const handleToggleTheme = () => {
+const handleToggleTheme = (ev: MouseEvent) => {
   toggleTheme();
 };
-const setVisible = () => {
+const setVisible = (ev: MouseEvent) => {
   appStore.updateSettings({globalSettings: true});
 };
 const refBtn = ref();
 const triggerBtn = ref();
-const setPopoverVisible = () => {
+const setPopoverVisible = (ev: MouseEvent) => {
   const event = new MouseEvent('click', {
     view: window,
     bubbles: true,
@@ -264,7 +260,7 @@ const setPopoverVisible = () => {
 const handleLogout = () => {
   logout();
 };
-const setDropDownVisible = () => {
+const setDropDownVisible = (ev: MouseEvent) => {
   const event = new MouseEvent('click', {
     view: window,
     bubbles: true,
@@ -276,7 +272,24 @@ const switchRoles = async () => {
   const res = await userStore.switchRoles();
   Message.success(res as string);
 };
-const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
+const toggleDrawerMenu = inject('toggleDrawerMenu') as (ev: MouseEvent) => void;
+
+const appInfo = ref({appLogo: "/src/assets/favicon.ico", appName: "Geelato Admin Pro"});
+const getAppInfo = async () => {
+  if (route.params && route.params.appId) {
+    try {
+      const {data} = await getApp(route.params.appId as string);
+      appInfo.value.appName = data.name;
+      if (data.logo) {
+        appInfo.value.appLogo = getDownloadUrlById(data.logo);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+}
+getAppInfo();
+
 </script>
 
 <style scoped lang="less">
