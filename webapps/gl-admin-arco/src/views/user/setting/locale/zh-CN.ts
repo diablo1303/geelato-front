@@ -189,6 +189,7 @@ export default {
   'security.dict.index.modal.content': '是否删除选中的数据？',
   'security.dict.index.modal.cancel.text': '取消',
   'security.dict.index.modal.ok.text': '提交',
+  'searchTable.columns.operations.config': '配置',
   // webapps/gl-admin-arco/src/views/security/dic
   'security.dictItem.index.menu.list': '应用管理',
   'security.dictItem.index.menu.list.searchTable': '字典项管理',

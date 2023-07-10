@@ -88,6 +88,7 @@
     </a-card>
     <DictDrawer ref="dictDrawerRef"></DictDrawer>
     <DictItemDrawer ref="dictItemDrawerRef"></DictItemDrawer>
+    <DictItemLocker ref="dictItemLockerRef"></DictItemLocker>
   </div>
 </template>
 
@@ -101,6 +102,7 @@ import DictList from '@/views/security/dict/list.vue';
 import DictDrawer from "@/views/security/dict/drawer.vue";
 import DictItemList from '@/views/security/dict/item/list.vue';
 import DictItemDrawer from "@/views/security/dict/item/drawer.vue";
+import DictItemLocker from "@/views/security/dict/item/locker.vue";
 
 // 国际化
 const {t} = useI18n();
@@ -110,6 +112,7 @@ const dictListRef = ref(null);
 const dictItemListRef = ref(null);
 const dictDrawerRef = shallowRef(DictDrawer);
 const dictItemDrawerRef = shallowRef(DictItemDrawer);
+const dictItemLockerRef = shallowRef(DictItemLocker);
 // Tree
 const treeData = ref<TreeNodeProps[]>([]);
 const searchKey = ref('');
@@ -323,8 +326,8 @@ const dropOptionDictAdd = (nodeData: TreeNodeProps) => {
 const dropOptionDictItemAdd = (nodeData: TreeNodeProps) => {
   const dictId = nodeData.key ? nodeData.key.toString() : '';
   const dictName = nodeData.title || '';
-  if (dictItemDrawerRef.value) {
-    dictItemDrawerRef.value.openForm({
+  if (dictItemLockerRef.value) {
+    dictItemLockerRef.value.openForm({
       action: 'add', params: {pId: dictId, pName: dictName}, closeBack: () => {
         setTimeout(() => {
           loadDictItemList(dictId, dictName);

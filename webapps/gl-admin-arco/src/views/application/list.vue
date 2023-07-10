@@ -137,7 +137,7 @@
       <a-table-column :ellipsis="true" :title="$t('application.app.list.description')" :tooltip="true" :width="200" data-index="description"/>
       <a-table-column :title="$t('application.app.list.operations')" :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-dropdown v-permission="['admin']" position="br">
+          <a-dropdown v-permission="['admin']" trigger="hover" position="br">
             <a-button size="small" type="text">
               {{ $t('application.app.list.operations.enter') }}
             </a-button>
@@ -147,11 +147,11 @@
                   {{ $t('application.app.list.operations.enter.index') }}
                 </a-button>
               </a-doption>
-              <a-doption>
+<!--              <a-doption>
                 <a-button size="small" type="text" @click="enterTable(record,'manage')">
                   {{ $t('application.app.list.operations.enter.manage') }}
                 </a-button>
-              </a-doption>
+              </a-doption>-->
               <a-doption>
                 <a-button size="small" type="text" @click="enterTable(record,'design')">
                   {{ $t('application.app.list.operations.enter.design') }}
@@ -287,7 +287,7 @@ const addTable = (ev: MouseEvent) => {
 const enterTable = (data: QueryForm, type: string) => {
   if (data && router) {
     switch (type) {
-      case 'manage':
+      case 'design':
         if (data.id && data.tenantCode) {
           window.open(router.resolve({
             path: `${DEFAULT_ROUTE.fullPath.replace("/:tenantCode", "").replace("/:appId", "")}/${data.tenantCode}/${data.id}`,
@@ -299,7 +299,7 @@ const enterTable = (data: QueryForm, type: string) => {
         break;
       case 'index':
         break;
-      case 'design':
+      case 'manage':
         break;
       default:
         break;

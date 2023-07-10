@@ -189,6 +189,7 @@ export default {
   'security.dict.index.modal.content': 'Whether to delete the selected datas?',
   'security.dict.index.modal.cancel.text': 'Cancel',
   'security.dict.index.modal.ok.text': 'Submit',
+  'searchTable.columns.operations.config': 'Config',
   // webapps/gl-admin-arco/src/views/security/dic/item
   'security.dictItem.index.menu.list': 'System',
   'security.dictItem.index.menu.list.searchTable': 'Dictionary Item',

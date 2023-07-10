@@ -119,9 +119,12 @@
       <a-table-column :title="$t('security.dict.index.form.createAt')" data-index="createAt" :width="180"></a-table-column>
       <a-table-column :title="$t('security.dict.index.form.dictRemark')" :tooltip="{position:'right'}" data-index="dictRemark" :ellipsis="true" :width="200"/>
       <a-table-column
-          v-show="pageData.formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="170" align="center"
+          v-show="pageData.formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="230" align="center"
           data-index="operations" fixed="right">
         <template #cell="{ record }">
+          <a-button v-permission="['admin']" size="small" type="text" @click="configTable(record.id)">
+            {{ $t('searchTable.columns.operations.config') }}
+          </a-button>
           <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
@@ -136,6 +139,7 @@
   </a-table>
   <DictForm ref="dictFormRef"></DictForm>
   <DictDrawer ref="dictDrawerRef"></DictDrawer>
+  <DictItemLocker ref="dictItemLockerRef"></DictItemLocker>
 </template>
 
 <script lang="ts" setup>
@@ -154,6 +158,7 @@ import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/ba
 // 引用其他页面
 import DictForm from "@/views/security/dict/form.vue";
 import DictDrawer from "@/views/security/dict/drawer.vue";
+import DictItemLocker from "@/views/security/dict/item/locker.vue";
 import {QueryConnectForm as QueryForm} from "@/api/service/model_service";
 
 /* 列表 */
@@ -166,6 +171,7 @@ const pageData = ref({
 });
 const dictFormRef = shallowRef(DictForm);
 const dictDrawerRef = shallowRef(DictDrawer);
+const dictItemLockerRef = shallowRef(DictItemLocker);
 // 加载
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
@@ -236,6 +242,11 @@ const addTable = (ev: MouseEvent) => {
     });
   }
 };
+const configTable = (id: string) => {
+  if (dictItemLockerRef.value) {
+    dictItemLockerRef.value?.openForm({action: 'edit', params: {pId: id}, closeBack: reset});
+  }
+}
 const viewTable = (id: string) => {
   if (dictDrawerRef.value) {
     dictDrawerRef.value.openForm({action: 'view', 'id': id});
