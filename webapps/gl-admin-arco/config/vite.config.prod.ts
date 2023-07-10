@@ -5,6 +5,7 @@ import configVisualizerPlugin from './plugin/visualizer';
 import configArcoResolverPlugin from './plugin/arcoResolver';
 import configStyleImportPlugin from './plugin/styleImport';
 import configImageminPlugin from './plugin/imagemin';
+import topLevelAwait from 'vite-plugin-top-level-await'
 
 export default mergeConfig(
   {
@@ -15,6 +16,10 @@ export default mergeConfig(
       configArcoResolverPlugin(),
       configStyleImportPlugin(),
       configImageminPlugin(),
+      topLevelAwait({
+        promiseExportName: '__tla',
+        promiseImportName: i => `__tla_${i}`
+      })
     ],
     build: {
       rollupOptions: {
