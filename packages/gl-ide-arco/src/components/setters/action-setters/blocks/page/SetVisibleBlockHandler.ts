@@ -6,7 +6,7 @@ export default class SetVisibleBlockHandler implements IBlockHandler {
     parseToScript(props: Props): ParseResult {
         return new ParseResult(
             `
-            $gl.setComponentProps("${props.componentId}",{unRender:${!!props.unRender}});
+            $gl.fn.setComponentProps("${props.componentId}",{unRender:${!!props.unRender}});
             `
         ).setBlockName('SetVisibleBlock');
     }

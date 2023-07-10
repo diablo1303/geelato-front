@@ -364,7 +364,7 @@ export default {
             "type": "props",
             "show": true,
             "expanded": true,
-            "description": "对字段值进行处理，示例：\"$ctx.record.enableStatus == 1 ? '已启用' : '未启用'\"。",
+            "description": "对字段值进行处理，示例：\"$gl.ctx.record.enableStatus == 1 ? '已启用' : '未启用'\"。",
             "title": "显示脚本",
             "setterComponentName": "AInput",
             "enableValueExpress": false
@@ -462,7 +462,7 @@ export default {
         "params": [{
             "name": "id",
             "type": "String",
-            "description": "在表格行操作中，值示例：$ctx.record.id",
+            "description": "在表格行操作中，值示例：$gl.ctx.record.id",
             "title": "记录ID",
             "defaultValue": ""
         }]

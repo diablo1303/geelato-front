@@ -75,13 +75,15 @@ const stopPropagation = (...args: any) => {
  *  @actionName 执行的动作名称
  */
 const doAction = (actionName: string, ...args: any) => {
-  console.log('GlComponent > doAction() > args:', args)
+  // console.log('GlComponent > doAction() > args:', args)
   if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
     props.glComponentInst.actions.forEach((action: Action) => {
       if (action.eventName === actionName) {
-        console.log('GlComponent > doAction > action', action)
+        // console.log('GlComponent > doAction > action', action)
         let ctx = inject('$ctx') as object || {}
-        Object.assign(ctx, props.glCtx, {args: args})
+        Object.assign(ctx, props.glCtx, {args: args}, {
+          pageProxy: pageProvideProxy
+        })
         jsScriptExecutor.doAction(action, ctx)
       }
     })
@@ -120,7 +122,9 @@ const executePropsExpressions = () => {
       // @ts-ignore
       const propsExpression = props.glComponentInst.propsExpressions[key]
       if (propsExpression) {
-        props.glComponentInst.props[key] = jsScriptExecutor.evalExpression(propsExpression, {})
+        props.glComponentInst.props[key] = jsScriptExecutor.evalExpression(propsExpression, {
+          pageProxy: pageProvideProxy
+        })
       }
     })
   }
@@ -140,7 +144,9 @@ const executePropsExpressions = () => {
           Object.keys(obj._propsExpressions).forEach((key: string) => {
             const expression = obj._propsExpressions[key]
             if (expression) {
-              obj[key] = jsScriptExecutor.evalExpression(expression, {})
+              obj[key] = jsScriptExecutor.evalExpression(expression, {
+                pageProxy: pageProvideProxy
+              })
             }
           })
         }

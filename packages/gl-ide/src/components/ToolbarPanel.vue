@@ -121,7 +121,7 @@ import {useComponentStore} from "../stores/UseComponentStore";
 import {useAppStore} from "../stores/UseAppStore";
 import EventNames from "../entity/Events";
 import ClipboardJS from "clipboard";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()

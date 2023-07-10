@@ -19,15 +19,14 @@ export default {
 
 import {type PropType, getCurrentInstance, onMounted, onUnmounted, provide} from "vue";
 import {
-  type PageParamConfigType,
   type PageType,
   PageProvideProxy,
   jsScriptExecutor,
   mixins,
-  PageProvideKey,
+  PageProvideKey, type Param,
 } from "@geelato/gl-ui";
 import type {Action} from "@geelato/gl-ui-schema";
-import {PageParam, PageParamsKey} from "@geelato/gl-ui/src/components/PageProvideProxy";
+import {PageParamsKey} from "@geelato/gl-ui";
 
 const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
@@ -75,7 +74,7 @@ const props = defineProps({
    *  支持转换前PageParamConfigType和转换后的参数类型PageParam
    */
   params: {
-    type: Array as PropType<Array<PageParamConfigType | PageParam>>,
+    type: Array as PropType<Array<Param>>,
     default() {
       return []
     }
@@ -98,20 +97,40 @@ const style = {
 }
 
 const showSlot = () => {
-  console.log('showSlot')
+  // console.log('showSlot')
 }
 
-// console.log('GlPage > props.params:', props.params, 'id:', props.glComponentInst.id)
+console.log('GlPage > props.params:', props.params, 'id:', props.glComponentInst.id)
 const pageProvideProxy = new PageProvideProxy(props.glComponentInst, getCurrentInstance())
 pageProvideProxy.pageId = props.pageId
 pageProvideProxy.setVueInst(props.glComponentInst.id, getCurrentInstance())
-if (pageProvideProxy.isParamNeedConvert(props.params)) {
-  // @ts-ignore
-  pageProvideProxy.setParams(JSON.parse(pageProvideProxy.paramStringify(props.params)))
-} else {
-  pageProvideProxy.setParams(props.params)
-}
+// if (pageProvideProxy.isParamNeedConvert(props.params)) {
+//   // @ts-ignore
+//   pageProvideProxy.setParams(JSON.parse(pageProvideProxy.paramStringify(props.params)))
+// } else {
+//   pageProvideProxy.setParams(props.params)
+// }
+
+// if (pageProvideProxy.isParamNeedConvert(props.params)) {
+//   // @ts-ignore
+//   pageProvideProxy.setParams(JSON.parse(pageProvideProxy.paramStringify(props.params)))
+// } else {
+//   pageProvideProxy.setParams(props.params)
+// }
+
+
+pageProvideProxy.setParams(props.params)
 jsScriptExecutor.addPageProxy(props.glComponentInst.id, pageProvideProxy)
+// 在打开页面时，依据页面参数表达式，先进行运行，计算出值
+// !!! 注意这里放在jsScriptExecutor.addPageProxy后面执行，是为了确保在计算参数时，可以用到当前页面proxy的相关内容
+if (props.params && props.params.length > 0) {
+  for (const index in props.params) {
+    const param: Param = props.params[index]
+    if (param.valueExpression) {
+      param.value = jsScriptExecutor.evalExpression(param.valueExpression, {pageProxy: pageProvideProxy})
+    }
+  }
+}
 // 整个页面组件级注入
 provide(PageProvideKey, pageProvideProxy)
 provide(PageParamsKey, props.params)
@@ -126,7 +145,9 @@ onMounted(() => {
   if (props.glIsRuntime) {
     props.glComponentInst.actions.forEach((action: Action) => {
       if (action.name === 'onMounted') {
-        jsScriptExecutor.doAction(action, {})
+        jsScriptExecutor.doAction(action, {
+          pageProxy: pageProvideProxy
+        })
       }
     })
   }

@@ -23,7 +23,7 @@
 </template>
 <script lang="ts">
 export default {
-  name: 'GlIconfontSetter'
+  name: 'GlIconfontSelect'
 }
 </script>
 <script lang="ts" setup>
@@ -31,6 +31,10 @@ import {iconsJson, IconsJson} from "@geelato/gl-ui"
 import {ref, watch} from 'vue'
 
 const props = defineProps({
+  /**
+   *  图标类型
+   *  示例值：gl-setting
+   */
   modelValue: {
     type: String
   }
@@ -41,7 +45,7 @@ const json: IconsJson = iconsJson
 const mv = ref(props.modelValue)
 
 const onSelected = (iconItem: any) => {
-  console.log('iconItem', iconItem, json)
+  // console.log('iconItem', iconItem, json)
   mv.value = json.css_prefix_text + iconItem.font_class
   visible.value = false
 }

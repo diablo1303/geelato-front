@@ -1,6 +1,6 @@
 import type IPropertySetterMeta from "./IPropertySetterMeta";
 import type Action from "./actions/Action";
-import {ActionMeta} from "./actions/Action";
+import type {ActionMeta} from "./actions/Action";
 
 /**
  *  记录组件中哪些信息需要进行多语言配置
