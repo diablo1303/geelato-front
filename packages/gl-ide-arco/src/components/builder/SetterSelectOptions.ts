@@ -43,7 +43,7 @@ export const setterSelectOptions = [
         type: 'String',
         propsSetter: 'GlExpressionBuilder'
     },
-    {name: 'GlIconfontSetter', label: '图标选择器', vModelName: 'modelValue', type: 'Object'},
+    {name: 'GlIconfontSelect', label: '图标选择器', vModelName: 'modelValue', type: 'Object'},
     {name: 'GlIconfontTextSetter', label: '图标文字选择器', vModelName: 'modelValue', type: 'Object'},
     {name: 'GlIconfontSetterForSlot', label: '图标选择器（用于插槽）', vModelName: 'modelValue', type: 'String'},
     {name: 'GlHtmlSetterForSlot', label: 'Html设置（用于插槽）', vModelName: 'modelValue', type: 'String'},

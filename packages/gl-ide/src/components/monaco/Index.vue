@@ -15,7 +15,7 @@ export default defineComponent({
 )
 </script>
 <script lang="ts" setup>
-import {defineComponent, onBeforeUnmount, onMounted, ref, watch, defineExpose} from 'vue'
+import {onBeforeUnmount, onMounted, ref, watch, defineExpose} from 'vue'
 import prettier from 'prettier/standalone';
 import parserBabel from 'prettier/parser-babel';
 

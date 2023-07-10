@@ -355,10 +355,10 @@ export default {
             "setterComponentName": "AInput",
             "enableValueExpress": false
         }, {
-            "name": "xShow",
+            "name": "_Show",
             "group": "base",
             "type": "props",
-            "enableValueExpress": false,
+            "enableValueExpress": true,
             "show": true,
             "expanded": true,
             "setterComponentProps": {"defaultChecked": true},
@@ -470,7 +470,7 @@ export default {
         "params": [{
             "name": "id",
             "type": "String",
-            "description": "在表格行操作中，值示例：$ctx.record.id",
+            "description": "在表格行操作中，值示例：$gl.ctx.record.id",
             "title": "记录ID",
             "defaultValue": ""
         }]

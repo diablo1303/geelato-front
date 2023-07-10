@@ -40,7 +40,6 @@ provide(FormProvideKey, formProvideProxy)
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 // console.log('GlEntityForm > inject pageProvideProxy:', pageProvideProxy)
-const isRead = pageProvideProxy.getParamValue('formState') === 'read'
 
 const global = useGlobal()
 
@@ -75,6 +74,8 @@ const props = defineProps({
   },
   ...mixins.props
 })
+// pageStatus: read | edit
+const isRead = pageProvideProxy.getParamValue('pageStatus') === 'read'
 // formData中不包括记录id，记录id在entityRecordId中定义
 const formParams = pageProvideProxy.getParamsByPrefixAsObject('form')
 const formData = ref<{ [key: string]: any }>(formParams);

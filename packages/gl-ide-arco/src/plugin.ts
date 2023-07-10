@@ -18,7 +18,6 @@ import GlComponentActionsSetter from "./components/setters/GlComponentActionsSet
 import GlSimpleObjectSetter from "./components/setters/property-setters/GlSimpleObjectSetter.vue";
 import GlPropertySetter from './components/setters/GlPropertySetter.vue'
 import GlPropertySetterCard from './components/setters/GlPropertySetterCard.vue'
-import GlIconfontSetter from "./components/setters/property-setters/GlIconfontSetter.vue";
 import GlIconfontTextSetter from "./components/setters/property-setters/GlIconfontTextSetter.vue";
 import GlIconfontSetterForSlot from "./components/setters/property-setters/GlIconfontSetterForSlot.vue";
 import GlHtmlSetter from "./components/setters/property-setters/GlHtmlSetter.vue";
@@ -189,7 +188,6 @@ const component: Plugin = {
         // app.component(GlSettingProperty.name, GlSettingProperty)
         app.component(GlPropertySetter.name, GlPropertySetter)
         app.component(GlPropertySetterCard.name, GlPropertySetterCard)
-        app.component(GlIconfontSetter.name, GlIconfontSetter)
         app.component(GlIconfontTextSetter.name, GlIconfontTextSetter)
         app.component(GlIconfontSetterForSlot.name, GlIconfontSetterForSlot)
         app.component(GlSelectSetter.name, GlSelectSetter)

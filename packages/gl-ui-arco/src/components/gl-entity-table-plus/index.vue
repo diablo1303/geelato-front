@@ -12,7 +12,7 @@ import GlQuery from "../gl-query/index.vue";
 import GlToolbar from "../gl-toolbar/index.vue";
 import GlEntityTable from "../gl-entity-table/index.vue";
 import {computed, inject, onMounted, type PropType, ref} from "vue";
-import type {EntityReaderParam} from "@geelato/gl-ui";
+import type {EntityReaderParam, Param} from "@geelato/gl-ui";
 import QueryItem from "../gl-query/query";
 import cloneDeep from "lodash/cloneDeep";
 import {
@@ -137,6 +137,7 @@ const handleSelectDensity = (
   size.value = val as SizeProps;
 };
 
+// 用于工具条中控制哪些列显示与否
 const showColumns = ref<Column[]>([]);
 const tableRef = ref();
 // const search = (queryFormModal: object) => {
@@ -145,10 +146,12 @@ const tableRef = ref();
 const popupVisibleChange = (val: boolean) => {
   tableRef.value.popupVisibleChange(val);
 };
-const handleChange = (event: any, item: any, index: number) => {
-  tableRef.value.handleChange(event, item, index);
+const changeShowColumns = (checked: boolean | (string | boolean | number)[],
+                           column: Column,
+                           index: number) => {
+  tableRef.value.changeShowColumns(checked, column, index);
 };
-const onUpdateColumns = (showColumnsValue: any) => {
+const updateColumns = (showColumnsValue: any) => {
   showColumns.value = showColumnsValue;
 };
 const onUpdateRow = (data: { record: object, rowIndex: number }) => {
@@ -176,16 +179,33 @@ const addRow = () => {
  * 默认为逻辑删除，依据属性base.isLogicDeleteMode进行区分
  * @param params
  */
-const deleteRow = (params: any) => {
-  const id = params[0].id
+const deleteRow = (params: Array<Param>) => {
+  console.log('deleteRow() > params:', params)
+
+  if (!params || params.length === 0) {
+    console.error('基于记录id进行删除失败，未配置参数。')
+    return
+  }
+
+  const foundParam = params.find((param: Param) => {
+    return param.name === 'id'
+  })
+  let id = foundParam ? foundParam.value : undefined
+  if (!id) {
+    console.error('基于记录id进行删除失败，id为：', id)
+    return
+  }
   if (props.base.isLogicDeleteMode === false) {
     entityApi.delete(props.base.entityName, {id: id}).then(() => {
       refresh()
     })
   } else {
-    entityApi.save(props.base.entityName, {id, [logicDeleteFieldName]: 1}).then(() => {
+    entityApi.deleteById(props.base.entityName, id).then(() => {
       refresh()
     })
+    // entityApi.save(props.base.entityName, {id, [logicDeleteFieldName]: 1}).then(() => {
+    //   refresh()
+    // })
   }
   console.log('GlEntityTablePlus > deleteRow() > params:', params)
 }
@@ -277,7 +297,7 @@ defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
                   <div>
                     <a-checkbox
                         v-model="item.checked"
-                        @change="handleChange($event, item, index)"
+                        @change="changeShowColumns($event, item, index)"
                     >
                     </a-checkbox>
                   </div>
@@ -303,7 +323,7 @@ defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
         :subTablePidName="base.subTablePidName"
         :isLogicDeleteMode="base.isLogicDeleteMode"
         :rowSelection="rowSelection"
-        @updateColumns="onUpdateColumns"
+        @updateColumns="updateColumns"
         @updateRow="onUpdateRow"
         @fetchSuccess="onFetchSuccess"
         :glIsRuntime="glIsRuntime"
