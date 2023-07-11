@@ -7,7 +7,11 @@
               componentStore.currentSelectedComponentMeta?.title
             }}]</span>
           <a-button-group style="float: right" type="primary" size="mini" shape="round">
-            <a-button status="primary" v-if="showSelectParent" @click="componentStore.selectParentComponent">上一层
+            <a-button status="primary" v-if="showMove" @click="componentStore.moveFrontCurrentComponent" title="移前">▲
+            </a-button>
+            <a-button status="primary" v-if="showMove" @click="componentStore.moveBackCurrentComponent" title="移后">▼
+            </a-button>
+            <a-button status="primary" v-if="showSelectParent" @click="componentStore.selectParentComponent">父组件
             </a-button>
             <a-button status="danger" v-if="showDelete" @click="deleteCurrentSelectedComponentInst">删除</a-button>
           </a-button-group>
@@ -99,6 +103,10 @@ const componentModel = ref(props.componentInstance)
 const setInstance = (instance: ComponentInstance, form: String) => {
   console.log('GlComponentSetter > set instance:', instance, 'form', form)
 }
+
+const showMove = computed(() => {
+  return componentStore.currentSelectedComponentMeta?.componentName !== 'GlPage'
+})
 
 const showSelectParent = computed(() => {
   return componentStore.currentSelectedComponentMeta?.componentName !== 'GlPage'

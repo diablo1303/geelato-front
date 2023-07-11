@@ -15,9 +15,9 @@ export default {
         "expanded": true,
         "setterComponentProps": {},
         "setterComponentVModelName": "",
-        "_showSub": false,
+        "_showSub": true,
         "properties": [{
-            "name": "tableTitle",
+            "name": "label",
             "group": "base",
             "type": "props",
             "enableValueExpress": true,
@@ -28,6 +28,17 @@ export default {
             "_showSub": false,
             "title": "标题",
             "setterComponentName": "AInput"
+        }, {
+            "name": "hideLabel",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": true,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "title": "隐藏标题",
+            "setterComponentName": "ASwitch"
         }, {
             "name": "entityName",
             "group": "base",

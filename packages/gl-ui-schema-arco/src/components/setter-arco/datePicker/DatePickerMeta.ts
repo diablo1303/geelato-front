@@ -28,6 +28,17 @@ export default {
             "title": "绑定字段",
             "setterComponentName": "GlEntityFieldSelect"
         }, {
+            "name": "showTime",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "show": true,
+            "expanded": true,
+            "title": "显示时间",
+            "placeholder": "日期是否带明细时间",
+            "setterComponentName": "ASwitch"
+        }, {
             "name": "allowClear",
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",

@@ -27,7 +27,7 @@ export const useThemeStore = defineStore({
         // 默认弹框的头部高度 48+1+1
         modalHeaderHeight: 50,
         // 全屏弹窗的内容高度
-        modalBodyHeight: 0,
+        // modalBodyHeight: 0,
         // 默认弹框的脚高度  padding上下合计16
         modalFooterHeight: 70
     }),

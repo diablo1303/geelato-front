@@ -240,7 +240,7 @@ defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
 </script>
 
 <template>
-  <a-card class="general-card" :title="base.tableTitle" :body-style="{padding:base.tablePadding}">
+  <a-card class="general-card" :title="base.hideLabel===true?'':base.label" :body-style="{padding:base.tablePadding}">
     <GlQuery v-if="query" v-show="base.showQuery!==false" ref="queryRef" :items="query" @search="onSearch"></GlQuery>
     <a-divider v-show="base.showQuery!==false" style="margin-top: 16px"/>
     <GlToolbar v-show="base.showToolbar!==false" v-bind="toolbar" style="margin-bottom: 8px">

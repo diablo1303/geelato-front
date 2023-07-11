@@ -175,15 +175,20 @@ const setSlotNames = () => {
   // console.log('GlEntityTable > columns after convert:', recordSchema)
 }
 
-if (props.glIsRuntime) {
-  setSlotNames()
-} else {
+const refreshFlag = ref(true)
+setSlotNames()
+// 这个watch 用于设计时，监控列变化时，及时刷新（主要是用于让表达式生效）
+if (!props.glIsRuntime) {
   watch(() => {
     return props.columns
   }, () => {
-    setSlotNames()
+    refreshFlag.value = false
+    nextTick(() => {
+      refreshFlag.value = true
+    })
   }, {deep: true})
 }
+
 
 /**
  *  基于是否启用编辑功能，进行插槽信息的转换
@@ -375,7 +380,7 @@ watch(() => columns.value,
       });
       cloneColumns.value.push(optColumn as Column)
       showColumns.value = cloneDeep(cloneColumns.value);
-      // console.log('GlEntityTable > update cloneColumns:', cloneColumns)
+      console.log('GlEntityTable > update cloneColumns:', cloneColumns)
       emits("updateColumns", showColumns.value);
     },
     {deep: true, immediate: true}
@@ -537,7 +542,7 @@ defineExpose({
 </script>
 
 <template>
-  <a-table class="gl-entity-table" v-if="enableEdit" row-key="id"
+  <a-table class="gl-entity-table" v-if="enableEdit&&refreshFlag" row-key="id"
            :loading="loading"
            :pagination="pagination"
            :row-selection="rowSelection"
@@ -577,7 +582,7 @@ defineExpose({
       </div>
     </template>
   </a-table>
-  <a-table class="gl-entity-table" v-else row-key="id"
+  <a-table class="gl-entity-table" v-if="!enableEdit&&refreshFlag" row-key="id"
            :loading="loading"
            :pagination="pagination"
            :row-selection="rowSelection"

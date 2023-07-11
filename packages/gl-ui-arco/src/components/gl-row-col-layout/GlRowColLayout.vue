@@ -4,9 +4,10 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {nextTick, onUpdated, type PropType} from "vue";
+import {computed, nextTick, onUpdated, type PropType} from "vue";
 import {mixins, utils} from "@geelato/gl-ui";
 import type {I18nItem} from "@geelato/gl-ui-schema";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const props = defineProps({
   spans: {
@@ -24,7 +25,7 @@ const props = defineProps({
   gutter: {
     type: Number,
     default() {
-      return 16;
+      return 4;
     },
   },
   /**
@@ -103,6 +104,17 @@ const i18nConvert = (value?: string, i18n?: Array<I18nItem>) => {
   return value
 }
 
+/**
+ *  数据输入组件作为表单项，除了表单组件本身
+ */
+const isFormItem = (inst: ComponentInstance) => {
+  // 排除特定的组件，如表单组件
+  if (inst.componentName === 'GlEntityForm') {
+    return false
+  }
+  return inst.group === 'dataEntry'
+}
+
 </script>
 
 <template>
@@ -112,8 +124,10 @@ const i18nConvert = (value?: string, i18n?: Array<I18nItem>) => {
         :key="index"
         :span="span"
     >
+      <!-- glComponentInst.children[index]就虚拟节点-->
       <template v-for="childComponentInst in glComponentInst.children[index].children">
         <a-form-item v-if="childComponentInst&&(childComponentInst.props.unRender!==true)" class="gl-form-item"
+                     :class="{'gl-hidden':childComponentInst.props.hideLabel===true||!isFormItem(childComponentInst)}"
                      :field="childComponentInst.props?.bindField?.fieldName"
                      :tooltip="i18nConvert(childComponentInst.props?.tooltip,childComponentInst.i18n)"
                      :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"
@@ -150,8 +164,12 @@ const i18nConvert = (value?: string, i18n?: Array<I18nItem>) => {
 
 </template>
 
-<style scoped>
+<style>
 .gl-row-col-layout > .arco-col {
   overflow-x: auto;
+}
+
+.gl-row-col-layout .gl-hidden > .arco-form-item-label-col {
+  display: none;
 }
 </style>

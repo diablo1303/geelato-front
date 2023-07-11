@@ -119,20 +119,12 @@ const setRef = (el: HTMLDivElement) => {
  */
 const isFormItem = computed(() => {
   // 排除特定的组件，如表单组件
-  if (props.glComponentInst.componentName === 'GlEntityForm') {
+  const ignoreComponentNames = ['GlEntityForm', 'GlEntityTableSub']
+  if (ignoreComponentNames.indexOf(props.glComponentInst.componentName) >= 0) {
     return false
   }
   return componentStore.isDataEntryComponent(props.glComponentInst.componentName)
 })
-// const blocks = ['GlPage', 'GlEntityForm', 'GlFormRow', 'GlFormCol', 'GlDndPlaceholder', 'GlCard', 'GlTabs', 'GlRowColLayout']
-// const style = ref({
-//   display: function () {
-//     if (componentStore.isDataEntryComponent(props.glComponentInst.componentName)) {
-//       return 'inline-block'
-//     }
-//     return false
-//   }()
-// })
 
 const styleDisplay = ref(function () {
   if (componentStore.isDataEntryComponent(props.glComponentInst.componentName)) {
@@ -193,6 +185,7 @@ const onClick = (...args: any[]) => {
     >
       <template v-if="isFormItem">
         <a-form-item class="gl-form-item" :field="glComponentInst?.props?.bindField?.fieldName"
+                     :class="{'gl-hidden':glComponentInst?.props?.hideLabel===true}"
                      :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"
                      :label="i18nConvert(glComponentInst?.props?.label)"
                      :rules="glComponentInst?.props?.rules"
@@ -222,7 +215,11 @@ const onClick = (...args: any[]) => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="less">
+.gl-form-item .gl-hidden .arco-form-item-label-col {
+  display: none;
+}
+
 .gl-dnd-wrapper {
   width: 100%;
   position: relative;
