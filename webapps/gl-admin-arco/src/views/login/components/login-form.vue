@@ -74,6 +74,7 @@ import {useUserStore} from '@/store';
 import useLoading from '@/hooks/loading';
 import type {LoginData} from '@/api/user';
 import {DEFAULT_ROUTE, DEFAULT_ROUTE_NAME} from "@/router/constants";
+import {appDataBaseRoutes, formatAppModules} from "@/router/routes";
 
 const router = useRouter();
 const {t} = useI18n();
@@ -90,6 +91,17 @@ const userInfo = reactive({
   username: loginConfig.value.username,
   password: loginConfig.value.password,
 });
+const getDataBaseRouters = async () => {
+  if (!(appDataBaseRoutes && appDataBaseRoutes.length > 0)) {
+    const dataBaseRoutes = await formatAppModules();
+    if (dataBaseRoutes && dataBaseRoutes.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of dataBaseRoutes) {
+        router.addRoute(item);
+      }
+    }
+  }
+}
 
 const handleSubmit = async ({errors, values,}: {
   errors: Record<string, ValidatedError> | undefined;
@@ -100,6 +112,7 @@ const handleSubmit = async ({errors, values,}: {
     setLoading(true);
     try {
       await userStore.login(values as LoginData);
+      // getDataBaseRouters();
       const {redirect, ...othersQuery} = router.currentRoute.value.query;
       if (redirect) {
         router.push({name: redirect as string, params: {...othersQuery} as RouteParamsRaw});

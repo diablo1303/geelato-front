@@ -290,7 +290,7 @@ const enterTable = (data: QueryForm, type: string) => {
       case 'design':
         if (data.id && data.tenantCode) {
           window.open(router.resolve({
-            path: `${DEFAULT_ROUTE.fullPath.replace("/:tenantCode", "").replace("/:appId", "")}/${data.tenantCode}/${data.id}`,
+            path: `/${data.tenantCode}/${data.id}${DEFAULT_ROUTE.fullPath.replace("/:tenantCode", "").replace("/:appId", "")}`,
             params: {tenantCode: data.tenantCode, appId: data.id}
           }).href, "_blank");
         } else {

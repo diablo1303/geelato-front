@@ -3,12 +3,10 @@ import {DEFAULT_LAYOUT} from "@/router/routes/base";
 import globalconfig from "@/config/globalconfig.json";
 import {getMenuList1, QueryMenuForm} from "@/api/user";
 import {DEFAULT_ROUTE, URL_PREFIX} from "@/router/constants";
-import {ref} from "vue";
+import {getToken} from "@/utils/auth";
 
 const modules = import.meta.glob('./modules/*.ts', {eager: true});
 const externalModules = import.meta.glob('./externalModules/*.ts', {eager: true,});
-
-const currentPage = ref({tenantCode: '', appId: '', pageId: ''});
 
 const getRouter = (_modules: any, result: string[]) => {
   Object.keys(_modules).forEach((key) => {
@@ -25,64 +23,58 @@ const getRouter = (_modules: any, result: string[]) => {
   return result;
 }
 
-const formatUrl = () => {
+export const currentPage = () => {
+  const currentParams = {path: '', tenantCode: '', appId: ''};
   const currentUrl = window.location.href;
   const url = new URL(currentUrl);
   if (url) {
-    console.log(url);
     const urlParams = url.searchParams;
     if (url.pathname) {
       const routerPaths = getRouter(modules, ['/page/preview']);
       // eslint-disable-next-line no-restricted-syntax
       for (const item of routerPaths) {
         if (url.pathname.indexOf(item) !== -1) {
-          const tb = url.pathname.split(item);
-          if (tb && tb.length >= 2 && tb[1]) {
-            const ta = tb[1].split("/");
-            currentPage.value.tenantCode = ta && ta[1] || '';
-            currentPage.value.appId = ta && ta[2] || '';
-            currentPage.value.pageId = ta && ta[3] || '';
+          const tb = url.pathname.replace(`${URL_PREFIX}`, '').split(item);
+          if (tb && tb.length > 0) {
+            const ta = tb[0].split("/");
+            currentParams.tenantCode = ta && ta[1] || '';
+            currentParams.appId = ta && ta[2] || '';
             break;
           }
         }
       }
     }
-    currentPage.value.tenantCode = currentPage.value.tenantCode || urlParams.get("tenantCode") || '';
-    currentPage.value.appId = currentPage.value.appId || urlParams.get("appId") || '';
-    currentPage.value.pageId = currentPage.value.pageId || urlParams.get("pageId") || '';
+    currentParams.tenantCode = currentParams.tenantCode || urlParams.get("tenantCode") || '';
+    currentParams.appId = currentParams.appId || urlParams.get("appId") || '';
   }
-  console.log(currentPage.value);
-}
-formatUrl();
-
-const currentPathSuffix = () => {
-  let path = "";
-  if (currentPage.value.tenantCode) {
-    path += `/:tenantCode`
-    if (currentPage.value.appId) {
-      path += `/:appId`
+  if (currentParams.tenantCode) {
+    currentParams.path += `/:tenantCode`
+    if (currentParams.appId) {
+      currentParams.path += `/:appId`
     }
   }
-  return path;
+
+  return currentParams;
 }
+
+const {path, ...urlParams} = currentPage();
 
 const formatModules = (_modules: any, result: RouteRecordNormalized[]) => {
   Object.keys(_modules).forEach((key) => {
     const defaultModule = _modules[key].default;
     if (!defaultModule) return;
-    defaultModule.path = URL_PREFIX + defaultModule.path;
+    defaultModule.path = URL_PREFIX + currentPage().path + defaultModule.path;
     if (defaultModule.children && defaultModule.children.length > 0) {
       defaultModule.children.forEach((value: any, index: number) => {
-        value.path += currentPathSuffix();
-        value.params = currentPage.value;
+        value.params = urlParams;
       });
     }
     const moduleList = Array.isArray(defaultModule) ? [...defaultModule] : [defaultModule];
     result.push(...moduleList);
   });
   // 默认页面
-  DEFAULT_ROUTE.fullPath = URL_PREFIX + DEFAULT_ROUTE.fullPath + currentPathSuffix();
-  DEFAULT_ROUTE.params = currentPage.value;
+  DEFAULT_ROUTE.fullPath = URL_PREFIX + path + DEFAULT_ROUTE.fullPath;
+  DEFAULT_ROUTE.params = urlParams;
 
   return result;
 }
@@ -121,13 +113,13 @@ const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryM
           } as unknown as RouteRecordNormalized);
         } else if (["formPage", "listPage", "freePage"].includes(item.type)) {
           data.children?.push({
-            path: `preview/:tenantCode/:appId/:pageId`,
+            path: `preview/:pageId`,
             name: `${item.id}`,
             component: () => import('@/views/page/PageRuntime.vue'),
             meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: item.seqNo},
             children: [],
             props: item,
-            params: {tenantCode: currentPage.value.tenantCode, appId: currentPage.value.appId, pageId: `${item.pageId}`}
+            params: {...urlParams, pageId: `${item.pageId}`}
           } as unknown as RouteRecordNormalized);
         }
       }
@@ -146,10 +138,12 @@ const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryM
   return defaultData;
 }
 
-const formatAppModules = async () => {
+const token = getToken();
+export const formatAppModules = async () => {
   let result: RouteRecordNormalized[] = [];
+  console.log(`token: ${token}`);
   try {
-    const {data} = await getMenuList1({flag: "menuItem", ...currentPage.value} as unknown as QueryMenuForm);
+    const {data} = await getMenuList1({flag: "menuItem", ...urlParams} as unknown as QueryMenuForm);
     // @ts-ignore
     const menuForms = data.code === globalconfig.interceptorCode ? data.data : data;
     const folderOptions: RouteRecordNormalized[] = [];
@@ -157,7 +151,7 @@ const formatAppModules = async () => {
     for (const item of menuForms) {
       if (item.type === 'folder') {
         folderOptions.push({
-          path: `${URL_PREFIX}/page`,
+          path: `${URL_PREFIX}/:tenantCode/:appId/page`,
           name: `${item.id}`,
           component: DEFAULT_LAYOUT,
           meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: item.seqNo},
@@ -179,8 +173,43 @@ const formatAppModules = async () => {
 // @ts-ignore
 const appDataBaseRoutes: RouteRecordNormalized[] = await formatAppModules();
 
-const appRoutes: RouteRecordNormalized[] = formatModules(modules, appDataBaseRoutes);
+const appRoutes: RouteRecordNormalized[] = formatModules(modules, []);
 
 const appExternalRoutes: RouteRecordNormalized[] = formatExternalModules(externalModules, []);
+
+export const appLoginRoutes = (result: any[]) => {
+  const loginPath = `${URL_PREFIX}${path}/login`;
+  // 基础版
+  result.push({
+    path: loginPath,
+    name: `login`,
+    component: () => import('@/views/login/index.vue'),
+    meta: {
+      requiresAuth: false,
+    },
+  });
+  result.push({path: '/', redirect: loginPath});
+
+  if (URL_PREFIX) {
+    const ta = URL_PREFIX.split('');
+    const positions = new Set();
+    for (let i = 0; i < ta.length; i += 1) {
+      if (ta[i] === '/') {
+        const position = URL_PREFIX.substring(0, i);
+        if (position) positions.add(position);
+      }
+    }
+    // eslint-disable-next-line no-restricted-syntax
+    for (const position of positions) {
+      result.push({path: position, redirect: `${URL_PREFIX}/login`})
+    }
+    // 前缀完全版
+    result.push({path: `${URL_PREFIX}`, redirect: loginPath})
+    if (path) {
+      result.push({path: `${URL_PREFIX}${path}`, redirect: loginPath})
+    }
+  }
+  return result;
+}
 
 export {appDataBaseRoutes, appRoutes, appExternalRoutes};

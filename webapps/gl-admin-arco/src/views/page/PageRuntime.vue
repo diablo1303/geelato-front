@@ -4,7 +4,7 @@ import {useRoute} from 'vue-router';
 
 const route = useRoute();
 const pageId = ref('');
-// http://localhost:5173/page/preview/:tenantCode/:appId/:pageId
+// http://localhost:5173/:tenantCode/:appId/page/preview/:pageId
 pageId.value = (route && route.params && route.params.pageId as string) || "";
 
 // http://localhost:8000/page/preview?pageId=xxxxxxxxxxxxxxxxxxx
@@ -25,7 +25,7 @@ export default {
   <div>
     <div v-if="!pageId">
       <a-alert>
-        请在url中传入pageId参数，如：【http://localhost:8000/page/preview/:tenantCode/:appId/:pageId】。
+        请在url中传入pageId参数，如：【http://localhost:8000/:tenantCode/:appId/page/preview/:pageId】。
       </a-alert>
     </div>
     <GlPageViewer v-if="pageId" :pageId="pageId"></GlPageViewer>

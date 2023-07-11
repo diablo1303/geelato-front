@@ -144,9 +144,9 @@
           <a-input-number
               v-model="formData.numericScale"
               :max="selectData.precision"
-              :min="0"
-              :placeholder="$t('model.form.rules.match.length.title')+`[0,${selectData.precision}]`"
-              :precision="0"/>
+              :min="1"
+              :placeholder="$t('model.form.rules.match.length.title')+`[1,${selectData.precision}]`"
+              :precision="0" @blur="numericScaleBlur($event)"/>
         </a-form-item>
       </a-col>
       <!-- 默认值 defaultValue -->
@@ -405,7 +405,7 @@ const selectTypeChange = (value: string) => {
     formData.value.numericScale = cst.radius.precision;
   }
   if (['DECIMAL'].includes(formData.value.dataType)) {
-    formData.value.numericPrecision = 14;
+    formData.value.numericPrecision = 12;
     formData.value.numericScale = 2;
     // eslint-disable-next-line no-use-before-define
     numericPrecisionBlur();
@@ -418,9 +418,14 @@ const numericPrecisionBlur = (ev?: FocusEvent) => {
   selectData.value.max = formData.value.numericSigned ? cst.radius.max : (cst.radius.max - cst.radius.min);
   selectData.value.min = formData.value.numericSigned ? cst.radius.min : 0;
   // 表单整数位、小数位 限制
-  const currentMax = 10 ** formData.value.numericPrecision - 1;
+  const currentMaxScale = ((10 ** formData.value.numericScale - 1) / 10 ** formData.value.numericScale);
+  const currentMaxPrecision = 10 ** formData.value.numericPrecision - 1;
+  const currentMax = currentMaxPrecision + currentMaxScale;
   selectData.value.max = currentMax > selectData.value.max ? selectData.value.max : currentMax;
   selectData.value.min = (0 - currentMax) < selectData.value.min ? selectData.value.min : (0 - currentMax);
+}
+const numericScaleBlur = (ev?: FocusEvent) => {
+  numericPrecisionBlur();
 }
 const numericSignedChange = (value: boolean, ev?: Event) => {
   numericPrecisionBlur();
