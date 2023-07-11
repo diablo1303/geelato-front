@@ -173,7 +173,7 @@ export const formatAppModules = async () => {
 // @ts-ignore
 const appDataBaseRoutes: RouteRecordNormalized[] = await formatAppModules();
 
-const appRoutes: RouteRecordNormalized[] = formatModules(modules, []);
+const appRoutes: RouteRecordNormalized[] = formatModules(modules, appDataBaseRoutes);
 
 const appExternalRoutes: RouteRecordNormalized[] = formatExternalModules(externalModules, []);
 

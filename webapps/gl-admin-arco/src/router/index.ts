@@ -10,7 +10,6 @@ NProgress.configure({showSpinner: false}); // NProgress Configuration
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    ...appDataBaseRoutes,
     ...appRoutes,
     ...appLoginRoutes([]),
     REDIRECT_MAIN,
