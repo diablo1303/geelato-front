@@ -23,7 +23,7 @@ export default {
         }, {"title": "编码", "dataIndex": "code"}, {
             "title": "类型",
             "dataIndex": "type",
-            "xRenderScript": "ctx.record.type === '1' ? '平台级' : '应用级'"
+            "xRenderScript": "$gl.ctx.record.type === '1' ? '平台级' : '应用级'"
         }, {
             "title": "启用",
             "dataIndex": "enableStatus",

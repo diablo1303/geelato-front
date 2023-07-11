@@ -26,7 +26,10 @@ export interface TableMeta {
 }
 
 export class BaseInfo {
-    tableTitle: string = ''
+    // 表格标题
+    label: string = ''
+    // 隐藏标题，默认为隐藏
+    hideLabel?: boolean
     entityName: string = ''
     showQuery: boolean = true
     showToolbar: boolean = true
@@ -49,7 +52,7 @@ export class BaseInfo {
     showCheckAll?: boolean = false
     // 数据删除模式是否为逻辑删除模式
     isLogicDeleteMode?: boolean = true
-    //  基于表达式计算出来的值，_propsExpression的示例值：{tableTitle:“用户列表”}
+    //  基于表达式计算出来的值，_propsExpression的示例值：{label:“用户列表”}
     _propsExpressions? = {}
 }
 

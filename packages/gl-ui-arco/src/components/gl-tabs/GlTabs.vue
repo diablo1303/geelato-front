@@ -8,7 +8,7 @@ export default {
 import {mixins, utils} from "@geelato/gl-ui";
 import {nextTick, onMounted, onUpdated, type PropType, ref, watch} from "vue";
 
-const emits = defineEmits(['update:modelValue','update:items'])
+const emits = defineEmits(['update:modelValue', 'update:items'])
 
 class TabItem {
   title: string = ''
@@ -20,17 +20,14 @@ const props = defineProps({
   items: {
     type: Array as PropType<Array<TabItem>>
   },
-  // defaultActiveKey: {
-  //   type: Number,
-  //   default() {
-  //     return 0
-  //   }
-  // },
+  position: String,
+  type: String,
+  direction: String,
   ...mixins.props
 })
 
 console.log('props.items:', props.items)
-const tabItems = ref(props.items || [])
+const tabItems = ref(props.items || <any>[])
 if (tabItems.value.length === 0) {
   tabItems.value.push(...[{
     title: '标题1', iconType: ''
@@ -88,8 +85,11 @@ const updateInst = () => {
 updateInst()
 
 const mv = ref(props.modelValue)
-const onTabClick = (key: any) => {
-  mv.value = key
+const onTabClick = (key: string | number) => {
+  const item = tabItems.value[key]
+  if (!item.disabled) {
+    mv.value = key
+  }
 }
 watch(mv, () => {
   emits('update:modelValue', mv.value)
@@ -101,18 +101,16 @@ onMounted(() => {
 </script>
 <template>
   <div>
-    <a-tabs :active-key="mv">
+    <a-tabs :active-key="mv" v-bind="props" @tabClick="onTabClick">
       <template #extra>
         <div>
           <slot name="extra"></slot>
         </div>
       </template>
-      <a-tab-pane v-for="(item,index) in tabItems" :key="index">
+      <a-tab-pane v-for="(item,index) in tabItems" :key="index" :disabled="item.disabled">
         <template #title>
-      <span @click="onTabClick(index)">
-        <GlIconfont v-if="item.iconType" :type="item.iconType"/>
-      {{ item.title }}
-      </span>
+          <GlIconfont v-if="item.iconType" :type="item.iconType"/>
+          {{ item.title }}
         </template>
         <component v-if="glComponentInst.children[index]" :is="'GlInsts'+glRuntimeFlag"
                    :glComponentInst="glComponentInst.children[index]"

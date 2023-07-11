@@ -25,7 +25,7 @@ export default class BlockUtils {
                 console.log('BlockUtils > try to find inst by paramKey:', paramKey, ' paramValue:', paramValue, ',and get', componentInst)
                 if (componentInst) {
                     if (componentInst.componentName === 'GlEntityTablePlus') {
-                        paramValue = componentInst.props.base.tableTitle || componentInst.id;
+                        paramValue = componentInst.props.base.label || componentInst.id;
                     } else {
                         paramValue = componentInst.props.label || componentInst.id
                     }

@@ -18,6 +18,17 @@ export default {
         "setterComponentName": "AInput",
         "enableValueExpress": true
     }, {
+        "name": "hideLabel",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "隐藏标题",
+        "setterComponentName": "ASwitch",
+        "enableValueExpress": true
+    },{
         "name": "bindField",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -76,10 +87,10 @@ export default {
         "expanded": true,
         "setterComponentProps": {
             "options": [{
-                "label": "下拉选择",
+                "label": "下拉单选",
                 "__o4MjAffwf6JXJF09HC": "select",
                 "value": "select"
-            }, {"label": "展开选择", "__o4MjAffwf6JXJF09HC": "radio", "value": "radio"}]
+            }, {"label": "展开单选", "__o4MjAffwf6JXJF09HC": "radio", "value": "radio"}, {"label": "展开复选",  "value": "checkbox"}]
         },
         "setterComponentVModelName": "modelValue",
         "title": "显示类型",

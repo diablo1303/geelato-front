@@ -218,6 +218,47 @@ class ComponentStoreFactory {
                         this.setCurrentSelectedComponentById(parentComponent!.id, fromPageId)
                     },
                     /**
+                     *  向前移动组件
+                     */
+                    moveFrontCurrentComponent() {
+                        const parentComponent = this.findParentComponentFromTreeById(this.currentSelectedComponentId)
+                        if (parentComponent && parentComponent.children.length >= 2) {
+                            const index = parentComponent.children.findIndex((inst) => {
+                                return inst.id === this.currentSelectedComponentId
+                            })
+                            if (index > 0) {
+                                const inst = parentComponent.children[index]
+                                // 上移
+                                parentComponent.children.splice(index, 1)
+                                parentComponent.children.splice(index - 1, 0, inst)
+                            }
+                        }
+                    },
+                    /**
+                     *  向后移动组件
+                     */
+                    moveBackCurrentComponent() {
+                        const parentComponent = this.findParentComponentFromTreeById(this.currentSelectedComponentId)
+                        if (parentComponent && parentComponent.children.length >= 2) {
+                            const index = parentComponent.children.findIndex((inst) => {
+                                return inst.id === this.currentSelectedComponentId
+                            })
+                            if (index < parentComponent.children.length - 1) {
+                                const inst = parentComponent.children[index]
+                                // 上移
+                                parentComponent.children.splice(index, 1)
+                                parentComponent.children.splice(index + 1, 0, inst)
+
+                            }
+                        }
+                    },
+                    /**
+                     *  复制当前组件
+                     */
+                    copyCurrentComponent() {
+
+                    },
+                    /**
                      * 查询指定组件id的父组件
                      * @param componentId 查找的组件id
                      * @return 找不到时返回null，找到时返回对应的组件实例

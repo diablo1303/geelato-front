@@ -10,7 +10,7 @@ import {entityApi} from "@geelato/gl-ui";
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: {
-    type: [String, Number],
+    type: [String, Number, Array<String | Number>],
     default() {
       return undefined
     }
@@ -30,10 +30,22 @@ const props = defineProps({
       return '+'
     }
   },
+  /**
+   *  下拉单选select|展开单选radio|展开复选checkbox
+   */
   displayType: {
     type: String,
     default() {
       return 'radio'
+    }
+  },
+  /**
+   * 可以选择的最大项数，displayType为checkbox才有效
+   */
+  maxCount: {
+    type: Number,
+    default() {
+      return 1000
     }
   },
   showValueInLabel: {
@@ -45,9 +57,19 @@ const props = defineProps({
 })
 // console.log('props.modelValue', props.modelValue, props.dictId)
 const mv = ref(props.modelValue)
+watch(() => {
+  return props.displayType
+}, (val) => {
+  if (val === 'checkbox') {
+    mv.value = []
+  } else {
+    mv.value = undefined
+  }
+})
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
+
 
 const onClear = () => {
   mv.value = undefined
@@ -60,7 +82,7 @@ const loadData = () => {
   if (props.dictId) {
     entityApi.query('platform_dict_item', 'id,itemCode,itemName', {
       dictId: props.dictId,
-      enableStatus: 0,
+      enableStatus: 1,
       delStatus: 0,
       '@order': 'seqNo|' + props.dictAscOrDesc
     }).then((resp: any) => {
@@ -79,11 +101,21 @@ watch(() => {
 
 <template>
   <template v-if="displayType==='select'">
-    <a-select placeholder="请选择" v-model="mv" allow-clear @clear="onClear">
+    <a-select placeholder="请选择" v-model="mv" allow-clear allow-search @clear="onClear">
       <a-option v-for="opt in options" :value="opt.itemCode">
         {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
       </a-option>
     </a-select>
+  </template>
+  <template v-else-if="displayType==='checkbox'">
+    <template v-if="options&&options.length===0">
+      <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
+    </template>
+    <a-checkbox-group v-model="mv" :max="maxCount">
+      <a-checkbox v-for="opt in options" :value="opt.itemCode">
+        {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
+      </a-checkbox>
+    </a-checkbox-group>
   </template>
   <template v-else>
     <template v-if="options&&options.length===0">

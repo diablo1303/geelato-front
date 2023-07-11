@@ -6,7 +6,7 @@ export default {
     "componentName": "GlEntityTableSub",
     "props": {
         "base": {
-            "tableTitle": "子表单",
+            "label": "子表单",
             "entityName": "platform_demo_sub_entity",
             "isFormSubTable": true,
             "subTablePidName": "demoEntityId",
@@ -47,9 +47,7 @@ export default {
                 "children": [],
                 "actions": [],
                 "style": {},
-                "propsWrapper": "",
                 "i18n": [],
-                "valueExpression": ""
             },
         }, {
             "title": "描述",
@@ -64,8 +62,5 @@ export default {
         }],
         "columnActions": []
     },
-    "slots": {},
-    "style": {},
-    "children": [],
     "actions": []
 }

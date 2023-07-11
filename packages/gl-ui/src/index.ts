@@ -1,4 +1,4 @@
-import {reactive, type App, type Plugin} from 'vue'
+import {reactive, type App,type Plugin} from 'vue'
 import emitter from "./m/mix/emitter";
 import PageProvideProxy from "./components/PageProvideProxy";
 import type {PageParamConfigType} from "./components/PageProvideProxy";
@@ -38,13 +38,11 @@ import FormProvideProxy from "./components/FormProvideProxy";
 import {FormProvideKey} from "./components/FormProvideProxy";
 import {Schema} from "b-validate";
 import type {PageType, Param} from "./m/types/global";
-import {ListGroupingUtil} from "./m/utils/ListGroupingUtil";
 import {paramStringify} from "./components/PageProvideProxy";
-
 const Utils = AllUtils
 
-const component: Plugin = {
-    install: function (app: App) {
+const component:Plugin = {
+    install: function (app: App):any {
         if (PluginUtil.markInstalledPlugin(app, 'gl-ui')) {
             return
         }
