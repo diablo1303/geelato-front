@@ -1,7 +1,7 @@
 import type {RouteRecordNormalized} from 'vue-router';
 import {DEFAULT_LAYOUT} from "@/router/routes/base";
 import globalconfig from "@/config/globalconfig.json";
-import {getMenuList1, QueryMenuForm} from "@/api/user";
+import {getMenus, QueryMenuForm} from "@/api/user";
 import {DEFAULT_ROUTE, URL_PREFIX} from "@/router/constants";
 import {getToken} from "@/utils/auth";
 
@@ -30,7 +30,7 @@ export const currentPage = () => {
   if (url) {
     const urlParams = url.searchParams;
     if (url.pathname) {
-      const routerPaths = getRouter(modules, ['/page/preview']);
+      const routerPaths = getRouter(modules, ['/login', '/page/preview']);
       // eslint-disable-next-line no-restricted-syntax
       for (const item of routerPaths) {
         if (url.pathname.indexOf(item) !== -1) {
@@ -63,7 +63,7 @@ const formatModules = (_modules: any, result: RouteRecordNormalized[]) => {
   Object.keys(_modules).forEach((key) => {
     const defaultModule = _modules[key].default;
     if (!defaultModule) return;
-    defaultModule.path = URL_PREFIX + currentPage().path + defaultModule.path;
+    defaultModule.path = URL_PREFIX + path + defaultModule.path;
     if (defaultModule.children && defaultModule.children.length > 0) {
       defaultModule.children.forEach((value: any, index: number) => {
         value.params = urlParams;
@@ -138,12 +138,9 @@ const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryM
   return defaultData;
 }
 
-const token = getToken();
-export const formatAppModules = async () => {
-  let result: RouteRecordNormalized[] = [];
-  console.log(`token: ${token}`);
+export const formatAppModules = async (result: RouteRecordNormalized[]) => {
   try {
-    const {data} = await getMenuList1({flag: "menuItem", ...urlParams} as unknown as QueryMenuForm);
+    const {data} = await getMenus({flag: "menuItem", ...urlParams} as unknown as QueryMenuForm);
     // @ts-ignore
     const menuForms = data.code === globalconfig.interceptorCode ? data.data : data;
     const folderOptions: RouteRecordNormalized[] = [];
@@ -171,7 +168,7 @@ export const formatAppModules = async () => {
 }
 
 // @ts-ignore
-const appDataBaseRoutes: RouteRecordNormalized[] = await formatAppModules();
+const appDataBaseRoutes: RouteRecordNormalized[] = await formatAppModules([]);
 
 const appRoutes: RouteRecordNormalized[] = formatModules(modules, appDataBaseRoutes);
 

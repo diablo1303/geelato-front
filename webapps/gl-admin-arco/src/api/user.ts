@@ -1,7 +1,6 @@
 import axios from 'axios';
 import {UserState} from '@/store/modules/user/types';
 import {RouteRecordNormalized} from "vue-router";
-import qs from "query-string";
 import {QueryAppForm} from "@/api/service/app_service";
 
 const urlOrigin = import.meta.env.VITE_API_BASE_URL;
@@ -64,10 +63,6 @@ export function getApp(id: string) {
  * 获取应用菜单
  * @param params
  */
-export function getMenuList1(params: QueryMenuForm) {
-  return axios.get<QueryMenuForm[]>(`${urlOrigin}/api/user/getMenuList`, {
-    params, paramsSerializer: (obj) => {
-      return qs.stringify(obj);
-    },
-  });
+export function getMenus(params: QueryMenuForm) {
+  return axios.post<QueryMenuForm[]>(`${urlOrigin}/api/user/menu`, params);
 }

@@ -65,7 +65,7 @@
 
 <script lang="ts" setup>
 import {reactive, ref} from 'vue';
-import {RouteParamsRaw, useRouter} from 'vue-router';
+import {RouteParamsRaw, useRoute, useRouter} from 'vue-router';
 import {Message} from '@arco-design/web-vue';
 import {ValidatedError} from '@arco-design/web-vue/es/form/interface';
 import {useI18n} from 'vue-i18n';
@@ -77,6 +77,7 @@ import {DEFAULT_ROUTE, DEFAULT_ROUTE_NAME} from "@/router/constants";
 import {appDataBaseRoutes, formatAppModules} from "@/router/routes";
 
 const router = useRouter();
+const route = useRoute();
 const {t} = useI18n();
 const errorMessage = ref('');
 const {loading, setLoading} = useLoading();
@@ -93,7 +94,7 @@ const userInfo = reactive({
 });
 const getDataBaseRouters = async () => {
   if (!(appDataBaseRoutes && appDataBaseRoutes.length > 0)) {
-    const dataBaseRoutes = await formatAppModules();
+    const dataBaseRoutes = await formatAppModules([]);
     if (dataBaseRoutes && dataBaseRoutes.length > 0) {
       // eslint-disable-next-line no-restricted-syntax
       for (const item of dataBaseRoutes) {
