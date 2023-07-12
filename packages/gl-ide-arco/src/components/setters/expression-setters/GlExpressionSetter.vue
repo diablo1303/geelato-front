@@ -43,7 +43,6 @@ const inputMv = ref(props.modelValue)
 const valueExpressModalVisible = ref(false)
 /**
  * 打开值表达式设置窗口
- * @param propertySetterMeta
  */
 const openValueExpressModal = () => {
   valueExpressModalVisible.value = true
@@ -52,7 +51,7 @@ const clearValueExpress = () => {
   // const propertySetterMeta = currentOpenModalPropertySetterMeta
   mv.value = ''
   // @ts-ignore
-  // componentModel[propertySetterMeta.type + 'Expression'][propertySetterMeta.name] = ''
+  // componentModel[propertySetterMeta.type + 'Expressions'][propertySetterMeta.name] = ''
   valueExpressModalVisible.value = false
   inputMv.value = mv.value
   emits('update:modelValue', mv.value)
@@ -165,13 +164,13 @@ const selectNode = (selectedKeys: any, data: any, treeData: any) => {
             如果设置了该变量绑定，则以该变量绑定计算的结果为优先。
             <h4 style="font-weight: 600">用法</h4>
             输入框内默认支持变量，写法和 JS 写法完全一致。
-            <li>变量: $gl.xxx</li>
-            <li>字符串: "我是字符串，我有引号"</li>
-            <li>数字: 123</li>
-            <li>布尔值: true / false</li>
-            <li>对象: { name: "王一" }</li>
-            <li>数组: ["1", "2"]或[1, 2]</li>
-            <li>空值: null</li>
+            <div>变量: $gl.xxx</div>
+            <div>字符串: "我是字符串，我有引号"</div>
+            <div>数字: 123</div>
+            <div>布尔值: true / false</div>
+            <div>对象: { name: "王一" }</div>
+            <div>数组: ["1", "2"]或[1, 2]</div>
+            <div>空值: null</div>
           </div>
         </div>
         <div style="flex: 1;min-width: 420px;max-height: 600px;overflow-y: auto">

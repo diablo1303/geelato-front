@@ -16,8 +16,6 @@
              v-on="onActionsHandler"
   >
     <template v-for="(slotItem,slotName) in glComponentInst.slots" v-slot:[slotName]>
-      <!--      <component v-if="slotItem" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"-->
-      <!--                 v-slot:[slotName] :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>-->
       <component v-if="slotItem.propsTarget==='v-bind'" :is="slotItem.componentName" v-bind="slotItem.props"
                  :style="slotItem.style" :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>
       <component v-else-if="slotItem.propsTarget==='v-model'&&slotItem.propsName" :is="slotItem.componentName"
@@ -117,14 +115,24 @@ const onChange = (...args: any) => {
  *   依据propsExpression设置的各属值的值表达式，计算出值，并合设置到props中，覆盖props中相应属性的值
  */
 const executePropsExpressions = () => {
+  console.log('glComponentInst:', props.glComponentInst.propsExpressions)
   if (props.glComponentInst.propsExpressions) {
     Object.keys(props.glComponentInst.propsExpressions).forEach((key: string) => {
+      console.log('key:', key)
       // @ts-ignore
       const propsExpression = props.glComponentInst.propsExpressions[key]
       if (propsExpression) {
-        props.glComponentInst.props[key] = jsScriptExecutor.evalExpression(propsExpression, {
-          pageProxy: pageProvideProxy
-        })
+        if (key === '_valueExpression') {
+          // 组件值
+          props.glComponentInst.value = jsScriptExecutor.evalExpression(propsExpression, {
+            pageProxy: pageProvideProxy
+          })
+        } else {
+          // 属性计
+          props.glComponentInst.props[key] = jsScriptExecutor.evalExpression(propsExpression, {
+            pageProxy: pageProvideProxy
+          })
+        }
       }
     })
   }

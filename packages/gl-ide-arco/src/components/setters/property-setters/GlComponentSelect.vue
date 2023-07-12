@@ -4,7 +4,7 @@
       <a-col flex="auto">
         <a-select v-model="mv.componentName" @change="changeComponent" allow-clear>
           <a-option v-for="item in options" :value="item.componentName" :title="getTitle(item.componentName)"
-          :class="{'gl-selected':mv.componentName===item.componentName}">
+                    :class="{'gl-selected':mv.componentName===item.componentName}">
             {{ item.title + getTitle(item.componentName, '-') }}
           </a-option>
         </a-select>
@@ -26,6 +26,7 @@
       <GlComponentSetter v-if="componentMeta" :componentMeta="componentMeta"
                          :componentInstance="mv"
                          :defaultActiveKey="defaultActiveKey"
+                         :hideToolbar = "true"
                          @update="(val)=>{updateInstance(val)}"/>
     </a-modal>
   </div>
@@ -53,7 +54,7 @@ const props = defineProps(
         }
       },
       options: {
-        type: Object,
+        type: Array as PropType<Array<{ componentName: string, title: string }>>,
         default() {
           return GlComponentSelectOptions
         }
@@ -65,11 +66,13 @@ const visible = ref(false)
 const componentMeta = ref(new ComponentMeta())
 const componentInstance = ref(new ComponentInstance())
 const ideStore = useIdeStore()
-// 依据不同的组件类型获取实体化标题
+// 依据不同的组件类型获取实例化标题
 const getTitle = (componentName: string, pre: string = '') => {
-  let name = ''
+  let name
   if (componentName === 'AButton') {
     name = mv.value?.slots?.icon?.props?.text
+  } else {
+    name = mv.value?.props?.label
   }
   return name ? pre + name : ''
 }

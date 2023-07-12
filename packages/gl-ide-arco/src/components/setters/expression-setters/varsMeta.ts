@@ -156,11 +156,18 @@ export const useComponentInstTreeData = () => {
         _type: 'object',
         children: [
             {
-                title: '页面参数值是否等于某值',
+                title: '页面参数值等于某值',
                 _code: 'isPageParamEquals',
                 _type: 'boolean',
                 _brackets: '("参数名",参数值)',
                 _description: '页面参数值是否等于某值',
+            },
+            {
+                title: '获取页面参数值',
+                _code: 'getPageParam',
+                _type: 'any',
+                _brackets: '("参数名")',
+                _description: '获取页面参数值',
             }
         ],
         _description: ''

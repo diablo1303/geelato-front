@@ -142,27 +142,6 @@ export default {
         "show": true,
         "expanded": true
     }, {
-        "name": "disabled",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "description": "是否禁用状态，默认为 false",
-        "title": "是否禁用",
-        "setterComponentName": "ASwitch",
-        "show": true,
-        "expanded": true
-    }, {
-        "name": "readonly",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "只读",
-        "setterComponentName": "ASwitch"
-    }, {
         "name": "unRender",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -184,16 +163,6 @@ export default {
         "title": "占位提示",
         "setterComponentName": "AInput",
         "enableValueExpress": true
-    }, {
-        "name": "rules",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "title": "验证规则",
-        "setterComponentName": "GlValidateRulesSetter"
     }],
     "actions": [{"name": "change", "description": "", "title": "值改变"}],
     "displayOnStage": "inline-block"

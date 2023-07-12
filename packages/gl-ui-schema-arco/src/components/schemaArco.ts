@@ -71,6 +71,7 @@ import DictMeta from "./setter-arco/dict/dictMeta";
 import DynamicSelectMeta from "./setter-arco/select/DynamicSelectMeta";
 import EncodeMeta from "./setter-arco/encode/EncodeMeta";
 import RefPageMeta from "./setter-arco/page/RefPageMeta";
+import commonProperties from "./setter-arco/CommonProperties";
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [ButtonMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
@@ -86,6 +87,19 @@ const ignoreInstances: Array<ComponentMeta> = [DndPlaceholderMeta, VirtualMeta, 
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {
     const meta = componentMetas[index]
+
+    //  设置僵入组件公共属性
+    if (meta.group === 'dataEntry') {
+        commonProperties.forEach((commonProperty) => {
+            const foundProperty = meta.properties.find((property) => {
+                return property.name === commonProperty.name
+            })
+            if (!foundProperty) {
+                meta.properties.push(commonProperty)
+            }
+        })
+    }
+
     if (ignoreInstances.findIndex((componentMeta: ComponentMeta) => {
         return meta.componentName === componentMeta.componentName
     }) !== -1) {

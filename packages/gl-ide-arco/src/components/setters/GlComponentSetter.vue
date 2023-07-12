@@ -2,7 +2,7 @@
   <div class="gl-component-setter" v-if="componentModel">
     <a-tabs size="small" :default-active-key="defaultActiveKey">
       <a-tab-pane key="1" tab="属性" title="属性">
-        <div style="border-bottom: 1px solid #F2F2F2;padding: 0 0.5em 0.5em;">
+        <div v-if="!hideToolbar" style="border-bottom: 1px solid #F2F2F2;padding: 0 0.5em 0.5em;">
           <span style="font-weight: 600" :title="componentStore.currentSelectedComponentMeta?.componentName">[{{
               componentStore.currentSelectedComponentMeta?.title
             }}]</span>
@@ -61,6 +61,7 @@ import {ComponentInstance, type ComponentMeta} from "@geelato/gl-ui-schema";
 import ClipboardJS from "clipboard";
 import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "./ComponentSetterProvideProxy";
 import {componentStoreFactory, usePageStore} from "@geelato/gl-ide";
+import {utils} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update']);
 const props = defineProps({
@@ -71,7 +72,7 @@ const props = defineProps({
   componentInstance: {
     type: Object as PropType<ComponentInstance>,
     // TODO 解决componentModel.id error TS2532: Object is possibly 'undefined'.
-    // 时引入默认值，后续需再确认是否保留
+    // 引入默认值，后续需再确认是否保留
     default() {
       return new ComponentInstance()
     }
@@ -84,7 +85,11 @@ const props = defineProps({
     default() {
       return "1"
     }
-  }
+  },
+  /**
+   *  是否显示组件属性设置面板的工作条
+   */
+  hideToolbar:Boolean
 })
 
 const pageStore = usePageStore()
@@ -99,6 +104,8 @@ if (props.componentMeta.vModelName) {
   props.componentInstance.vModelName = props.componentMeta.vModelName
 }
 const componentModel = ref(props.componentInstance)
+// 确保都有id
+componentModel.value.id = componentModel.value.id ? componentModel.value.id : utils.gid('', 20)
 
 const setInstance = (instance: ComponentInstance, form: String) => {
   console.log('GlComponentSetter > set instance:', instance, 'form', form)

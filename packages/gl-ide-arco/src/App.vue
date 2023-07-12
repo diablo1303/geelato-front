@@ -9,6 +9,7 @@ import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
 import {plugin} from "./plugin";
 import { DndProvider } from 'vue3-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import {Utils} from "@geelato/gl-ui";
 
 const ideStore = useIdeStore()
 // 安装插件
@@ -16,6 +17,10 @@ ideStore.usePlugin(plugin)
 ideStore.addComponentMetas(useComponentMaterialStore().componentMetas)
 ideStore.setUiLibName('arco')
 
+// 获取应用id
+if(Utils.CheckUtil.isBrowser()){
+
+}
 </script>
 <template>
   <DndProvider :backend="HTML5Backend">

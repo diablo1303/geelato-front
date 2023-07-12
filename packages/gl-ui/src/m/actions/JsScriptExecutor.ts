@@ -170,6 +170,7 @@ export class JsScriptExecutor {
     /**
      * 获取当前页面的参数
      * @param paramName
+     * @param $gl
      */
     getPageParam(paramName: string, $gl: any) {
         const pageProxy: PageProvideProxy = $gl.ctx.pageProxy
@@ -274,6 +275,7 @@ export class JsScriptExecutor {
             //     return that.evalFn(expression, ctx, callback)
             // },
             getPageParams: () => that.getPageParams($gl),
+            getPageParam: (paramName: string) => that.getPageParam(paramName, $gl),
             getComponentMethod: that.getComponentMethod,
             getComponentValue: that.getComponentValue,
             setComponentValue: (componentId: string, valueExpression: any) => {
@@ -288,6 +290,7 @@ export class JsScriptExecutor {
     /**
      * 获取组件值
      * @param componentId
+     * @param value
      */
     setComponentValue(componentId: string, value: any) {
         for (const pageComponentId in pageProxyMap) {
@@ -355,6 +358,7 @@ export class JsScriptExecutor {
     /**
      * 执行参数，将参数中的valueExpression值表达式计算结果保存到value中
      * @param params
+     * @param ctx
      */
     evalParams(params: Array<Param>, ctx: object) {
 
@@ -471,9 +475,9 @@ export class JsScriptExecutor {
 
     /**
      * 加载页面
-     * @param pageId    页面ID
+     * @param pageId   页面ID
      * @param extendId 应用页面树节点ID
-     * @param pageProps
+     * @param params
      */
     loadPage(pageId: string, extendId: string, params: Array<Param>) {
         const pageProps = {params: params}
@@ -481,12 +485,6 @@ export class JsScriptExecutor {
         return h(GlPageViewer, {pageId, extendId, pageProps})
     }
 
-    /**
-     * 获取当前组件所在的页面组件
-     */
-    // getParentPageComponent() {
-    // getCurrentInstance().parent.
-    // }
 }
 
 

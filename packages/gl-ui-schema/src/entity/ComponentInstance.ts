@@ -1,12 +1,25 @@
 import type Action from "./actions/Action";
+import type BindField from "./model/BindField";
 
 export class ComponentInstanceProps {
-    [key: string]: any
-
     // 标题，如用于formItem的标题
     label?: string = ''
+    // 绑定字段，对于输入组件，需要用到该属性
+    _bindField?: BindField
+
+    // 组件个性化属性
+    [key: string]: any
+
+    // 默认值表达式
+    _valueExpression?: any
+    // 是否禁用
+    disabled?: boolean
     // 只读
-    readonly?: boolean = false
+    readonly?: boolean
+    // 是否渲染
+    unRender?: boolean
+    // 是否隐藏(渲染但不可见)
+    _hidden?: boolean
     // 验证规则，适用于表单项组件，如AInput
     rules?: Array<any>
 }
@@ -26,10 +39,11 @@ export default class ComponentInstance {
     group?: string = ''
     // 组件的值绑定属性名，默认为modelValue,特殊的，如tabs为activeKey
     vModelName?: string
+    // 组件属性
     props: ComponentInstanceProps = {}
     // 属性值表达式，通过变量绑定、函数计算等，动态计算属性的值
     propsExpressions?: ComponentInstanceProps = {}
-    slots: { [key: string]: any } = {}
+    slots: { [key: string]: any, propsTarget?: string, propsName?: string } = {}
     // 插槽值表达式，通过变量绑定、函数计算等，动态计算属性的值
     slotsExpressions?: ComponentInstanceProps = {}
     children: Array<ComponentInstance> = []
@@ -41,7 +55,7 @@ export default class ComponentInstance {
     // 运行时的值，如对于input等表单组件，可用于v-model绑定值
     value?: undefined
     // 值表达式，用于结合上下文的信息、相关逻辑计算得出value
-    valueExpression?: string = ''
+    // valueExpression?: string = ''
     // 是否禁用，默认为启用，用于设计时
     _disabled?: boolean
     // 是否为模板实例

@@ -201,10 +201,13 @@ watch(() => props.enableEdit,
 )
 
 const {loading, setLoading} = useLoading(false);
-const {t} = CheckUtil.isBrowser() ? useI18n() : {
-  t: () => {
-  }
-};
+// const {t} = CheckUtil.isBrowser() ? useI18n() : {
+//   t: () => {
+//   }
+// };
+const t = (str:any) => {
+  return str
+}
 // 渲染展示的数据
 const renderData = ref<Array<object>>([]);
 

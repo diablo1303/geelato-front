@@ -88,39 +88,7 @@ export default {
         "setterComponentName": "ASwitch",
         "show": true,
         "expanded": true
-    }, {
-        "name": "disabled",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "description": "是否禁用状态，默认为 false",
-        "title": "是否禁用",
-        "setterComponentName": "ASwitch",
-        "show": true,
-        "expanded": true
-    }, {
-        "name": "readonly",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "只读",
-        "setterComponentName": "ASwitch"
-    }, {
-        "name": "unRender",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "不渲染",
-        "setterComponentName": "ASwitch",
-        "enableValueExpress": true
-    }, {
+    },  {
         "name": "placeholder",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -151,16 +119,6 @@ export default {
         "expanded": true,
         "title": "显示字数",
         "setterComponentName": "ASwitch"
-    }, {
-        "name": "rules",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "title": "验证规则",
-        "setterComponentName": "GlValidateRulesSetter"
     }],
     "actions": [{"name": "change", "description": "仅在输入框失焦或按下回车时触发", "title": "值改变"}],
     "displayOnStage": "inline-block"

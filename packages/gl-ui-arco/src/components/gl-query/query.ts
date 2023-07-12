@@ -11,5 +11,8 @@ export default class QueryItem {
     isAdvanceQuery: boolean = false;
     // 是否隐藏，不展示的场景示例：作为默认内置的查询条件
     isHidden: boolean = false
-    component: ComponentInstance | undefined = undefined
+    // 默认值表达式，如果有，则取该值
+    valueExpression?: string
+    // 组件
+    component?: ComponentInstance
 }

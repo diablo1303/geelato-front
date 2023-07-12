@@ -178,50 +178,49 @@ export default {
         "group": "base",
         "type": "props",
         "title": "查询条件",
-        "_showSub": false,
+        "_showSub": true,
         "properties": [{
-            "name": "name",
+            "name": "component",
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
             "group": "base",
             "type": "props",
-            "setterComponentName": "GlFieldSelect",
-            "title": "绑定字段",
-            "show": true,
-            "expanded": true
-        }, {
-            "name": "title",
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
+            "setterComponentName": "GlComponentSelect",
+            "title": "选择组件",
             "show": true,
             "expanded": true,
-            "title": "标题",
-            "setterComponentName": "AInput"
+            "enableValueExpress": false
         }, {
             "name": "cop",
             "setterComponentProps": {
                 "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
-                "options": [{"label": "等于", "value": "eq"}, {"label": "不等于", "value": "neq"}, {
-                    "label": "小于",
-                    "value": "lt"
-                }, {"label": "小于等于", "value": "lte"}, {"label": "大于", "value": "gt"}, {
+                "options": [{"label": "等于", "value": "eq", "__sIGch6bIhRKB7cNZod": "eq"}, {
+                    "label": "不等于",
+                    "value": "neq",
+                    "__sIGch6bIhRKB7cNZod": "neq"
+                }, {"label": "小于", "value": "lt", "__sIGch6bIhRKB7cNZod": "lt"}, {
+                    "label": "小于等于",
+                    "value": "lte",
+                    "__sIGch6bIhRKB7cNZod": "lte"
+                }, {"label": "大于", "value": "gt", "__sIGch6bIhRKB7cNZod": "gt"}, {
                     "label": "大于等于",
-                    "value": "gte"
-                }, {"label": "开头包括", "value": "sw"}, {"label": "结尾包括", "value": "ew"}, {
-                    "label": "包括",
-                    "value": "contains"
-                }],
+                    "value": "gte",
+                    "__sIGch6bIhRKB7cNZod": "gte"
+                }, {"label": "开头包括", "value": "sw", "__sIGch6bIhRKB7cNZod": "sw"}, {
+                    "label": "结尾包括",
+                    "value": "ew",
+                    "__sIGch6bIhRKB7cNZod": "ew"
+                }, {"label": "包括", "value": "contains", "__sIGch6bIhRKB7cNZod": "contains"}],
                 "buttonStyle": "solid"
             },
             "setterComponentVModelName": "modelValue",
             "group": "base",
             "type": "props",
-            "title": "操作",
+            "title": "值比较",
             "setterComponentName": "ASelect",
             "show": true,
-            "expanded": true
+            "expanded": true,
+            "enableValueExpress": false
         }, {
             "name": "colspan",
             "setterComponentProps": {},
@@ -231,7 +230,8 @@ export default {
             "setterComponentName": "AInputNumber",
             "title": "列间距",
             "show": true,
-            "expanded": true
+            "expanded": true,
+            "enableValueExpress": false
         }, {
             "name": "isAdvanceQuery",
             "setterComponentProps": {},
@@ -243,33 +243,11 @@ export default {
             "setterComponentName": "ASwitch",
             "show": true,
             "enableValueExpress": false
-        }, {
-            "name": "isHidden",
-            "group": "base",
-            "type": "props",
-            "enableValueExpress": false,
-            "show": true,
-            "expanded": true,
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "title": "是否隐藏",
-            "setterComponentName": "ASwitch",
-            "description": "是否隐藏该查询条件，一般用于设置内置的参数"
-        }, {
-            "name": "component",
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "setterComponentName": "GlComponentSelect",
-            "title": "选择组件",
-            "show": true,
-            "expanded": true
         }],
         "setterComponentName": "GlObjectArraySetter",
         "show": true,
         "expanded": false,
-        "titleField": "title",
+        "titleField": "component.props.label",
         "enableValueExpress": false
     }, {
         "name": "toolbar",

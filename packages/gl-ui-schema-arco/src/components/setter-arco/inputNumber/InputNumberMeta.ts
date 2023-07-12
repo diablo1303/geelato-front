@@ -193,17 +193,6 @@ export default {
         "title": "只读",
         "setterComponentName": "ASwitch",
         "enableValueExpress": true
-    }, {
-        "name": "rules",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "title": "验证规则",
-        "setterComponentName": "GlValidateRulesSetter",
-        "enableValueExpress": false
     }],
     "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

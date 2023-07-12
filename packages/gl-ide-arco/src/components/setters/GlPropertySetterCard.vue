@@ -15,7 +15,7 @@
           <div class="gl-m-header" v-if="maxCount!==1" @click="editElement(index)" style="cursor: pointer">
             <span v-if="enableSort"><GlIconfont type="gl-drag" class="gl-dnd-item"
                                                 style="cursor: move"></GlIconfont></span>
-            <span class="gl-m-title">{{ element[titleField] }}</span>
+            <span class="gl-m-title">{{ getElementTitle(element, titleField) }}</span>
             <span class="gl-m-action" v-if="enableDelete"><GlIconfont type="gl-delete" @click="removeElement(index)"
                                                                       style="color: red;cursor: pointer"></GlIconfont></span>
             <!--            <span class="gl-m-action" v-if="enableEdit"><FormOutlined /></span>-->
@@ -98,7 +98,7 @@ export default defineComponent({
   },
   data() {
     return {
-      cardTitleField:'',
+      cardTitleField: '',
       items: this.modelValue,
       selectedElement: {},
       selectedIndex: -1
@@ -115,10 +115,22 @@ export default defineComponent({
     if (element) {
       const keys = Object.keys(element)
       keys.length > 0 ? this.cardTitleField = keys[0] : ''
-      console.log('this.cardTitleField:',this.cardTitleField,keys,element)
+      console.log('this.cardTitleField:', this.cardTitleField, keys, element)
     }
   },
   methods: {
+    getElementTitle(element: any, titleField: string) {
+      if (!titleField) return ''
+      const keys = titleField.split('.')
+
+      const getValue: any = (obj: any, keys: string[]) => {
+        if (!obj) return
+        const key: string = keys.shift()!
+        return keys.length > 0 ? getValue(obj[key], keys) : obj[key]
+      }
+
+      return getValue(element, keys)
+    },
     addElement() {
       let element = this.elementTemplate ? JSON.parse(JSON.stringify(this.elementTemplate)) : {}
       if (this.items.length === this.maxCount && this.maxCount > 0) {
@@ -145,7 +157,7 @@ export default defineComponent({
         // @ts-ignore
         this.selectedElement = this.items[index]
       }
-     this.emitSelectedElement()
+      this.emitSelectedElement()
     },
     removeElement(index: number) {
       // console.log('removeElement', this.selectedIndex, index, this.selectedElement)
@@ -164,7 +176,7 @@ export default defineComponent({
       // console.log('selectedElement:', {element: this.selectedElement, index: this.selectedIndex})
       this.$emit('selectedElement', {element: this.selectedElement, index: this.selectedIndex})
     },
-    onEnd(evt: {newIndex:number}) {
+    onEnd(evt: { newIndex: number }) {
       if (this.selectedIndex === -1) {
         return
       }

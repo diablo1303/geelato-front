@@ -32,11 +32,13 @@ import type {Action} from "../../types/global";
 const emits = defineEmits(['changeRecord', 'fetchSuccess'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
-const {t} = CheckUtil.isBrowser() ? useI18n() : {
-  t: () => {
-  }
-};
-
+// const {t} = CheckUtil.isBrowser() ? useI18n() : {
+//   t: () => {
+//   }
+// };
+const t = (str: any) => {
+  return str
+}
 
 const props = defineProps({
   base: {
@@ -162,9 +164,11 @@ const onUpdateRow = (data: { record: object, rowIndex: number }) => {
 let lastEntityReaderParams: Array<EntityReaderParam>;
 // 在初始化（init）时，GlQuery组件的事件会触发：@search="onSearch"
 const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
-  // console.log("onSearch() > entityReaderParams:", entityReaderParams);
-  tableRef.value.search(entityReaderParams);
-  lastEntityReaderParams = entityReaderParams;
+  console.log("onSearch() > entityReaderParams:", entityReaderParams);
+  if (tableRef.value) {
+    tableRef.value.search(entityReaderParams);
+    lastEntityReaderParams = entityReaderParams;
+  }
 }
 const refresh = (event?: MouseEvent) => {
   onSearch(lastEntityReaderParams);

@@ -2,11 +2,11 @@
 // @ts-nocheck
 import {computed, onMounted, type PropType, ref} from "vue";
 import type {EntityReaderParam} from "@geelato/gl-ui";
-import {ConvertUtil} from "@geelato/gl-ui";
+import {ConvertUtil, jsScriptExecutor} from "@geelato/gl-ui";
 import QueryItem from "./query";
 import {GlIconfont} from "@geelato/gl-ui";
 
-const emit = defineEmits(["search"]);
+const emits = defineEmits(["search"]);
 const props = defineProps({
   items: {
     type: Array as PropType<QueryItem[]>,
@@ -16,11 +16,18 @@ const props = defineProps({
   },
 });
 
+/**
+ *  基于组件参数及页面参数，创建查询表单值
+ *  若有同名值，页面参数值优先
+ */
 const generateFormModel = () => {
   const fModel: any = {};
+  // 组件值
   props.items?.forEach((item: QueryItem) => {
-    fModel[item.id] = item.component?.value;
-  });
+        // 首次加载时，需要依据表达式的值进行计算
+        fModel[item.id] = item.component?.value
+      }
+  )
   // console.log('GlQuery > generateFormModel() > fModel:', fModel)
   return fModel;
 };
@@ -31,7 +38,7 @@ const formModel = ref(defaultValue);
 /**
  *  创建查询参数
  */
-const getEntityReaderParams = () => {
+const createEntityReaderParams = () => {
   const entityReaderParams: Array<EntityReaderParam> = [];
   props.items?.forEach((item: QueryItem) => {
     if (
@@ -39,7 +46,7 @@ const getEntityReaderParams = () => {
         ConvertUtil.trim(`${formModel.value[item.id]}`).length > 0
     ) {
       entityReaderParams.push({
-        name: item.name,
+        name: item.component?.props?.bindField?.fieldName || '',
         cop: item.cop,
         value: formModel.value[item.id],
       });
@@ -53,7 +60,8 @@ const getEntityReaderParams = () => {
 
 const onSearch = () => {
   formModel.value = generateFormModel()
-  emit("search", getEntityReaderParams(), formModel.value);
+  const entityReaderParams = createEntityReaderParams()
+  emits("search", entityReaderParams);
 };
 const reset = () => {
   props.items?.forEach((item: QueryItem) => {
@@ -64,9 +72,15 @@ const reset = () => {
   onSearch()
 };
 
-const renderItems = computed(() => {
+const showItems = computed(() => {
   return props.items.filter((item: QueryItem) => {
-    return item.isHidden !== true
+    return !item.component?.props.unRender
+  })
+})
+
+const hideItems = computed(() => {
+  return props.items.filter((item: QueryItem) => {
+    return item.component?.props.unRender
   })
 })
 const t = (value: any) => {
@@ -75,7 +89,7 @@ const t = (value: any) => {
 onMounted(() => {
   onSearch()
 })
-defineExpose({getEntityReaderParams, reset});
+defineExpose({createEntityReaderParams, reset});
 </script>
 
 <template>
@@ -88,13 +102,29 @@ defineExpose({getEntityReaderParams, reset});
       >
         <a-row :gutter="16">
           <a-col
-              v-for="(item, index) in renderItems"
+              v-for="(item, index) in showItems"
               :key="index"
               :span="item.colspan"
           >
-            <a-form-item :field="item.id" :label="item.title ? t(item.title) : t(item.name)">
+            <a-form-item :field="item.id" :label="t(item.component?.props.label)">
               <GlComponent v-if="item.component" :glComponentInst="item.component"
-                           @change="onSearch"></GlComponent>
+                           @update="onSearch"></GlComponent>
+            </a-form-item>
+            <!--            <a-form-item :field="item.id" :label="item.title ? t(item.title) : t(item.name)">-->
+            <!--              <GlComponent v-if="item.component" :glComponentInst="item.component"-->
+            <!--                           @change="onSearch"></GlComponent>-->
+            <!--            </a-form-item>-->
+          </a-col>
+        </a-row>
+        <a-row :gutter="16" style="display: none">
+          <a-col
+              v-for="(item, index) in hideItems"
+              :key="index"
+              :span="item.colspan"
+          >
+            <a-form-item :field="item.id" :label="t(item.component?.props.label)">
+              <GlComponent v-if="item.component" :glComponentInst="item.component"
+                           @update="onSearch"></GlComponent>
             </a-form-item>
           </a-col>
         </a-row>
