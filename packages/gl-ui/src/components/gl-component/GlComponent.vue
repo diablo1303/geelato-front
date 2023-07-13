@@ -16,8 +16,6 @@
              v-on="onActionsHandler"
   >
     <template v-for="(slotItem,slotName) in glComponentInst.slots" v-slot:[slotName]>
-      <!--      <component v-if="slotItem" :is="slotItem.componentName" v-bind="slotItem.props" :style="slotItem.style"-->
-      <!--                 v-slot:[slotName] :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>-->
       <component v-if="slotItem.propsTarget==='v-bind'" :is="slotItem.componentName" v-bind="slotItem.props"
                  :style="slotItem.style" :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>
       <component v-else-if="slotItem.propsTarget==='v-model'&&slotItem.propsName" :is="slotItem.componentName"
@@ -122,9 +120,17 @@ const executePropsExpressions = () => {
       // @ts-ignore
       const propsExpression = props.glComponentInst.propsExpressions[key]
       if (propsExpression) {
-        props.glComponentInst.props[key] = jsScriptExecutor.evalExpression(propsExpression, {
-          pageProxy: pageProvideProxy
-        })
+        if (key === '_valueExpression') {
+          // 组件值
+          props.glComponentInst.value = jsScriptExecutor.evalExpression(propsExpression, {
+            pageProxy: pageProvideProxy
+          })
+        } else {
+          // 属性计
+          props.glComponentInst.props[key] = jsScriptExecutor.evalExpression(propsExpression, {
+            pageProxy: pageProvideProxy
+          })
+        }
       }
     })
   }

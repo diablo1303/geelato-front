@@ -38,17 +38,6 @@ export default {
         "show": true,
         "expanded": true
     }, {
-        "name": "defaultValue",
-        "setterComponentProps": {"defaultValue": 0},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "placeholder": "",
-        "setterComponentName": "AInputNumber",
-        "title": "默认值"
-    }, {
         "name": "allowHalf",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -82,16 +71,6 @@ export default {
         "title": "笑脸分级",
         "setterComponentName": "ASwitch"
     }, {
-        "name": "readonly",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "只读",
-        "setterComponentName": "ASwitch"
-    }, {
         "name": "disabled",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -123,16 +102,6 @@ export default {
         "title": "符号",
         "setterComponentName": "AInput",
         "slotComponentBindTarget": "v-model"
-    }, {
-        "name": "rules",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "title": "验证规则",
-        "setterComponentName": "GlValidateRulesSetter"
     }],
     "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

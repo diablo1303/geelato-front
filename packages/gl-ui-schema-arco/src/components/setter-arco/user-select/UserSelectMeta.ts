@@ -38,16 +38,6 @@ export default {
         "setterComponentName": "AInput",
         "description": "人员选择时，人员id绑定到本组件，人员名称需绑定到另一个组件，在此设置目标组件的唯一标识。",
         "placeholder": "名称组件的唯一标识"
-    }, {
-        "name": "rules",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "title": "验证规则",
-        "setterComponentName": "GlValidateRulesSetter"
     }],
     "actions": [{"name": "change", "description": "", "title": "值改变"}]
 }

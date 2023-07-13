@@ -201,10 +201,13 @@ watch(() => props.enableEdit,
 )
 
 const {loading, setLoading} = useLoading(false);
-const {t} = CheckUtil.isBrowser() ? useI18n() : {
-  t: () => {
-  }
-};
+// const {t} = CheckUtil.isBrowser() ? useI18n() : {
+//   t: () => {
+//   }
+// };
+const t = (str:any) => {
+  return str
+}
 // 渲染展示的数据
 const renderData = ref<Array<object>>([]);
 
@@ -304,7 +307,7 @@ const fetchData = async (readerInfo?: {
 };
 
 const search = (entityReaderParams: Array<EntityReaderParam>) => {
-  console.log('search entityReaderParams:', entityReaderParams)
+  // console.log('search entityReaderParams:', entityReaderParams)
   fetchData({params: entityReaderParams});
 };
 const onPageChange = (pageNo: number) => {
@@ -380,7 +383,7 @@ watch(() => columns.value,
       });
       cloneColumns.value.push(optColumn as Column)
       showColumns.value = cloneDeep(cloneColumns.value);
-      console.log('GlEntityTable > update cloneColumns:', cloneColumns)
+      // console.log('GlEntityTable > update cloneColumns:', cloneColumns)
       emits("updateColumns", showColumns.value);
     },
     {deep: true, immediate: true}
@@ -515,7 +518,7 @@ const deleteRecord = (record: object, rowIndex: number) => {
       deleteDataWhenEnableEdit.value.push({id: record.id, [logicDeleteFieldName]: 1})
     }
   }
-  console.log('deleteDataWhenEnableEdit:', deleteDataWhenEnableEdit)
+  // console.log('deleteDataWhenEnableEdit:', deleteDataWhenEnableEdit)
 }
 // console.log('props.columns:', props.columns)
 // console.log('cloneColumns', cloneColumns, 'columnActions:', props.columnActions)

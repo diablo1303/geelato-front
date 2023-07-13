@@ -58,7 +58,7 @@
                         <GlExpressionSetter
                             v-model="slotProps.item._propsExpressions[property.name]"></GlExpressionSetter>
 <!--                        <GlExpressionSetter-->
-<!--                            v-model="slotProps.item[property.type + 'Expression'][property.name]"></GlExpressionSetter>-->
+<!--                            v-model="slotProps.item[property.type + 'Expressions'][property.name]"></GlExpressionSetter>-->
                       </div>
                     </GlPropertySetter>
                   </template>
@@ -133,7 +133,7 @@
                                     @update="($event:any)=>{slotProps.item.props[property.name]=$event}">
                     <div v-if="propertySetterMeta.enableValueExpress">
                       <GlExpressionSetter
-                          v-model="slotProps.item[propertySetterMeta.type + 'Expression'][propertySetterMeta.name]"></GlExpressionSetter>
+                          v-model="slotProps.item[propertySetterMeta.type + 'Expressions'][propertySetterMeta.name]"></GlExpressionSetter>
                     </div>
                   </GlPropertySetter>
                 </template>

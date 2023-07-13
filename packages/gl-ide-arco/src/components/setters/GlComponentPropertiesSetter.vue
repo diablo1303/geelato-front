@@ -12,8 +12,8 @@
             @change:propertyValue="changePropertyValue(propertySetterMeta.type,propertySetterMeta.name,$event)"
         >
           <div v-if="propertySetterMeta.enableValueExpress">
-            <template v-if="componentModel[propertySetterMeta.type + 'Expression']?true:componentModel[propertySetterMeta.type + 'Expression']={}"></template>
-            <GlExpressionSetter v-model="componentModel[propertySetterMeta.type + 'Expression'][propertySetterMeta.name]"></GlExpressionSetter>
+            <template v-if="componentModel[propertySetterMeta.type + 'Expressions']?true:componentModel[propertySetterMeta.type + 'Expressions']={}"></template>
+            <GlExpressionSetter v-model="componentModel[propertySetterMeta.type + 'Expressions'][propertySetterMeta.name]"></GlExpressionSetter>
             <!--            <a-button size="mini" @click="openValueExpressModal(propertySetterMeta)"-->
             <!--                      :type="componentModel[propertySetterMeta.type+'Expression'][propertySetterMeta.name]?'primary':''"-->
             <!--                      style="padding: 0 0.1em;height: 2.6em;font-weight: 700">{ / }-->
@@ -118,19 +118,19 @@ export default defineComponent({
     //   this.currentOpenModalPropertySetterMeta = propertySetterMeta
     //   this.valueExpressModalVisible = true
     //   // @ts-ignore
-    //   this.valueExpression = this.componentModel[propertySetterMeta.type + 'Expression'][propertySetterMeta.name] || ''
+    //   this.valueExpression = this.componentModel[propertySetterMeta.type + 'Expressions'][propertySetterMeta.name] || ''
     // },
     // clearValueExpress() {
     //   const propertySetterMeta = this.currentOpenModalPropertySetterMeta
     //   this.valueExpression = ''
     //   // @ts-ignore
-    //   this.componentModel[propertySetterMeta.type + 'Expression'][propertySetterMeta.name] = ''
+    //   this.componentModel[propertySetterMeta.type + 'Expressions'][propertySetterMeta.name] = ''
     //   this.valueExpressModalVisible = false
     // },
     // handleOk() {
     //   const propertySetterMeta = this.currentOpenModalPropertySetterMeta
     //   // @ts-ignore
-    //   this.componentModel[propertySetterMeta.type + 'Expression'][propertySetterMeta.name] = this.valueExpression
+    //   this.componentModel[propertySetterMeta.type + 'Expressions'][propertySetterMeta.name] = this.valueExpression
     // },
     // handleCancel() {
     //

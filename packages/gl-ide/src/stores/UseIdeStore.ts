@@ -124,7 +124,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
                 if (foundPanel) {
                     // 从后台服务中加载页面，若无则创建新页面
                     pageStore.loadPage({extendId}).then((res) => {
-                        console.log('loadedPage:', res.data.data)
+                        // console.log('loadedPage:', res.data.data)
                         let page = new Page()
                         if (res.data.data && res.data.data.length > 0) {
                             // 服务端加载的页面

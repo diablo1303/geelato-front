@@ -18,6 +18,7 @@
 </template>
 
 <script lang="ts">
+
 /**
  *  选择实体及字段，构建实体字段对象信息
  */
@@ -25,11 +26,6 @@ export default {
   name: 'GlEntityFieldSelect'
 }
 
-export class EntityFieldSelectResult {
-  appCode: string = ''
-  fieldName: string = ''
-  entityName: string = ''
-}
 </script>
 <script lang="ts" setup>
 /**
@@ -38,13 +34,14 @@ export class EntityFieldSelectResult {
 import {type PropType, ref, watch} from 'vue'
 import type {FieldMeta, EntityLiteMeta} from "@geelato/gl-ui";
 import {useEntityStore} from "@geelato/gl-ide";
+import {BindField} from "@geelato/gl-ui-schema";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: {
-    type: Object as PropType<EntityFieldSelectResult>,
+    type: Object as PropType<BindField>,
     default() {
-      return new EntityFieldSelectResult()
+      return new BindField()
     }
   },
   bindFieldCount: {
@@ -75,14 +72,14 @@ const getLastEntityFieldSelectResult = () => {
   if (lastEntityFieldSelectResultStr) {
     lastEntityFieldSelectResult = JSON.parse(lastEntityFieldSelectResultStr)
   } else {
-    lastEntityFieldSelectResult = new EntityFieldSelectResult()
+    lastEntityFieldSelectResult = new BindField()
   }
   return lastEntityFieldSelectResult
 }
 /**
  *  保存到浏览器存储中
  */
-const saveLastEntityFieldSelectResult = (lastEntityFieldSelectResult: EntityFieldSelectResult) => {
+const saveLastEntityFieldSelectResult = (lastEntityFieldSelectResult: BindField) => {
   localStorage.setItem('lastEntityFieldSelectResult', JSON.stringify(lastEntityFieldSelectResult));
 }
 
@@ -112,8 +109,7 @@ const onEntityChange = (entityName: string) => {
 
 
 // 字段信息
-const mv = ref(new EntityFieldSelectResult())
-mv.value = props.modelValue
+const mv = ref(props.modelValue)
 
 // 检查当前字段选择器是否已配置了实体，若无，则尝试从浏览器存储中获取实体信息
 if (!props.modelValue.entityName) {

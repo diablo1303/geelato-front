@@ -231,7 +231,8 @@ export default {
             "group": "base",
             "type": "props",
             "setterComponentName": "AInputNumber",
-            "title": "列间距",
+            "title": "宽度",
+            "description": "24个单位为一行，一般填写6个单位，即一行4个组件",
             "show": true,
             "expanded": true
         }, {
@@ -454,7 +455,7 @@ export default {
             "placeholder": "单位象素(px)"
         }],
         "setterComponentName": "GlObjectArraySetter",
-        "title": "表格列",
+        "title": "数据列",
         "titleField": "title",
         "enableValueExpress": false
     }],

@@ -6,15 +6,5 @@ export default {
     "title": "树选择",
     "alias": "treeselect",
     "useBy": ["freePage"],
-    "properties": [ {
-        "name": "rules",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "title": "验证规则",
-        "setterComponentName": "GlValidateRulesSetter"
-    }],"actions": [],
+    "properties": [],"actions": [],
 }

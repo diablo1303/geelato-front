@@ -156,11 +156,18 @@ export const useComponentInstTreeData = () => {
         _type: 'object',
         children: [
             {
-                title: '页面参数值是否等于某值',
+                title: '页面参数值等于某值',
                 _code: 'isPageParamEquals',
                 _type: 'boolean',
                 _brackets: '("参数名",参数值)',
                 _description: '页面参数值是否等于某值',
+            },
+            {
+                title: '获取页面参数值',
+                _code: 'getPageParam',
+                _type: 'any',
+                _brackets: '("参数名")',
+                _description: '获取页面参数值',
             }
         ],
         _description: ''
@@ -178,11 +185,12 @@ const text = {
     children: [
         // _brackets 对于方法，需要同时生成参数内容
         {
-            title: '获取字典值',
-            _code: 'dict',
+            title: '键值转换',
+            _code: 'keyValue',
             _type: 'string',
-            _brackets: '(key1,{key1:value1,key2:value2})',
-            _description: '依据字典的键key1，从字典{key1:value1,key2:value2}中获取值value1。',
+            _brackets: '(keys,{key1:value1,key2:value2})',
+            _description: '依据字典的键keys，从键值对{key1:value1,key2:value2}中获取值，keys可为单值或多值，' +
+                '如字符串key1,key2,key3，可为[key1,key2,key3],可为key1。value1可为string，也可为object，当前object时，支持多语言翻译，格式为{cn:value11,en:value12}',
         },
         {
             title: '获取文本长度',
