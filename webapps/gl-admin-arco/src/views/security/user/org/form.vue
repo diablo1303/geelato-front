@@ -47,8 +47,8 @@ import {
   QueryOrgForm,
   queryOrgs,
   QueryOrgUserForm as QueryForm
-} from '@/api/service/security_service';
-import {ListUrlParams, SelectOption} from '@/api/service/base_service';
+} from '@/api/security';
+import {ListUrlParams, SelectOption} from '@/api/base';
 import {defaultOrgOptions} from "@/views/security/user/org/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 

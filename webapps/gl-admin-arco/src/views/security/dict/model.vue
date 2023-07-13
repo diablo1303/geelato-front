@@ -55,8 +55,8 @@
 import {ref} from "vue";
 import {Modal} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
-import {ListUrlParams} from '@/api/service/base_service';
-import {createOrUpdateDict as createOrUpdateForm, getDict as getForm, QueryDictForm as QueryForm} from '@/api/service/security_service'
+import {ListUrlParams} from '@/api/base';
+import {createOrUpdateDict as createOrUpdateForm, getDict as getForm, QueryDictForm as QueryForm} from '@/api/security'
 import {enableStatusOptions} from "@/views/security/dict/item/searchTable";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1});

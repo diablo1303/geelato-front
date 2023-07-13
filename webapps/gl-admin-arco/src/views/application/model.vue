@@ -98,7 +98,7 @@
 import {ref} from "vue";
 import {Modal, Notification} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
-import {ListUrlParams} from '@/api/service/base_service';
+import {ListUrlParams} from '@/api/base';
 import {
   AttachmentForm,
   createOrUpdateApp as createOrUpdateForm,
@@ -107,7 +107,7 @@ import {
   getDownloadUrlById,
   getUploadUrl,
   QueryAppForm as QueryForm
-} from '@/api/service/app_service'
+} from '@/api/application'
 import {watermarkOptions} from "@/views/application/searchTable";
 import {FileItem} from "@arco-design/web-vue/es/upload/interfaces";
 import {iconsJson} from "@geelato/gl-ui";

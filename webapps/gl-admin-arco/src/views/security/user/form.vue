@@ -15,8 +15,8 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import UserModel from '@/views/security/user/model.vue'
-import {QueryUserForm} from "@/api/service/security_service";
-import {ListUrlParams} from '@/api/service/base_service';
+import {QueryUserForm} from "@/api/security";
+import {ListUrlParams} from '@/api/base';
 
 const pageData = ref({formState: 'add', button: true});
 const userModelRef = ref(null);

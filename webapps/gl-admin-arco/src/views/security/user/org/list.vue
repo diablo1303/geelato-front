@@ -159,8 +159,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, defaultOrgOptions} from '@/views/security/user/org/searchTable'
-import {deleteOrgUser as deleteList, FilterOrgUserForm as FilterForm, pageQueryOrgUser as pageQueryList} from '@/api/service/security_service';
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
+import {deleteOrgUser as deleteList, FilterOrgUserForm as FilterForm, pageQueryOrgUser as pageQueryList} from '@/api/security';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 引用其他页面
 import OrgUserForm from '@/views/security/user/org/form.vue';
 

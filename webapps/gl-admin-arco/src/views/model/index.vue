@@ -110,8 +110,8 @@ import {useI18n} from 'vue-i18n';
 import {Modal, Notification} from "@arco-design/web-vue";
 import {IconFolder, IconLink} from '@arco-design/web-vue/es/icon';
 import {TreeNodeData, TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
-import {createOrUpdateModelToTable, QueryConnectForm, queryConnects, QueryTableForm, queryTables, resetModelFormTable} from "@/api/service/model_service";
-import {PageQueryRequest} from "@/api/service/base_service";
+import {createOrUpdateModelToTable, QueryConnectForm, queryConnects, QueryTableForm, queryTables, resetModelFormTable} from "@/api/model";
+import {PageQueryRequest} from "@/api/base";
 // 引用其他页面
 import TableList from '@/views/model/table/list.vue';
 import ColumnList from '@/views/model/column/list.vue';

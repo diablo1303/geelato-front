@@ -154,14 +154,14 @@
           :title="$t('security.user.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
           fixed="right">
         <template #cell="{ record }">
-          <a-button v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">
+          <a-button  size="small" type="text" @click="viewTable(record.id)">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
-          <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
+          <a-button v-show="pageData.formState==='edit'"  size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" status="danger" type="text">
+            <a-button v-show="pageData.formState==='edit'"  size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -186,8 +186,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, sexOptions, sourceOptions, typeOptions} from '@/views/security/user/searchTable'
-import {deleteUser as deleteList, FilterUserForm as FilterForm, pageQueryUser as pageQueryList} from '@/api/service/security_service';
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
+import {deleteUser as deleteList, FilterUserForm as FilterForm, pageQueryUser as pageQueryList} from '@/api/security';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 引用其他页面
 import UserForm from '@/views/security/user/form.vue';
 import UserDrawer from '@/views/security/user/drawer.vue';

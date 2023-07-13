@@ -195,9 +195,9 @@
       <a-col v-if="formData.autoAdd.toString()==='1'" :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.column.index.form.autoName')"
-            :tooltip="$t('model.column.index.form.autoName.tip')"
             :rules="[{required: formData.autoAdd.toString()==='1',message: $t('model.form.rules.match.required')},
             {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')}]"
+            :tooltip="$t('model.column.index.form.autoName.tip')"
             field="autoName">
           <a-input v-model="formData.autoName" :max-length="32" @blur="autoNameBlur($event)"/>
         </a-form-item>
@@ -246,7 +246,7 @@
 import {ref} from 'vue';
 import {Modal} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
-import {ListUrlParams} from '@/api/service/base_service';
+import {ListUrlParams} from '@/api/base';
 import {
   autoIncrementOptions,
   columnSelectType,
@@ -257,12 +257,7 @@ import {
   selectTypeOptions,
   uniquedOptions
 } from "@/views/model/column/searchTable";
-import {
-  ColumnSelectType,
-  createOrUpdateTableColumn as createOrUpdateForm,
-  getTableColumn as getForm,
-  QueryTableColumnForm as QueryForm
-} from '@/api/service/model_service';
+import {ColumnSelectType, createOrUpdateTableColumn as createOrUpdateForm, getTableColumn as getForm, QueryTableColumnForm as QueryForm} from '@/api/model';
 import {formatSeparator, isBlank, isNotBlank, toCamelCase} from '@/utils/strings';
 
 const pageData = ref({

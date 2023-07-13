@@ -58,7 +58,7 @@ import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {Modal, Notification} from '@arco-design/web-vue';
 import useLoading from '@/hooks/loading';
-import {deleteDict, getDict, QueryDictForm, queryDicts} from '@/api/service/security_service';
+import {deleteDict, getDict, QueryDictForm, queryDicts} from '@/api/security';
 import DictModel from '@/views/security/dict/model.vue'
 import DictItemList from '@/views/security/dict/item/list.vue'
 

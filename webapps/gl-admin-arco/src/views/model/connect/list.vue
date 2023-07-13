@@ -105,31 +105,31 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('model.connect.index.form.index')" align="center" data-index="index" :width="80">
+      <a-table-column :title="$t('model.connect.index.form.index')" :width="80" align="center" data-index="index">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :title="$t('model.connect.index.form.dbConnectName')" data-index="dbConnectName" :ellipsis="true" :tooltip="true" :width="150"/>
-      <a-table-column :title="$t('model.connect.index.form.dbSchema')" data-index="dbSchema" :ellipsis="true" :tooltip="true" :width="150"/>
-      <a-table-column :title="$t('model.connect.index.form.dbType')" data-index="dbType" :ellipsis="true" :tooltip="true" :width="120"/>
-      <a-table-column :title="$t('model.connect.index.form.dbName')" data-index="dbName" :ellipsis="true" :tooltip="true" :width="150"/>
-      <a-table-column :title="$t('model.connect.index.form.dbHostnameIp')" data-index="dbHostnameIp" :ellipsis="true" :tooltip="true" :width="150"/>
-      <a-table-column :title="$t('model.connect.index.form.dbPort')" data-index="dbPort" :ellipsis="true" :tooltip="true" :width="100"/>
-      <a-table-column :title="$t('model.connect.index.form.dbUserName')" data-index="dbUserName" :ellipsis="true" :tooltip="true" :width="120"/>
-      <a-table-column :title="$t('model.connect.index.form.enableStatus')" data-index="enableStatus" :ellipsis="true" :tooltip="true" :width="100">
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbConnectName')" :tooltip="true" :width="150" data-index="dbConnectName"/>
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbSchema')" :tooltip="true" :width="150" data-index="dbSchema"/>
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbType')" :tooltip="true" :width="120" data-index="dbType"/>
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbName')" :tooltip="true" :width="150" data-index="dbName"/>
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbHostnameIp')" :tooltip="true" :width="150" data-index="dbHostnameIp"/>
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbPort')" :tooltip="true" :width="100" data-index="dbPort"/>
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbUserName')" :tooltip="true" :width="120" data-index="dbUserName"/>
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.enableStatus')" :tooltip="true" :width="100" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`model.connect.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.connect.index.form.createAt')" data-index="createAt" :width="180"/>
+      <a-table-column :title="$t('model.connect.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('model.connect.index.form.operations')" :width="170"
           align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
+          <a-button size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-permission="['admin']" size="small" status="danger" type="text">
+            <a-button size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -155,8 +155,8 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
-import {deleteConnect as deleteList, pageQueryConnects as pageQueryList, QueryConnectForm as QueryForm} from '@/api/service/model_service';
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
+import {deleteConnect as deleteList, pageQueryConnects as pageQueryList, QueryConnectForm as QueryForm} from '@/api/model';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 import {columns, dbTypeOptions, enableStatusOptions} from '@/views/model/connect/searchTable';
 // 引用其他页面
 import ConnectForm from '@/views/model/connect/form.vue';

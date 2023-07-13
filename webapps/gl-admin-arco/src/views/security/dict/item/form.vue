@@ -13,9 +13,9 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {ListUrlParams} from '@/api/service/base_service';
+import {ListUrlParams} from '@/api/base';
 import DictItemModel from "@/views/security/dict/item/model.vue";
-import {QueryDictForm as QueryModel} from '@/api/service/security_service';
+import {QueryDictForm as QueryModel} from '@/api/security';
 
 const pageData = ref({
   formState: 'add', button: true, okBack: (data: QueryModel) => {

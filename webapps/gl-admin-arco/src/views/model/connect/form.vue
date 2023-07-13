@@ -14,8 +14,8 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {QueryConnectForm as QueryModel} from '@/api/service/model_service';
-import {ListUrlParams} from '@/api/service/base_service';
+import {QueryConnectForm as QueryModel} from '@/api/model';
+import {ListUrlParams} from '@/api/base';
 import ConnectModel from "@/views/model/connect/model.vue";
 
 const pageData = ref({formState: 'add', button: true});

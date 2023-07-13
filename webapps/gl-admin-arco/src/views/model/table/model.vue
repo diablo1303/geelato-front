@@ -168,8 +168,8 @@ import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {Modal, Notification} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
-import {ListUrlParams} from '@/api/service/base_service';
-import {createOrUpdateTable as createOrUpdateForm, getTable as getForm, QueryTableForm as QueryForm, validateMetaView} from '@/api/service/model_service';
+import {ListUrlParams} from '@/api/base';
+import {createOrUpdateTable as createOrUpdateForm, getTable as getForm, QueryTableForm as QueryForm, validateMetaView} from '@/api/model';
 import {enableStatusOptions, linkedOptions, tableTypeOptions} from "@/views/model/table/searchTable";
 import MonacoEditor from '@/components/monaco/index.vue';
 

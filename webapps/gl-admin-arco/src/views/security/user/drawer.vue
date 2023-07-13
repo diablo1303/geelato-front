@@ -48,7 +48,7 @@
 <script lang="ts" setup>
 import {ref, shallowRef} from "vue";
 import UserModel from '@/views/security/user/model.vue'
-import {ListUrlParams, PageQueryRequest, SelectOption} from '@/api/service/base_service';
+import {ListUrlParams, PageQueryRequest, SelectOption} from '@/api/base';
 import {
   deleteOrgUser as deleteList,
   insertOrgUser as createOrUpdateForm,
@@ -57,7 +57,7 @@ import {
   QueryOrgUserForm,
   queryOrgUsers,
   QueryUserForm
-} from "@/api/service/security_service";
+} from "@/api/security";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 
 const pageData = ref({formState: 'add', button: true, orgId: '', userId: ''});

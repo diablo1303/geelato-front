@@ -131,11 +131,11 @@
           v-show="pageData.formState==='edit'" :title="$t('model.foreign.index.form.operations')"
           :width="170" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
+          <a-button  size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-permission="['admin']" size="small" status="danger" type="text">
+            <a-button  size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -161,8 +161,8 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
-import {deleteTableForeign as deleteList, pageQueryTableForeigns as pageQueryList} from '@/api/service/model_service';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
+import {deleteTableForeign as deleteList, pageQueryTableForeigns as pageQueryList} from '@/api/model';
 import {columns, enableStatusOptions} from '@/views/model/foreign/searchTable';
 // 引用其他页面
 import ForeignForm from '@/views/model/foreign/form.vue';

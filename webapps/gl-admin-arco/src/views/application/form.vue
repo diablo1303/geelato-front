@@ -13,8 +13,8 @@
 
 <script lang="ts" setup>
 import {ref, shallowRef} from "vue";
-import {ListUrlParams} from '@/api/service/base_service';
-import {QueryAppForm as QueryModel} from "@/api/service/app_service";
+import {ListUrlParams} from '@/api/base';
+import {QueryAppForm as QueryModel} from "@/api/application";
 import AppModel from "@/views/application/model.vue";
 
 const pageData = ref({

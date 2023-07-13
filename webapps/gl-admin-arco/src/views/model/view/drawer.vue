@@ -14,8 +14,8 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {QueryViewForm as QueryModel} from '@/api/service/model_service';
-import {ListUrlParams} from '@/api/service/base_service';
+import {QueryViewForm as QueryModel} from '@/api/model';
+import {ListUrlParams} from '@/api/base';
 import ViewModel from "@/views/model/view/model.vue";
 
 const pageData = ref({

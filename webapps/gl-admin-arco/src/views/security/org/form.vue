@@ -85,8 +85,8 @@ import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {Modal} from "@arco-design/web-vue";
 import {categoryOptions, statusOptions, typeOptions} from "@/views/security/org/searchTable";
-import {createOrUpdateOrg as createOrUpdateForm, getOrg as getForm, QueryOrgForm, QueryOrgForm as QueryForm, queryOrgs} from '@/api/service/security_service'
-import {ListUrlParams, SelectOption} from '@/api/service/base_service';
+import {createOrUpdateOrg as createOrUpdateForm, getOrg as getForm, QueryOrgForm, QueryOrgForm as QueryForm, queryOrgs} from '@/api/security'
+import {ListUrlParams, SelectOption} from '@/api/base';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 
 const pageData = ref({formState: 'add', button: true, orgName: ''});

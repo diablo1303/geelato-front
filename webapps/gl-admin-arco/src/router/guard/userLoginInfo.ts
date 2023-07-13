@@ -1,8 +1,7 @@
-import type { Router, LocationQueryRaw } from 'vue-router';
+import type {LocationQueryRaw, Router} from 'vue-router';
 import NProgress from 'nprogress'; // progress bar
-
-import { useUserStore } from '@/store';
-import { isLogin } from '@/utils/auth';
+import {useUserStore} from '@/store';
+import {isLogin} from '@/utils/auth';
 
 export default function setupUserLoginInfoGuard(router: Router) {
   router.beforeEach(async (to, from, next) => {
@@ -27,7 +26,7 @@ export default function setupUserLoginInfoGuard(router: Router) {
         }
       }
     } else {
-      if (to.name === 'login') {
+      if (['login', 'resetPwd'].includes(to.name as string)) {
         next();
         return;
       }

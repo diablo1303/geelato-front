@@ -161,15 +161,15 @@
           :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-tooltip :content="$t('searchTable.tables.operations.alter.warning')">
-            <a-button v-permission="['admin']" size="small" type="text" @click="alterTable(record.id)">
+            <a-button  size="small" type="text" @click="alterTable(record.id)">
               {{ $t('searchTable.tables.operations.alter') }}
             </a-button>
           </a-tooltip>
-          <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
+          <a-button  size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-permission="['admin']" size="small" status="danger" type="text">
+            <a-button  size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -195,8 +195,8 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
-import {deleteTable as deleteList, pageQueryTables as pageQueryList, QueryTableForm as QueryForm} from '@/api/service/model_service';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
+import {deleteTable as deleteList, pageQueryTables as pageQueryList, QueryTableForm as QueryForm} from '@/api/model';
 import {columns, enableStatusOptions, tableTypeOptions} from '@/views/model/table/searchTable';
 // 引用其他页面
 import TableForm from '@/views/model/table/form.vue';

@@ -15,8 +15,8 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {ListUrlParams} from '@/api/service/base_service';
-import {QueryDictForm as QueryModel} from "@/api/service/security_service";
+import {ListUrlParams} from '@/api/base';
+import {QueryDictForm as QueryModel} from "@/api/security";
 import DictModel from "@/views/security/dict/model.vue";
 
 

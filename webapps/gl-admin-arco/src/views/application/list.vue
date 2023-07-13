@@ -113,7 +113,7 @@
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.logo')" :tooltip="true" :width="80" data-index="logo" align="center">
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.logo')" :tooltip="true" :width="80" align="center" data-index="logo">
         <template #cell="{record}">
           <img v-show="record.logo" :src="getDownloadUrlById(record.logo)" alt="logo" style="width: 25px;height: 25px"/>
         </template>
@@ -137,7 +137,7 @@
       <a-table-column :ellipsis="true" :title="$t('application.app.list.description')" :tooltip="true" :width="200" data-index="description"/>
       <a-table-column :title="$t('application.app.list.operations')" :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-dropdown v-permission="['admin']" trigger="hover" position="br">
+          <a-dropdown position="br" trigger="hover">
             <a-button size="small" type="text">
               {{ $t('application.app.list.operations.enter') }}
             </a-button>
@@ -147,11 +147,11 @@
                   {{ $t('application.app.list.operations.enter.index') }}
                 </a-button>
               </a-doption>
-<!--              <a-doption>
-                <a-button size="small" type="text" @click="enterTable(record,'manage')">
-                  {{ $t('application.app.list.operations.enter.manage') }}
-                </a-button>
-              </a-doption>-->
+              <!--              <a-doption>
+                              <a-button size="small" type="text" @click="enterTable(record,'manage')">
+                                {{ $t('application.app.list.operations.enter.manage') }}
+                              </a-button>
+                            </a-doption>-->
               <a-doption>
                 <a-button size="small" type="text" @click="enterTable(record,'design')">
                   {{ $t('application.app.list.operations.enter.design') }}
@@ -159,14 +159,14 @@
               </a-doption>
             </template>
           </a-dropdown>
-          <!-- <a-button v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">
+          <!-- <a-button  size="small" type="text" @click="viewTable(record.id)">
                       {{ $t('application.app.list.operations.view') }}
                     </a-button>-->
-          <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
+          <a-button size="small" type="text" @click="editTable(record.id)">
             {{ $t('application.app.list.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('application.app.list.operations.delete.popContent')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-permission="['admin']" size="small" status="danger" type="text">
+            <a-button size="small" status="danger" type="text">
               {{ $t('application.app.list.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -188,14 +188,14 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 import {
   deleteApp as deleteList,
   FilterAppForm as FilterForm,
   getDownloadUrlById,
   pageQueryApps as pageQueryList,
   QueryAppForm as QueryForm
-} from '@/api/service/app_service'
+} from '@/api/application'
 import {columns, watermarkOptions} from "@/views/application/searchTable";
 import {Notification} from "@arco-design/web-vue";
 // 引用其他页面

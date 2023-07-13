@@ -11,9 +11,9 @@
         @submit="handleSubmit"
     >
       <a-form-item
-          field="username"
           :rules="[{ required: true, message: $t('login.form.userName.errMsg') }]"
           :validate-trigger="['change', 'blur']"
+          field="username"
           hide-label
       >
         <a-input
@@ -26,9 +26,9 @@
         </a-input>
       </a-form-item>
       <a-form-item
-          field="password"
           :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
           :validate-trigger="['change', 'blur']"
+          field="password"
           hide-label
       >
         <a-input-password
@@ -44,23 +44,24 @@
       <a-space :size="16" direction="vertical">
         <div class="login-form-password-actions">
           <a-checkbox
-              checked="rememberPassword"
               :model-value="loginConfig.rememberPassword"
+              checked="rememberPassword"
               @change="setRememberPassword as any"
           >
             {{ $t('login.form.rememberPassword') }}
           </a-checkbox>
-          <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
+          <a-link @click="resetPwd($event)">{{ $t('login.form.forgetPassword') }}</a-link>
         </div>
-        <a-button type="primary" html-type="submit" long :loading="loading">
+        <a-button :loading="loading" html-type="submit" long type="primary">
           {{ $t('login.form.login') }}
         </a-button>
-        <a-button type="text" long class="login-form-register-btn">
+        <a-button class="login-form-register-btn" long type="text">
           {{ $t('login.form.register') }}
         </a-button>
       </a-space>
     </a-form>
   </div>
+
 </template>
 
 <script lang="ts" setup>
@@ -137,6 +138,9 @@ const handleSubmit = async ({errors, values,}: {
 const setRememberPassword = (value: boolean) => {
   loginConfig.value.rememberPassword = value;
 };
+const resetPwd = (ev?: MouseEvent) => {
+  window.open(router.resolve({name: "resetPwd"}).href, "_blank");
+}
 </script>
 
 <style lang="less" scoped>

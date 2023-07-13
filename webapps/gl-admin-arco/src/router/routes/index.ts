@@ -1,9 +1,8 @@
 import type {RouteRecordNormalized} from 'vue-router';
 import {DEFAULT_LAYOUT} from "@/router/routes/base";
-import globalconfig from "@/config/globalconfig.json";
 import {getMenus, QueryMenuForm} from "@/api/user";
+import globalConfig from '@/config/globalConfig.json';
 import {DEFAULT_ROUTE, URL_PREFIX} from "@/router/constants";
-import {getToken} from "@/utils/auth";
 
 const modules = import.meta.glob('./modules/*.ts', {eager: true});
 const externalModules = import.meta.glob('./externalModules/*.ts', {eager: true,});
@@ -142,7 +141,7 @@ export const formatAppModules = async (result: RouteRecordNormalized[]) => {
   try {
     const {data} = await getMenus({flag: "menuItem", ...urlParams} as unknown as QueryMenuForm);
     // @ts-ignore
-    const menuForms = data.code === globalconfig.interceptorCode ? data.data : data;
+    const menuForms = data.code === globalConfig.interceptorCode ? data.data : data;
     const folderOptions: RouteRecordNormalized[] = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const item of menuForms) {

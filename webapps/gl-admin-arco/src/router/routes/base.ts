@@ -1,6 +1,5 @@
 import type {RouteRecordRaw} from 'vue-router';
 import {REDIRECT_ROUTE_NAME, URL_PREFIX} from '@/router/constants';
-import {ref} from "vue/dist/vue";
 
 export const DEFAULT_LAYOUT = () => import('@/layout/default-layout.vue');
 
@@ -50,4 +49,13 @@ export const APP_PAGE_MAIN: RouteRecordRaw = {
       },
     },
   ],
+};
+
+export const RESET_PWD_MAIN: RouteRecordRaw = {
+  path: `${URL_PREFIX}/resetPwd`,
+  name: `resetPwd`,
+  component: () => import('@/views/reset/index.vue'),
+  meta: {
+    requiresAuth: false,
+  },
 };

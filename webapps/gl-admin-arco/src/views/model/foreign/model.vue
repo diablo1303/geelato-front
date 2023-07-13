@@ -131,7 +131,7 @@ import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {Modal} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
-import {ListUrlParams, PageQueryRequest} from '@/api/service/base_service';
+import {ListUrlParams, PageQueryRequest} from '@/api/base';
 import {
   createOrUpdateTableForeign as createOrUpdateForm,
   getTableForeign as getForm,
@@ -140,7 +140,7 @@ import {
   QueryTableForeignForm as QueryForm,
   QueryTableForm,
   queryTables
-} from '@/api/service/model_service';
+} from '@/api/model';
 import {enableStatusOptions} from "@/views/model/foreign/searchTable";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1, mainTable: ''});

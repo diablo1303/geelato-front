@@ -32,8 +32,8 @@
 
 <script lang="ts" setup>
 import {ref, shallowRef} from "vue";
-import {QueryUserForm} from "@/api/service/security_service";
-import {ListUrlParams} from '@/api/service/base_service';
+import {QueryUserForm} from "@/api/security";
+import {ListUrlParams} from '@/api/base';
 import UserModel from '@/views/security/user/model.vue'
 import OrgUserList from '@/views/security/user/org/list.vue'
 

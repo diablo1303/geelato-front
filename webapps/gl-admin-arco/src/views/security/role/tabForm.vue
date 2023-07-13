@@ -47,8 +47,8 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {QueryRoleForm} from "@/api/service/security_service";
-import {ListUrlParams} from '@/api/service/base_service';
+import {QueryRoleForm} from "@/api/security";
+import {ListUrlParams} from '@/api/base';
 import RoleModel from '@/views/security/role/model.vue'
 import RoleAppList from '@/views/security/role/app/list.vue'
 import RolePermissionList from '@/views/security/role/permission/list.vue'

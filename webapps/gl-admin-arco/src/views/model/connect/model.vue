@@ -106,8 +106,8 @@
 import {ref} from 'vue';
 import {Modal} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
-import {ListUrlParams} from '@/api/service/base_service';
-import {createOrUpdateConnect as createOrUpdateForm, getConnect as getForm, jdbcConnect, QueryConnectForm as QueryForm} from '@/api/service/model_service';
+import {ListUrlParams} from '@/api/base';
+import {createOrUpdateConnect as createOrUpdateForm, getConnect as getForm, jdbcConnect, QueryConnectForm as QueryForm} from '@/api/model';
 import {dbTypeOptions, enableStatusOptions} from "@/views/model/connect/searchTable";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1});

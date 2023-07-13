@@ -68,8 +68,8 @@
 <script lang="ts" setup>
 import {reactive, ref} from "vue";
 import {Notification} from "@arco-design/web-vue";
-import {ListUrlParams, PageQueryRequest} from '@/api/service/base_service';
-import {batchCreateOrUpdateDictItem, pageQueryDictItem as pageQueryList, QueryDictForm as QueryModel, QueryDictItemForm} from "@/api/service/security_service";
+import {ListUrlParams, PageQueryRequest} from '@/api/base';
+import {batchCreateOrUpdateDictItem, pageQueryDictItem as pageQueryList, QueryDictForm as QueryModel, QueryDictItemForm} from "@/api/security";
 import {TableData} from "@arco-design/web-vue/es/table/interface";
 import {enableStatusOptions} from "@/views/security/dict/item/searchTable";
 

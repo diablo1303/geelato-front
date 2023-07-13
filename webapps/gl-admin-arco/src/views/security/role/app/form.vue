@@ -35,8 +35,8 @@ import {
   QueryAppForm as QuerySelectForm,
   queryApps as querySelectOptions,
   QueryRoleAppForm as QueryForm
-} from '@/api/service/security_service';
-import {ListUrlParams} from '@/api/service/base_service';
+} from '@/api/security';
+import {ListUrlParams} from '@/api/base';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 
 const pageData = ref({formState: 'add', button: true});

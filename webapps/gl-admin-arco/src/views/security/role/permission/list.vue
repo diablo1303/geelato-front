@@ -114,14 +114,14 @@
                       align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">
-          <a-button v-show="!pageData.isModal" v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">
+          <a-button v-show="!pageData.isModal"  size="small" type="text" @click="viewTable(record.id)">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
-          <a-button v-show="pageData.formState==='edit'&&!pageData.isModal" v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
+          <a-button v-show="pageData.formState==='edit'&&!pageData.isModal"  size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'" v-permission="['admin']" size="small" status="danger" type="text">
+            <a-button v-show="pageData.formState==='edit'"  size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -148,8 +148,8 @@ import {
   deleteRolePermission as deleteList,
   FilterRolePermissionForm as FilterForm,
   pageQueryRolePermission as pageQueryList
-} from '@/api/service/security_service';
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
+} from '@/api/security';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 引用其他页面
 import RolePermissionForm from '@/views/security/role/permission/form.vue';
 

@@ -14,8 +14,8 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {QueryTableColumnForm as QueryModel} from '@/api/service/model_service';
-import {ListUrlParams} from '@/api/service/base_service';
+import {QueryTableColumnForm as QueryModel} from '@/api/model';
+import {ListUrlParams} from '@/api/base';
 import ColumnModel from "@/views/model/column/model.vue";
 
 const pageData = ref({formState: 'add', button: true});

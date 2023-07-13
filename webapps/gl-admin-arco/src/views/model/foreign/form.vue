@@ -14,8 +14,8 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {QueryTableForeignForm as QueryModel} from '@/api/service/model_service';
-import {ListUrlParams} from '@/api/service/base_service';
+import {QueryTableForeignForm as QueryModel} from '@/api/model';
+import {ListUrlParams} from '@/api/base';
 import ForeignModel from "@/views/model/foreign/model.vue";
 
 const pageData = ref({formState: 'add', button: true});

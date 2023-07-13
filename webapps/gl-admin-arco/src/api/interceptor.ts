@@ -1,9 +1,9 @@
+import type {AxiosRequestConfig, AxiosResponse} from 'axios';
 import axios from 'axios';
-import type { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Message, Modal } from '@arco-design/web-vue';
-import { useUserStore } from '@/store';
-import globalconfig from '@/config/globalconfig.json';
-import { getToken } from '@/utils/auth';
+import {Message, Modal} from '@arco-design/web-vue';
+import {useUserStore} from '@/store';
+import globalConfig from '@/config/globalConfig.json';
+import {getToken} from '@/utils/auth';
 
 export interface HttpResponse<T = unknown> {
   status: number;
@@ -41,7 +41,7 @@ axios.interceptors.response.use(
   (response: AxiosResponse<HttpResponse>) => {
     const res = response.data;
     // if the custom code is not 20000, it is judged as an error.
-    if (res.code !==  globalconfig.interceptorCode) {
+    if (res.code !== globalConfig.interceptorCode) {
       Message.error({
         content: res.msg || 'Error',
         duration: 5 * 1000,

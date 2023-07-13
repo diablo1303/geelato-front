@@ -1,7 +1,8 @@
 import axios from 'axios';
 import {UserState} from '@/store/modules/user/types';
 import {RouteRecordNormalized} from "vue-router";
-import {QueryAppForm} from "@/api/service/app_service";
+import {QueryAppForm} from "@/api/application";
+import {QueryResult} from "@/api/base";
 
 const urlOrigin = import.meta.env.VITE_API_BASE_URL;
 
@@ -65,4 +66,22 @@ export function getApp(id: string) {
  */
 export function getMenus(params: QueryMenuForm) {
   return axios.post<QueryMenuForm[]>(`${urlOrigin}/api/user/menu`, params);
+}
+
+export interface ResetPasswordForm {
+  validType: string;
+  prefix: string;
+  validBox: string;
+  userId: string;
+  authCode: string;
+  password: string;
+  rPassword: string;
+}
+
+export function resetPwdValid(params: ResetPasswordForm) {
+  return axios.post<QueryResult>(`/api/user/resetPwdValid`, params);
+}
+
+export function resetPwdEdit(params: ResetPasswordForm) {
+  return axios.post<QueryResult>(`/api/user/resetPwd`, params);
 }

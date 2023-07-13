@@ -2,7 +2,7 @@ import {computed} from 'vue';
 import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import {SelectOptionData, SelectOptionGroup} from "@arco-design/web-vue/es/select/interface";
 import {RadioOption} from "@arco-design/web-vue/es/radio/interface";
-import {ColumnSelectType, getSelectTypes, queryDefaultMetas} from "@/api/service/model_service";
+import {ColumnSelectType, getSelectTypes, queryDefaultMetas} from "@/api/model";
 
 const columns = computed<TableColumnData[]>(() => [
   {

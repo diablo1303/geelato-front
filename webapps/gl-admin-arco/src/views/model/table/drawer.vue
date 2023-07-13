@@ -14,8 +14,8 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {QueryTableForm as QueryModel} from '@/api/service/model_service';
-import {ListUrlParams} from '@/api/service/base_service';
+import {QueryTableForm as QueryModel} from '@/api/model';
+import {ListUrlParams} from '@/api/base';
 import TableModel from "@/views/model/table/model.vue";
 
 const pageData = ref({

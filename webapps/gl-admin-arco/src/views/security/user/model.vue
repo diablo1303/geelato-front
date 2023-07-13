@@ -153,8 +153,8 @@ import {
   QueryOrgForm,
   queryOrgs,
   QueryUserForm as QueryForm,
-} from '@/api/service/security_service';
-import {ListUrlParams, SelectOption} from '@/api/service/base_service';
+} from '@/api/security';
+import {ListUrlParams, SelectOption} from '@/api/base';
 import {sexOptions, sourceOptions, typeOptions} from "@/views/security/user/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 

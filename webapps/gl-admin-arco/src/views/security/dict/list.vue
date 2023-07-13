@@ -122,14 +122,14 @@
           v-show="pageData.formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="230" align="center"
           data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-button v-permission="['admin']" size="small" type="text" @click="configTable(record.id)">
+          <a-button  size="small" type="text" @click="configTable(record.id)">
             {{ $t('searchTable.columns.operations.config') }}
           </a-button>
-          <a-button v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
+          <a-button  size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-permission="['admin']" size="small" status="danger" type="text">
+            <a-button  size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -153,13 +153,13 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, enableStatusOptions} from "@/views/security/dict/searchTable";
-import {deleteDict as deleteList, FilterDictForm as FilterForm, pageQueryDict as pageQueryList,} from '@/api/service/security_service'
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
+import {deleteDict as deleteList, FilterDictForm as FilterForm, pageQueryDict as pageQueryList,} from '@/api/security'
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 引用其他页面
 import DictForm from "@/views/security/dict/form.vue";
 import DictDrawer from "@/views/security/dict/drawer.vue";
 import DictItemLocker from "@/views/security/dict/item/locker.vue";
-import {QueryConnectForm as QueryForm} from "@/api/service/model_service";
+import {QueryConnectForm as QueryForm} from "@/api/model";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };

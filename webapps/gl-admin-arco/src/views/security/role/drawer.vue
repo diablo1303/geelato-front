@@ -42,8 +42,8 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
-import {QueryAppForm, queryApps, QueryOrgUserForm, QueryUserForm} from "@/api/service/security_service";
-import {ListUrlParams, SelectOption} from '@/api/service/base_service';
+import {QueryAppForm, queryApps, QueryOrgUserForm, QueryUserForm} from "@/api/security";
+import {ListUrlParams, SelectOption} from '@/api/base';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import RoleModel from "@/views/security/role/model.vue";
 

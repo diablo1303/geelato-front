@@ -147,32 +147,32 @@
       <a-table-column v-show="pageData.formState==='edit'" :title="$t('model.view.index.form.operations')" :width="255" align="center"
                       data-index="operations" fixed="right">
         <template #cell="{ record,isDefault=record.viewType==='default'}">
-          <a-button v-if="isDefault" v-permission="['admin']" size="small" type="text" @click="viewTable(record.id)">
+          <a-button v-if="isDefault"  size="small" type="text" @click="viewTable(record.id)">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
-          <a-button v-else v-permission="['admin']" size="small" type="text" @click="editTable(record.id)">
+          <a-button v-else  size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <!--    发布      -->
           <a-tooltip v-if="!pageData.tableSync" :content="$t('model.view.index.form.operations.noRel')">
-            <a-button v-permission="['admin']" class="button-disabled" size="small" type="text">
+            <a-button  class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.release') }}
             </a-button>
           </a-tooltip>
           <a-popconfirm v-else :content="$t('searchTable.columns.operations.releaseMsg')" position="tr" type="info" @ok="releaseTable(record)">
-            <a-button v-permission="['admin']" size="small" type="text">
+            <a-button  size="small" type="text">
               {{ $t('searchTable.columns.operations.release') }}
             </a-button>
           </a-popconfirm>
           <!--    删除      -->
           <a-tooltip v-if="isDefault" :content="$t('model.column.index.form.operations.disabled')">
-            <a-button v-permission="['admin']" class="button-disabled" size="small" type="text">
+            <a-button  class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-tooltip>
           <a-popconfirm v-else :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
                         @ok="deleteTable(record.id)">
-            <a-button v-permission="['admin']" size="small" status="danger" type="text">
+            <a-button  size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -198,7 +198,7 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/service/base_service';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 import {
   deleteView as deleteList,
   FilterViewForm as FilterForm,
@@ -207,7 +207,7 @@ import {
   QueryViewForm as QueryForm,
   releaseMetaView,
   resetDefaultView
-} from '@/api/service/model_service';
+} from '@/api/model';
 import {columns, enableStatusOptions, viewTypeOptions} from '@/views/model/view/searchTable';
 // 引用其他页面
 import ViewForm from '@/views/model/view/form.vue';

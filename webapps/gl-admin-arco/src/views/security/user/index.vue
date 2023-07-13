@@ -52,7 +52,7 @@ import {useI18n} from 'vue-i18n';
 import {Notification} from "@arco-design/web-vue";
 import {TreeNodeData, TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
 import UserList from '@/views/security/user/list.vue';
-import {QueryOrgForm, queryOrgs} from '@/api/service/security_service';
+import {QueryOrgForm, queryOrgs} from '@/api/security';
 
 // 国际化
 const {t} = useI18n();

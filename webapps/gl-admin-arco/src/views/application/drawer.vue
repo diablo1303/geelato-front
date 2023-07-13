@@ -15,9 +15,9 @@
 
 <script lang="ts" setup>
 import {ref, shallowRef} from "vue";
-import {ListUrlParams} from '@/api/service/base_service';
+import {ListUrlParams} from '@/api/base';
 import AppModel from "@/views/application/model.vue";
-import {QueryAppForm as QueryModel} from "@/api/service/app_service";
+import {QueryAppForm as QueryModel} from "@/api/application";
 
 const pageData = ref({
   formState: 'add', button: true, okBack: (data: QueryModel) => {

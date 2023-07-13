@@ -15,8 +15,8 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import RoleModel from '@/views/security/role/model.vue'
-import {QueryRoleForm} from "@/api/service/security_service";
-import {ListUrlParams} from '@/api/service/base_service';
+import {QueryRoleForm} from "@/api/security";
+import {ListUrlParams} from '@/api/base';
 
 const pageData = ref({formState: 'add', button: true});
 const roleModelRef = ref(null);

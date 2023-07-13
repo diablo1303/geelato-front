@@ -97,7 +97,7 @@ import {computed, ref, shallowRef} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {Modal, Notification, TreeNodeData} from "@arco-design/web-vue";
 import {TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
-import {deleteDict, QueryDictForm as QueryForm, queryDicts} from '@/api/service/security_service';
+import {deleteDict, QueryDictForm as QueryForm, queryDicts} from '@/api/security';
 import DictList from '@/views/security/dict/list.vue';
 import DictDrawer from "@/views/security/dict/drawer.vue";
 import DictItemList from '@/views/security/dict/item/list.vue';
