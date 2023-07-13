@@ -1,6 +1,6 @@
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { Message } from '@arco-design/web-vue';
+import {computed} from 'vue';
+import {useI18n} from 'vue-i18n';
+import {Message} from '@arco-design/web-vue';
 
 export default function useLocale() {
   const i18 = useI18n();

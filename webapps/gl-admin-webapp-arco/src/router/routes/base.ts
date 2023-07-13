@@ -1,5 +1,5 @@
-import type { RouteRecordRaw } from 'vue-router';
-import { REDIRECT_ROUTE_NAME } from '@/router/constants';
+import type {RouteRecordRaw} from 'vue-router';
+import {REDIRECT_ROUTE_NAME, URL_PREFIX} from '@/router/constants';
 
 export const DEFAULT_LAYOUT = () => import('@/layout/default-layout.vue');
 
@@ -28,4 +28,34 @@ export const NOT_FOUND_ROUTE: RouteRecordRaw = {
   path: '/:pathMatch(.*)*',
   name: 'notFound',
   component: () => import('@/views/not-found/index.vue'),
+};
+
+export const APP_PAGE_MAIN: RouteRecordRaw = {
+  path: `${URL_PREFIX}/:tenantCode/:appId/page`,
+  name: 'pageWrapper',
+  component: DEFAULT_LAYOUT,
+  meta: {
+    requiresAuth: true,
+    hideInMenu: true,
+  },
+  children: [
+    {
+      path: 'preview/:pageId',
+      name: 'page',
+      component: () => import('@/views/page/PageRuntime.vue'),
+      meta: {
+        requiresAuth: true,
+        hideInMenu: true,
+      },
+    },
+  ],
+};
+
+export const RESET_PWD_MAIN: RouteRecordRaw = {
+  path: `${URL_PREFIX}/forget`,
+  name: `forget`,
+  component: () => import('@/views/reset/index.vue'),
+  meta: {
+    requiresAuth: false,
+  },
 };

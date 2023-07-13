@@ -1,7 +1,7 @@
-import { useRouter } from 'vue-router';
-import { Message } from '@arco-design/web-vue';
+import {useRouter} from 'vue-router';
+import {Message} from '@arco-design/web-vue';
 
-import { useUserStore } from '@/store';
+import {useUserStore} from '@/store';
 
 export default function useUser() {
   const router = useRouter();
@@ -12,10 +12,8 @@ export default function useUser() {
     Message.success('登出成功');
     router.push({
       name: logoutTo && typeof logoutTo === 'string' ? logoutTo : 'login',
-      query: {
-        ...router.currentRoute.value.query,
-        redirect: currentRoute.name as string,
-      },
+      params: currentRoute.params,
+      query: {redirect: currentRoute.name as string, ...router.currentRoute.value.params},
     });
   };
   return {

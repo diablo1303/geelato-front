@@ -1,4 +1,4 @@
-import { App } from 'vue';
+import {App} from 'vue';
 import permission from './permission';
 
 export default {

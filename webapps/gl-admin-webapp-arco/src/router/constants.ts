@@ -1,6 +1,8 @@
+export const URL_PREFIX = import.meta.env.VITE_WEB_PREFIX_URL;
+
 export const WHITE_LIST = [
-  { name: 'notFound', children: [] },
-  { name: 'login', children: [] },
+  {name: 'notFound', children: []},
+  {name: 'login', children: []},
 ];
 
 export const NOT_FOUND = {
@@ -9,10 +11,4 @@ export const NOT_FOUND = {
 
 export const REDIRECT_ROUTE_NAME = 'Redirect';
 
-export const DEFAULT_ROUTE_NAME = 'Workplace';
-
-export const DEFAULT_ROUTE = {
-  title: 'menu.dashboard.workplace',
-  name: DEFAULT_ROUTE_NAME,
-  fullPath: '/dashboard/workplace',
-};
+export const DEFAULT_ROUTE = {title: '默认页面', name: '', fullPath: '', params: {}};

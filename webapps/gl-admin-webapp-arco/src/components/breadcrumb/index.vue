@@ -1,7 +1,7 @@
 <template>
   <a-breadcrumb class="container-breadcrumb">
     <a-breadcrumb-item>
-      <icon-apps />
+      <icon-apps/>
     </a-breadcrumb-item>
     <a-breadcrumb-item v-for="item in items" :key="item">
       {{ $t(item) }}
@@ -10,26 +10,28 @@
 </template>
 
 <script lang="ts" setup>
-  import { PropType } from 'vue';
+import {PropType} from 'vue';
 
-  defineProps({
-    items: {
-      type: Array as PropType<string[]>,
-      default() {
-        return [];
-      },
+defineProps({
+  items: {
+    type: Array as PropType<string[]>,
+    default() {
+      return [];
     },
-  });
+  },
+});
 </script>
 
-<style scoped lang="less">
-  .container-breadcrumb {
-    margin: 16px 0;
-    :deep(.arco-breadcrumb-item) {
-      color: rgb(var(--gray-6));
-      &:last-child {
-        color: rgb(var(--gray-8));
-      }
+<style lang="less" scoped>
+.container-breadcrumb {
+  margin: 16px 0;
+
+  :deep(.arco-breadcrumb-item) {
+    color: rgb(var(--gray-6));
+
+    &:last-child {
+      color: rgb(var(--gray-8));
     }
   }
+}
 </style>

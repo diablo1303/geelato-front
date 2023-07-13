@@ -1,15 +1,11 @@
-import type { RouteLocationNormalized } from 'vue-router';
-import { defineStore } from 'pinia';
-import {
-  DEFAULT_ROUTE,
-  DEFAULT_ROUTE_NAME,
-  REDIRECT_ROUTE_NAME,
-} from '@/router/constants';
-import { isString } from '@/utils/is';
-import { TabBarState, TagProps } from './types';
+import type {RouteLocationNormalized} from 'vue-router';
+import {defineStore} from 'pinia';
+import {DEFAULT_ROUTE, REDIRECT_ROUTE_NAME,} from '@/router/constants';
+import {isString} from '@/utils/is';
+import {TabBarState, TagProps} from './types';
 
 const formatTag = (route: RouteLocationNormalized): TagProps => {
-  const { name, meta, fullPath, query } = route;
+  const {name, meta, fullPath, query} = route;
   return {
     title: meta.locale || '',
     name: String(name),
@@ -23,7 +19,7 @@ const BAN_LIST = [REDIRECT_ROUTE_NAME];
 
 const useAppStore = defineStore('tabBar', {
   state: (): TabBarState => ({
-    cacheTabList: new Set([DEFAULT_ROUTE_NAME]),
+    cacheTabList: new Set([DEFAULT_ROUTE.name]),
     tagList: [DEFAULT_ROUTE],
   }),
 
@@ -66,7 +62,7 @@ const useAppStore = defineStore('tabBar', {
     resetTabList() {
       this.tagList = [DEFAULT_ROUTE];
       this.cacheTabList.clear();
-      this.cacheTabList.add(DEFAULT_ROUTE_NAME);
+      this.cacheTabList.add(DEFAULT_ROUTE.name);
     },
   },
 });
