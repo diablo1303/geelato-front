@@ -185,11 +185,12 @@ const text = {
     children: [
         // _brackets 对于方法，需要同时生成参数内容
         {
-            title: '获取字典值',
-            _code: 'dict',
+            title: '键值转换',
+            _code: 'keyValue',
             _type: 'string',
-            _brackets: '(key1,{key1:value1,key2:value2})',
-            _description: '依据字典的键key1，从字典{key1:value1,key2:value2}中获取值value1。',
+            _brackets: '(keys,{key1:value1,key2:value2})',
+            _description: '依据字典的键keys，从键值对{key1:value1,key2:value2}中获取值，keys可为单值或多值，' +
+                '如字符串key1,key2,key3，可为[key1,key2,key3],可为key1。value1可为string，也可为object，当前object时，支持多语言翻译，格式为{cn:value11,en:value12}',
         },
         {
             title: '获取文本长度',

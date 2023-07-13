@@ -268,6 +268,39 @@ export class JsScriptExecutor {
                     method(that.evalParams(params, $gl.ctx))
                 }
             },
+            /**
+             * 键值文本转换
+             * @param keys key1,key2,key3... 或为[key1,key2,key3...]或为key1
+             * @param keyValues
+             */
+            keyValue(keys: string | Array<any>, keyValues: {
+                [key: string]: {
+                    en?: [string | number | boolean],
+                    cn: [string | number | boolean]
+                } | [string | number | boolean]
+            }) {
+                if (!keyValues || !keys) return keys
+                // keys
+                let keyAry = []
+                if (typeof keys === 'object' && keys.length >= 0) {
+                    keyAry = keys
+                } else {
+                    // @ts-ignore
+                    keyAry = keys.split(',')
+                }
+                const valueAry: any[] = []
+                for (const index in keyAry) {
+                    const key = keyAry[index]
+                    const value: any = keyValues[key]
+                    if (typeof value === 'object' && (value.cn || value.en)) {
+                        // TODO 待结合环境获取当前语言
+                        valueAry.push(value.cn || value.en)
+                    } else {
+                        valueAry.push(value)
+                    }
+                }
+                return valueAry.join(',') || keys
+            },
             // evalExpression: (expression: string) => {
             //     return that.evalExpression(expression, $gl.ctx)
             // },

@@ -455,16 +455,6 @@ export class Utils {
         await sleepMs(ms)
     }
 
-    dict(key: any, dict: { [key: string]: { en?: [string | number | boolean], cn: [string | number | boolean] } | [string | number | boolean] }) {
-        if (!dict) return key
-        const value: any = dict[key]
-        if (typeof value === 'object' && (value.cn || value.en)) {
-            // TODO 待结合环境获取当前语言
-            return value.cn || value.en
-        }
-        return value
-    }
-
 }
 
 const utils = new Utils()

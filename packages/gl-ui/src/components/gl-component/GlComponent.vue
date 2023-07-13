@@ -115,10 +115,8 @@ const onChange = (...args: any) => {
  *   依据propsExpression设置的各属值的值表达式，计算出值，并合设置到props中，覆盖props中相应属性的值
  */
 const executePropsExpressions = () => {
-  console.log('glComponentInst:', props.glComponentInst.propsExpressions)
   if (props.glComponentInst.propsExpressions) {
     Object.keys(props.glComponentInst.propsExpressions).forEach((key: string) => {
-      console.log('key:', key)
       // @ts-ignore
       const propsExpression = props.glComponentInst.propsExpressions[key]
       if (propsExpression) {

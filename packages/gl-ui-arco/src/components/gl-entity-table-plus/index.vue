@@ -164,7 +164,7 @@ const onUpdateRow = (data: { record: object, rowIndex: number }) => {
 let lastEntityReaderParams: Array<EntityReaderParam>;
 // 在初始化（init）时，GlQuery组件的事件会触发：@search="onSearch"
 const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
-  console.log("onSearch() > entityReaderParams:", entityReaderParams);
+  // console.log("onSearch() > entityReaderParams:", entityReaderParams);
   if (tableRef.value) {
     tableRef.value.search(entityReaderParams);
     lastEntityReaderParams = entityReaderParams;

@@ -83,6 +83,15 @@ const hideItems = computed(() => {
     return item.component?.props.unRender
   })
 })
+
+// 计算出所有组件占用的行数
+const rowCount = computed(() => {
+  let colCount = 0
+  showItems.value.forEach((item: QueryItem) => {
+    colCount = colCount + (item.colspan === undefined ? 24 : item.colspan)
+  })
+  return Math.ceil(colCount / 24)
+})
 const t = (value: any) => {
   return value
 }
@@ -100,28 +109,18 @@ defineExpose({createEntityReaderParams, reset});
           :wrapper-col-props="{ span: 18 }"
           label-align="left"
       >
+        <!--  显示的区域  -->
         <a-row :gutter="16">
-          <a-col
-              v-for="(item, index) in showItems"
-              :key="index"
-              :span="item.colspan"
-          >
+          <a-col v-for="(item, index) in showItems" :key="index" :span="item.colspan">
             <a-form-item :field="item.id" :label="t(item.component?.props.label)">
               <GlComponent v-if="item.component" :glComponentInst="item.component"
                            @update="onSearch"></GlComponent>
             </a-form-item>
-            <!--            <a-form-item :field="item.id" :label="item.title ? t(item.title) : t(item.name)">-->
-            <!--              <GlComponent v-if="item.component" :glComponentInst="item.component"-->
-            <!--                           @change="onSearch"></GlComponent>-->
-            <!--            </a-form-item>-->
           </a-col>
         </a-row>
+        <!--  隐藏的区域  -->
         <a-row :gutter="16" style="display: none">
-          <a-col
-              v-for="(item, index) in hideItems"
-              :key="index"
-              :span="item.colspan"
-          >
+          <a-col v-for="(item, index) in hideItems" :key="index" :span="item.colspan">
             <a-form-item :field="item.id" :label="t(item.component?.props.label)">
               <GlComponent v-if="item.component" :glComponentInst="item.component"
                            @update="onSearch"></GlComponent>
@@ -130,9 +129,9 @@ defineExpose({createEntityReaderParams, reset});
         </a-row>
       </a-form>
     </a-col>
-    <a-divider style="height: 84px" direction="vertical"/>
+    <a-divider :style="{height: `${42*rowCount}px`}" direction="vertical"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space direction="vertical" :size="18">
+      <a-space :direction="rowCount>1?'vertical':'horizontal'" :size="18">
         <a-button type="primary" @click="onSearch">
           <template #icon>
             <GlIconfont type="gl-search"></GlIconfont>

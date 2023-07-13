@@ -105,7 +105,7 @@ export default defineComponent({
     }
   },
   created() {
-    console.log('GlPropertySetterCard modelValue', this.modelValue)
+    // console.log('GlPropertySetterCard modelValue', this.modelValue)
     // 对于空的默认创建一个
     if (this.items.length === 0 && this.maxCount >= 0 && this.autoAddWhenEmpty) {
       this.addElement()
@@ -115,7 +115,7 @@ export default defineComponent({
     if (element) {
       const keys = Object.keys(element)
       keys.length > 0 ? this.cardTitleField = keys[0] : ''
-      console.log('this.cardTitleField:', this.cardTitleField, keys, element)
+      // console.log('this.cardTitleField:', this.cardTitleField, keys, element)
     }
   },
   methods: {

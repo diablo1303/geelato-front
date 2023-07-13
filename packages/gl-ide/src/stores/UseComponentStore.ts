@@ -62,7 +62,6 @@ class ComponentStoreFactory {
                 actions: {
 
                     setComponentTree(componentInst: ComponentInstance) {
-                        console.log('setComponentTree', componentInst)
                         this.currentComponentTree.length = 0
                         if (componentInst) {
                             this.currentComponentTree.push(componentInst)

@@ -183,7 +183,7 @@ const init = () => {
     emits('change', value)
   })
   // editor.getModel().focus()
-  console.log('editor.getPosition()', editor.getPosition())
+  // console.log('editor.getPosition()', editor.getPosition())
 
   // eslint-disable-next-line vue/custom-event-name-casing
   emits('editor-mounted', editor)
