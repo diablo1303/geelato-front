@@ -118,50 +118,50 @@
       :stripe="true" column-resizable
       row-key="id" @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('security.user.index.form.index')" align="center" data-index="index" :width="80">
+      <a-table-column :title="$t('security.user.index.form.index')" :width="80" align="center" data-index="index">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.name')" data-index="name" :ellipsis="true" :tooltip="true" :width="120"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.orgName')" data-index="orgName" :ellipsis="true" :tooltip="true" :width="200"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.mobilePhone')" data-index="mobilePhone" :width="150"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.email')" data-index="email" :ellipsis="true" :tooltip="true" :width="200"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.post')" data-index="post" :width="120"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.address')" data-index="address" :ellipsis="true" :tooltip="true" :width="200">
+      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.name')" :tooltip="true" :width="120" data-index="name"></a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.orgName')" :tooltip="true" :width="200" data-index="orgName"></a-table-column>
+      <a-table-column :title="$t('security.user.index.form.mobilePhone')" :width="150" data-index="mobilePhone"></a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.email')" :tooltip="true" :width="200" data-index="email"></a-table-column>
+      <a-table-column :title="$t('security.user.index.form.post')" :width="120" data-index="post"></a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.address')" :tooltip="true" :width="200" data-index="address">
         <template #cell="{  record }">
           {{ record.provinceCode }} - {{ record.cityCode }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.sex')" data-index="sex" :width="100">
+      <a-table-column :title="$t('security.user.index.form.sex')" :width="100" data-index="sex">
         <template #cell="{ record }">
           {{ $t(`security.user.index.form.sex.${record.sex}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.type')" data-index="status" :width="120">
+      <a-table-column :title="$t('security.user.index.form.type')" :width="120" data-index="status">
         <template #cell="{ record }">
           {{ $t(`security.user.index.form.type.${record.type}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.source')" data-index="status" :width="120">
+      <a-table-column :title="$t('security.user.index.form.source')" :width="120" data-index="status">
         <template #cell="{ record }">
           {{ $t(`security.user.index.form.source.${record.source}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.seqNo')" data-index="seqNo" :width="100"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.createAt')" data-index="createAt" :width="180"></a-table-column>
+      <a-table-column :title="$t('security.user.index.form.seqNo')" :width="100" data-index="seqNo"></a-table-column>
+      <a-table-column :title="$t('security.user.index.form.createAt')" :width="180" data-index="createAt"></a-table-column>
       <a-table-column
           :title="$t('security.user.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
           fixed="right">
         <template #cell="{ record }">
-          <a-button  size="small" type="text" @click="viewTable(record.id)">
+          <a-button size="small" type="text" @click="viewTable(record.id)">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
-          <a-button v-show="pageData.formState==='edit'"  size="small" type="text" @click="editTable(record.id)">
+          <a-button v-show="pageData.formState==='edit'" size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'"  size="small" status="danger" type="text">
+            <a-button v-show="pageData.formState==='edit'" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>

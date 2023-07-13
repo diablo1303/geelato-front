@@ -109,33 +109,33 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('model.foreign.index.form.index')" align="center" data-index="index" :width="80">
+      <a-table-column :title="$t('model.foreign.index.form.index')" :width="80" align="center" data-index="index">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
       <a-table-column
-          v-if="pageData.params.pId===''" :title="$t('model.foreign.index.form.mainTable')" data-index="mainTable" :ellipsis="true" :tooltip="true"
-          :width="250"/>
-      <a-table-column :title="$t('model.foreign.index.form.mainTableCol')" data-index="mainTableCol" :ellipsis="true" :tooltip="true" :width="150"/>
-      <a-table-column :title="$t('model.foreign.index.form.foreignTable')" data-index="foreignTable" :ellipsis="true" :tooltip="true" :width="200"/>
-      <a-table-column :title="$t('model.foreign.index.form.foreignTableCol')" data-index="foreignTableCol" :ellipsis="true" :tooltip="true" :width="150"/>
+          v-if="pageData.params.pId===''" :ellipsis="true" :title="$t('model.foreign.index.form.mainTable')" :tooltip="true" :width="250"
+          data-index="mainTable"/>
+      <a-table-column :ellipsis="true" :title="$t('model.foreign.index.form.mainTableCol')" :tooltip="true" :width="150" data-index="mainTableCol"/>
+      <a-table-column :ellipsis="true" :title="$t('model.foreign.index.form.foreignTable')" :tooltip="true" :width="200" data-index="foreignTable"/>
+      <a-table-column :ellipsis="true" :title="$t('model.foreign.index.form.foreignTableCol')" :tooltip="true" :width="150" data-index="foreignTableCol"/>
       <!-- <a-table-column :title="$t('model.foreign.index.form.deleteAction')" data-index="deleteAction" :width="120"/>-->
       <!-- <a-table-column :title="$t('model.foreign.index.form.updateAction')" data-index="updateAction" :width="120"/>-->
-      <a-table-column :title="$t('model.foreign.index.form.enableStatus')" data-index="enableStatus" :width="100">
+      <a-table-column :title="$t('model.foreign.index.form.enableStatus')" :width="100" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`model.foreign.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.foreign.index.form.seqNo')" data-index="seqNo" :width="100"/>
-      <a-table-column :title="$t('model.foreign.index.form.createAt')" data-index="createAt" :width="180"/>
+      <a-table-column :title="$t('model.foreign.index.form.seqNo')" :width="100" data-index="seqNo"/>
+      <a-table-column :title="$t('model.foreign.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('model.foreign.index.form.operations')"
           :width="170" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-button  size="small" type="text" @click="editTable(record.id)">
+          <a-button size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button  size="small" status="danger" type="text">
+            <a-button size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>

@@ -94,26 +94,26 @@
           row-key="id"
           @page-change="onPageChange">
         <template #columns>
-          <a-table-column :title="$t('security.permission.index.form.index')" align="center" data-index="index" :width="80">
+          <a-table-column :title="$t('security.permission.index.form.index')" :width="80" align="center" data-index="index">
             <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
           </a-table-column>
-          <a-table-column :title="$t('security.permission.index.form.name')" data-index="name" :ellipsis="true" :tooltip="true" :width="150"/>
-          <a-table-column :title="$t('security.permission.index.form.text')" data-index="text" :ellipsis="true" :tooltip="true" :width="150"/>
-          <a-table-column :title="$t('security.permission.index.form.description')" data-index="description" :ellipsis="true" :tooltip="true" :width="200"/>
-          <a-table-column :title="$t('security.permission.index.form.createAt')" data-index="createAt" :width="180"/>
+          <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.name')" :tooltip="true" :width="150" data-index="name"/>
+          <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.text')" :tooltip="true" :width="150" data-index="text"/>
+          <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.description')" :tooltip="true" :width="200" data-index="description"/>
+          <a-table-column :title="$t('security.permission.index.form.createAt')" :width="180" data-index="createAt"/>
           <a-table-column
               :title="$t('security.permission.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center"
               data-index="operations"
               fixed="right">
             <template #cell="{ record }">
-              <a-button  size="small" type="text" @click="viewTable(record.id)">
+              <a-button size="small" type="text" @click="viewTable(record.id)">
                 {{ $t('searchTable.columns.operations.view') }}
               </a-button>
-              <a-button v-show="pageData.formState==='edit'"  size="small" type="text" @click="editTable(record.id)">
+              <a-button v-show="pageData.formState==='edit'" size="small" type="text" @click="editTable(record.id)">
                 {{ $t('searchTable.columns.operations.edit') }}
               </a-button>
               <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-                <a-button v-show="pageData.formState==='edit'"  size="small" status="danger" type="text">
+                <a-button v-show="pageData.formState==='edit'" size="small" status="danger" type="text">
                   {{ $t('searchTable.columns.operations.delete') }}
                 </a-button>
               </a-popconfirm>

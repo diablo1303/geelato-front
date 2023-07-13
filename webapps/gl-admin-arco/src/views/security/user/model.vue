@@ -147,13 +147,7 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import {Modal} from "@arco-design/web-vue";
-import {
-  createOrUpdateUser as createOrUpdateForm,
-  getUser as getForm,
-  QueryOrgForm,
-  queryOrgs,
-  QueryUserForm as QueryForm,
-} from '@/api/security';
+import {createOrUpdateUser as createOrUpdateForm, getUser as getForm, QueryOrgForm, queryOrgs, QueryUserForm as QueryForm,} from '@/api/security';
 import {ListUrlParams, SelectOption} from '@/api/base';
 import {sexOptions, sourceOptions, typeOptions} from "@/views/security/user/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";

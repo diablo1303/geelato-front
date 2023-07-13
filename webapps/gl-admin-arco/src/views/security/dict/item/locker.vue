@@ -19,41 +19,41 @@
       </a-space>
       <a-space>
         <a-button @click="handleModelCancel($event)">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
-        <a-button type="primary" :loading="okLoading" @click="handleModelOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
+        <a-button :loading="okLoading" type="primary" @click="handleModelOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
       </a-space>
     </template>
     <a-table
         :bordered="{cell:true}"
         :columns="columnTitle"
         :data="(columnData as TableData[])"
+        :draggable="{ type: 'handle', width: 30 }"
         :pagination="false"
         :stripe="true"
-        size="small"
-        :draggable="{ type: 'handle', width: 30 }"
         column-resizable
-        row-key="id" @change="handleChange">
+        row-key="id"
+        size="small" @change="handleChange">
       <template #columns>
-        <a-table-column :title="$t('security.dictItem.index.form.itemName')" data-index="itemName" :ellipsis="true" :tooltip="true" :width="140">
+        <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemName')" :tooltip="true" :width="140" data-index="itemName">
           <template #cell="{record}">
             <a-input v-model="record.itemName" :max-length="32" placeholder="必填项"/>
           </template>
         </a-table-column>
-        <a-table-column :title="$t('security.dictItem.index.form.itemCode')" data-index="itemCode" :ellipsis="true" :tooltip="true" :width="140">
+        <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemCode')" :tooltip="true" :width="140" data-index="itemCode">
           <template #cell="{record}">
             <a-input v-model="record.itemCode" :max-length="32" placeholder="必填项" @blur="itemCodeValidate($event)"/>
           </template>
         </a-table-column>
-        <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" data-index="enableStatus" :width="70">
+        <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" :width="70" data-index="enableStatus">
           <template #cell="{ record }">
             <a-select v-model="record.enableStatus">
               <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
             </a-select>
           </template>
         </a-table-column>
-        <a-table-column :title="$t('model.column.index.form.operations')" data-index="operations" :width="40"
-                        align="center" fixed="right">
+        <a-table-column :title="$t('model.column.index.form.operations')" :width="40" align="center"
+                        data-index="operations" fixed="right">
           <template #cell="{record}">
-            <a-button type="text" status="danger" @click="deleteItemColumn(record.itemCode)">
+            <a-button status="danger" type="text" @click="deleteItemColumn(record.itemCode)">
               <template #icon>
                 <IconClose/>
               </template>

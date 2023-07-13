@@ -1,5 +1,5 @@
-import { RouteLocationNormalized, RouteRecordRaw } from 'vue-router';
-import { useUserStore } from '@/store';
+import {RouteLocationNormalized, RouteRecordRaw} from 'vue-router';
+import {useUserStore} from '@/store';
 
 export default function usePermission() {
   const userStore = useUserStore();
@@ -21,7 +21,7 @@ export default function usePermission() {
             return el.includes('*') || el.includes(role);
           })
         )
-          return { name: firstElement.name };
+          return {name: firstElement.name};
         if (firstElement?.children) {
           cloneRouters.push(...firstElement.children);
         }

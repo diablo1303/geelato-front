@@ -11,7 +11,8 @@
           </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('security.orgUser.index.form.userName')" field="userName">
-              <a-input v-model="filterData.userName" :readonly="pageData.params.userName!=''" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.userName" :readonly="pageData.params.userName!=''" allow-clear @clear="search($event)"
+                       @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
@@ -110,19 +111,19 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('security.orgUser.index.form.index')" align="center" data-index="index" :width="80">
+      <a-table-column :title="$t('security.orgUser.index.form.index')" :width="80" align="center" data-index="index">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :title="$t('security.orgUser.index.form.orgName')" data-index="orgName" :ellipsis="true" :tooltip="true" :width="150"/>
+      <a-table-column :ellipsis="true" :title="$t('security.orgUser.index.form.orgName')" :tooltip="true" :width="150" data-index="orgName"/>
       <a-table-column
-          v-if="pageData.params.userName===''" :title="$t('security.orgUser.index.form.userName')" data-index="userName" :ellipsis="true"
-          :tooltip="true" :width="150"/>
-      <a-table-column :title="$t('security.orgUser.index.form.defaultOrg')" data-index="defaultOrg" :width="100">
+          v-if="pageData.params.userName===''" :ellipsis="true" :title="$t('security.orgUser.index.form.userName')" :tooltip="true"
+          :width="150" data-index="userName"/>
+      <a-table-column :title="$t('security.orgUser.index.form.defaultOrg')" :width="100" data-index="defaultOrg">
         <template #cell="{ record }">
           {{ $t(`security.orgUser.index.form.defaultOrg.${record.defaultOrg}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.orgUser.index.form.createAt')" data-index="createAt" :width="180"/>
+      <a-table-column :title="$t('security.orgUser.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column
           v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('security.orgUser.index.form.operations')"
           :width="(pageData.formState==='edit'&&!pageData.isModal)?230:100"

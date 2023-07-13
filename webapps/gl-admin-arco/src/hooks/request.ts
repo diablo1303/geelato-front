@@ -1,6 +1,6 @@
-import { ref, UnwrapRef } from 'vue';
-import { AxiosResponse } from 'axios';
-import { HttpResponse } from '@/api/interceptor';
+import {ref, UnwrapRef} from 'vue';
+import {AxiosResponse} from 'axios';
+import {HttpResponse} from '@/api/interceptor';
 import useLoading from './loading';
 
 // use to fetch list
@@ -13,7 +13,7 @@ export default function useRequest<T>(
   defaultValue = [] as unknown as T,
   isLoading = true
 ) {
-  const { loading, setLoading } = useLoading(isLoading);
+  const {loading, setLoading} = useLoading(isLoading);
   const response = ref<T>(defaultValue);
   api()
     .then((res) => {
@@ -22,5 +22,5 @@ export default function useRequest<T>(
     .finally(() => {
       setLoading(false);
     });
-  return { loading, response };
+  return {loading, response};
 }

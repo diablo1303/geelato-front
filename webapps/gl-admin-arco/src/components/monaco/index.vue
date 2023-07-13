@@ -1,8 +1,8 @@
 <template>
   <div
       ref="codeEditBox"
-      class="codeEditBox"
       :class="heightChange&&'codeEditBox1'"
+      class="codeEditBox"
   />
 </template>
 

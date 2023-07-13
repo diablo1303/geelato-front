@@ -4,9 +4,9 @@
     <div class="left-side">
       <a-space>
         <span style="text-align: center;width: 32px;height: 32px;">
-            <img alt="logo" :src="appInfo.appLogo" style="width: 100%;height: 100%"/>
+            <img :src="appInfo.appLogo" alt="logo" style="width: 100%;height: 100%"/>
         </span>
-        <a-typography-title :style="{ margin: 0, fontSize: '18px' }" :heading="5">
+        <a-typography-title :heading="5" :style="{ margin: 0, fontSize: '18px' }">
           {{ appInfo.appName }}
         </a-typography-title>
         <icon-menu-fold
@@ -25,7 +25,7 @@
       <!--   搜索   -->
       <li v-show="false">
         <a-tooltip :content="$t('settings.search')">
-          <a-button class="nav-btn" type="outline" :shape="'circle'">
+          <a-button :shape="'circle'" class="nav-btn" type="outline">
             <template #icon>
               <icon-search/>
             </template>
@@ -36,9 +36,9 @@
       <li v-show="false">
         <a-tooltip :content="$t('settings.language')">
           <a-button
+              :shape="'circle'"
               class="nav-btn"
               type="outline"
-              :shape="'circle'"
               @click="setDropDownVisible($event)"
           >
             <template #icon>
@@ -72,9 +72,9 @@
           "
         >
           <a-button
+              :shape="'circle'"
               class="nav-btn"
               type="outline"
-              :shape="'circle'"
               @click="handleToggleTheme($event)"
           >
             <template #icon>
@@ -90,9 +90,9 @@
           <div class="message-box-trigger">
             <a-badge :count="9" dot>
               <a-button
+                  :shape="'circle'"
                   class="nav-btn"
                   type="outline"
-                  :shape="'circle'"
                   @click="setPopoverVisible($event)"
               >
                 <icon-notification/>
@@ -101,10 +101,10 @@
           </div>
         </a-tooltip>
         <a-popover
-            trigger="click"
             :arrow-style="{ display: 'none' }"
             :content-style="{ padding: 0, minWidth: '400px' }"
             content-class="message-popover"
+            trigger="click"
         >
           <div ref="refBtn" class="ref-btn"></div>
           <template #content>
@@ -122,9 +122,9 @@
           "
         >
           <a-button
+              :shape="'circle'"
               class="nav-btn"
               type="outline"
-              :shape="'circle'"
               @click="toggleFullScreen"
           >
             <template #icon>
@@ -138,9 +138,9 @@
       <li v-show="false">
         <a-tooltip :content="$t('settings.title')">
           <a-button
+              :shape="'circle'"
               class="nav-btn"
               type="outline"
-              :shape="'circle'"
               @click="setVisible($event)"
           >
             <template #icon>
@@ -156,7 +156,7 @@
               :size="32"
               :style="{ marginRight: '8px', cursor: 'pointer' }"
           >
-            <img alt="avatar" :src="avatar"/>
+            <img :src="avatar" alt="avatar"/>
           </a-avatar>
           <template #content>
             <!--     切换角色       -->
@@ -292,7 +292,7 @@ getAppInfo();
 
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .navbar {
   display: flex;
   justify-content: space-between;

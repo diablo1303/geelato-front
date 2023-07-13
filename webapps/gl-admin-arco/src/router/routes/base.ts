@@ -52,8 +52,8 @@ export const APP_PAGE_MAIN: RouteRecordRaw = {
 };
 
 export const RESET_PWD_MAIN: RouteRecordRaw = {
-  path: `${URL_PREFIX}/resetPwd`,
-  name: `resetPwd`,
+  path: `${URL_PREFIX}/forget`,
+  name: `forget`,
   component: () => import('@/views/reset/index.vue'),
   meta: {
     requiresAuth: false,

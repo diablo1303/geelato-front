@@ -1,12 +1,12 @@
 <template>
   <a-list :bordered="false">
     <a-list-item
-      v-for="item in renderList"
-      :key="item.id"
-      action-layout="vertical"
-      :style="{
+        v-for="item in renderList"
+        :key="item.id"
+        :style="{
         opacity: item.status ? 0.5 : 1,
       }"
+        action-layout="vertical"
     >
       <template #extra>
         <a-tag v-if="item.messageType === 0" color="gray">未开始</a-tag>
@@ -18,8 +18,8 @@
         <a-list-item-meta>
           <template v-if="item.avatar" #avatar>
             <a-avatar shape="circle">
-              <img v-if="item.avatar" :src="item.avatar" />
-              <icon-desktop v-else />
+              <img v-if="item.avatar" :src="item.avatar"/>
+              <icon-desktop v-else/>
             </a-avatar>
           </template>
           <template #title>
@@ -33,14 +33,15 @@
           <template #description>
             <div>
               <a-typography-paragraph
-                :ellipsis="{
+                  :ellipsis="{
                   rows: 1,
                 }"
-                >{{ item.content }}</a-typography-paragraph
+              >{{ item.content }}
+              </a-typography-paragraph
               >
               <a-typography-text
-                v-if="item.type === 'message'"
-                class="time-text"
+                  v-if="item.type === 'message'"
+                  class="time-text"
               >
                 {{ item.time }}
               </a-typography-text>
@@ -51,9 +52,9 @@
     </a-list-item>
     <template #footer>
       <a-space
-        fill
-        :size="0"
-        :class="{ 'add-border-top': renderList.length < showMax }"
+          :class="{ 'add-border-top': renderList.length < showMax }"
+          :size="0"
+          fill
       >
         <div class="footer-wrap">
           <a-link @click="allRead">{{ $t('messageBox.allRead') }}</a-link>
@@ -64,86 +65,98 @@
       </a-space>
     </template>
     <div
-      v-if="renderList.length && renderList.length < 3"
-      :style="{ height: (showMax - renderList.length) * 86 + 'px' }"
+        v-if="renderList.length && renderList.length < 3"
+        :style="{ height: (showMax - renderList.length) * 86 + 'px' }"
     ></div>
   </a-list>
 </template>
 
 <script lang="ts" setup>
-  import { PropType } from 'vue';
-  import { MessageRecord, MessageListType } from '@/api/message';
+import {PropType} from 'vue';
+import {MessageListType, MessageRecord} from '@/api/message';
 
-  const props = defineProps({
-    renderList: {
-      type: Array as PropType<MessageListType>,
-      required: true,
-    },
-    unreadCount: {
-      type: Number,
-      default: 0,
-    },
-  });
-  const emit = defineEmits(['itemClick']);
-  const allRead = () => {
-    emit('itemClick', [...props.renderList]);
-  };
+const props = defineProps({
+  renderList: {
+    type: Array as PropType<MessageListType>,
+    required: true,
+  },
+  unreadCount: {
+    type: Number,
+    default: 0,
+  },
+});
+const emit = defineEmits(['itemClick']);
+const allRead = () => {
+  emit('itemClick', [...props.renderList]);
+};
 
-  const onItemClick = (item: MessageRecord) => {
-    if (!item.status) {
-      emit('itemClick', [item]);
-    }
-  };
-  const showMax = 3;
+const onItemClick = (item: MessageRecord) => {
+  if (!item.status) {
+    emit('itemClick', [item]);
+  }
+};
+const showMax = 3;
 </script>
 
-<style scoped lang="less">
-  :deep(.arco-list) {
-    .arco-list-item {
-      min-height: 86px;
-      border-bottom: 1px solid rgb(var(--gray-3));
-    }
-    .arco-list-item-extra {
-      position: absolute;
-      right: 20px;
-    }
-    .arco-list-item-meta-content {
-      flex: 1;
-    }
-    .item-wrap {
-      cursor: pointer;
-    }
-    .time-text {
-      font-size: 12px;
-      color: rgb(var(--gray-6));
-    }
-    .arco-empty {
-      display: none;
-    }
-    .arco-list-footer {
-      padding: 0;
-      height: 50px;
-      line-height: 50px;
-      border-top: none;
-      .arco-space-item {
-        width: 100%;
-        border-right: 1px solid rgb(var(--gray-3));
-        &:last-child {
-          border-right: none;
-        }
+<style lang="less" scoped>
+:deep(.arco-list) {
+  .arco-list-item {
+    min-height: 86px;
+    border-bottom: 1px solid rgb(var(--gray-3));
+  }
+
+  .arco-list-item-extra {
+    position: absolute;
+    right: 20px;
+  }
+
+  .arco-list-item-meta-content {
+    flex: 1;
+  }
+
+  .item-wrap {
+    cursor: pointer;
+  }
+
+  .time-text {
+    font-size: 12px;
+    color: rgb(var(--gray-6));
+  }
+
+  .arco-empty {
+    display: none;
+  }
+
+  .arco-list-footer {
+    padding: 0;
+    height: 50px;
+    line-height: 50px;
+    border-top: none;
+
+    .arco-space-item {
+      width: 100%;
+      border-right: 1px solid rgb(var(--gray-3));
+
+      &:last-child {
+        border-right: none;
       }
-      .add-border-top {
-        border-top: 1px solid rgb(var(--gray-3));
-      }
     }
-    .footer-wrap {
-      text-align: center;
-    }
-    .arco-typography {
-      margin-bottom: 0;
-    }
-    .add-border {
+
+    .add-border-top {
       border-top: 1px solid rgb(var(--gray-3));
     }
   }
+
+  .footer-wrap {
+    text-align: center;
+  }
+
+  .arco-typography {
+    margin-bottom: 0;
+  }
+
+  .add-border {
+    border-top: 1px solid rgb(var(--gray-3));
+  }
+}
 </style>

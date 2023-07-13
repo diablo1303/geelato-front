@@ -1,9 +1,9 @@
-import { computed } from 'vue';
-import { RouteRecordRaw, RouteRecordNormalized } from 'vue-router';
+import {computed} from 'vue';
+import {RouteRecordNormalized, RouteRecordRaw} from 'vue-router';
 import usePermission from '@/hooks/permission';
-import { useAppStore } from '@/store';
+import {useAppStore} from '@/store';
 import appClientMenus from '@/router/app-menus';
-import { cloneDeep } from 'lodash';
+import {cloneDeep} from 'lodash';
 
 export default function useMenuTree() {
   const permission = usePermission();
@@ -19,6 +19,7 @@ export default function useMenuTree() {
     copyRouter.sort((a: RouteRecordNormalized, b: RouteRecordNormalized) => {
       return (a.meta.order || 0) - (b.meta.order || 0);
     });
+
     function travel(_routes: RouteRecordRaw[], layer: number) {
       if (!_routes) return null;
 
@@ -60,6 +61,7 @@ export default function useMenuTree() {
       });
       return collector.filter(Boolean);
     }
+
     return travel(copyRouter, 0);
   });
 

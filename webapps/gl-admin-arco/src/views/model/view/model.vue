@@ -148,26 +148,26 @@
       :bordered="{cell:true}"
       :columns="columnTitle"
       :data="(columnData as TableData[])"
+      :draggable="{ type: 'handle', width: 40 }"
       :pagination="false"
       :stripe="true"
-      :draggable="{ type: 'handle', width: 40 }"
       column-resizable
       row-key="id" @change="handleChange">
     <template #columns>
-      <a-table-column :title="$t('model.column.index.form.title')" data-index="title" :ellipsis="true" :tooltip="true" :width="120" fixed="left"/>
-      <a-table-column :title="$t('model.column.index.form.fieldName')" data-index="fieldName" :ellipsis="true" :tooltip="true" :width="120"/>
-      <a-table-column :title="$t('model.column.index.form.type')" data-index="type" :ellipsis="true" :tooltip="true" :width="120"/>
-      <a-table-column :title="$t('model.column.index.form.key')" data-index="key" :width="100"/>
-      <a-table-column :title="$t('model.column.index.form.nullable')" data-index="nullable" :width="100"/>
-      <a-table-column :title="$t('model.column.index.form.charMaxLength')" data-index="charMaxLength" :width="100"/>
-      <a-table-column :title="$t('model.column.index.form.precision')" data-index="precision" :width="100"/>
-      <a-table-column :title="$t('model.column.index.form.scale')" data-index="scale" :width="100"/>
-      <a-table-column :title="$t('model.column.index.form.name')" data-index="name" :ellipsis="true" :tooltip="true" :width="120"/>
-      <a-table-column :title="$t('model.column.index.form.tableName')" data-index="tableName" :ellipsis="true" :tooltip="true" :width="150"/>
-      <a-table-column v-show="pageData.formState!=='view'" :title="$t('model.column.index.form.operations')" data-index="operations" :width="80"
-                      align="center" fixed="right">
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.title')" :tooltip="true" :width="120" data-index="title" fixed="left"/>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.fieldName')" :tooltip="true" :width="120" data-index="fieldName"/>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.type')" :tooltip="true" :width="120" data-index="type"/>
+      <a-table-column :title="$t('model.column.index.form.key')" :width="100" data-index="key"/>
+      <a-table-column :title="$t('model.column.index.form.nullable')" :width="100" data-index="nullable"/>
+      <a-table-column :title="$t('model.column.index.form.charMaxLength')" :width="100" data-index="charMaxLength"/>
+      <a-table-column :title="$t('model.column.index.form.precision')" :width="100" data-index="precision"/>
+      <a-table-column :title="$t('model.column.index.form.scale')" :width="100" data-index="scale"/>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.name')" :tooltip="true" :width="120" data-index="name"/>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.tableName')" :tooltip="true" :width="150" data-index="tableName"/>
+      <a-table-column v-show="pageData.formState!=='view'" :title="$t('model.column.index.form.operations')" :width="80" align="center"
+                      data-index="operations" fixed="right">
         <template #cell="{record}">
-          <a-button type="text" status="danger" @click="deleteViewColumn(record.tableName,record.fieldName)">
+          <a-button status="danger" type="text" @click="deleteViewColumn(record.tableName,record.fieldName)">
             <template #icon>
               <icon-delete/>
             </template>
@@ -187,13 +187,7 @@ import {useI18n} from 'vue-i18n';
 import {Modal, Notification} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/base';
-import {
-  createOrUpdateView as createOrUpdateForm,
-  getView as getForm,
-  QueryViewColumnForm,
-  QueryViewForm as QueryForm,
-  validateMetaView
-} from '@/api/model';
+import {createOrUpdateView as createOrUpdateForm, getView as getForm, QueryViewColumnForm, QueryViewForm as QueryForm, validateMetaView} from '@/api/model';
 import {enableStatusOptions, linkedOptions} from "@/views/model/view/searchTable";
 import MonacoEditor from '@/components/monaco/index.vue';
 import {TableData} from "@arco-design/web-vue/es/table/interface";

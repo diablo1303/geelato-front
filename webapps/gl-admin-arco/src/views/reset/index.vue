@@ -3,8 +3,8 @@
     <div class="logo">
       <img
           alt="logo"
-          style="width: 14%"
           src="/src/assets/favicon.ico"
+          style="width: 14%"
       />
       <div class="logo-text">Geelato Admin</div>
     </div>

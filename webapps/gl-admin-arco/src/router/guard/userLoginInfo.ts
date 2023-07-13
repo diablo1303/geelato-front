@@ -26,7 +26,7 @@ export default function setupUserLoginInfoGuard(router: Router) {
         }
       }
     } else {
-      if (['login', 'resetPwd'].includes(to.name as string)) {
+      if (['login', 'forget'].includes(to.name as string)) {
         next();
         return;
       }

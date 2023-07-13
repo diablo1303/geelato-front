@@ -26,8 +26,8 @@
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('model.table.index.form.tableType')" field="tableType">
               <a-select v-model="filterData.tableType" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of tableTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"
-                          :disabled="item.disabled"/>
+                <a-option v-for="item of tableTypeOptions" :key="item.value as string" :disabled="item.disabled" :label="$t(`${item.label}`)"
+                          :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
@@ -131,45 +131,45 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('model.table.index.form.index')" align="center" data-index="index" :width="80">
+      <a-table-column :title="$t('model.table.index.form.index')" :width="80" align="center" data-index="index">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :title="$t('model.table.index.form.title')" data-index="title" :ellipsis="true" :tooltip="true" :width="200"/>
-      <a-table-column :title="$t('model.table.index.form.entityName')" data-index="entityName" :ellipsis="true" :tooltip="true" :width="200"/>
-      <a-table-column :title="$t('model.table.index.form.tableName')" data-index="tableName" :ellipsis="true" :tooltip="true" :width="200"/>
-      <a-table-column :title="$t('model.table.index.form.tableType')" data-index="tableType" :width="100">
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.title')" :tooltip="true" :width="200" data-index="title"/>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.entityName')" :tooltip="true" :width="200" data-index="entityName"/>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.tableName')" :tooltip="true" :width="200" data-index="tableName"/>
+      <a-table-column :title="$t('model.table.index.form.tableType')" :width="100" data-index="tableType">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.tableType.${record.tableType}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.table.index.form.linked')" data-index="linked" :width="100">
+      <a-table-column :title="$t('model.table.index.form.linked')" :width="100" data-index="linked">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.linked.${record.linked}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.table.index.form.enableStatus')" data-index="enableStatus" :width="100">
+      <a-table-column :title="$t('model.table.index.form.enableStatus')" :width="100" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.table.index.form.seqNo')" data-index="seqNo" :width="100"/>
-      <a-table-column :title="$t('model.table.index.form.createAt')" data-index="createAt" :width="180"/>
-      <a-table-column :title="$t('model.table.index.form.tableComment')" data-index="tableComment" :ellipsis="true" :tooltip="true" :width="200"/>
-      <a-table-column :title="$t('model.table.index.form.description')" data-index="description" :ellipsis="true" :tooltip="true" :width="200"/>
+      <a-table-column :title="$t('model.table.index.form.seqNo')" :width="100" data-index="seqNo"/>
+      <a-table-column :title="$t('model.table.index.form.createAt')" :width="180" data-index="createAt"/>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.tableComment')" :tooltip="true" :width="200" data-index="tableComment"/>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.description')" :tooltip="true" :width="200" data-index="description"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('model.table.index.form.operations')"
           :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-tooltip :content="$t('searchTable.tables.operations.alter.warning')">
-            <a-button  size="small" type="text" @click="alterTable(record.id)">
+            <a-button size="small" type="text" @click="alterTable(record.id)">
               {{ $t('searchTable.tables.operations.alter') }}
             </a-button>
           </a-tooltip>
-          <a-button  size="small" type="text" @click="editTable(record.id)">
+          <a-button size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button  size="small" status="danger" type="text">
+            <a-button size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>

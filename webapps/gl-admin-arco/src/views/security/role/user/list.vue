@@ -11,7 +11,8 @@
           </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('security.roleUser.index.form.roleName')" field="roleName">
-              <a-input v-model="filterData.roleName" :readonly="pageData.params.roleName!=''" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.roleName" :readonly="pageData.params.roleName!=''" allow-clear @clear="search($event)"
+                       @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
@@ -102,26 +103,26 @@
            row-key="id"
            @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('security.roleUser.index.form.index')" align="center" data-index="index" :width="80">
+      <a-table-column :title="$t('security.roleUser.index.form.index')" :width="80" align="center" data-index="index">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :title="$t('security.roleUser.index.form.userName')" data-index="userName" :ellipsis="true" :tooltip="true" :width="150"/>
-      <a-table-column v-if="pageData.params.roleName===''" :title="$t('security.roleUser.index.form.roleName')" data-index="roleName" :ellipsis="true"
-                      :tooltip="true" :width="150"/>
-      <a-table-column :title="$t('security.roleUser.index.form.createAt')" data-index="createAt" :width="180"/>
+      <a-table-column :ellipsis="true" :title="$t('security.roleUser.index.form.userName')" :tooltip="true" :width="150" data-index="userName"/>
+      <a-table-column v-if="pageData.params.roleName===''" :ellipsis="true" :title="$t('security.roleUser.index.form.roleName')" :tooltip="true"
+                      :width="150" data-index="roleName"/>
+      <a-table-column :title="$t('security.roleUser.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('security.roleUser.index.form.operations')"
                       :width="(pageData.formState==='edit'&&!pageData.isModal)?230:100"
                       align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">
-          <a-button v-show="!pageData.isModal"  size="small" type="text" @click="viewTable(record.id)">
+          <a-button v-show="!pageData.isModal" size="small" type="text" @click="viewTable(record.id)">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
-          <a-button v-show="pageData.formState==='edit'&&!pageData.isModal"  size="small" type="text" @click="editTable(record.id)">
+          <a-button v-show="pageData.formState==='edit'&&!pageData.isModal" size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'"  size="small" status="danger" type="text">
+            <a-button v-show="pageData.formState==='edit'" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>

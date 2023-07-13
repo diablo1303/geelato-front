@@ -9,22 +9,22 @@
     </a-steps>
     <a-divider/>
     <keep-alive class="reset-form-keep-alive">
-      <a-form ref="validFormRef" :model="formData" class="form" :wrapper-col-props="{ span: 24 }" size="large">
+      <a-form ref="validFormRef" :model="formData" :wrapper-col-props="{ span: 24 }" class="form" size="large">
         <a-form-item
             v-show="step===1"
-            :rules="[{required: true,message: $t('stepForm.form.error.activityName.required')}]"
             :hide-asterisk="true"
+            :rules="[{required: true,message: $t('stepForm.form.error.activityName.required')}]"
             field="validType">
           <a-select v-model="formData.validType" :options="validTypeOptions" @change="validateChange"/>
         </a-form-item>
         <a-form-item
             v-if="[1,2].includes(step)&&formData.validType==='1'"
-            :rules="[{required: true,message: '请输入手机号'}]"
             :hide-asterisk="true"
+            :rules="[{required: true,message: '请输入手机号'}]"
             field="validBox">
-          <a-input v-model="formData.validBox" placeholder="账号绑定的手机号" :disabled="step===2">
+          <a-input v-model="formData.validBox" :disabled="step===2" placeholder="账号绑定的手机号">
             <template #prepend>
-              <a-select v-model="formData.prefix" :options="prefixTypeOptions" :disabled="step===2" :style="{width:'112.5px'}"
+              <a-select v-model="formData.prefix" :disabled="step===2" :options="prefixTypeOptions" :style="{width:'112.5px'}"
                         allow-search>
                 <template #label="{data}">
                   {{ data.value }}
@@ -35,44 +35,44 @@
         </a-form-item>
         <a-form-item
             v-if="[1,2].includes(step)&&formData.validType==='2'"
+            :hide-asterisk="true"
             :rules="[{required: true,message:'请输入邮箱'},
                 {match: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,message: '请输入正确的邮箱'}]"
-            :hide-asterisk="true"
             field="validBox">
-          <a-input v-model="formData.validBox" placeholder="账号绑定的邮箱" :disabled="step===2"/>
+          <a-input v-model="formData.validBox" :disabled="step===2" placeholder="账号绑定的邮箱"/>
         </a-form-item>
         <!--     重置密码     -->
         <a-form-item
             v-show="step===2"
-            :rules="[{required: step===2,message:'请输入验证码'},{length:6,message:'请输入6位验证码'}]"
             :hide-asterisk="true"
+            :rules="[{required: step===2,message:'请输入验证码'},{length:6,message:'请输入6位验证码'}]"
             field="authCode">
           <a-input v-model="formData.authCode" placeholder="6位验证码"/>
-          <a-button type="outline" style="margin-left: 20px;border-radius: 8px;"
-                    :disabled="autoCodeData.disabled" @click="autoCodeClick($event)">
+          <a-button :disabled="autoCodeData.disabled" style="margin-left: 20px;border-radius: 8px;"
+                    type="outline" @click="autoCodeClick($event)">
             {{ autoCodeData.content ? autoCodeData.content : '获取验证码' }}
           </a-button>
         </a-form-item>
         <a-form-item
             v-show="step===2"
-            :rules="[{required: step===2,message:'请输入新密码'}]"
             :hide-asterisk="true"
+            :rules="[{required: step===2,message:'请输入新密码'}]"
             field="password">
           <a-input-password v-model="formData.password" placeholder="请输入新密码"/>
         </a-form-item>
         <a-form-item
             v-show="step===2"
-            :rules="[{required: step===2,message:'请再次输入新密码'}]"
             :hide-asterisk="true"
+            :rules="[{required: step===2,message:'请再次输入新密码'}]"
             field="rPassword">
           <a-input-password v-model="formData.rPassword" placeholder="确认密码"/>
         </a-form-item>
         <a-space v-show="step===1" class="reset-form-one-button">
-          <a-button type="primary" :loading="validNextButtonLoading" @click="validNextClick($event)">下一步</a-button>
+          <a-button :loading="validNextButtonLoading" type="primary" @click="validNextClick($event)">下一步</a-button>
         </a-space>
         <a-space v-show="step===2" class="reset-form-two-button">
           <a-button type="primary" @click="validLastClick($event)">上一步</a-button>
-          <a-button type="primary" :loading="updatePwdButtonLoading" @click="updatePwdClick($event)">确认重置</a-button>
+          <a-button :loading="updatePwdButtonLoading" type="primary" @click="updatePwdClick($event)">确认重置</a-button>
         </a-space>
         <div v-show="step===3" class="reset-form-success-wrap">
           <a-result status="success" title="重置成功"/>
@@ -86,10 +86,10 @@
 import {computed, ref} from 'vue';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
-import {ResetPasswordForm, resetPwdEdit, resetPwdValid} from "@/api/user";
+import {forgetPasswordEdit, forgetPasswordValid, ResetPasswordForm} from "@/api/user";
 import mobilePrefix from '@/config/mobilePrefix.json';
 
-const step = ref(2);
+const step = ref(1);
 const errorMessage = ref('');
 /* 验证方式 */
 const validFormRef = ref<FormInstance>();
@@ -115,7 +115,7 @@ const validNextClick = async (ev?: MouseEvent) => {
   if (!res) {
     validNextButtonLoading.value = true;
     try {
-      const {data} = await resetPwdValid(formData.value);
+      const {data} = await forgetPasswordValid(formData.value);
       console.log(data);
       // @ts-ignore
       formData.value.userId = data.id as string;
@@ -162,7 +162,7 @@ const updatePwdClick = async (ev?: MouseEvent) => {
     }
     updatePwdButtonLoading.value = true;
     try {
-      await resetPwdEdit(formData.value);
+      await forgetPasswordEdit(formData.value);
       errorMessage.value = '';
       step.value = 3;
     } catch (err) {

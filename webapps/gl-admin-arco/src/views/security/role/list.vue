@@ -107,36 +107,36 @@
            column-resizable
            row-key="id" @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('security.role.index.form.index')" align="center" data-index="index" :width="80">
+      <a-table-column :title="$t('security.role.index.form.index')" :width="80" align="center" data-index="index">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.role.index.form.name')" data-index="name" :ellipsis="true" :tooltip="true" :width="150"></a-table-column>
-      <a-table-column :title="$t('security.role.index.form.code')" data-index="code" :ellipsis="true" :tooltip="true" :width="150"></a-table-column>
-      <a-table-column :title="$t('security.role.index.form.type')" data-index="status" :width="100">
+      <a-table-column :ellipsis="true" :title="$t('security.role.index.form.name')" :tooltip="true" :width="150" data-index="name"></a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.role.index.form.code')" :tooltip="true" :width="150" data-index="code"></a-table-column>
+      <a-table-column :title="$t('security.role.index.form.type')" :width="100" data-index="status">
         <template #cell="{ record }">
           {{ $t(`security.role.index.form.type.${record.type}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.role.index.form.enableStatus')" data-index="enableStatus" :width="100">
+      <a-table-column :title="$t('security.role.index.form.enableStatus')" :width="100" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`security.role.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.role.index.form.seqNo')" data-index="seqNo" :width="80"></a-table-column>
-      <a-table-column :title="$t('security.role.index.form.createAt')" data-index="createAt" :width="150"></a-table-column>
+      <a-table-column :title="$t('security.role.index.form.seqNo')" :width="80" data-index="seqNo"></a-table-column>
+      <a-table-column :title="$t('security.role.index.form.createAt')" :width="150" data-index="createAt"></a-table-column>
       <a-table-column :title="$t('security.role.index.form.operations')" :width="pageData.formState==='edit'?200:100" align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">
-          <a-button  size="small" type="text" @click="viewTable(record.id)">
+          <a-button size="small" type="text" @click="viewTable(record.id)">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
-          <a-button v-show="pageData.formState==='edit'"  size="small" type="text" @click="editTable(record.id)">
+          <a-button v-show="pageData.formState==='edit'" size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'"  size="small" status="danger" type="text">
+            <a-button v-show="pageData.formState==='edit'" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>

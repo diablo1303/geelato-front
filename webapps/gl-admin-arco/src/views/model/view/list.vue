@@ -120,59 +120,59 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('model.view.index.form.index')" align="center" data-index="index" :width="80">
+      <a-table-column :title="$t('model.view.index.form.index')" :width="80" align="center" data-index="index">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :title="$t('model.view.index.form.title')" data-index="title" :ellipsis="true" :tooltip="true" :width="200"/>
+      <a-table-column :ellipsis="true" :title="$t('model.view.index.form.title')" :tooltip="true" :width="200" data-index="title"/>
       <!-- <a-table-column :title="$t('model.view.index.form.entityName')" data-index="entityName" :ellipsis="true" :tooltip="true" :width="200"/>-->
-      <a-table-column :title="$t('model.view.index.form.viewName')" data-index="viewName" :ellipsis="true" :tooltip="true" :width="200"/>
-      <a-table-column :title="$t('model.view.index.form.viewType')" data-index="viewType" :width="120">
+      <a-table-column :ellipsis="true" :title="$t('model.view.index.form.viewName')" :tooltip="true" :width="200" data-index="viewName"/>
+      <a-table-column :title="$t('model.view.index.form.viewType')" :width="120" data-index="viewType">
         <template #cell="{ record }">
           {{ $t(`model.view.index.form.viewType.${record.viewType}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.view.index.form.linked')" data-index="linked" :width="100">
+      <a-table-column :title="$t('model.view.index.form.linked')" :width="100" data-index="linked">
         <template #cell="{ record }">
           {{ $t(`model.view.index.form.linked.${record.linked}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.view.index.form.enableStatus')" data-index="enableStatus" :width="100">
+      <a-table-column :title="$t('model.view.index.form.enableStatus')" :width="100" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`model.view.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.view.index.form.seqNo')" data-index="seqNo" :width="100"/>
-      <a-table-column :title="$t('model.view.index.form.createAt')" data-index="createAt" :width="180"/>
-      <a-table-column :title="$t('model.view.index.form.description')" data-index="description" :ellipsis="true" :tooltip="true" :width="200"/>
+      <a-table-column :title="$t('model.view.index.form.seqNo')" :width="100" data-index="seqNo"/>
+      <a-table-column :title="$t('model.view.index.form.createAt')" :width="180" data-index="createAt"/>
+      <a-table-column :ellipsis="true" :title="$t('model.view.index.form.description')" :tooltip="true" :width="200" data-index="description"/>
       <a-table-column v-show="pageData.formState==='edit'" :title="$t('model.view.index.form.operations')" :width="255" align="center"
                       data-index="operations" fixed="right">
         <template #cell="{ record,isDefault=record.viewType==='default'}">
-          <a-button v-if="isDefault"  size="small" type="text" @click="viewTable(record.id)">
+          <a-button v-if="isDefault" size="small" type="text" @click="viewTable(record.id)">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
-          <a-button v-else  size="small" type="text" @click="editTable(record.id)">
+          <a-button v-else size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <!--    发布      -->
           <a-tooltip v-if="!pageData.tableSync" :content="$t('model.view.index.form.operations.noRel')">
-            <a-button  class="button-disabled" size="small" type="text">
+            <a-button class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.release') }}
             </a-button>
           </a-tooltip>
           <a-popconfirm v-else :content="$t('searchTable.columns.operations.releaseMsg')" position="tr" type="info" @ok="releaseTable(record)">
-            <a-button  size="small" type="text">
+            <a-button size="small" type="text">
               {{ $t('searchTable.columns.operations.release') }}
             </a-button>
           </a-popconfirm>
           <!--    删除      -->
           <a-tooltip v-if="isDefault" :content="$t('model.column.index.form.operations.disabled')">
-            <a-button  class="button-disabled" size="small" type="text">
+            <a-button class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-tooltip>
           <a-popconfirm v-else :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
                         @ok="deleteTable(record.id)">
-            <a-button  size="small" status="danger" type="text">
+            <a-button size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>

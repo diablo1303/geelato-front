@@ -102,34 +102,34 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('security.dict.index.form.index')" align="center" data-index="index" :width="80">
+      <a-table-column :title="$t('security.dict.index.form.index')" :width="80" align="center" data-index="index">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.dictName')" data-index="dictName" :ellipsis="true" :tooltip="true" :width="150"></a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.dictCode')" data-index="dictCode" :ellipsis="true" :tooltip="true" :width="150"></a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.tenantCode')" data-index="tenantCode" :width="120"></a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.seqNo')" data-index="seqNo" :width="100"></a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.enableStatus')" data-index="enableStatus" :width="120">
+      <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictName')" :tooltip="true" :width="150" data-index="dictName"></a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictCode')" :tooltip="true" :width="150" data-index="dictCode"></a-table-column>
+      <a-table-column :title="$t('security.dict.index.form.tenantCode')" :width="120" data-index="tenantCode"></a-table-column>
+      <a-table-column :title="$t('security.dict.index.form.seqNo')" :width="100" data-index="seqNo"></a-table-column>
+      <a-table-column :title="$t('security.dict.index.form.enableStatus')" :width="120" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`security.dict.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.createAt')" data-index="createAt" :width="180"></a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.dictRemark')" :tooltip="{position:'right'}" data-index="dictRemark" :ellipsis="true" :width="200"/>
+      <a-table-column :title="$t('security.dict.index.form.createAt')" :width="180" data-index="createAt"></a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictRemark')" :tooltip="{position:'right'}" :width="200" data-index="dictRemark"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="230" align="center"
           data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-button  size="small" type="text" @click="configTable(record.id)">
+          <a-button size="small" type="text" @click="configTable(record.id)">
             {{ $t('searchTable.columns.operations.config') }}
           </a-button>
-          <a-button  size="small" type="text" @click="editTable(record.id)">
+          <a-button size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button  size="small" status="danger" type="text">
+            <a-button size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>

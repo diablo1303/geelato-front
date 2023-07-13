@@ -27,15 +27,15 @@
             :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')},
             {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')}]"
             field="entityName">
-          <a-input  v-if="pageData.editName" v-model="formData.entityName" :max-length="32"/>
-                    <span v-else>{{ formData.entityName }}</span>
+          <a-input v-if="pageData.editName" v-model="formData.entityName" :max-length="32"/>
+          <span v-else>{{ formData.entityName }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.table.index.form.tableName')"
             field="tableName">
-<!--           <a-input v-if="pageData.editName" v-model="formData.tableName" :max-length="32"/>-->
+          <!--           <a-input v-if="pageData.editName" v-model="formData.tableName" :max-length="32"/>-->
           <span>{{ formData.tableName }}</span>
         </a-form-item>
       </a-col>
@@ -45,7 +45,7 @@
             :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
             field="tableType">
           <a-select v-if="pageData.formState==='add'" v-model="formData.tableType">
-            <a-option v-for="item of tableTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value" :disabled="item.disabled"/>
+            <a-option v-for="item of tableTypeOptions" :key="item.value as string" :disabled="item.disabled" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.tableType.${formData.tableType}`) }}</span>
         </a-form-item>

@@ -41,13 +41,7 @@
 
 <script lang="ts" setup>
 import {ref} from 'vue';
-import {
-  getOrgUser as getForm,
-  insertOrgUser as createOrUpdateForm,
-  QueryOrgForm,
-  queryOrgs,
-  QueryOrgUserForm as QueryForm
-} from '@/api/security';
+import {getOrgUser as getForm, insertOrgUser as createOrUpdateForm, QueryOrgForm, queryOrgs, QueryOrgUserForm as QueryForm} from '@/api/security';
 import {ListUrlParams, SelectOption} from '@/api/base';
 import {defaultOrgOptions} from "@/views/security/user/org/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";

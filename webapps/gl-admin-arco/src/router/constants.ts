@@ -11,11 +11,4 @@ export const NOT_FOUND = {
 
 export const REDIRECT_ROUTE_NAME = 'Redirect';
 
-export const DEFAULT_ROUTE_NAME = 'appList';
-
-export const DEFAULT_ROUTE = {
-  title: 'model.dataBase.index.menu.list',
-  name: DEFAULT_ROUTE_NAME,
-  fullPath: `/app/appList`,
-  params: {}
-};
+export const DEFAULT_ROUTE = {title: 'model.dataBase.index.menu.list', name: 'appList', fullPath: `/app/appList`, params: {}};

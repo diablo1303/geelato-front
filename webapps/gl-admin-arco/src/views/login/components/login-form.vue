@@ -50,7 +50,7 @@
           >
             {{ $t('login.form.rememberPassword') }}
           </a-checkbox>
-          <a-link @click="resetPwd($event)">{{ $t('login.form.forgetPassword') }}</a-link>
+          <a-link @click="forgetPassword($event)">{{ $t('login.form.forgetPassword') }}</a-link>
         </div>
         <a-button :loading="loading" html-type="submit" long type="primary">
           {{ $t('login.form.login') }}
@@ -74,8 +74,9 @@ import {useStorage} from '@vueuse/core';
 import {useUserStore} from '@/store';
 import useLoading from '@/hooks/loading';
 import type {LoginData} from '@/api/user';
-import {DEFAULT_ROUTE, DEFAULT_ROUTE_NAME} from "@/router/constants";
+import {DEFAULT_ROUTE} from "@/router/constants";
 import {appDataBaseRoutes, formatAppModules} from "@/router/routes";
+import {forgetPasswordEdit} from "@/api/user";
 
 const router = useRouter();
 const route = useRoute();
@@ -119,7 +120,7 @@ const handleSubmit = async ({errors, values,}: {
       if (redirect) {
         router.push({name: redirect as string, params: {...othersQuery} as RouteParamsRaw});
       } else {
-        router.push({name: DEFAULT_ROUTE_NAME, params: DEFAULT_ROUTE.params});
+        router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
       }
       Message.success(t('login.form.login.success'));
       const {rememberPassword} = loginConfig.value;
@@ -138,8 +139,8 @@ const handleSubmit = async ({errors, values,}: {
 const setRememberPassword = (value: boolean) => {
   loginConfig.value.rememberPassword = value;
 };
-const resetPwd = (ev?: MouseEvent) => {
-  window.open(router.resolve({name: "resetPwd"}).href, "_blank");
+const forgetPassword = (ev?: MouseEvent) => {
+  window.open(router.resolve({name: "forget"}).href, "_blank");
 }
 </script>
 

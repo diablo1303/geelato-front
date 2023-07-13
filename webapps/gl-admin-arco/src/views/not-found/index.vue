@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <a-result class="result" status="404" :subtitle="'not found'"></a-result>
+    <a-result :subtitle="'not found'" class="result" status="404"></a-result>
     <div class="operation-row">
       <a-button key="back" type="primary" @click="back($event)"> back</a-button>
     </div>
@@ -9,17 +9,16 @@
 
 <script lang="ts" setup>
 import {useRouter} from 'vue-router';
-import {DEFAULT_ROUTE, DEFAULT_ROUTE_NAME} from "@/router/constants";
+import {DEFAULT_ROUTE} from "@/router/constants";
 
 const router = useRouter();
 const back = (ev: MouseEvent) => {
-  console.log(DEFAULT_ROUTE)
   // warning： Go to the node that has the permission
-  router.push({name: DEFAULT_ROUTE_NAME, params: DEFAULT_ROUTE.params});
+  router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
 };
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .content {
   // padding-top: 100px;
   position: absolute;

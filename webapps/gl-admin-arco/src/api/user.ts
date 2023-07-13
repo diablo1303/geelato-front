@@ -78,10 +78,10 @@ export interface ResetPasswordForm {
   rPassword: string;
 }
 
-export function resetPwdValid(params: ResetPasswordForm) {
-  return axios.post<QueryResult>(`/api/user/resetPwdValid`, params);
+export function forgetPasswordValid(params: ResetPasswordForm) {
+  return axios.post<QueryResult>(`/api/user/forgetValid`, params);
 }
 
-export function resetPwdEdit(params: ResetPasswordForm) {
-  return axios.post<QueryResult>(`/api/user/resetPwd`, params);
+export function forgetPasswordEdit(params: ResetPasswordForm) {
+  return axios.post<QueryResult>(`/api/user/forget`, params);
 }
