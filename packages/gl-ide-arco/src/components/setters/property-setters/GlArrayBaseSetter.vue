@@ -28,11 +28,10 @@
         </div>
       </template>
     </gl-draggable>
+    <a v-if="addAble" @click="addItem" style="line-height: 2em;cursor: pointer;margin-left: 1.5em">
+      <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加
+    </a>
   </div>
-
-  <a v-if="addAble" @click="addItem" style="line-height: 2em;cursor: pointer">
-    <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加</a>
-
 </template>
 
 <script lang="ts">

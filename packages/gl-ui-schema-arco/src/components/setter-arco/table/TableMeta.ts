@@ -102,7 +102,7 @@ export default {
             "group": "base",
             "type": "props",
             "enableValueExpress": false,
-            "show": true,
+            "show": false,
             "expanded": true,
             "title": "启用表格编辑",
             "setterComponentName": "ASwitch"

@@ -3,7 +3,7 @@ export default {
     "displayMode": "Tile",
     "iconType": "gl-textarea",
     "group": "dataEntry",
-    "title": "多行文本",
+    "title": "多行输入",
     "alias": "textarea",
     "useBy": ["freePage"],
     "properties": [{
