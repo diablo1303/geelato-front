@@ -9,13 +9,13 @@
 
 <script lang="ts" setup>
 import {useRouter} from 'vue-router';
-import {DEFAULT_ROUTE, DEFAULT_ROUTE_NAME} from "@/router/constants";
+import {DEFAULT_ROUTE} from "@/router/constants";
 
 const router = useRouter();
 const back = (ev: MouseEvent) => {
   console.log(DEFAULT_ROUTE)
   // warning： Go to the node that has the permission
-  router.push({name: DEFAULT_ROUTE_NAME, params: DEFAULT_ROUTE.params});
+  router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
 };
 </script>
 
