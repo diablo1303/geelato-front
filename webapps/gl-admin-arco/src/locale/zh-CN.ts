@@ -1,9 +1,11 @@
 import localeMessageBox from '@/components/message-box/locale/zh-CN';
-import localeLogin from '@/views/login/locale/zh-CN';
-
-import localeSecurity from '@/views/security/locale/zh-CN';
 
 import localeApplication from '@/views/application/locale/zh-CN';
+import localeLogin from '@/views/login/locale/zh-CN';
+import localeModel from '@/views/model/locale/zh-CN';
+import localePage from '@/views/page/locale/zh-CN';
+import localReset from '@/views/reset/locale/zh-CN';
+import localeSecurity from '@/views/security/locale/zh-CN';
 
 import localeSettings from './zh-CN/settings';
 
@@ -23,10 +25,14 @@ export default {
   'menu.faq': '常见问题',
   'navbar.docs': '文档中心',
   'navbar.action.locale': '切换为中文',
-  ...localeSettings,
   ...localeMessageBox,
-  ...localeLogin,
 
-  ...localeSecurity,
   ...localeApplication,
+  ...localeLogin,
+  ...localeModel,
+  ...localePage,
+  ...localReset,
+  ...localeSecurity,
+
+  ...localeSettings,
 };

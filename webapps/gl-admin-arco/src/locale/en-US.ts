@@ -1,9 +1,11 @@
 import localeMessageBox from '@/components/message-box/locale/en-US';
-import localeLogin from '@/views/login/locale/en-US';
-
-import localeSecurity from '@/views/security/locale/en-US';
 
 import localeApplication from '@/views/application/locale/en-US';
+import localeLogin from '@/views/login/locale/en-US';
+import localeModel from '@/views/model/locale/en-US';
+import localePage from '@/views/page/locale/en-US';
+import localReset from '@/views/reset/locale/en-US';
+import localeSecurity from '@/views/security/locale/en-US';
 
 import localeSettings from './en-US/settings';
 
@@ -23,10 +25,14 @@ export default {
   'menu.faq': 'FAQ',
   'navbar.docs': 'Docs',
   'navbar.action.locale': 'Switch to English',
-  ...localeSettings,
   ...localeMessageBox,
-  ...localeLogin,
 
-  ...localeSecurity,
   ...localeApplication,
+  ...localeLogin,
+  ...localeModel,
+  ...localePage,
+  ...localReset,
+  ...localeSecurity,
+
+  ...localeSettings,
 };
