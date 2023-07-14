@@ -346,39 +346,19 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "_showSub": false,
+        "_showSub": true,
         "properties": [{
-            "name": "dataIndex",
+            "name": "xEditComponent",
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
             "group": "base",
             "type": "props",
             "show": true,
             "expanded": true,
-            "title": "绑定字段",
-            "setterComponentName": "GlFieldSelect"
-        }, {
-            "name": "title",
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "title": "字段标题",
-            "setterComponentName": "AInput",
-            "enableValueExpress": false
-        }, {
-            "name": "xRenderScript",
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "description": "对字段值进行处理，示例：\"$gl.ctx.record.enableStatus == 1 ? '已启用' : '未启用'\"。",
-            "title": "显示脚本",
-            "setterComponentName": "AInput",
+            "title": "编辑组件",
+            "setterComponentName": "GlComponentSelect",
+            "placeholder": "",
+            "description": "若表格启用编辑，则该列选择此组件进行编辑；若该表格不需编辑，则可不选。",
             "enableValueExpress": false
         }, {
             "name": "sortable",
@@ -429,19 +409,6 @@ export default {
             "setterComponentName": "GlSimpleObjectSetter",
             "title": "排序"
         }, {
-            "name": "xEditComponent",
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "title": "编辑组件",
-            "setterComponentName": "GlComponentSelect",
-            "placeholder": "",
-            "description": "若表格启用编辑，则该列选择此组件进行编辑；若该表格不需编辑，则可不选。",
-            "enableValueExpress": false
-        }, {
             "name": "width",
             "group": "base",
             "type": "props",
@@ -456,7 +423,7 @@ export default {
         }],
         "setterComponentName": "GlObjectArraySetter",
         "title": "数据列",
-        "titleField": "title",
+        "titleField": "xEditComponent.props.label",
         "enableValueExpress": false
     }],
     "actions": [{

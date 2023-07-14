@@ -10,7 +10,8 @@ export default {
 // @ts-nocheck
 import GlQuery from "../gl-query/index.vue";
 import GlToolbar from "../gl-toolbar/index.vue";
-import GlEntityTable from "../gl-entity-table/index.vue";
+import GlEntityTable from "../gl-entity-table/GlEntityTable.vue";
+import GlEntityTableEditable from "../gl-entity-table/GlEntityTableEditable.vue";
 import {computed, inject, onMounted, type PropType, ref} from "vue";
 import type {EntityReaderParam, Param} from "@geelato/gl-ui";
 import QueryItem from "../gl-query/query";
@@ -240,6 +241,10 @@ const validateTable = () => {
 const onFetchSuccess = (args: any) => {
   emits('fetchSuccess', args)
 }
+
+const entityTable = computed(() => {
+  return props.base?.enableEdit ? GlEntityTableEditable : GlEntityTable
+})
 defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData, validateTable])
 </script>
 
@@ -315,24 +320,24 @@ defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
         </a-tooltip>
       </template>
     </GlToolbar>
-    <GlEntityTable
-        ref="tableRef"
-        :entityName="base.entityName"
-        :columns="columns"
-        :columnActions="columnActions"
-        :size="size"
-        :showPagination=base.showPagination
-        :enableEdit="base.enableEdit"
-        :isFormSubTable="base.isFormSubTable"
-        :subTablePidName="base.subTablePidName"
-        :isLogicDeleteMode="base.isLogicDeleteMode"
-        :rowSelection="rowSelection"
-        @updateColumns="updateColumns"
-        @updateRow="onUpdateRow"
-        @fetchSuccess="onFetchSuccess"
-        :glIsRuntime="glIsRuntime"
-        :glRuntimeFlag="glRuntimeFlag"
-    ></GlEntityTable>
+    <component :is="entityTable"
+               ref="tableRef"
+               :entityName="base.entityName"
+               :columns="columns"
+               :columnActions="columnActions"
+               :size="size"
+               :showPagination=base.showPagination
+               :enableEdit="base.enableEdit"
+               :isFormSubTable="base.isFormSubTable"
+               :subTablePidName="base.subTablePidName"
+               :isLogicDeleteMode="base.isLogicDeleteMode"
+               :rowSelection="rowSelection"
+               @updateColumns="updateColumns"
+               @updateRow="onUpdateRow"
+               @fetchSuccess="onFetchSuccess"
+               :glIsRuntime="glIsRuntime"
+               :glRuntimeFlag="glRuntimeFlag"
+    ></component>
   </a-card>
 </template>
 

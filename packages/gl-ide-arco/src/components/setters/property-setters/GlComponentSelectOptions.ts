@@ -1,6 +1,8 @@
 export default [
     {componentName: 'AButton', title: '按钮'},
-    {componentName: 'AInput', title: '单行文本'},
+    {componentName: 'GlText', title: '文本'},
+    {componentName: 'AInput', title: '单行输入'},
+    {componentName: 'ATextarea', title: '多行输入'},
     {componentName: 'AInputNumber', title: '数字输入'},
     {componentName: 'ASwitch', title: '开关'},
     {componentName: 'ASelect', title: '下拉选择'},
