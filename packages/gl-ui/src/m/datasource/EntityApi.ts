@@ -5,6 +5,8 @@ import MixUtil from "../utils/MixUtil";
 import type {EntityReader, EntityReaderParam} from "./EntityDataSource";
 import type {LooseObject} from "../mix/LooseObject";
 import AllUtils from "../utils/AllUtils";
+import {getToken} from "../utils/auth";
+
 
 export class EntityApi {
     url = new UrlConfig();
@@ -50,6 +52,27 @@ export class EntityApi {
             // crossDomain: true
         }
         this.service = axios.create(opts);
+
+        this.service.interceptors.request.use(
+            (config: any) => {
+                // let each request carry token
+                // this example using the JWT token
+                // Authorization is a custom headers key
+                // please modify it according to the actual situation
+                const token = getToken();
+                if (token) {
+                    if (!config.headers) {
+                        config.headers = {};
+                    }
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
+                return config;
+            },
+            (error) => {
+                // do something
+                return Promise.reject(error);
+            }
+        );
 
         // console.log('EntityApi > reCreate() > service options:', opts)
         return this.service
