@@ -77,6 +77,15 @@ const props = defineProps({
     type: [String, Number],
     required: true
   },
+  /**
+   *  树根节点名称
+   */
+  treeName: {
+    type: String,
+    default() {
+      return '根'
+    }
+  },
   draggable: {
     type: Boolean,
     default() {
@@ -194,17 +203,6 @@ const refreshTree = () => {
   console.log('refreshTree', treeData.value)
 }
 
-// const defaultTreeData = [
-//   {
-//     title: '根节点',
-//     key: '0-0',
-//     nodeType: 'folder',
-//     children: [],
-//   }
-// ];
-
-// const dragRules = [{type: 'allow', from: '*', to: 'folder'}]
-
 const filterContextMenuData = ref(new Array<ContextMenuDataType>())
 /**
  * 过滤显示适用于（useFor）该节点的菜单项
@@ -214,7 +212,7 @@ const onShowContextMenu = (clickedNodeData: any) => {
   filterContextMenuData.value = props.contextMenuData.filter((item: ContextMenuDataType) => {
     // 基于node节点的show属性作是否展示的检查
     if (item.show) {
-      const isShow = utils.evalExpression(item.show, {ctx:clickedNodeData})
+      const isShow = utils.evalExpression(item.show, {ctx: clickedNodeData})
       // @ts-ignore
       return item.useFor.includes(clickedNodeData.nodeType) && isShow
     } else {
@@ -422,7 +420,11 @@ const onDrop = ({dragNode, dropNode, dropPosition}: any) => {
   };
 
   // 1、从原数组删除拖动的节点
-  loop(data, dragNode.key, (nodeItem: any, index: number, arr: any, dragParams: { dragNode: any, dropNode: any, dropPosition: any }) => {
+  loop(data, dragNode.key, (nodeItem: any, index: number, arr: any, dragParams: {
+    dragNode: any,
+    dropNode: any,
+    dropPosition: any
+  }) => {
     arr.splice(index, 1);
   });
 
@@ -457,9 +459,20 @@ const closeModal = () => {
 const reloadTreeData = () => {
   if (props.loadTreeData) {
     props.loadTreeData().then((res: any) => {
-      // console.log('platform_tree_node:', res)
-      treeData.value = []
-      treeData.value.push(...Utils.ConvertUtil.listToTree({
+      console.log('platform_tree_node:', res)
+      treeData.value = [
+        {
+          treeId: props.treeId,
+          pid: '',
+          key: props.treeId,
+          title: props.treeName,
+          iconType: "gl-folder",
+          nodeType: "folder",
+          seqNo: "0",
+          children: []
+        }
+      ]
+      treeData.value[0].children.push(...Utils.ConvertUtil.listToTree({
         data: res.data.result || res.data.data,
         pid: props.treeId,
         renameId: 'key',

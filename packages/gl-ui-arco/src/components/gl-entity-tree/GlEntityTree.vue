@@ -1,6 +1,8 @@
 <template>
   <div class="gl-entity-tree">
-    <GlBaseTree :treeId="treeId" ref="glBaseTree"
+    <GlBaseTree ref="glBaseTree"
+                :treeId="treeId"
+                :treeName="treeName"
                 :draggable="draggable"
                 :loadTreeData="loadTreeDataFn"
                 :addNode="addNodeFn"
@@ -28,6 +30,15 @@ const props = defineProps({
   treeId: {
     type: [String, Number],
     required: true
+  },
+  /**
+   *  树根节点名称
+   */
+  treeName: {
+    type: String,
+    default() {
+      return '根'
+    }
   },
   draggable: {
     type: Boolean,

@@ -2,8 +2,7 @@ import {createApp} from 'vue';
 import ArcoVue from '@arco-design/web-vue';
 import ArcoVueIcon from '@arco-design/web-vue/es/icon';
 import globalComponents from '@/components';
-import geelatoMain from "@/main.geelato";
-import {entityApi} from "@geelato/gl-ui";
+import geelatoMain from "./main.geelato";
 import router from './router';
 import store from './store';
 import i18n from './locale';
@@ -15,17 +14,14 @@ import '@/api/interceptor';
 
 const app = createApp(App);
 
-
-entityApi.reCreate({baseURL: "https://localhost:8080"})
-
 app.use(ArcoVue, {});
 app.use(ArcoVueIcon);
-app.use(geelatoMain)
 
 app.use(router);
 app.use(store);
 app.use(i18n);
 app.use(globalComponents);
 app.use(directive);
+app.use(geelatoMain)
 
 app.mount('#app');

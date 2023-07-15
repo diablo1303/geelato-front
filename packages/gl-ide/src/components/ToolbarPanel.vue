@@ -1,7 +1,8 @@
 <template>
   <div class="gl-designer-toolbar" :style="btnStyle" style="text-align: center">
-    <span class="gl-left">
-      <img src="../../public/logo_words.svg" style="width: 84px;height: 24px"/>
+    <span class="gl-left" style="vertical-align: middle">
+<!--      <img src="../../public/logo_words.svg" style="width: 84px;height: 24px"/>-->
+            <img src="../../public/logo.png" style="padding:2px;width: 24px;height: 24px;" title="GEELATO IDE"/>
     </span>
     <span class="gl-left">
       <!--      <span title="项目名称">-->
@@ -9,12 +10,12 @@
       <!--      </span>-->
       <!--<a size="small" :style="btnStyle" @click="comingSoon('设置管理')">设置</a>-->
        <span class="gl-item">
-        <GlIconfont type="gl-project" text="项目" @click="projectConfig"></GlIconfont>
+         {{ appStore.currentApp.name }}
       </span>
       <span class="gl-item">
         <GlIconfont type="gl-save" text="保存" @click="saveFile"></GlIconfont>
       </span>
-      <span class="gl-item" v-if="isLogined" :disabled="!(pageStore.currentPage && pageStore.currentPage.id)">
+      <span class="gl-item" v-if="isLogin()" :disabled="!(pageStore.currentPage && pageStore.currentPage.id)">
         <GlIconfont type="gl-preview" text="预览" @click="preview"></GlIconfont>
         <!--<router-link target="_blank" to="/preview"></router-link>-->
       </span>
@@ -34,30 +35,30 @@
                <GlIconfont type="gl-redo" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"
                            @click="currentIconSelected='gl-desktop'"></GlIconfont>
              </a-button>
-      <!--      <span class="gl-item" v-if="isLogined">-->
+      <!--      <span class="gl-item" v-if="isLogin()">-->
       <!--        <GlIconfont type="gl-desktop" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"-->
       <!--                    @click="currentIconSelected='gl-desktop'"></GlIconfont>-->
       <!--      </span>-->
-      <!--       <span class="gl-item" v-if="isLogined">-->
+      <!--       <span class="gl-item" v-if="isLogin()">-->
       <!--        <GlIconfont type="gl-tablet" :class="{'gl-selected':currentIconSelected==='gl-tablet'}"-->
       <!--                    @click="currentIconSelected='gl-tablet'"></GlIconfont>-->
       <!--      </span>-->
-      <!--      <span class="gl-item" v-if="isLogined">-->
+      <!--      <span class="gl-item" v-if="isLogin()">-->
       <!--       <GlIconfont type="gl-mobile" :class="{'gl-selected':currentIconSelected==='gl-mobile'}"-->
       <!--                   @click="currentIconSelected='gl-mobile'"></GlIconfont>-->
-      <!--      </span><span class="gl-item" v-if="isLogined">-->
+      <!--      </span><span class="gl-item" v-if="isLogin()">-->
       <!--        <GlIconfont type="gl-desktop" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"-->
       <!--                    @click="currentIconSelected='gl-desktop'"></GlIconfont>-->
       <!--      </span>-->
-      <!--       <span class="gl-item" v-if="isLogined">-->
+      <!--       <span class="gl-item" v-if="isLogin()">-->
       <!--        <GlIconfont type="gl-tablet" :class="{'gl-selected':currentIconSelected==='gl-tablet'}"-->
       <!--                    @click="currentIconSelected='gl-tablet'"></GlIconfont>-->
       <!--      </span>-->
-      <!--      <span class="gl-item" v-if="isLogined">-->
+      <!--      <span class="gl-item" v-if="isLogin()">-->
       <!--       <GlIconfont type="gl-mobile" :class="{'gl-selected':currentIconSelected==='gl-mobile'}"-->
       <!--                   @click="currentIconSelected='gl-mobile'"></GlIconfont>-->
       <!--      </span>-->
-       <span class="gl-item" v-if="isLogined">
+       <span class="gl-item" v-if="isLogin()">
        <GlIconfont type="gl-json" @click="openCodeViewer"></GlIconfont>
       </span>
     </span>
@@ -68,10 +69,10 @@
         <GlIconfont v-if="currentLocalOption" type="gl-earth" :text="currentLocalOption.label"
                     @click="switchLanguages"></GlIconfont>
       </span>
-      <span class="gl-item" v-if="isLogined">
+      <span class="gl-item" v-if="isLogin()">
         <GlIconfont type="gl-logout" text="退出"></GlIconfont>
       </span>
-       <span class="gl-item" v-if="!isLogined">
+       <span class="gl-item" v-if="!isLogin()">
         <GlIconfont type="gl-preview" text="登录"></GlIconfont>
       </span>
        <span class="gl-item">
@@ -122,6 +123,7 @@ import {useAppStore} from "../stores/UseAppStore";
 import EventNames from "../entity/Events";
 import ClipboardJS from "clipboard";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import {isLogin} from "@geelato/gl-ui/src/m/utils/auth";
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()
@@ -134,7 +136,12 @@ const global = useGlobal()
 
 const btnStyle = {background: themeStore.theme.background}
 const isFullscreen = ref(false)
-const isLogined = ref(true)
+
+// 从查询参数中获取参数值
+appStore.currentApp.id = utils.getUrlQueryParam('appId') || ''
+appStore.currentApp.name = decodeURI(utils.getUrlQueryParam('appName') || '')
+appStore.currentApp.tenantCode = utils.getUrlQueryParam('tenantCode') || ''
+
 const zh = {
   title: '中文',
   locale: 'zh-CN',

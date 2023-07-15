@@ -29,7 +29,7 @@ import GlEntitySelect from "./components/setters/property-setters/GlEntitySelect
 import GlPageSelect from "./components/setters/property-setters/GlPageSelect.vue";
 import GlComponentSelect from "./components/setters/property-setters/GlComponentSelect.vue";
 import GlEntityReaderSetter from "./components/setters/property-setters/entity-reader-setter/GlEntityReaderSetter.vue";
-import GlToolbarBreadcrumbs from './components/gl-toolbar-breadcrumbs/Index.vue'
+import GlToolbarBreadcrumbs from './components/stage/GlToolbarBreadcrumbs.vue'
 import GlExpressionSetter from "./components/setters/expression-setters/GlExpressionSetter.vue";
 // import GlX from './components/gl-x/GlX.vue'
 // import GlComponentRecursion from './components/gl-component-recursion/ComponentRecursion.vue'

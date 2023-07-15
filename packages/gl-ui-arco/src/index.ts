@@ -23,6 +23,7 @@ import GlInstsRuntime from "./components/gl-inst-runtime/GlInstsRuntime.vue";
 import GlRefPage from "./components/gl-ref-page/GlRefPage.vue";
 import GlIconfontSelect from "./components/gl-iconfont-select/GlIconfontSelect.vue";
 import GlText from "./components/gl-text/GlText.vue";
+import {Drawer, Modal} from "@arco-design/web-vue";
 
 const i18nMessage = {en, cn};
 
@@ -53,6 +54,9 @@ const component: Plugin = {
         app.component(GlEncode.name, GlEncode)
         app.component(GlInstRuntime.name, GlInstRuntime)
         app.component(GlInstsRuntime.name, GlInstsRuntime)
+
+        app.component('GlModal', Modal)
+        app.component('GlDrawer', Drawer)
         // const i18n = createI18n({
         //   locale: localStorage.getItem("arco-locale") || "zh-CN",
         //   fallbackLocale: "en-US",

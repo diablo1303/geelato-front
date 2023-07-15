@@ -24,7 +24,8 @@
           </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('application.app.list.versionInfo')" field="versionInfo">
-              <a-input v-model="filterData.versionInfo" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.versionInfo" allow-clear @clear="search($event)"
+                       @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
@@ -113,29 +114,39 @@
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.logo')" :tooltip="true" :width="80" align="center" data-index="logo">
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.logo')" :tooltip="true" :width="80"
+                      align="center" data-index="logo">
         <template #cell="{record}">
           <img v-show="record.logo" :src="getDownloadUrlById(record.logo)" alt="logo" style="width: 25px;height: 25px"/>
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.name')" :tooltip="true" :width="150" data-index="name"/>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.code')" :tooltip="true" :width="120" data-index="code"/>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.icon')" :tooltip="true" :width="150" data-index="icon">
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.name')" :tooltip="true" :width="150"
+                      data-index="name"/>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.code')" :tooltip="true" :width="120"
+                      data-index="code"/>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.icon')" :tooltip="true" :width="150"
+                      data-index="icon">
         <template #cell="{record}">
           <GlIconfont :type="record.icon"/>
           {{ record.icon }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.watermark')" :tooltip="true" :width="100" data-index="watermark">
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.watermark')" :tooltip="true" :width="100"
+                      data-index="watermark">
         <template #cell="{ record }">
           {{ $t(`application.app.list.watermark.${record.watermark}`) }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.versionInfo')" :tooltip="true" :width="120" data-index="versionInfo"/>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.seqNo')" :tooltip="true" :width="80" data-index="seqNo"/>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.createAt')" :tooltip="true" :width="180" data-index="createAt"/>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.description')" :tooltip="true" :width="200" data-index="description"/>
-      <a-table-column :title="$t('application.app.list.operations')" :width="230" align="center" data-index="operations" fixed="right">
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.versionInfo')" :tooltip="true" :width="120"
+                      data-index="versionInfo"/>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.seqNo')" :tooltip="true" :width="80"
+                      data-index="seqNo"/>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.createAt')" :tooltip="true" :width="180"
+                      data-index="createAt"/>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.description')" :tooltip="true" :width="200"
+                      data-index="description"/>
+      <a-table-column :title="$t('application.app.list.operations')" :width="230" align="center" data-index="operations"
+                      fixed="right">
         <template #cell="{ record }">
           <a-dropdown position="br" trigger="hover">
             <a-button size="small" type="text">
@@ -165,7 +176,8 @@
           <a-button size="small" type="text" @click="editTable(record.id)">
             {{ $t('application.app.list.operations.edit') }}
           </a-button>
-          <a-popconfirm :content="$t('application.app.list.operations.delete.popContent')" position="tr" type="warning" @ok="deleteTable(record.id)">
+          <a-popconfirm :content="$t('application.app.list.operations.delete.popContent')" position="tr" type="warning"
+                        @ok="deleteTable(record.id)">
             <a-button size="small" status="danger" type="text">
               {{ $t('application.app.list.operations.delete') }}
             </a-button>
@@ -286,18 +298,20 @@ const addTable = (ev: MouseEvent) => {
 };
 const enterTable = (data: QueryForm, type: string) => {
   if (data && router) {
+    if (!data.id || !data.tenantCode) {
+      Notification.error("参数缺少，请补全数据{tenantCode、appId}");
+      return
+    }
     switch (type) {
-      case 'design':
-        if (data.id && data.tenantCode) {
-          window.open(router.resolve({
-            path: `/${data.tenantCode}/${data.id}${DEFAULT_ROUTE.fullPath.replace("/:tenantCode", "").replace("/:appId", "")}`,
-            params: {tenantCode: data.tenantCode, appId: data.id}
-          }).href, "_blank");
-        } else {
-          Notification.error("参数缺少，请补全数据{tenantCode、appId}");
-        }
-        break;
       case 'index':
+        window.open(router.resolve({
+          path: `/${data.tenantCode}/${data.id}${DEFAULT_ROUTE.fullPath.replace("/:tenantCode", "").replace("/:appId", "")}`,
+          params: {tenantCode: data.tenantCode, appId: data.id}
+        }).href, "_blank");
+        break;
+      case 'design':
+        console.log('window.location.host:', window.location.host)
+        window.open(`${window.location.protocol}//${window.location.host}/ide.html?tenantCode=${data.tenantCode}&appId=${data.id}&appName=${data.name}`, "_blank")
         break;
       case 'manage':
         break;
@@ -371,13 +385,13 @@ const popupVisibleChange = (val: boolean) => {
   }
 };
 watch(() => columns.value, (val) => {
-    cloneColumns.value = cloneDeep(val);
-    cloneColumns.value.forEach((item, index) => {
-      item.checked = true;
-    });
-    showColumns.value = cloneDeep(cloneColumns.value);
-  },
-  {deep: true, immediate: true}
+      cloneColumns.value = cloneDeep(val);
+      cloneColumns.value.forEach((item, index) => {
+        item.checked = true;
+      });
+      showColumns.value = cloneDeep(cloneColumns.value);
+    },
+    {deep: true, immediate: true}
 );
 
 /* 对外调用方法 */

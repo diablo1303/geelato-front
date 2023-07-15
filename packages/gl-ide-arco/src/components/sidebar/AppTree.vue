@@ -1,6 +1,7 @@
 <template>
   <div class="gl-app-tree">
-    <GlEntityTree :treeId="treeId"
+    <GlEntityTree :treeId="appStore.currentApp.id"
+                  :treeName="appStore.currentApp.name"
                   :draggable="true"
                   extendEntityName="platform_app_page"
                   @selectNode="onSelectNode"
@@ -22,39 +23,36 @@ const ideStore = useIdeStore()
 const appStore = useAppStore()
 
 // treeId，即应用的id
-const treeId = ref(appStore.currentApp.id || '')
 
 const onSelectNode = (params: any) => {
-  const dataRef = params
-  ideStore.openPage(<Page>{
-    type: dataRef.nodeType,
-    extendId: dataRef.key,
-    title: dataRef.title,
-    iconType: dataRef.iconType
-  })
+  if (!params.pid || params.nodeType === 'folder') {
+    // 根节点或目录节点
+  } else {
+    // 子节点
+    const dataRef = params
+    ideStore.openPage(<Page>{
+      type: dataRef.nodeType,
+      extendId: dataRef.key,
+      title: dataRef.title,
+      iconType: dataRef.iconType
+    })
+  }
 }
 
 const onDeleteNode = (params: any) => {
-  console.log('onDeleteNode params:', params)
-  const dataRef = params
-  ideStore.closePage(<Page>{
-    type: dataRef.nodeType,
-    extendId: dataRef.key,
-    title: dataRef.title,
-    iconType: dataRef.iconType
-  })
+  if (!params.pid) {
+    // 根节点
+  } else {
+    // 子节点
+    const dataRef = params
+    ideStore.closePage(<Page>{
+      type: dataRef.nodeType,
+      extendId: dataRef.key,
+      title: dataRef.title,
+      iconType: dataRef.iconType
+    })
+  }
 }
-
-// const onSelect = (selectedKeys: Array<string | number>, data: any) => {
-//   console.log('selectedKeys,data:', selectedKeys, data)
-//   const dataRef = data.node
-//   ideStore.openPage(<Page>{
-//     type: dataRef.nodeType,
-//     id: dataRef.key,
-//     title: dataRef.title,
-//     iconType: dataRef.iconType
-//   })
-// }
 
 const onIconClick = (nodeData: any) => {
   console.log('onIconClick:', nodeData)
