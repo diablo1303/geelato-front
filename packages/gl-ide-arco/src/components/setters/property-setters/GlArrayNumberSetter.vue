@@ -1,12 +1,12 @@
 <template>
   <GlArrayBaseSetter v-slot:default="slotProps" v-model="items" :defaultItemForAdd="0" @addItem="update"
                      @removeItem="update">
-    <a-input-number v-model="items[slotProps.index]"></a-input-number>
+    <a-input-number v-model="items![slotProps.index]"></a-input-number>
   </GlArrayBaseSetter>
 </template>
 
 <script lang="ts">
-import {defineComponent, type PropType} from 'vue'
+import {defineComponent} from 'vue'
 
 export default defineComponent({
   name: "GlArrayNumberSetter",
@@ -16,7 +16,7 @@ export default defineComponent({
       default() {
         return []
       }
-    }
+    },
   },
   data() {
     return {

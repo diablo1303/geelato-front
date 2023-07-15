@@ -140,7 +140,7 @@ const selectNode = (selectedKeys: any, data: any, treeData: any) => {
     <a-input v-if="showInput" v-model="inputMv" @click="openValueExpressModal" readonly></a-input>
     <a-button v-if="!showInput" size="mini" @click="openValueExpressModal"
               :type="mv?'primary':''"
-              style="padding: 0 0.1em;height: 2.6em;font-weight: 700">{ / }
+              style="padding: 0 0.1em;height: 2.6em;font-weight: 700;border: none">{ / }
     </a-button>
     <a-modal title="编辑表达式" v-model:visible="valueExpressModalVisible"
              :width="1100"

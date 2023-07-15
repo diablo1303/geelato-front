@@ -5,10 +5,12 @@ import GlUiSchemaCore from '@geelato/gl-ui-schema'
 import GlUiSchemaArco from '@geelato/gl-ui-schema-arco'
 import GlIde from '@geelato/gl-ide'
 import GlIdeArco from '@geelato/gl-ide-arco'
+import draggable from "vuedraggable";
 
 const geelatoMain = {
     install(app: App) {
 
+        app.component('gl-draggable', draggable)
         entityApi.reCreate({baseURL: import.meta.env.VITE_API_BASE_URL})
         app.use(GlUi)
         app.use(GlUiArco)

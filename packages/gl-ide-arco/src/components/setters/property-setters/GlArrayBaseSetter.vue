@@ -35,8 +35,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, nextTick, type PropType} from 'vue'
-import {CheckUtil, utils} from "@geelato/gl-ui";
+import {defineComponent} from 'vue'
 
 const defaultItemType: any = ''
 export default defineComponent({
