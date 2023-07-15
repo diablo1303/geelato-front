@@ -239,6 +239,7 @@ const onMenuItemClick = (clickedNodeData: any, contextMenuItemData: ContextMenuD
   } else if (contextMenuItemData.action === 'updateNodeName') {
     currentEditNodeData.value = JSON.parse(JSON.stringify(clickedNodeData))
     currentAction.value = {action: 'updateNodeName', title: '修改名称'}
+    // 这里不需调用 updateNodeName，会在弹出窗口修改，修改之后保存再调用
   } else if (contextMenuItemData.action === 'updateNode') {
     currentEditNodeData.value = JSON.parse(JSON.stringify(clickedNodeData))
     if (contextMenuItemData.actionParams) {
@@ -286,8 +287,10 @@ const saveNode = () => {
 
 const updateNodeName = (clickedNodeData: any, editNodeData: any) => {
   const params = {editNodeData}
+  // console.log('updateNodeName() > clickedNodeData', clickedNodeData, 'editNodeData', editNodeData)
   if (props.updateNodeName) {
     props.updateNodeName(params).then((res: any) => {
+      clickedNodeData.title = editNodeData.title
       refreshTree()
       emits('updateNodeName', params)
     })
@@ -303,6 +306,7 @@ const updateNode = (clickedNodeData: any, editNodeData: any) => {
   const params = {editNodeData}
   if (props.updateNode) {
     props.updateNode(params).then((res: any) => {
+      //  TODO 待结合实际应用情况，参考updateNodeName，在保存成功之后，更新前端的信息
       refreshTree()
       emits('updateNode', params)
     })
@@ -467,7 +471,7 @@ const reloadTreeData = () => {
           key: props.treeId,
           title: props.treeName,
           iconType: "gl-folder",
-          nodeType: "folder",
+          nodeType: "root",
           seqNo: "0",
           children: []
         }

@@ -17,15 +17,13 @@ export default {
 </script>
 <script setup lang="ts">
 import {useIdeStore, useAppStore, Page} from "@geelato/gl-ide";
-import {ref} from "vue";
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()
 
-// treeId，即应用的id
-
 const onSelectNode = (params: any) => {
-  if (!params.pid || params.nodeType === 'folder') {
+  // console.log('onSelectNode() > params:', params)
+  if (['root', 'folder'].indexOf(params.nodeType) >= 0) {
     // 根节点或目录节点
   } else {
     // 子节点
@@ -40,7 +38,7 @@ const onSelectNode = (params: any) => {
 }
 
 const onDeleteNode = (params: any) => {
-  if (!params.pid) {
+  if (['root'].indexOf(params.nodeType) >= 0) {
     // 根节点
   } else {
     // 子节点
