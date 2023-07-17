@@ -265,8 +265,9 @@ export class JsScriptExecutor {
             invokeComponentMethod: (componentId: string, methodName: string, params: Array<Param>) => {
                 const method = this.getComponentMethod(componentId, methodName)
                 if (method) {
-                    method(that.evalParams(params, $gl.ctx))
+                    return method(that.evalParams(params, $gl.ctx))
                 }
+                return false
             },
             /**
              * 键值文本转换

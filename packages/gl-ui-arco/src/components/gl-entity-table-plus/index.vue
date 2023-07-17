@@ -188,7 +188,7 @@ const deleteRow = (params: Array<Param>) => {
   console.log('deleteRow() > params:', params)
 
   if (!params || params.length === 0) {
-    console.error('基于记录id进行删除失败，未配置参数。')
+    console.error('基于记录id进行删除失败，未配置参数id。')
     return
   }
 

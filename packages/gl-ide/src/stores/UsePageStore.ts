@@ -57,12 +57,9 @@ export const usePageStore = defineStore('GlPageStore', () => {
     /**
      * 获取页面模板，并为页面模板中无id的组件加上id
      * @param pageType
-     * @param template
      */
     function getPageTemplate(pageType: PageType): ComponentInstance {
-        const template: ComponentInstance = JSON.parse(JSON.stringify(pageTemplates[pageType]))
-
-        return template
+        return JSON.parse(JSON.stringify(pageTemplates[pageType]))
     }
 
     function addPage(page: Page) {
