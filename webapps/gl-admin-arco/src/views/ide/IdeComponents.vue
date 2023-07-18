@@ -33,7 +33,7 @@ watch(searchText, change)
 <template>
   <div class="ide-components">
     <div style="border-bottom: 1px solid black">
-      <a-radio-group type="button" v-model="schema" size="large" @change="change">
+      <a-radio-group v-model="schema" type="button" size="large" @change="change">
         <a-radio value="schemaArco">UI组件库</a-radio>
         <a-radio value="schemaBlock">脚本组件库</a-radio>
       </a-radio-group>
