@@ -23,12 +23,12 @@ export default {
         }, {"title": "编码", "dataIndex": "code"}, {
             "title": "类型",
             "dataIndex": "type",
-            "xRenderScript": "$gl.ctx.record.type === '1' ? '平台级' : '应用级'"
+            "_renderScript": "$gl.ctx.record.type === '1' ? '平台级' : '应用级'"
         }, {
             "title": "启用",
             "dataIndex": "enableStatus",
             "slotName": "enableStatus",
-            "xRenderScript": "ctx.record.enableStatus === 1 ? '已启用' : '未启用'"
+            "_renderScript": "ctx.record.enableStatus === 1 ? '已启用' : '未启用'"
         }, {"title": "描述", "dataIndex": "description"}, {
             "title": "创建时间",
             "dataIndex": "createAt"

@@ -48,7 +48,7 @@ module.exports = {
     'vue/multi-word-component-names': 0,
     // Allow @ts-ignore comment
     '@typescript-eslint/ban-ts-comment': 0,
-    '@typescript-eslint/no-unused-vars': 1,
+    '@typescript-eslint/no-unused-vars': 0,
     '@typescript-eslint/no-empty-function': 1,
     '@typescript-eslint/no-explicit-any': 0,
     'import/extensions': [
@@ -66,6 +66,8 @@ module.exports = {
     'prefer-regex-literals': 0,
     'import/no-extraneous-dependencies': 0,
     'import/first':0,
-    'vue/padding-line-between-blocks':0
+    'vue/padding-line-between-blocks':0,
+    'vue/attribute-hyphenation':0,
+    'vue/first-attribute-linebreak':0
   },
 };

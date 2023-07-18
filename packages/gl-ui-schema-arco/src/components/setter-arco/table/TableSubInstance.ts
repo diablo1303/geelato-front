@@ -26,7 +26,7 @@ export default {
             "dataIndex": "name",
             "fixed": "right",
             "sortable": {"sortDirections": ["ascend", "descend"]},
-            "xEditComponent": {
+            "_editComponent": {
                 "id": "",
                 "title": "",
                 "componentName": "AInput",
@@ -55,7 +55,7 @@ export default {
         }, {
             "title": "状态",
             "dataIndex": "delStatus",
-            "xRenderScript": "$gl.ctx.record.delStatus == 1 ? '已启用' : '未启用'"
+            "_renderScript": "$gl.ctx.record.delStatus == 1 ? '已启用' : '未启用'"
         }, {
             "title": "创建时间",
             "dataIndex": "createAt"

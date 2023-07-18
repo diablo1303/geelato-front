@@ -152,17 +152,6 @@ export default {
         "title": "不渲染",
         "setterComponentName": "ASwitch",
         "enableValueExpress": true
-    }, {
-        "name": "placeholder",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "占位提示",
-        "setterComponentName": "AInput",
-        "enableValueExpress": true
     }],
     "actions": [{"name": "change", "description": "", "title": "值改变"}],
     "displayOnStage": "inline-block"

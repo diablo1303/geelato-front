@@ -24,6 +24,7 @@ import GlRefPage from "./components/gl-ref-page/GlRefPage.vue";
 import GlIconfontSelect from "./components/gl-iconfont-select/GlIconfontSelect.vue";
 import GlText from "./components/gl-text/GlText.vue";
 import {Drawer, Modal} from "@arco-design/web-vue";
+import GlAlert from "./components/gl-alert/GlAlert.vue";
 
 const i18nMessage = {en, cn};
 
@@ -33,7 +34,8 @@ const component: Plugin = {
         if (PluginUtil.markInstalledPlugin(app, "gl-ui-arco")) {
             return;
         }
-        app.component(GlText.name,GlText)
+        app.component(GlAlert.name, GlAlert)
+        app.component(GlText.name, GlText)
         app.component(GlIconfontSelect.name, GlIconfontSelect)
         app.component(GlDict.name, GlDict)
         app.component(GlPage.name, GlPage)

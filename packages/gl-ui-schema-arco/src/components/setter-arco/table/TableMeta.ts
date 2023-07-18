@@ -356,7 +356,7 @@ export default {
             "title": "是否显示",
             "setterComponentName": "ASwitch"
         }, {
-            "name": "xRenderScript",
+            "name": "_renderScript",
             "setterComponentProps": {"showInput": true},
             "setterComponentVModelName": "modelValue",
             "group": "base",

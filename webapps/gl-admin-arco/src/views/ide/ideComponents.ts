@@ -1,12 +1,12 @@
 import {createApp} from 'vue';
 import ArcoVue from '@arco-design/web-vue';
 import geelatoMain from "./ide.geelato";
-import store from './store';
-import i18n from './locale';
-import IdePage from './views/ide/IdePage.vue';
+import store from '../../store';
+import i18n from '../../locale';
+import IdeComponents from "./IdeComponents.vue";
 import '@arco-design/web-vue/dist/arco.css';
 
-const app = createApp(IdePage);
+const app = createApp(IdeComponents);
 
 app.use(ArcoVue, {});
 app.use(store);

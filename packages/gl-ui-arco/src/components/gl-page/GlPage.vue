@@ -93,7 +93,7 @@ const props = defineProps({
 
 const style = {
   margin: props.pageMargin || '12px',
-  padding: props.pagePadding || '12px'
+  padding: props.pagePadding || '0'
 }
 
 const showSlot = () => {

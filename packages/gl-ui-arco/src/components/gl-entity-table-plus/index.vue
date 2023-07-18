@@ -86,8 +86,8 @@ const props = defineProps({
 // 数据预处理
 onMounted(() => {
   props.columns.forEach((item, index) => {
-    if (item.xRenderFnBody) {
-      const fn = `(record,column,rowIndex)=>{return ${item.xRenderFnBody}}`;
+    if (item._renderFnBody) {
+      const fn = `(record,column,rowIndex)=>{return ${item._renderFnBody}}`;
       // eslint-disable-next-line no-eval
       item.render = eval(fn);
     }

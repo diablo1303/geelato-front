@@ -29,7 +29,6 @@ import AllUtils from "./m/utils/AllUtils";
 import CheckUtil from "./m/utils/CheckUtil";
 import ConvertUtil from "./m/utils/ConvertUtil";
 import useGlobal from "./m/hooks/useGlobal";
-import './assets/style.css'
 import jsScriptExecutor from "./m/actions/JsScriptExecutor";
 import {PageProvideKey, PageParamsKey} from "./components/PageProvideProxy";
 import AppProvideProxy from "./components/AppProvideProxy";
@@ -39,6 +38,8 @@ import {FormProvideKey} from "./components/FormProvideProxy";
 import {Schema} from "b-validate";
 import type {PageType, Param} from "./m/types/global";
 import {paramStringify} from "./components/PageProvideProxy";
+import './assets/style.css'
+
 const Utils = AllUtils
 
 const component:Plugin = {
