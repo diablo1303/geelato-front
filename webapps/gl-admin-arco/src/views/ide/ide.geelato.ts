@@ -10,7 +10,7 @@ import draggable from "vuedraggable";
 const geelatoMain = {
     install(app: App) {
 
-        app.component('gl-draggable', draggable)
+        app.component('GlDraggable', draggable)
         entityApi.reCreate({baseURL: import.meta.env.VITE_API_BASE_URL})
         app.use(GlUi)
         app.use(GlUiArco)

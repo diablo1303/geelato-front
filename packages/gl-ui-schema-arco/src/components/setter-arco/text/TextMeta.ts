@@ -2,11 +2,44 @@ export default {
     "componentName": "GlText",
     "displayMode": "Tile",
     "iconType": "gl-text",
-    "group": "dataDisplay",
+    "group": "dataEntry",
     "title": "文本",
     "alias": "text",
     "useBy": ["freePage"],
     "properties": [{
+        "name": "label",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "title": "标题",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "bindField",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "setterComponentName": "GlEntityFieldSelect",
+        "title": "编写对象"
+    }, {
+        "name": "_content",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "title": "内容",
+        "setterComponentName": "AInput"
+    }, {
         "name": "bold",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -83,17 +116,7 @@ export default {
         "setterComponentVModelName": "modelValue",
         "title": "可复制",
         "setterComponentName": "ASwitch"
-    }, {
-        "name": "disabled",
-        "group": "base",
-        "type": "props",
-        "enableValueExpress": true,
-        "show": true,
-        "expanded": true,
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "title": "禁用",
-        "setterComponentName": "ASwitch"
     }],
-    "actions": [{"name": "change", "description": "", "title": "值改变"}]
+    "actions": [{"name": "change", "description": "", "title": "值改变"}],
+    "displayOnStage": "inline-block"
 }

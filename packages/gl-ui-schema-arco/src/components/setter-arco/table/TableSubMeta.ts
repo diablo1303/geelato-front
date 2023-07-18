@@ -306,7 +306,7 @@ export default {
             "expanded": true,
             "_showSub": true,
             "properties": [],
-            "title": "左边组件",
+            "title": "右边组件",
             "setterComponentName": "GlArrayComponentSetter",
             "titleField": ""
         }, {

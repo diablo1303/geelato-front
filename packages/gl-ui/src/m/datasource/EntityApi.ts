@@ -152,6 +152,7 @@ export class EntityApi {
      * @param entityName e.g. platform_dev_project
      * @param fieldNames 查询的列字段 e.g. id,name
      * @param params 查询要件键值对 e.g. {id:123456,name:'张三'} or {'@order':'name|+'}
+     * @param withMeta
      */
     query(
         entityName: string,

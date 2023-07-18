@@ -206,12 +206,14 @@ watch(mv, (value) => {
   emits('update', mv.value)
 })
 
+/**
+ *  将页面内的子组件通过map进行引用，便于后续基于页面进行组件事件调用
+ *  注意需在创建后即执行，以确保后续的运算可以用到该实例
+ */
+pageProvideProxy?.setVueInst(props.glComponentInst.id, getCurrentInstance())
+
 onMounted(() => {
   emits('onComponentMounted', {})
-  /**
-   *  将页面内的子组件通过map进行引用，便于后续基于页面进行组件事件调用
-   */
-  pageProvideProxy?.setVueInst(props.glComponentInst.id, getCurrentInstance())
 })
 
 executePropsExpressions()

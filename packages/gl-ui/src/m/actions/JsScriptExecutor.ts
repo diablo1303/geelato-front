@@ -441,6 +441,7 @@ export class JsScriptExecutor {
                 }
             }
         }
+        console.log('{inst, insts}',{inst, insts})
         return {inst, insts}
     }
 
@@ -503,7 +504,6 @@ export class JsScriptExecutor {
                 }
             }
         }
-
         return $gl
     }
 

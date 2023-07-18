@@ -21,7 +21,7 @@ export default {
         "name": "_content",
         "group": "base",
         "type": "props",
-        "enableValueExpress": false,
+        "enableValueExpress": true,
         "show": true,
         "expanded": true,
         "setterComponentProps": {},

@@ -7,7 +7,6 @@ import GlIconfont from './components/gl-iconfont/Index.vue'
 import GlDndPlaceholder from './components/gl-dnd-placeholder/Index.vue'
 import GlComponent from "./components/gl-component/GlComponent.vue";
 import GlPageViewer from "./components/gl-page-viewer/GlPageViewer.vue";
-import GlText from './components/gl-text/Index.vue'
 import {LooseObject} from "./m/mix/LooseObject";
 import {default as iconsJson} from './assets/iconfont.json'
 import {IconsJson} from "./components/gl-iconfont/IconsJson";
@@ -53,7 +52,6 @@ const component:Plugin = {
         app.component(GlIconfont.name, GlIconfont)
         app.component(GlHtml.name, GlHtml)
         app.component(GlDndPlaceholder.name, GlDndPlaceholder)
-        app.component(GlText.name, GlText)
         app.component(GlComponent.name, GlComponent)
         app.component(GlPageViewer.name, GlPageViewer)
 

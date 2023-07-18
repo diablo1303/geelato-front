@@ -156,16 +156,16 @@ const selectConstNode = (selectedKeys: any, data: any, treeData: any) => {
     <a-modal title="编辑表达式" v-model:visible="valueExpressModalVisible"
              :width="1100"
              :modal-style="{height:'700px',maxHeight:'700px'}"
-             :body-style="{padding:0}"
+             :body-style="{padding:0,overflow:'hidden'}"
              :mask-style="{background:'rgba(0, 0, 0, 0.25)'}"
              @ok="handleOk"
              @cancel="handleCancel">
       <div class="gl-expression-setter-editor" style="display: flex;" v-if="valueExpressModalVisible">
         <div style="flex: auto;border-right: solid 1px #d7d6d6">
           <!--      <a-textarea v-model="mv" placeholder="在此输入..."></a-textarea>-->
-          <div style="max-height: 310px">
-            <GlMonacoEditor ref="monacoEditor" v-model="mv" :height="310"
-                            language="javascript"></GlMonacoEditor>
+          <div>
+            <GlMonacoEditor ref="monacoEditor" v-model="mv" :height="245"
+                            language="javascript" style="max-height:245px"></GlMonacoEditor>
           </div>
           <!--          <a-button style="float: right" type="outline" size="mini" status="danger"-->
           <!--                    @click="clearValueExpress">清除绑定-->

@@ -463,7 +463,7 @@ const closeModal = () => {
 const reloadTreeData = () => {
   if (props.loadTreeData) {
     props.loadTreeData().then((res: any) => {
-      console.log('platform_tree_node:', res)
+      // console.log('platform_tree_node:', res)
       treeData.value = [
         {
           treeId: props.treeId,
