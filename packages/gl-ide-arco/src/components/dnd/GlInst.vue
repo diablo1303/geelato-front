@@ -117,11 +117,14 @@ const setRef = (el: HTMLDivElement) => {
 /**
  *  数据输入组件作为表单项，除了表单组件本身
  */
-const isFormItem = computed(() => {
+const showFormItem = computed(() => {
   // 排除特定的组件，如表单组件
   const ignoreComponentNames = ['GlEntityForm', 'GlEntityTableSub']
   if (ignoreComponentNames.indexOf(props.glComponentInst.componentName) >= 0) {
     return false
+  }
+  if (props.glComponentInst.componentName === 'GlRowColLayout' && props.glComponentInst.props.showLabel === true) {
+    return true
   }
   return componentStore.isDataEntryComponent(props.glComponentInst.componentName)
 })
@@ -183,7 +186,7 @@ const onClick = (...args: any[]) => {
          :style="{ opacity }"
          :data-handler-id="handlerId"
     >
-      <template v-if="isFormItem">
+      <template v-if="showFormItem">
         <a-form-item class="gl-form-item" :field="glComponentInst?.props?.bindField?.fieldName"
                      :class="{'gl-hidden':glComponentInst?.props?.hideLabel===true}"
                      :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"
@@ -205,7 +208,7 @@ const onClick = (...args: any[]) => {
         </a-form-item>
       </template>
       <template v-else>
-        <GlComponentDnd class="gl-dnd-item gl-x-item"
+        <GlComponentDnd class="gl-dnd-item gl-x-item" style="flex: auto"
                         :glComponentInst="glComponentInst"
                         :componentStoreId="componentStoreId">
         </GlComponentDnd>
@@ -218,6 +221,10 @@ const onClick = (...args: any[]) => {
 <style lang="less">
 .gl-form-item .gl-hidden .arco-form-item-label-col {
   display: none;
+}
+
+.gl-form-item .gl-hidden .arco-form-item-wrapper-col {
+  flex: auto;
 }
 
 .gl-dnd-wrapper {
