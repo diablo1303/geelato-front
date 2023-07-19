@@ -1,7 +1,8 @@
 <template>
   <div class="gl-component-register">
     <!--:push-other-panes="false"-->
-    <splitpanes class="default-theme gl-bg-white" style="height:750px;background-color:#FFF">
+    <splitpanes class="default-theme gl-bg-white" style="background-color:#FFF"
+                :style="{height:`${themeStore.modalBodyHeight}px`}">
       <pane :size="paneSize.A" style="padding-right: 0.2em;overflow-y: auto">
         <div class="gl-title">
           <span>
@@ -45,7 +46,9 @@
               </td>
             </tr>
             <tr>
-              <td class="gl-table-cell gl-label" title="v-model属性名，默认为modelValue，特殊的，如tab组件为activeKey">绑定属性</td>
+              <td class="gl-table-cell gl-label" title="v-model属性名，默认为modelValue，特殊的，如tab组件为activeKey">
+                绑定属性
+              </td>
               <td class="gl-table-cell">
                 <a-input v-model="cMeta.vModelName" placeholder="默认为modelValue，特殊的，如tab组件为activeKey"/>
               </td>
@@ -157,7 +160,7 @@
               组件动作设置 (当前动作：{{ (currentAction.name || '未设置') }})
               </span>
           </div>
-          <GlActionSetterBuilder :key="currentActionIndex"  v-model:modelValue="currentAction"
+          <GlActionSetterBuilder :key="currentActionIndex" v-model:modelValue="currentAction"
                                  @updateSetter="updateGlActionSetter"></GlActionSetterBuilder>
         </template>
         <template v-else-if="currentSetterTarget==setterTarget.methods">
@@ -298,6 +301,7 @@ import ClipboardJS from "clipboard";
 import VueJsonPretty from 'vue-json-pretty'
 import {ComponentMeta, ActionSetterMeta, MethodSetterMeta} from "@geelato/gl-ui-schema";
 import {ComponentInstance, PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
+import {useThemeStore} from "@geelato/gl-ide";
 
 enum SetterTarget {
   actions = 'actions',
@@ -349,6 +353,7 @@ export default defineComponent({
   },
   data() {
     return {
+      themeStore: useThemeStore(),
       setterTarget: SetterTarget,
       previewEnable: false,
       currentSetterTarget: SetterTarget.none,
@@ -505,7 +510,7 @@ export default defineComponent({
 <style>
 
 .gl-component-register .gl-title {
-  margin: 1em 0em;
+  margin: 1em 0;
   font-weight: bold;
 }
 
@@ -513,7 +518,7 @@ export default defineComponent({
   width: 100%;
   text-align: center;
   padding: 0;
-  border-top: 0px;
+  border-top: 0;
   /*border-right: 1px solid #178df7;*/
   /*border-bottom: 1px solid #178df7;*/
   /*border-left: 1px solid #178df7;*/

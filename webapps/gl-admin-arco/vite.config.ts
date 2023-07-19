@@ -21,7 +21,8 @@ export default defineConfig({
       // 配置多入口
       input: {
         index: path.resolve(__dirname, 'index.html'),
-        about: path.resolve(__dirname, 'ide.html'),
+        ide: path.resolve(__dirname, 'ide.html'),
+        idePagePreview: path.resolve(__dirname, 'idePagePreview.html'),
       },
       // 确保外部化处理那些你不想打包进库的依赖
       external: [],

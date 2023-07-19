@@ -10,8 +10,29 @@ export default [
         "title": "默认值",
         "setterComponentName": "AInput",
         "enableValueExpress": true,
-        // "setterComponentName": "GlExpressionSetter",
         "description": "基于表达式计算默认值"
+    }, {
+        "name": "placeholder",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "占位提示",
+        "setterComponentName": "AInput",
+        "enableValueExpress": true
+    }, {
+        "name": "description",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "描述",
+        "setterComponentName": "AInput",
+        "enableValueExpress": true
     },
     {
         "name": "readonly",

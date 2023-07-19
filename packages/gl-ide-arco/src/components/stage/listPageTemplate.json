@@ -96,13 +96,13 @@
           {
             "title": "类型",
             "dataIndex": "type",
-            "xRenderScript": "ctx.record.type === '1' ? '平台级' : '应用级'"
+            "_renderScript": "ctx.record.type === '1' ? '平台级' : '应用级'"
           },
           {
             "title": "启用",
             "dataIndex": "delStatus",
             "slotName": "delStatus",
-            "xRenderScript": "ctx.record.delStatus === 1 ? '已启用' : '未启用'"
+            "_renderScript": "ctx.record.delStatus === 1 ? '已启用' : '未启用'"
           },
           {
             "title": "描述",

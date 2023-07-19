@@ -74,13 +74,13 @@ const props = defineProps({
   },
   ...mixins.props
 })
-// pageStatus: read | edit
-const isRead = pageProvideProxy.getParamValue('pageStatus') === 'read'
+// page.status: read | edit
+const isRead = pageProvideProxy.getParamValue('page.status') === 'read'
 // formData中不包括记录id，记录id在entityRecordId中定义
 const formParams = pageProvideProxy.getParamsByPrefixAsObject('form')
 const formData = ref<{ [key: string]: any }>(formParams);
 console.log('GlEntityForm > formData:', formData, 'formParams:', formParams)
-let entityRecordId = ref<string>(formParams.id || pageProvideProxy.getParamValue('recordId'))
+let entityRecordId = ref<string>(formParams.id)
 formProvideProxy.setRecordId(entityRecordId.value)
 
 const formItems = ref<Array<FormItem>>([]);
@@ -361,11 +361,9 @@ const submitForm = async () => {
     setLoading(false)
     return true
   } else {
+    // console.error('保存表单验证失败', res, subFormTableValidError)
     return false
   }
-  setTimeout(() => {
-    setLoading(false);
-  }, 1000);
 };
 
 /**

@@ -118,15 +118,16 @@
           </template>
           <!-- 3 ========================type为children========================-->
           <template v-else-if="propertySetterMeta.type==='children'">
+            {{propertySetterMeta}}
             <GlPropertySetterCard v-slot:default="slotProps" v-model="propertyModel"
-                                  :maxCount="propertySetterMeta.setterComponentProps.maxCount"
+                                  :maxCount="propertySetterMeta.subComponentCount"
                                   :titleField="propertySetterMeta.titleField"
                                   :elementTemplate="createChildElementTemplate(propertySetterMeta.name,propertySetterMeta.setterComponentProps.ChildComponentName)"
                                   @selectedElement="selectChildElement"
             >
               <!-- 通过属性元数据，定义每张卡片的内容  -->
               <div class="gl-table" :class="{'gl-table-as-tree':false}">
-                <template v-for="property in propertySetterMeta.properties">
+                <template v-for="property in propertySetterMeta.properties">aaaa
                   <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
                                     :propertyValue="slotProps.item.props[property.name]"
                                     @set:propertyValue="newValue=>slotProps.item.props[property.name]=newValue"

@@ -135,7 +135,7 @@ const editSlotNameFlag = '__editSlot'
 const setSlotNames = () => {
   // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确认列有slotName
   props.columns.forEach((col: Column) => {
-    if (col.xRenderScript) {
+    if (col._renderScript) {
       col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
     } else {
       delete col.slotName
@@ -145,11 +145,11 @@ const setSlotNames = () => {
   // 对于编辑状态
   // 如果启用编辑，需将column中没有设置插槽的，生成插槽
   props.columns.forEach((col: Column) => {
-    if (col.xEditComponent) {
+    if (col._editComponent) {
       col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
       // 验证信息
-      if (col.xEditComponent.props.rules) {
-        recordSchema.schema[col.dataIndex!] = toRaw(col.xEditComponent.props.rules)
+      if (col._editComponent.props.rules) {
+        recordSchema.schema[col.dataIndex!] = toRaw(col._editComponent.props.rules)
       }
     } else {
       col.slotName = undefined
@@ -361,7 +361,7 @@ watch(() => columns.value,
     (val) => {
 
       val.forEach((col)=>{
-        col.title = col.xEditComponent?.props.label
+        col.title = col._editComponent?.props.label
       })
       // @ts-ignore
       cloneColumns.value = cloneDeep(val);
@@ -389,7 +389,7 @@ const evalExpression = (data: {
     column: toRaw(data.column),
     rowIndex: toRaw(data.rowIndex),
   };
-  return jsScriptExecutor.evalExpression(ctx.column.xRenderScript, ctx);
+  return jsScriptExecutor.evalExpression(ctx.column._renderScript, ctx);
 };
 
 /**
@@ -453,7 +453,7 @@ const addRow = () => {
   const newRow = {}
   props.columns.forEach((col: Column) => {
     //@ts-ignore
-    newRow[col.dataIndex] = col.xEditComponent?.value
+    newRow[col.dataIndex] = col._editComponent?.value
   })
   renderData.value.push(newRow)
 }
@@ -563,7 +563,7 @@ defineExpose({
       <div class="gl-entity-table-cols-opt"
            :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">
         <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="updateRow(record,rowIndex)"
-                     :glComponentInst="cloneDeep(column.xEditComponent)"></GlComponent>
+                     :glComponentInst="cloneDeep(column._editComponent)"></GlComponent>
         <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>
       </div>
     </template>

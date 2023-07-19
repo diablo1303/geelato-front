@@ -306,7 +306,7 @@ export default {
             "expanded": true,
             "_showSub": true,
             "properties": [],
-            "title": "左边组件",
+            "title": "右边组件",
             "setterComponentName": "GlArrayComponentSetter",
             "titleField": ""
         }, {
@@ -348,7 +348,7 @@ export default {
         "expanded": true,
         "_showSub": true,
         "properties": [{
-            "name": "xEditComponent",
+            "name": "_editComponent",
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
             "group": "base",
@@ -423,7 +423,7 @@ export default {
         }],
         "setterComponentName": "GlObjectArraySetter",
         "title": "数据列",
-        "titleField": "xEditComponent.props.label",
+        "titleField": "_editComponent.props.label",
         "enableValueExpress": false
     }],
     "actions": [{

@@ -28,9 +28,9 @@ const props = defineProps({
 /**
  *  数据输入组件作为表单项，除了表单组件本身
  */
-const isFormItem = computed(() => {
+const showLabel = computed(() => {
   // 排除特定的组件，如表单组件
-  if (props.glComponentInst.componentName === 'GlEntityForm') {
+  if (['GlEntityForm','GlEntityTableSub'].indexOf(props.glComponentInst.componentName)>=0) {
     return false
   }
   return props.glComponentInst.group === 'dataEntry'
@@ -86,7 +86,7 @@ const i18nConvert = (value?: string) => {
 <template>
   <div class="gl-dnd-wrapper" :style="{display:displayStyle}">
     <div class="gl-component-wrapper">
-      <template v-if="isFormItem">
+      <template v-if="showLabel">
         <a-form-item v-show="glComponentInst.props.unRender!==true" class="gl-form-item"
                      :field="glComponentInst?.props?.bindField?.fieldName"
                      :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"

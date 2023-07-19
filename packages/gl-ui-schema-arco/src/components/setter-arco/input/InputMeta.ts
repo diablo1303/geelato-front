@@ -88,17 +88,6 @@ export default {
         "setterComponentName": "ASwitch",
         "show": true,
         "expanded": true
-    },  {
-        "name": "placeholder",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "占位提示",
-        "setterComponentName": "AInput",
-        "enableValueExpress": true
     }, {
         "name": "maxlength",
         "setterComponentProps": {},

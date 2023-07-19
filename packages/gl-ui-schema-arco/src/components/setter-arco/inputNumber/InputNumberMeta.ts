@@ -29,18 +29,6 @@ export default {
         "setterComponentName": "GlEntityFieldSelect",
         "enableValueExpress": false
     }, {
-        "name": "placeholder",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "占位提示",
-        "placeholder": "输入框提示文字",
-        "enableValueExpress": false,
-        "setterComponentName": "AInput"
-    }, {
         "name": "mode",
         "setterComponentProps": {
             "options": [{

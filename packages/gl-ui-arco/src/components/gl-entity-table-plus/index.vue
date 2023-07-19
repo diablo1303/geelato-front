@@ -86,8 +86,8 @@ const props = defineProps({
 // 数据预处理
 onMounted(() => {
   props.columns.forEach((item, index) => {
-    if (item.xRenderFnBody) {
-      const fn = `(record,column,rowIndex)=>{return ${item.xRenderFnBody}}`;
+    if (item._renderFnBody) {
+      const fn = `(record,column,rowIndex)=>{return ${item._renderFnBody}}`;
       // eslint-disable-next-line no-eval
       item.render = eval(fn);
     }
@@ -188,7 +188,7 @@ const deleteRow = (params: Array<Param>) => {
   console.log('deleteRow() > params:', params)
 
   if (!params || params.length === 0) {
-    console.error('基于记录id进行删除失败，未配置参数。')
+    console.error('基于记录id进行删除失败，未配置参数id。')
     return
   }
 

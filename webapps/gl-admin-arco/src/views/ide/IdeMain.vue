@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: "IdePage"
+  name: "IdeMain"
 }
 </script>
 <script setup lang="ts">

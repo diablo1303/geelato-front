@@ -15,6 +15,7 @@ const props = defineProps({
       return ''
     }
   },
+  _text: String,
   bold: Boolean,
   mark: Boolean,
   underline: Boolean,
@@ -28,6 +29,9 @@ const mv = ref(props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
+if (props._text) {
+  mv.value = props._text
+}
 </script>
 
 <template>

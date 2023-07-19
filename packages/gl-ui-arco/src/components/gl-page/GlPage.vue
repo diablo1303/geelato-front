@@ -93,7 +93,7 @@ const props = defineProps({
 
 const style = {
   margin: props.pageMargin || '12px',
-  padding: props.pagePadding || '12px'
+  padding: props.pagePadding || '0'
 }
 
 const showSlot = () => {
@@ -156,7 +156,7 @@ onMounted(() => {
 </script>
 <style lang="less">
 .gl-page {
-  width: 100%;
+  //width: 100%;
   //padding: 0 20px 20px 20px;
 }
 

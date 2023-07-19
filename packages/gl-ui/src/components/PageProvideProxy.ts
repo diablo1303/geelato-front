@@ -133,7 +133,7 @@ export default class PageProvideProxy {
     }
 
     /**
-     *  在动作面板中配置的页面参数，如pageStatus为'read'
+     *  在动作面板中配置的页面参数，如page.status为'read'
      */
     getParams(): Array<Param> {
         return this.pageParams

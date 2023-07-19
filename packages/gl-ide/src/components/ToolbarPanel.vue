@@ -17,10 +17,9 @@
       </span>
       <span class="gl-item" v-if="isLogin()" :disabled="!(pageStore.currentPage && pageStore.currentPage.id)">
         <GlIconfont type="gl-preview" text="预览" @click="preview"></GlIconfont>
-        <!--<router-link target="_blank" to="/preview"></router-link>-->
       </span>
-    </span>
 
+    </span>
 
     <span>
         <a-button size="small" :style="btnStyle" :disabled="!pageStore.currentPageHistory.undoAble"
@@ -65,6 +64,9 @@
 
 
     <span style="float: right;padding-right: 1em">
+      <span class="gl-item" v-if="isLogin()">
+        <GlIconfont type="gl-component" text="组件库" @click="showComponents"></GlIconfont>
+      </span>
       <span class="gl-item">
         <GlIconfont v-if="currentLocalOption" type="gl-earth" :text="currentLocalOption.label"
                     @click="switchLanguages"></GlIconfont>
@@ -208,10 +210,17 @@ const showPlugins = () => {
 const preview = () => {
   if (pageStore.currentPage && pageStore.currentPage.id) {
     console.log('preview(),currentPage', pageStore.currentPage)
-    window.open(`${window.location.origin}/showcase/preview.html?pageId=${pageStore.currentPage.id}`, '_blank')
+    window.open(`${window.location.origin}/idePagePreview.html?pageId=${pageStore.currentPage.id}`, '_blank')
   } else {
     global.$message.info('当前无预览的页面。')
   }
+}
+
+/**
+ *  打开组件库
+ */
+const showComponents = () => {
+  window.open(`${window.location.origin}/ideComponents.html`, '_blank')
 }
 
 const toggleFullScreen = () => {
