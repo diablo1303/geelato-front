@@ -19,6 +19,14 @@ const APPLICATION: AppRouteRecordRaw = {
       locale: 'menu.application.app.list',
       requiresAuth: true,
     },
+  }, {
+    path: 'dataList',
+    name: 'dataList',
+    component: () => import('@/views/model/index.vue'),
+    meta: {
+      locale: 'model.dataBase.index.menu.list',
+      requiresAuth: true,
+    },
   }
   ],
 };
