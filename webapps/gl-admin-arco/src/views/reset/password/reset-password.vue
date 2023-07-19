@@ -52,9 +52,9 @@
             {length:6,message:$t('reset.password.authCode.rules.length')}]"
             field="authCode">
           <a-input v-model="formData.authCode" :placeholder="$t('reset.password.authCode.placeholder')"/>
-          <a-button :disabled="autoCodeData.disabled" class="reset-form-autoCode-button"
-                    type="outline" @click="autoCodeClick($event)">
-            {{ autoCodeData.content ? autoCodeData.content : $t('reset.password.authCode.button.default.content') }}
+          <a-button :disabled="authCodeData.disabled" class="reset-form-authCode-button"
+                    type="outline" @click="authCodeClick($event)">
+            {{ authCodeData.content ? authCodeData.content : $t('reset.password.authCode.button.default.content') }}
           </a-button>
         </a-form-item>
         <a-form-item
@@ -97,7 +97,7 @@ import {computed, ref} from 'vue';
 import {useI18n} from "vue-i18n";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
-import {forgetPasswordEdit, forgetPasswordValid, ResetPasswordForm} from "@/api/user";
+import {AuthCodeForm, forgetPasswordEdit, forgetPasswordValid, generateAuthCode, ResetPasswordForm} from "@/api/user";
 import mobilePrefix from '@/config/mobilePrefix.json';
 
 const {t} = useI18n();
@@ -108,14 +108,15 @@ const validFormRef = ref<FormInstance>();
 const validNextButtonLoading = ref(false);
 const formatValidData = (): ResetPasswordForm => {
   return {
+    action: 'forgetPassword', userId: '',
     validType: '1', prefix: '+86', validBox: '',
-    authCode: '', password: '', rPassword: '', userId: ''
+    authCode: '', password: '', rPassword: ''
   };
 }
 const formData = ref(formatValidData());
 /* 重置密码 */
 const updatePwdButtonLoading = ref(false);
-const autoCodeData = ref({disabled: false, content: ''});
+const authCodeData = ref({disabled: false, content: ''});
 /* 完成 */
 /* 验证方式 */
 const validateChange = () => {
@@ -141,14 +142,14 @@ const validNextClick = async (ev?: MouseEvent) => {
   }
 };
 /* 重置密码 */
-const autoCodeClick = (ev?: MouseEvent) => {
+const authCodeInterval = () => {
   let remainingSeconds = 60;
   const resetContent = t('reset.password.authCode.button.reset.content');
   const handler = () => {
-    autoCodeData.value = {content: `${resetContent}(${remainingSeconds})`, disabled: true};
+    authCodeData.value = {content: `${resetContent}(${remainingSeconds})`, disabled: true};
     remainingSeconds -= 1;
     if (remainingSeconds <= 0) {
-      autoCodeData.value = {content: `${resetContent}`, disabled: false};
+      authCodeData.value = {content: `${resetContent}`, disabled: false};
       clearInterval(autoTimer);
     }
   }
@@ -157,9 +158,22 @@ const autoCodeClick = (ev?: MouseEvent) => {
     handler();
   }, 1000);
 }
+const authCodeClick = async (ev?: MouseEvent) => {
+  if (formData.value.userId) {
+    const {password, rPassword, ...otherParams} = formData.value;
+    try {
+      await generateAuthCode(otherParams as AuthCodeForm);
+      authCodeInterval();
+    } catch (err) {
+      errorMessage.value = '获取验证码失败！';
+    }
+  } else {
+    errorMessage.value = '缺失用户信息，请重试！';
+  }
+}
 const validLastClick = (ev?: MouseEvent) => {
   errorMessage.value = '';
-  autoCodeData.value = {content: t('reset.password.authCode.button.default.content'), disabled: false};
+  authCodeData.value = {content: t('reset.password.authCode.button.default.content'), disabled: false};
   formData.value.authCode = '';
   formData.value.password = '';
   formData.value.rPassword = '';
@@ -248,7 +262,7 @@ export default {
     width: 360px;
   }*/
 
-  &-autoCode-button {
+  &-authCode-button {
     margin-left: 20px;
     border-radius: 8px;
   }

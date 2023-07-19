@@ -1,28 +1,31 @@
 import {defineStore} from 'pinia';
 import {getUserInfo, login as userLogin, LoginData, logout as userLogout,} from '@/api/user';
-import {clearToken, setToken} from '@/utils/auth';
+import {clearToken, clearValidUser, setToken} from '@/utils/auth';
 import {removeRouteListener} from '@/utils/route-listener';
 import {UserState} from './types';
 import useAppStore from '../app';
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
+    id: undefined,
     name: undefined,
+    loginName: undefined,
     avatar: undefined,
-    job: undefined,
-    organization: undefined,
-    location: undefined,
+    mobilePrefix: undefined,
+    mobilePhone: undefined,
     email: undefined,
-    introduction: undefined,
-    personalWebsite: undefined,
-    jobName: undefined,
-    organizationName: undefined,
-    locationName: undefined,
-    phone: undefined,
     registrationDate: undefined,
-    accountId: undefined,
+    personalWebsite: undefined,
+    introduction: undefined,
     certification: undefined,
+    job: undefined,
+    jobName: undefined,
+    location: undefined,
+    locationName: undefined,
+    orgId: undefined,
+    orgName: undefined,
     tenantCode: undefined,
+    description: undefined,
     role: '',
   }),
 
@@ -50,10 +53,10 @@ const useUserStore = defineStore('user', {
     },
 
     // Get user's information
-    async info() {
+    async info(successCallBack?: any) {
       const res = await getUserInfo();
-
       this.setInfo(res.data);
+      if (typeof successCallBack === "function") successCallBack();
     },
 
     // Login
@@ -61,10 +64,12 @@ const useUserStore = defineStore('user', {
       try {
         const res = await userLogin(loginForm);
         setToken(res.data.token);
+        clearValidUser();
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error('login fail:', err);
         clearToken();
+        clearValidUser();
         throw err;
       }
     },
@@ -72,6 +77,7 @@ const useUserStore = defineStore('user', {
       const appStore = useAppStore();
       this.resetInfo();
       clearToken();
+      clearValidUser();
       removeRouteListener();
       appStore.clearServerMenu();
     },

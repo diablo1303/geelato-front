@@ -76,7 +76,6 @@ import useLoading from '@/hooks/loading';
 import type {LoginData} from '@/api/user';
 import {DEFAULT_ROUTE} from "@/router/constants";
 import {appDataBaseRoutes, formatAppModules} from "@/router/routes";
-import {forgetPasswordEdit} from "@/api/user";
 
 const router = useRouter();
 const route = useRoute();
