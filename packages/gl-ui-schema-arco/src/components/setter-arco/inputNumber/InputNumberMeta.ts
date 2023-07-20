@@ -18,6 +18,17 @@ export default {
         "setterComponentName": "AInput",
         "enableValueExpress": true
     }, {
+        "name": "hideLabel",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "隐藏标题",
+        "setterComponentName": "ASwitch"
+    }, {
         "name": "bindField",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",

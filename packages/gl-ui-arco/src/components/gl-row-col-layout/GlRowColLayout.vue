@@ -16,6 +16,11 @@ const props = defineProps({
       return [8, 8, 8];
     },
   },
+  label: String,
+  /**
+   *  显否显示label，用于在表单中
+   */
+  showLabel: Boolean,
   offsets: {
     type: Array as PropType<Array<number>>,
     default() {
@@ -107,10 +112,13 @@ const i18nConvert = (value?: string, i18n?: Array<I18nItem>) => {
 /**
  *  数据输入组件作为表单项，除了表单组件本身
  */
-const isFormItem = (inst: ComponentInstance) => {
+const showFormItem = (inst: ComponentInstance) => {
   // 排除特定的组件，如表单组件
   if (inst.componentName === 'GlEntityForm') {
     return false
+  }
+  if (inst.componentName === 'GlRowColLayout' && inst.props.showLabel === true) {
+    return true
   }
   return inst.group === 'dataEntry'
 }
@@ -127,7 +135,7 @@ const isFormItem = (inst: ComponentInstance) => {
       <!-- glComponentInst.children[index]就虚拟节点-->
       <template v-for="childComponentInst in glComponentInst.children[index].children">
         <a-form-item v-if="childComponentInst&&(childComponentInst.props.unRender!==true)" class="gl-form-item"
-                     :class="{'gl-hidden':childComponentInst.props.hideLabel===true||!isFormItem(childComponentInst)}"
+                     :class="{'gl-hidden':childComponentInst.props.hideLabel===true||!showFormItem(childComponentInst)}"
                      :field="childComponentInst.props?.bindField?.fieldName"
                      :tooltip="i18nConvert(childComponentInst.props?.tooltip,childComponentInst.i18n)"
                      :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"
@@ -165,11 +173,19 @@ const isFormItem = (inst: ComponentInstance) => {
 </template>
 
 <style>
+.gl-row-col-layout {
+  flex: auto;
+}
+
 .gl-row-col-layout > .arco-col {
   overflow-x: auto;
 }
 
 .gl-row-col-layout .gl-hidden > .arco-form-item-label-col {
   display: none;
+}
+
+.gl-form-item .gl-hidden .arco-form-item-wrapper-col {
+  flex: auto;
 }
 </style>
