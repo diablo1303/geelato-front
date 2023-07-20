@@ -178,11 +178,20 @@
               </a-space>
             </a-doption>
             <!--     用户设置       -->
-            <a-doption>
+            <a-doption v-show="false">
               <a-space @click="$router.push({ name: 'Setting' })">
                 <icon-settings/>
                 <span>
                   {{ $t('messageBox.userSettings') }}
+                </span>
+              </a-space>
+            </a-doption>
+            <!--     账号设置       -->
+            <a-doption>
+              <a-space @click="$router.push({ name: 'userAccount' })">
+                <icon-settings/>
+                <span>
+                  {{ $t('messageBox.accountSettings') }}
                 </span>
               </a-space>
             </a-doption>

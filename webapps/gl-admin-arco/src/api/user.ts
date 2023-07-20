@@ -68,7 +68,10 @@ export function getMenus(params: QueryMenuForm) {
   return axios.post<QueryMenuForm[]>(`${urlOrigin}/api/user/menu`, params);
 }
 
+export type AuthCodeAction = 'forgetPassword' | 'validateUser' | 'updateMobile' | 'updatePassword' | 'updateEmail';
+
 export interface ResetPasswordForm {
+  action: AuthCodeAction;
   validType: string;
   prefix: string;
   validBox: string;
@@ -84,4 +87,43 @@ export function forgetPasswordValid(params: ResetPasswordForm) {
 
 export function forgetPasswordEdit(params: ResetPasswordForm) {
   return axios.post<QueryResult>(`/api/user/forget`, params);
+}
+
+export interface AuthCodeForm {
+  action: AuthCodeAction;
+  validType: string;
+  prefix: string;
+  validBox: string;
+  userId: string;
+  authCode: string;
+}
+
+export function generateAuthCode(params: AuthCodeForm) {
+  return axios.post<QueryResult>(`/api/code/generate`, params);
+}
+
+export function validateUser(params: AuthCodeForm) {
+  return axios.post<QueryResult>(`/api/user/validate`, params);
+}
+
+export function bindAccount(params: AuthCodeForm) {
+  return axios.post<QueryResult>(`/api/user/bindAccount`, params);
+}
+
+export interface BindAccountData {
+  index: number;
+  title: string;
+  description: string;
+  isNull: boolean;
+}
+
+export function abbreviateValue(value: string, type: string) {
+  if (value) {
+    if (type === '1') {
+      value = `${value.substring(0, 3)}******${value.substring(value.length - 3)}`
+    } else if (type === '2') {
+      value = `${value.substring(0, 3)}****${value.substring(value.lastIndexOf('@'))}`;
+    }
+  }
+  return value;
 }
