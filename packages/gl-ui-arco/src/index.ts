@@ -3,7 +3,7 @@ import PageProvideProxy from "@geelato/gl-ui";
 import GlPage from './components/gl-page/GlPage.vue'
 import GlEntityTablePlus from "./components/gl-entity-table-plus/index.vue";
 import GlEntityTree from "./components/gl-entity-tree/GlEntityTree.vue";
-import GlEntityForm from "./components/gl-entity-form/index.vue";
+import GlEntityForm from "./components/gl-entity-form/GlEntityForm.vue";
 import GlRowColLayout from "./components/gl-row-col-layout/GlRowColLayout.vue";
 import GlCard from "./components/gl-card/index.vue";
 import GlHidden from "./components/gl-hidden-area/GlHiddenArea.vue";
@@ -25,6 +25,7 @@ import GlIconfontSelect from "./components/gl-iconfont-select/GlIconfontSelect.v
 import GlText from "./components/gl-text/GlText.vue";
 import {Drawer, Modal} from "@arco-design/web-vue";
 import GlAlert from "./components/gl-alert/GlAlert.vue";
+import GlMultiComponents from "./components/gl-multi-components/GlMultiComponents.vue";
 
 const i18nMessage = {en, cn};
 
@@ -56,6 +57,7 @@ const component: Plugin = {
         app.component(GlEncode.name, GlEncode)
         app.component(GlInstRuntime.name, GlInstRuntime)
         app.component(GlInstsRuntime.name, GlInstsRuntime)
+        app.component(GlMultiComponents.name, GlMultiComponents)
 
         app.component('GlModal', Modal)
         app.component('GlDrawer', Drawer)

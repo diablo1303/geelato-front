@@ -132,10 +132,14 @@ const showFormItem = (inst: ComponentInstance) => {
         :key="index"
         :span="span"
     >
-      <!-- glComponentInst.children[index]就虚拟节点-->
-      <template v-for="childComponentInst in glComponentInst.children[index].children">
-        <a-form-item v-if="childComponentInst&&(childComponentInst.props.unRender!==true)" class="gl-form-item"
+      <!-- glComponentInst.children[index]就虚拟节点
+        注意，label-col-flex的百分比为整数，如6%，若为6.9%有小数的则无效
+      -->
+      <template v-for="childComponentInst in glComponentInst?.children[index].children">
+        <a-form-item v-if="childComponentInst&&(childComponentInst.props.unRender!==true)"
+                     class="gl-form-item"
                      :class="{'gl-hidden':childComponentInst.props.hideLabel===true||!showFormItem(childComponentInst)}"
+                     :label-col-flex="childComponentInst.props.labelColFlex"
                      :field="childComponentInst.props?.bindField?.fieldName"
                      :tooltip="i18nConvert(childComponentInst.props?.tooltip,childComponentInst.i18n)"
                      :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"
@@ -165,7 +169,7 @@ const showFormItem = (inst: ComponentInstance) => {
         :key="index"
         :span="span"
     >
-      <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst.children[index]"
+      <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst?.children[index]"
                  :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"/>
     </a-col>
   </a-row>

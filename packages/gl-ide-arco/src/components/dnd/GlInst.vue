@@ -189,6 +189,7 @@ const onClick = (...args: any[]) => {
       <template v-if="showFormItem">
         <a-form-item class="gl-form-item" :field="glComponentInst?.props?.bindField?.fieldName"
                      :class="{'gl-hidden':glComponentInst?.props?.hideLabel===true}"
+                     :label-col-flex="glComponentInst?.props.labelColFlex"
                      :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"
                      :label="i18nConvert(glComponentInst?.props?.label)"
                      :rules="glComponentInst?.props?.rules"

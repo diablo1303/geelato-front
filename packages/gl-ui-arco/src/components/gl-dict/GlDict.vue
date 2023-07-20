@@ -68,8 +68,7 @@ watch(() => {
 })
 watch(mv, () => {
   emits('update:modelValue', mv.value)
-})
-
+}, {deep: true})
 
 const onClear = () => {
   mv.value = undefined
