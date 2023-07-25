@@ -3,7 +3,7 @@
     <Breadcrumb :items="['menu.account', 'menu.account.manage']"/>
     <a-card class="general-card">
       <div style="margin-bottom: 20px;padding-top: 5px;">
-        <a-divider orientation="left" class="account-manage-divider">
+        <a-divider class="account-manage-divider" orientation="left">
           {{ $t('account.manage.index.first') }}
         </a-divider>
         <a-list style="width: 620px;">
@@ -23,7 +23,7 @@
         </a-list>
       </div>
       <div style="padding-top: 5px;">
-        <a-divider orientation="left" class="account-manage-divider">
+        <a-divider class="account-manage-divider" orientation="left">
           {{ $t('account.manage.index.second') }}
         </a-divider>
         <a-space class="account-manage-two-subTitle">

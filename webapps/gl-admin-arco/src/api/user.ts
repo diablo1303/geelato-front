@@ -52,6 +52,21 @@ export function getMenuList() {
   return axios.post<RouteRecordNormalized[]>('/api/user/menu');
 }
 
+export function uploadAvatar(userId: string, formData: FormData) {
+  return axios.post<UserState>(`/api/user/avatar/${userId}`, formData, {
+    headers: {'Content-Type': 'multipart/form-data'}
+  });
+}
+
+export interface AccountUserInfo {
+  description: string;
+  address: string;
+}
+
+export function updateUserInfo(userId: string, formData: AccountUserInfo) {
+  return axios.post<UserState>(`/api/user/update/${userId}`, formData);
+}
+
 /**
  * 获取应用信息
  * @param id

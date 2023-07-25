@@ -222,6 +222,7 @@ import useLocale from '@/hooks/locale';
 import useUser from '@/hooks/user';
 import Menu from '@/components/menu/index.vue';
 import {getApp, getDownloadUrlById} from "@/api/application";
+import defaultAvatar from '@/assets/images/default-avatar.png';
 import MessageBox from '../message-box/index.vue';
 
 const appStore = useAppStore();
@@ -232,7 +233,8 @@ const {changeLocale, currentLocale} = useLocale();
 const {isFullscreen, toggle: toggleFullScreen} = useFullscreen();
 const locales = [...LOCALE_OPTIONS];
 const avatar = computed(() => {
-  return userStore.avatar;
+  const userAvatar = userStore.userInfo.avatar;
+  return userAvatar ? getDownloadUrlById(userAvatar) : defaultAvatar;
 });
 const theme = computed(() => {
   return appStore.theme;

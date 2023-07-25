@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model:visible="visible" width="360px" title="身份验证" title-align="start" @cancel="cancelModalClick($event)">
+  <a-modal v-model:visible="visible" title="身份验证" title-align="start" width="360px" @cancel="cancelModalClick($event)">
     <a-form ref="validFormRef" :model="formData" :wrapper-col-props="{ span: 24 }" class="form" size="large">
       <!--   验证   -->
       <a-form-item

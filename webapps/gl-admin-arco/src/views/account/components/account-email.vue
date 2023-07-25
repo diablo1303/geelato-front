@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model:visible="visible" width="360px" title="更改电子邮箱" title-align="start" @cancel="cancelModalClick($event)">
+  <a-modal v-model:visible="visible" title="更改电子邮箱" title-align="start" width="360px" @cancel="cancelModalClick($event)">
     <a-form ref="validFormRef" :model="formData" :wrapper-col-props="{ span: 24 }" class="form" size="large">
       <!--   新   -->
       <a-form-item
@@ -27,7 +27,7 @@
         <a-button type="outline" @click="cancelModalClick($event)">
           {{ $t('account.manage.email.button.cancel') }}
         </a-button>
-        <a-button type="primary" :loading="buttonLoading" @click="okModelClick($event)">
+        <a-button :loading="buttonLoading" type="primary" @click="okModelClick($event)">
           {{ $t('account.manage.email.button.ok') }}
         </a-button>
       </a-space>
