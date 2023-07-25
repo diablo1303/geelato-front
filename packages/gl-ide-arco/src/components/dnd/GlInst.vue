@@ -10,7 +10,7 @@ import {useDrag, useDrop} from 'vue3-dnd'
 import {ItemTypes} from './DndItemTypes'
 import type {Identifier} from 'dnd-core'
 import {toRefs} from '@vueuse/core'
-import {emitter, mixins, utils} from "@geelato/gl-ui"
+import {mixins, utils} from "@geelato/gl-ui"
 import {componentStoreFactory} from "@geelato/gl-ide";
 import {PageProvideProxy, PageProvideKey} from "@geelato/gl-ui";
 
@@ -189,7 +189,7 @@ const onClick = (...args: any[]) => {
       <template v-if="showFormItem">
         <a-form-item class="gl-form-item" :field="glComponentInst?.props?.bindField?.fieldName"
                      :class="{'gl-hidden':glComponentInst?.props?.hideLabel===true}"
-                     :label-col-flex="glComponentInst?.props.labelColFlex"
+                     :label-col-flex="glComponentInst?.props._labelColFlex"
                      :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"
                      :label="i18nConvert(glComponentInst?.props?.label)"
                      :rules="glComponentInst?.props?.rules"

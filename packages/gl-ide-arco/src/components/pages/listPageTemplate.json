@@ -1,0 +1,582 @@
+{
+  "id": "{{ listPageId }}",
+  "componentName": "GlPage",
+  "title": "{{ mv.listTitle }}",
+  "props": {
+    "pageMargin": "0",
+    "pageType": "listPage"
+  },
+  "slots": {},
+  "children": [
+    {
+      "componentName": "GlEntityTablePlus",
+      "title": "{{ mv.listTitle }}",
+      "group": "dataDisplay",
+      "useBy": [
+        "freePage"
+      ],
+      "style": {},
+      "id": "{{ tableId }}",
+      "props": {
+        "query": [
+          {
+            "id": "{{item.id}}",
+            "name": "{{item.name}}",
+            "cop": "eq",
+            "isAdvanceQuery": false,
+            "colspan": 8,
+            "component": {
+              "componentName": "{{item.componentName}}",
+              "props": {
+                "label": "{{item.id}}",
+                "bindField": {
+                  "appCode": "",
+                  "entityName": "{{ mv.entityName }}",
+                  "fieldName": "{{item.id}}"
+                }
+              },
+              "id": "{{utils.gid()}}"
+            }
+          }
+        ],
+        "toolbar": {
+          "leftColSpan": 12,
+          "centerColSpan": 0,
+          "rightColSpan": 12,
+          "leftItems": [
+            {
+              "id": "{{utils.gid()}}",
+              "title": "",
+              "componentName": "AButton",
+              "group": "",
+              "props": {
+                "type": "primary"
+              },
+              "propsExpressions": {},
+              "slots": {
+                "icon": {
+                  "componentName": "GlIconfont",
+                  "props": {
+                    "type": "gl-plus-circle",
+                    "text": "新增",
+                    "rotate": 0
+                  },
+                  "propsTarget": "v-bind"
+                }
+              },
+              "slotsExpressions": {},
+              "children": [],
+              "actions": [
+                {
+                  "id": "{{utils.gid('act')}}",
+                  "eventName": "click",
+                  "name": "click",
+                  "title": "点击",
+                  "body": "const content = $gl.fn.loadPage(\"\",\"{{listPageId}}\",[]);\n            $gl.$drawer.open({\n                title: \"{{mv.formTitle}}\",\n                content: content,\n                width:\"1024px\",\n                okText:\"确定\",\n                onBeforeOk: async ()=>{\n                    return $gl.fn.invokeComponentMethod(\"{{mv.formId}}\",\"submitForm\",[]);\n                },\n                onOpen:async ()=>{\n                    \n                },\n                onClose:async ()=>{\n                    return $gl.fn.invokeComponentMethod(\"{{mv.listId}}\",\"refresh\",[]);\n                },\n                cancelText:\"取消\",\n                hideCancel:false\n            })",
+                  "__commandBlock": {
+                    "componentName": "GlPage",
+                    "id": "blockPage_ow7BOynGhY",
+                    "props": {
+                      "pageType": "blockPage",
+                      "pageTitle": "指令",
+                      "pageMargin": "0",
+                      "pagePadding": "0"
+                    },
+                    "slots": {},
+                    "children": [
+                      {
+                        "id": "id_q1Rr8MEwkgjndKF9r",
+                        "title": "",
+                        "componentName": "GlBlockOpenComponentPage",
+                        "group": "block_page",
+                        "props": {
+                          "extendId": "3711266248572051212",
+                          "title": "码头信息",
+                          "params": [],
+                          "invokeBlocks": [
+                            "onBeforeOk",
+                            "onClose"
+                          ]
+                        },
+                        "propsExpressions": {},
+                        "slots": {},
+                        "slotsExpressions": {},
+                        "children": [
+                          {
+                            "componentName": "GlVirtual",
+                            "id": "v_b81ltaRPJgtyRrXjEW",
+                            "props": {},
+                            "slots": {},
+                            "children": [
+                              {
+                                "id": "id_gRL9oxFaYa2YF1NT4",
+                                "title": "",
+                                "componentName": "GlBlockComponentInvoke",
+                                "group": "block_page",
+                                "props": {
+                                  "extendId": "3711266248572051212",
+                                  "componentId": "form_Bi5hDjpelrRdkDV",
+                                  "methodName": "submitForm",
+                                  "params": []
+                                },
+                                "propsExpressions": {},
+                                "slots": {},
+                                "slotsExpressions": {},
+                                "children": [],
+                                "actions": [],
+                                "style": {},
+                                "propsWrapper": "",
+                                "i18n": [],
+                                "__validateError": null,
+                                "__dragFlag": "dragFlag_56dU7bNs3G3"
+                              }
+                            ],
+                            "actions": [],
+                            "style": {}
+                          },
+                          {
+                            "componentName": "GlVirtual",
+                            "id": "v_tmYWoA4sd8bAtYMBb1",
+                            "props": {},
+                            "slots": {},
+                            "children": [
+                              {
+                                "id": "id_2JCfEfvKnoEe8XF4T",
+                                "title": "",
+                                "componentName": "GlBlockComponentInvoke",
+                                "group": "block_page",
+                                "props": {
+                                  "extendId": "3711081760969760541",
+                                  "componentId": "table_0pDf5U7y3vESsa",
+                                  "methodName": "refresh",
+                                  "params": []
+                                },
+                                "propsExpressions": {},
+                                "slots": {},
+                                "slotsExpressions": {},
+                                "children": [],
+                                "actions": [],
+                                "style": {},
+                                "propsWrapper": "",
+                                "i18n": [],
+                                "__validateError": null,
+                                "__dragFlag": "dragFlag_OUvEEhFYtPQ"
+                              }
+                            ],
+                            "actions": [],
+                            "style": {}
+                          }
+                        ],
+                        "actions": [],
+                        "style": {},
+                        "propsWrapper": "",
+                        "i18n": [],
+                        "__validateError": null,
+                        "__dragFlag": "dragFlag_q3Dl7Wjdkrb"
+                      }
+                    ],
+                    "actions": [],
+                    "style": {}
+                  }
+                }
+              ],
+              "style": {},
+              "propsWrapper": "",
+              "i18n": [],
+              "valueExpression": "",
+              "__validateError": null,
+              "__dragFlag": ""
+            }
+          ],
+          "centerItems": [],
+          "rightItems": []
+        },
+        "columns": [
+          {
+            "title": "ID",
+            "dataIndex": "id",
+            "_propsExpressions": {},
+            "sortable": {}
+          },
+          {
+            "title": "名称",
+            "dataIndex": "name",
+            "fixed": "right",
+            "sortable": {
+              "sortDirections": [
+                "ascend",
+                "descend"
+              ]
+            },
+            "_propsExpressions": {}
+          }
+        ],
+        "columnActions": [
+          {
+            "id": "S6MdNUMa3r62IXNWyeRa",
+            "title": "",
+            "componentName": "AButton",
+            "group": "",
+            "props": {
+              "type": "text"
+            },
+            "propsExpressions": {},
+            "slots": {
+              "icon": {
+                "componentName": "GlIconfont",
+                "props": {
+                  "type": "",
+                  "text": "详细",
+                  "rotate": 0
+                },
+                "propsTarget": "v-bind"
+              }
+            },
+            "slotsExpressions": {},
+            "children": [],
+            "actions": [
+              {
+                "id": "act_UNR2GWBCsSS1hkJC",
+                "eventName": "click",
+                "name": "click",
+                "title": "点击",
+                "body": "const content = $gl.fn.loadPage(\"\",\"3711266248572051212\",[{\"id\":\"K0u713FJKq0IRQIZWWab\",\"name\":\"form.id\",\"valueExpression\":\"$gl.ctx.record.id\"},{\"id\":\"WzMjM69YN5mVndSJqMmP\",\"name\":\"page.status\",\"valueExpression\":\"\\\"read\\\"\"}]);\n            $gl.$drawer.open({\n                title: \"详细信息\",\n                content: content,\n                width:\"1024px\",\n                okText:\"确定\",\n                onBeforeOk: async ()=>{\n                    \n                },\n                onOpen:async ()=>{\n                    \n                },\n                onClose:async ()=>{\n                    \n                },\n                cancelText:\"取消\",\n                hideCancel:false\n            })",
+                "__commandBlock": {
+                  "componentName": "GlPage",
+                  "id": "blockPage_coMFVeaQ4m",
+                  "props": {
+                    "pageType": "blockPage",
+                    "pageTitle": "指令",
+                    "pageMargin": "0",
+                    "pagePadding": "0"
+                  },
+                  "slots": {},
+                  "children": [
+                    {
+                      "id": "id_lNZRkif4zb5lT3LeJ",
+                      "title": "",
+                      "componentName": "GlBlockOpenComponentPage",
+                      "group": "block_page",
+                      "props": {
+                        "extendId": "3711266248572051212",
+                        "title": "详细信息",
+                        "params": [
+                          {
+                            "id": "K0u713FJKq0IRQIZWWab",
+                            "name": "form.id",
+                            "valueExpression": "$gl.ctx.record.id"
+                          },
+                          {
+                            "id": "WzMjM69YN5mVndSJqMmP",
+                            "name": "page.status",
+                            "valueExpression": "\"read\""
+                          }
+                        ]
+                      },
+                      "propsExpressions": {},
+                      "slots": {},
+                      "slotsExpressions": {},
+                      "children": [],
+                      "actions": [],
+                      "style": {},
+                      "propsWrapper": "",
+                      "i18n": [],
+                      "__validateError": null,
+                      "__dragFlag": "dragFlag_532vojHjdlE"
+                    }
+                  ],
+                  "actions": [],
+                  "style": {}
+                }
+              }
+            ],
+            "style": {},
+            "propsWrapper": "",
+            "i18n": [],
+            "__validateError": null,
+            "__dragFlag": ""
+          },
+          {
+            "id": "Yts5XOHkOWxhjCyUh3KL",
+            "title": "",
+            "componentName": "AButton",
+            "group": "",
+            "props": {
+              "type": "text",
+              "shape": "default",
+              "size": "medium"
+            },
+            "propsExpressions": {},
+            "slots": {
+              "icon": {
+                "componentName": "GlIconfont",
+                "props": {
+                  "type": "",
+                  "text": "修改",
+                  "rotate": 0
+                },
+                "propsTarget": "v-bind"
+              }
+            },
+            "slotsExpressions": {},
+            "children": [],
+            "actions": [
+              {
+                "id": "act_qhp7L6IfKMBtLWeW",
+                "eventName": "click",
+                "name": "click",
+                "title": "点击",
+                "body": "const content = $gl.fn.loadPage(\"\",\"3711266248572051212\",[{\"id\":\"c2cEDfGJUQP96TcXKFW7\",\"name\":\"form.id\",\"valueExpression\":\"$gl.ctx.record.id\"}]);\n            $gl.$drawer.open({\n                title: \"编辑码头信息\",\n                content: content,\n                width:\"1024px\",\n                okText:\"确定\",\n                onBeforeOk: async ()=>{\n                    return $gl.fn.invokeComponentMethod(\"form_Bi5hDjpelrRdkDV\",\"submitForm\",[]);\n                },\n                onOpen:async ()=>{\n                    \n                },\n                onClose:async ()=>{\n                    return $gl.fn.invokeComponentMethod(\"table_0pDf5U7y3vESsa\",\"refresh\",[]);\n                },\n                cancelText:\"取消\",\n                hideCancel:true\n            })",
+                "__commandBlock": {
+                  "componentName": "GlPage",
+                  "id": "blockPage_zimFlDExD1",
+                  "props": {
+                    "pageType": "blockPage",
+                    "pageTitle": "指令",
+                    "pageMargin": "0",
+                    "pagePadding": "0"
+                  },
+                  "slots": {},
+                  "children": [
+                    {
+                      "id": "id_qjZ1zQnNraKc4AU6z",
+                      "title": "",
+                      "componentName": "GlBlockOpenComponentPage",
+                      "group": "block_page",
+                      "props": {
+                        "extendId": "3711266248572051212",
+                        "title": "编辑码头信息",
+                        "params": [
+                          {
+                            "id": "c2cEDfGJUQP96TcXKFW7",
+                            "name": "form.id",
+                            "valueExpression": "$gl.ctx.record.id"
+                          }
+                        ],
+                        "hideCancel": true,
+                        "invokeBlocks": [
+                          "onBeforeOk",
+                          "onClose"
+                        ]
+                      },
+                      "propsExpressions": {},
+                      "slots": {},
+                      "slotsExpressions": {},
+                      "children": [
+                        {
+                          "componentName": "GlVirtual",
+                          "id": "v_uNHhrDNOXSH6pfpP7i",
+                          "props": {},
+                          "slots": {},
+                          "children": [
+                            {
+                              "id": "id_fUHNPlkWsDolgMuFw",
+                              "title": "",
+                              "componentName": "GlBlockComponentInvoke",
+                              "group": "block_page",
+                              "props": {
+                                "extendId": "3711266248572051212",
+                                "componentId": "form_Bi5hDjpelrRdkDV",
+                                "methodName": "submitForm",
+                                "params": []
+                              },
+                              "propsExpressions": {},
+                              "slots": {},
+                              "slotsExpressions": {},
+                              "children": [],
+                              "actions": [],
+                              "style": {},
+                              "propsWrapper": "",
+                              "i18n": [],
+                              "__validateError": null,
+                              "__dragFlag": "dragFlag_FC9B3CJRcVq"
+                            }
+                          ],
+                          "actions": [],
+                          "style": {}
+                        },
+                        {
+                          "componentName": "GlVirtual",
+                          "id": "v_khTLcXfWzhJOdJCuHA",
+                          "props": {},
+                          "slots": {},
+                          "children": [
+                            {
+                              "id": "id_yQsqGtZgdQ7fakp0e",
+                              "title": "",
+                              "componentName": "GlBlockComponentInvoke",
+                              "group": "block_page",
+                              "props": {
+                                "extendId": "3711081760969760541",
+                                "componentId": "table_0pDf5U7y3vESsa",
+                                "methodName": "refresh",
+                                "params": []
+                              },
+                              "propsExpressions": {},
+                              "slots": {},
+                              "slotsExpressions": {},
+                              "children": [],
+                              "actions": [],
+                              "style": {},
+                              "propsWrapper": "",
+                              "i18n": [],
+                              "__validateError": null,
+                              "__dragFlag": "dragFlag_d449HGZL13E"
+                            }
+                          ],
+                          "actions": [],
+                          "style": {}
+                        }
+                      ],
+                      "actions": [],
+                      "style": {},
+                      "propsWrapper": "",
+                      "i18n": [],
+                      "__validateError": null,
+                      "__dragFlag": "dragFlag_2r5DGj9oVF3"
+                    }
+                  ],
+                  "actions": [],
+                  "style": {},
+                  "__dragFlag": "dragFlag_rRuKTKHOU2p"
+                }
+              }
+            ],
+            "style": {},
+            "propsWrapper": "",
+            "i18n": [],
+            "__validateError": null,
+            "__dragFlag": ""
+          },
+          {
+            "id": "7zKNZLQluSuYnc10QgvE",
+            "title": "",
+            "componentName": "AButton",
+            "group": "",
+            "props": {
+              "type": "text",
+              "status": "danger"
+            },
+            "propsExpressions": {},
+            "slots": {
+              "icon": {
+                "componentName": "GlIconfont",
+                "props": {
+                  "type": "",
+                  "text": "删除",
+                  "rotate": 0
+                },
+                "propsTarget": "v-bind"
+              }
+            },
+            "slotsExpressions": {},
+            "children": [],
+            "actions": [
+              {
+                "id": "act_kpylR2nrddOmu7Fu",
+                "eventName": "click",
+                "name": "click",
+                "title": "点击",
+                "body": "let varName = 'undefined' || 'confirm'\n            let vars = {}\n            $gl.$modal.open({\n                width:'15em',\n                title: \"危险操作\",\n                content: \"是否确定删除？\",\n                onOk: ()=>{\n                  vars[varName] = true;\n                  return $gl.fn.invokeComponentMethod(\"table_0pDf5U7y3vESsa\",\"deleteRow\",[{\"id\":\"EKkXhRgN52MoRXVmicZT\",\"name\":\"id\",\"valueExpression\":\"$gl.ctx.record.id\"}]);\n                },\n                onCancel: ()=>{\n                  vars[varName] = false;\n                  \n                }\n            })",
+                "__commandBlock": {
+                  "componentName": "GlPage",
+                  "id": "blockPage_wWqxzlu4jp",
+                  "props": {
+                    "pageType": "blockPage",
+                    "pageTitle": "指令",
+                    "pageMargin": "0",
+                    "pagePadding": "0"
+                  },
+                  "slots": {},
+                  "children": [
+                    {
+                      "id": "id_rdjzBWteu4k4P4y9Y",
+                      "title": "",
+                      "componentName": "GlBlockConfirm",
+                      "group": "block_feedback",
+                      "props": {
+                        "invokeBlocks": [
+                          "onOk"
+                        ],
+                        "title": "危险操作",
+                        "content": "是否确定删除？"
+                      },
+                      "propsExpressions": {},
+                      "slots": {},
+                      "slotsExpressions": {},
+                      "children": [
+                        {
+                          "componentName": "GlVirtual",
+                          "id": "v_N8DEH86qMPXIpsBwvu",
+                          "props": {},
+                          "slots": {},
+                          "children": [
+                            {
+                              "id": "id_SxB0bGvn04TFtDeaD",
+                              "title": "",
+                              "componentName": "GlBlockComponentInvoke",
+                              "group": "block_page",
+                              "props": {
+                                "extendId": "3711081760969760541",
+                                "componentId": "table_0pDf5U7y3vESsa",
+                                "methodName": "deleteRow",
+                                "params": [
+                                  {
+                                    "id": "EKkXhRgN52MoRXVmicZT",
+                                    "name": "id",
+                                    "valueExpression": "$gl.ctx.record.id"
+                                  }
+                                ]
+                              },
+                              "propsExpressions": {},
+                              "slots": {},
+                              "slotsExpressions": {},
+                              "children": [],
+                              "actions": [],
+                              "style": {},
+                              "propsWrapper": "",
+                              "i18n": [],
+                              "__validateError": null,
+                              "__dragFlag": "dragFlag_ZAaITaS3nnU"
+                            }
+                          ],
+                          "actions": [],
+                          "style": {}
+                        }
+                      ],
+                      "actions": [],
+                      "style": {},
+                      "propsWrapper": "",
+                      "i18n": [],
+                      "__validateError": null,
+                      "__dragFlag": "dragFlag_nuZXZj6AIBO"
+                    }
+                  ],
+                  "actions": [],
+                  "style": {}
+                }
+              }
+            ],
+            "style": {},
+            "propsWrapper": "",
+            "i18n": [],
+            "__validateError": null,
+            "__dragFlag": ""
+          }
+        ],
+        "base": {
+          "_propsExpressions": {},
+          "entityName": "il_wharf",
+          "label": "码头信息列表",
+          "showPagination": false
+        }
+      },
+      "slots": {},
+      "children": [],
+      "actions": [],
+      "propsExpressions": {},
+      "slotsExpressions": {}
+    }
+  ],
+  "actions": []
+}

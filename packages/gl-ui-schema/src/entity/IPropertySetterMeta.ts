@@ -53,6 +53,9 @@ export default interface IPropertySetterMeta {
     // 在属性设置器中，若该属性为数组对象属性时，指定数组中对象的某一属性作为标题
     titleField?: String
 
+    // 子标题，与titleField配合使用
+    subTitleField?:String
+
     // type为slots时有值
     slotComponentName?: String
 
@@ -85,6 +88,7 @@ export class PropertySetterMetaImpl implements IPropertySetterMeta {
     dataItems: Array<any>;
     properties: Array<any>;
     titleField: String;
+    subTitleField?: String;
     slotComponentName: String;
     slotComponentBindTarget: String;
     slotComponentBindName?: String;

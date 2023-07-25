@@ -41,6 +41,7 @@
               <GlPropertySetterCard v-slot:default="slotProps" v-model="propertyModel"
                                     :maxCount="propertySetterMeta.setterComponentProps.maxCount"
                                     :titleField="propertySetterMeta.titleField"
+                                    :subTitleField="propertySetterMeta.subTitleField"
                                     :autoAddWhenEmpty="false"
                                     :elementTemplate="createChildObjectTemplate()"
                                     @selectedElement="selectChildElement"
@@ -122,6 +123,7 @@
             <GlPropertySetterCard v-slot:default="slotProps" v-model="propertyModel"
                                   :maxCount="propertySetterMeta.subComponentCount"
                                   :titleField="propertySetterMeta.titleField"
+                                  :subTitleField="propertySetterMeta.subTitleField"
                                   :elementTemplate="createChildElementTemplate(propertySetterMeta.name,propertySetterMeta.setterComponentProps.ChildComponentName)"
                                   @selectedElement="selectChildElement"
             >

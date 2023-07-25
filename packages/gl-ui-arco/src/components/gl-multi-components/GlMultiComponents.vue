@@ -22,7 +22,7 @@ const props = defineProps({
       return []
     }
   },
-  labelColFlex: String,
+  _labelColFlex: String,
   /**
    *  每一组组件的配置项
    */
@@ -92,21 +92,21 @@ watch(() => {
 })
 const clickTag = (modelProps: ModelProps, index: number) => {
   isAdd.value = false
-  if (!props.glIsRuntime) {
-    // 打开配置页面
-    currentModelProps.value = modelProps
-    props.items.forEach((item) => {
-      const foundProp = modelProps.find((modelProp) => {
-        return modelProp.label === item.inst.props.label
-      })
-      console.log('foundProp:', foundProp)
-      if (foundProp) {
-        // @ts-ignore
-        item.inst.value = foundProp.value
-      }
+  // if (!props.glIsRuntime) {
+  // 打开配置页面
+  currentModelProps.value = modelProps
+  props.items.forEach((item) => {
+    const foundProp = modelProps.find((modelProp) => {
+      return modelProp.label === item.inst.props.label
     })
-    visible.value = true
-  }
+    console.log('foundProp:', foundProp)
+    if (foundProp) {
+      // @ts-ignore
+      item.inst.value = foundProp.value
+    }
+  })
+  visible.value = true
+  // }
 }
 
 const setCurrentModel = () => {

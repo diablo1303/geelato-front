@@ -360,7 +360,8 @@ const scroll = {
 watch(() => columns.value,
     (val) => {
 
-      val.forEach((col)=>{
+      val.forEach((col) => {
+        // @ts-ignore
         col.title = col._editComponent?.props.label
       })
       // @ts-ignore
@@ -551,12 +552,12 @@ defineExpose({
   >
     <template ##="{ record,rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
-          <!-- 在编辑模式下，默认的操作：复制、删除 -->
-          <!--          <a-button type="text" size="small" @click="saveRow(record,rowIndex)">保存</a-button>-->
-          <!--          在这里popconfirm无效 TODO-->
-          <a-popconfirm content="确定是否删除?">
-            <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)">删除</a-button>
-          </a-popconfirm>
+        <!-- 在编辑模式下，默认的操作：复制、删除 -->
+        <!--          <a-button type="text" size="small" @click="saveRow(record,rowIndex)">保存</a-button>-->
+        <!--          在这里popconfirm无效 TODO-->
+        <a-popconfirm content="确定是否删除?">
+          <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)">删除</a-button>
+        </a-popconfirm>
       </a-space>
     </template>
     <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">
@@ -594,5 +595,9 @@ defineExpose({
 .gl-entity-table .gl-validate-error .gl-validate-message {
   display: inline-block;
   color: red;
+}
+
+.gl-entity-table .arco-table-cell{
+  padding: 4px !important;
 }
 </style>

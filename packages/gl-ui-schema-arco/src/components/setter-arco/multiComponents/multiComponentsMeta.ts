@@ -29,18 +29,15 @@ export default {
         "title": "隐藏标题",
         "setterComponentName": "ASwitch"
     }, {
-        "name": "labelColFlex",
-        "group": "base",
-        "type": "props",
-        "enableValueExpress": false,
-        "show": true,
-        "expanded": true,
+        "name": "bindField",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
-        "title": "标题宽度",
-        "setterComponentName": "AInput",
-        "description": "标题的宽度，默认的标题占比20%（精确值应为20.83%，这里需填整数去掉.83）",
-        "placeholder": "如：6% 或 100px"
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "绑定字段",
+        "setterComponentName": "GlEntityFieldSelect"
     }, {
         "name": "items",
         "setterComponentProps": {},

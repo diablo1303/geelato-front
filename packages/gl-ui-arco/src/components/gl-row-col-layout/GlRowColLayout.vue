@@ -139,7 +139,7 @@ const showFormItem = (inst: ComponentInstance) => {
         <a-form-item v-if="childComponentInst&&(childComponentInst.props.unRender!==true)"
                      class="gl-form-item"
                      :class="{'gl-hidden':childComponentInst.props.hideLabel===true||!showFormItem(childComponentInst)}"
-                     :label-col-flex="childComponentInst.props.labelColFlex"
+                     :label-col-flex="childComponentInst.props._labelColFlex"
                      :field="childComponentInst.props?.bindField?.fieldName"
                      :tooltip="i18nConvert(childComponentInst.props?.tooltip,childComponentInst.i18n)"
                      :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"

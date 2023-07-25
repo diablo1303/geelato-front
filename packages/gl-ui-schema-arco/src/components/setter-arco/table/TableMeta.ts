@@ -312,7 +312,8 @@ export default {
         }],
         "title": "工具条",
         "setterComponentName": "GlSimpleObjectSetter",
-        "titleField": "",
+        "titleField": "title",
+        "subTitleField": "name",
         "enableValueExpress": false
     }, {
         "name": "columns",
@@ -430,6 +431,7 @@ export default {
         "setterComponentName": "GlObjectArraySetter",
         "title": "数据列",
         "titleField": "title",
+        "subTitleField":"fieldName",
         "enableValueExpress": false
     }, {
         "name": "columnActions",

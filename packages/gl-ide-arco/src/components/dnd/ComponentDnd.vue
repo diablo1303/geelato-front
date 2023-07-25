@@ -154,7 +154,11 @@ if (pageProvideProxy) {
 }
 
 .gl-component.gl-hover, .gl-component.gl-selected {
-  border: 1px solid #178df7;
+  border: 1px solid #165DFF;
+}
+
+.gl-entity-form.gl-component.gl-hover,.gl-entity-form.gl-component.gl-selected{
+  border: 1px solid #D91AD9;
 }
 
 .gl-component.gl-drag-enter {

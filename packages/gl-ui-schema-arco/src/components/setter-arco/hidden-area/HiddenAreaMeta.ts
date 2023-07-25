@@ -2,7 +2,7 @@ export default {
     "componentName": "GlHiddenArea",
     "displayMode": "Tile",
     "iconType": "gl-hide",
-    "group": "other",
+    "group": "layout",
     "title": "隐藏区域",
     "alias": "hidden",
     "useBy": ["freePage"],

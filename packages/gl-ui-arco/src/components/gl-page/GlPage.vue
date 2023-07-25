@@ -100,24 +100,10 @@ const showSlot = () => {
   // console.log('showSlot')
 }
 
-// console.log('GlPage > props.params:', props.params, 'id:', props.glComponentInst.id)
+console.log('GlPage > props.params:', props.params, 'id:', props.glComponentInst.id)
 const pageProvideProxy = new PageProvideProxy(props.glComponentInst, getCurrentInstance())
 pageProvideProxy.pageId = props.pageId
 pageProvideProxy.setVueInst(props.glComponentInst.id, getCurrentInstance())
-// if (pageProvideProxy.isParamNeedConvert(props.params)) {
-//   // @ts-ignore
-//   pageProvideProxy.setParams(JSON.parse(pageProvideProxy.paramStringify(props.params)))
-// } else {
-//   pageProvideProxy.setParams(props.params)
-// }
-
-// if (pageProvideProxy.isParamNeedConvert(props.params)) {
-//   // @ts-ignore
-//   pageProvideProxy.setParams(JSON.parse(pageProvideProxy.paramStringify(props.params)))
-// } else {
-//   pageProvideProxy.setParams(props.params)
-// }
-
 
 pageProvideProxy.setParams(props.params)
 jsScriptExecutor.addPageProxy(props.glComponentInst.id, pageProvideProxy)

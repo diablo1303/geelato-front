@@ -85,11 +85,10 @@ export class EntityApi {
      * @returns {*}
      */
     queryByGql(mql: object | Array<object>, withMeta?: boolean) {
-        const path = Array.isArray(mql)
-            ? this.url.metaMultiList
-            : this.url.metaList;
+        const isArray = Array.isArray(mql)
+        const path = isArray ? this.url.metaMultiList : this.url.metaList;
         return this.service({
-            url: `${path}?withMeta=${!!withMeta}`,
+            url: `${path}?withMeta=${!!withMeta}&e=${isArray ? '_multiEntity' : Object.keys(mql)[0]}`,
             method: "POST",
             data: mql,
             headers: {
@@ -162,7 +161,11 @@ export class EntityApi {
     ) {
         if (!fieldNames) {
             // eslint-disable-next-line no-throw-literal
-            throw "查询列（fieldNames）不能为空。";
+            throw `查询${entityName},失败，列（fieldNames）不能为空。`;
+        }
+        if (fieldNames.indexOf(',,')>=0) {
+            // eslint-disable-next-line no-throw-literal
+            throw `查询${entityName}失败，列（fieldNames）格式不对,存在连续的",,"：${fieldNames}`;
         }
         // mql查询语句
         const mql: LooseObject = {};
@@ -426,8 +429,8 @@ export class EntityApi {
 
     /**
      * 实体对像的数据转换
-     * @param <Object> data 简单一层对象，如：{id:'123456',name:'张三'}
-     * @param <Object> dataMapping  可为可层对象，如两层对像：{query: {fullName: '$ctx.name'}}
+     * @param data 简单一层对象，如：{id:'123456',name:'张三'}
+     * @param dataMapping  可为可层对象，如两层对像：{query: {fullName: '$ctx.name'}}
      * @return <Object> 若dataMapping为空，则直接返回data，{query: {fullName: '张三'}}
      */
     entityDataMappingHandler(data: LooseObject, dataMapping: LooseObject = {}) {
@@ -447,9 +450,8 @@ export class EntityApi {
 
     /**
      * 查询数据定义信息，即元数据信息
-     * @param mqlObject or mqlArray
-     * @param withMeta 是否需同时查询出各列表字段的元数据信息
      * @returns {*}
+     * @param entityName
      */
     queryMeta(entityName: string) {
         return this.service({

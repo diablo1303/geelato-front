@@ -16,6 +16,7 @@
             <span v-if="enableSort"><GlIconfont type="gl-drag" class="gl-dnd-item"
                                                 style="cursor: move"></GlIconfont></span>
             <span class="gl-m-title">{{ getElementTitle(element, titleField) }}</span>
+            <span class="gl-m-sub-title">{{ getElementTitle(element, subTitleField) }}</span>
             <span class="gl-m-action" v-if="enableDelete"><GlIconfont type="gl-delete" @click="removeElement(index)"
                                                                       style="color: red;cursor: pointer"></GlIconfont></span>
             <!--            <span class="gl-m-action" v-if="enableEdit"><FormOutlined /></span>-->
@@ -50,6 +51,12 @@ export default defineComponent({
       type: String,
       default() {
         return 'title'
+      }
+    },
+    subTitleField: {
+      type: String,
+      default() {
+        return ''
       }
     },
     /**
@@ -195,6 +202,10 @@ export default defineComponent({
 /* gl-m 即为 gl-modifier*/
 .gl-property-setter-card .gl-m-title {
   padding-left: 0.5em;
+}
+.gl-property-setter-card .gl-m-sub-title{
+  padding-left: 0.5em;
+  color: #8f8f8f;
 }
 
 .gl-property-setter-card .gl-m-header {

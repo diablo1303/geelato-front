@@ -275,6 +275,17 @@
         <a-input size="small" v-model="mv.titleField"/>
       </td>
     </tr>
+    <tr v-if="mv.setterComponentName==='GlObjectArraySetter'">
+      <td class="gl-table-cell gl-label"
+          title="在属性设置器中，若该属性为数组对象属性时，指定数组中对象的某一属性作为副标题">
+        <GlIconfont type="gl-info-circle"></GlIconfont>
+        副标题字段名
+      </td>
+      <td class="gl-table-cell">
+        <template v-if="mv.subTitleField=(mv.subTitleField===undefined?'':mv.subTitleField)"></template>
+        <a-input size="small" v-model="mv.subTitleField"/>
+      </td>
+    </tr>
   </table>
 </template>
 
