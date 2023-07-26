@@ -1,3 +1,4 @@
+import {ref} from "vue";
 import type {RouteRecordNormalized} from 'vue-router';
 import {DEFAULT_LAYOUT} from "@/router/routes/base";
 import {getMenus, QueryMenuForm} from "@/api/user";
@@ -22,6 +23,8 @@ const getRouter = (_modules: any, result: string[]) => {
   return result;
 }
 
+export const IS_ACCOUNT = ref<boolean>(false);
+export const IS_DATA_PAGE = ref<boolean>(false);
 export const currentPage = () => {
   const currentParams = {path: '', tenantCode: '', appId: ''};
   const currentUrl = window.location.href;
@@ -29,7 +32,15 @@ export const currentPage = () => {
   if (url) {
     const urlParams = url.searchParams;
     if (url.pathname) {
-      const routerPaths = getRouter(modules, ['/login', '/page/preview']);
+      // 是否是账户页面
+      if (url.pathname.startsWith('/account/')) {
+        IS_ACCOUNT.value = true;
+      }
+      // 是否是无指定的应用站点
+      if (url.pathname.endsWith('/page/') || url.pathname.endsWith('/page')) {
+        IS_DATA_PAGE.value = true;
+      }
+      const routerPaths = getRouter(modules, ['/login', '/page', '/page/preview']);
       // eslint-disable-next-line no-restricted-syntax
       for (const item of routerPaths) {
         if (url.pathname.indexOf(item) !== -1) {
@@ -62,6 +73,17 @@ const formatModules = (_modules: any, result: RouteRecordNormalized[]) => {
   Object.keys(_modules).forEach((key) => {
     const defaultModule = _modules[key].default;
     if (!defaultModule) return;
+    // 限制
+    if (IS_ACCOUNT.value && defaultModule.name !== 'account') {
+      return;
+    }
+    if (!IS_ACCOUNT.value && defaultModule.name === 'account') {
+      return;
+    }
+    // 租户下显示，应用下不显示
+    if (urlParams.appId) {
+      return;
+    }
     defaultModule.path = URL_PREFIX + path + defaultModule.path;
     if (defaultModule.children && defaultModule.children.length > 0) {
       defaultModule.children.forEach((value: any, index: number) => {
@@ -71,9 +93,11 @@ const formatModules = (_modules: any, result: RouteRecordNormalized[]) => {
     const moduleList = Array.isArray(defaultModule) ? [...defaultModule] : [defaultModule];
     result.push(...moduleList);
   });
-  // 默认页面
-  DEFAULT_ROUTE.fullPath = URL_PREFIX + path + DEFAULT_ROUTE.fullPath;
-  DEFAULT_ROUTE.params = urlParams;
+  if (!urlParams.appId) {
+    // 默认页面
+    DEFAULT_ROUTE.fullPath = URL_PREFIX + path + DEFAULT_ROUTE.fullPath;
+    DEFAULT_ROUTE.params = urlParams;
+  }
 
   return result;
 }
@@ -157,6 +181,23 @@ export const formatAppModules = async (result: RouteRecordNormalized[]) => {
       }
     }
     result = buildOrgOptions(folderOptions, menuForms);
+    // 默认页面 取第一个
+    if (result && result.length > 0) {
+      DEFAULT_ROUTE.fullPath += result[0].path;
+      DEFAULT_ROUTE.name = result[0].name as string;
+      if (result[0].children && result[0].children.length > 0) {
+        DEFAULT_ROUTE.name = result[0].children[0].name as string;
+        DEFAULT_ROUTE.fullPath += `/${result[0].children[0].path}`
+        // @ts-ignore
+        DEFAULT_ROUTE.params = result[0].children[0].params;
+        if (IS_DATA_PAGE.value) {
+          // @ts-ignore
+          const url1 = `preview/${DEFAULT_ROUTE.params.pageId}`;
+          const url2 = window.location.href.endsWith('/page') ? '/' : '';
+          window.location.assign(window.location.href + url2 + url1);
+        }
+      }
+    }
     console.log(result)
   } catch (err) {
     console.log(err);

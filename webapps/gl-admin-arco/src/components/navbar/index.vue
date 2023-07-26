@@ -188,7 +188,7 @@
             </a-doption>
             <!--     账号设置       -->
             <a-doption>
-              <a-space @click="$router.push({ name: 'userAccount' })">
+              <a-space @click="accountSettingsClick($event)">
                 <icon-settings/>
                 <span>
                   {{ $t('messageBox.accountSettings') }}
@@ -216,17 +216,20 @@ import {computed, inject, ref} from 'vue';
 import {Message} from '@arco-design/web-vue';
 import {useDark, useFullscreen, useToggle} from '@vueuse/core';
 import {useAppStore, useUserStore} from '@/store';
-import {useRoute} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
 import {LOCALE_OPTIONS} from '@/locale';
 import useLocale from '@/hooks/locale';
 import useUser from '@/hooks/user';
 import Menu from '@/components/menu/index.vue';
 import {getApp, getDownloadUrlById} from "@/api/application";
 import defaultAvatar from '@/assets/images/default-avatar.png';
+import {ACCOUNT_ROUTE_PATH} from "@/router/constants";
+import {IS_ACCOUNT} from "@/router/routes";
 import MessageBox from '../message-box/index.vue';
 
 const appStore = useAppStore();
 const userStore = useUserStore();
+const router = useRouter();
 const route = useRoute();
 const {logout} = useUser();
 const {changeLocale, currentLocale} = useLocale();
@@ -301,6 +304,13 @@ const getAppInfo = async () => {
 }
 getAppInfo();
 
+const accountSettingsClick = (ev?: MouseEvent) => {
+  if (IS_ACCOUNT.value) {
+    router.push({path: ACCOUNT_ROUTE_PATH});
+  } else {
+    window.open(router.resolve({path: ACCOUNT_ROUTE_PATH}).href, "_blank");
+  }
+}
 </script>
 
 <style lang="less" scoped>

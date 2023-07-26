@@ -214,7 +214,6 @@ import {Notification} from "@arco-design/web-vue";
 import AppForm from '@/views/application/form.vue';
 import AppDrawer from '@/views/application/drawer.vue';
 import {useRouter} from "vue-router";
-import {DEFAULT_ROUTE} from "@/router/constants";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
@@ -305,7 +304,8 @@ const enterTable = (data: QueryForm, type: string) => {
     switch (type) {
       case 'index':
         window.open(router.resolve({
-          path: `/${data.tenantCode}/${data.id}${DEFAULT_ROUTE.fullPath.replace("/:tenantCode", "").replace("/:appId", "")}`,
+          // path: `/${data.tenantCode}/${data.id}${DEFAULT_ROUTE.fullPath.replace("/:tenantCode", "").replace("/:appId", "")}`,
+          name: 'pageWrapper',
           params: {tenantCode: data.tenantCode, appId: data.id}
         }).href, "_blank");
         break;
@@ -385,13 +385,13 @@ const popupVisibleChange = (val: boolean) => {
   }
 };
 watch(() => columns.value, (val) => {
-      cloneColumns.value = cloneDeep(val);
-      cloneColumns.value.forEach((item, index) => {
-        item.checked = true;
-      });
-      showColumns.value = cloneDeep(cloneColumns.value);
-    },
-    {deep: true, immediate: true}
+    cloneColumns.value = cloneDeep(val);
+    cloneColumns.value.forEach((item, index) => {
+      item.checked = true;
+    });
+    showColumns.value = cloneDeep(cloneColumns.value);
+  },
+  {deep: true, immediate: true}
 );
 
 /* 对外调用方法 */
