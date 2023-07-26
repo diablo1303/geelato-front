@@ -237,7 +237,7 @@ const {isFullscreen, toggle: toggleFullScreen} = useFullscreen();
 const locales = [...LOCALE_OPTIONS];
 const avatar = computed(() => {
   const userAvatar = userStore.userInfo.avatar;
-  return userAvatar ? getDownloadUrlById(userAvatar) : defaultAvatar;
+  return userAvatar || defaultAvatar;
 });
 const theme = computed(() => {
   return appStore.theme;

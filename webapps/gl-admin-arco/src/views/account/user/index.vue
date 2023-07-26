@@ -72,7 +72,6 @@ import {Notification} from "@arco-design/web-vue";
 import {useUserStore} from "@/store";
 import VueCropping from "@/components/vue-cropper/index.vue";
 import {uploadFile} from "@/components/vue-cropper/type";
-import {getDownloadUrlById} from "@/api/application";
 import defaultAvatar from '@/assets/images/default-avatar.png';
 import {AccountUserInfo, updateUserInfo} from "@/api/user";
 
@@ -84,7 +83,7 @@ const buttonLoading = ref(false);
 // 头像
 const avatarData = computed(() => {
   const data = userStore.userInfo.avatar;
-  return data ? getDownloadUrlById(data) : defaultAvatar;
+  return data || defaultAvatar;
 });
 // 账户信息
 const formData = ref<AccountUserInfo>({
@@ -135,13 +134,14 @@ export default {
 
   &-avatar {
     text-align: center;
-    width: 81px;
-    height: 81px;
   }
 
   &-avatar > img {
     width: 81px;
     height: 81px;
+    border-radius: 2px;
+    border: 1px solid #e8e8e8;
+    box-shadow: 2px 2px 5px 3px rgba(0, 0, 0, 0.08);
   }
 }
 </style>
