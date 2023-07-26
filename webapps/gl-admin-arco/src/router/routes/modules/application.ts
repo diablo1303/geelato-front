@@ -2,8 +2,8 @@ import {DEFAULT_LAYOUT} from '../base';
 import {AppRouteRecordRaw} from '../types';
 
 const APPLICATION: AppRouteRecordRaw = {
-  path: `/app`,
-  name: 'app',
+  path: `/dev`,
+  name: 'dev',
   component: DEFAULT_LAYOUT,
   meta: {
     locale: 'menu.application',

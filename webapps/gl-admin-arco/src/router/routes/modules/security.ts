@@ -2,8 +2,8 @@ import {DEFAULT_LAYOUT} from '../base';
 import {AppRouteRecordRaw} from '../types';
 
 const USER: AppRouteRecordRaw = {
-  path: '/role',
-  name: 'role',
+  path: '/manage',
+  name: 'manage',
   component: DEFAULT_LAYOUT,
   meta: {
     locale: 'security.org.index.menu.list',
