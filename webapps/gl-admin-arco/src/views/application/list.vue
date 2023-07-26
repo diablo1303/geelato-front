@@ -117,7 +117,7 @@
       <a-table-column :ellipsis="true" :title="$t('application.app.list.logo')" :tooltip="true" :width="80"
                       align="center" data-index="logo">
         <template #cell="{record}">
-          <img v-show="record.logo" :src="getDownloadUrlById(record.logo)" alt="logo" style="width: 25px;height: 25px"/>
+          <img v-show="record.logo" :src="record.logo" alt="logo" style="width: 25px;height: 25px"/>
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.name')" :tooltip="true" :width="150"
@@ -201,13 +201,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
-import {
-  deleteApp as deleteList,
-  FilterAppForm as FilterForm,
-  getDownloadUrlById,
-  pageQueryApps as pageQueryList,
-  QueryAppForm as QueryForm
-} from '@/api/application'
+import {deleteApp as deleteList, FilterAppForm as FilterForm, pageQueryApps as pageQueryList, QueryAppForm as QueryForm} from '@/api/application'
 import {columns, watermarkOptions} from "@/views/application/searchTable";
 import {Notification} from "@arco-design/web-vue";
 // 引用其他页面

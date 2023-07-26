@@ -26,7 +26,7 @@
           <a-button class="input-button input-button-primary" type="dashed" @click="showIconSelect($event)">
             <IconPlus/>
           </a-button>
-          <a-button class="input-button input-button-close" type="dashed" @click="()=>{formData.icon = ''}">
+          <a-button class="input-button input-button-close" type="dashed" @click="deleteIconClick($event)">
             <IconClose/>
           </a-button>
         </template>
@@ -37,12 +37,34 @@
         :label="$t('application.app.list.logo')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="logo">
-      <a-upload :action="getUploadUrl()" :disabled="!pageData.button" :file-list="logoFile"
-                :limit="1" accept="image/*"
-                image-preview
-                list-type="picture-card"
-                @error="uploadLogoError" @success="uploadLogoSuccess" @before-remove="beforeRemoveLogo"/>
+      <a-space style="align-items: flex-end;">
+        <a-image v-model:src="formData.logo" :preview="false" class="logo-img" width="82"/>
+        <a-space v-if="pageData.button" style="flex-direction: column;align-items: flex-start;">
+          <a-button size="mini" style="border-radius: 6px;margin-bottom: 5px;" type="outline" @click="logoDeleteClick($event)">
+            <template #icon>
+              <GlIconfont type="gl-delete"/>
+            </template>
+            {{ $t('application.app.list.logo.button.delete') }}
+          </a-button>
+          <a-button size="mini" style="border-radius: 6px;" type="outline" @click="logoSelectClick($event)">
+            <template #icon>
+              <GlIconfont type="gl-edit-square"/>
+            </template>
+            {{ $t('application.app.list.logo.button.select') }}
+          </a-button>
+        </a-space>
+      </a-space>
     </a-form-item>
+    <!--    <a-form-item
+            :label="$t('application.app.list.logo')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            field="logo">
+          <a-upload :action="getUploadUrl()" :disabled="!pageData.button" :file-list="logoFile"
+                    :limit="1" accept="image/*"
+                    image-preview
+                    list-type="picture-card"
+                    @error="uploadLogoError" @success="uploadLogoSuccess" @before-remove="beforeRemoveLogo"/>
+        </a-form-item>-->
     <a-form-item
         :label="$t('application.app.list.watermark')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
@@ -99,18 +121,11 @@ import {ref} from "vue";
 import {Modal, Notification} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/base';
-import {
-  AttachmentForm,
-  createOrUpdateApp as createOrUpdateForm,
-  getApp as getForm,
-  getAttachmentByIds,
-  getDownloadUrlById,
-  getUploadUrl,
-  QueryAppForm as QueryForm
-} from '@/api/application'
+import {createOrUpdateApp as createOrUpdateForm, getApp as getForm, QueryAppForm as QueryForm} from '@/api/application'
 import {watermarkOptions} from "@/views/application/searchTable";
 import {FileItem} from "@arco-design/web-vue/es/upload/interfaces";
 import {iconsJson} from "@geelato/gl-ui";
+import {uploadFile} from "@/components/vue-cropper/type";
 
 const visible = ref(false);
 const pageData = ref({formState: 'add', button: true, formCol: 1});
@@ -147,6 +162,9 @@ const onSelected = (iconItem: any) => {
 const showIconSelect = (ev: Event) => {
   visible.value = true
 }
+const deleteIconClick = (ev?: MouseEvent) => {
+  formData.value.icon = ''
+}
 
 const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
@@ -162,6 +180,24 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
     failBack();
   }
 };
+
+const logoDeleteClick = (ev?: MouseEvent) => {
+  formData.value.logo = "";
+}
+const logoSelectClick = (ev?: MouseEvent) => {
+  uploadFile((file: File, url: string) => {
+    if (!file) { // 如果没有选择文件，则返回
+      return;
+    }
+    const reader = new FileReader(); // 创建FileReader对象
+    reader.onload = function (e) { // 当读取完成时触发该事件
+      formData.value.logo = (e && e.target && e.target.result as string) || '';
+      console.log(formData.value.logo);
+    };
+    reader.readAsDataURL(file); // 以DataURL格式读取文件内容
+  });
+}
+
 const getData = async (id: string, successBack?: any, failBack?: any) => {
   try {
     const {data} = await getForm(id);
@@ -237,7 +273,7 @@ const loadModel = (urlParams: ListUrlParams) => {
   if (urlParams.id) {
     getData(urlParams.id, (data: QueryForm) => {
       data.seqNo = Number(data.seqNo);
-      if (data.logo !== null && data.logo !== '') {
+      /* if (data.logo !== null && data.logo !== '') {
         getAttachmentByIds(data.logo, (attachs: AttachmentForm[]) => {
           if (attachs != null && attachs.length > 0) {
             attachs.forEach((value, index, array) => {
@@ -253,7 +289,7 @@ const loadModel = (urlParams: ListUrlParams) => {
           console.log(logoFile.value);
         }, () => {
         });
-      }
+      } */
       formData.value = data;
       urlParams.loadSuccessBack(data);
     }, urlParams.loadFailBack);
@@ -300,5 +336,11 @@ defineExpose({loadModel, submitModel});
 
 .gl-iconfont-setter-icon-item:hover {
   box-shadow: 0px 0px 4px #1890FF;
+}
+
+.logo-img {
+  border-radius: 2px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 2px 2px 5px 3px rgba(0, 0, 0, 0.08);
 }
 </style>

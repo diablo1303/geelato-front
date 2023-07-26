@@ -9,6 +9,8 @@ export default {
   'application.app.list.token': 'token',
   'application.app.list.tree': 'tree',
   'application.app.list.logo': 'logo',
+  'application.app.list.logo.button.delete': 'Delete',
+  'application.app.list.logo.button.select': 'Select',
   'application.app.list.theme': 'theme',
   'application.app.list.watermark': 'watermark',
   'application.app.list.watermark.0': 'disabled',

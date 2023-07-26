@@ -221,7 +221,7 @@ import {LOCALE_OPTIONS} from '@/locale';
 import useLocale from '@/hooks/locale';
 import useUser from '@/hooks/user';
 import Menu from '@/components/menu/index.vue';
-import {getApp, getDownloadUrlById} from "@/api/application";
+import {getApp} from "@/api/application";
 import defaultAvatar from '@/assets/images/default-avatar.png';
 import {ACCOUNT_ROUTE_PATH} from "@/router/constants";
 import {IS_ACCOUNT} from "@/router/routes";
@@ -295,7 +295,7 @@ const getAppInfo = async () => {
       const {data} = await getApp(route.params.appId as string);
       appInfo.value.appName = data.name;
       if (data.logo) {
-        appInfo.value.appLogo = getDownloadUrlById(data.logo);
+        appInfo.value.appLogo = data.logo;
       }
     } catch (err) {
       console.log(err);
