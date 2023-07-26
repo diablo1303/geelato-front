@@ -87,10 +87,10 @@ const avatarData = computed(() => {
   return data ? getDownloadUrlById(data) : defaultAvatar;
 });
 // 账户信息
-const formData = computed<AccountUserInfo>(() => {
-  const data = userStore.userInfo;
-  return {description: data.description, address: data.address} as unknown as AccountUserInfo;
-});
+const formData = ref<AccountUserInfo>({
+  description: userStore.userInfo.description || '',
+  address: userStore.userInfo.address || ''
+} as unknown as AccountUserInfo);
 
 const updateAvatarClick = (ev?: MouseEvent) => {
   uploadFile((file: File, url: string) => {
