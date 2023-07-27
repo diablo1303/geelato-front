@@ -29,6 +29,27 @@ export default {
         "title": "打开的页面",
         "setterComponentName": "GlPageSelect"
     }, {
+        "name": "mode",
+        "title": "页面模式",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentName": "ASelect",
+        "setterComponentProps": {
+            "options": [
+                {
+                    "label": "抽屉",
+                    "value": "Drawer"
+                },
+                {
+                    "label": "弹层",
+                    "value": "Modal"
+                }
+            ]
+        }
+    }, {
         "name": "title",
         "setterComponentProps": {"value": "默认为1024px"},
         "setterComponentVModelName": "modelValue",
@@ -38,7 +59,7 @@ export default {
         "expanded": true,
         "title": "页面标题",
         "setterComponentName": "AInput",
-        "enableValueExpress": false
+        "enableValueExpress": true
     }, {
         "name": "width",
         "setterComponentProps": {},
@@ -49,7 +70,7 @@ export default {
         "expanded": true,
         "title": "页面宽度",
         "setterComponentName": "AInput",
-        "enableValueExpress": false
+        "enableValueExpress": true
     }, {
         "name": "params",
         "setterComponentProps": {},
@@ -94,7 +115,7 @@ export default {
         "expanded": true,
         "title": "确认按钮文字",
         "setterComponentName": "AInput",
-        "enableValueExpress": false
+        "enableValueExpress": true
     }, {
         "name": "cancelText",
         "setterComponentProps": {},
@@ -105,7 +126,7 @@ export default {
         "expanded": true,
         "title": "取消按钮文字",
         "setterComponentName": "AInput",
-        "enableValueExpress": false
+        "enableValueExpress": true
     }, {
         "name": "hideCancel",
         "setterComponentProps": {},

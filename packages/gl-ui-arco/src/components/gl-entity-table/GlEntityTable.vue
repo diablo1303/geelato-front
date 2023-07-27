@@ -378,7 +378,7 @@ watch(() => columns.value,
       cloneColumns.value = cloneDeep(val);
       cloneColumns.value.forEach((item, index) => {
         item.checked = true;
-        item.width = item.width || 200
+        item.width = item.width || 150
         item.align = item.align || 'center'
       });
       cloneColumns.value.push(optColumn as Column)

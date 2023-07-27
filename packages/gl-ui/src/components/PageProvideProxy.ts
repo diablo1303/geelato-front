@@ -4,6 +4,7 @@
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import type {ComponentInternalInstance} from "vue";
 import type {Param} from "../m/types/global";
+import utils from "../m/utils/Utils";
 
 export type PageParamConfigType = { pName: string, pValue: any, pType: string }
 export const PageProvideKey = 'PageProvideKey'
@@ -68,14 +69,53 @@ export default class PageProvideProxy {
     pageCtx: object = {}
     componentMap: { [key: string]: ComponentInternalInstance | null } = {}
     componentInsts: { [key: string]: ComponentInstance } = {}
+    unMountedIds: { [key: string]: boolean } = {}
+    onPageMountedEvents: { id: string, fn: Function }[] = []
 
-    constructor(pageInst: ComponentInstance, pageVueInst: ComponentInternalInstance | null) {
+    constructor(pageInst: ComponentInstance, pageVueInst: ComponentInternalInstance) {
         this.pageInst = pageInst
         this.pageVueInst = pageVueInst
+
+
+        const statAllComponentIds = () => {
+            const ids: { [key: string]: boolean } = {}
+            const statId = (inst: ComponentInstance) => {
+                // 不记GlVirtual、GlPage
+                if (inst.componentName !== 'GlVirtual' && inst.componentName !== 'GlPage') {
+                    ids[inst.id] = true
+                }
+                if (inst.children?.length > 0) {
+                    for (const index in inst.children) {
+                        statId(inst.children[index])
+                    }
+                }
+            }
+            statId(pageInst)
+            // console.log('statAllComponentIds() > ids:', Object.keys(ids).length, ids)
+            return ids
+        }
+        // 设置未加载完成（未mounted）的组件ids
+        this.unMountedIds = statAllComponentIds()
+    }
+
+    addPageMountedEvent(fn: Function) {
+        const id = utils.gid()
+        this.onPageMountedEvents.push({id, fn})
+        return id
+    }
+
+    removePageMountedEvent(id: string) {
+        const index = this.onPageMountedEvents.findIndex((event) => {
+            return event.id === id
+        })
+        if (index >= 0) {
+            this.onPageMountedEvents.splice(index, 1)
+        }
     }
 
     /**
-     * 页面内子组件引用
+     * 页面内子组件引用（在组件mounted之后执行）
+     * 同时计算有多少组件还未mounted，记录在unMountedIds
      * @param componentId
      * @param vueInst vue实组件实例
      */
@@ -84,6 +124,19 @@ export default class PageProvideProxy {
             // console.log('setVueInst(),componentId:', componentId, ',vueInst:', vueInst, vueInst.props.glComponentInst)
             this.componentMap[componentId] = vueInst
             this.componentInsts[componentId] = vueInst.props.glComponentInst as ComponentInstance
+
+            // 由于动态组件的的onMounted事件次序中，父组件不是最后一个触发，这个自行实现
+            if (this.unMountedIds[componentId]) {
+                delete this.unMountedIds[componentId]
+                // console.log('delete unMounted id:', componentId, 'current unMountedIds:', Object.keys(this.unMountedIds).length, this.unMountedIds,)
+                if (Object.keys(this.unMountedIds).length === 0) {
+                    if (this.onPageMountedEvents.length > 0) {
+                        for (const index in this.onPageMountedEvents) {
+                            this.onPageMountedEvents[index].fn()
+                        }
+                    }
+                }
+            }
         }
     }
 

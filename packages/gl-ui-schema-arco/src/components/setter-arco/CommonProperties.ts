@@ -70,6 +70,18 @@ export default [
         "show": true,
         "expanded": true
     }, {
+        "name": "_hidden",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "隐藏",
+        "description": "页面中存在该组件，只是不可见",
+        "setterComponentName": "ASwitch",
+        "enableValueExpress": true
+    }, {
         "name": "unRender",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -78,6 +90,7 @@ export default [
         "show": true,
         "expanded": true,
         "title": "不渲染",
+        "description": "页面中不存在该组件，不渲染，不可见，一般是为了提高性能在一些场景下不渲染。",
         "setterComponentName": "ASwitch",
         "enableValueExpress": true
     },
@@ -93,4 +106,9 @@ export default [
         "setterComponentName": "GlValidateRulesSetter"
     }
 
+]
+
+export const commonActions = [
+    {"name": "onMounted", "description": "组件加载完时触发，和Vue的onMounted一致", "title": "加载完"},
+    {"name": "onUpdated", "description": "组件更新时触发，和Vue的onUpdated一致", "title": "加载完"}
 ]

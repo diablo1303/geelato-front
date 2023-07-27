@@ -103,5 +103,5 @@ export default {
         "setterComponentName": "AInput",
         "slotComponentBindTarget": "v-model"
     }],
-    "actions": [{"name": "change", "description": "", "title": "值改变"}]
+    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}]
 }

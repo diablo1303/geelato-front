@@ -137,6 +137,7 @@ const showFormItem = (inst: ComponentInstance) => {
       -->
       <template v-for="childComponentInst in glComponentInst?.children[index].children">
         <a-form-item v-if="childComponentInst&&(childComponentInst.props.unRender!==true)"
+                     v-show="childComponentInst.props._hidden!==true"
                      class="gl-form-item"
                      :class="{'gl-hidden':childComponentInst.props.hideLabel===true||!showFormItem(childComponentInst)}"
                      :label-col-flex="childComponentInst.props._labelColFlex"
@@ -169,7 +170,8 @@ const showFormItem = (inst: ComponentInstance) => {
         :key="index"
         :span="span"
     >
-      <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst?.children[index]"
+      <component v-show="glComponentInst?.props._hidden!==true"
+                 :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst?.children[index]"
                  :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"/>
     </a-col>
   </a-row>

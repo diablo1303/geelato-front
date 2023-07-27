@@ -16,6 +16,7 @@ export default {
         "expanded": true,
         "title": "标题",
         "setterComponentName": "AInput",
+        "enableValueExpress": true,
         "placeholder": ""
     }, {
         "name": "content",
@@ -26,6 +27,7 @@ export default {
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "title": "内容",
+        "enableValueExpress": true,
         "setterComponentName": "AInput"
     }, {
         "name": "varName",

@@ -5,7 +5,7 @@ export default {
     "group": "block_page",
     "title": "设置组件隐藏",
     "useBy": ["freePage"],
-    "blockContent": "设置组件:${componentId}，是否隐藏（不渲染）:${unRender}",
+    "blockContent": "设置组件:${componentId}，是否隐藏（不可见）:${_hidden}",
     "properties": [{
         "name": "appId",
         "setterComponentProps": {},
@@ -40,7 +40,7 @@ export default {
         "setterComponentName": "GlPageComponentSelect",
         "enableValueExpress": false
     }, {
-        "name": "unRender",
+        "name": "_hidden",
         "group": "base",
         "type": "props",
         "show": true,

@@ -74,13 +74,13 @@ const reset = () => {
 
 const showItems = computed(() => {
   return props.items.filter((item: QueryItem) => {
-    return !item.component?.props.unRender
+    return !item.component?.props._hidden
   })
 })
 
 const hideItems = computed(() => {
   return props.items.filter((item: QueryItem) => {
-    return item.component?.props.unRender
+    return item.component?.props._hidden
   })
 })
 

@@ -86,5 +86,5 @@ export default {
         }],
         "titleField": "name"
     }],
-    "actions": [{"name": "onMounted", "description": "页面加载完时触发，和Vue的onMounted一致", "title": "加载完"}]
+    "actions": []
 }

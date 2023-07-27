@@ -7,6 +7,37 @@ import type {LooseObject} from "../mix/LooseObject";
 import AllUtils from "../utils/AllUtils";
 import {getToken} from "../utils/auth";
 
+export type MqlObject = { [key: string]: { [key: string]: any } }
+
+/**
+ * 检查mql对象的格式
+ * @param mql
+ */
+const checkMqlObject = (mql: MqlObject | Array<MqlObject>): boolean => {
+    if (Array.isArray(mql)) {
+        let result = true
+        for (const key in mql) {
+            const mqlObject = mql[key]
+            result = result && checkMqlObject(mqlObject)
+        }
+        return result
+    } else {
+        const entityName = Object.keys(mql)[0]
+        const config = mql[entityName]
+        const fieldNames = config['@fs']
+
+        if (!fieldNames) {
+            // eslint-disable-next-line no-throw-literal
+            throw `查询${entityName},失败，列（fieldNames）不能为空。`;
+        }
+        if (fieldNames.indexOf(',,') >= 0) {
+            // eslint-disable-next-line no-throw-literal
+            throw `查询${entityName}失败，列（fieldNames）格式不对,存在连续的",,"：${fieldNames}`;
+        }
+        // TODO 子对象验证
+        return true
+    }
+}
 
 export class EntityApi {
     url = new UrlConfig();
@@ -84,9 +115,13 @@ export class EntityApi {
      * @param withMeta 是否需同时查询出各列表字段的元数据信息
      * @returns {*}
      */
-    queryByGql(mql: object | Array<object>, withMeta?: boolean) {
+    queryByGql(mql: MqlObject | Array<MqlObject>, withMeta?: boolean) {
         const isArray = Array.isArray(mql)
         const path = isArray ? this.url.metaMultiList : this.url.metaList;
+
+        // 检查查询对象格式
+        checkMqlObject(mql)
+
         return this.service({
             url: `${path}?withMeta=${!!withMeta}&e=${isArray ? '_multiEntity' : Object.keys(mql)[0]}`,
             method: "POST",
@@ -159,14 +194,14 @@ export class EntityApi {
         params: object,
         withMeta?: boolean
     ) {
-        if (!fieldNames) {
-            // eslint-disable-next-line no-throw-literal
-            throw `查询${entityName},失败，列（fieldNames）不能为空。`;
-        }
-        if (fieldNames.indexOf(',,')>=0) {
-            // eslint-disable-next-line no-throw-literal
-            throw `查询${entityName}失败，列（fieldNames）格式不对,存在连续的",,"：${fieldNames}`;
-        }
+        // if (!fieldNames) {
+        //     // eslint-disable-next-line no-throw-literal
+        //     throw `查询${entityName},失败，列（fieldNames）不能为空。`;
+        // }
+        // if (fieldNames.indexOf(',,') >= 0) {
+        //     // eslint-disable-next-line no-throw-literal
+        //     throw `查询${entityName}失败，列（fieldNames）格式不对,存在连续的",,"：${fieldNames}`;
+        // }
         // mql查询语句
         const mql: LooseObject = {};
         mql[entityName] = {

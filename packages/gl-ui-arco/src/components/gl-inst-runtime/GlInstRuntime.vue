@@ -87,7 +87,7 @@ const i18nConvert = (value?: string) => {
   <div class="gl-dnd-wrapper" :style="{display:displayStyle}">
     <div class="gl-component-wrapper">
       <template v-if="showLabel">
-        <a-form-item v-show="glComponentInst.props.unRender!==true" class="gl-form-item"
+        <a-form-item v-show="glComponentInst?.props.unRender!==true" class="gl-form-item"
                      :field="glComponentInst?.props?.bindField?.fieldName"
                      :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"
                      :label="i18nConvert(glComponentInst?.props?.label)"

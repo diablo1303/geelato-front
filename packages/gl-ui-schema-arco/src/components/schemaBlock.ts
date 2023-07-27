@@ -17,10 +17,11 @@ import IfComponentValueBlockInstance from "./setter-block/if-else/IfComponentVal
 import TriggerComponentActionMeta from "./setter-block/page/TriggerComponentActionBlockMeta";
 import LogBlockMeta from "./setter-block/other/LogBlockMeta";
 import SetValueBlockMeta from "./setter-block/page/SetValueBlockMeta";
+import ReturnBlockMeta from "./setter-block/other/ReturnBlockMeta";
 
 const componentMetas: Array<ComponentMeta> = [BlockRootMeta, BlockNotificationMeta, BlockOpenThirdPageMeta,
     BlockOpenComponentPageMeta, BlockSetVisibleMeta, SetValueBlockMeta, BlockSetVarMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
-    BlockComponentInvokeMeta, BlockConfirmMeta, TriggerComponentActionMeta,
+    BlockComponentInvokeMeta, BlockConfirmMeta, TriggerComponentActionMeta,ReturnBlockMeta,
     LogBlockMeta]
 
 // @ts-ignore

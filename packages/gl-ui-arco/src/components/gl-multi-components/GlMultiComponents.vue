@@ -54,7 +54,7 @@ const props = defineProps({
   ...mixins.props
 })
 
-const mv = ref<Array<ModelProps>>(props.modelValue)
+const mv = ref<Array<ModelProps>>(props.modelValue || [])
 const isAdd = ref(false)
 
 watch(mv, () => {
@@ -92,7 +92,6 @@ watch(() => {
 })
 const clickTag = (modelProps: ModelProps, index: number) => {
   isAdd.value = false
-  // if (!props.glIsRuntime) {
   // 打开配置页面
   currentModelProps.value = modelProps
   props.items.forEach((item) => {
@@ -106,7 +105,6 @@ const clickTag = (modelProps: ModelProps, index: number) => {
     }
   })
   visible.value = true
-  // }
 }
 
 const setCurrentModel = () => {
@@ -118,10 +116,8 @@ const setCurrentModel = () => {
 }
 
 const closeTag = (modelProps: ModelProps, index: number) => {
-  if (!props.glIsRuntime) {
-    mv.value.splice(index, 1)
-    refresh()
-  }
+  mv.value.splice(index, 1)
+  refresh()
 }
 
 const showAddTag = () => {

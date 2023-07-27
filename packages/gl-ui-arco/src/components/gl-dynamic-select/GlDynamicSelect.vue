@@ -88,7 +88,7 @@ const loadData = () => {
   if (props.entityName && props.valueFiledName && props.labelFieldName) {
     const params = props.orderFiledName ? {'@order': props.orderFiledName + '|' + props.ascOrDesc} : {}
     Object.assign(params, {'delStatus|eq': '0'})
-    console.log('GlDynamicSelect > loadData() > entityName:', props.entityName,'params:', params)
+    // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName,'params:', params)
     entityApi.query(props.entityName, `${props.valueFiledName},${props.labelFieldName}`, params).then((resp: any) => {
       selectOptions.value = resp.data?.data || []
     })

@@ -12,6 +12,7 @@ import IfComponentValueBlockHandler from "./logic/IfComponentValueBlockHandler";
 import TriggerComponentActionBlockHandler from "./logic/TriggerComponentActionBlockHandler";
 import LogBlockHandler from "./other/LogBlockHandler";
 import SetValueBlockHandler from "./page/SetValueBlockHandler";
+import ReturnBlockHandler from "./other/ReturnBlockHandler";
 
 export default interface IBlockHandler {
     /**
@@ -19,8 +20,10 @@ export default interface IBlockHandler {
      * @param propsExpressions   属性性的表达式，若有配置，与props的实属对应；有配置该值时，以
      * @param componentInst
      */
-    parseToScript(props: Object, propsExpressions?: Object, componentInst?: ComponentInstance): ParseResult;
+    parseToScript(props: Object, propsExpressions?: {[key:string]:any}, componentInst?: ComponentInstance): ParseResult;
 }
+
+export type PropsExpressions =  { [key: string]: any }
 
 type Handlers = { [key: string]: any }
 
@@ -41,7 +44,8 @@ export class BlocksHandler {
             GlIfComponentValueBlock: new IfComponentValueBlockHandler(),
             GlTriggerComponentActionBlock: new TriggerComponentActionBlockHandler(),
             GlLogBlock: new LogBlockHandler(),
-            GlSetValueBlock: new SetValueBlockHandler()
+            GlSetValueBlock: new SetValueBlockHandler(),
+            GlReturnBlock: new ReturnBlockHandler()
         }
     }
 

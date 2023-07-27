@@ -1,16 +1,17 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
+import type {PropsExpressions} from "../BlockHandler";
 
 export default class ConfirmBlockHandler implements IBlockHandler {
-    parseToScript(props: any): ParseResult {
+    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
         return new ParseResult(
             `
             let varName = '${props.varName}' || 'confirm'
             let vars = {};
-            $gl.$modal.open({
+            $gl.fn.confirm({
                 width:'15em',
-                title: "${props.title}",
-                content: "${props.content}",
+                title: "${propsExpressions?.title || props.title}",
+                content: "${propsExpressions?.content || props.content}",
                 onOk: ()=>{
                   vars[varName] = true;
                   #{onOk}
@@ -25,10 +26,10 @@ export default class ConfirmBlockHandler implements IBlockHandler {
     }
 }
 
-export class Props {
-    title: string = "";
+interface Props {
+    title: string;
 
-    content: string = "";
+    content: string;
     // 存储结果的变量名
-    varName: string = "";
+    varName: string;
 }

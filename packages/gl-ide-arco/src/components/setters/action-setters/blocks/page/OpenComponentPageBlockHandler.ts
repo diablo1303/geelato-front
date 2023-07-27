@@ -1,24 +1,28 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
 import type {Param} from "@geelato/gl-ui";
+import type {PropsExpressions} from "../BlockHandler";
 
-
+const toStr = (str: string) => {
+    return `"${str}"`
+}
 export default class OpenComponentPageBlockHandler implements IBlockHandler {
-
-    parseToScript(props: Props): ParseResult {
+    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
         // console.log("OpenComponentPageBlockHandler > parseToScript > props:", props)
-        const width = props.width || "1024px"
-        const okText = props.okText || "确定"
-        const cancelText = props.cancelText || "取消"
+        const mode = props.mode || 'Drawer'
+        const title = propsExpressions?.title || toStr(props.title)
+        const width = propsExpressions?.width || toStr(props.width || "1024px")
+        const okText = propsExpressions?.okText || toStr(props.okText || "确定")
+        const cancelText = propsExpressions?.cancelText || toStr(props.cancelText || "取消")
         const hideCancel = props.hideCancel === true ? true : false
         return new ParseResult(
             `
             const content = $gl.fn.loadPage("${props.pageId || ''}","${props.extendId}",${JSON.stringify(props.params)});
-            $gl.$drawer.open({
-                title: "${props.title}",
+            $gl.fn.open${mode}({
+                title:${title},
                 content: content,
-                width:"${width}",
-                okText:"${okText}",
+                width:${width},
+                okText:${okText},
                 onBeforeOk: async ()=>{
                     #{onBeforeOk}
                 },
@@ -28,7 +32,7 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
                 onClose:async ()=>{
                     #{onClose}
                 },
-                cancelText:"${cancelText}",
+                cancelText:${cancelText},
                 hideCancel:${hideCancel}
             })
             `
@@ -36,13 +40,15 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
     }
 }
 
-export class Props {
-    title: string = ""
-    appId: string = "";
+interface Props {
+    // Drawer | Modal
+    mode: string
+    title: string
+    appId: string
     // pageId 或 extendId 二选一，填写其中一个，优先采用pageId
-    pageId: string = "";
-    extendId: string = "";
-    width: string = "1024px";
+    pageId: string
+    extendId: string
+    width: string
     // 页面参数
     params?: Array<Param>
     // 确认按钮的内容

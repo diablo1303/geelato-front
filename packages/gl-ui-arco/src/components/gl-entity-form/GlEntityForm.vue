@@ -32,9 +32,11 @@ import {
   PageProvideProxy,
   PageProvideKey,
   FormProvideKey,
-  FormProvideProxy
+  FormProvideProxy, utils
 } from "@geelato/gl-ui";
 
+// onLoadedData：从服务端加载完数据并设置到表单中
+const emits = defineEmits(['onLoadedData'])
 const formProvideProxy = new FormProvideProxy()
 provide(FormProvideKey, formProvideProxy)
 
@@ -153,14 +155,18 @@ const buildFieldItems = () => {
 
   buildFieldItem(props.glComponentInst)
   formProvideProxy.setValues(formData.value)
-  console.log('buildFieldItems formItems:', formItems.value, 'formData:', formData.value)
+  // console.log('buildFieldItems formItems:', formItems.value, 'formData:', formData.value)
 }
 
+/**
+ * 构建formItems
+ * 同时设置inst的value
+ * @param dataItem
+ */
 const setFormItemValues = (dataItem: { [key: string]: any }) => {
   formItems.value.length = 0
 
   // subFormTableInstIds.value.length = 0
-
   function setFieldItemValue(inst: ComponentInstance) {
     for (let index in inst.children) {
       let subInst = inst.children[index]
@@ -171,7 +177,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
         })
         if (foundFieldName) {
           const value = dataItem[subInst.props.bindField.fieldName]
-          // 由于AInputNumber的值不支持设置字符串，这里对可能的字符串值进行转换
+          // 注意！！ 由于AInputNumber的值不支持设置字符串，这里对可能的字符串值进行转换
           if (subInst.componentName === 'AInputNumber') {
             // @ts-ignore
             subInst.value = typeof value !== 'number' ? Number(value) : value
@@ -191,6 +197,8 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
           formData.value[subInst.props.bindField.fieldName] = subInst.value
         }
       }
+      console.log('setFieldItemValue ', subInst.componentName, subInst.props.label, subInst.id, subInst.value)
+
       if (subInst.children && subInst.children.length > 0) {
         setFieldItemValue(subInst)
       }
@@ -199,19 +207,22 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
 
   setFieldItemValue(props.glComponentInst)
 
-  // 刷新展示表单
+  // 设置表单值后，刷新表单
   refreshFlag.value = false
   nextTick(() => {
     refreshFlag.value = true
   })
-  console.log('GlEntityForm > setFormItemValues() > formData:', formData.value)
+
+  console.log('GlEntityForm > setFormItemValues() > formData:', formData.value, dataItem)
+  emits('onLoadedData', {data: formData.value})
 }
 
 /**
  *  加载表单数据
  */
-const loadForm = () => {
+const loadForm = async () => {
   if (!entityRecordId.value) {
+    // 1、不需要从服务端获取
     if (isRead) {
       global.$notification.error({
         duration: 8000,
@@ -220,27 +231,31 @@ const loadForm = () => {
         closable: true
       })
     }
-    setFormItemValues(formData.value)
-    return
-  }
-  // 构建表单数据项
-  buildFieldItems()
-  // 基于表单项，构建字段
-  const fieldNames: Array<string> = []
-  formItems.value.forEach((item) => {
-    if (item.fieldName) {
-      fieldNames.push(item.fieldName)
-    } else {
-      console.error('存在未绑定字段', item)
-    }
-  })
-  if (checkBindEntity()) {
-    entityApi.query(props.bindEntity.entityName, fieldNames.join(','), {id: entityRecordId.value}).then((resp) => {
-      const items = resp?.data?.data
-      if (items && items.length > 0) {
-        setFormItemValues(items[0])
+    pageProvideProxy.addPageMountedEvent(()=>{
+      // await utils.sleep(100)
+      setFormItemValues(formData.value)
+    })
+  } else {
+    // 2、需要从服务端获取
+    // 2.1 构建表单数据项
+    buildFieldItems()
+    // 2.2基于上面构建的表单项，构建数据加载字段
+    const fieldNames: Array<string> = []
+    formItems.value.forEach((item) => {
+      if (item.fieldName) {
+        fieldNames.push(item.fieldName)
+      } else {
+        console.error('存在未绑定字段', item)
       }
     })
+    if (checkBindEntity()) {
+      entityApi.query(props.bindEntity.entityName, fieldNames.join(','), {id: entityRecordId.value}).then((resp) => {
+        const items = resp?.data?.data
+        if (items && items.length > 0) {
+          setFormItemValues(items[0])
+        }
+      })
+    }
   }
 }
 
@@ -396,7 +411,6 @@ const checkConfig = () => {
 
   checkFieldItem(props.glComponentInst)
 }
-
 
 loadForm()
 defineExpose([submitForm])

@@ -147,6 +147,7 @@ const setSlotNames = () => {
   props.columns.forEach((col: Column) => {
     if (col._editComponent) {
       col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
+      col.dataIndex = col.dataIndex || col._editComponent.props.bindField?.fieldName
       // 验证信息
       if (col._editComponent.props.rules) {
         recordSchema.schema[col.dataIndex!] = toRaw(col._editComponent.props.rules)
@@ -154,7 +155,6 @@ const setSlotNames = () => {
     } else {
       col.slotName = undefined
     }
-    // console.log('GlEntityTable > col:', col, col.slotName)
   })
 
   // console.log('GlEntityTable > columns after convert:', recordSchema)
@@ -368,7 +368,7 @@ watch(() => columns.value,
       cloneColumns.value = cloneDeep(val);
       cloneColumns.value.forEach((item, index) => {
         item.checked = true;
-        item.width = item.width || 200
+        item.width = item.width || 150
         item.align = item.align || 'center'
       });
       cloneColumns.value.push(optColumn as Column)
@@ -449,6 +449,7 @@ const setError = (record: object, rowIndex: number, err: { [key: string]: any },
 
 /**
  *  表格在编辑模式下，添加行
+ *  设置列的dataIndex让其与绑定的组件一致
  */
 const addRow = () => {
   const newRow = {}
@@ -597,7 +598,7 @@ defineExpose({
   color: red;
 }
 
-.gl-entity-table .arco-table-cell{
+.gl-entity-table .arco-table-cell {
   padding: 4px !important;
 }
 </style>

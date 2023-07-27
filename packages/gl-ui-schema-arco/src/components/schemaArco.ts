@@ -71,12 +71,12 @@ import DictMeta from "./setter-arco/dict/dictMeta";
 import DynamicSelectMeta from "./setter-arco/select/DynamicSelectMeta";
 import EncodeMeta from "./setter-arco/encode/EncodeMeta";
 import RefPageMeta from "./setter-arco/page/RefPageMeta";
-import commonProperties from "./setter-arco/CommonProperties";
+import commonProperties, {commonActions} from "./setter-arco/CommonProperties";
 import TextMeta from "./setter-arco/text/TextMeta";
 import AlertMeta from "./setter-arco/alert/AlertMeta";
 import MultiComponentsMeta from "./setter-arco/multiComponents/multiComponentsMeta";
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [ButtonMeta, TextMeta, AlertMeta,FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta,TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
+const componentMetas: Array<ComponentMeta> = [ButtonMeta, TextMeta, AlertMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
@@ -104,6 +104,10 @@ for (const index in componentMetas) {
             }
         })
     }
+
+    // 设置组件的加载完成事件
+    meta.actions = meta.actions || []
+    meta.actions.push(...commonActions)
 
     if (ignoreInstances.findIndex((componentMeta: ComponentMeta) => {
         return meta.componentName === componentMeta.componentName

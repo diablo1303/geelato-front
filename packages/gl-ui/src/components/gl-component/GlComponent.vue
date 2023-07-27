@@ -1,5 +1,5 @@
 <template>
-  <component v-if="glComponentInst&&(glComponentInst.props.unRender!==true)"
+  <component v-if="glComponentInst&&glComponentInst?.props.unRender!==true"
              :id="glComponentInst.id" :ref="glComponentInst.id"
              class="gl-component"
              :is="glComponentInst.componentName"
@@ -38,13 +38,13 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {getCurrentInstance, inject, onMounted, ref, watch} from 'vue'
+import {getCurrentInstance, inject, nextTick, onMounted, onUpdated, ref, watch} from 'vue'
 import mixins from "../mixins";
 import jsScriptExecutor from "../../m/actions/JsScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
 import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
 
-const emits = defineEmits(['update:modelValue', 'update', 'onAction', 'onComponentClick', 'onComponentChange', 'onComponentMounted'])
+const emits = defineEmits(['update:modelValue', 'update', 'onAction', 'onComponentClick', 'onValueChange', 'onComponentMounted'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const props = defineProps({
@@ -53,6 +53,10 @@ const props = defineProps({
   },
   ...mixins.props
 })
+
+pageProvideProxy?.setVueInst(props.glComponentInst.id, getCurrentInstance())
+
+const refreshFlag = ref(true)
 
 /**
  * 对于一些组件，点击事件可能是优先触发了组件内的点击事件，第一个参数不一定是event，这里对所有参数做统一处理
@@ -73,7 +77,7 @@ const stopPropagation = (...args: any) => {
  *  @actionName 执行的动作名称
  */
 const doAction = (actionName: string, ...args: any) => {
-  // console.log('GlComponent > doAction() > args:', args)
+  // console.log('GlComponent > doAction() > args:', actionName, args)
   if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
     props.glComponentInst.actions.forEach((action: Action) => {
       if (action.eventName === actionName) {
@@ -102,12 +106,12 @@ props.glComponentInst?.actions?.forEach((action: Action) => {
   onActionsHandler[action.eventName] = createActionHandler(action.eventName)
 })
 
-const onChange = (...args: any) => {
-  // console.log('gl-component > onChange() > arguments:', args, props.glComponentInst)
+const onValueChange = (...args: any) => {
+  // console.log('gl-component > onValueChange() > arguments:', args, props.glComponentInst)
   // 对于一些组件，事件可能是优先触发了组件内的事件，第一个参数不一定是event，这里对所有参数做统一处理
   stopPropagation(args)
-  emits('onComponentChange', {arguments: args, glComponentInst: props.glComponentInst, glCtx: props.glCtx})
-  doAction('change', args)
+  emits('onValueChange', {arguments: args, glComponentInst: props.glComponentInst, glCtx: props.glCtx})
+  doAction('onValueChange', args)
 }
 
 /**
@@ -186,38 +190,68 @@ const onMouseLeave = (...args: any[]) => {
   }
 }
 
-const mv = ref(props.modelValue || props.glComponentInst.value)
+const mv = <any>ref(props.modelValue || props.glComponentInst.value)
 
-watch(() => {
-  return props.glComponentInst.value
-}, () => {
-  mv.value = props.glComponentInst.value
-})
+// watch(() => {
+//   return props.glComponentInst.value
+// }, () => {
+//   mv.value = props.glComponentInst.value
+// })
+
+// watch(() => {
+//   return props.modelValue
+// }, () => {
+//   mv.value = props.modelValue
+// })
+
 
 // @ts-ignore
 props.glComponentInst.value = mv.value
-watch(mv, (value) => {
+watch(mv, (value, oldValue) => {
   // @ts-ignore
-  props.glComponentInst.value = mv.value
-  // console.log('update mv', mv.value)
-  onChange(value)
+  props.glComponentInst.value = value
+  onValueChange(value)
+
   // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
-  emits('update:modelValue', mv.value)
-  emits('update', mv.value)
+  emits('update:modelValue', value)
+  emits('update', value)
+}, {immediate: true})
+
+watch(() => {
+  return props.glComponentInst.props._hidden
+}, (value, oldValue) => {
+  console.log('_hidden', value, oldValue)
+  refreshFlag.value = false
+  nextTick(() => {
+    refreshFlag.value = true
+  })
 })
 
-/**
- *  将页面内的子组件通过map进行引用，便于后续基于页面进行组件事件调用
- *  注意需在创建后即执行，以确保后续的运算可以用到该实例
- */
-pageProvideProxy?.setVueInst(props.glComponentInst.id, getCurrentInstance())
-
+let init = false
 onMounted(() => {
+
+  /**
+   *  将页面内的子组件通过map进行引用，便于后续基于页面进行组件事件调用
+   *  注意需在创建后即执行，以确保后续的运算可以用到该实例
+   */
+  if (!init) {
+
+  }
+  init = true
+  //  触发组件配置的事件，只限运行时，GlPage的onMounted另行触发，在此不执行
+  // if (props.glIsRuntime && props.glComponentInst.componentName !== 'GlPage') {
+  //   props.glComponentInst.actions?.forEach((action: Action) => {
+  //     if (action.name === 'onMounted') {
+  //       jsScriptExecutor.doAction(action, {
+  //         pageProxy: pageProvideProxy
+  //       })
+  //     }
+  //   })
+  // }
+
   emits('onComponentMounted', {})
 })
-
 executePropsExpressions()
-
 defineExpose([onMouseLeave, onMouseOver])
 
 </script>
