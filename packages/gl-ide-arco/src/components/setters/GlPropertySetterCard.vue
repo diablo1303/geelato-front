@@ -16,7 +16,7 @@
             <span v-if="enableSort"><GlIconfont type="gl-drag" class="gl-dnd-item"
                                                 style="cursor: move"></GlIconfont></span>
             <span class="gl-m-title" v-html="getElementTitle(element, titleField)"></span>
-            <span class="gl-m-sub-title" v-html="getElementTitle(element, subTitleField)"></span>
+            <span class="gl-m-sub-title" v-html="getElementTitle(element, subTitleField,alarmIfNoSubTitle)"></span>
             <span class="gl-m-action" v-if="enableDelete"><GlIconfont type="gl-delete" @click="removeElement(index)"
                                                                       style="color: red;cursor: pointer"></GlIconfont></span>
             <!--            <span class="gl-m-action" v-if="enableEdit"><FormOutlined /></span>-->
@@ -27,7 +27,7 @@
         </div>
       </template>
     </gl-draggable>
-    <div v-if="!(maxCount>0&&items.length === maxCount)&&maxCount!==1">
+    <div v-if="!(maxCount>0&&items?.length === maxCount)&&maxCount!==1">
       <a @click="addElement" style="line-height: 2em;cursor: pointer;padding-left: 1em">
         <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加</a>
     </div>
@@ -59,6 +59,7 @@ export default defineComponent({
         return ''
       }
     },
+    alarmIfNoSubTitle: String,
     /**
      *  添加时，创建的元素，支持外部传入，以配置一些扩展字段信息
      */
@@ -126,17 +127,27 @@ export default defineComponent({
     }
   },
   methods: {
-    getElementTitle(element: any, titleField: string) {
-      if (!titleField) return '<span style="color: red">未设置</span>'
-      const keys = titleField.split('.')
-
-      const getValue: any = (obj: any, keys: string[]) => {
-        if (!obj) return '<span style="color: red">未设置</span>'
-        const key: string = keys.shift()!
-        return keys.length > 0 ? getValue(obj[key], keys) : obj[key]
+    // alarmIfNoSubTitle
+    getElementTitle(element: any, titleField?: string, alarmIfNoTitle?: string) {
+      if (!titleField) return ''
+      try {
+        const keys = titleField.split('.')
+        const getValue: any = (obj: any, keys: string[]) => {
+          if (!obj || !keys || keys.length === 0) {
+            if (alarmIfNoTitle) {
+              return `<span style="color: red">${alarmIfNoTitle}</span>`
+            } else {
+              return ''
+            }
+          }
+          const key: string = keys.shift()!
+          return keys.length > 0 ? getValue(obj[key], keys) : obj[key]
+        }
+        return getValue(element, keys)
+      } catch (e) {
+        console.error(e)
       }
-
-      return getValue(element, keys)
+      return ''
     },
     addElement() {
       let element = this.elementTemplate ? JSON.parse(JSON.stringify(this.elementTemplate)) : {}
@@ -203,7 +214,8 @@ export default defineComponent({
 .gl-property-setter-card .gl-m-title {
   padding-left: 0.5em;
 }
-.gl-property-setter-card .gl-m-sub-title{
+
+.gl-property-setter-card .gl-m-sub-title {
   padding-left: 0.5em;
   color: #8f8f8f;
 }

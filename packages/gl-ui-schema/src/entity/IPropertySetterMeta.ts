@@ -54,7 +54,10 @@ export default interface IPropertySetterMeta {
     titleField?: String
 
     // 子标题，与titleField配合使用
-    subTitleField?:String
+    subTitleField?: String
+
+    // 配置了子标题字段，但获取不到子标题时告警
+    alarmIfNoSubTitle?: string;
 
     // type为slots时有值
     slotComponentName?: String
@@ -75,29 +78,30 @@ export default interface IPropertySetterMeta {
 }
 
 export class PropertySetterMetaImpl implements IPropertySetterMeta {
-    expanded: Boolean;
-    group: String;
+    expanded: boolean;
+    group: string;
     name: string;
-    type: String;
-    setterComponentName: String;
+    type: string;
+    setterComponentName: string;
     setterComponentProps: SetterComponentPropsMetaImpl;
     setterDefaultValue: undefined;
-    show: Boolean;
-    title: String;
-    setterComponentVModelName: String;
+    show: boolean;
+    title: string;
+    setterComponentVModelName: string;
     dataItems: Array<any>;
     properties: Array<any>;
-    titleField: String;
-    subTitleField?: String;
-    slotComponentName: String;
-    slotComponentBindTarget: String;
-    slotComponentBindName?: String;
-    subComponentName?: String;
-    subComponentCount?: Number
-    placeholder?: String
+    titleField: string;
+    subTitleField?: string;
+    alarmIfNoSubTitle?: string;
+    slotComponentName: string;
+    slotComponentBindTarget: string;
+    slotComponentBindName?: string;
+    subComponentName?: string;
+    subComponentCount?: number
+    placeholder?: string
     style?: StyleSetterMeta
-    description?: String
-    enableValueExpress?: Boolean
+    description?: string
+    enableValueExpress?: boolean
 
     constructor() {
         this.expanded = true

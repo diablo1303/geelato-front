@@ -13,7 +13,7 @@ export interface TableColumnDataPlus extends TableColumnData {
     // 用于编辑该字段的组件，作为子表时用到
     _editComponent?: ComponentInstance;
     // 是否显示，用于控制数据查询加载，但不展示，可用于前端列计算或record传值，恒等于false时才不显示
-    _Show?: boolean;
+    _show?: boolean;
 }
 
 export interface TableMeta {

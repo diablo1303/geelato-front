@@ -286,6 +286,17 @@
         <a-input size="small" v-model="mv.subTitleField"/>
       </td>
     </tr>
+    <tr v-if="mv.setterComponentName==='GlObjectArraySetter'">
+      <td class="gl-table-cell gl-label"
+          title="设置了副标题字段名，但是在展示该字段名内容时，内容为空，是否需进行告警展示">
+        <GlIconfont type="gl-info-circle"></GlIconfont>
+        无副标题告警
+      </td>
+      <td class="gl-table-cell">
+        <template v-if="mv.alarmIfNoSubTitle=(mv.alarmIfNoSubTitle?mv.alarmIfNoSubTitle:'')"></template>
+        <a-switch size="small" v-model="mv.alarmIfNoSubTitle"/>
+      </td>
+    </tr>
   </table>
 </template>
 
