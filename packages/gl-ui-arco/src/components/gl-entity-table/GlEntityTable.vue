@@ -378,7 +378,7 @@ watch(() => columns.value,
       cloneColumns.value = cloneDeep(val);
       cloneColumns.value.forEach((item, index) => {
         item.checked = true;
-        item.width = item.width || 200
+        item.width = item.width || 150
         item.align = item.align || 'center'
       });
       cloneColumns.value.push(optColumn as Column)
@@ -545,46 +545,46 @@ defineExpose({
 </script>
 
 <template>
-  <a-table class="gl-entity-table" v-if="enableEdit&&refreshFlag" row-key="id"
-           :loading="loading"
-           :pagination="pagination"
-           :row-selection="rowSelection"
-           :columns="cloneColumns"
-           :data="renderData"
-           :bordered="{ cell: true }"
-           :hoverable="true"
-           :stripe="true"
-           :column-resizable="columnResizable"
-           :size="size"
-           :scroll="scroll"
-           @page-change="onPageChange"
-           @page-size-change="onPageSizeChange"
-  >
-    <template ##="{ record,rowIndex }">
-      <a-space :size="0" class="gl-entity-table-cols-opt">
-        <template v-if="enableEdit">
-          <!-- 在编辑模式下，默认的操作：复制、删除 -->
-          <!--          <a-button type="text" size="small" @click="saveRow(record,rowIndex)">保存</a-button>-->
-          <!--          在这里popconfirm无效 TODO-->
-          <a-popconfirm content="确定是否删除?">
-            <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)">删除</a-button>
-          </a-popconfirm>
-        </template>
-        <template v-for="(columnAction,index) in columnActions" :key="index">
-          <GlComponent v-if="columnAction" :glComponentInst="columnAction" :glCtx="{record:record,rowIndex:rowIndex}"
-          ></GlComponent>
-        </template>
-      </a-space>
-    </template>
-    <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">
-      <div class="gl-entity-table-cols-opt"
-           :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">
-        <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="updateRow(record,rowIndex)"
-                     :glComponentInst="cloneDeep(column._editComponent)"></GlComponent>
-        <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>
-      </div>
-    </template>
-  </a-table>
+<!--  <a-table class="gl-entity-table" v-if="enableEdit&&refreshFlag" row-key="id"-->
+<!--           :loading="loading"-->
+<!--           :pagination="pagination"-->
+<!--           :row-selection="rowSelection"-->
+<!--           :columns="cloneColumns"-->
+<!--           :data="renderData"-->
+<!--           :bordered="{ cell: true }"-->
+<!--           :hoverable="true"-->
+<!--           :stripe="true"-->
+<!--           :column-resizable="columnResizable"-->
+<!--           :size="size"-->
+<!--           :scroll="scroll"-->
+<!--           @page-change="onPageChange"-->
+<!--           @page-size-change="onPageSizeChange"-->
+<!--  >-->
+<!--    <template ##="{ record,rowIndex }">-->
+<!--      <a-space :size="0" class="gl-entity-table-cols-opt">-->
+<!--        <template v-if="enableEdit">-->
+<!--          &lt;!&ndash; 在编辑模式下，默认的操作：复制、删除 &ndash;&gt;-->
+<!--          &lt;!&ndash;          <a-button type="text" size="small" @click="saveRow(record,rowIndex)">保存</a-button>&ndash;&gt;-->
+<!--          &lt;!&ndash;          在这里popconfirm无效 TODO&ndash;&gt;-->
+<!--          <a-popconfirm content="确定是否删除?">-->
+<!--            <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)">删除</a-button>-->
+<!--          </a-popconfirm>-->
+<!--        </template>-->
+<!--        <template v-for="(columnAction,index) in columnActions" :key="index">-->
+<!--          <GlComponent v-if="columnAction" :glComponentInst="columnAction" :glCtx="{record:record,rowIndex:rowIndex}"-->
+<!--          ></GlComponent>-->
+<!--        </template>-->
+<!--      </a-space>-->
+<!--    </template>-->
+<!--    <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">-->
+<!--      <div class="gl-entity-table-cols-opt"-->
+<!--           :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">-->
+<!--        <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="updateRow(record,rowIndex)"-->
+<!--                     :glComponentInst="cloneDeep(column._editComponent)"></GlComponent>-->
+<!--        <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>-->
+<!--      </div>-->
+<!--    </template>-->
+<!--  </a-table>-->
   <a-table class="gl-entity-table" v-if="!enableEdit&&refreshFlag" row-key="id"
            :loading="loading"
            :pagination="pagination"
@@ -600,10 +600,10 @@ defineExpose({
            @page-change="onPageChange"
            @page-size-change="onPageSizeChange"
   >
-    <template ##="{ record }">
+    <template ##="{ record,rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
         <template v-for="(columnAction,index) in columnActions" :key="index">
-          <GlComponent v-if="columnAction" :glComponentInst="columnAction" :glCtx="{record:record}"></GlComponent>
+          <GlComponent v-if="columnAction" :glComponentInst="columnAction" :glCtx="{record,rowIndex}"></GlComponent>
         </template>
       </a-space>
     </template>

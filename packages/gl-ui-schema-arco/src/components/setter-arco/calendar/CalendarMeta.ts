@@ -8,5 +8,5 @@ export default {
     "useBy": ["freePage"],
     "properties": [
     ],
-    "actions": [{"name": "change", "description": "", "title": "值改变"}]
+    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}]
 }

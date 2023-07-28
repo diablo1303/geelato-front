@@ -7,6 +7,7 @@ import type PageProvideProxy from "../../components/PageProvideProxy";
 import type {Param} from "../types/global";
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
+type OptionsType = { [key: string]: any }
 
 export class JsScriptExecutor {
 
@@ -36,7 +37,7 @@ export class JsScriptExecutor {
     addPageProxy(pageComponentId: string, pageProxy: PageProvideProxy) {
         pageProxyMap[pageComponentId] = pageProxy
         this.pageIds.push(pageComponentId)
-        console.log('addPageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
+        // console.log('addPageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
     }
 
     /**
@@ -54,7 +55,7 @@ export class JsScriptExecutor {
                 }
             })
         }
-        console.log('removePageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap, ids)
+        // console.log('removePageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap, ids)
     }
 
     /**
@@ -175,7 +176,6 @@ export class JsScriptExecutor {
     getPageParam(paramName: string, $gl: any) {
         const pageProxy: PageProvideProxy = $gl.ctx.pageProxy
         if (pageProxy) {
-            console.log('pageProxy', pageProxy)
             return pageProxy.getParamValue(paramName)
         }
         console.error('在获取页面参数值时，获取不到当前页面信息。')
@@ -184,13 +184,17 @@ export class JsScriptExecutor {
 
     /**
      * 触发组件的动作事件f
+     * @param componentId
      * @param actionName
+     * @param ctx
+     * @param callback
      */
     triggerComponentAction(componentId: string, actionName: string, ctx?: {}, callback?: Function) {
         for (const pageComponentId in pageProxyMap) {
             const pageProxy = pageProxyMap[pageComponentId]
             if (pageProxy) {
                 const vueInst = pageProxy.getVueInst(componentId)
+                // console.log('triggerComponentAction() > componentId:', componentId, 'vueInst:', vueInst, 'pageProxy:', pageProxy)
                 if (vueInst) {
                     // @ts-ignore
                     const actions = vueInst?.props?.glComponentInst?.actions
@@ -203,7 +207,6 @@ export class JsScriptExecutor {
                         }
                     }
                 }
-                continue
             }
         }
     }
@@ -226,6 +229,38 @@ export class JsScriptExecutor {
         return undefined
     }
 
+    private getFeedbackFns($gl: any) {
+        let that = this
+        return {
+            notification: {
+                info(options: OptionsType) {
+                    $gl.$notification.info(that.evalOptions(options, $gl?.ctx, ['title', 'content']))
+                },
+                success(options: OptionsType) {
+                    $gl.$notification.info(that.evalOptions(options, $gl?.ctx, ['title', 'content']))
+                },
+                warning(options: OptionsType) {
+                    $gl.$notification.info(that.evalOptions(options, $gl?.ctx, ['title', 'content']))
+                },
+                error(options: OptionsType) {
+                    $gl.$notification.info(that.evalOptions(options, $gl?.ctx, ['title', 'content']))
+                }
+            },
+            confirm(options: OptionsType): any {
+                return $gl.$modal.open(that.evalOptions(options, $gl?.ctx, ['title', 'content']))
+            }
+        }
+    }
+
+    private getOtherFns($gl: any) {
+        let that = this
+        return {
+            log(options: OptionsType) {
+                console.log(that.evalOptions(options, $gl?.ctx, ['content']).content)
+            }
+        }
+    }
+
     private getLogicFns($gl: any) {
         let that = this
         return {
@@ -242,6 +277,13 @@ export class JsScriptExecutor {
     private getComponentFns($gl: any) {
         let that = this
         return {
+            openModal: (options: OptionsType) => {
+                return $gl.$modal.open(options)
+            },
+            openDrawer: (options: OptionsType) => {
+                // return $gl.$drawer.open(that.evalOptions(options, $gl.ctx, ['title', 'width', 'okText', 'cancelText']))
+                return $gl.$drawer.open(options)
+            },
             openWin: (url: string, urlParams: Array<Param>) => {
                 const paramsAry: Array<string> = []
                 urlParams.forEach((param) => {
@@ -271,7 +313,7 @@ export class JsScriptExecutor {
             },
             /**
              * 键值文本转换
-             * @param keys key1,key2,key3... 或为[key1,key2,key3...]或为key1
+             * @param keys key1,key2,key3... 或为[key1,key2,key3...]或为key1或为表达式
              * @param keyValues
              */
             keyValue(keys: string | Array<any>, keyValues: {
@@ -283,9 +325,16 @@ export class JsScriptExecutor {
                 if (!keyValues || !keys) return keys
                 // keys
                 let keyAry = []
+                console.log('typeof keys:', typeof keys, keys)
                 if (typeof keys === 'object' && keys.length >= 0) {
                     keyAry = keys
                 } else {
+                    // 表达式
+                    // if (keys.indexOf('$gl.') >= 0) {
+                    //     // @ts-ignore
+                    //     that.evalExpression(keys, $gl.ctx)
+                    // }
+                    // 连接字段串
                     // @ts-ignore
                     keyAry = keys.split(',')
                 }
@@ -380,7 +429,7 @@ export class JsScriptExecutor {
     evalFn(fnBodyScript: string, ctx: { pageProxy?: PageProvideProxy, [key: string]: any }, callback?: Function) {
         const $gl = this.getGl(ctx?.pageProxy)
         Object.assign($gl.ctx, ctx)
-        console.log('$gl.ctx', $gl.ctx)
+        // console.log('$gl.ctx', $gl.ctx)
         let result = utils.evalFn(fnBodyScript, $gl)
         if (callback && typeof callback === 'function') {
             callback()
@@ -400,7 +449,7 @@ export class JsScriptExecutor {
         if (params && params.length > 0) {
             for (const index in params) {
                 const param: Param = params[index]
-                console.log('param.value:', param.value)
+                // console.log('param.value:', param.value)
                 // param.value未设置，且valueExpression有值时
                 if (param.valueExpression && !param.value) {
                     param.value = this.evalExpression(param.valueExpression, ctx)
@@ -414,6 +463,20 @@ export class JsScriptExecutor {
         }
         console.log('evalParams params:', params, 'ctx:', ctx, 'newParams:', newParams)
         return newParams
+    }
+
+    /**
+     * 转换选项中的表达式
+     * @param options
+     * @param ctx
+     * @param evalKeys 指定需要转换值的选项keys，如：['title', 'content']
+     */
+    evalOptions(options: OptionsType, ctx: object, evalKeys: string[]): OptionsType {
+        const newOptions = JSON.parse(JSON.stringify(options))
+        evalKeys.forEach((key) => {
+            newOptions[key] = this.evalExpression(newOptions[key], ctx)
+        })
+        return newOptions
     }
 
     /**
@@ -441,7 +504,7 @@ export class JsScriptExecutor {
                 }
             }
         }
-        console.log('{inst, insts}',{inst, insts})
+        console.log('{inst, insts}', {inst, insts})
         return {inst, insts}
     }
 
@@ -470,21 +533,16 @@ export class JsScriptExecutor {
         Object.assign($gl.fn, this.getLogicFns($gl))
         // set components fns
         Object.assign($gl.fn, this.getComponentFns($gl))
-
+        // set feedback fns
+        Object.assign($gl.fn, this.getFeedbackFns($gl))
+        // set other fns
+        Object.assign($gl.fn, this.getOtherFns($gl))
         // set page
         $gl.page = {
             id: pageProxy?.pageInst.id,
             label: pageProxy?.pageInst.title,
             params: pageProxy?.pageInst.props.params
         }
-        // if (this.pageIds.length > 0) {
-        //     const pageProxy = pageProxyMap[this.pageIds[0]]!
-        //     $gl.page = {
-        //         id: pageProxy.pageInst.id,
-        //         label: pageProxy.pageInst.title,
-        //         params: pageProxy.pageInst.props.params
-        //     }
-        // }
 
         for (const pageComponentId in pageProxyMap) {
             const pageProxy = pageProxyMap[pageComponentId]

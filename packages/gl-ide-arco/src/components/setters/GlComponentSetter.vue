@@ -2,25 +2,35 @@
   <div class="gl-component-setter" v-if="componentModel">
     <a-tabs size="small" :default-active-key="defaultActiveKey">
       <a-tab-pane key="1" tab="属性" title="属性">
-        <div v-if="!hideToolbar" style="border-bottom: 1px solid #F2F2F2;padding: 0 0.5em 0.5em;">
-          <span style="font-weight: 600" :title="componentStore.currentSelectedComponentMeta?.componentName">[{{
-              componentStore.currentSelectedComponentMeta?.title
-            }}]</span>
-          <a-button-group style="float: right" type="primary" size="mini" shape="round">
-            <a-button status="primary" v-if="showMove" @click="componentStore.moveFrontCurrentComponent" title="移前">▲
+        <div v-if="!hideToolbar&&(showMove||showMove||showSelectParent||showDelete)" style="padding: 0 0.5em 0.5em;">
+          <a-button-group type="primary" size="mini" shape="round">
+            <a-button status="primary" v-if="showMove" @click="componentStore.moveFrontCurrentComponent" title="移前呀移上">
+              移前
             </a-button>
-            <a-button status="primary" v-if="showMove" @click="componentStore.moveBackCurrentComponent" title="移后">▼
+            <a-button status="primary" v-if="showMove" @click="componentStore.moveBackCurrentComponent" title="移后或移下">移后
             </a-button>
-            <a-button status="primary" v-if="showSelectParent" @click="componentStore.selectParentComponent">父组件
+            <a-button status="primary" v-if="showSelectParent" @click="componentStore.selectParentComponent">选择父组件
             </a-button>
-            <a-button status="danger" v-if="showDelete" @click="deleteCurrentSelectedComponentInst">删除</a-button>
           </a-button-group>
+            <a-button style="float: right" type="primary" size="mini" shape="round" status="danger" v-if="showDelete" @click="deleteCurrentSelectedComponentInst">删除</a-button>
+        </div>
+        <div class="gl-table">
+          <div class="gl-table-row">
+            <div class="gl-table-cell gl-label" style="width: 7em;">当前组件</div>
+            <div class="gl-table-cell">
+              <span
+                  style="font-size: 12px;line-height: 3em" :title="componentStore.currentSelectedComponentMeta?.componentName">{{ componentStore.currentSelectedComponentMeta?.title + ' ' + componentStore.currentSelectedComponentMeta?.componentName }}</span>
+              <a-button size="mini" style="float: right;padding: 0 4px;margin: 1px" type="text"
+                        @click="()=>{ClipboardJS.copy(componentStore.currentSelectedComponentMeta?.componentName)}">复制
+              </a-button>
+            </div>
+          </div>
         </div>
         <div class="gl-table" style="margin: 0 0 2px 0;border-bottom: 2px solid #04559f">
           <div class="gl-table-row">
             <div class="gl-table-cell gl-label" style="width: 7em;">唯一标识</div>
             <div class="gl-table-cell">
-              <span style="font-size: 12px">{{ componentModel.id }}</span>
+              <span style="font-size: 12px;line-height: 3em">{{ componentModel.id }}</span>
               <a-button size="mini" style="float: right;padding: 0 4px;margin: 1px" type="text"
                         @click="()=>{ClipboardJS.copy(componentModel.id)}">复制
               </a-button>
@@ -89,7 +99,7 @@ const props = defineProps({
   /**
    *  是否显示组件属性设置面板的工作条
    */
-  hideToolbar:Boolean
+  hideToolbar: Boolean
 })
 
 const pageStore = usePageStore()

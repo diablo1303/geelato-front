@@ -142,10 +142,7 @@ onMounted(() => {
 /**
  *  将页面内的子组件通过map进行引用，便于后续基于页面进行组件事件调用
  */
-if (pageProvideProxy) {
-  const inst = getCurrentInstance()
-  pageProvideProxy.setVueInst(props.glComponentInst.id, inst)
-}
+pageProvideProxy?.setVueInst(props.glComponentInst.id, getCurrentInstance())
 
 </script>
 
@@ -154,7 +151,11 @@ if (pageProvideProxy) {
 }
 
 .gl-component.gl-hover, .gl-component.gl-selected {
-  border: 1px solid #178df7;
+  border: 1px solid #165DFF;
+}
+
+.gl-entity-form.gl-component.gl-hover, .gl-entity-form.gl-component.gl-selected {
+  border: 1px solid #D91AD9;
 }
 
 .gl-component.gl-drag-enter {

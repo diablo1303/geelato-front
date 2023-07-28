@@ -117,5 +117,5 @@ export default {
         "title": "类型",
         "setterComponentName": "ARadioGroup"
     }],
-    "actions": [{"name": "change", "description": "切换选项卡", "title": "切换选项卡"}]
+    "actions": [{"name": "onValueChange", "description": "切换选项卡", "title": "切换选项卡"}]
 }

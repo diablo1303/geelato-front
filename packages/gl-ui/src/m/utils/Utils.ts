@@ -117,7 +117,7 @@ export class Utils {
             }
             return new Fn(glName, bodyScript)($gl)
         } catch (e: any) {
-            console.error('执行脚本出错', e.message, '方法体为：', fnBody)
+            console.error('执行脚本出错', e.message, '方法体为：', fnBody, 'e:', e)
             return ''
         }
     }

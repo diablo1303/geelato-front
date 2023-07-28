@@ -58,6 +58,6 @@ export default {
         "setterComponentName": "ASwitch",
         "description": "设置 auto-label-width 开启自动标签宽度。仅在 layout=\"horizontal\" 布局下生效。"
     }],
-    "actions": [],
+    "actions": [{"name": "onLoadedData", "description": "表单加载完成数据并设置到各表单项之后触发。", "title": "加载完数据"}],
     "methods": [{"name": "submitForm", "title": "提交表单", "description": "", "params": []}]
 }

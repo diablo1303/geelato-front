@@ -150,6 +150,36 @@ export default {
             "title": "显示序号",
             "setterComponentName": "ASwitch"
         }, {
+            "name": "checkType",
+            "setterComponentProps": {
+                "type": "button",
+                "options": [{"label": "无", "value": "null", "__xJvT8pskAbMdRLoi7C": "null"}, {
+                    "label": "单选",
+                    "value": "radio",
+                    "__xJvT8pskAbMdRLoi7C": "radio"
+                }, {"label": "复选", "value": "checkbox", "__xJvT8pskAbMdRLoi7C": "checkbox"}]
+            },
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "title": "选择类型",
+            "setterComponentName": "ARadioGroup"
+        }, {
+            "name": "showCheckAll",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "title": "显示全选",
+            "setterComponentName": "ASwitch",
+            "description": "该属性在选择类型为复选时有效"
+        }, {
             "name": "leftFixedCount",
             "setterComponentProps": {
                 "options": [{
@@ -273,6 +303,7 @@ export default {
         "show": true,
         "expanded": false,
         "titleField": "title",
+        "subTitleField": "name",
         "enableValueExpress": false
     }, {
         "name": "toolbar",
@@ -424,6 +455,7 @@ export default {
         "setterComponentName": "GlObjectArraySetter",
         "title": "数据列",
         "titleField": "_editComponent.props.label",
+        "subTitleField":"_editComponent.props.bindField.fieldName",
         "enableValueExpress": false
     }],
     "actions": [{

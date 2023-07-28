@@ -29,18 +29,15 @@ export default {
         "title": "隐藏标题",
         "setterComponentName": "ASwitch"
     }, {
-        "name": "labelColFlex",
-        "group": "base",
-        "type": "props",
-        "enableValueExpress": false,
-        "show": true,
-        "expanded": true,
+        "name": "bindField",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
-        "title": "标题宽度",
-        "setterComponentName": "AInput",
-        "description": "标题的宽度，默认的标题占比20%（精确值应为20.83%，这里需填整数去掉.83）",
-        "placeholder": "如：6% 或 100px"
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "绑定字段",
+        "setterComponentName": "GlEntityFieldSelect"
     }, {
         "name": "items",
         "setterComponentProps": {},
@@ -169,6 +166,6 @@ export default {
         "enableValueExpress": false,
         "description": "跟随在后面的组件，如可以为一个按钮，用于配置点击事件"
     }],
-    "actions": [{"name": "change", "description": "仅在输入框失焦或按下回车时触发", "title": "值改变"}],
+    "actions": [{"name": "onValueChange", "description": "仅在输入框失焦或按下回车时触发", "title": "值改变"}],
     "displayOnStage": "inline-block"
 }

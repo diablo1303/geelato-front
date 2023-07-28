@@ -100,7 +100,7 @@ onMounted(() => {
 
 </script>
 <template>
-  <div>
+  <div style="background-color:white">
     <a-tabs :active-key="mv" v-bind="props" @tabClick="onTabClick">
       <template #extra>
         <div>

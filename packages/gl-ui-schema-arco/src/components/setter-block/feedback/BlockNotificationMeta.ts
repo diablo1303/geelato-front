@@ -15,7 +15,8 @@ export default {
         "show": true,
         "expanded": true,
         "title": "内容",
-        "setterComponentName": "AInput"
+        "setterComponentName": "AInput",
+        "enableValueExpress": true,
     }, {
         "name": "title",
         "group": "base",
@@ -25,7 +26,8 @@ export default {
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "title": "标题",
-        "setterComponentName": "AInput"
+        "setterComponentName": "AInput",
+        "enableValueExpress": true,
     }, {
         "name": "closable",
         "group": "base",

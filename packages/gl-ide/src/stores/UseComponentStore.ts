@@ -8,26 +8,71 @@ class ComponentMetaMap {
     [key: string]: any
 }
 
-const changeId = (inst: ComponentInstance) => {
-    let index = inst.id.indexOf('_')
-    let prefix = index > 0 ? inst.id.substring(0, index) : ''
-    inst.id = utils.gid(prefix)
+// const changeId = (inst: ComponentInstance) => {
+//     let index = inst.id.indexOf('_')
+//     let prefix = index > 0 ? inst.id.substring(0, index) : ''
+//     inst.id = utils.gid(prefix)
+//     if (inst.children && inst.children.length > 0) {
+//         inst.children.forEach((subInst) => {
+//             changeId(subInst)
+//         })
+//     }
+// }
+
+
+const convertId = (id: string) => {
+    let index = id.indexOf('_')
+    let prefix = index > 0 ? id.substring(0, index) : ''
+    return utils.gid(prefix)
+}
+
+const genIdMap = (inst: ComponentInstance, idMap: { [key: string]: string }) => {
+    idMap[inst.id] = convertId(inst.id)
+    const otherIds = [inst.props.query?.id,]
+    otherIds.forEach((otherId) => {
+        if (otherId) {
+            idMap[otherId] = convertId(otherId)
+        }
+    })
+
+
     if (inst.children && inst.children.length > 0) {
         inst.children.forEach((subInst) => {
-            changeId(subInst)
+            genIdMap(subInst, idMap)
         })
     }
 }
 
 /**
- * 深度复制组件
+ * 基于字符串替换，深度复制组件
  * 重新生成组件和各子组件的id
+ * 当前组件内的id引用也会被替换
  * @param inst
  */
-const copyComponentInst = (inst: ComponentInstance) => {
-    const copyInst = JSON.parse(JSON.stringify(inst))
-    changeId(copyInst)
-    return copyInst
+export const copyComponentInst = (inst: ComponentInstance) => {
+    // const copyInst = JSON.parse(JSON.stringify(inst))
+    // changeId(copyInst)
+    // return copyInst
+    return copyComponentInsts([inst])[0]
+}
+
+export const copyComponentInsts = (insts: Array<ComponentInstance>) => {
+    // 先找出所有的id，并算出应转换的id
+    const idMap: { [key: string]: string } = {}
+    insts.forEach((inst) => {
+        genIdMap(inst, idMap)
+    })
+
+    // 基于字符串替换所有的id，实现组件id及脚本引用组件id的转换
+    const newInsts: Array<ComponentInstance> = []
+    insts.forEach((inst) => {
+        let instStr = JSON.stringify(inst)
+        Object.keys(idMap).forEach((id) => {
+            instStr = instStr.replace(new RegExp(id, 'g'), idMap[id])
+            newInsts.push(JSON.parse(instStr))
+        })
+    })
+    return newInsts
 }
 
 class ComponentStoreFactory {

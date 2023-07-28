@@ -16,17 +16,17 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-
 import {type PropType, getCurrentInstance, onMounted, onUnmounted, provide} from "vue";
 import {
   type PageType,
   PageProvideProxy,
   jsScriptExecutor,
   mixins,
-  PageProvideKey, type Param,
+  PageProvideKey, type Param, utils,
 } from "@geelato/gl-ui";
 import type {Action} from "@geelato/gl-ui-schema";
 import {PageParamsKey} from "@geelato/gl-ui";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
@@ -96,30 +96,25 @@ const style = {
   padding: props.pagePadding || '0'
 }
 
-const showSlot = () => {
-  // console.log('showSlot')
-}
-
 // console.log('GlPage > props.params:', props.params, 'id:', props.glComponentInst.id)
-const pageProvideProxy = new PageProvideProxy(props.glComponentInst, getCurrentInstance())
+const pageProvideProxy = new PageProvideProxy(props.glComponentInst, getCurrentInstance()!)
 pageProvideProxy.pageId = props.pageId
 pageProvideProxy.setVueInst(props.glComponentInst.id, getCurrentInstance())
-// if (pageProvideProxy.isParamNeedConvert(props.params)) {
-//   // @ts-ignore
-//   pageProvideProxy.setParams(JSON.parse(pageProvideProxy.paramStringify(props.params)))
-// } else {
-//   pageProvideProxy.setParams(props.params)
-// }
-
-// if (pageProvideProxy.isParamNeedConvert(props.params)) {
-//   // @ts-ignore
-//   pageProvideProxy.setParams(JSON.parse(pageProvideProxy.paramStringify(props.params)))
-// } else {
-//   pageProvideProxy.setParams(props.params)
-// }
-
-
 pageProvideProxy.setParams(props.params)
+const onPageMounted = () => {
+  //  触发页面配置的事件，只限运行时
+  if (props.glIsRuntime) {
+    props.glComponentInst.actions.forEach((action: Action) => {
+      if (action.name === 'onMounted') {
+        jsScriptExecutor.doAction(action, {
+          pageProxy: pageProvideProxy
+        })
+      }
+    })
+  }
+}
+pageProvideProxy.addPageMountedEvent(onPageMounted)
+
 jsScriptExecutor.addPageProxy(props.glComponentInst.id, pageProvideProxy)
 // 在打开页面时，依据页面参数表达式，先进行运行，计算出值
 // !!! 注意这里放在jsScriptExecutor.addPageProxy后面执行，是为了确保在计算参数时，可以用到当前页面proxy的相关内容
@@ -131,6 +126,7 @@ if (props.params && props.params.length > 0) {
     }
   }
 }
+
 // 整个页面组件级注入
 provide(PageProvideKey, pageProvideProxy)
 provide(PageParamsKey, props.params)
@@ -138,19 +134,6 @@ provide(PageParamsKey, props.params)
 onUnmounted(() => {
   jsScriptExecutor.removePageProxy(props.glComponentInst.id)
   console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
-})
-
-onMounted(() => {
-  //  触发页面配置的事件，只限运行时
-  if (props.glIsRuntime) {
-    props.glComponentInst.actions.forEach((action: Action) => {
-      if (action.name === 'onMounted') {
-        jsScriptExecutor.doAction(action, {
-          pageProxy: pageProvideProxy
-        })
-      }
-    })
-  }
 })
 
 </script>

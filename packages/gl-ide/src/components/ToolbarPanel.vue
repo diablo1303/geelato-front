@@ -62,7 +62,6 @@
       </span>
     </span>
 
-
     <span style="float: right;padding-right: 1em">
       <span class="gl-item" v-if="isLogin()">
         <GlIconfont type="gl-component" text="组件库" @click="showComponents"></GlIconfont>
@@ -105,7 +104,8 @@
                       language="json"></GlMonacoEditor>
       <template #footer>
         <a-button type="primary" @click="saveCode">保存</a-button>
-        <a-button type="primary" @click="copyCode">复制</a-button>
+        <a-button type="primary" @click="copyCode">复制(完全复制)</a-button>
+        <a-button type="primary" @click="copyCodeAndChangeId">复制(组件相关Id更改)</a-button>
       </template>
     </gl-modal>
   </div>
@@ -120,7 +120,7 @@ import {useIdeStore} from "../stores/UseIdeStore";
 import {usePageStore} from "../stores/UsePageStore";
 import {useThemeStore} from "../stores/UseThemeStore";
 import {emitter, useGlobal} from "@geelato/gl-ui";
-import {useComponentStore} from "../stores/UseComponentStore";
+import {copyComponentInst, useComponentStore} from "../stores/UseComponentStore";
 import {useAppStore} from "../stores/UseAppStore";
 import EventNames from "../entity/Events";
 import ClipboardJS from "clipboard";
@@ -269,9 +269,15 @@ const saveCode = () => {
 const copyCode = () => {
   if (componentStore.currentComponentTree[0]) {
     ClipboardJS.copy(JSON.stringify(componentStore.currentComponentTree[0]))
+    copyComponentInst(componentStore.currentComponentTree[0])
   }
 }
 
+const copyCodeAndChangeId = () => {
+  if (componentStore.currentComponentTree[0]) {
+    ClipboardJS.copy(JSON.stringify(copyComponentInst(componentStore.currentComponentTree[0])))
+  }
+}
 
 </script>
 

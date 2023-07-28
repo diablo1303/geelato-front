@@ -1,5 +1,5 @@
 <template>
-  <div class="gl-entity-form">
+  <div class="gl-entity-form" v-if="refreshFlag">
     <a-form ref="formRef" :model="formData" :layout="layout"
             :autoLabelWidth="autoLabelWidth" :disabled="isRead">
       <template v-if="glIsRuntime">
@@ -20,7 +20,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, type PropType, provide, ref, toRaw} from 'vue';
+import {inject, nextTick, type PropType, provide, ref, toRaw} from 'vue';
 import type {FormInstance} from '@arco-design/web-vue/es/form';
 import useLoading from '../../hooks/loading';
 import {isDataEntry} from "@geelato/gl-ui-schema-arco";
@@ -32,15 +32,18 @@ import {
   PageProvideProxy,
   PageProvideKey,
   FormProvideKey,
-  FormProvideProxy
+  FormProvideProxy, utils
 } from "@geelato/gl-ui";
 
+// onLoadedData：从服务端加载完数据并设置到表单中
+const emits = defineEmits(['onLoadedData'])
 const formProvideProxy = new FormProvideProxy()
 provide(FormProvideKey, formProvideProxy)
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 // console.log('GlEntityForm > inject pageProvideProxy:', pageProvideProxy)
 
+const refreshFlag = ref(true)
 const global = useGlobal()
 
 type LayoutType = "inline" | "horizontal" | "vertical"
@@ -76,10 +79,10 @@ const props = defineProps({
 })
 // page.status: read | edit
 const isRead = pageProvideProxy.getParamValue('page.status') === 'read'
-// formData中不包括记录id，记录id在entityRecordId中定义
 const formParams = pageProvideProxy.getParamsByPrefixAsObject('form')
+// formData中不包括记录id，记录id在entityRecordId中定义
 const formData = ref<{ [key: string]: any }>(formParams);
-console.log('GlEntityForm > formData:', formData, 'formParams:', formParams)
+// console.log('GlEntityForm > formData:', formData, 'formParams:', formParams)
 let entityRecordId = ref<string>(formParams.id)
 formProvideProxy.setRecordId(entityRecordId.value)
 
@@ -105,6 +108,7 @@ const buildFieldItems = () => {
       // console.log('checkValidDataEntry:', subInst.componentName, checkValidDataEntry(subInst.componentName), ' subInst:', subInst)
       // 处理主表字段，排除子表单GlEntityTableSub，子表单另行处理
       if (checkValidDataEntry(subInst.componentName)) {
+        // console.log('subInst form:', subInst.componentName)
         if (!subInst.props.bindField) {
           // console.error('GlEntityForm > 组件未进行数据绑定，组件为：', subInst)
           let moreInfo = ''
@@ -123,11 +127,11 @@ const buildFieldItems = () => {
           fieldName: subInst.props.bindField.fieldName,
           value: subInst.value
         }
-        const foundSomeBindFiled = formItems.value.find((formItem: any) => {
+        const foundSameBindFiled = formItems.value.find((formItem: any) => {
           return formItem.fieldName === subInst.props.bindField.fieldName
         })
-        if (foundSomeBindFiled) {
-          const info = `多组件绑定同字段：${subInst.props.bindField.fieldName}，组件：${foundSomeBindFiled.label}、${subInst.props.label}`
+        if (foundSameBindFiled) {
+          const info = `多组件绑定同字段：${subInst.props.bindField.fieldName}，组件：${foundSameBindFiled.label}、${subInst.props.label}`
           console.error(info)
           global.$notification.error({
             title: '字段重复',
@@ -140,16 +144,7 @@ const buildFieldItems = () => {
         formItems.value.push(formItem)
       } else if (subInst.componentName === 'GlEntityTableSub' && subInst.props?.base?.isFormSubTable) {
         // 处理从表信息，只有明确是子表的才算
-        // let formItem = {
-        //   componentName: subInst.componentName,
-        //   fieldName: '',
-        //   value: {
-        //     instId: subInst.id,
-        //   }, // 在保存时才获取表格的值
-        //   isFormSubTable: true
-        // }
-        //
-        // formItems.value.push(formItem)
+        // 先记录，后续在其它方法中处理
         subFormTableInstIds.value.push(subInst.id)
       }
       if (subInst.children && subInst.children.length > 0) {
@@ -160,14 +155,18 @@ const buildFieldItems = () => {
 
   buildFieldItem(props.glComponentInst)
   formProvideProxy.setValues(formData.value)
-  console.log('buildFieldItems formItems:', formItems.value, 'formData:', formData.value)
+  // console.log('buildFieldItems formItems:', formItems.value, 'formData:', formData.value)
 }
 
+/**
+ * 构建formItems
+ * 同时设置inst的value
+ * @param dataItem
+ */
 const setFormItemValues = (dataItem: { [key: string]: any }) => {
   formItems.value.length = 0
 
   // subFormTableInstIds.value.length = 0
-
   function setFieldItemValue(inst: ComponentInstance) {
     for (let index in inst.children) {
       let subInst = inst.children[index]
@@ -178,7 +177,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
         })
         if (foundFieldName) {
           const value = dataItem[subInst.props.bindField.fieldName]
-          // 由于AInputNumber的值不支持设置字符串，这里对可能的字符串值进行转换
+          // 注意！！ 由于AInputNumber的值不支持设置字符串，这里对可能的字符串值进行转换
           if (subInst.componentName === 'AInputNumber') {
             // @ts-ignore
             subInst.value = typeof value !== 'number' ? Number(value) : value
@@ -198,6 +197,8 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
           formData.value[subInst.props.bindField.fieldName] = subInst.value
         }
       }
+      console.log('setFieldItemValue ', subInst.componentName, subInst.props.label, subInst.id, subInst.value)
+
       if (subInst.children && subInst.children.length > 0) {
         setFieldItemValue(subInst)
       }
@@ -205,14 +206,23 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
   }
 
   setFieldItemValue(props.glComponentInst)
-  console.log('GlEntityForm > setFormItemValues() > formData:', formData.value)
+
+  // 设置表单值后，刷新表单
+  refreshFlag.value = false
+  nextTick(() => {
+    refreshFlag.value = true
+  })
+
+  console.log('GlEntityForm > setFormItemValues() > formData:', formData.value, dataItem)
+  emits('onLoadedData', {data: formData.value})
 }
 
 /**
  *  加载表单数据
  */
-const loadForm = () => {
+const loadForm = async () => {
   if (!entityRecordId.value) {
+    // 1、不需要从服务端获取
     if (isRead) {
       global.$notification.error({
         duration: 8000,
@@ -221,23 +231,31 @@ const loadForm = () => {
         closable: true
       })
     }
-    setFormItemValues(formData.value)
-    return
-  }
-  // 构建表单数据项
-  buildFieldItems()
-  // 基于表单项，构建字段
-  const fieldNames: Array<string> = []
-  formItems.value.forEach((item) => {
-    fieldNames.push(item.fieldName)
-  })
-  if (checkBindEntity()) {
-    entityApi.query(props.bindEntity.entityName, fieldNames.join(','), {id: entityRecordId.value}).then((resp) => {
-      const items = resp?.data?.data
-      if (items && items.length > 0) {
-        setFormItemValues(items[0])
+    pageProvideProxy.addPageMountedEvent(()=>{
+      // await utils.sleep(100)
+      setFormItemValues(formData.value)
+    })
+  } else {
+    // 2、需要从服务端获取
+    // 2.1 构建表单数据项
+    buildFieldItems()
+    // 2.2基于上面构建的表单项，构建数据加载字段
+    const fieldNames: Array<string> = []
+    formItems.value.forEach((item) => {
+      if (item.fieldName) {
+        fieldNames.push(item.fieldName)
+      } else {
+        console.error('存在未绑定字段', item)
       }
     })
+    if (checkBindEntity()) {
+      entityApi.query(props.bindEntity.entityName, fieldNames.join(','), {id: entityRecordId.value}).then((resp) => {
+        const items = resp?.data?.data
+        if (items && items.length > 0) {
+          setFormItemValues(items[0])
+        }
+      })
+    }
   }
 }
 
@@ -245,15 +263,20 @@ const loadForm = () => {
  *  检查是否已绑定实体
  */
 const checkBindEntity = () => {
+  // 检查实体
   if (!props.bindEntity || !props.bindEntity.entityName) {
+    const title = `表单${props.glComponentInst?.id}未绑定实体`
     global.$notification.error({
-      duration: 6000,
-      title: '表单未绑定实体',
+      duration: 8000,
+      title: title,
       content: '请在设计器中选择表单组件，右边的属性面板选择实体进行绑定。',
       closable: true
     })
+    console.error(title, props.glComponentInst)
     return false
   }
+  // 检查字段
+
   return true
 }
 
@@ -272,7 +295,7 @@ const saveForm = async () => {
       const componentInst: ComponentInstance = pageProvideProxy.getComponentInst(instId)
       const getRenderColumnsFn = pageProvideProxy.getMethod(instId, 'getRenderColumns')
       const getDeleteDataFn = pageProvideProxy.getMethod(instId, 'getDeleteData')
-      console.log('GlEntityForm > saveForm() > getRenderColumnsFn', getRenderColumnsFn)
+      // console.log('GlEntityForm > saveForm() > getRenderColumnsFn', getRenderColumnsFn)
       const subEntityFlag = '#'
       const subEntityKey = subEntityFlag + componentInst.props?.base?.entityName
       // 处理需保存的子表单数据
@@ -302,14 +325,14 @@ const saveForm = async () => {
       // console.log('GlEntityForm > saveForm() > getDeleteDataFn', getDeleteDataFn)
       if (typeof getDeleteDataFn === 'function') {
         const deleteData = getDeleteDataFn()
-        console.log('GlEntityForm > saveForm() > deleteData:', deleteData)
+        // console.log('GlEntityForm > saveForm() > deleteData:', deleteData)
         if (deleteData && deleteData.length > 0) {
           entityKeyValues[subEntityKey] = entityKeyValues[subEntityKey] || []
           entityKeyValues[subEntityKey].push(...deleteData)
         }
       }
     })
-    console.log('saveForm props.bindEntity:', props.bindEntity, 'entityKeyValues:', entityKeyValues)
+    // console.log('saveForm props.bindEntity:', props.bindEntity, 'entityKeyValues:', entityKeyValues)
     return await entityApi.save(props.bindEntity.entityName, entityKeyValues)
   }
 }
@@ -320,13 +343,14 @@ const hasSubFormTable = () => {
 }
 /**
  *  提交表单：构建表单项、校验、保存到服务端
+ *  submitForm() --> saveForm()
  */
 const submitForm = async () => {
   // checkConfig()
   // 构建表单数据项，设置值
   buildFieldItems()
   // 再进一步进行表单数据项值校验
-  const res = await formRef.value?.validate();
+  const validateResult = await formRef.value?.validate();
   // 验证子表单，若存在则验证
   let subFormTableValidError = false
   subFormTableInstIds.value.forEach((instId: string) => {
@@ -340,10 +364,10 @@ const submitForm = async () => {
     }
   })
 
-  // console.log('submitForm() > validate form:', formRef.value, ' result:', res)
-  if (!res && !subFormTableValidError) {
+  // console.log('submitForm() > validate form:', formRef.value, ' result:', validateResult)
+  if (!validateResult && !subFormTableValidError) {
     setLoading(true);
-    console.log('submitForm() > formData', formData)
+    // console.log('submitForm() > formData', formData)
     const saveResult = await saveForm()
     entityRecordId.value = saveResult?.data.data
     // 将表单值，注册到表单的子项中
@@ -361,7 +385,7 @@ const submitForm = async () => {
     setLoading(false)
     return true
   } else {
-    // console.error('保存表单验证失败', res, subFormTableValidError)
+    // console.error('保存表单验证失败', validateResult, subFormTableValidError)
     return false
   }
 };
@@ -375,7 +399,7 @@ const checkConfig = () => {
     for (let index in inst.children) {
       let subInst = inst.children[index]
       if (checkValidDataEntry(subInst.componentName)) {
-        if (!subInst.props.bindField) {
+        if (!subInst.props.bindField || !subInst.props.bindField.fieldName) {
           global.$notification.error(`组件[${subInst.componentName}],标题：${subInst.props.label},未绑定模型字段。`)
         }
       }
@@ -387,7 +411,6 @@ const checkConfig = () => {
 
   checkFieldItem(props.glComponentInst)
 }
-
 
 loadForm()
 defineExpose([submitForm])

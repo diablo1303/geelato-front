@@ -147,6 +147,7 @@ const setSlotNames = () => {
   props.columns.forEach((col: Column) => {
     if (col._editComponent) {
       col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
+      col.dataIndex = col.dataIndex || col._editComponent.props.bindField?.fieldName
       // 验证信息
       if (col._editComponent.props.rules) {
         recordSchema.schema[col.dataIndex!] = toRaw(col._editComponent.props.rules)
@@ -154,7 +155,6 @@ const setSlotNames = () => {
     } else {
       col.slotName = undefined
     }
-    // console.log('GlEntityTable > col:', col, col.slotName)
   })
 
   // console.log('GlEntityTable > columns after convert:', recordSchema)
@@ -360,14 +360,15 @@ const scroll = {
 watch(() => columns.value,
     (val) => {
 
-      val.forEach((col)=>{
+      val.forEach((col) => {
+        // @ts-ignore
         col.title = col._editComponent?.props.label
       })
       // @ts-ignore
       cloneColumns.value = cloneDeep(val);
       cloneColumns.value.forEach((item, index) => {
         item.checked = true;
-        item.width = item.width || 200
+        item.width = item.width || 150
         item.align = item.align || 'center'
       });
       cloneColumns.value.push(optColumn as Column)
@@ -448,6 +449,7 @@ const setError = (record: object, rowIndex: number, err: { [key: string]: any },
 
 /**
  *  表格在编辑模式下，添加行
+ *  设置列的dataIndex让其与绑定的组件一致
  */
 const addRow = () => {
   const newRow = {}
@@ -551,12 +553,12 @@ defineExpose({
   >
     <template ##="{ record,rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
-          <!-- 在编辑模式下，默认的操作：复制、删除 -->
-          <!--          <a-button type="text" size="small" @click="saveRow(record,rowIndex)">保存</a-button>-->
-          <!--          在这里popconfirm无效 TODO-->
-          <a-popconfirm content="确定是否删除?">
-            <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)">删除</a-button>
-          </a-popconfirm>
+        <!-- 在编辑模式下，默认的操作：复制、删除 -->
+        <!--          <a-button type="text" size="small" @click="saveRow(record,rowIndex)">保存</a-button>-->
+        <!--          在这里popconfirm无效 TODO-->
+        <a-popconfirm content="确定是否删除?">
+          <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)">删除</a-button>
+        </a-popconfirm>
       </a-space>
     </template>
     <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">
@@ -594,5 +596,9 @@ defineExpose({
 .gl-entity-table .gl-validate-error .gl-validate-message {
   display: inline-block;
   color: red;
+}
+
+.gl-entity-table .arco-table-cell {
+  padding: 4px !important;
 }
 </style>

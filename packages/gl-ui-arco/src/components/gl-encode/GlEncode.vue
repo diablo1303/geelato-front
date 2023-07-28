@@ -27,7 +27,7 @@ watch(mv, () => {
 </script>
 
 <template>
-  <a-input v-model="mv" placeholder="TODO 待集成后台服务" readonly></a-input>
+  <a-input v-model="mv" placeholder="TODO 待集成后台服务"></a-input>
 </template>
 
 <style scoped>

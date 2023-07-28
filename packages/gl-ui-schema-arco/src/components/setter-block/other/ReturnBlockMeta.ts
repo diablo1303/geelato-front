@@ -1,11 +1,11 @@
 export default {
-    "componentName": "GlLogBlock",
+    "componentName": "GlReturnBlock",
     "displayMode": "Tile",
-    "iconType": "gl-log",
+    "iconType": "gl-undo",
     "group": "block_other",
-    "title": "输出日志",
+    "title": "返回结果",
     "useBy": ["freePage"],
-    "blockContent": "控制台输出日志内容${content}",
+    "blockContent": "返回结果，表达式为${content}",
     "properties": [{
         "name": "content",
         "setterComponentProps": {},
@@ -14,10 +14,10 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "日志内容",
+        "title": "返回结果",
         "setterComponentName": "AInput",
         "enableValueExpress": true,
-        "placeholder": "控制台输出日志内容"
+        "placeholder": "返回结果表达式"
     }],
     "actions": []
 }

@@ -141,18 +141,7 @@ export default {
         "setterComponentName": "ASwitch",
         "show": true,
         "expanded": true
-    }, {
-        "name": "unRender",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "不渲染",
-        "setterComponentName": "ASwitch",
-        "enableValueExpress": true
     }],
-    "actions": [{"name": "change", "description": "", "title": "值改变"}],
+    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}],
     "displayOnStage": "inline-block"
 }

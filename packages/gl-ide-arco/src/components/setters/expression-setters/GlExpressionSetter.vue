@@ -45,12 +45,21 @@ const inputMv = ref(props.modelValue)
 //   emits('update:modelValue', mv.value)
 // })
 
+const _systemVarsTreeData = ref<any[]>([])
+const _functionalFormulaTreeData = ref<any[]>([])
+const _componentInstTreeData = ref<any[]>([])
+const _enumTreeData = ref<any[]>([])
+
 const valueExpressModalVisible = ref(false)
 /**
  * 打开值表达式设置窗口
  */
-const openValueExpressModal = () => {
+const openValueExpressModal = async () => {
   valueExpressModalVisible.value = true
+  _systemVarsTreeData.value = setKeys(useSystemVarsTreeData())
+  _functionalFormulaTreeData.value = setKeys(functionalFormulaTreeData)
+  _componentInstTreeData.value = setKeys(useComponentInstTreeData())
+  _enumTreeData.value = setKeys(await useEnumTreeData())
 }
 const clearValueExpress = () => {
   // const propertySetterMeta = currentOpenModalPropertySetterMeta
@@ -128,19 +137,22 @@ const getKeyPath = (tree: any, key: string): string => {
   }
 }
 
-const _systemVarsTreeData = setKeys(useSystemVarsTreeData())
-const _functionalFormulaTreeData = setKeys(functionalFormulaTreeData)
-const _componentInstTreeData = setKeys(useComponentInstTreeData())
-const _enumTreeData = setKeys(useEnumTreeData())
+
 
 const selectNode = (selectedKeys: any, data: any, treeData: any) => {
   const path = getKeyPath(treeData, data.node.key)
   monacoEditor.value.replaceSelectOrInsert(path)
-  console.log('selectNode:', selectedKeys, 'data:', data, 'path:', path)
+  // console.log('selectNode:', selectedKeys, 'data:', data, 'path:', path)
 }
 
-const selectConstNode = (selectedKeys: any, data: any, treeData: any) => {
-  monacoEditor.value.replaceSelectOrInsert(data.node._code)
+const selectConstNode = async (selectedKeys: any, data: any, treeData: any) => {
+  let code = data.node._code
+  if (code) {
+    if (typeof code === 'function') {
+      code = await code()
+    }
+    monacoEditor.value.replaceSelectOrInsert(code)
+  }
 }
 
 
@@ -198,9 +210,9 @@ const selectConstNode = (selectedKeys: any, data: any, treeData: any) => {
                 </template>
               </a-tree>
             </a-collapse-item>
-            <a-collapse-item header="自定义变量" key="2">
-              Coming Soon...
-            </a-collapse-item>
+            <!--            <a-collapse-item header="自定义变量" key="2">-->
+            <!--              Coming Soon...-->
+            <!--            </a-collapse-item>-->
             <a-collapse-item header="枚举值" key="3">
               <a-tree ref="enumVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_enumTreeData"
@@ -210,9 +222,8 @@ const selectConstNode = (selectedKeys: any, data: any, treeData: any) => {
                     <template #content>
                       {{ _description }}
                     </template>
-                    <span>{{ _code }}
-                      <!--  title和_code相同，则只显示_code -->
-                    <span class="gl-title" style="margin-left: 0!important;">{{ title === _code ? '' : title }}</span>
+                    <span>
+                    <span class="gl-title" style="color:#1d2129;margin-left: 0!important;">{{ title }}</span>
                   </span>
                   </a-tooltip>
                 </template>
@@ -221,7 +232,7 @@ const selectConstNode = (selectedKeys: any, data: any, treeData: any) => {
                 </template>
               </a-tree>
             </a-collapse-item>
-            <a-collapse-item header="组件实例变量" key="3">
+            <a-collapse-item header="组件实例变量" key="4">
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_componentInstTreeData"
                       @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_componentInstTreeData)">
@@ -241,7 +252,7 @@ const selectConstNode = (selectedKeys: any, data: any, treeData: any) => {
                 </template>
               </a-tree>
             </a-collapse-item>
-            <a-collapse-item header="函数公式" key="4">
+            <a-collapse-item header="函数公式" key="5">
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_functionalFormulaTreeData"
                       @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_functionalFormulaTreeData)">

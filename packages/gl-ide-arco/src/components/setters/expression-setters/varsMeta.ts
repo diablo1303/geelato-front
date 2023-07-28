@@ -98,7 +98,7 @@ export const useComponentInstTreeData = () => {
             children: <any>[]
         }
         const componentStore = useComponentStore()
-        if (['GlEntityTablePlus', 'GlEntityTableSub'].indexOf(componentStore.currentSelectedComponentInstance.componentName) != -1) {
+        if (componentStore.currentSelectedComponentInstance && ['GlEntityTablePlus', 'GlEntityTableSub'].indexOf(componentStore.currentSelectedComponentInstance.componentName) != -1) {
             const columns = componentStore.currentSelectedComponentInstance.props.columns
             if (columns && columns.length > 0) {
                 columns.forEach((col: any) => {

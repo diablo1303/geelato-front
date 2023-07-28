@@ -9,7 +9,7 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {jsScriptExecutor, mixins} from "@geelato/gl-ui";
+import {jsScriptExecutor, mixins, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 import {inject} from "vue";
 import {PageParamsKey} from "@geelato/gl-ui";
 

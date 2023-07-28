@@ -105,7 +105,7 @@ const props = defineProps({
     type: Array as PropType<Array<ContextMenuDataType>>,
     default() {
       return [
-        {title: '新建目录', iconType: 'gl-folder', nodeType: 'folder', useFor: ['folder'], action: 'addNode'},
+        {title: '新建目录', iconType: 'gl-folder', nodeType: 'folder', useFor: ['root','folder'], action: 'addNode'},
         {title: '新建自由页面', iconType: 'gl-file', nodeType: 'freePage', useFor: ['folder'], action: 'addNode'},
         {title: '新建表单页面', iconType: 'gl-form', nodeType: 'formPage', useFor: ['folder'], action: 'addNode'},
         {title: '新建列表页面', iconType: 'gl-list', nodeType: 'listPage', useFor: ['folder'], action: 'addNode'},
