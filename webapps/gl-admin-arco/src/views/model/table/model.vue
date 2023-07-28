@@ -17,7 +17,7 @@
             :label="$t('model.table.index.form.title')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="title">
-          <a-input v-if="pageData.button" v-model="formData.title" :max-length="32"/>
+          <a-input v-if="pageData.button" v-model.trim="formData.title" :max-length="32"/>
           <span v-else>{{ formData.title }}</span>
         </a-form-item>
       </a-col>
@@ -27,7 +27,7 @@
             :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')},
             {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')}]"
             field="entityName">
-          <a-input v-if="pageData.editName" v-model="formData.entityName" :max-length="32"/>
+          <a-input v-if="pageData.editName" v-model.trim="formData.entityName" :max-length="32"/>
           <span v-else>{{ formData.entityName }}</span>
         </a-form-item>
       </a-col>

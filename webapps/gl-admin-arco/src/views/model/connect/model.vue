@@ -11,7 +11,7 @@
             :label="$t('model.connect.index.form.dbConnectName')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="dbConnectName">
-          <a-input v-if="pageData.button" v-model="formData.dbConnectName" :max-length="125"/>
+          <a-input v-if="pageData.button" v-model.trim="formData.dbConnectName" :max-length="125"/>
           <span v-else>{{ formData.dbConnectName }}</span>
         </a-form-item>
       </a-col>
@@ -20,7 +20,7 @@
             :label="$t('model.connect.index.form.dbSchema')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="dbSchema">
-          <a-input v-if="pageData.button" v-model="formData.dbSchema" :max-length="125"/>
+          <a-input v-if="pageData.button" v-model.trim="formData.dbSchema" :max-length="125"/>
           <span v-else>{{ formData.dbSchema }}</span>
         </a-form-item>
       </a-col>
@@ -29,7 +29,7 @@
             :label="$t('model.connect.index.form.dbName')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="dbName">
-          <a-input v-if="pageData.button" v-model="formData.dbName" :max-length="75"/>
+          <a-input v-if="pageData.button" v-model.trim="formData.dbName" :max-length="75"/>
           <span v-else>{{ formData.dbName }}</span>
         </a-form-item>
       </a-col>
@@ -47,7 +47,7 @@
             :label="$t('model.connect.index.form.dbHostnameIp')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="dbHostnameIp">
-          <a-input v-if="pageData.button" v-model="formData.dbHostnameIp" :max-length="75"/>
+          <a-input v-if="pageData.button" v-model.trim="formData.dbHostnameIp" :max-length="75"/>
           <span v-else>{{ formData.dbHostnameIp }}</span>
         </a-form-item>
       </a-col>
@@ -58,7 +58,7 @@
             field="dbPort">
           <a-input-number
               v-if="pageData.button"
-              v-model="formData.dbPort"
+              v-model.trim="formData.dbPort"
               :max="999999"
               :min="1"
               :placeholder="$t('model.form.rules.match.length.title')+'[0,999999]'"

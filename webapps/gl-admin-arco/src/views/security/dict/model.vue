@@ -8,21 +8,21 @@
         :label="$t('security.dict.index.form.dictName')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="dictName">
-      <a-input v-if="pageData.button" v-model="formData.dictName" :max-length="32"/>
+      <a-input v-if="pageData.button" v-model.trim="formData.dictName" :max-length="32"/>
       <span v-else>{{ formData.dictName }}</span>
     </a-form-item>
     <a-form-item
         :label="$t('security.dict.index.form.dictCode')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="dictCode">
-      <a-input v-if="pageData.button" v-model="formData.dictCode" :max-length="32"/>
+      <a-input v-if="pageData.button" v-model.trim="formData.dictCode" :max-length="32"/>
       <span v-else>{{ formData.dictCode }}</span>
     </a-form-item>
     <a-form-item
         :label="$t('security.dict.index.form.tenantCode')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="tenantCode">
-      <a-input v-if="pageData.button" v-model="formData.tenantCode" :max-length="32"/>
+      <a-input v-if="pageData.button" v-model.trim="formData.tenantCode" :max-length="32"/>
       <span v-else>{{ formData.tenantCode }}</span>
     </a-form-item>
     <a-form-item

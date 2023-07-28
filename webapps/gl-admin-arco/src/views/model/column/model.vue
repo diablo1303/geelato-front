@@ -21,7 +21,7 @@
             :label="$t('model.column.index.form.title')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="title">
-          <a-input v-model="formData.title" :max-length="32"/>
+          <a-input v-model.trim="formData.title" :max-length="32"/>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
@@ -30,7 +30,7 @@
             :rules="[{required: pageData.editName,message: $t('model.form.rules.match.required')},
             {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')}]"
             field="name">
-          <a-input v-if="pageData.editName" v-model="formData.name" :max-length="32" @blur="columnNameBlur($event)"/>
+          <a-input v-if="pageData.editName" v-model.trim="formData.name" :max-length="32" @blur="columnNameBlur($event)"/>
           <span v-else>{{ formData.name }}</span>
         </a-form-item>
       </a-col>
@@ -38,7 +38,7 @@
         <a-form-item :label="$t('model.column.index.form.fieldName')"
                      :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
                      field="fieldName">
-          <a-input v-if="pageData.formState==='add'" v-model="formData.fieldName" :max-length="32"
+          <a-input v-if="pageData.formState==='add'" v-model.trim="formData.fieldName" :max-length="32"
                    :placeholder="$t('model.column.index.form.fieldName.placeholder')" readonly/>
           <span v-else>{{ formData.fieldName }}</span>
         </a-form-item>

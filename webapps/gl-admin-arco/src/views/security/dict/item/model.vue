@@ -8,14 +8,14 @@
         :label="$t('security.dictItem.index.form.itemName')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="itemName">
-      <a-input v-if="pageData.button" v-model="formData.itemName" :max-length="32"/>
+      <a-input v-if="pageData.button" v-model.trim="formData.itemName" :max-length="32"/>
       <span v-else>{{ formData.itemName }}</span>
     </a-form-item>
     <a-form-item
         :label="$t('security.dictItem.index.form.itemCode')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="itemCode">
-      <a-input v-if="pageData.button" v-model="formData.itemCode" :max-length="32"/>
+      <a-input v-if="pageData.button" v-model.trim="formData.itemCode" :max-length="32"/>
       <span v-else>{{ formData.itemCode }}</span>
     </a-form-item>
     <a-form-item

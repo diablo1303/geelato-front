@@ -4,14 +4,14 @@
         :label="$t('application.app.list.name')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="name">
-      <a-input v-if="pageData.button" v-model="formData.name" :max-length="32"/>
+      <a-input v-if="pageData.button" v-model.trim="formData.name" :max-length="32"/>
       <span v-else>{{ formData.name }}</span>
     </a-form-item>
     <a-form-item
         :label="$t('application.app.list.code')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="code">
-      <a-input v-if="pageData.button" v-model="formData.code" :max-length="32"/>
+      <a-input v-if="pageData.button" v-model.trim="formData.code" :max-length="32"/>
       <span v-else>{{ formData.code }}</span>
     </a-form-item>
     <a-form-item

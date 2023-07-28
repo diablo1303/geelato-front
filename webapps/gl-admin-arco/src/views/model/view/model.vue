@@ -16,7 +16,7 @@
             :label="$t('model.view.index.form.title')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="title">
-          <a-input v-if="pageData.button" v-model="formData.title" :max-length="32"/>
+          <a-input v-if="pageData.button" v-model.trim="formData.title" :max-length="32"/>
           <span v-else>{{ formData.title }}</span>
         </a-form-item>
       </a-col>
@@ -27,7 +27,7 @@
             {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.viewName.match')},
             {match:pageData.formState==='add'?/^(?!v_|V_)/:/^[vV][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.viewName.match')}]"
             field="viewName">
-          <a-input v-if="pageData.formState==='add'" v-model="formData.viewName" :max-length="32" @blur="viewNameBlur($event)">
+          <a-input v-if="pageData.formState==='add'" v-model.trim="formData.viewName" :max-length="32" @blur="viewNameBlur($event)">
             <template #prepend>
               v_
             </template>
