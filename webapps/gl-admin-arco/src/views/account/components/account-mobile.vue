@@ -51,17 +51,19 @@ import {AuthCodeForm, bindAccount, generateAuthCode} from "@/api/user";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import mobilePrefix from '@/config/mobilePrefix.json';
 import {Message} from "@arco-design/web-vue";
+import {useUserStore} from "@/store";
 
 const props = defineProps({modelValue: {type: Boolean, default: false}});
 const emits = defineEmits(['update:modelValue', 'completeEvent']);
 const {t} = useI18n();
+const userStore = useUserStore();
 const visible = ref(false);
 const validFormRef = ref<FormInstance>();
 const buttonLoading = ref(false);
 const authCodeData = ref({disabled: false, content: ''});
 const formatValidData = (): AuthCodeForm => {
   return {
-    action: 'updateMobile', validType: '1', prefix: '+86', validBox: '', userId: '1', authCode: ''
+    action: 'updateMobile', validType: '1', prefix: '+86', validBox: '', userId: userStore.userInfo.id as string, authCode: ''
   };
 }
 const formData = ref(formatValidData());

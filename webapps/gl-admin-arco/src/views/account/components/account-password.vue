@@ -37,17 +37,19 @@ import {ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {AuthCodeForm, bindAccount} from "@/api/user";
 import {FormInstance} from "@arco-design/web-vue/es/form";
+import {useUserStore} from "@/store";
 
 const props = defineProps({modelValue: {type: Boolean, default: false}});
 const emits = defineEmits(['update:modelValue', 'completeEvent']);
 const {t} = useI18n();
+const userStore = useUserStore();
 const visible = ref(false);
 const validFormRef = ref<FormInstance>();
 const buttonLoading = ref(false);
 const errorMessage = ref('');
 const formatValidData = (): AuthCodeForm => {
   return {
-    action: 'updatePassword', validType: '3', prefix: '', validBox: '', userId: '1', authCode: ''
+    action: 'updatePassword', validType: '3', prefix: '', validBox: '', userId: userStore.userInfo.id as string, authCode: ''
   };
 }
 const formData = ref(formatValidData());

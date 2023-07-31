@@ -65,7 +65,9 @@ const buttonLoading = ref(false);
 const authCodeData = ref({disabled: false, content: ''});
 const formatValidData = (): AuthCodeForm => {
   return {
-    action: 'validateUser', validType: '3', prefix: '', validBox: '', userId: '1', authCode: ''
+    action: 'validateUser', validType: '3', prefix: '', validBox: '',
+    userId: userStore.userInfo.id as string,
+    authCode: ''
   };
 }
 const formData = ref(formatValidData());
