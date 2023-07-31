@@ -153,6 +153,7 @@ export interface QueryUserForm {
   salt: string;
   avatar: string;
   password: string;
+  mobilePrefix: string;
   plainPassword: string;
   mobilePhone: string;
   telephone: string;
@@ -192,6 +193,10 @@ export function createOrUpdateUser(params: QueryUserForm) {
 
 export function deleteUser(id: string) {
   return axios.delete<QueryResult>(`/api/security/user/isDelete/${id}`);
+}
+
+export function resetPassword(id: string) {
+  return axios.post<QueryResult>(`/api/security/user/resetPwd/${id}`);
 }
 
 /* -----------------------------字典管理 - 字典--------------------------- */

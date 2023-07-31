@@ -142,6 +142,8 @@ export default {
   'security.org.index.form.operations': '操作',
   'security.org.index.form.root': '没有上级组织',
   // webapps/gl-admin-arco/src/views/security/org - list.operation
+  'searchTable.columns.operations.reset': '重置',
+  'searchTable.columns.operations.resetMsg': '是否重置该用户密码？',
   'searchTable.columns.operations.edit': '编辑',
   'searchTable.columns.operations.delete': '删除',
   'searchTable.columns.operations.deleteMsg': '是否删除该条数据？',

@@ -151,9 +151,14 @@
       <a-table-column :title="$t('security.user.index.form.seqNo')" :width="100" data-index="seqNo"></a-table-column>
       <a-table-column :title="$t('security.user.index.form.createAt')" :width="180" data-index="createAt"></a-table-column>
       <a-table-column
-          :title="$t('security.user.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
+          :title="$t('security.user.index.form.operations')" :width="pageData.formState==='edit'?306:100" align="center" data-index="operations"
           fixed="right">
         <template #cell="{ record }">
+          <a-popconfirm :content="$t('searchTable.columns.operations.resetMsg')" position="tr" type="warning" @ok="resetPwdTable(record.id)">
+            <a-button v-show="pageData.formState==='edit'" size="small" status="danger" type="text">
+              {{ $t('searchTable.columns.operations.reset') }}
+            </a-button>
+          </a-popconfirm>
           <a-button size="small" type="text" @click="viewTable(record.id)">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
@@ -179,6 +184,7 @@
 /* 导入 */
 import {nextTick, reactive, ref, watch} from 'vue';
 import useLoading from '@/hooks/loading';
+import {Notification} from "@arco-design/web-vue";
 // 分页列表
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
@@ -186,12 +192,13 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, sexOptions, sourceOptions, typeOptions} from '@/views/security/user/searchTable'
-import {deleteUser as deleteList, FilterUserForm as FilterForm, pageQueryUser as pageQueryList} from '@/api/security';
+import {deleteUser as deleteList, FilterUserForm as FilterForm, pageQueryUser as pageQueryList, resetPassword} from '@/api/security';
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 引用其他页面
 import UserForm from '@/views/security/user/form.vue';
 import UserDrawer from '@/views/security/user/drawer.vue';
 import UserTabForm from '@/views/security/user/tabForm.vue';
+import {useI18n} from "vue-i18n";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
@@ -200,6 +207,7 @@ const userFormRef = ref(null);
 const userTabFormRef = ref(null);
 const userDrawerRef = ref(null);
 // 加载
+const {t} = useI18n();
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
 const cloneColumns = ref<Column[]>([]);
@@ -265,6 +273,14 @@ const addTable = (ev: MouseEvent) => {
     userDrawerRef.value?.openForm({action: 'add', closeBack: reset});
   }
 };
+const resetPwdTable = async (id: string) => {
+  try {
+    await resetPassword(id);
+    Notification.success(t('security.dict.index.notice.success'));
+  } catch (err) {
+    console.log(err);
+  }
+}
 const viewTable = (id: string) => {
   if (userDrawerRef.value) {
     // @ts-ignore

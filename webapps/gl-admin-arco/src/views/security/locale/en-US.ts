@@ -141,6 +141,8 @@ export default {
   'security.org.index.form.operations': 'operations',
   'security.org.index.form.root': 'No Superior Organization',
   // webapps/gl-admin-arco/src/views/security/org - list.operation
+  'searchTable.columns.operations.reset': 'Reset',
+  'searchTable.columns.operations.resetMsg': 'Whether to reset the user password？',
   'searchTable.columns.operations.edit': 'Edit',
   'searchTable.columns.operations.delete': 'Delete',
   'searchTable.columns.operations.deleteMsg': 'Whether to delete the data？',

@@ -59,8 +59,16 @@
             :label="$t('security.user.index.form.mobilePhone')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="mobilePhone">
-          <a-input v-if="pageData.button" v-model="formData.mobilePhone" :max-length="32"/>
-          <span v-else>{{ formData.mobilePhone }}</span>
+          <a-input v-if="pageData.button" v-model="formData.mobilePhone" :max-length="32">
+            <template #prepend>
+              <a-select v-model="formData.mobilePrefix" :options="prefixTypeOptions" :style="{width:'112.5px'}" allow-search>
+                <template #label="{data}">
+                  {{ data.value }}
+                </template>
+              </a-select>
+            </template>
+          </a-input>
+          <span v-else>{{formData.mobilePrefix}} {{ formData.mobilePhone }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
@@ -145,12 +153,14 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {Modal} from "@arco-design/web-vue";
-import {createOrUpdateUser as createOrUpdateForm, getUser as getForm, QueryOrgForm, queryOrgs, QueryUserForm as QueryForm,} from '@/api/security';
+import {createOrUpdateUser as createOrUpdateForm, getUser as getForm, QueryOrgForm, queryOrgs, QueryUserForm as QueryForm} from '@/api/security';
 import {ListUrlParams, SelectOption} from '@/api/base';
 import {sexOptions, sourceOptions, typeOptions} from "@/views/security/user/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";
+import mobilePrefix from '@/config/mobilePrefix.json';
+import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
 
 const pageData = ref({formState: 'add', button: true, formCol: 2});
 const validateForm = ref<FormInstance>();
@@ -166,6 +176,7 @@ const generateFormData = (): QueryForm => {
     avatar: '',
     password: '',
     plainPassword: '',
+    mobilePrefix:'+86',
     mobilePhone: '',
     telephone: '',
     orgId: '',
@@ -180,6 +191,13 @@ const generateFormData = (): QueryForm => {
   };
 }
 const formData = ref(generateFormData());
+const prefixTypeOptions = computed<SelectOptionData[]>(() => {
+  const options: SelectOptionData[] = [];
+  mobilePrefix.forEach((item, index) => {
+    options.push({value: item.code, label: `${item.area} ${item.code}`});
+  });
+  return options;
+});
 
 const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[]): SelectOption[] => {
   // eslint-disable-next-line no-restricted-syntax
