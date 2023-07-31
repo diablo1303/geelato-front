@@ -42,6 +42,7 @@
                                     :maxCount="propertySetterMeta.setterComponentProps.maxCount"
                                     :titleField="propertySetterMeta.titleField"
                                     :subTitleField="propertySetterMeta.subTitleField"
+                                    :alarmIfNoSubTitle="propertySetterMeta.alarmIfNoSubTitle"
                                     :autoAddWhenEmpty="false"
                                     :elementTemplate="createChildObjectTemplate()"
                                     @selectedElement="selectChildElement"
@@ -124,6 +125,7 @@
                                   :maxCount="propertySetterMeta.subComponentCount"
                                   :titleField="propertySetterMeta.titleField"
                                   :subTitleField="propertySetterMeta.subTitleField"
+                                  :alarmIfNoSubTitle="propertySetterMeta.alarmIfNoSubTitle"
                                   :elementTemplate="createChildElementTemplate(propertySetterMeta.name,propertySetterMeta.setterComponentProps.ChildComponentName)"
                                   @selectedElement="selectChildElement"
             >

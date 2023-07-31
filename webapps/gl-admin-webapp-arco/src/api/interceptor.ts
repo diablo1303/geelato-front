@@ -2,6 +2,7 @@ import type {AxiosRequestConfig, AxiosResponse} from 'axios';
 import axios from 'axios';
 import {Message, Modal} from '@arco-design/web-vue';
 import {useUserStore} from '@/store';
+/* eslint-disable-next-line */
 import globalConfig from '@/config/globalConfig.json';
 import {getToken} from '@/utils/auth';
 

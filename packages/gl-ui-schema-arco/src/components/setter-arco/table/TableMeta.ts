@@ -171,14 +171,16 @@ export default {
         }],
         "title": "基本设置",
         "setterComponentName": "GlSimpleObjectSetter"
-    }, {
+    },
+
+        {
         "name": "query",
         "setterComponentProps": {},
         "setterComponentVModelName": "",
         "group": "base",
         "type": "props",
         "title": "查询条件",
-        "_showSub": true,
+        "_showSub": false,
         "properties": [{
             "name": "component",
             "setterComponentProps": {},
@@ -189,7 +191,8 @@ export default {
             "title": "选择组件",
             "show": true,
             "expanded": true,
-            "enableValueExpress": false
+            "enableValueExpress": false,
+            "_showSub": false
         }, {
             "name": "cop",
             "setterComponentProps": {
@@ -249,7 +252,9 @@ export default {
         "show": true,
         "expanded": false,
         "titleField": "component.props.label",
-        "enableValueExpress": false
+        "enableValueExpress": false,
+        "subTitleField": "component.props.bindField.fieldName",
+        "alarmIfNoSubTitle": '无字段'
     }, {
         "name": "toolbar",
         "setterComponentProps": {},
@@ -314,6 +319,7 @@ export default {
         "setterComponentName": "GlSimpleObjectSetter",
         "titleField": "title",
         "subTitleField": "name",
+        "alarmIfNoSubTitle": '未设置',
         "enableValueExpress": false
     }, {
         "name": "columns",
@@ -346,7 +352,7 @@ export default {
             "setterComponentName": "AInput",
             "enableValueExpress": false
         }, {
-            "name": "_Show",
+            "name": "_show",
             "group": "base",
             "type": "props",
             "enableValueExpress": true,
@@ -431,7 +437,8 @@ export default {
         "setterComponentName": "GlObjectArraySetter",
         "title": "数据列",
         "titleField": "title",
-        "subTitleField":"fieldName",
+        "subTitleField": "dataIndex",
+        "alarmIfNoSubTitle": '无字段',
         "enableValueExpress": false
     }, {
         "name": "columnActions",
@@ -455,7 +462,11 @@ export default {
         "name": "changeRecord",
         "title": "行记录更改",
         "description": "在数据表的行内编辑模式下，当数据表的行记录信息更换时触发"
-    }],
+    }, {
+        "name": "onMounted",
+        "description": "组件加载完时触发，和Vue的onMounted一致",
+        "title": "加载完"
+    }, {"name": "onUpdated", "description": "组件更新时触发，和Vue的onUpdated一致", "title": "加载完"}],
     "methods": [{"name": "refresh", "title": "刷新", "description": "刷新表格", "params": []}, {
         "name": "deleteRow",
         "title": "删除行",
