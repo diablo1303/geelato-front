@@ -31,7 +31,13 @@
             </template>
             {{ $t('searchTable.operation.create') }}
           </a-button>
-          <a-trigger v-model:popup-visible="popupVisible" :unmount-on-close="false" position="bl" trigger="click">
+          <a-trigger
+              v-model:popup-visible="popupVisible"
+              :popup-translate="[0, 10]"
+              :unmount-on-close="false"
+              position="bl"
+              show-arrow
+              trigger="click">
             <a-button type="primary">
               <template #icon>
                 <icon-plus/>
@@ -46,12 +52,10 @@
                 <a-form-item :label="$t('security.dictItem.index.form.itemCode')" field="itemCode">
                   <a-textarea v-model.trim="affixData.itemCode" :auto-size="{minRows:1,maxRows:3}" show-word-limit/>
                 </a-form-item>
-                <a-form-item style="justify-content: flex-end;">
-                  <a-space>
-                    <a-button @click="handlePopupCancel($event)">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
-                    <a-button type="primary" @click="handlePopupOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
-                  </a-space>
-                </a-form-item>
+                <a-space style="justify-content: flex-end;">
+                  <a-button @click="handlePopupCancel($event)">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
+                  <a-button type="primary" @click="handlePopupOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
+                </a-space>
               </a-form>
             </template>
           </a-trigger>
@@ -399,7 +403,7 @@ div.arco-form-item-content > span.textarea-span {
 }
 
 .affix-form {
-  padding: 18px 10px 0px 5px;
+  padding: 18px 10px 10px 5px;
   width: 456px;
   background-color: var(--color-bg-popup);
   border-radius: 4px;
