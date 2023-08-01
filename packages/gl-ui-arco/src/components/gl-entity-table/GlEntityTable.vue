@@ -138,40 +138,17 @@ const formProvideProxy: FormProvideProxy | undefined = inject(FormProvideKey)
 const pageProvideProxy: PageProvideProxy | undefined = inject(PageProvideKey)
 let recordSchema = new Schema({})
 
-const editSlotNameFlag = '__editSlot'
+const slotNameFlag = '__slot'
 
 const setSlotNames = () => {
   // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确认列有slotName
   props.columns.forEach((col: Column) => {
-    if (col._renderScript) {
-      col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
+    if (col._renderScript || col._component) {
+      col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
     } else {
       delete col.slotName
     }
   })
-
-  // 对于编辑状态
-  if (props.enableEdit) {
-    // 如果启用编辑，需将column中没有设置插槽的，生成插槽
-    props.columns.forEach((col: Column) => {
-      if (col._editComponent) {
-        col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
-        // 验证信息
-        if (col._editComponent.props.rules) {
-          recordSchema.schema[col.dataIndex!] = toRaw(col._editComponent.props.rules)
-        }
-      } else {
-        col.slotName = undefined
-      }
-      // console.log('GlEntityTable > col:', col, col.slotName)
-    })
-  } else {
-    props.columns.forEach((col: Column) => {
-      // 如果未启用编辑
-      // col.slotName = col.slotName && col.slotName.startsWith(editSlotNameFlag) ? "" : col.slotName
-      // console.log('GlEntityTable > col:', col)
-    })
-  }
   // console.log('GlEntityTable > columns after convert:', recordSchema)
 }
 
@@ -190,39 +167,25 @@ if (!props.glIsRuntime) {
 }
 
 
-/**
- *  基于是否启用编辑功能，进行插槽信息的转换
- */
-watch(() => props.enableEdit,
-    () => {
-      setSlotNames()
-    },
-    {immediate: true}
-)
-
 const {loading, setLoading} = useLoading(false);
-// const {t} = CheckUtil.isBrowser() ? useI18n() : {
-//   t: () => {
-//   }
-// };
-const t = (str:any) => {
+const t = (str: any) => {
   return str
 }
 // 渲染展示的数据
 const renderData = ref<Array<object>>([]);
 
-// 编辑状态时删除的数据，
-const deleteDataWhenEnableEdit = ref<Array<{ id: string, [logicDeleteFieldName]: number }>>([]);
-const resetDeleteDataWhenEnableEdit = () => {
-  deleteDataWhenEnableEdit.value = []
-}
+// // 编辑状态时删除的数据，
+// const deleteDataWhenEnableEdit = ref<Array<{ id: string, [logicDeleteFieldName]: number }>>([]);
+// const resetDeleteDataWhenEnableEdit = () => {
+//   deleteDataWhenEnableEdit.value = []
+// }
 const pagination = reactive({
   ...props.pagination,
 });
 
-const columns = computed<TableColumnData[]>(() => {
+const columns = computed<TableColumnDataPlus[]>(() => {
   // 如果启用了多语言，则需要对标题进行翻译
-  let columnData: Array<TableColumnData> = [];
+  let columnData: Array<TableColumnDataPlus> = [];
   if (props.enableI18n && props.columns) {
     columnData = JSON.parse(JSON.stringify(props.columns));
     columnData.forEach((item) => {
@@ -266,7 +229,7 @@ const fetchData = async (readerInfo?: {
   pageNo?: number,
   params?: Array<EntityReaderParam>
 }) => {
-  resetDeleteDataWhenEnableEdit()
+  // resetDeleteDataWhenEnableEdit()
   // 绑定了有效的实体才发起查询
   // 作为子表时，必须指定子表外键，即对应主表ID的字段
   if (!props.entityName || (props.isFormSubTable && !props.subTablePidName)) {
@@ -394,6 +357,9 @@ const evalExpression = (data: {
   column: TableColumnDataPlus;
   rowIndex: number;
 }) => {
+  if (!data.column._renderScript) {
+    return data.record[data.rowIndex]
+  }
   const ctx = {
     pageProxy: pageProvideProxy,
     record: toRaw(data.record),
@@ -416,117 +382,114 @@ const slotColumns = computed(() => {
 /**
  *  在表格修改状态下，验证表格的一行数据
  */
-const validateRecord = (record: object, rowIndex: number) => {
-  let validateStatus = 'start'
-  let result: { [key: string]: any } = {}
-  recordSchema.validate(record, (err: any) => {
-    result = err
-    validateStatus = 'end'
-  })
-  let times = 1000
-  while (validateStatus === 'start') {
-    // console.log('sleep 5ms and validate status:', validateStatus)
-    utils.sleep(5)
-    times--
-    if (times <= 0) {
-      break
-    }
-  }
-  // console.log('validate record:', toRaw(record), 'rowIndex:', rowIndex, 'and get result:', result, 'cloneColumns:', cloneColumns.value)
-  setError(record, rowIndex, result)
-  return result
-}
+// const validateRecord = (record: object, rowIndex: number) => {
+//   let validateStatus = 'start'
+//   let result: { [key: string]: any } = {}
+//   recordSchema.validate(record, (err: any) => {
+//     result = err
+//     validateStatus = 'end'
+//   })
+//   let times = 1000
+//   while (validateStatus === 'start') {
+//     // console.log('sleep 5ms and validate status:', validateStatus)
+//     utils.sleep(5)
+//     times--
+//     if (times <= 0) {
+//       break
+//     }
+//   }
+//   // console.log('validate record:', toRaw(record), 'rowIndex:', rowIndex, 'and get result:', result, 'cloneColumns:', cloneColumns.value)
+//   setError(record, rowIndex, result)
+//   return result
+// }
 // 对应整个数据表，构建对应的检查错误信息表
-const tableErrors = ref<Array<object | null>>([])
-tableErrors.value.length = cloneColumns.value.length
-const setError = (record: object, rowIndex: number, err: { [key: string]: any },) => {
-  if (!err) {
-    tableErrors.value[rowIndex] = null
-    return
-  }
-  tableErrors.value[rowIndex] = tableErrors.value[rowIndex] = {}
-  cloneColumns.value.forEach((col: Column) => {
-    // console.log('tableErrors.value[rowIndex]:', tableErrors.value[rowIndex])
-    Object.keys(err).forEach((errKey: string) => {
-      if (col.dataIndex === errKey) {
-        // @ts-ignore
-        tableErrors.value[rowIndex][errKey] = toRaw(err[errKey])
-      }
-    })
-    // console.log('col.dataIndex', col.dataIndex, tableErrors.value[rowIndex])
-  })
-}
+// const tableErrors = ref<Array<object | null>>([])
+// tableErrors.value.length = cloneColumns.value.length
+// const setError = (record: object, rowIndex: number, err: { [key: string]: any },) => {
+//   if (!err) {
+//     tableErrors.value[rowIndex] = null
+//     return
+//   }
+//   tableErrors.value[rowIndex] = tableErrors.value[rowIndex] = {}
+//   cloneColumns.value.forEach((col: Column) => {
+//     // console.log('tableErrors.value[rowIndex]:', tableErrors.value[rowIndex])
+//     Object.keys(err).forEach((errKey: string) => {
+//       if (col.dataIndex === errKey) {
+//         // @ts-ignore
+//         tableErrors.value[rowIndex][errKey] = toRaw(err[errKey])
+//       }
+//     })
+//     // console.log('col.dataIndex', col.dataIndex, tableErrors.value[rowIndex])
+//   })
+// }
 
 /**
  *  表格在编辑模式下，添加行
  */
-const addRow = () => {
-  const newRow = {}
-  props.columns.forEach((col: Column) => {
-    //@ts-ignore
-    newRow[col.dataIndex] = col._editComponent?.value
-  })
-  renderData.value.push(newRow)
-}
+// const addRow = () => {
+//   const newRow = {}
+//   props.columns.forEach((col: Column) => {
+//     //@ts-ignore
+//     newRow[col.dataIndex] = col._component?.value
+//   })
+//   renderData.value.push(newRow)
+// }
 /**
  *  表格在编辑模式下，保存行
  */
-const saveRow = (record: object, rowIndex: number) => {
-  const result = validateRecord(record, rowIndex)
-  if (result && Object.keys(result).length > 0) {
-    // 有异常
-
-    return false
-  } else {
-    // 无异常
-
-    return true
-  }
-}
+// const saveRow = (record: object, rowIndex: number) => {
+//   const result = validateRecord(record, rowIndex)
+//   if (result && Object.keys(result).length > 0) {
+//     // 有异常
+//
+//     return false
+//   } else {
+//     // 无异常
+//
+//     return true
+//   }
+// }
 
 /**
  *  表格在编辑模式下，验证表格数据
  */
-const validateTable = () => {
-  const resultList: Array<any> = []
-  let error = false
-  renderData.value.forEach((record, rowIndex) => {
-    const result = validateRecord(record, rowIndex)
-    resultList.push({record, rowIndex, result})
-    if (result && Object.keys(result).length > 0) {
-      // 有异常
-      error = true
-    } else {
-      // 无异常
-    }
-  })
-  return {error, resultList}
-}
+// const validateTable = () => {
+//   const resultList: Array<any> = []
+//   let error = false
+//   renderData.value.forEach((record, rowIndex) => {
+//     const result = validateRecord(record, rowIndex)
+//     resultList.push({record, rowIndex, result})
+//     if (result && Object.keys(result).length > 0) {
+//       // 有异常
+//       error = true
+//     } else {
+//       // 无异常
+//     }
+//   })
+//   return {error, resultList}
+// }
 
-const updateRow = (record: object, rowIndex: number) => {
-  validateRecord(record, rowIndex)
-  emits('updateRow', {record, rowIndex})
-}
+// const updateRow = (record: object, rowIndex: number) => {
+//   validateRecord(record, rowIndex)
+//   emits('updateRow', {record, rowIndex})
+// }
 
 
-const deleteRecord = (record: object, rowIndex: number) => {
-  const records = renderData.value.splice(rowIndex, 1)
-  if (records && records.length > 0) {
-    const record: { [key: string]: any } = records[0]
-    // 如可该记录没有id，即表示新添加且未保存的，在点删除时，直接删除，不需要再记录到待删除组数中
-    if (record.id) {
-      deleteDataWhenEnableEdit.value.push({id: record.id, [logicDeleteFieldName]: 1})
-    }
-  }
-  // console.log('deleteDataWhenEnableEdit:', deleteDataWhenEnableEdit)
-}
+// const deleteRecord = (record: object, rowIndex: number) => {
+//   const records = renderData.value.splice(rowIndex, 1)
+//   if (records && records.length > 0) {
+//     const record: { [key: string]: any } = records[0]
+//     // 如可该记录没有id，即表示新添加且未保存的，在点删除时，直接删除，不需要再记录到待删除组数中
+//     if (record.id) {
+//       // deleteDataWhenEnableEdit.value.push({id: record.id, [logicDeleteFieldName]: 1})
+//     }
+//   }
+//   // console.log('deleteDataWhenEnableEdit:', deleteDataWhenEnableEdit)
+// }
 // console.log('props.columns:', props.columns)
 // console.log('cloneColumns', cloneColumns, 'columnActions:', props.columnActions)
 const getRenderData = () => {
   return renderData.value
-}
-const getDeleteData = () => {
-  return deleteDataWhenEnableEdit.value
 }
 const getRenderColumns = () => {
   return cloneColumns.value
@@ -535,56 +498,12 @@ defineExpose({
   search,
   popupVisibleChange,
   changeShowColumns,
-  validateTable,
-  validateRecord,
-  addRow,
   getRenderData,
-  getRenderColumns,
-  getDeleteData
+  getRenderColumns
 });
 </script>
 
 <template>
-<!--  <a-table class="gl-entity-table" v-if="enableEdit&&refreshFlag" row-key="id"-->
-<!--           :loading="loading"-->
-<!--           :pagination="pagination"-->
-<!--           :row-selection="rowSelection"-->
-<!--           :columns="cloneColumns"-->
-<!--           :data="renderData"-->
-<!--           :bordered="{ cell: true }"-->
-<!--           :hoverable="true"-->
-<!--           :stripe="true"-->
-<!--           :column-resizable="columnResizable"-->
-<!--           :size="size"-->
-<!--           :scroll="scroll"-->
-<!--           @page-change="onPageChange"-->
-<!--           @page-size-change="onPageSizeChange"-->
-<!--  >-->
-<!--    <template ##="{ record,rowIndex }">-->
-<!--      <a-space :size="0" class="gl-entity-table-cols-opt">-->
-<!--        <template v-if="enableEdit">-->
-<!--          &lt;!&ndash; 在编辑模式下，默认的操作：复制、删除 &ndash;&gt;-->
-<!--          &lt;!&ndash;          <a-button type="text" size="small" @click="saveRow(record,rowIndex)">保存</a-button>&ndash;&gt;-->
-<!--          &lt;!&ndash;          在这里popconfirm无效 TODO&ndash;&gt;-->
-<!--          <a-popconfirm content="确定是否删除?">-->
-<!--            <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)">删除</a-button>-->
-<!--          </a-popconfirm>-->
-<!--        </template>-->
-<!--        <template v-for="(columnAction,index) in columnActions" :key="index">-->
-<!--          <GlComponent v-if="columnAction" :glComponentInst="columnAction" :glCtx="{record:record,rowIndex:rowIndex}"-->
-<!--          ></GlComponent>-->
-<!--        </template>-->
-<!--      </a-space>-->
-<!--    </template>-->
-<!--    <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">-->
-<!--      <div class="gl-entity-table-cols-opt"-->
-<!--           :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">-->
-<!--        <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="updateRow(record,rowIndex)"-->
-<!--                     :glComponentInst="cloneDeep(column._editComponent)"></GlComponent>-->
-<!--        <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>-->
-<!--      </div>-->
-<!--    </template>-->
-<!--  </a-table>-->
   <a-table class="gl-entity-table" v-if="!enableEdit&&refreshFlag" row-key="id"
            :loading="loading"
            :pagination="pagination"
@@ -609,7 +528,13 @@ defineExpose({
     </template>
     <template v-for="slotColumn in slotColumns"
               v-slot:[slotColumn.slotName]="{ record, column, rowIndex }">
-      {{ evalExpression({record, column, rowIndex}) }}
+      <template v-if="column._component">
+        <GlComponent :glComponentInst="column._component" v-model="record[column.dataIndex]"
+                     :glCtx="{record,rowIndex}"></GlComponent>
+      </template>
+      <span v-else>
+        {{ evalExpression({record, column, rowIndex}) }}
+      </span>
     </template>
   </a-table>
 </template>

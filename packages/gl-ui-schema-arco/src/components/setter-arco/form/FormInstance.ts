@@ -1,8 +1,7 @@
 export default {
     "id": "GlEntityForm",
     "componentName": "GlEntityForm",
-    "title": "实体表单",
-    "props": {"title": "实体表单"},
+    "props": {"label": "实体表单"},
     "slots": {},
     "children": [
         {

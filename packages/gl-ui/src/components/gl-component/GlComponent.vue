@@ -192,11 +192,11 @@ const onMouseLeave = (...args: any[]) => {
 
 const mv = <any>ref(props.modelValue || props.glComponentInst.value)
 
-// watch(() => {
-//   return props.glComponentInst.value
-// }, () => {
-//   mv.value = props.glComponentInst.value
-// })
+watch(() => {
+  return props.glComponentInst.value
+}, () => {
+  mv.value = props.glComponentInst.value
+})
 
 // watch(() => {
 //   return props.modelValue

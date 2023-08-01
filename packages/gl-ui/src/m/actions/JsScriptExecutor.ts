@@ -223,7 +223,6 @@ export class JsScriptExecutor {
                 if (vueInst) {
                     return pageProxy.getComponentValue(componentId)
                 }
-                continue
             }
         }
         return undefined
@@ -232,23 +231,8 @@ export class JsScriptExecutor {
     private getFeedbackFns($gl: any) {
         let that = this
         return {
-            notification: {
-                info(options: OptionsType) {
-                    $gl.$notification.info(that.evalOptions(options, $gl?.ctx, ['title', 'content']))
-                },
-                success(options: OptionsType) {
-                    $gl.$notification.info(that.evalOptions(options, $gl?.ctx, ['title', 'content']))
-                },
-                warning(options: OptionsType) {
-                    $gl.$notification.info(that.evalOptions(options, $gl?.ctx, ['title', 'content']))
-                },
-                error(options: OptionsType) {
-                    $gl.$notification.info(that.evalOptions(options, $gl?.ctx, ['title', 'content']))
-                }
-            },
-            confirm(options: OptionsType): any {
-                return $gl.$modal.open(that.evalOptions(options, $gl?.ctx, ['title', 'content']))
-            }
+            notification: $gl.$notification,
+            confirm: $gl.$modal.open
         }
     }
 
@@ -256,7 +240,8 @@ export class JsScriptExecutor {
         let that = this
         return {
             log(options: OptionsType) {
-                console.log(that.evalOptions(options, $gl?.ctx, ['content']).content)
+                // console.log(that.evalOptions(options, $gl?.ctx, ['content']).content)
+                console.log(options)
             }
         }
     }
@@ -325,7 +310,7 @@ export class JsScriptExecutor {
                 if (!keyValues || !keys) return keys
                 // keys
                 let keyAry = []
-                console.log('typeof keys:', typeof keys, keys)
+                // console.log('typeof keys:', typeof keys, keys)
                 if (typeof keys === 'object' && keys.length >= 0) {
                     keyAry = keys
                 } else {
@@ -383,7 +368,6 @@ export class JsScriptExecutor {
                 if (vueInst) {
                     return pageProxy.setComponentValue(componentId, value)
                 }
-                continue
             }
         }
         return undefined

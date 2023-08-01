@@ -267,7 +267,7 @@ export default class PageProvideProxy {
      * @param value
      */
     setComponentValue(componentId: string, value: any) {
-        // console.log('setComponentValue', componentId, value, this.pageInst, this.componentMap)
+        console.log('setComponentValue', componentId, value, this.pageInst, this.componentMap)
         const vueInst = this.getVueInst(componentId)
         const proxy = vueInst?.proxy
         if (proxy) {

@@ -1,13 +1,14 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
+import type {PropsExpressions} from "../BlockHandler";
 
 
 export default class IfComponentValueBlockHandler implements IBlockHandler {
-    parseToScript(props: Props): ParseResult {
+    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
 
         return new ParseResult(
             `
-            ${props.mode === 'if' ? 'if' : 'else if'}($gl.fn.getComponentValue("${props.componentId}") ${props.relationship} ${props.compareValue}){
+            ${props.mode === 'if' ? 'if' : 'else if'}($gl.fn.getComponentValue("${props.componentId}") ${props.relationship} ${propsExpressions?.compareValue || props.compareValue}){
             `
             , "}").setBlockName('IfComponentValueBlock');
     }

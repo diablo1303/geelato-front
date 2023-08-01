@@ -1,4 +1,4 @@
-import {reactive, type App,type Plugin} from 'vue'
+import {reactive, type App, type Plugin} from 'vue'
 import emitter from "./m/mix/emitter";
 import PageProvideProxy from "./components/PageProvideProxy";
 import type {PageParamConfigType} from "./components/PageProvideProxy";
@@ -35,14 +35,15 @@ import {AppProvideKey} from "./components/AppProvideProxy";
 import FormProvideProxy from "./components/FormProvideProxy";
 import {FormProvideKey} from "./components/FormProvideProxy";
 import {Schema} from "b-validate";
-import type {PageType, Param} from "./m/types/global";
+import type {ApiPagedResult, ApiResult, ApiResultStatus, PageType, Param} from "./m/types/global";
 import {paramStringify} from "./components/PageProvideProxy";
+import * as fileApi from "./m/datasource/FileApi"
 import './assets/style.css'
 
 const Utils = AllUtils
 
-const component:Plugin = {
-    install: function (app: App):any {
+const component: Plugin = {
+    install: function (app: App): any {
         if (PluginUtil.markInstalledPlugin(app, 'gl-ui')) {
             return
         }
@@ -82,6 +83,9 @@ export {
     PageType,
     Schema,
     PageParamConfigType,
+    ApiResultStatus,
+    ApiResult,
+    ApiPagedResult,
     Param,
     GlIconfont,
     EntityApi,
@@ -106,6 +110,7 @@ export {
     PluginUtil,
     useGlobal,
     jsScriptExecutor,
+    fileApi
 }
 // 默认导出组件
 export default component

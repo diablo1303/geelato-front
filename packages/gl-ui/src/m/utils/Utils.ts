@@ -1,4 +1,5 @@
 import type {LooseObject} from "../mix/LooseObject";
+import {RecordsUtil} from "./RecordsUtil";
 
 export class Utils {
     constructor() {
@@ -469,6 +470,10 @@ export class Utils {
             }
         }
         return;
+    }
+
+    groupSum(data: { [key: string]: any }[], groupField: string, sumFields: string[]) {
+        return RecordsUtil.groupSum(data, groupField, sumFields)
     }
 
 }

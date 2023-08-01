@@ -171,7 +171,8 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
     for (let index in inst.children) {
       let subInst = inst.children[index]
       // console.log('setFieldItemValue() > checkValidDataEntry:', subInst.componentName, checkValidDataEntry(subInst.componentName), ' subInst:', subInst)
-      if (checkValidDataEntry(subInst.componentName) && subInst.props.bindField) {
+      // 只要做了数据绑定，不管是输入还是展示类的组件，都需进行值设置
+      if (subInst.props.bindField) {
         const foundFieldName = Object.keys(dataItem).find((key: string) => {
           return key === subInst.props.bindField.fieldName
         })
@@ -185,19 +186,22 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
             subInst.value = value
           }
 
-          let formItem = {
-            componentName: subInst.componentName,
-            label: subInst.props.label || '',
-            fieldName: subInst.props.bindField.fieldName,
-            value: subInst.value,
-            isFormSubTable: false
+          // 对于输入表单项，需要另外记录formItems、formData
+          if (checkValidDataEntry(subInst.componentName)) {
+            let formItem = {
+              componentName: subInst.componentName,
+              label: subInst.props.label || '',
+              fieldName: subInst.props.bindField.fieldName,
+              value: subInst.value,
+              isFormSubTable: false
+            }
+            formItems.value.push(formItem)
+            // @ts-ignore
+            formData.value[subInst.props.bindField.fieldName] = subInst.value
           }
-          formItems.value.push(formItem)
-          // @ts-ignore
-          formData.value[subInst.props.bindField.fieldName] = subInst.value
         }
       }
-      console.log('setFieldItemValue ', subInst.componentName, subInst.props.label, subInst.id, subInst.value)
+      // console.log('setFieldItemValue ', subInst.componentName, subInst.props.label, subInst.id, subInst.value)
 
       if (subInst.children && subInst.children.length > 0) {
         setFieldItemValue(subInst)
@@ -213,7 +217,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
     refreshFlag.value = true
   })
 
-  console.log('GlEntityForm > setFormItemValues() > formData:', formData.value, dataItem)
+  // console.log('GlEntityForm > setFormItemValues() > formData:', formData.value, dataItem)
   emits('onLoadedData', {data: formData.value})
 }
 
@@ -231,7 +235,7 @@ const loadForm = async () => {
         closable: true
       })
     }
-    pageProvideProxy.addPageMountedEvent(()=>{
+    pageProvideProxy.addPageMountedEvent(() => {
       // await utils.sleep(100)
       setFormItemValues(formData.value)
     })

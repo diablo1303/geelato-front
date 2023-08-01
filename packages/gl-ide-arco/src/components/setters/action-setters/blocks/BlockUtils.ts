@@ -22,7 +22,7 @@ export default class BlockUtils {
             if (paramValue !== undefined) {
                 // 尝试看是不是组件，如果是否组件，取组件label进行展示
                 const componentInst: ComponentInstance = jsScriptExecutor.getComponentInst(paramValue)
-                console.log('BlockUtils > try to find inst by paramKey:', paramKey, ' paramValue:', paramValue, ',and get', componentInst)
+                // console.log('BlockUtils > try to find inst by paramKey:', paramKey, ' paramValue:', paramValue, ',and get', componentInst)
                 if (componentInst) {
                     if (componentInst.componentName === 'GlEntityTablePlus') {
                         paramValue = componentInst.props.base.label || componentInst.id;

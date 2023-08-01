@@ -149,11 +149,9 @@ export default {
             "options": [{
                 "label": "确认操作时触发，如可做表单保存工作",
                 "value": "onBeforeOk",
-                "__YJe434P13sWjPAcCS1": "onBeforeOk"
             }, {
                 "label": "页面关闭后（动画结束）触发",
                 "value": "onClose",
-                "__YJe434P13sWjPAcCS1": "onClose"
             }, {"label": "页面打开后（动画结束）触发", "value": "onOpen", "__YJe434P13sWjPAcCS1": "onOpen"}],
             "multiple": true,
             "allowClear": false
@@ -161,6 +159,5 @@ export default {
         "setterComponentVModelName": "modelValue",
         "title": "调用指令",
         "setterComponentName": "ASelect"
-    }],
-    "actions": []
+    }]
 }

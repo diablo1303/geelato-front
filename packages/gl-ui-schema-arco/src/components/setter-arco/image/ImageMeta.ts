@@ -1,11 +1,124 @@
 export default {
-    "componentName": "AImage",
+    "componentName": "GlImage",
     "displayMode": "Tile",
-    "iconType":"gl-image",
+    "iconType": "gl-image",
     "group": "dataDisplay",
     "title": "图片",
     "alias": "image",
     "useBy": ["freePage"],
-    "properties": [],
-    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}]
+    "properties": [{
+        "name": "srcType",
+        "setterComponentProps": {
+            "type": "button",
+            "options": [{"label": "ID", "value": "ID"}, {"label": "URL", "value": "URL"}, {
+                "label": "Base64",
+                "value": "Base64"
+            }]
+        },
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "title": "来源类型",
+        "setterComponentName": "ARadioGroup"
+    }, {
+        "name": "bindField",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "绑定字段",
+        "setterComponentName": "GlEntityFieldSelect",
+        "enableValueExpress": false
+    }, {
+        "name": "srcValue",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "title": "来源值",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "width",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "description": "图片显示宽度",
+        "title": "宽度",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "height",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "description": "图片显示高度",
+        "title": "高度",
+        "setterComponentName": "AInputNumber"
+    }, {
+        "name": "description",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "description": "描述，将显示在底部，如果 alt 没有值，则会将其设置给 alt",
+        "title": "底部描述",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "fit",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {
+            "options": [{
+                "label": "contain",
+                "value": "contain",
+                "__PhBGtPj8ilsC5Yo53S": "contain"
+            }, {"label": "cover", "value": "cover", "__PhBGtPj8ilsC5Yo53S": "cover"}, {
+                "label": "fill",
+                "value": "fill",
+                "__PhBGtPj8ilsC5Yo53S": "fill"
+            }, {"label": "none", "value": "none", "__PhBGtPj8ilsC5Yo53S": "none"}, {
+                "label": "scale-down",
+                "value": "scale-down",
+                "__PhBGtPj8ilsC5Yo53S": "scale-down"
+            }]
+        },
+        "setterComponentVModelName": "modelValue",
+        "description": "确定图片如何适应容器框",
+        "setterComponentName": "ASelect",
+        "title": "适应容器"
+    }, {
+        "name": "alt",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "description": "图片的文字描述",
+        "title": "alt描述",
+        "setterComponentName": "AInput"
+    }],
+    "actions": []
 }

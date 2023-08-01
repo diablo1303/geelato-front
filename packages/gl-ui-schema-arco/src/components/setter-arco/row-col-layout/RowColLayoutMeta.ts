@@ -19,17 +19,6 @@ export default {
         "enableValueExpress": true,
         "description": "此布局组件的标题不会出现在最终用户页面上，用于设计时展示，如动作编排时展示。"
     }, {
-        "name": "spans",
-        "setterComponentProps": {"min": 1, "max": 24},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "项",
-        "setterComponentName": "GlArrayNumberSetter",
-        "enableValueExpress": false
-    }, {
         "name": "showLabel",
         "group": "base",
         "type": "props",
@@ -41,6 +30,17 @@ export default {
         "description": "作为表单字段，显示label的内容",
         "title": "显示标题",
         "setterComponentName": "ASwitch"
+    }, {
+        "name": "spans",
+        "setterComponentProps": {"min": 1, "max": 24},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "项",
+        "setterComponentName": "GlArrayNumberSetter",
+        "enableValueExpress": false
     }],
     "displayOnStage": "block"
 }

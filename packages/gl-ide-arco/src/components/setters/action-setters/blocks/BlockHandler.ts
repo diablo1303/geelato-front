@@ -13,6 +13,8 @@ import TriggerComponentActionBlockHandler from "./logic/TriggerComponentActionBl
 import LogBlockHandler from "./other/LogBlockHandler";
 import SetValueBlockHandler from "./page/SetValueBlockHandler";
 import ReturnBlockHandler from "./other/ReturnBlockHandler";
+import SetVarBlockHandler from "./var/SetVarBlockHandler";
+import GroupSumBlockHandler from "./data/GroupSumBlockHandler";
 
 export default interface IBlockHandler {
     /**
@@ -45,7 +47,9 @@ export class BlocksHandler {
             GlTriggerComponentActionBlock: new TriggerComponentActionBlockHandler(),
             GlLogBlock: new LogBlockHandler(),
             GlSetValueBlock: new SetValueBlockHandler(),
-            GlReturnBlock: new ReturnBlockHandler()
+            GlReturnBlock: new ReturnBlockHandler(),
+            GlSetVarBlock: new SetVarBlockHandler(),
+            GlGroupSumBlock:new GroupSumBlockHandler()
         }
     }
 

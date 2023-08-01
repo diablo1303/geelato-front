@@ -46,6 +46,8 @@ export class EntityApi {
 
     VITE_API_BASE_URL: string = ''
 
+    options?: AxiosRequestConfig
+
     constructor(url?: UrlConfig, options?: AxiosRequestConfig) {
         if (url) {
             this.url = url;
@@ -66,6 +68,15 @@ export class EntityApi {
         // if (options && typeof options.interceptors === 'function') {
         //     options.interceptors(service)
         // }
+    }
+
+    getAuthorization() {
+        const token = getToken();
+        if (token) {
+            return `Bearer ${token}`;
+        } else {
+            return undefined
+        }
     }
 
     reCreate(options?: AxiosRequestConfig) {
@@ -90,13 +101,14 @@ export class EntityApi {
                 // this example using the JWT token
                 // Authorization is a custom headers key
                 // please modify it according to the actual situation
-                const token = getToken();
-                if (token) {
-                    if (!config.headers) {
-                        config.headers = {};
-                    }
-                    config.headers.Authorization = `Bearer ${token}`;
-                }
+                // const token = getToken();
+                // if (token) {
+                //     if (!config.headers) {
+                //         config.headers = {};
+                //     }
+                //     config.headers.Authorization = `Bearer ${token}`;
+                // }
+                config.headers.Authorization = this.getAuthorization()
                 return config;
             },
             (error) => {
@@ -106,6 +118,7 @@ export class EntityApi {
         );
 
         // console.log('EntityApi > reCreate() > service options:', opts)
+        this.options = opts
         return this.service
     }
 
@@ -253,6 +266,9 @@ export class EntityApi {
     /**
      * @param entityName 实体名称
      * @param keyValues Object类型
+     * @param biz
+     * @param successMsg
+     * @param errorMsg
      * @returns {*}
      */
     save(
@@ -309,14 +325,6 @@ export class EntityApi {
             method: "POST",
             data: {}
         })
-    }
-
-    /**
-     * 逻辑删除（基于多个id）
-     * @param ids id1,id2,id3
-     */
-    deleteByIds(entityName: string, ids: string, biz?: string) {
-
     }
 
     /**
@@ -443,7 +451,7 @@ export class EntityApi {
         // 如增加静态的列，列值格式化、列值组合;重命名列(在原有列的基础上增加重命名的列)等
         const dataItems = res.data as Array<any>;
         dataItems.forEach((dataItem) => {
-            toStatMappingItems.forEach((mappingItem, index) => {
+            toStatMappingItems.forEach((mappingItem) => {
                 if (mappingItem.isRename) {
                     dataItem[mappingItem.key] = dataItem[mappingItem.value];
                 } else {
@@ -512,21 +520,30 @@ export class EntityApi {
         });
     }
 
-    /**
-     *
-     * @param path e.g. url:/api/cache/，path:/cache/
-     * @returns {*}
-     */
-    // queryList(path: string, data: object) {
-    //   return this.service({
-    //     url: this.url.api + path,
-    //     method: "POST",
-    //     data,
-    //   });
-    // }
-
     getService() {
         return this.service;
+    }
+
+    // /**
+    //  * 获取文件上传地址
+    //  * @param isRename
+    //  */
+    // getUploadUrl(isRename?: boolean) {
+    //     return `${this.options?.baseURL}/api/upload/file?isRename=${!!isRename}`;
+    // }
+    //
+    // /**
+    //  * 获文件下载地址
+    //  * @param id
+    //  */
+    // getDownloadUrlById(id: string) {
+    //     return id ? `${this.options?.baseURL}/resources/file?rstk=download&id=${id}` : '';
+    // }
+
+    getHeader() {
+        return {
+            Authorization: this.getAuthorization()
+        }
     }
 }
 

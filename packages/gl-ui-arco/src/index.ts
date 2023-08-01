@@ -26,6 +26,8 @@ import GlText from "./components/gl-text/GlText.vue";
 import {Drawer, Modal} from "@arco-design/web-vue";
 import GlAlert from "./components/gl-alert/GlAlert.vue";
 import GlMultiComponents from "./components/gl-multi-components/GlMultiComponents.vue";
+import GlUpload from "./components/gl-upload/GlUpload.vue";
+import GlImage from "./components/gl-image/GlImage.vue";
 
 const i18nMessage = {en, cn};
 
@@ -58,6 +60,8 @@ const component: Plugin = {
         app.component(GlInstRuntime.name, GlInstRuntime)
         app.component(GlInstsRuntime.name, GlInstsRuntime)
         app.component(GlMultiComponents.name, GlMultiComponents)
+        app.component(GlUpload.name, GlUpload)
+        app.component(GlImage.name, GlImage)
 
         app.component('GlModal', Modal)
         app.component('GlDrawer', Drawer)

@@ -1,10 +1,12 @@
 <template>
-  <div
-      :style="{height: height+'px'}"
-      ref="codeEditBox"
-      class="codeEditBox"
-      :class="heightChange&&'codeEditBox1'"
-  />
+  <div :style="{height: height+'px'}">
+    <div
+        style="height: 100%"
+        ref="codeEditBox"
+        class="codeEditBox"
+        :class="heightChange&&'codeEditBox1'"
+    />
+  </div>
 </template>
 <script lang="ts">
 import {defineComponent} from "vue";
@@ -18,6 +20,7 @@ export default defineComponent({
 import {onBeforeUnmount, onMounted, ref, watch, defineExpose} from 'vue'
 import prettier from 'prettier/standalone';
 import parserBabel from 'prettier/parser-babel';
+import parserTypescript from 'prettier/parser-typescript';
 
 import * as monaco from 'monaco-editor'
 // @ts-ignore
@@ -51,6 +54,7 @@ self.MonacoEnvironment = {
       case 'razor':
         return new HtmlWorker();
       case 'typescript':
+        return new TypescriptWorker();
       case 'javascript':
         return new TypescriptWorker();
       default:
@@ -64,43 +68,21 @@ const props = defineProps({
 })
 const emits = defineEmits(['update:modelValue', 'change', 'editor-mounted'])
 
-
-// eslint-disable-next-line no-restricted-globals
-// self.MonacoEnvironment = {
-//   getWorker: (workerId: string, label: string) => {
-//     // eslint-disable-next-line no-shadow,no-restricted-globals
-//     const getWorkerModule = (moduleUrl: string, label: string) => new Worker((self as any).MonacoEnvironment.getWorkerUrl(moduleUrl), {
-//       name: label,
-//       type: 'module',
-//     });
-//     switch (label) {
-//       case 'json':
-//         return getWorkerModule('/monaco-editor/esm/vs/language/json/json.worker.js?worker', label);
-//       case 'css':
-//       case 'scss':
-//       case 'less':
-//         return getWorkerModule('/monaco-editor/esm/vs/language/css/css.worker.js?worker', label);
-//       case 'html':
-//       case 'handlebars':
-//       case 'razor':
-//         return getWorkerModule('/monaco-editor/esm/vs/language/html/html.worker.js?worker', label);
-//       case 'typescript':
-//       case 'javascript':
-//         return getWorkerModule('/monaco-editor/esm/vs/language/typescript/ts.worker.js?worker', label);
-//       default:
-//         return getWorkerModule('/monaco-editor/esm/vs/editor/editor.worker.js?worker', label);
-//     }
-//   },
-// }
 let editor: any
 const codeEditBox = ref()
 
 const formatCode = (value: string, language: string) => {
-  return prettier.format(value, {
-    parser: language,
-    plugins: [parserBabel],
-    tabWidth: 2,
-  })
+  try {
+    return prettier.format(value, {
+      parser: language,
+      plugins: [parserBabel, parserTypescript],
+      tabWidth: 2,
+    })
+  } catch (e: any) {
+    console.warn(`格式化${language}出错。`, e?.message)
+    return value
+  }
+
 }
 
 const init = () => {
@@ -169,7 +151,7 @@ const init = () => {
   })
 
   editor = monaco.editor.create(codeEditBox.value, {
-    value: props.modelValue,
+    value: formatCode(props.modelValue, props.language),
     language: props.language,
     readOnly: props.readOnly,
     theme: props.theme,

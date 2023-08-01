@@ -1,5 +1,6 @@
 import type Action from "./actions/Action";
 import type BindField from "./model/BindField";
+import BlockInstance from "./actions/BlockInstance";
 
 export class ComponentInstanceProps {
     // 标题，如用于formItem的标题
@@ -71,4 +72,7 @@ export default class ComponentInstance {
 
     // 拖动标识，通过监控该标识的变化，可以判断整个页面是否有变化
     __dragFlag? = ''
+
+    // 脚本块
+    __commandBlock?: BlockInstance
 }

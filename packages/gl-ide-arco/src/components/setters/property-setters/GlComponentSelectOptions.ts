@@ -1,6 +1,5 @@
 export default [
     {componentName: 'AButton', title: '按钮'},
-    {componentName: 'GlText', title: '文本'},
     {componentName: 'AInput', title: '单行输入'},
     {componentName: 'ATextarea', title: '多行输入'},
     {componentName: 'AInputNumber', title: '数字输入'},
@@ -11,5 +10,7 @@ export default [
     {componentName: 'ADatePicker', title: '日期选择器'},
     {componentName: 'ATimePicker', title: '时间选择器'},
     {componentName: 'GlUserSelect', title: '人员选择器'},
-    {componentName: 'AUpload', title: '上传'}
+    {componentName: 'AUpload', title: '文件上传'},
+    {componentName: 'GlText', title: '文本展示'},
+    {componentName: 'GlImage', title: '图片展示'},
 ]

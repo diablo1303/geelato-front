@@ -24,7 +24,7 @@ import {
   FieldMeta,
   EntityReader,
   EntityReaderParam,
-  CheckUtil, utils, useGlobal, FormProvideProxy, FormProvideKey, jsScriptExecutor, PageProvideProxy, PageProvideKey
+  utils, useGlobal, FormProvideProxy, FormProvideKey, jsScriptExecutor, PageProvideProxy, PageProvideKey
 } from "@geelato/gl-ui";
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import type {Column, TableColumnDataPlus} from "./table";
@@ -130,13 +130,13 @@ const formProvideProxy: FormProvideProxy | undefined = inject(FormProvideKey)
 const pageProvideProxy: PageProvideProxy | undefined = inject(PageProvideKey)
 let recordSchema = new Schema({})
 
-const editSlotNameFlag = '__editSlot'
+const slotNameFlag = '__slot'
 
 const setSlotNames = () => {
   // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确认列有slotName
   props.columns.forEach((col: Column) => {
     if (col._renderScript) {
-      col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
+      col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
     } else {
       delete col.slotName
     }
@@ -145,12 +145,12 @@ const setSlotNames = () => {
   // 对于编辑状态
   // 如果启用编辑，需将column中没有设置插槽的，生成插槽
   props.columns.forEach((col: Column) => {
-    if (col._editComponent) {
-      col.slotName = col.slotName || utils.gid(editSlotNameFlag, 20)
-      col.dataIndex = col.dataIndex || col._editComponent.props.bindField?.fieldName
+    if (col._component) {
+      col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
+      col.dataIndex = col.dataIndex || col._component.props.bindField?.fieldName
       // 验证信息
-      if (col._editComponent.props.rules) {
-        recordSchema.schema[col.dataIndex!] = toRaw(col._editComponent.props.rules)
+      if (col._component.props.rules) {
+        recordSchema.schema[col.dataIndex!] = toRaw(col._component.props.rules)
       }
     } else {
       col.slotName = undefined
@@ -362,7 +362,7 @@ watch(() => columns.value,
 
       val.forEach((col) => {
         // @ts-ignore
-        col.title = col._editComponent?.props.label
+        col.title = col._component?.props.label
       })
       // @ts-ignore
       cloneColumns.value = cloneDeep(val);
@@ -455,7 +455,7 @@ const addRow = () => {
   const newRow = {}
   props.columns.forEach((col: Column) => {
     //@ts-ignore
-    newRow[col.dataIndex] = col._editComponent?.value
+    newRow[col.dataIndex] = col._component?.value
   })
   renderData.value.push(newRow)
 }
@@ -565,7 +565,7 @@ defineExpose({
       <div class="gl-entity-table-cols-opt"
            :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">
         <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="updateRow(record,rowIndex)"
-                     :glComponentInst="cloneDeep(column._editComponent)"></GlComponent>
+                     :glComponentInst="cloneDeep(column._component)"></GlComponent>
         <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>
       </div>
     </template>

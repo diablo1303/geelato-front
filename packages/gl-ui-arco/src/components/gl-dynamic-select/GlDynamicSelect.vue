@@ -6,8 +6,11 @@
             :size="size"
             :disabled="disabled"
             :placeholder="placeholder"
+            @change="selectOne"
+            :valueKey="valueFiledName"
   >
-    <a-option v-for="item in selectOptions" :value="item[valueFiledName]">{{ item[labelFieldName] }}</a-option>
+    <a-option v-for="item in selectOptions" :value="item" :label="item[labelFieldName]"
+              :title="item[labelFieldName]"></a-option>
   </a-select>
 </template>
 <script lang="ts">
@@ -19,8 +22,10 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {type PropType, ref, watch} from 'vue'
-import {entityApi} from "@geelato/gl-ui";
+import {inject, type PropType, ref, watch} from 'vue'
+import {entityApi, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
+
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const props = defineProps({
   modelValue: {
@@ -47,6 +52,15 @@ const props = defineProps({
     type: String,
     default() {
       return ''
+    }
+  },
+  /**
+   *  额外查询出来的字段fieldName，并将结果设置到id中
+   */
+  extraFieldAndBindIds: {
+    type: Array as PropType<Array<{ fieldName: string, bindId: string }>>,
+    default() {
+      return []
     }
   },
   /**
@@ -88,17 +102,36 @@ const loadData = () => {
   if (props.entityName && props.valueFiledName && props.labelFieldName) {
     const params = props.orderFiledName ? {'@order': props.orderFiledName + '|' + props.ascOrDesc} : {}
     Object.assign(params, {'delStatus|eq': '0'})
-    // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName,'params:', params)
-    entityApi.query(props.entityName, `${props.valueFiledName},${props.labelFieldName}`, params).then((resp: any) => {
+    console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'params:', params, 'extraFieldAndBindIds:', props.extraFieldAndBindIds)
+    let fields = props.valueFiledName === props.labelFieldName ? `${props.valueFiledName}` : `${props.valueFiledName},${props.labelFieldName}`
+    if (props.extraFieldAndBindIds?.length > 0) {
+      const extraFieldNames: string[] = []
+      props.extraFieldAndBindIds.forEach((item) => {
+        extraFieldNames.push(item.fieldName)
+      })
+      fields = fields + ',' + extraFieldNames.join(',')
+    }
+    entityApi.query(props.entityName, fields, params).then((resp: any) => {
       selectOptions.value = resp.data?.data || []
     })
   }
 }
 watch(() => {
-  return props.entityName + props.valueFiledName + props.labelFieldName
+  return props.entityName + props.valueFiledName + props.labelFieldName + props.extraFieldAndBindIds
 }, () => {
   loadData()
-}, {immediate: true})
+}, {immediate: true, deep: true})
+
+const selectOne = (value: any) => {
+  // 将值设置到对应的组件中
+  console.log('selectOne', value)
+  if (value && props.extraFieldAndBindIds.length > 0) {
+    props.extraFieldAndBindIds.forEach((extraFieldAndBindId) => {
+      pageProvideProxy.setComponentValue(extraFieldAndBindId.bindId, value[extraFieldAndBindId.fieldName])
+    })
+  }
+}
+
 </script>
 
 <style scoped>

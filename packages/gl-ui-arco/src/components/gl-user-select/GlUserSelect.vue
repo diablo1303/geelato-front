@@ -131,6 +131,9 @@ const init = () => {
         pageProvideProxy.setComponentValue(props.nameFieldBindComponentId, selectedNames.value)
       })
     })
+  } else {
+    selectingItems.value.length = 0
+    selectedNames.value = ''
   }
 }
 
@@ -189,7 +192,8 @@ watch(() => {
 
 <template>
   <div>
-    <a-input :style="{width:'100%'}" allow-clear v-model="selectedNames" @clear="clearMultipleSelected(selectingItems)" readonly>
+    <a-input :style="{width:'100%'}" allow-clear v-model="selectedNames" @clear="clearMultipleSelected(selectingItems)"
+             readonly>
       <template #prefix>
         <a-button type="primary" @click="onOpenModal" style="margin-left: -12px" title="选择人员">
           <GlIconfont type="gl-user"></GlIconfont>
@@ -220,7 +224,7 @@ watch(() => {
           <div style="flex: 1;padding: 0 0.5em">
             <div style="line-height: 2.4em">
               <span>已选择({{ selectingItems.length }})</span>
-<!--              <a-button type="text" style="float: right">清空</a-button>-->
+              <!--              <a-button type="text" style="float: right">清空</a-button>-->
             </div>
             <div style="margin-top: 4px">
               <span v-for="item in selectingItems">

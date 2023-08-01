@@ -15,7 +15,7 @@ import {
   useComponentInstTreeData
 } from "./varsMeta";
 import {utils} from "@geelato/gl-ui";
-import {useEnumTreeData} from "./enumMeta";
+import {useConstTreeData, useDictTreeData} from "./enumMeta";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -48,7 +48,8 @@ const inputMv = ref(props.modelValue)
 const _systemVarsTreeData = ref<any[]>([])
 const _functionalFormulaTreeData = ref<any[]>([])
 const _componentInstTreeData = ref<any[]>([])
-const _enumTreeData = ref<any[]>([])
+const _constTreeData = ref<any[]>([])
+const _dictTreeData = ref<any[]>([])
 
 const valueExpressModalVisible = ref(false)
 /**
@@ -59,7 +60,8 @@ const openValueExpressModal = async () => {
   _systemVarsTreeData.value = setKeys(useSystemVarsTreeData())
   _functionalFormulaTreeData.value = setKeys(functionalFormulaTreeData)
   _componentInstTreeData.value = setKeys(useComponentInstTreeData())
-  _enumTreeData.value = setKeys(await useEnumTreeData())
+  _constTreeData.value = setKeys(await useConstTreeData())
+  _dictTreeData.value = setKeys(await useDictTreeData())
 }
 const clearValueExpress = () => {
   // const propertySetterMeta = currentOpenModalPropertySetterMeta
@@ -138,7 +140,6 @@ const getKeyPath = (tree: any, key: string): string => {
 }
 
 
-
 const selectNode = (selectedKeys: any, data: any, treeData: any) => {
   const path = getKeyPath(treeData, data.node.key)
   monacoEditor.value.replaceSelectOrInsert(path)
@@ -155,6 +156,22 @@ const selectConstNode = async (selectedKeys: any, data: any, treeData: any) => {
   }
 }
 
+const expendDictItems = ref({})
+const dictItemsDisplay = ref(false)
+const expendDict = async (code: any) => {
+  if (code && typeof code === 'function') {
+    expendDictItems.value = JSON.parse(await code())
+  }
+  dictItemsDisplay.value = true
+}
+const closeDict = () => {
+  dictItemsDisplay.value = false
+}
+
+const selectDictItem = (key: any) => {
+  monacoEditor.value.replaceSelectOrInsert(`"${key}"`)
+  dictItemsDisplay.value = false
+}
 
 </script>
 
@@ -177,7 +194,7 @@ const selectConstNode = async (selectedKeys: any, data: any, treeData: any) => {
           <!--      <a-textarea v-model="mv" placeholder="在此输入..."></a-textarea>-->
           <div>
             <GlMonacoEditor ref="monacoEditor" v-model="mv" :height="245"
-                            language="javascript" style="max-height:245px"></GlMonacoEditor>
+                            language="typescript" style="max-height:245px"></GlMonacoEditor>
           </div>
           <!--          <a-button style="float: right" type="outline" size="mini" status="danger"-->
           <!--                    @click="clearValueExpress">清除绑定-->
@@ -213,26 +230,72 @@ const selectConstNode = async (selectedKeys: any, data: any, treeData: any) => {
             <!--            <a-collapse-item header="自定义变量" key="2">-->
             <!--              Coming Soon...-->
             <!--            </a-collapse-item>-->
-            <a-collapse-item header="枚举值" key="3">
+            <a-collapse-item header="系统常量" key="3">
               <a-tree ref="enumVarsTree" :default-expanded-keys="[]" size="small" blockNode
-                      :data="_enumTreeData"
-                      @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_enumTreeData)">
+                      :data="_constTreeData"
+                      @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_constTreeData)">
                 <template #title="{_code,title,_value,_description}">
-                  <a-tooltip background-color="#165DFF">
+                  <a-tooltip v-if="_description" background-color="#165DFF">
                     <template #content>
                       {{ _description }}
                     </template>
                     <span>
-                    <span class="gl-title" style="color:#1d2129;margin-left: 0!important;">{{ title }}</span>
+                    <span class="gl-title" style="color:#1d2129;margin-left: 0!important;"
+                          @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_constTreeData)">{{
+                        title
+                      }}</span>
                   </span>
                   </a-tooltip>
+                  <span v-else class="gl-title" style="color:#1d2129;margin-left: 0!important;">{{ title }}
+                  </span>
                 </template>
                 <template #extra="{_type}">
                   <span class="gl-extra">{{ _type }}</span>
                 </template>
               </a-tree>
             </a-collapse-item>
-            <a-collapse-item header="组件实例变量" key="4">
+            <a-collapse-item header="数据字典" key="4">
+              <a-tree ref="enumVarsTree" :default-expanded-keys="[]" size="small" blockNode
+                      :data="_dictTreeData"
+                      @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_dictTreeData)"
+              >
+                <template #title="{_code,title,_value,_description}">
+                  <a-tooltip v-if="_description" background-color="#165DFF">
+                    <template #content>
+                      {{ _description }}
+                    </template>
+                    <span>
+                    <span class="gl-title" style="color:#1d2129;margin-left: 0!important;"
+                    >{{
+                        title
+                      }}</span>
+                  </span>
+                  </a-tooltip>
+                  <span v-else class="gl-title" style="color:#1d2129;margin-left: 0!important;">
+                    <span>{{
+                        title
+                      }}</span>
+                  </span>
+                </template>
+                <template #extra="{_code,_type}">
+                  <a-button v-if="['系统常量'].indexOf(title)===-1" size="mini" type="text" shape="round"
+                            @click="expendDict(_code)">选择字典值
+                  </a-button>
+                  <span class="gl-extra">{{ _type }}</span>
+                  <a-modal>
+
+                  </a-modal>
+                  <a-modal v-model:visible="dictItemsDisplay" title="选择字典值" :footer="false" mask-style="opacity:0.05" @ok="handleOk" @cancel="closeDict">
+                    <a-space wrap>
+                      <a-tag v-for="key of Object.keys(expendDictItems)" style="cursor: pointer" clore="blue" @click="selectDictItem(key)">
+                        {{ expendDictItems[key] }}
+                      </a-tag>
+                    </a-space>
+                  </a-modal>
+                </template>
+              </a-tree>
+            </a-collapse-item>
+            <a-collapse-item header="组件实例变量" key="5">
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_componentInstTreeData"
                       @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_componentInstTreeData)">
@@ -252,7 +315,7 @@ const selectConstNode = async (selectedKeys: any, data: any, treeData: any) => {
                 </template>
               </a-tree>
             </a-collapse-item>
-            <a-collapse-item header="函数公式" key="5">
+            <a-collapse-item header="函数公式" key="6">
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_functionalFormulaTreeData"
                       @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_functionalFormulaTreeData)">

@@ -26,7 +26,7 @@ export default {
             "dataIndex": "name",
             "fixed": "right",
             "sortable": {"sortDirections": ["ascend", "descend"]},
-            "_editComponent": {
+            "_component": {
                 "id": "",
                 "title": "",
                 "componentName": "AInput",

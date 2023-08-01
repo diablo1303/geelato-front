@@ -23,7 +23,9 @@
               生成配置JSON
             </template>
             <div style="padding: 2px 4px ">
-              <VueJsonPretty :data="mv"></VueJsonPretty>
+              <GlMonacoEditor v-if="mvStr" ref="jsonMonacoEditor" v-model="mvStr" :height="editorHeight"
+                              readOnly="true"
+                              language="json"></GlMonacoEditor>
             </div>
           </a-tab-pane>
           <a-tab-pane key="3">
@@ -32,7 +34,8 @@
               生成脚本JS
             </template>
             <div style="padding: 2px 4px ">
-              {{ mv.body }}
+              <GlMonacoEditor v-if="mvBodyStr" ref="jsMonacoEditor" v-model="mvBodyStr" language="typescript"
+                              :height="editorHeight" readOnly="true"></GlMonacoEditor>
             </div>
           </a-tab-pane>
         </a-tabs>
@@ -72,15 +75,13 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import GlCommandEditorSidebar from './GlCommandEditorSidebar.vue'
-import {onMounted, onUpdated, type PropType, ref, toRaw, watch} from "vue";
-import "./blocks/style.css"
-import {Action, ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
-import {blocksHandler} from "./blocks/BlockHandler";
+import {onMounted, type PropType, ref, watch} from "vue";
+import {Action, ComponentInstance} from "@geelato/gl-ui-schema";
 import {componentStoreFactory, useThemeStore} from "@geelato/gl-ide";
+import GlCommandEditorSidebar from './GlCommandEditorSidebar.vue'
+import {blocksHandler} from "./blocks/BlockHandler";
 import BlockPage from "../../../components/stage/BlockPage.vue";
-import VueJsonPretty from "vue-json-pretty";
-// import {editor} from "monaco-editor"
+import "./blocks/style.css"
 
 const props = defineProps({
   componentStoreId: {
@@ -100,6 +101,7 @@ const props = defineProps({
 const themeStore = useThemeStore()
 
 const mainHeight = themeStore.modalBodyHeight + 'px'
+const editorHeight = themeStore.modalBodyHeight - 76
 const sidebarStyle = ref({
   height: mainHeight,
   'min-height': mainHeight,
@@ -122,7 +124,11 @@ const emits = defineEmits(["update:action", 'updateAction'])
 
 const mv = ref(props.action)
 
-
+const mvStr = ref(JSON.stringify(mv.value))
+const mvBodyStr = ref('')
+watch(mv, () => {
+  mvStr.value = JSON.stringify(mv.value?.body)
+})
 onMounted(() => {
   reset()
 })
@@ -145,6 +151,7 @@ const updateInstance = (instance: ComponentInstance) => {
 
 const generateScript = () => {
   mv.value.body = blocksHandler.parseToScript(componentStore.currentComponentTree[0])
+  mvBodyStr.value = mv.value.body
 }
 
 

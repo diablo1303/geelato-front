@@ -158,7 +158,7 @@ const updateColumns = (showColumnsValue: any) => {
   showColumns.value = showColumnsValue;
 };
 const onUpdateRow = (data: { record: object, rowIndex: number }) => {
-  console.log('GlEntityTablePlus > onUpdateRow() > data:', data)
+  // console.log('GlEntityTablePlus > onUpdateRow() > data:', data)
   emits('changeRecord', data)
 }
 

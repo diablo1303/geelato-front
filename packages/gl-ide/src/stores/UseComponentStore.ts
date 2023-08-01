@@ -27,7 +27,9 @@ const convertId = (id: string) => {
 }
 
 const genIdMap = (inst: ComponentInstance, idMap: { [key: string]: string }) => {
-    idMap[inst.id] = convertId(inst.id)
+    if (inst.id) {
+        idMap[inst.id] = convertId(inst.id)
+    }
     const otherIds = [inst.props.query?.id,]
     otherIds.forEach((otherId) => {
         if (otherId) {
@@ -35,7 +37,34 @@ const genIdMap = (inst: ComponentInstance, idMap: { [key: string]: string }) => 
         }
     })
 
+    // 对于actions
+    if (inst.actions && inst.actions.length > 0) {
+        inst.actions.forEach((actionInst) => {
+            if (actionInst.id) {
+                idMap[actionInst.id] = convertId(actionInst.id)
+            }
+            // 对于命令块组件实例
+            if (actionInst.__commandBlock) {
+                if (actionInst.__commandBlock.id) {
+                    idMap[actionInst.__commandBlock.id] = convertId(actionInst.__commandBlock.id)
+                }
+                if (actionInst.__commandBlock.children && actionInst.__commandBlock.children.length > 0) {
+                    actionInst.__commandBlock.children.forEach((subInst) => {
+                        genIdMap(subInst, idMap)
+                    })
+                }
+            }
+        })
+    }
 
+    // 对于命令块组件实例
+    if (inst.__commandBlock && inst.__commandBlock.children && inst.__commandBlock.children.length > 0) {
+        inst.__commandBlock.children.forEach((subInst) => {
+            genIdMap(subInst, idMap)
+        })
+    }
+
+    // 对于页面UI组件实例
     if (inst.children && inst.children.length > 0) {
         inst.children.forEach((subInst) => {
             genIdMap(subInst, idMap)
@@ -64,15 +93,20 @@ export const copyComponentInsts = (insts: Array<ComponentInstance>) => {
     })
 
     // 基于字符串替换所有的id，实现组件id及脚本引用组件id的转换
-    const newInsts: Array<ComponentInstance> = []
-    insts.forEach((inst) => {
-        let instStr = JSON.stringify(inst)
-        Object.keys(idMap).forEach((id) => {
-            instStr = instStr.replace(new RegExp(id, 'g'), idMap[id])
-            newInsts.push(JSON.parse(instStr))
-        })
+    // const newInsts: Array<ComponentInstance> = []
+    // insts.forEach((inst) => {
+    //     let instStr = JSON.stringify(inst)
+    //     Object.keys(idMap).forEach((id) => {
+    //         instStr = instStr.replace(new RegExp(id, 'g'), idMap[id])
+    //         newInsts.push(JSON.parse(instStr))
+    //     })
+    // })
+
+    let instsStr = JSON.stringify(insts)
+    Object.keys(idMap).forEach((id) => {
+        instsStr = instsStr.replace(new RegExp(id, 'g'), idMap[id])
     })
-    return newInsts
+    return JSON.parse(instsStr)
 }
 
 class ComponentStoreFactory {

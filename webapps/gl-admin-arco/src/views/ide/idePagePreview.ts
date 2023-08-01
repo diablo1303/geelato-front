@@ -5,6 +5,7 @@ import store from '../../store';
 import i18n from '../../locale';
 import IdePagePreview from './IdePagePreview.vue';
 import '@arco-design/web-vue/dist/arco.css';
+import '@/api/interceptor';
 
 const app = createApp(IdePagePreview);
 

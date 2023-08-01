@@ -5,6 +5,7 @@ import store from '../../store';
 import i18n from '../../locale';
 import IdeComponents from "./IdeComponents.vue";
 import '@arco-design/web-vue/dist/arco.css';
+import '@/api/interceptor';
 
 const app = createApp(IdeComponents);
 

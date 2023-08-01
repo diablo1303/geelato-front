@@ -15,5 +15,8 @@ export default class UrlConfig {
 
     apiMetaDefined = "/api/meta/defined";
 
+    apiUpload = "/api/upload/file";
+
     api = "/api";
 }
+

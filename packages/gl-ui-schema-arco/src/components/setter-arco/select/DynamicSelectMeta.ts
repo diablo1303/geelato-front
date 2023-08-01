@@ -66,6 +66,45 @@ export default {
         "placeholder": "实体值字段名",
         "setterComponentName": "GlFieldSelect"
     }, {
+        "name": "extraFieldAndBindIds",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "",
+        "title": "数据联动",
+        "description": "获取更多的字段信息，并设置到指定的组件中",
+        "_showSub": true,
+        "properties": [{
+            "name": "fieldName",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "title": "字段名",
+            "placeholder": "",
+            "setterComponentName": "GlFieldSelect"
+        }, {
+            "name": "bindId",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "setterComponentName": "AInput",
+            "title": "绑定组件"
+        }],
+        "setterComponentName": "GlObjectArraySetter",
+        "titleField": "fieldName",
+        "alarmIfNoSubTitle": true
+    }, {
         "name": "size",
         "setterComponentProps": {
             "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",
@@ -107,18 +146,11 @@ export default {
         "show": true,
         "expanded": true,
         "enableValueExpress": false
-    },  {
-        "name": "placeholder",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "提示文字",
-        "setterComponentName": "AInput",
-        "enableValueExpress": false
     }],
-    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}],
+    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}, {
+        "name": "onMounted",
+        "description": "组件加载完时触发，和Vue的onMounted一致",
+        "title": "加载完"
+    }, {"name": "onUpdated", "description": "组件更新时触发，和Vue的onUpdated一致", "title": "加载完"}],
     "displayOnStage": "inline-block"
 }

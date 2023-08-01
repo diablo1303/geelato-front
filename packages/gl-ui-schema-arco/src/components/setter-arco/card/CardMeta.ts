@@ -8,8 +8,7 @@ export default {
     "useBy": ["freePage"],
     "properties": [{
         "expanded": true,
-        "style": "",
-        "name": "title",
+        "name": "label",
         "title": "标题",
         "group": "base",
         "placeholder": "",

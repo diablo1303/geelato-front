@@ -10,8 +10,9 @@ export interface TableColumnDataPlus extends TableColumnData {
     _renderFnBody: string;
     // 数据显示的处理脚本
     _renderScript: string;
-    // 用于编辑该字段的组件，作为子表时用到
-    _editComponent?: ComponentInstance;
+    // 用于编辑表格时，作为编辑组件
+    // 用于展示表格时，作为展示组件，展示特殊的数据
+    _component?: ComponentInstance;
     // 是否显示，用于控制数据查询加载，但不展示，可用于前端列计算或record传值，恒等于false时才不显示
     _show?: boolean;
 }

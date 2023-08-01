@@ -5,12 +5,6 @@ import GlCommandBlockTwo from "./components/setters/action-setters/blocks/Comman
 const component: Plugin = {
     install: function (app: App) {
         // 注册组件
-        // if (!app.config.globalProperties.$ide) {
-        //     console.error('必须先注册安装GlIde插件.')
-        //     return
-        // }
-
-        // 注册组件
         app.component('GlCommandBlock', GlCommandBlockOne)
         app.component('GlBlockMessage', GlCommandBlockOne)
         app.component('GlBlockNotification', GlCommandBlockOne)
@@ -27,16 +21,8 @@ const component: Plugin = {
         app.component('GlLogBlock', GlCommandBlockOne)
         app.component('GlSetValueBlock', GlCommandBlockOne)
         app.component('GlReturnBlock', GlCommandBlockOne)
-        // 注册组件构建器
-
-        // 注册属性设置组件
-
-
-        // 组件别名
-        // app.config.globalProperties.$gl.alias[GlX.name] = 'glx'
-
-        // 安装插件
-        // useIdeStore().usePlugin(plugin)
+        app.component('GlSetVarBlock', GlCommandBlockOne)
+        app.component('GlGroupSumBlock', GlCommandBlockOne)
     }
 }
 

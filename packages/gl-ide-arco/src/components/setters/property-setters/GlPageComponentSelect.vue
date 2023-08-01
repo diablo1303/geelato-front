@@ -136,10 +136,10 @@ const loadPage = () => {
 }
 
 const convertTitle = (componentInst: ComponentInstance, title?: string) => {
-  componentInst.title = title || componentInst.title || componentInst.componentName
+  componentInst.title = title || componentInst.props.label || componentInst.componentName
 
   if (componentInst.group === 'dataEntry') {
-    componentInst.title = componentInst.props.label || componentInst.title || componentInst.componentName
+    // componentInst.title = componentInst.props.label || componentInst.title || componentInst.componentName
     componentInst.title += "【表单字段】"
   }
   if (componentInst.children) {

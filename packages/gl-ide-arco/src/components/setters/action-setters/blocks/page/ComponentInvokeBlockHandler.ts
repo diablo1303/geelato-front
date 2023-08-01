@@ -12,7 +12,7 @@ export default class ComponentInvokeBlockHandler implements IBlockHandler {
         if (props.resultVar) {
             return new ParseResult(
                 `
-                const ${props.resultVar} = ${props.enableAwait ? 'await ' : ''} $gl.fn.invokeComponentMethod("${props.componentId}","${props.methodName}",${JSON.stringify(params)});
+                ${props.resultVar} = ${props.enableAwait ? 'await ' : ''} $gl.fn.invokeComponentMethod("${props.componentId}","${props.methodName}",${JSON.stringify(params)});
                 ${props.enableReturn ? 'return ' + props.resultVar : ''}
                 `
             ).setBlockName('ComponentInvokeBlock');

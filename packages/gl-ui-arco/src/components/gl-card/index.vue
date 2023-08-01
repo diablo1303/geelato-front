@@ -4,7 +4,7 @@
       <span @click="switchHide" style="cursor: pointer">
         <GlIconfont v-if="isHidden" type="gl-down-circle"></GlIconfont>
         <GlIconfont v-else type="gl-right-circle"></GlIconfont>
-      </span> <span>{{ title }}</span>
+      </span> <span>{{ label }}</span>
     </template>
     <!--    <template v-if="glIsRuntime">-->
     <!--&lt;!&ndash;      <slot></slot>&ndash;&gt;-->
@@ -28,7 +28,7 @@ import {mixins} from "@geelato/gl-ui";
 import {ref} from "vue";
 
 const props = defineProps({
-  title: String,
+  label: String,
   ...mixins.props
 })
 

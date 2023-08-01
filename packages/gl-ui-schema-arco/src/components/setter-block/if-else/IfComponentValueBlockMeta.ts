@@ -77,17 +77,6 @@ export default {
         "title": "比较关系",
         "setterComponentName": "ASelect"
     }, {
-        "name": "valueType",
-        "setterComponentProps": {"allowClear": true, "options": []},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "值类型",
-        "setterComponentName": "GlValueTypes",
-        "enableValueExpress": false
-    }, {
         "name": "compareValue",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
@@ -97,7 +86,7 @@ export default {
         "expanded": true,
         "title": "比较值",
         "setterComponentName": "GlCompareValueSetter",
-        "enableValueExpress": false
+        "enableValueExpress": true
     }],
     "actions": []
 }

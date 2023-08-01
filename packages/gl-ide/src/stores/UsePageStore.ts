@@ -214,7 +214,57 @@ export const usePageStore = defineStore('GlPageStore', () => {
         }
 
         function convertToPreview(sourceContent?: ComponentInstance) {
-            return convertToRelease(sourceContent)
+            return sourceContent
+        }
+
+        function convertToSource(sourceContent?: object) {
+            if (!sourceContent) return sourceContent
+            const copyContent = JSON.parse(JSON.stringify(sourceContent))
+
+            function convertInst(inst: ComponentInstance) {
+                if (!inst) return
+
+                if (inst.componentName) {
+                    // @ts-ignore
+                    delete inst.propsExpress
+                    // @ts-ignore
+                    delete inst.slotsExpress
+                    // @ts-ignore
+                    delete inst.title
+
+                    if (inst.props?.title) {
+                        inst.props.label = inst.props.label || inst.props.title
+                        delete inst.props?.title
+                        console.error('#自动将props的title改成了label，需要同步改组件元数据：', inst.componentName)
+                    }
+                }
+                if (['GlEntityTablePlus', 'GlEntityTable', 'GlEntityTableSub'].indexOf(inst.componentName) !== -1) {
+                    inst.props.query?.forEach((item: any) => {
+                        convertInst(item?.component)
+                    })
+                    inst.props.toolbar?.leftItems?.forEach((item: any) => {
+                        convertInst(item?.component)
+                    })
+                    inst.props.columns?.forEach((item: any) => {
+                        if(item._editComponent){
+                            item._component = JSON.parse(JSON.stringify(item._editComponent))
+                            delete item._editComponent
+                        }
+                    })
+                }
+
+
+                // @ts-ignore
+                if (inst.children && inst.children.length > 0) {
+                    // @ts-ignore
+                    inst.children.forEach((subInst) => {
+                        convertInst(subInst)
+                    })
+                }
+            }
+
+            convertInst(copyContent)
+            return copyContent
         }
 
         entityApi.save('platform_app_page', {
@@ -223,7 +273,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
             extendId: currentPage.value.extendId,
             code: currentPage.value.code,
             type: 'GlPageLayout',
-            sourceContent: JSON.stringify(currentPage.value.sourceContent),
+            sourceContent: JSON.stringify(convertToSource(currentPage.value.sourceContent)),
             releaseContent: JSON.stringify(convertToRelease(currentPage.value.sourceContent)),
             previewContent: JSON.stringify(convertToPreview(currentPage.value.sourceContent)),
             description: currentPage.value.description
