@@ -31,6 +31,8 @@ const props = defineProps({
   }
 })
 
+
+
 const src = computed(() => {
   switch (props.srcType) {
     case "ID":
@@ -46,7 +48,7 @@ const src = computed(() => {
 </script>
 
 <template>
-  <a-image :style="defaultStyle" :width="width" :height="height" :src="src">
+  <a-image :style="defaultStyle" :width="width" :height="height" :src="src" >
   </a-image>
 </template>
 

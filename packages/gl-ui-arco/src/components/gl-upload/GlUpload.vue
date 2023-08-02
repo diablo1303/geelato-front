@@ -118,10 +118,6 @@ loadFiles()
 <template>
   <a-upload :action="fileApi.getUploadUrl()" :file-list="fileList"
             :headers="entityApi.getHeader()"
-            :limit="1"
-            accept="image/*"
-            image-preview
-            list-type="picture-card"
             @error="uploadError" @success="uploadSuccess" @before-remove="beforeRemove"/>
 </template>
 
