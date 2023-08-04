@@ -1,26 +1,32 @@
 <template>
   <div class="gl-designer">
-    <DesignerToolbarPanel></DesignerToolbarPanel>
+    <IdeToolbarPanel/>
     <splitpanes class="default-theme" :push-other-panes="false"
                 :style="{height:`${themeStore.ideMainHeight}px`}">
       <pane class="gl-ide-sidebar-tab-pane" :size="themeStore.sidebarTabWidthPercent"
             :min-size="themeStore.sidebarTabWidthPercent">
-        <DesignerSidebarTab></DesignerSidebarTab>
+        <IdeSidebarTab/>
       </pane>
       <pane :size="themeStore.sidebarsWidthPercent" :min-size="themeStore.sidebarTabWidthPercent"
             :style="{height:`${themeStore.ideMainHeight}px`}" style="overflow-y: auto">
-        <DesignerSidebarPanel @switchPanel="onSwitchSidebarPanel"></DesignerSidebarPanel>
+        <IdeSidebarPanel @switchPanel="onSwitchSidebarPanel"/>
       </pane>
       <pane :size="themeStore.stageWidthPercent"
-            :style="{height:`${themeStore.ideMainHeight}px`}" style="overflow-y: auto">
-        <DesignerStagePanel></DesignerStagePanel>
+            :style="{height:`${themeStore.ideMainHeight}px`}">
+        <div style="overflow-y: auto"
+             :style="{height:`${themeStore.ideMainHeight-themeStore.stageBreadcrumbHeight}px`,'min-height':`${themeStore.ideMainHeight-themeStore.stageBreadcrumbHeight}px`}">
+          <IdeStagePanel/>
+        </div>
+        <div :style="{height:`${themeStore.stageBreadcrumbHeight}px`}">
+          <IdeStageBreadcrumb/>
+        </div>
       </pane>
       <pane :size="themeStore.setterWidthPercent"
             :style="{height:`${themeStore.ideMainHeight}px`}" style="overflow-y: auto">
-        <DesignerSetterPanel @update="updateSetter"></DesignerSetterPanel>
+        <IdeSetterPanel @update="updateSetter"/>
       </pane>
     </splitpanes>
-    <DesignerStatusPanel v-show="themeStore.statusHeight!==0"></DesignerStatusPanel>
+    <IdeStatusPanel v-show="themeStore.statusHeight!==0"/>
   </div>
 </template>
 
@@ -28,12 +34,13 @@
 import {provide, defineComponent, ref, nextTick} from 'vue'
 import {Splitpanes, Pane} from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
-import DesignerToolbarPanel from './ToolbarPanel.vue'
-import DesignerSidebarPanel from './SidebarPanel.vue'
-import DesignerSidebarTab from './SidebarTab.vue'
-import DesignerStagePanel from './StagePanel.vue'
-import DesignerSetterPanel from './SetterPanel.vue'
-import DesignerStatusPanel from './StatusPanel.vue'
+import IdeToolbarPanel from './ToolbarPanel.vue'
+import IdeSidebarPanel from './SidebarPanel.vue'
+import IdeSidebarTab from './SidebarTab.vue'
+import IdeStagePanel from './StagePanel.vue'
+import IdeSetterPanel from './SetterPanel.vue'
+import IdeStatusPanel from './StatusPanel.vue'
+import IdeStageBreadcrumb from "./StageBreadcrumb.vue";
 import {useThemeStore} from "../stores/UseThemeStore";
 import {Utils} from "@geelato/gl-ui";
 
@@ -42,12 +49,13 @@ export default defineComponent({
   components: {
     Splitpanes,
     Pane,
-    DesignerToolbarPanel,
-    DesignerSidebarPanel,
-    DesignerStagePanel,
-    DesignerSetterPanel,
-    DesignerSidebarTab,
-    DesignerStatusPanel
+    IdeToolbarPanel,
+    IdeSidebarPanel,
+    IdeStagePanel,
+    IdeSetterPanel,
+    IdeSidebarTab,
+    IdeStatusPanel,
+    IdeStageBreadcrumb
   },
   setup(props, context) {
     const stagePanels = ref([])

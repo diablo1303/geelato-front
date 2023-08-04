@@ -223,6 +223,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
 
             function convertInst(inst: ComponentInstance) {
                 if (!inst) return
+                console.log('inst.componentName', inst.componentName)
 
                 if (inst.componentName) {
                     // @ts-ignore
@@ -238,19 +239,40 @@ export const usePageStore = defineStore('GlPageStore', () => {
                         console.error('#自动将props的title改成了label，需要同步改组件元数据：', inst.componentName)
                     }
                 }
+
                 if (['GlEntityTablePlus', 'GlEntityTable', 'GlEntityTableSub'].indexOf(inst.componentName) !== -1) {
+                    console.log('inst.componentName convert GlEntityTablePlus', inst)
                     inst.props.query?.forEach((item: any) => {
                         convertInst(item?.component)
                     })
                     inst.props.toolbar?.leftItems?.forEach((item: any) => {
-                        convertInst(item?.component)
+                        convertInst(item)
+                    })
+                    inst.props.toolbar?.rightItems?.forEach((item: any) => {
+                        convertInst(item)
+                    })
+                    inst.props.toolbar?.centerItems?.forEach((item: any) => {
+                        convertInst(item)
+                    })
+                    inst.props.columnActions?.forEach((item: any) => {
+                        convertInst(item)
                     })
                     inst.props.columns?.forEach((item: any) => {
-                        if(item._editComponent){
+                        if (item._editComponent) {
                             item._component = JSON.parse(JSON.stringify(item._editComponent))
                             delete item._editComponent
                         }
                     })
+                }
+
+                if (inst.componentName === 'AButton' && inst.slots) {
+                    console.log('inst.componentName convert AButton')
+                    if (inst.slots?.icon?.componentName === 'GlIconfont') {
+                        inst.props.label = inst.slots?.icon?.props?.text
+                        inst.props.iconType = inst.slots?.icon?.props?.type
+                        inst.componentName = 'GlButton'
+                        delete inst.slots?.icon
+                    }
                 }
 
 
@@ -267,15 +289,17 @@ export const usePageStore = defineStore('GlPageStore', () => {
             return copyContent
         }
 
+        const convertedSource = convertToSource(currentPage.value.sourceContent)
+        const convertedRelease = convertToRelease(convertedSource)
         entityApi.save('platform_app_page', {
             id: currentPage.value.id,
             appId: currentPage.value.appId,
             extendId: currentPage.value.extendId,
             code: currentPage.value.code,
             type: 'GlPageLayout',
-            sourceContent: JSON.stringify(convertToSource(currentPage.value.sourceContent)),
-            releaseContent: JSON.stringify(convertToRelease(currentPage.value.sourceContent)),
-            previewContent: JSON.stringify(convertToPreview(currentPage.value.sourceContent)),
+            sourceContent: JSON.stringify(convertedSource),
+            releaseContent: JSON.stringify(convertedRelease),
+            previewContent: JSON.stringify(convertToPreview(convertedRelease)),
             description: currentPage.value.description
         }).then((res) => {
             currentPage.value.id = res.data.data

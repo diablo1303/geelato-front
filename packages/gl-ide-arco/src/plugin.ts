@@ -31,6 +31,7 @@ import GlComponentSelect from "./components/setters/property-setters/GlComponent
 import GlEntityReaderSetter from "./components/setters/property-setters/entity-reader-setter/GlEntityReaderSetter.vue";
 import GlToolbarBreadcrumbs from './components/stage/GlToolbarBreadcrumbs.vue'
 import GlExpressionSetter from "./components/setters/expression-setters/GlExpressionSetter.vue";
+import GlActionList from "./components/sidebar/GlActionList.vue";
 // import GlX from './components/gl-x/GlX.vue'
 // import GlComponentRecursion from './components/gl-component-recursion/ComponentRecursion.vue'
 import "./assets/style.css"
@@ -82,6 +83,13 @@ plugin.sidebar.push(new Panel({
     name: '页面结构',
     iconType: 'gl-tree-structure',
     componentName: GlComponentTree.name
+}))
+
+plugin.sidebar.push(new Panel({
+    title: '页面动作',
+    name: '页面动作',
+    iconType: 'gl-thunderbolt',
+    componentName: GlActionList.name
 }))
 
 plugin.sidebar.push(new Panel({
@@ -138,14 +146,9 @@ plugin.stage.push(new Panel({
 const component: Plugin = {
     install: function (app: App) {
         // 注册组件
-        // if (!app.config.globalProperties.$ide) {
-        //     console.error('必须先注册安装GlIde插件.')
-        //     return
-        // }
-
-        // 注册组件
         app.component(GlComponentsSidebar.name, GlComponentsSidebar)
         app.component(GlComponentTree.name, GlComponentTree)
+        app.component(GlActionList.name,GlActionList)
         app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
         app.component(GlIdePluginCoreHistory.name, GlIdePluginCoreHistory)
         app.component(GlBasePage.name, GlBasePage)
@@ -153,12 +156,9 @@ const component: Plugin = {
         app.component(GlFreePage.name, GlFreePage)
         app.component(GlListPage.name, GlListPage)
         app.component(GlToolbarBreadcrumbs.name, GlToolbarBreadcrumbs)
-        // app.component(GlX.name, GlX)
-        // app.component(GlComponentRecursion.name, GlComponentRecursion)
         app.component(GlInsts.name, GlInsts)
         app.component(GlInst.name, GlInst)
         app.component(ComponentDnd.name, ComponentDnd)
-        // app.config.globalProperties.$ide.usePlugin(plugin)
 
         // 注册组件构建器
         app.component(GlComponentBuilder.name, GlComponentBuilder)

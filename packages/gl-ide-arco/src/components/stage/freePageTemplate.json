@@ -1,8 +1,8 @@
 {
   "id": "",
   "componentName": "GlPage",
-  "title": "页面",
   "props": {
+    "label": "页面",
     "pageMargin":"0",
     "pageType":"freePage"
   },
@@ -11,8 +11,7 @@
     {
       "id": "",
       "componentName": "GlDndPlaceholder",
-      "title": "占位符",
-      "props": {},
+      "props": {"label": "占位符"},
       "slots": {},
       "children": []
     }

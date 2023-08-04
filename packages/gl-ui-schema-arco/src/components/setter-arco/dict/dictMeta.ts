@@ -46,7 +46,7 @@ export default {
             "labelFieldName": "dictName",
             "valueFieldName": "id",
             "ascOrDesc": "+",
-            "orderFieldName": "seq_no"
+            "orderFieldName": "seqNo"
         },
         "setterComponentVModelName": "modelValue",
         "group": "base",

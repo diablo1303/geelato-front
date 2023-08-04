@@ -73,6 +73,8 @@ const clearValueExpress = () => {
   emits('update:modelValue', mv.value)
 }
 const handleOk = () => {
+  // 由于代码做了格式化，会自动增加“;”换行等，需处理掉
+  mv.value = mv.value ? mv.value.replace(new RegExp('[;,\\s]*$'), '') : ''
   inputMv.value = mv.value
   valueExpressModalVisible.value = false
   emits('update:modelValue', mv.value)
@@ -285,9 +287,11 @@ const selectDictItem = (key: any) => {
                   <a-modal>
 
                   </a-modal>
-                  <a-modal v-model:visible="dictItemsDisplay" title="选择字典值" :footer="false" mask-style="opacity:0.05" @ok="handleOk" @cancel="closeDict">
+                  <a-modal v-model:visible="dictItemsDisplay" title="选择字典值" :footer="false"
+                           mask-style="opacity:0.05" @ok="handleOk" @cancel="closeDict">
                     <a-space wrap>
-                      <a-tag v-for="key of Object.keys(expendDictItems)" style="cursor: pointer" clore="blue" @click="selectDictItem(key)">
+                      <a-tag v-for="key of Object.keys(expendDictItems)" style="cursor: pointer" clore="blue"
+                             @click="selectDictItem(key)">
                         {{ expendDictItems[key] }}
                       </a-tag>
                     </a-space>

@@ -1,8 +1,8 @@
 {
   "id": "",
   "componentName": "GlPage",
-  "title": "页面",
   "props": {
+    "label": "页面",
     "pageMargin":"0",
     "pageType":"formPage"
   },
@@ -10,9 +10,8 @@
   "children": [{
     "id": "",
     "componentName": "GlEntityForm",
-    "title": "实体表单",
     "props": {
-      "title": "实体表单",
+      "label": "实体表单",
       "layout":"vertical",
       "autoLabelWidth":true
     },
@@ -20,55 +19,47 @@
     "children": [{
       "id": "",
       "componentName": "GlCard",
-      "title": "卡片",
-      "props": {"title": "卡片", "bordered": false},
+      "props": {"label": "卡片", "bordered": false},
       "slots": {},
       "children": [
         {
           "id": "",
           "componentName": "GlRowColLayout",
-          "title": "栅格布局",
-          "props": {"title": "栅格布局", "spans": [8, 8, 8]},
+          "props": {"label": "栅格布局", "spans": [8, 8, 8]},
           "slots": {},
           "children": [{
             "id": "",
             "componentName": "GlVirtual",
-            "title": "项",
-            "props": {},
+            "props": {"label": "项"},
             "slots": {},
             "children": [{
               "id": "",
               "componentName": "GlDndPlaceholder",
-              "title": "占位符",
-              "props": {},
+              "props": {"label": "占位符"},
               "slots": {},
               "children": []
             }]
           }, {
             "id": "",
             "componentName": "GlVirtual",
-            "title": "项",
-            "props": {},
+            "props": {"label": "项"},
             "slots": {},
             "children": [{
               "id": "",
               "componentName": "GlDndPlaceholder",
-              "title": "占位符",
-              "props": {},
+              "props": {"label": "占位符"},
               "slots": {},
               "children": []
             }]
           }, {
             "id": "",
             "componentName": "GlVirtual",
-            "title": "项",
-            "props": {},
+            "props": {"label": "项"},
             "slots": {},
             "children": [{
               "id": "",
               "componentName": "GlDndPlaceholder",
-              "title": "占位符",
-              "props": {},
+              "props": {"label": "占位符"},
               "slots": {},
               "children": []
             }]

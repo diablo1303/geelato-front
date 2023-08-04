@@ -7,9 +7,11 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
+import GlArrayBaseSetter from "./GlArrayBaseSetter.vue";
 
 export default defineComponent({
   name: "GlArrayNumberSetter",
+  components: {GlArrayBaseSetter},
   props: {
     modelValue: {
       type: Array,

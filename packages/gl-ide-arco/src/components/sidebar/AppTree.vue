@@ -22,7 +22,7 @@ const ideStore = useIdeStore()
 const appStore = useAppStore()
 
 const onSelectNode = (params: any) => {
-  // console.log('onSelectNode() > params:', params)
+  console.log('onSelectNode() > params:', params)
   if (['root', 'folder'].indexOf(params.nodeType) >= 0) {
     // 根节点或目录节点
   } else {

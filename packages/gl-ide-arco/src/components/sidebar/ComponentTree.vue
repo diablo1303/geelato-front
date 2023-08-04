@@ -72,7 +72,7 @@ function getMatchIndex(componentName: String) {
 
 
 <template>
-  <div>
+  <div class="gl-tree">
     <a-input-search
         style="margin-bottom: 8px; max-width: 240px"
         v-model="searchKey"
@@ -81,10 +81,14 @@ function getMatchIndex(componentName: String) {
             :field-names="treeFieldNames"
             :selectedKeys="selectedKeys">
       <template #title="nodeData">
-        <span @click="selectNode(nodeData)">
-          <template v-if="index = getMatchIndex(nodeData?.componentName), index < 0">{{
-              nodeData?.componentName
-            }}
+        <span @click="selectNode(nodeData)" :title="nodeData.componentName">
+          <template v-if="index = getMatchIndex(nodeData?.componentName), index < 0">
+            <template v-if="nodeData.props.label ">
+              {{nodeData.props.label || nodeData.componentName}}
+            </template>
+            <template v-else>
+              {{nodeData.componentName}}
+            </template>
         </template>
         <span v-else>
           {{ nodeData?.componentName?.substring(0, index) }}

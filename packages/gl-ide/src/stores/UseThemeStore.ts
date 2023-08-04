@@ -18,6 +18,7 @@ export const useThemeStore = defineStore({
         sidebarTabWidth: sidebarTabWidthDefault * 1,
         // stageHeight: 0,
         stageWidth: 0,
+        stageBreadcrumbHeight: 32,
         // setterHeight: 0,
         settingsWidth: 320,
         statusHeight: 0,

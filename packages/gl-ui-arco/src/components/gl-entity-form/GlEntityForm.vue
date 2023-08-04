@@ -20,7 +20,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, nextTick, type PropType, provide, ref, toRaw} from 'vue';
+import {inject, nextTick, onMounted, type PropType, provide, ref, toRaw} from 'vue';
 import type {FormInstance} from '@arco-design/web-vue/es/form';
 import useLoading from '../../hooks/loading';
 import {isDataEntry} from "@geelato/gl-ui-schema-arco";
@@ -211,11 +211,12 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
 
   setFieldItemValue(props.glComponentInst)
 
+  // !!!注意  刷新表单会导致表单内的所有组件重建，有性能问题，【禁用】该操作；若存在组件信息未能更新的情况，需针对相应的组件，设置自动更新
   // 设置表单值后，刷新表单
-  refreshFlag.value = false
-  nextTick(() => {
-    refreshFlag.value = true
-  })
+  // refreshFlag.value = false
+  // nextTick(() => {
+  //   refreshFlag.value = true
+  // })
 
   // console.log('GlEntityForm > setFormItemValues() > formData:', formData.value, dataItem)
   emits('onLoadedData', {data: formData.value})
@@ -415,6 +416,11 @@ const checkConfig = () => {
 
   checkFieldItem(props.glComponentInst)
 }
+console.log('GLEntityForm > create > id', props.glComponentInst.id)
+
+onMounted(() => {
+  console.log('GLEntityForm > onMounted() > id', props.glComponentInst.id)
+})
 
 loadForm()
 defineExpose([submitForm])

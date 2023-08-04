@@ -1,5 +1,5 @@
 /* 重置卡片标题样式 */
-.arco-card-header-title{
+.arco-card-header-title {
     font-weight: 600;
 }
 
@@ -9,5 +9,9 @@
 
 .arco-input-wrapper .arco-input[disabled] {
     -webkit-text-fill-color: rgb(119 121 124);
+}
+
+.gl-tree .arco-tree-node-indent-block {
+    margin-right: 0 !important;
 }
 

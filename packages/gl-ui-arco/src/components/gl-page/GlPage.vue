@@ -16,7 +16,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {type PropType, getCurrentInstance, onMounted, onUnmounted, provide} from "vue";
+import {type PropType, getCurrentInstance, onUnmounted, provide, onMounted} from "vue";
 import {
   type PageType,
   PageProvideProxy,
@@ -26,7 +26,6 @@ import {
 } from "@geelato/gl-ui";
 import type {Action} from "@geelato/gl-ui-schema";
 import {PageParamsKey} from "@geelato/gl-ui";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
@@ -126,14 +125,18 @@ if (props.params && props.params.length > 0) {
     }
   }
 }
-
+// console.log('GlPage > create() > pageInstId:', props.glComponentInst.id)
+//
+// onMounted(() => {
+//   console.log('GlPage > onMounted() > pageInstId:', props.glComponentInst.id)
+// })
 // 整个页面组件级注入
 provide(PageProvideKey, pageProvideProxy)
 provide(PageParamsKey, props.params)
 // console.log('GlPage > provide() > pageProvideProxy:', pageProvideProxy)
 onUnmounted(() => {
   jsScriptExecutor.removePageProxy(props.glComponentInst.id)
-  console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
+  // console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
 })
 
 </script>

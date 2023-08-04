@@ -294,7 +294,7 @@
       </td>
       <td class="gl-table-cell">
         <template v-if="mv.alarmIfNoSubTitle=(mv.alarmIfNoSubTitle?mv.alarmIfNoSubTitle:'')"></template>
-        <a-switch size="small" v-model="mv.alarmIfNoSubTitle"/>
+        <a-input size="small" v-model="mv.alarmIfNoSubTitle"/>
       </td>
     </tr>
   </table>

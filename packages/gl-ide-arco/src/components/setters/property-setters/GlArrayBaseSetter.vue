@@ -110,7 +110,7 @@ export default defineComponent({
     },
 
     removeItem(index: number) {
-      let element = this.items[index]
+      // let element = this.items[index]
       // console.log('removeItem', this.items, index, element)
       if (this.selectedIndex === index) {
         // @ts-ignore

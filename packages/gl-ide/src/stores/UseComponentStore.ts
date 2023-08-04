@@ -1,8 +1,7 @@
 import {defineStore} from 'pinia'
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import {emitter, utils} from "@geelato/gl-ui";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
-
+import {type Action, ComponentInstance} from "@geelato/gl-ui-schema";
 
 class ComponentMetaMap {
     [key: string]: any
@@ -148,7 +147,7 @@ class ComponentStoreFactory {
                     },
                     /**
                      * 添加组件元数据
-                     * @param componentMetaMap
+                     * @param componentMetas
                      */
                     addComponentMetas(componentMetas: Array<ComponentMeta>) {
                         componentMetas.forEach((meta) => {
@@ -165,6 +164,7 @@ class ComponentStoreFactory {
                     /**
                      * 基于组件元数据，获取组件别名，若无别名，返回空：''
                      * @param componentName
+                     * @param defaultName
                      */
                     getAlias(componentName: string, defaultName?: string) {
                         const defaultAlias = defaultName || ''
@@ -200,6 +200,7 @@ class ComponentStoreFactory {
                     /**
                      * 从组件实体树中删除组件
                      * @param componentId
+                     * @param fromPageId
                      */
                     deleteComponentInstById(componentId: String, fromPageId: string) {
                         if (!componentId) {
@@ -211,7 +212,7 @@ class ComponentStoreFactory {
                         function deleteNodeFromTree(nodeId: String, nodes: Array<any>): any {
                             for (let index in nodes) {
                                 let node = nodes[index]
-                                console.log('compare node.id,componentId', node.id, componentId, node.id === componentId)
+                                // console.log('compare node.id,componentId', node.id, componentId, node.id === componentId)
                                 if (node.id === componentId) {
                                     nodes.splice(Number.parseInt(index), 1)
                                     thisProxy.clearCurrentSelectedComponent(fromPageId)
@@ -293,7 +294,10 @@ class ComponentStoreFactory {
                         }
                         const parentComponent = this.findParentComponentFromTreeById(this.currentSelectedComponentId)
                         // console.log('storeId:', storeId, 'selectParentComponent(),found:', parentComponent)
-                        this.setCurrentSelectedComponentById(parentComponent!.id, fromPageId)
+                        this.setCurrentSelectedComponent(parentComponent!)
+                        if (parentComponent?.componentName == 'GlVirtual') {
+                            this.selectParentComponent(fromPageId)
+                        }
                     },
                     /**
                      *  向前移动组件
@@ -329,6 +333,35 @@ class ComponentStoreFactory {
 
                             }
                         }
+                    },
+                    /**
+                     *  移动当前选中的组件到上一层，即作为parent的下一个组件
+                     */
+                    moveToParent() {
+                        // 1、选择当前的父组件
+                        const parentComponent = this.findParentComponentFromTreeById(this.currentSelectedComponentId)
+                        if (parentComponent && parentComponent.componentName === 'GlPage') {
+                            return
+                        }
+                        // 2、将当前组件放到父组件之后
+                        // 2.1 找到当前父组件的父组件
+                        let grandParentComponent = this.findParentComponentFromTreeById(parentComponent!.id)
+                        if (grandParentComponent) {
+                            // console.log('grandParentComponent componentName:', grandParentComponent.componentName)
+                            // !!!注意，如果
+                            if (grandParentComponent.componentName === 'GlRowColLayout') {
+                                grandParentComponent = this.findParentComponentFromTreeById(grandParentComponent!.id)
+                            }
+                            if (grandParentComponent) {
+                                // 从父组件中移除当前组件
+                                const moveInst = this.deleteCurrentSelectedComponentInst('')
+                                if (moveInst) {
+                                    grandParentComponent.children.push(moveInst)
+                                    this.setCurrentSelectedComponent(moveInst)
+                                }
+                            }
+                        }
+
                     },
                     /**
                      *  复制当前组件
@@ -385,9 +418,9 @@ class ComponentStoreFactory {
                         this.currentSelectedComponentId = componentId;
                         emitter.emit('setCurrentSelectedComponentId', payload)
                     },
-                    setCurrentHoverComponentId(value: string) {
-                        const payload = {old: this.currentHoverComponentId, new: value}
-                        this.currentHoverComponentId = value;
+                    setCurrentHoverComponentId(componentId: string) {
+                        const payload = {old: this.currentHoverComponentId, new: componentId}
+                        this.currentHoverComponentId = componentId;
                         emitter.emit('setCurrentHoverComponentId', payload)
                     },
                     // setCurrentSelectedComponentInstance(instance: any) {
@@ -398,6 +431,7 @@ class ComponentStoreFactory {
                      * 并设置当前选中组件的信息，包括id、name、componentMeta
                      * 需在currentComponentTree已push了相应的组件之后才有效，否则找不到对应的组件实例
                      * @param value
+                     * @param fromPageId
                      */
                     setCurrentSelectedComponentById(value: string, fromPageId: string) {
                         // console.log('storeId:', storeId, 'setCurrentSelectedComponentById > value:', value)
@@ -405,22 +439,31 @@ class ComponentStoreFactory {
                         if (this.currentSelectedComponentId) {
                             const foundComponent = this.findComponentFromTreeById(this.currentSelectedComponentId)
                             // console.log('setCurrentSelectedComponentById () > storeId:', storeId, 'findComponentFromTreeById', this.currentSelectedComponentId, 'and get', foundComponent, ',currentComponentTree:', this.currentComponentTree)
-                            this.currentSelectedComponentInstance = foundComponent
-                            if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
-                                // @ts-ignore  TODO 该操作会导致GL-X内的组件拖拽时，一次可拖一次禁用交替出现??
-                                this.currentSelectedComponentName = this.currentSelectedComponentInstance.componentName
-                                this.currentSelectedComponentMeta = componentStoreFactory.componentMetaMap[this.currentSelectedComponentName]
-                                // this.currentSelectedComponentMeta.props = foundComponent.props
-                            }
-                            // console.log('setCurrentSelectedComponentById > currentComponentTree', this.currentComponentTree)
-                            // console.log('setCurrentSelectedComponentById > currentSelectedComponentInstance', this.currentSelectedComponentInstance, foundComponent)
-                            // console.log('setCurrentSelectedComponentById > currentSelectedComponentMeta', this.currentSelectedComponentMeta)
-                            // this.setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsSelected', this.currentSelectedComponentId)
+                            this.setCurrentSelectedComponent(foundComponent)
                         } else {
                             this.currentSelectedComponentName = ''
                             this.currentSelectedComponentMeta = undefined
                             this.currentSelectedComponentInstance = new ComponentInstance()
                         }
+                    },
+                    /**
+                     * 并设置当前选中组件的信息，包括id、name、componentMeta
+                     * @param inst
+                     */
+                    setCurrentSelectedComponent(inst: ComponentInstance) {
+                        if (!inst) return
+                        this.currentSelectedComponentId = inst.id
+                        this.currentSelectedComponentInstance = inst
+                        if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
+                            // @ts-ignore  TODO 该操作会导致GL-X内的组件拖拽时，一次可拖一次禁用交替出现??
+                            this.currentSelectedComponentName = this.currentSelectedComponentInstance.componentName
+                            this.currentSelectedComponentMeta = componentStoreFactory.componentMetaMap[this.currentSelectedComponentName]
+                            // this.currentSelectedComponentMeta.props = foundComponent.props
+                        }
+                        // console.log('setCurrentSelectedComponentById > currentComponentTree', this.currentComponentTree)
+                        // console.log('setCurrentSelectedComponentById > currentSelectedComponentInstance', this.currentSelectedComponentInstance, foundComponent)
+                        // console.log('setCurrentSelectedComponentById > currentSelectedComponentMeta', this.currentSelectedComponentMeta)
+                        // this.setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsSelected', this.currentSelectedComponentId)
                     },
                     setCurrentSelectedComponentByIdFromItems(id: string, insts: Array<ComponentInstance>, formPageId: string) {
                         console.log('setCurrentSelectedComponentByIdFromItems() > storeId:', storeId, 'setCurrentSelectedComponentByIdFromItems > id:', id)
@@ -444,6 +487,73 @@ class ComponentStoreFactory {
                     },
                     clearCurrentSelectedComponent(fromPageId: string) {
                         this.setCurrentSelectedComponentById('', fromPageId)
+                    },
+                    /**
+                     *  获取当前页面的组件动作列表
+                     */
+                    getActionList() {
+                        const actionList: ComponentInstance[] = []
+                        const findAction = (inst: ComponentInstance) => {
+                            if (inst.actions && inst.actions.length > 0) {
+                                actionList.push(inst)
+                            }
+                            if (inst.children && inst.children.length > 0) {
+                                inst.children.forEach((subInst) => {
+                                    findAction(subInst)
+                                })
+                            }
+
+                            if (['GlEntityTablePlus', 'GlEntityTable', 'GlEntityTableSub'].indexOf(inst.componentName) !== -1) {
+                                inst.props.query?.forEach((queryItem: any) => {
+                                    findAction(queryItem.component)
+                                })
+                                inst.props.toolbar?.leftItems?.forEach((actionInst: ComponentInstance) => {
+                                    findAction(actionInst)
+                                })
+                                inst.props.toolbar?.rightItems?.forEach((actionInst: ComponentInstance) => {
+                                    findAction(actionInst)
+                                })
+                                inst.props.toolbar?.centerItems?.forEach((actionInst: ComponentInstance) => {
+                                    findAction(actionInst)
+                                })
+                                inst.props.columnActions?.forEach((actionInst: ComponentInstance) => {
+                                    findAction(actionInst)
+                                })
+                                inst.props.columns?.forEach((item: any) => {
+                                    if (item._component) {
+                                        findAction(item._component)
+                                    }
+                                })
+                            }
+                        }
+                        if (this.currentComponentTree && this.currentComponentTree.length > 0) {
+                            findAction(this.currentComponentTree[0])
+                        }
+                        return actionList
+                    },
+
+                    /**
+                     *  获取当前组件的导航
+                     */
+                    getBreadcrumb() {
+                        const crumb: ComponentInstance[] = []
+                        const findParent = (id: string) => {
+                            if (!id) return
+                            const parent = this.findParentComponentFromTreeById(id)
+                            if (parent) {
+                                if (parent.componentName) {
+                                    if (parent.componentName !== 'GlVirtual') {
+                                        crumb.push(parent)
+                                    }
+                                    findParent(parent.id)
+                                }
+                            }
+                        }
+                        if (this.currentSelectedComponentId) {
+                            crumb.push(this.currentSelectedComponentInstance)
+                            findParent(this.currentSelectedComponentId)
+                        }
+                        return crumb.reverse()
                     }
                 }
             })

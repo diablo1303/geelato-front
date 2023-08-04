@@ -29,7 +29,7 @@ import {
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import type {Column, TableColumnDataPlus} from "./table";
 import {Schema} from "b-validate";
-import {logicDeleteFieldName} from "./table";
+import {exchangeArray, logicDeleteFieldName} from "./table";
 import {mixins} from "@geelato/gl-ui";
 import {forEach} from "lodash";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
@@ -205,18 +205,30 @@ const pagination = reactive({
   ...props.pagination,
 });
 
-const columns = computed<TableColumnData[]>(() => {
+/**
+ *  表格列定义转换
+ */
+const columns = computed<TableColumnDataPlus[]>(() => {
   // 如果启用了多语言，则需要对标题进行翻译
-  let columnData: Array<TableColumnData> = [];
-  if (props.enableI18n && props.columns) {
+  let columnData: Array<TableColumnDataPlus> = [];
+  if (props.columns) {
     columnData = JSON.parse(JSON.stringify(props.columns));
-    columnData.forEach((item) => {
+    columnData.forEach((item: TableColumnDataPlus) => {
       // console.log("gl-entity-table > columns item:", item, item.title);
+      item.title = item._component?.props?.label ? t(item._component?.props?.label + "") : "";
+      // 增加必填标识
       // @ts-ignore
-      item.title = item.title ? t(item.title + "") : "";
+      if (item._component?.props?.rules?.length > 0) {
+        // @ts-ignore
+        const foundIndex = item._component.props.rules.findIndex((rule) => {
+          return rule.required === true && rule.ruleName === 'required'
+        })
+        if (foundIndex >= 0) {
+          item._required = true
+          item.titleSlotName = 'titleSlotRequired'
+        }
+      }
     });
-  } else {
-    columnData = props.columns
   }
   return columnData;
 });
@@ -303,23 +315,7 @@ const onPageSizeChange = (pageSize: number) => {
   fetchData({pageSize})
 }
 
-const exchangeArray = <T extends Array<any>>(
-    array: T,
-    beforeIdx: number,
-    newIdx: number,
-    isDeep = false
-): T => {
-  const newArray = isDeep ? cloneDeep(array) : array;
-  if (beforeIdx > -1 && newIdx > -1) {
-    // 先替换后面的，然后拿到替换的结果替换前面的
-    newArray.splice(
-        beforeIdx,
-        1,
-        newArray.splice(newIdx, 1, newArray[beforeIdx]).pop()
-    );
-  }
-  return newArray;
-};
+
 // cloneColumns:TableColumnData[]
 const cloneColumns = ref<Column[]>([]);
 const showColumns = ref<Column[]>([]);
@@ -360,10 +356,10 @@ const scroll = {
 watch(() => columns.value,
     (val) => {
 
-      val.forEach((col) => {
-        // @ts-ignore
-        col.title = col._component?.props.label
-      })
+      // val.forEach((col) => {
+      //   // @ts-ignore
+      //   col.title = col._component?.props.label
+      // })
       // @ts-ignore
       cloneColumns.value = cloneDeep(val);
       cloneColumns.value.forEach((item, index) => {
@@ -379,19 +375,19 @@ watch(() => columns.value,
     {deep: true, immediate: true}
 )
 
-const evalExpression = (data: {
-  record: TableData;
-  column: TableColumnDataPlus;
-  rowIndex: number;
-}) => {
-  const ctx = {
-    pageProxy: pageProvideProxy,
-    record: toRaw(data.record),
-    column: toRaw(data.column),
-    rowIndex: toRaw(data.rowIndex),
-  };
-  return jsScriptExecutor.evalExpression(ctx.column._renderScript, ctx);
-};
+// const evalExpression = (data: {
+//   record: TableData;
+//   column: TableColumnDataPlus;
+//   rowIndex: number;
+// }) => {
+//   const ctx = {
+//     pageProxy: pageProvideProxy,
+//     record: toRaw(data.record),
+//     column: toRaw(data.column),
+//     rowIndex: toRaw(data.rowIndex),
+//   };
+//   return jsScriptExecutor.evalExpression(ctx.column._renderScript, ctx);
+// };
 
 /**
  *  计算出带有插槽的列
@@ -459,21 +455,6 @@ const addRow = () => {
   })
   renderData.value.push(newRow)
 }
-/**
- *  表格在编辑模式下，保存行
- */
-const saveRow = (record: object, rowIndex: number) => {
-  const result = validateRecord(record, rowIndex)
-  if (result && Object.keys(result).length > 0) {
-    // 有异常
-
-    return false
-  } else {
-    // 无异常
-
-    return true
-  }
-}
 
 /**
  *  表格在编辑模式下，验证表格数据
@@ -499,7 +480,13 @@ const updateRow = (record: object, rowIndex: number) => {
   emits('updateRow', {record, rowIndex})
 }
 
-
+const copyRecord = (record: object, rowIndex: number) => {
+  const newRecord = JSON.parse(JSON.stringify(record))
+  if (newRecord.id) {
+    newRecord.id = undefined
+  }
+  renderData.value.splice(rowIndex + 1, 0, newRecord)
+}
 const deleteRecord = (record: object, rowIndex: number) => {
   const records = renderData.value.splice(rowIndex, 1)
   if (records && records.length > 0) {
@@ -511,8 +498,7 @@ const deleteRecord = (record: object, rowIndex: number) => {
   }
   // console.log('deleteDataWhenEnableEdit:', deleteDataWhenEnableEdit)
 }
-// console.log('props.columns:', props.columns)
-// console.log('cloneColumns', cloneColumns, 'columnActions:', props.columnActions)
+
 const getRenderData = () => {
   return renderData.value
 }
@@ -538,7 +524,7 @@ defineExpose({
 <template>
   <a-table class="gl-entity-table" v-if="refreshFlag" row-key="id"
            :loading="loading"
-           :pagination="pagination"
+           :pagination="false"
            :row-selection="rowSelection"
            :columns="cloneColumns"
            :data="renderData"
@@ -551,22 +537,25 @@ defineExpose({
            @page-change="onPageChange"
            @page-size-change="onPageSizeChange"
   >
+    <template #titleSlotRequired="{column}">
+      <span class="gl-required">*</span>{{ column.title }}
+    </template>
     <template ##="{ record,rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
-        <!-- 在编辑模式下，默认的操作：复制、删除 -->
-        <!--          <a-button type="text" size="small" @click="saveRow(record,rowIndex)">保存</a-button>-->
-        <!--          在这里popconfirm无效 TODO-->
+        <a-button type="text" size="small" @click="copyRecord(record,rowIndex)">复制</a-button>
+        <!--                  在这里popconfirm无效 TODO-->
         <a-popconfirm content="确定是否删除?">
           <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)">删除</a-button>
         </a-popconfirm>
       </a-space>
     </template>
     <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">
-      <div class="gl-entity-table-cols-opt"
-           :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}">
+      <div class="gl-entity-table-cols-opt" :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}"
+           :title="tableErrors[rowIndex]?.[column.dataIndex]?.message"
+      >
         <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="updateRow(record,rowIndex)"
                      :glComponentInst="cloneDeep(column._component)"></GlComponent>
-        <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>
+<!--        <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>-->
       </div>
     </template>
   </a-table>
@@ -599,6 +588,6 @@ defineExpose({
 }
 
 .gl-entity-table .arco-table-cell {
-  padding: 4px !important;
+  padding: 1px !important;
 }
 </style>
