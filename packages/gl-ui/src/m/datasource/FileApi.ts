@@ -1,5 +1,5 @@
 import axios from "axios";
-import type {ApiResult} from "@/m/types/global";
+import type {ApiResult} from "../types/global";
 
 
 export interface AttachmentForm {

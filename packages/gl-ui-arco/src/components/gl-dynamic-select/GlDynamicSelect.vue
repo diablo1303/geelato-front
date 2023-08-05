@@ -119,7 +119,7 @@ const loadData = () => {
   }
 }
 
-console.log('GlDynamicSelect > create', props.entityName, useAttrs().id)
+// console.log('GlDynamicSelect > create', props.entityName, useAttrs().id)
 watch(() => {
   return props.entityName + props.valueFiledName + props.labelFieldName + props.extraFieldAndBindIds
 }, () => {
@@ -128,7 +128,7 @@ watch(() => {
 
 const selectOne = (value: any) => {
   // 将值设置到对应的组件中
-  console.log('selectOne', value)
+  // console.log('selectOne', value)
   if (value && props.extraFieldAndBindIds.length > 0) {
     props.extraFieldAndBindIds.forEach((extraFieldAndBindId) => {
       pageProvideProxy.setComponentValue(extraFieldAndBindId.bindId, value[extraFieldAndBindId.fieldName])

@@ -423,7 +423,7 @@ onMounted(() => {
 })
 
 loadForm()
-defineExpose([submitForm])
+defineExpose({submitForm})
 </script>
 
 <style>

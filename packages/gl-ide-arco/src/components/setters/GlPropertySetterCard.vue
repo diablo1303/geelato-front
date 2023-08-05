@@ -129,7 +129,7 @@ export default defineComponent({
   methods: {
     // alarmIfNoSubTitle
     getElementTitle(element: any, titleField?: string, alarmIfNoTitle?: string) {
-      console.log('getElementTitle() > label:', element._component.props.label, element._component.props.bindField.fieldName,'titleField:', titleField, 'alarmIfNoTitle:', alarmIfNoTitle)
+      // console.log('getElementTitle() > label:', element._component.props.label, element._component.props.bindField.fieldName,'titleField:', titleField, 'alarmIfNoTitle:', alarmIfNoTitle)
       if (!titleField) return ''
       try {
         const keys = titleField.split('.')

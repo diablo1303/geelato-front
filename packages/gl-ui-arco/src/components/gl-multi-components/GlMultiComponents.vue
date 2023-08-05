@@ -5,10 +5,12 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {nextTick, PropType, ref, watch} from "vue";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
+import {nextTick, type PropType, ref, watch} from "vue";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {mixins} from "@geelato/gl-ui";
+import type {Size} from "@arco-design/web-vue";
 
+type TagSize = "medium" | "large" | "small" | undefined
 type ItemType = { inst: ComponentInstance, showInTag: boolean }
 type ValueItemType = { label: string | undefined, value: string | undefined }
 type ModelProps = Array<ValueItemType>
@@ -45,7 +47,7 @@ const props = defineProps({
     }
   },
   tagSize: {
-    type: String,
+    type: String as PropType<TagSize>,
     default() {
       return 'large'
     }
@@ -136,6 +138,7 @@ const addTag = () => {
   }
 }
 
+const form = ref({})
 </script>
 
 <template>
@@ -157,9 +160,9 @@ const addTag = () => {
       </template>
     </a-button>
     <a-modal v-if="visible" v-model:visible="visible" title="编辑" @ok="addTag">
-      <a-form>
+      <a-form :model="form">
         <template v-for="(item,index) in items" :key="index">
-          <a-form-item :field="item.inst?.props.label" :label="item.inst?.props.label">
+          <a-form-item :field="item.inst.props.label" :label="item.inst?.props.label">
             <GlComponent v-if="item.inst" :glComponentInst="item.inst" :glIsRuntime="glIsRuntime"
                          :glRuntimeFlag="glRuntimeFlag"></GlComponent>
           </a-form-item>

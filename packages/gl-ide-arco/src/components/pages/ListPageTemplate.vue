@@ -5,8 +5,8 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {PropType, ref, watch} from "vue";
-import type {CreatePageOptions} from "@/components/pages/CreatePagesFromEntityManager";
+import {type PropType, ref, watch} from "vue";
+import type {CreatePageOptions} from "./CreatePagesFromEntityManager";
 import {utils} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue'])
@@ -42,7 +42,7 @@ const columns = []
   </div>
   <div>
     {
-      "id": "{{ listPageId }}",
+      "id": "{{ 'listPageId' }}",
       "componentName": "GlPage",
       "title": "{{ mv.listTitle }}",
       "props": {
@@ -57,7 +57,7 @@ const columns = []
     "group": "dataDisplay",
     "useBy": ["freePage"],
     "style": {},
-    "id": "{{ tableId }}",
+    "id": "{{ 'tableId' }}",
     "props": {
       "entityName": "{{ mv.entityName }}",
       "query": [{

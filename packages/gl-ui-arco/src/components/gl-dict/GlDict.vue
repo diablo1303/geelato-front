@@ -4,6 +4,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+// @ts-nocheck
 import {ref, watch} from "vue";
 import {entityApi} from "@geelato/gl-ui";
 

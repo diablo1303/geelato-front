@@ -349,7 +349,7 @@ class ComponentStoreFactory {
                         if (grandParentComponent) {
                             // console.log('grandParentComponent componentName:', grandParentComponent.componentName)
                             // !!!注意，如果
-                            if (grandParentComponent.componentName === 'GlRowColLayout') {
+                            if (['GlRowColLayout', 'GlTabs'].indexOf(grandParentComponent.componentName) !== -1) {
                                 grandParentComponent = this.findParentComponentFromTreeById(grandParentComponent!.id)
                             }
                             if (grandParentComponent) {

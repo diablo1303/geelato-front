@@ -40,7 +40,7 @@ export default {
         "setterComponentName": "GlEntityFieldSelect",
         "enableValueExpress": false
     }, {
-        "name": "accept",
+        "name": "acceptArray",
         "group": "base",
         "type": "props",
         "enableValueExpress": true,

@@ -48,7 +48,7 @@ export default defineComponent({
       }
     },
     defaultItemForAdd: {
-      type: [Object, Function],
+      type: [Object, Number, String, Array, Boolean, Function],
       default() {
         return {}
       }
@@ -90,7 +90,7 @@ export default defineComponent({
   methods: {
     getDefaultItem() {
       // console.log('........', typeof this.defaultItemForAdd, this.defaultItemForAdd)
-      const template = typeof this.defaultItemForAdd === 'function' ? this.defaultItemForAdd() : this.defaultItemForAdd
+      let template = typeof this.defaultItemForAdd === 'function' ? this.defaultItemForAdd() : this.defaultItemForAdd
       try {
         return JSON.parse(JSON.stringify(template))
       } catch (e) {

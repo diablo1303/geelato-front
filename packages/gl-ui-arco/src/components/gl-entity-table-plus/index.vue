@@ -245,7 +245,7 @@ const onFetchSuccess = (args: any) => {
 const entityTable = computed(() => {
   return props.base?.enableEdit ? GlEntityTableEditable : GlEntityTable
 })
-defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData, validateTable])
+defineExpose({deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData, validateTable})
 </script>
 
 <template>

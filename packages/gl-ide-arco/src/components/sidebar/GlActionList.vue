@@ -6,7 +6,7 @@ export default {
 <script lang="ts" setup>
 import {onMounted, ref, watch} from "vue";
 import {useComponentStore} from "@geelato/gl-ide";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const componentStore = useComponentStore()
 const emits = defineEmits(['update:modelValue'])

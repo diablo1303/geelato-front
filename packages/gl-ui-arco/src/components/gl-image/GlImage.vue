@@ -18,8 +18,8 @@ const props = defineProps({
   },
   srcType: String,
   srcValue: String,
-  width: Number,
-  height: Number,
+  width: [Number,String],
+  height: [Number,String],
   defaultStyle: {
     type: Object,
     default() {

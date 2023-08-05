@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {useComponentStore} from "../stores/UseComponentStore";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const componentStore = useComponentStore()
 

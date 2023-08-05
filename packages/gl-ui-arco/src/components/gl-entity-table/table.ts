@@ -2,11 +2,7 @@ import type {TableColumnData} from "@arco-design/web-vue/es/table/interface";
 import type {EntityReader} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import cloneDeep from "lodash/cloneDeep";
-import type {TableData} from "@arco-design/web-vue";
-import {inject, toRaw} from "vue";
-import {jsScriptExecutor, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 
-const pageProvideProxy: PageProvideProxy | undefined = inject(PageProvideKey)
 
 export type SizeProps = "mini" | "small" | "medium" | "large";
 export type Column = TableColumnDataPlus & { checked?: true };
@@ -92,16 +88,16 @@ export const exchangeArray = <T extends Array<any>>(
     return newArray;
 }
 
-const evalExpression = (data: {
-    record: TableData;
-    column: TableColumnDataPlus;
-    rowIndex: number;
-}) => {
-    const ctx = {
-        pageProxy: pageProvideProxy,
-        record: toRaw(data.record),
-        column: toRaw(data.column),
-        rowIndex: toRaw(data.rowIndex),
-    };
-    return jsScriptExecutor.evalExpression(ctx.column._renderScript, ctx);
-};
+// const evalExpression = (data: {
+//     record: TableData;
+//     column: TableColumnDataPlus;
+//     rowIndex: number;
+// }) => {
+//     const ctx = {
+//         pageProxy: pageProvideProxy,
+//         record: toRaw(data.record),
+//         column: toRaw(data.column),
+//         rowIndex: toRaw(data.rowIndex),
+//     };
+//     return jsScriptExecutor.evalExpression(ctx.column._renderScript, ctx);
+// };

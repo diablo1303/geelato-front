@@ -7,7 +7,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-
+// @ts-nocheck
 import {ref} from "vue";
 import {
   useSystemVarsTreeData,
@@ -158,7 +158,7 @@ const selectConstNode = async (selectedKeys: any, data: any, treeData: any) => {
   }
 }
 
-const expendDictItems = ref({})
+const expendDictItems = <{ [key: string]: any }>ref({})
 const dictItemsDisplay = ref(false)
 const expendDict = async (code: any) => {
   if (code && typeof code === 'function') {
@@ -279,7 +279,7 @@ const selectDictItem = (key: any) => {
                       }}</span>
                   </span>
                 </template>
-                <template #extra="{_code,_type}">
+                <template #extra="{_code,title,_type}">
                   <a-button v-if="['系统常量'].indexOf(title)===-1" size="mini" type="text" shape="round"
                             @click="expendDict(_code)">选择字典值
                   </a-button>

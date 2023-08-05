@@ -4,10 +4,10 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {computed, nextTick, onUpdated, type PropType} from "vue";
+import {nextTick, onUpdated, type PropType} from "vue";
 import {mixins, utils} from "@geelato/gl-ui";
 import type {I18nItem} from "@geelato/gl-ui-schema";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const props = defineProps({
   spans: {

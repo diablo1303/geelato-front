@@ -4,9 +4,9 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {PropType, ref, watch} from "vue";
+import {ref, watch} from "vue";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
-import {Param, useGlobal} from "../../index";
+import {useGlobal} from "../../index";
 import {entityApi} from "../../m/datasource/EntityApi";
 
 const global = useGlobal()

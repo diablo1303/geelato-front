@@ -1,6 +1,6 @@
 import type Action from "./actions/Action";
 import type BindField from "./model/BindField";
-import BlockInstance from "./actions/BlockInstance";
+import type BlockInstance from "./actions/BlockInstance";
 
 export class ComponentInstanceProps {
     // 标题，如用于formItem的标题

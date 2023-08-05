@@ -20,9 +20,9 @@ const props = defineProps({
   items: {
     type: Array as PropType<Array<TabItem>>
   },
-  position: String,
-  type: String,
-  direction: String,
+  // position: String,
+  // type: String,
+  // direction: String,
   ...mixins.props
 })
 
@@ -100,24 +100,22 @@ onMounted(() => {
 
 </script>
 <template>
-  <div style="background-color:white">
-    <a-tabs :active-key="mv" v-bind="props" @tabClick="onTabClick">
-      <template #extra>
-        <div>
-          <slot name="extra"></slot>
-        </div>
+  <a-tabs :active-key="mv" @tabClick="onTabClick" style="background-color:white">
+    <template #extra>
+      <div>
+        <slot name="extra"></slot>
+      </div>
+    </template>
+    <a-tab-pane v-for="(item,index) in tabItems" :key="index" :disabled="item.disabled">
+      <template #title>
+        <GlIconfont v-if="item.iconType" :type="item.iconType"/>
+        {{ item.title }}
       </template>
-      <a-tab-pane v-for="(item,index) in tabItems" :key="index" :disabled="item.disabled">
-        <template #title>
-          <GlIconfont v-if="item.iconType" :type="item.iconType"/>
-          {{ item.title }}
-        </template>
-        <component v-if="glComponentInst.children[index]" :is="'GlInsts'+glRuntimeFlag"
-                   :glComponentInst="glComponentInst.children[index]"
-                   :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></component>
-      </a-tab-pane>
-    </a-tabs>
-  </div>
+      <component v-if="glComponentInst.children[index]" :is="'GlInsts'+glRuntimeFlag"
+                 :glComponentInst="glComponentInst.children[index]"
+                 :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></component>
+    </a-tab-pane>
+  </a-tabs>
 </template>
 
 <style scoped>

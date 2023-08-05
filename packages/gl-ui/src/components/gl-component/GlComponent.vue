@@ -252,7 +252,7 @@ onMounted(() => {
   emits('onComponentMounted', {})
 })
 executePropsExpressions()
-defineExpose([onMouseLeave, onMouseOver])
+defineExpose({onMouseLeave, onMouseOver})
 
 </script>
 

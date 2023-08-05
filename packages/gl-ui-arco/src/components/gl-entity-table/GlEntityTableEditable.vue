@@ -207,9 +207,10 @@ const pagination = reactive({
 
 /**
  *  表格列定义转换
+ *  如果启用了多语言，则需要对标题进行翻译
+ *  对于一些特殊的列，设置默认值，如ID的宽度
  */
 const columns = computed<TableColumnDataPlus[]>(() => {
-  // 如果启用了多语言，则需要对标题进行翻译
   let columnData: Array<TableColumnDataPlus> = [];
   if (props.columns) {
     columnData = JSON.parse(JSON.stringify(props.columns));
@@ -227,6 +228,10 @@ const columns = computed<TableColumnDataPlus[]>(() => {
           item._required = true
           item.titleSlotName = 'titleSlotRequired'
         }
+      }
+      // ID width
+      if (item.dataIndex === "id" && !item.width) {
+        item.width = 160
       }
     });
   }
@@ -550,12 +555,13 @@ defineExpose({
       </a-space>
     </template>
     <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">
-      <div class="gl-entity-table-cols-opt" :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}"
+      <div class="gl-entity-table-cols-opt"
+           :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}"
            :title="tableErrors[rowIndex]?.[column.dataIndex]?.message"
       >
         <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="updateRow(record,rowIndex)"
                      :glComponentInst="cloneDeep(column._component)"></GlComponent>
-<!--        <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>-->
+        <!--        <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>-->
       </div>
     </template>
   </a-table>

@@ -5,13 +5,8 @@ export default {
 </script>
 <script lang="ts" setup>
 import {
-  ComponentPublicInstance,
-  getCurrentInstance,
   inject,
   nextTick,
-  onBeforeUpdate,
-  onMounted,
-  onUpdated,
   ref
 } from 'vue'
 import {mixins, utils} from "@geelato/gl-ui";
