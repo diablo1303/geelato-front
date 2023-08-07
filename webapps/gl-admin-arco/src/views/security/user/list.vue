@@ -184,7 +184,7 @@
 /* 导入 */
 import {nextTick, reactive, ref, watch} from 'vue';
 import useLoading from '@/hooks/loading';
-import {Notification} from "@arco-design/web-vue";
+import {Modal} from "@arco-design/web-vue";
 // 分页列表
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
@@ -275,8 +275,26 @@ const addTable = (ev: MouseEvent) => {
 };
 const resetPwdTable = async (id: string) => {
   try {
-    await resetPassword(id);
-    Notification.success(t('security.dict.index.notice.success'));
+    const {data} = await resetPassword(id);
+    // @ts-ignore
+    const pwd: string = data || data.plainPassword;
+    // Notification.success(t('security.dict.index.notice.success'));
+    if (pwd) {
+      Modal.success({
+        title: t('security.user.index.form.password'),
+        content: pwd,
+        okText: "复制",
+        onBeforeOk: (done: any) => {
+          const textarea = document.createElement('textarea');
+          textarea.value = pwd;
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          done(true);
+        }
+      });
+    }
   } catch (err) {
     console.log(err);
   }

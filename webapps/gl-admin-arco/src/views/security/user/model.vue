@@ -68,7 +68,7 @@
               </a-select>
             </template>
           </a-input>
-          <span v-else>{{formData.mobilePrefix}} {{ formData.mobilePhone }}</span>
+          <span v-else>{{ formData.mobilePrefix }} {{ formData.mobilePhone }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
@@ -161,7 +161,9 @@ import {sexOptions, sourceOptions, typeOptions} from "@/views/security/user/sear
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import mobilePrefix from '@/config/mobilePrefix.json';
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
+import {useI18n} from "vue-i18n";
 
+const {t} = useI18n();
 const pageData = ref({formState: 'add', button: true, formCol: 2});
 const validateForm = ref<FormInstance>();
 const orgSelectOptions = ref<SelectOption[]>([]);
@@ -176,7 +178,7 @@ const generateFormData = (): QueryForm => {
     avatar: '',
     password: '',
     plainPassword: '',
-    mobilePrefix:'+86',
+    mobilePrefix: '+86',
     mobilePhone: '',
     telephone: '',
     orgId: '',
@@ -233,6 +235,24 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
     try {
       const {data} = await createOrUpdateForm(params);
       successBack(data);
+      // @ts-ignore
+      const pwd: string = data && data.plainPassword;
+      if (pwd) {
+        Modal.success({
+          title: t('security.user.index.form.password'),
+          content: pwd,
+          okText: "复制",
+          onBeforeOk: (done: any) => {
+            const textarea = document.createElement('textarea');
+            textarea.value = pwd;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            done(true);
+          }
+        });
+      }
     } catch (err) {
       failBack(err);
     }
