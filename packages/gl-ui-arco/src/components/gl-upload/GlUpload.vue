@@ -5,8 +5,8 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {ref, watch} from "vue";
-import {FileItem} from "@arco-design/web-vue/es/upload/interfaces";
+import {onMounted, ref, watch} from "vue";
+import type {FileItem} from "@arco-design/web-vue";
 import {Notification} from "@arco-design/web-vue";
 import {entityApi, fileApi} from "@geelato/gl-ui";
 
@@ -17,12 +17,18 @@ const props = defineProps({
     default() {
       return ''
     }
-  }
+  },
+  acceptArray: Array
 })
 const mv = ref(props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
+
+// 转成字符串格式，并去掉空项
+const accept = ref(JSON.stringify(props.acceptArray?.filter((acceptItem) => {
+  return !acceptItem
+}) || []))
 
 const fileList = ref<FileItem[]>([]);
 
@@ -69,6 +75,7 @@ const uploadError = (fileItem: FileItem) => {
 const uploadSuccess = (fileItem: FileItem) => {
   fileItem.uid = fileItem.response.data.id;
   fileList.value.push(fileItem)
+  console.log('fileList:', fileList)
   resetMv()
   Notification.success("上传成功");
 }
@@ -108,20 +115,19 @@ const loadFiles = () => {
       fileList.value.length = 0
     }
     resetMv()
-    // console.log('getAttachmentByIds() > fileList:', fileList.value);
+    console.log('getAttachmentByIds() > fileList:', fileList.value);
   });
 }
 // 初始化，加载文件
-loadFiles()
+onMounted(() => {
+  loadFiles()
+})
 </script>
 
 <template>
   <a-upload :action="fileApi.getUploadUrl()" :file-list="fileList"
+            :accept="accept"
             :headers="entityApi.getHeader()"
-            :limit="1"
-            accept="image/*"
-            image-preview
-            list-type="picture-card"
             @error="uploadError" @success="uploadSuccess" @before-remove="beforeRemove"/>
 </template>
 

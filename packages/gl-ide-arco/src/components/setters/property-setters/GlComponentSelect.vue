@@ -68,12 +68,12 @@ const componentInstance = ref(new ComponentInstance())
 const ideStore = useIdeStore()
 // 依据不同的组件类型获取实例化标题
 const getTitle = (componentName: string, pre: string = '') => {
-  let name
-  if (componentName === 'AButton') {
-    name = mv.value?.slots?.icon?.props?.text
-  } else {
-    name = mv.value?.props?.label
-  }
+  let name = mv.value?.props?.label
+  // if (componentName === 'AButton') {
+  //   name = mv.value?.slots?.icon?.props?.text
+  // } else {
+  //
+  // }
   return name ? pre + name : ''
 }
 

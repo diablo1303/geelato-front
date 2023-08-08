@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import {computed, inject, type PropType, ref, unref} from 'vue'
+import {computed, inject, onMounted, type PropType, ref, unref} from 'vue'
 import {useDrag, useDrop} from 'vue3-dnd'
 import {ItemTypes} from './DndItemTypes'
 import type {Identifier} from 'dnd-core'
@@ -17,7 +17,6 @@ import {PageProvideProxy, PageProvideKey} from "@geelato/gl-ui";
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const props = defineProps({
   id: [String],
-  text: String,
   index: Number,
   moveItem: Function as PropType<(dragIndex: number, hoverIndex: number, dragItemId: string, dropItemId: string) => void>,
   addItem: Function,
@@ -177,10 +176,15 @@ const onClick = (...args: any[]) => {
   const fromPageId = pageProvideProxy?.pageInst.id || props.glComponentInst.id
   componentStore.setCurrentSelectedComponentById(props.glComponentInst.id || '', fromPageId)
 }
+
+// console.log('GlInst > create()', props.glComponentInst.id)
+// onMounted(() => {
+//   console.log('GlInst > onMounted()', props.glComponentInst.id)
+// })
 </script>
 
 <template>
-  <div class="gl-dnd-wrapper" :style="{display:styleDisplay}">
+  <div class="gl-dnd-wrapper" :style="{display:styleDisplay}" v-if="glComponentInst.id">
     <div :ref="setRef"
          class="gl-component-wrapper"
          :style="{ opacity }"
@@ -209,7 +213,7 @@ const onClick = (...args: any[]) => {
         </a-form-item>
       </template>
       <template v-else>
-        <GlComponentDnd class="gl-dnd-item gl-x-item" style="flex: auto"
+        <GlComponentDnd :modelValue="utils.gid()" class="gl-dnd-item gl-x-item" style="flex: auto"
                         :glComponentInst="glComponentInst"
                         :componentStoreId="componentStoreId">
         </GlComponentDnd>

@@ -1,6 +1,8 @@
 import type {TableColumnData} from "@arco-design/web-vue/es/table/interface";
 import type {EntityReader} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import cloneDeep from "lodash/cloneDeep";
+
 
 export type SizeProps = "mini" | "small" | "medium" | "large";
 export type Column = TableColumnDataPlus & { checked?: true };
@@ -15,6 +17,8 @@ export interface TableColumnDataPlus extends TableColumnData {
     _component?: ComponentInstance;
     // 是否显示，用于控制数据查询加载，但不展示，可用于前端列计算或record传值，恒等于false时才不显示
     _show?: boolean;
+    // 是否必填，用于编辑状态
+    _required?: boolean
 }
 
 export interface TableMeta {
@@ -65,3 +69,35 @@ export {defaultTable};
 
 // 强制约定，实体需要有逻辑删除字段delStatus
 export const logicDeleteFieldName = 'delStatus'
+
+export const exchangeArray = <T extends Array<any>>(
+    array: T,
+    beforeIdx: number,
+    newIdx: number,
+    isDeep = false
+): T => {
+    const newArray = isDeep ? cloneDeep(array) : array;
+    if (beforeIdx > -1 && newIdx > -1) {
+        // 先替换后面的，然后拿到替换的结果替换前面的
+        newArray.splice(
+            beforeIdx,
+            1,
+            newArray.splice(newIdx, 1, newArray[beforeIdx]).pop()
+        );
+    }
+    return newArray;
+}
+
+// const evalExpression = (data: {
+//     record: TableData;
+//     column: TableColumnDataPlus;
+//     rowIndex: number;
+// }) => {
+//     const ctx = {
+//         pageProxy: pageProvideProxy,
+//         record: toRaw(data.record),
+//         column: toRaw(data.column),
+//         rowIndex: toRaw(data.rowIndex),
+//     };
+//     return jsScriptExecutor.evalExpression(ctx.column._renderScript, ctx);
+// };

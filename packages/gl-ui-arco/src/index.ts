@@ -28,6 +28,7 @@ import GlAlert from "./components/gl-alert/GlAlert.vue";
 import GlMultiComponents from "./components/gl-multi-components/GlMultiComponents.vue";
 import GlUpload from "./components/gl-upload/GlUpload.vue";
 import GlImage from "./components/gl-image/GlImage.vue";
+import GlButton from "./components/gl-button/GlButton.vue";
 
 const i18nMessage = {en, cn};
 
@@ -37,6 +38,7 @@ const component: Plugin = {
         if (PluginUtil.markInstalledPlugin(app, "gl-ui-arco")) {
             return;
         }
+        app.component(GlButton.name,GlButton)
         app.component(GlAlert.name, GlAlert)
         app.component(GlText.name, GlText)
         app.component(GlIconfontSelect.name, GlIconfontSelect)

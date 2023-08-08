@@ -542,7 +542,7 @@ export class EntityApi {
 
     getHeader() {
         return {
-            Authorization: this.getAuthorization()
+            Authorization: this.getAuthorization()!
         }
     }
 }

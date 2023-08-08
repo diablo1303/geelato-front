@@ -1,7 +1,6 @@
-
 <script lang="ts">
 export default {
-  name: 'GlIdeStatus'
+  name: 'GlButton'
 }
 </script>
 <script lang="ts" setup>
@@ -15,7 +14,9 @@ const props = defineProps({
     default() {
       return ''
     }
-  }
+  },
+  label:String,
+  iconType: String
 })
 const mv = ref(props.modelValue)
 watch(mv, () => {
@@ -24,12 +25,14 @@ watch(mv, () => {
 </script>
 
 <template>
-  <div class="gl-designer-status">
-xxxx
-  </div>
+  <a-button>
+    <template #icon>
+      <GlIconfont :type="iconType">xx</GlIconfont>
+    </template>
+    {{ label}}
+  </a-button>
 </template>
 
 <style scoped>
 
 </style>
-

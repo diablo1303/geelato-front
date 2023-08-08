@@ -36,10 +36,9 @@
     <!--                          :glComponentInst="childElement" :componentStoreId="componentStoreId"></GlComponentDnd>-->
     <!--    <div>xxx</div>-->
     <!--    <GlInsts :items="glComponentInst.children" :componentStoreId="componentStoreId"></GlInsts>-->
+<!--    :key="inst.id"-->
     <GlInst v-if="glComponentInst" v-for="(inst, index) in glComponentInst.children"
             :id="inst.id"
-            :key="inst.id"
-            :text="inst.id"
             :index="index"
             :moveItem="moveItem"
             :addItem="addItem"

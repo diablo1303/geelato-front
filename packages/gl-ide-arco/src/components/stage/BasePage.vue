@@ -12,7 +12,7 @@ export default {
 import {componentStoreFactory} from "@geelato/gl-ide";
 import {useGlobal, emitter, utils} from "@geelato/gl-ui";
 import GlInst from "../dnd/GlInst.vue";
-import {onUnmounted, provide} from "vue";
+import {onMounted, onUnmounted, provide} from "vue";
 
 const emits = defineEmits(['drop'])
 
@@ -88,30 +88,36 @@ const onSetCurrentHoverComponentId = (data: any) => {
     })
   }
 }
-console.log('props:', props)
+// console.log('props:', props)
 if (props.enableToolbar) {
   emitter.on('setCurrentSelectedComponentId', onSetCurrentSelectedComponentId)
   emitter.on('setCurrentHoverComponentId', onSetCurrentHoverComponentId)
 }
 
+// console.log('BasePage > create()')
+//
+// onMounted(() => {
+//   console.log('BasePage > onMounted()')
+// })
 onUnmounted(() => {
   if (props.enableToolbar) {
     emitter.off('setCurrentSelectedComponentId', onSetCurrentSelectedComponentId)
     emitter.off('setCurrentSelectedComponentId', onSetCurrentHoverComponentId)
   }
-  console.log('BasePage > onUnmounted()')
+  // console.log('BasePage > onUnmounted()')
 })
 
 </script>
 
 <template>
-  <div class="gl-base-page" v-if="componentStore.currentComponentTree.length>0"
+  <div class="gl-base-page"
+       v-if="componentStore.currentComponentTree.length>0&&componentStore.currentComponentTree[0].id"
        :id="componentStore.currentComponentTree[0].id">
+    <!--       :key="componentStore.currentComponentTree[0].id"   :index="0" -->
     <GlToolbarBreadcrumbs eventType="Hover"></GlToolbarBreadcrumbs>
     <GlToolbarBreadcrumbs eventType="Selected"></GlToolbarBreadcrumbs>
-    <GlInst :id="componentStore.currentComponentTree[0].id"
-            :key="componentStore.currentComponentTree[0].id"
-            :text="componentStore.currentComponentTree[0].id"
+    <GlInst :modelValue="utils.gid()"
+            :id="componentStore.currentComponentTree[0].id"
             :index="0"
             :glComponentInst="componentStore.currentComponentTree[0]"
             :componentStoreId="componentStoreId"

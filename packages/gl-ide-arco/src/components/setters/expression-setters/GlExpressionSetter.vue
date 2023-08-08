@@ -7,7 +7,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-
+// @ts-nocheck
 import {ref} from "vue";
 import {
   useSystemVarsTreeData,
@@ -73,6 +73,8 @@ const clearValueExpress = () => {
   emits('update:modelValue', mv.value)
 }
 const handleOk = () => {
+  // 由于代码做了格式化，会自动增加“;”换行等，需处理掉
+  mv.value = mv.value ? mv.value.replace(new RegExp('[;,\\s]*$'), '') : ''
   inputMv.value = mv.value
   valueExpressModalVisible.value = false
   emits('update:modelValue', mv.value)
@@ -156,7 +158,7 @@ const selectConstNode = async (selectedKeys: any, data: any, treeData: any) => {
   }
 }
 
-const expendDictItems = ref({})
+const expendDictItems = <{ [key: string]: any }>ref({})
 const dictItemsDisplay = ref(false)
 const expendDict = async (code: any) => {
   if (code && typeof code === 'function') {
@@ -277,7 +279,7 @@ const selectDictItem = (key: any) => {
                       }}</span>
                   </span>
                 </template>
-                <template #extra="{_code,_type}">
+                <template #extra="{_code,title,_type}">
                   <a-button v-if="['系统常量'].indexOf(title)===-1" size="mini" type="text" shape="round"
                             @click="expendDict(_code)">选择字典值
                   </a-button>
@@ -285,9 +287,11 @@ const selectDictItem = (key: any) => {
                   <a-modal>
 
                   </a-modal>
-                  <a-modal v-model:visible="dictItemsDisplay" title="选择字典值" :footer="false" mask-style="opacity:0.05" @ok="handleOk" @cancel="closeDict">
+                  <a-modal v-model:visible="dictItemsDisplay" title="选择字典值" :footer="false"
+                           mask-style="opacity:0.05" @ok="handleOk" @cancel="closeDict">
                     <a-space wrap>
-                      <a-tag v-for="key of Object.keys(expendDictItems)" style="cursor: pointer" clore="blue" @click="selectDictItem(key)">
+                      <a-tag v-for="key of Object.keys(expendDictItems)" style="cursor: pointer" clore="blue"
+                             @click="selectDictItem(key)">
                         {{ expendDictItems[key] }}
                       </a-tag>
                     </a-space>

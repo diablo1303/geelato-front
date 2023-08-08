@@ -7,3 +7,7 @@
 .gl-theme-default .anticon.anticon-delete {
     color: red;
 }
+
+.gl-required {
+    color: red;
+}

@@ -92,7 +92,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
      * @param iconType
      */
     function openPage({type, extendId, title, iconType}: Page) {
-        console.log('try to open page:', {type, extendId, title, iconType}, openingPageExtendId.value)
+        // console.log('try to open page:', {type, extendId, title, iconType}, openingPageExtendId.value)
         if (openingPageExtendId.value) {
             if (openingPageExtendId.value === extendId) {
                 global.$notification.error({
@@ -112,7 +112,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
             // 从已打开的页面中查找，若有若激活
             let foundItem = pageStore.findPageByExtendId(extendId)
             if (foundItem.index >= 0) {
-                console.log('found opened page:', foundItem)
+                // console.log('found opened page:', foundItem)
                 // componentStore.setComponentTree(foundItem.page.sourceContent)
                 pageStore.switchToPage(<number>foundItem.index)
                 openingPageExtendId.value = ''
@@ -200,10 +200,10 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
      * @param iconType
      */
     function closePage({type, extendId, title, iconType}: Page) {
-        console.log('close page:', {type, extendId, title, iconType})
+        // console.log('close page:', {type, extendId, title, iconType})
         let foundItem = pageStore.findPageByExtendId(extendId)
         if (foundItem.index >= 0) {
-            console.log('found delete page:', foundItem)
+            // console.log('found delete page:', foundItem)
             pageStore.closePage(<number>foundItem.index)
         }
     }

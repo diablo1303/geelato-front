@@ -18,8 +18,8 @@ const props = defineProps({
   },
   srcType: String,
   srcValue: String,
-  width: Number,
-  height: Number,
+  width: [Number,String],
+  height: [Number,String],
   defaultStyle: {
     type: Object,
     default() {
@@ -30,6 +30,8 @@ const props = defineProps({
     }
   }
 })
+
+
 
 const src = computed(() => {
   switch (props.srcType) {
@@ -46,7 +48,7 @@ const src = computed(() => {
 </script>
 
 <template>
-  <a-image :style="defaultStyle" :width="width" :height="height" :src="src">
+  <a-image :style="defaultStyle" :width="width" :height="height" :src="src" >
   </a-image>
 </template>
 

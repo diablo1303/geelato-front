@@ -105,7 +105,7 @@ const props = defineProps({
     type: Array as PropType<Array<ContextMenuDataType>>,
     default() {
       return [
-        {title: '新建目录', iconType: 'gl-folder', nodeType: 'folder', useFor: ['root','folder'], action: 'addNode'},
+        {title: '新建目录', iconType: 'gl-folder', nodeType: 'folder', useFor: ['root', 'folder'], action: 'addNode'},
         {title: '新建自由页面', iconType: 'gl-file', nodeType: 'freePage', useFor: ['folder'], action: 'addNode'},
         {title: '新建表单页面', iconType: 'gl-form', nodeType: 'formPage', useFor: ['folder'], action: 'addNode'},
         {title: '新建列表页面', iconType: 'gl-list', nodeType: 'listPage', useFor: ['folder'], action: 'addNode'},
@@ -181,6 +181,7 @@ const titleInput = ref()
 
 enum NodeType {
   folder = 'folder',
+  root = 'root'
 }
 
 type ContextMenuDataType = {
@@ -405,7 +406,7 @@ const onDragLeave = (ev: DragEvent, node: TreeNodeData) => {
 const onDrop = ({dragNode, dropNode, dropPosition}: any) => {
   const data = treeData.value;
   console.log('onDrop dragNode:', dragNode, ' dropNode:', dropNode, ' dropPosition:', dropPosition)
-  if (dragMode === DragModeType.onlyToFolder && dropNode.nodeType !== NodeType.folder && dropPosition === 0) {
+  if (dragMode === DragModeType.onlyToFolder && dropNode.nodeType !== NodeType.folder && dropNode.nodeType !== NodeType.root && dropPosition === 0) {
     global.$message.info('不能放在叶子节点下')
     return
   }

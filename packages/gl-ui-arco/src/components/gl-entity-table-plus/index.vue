@@ -245,7 +245,7 @@ const onFetchSuccess = (args: any) => {
 const entityTable = computed(() => {
   return props.base?.enableEdit ? GlEntityTableEditable : GlEntityTable
 })
-defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData, validateTable])
+defineExpose({deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData, validateTable})
 </script>
 
 <template>
@@ -256,7 +256,7 @@ defineExpose([deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
       <template #leftItems>
         <div v-if="base.enableEdit" class="action-icon">
           <a-button @click="addRow" shape="round" type="text" size="small">
-            <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加一行
+            <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加
           </a-button>
         </div>
       </template>

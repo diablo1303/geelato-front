@@ -129,6 +129,7 @@ export default defineComponent({
   methods: {
     // alarmIfNoSubTitle
     getElementTitle(element: any, titleField?: string, alarmIfNoTitle?: string) {
+      // console.log('getElementTitle() > label:', element._component.props.label, element._component.props.bindField.fieldName,'titleField:', titleField, 'alarmIfNoTitle:', alarmIfNoTitle)
       if (!titleField) return ''
       try {
         const keys = titleField.split('.')
@@ -141,7 +142,7 @@ export default defineComponent({
             }
           }
           const key: string = keys.shift()!
-          return keys.length > 0 ? getValue(obj[key], keys) : obj[key]
+          return keys.length > 0 ? getValue(obj[key], keys) : (obj[key]?obj[key]:`<span style="color: red">${alarmIfNoTitle}</span>`)
         }
         return getValue(element, keys)
       } catch (e) {

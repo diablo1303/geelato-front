@@ -1,25 +1,35 @@
 <template>
   <div class="gl-component-setter" v-if="componentModel">
-    <a-tabs size="small" :default-active-key="defaultActiveKey">
+    <!-- 这里需加上 :destroy-on-hide="true"，默认值为false，否则在页面切换时，各个页面重复更新渲染，性能很差-->
+    <a-tabs size="small" :default-active-key="defaultActiveKey" :destroy-on-hide="true">
       <a-tab-pane key="1" tab="属性" title="属性">
         <div v-if="!hideToolbar&&(showMove||showMove||showSelectParent||showDelete)" style="padding: 0 0.5em 0.5em;">
           <a-button-group type="primary" size="mini" shape="round">
-            <a-button status="primary" v-if="showMove" @click="componentStore.moveFrontCurrentComponent" title="移前呀移上">
-              移前
+            <a-button status="primary" v-if="showSelectParent" @click="componentStore.selectParentComponent">选父组件
             </a-button>
-            <a-button status="primary" v-if="showMove" @click="componentStore.moveBackCurrentComponent" title="移后或移下">移后
+            <a-button status="warning" :disabled="!showMove" @click="componentStore.moveFrontCurrentComponent"
+                      title="移前呀移上">移前
             </a-button>
-            <a-button status="primary" v-if="showSelectParent" @click="componentStore.selectParentComponent">选择父组件
+            <a-button status="warning" :disabled="!showMove" @click="componentStore.moveBackCurrentComponent"
+                      title="移后或移下">移后
+            </a-button>
+            <a-button status="warning" :disabled="!showMoveToParent" @click="componentStore.moveToParent" title="移后或移下">
+              移上一层
             </a-button>
           </a-button-group>
-            <a-button style="float: right" type="primary" size="mini" shape="round" status="danger" v-if="showDelete" @click="deleteCurrentSelectedComponentInst">删除</a-button>
+          <a-button style="float: right" type="primary" size="mini" shape="round" status="danger" v-if="showDelete"
+                    @click="deleteCurrentSelectedComponentInst">删除
+          </a-button>
         </div>
         <div class="gl-table">
           <div class="gl-table-row">
             <div class="gl-table-cell gl-label" style="width: 7em;">当前组件</div>
             <div class="gl-table-cell">
               <span
-                  style="font-size: 12px;line-height: 3em" :title="componentStore.currentSelectedComponentMeta?.componentName">{{ componentStore.currentSelectedComponentMeta?.title + ' ' + componentStore.currentSelectedComponentMeta?.componentName }}</span>
+                  style="font-size: 12px;line-height: 3em"
+                  :title="componentStore.currentSelectedComponentMeta?.componentName">{{
+                  componentStore.currentSelectedComponentMeta?.title + ' ' + componentStore.currentSelectedComponentMeta?.componentName
+                }}</span>
               <a-button size="mini" style="float: right;padding: 0 4px;margin: 1px" type="text"
                         @click="()=>{ClipboardJS.copy(componentStore.currentSelectedComponentMeta?.componentName)}">复制
               </a-button>
@@ -120,6 +130,10 @@ componentModel.value.id = componentModel.value.id ? componentModel.value.id : ut
 const setInstance = (instance: ComponentInstance, form: String) => {
   console.log('GlComponentSetter > set instance:', instance, 'form', form)
 }
+
+const showMoveToParent = computed(() => {
+  return componentStore.currentSelectedComponentMeta?.componentName !== 'GlVirtual'
+})
 
 const showMove = computed(() => {
   return componentStore.currentSelectedComponentMeta?.componentName !== 'GlPage'

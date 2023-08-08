@@ -66,6 +66,78 @@ export default {
         "placeholder": "实体值字段名",
         "setterComponentName": "GlFieldSelect"
     }, {
+        "name": "valueFilter",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "title": "数据过滤",
+        "_showSub": true,
+        "properties": [{
+            "name": "fieldName",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "setterComponentName": "GlFieldSelect",
+            "title": "字段名"
+        }, {
+            "name": "cop",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {
+                "options": [{
+                    "label": "等于",
+                    "value": "eq",
+                    "__sfh6bOn4TZO1ya3MA3": "eq"
+                }, {"label": "不等于", "value": "neq", "__sfh6bOn4TZO1ya3MA3": "neq"}, {
+                    "label": "小于",
+                    "value": "lt",
+                    "__sfh6bOn4TZO1ya3MA3": "lt"
+                }, {"label": "小于等于", "value": "lte", "__sfh6bOn4TZO1ya3MA3": "lte"}, {
+                    "label": "大于",
+                    "value": "gt",
+                    "__sfh6bOn4TZO1ya3MA3": "gt"
+                }, {"label": "大于等于", "value": "gte", "__sfh6bOn4TZO1ya3MA3": "gte"}, {
+                    "label": "开头包括",
+                    "value": "sw",
+                    "__sfh6bOn4TZO1ya3MA3": "sw"
+                }, {"label": "结尾包括", "value": "ew", "__sfh6bOn4TZO1ya3MA3": "ew"}, {
+                    "label": "包括",
+                    "value": "contains",
+                    "__sfh6bOn4TZO1ya3MA3": "contains"
+                }]
+            },
+            "setterComponentVModelName": "modelValue",
+            "title": "比较",
+            "setterComponentName": "ASelect"
+        }, {
+            "name": "value",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": true,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "title": "字段值",
+            "setterComponentName": "AInput",
+            "placeholder": ""
+        }],
+        "setterComponentName": "GlObjectArraySetter",
+        "titleField": "fieldName",
+        "subTitleField": "",
+        "alarmIfNoSubTitle": ""
+    }, {
         "name": "extraFieldAndBindIds",
         "group": "base",
         "type": "props",
@@ -103,7 +175,8 @@ export default {
         }],
         "setterComponentName": "GlObjectArraySetter",
         "titleField": "fieldName",
-        "alarmIfNoSubTitle": true
+        "alarmIfNoSubTitle": true,
+        "subTitleField": ""
     }, {
         "name": "size",
         "setterComponentProps": {
@@ -147,10 +220,6 @@ export default {
         "expanded": true,
         "enableValueExpress": false
     }],
-    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}, {
-        "name": "onMounted",
-        "description": "组件加载完时触发，和Vue的onMounted一致",
-        "title": "加载完"
-    }, {"name": "onUpdated", "description": "组件更新时触发，和Vue的onUpdated一致", "title": "加载完"}],
+    "actions": [],
     "displayOnStage": "inline-block"
 }

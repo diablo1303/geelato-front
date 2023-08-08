@@ -1,5 +1,5 @@
 <template>
-  <a-select v-model="mv"
+  <a-select v-model="mvItem"
             :allow-clear="allowClear"
             :allow-search="allowSearch"
             :readonly="readonly"
@@ -10,7 +10,8 @@
             :valueKey="valueFiledName"
   >
     <a-option v-for="item in selectOptions" :value="item" :label="item[labelFieldName]"
-              :title="item[labelFieldName]"></a-option>
+              :title="item[labelFieldName]"
+              :class="{'gl-selected':mv===item[valueFiledName]}"></a-option>
   </a-select>
 </template>
 <script lang="ts">
@@ -22,7 +23,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, type PropType, ref, watch} from 'vue'
+import {inject, onMounted, type PropType, ref, useAttrs, watch} from 'vue'
 import {entityApi, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
@@ -91,6 +92,7 @@ const props = defineProps({
 })
 const emits = defineEmits(['update:modelValue'])
 const mv = ref(props.modelValue)
+const mvItem = ref({[props.valueFiledName]: props.modelValue})
 watch(mv,
     (val: any) => {
       emits('update:modelValue', val)
@@ -102,7 +104,7 @@ const loadData = () => {
   if (props.entityName && props.valueFiledName && props.labelFieldName) {
     const params = props.orderFiledName ? {'@order': props.orderFiledName + '|' + props.ascOrDesc} : {}
     Object.assign(params, {'delStatus|eq': '0'})
-    console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'params:', params, 'extraFieldAndBindIds:', props.extraFieldAndBindIds)
+    // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'params:', params, 'extraFieldAndBindIds:', props.extraFieldAndBindIds)
     let fields = props.valueFiledName === props.labelFieldName ? `${props.valueFiledName}` : `${props.valueFiledName},${props.labelFieldName}`
     if (props.extraFieldAndBindIds?.length > 0) {
       const extraFieldNames: string[] = []
@@ -116,6 +118,8 @@ const loadData = () => {
     })
   }
 }
+
+// console.log('GlDynamicSelect > create', props.entityName, useAttrs().id)
 watch(() => {
   return props.entityName + props.valueFiledName + props.labelFieldName + props.extraFieldAndBindIds
 }, () => {
@@ -124,12 +128,13 @@ watch(() => {
 
 const selectOne = (value: any) => {
   // 将值设置到对应的组件中
-  console.log('selectOne', value)
+  // console.log('selectOne', value)
   if (value && props.extraFieldAndBindIds.length > 0) {
     props.extraFieldAndBindIds.forEach((extraFieldAndBindId) => {
       pageProvideProxy.setComponentValue(extraFieldAndBindId.bindId, value[extraFieldAndBindId.fieldName])
     })
   }
+  mv.value = value ? value[props.valueFiledName] : ''
 }
 
 </script>

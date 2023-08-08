@@ -48,7 +48,7 @@ export default defineComponent({
       }
     },
     defaultItemForAdd: {
-      type: [Object, Function],
+      type: [Object, Number, String, Array, Boolean, Function],
       default() {
         return {}
       }
@@ -90,7 +90,7 @@ export default defineComponent({
   methods: {
     getDefaultItem() {
       // console.log('........', typeof this.defaultItemForAdd, this.defaultItemForAdd)
-      const template = typeof this.defaultItemForAdd === 'function' ? this.defaultItemForAdd() : this.defaultItemForAdd
+      let template = typeof this.defaultItemForAdd === 'function' ? this.defaultItemForAdd() : this.defaultItemForAdd
       try {
         return JSON.parse(JSON.stringify(template))
       } catch (e) {
@@ -110,7 +110,7 @@ export default defineComponent({
     },
 
     removeItem(index: number) {
-      let element = this.items[index]
+      // let element = this.items[index]
       // console.log('removeItem', this.items, index, element)
       if (this.selectedIndex === index) {
         // @ts-ignore

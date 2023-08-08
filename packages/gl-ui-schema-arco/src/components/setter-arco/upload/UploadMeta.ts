@@ -1,45 +1,188 @@
 export default {
     "componentName": "GlUpload",
     "displayMode": "Tile",
-    "iconType":"gl-upload",
+    "iconType": "gl-upload",
     "group": "dataEntry",
     "title": "上传",
     "alias": "upload",
     "useBy": ["freePage"],
-    "properties": [
-        {
-            "name": "label",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "title": "标题",
-            "setterComponentName": "AInput",
-            "enableValueExpress": true
-        }, {
-            "name": "hideLabel",
-            "group": "base",
-            "type": "props",
-            "enableValueExpress": true,
-            "show": true,
-            "expanded": true,
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "title": "隐藏标题",
-            "setterComponentName": "ASwitch"
-        }, {
-            "name": "bindField",
-            "setterComponentProps": {},
-            "setterComponentVModelName": "modelValue",
-            "group": "base",
-            "type": "props",
-            "show": true,
-            "expanded": true,
-            "title": "绑定字段",
-            "setterComponentName": "GlEntityFieldSelect",
-            "enableValueExpress": false
-        }
-    ]
+    "properties": [{
+        "name": "label",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "标题",
+        "setterComponentName": "AInput",
+        "enableValueExpress": true
+    }, {
+        "name": "hideLabel",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "隐藏标题",
+        "setterComponentName": "ASwitch"
+    }, {
+        "name": "bindField",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "绑定字段",
+        "setterComponentName": "GlEntityFieldSelect",
+        "enableValueExpress": false
+    }, {
+        "name": "acceptArray",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {
+            "multiple": true,
+            "options": [{
+                "label": "办公文档",
+                "__XUTvPkyOYDLpO5f8xh": ".pdf,.doc,.docx,xls,xlsx",
+                "value": ".pdf,.doc,.docx,xls,xlsx"
+            }, {"label": "图片类型", "__XUTvPkyOYDLpO5f8xh": "image/*", "value": "image/*"}, {
+                "label": "压缩包",
+                "__XUTvPkyOYDLpO5f8xh": ".zip,.rar,.7z,.gz,.tar,.tgz,.bz2,.Z",
+                "value": ".zip,.rar,.7z,.gz,.tar,.tgz,.bz2,.Z"
+            }, {"label": "视频", "__XUTvPkyOYDLpO5f8xh": "video/*", "value": "video/*"}, {
+                "label": "音频",
+                "__XUTvPkyOYDLpO5f8xh": "audio/*",
+                "value": "audio/*"
+            }]
+        },
+        "setterComponentVModelName": "modelValue",
+        "title": "文件类型",
+        "setterComponentName": "ASelect",
+        "setterDefaultValue": ""
+    }, {
+        "name": "limit",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "description": "限制上传文件的数量。0表示不限制",
+        "title": "上传数量",
+        "setterDefaultValue": 1,
+        "setterComponentName": "AInputNumber"
+    }, {
+        "name": "multiple",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "description": "是否支持同时选择多文件上传",
+        "title": "选择多个",
+        "setterComponentName": "ASwitch"
+    }, {
+        "name": "draggable",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "拖拽上传",
+        "description": "是否支持拖拽上传",
+        "setterComponentName": "ASwitch"
+    }, {
+        "name": "tip",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "提示文字",
+        "setterComponentName": "AInput"
+    }, {
+        "name": "showFileList",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "description": "是否显示文件列表",
+        "title": "显示列表",
+        "setterComponentName": "ASwitch"
+    },{
+        "name": "listType",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {
+            "options": [{
+                "label": "text",
+                "__3FZbPFjO1B5CDK7t2A": "text",
+                "value": "text"
+            }, {"label": "picture", "__3FZbPFjO1B5CDK7t2A": "picture", "value": "picture"}, {
+                "label": "picture-card",
+                "__3FZbPFjO1B5CDK7t2A": "picture-card",
+                "value": "picture-card"
+            }]
+        },
+        "setterComponentVModelName": "modelValue",
+        "title": "列表类型",
+        "setterComponentName": "ASelect"
+    }, {
+        "name": "showPreviewButton",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "description": "照片墙是否显示预览按钮",
+        "title": "预览按钮",
+        "setterComponentName": "ASwitch"
+    }, {
+        "name": "showRemoveButton",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "description": "是否显示删除按钮",
+        "title": "显示删除",
+        "setterComponentName": "ASwitch"
+    },{
+        "name": "imagePreview",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "description": "是否使用 ImagePreview 组件进行预览",
+        "title": "预览图片",
+        "setterComponentName": "ASwitch"
+    }],
+    "actions": []
 }

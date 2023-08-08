@@ -4,7 +4,11 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, nextTick, ref} from 'vue'
+import {
+  inject,
+  nextTick,
+  ref
+} from 'vue'
 import {mixins, utils} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {componentStoreFactory, usePageStore} from "@geelato/gl-ide";
@@ -100,6 +104,7 @@ const addItem = (hoverIndex: number, item: ComponentInstance) => {
 }
 
 const refresh = () => {
+  console.log('refresh............................')
   freshFlag.value = false
   nextTick(() => {
     freshFlag.value = true
@@ -145,20 +150,33 @@ const tryAddDndPlaceholder = (items?: Array<any>, info?: string) => {
   return
 }
 
+// console.log('GlInsts > create:', props.glComponentInst.id, props.glComponentInst.componentName)
+// onMounted(() => {
+//   console.log('GlInsts > onMounted:', props.glComponentInst.id, props.glComponentInst.componentName)
+// })
+//
+// onBeforeUpdate(() => {
+//   console.log('GlInsts > onBeforeUpdate:', props.glComponentInst.id, props.glComponentInst.componentName, getCurrentInstance())
+//   return false
+// })
+// onUpdated(() => {
+//   console.log('GlInsts > onUpdated:', props.glComponentInst.id, props.glComponentInst.componentName)
+// })
 </script>
 
 <template>
-  <GlInst v-if="freshFlag&&glComponentInst" v-for="(inst, index) in glComponentInst.children"
-          :parentId=glComponentInst.id
-          :id="inst.id"
-          :key="inst.id"
-          :text="inst.id"
-          :index="index"
-          :moveItem="moveItem"
-          :addItem="addItem"
-          :glComponentInst="inst"
-          :componentStoreId="componentStoreId"
-  />
+  <template v-for="(inst, index) in glComponentInst?.children" >
+    <GlInst v-if="freshFlag&&glComponentInst" :key="index"
+            :parentId=glComponentInst.id
+            :id="inst.id"
+            :index="index"
+            :moveItem="moveItem"
+            :addItem="addItem"
+            :glComponentInst="inst"
+            :componentStoreId="componentStoreId"
+    />
+  </template>
+
 </template>
 
 <style lang="less" scoped>
