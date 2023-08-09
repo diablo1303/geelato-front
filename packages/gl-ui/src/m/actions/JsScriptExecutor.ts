@@ -528,6 +528,7 @@ export class JsScriptExecutor {
         $gl.page = {
             id: pageProxy?.pageInst.id,
             label: pageProxy?.pageInst.title,
+            status: pageProxy?.pageStatus,
             params: pageProxy?.pageInst.props.params
         }
 

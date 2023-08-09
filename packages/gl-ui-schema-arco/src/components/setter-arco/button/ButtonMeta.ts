@@ -127,7 +127,8 @@ export default {
         "setterComponentVModelName": "modelValue",
         "setterComponentProps": {},
         "type": "props",
-        "show": true
+        "show": true,
+        "enableValueExpress": true
     }, {
         "name": "href",
         "setterComponentProps": {},

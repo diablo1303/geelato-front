@@ -56,7 +56,8 @@ export const commonPropsDataEntry = [
         "show": true,
         "expanded": true,
         "title": "只读",
-        "setterComponentName": "ASwitch"
+        "setterComponentName": "ASwitch",
+        "enableValueExpress": true
     },
     {
         "name": "disabled",
@@ -68,7 +69,8 @@ export const commonPropsDataEntry = [
         "title": "禁用",
         "setterComponentName": "ASwitch",
         "show": true,
-        "expanded": true
+        "expanded": true,
+        "enableValueExpress": true
     }, {
         "name": "_hidden",
         "setterComponentProps": {},

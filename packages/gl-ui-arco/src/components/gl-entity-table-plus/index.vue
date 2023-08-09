@@ -32,7 +32,7 @@ import type {Action} from "../../types/global";
  */
 const emits = defineEmits(['changeRecord', 'fetchSuccess'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
-
+const isRead = !!pageProvideProxy?.isPageStatusRead()
 // const {t} = CheckUtil.isBrowser() ? useI18n() : {
 //   t: () => {
 //   }
@@ -258,72 +258,74 @@ defineExpose({deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
   <a-card class="general-card" :title="base.hideLabel===true?'':base.label" :body-style="{padding:base.tablePadding}">
     <GlQuery v-if="query" v-show="base.showQuery!==false" ref="queryRef" :items="query" @search="onSearch"></GlQuery>
     <a-divider v-show="base.showQuery!==false" style="margin-top: 16px"/>
-    <GlToolbar v-show="base.showToolbar!==false" v-bind="toolbar" style="margin-bottom: 8px">
+    <GlToolbar v-show="base.showToolbar!==false" v-bind="toolbar" style="margin-bottom: 8px" :disabled="isRead">
       <template #leftItems>
         <div v-if="base.enableEdit" class="action-icon">
-          <a-button @click="addRow" shape="round" type="text" size="small">
-            <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加
+          <a-button @click="addRow" shape="round" type="text" size="small" :disabled="isRead">
+            <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加一行
           </a-button>
         </div>
       </template>
       <template #rightItems>
-        <a-tooltip content="刷新">
-          <div class="action-icon" @click="refresh">
-            <GlIconfont type="gl-refresh"></GlIconfont>
-          </div>
-        </a-tooltip>
-        <a-dropdown @select="handleSelectDensity">
-          <a-tooltip content="行高调整">
-            <div class="action-icon">
-              <GlIconfont type="gl-line-height"></GlIconfont>
-            </div>
-          </a-tooltip>
-          <template #content>
-            <a-doption
-                v-for="item in densityList"
-                :key="item.value"
-                :value="item.value"
-                :class="{ active: item.value === size }"
-            >
-              <span>{{ item.name }}</span>
-            </a-doption>
-          </template>
-        </a-dropdown>
-        <a-tooltip :content="t('searchTable.actions.columnSetting')">
-          <a-popover
-              trigger="click"
-              position="bl"
-              @popup-visible-change="popupVisibleChange"
-          >
-            <div class="action-icon">
-              <GlIconfont type="gl-setting"></GlIconfont>
-            </div>
+        <a-space>
+          <a-dropdown @select="handleSelectDensity">
+            <a-tooltip content="行高调整">
+              <div class="action-icon">
+                <GlIconfont type="gl-line-height"></GlIconfont>
+              </div>
+            </a-tooltip>
             <template #content>
-              <div :id="tableSettingId">
-                <div
-                    v-for="(item, index) in showColumns"
-                    :key="item.dataIndex"
-                    class="setting"
-                >
-                  <div style="margin-right: 4px; cursor: move">
-                    <!--   TODO 待支持拖拽排序 -->
-                    <!--                    <GlIconfont type="gl-drag-arrow"></GlIconfont>-->
-                  </div>
-                  <div>
-                    <a-checkbox
-                        v-model="item.checked"
-                        @change="changeShowColumns($event, item, index)"
-                    >
-                    </a-checkbox>
-                  </div>
-                  <div class="title">
-                    {{ item.title === "#" ? "序号" : item.title }}
+              <a-doption
+                  v-for="item in densityList"
+                  :key="item.value"
+                  :value="item.value"
+                  :class="{ active: item.value === size }"
+              >
+                <span>{{ item.name }}</span>
+              </a-doption>
+            </template>
+          </a-dropdown>
+          <a-tooltip :content="t('searchTable.actions.columnSetting')">
+            <a-popover
+                trigger="click"
+                position="bl"
+                @popup-visible-change="popupVisibleChange"
+            >
+              <div class="action-icon">
+                <GlIconfont type="gl-setting"></GlIconfont>
+              </div>
+              <template #content>
+                <div :id="tableSettingId">
+                  <div
+                      v-for="(item, index) in showColumns"
+                      :key="item.dataIndex"
+                      class="setting"
+                  >
+                    <div style="margin-right: 4px; cursor: move">
+                      <!--   TODO 待支持拖拽排序 -->
+                      <!--                    <GlIconfont type="gl-drag-arrow"></GlIconfont>-->
+                    </div>
+                    <div>
+                      <a-checkbox
+                          v-model="item.checked"
+                          @change="changeShowColumns($event, item, index)"
+                      >
+                      </a-checkbox>
+                    </div>
+                    <div class="title">
+                      {{ item.title === "#" ? "序号" : item.title }}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </template>
-          </a-popover>
-        </a-tooltip>
+              </template>
+            </a-popover>
+          </a-tooltip>
+          <a-tooltip content="刷新">
+            <div class="action-icon" @click="refresh">
+              <GlIconfont type="gl-refresh"></GlIconfont>
+            </div>
+          </a-tooltip>
+        </a-space>
       </template>
     </GlToolbar>
     <component :is="entityTable"

@@ -535,6 +535,8 @@ const getRenderColumns = () => {
   return cloneColumns.value
 }
 
+const isRead = !!pageProvideProxy?.isPageStatusRead()
+
 
 defineExpose({
   search,
@@ -571,11 +573,10 @@ defineExpose({
     </template>
     <template ##="{ record,rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
-        <a-button type="text" size="small" @click="copyRecord(record,rowIndex)">复制</a-button>
-        <!--                  在这里popconfirm无效 TODO-->
-        <a-popconfirm content="确定是否删除?">
-          <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)">删除</a-button>
-        </a-popconfirm>
+        <a-button type="text" size="small" @click="copyRecord(record,rowIndex)" :disabled="isRead">复制</a-button>
+        <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)" :disabled="isRead">
+          删除
+        </a-button>
       </a-space>
     </template>
     <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">
@@ -591,7 +592,7 @@ defineExpose({
       </div>
     </template>
   </a-table>
-<!--  {{renderData}}-->
+  <!--  {{renderData}}-->
 </template>
 
 <style>

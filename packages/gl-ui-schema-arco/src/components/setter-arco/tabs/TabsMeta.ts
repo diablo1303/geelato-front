@@ -29,6 +29,18 @@ export default {
             "setterComponentName": "AInput",
             "enableValueExpress": false
         }, {
+            "name": "value",
+            "group": "base",
+            "type": "props",
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "title": "值",
+            "description": "切换tab时，选中的值",
+            "setterComponentName": "AInput",
+            "enableValueExpress": true
+        },{
             "name": "iconType",
             "group": "base",
             "type": "props",

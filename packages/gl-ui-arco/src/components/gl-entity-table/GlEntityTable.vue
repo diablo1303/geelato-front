@@ -520,7 +520,10 @@ defineExpose({
     <template ##="{ record,rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
         <template v-for="(columnAction,index) in columnActions" :key="index">
-          <GlComponent v-if="columnAction&&(columnAction.props.unRender!==true)" v-show="columnAction.props._hidden!==true" :glComponentInst="columnAction" :glCtx="{record,rowIndex}"></GlComponent>
+          <template v-if="columnAction">
+            <GlComponent v-if="columnAction.props.unRender!==true" v-show="columnAction.props._hidden!==true"
+                         :glComponentInst="columnAction" :glCtx="{record,rowIndex}"></GlComponent>
+          </template>
         </template>
       </a-space>
     </template>
