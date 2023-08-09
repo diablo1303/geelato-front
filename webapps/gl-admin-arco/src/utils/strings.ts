@@ -1,3 +1,5 @@
+import {Message} from "@arco-design/web-vue";
+
 /**
  * 字符串是为空[null，'']
  * @param s
@@ -94,4 +96,31 @@ const buildUrl = (url: string, params: any): string => {
   return url;
 }
 
-export {isEmpty, isNotEmpty, isBlank, isNotBlank, toCamelCase, formatSeparator, buildUrl};
+/**
+ * 复制
+ * @param value
+ */
+const textareaCopy = (value: string) => {
+  const textarea = document.createElement('textarea');
+  textarea.value = value;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+}
+
+/**
+ * Clipboard Api
+ * @param value
+ */
+const copyToClipboard = async (value: string, successMsg?: string, failMsg?: string) => {
+  try {
+    await navigator.clipboard.writeText(value);
+    if (successMsg) Message.success({content: successMsg, duration: 3 * 1000});
+  } catch (err) {
+    console.log(err);
+    if (failMsg) Message.error({content: failMsg, duration: 3 * 1000});
+  }
+}
+
+export {isEmpty, isNotEmpty, isBlank, isNotBlank, toCamelCase, formatSeparator, buildUrl, copyToClipboard};

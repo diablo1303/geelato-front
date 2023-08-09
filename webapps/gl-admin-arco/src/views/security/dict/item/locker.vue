@@ -149,13 +149,16 @@
 
 <script lang="ts" setup>
 import {reactive, ref} from "vue";
-import {Message, Notification} from "@arco-design/web-vue";
+import {useI18n} from "vue-i18n";
+import {Notification} from "@arco-design/web-vue";
 import {ListUrlParams, PageQueryRequest} from '@/api/base';
 import {batchCreateOrUpdateDictItem, pageQueryDictItem as pageQueryList, QueryDictForm as QueryModel, QueryDictItemForm} from "@/api/security";
 import {TableData} from "@arco-design/web-vue/es/table/interface";
 import {enableStatusOptions} from "@/views/security/dict/item/searchTable";
+import {copyToClipboard} from "@/utils/strings";
 
 // 表单
+const {t} = useI18n();
 const columnData = ref<QueryDictItemForm[]>([]);
 const pageData = ref({
   formState: 'add', button: true, pId: '', pName: '', okBack: (data: QueryModel) => {
@@ -220,13 +223,7 @@ function UUID() {
 
 /* 表单 */
 const copyEvent = (value: string) => {
-  const input = document.createElement('textarea');
-  input.value = value; // 将要复制的文本内容赋值给textarea元素的value属性
-  document.body.appendChild(input); // 将textarea元素添加到页面中
-  input.select(); // 选中textarea元素中的文本内容
-  document.execCommand('copy'); // 执行复制命令
-  document.body.removeChild(input); // 将textarea元素从页面中移除
-  Message.success({content: '复制成功！', duration: 5 * 1000});// 弹出提示框表示复制成功
+  copyToClipboard(value, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
 }
 const copyFilling = (ev?: MouseEvent) => {
   const copyData: QueryDictItemForm[] = [];

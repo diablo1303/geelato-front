@@ -199,6 +199,7 @@ import UserForm from '@/views/security/user/form.vue';
 import UserDrawer from '@/views/security/user/drawer.vue';
 import UserTabForm from '@/views/security/user/tabForm.vue';
 import {useI18n} from "vue-i18n";
+import {copyToClipboard} from "@/utils/strings";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
@@ -285,12 +286,7 @@ const resetPwdTable = async (id: string) => {
         content: pwd,
         okText: "复制",
         onBeforeOk: (done: any) => {
-          const textarea = document.createElement('textarea');
-          textarea.value = pwd;
-          document.body.appendChild(textarea);
-          textarea.select();
-          document.execCommand('copy');
-          document.body.removeChild(textarea);
+          copyToClipboard(pwd, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
           done(true);
         }
       });

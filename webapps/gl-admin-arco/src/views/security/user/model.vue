@@ -162,6 +162,7 @@ import {FormInstance} from "@arco-design/web-vue/es/form";
 import mobilePrefix from '@/config/mobilePrefix.json';
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
 import {useI18n} from "vue-i18n";
+import {copyToClipboard} from "@/utils/strings";
 
 const {t} = useI18n();
 const pageData = ref({formState: 'add', button: true, formCol: 2});
@@ -243,12 +244,7 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
           content: pwd,
           okText: "复制",
           onBeforeOk: (done: any) => {
-            const textarea = document.createElement('textarea');
-            textarea.value = pwd;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
+            copyToClipboard(pwd, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
             done(true);
           }
         });
