@@ -400,6 +400,7 @@ export default {
 
   'security.encoding.index.menu.list': '应用管理',
   'security.encoding.index.menu.list.searchTable': '编码管理',
+  'security.encoding.index.form.id': '主键',
   'security.encoding.index.form.index': '序号',
   'security.encoding.index.form.title': '标题',
   'security.encoding.index.form.template': '模板',
@@ -430,4 +431,7 @@ export default {
   'security.encoding.index.model.title.view': '查看编码',
   'security.encoding.index.model.cancel.text': '取消',
   'security.encoding.index.model.ok.text': '确认',
+
+  'copy.to.clipboard.success': '复制成功！',
+  'copy.to.clipboard.fail': '复制失败！',
 };

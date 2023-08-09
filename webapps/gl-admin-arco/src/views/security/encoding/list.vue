@@ -99,6 +99,16 @@
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.encoding.index.form.id')" :tooltip="true" :width="120" data-index="title">
+        <template #cell="{ record }">
+          <a-button type="text" @click="copyPrimaryKey(record.id)">
+            <template #icon>
+              <icon-copy/>
+            </template>
+          </a-button>
+          {{ record.id }}
+        </template>
+      </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.encoding.index.form.title')" :tooltip="true" :width="150" data-index="title"/>
       <a-table-column :ellipsis="true" :title="$t('security.encoding.index.form.example')" :tooltip="true" :width="150" data-index="example"/>
       <a-table-column :title="$t('security.encoding.index.form.enableStatus')" :width="120" data-index="enableStatus">
@@ -146,6 +156,7 @@ import {deleteEncoding as deleteList, FilterEncodingForm as FilterForm, pageQuer
 import {columns, enableStatusOptions} from "@/views/security/encoding/searchTable";
 // 引用其他页面
 import EncodingDrawer from "@/views/security/encoding/drawer.vue";
+import {copyToClipboard} from "@/utils/strings";
 
 
 /* 列表 */
@@ -227,6 +238,9 @@ const addTable = (ev: MouseEvent) => {
     formRef.value?.openForm({action: 'add', closeBack: reset});
   }
 };
+const copyPrimaryKey = (id: string) => {
+  copyToClipboard(id, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
+}
 const viewTable = (id: string) => {
   if (formRef.value) {
     // @ts-ignore

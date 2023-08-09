@@ -399,6 +399,7 @@ export default {
 
   'security.encoding.index.menu.list': 'System',
   'security.encoding.index.menu.list.searchTable': 'Encoding',
+  'security.encoding.index.form.id': 'primaryKey',
   'security.encoding.index.form.index': 'index',
   'security.encoding.index.form.title': 'title',
   'security.encoding.index.form.template': 'template',
@@ -428,4 +429,7 @@ export default {
   'security.encoding.index.model.title.view': 'View Encoding',
   'security.encoding.index.model.cancel.text': 'Cancel',
   'security.encoding.index.model.ok.text': 'Confirm',
+
+  'copy.to.clipboard.success': 'Text copied to clipboard successfully！',
+  'copy.to.clipboard.fail': 'Failed to copy text！',
 };
