@@ -50,7 +50,7 @@
           <span v-else>{{ $t(`model.table.index.form.tableType.${formData.tableType}`) }}</span>
         </a-form-item>
       </a-col>
-      <a-col v-show="formData.tableType==='view'" :span="24">
+<!--      <a-col v-show="formData.tableType==='view'" :span="24">
         <a-form-item
             :label="$t('model.table.index.form.viewSql')"
             :label-col-props="{ span: (pageData.formCol===1?6:3) }"
@@ -91,7 +91,7 @@
             </a-popconfirm>
           </a-space>
         </a-form-item>
-      </a-col>
+      </a-col>-->
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.table.index.form.enableStatus')"
