@@ -157,7 +157,7 @@ const changeShowColumns = (checked: boolean | (string | boolean | number)[],
 const updateColumns = (showColumnsValue: any) => {
   showColumns.value = showColumnsValue;
 };
-const onUpdateRow = (data: { record: object, rowIndex: number }) => {
+const onUpdateRow = (data: { record: object, rowIndex: number, columns: TableColumnDataPlus }) => {
   // console.log('GlEntityTablePlus > onUpdateRow() > data:', data)
   emits('changeRecord', data)
 }
@@ -238,14 +238,20 @@ const getDeleteData = () => {
 const validateTable = () => {
   return tableRef.value.validateTable()
 }
-const onFetchSuccess = (args: any) => {
+
+const reRender = () => {
+  return tableRef.value.reRender()
+}
+const onFetchSuccess = (args: { data: [], pagination: object }) => {
+  props.glComponentInst.value = args.data
   emits('fetchSuccess', args)
 }
+
 
 const entityTable = computed(() => {
   return props.base?.enableEdit ? GlEntityTableEditable : GlEntityTable
 })
-defineExpose({deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData, validateTable})
+defineExpose({deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData, validateTable, reRender})
 </script>
 
 <template>
@@ -335,6 +341,7 @@ defineExpose({deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
                @updateColumns="updateColumns"
                @updateRow="onUpdateRow"
                @fetchSuccess="onFetchSuccess"
+               :glComponentInst="glComponentInst"
                :glIsRuntime="glIsRuntime"
                :glRuntimeFlag="glRuntimeFlag"
     ></component>

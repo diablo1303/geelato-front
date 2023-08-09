@@ -1,5 +1,5 @@
 <template>
-  <a-tree-select :data="treeData"
+  <a-tree-select title="该组件树为当前后台服务中已保存的组件树" :data="treeData"
                  v-model="selected"
                  placeholder="请选择"
                  :allow-search="true"
@@ -110,10 +110,16 @@ const onChange = (value: any) => {
     foundInst = findInst(treeData.value[0])
   }
   if (foundInst) {
+    // 如果当前组件页面存在该组件，则以当前页面的组件为准，确保为最新的状态，如组件新配置的动作
+    const isEditingComponent =  componentStore.findComponentFromTreeById(foundInst.id)
+    if(isEditingComponent){
+      foundInst = isEditingComponent
+    }
     // 设置实例
     componentSetterProvideProxy.setVarValue(props.exposeVarComponentInst, foundInst)
     // 设置元数据
     const componentMeta = componentStore.getComponentMeta(foundInst.componentName)
+
     componentSetterProvideProxy.setVarValue(props.exposeVarComponentMeta, componentMeta)
   }
 }
@@ -149,9 +155,6 @@ const convertTitle = (componentInst: ComponentInstance, title?: string) => {
         convertTitle(childComponentInst, componentInst.props?.items[index].title + '【标签项】')
       } else if (componentInst.componentName === 'GlRowColLayout') {
         convertTitle(childComponentInst, '单元格')
-      } else if (componentInst.componentName === 'GlCard') {
-        componentInst.title = componentInst.props.title + '【卡片】'
-        convertTitle(childComponentInst)
       } else {
         convertTitle(childComponentInst)
       }

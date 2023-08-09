@@ -26,7 +26,7 @@ const props = defineProps({
   ...mixins.props
 })
 
-console.log('props.items:', props.items)
+// console.log('props.items:', props.items)
 const tabItems = ref(props.items || <any>[])
 if (tabItems.value.length === 0) {
   tabItems.value.push(...[{

@@ -26,7 +26,7 @@ watch(mv, () => {
 })
 
 // 转成字符串格式，并去掉空项
-const accept = ref(JSON.stringify(props.acceptArray?.filter((acceptItem) => {
+const accept = ref(props.acceptArray&&JSON.stringify(props.acceptArray?.filter((acceptItem) => {
   return !acceptItem
 }) || []))
 

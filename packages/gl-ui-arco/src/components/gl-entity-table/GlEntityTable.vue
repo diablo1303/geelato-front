@@ -10,13 +10,11 @@ import {
   watch,
 } from "vue";
 import type {
-  TableColumnData,
   TableData,
   TableRowSelection,
   PaginationProps
 } from "@arco-design/web-vue";
 import useLoading from "../../hooks/loading";
-import {useI18n} from "vue-i18n";
 import cloneDeep from "lodash/cloneDeep";
 import Sortable from "sortablejs";
 import {
@@ -24,17 +22,17 @@ import {
   FieldMeta,
   EntityReader,
   EntityReaderParam,
-  CheckUtil, utils, useGlobal, FormProvideProxy, FormProvideKey, jsScriptExecutor, PageProvideProxy, PageProvideKey
+  utils, useGlobal, FormProvideProxy, FormProvideKey, jsScriptExecutor, PageProvideProxy, PageProvideKey
 } from "@geelato/gl-ui";
-import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import type {Column, TableColumnDataPlus} from "./table";
 import {Schema} from "b-validate";
 import {logicDeleteFieldName} from "./table";
 import {mixins} from "@geelato/gl-ui";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal;
 // fetch 加载完成数据之后
-const emits = defineEmits(["updateColumns", "updateRow", "fetchSuccess"]);
+const emits = defineEmits(["updateColumns", "fetchSuccess"]);
 const props = defineProps({
   /**
    *  绑定的实体名称
@@ -56,7 +54,7 @@ const props = defineProps({
    *  列上的操作配置
    */
   columnActions: {
-    type: Array as PropType<ComponentMeta[]>,
+    type: Array as PropType<ComponentInstance[]>,
     default() {
       return []
     }
@@ -522,7 +520,7 @@ defineExpose({
     <template ##="{ record,rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
         <template v-for="(columnAction,index) in columnActions" :key="index">
-          <GlComponent v-if="columnAction" :glComponentInst="columnAction" :glCtx="{record,rowIndex}"></GlComponent>
+          <GlComponent v-if="columnAction&&(columnAction.props.unRender!==true)" v-show="columnAction.props._hidden!==true" :glComponentInst="columnAction" :glCtx="{record,rowIndex}"></GlComponent>
         </template>
       </a-space>
     </template>

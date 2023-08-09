@@ -63,11 +63,12 @@ export const paramStringify = (params: Array<PageParamConfigType>) => {
 export default class PageProvideProxy {
     // 数据库中的字段，页面id
     pageId: string = ''
+    pageStatus: string = 'read'
     pageInst: ComponentInstance
     pageVueInst: ComponentInternalInstance | null
     pageParams: Array<Param> = []
     pageCtx: object = {}
-    componentMap: { [key: string]: ComponentInternalInstance | null } = {}
+    vueInstMap: { [key: string]: ComponentInternalInstance | null } = {}
     componentInsts: { [key: string]: ComponentInstance } = {}
     unMountedIds: { [key: string]: boolean } = {}
     onPageMountedEvents: { id: string, fn: Function }[] = []
@@ -117,13 +118,15 @@ export default class PageProvideProxy {
      * 页面内子组件引用（在组件mounted之后执行）
      * 同时计算有多少组件还未mounted，记录在unMountedIds
      * @param componentId
-     * @param vueInst vue实组件实例
+     * @param vueInst vue实组件实例，这里的vueInst为GlComponent动态组件实例，需再进一步通过refs[componentId]获取最终的实例
      */
     setVueInst(componentId: string, vueInst: ComponentInternalInstance | null) {
         if (componentId && vueInst) {
             // console.log('setVueInst(),componentId:', componentId, ',vueInst:', vueInst, vueInst.props.glComponentInst)
-            this.componentMap[componentId] = vueInst
+            this.vueInstMap[componentId] = vueInst
             this.componentInsts[componentId] = vueInst.props.glComponentInst as ComponentInstance
+
+            // vueInst.subTree.component?.exposed
 
             // 由于动态组件的的onMounted事件次序中，父组件不是最后一个触发，这个自行实现
             if (this.unMountedIds[componentId]) {
@@ -142,7 +145,7 @@ export default class PageProvideProxy {
 
     removeVueInst(componentId: string) {
         if (componentId) {
-            delete this.componentMap[componentId]
+            delete this.vueInstMap[componentId]
             delete this.componentInsts[componentId]
         }
     }
@@ -153,8 +156,8 @@ export default class PageProvideProxy {
      */
     getVueInst(componentId: string) {
         if (componentId) {
-            // console.log('getVueInst() > componentMap:', this.componentMap)
-            return this.componentMap[componentId]
+            // console.log('getVueInst() > vueInstMap:', this.vueInstMap)
+            return this.vueInstMap[componentId]
         }
         return null
     }
@@ -186,7 +189,7 @@ export default class PageProvideProxy {
     }
 
     /**
-     *  在动作面板中配置的页面参数，如page.status为'read'
+     *  在动作面板中配置的页面参数，如recordId
      */
     getParams(): Array<Param> {
         return this.pageParams
@@ -267,7 +270,7 @@ export default class PageProvideProxy {
      * @param value
      */
     setComponentValue(componentId: string, value: any) {
-        console.log('setComponentValue', componentId, value, this.pageInst, this.componentMap)
+        console.log('setComponentValue', componentId, value, this.pageInst, this.vueInstMap)
         const vueInst = this.getVueInst(componentId)
         const proxy = vueInst?.proxy
         if (proxy) {
@@ -345,6 +348,26 @@ export default class PageProvideProxy {
             }
         }
         return null
+    }
+
+    setPageStatus(pageStatus: string) {
+        this.pageStatus = pageStatus || 'read'
+    }
+
+    isPageStatusRead() {
+        return this.pageStatus === 'read'
+    }
+
+    isPageStatusCreate() {
+        return this.pageStatus === 'create'
+    }
+
+    isPageStatusUpdate() {
+        return this.pageStatus === 'update'
+    }
+
+    isPageStatusCreateOrUpdate() {
+        return this.isPageStatusCreate() || this.isPageStatusUpdate()
     }
 
 }

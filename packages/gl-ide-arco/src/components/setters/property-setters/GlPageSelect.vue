@@ -16,6 +16,7 @@ export default {
 <script lang="ts" setup>
 import {inject, ref, watch} from "vue";
 import {entityApi, Utils} from "@geelato/gl-ui";
+import {useAppStore} from "@geelato/gl-ide";
 
 const emits = defineEmits(['update:modelValue'])
 
@@ -45,7 +46,7 @@ const filterTreeNode = (searchValue: string, nodeData: any) => {
 
 // inject('appId')
 // TODO 需改成基于上下文获取
-const appId = '1976169388038462609'
+const appId = useAppStore().currentApp.id
 entityApi.query('platform_tree_node', 'treeId,id key,text title,pid,iconType,type nodeType,flag,seqNo', {
   treeId: appId,
   delStatus: 0

@@ -183,9 +183,9 @@ export class JsScriptExecutor {
     }
 
     /**
-     * 触发组件的动作事件f
+     * 触发组件的动作事件
      * @param componentId
-     * @param actionName
+     * @param actionName 动名名（注意，非事件名eventName，一个事件可以触发多个动作）
      * @param ctx
      * @param callback
      */
@@ -201,6 +201,7 @@ export class JsScriptExecutor {
                     if (actions) {
                         for (const actionsKey in actions) {
                             const action = actions[actionsKey]
+                            // 按actionName进行触发
                             if (action.name === actionName) {
                                 jsScriptExecutor.doAction(action, ctx = {pageProxy}, callback)
                             }
@@ -280,8 +281,8 @@ export class JsScriptExecutor {
                 })
                 window.open(`${url}?${paramsAry.join('&')}`, '_blank')
             },
-            loadPage: (pageId: string, extendId: string, params: Array<Param>) => {
-                return that.loadPage(pageId, extendId, that.evalParams(params, $gl.ctx) || [])
+            loadPage: (pageId: string, extendId: string, params: Array<Param>, pageStatus: string) => {
+                return that.loadPage(pageId, extendId, that.evalParams(params, $gl.ctx) || [], pageStatus)
             },
             /**
              * 调用组件方法
@@ -508,8 +509,10 @@ export class JsScriptExecutor {
             ...this.app?.config.globalProperties,
             page: {},
             inst: <{ [key: string]: any }>{},
+            vueInst: <{ [key: string]: any }>{},
             // 多页面嵌套场景
             insts: <{ [key: string]: any }>{},
+            vueInsts: <{ [key: string]: any }>{},
             ctx: {},
             fn: utils
         }
@@ -539,10 +542,15 @@ export class JsScriptExecutor {
                         // TODO
                     } else {
                         $gl.inst[instKey] = pageProxy.getInsts()[instKey]
+                        $gl.vueInst[instKey] = pageProxy.getVueInst(instKey)?.refs[instKey]
                     }
                     // 多页面并存
-                    if (!$gl.insts[pageComponentId]) $gl.insts[pageComponentId] = {}
+                    if (!$gl.insts[pageComponentId]) {
+                        $gl.insts[pageComponentId] = {}
+                        $gl.vueInsts[pageComponentId] = {}
+                    }
                     $gl.insts[pageComponentId][instKey] = pageProxy.getInsts()[instKey]
+                    $gl.vueInsts[pageComponentId][instKey] = pageProxy.getVueInst(instKey)?.refs[instKey]
                 }
             }
         }
@@ -554,11 +562,12 @@ export class JsScriptExecutor {
      * @param pageId   页面ID
      * @param extendId 应用页面树节点ID
      * @param params
+     * @param pageStatus 页面状态
      */
-    loadPage(pageId: string, extendId: string, params: Array<Param>) {
+    loadPage(pageId: string, extendId: string, params: Array<Param>, pageStatus?: string) {
         const pageProps = {params: params}
-        console.log('JsScriptExecutor > loadPage > pageId:', pageId, 'extendId:', extendId, 'pageProps:', pageProps)
-        return h(GlPageViewer, {pageId, extendId, pageProps})
+        console.log('JsScriptExecutor > loadPage > pageId:', pageId, 'extendId:', extendId, 'pageStatus:', pageStatus, 'pageProps:', pageProps)
+        return h(GlPageViewer, {pageId, extendId, pageStatus, pageProps})
     }
 
 }

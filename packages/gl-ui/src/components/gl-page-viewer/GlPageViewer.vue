@@ -23,6 +23,10 @@ const props = defineProps({
   extendId: {
     type: String
   },
+  /**
+   *  页面状态
+   */
+  pageStatus: String,
   pageProps: {
     type: Object,
     default() {
@@ -80,7 +84,7 @@ watch(() => {
     <!--    </GlInstRuntime>-->
     <!--    TODO 表单项组件为通过GlInstRuntime渲染时，未能显示label-->
     <GlComponent v-if="glComponentInst" :key="glComponentInst.id" :glComponentInst="glComponentInst"
-                 :glIsRuntime="true" glRuntimeFlag="Runtime" v-bind="pageProps" ></GlComponent>
+                 :glIsRuntime="true" glRuntimeFlag="Runtime" :pageStatus="pageStatus" v-bind="pageProps"></GlComponent>
   </div>
 </template>
 <style scoped>

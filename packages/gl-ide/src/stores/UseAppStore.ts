@@ -1,22 +1,16 @@
 import {defineStore} from 'pinia'
-import type GlPlugin from "../entity/GlPlugin";
 import {ref} from "vue";
 import App from "../entity/App";
+import {utils} from "@geelato/gl-ui";
 
 export const useAppStore = defineStore('GlAppStore',()=>{
 
     const currentApp = ref(new App())
-    // TODO
-    currentApp.value.id = '1976169388038462609'
 
-    /**
-     * 安装插件
-     * 插件title唯一
-     * @param plugin
-     */
-    // usePlugin(plugin: GlPlugin) {
-    //
-    // }
+    currentApp.value.id = utils.getUrlQueryParam('appId') || ''
+    currentApp.value.name = decodeURI(utils.getUrlQueryParam('appName') || '')
+    currentApp.value.tenantCode = utils.getUrlQueryParam('tenantCode') || ''
+
     return {
         currentApp
     }

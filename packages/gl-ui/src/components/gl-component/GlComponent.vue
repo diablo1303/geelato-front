@@ -44,7 +44,7 @@ import jsScriptExecutor from "../../m/actions/JsScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
 import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
 
-const emits = defineEmits(['update:modelValue', 'update', 'onAction', 'onComponentClick', 'onValueChange', 'onComponentMounted'])
+const emits = defineEmits(['update:modelValue', 'update', 'onAction', 'onComponentClick', 'onValueChange'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const props = defineProps({
@@ -198,23 +198,23 @@ watch(() => {
   mv.value = props.glComponentInst.value
 })
 
-// watch(() => {
-//   return props.modelValue
-// }, () => {
-//   mv.value = props.modelValue
-// })
+// 开启监控，待观察是否有副作用 8.8
+watch(() => {
+  return props.modelValue
+}, () => {
+  mv.value = props.modelValue
+})
 
-
-// @ts-ignore
 props.glComponentInst.value = mv.value
 watch(mv, (value, oldValue) => {
-  // @ts-ignore
   props.glComponentInst.value = value
-  onValueChange(value)
 
   // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
   emits('update:modelValue', value)
   emits('update', value)
+  // 这个需放在 'update:modelValue' 事件之后，确保组件的值已更新
+  onValueChange(value)
+
 }, {immediate: true})
 
 watch(() => {
@@ -227,30 +227,6 @@ watch(() => {
   })
 })
 
-let init = false
-onMounted(() => {
-
-  /**
-   *  将页面内的子组件通过map进行引用，便于后续基于页面进行组件事件调用
-   *  注意需在创建后即执行，以确保后续的运算可以用到该实例
-   */
-  if (!init) {
-
-  }
-  init = true
-  //  触发组件配置的事件，只限运行时，GlPage的onMounted另行触发，在此不执行
-  // if (props.glIsRuntime && props.glComponentInst.componentName !== 'GlPage') {
-  //   props.glComponentInst.actions?.forEach((action: Action) => {
-  //     if (action.name === 'onMounted') {
-  //       jsScriptExecutor.doAction(action, {
-  //         pageProxy: pageProvideProxy
-  //       })
-  //     }
-  //   })
-  // }
-
-  emits('onComponentMounted', {})
-})
 executePropsExpressions()
 defineExpose({onMouseLeave, onMouseOver})
 

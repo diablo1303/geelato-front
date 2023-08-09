@@ -15,3 +15,8 @@
     margin-right: 0 !important;
 }
 
+
+/* 表格的滾動条位置向下调整1.1em，这样不会挡到表格的内容，不会不小心点到滾動条*/
+.arco-scrollbar-track-direction-horizontal {
+    bottom: -1.1em !important;
+}

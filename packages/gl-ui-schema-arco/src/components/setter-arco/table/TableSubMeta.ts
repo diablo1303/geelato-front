@@ -444,8 +444,12 @@ export default {
         "name": "fetchSuccess",
         "title": "成功加载完数据",
         "description": "从服务端成功加数据（0到多条）后触发。"
+    }, {
+        "name": "changeRecord",
+        "title": "行记录更改",
+        "description": "在数据表的行内编辑模式下，当数据表的行记录信息更换时触发"
     }],
-    "methods": [{"name": "refresh", "title": "刷新", "description": "刷新表格", "params": []}, {
+    "methods": [{"name": "refresh", "title": "刷新", "description": "刷新表格", "params": []}, {"name": "reRender", "title": "重新渲染", "description": "基于当前的表格数据重新渲染", "params": []},{
         "name": "deleteRow",
         "title": "删除行",
         "params": [{

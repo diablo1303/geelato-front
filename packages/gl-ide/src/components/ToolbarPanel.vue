@@ -140,9 +140,9 @@ const btnStyle = {background: themeStore.theme.background}
 const isFullscreen = ref(false)
 
 // 从查询参数中获取参数值
-appStore.currentApp.id = utils.getUrlQueryParam('appId') || ''
-appStore.currentApp.name = decodeURI(utils.getUrlQueryParam('appName') || '')
-appStore.currentApp.tenantCode = utils.getUrlQueryParam('tenantCode') || ''
+// appStore.currentApp.id = utils.getUrlQueryParam('appId') || ''
+// appStore.currentApp.name = decodeURI(utils.getUrlQueryParam('appName') || '')
+// appStore.currentApp.tenantCode = utils.getUrlQueryParam('tenantCode') || ''
 
 const zh = {
   title: '中文',

@@ -23,6 +23,7 @@ const component: Plugin = {
         app.component('GlReturnBlock', GlCommandBlockOne)
         app.component('GlSetVarBlock', GlCommandBlockOne)
         app.component('GlGroupSumBlock', GlCommandBlockOne)
+        app.component('GlJsCodeBlock', GlCommandBlockOne)
     }
 }
 
