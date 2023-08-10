@@ -2,7 +2,6 @@ export default {
     "componentName": "GlUpload",
     "displayMode": "Tile",
     "iconType": "gl-upload",
-    "group": "dataEntry",
     "title": "上传",
     "alias": "upload",
     "useBy": ["freePage"],
@@ -119,14 +118,15 @@ export default {
         "group": "base",
         "type": "props",
         "enableValueExpress": true,
-        "show": true,
+        "show": false,
         "expanded": true,
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "description": "是否显示文件列表",
         "title": "显示列表",
-        "setterComponentName": "ASwitch"
-    },{
+        "setterComponentName": "ASwitch",
+        "setterDefaultValue": true
+    }, {
         "name": "listType",
         "group": "base",
         "type": "props",
@@ -171,7 +171,7 @@ export default {
         "description": "是否显示删除按钮",
         "title": "显示删除",
         "setterComponentName": "ASwitch"
-    },{
+    }, {
         "name": "imagePreview",
         "group": "base",
         "type": "props",

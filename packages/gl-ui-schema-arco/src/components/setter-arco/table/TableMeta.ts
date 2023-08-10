@@ -211,7 +211,8 @@ export default {
                     "label": "结尾包括",
                     "value": "ew",
                     "__sIGch6bIhRKB7cNZod": "ew"
-                }, {"label": "包括", "value": "contains", "__sIGch6bIhRKB7cNZod": "contains"}],
+                }, {"label": "包括", "value": "contains", "__sIGch6bIhRKB7cNZod": "contains"},
+                    {"label": "在范围(in)", "value": "in"}],
                 "buttonStyle": "solid"
             },
             "setterComponentVModelName": "modelValue",

@@ -12,9 +12,10 @@ export default class TriggerComponentActionBlockHandler implements IBlockHandler
     }
 }
 
-export class Props {
-    appId: string = ''
-    extendId: string = ''
-    componentId: string = ''
-    actionName: string = ''
+interface Props {
+    appId: string
+    extendId: string
+    componentId: string
+    eventName: string
+    actionName: string
 }

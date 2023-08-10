@@ -15,6 +15,7 @@ import SetValueBlockHandler from "./page/SetValueBlockHandler";
 import ReturnBlockHandler from "./other/ReturnBlockHandler";
 import SetVarBlockHandler from "./var/SetVarBlockHandler";
 import GroupSumBlockHandler from "./data/GroupSumBlockHandler";
+import JsCodeBlockHandler from "./other/JsCodeBlockHandler";
 
 export default interface IBlockHandler {
     /**
@@ -49,7 +50,8 @@ export class BlocksHandler {
             GlSetValueBlock: new SetValueBlockHandler(),
             GlReturnBlock: new ReturnBlockHandler(),
             GlSetVarBlock: new SetVarBlockHandler(),
-            GlGroupSumBlock:new GroupSumBlockHandler()
+            GlGroupSumBlock:new GroupSumBlockHandler(),
+            GlJsCodeBlock:new JsCodeBlockHandler()
         }
     }
 

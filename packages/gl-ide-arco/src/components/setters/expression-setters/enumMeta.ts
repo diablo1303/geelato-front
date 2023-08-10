@@ -7,19 +7,13 @@ export const useConstTreeData = async () => {
         title: 'page.status 页面状态',
         _description: '',
         children: [
-            {title: '只读', _code: '"read"', _type: 'string', _description: '页页面各组件为只读状态'},
-            {
-                title: '编辑',
-                _code: '"edit"',
-                _type: 'string',
-                _description: '页页面各组件为编辑状态，此为默认状态'
-            }
+            {title: '查看', _code: '"read"', _type: 'string', _description: '页页面各组件为只读状态'},
+            {title: '创建', _code: '"create"', _type: 'string', _description: '页页面各组件为创建状态'},
+            {title: '修改', _code: '"update"', _type: 'string', _description: '页页面各组件为修改状态'}
         ],
     }
-
     return [sysConst]
 }
-
 
 
 let dict: any[] = []

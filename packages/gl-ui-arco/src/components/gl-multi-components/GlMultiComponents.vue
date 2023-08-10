@@ -8,7 +8,6 @@ export default {
 import {nextTick, type PropType, ref, watch} from "vue";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {mixins} from "@geelato/gl-ui";
-import type {Size} from "@arco-design/web-vue";
 
 type TagSize = "medium" | "large" | "small" | undefined
 type ItemType = { inst: ComponentInstance, showInTag: boolean }
@@ -112,6 +111,7 @@ const clickTag = (modelProps: ModelProps, index: number) => {
 const setCurrentModel = () => {
   currentModelProps.value.length = 0
   props.items.forEach((item) => {
+    // @ts-ignore
     currentModelProps.value.push({label: item.inst.props.label, value: item.inst.value})
     item.inst.value = undefined
   })

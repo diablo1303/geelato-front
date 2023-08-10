@@ -77,8 +77,7 @@ const props = defineProps({
   },
   ...mixins.props
 })
-// page.status: read | edit
-const isRead = pageProvideProxy.getParamValue('page.status') === 'read'
+const isRead = pageProvideProxy.isPageStatusRead()
 const formParams = pageProvideProxy.getParamsByPrefixAsObject('form')
 // formData中不包括记录id，记录id在entityRecordId中定义
 const formData = ref<{ [key: string]: any }>(formParams);

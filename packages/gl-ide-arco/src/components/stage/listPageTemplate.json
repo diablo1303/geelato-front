@@ -326,11 +326,6 @@
                             "id": "nhhWswTDwaaWldNTp6Wk",
                             "name": "form.id",
                             "valueExpression": "$gl.ctx.record.id"
-                          },
-                          {
-                            "id": "h0B13OhLtHWOqZ5yjRYB",
-                            "name": "page.status",
-                            "valueExpression": "\"read\""
                           }
                         ]
                       },

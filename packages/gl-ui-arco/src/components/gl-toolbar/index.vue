@@ -39,13 +39,14 @@ defineProps({
       return [];
     },
   },
+  disabled: Boolean
 });
 
 </script>
 
 <template>
   <a-row>
-    <a-col :span="leftColSpan">
+    <a-col :span="leftColSpan!">
       <a-space style="margin-left: -8px">
         <slot name="leftItems"></slot>
         <span></span>
@@ -54,7 +55,7 @@ defineProps({
         </template>
       </a-space>
     </a-col>
-    <a-col :span="centerColSpan">
+    <a-col :span="centerColSpan!">
       <a-space>
         <span></span>
         <template v-for="(item, index) in centerItems" :key="index">
@@ -62,7 +63,7 @@ defineProps({
         </template>
       </a-space>
     </a-col>
-    <a-col :span="rightColSpan" style="display: flex; align-items: center; justify-content: end">
+    <a-col :span="rightColSpan!" style="display: flex; align-items: center; justify-content: end">
       <a-space>
         <template v-for="(item, index) in rightItems" :key="index">
           <GlComponent v-if="item" :glComponentInst="item"></GlComponent>

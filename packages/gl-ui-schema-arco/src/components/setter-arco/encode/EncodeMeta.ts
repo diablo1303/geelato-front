@@ -28,15 +28,17 @@ export default {
         "title": "绑定字段",
         "setterComponentName": "GlEntityFieldSelect",
         "enableValueExpress": false
-    },{
-        "name": "encodeId",
+    }, {
+        "name": "codedId",
         "group": "base",
         "type": "props",
         "show": true,
         "expanded": true,
-        "setterComponentProps": {},
+        "setterComponentProps": {"entityName": "platform_encoding", "labelFieldName": "title", "valueFieldName": "id"},
         "setterComponentVModelName": "modelValue",
         "title": "编码Id",
-        "setterComponentName": "AInput"
-    }], "actions": [],
+        "setterComponentName": "GlDynamicSelect",
+        "enableValueExpress": false
+    }],
+    "actions": []
 }

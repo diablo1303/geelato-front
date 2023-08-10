@@ -67,6 +67,12 @@ watch(() => {
     mv.value = undefined
   }
 })
+watch(() => {
+  return props.modelValue
+}, () => {
+  mv.value = props.modelValue
+}, {deep: true})
+
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 }, {deep: true})

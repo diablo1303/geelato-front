@@ -40,6 +40,24 @@ export default {
         "title": "选项源实体",
         "setterComponentName": "GlEntitySelect"
     }, {
+        "name": "triggerMode",
+        "setterComponentProps": {
+            "options": [{
+                "label": "组件创建时",
+                "__wY748nFdYBExuM4FRD": "onCreated",
+                "value": "onCreated"
+            }, {"label": "被调用时", "__wY748nFdYBExuM4FRD": "onInvoked", "value": "onInvoked"}]
+        },
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "title": "触发模式",
+        "setterComponentName": "ARadioGroup",
+        "description": "不选择时，默认为组件创建时"
+    }, {
         "name": "labelFieldName",
         "group": "base",
         "type": "props",
@@ -75,7 +93,7 @@ export default {
         "show": true,
         "expanded": true,
         "title": "数据过滤",
-        "_showSub": true,
+        "_showSub": false,
         "properties": [{
             "name": "fieldName",
             "group": "base",
@@ -148,7 +166,7 @@ export default {
         "setterComponentVModelName": "",
         "title": "数据联动",
         "description": "获取更多的字段信息，并设置到指定的组件中",
-        "_showSub": true,
+        "_showSub": false,
         "properties": [{
             "name": "fieldName",
             "group": "base",
@@ -220,6 +238,7 @@ export default {
         "expanded": true,
         "enableValueExpress": false
     }],
-    "actions": [],
-    "displayOnStage": "inline-block"
+    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}],
+    "displayOnStage": "inline-block",
+    "methods": [{"name": "fetchData", "title": "获取数据"}]
 }

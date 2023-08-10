@@ -10,13 +10,10 @@ import {
   watch,
 } from "vue";
 import type {
-  TableColumnData,
-  TableData,
   TableRowSelection,
   PaginationProps
 } from "@arco-design/web-vue";
 import useLoading from "../../hooks/loading";
-import {useI18n} from "vue-i18n";
 import cloneDeep from "lodash/cloneDeep";
 import Sortable from "sortablejs";
 import {
@@ -24,19 +21,24 @@ import {
   FieldMeta,
   EntityReader,
   EntityReaderParam,
-  utils, useGlobal, FormProvideProxy, FormProvideKey, jsScriptExecutor, PageProvideProxy, PageProvideKey
+  utils, useGlobal, FormProvideProxy, FormProvideKey, PageProvideProxy, PageProvideKey
 } from "@geelato/gl-ui";
-import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import type {Column, TableColumnDataPlus} from "./table";
 import {Schema} from "b-validate";
 import {exchangeArray, logicDeleteFieldName} from "./table";
 import {mixins} from "@geelato/gl-ui";
-import {forEach} from "lodash";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal;
 // fetch 加载完成数据之后
 const emits = defineEmits(["updateColumns", "updateRow", "fetchSuccess"]);
 const props = defineProps({
+  modelValue: {
+    type: Array,
+    default() {
+      return []
+    }
+  },
   /**
    *  绑定的实体名称
    */
@@ -57,7 +59,7 @@ const props = defineProps({
    *  列上的操作配置
    */
   columnActions: {
-    type: Array as PropType<ComponentMeta[]>,
+    type: Array as PropType<ComponentInstance[]>,
     default() {
       return []
     }
@@ -161,19 +163,24 @@ const setSlotNames = () => {
 }
 
 const refreshFlag = ref(true)
+/**
+ *  基于当前的数据重新渲染表格
+ */
+const reRender = () => {
+  refreshFlag.value = false
+  nextTick(() => {
+    refreshFlag.value = true
+  })
+}
 setSlotNames()
 // 这个watch 用于设计时，监控列变化时，及时刷新（主要是用于让表达式生效）
 if (!props.glIsRuntime) {
   watch(() => {
     return props.columns
   }, () => {
-    refreshFlag.value = false
-    nextTick(() => {
-      refreshFlag.value = true
-    })
+    reRender()
   }, {deep: true})
 }
-
 
 /**
  *  基于是否启用编辑功能，进行插槽信息的转换
@@ -195,6 +202,7 @@ const t = (str: any) => {
 }
 // 渲染展示的数据
 const renderData = ref<Array<object>>([]);
+props.glComponentInst.value = renderData.value
 
 // 编辑状态时删除的数据，
 const deleteDataWhenEnableEdit = ref<Array<{ id: string, [logicDeleteFieldName]: number }>>([]);
@@ -307,6 +315,18 @@ const fetchData = async (readerInfo?: {
     setLoading(false);
   }
 };
+
+
+/**
+ *  编辑页面的数据量不会太大，这里直接Watch数据的变化，不用在页面中配置值改变之后刷新列表
+ */
+watch(() => {
+  return props.glComponentInst.value
+}, () => {
+  console.log('update value:', props.glComponentInst.value)
+  renderData.value = []
+  renderData.value = [...props.glComponentInst.value]
+}, {deep: true})
 
 const search = (entityReaderParams: Array<EntityReaderParam>) => {
   // console.log('search entityReaderParams:', entityReaderParams)
@@ -480,9 +500,9 @@ const validateTable = () => {
   return {error, resultList}
 }
 
-const updateRow = (record: object, rowIndex: number) => {
+const updateRow = (record: object, rowIndex: number, columns: TableColumnDataPlus[]) => {
   validateRecord(record, rowIndex)
-  emits('updateRow', {record, rowIndex})
+  emits('updateRow', {record, rowIndex, columns})
 }
 
 const copyRecord = (record: object, rowIndex: number) => {
@@ -507,12 +527,17 @@ const deleteRecord = (record: object, rowIndex: number) => {
 const getRenderData = () => {
   return renderData.value
 }
+
 const getDeleteData = () => {
   return deleteDataWhenEnableEdit.value
 }
 const getRenderColumns = () => {
   return cloneColumns.value
 }
+
+const isRead = !!pageProvideProxy?.isPageStatusRead()
+
+
 defineExpose({
   search,
   popupVisibleChange,
@@ -520,6 +545,7 @@ defineExpose({
   validateTable,
   validateRecord,
   addRow,
+  reRender,
   getRenderData,
   getRenderColumns,
   getDeleteData
@@ -527,7 +553,7 @@ defineExpose({
 </script>
 
 <template>
-  <a-table class="gl-entity-table" v-if="refreshFlag" row-key="id"
+  <a-table class="gl-entity-table-edit" v-if="refreshFlag" row-key="id"
            :loading="loading"
            :pagination="false"
            :row-selection="rowSelection"
@@ -547,11 +573,10 @@ defineExpose({
     </template>
     <template ##="{ record,rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
-        <a-button type="text" size="small" @click="copyRecord(record,rowIndex)">复制</a-button>
-        <!--                  在这里popconfirm无效 TODO-->
-        <a-popconfirm content="确定是否删除?">
-          <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)">删除</a-button>
-        </a-popconfirm>
+        <a-button type="text" size="small" @click="copyRecord(record,rowIndex)" :disabled="isRead">复制</a-button>
+        <a-button type="text" status="danger" size="small" @click="deleteRecord(record,rowIndex)" :disabled="isRead">
+          删除
+        </a-button>
       </a-space>
     </template>
     <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record,rowIndex }">
@@ -559,15 +584,42 @@ defineExpose({
            :class="{'gl-validate-error':tableErrors[rowIndex]&&tableErrors[rowIndex][column.dataIndex]}"
            :title="tableErrors[rowIndex]?.[column.dataIndex]?.message"
       >
-        <GlComponent v-model="renderData[rowIndex][column.dataIndex]" @update="updateRow(record,rowIndex)"
-                     :glComponentInst="cloneDeep(column._component)"></GlComponent>
+        <GlComponent v-model="renderData[rowIndex][column.dataIndex]"
+                     @update="updateRow(record,rowIndex,cloneColumns)"
+                     :glComponentInst="cloneDeep(column._component)"
+                     :glCtx="{record,rowIndex,dataIndex:column.dataIndex,cellLastValue:renderData[rowIndex][column.dataIndex]}"></GlComponent>
         <!--        <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>-->
       </div>
     </template>
   </a-table>
+  <!--  {{renderData}}-->
 </template>
 
 <style>
+
+.gl-entity-table-edit .arco-upload-list-item-thumbnail {
+  width: 1.5em !important;
+  height: 1.5em !important;
+}
+
+.gl-entity-table-edit .gl-validate-message {
+  display: none;
+}
+
+.gl-entity-table-edit .gl-validate-error .gl-component {
+  background-color: #fde5e5
+}
+
+.gl-entity-table-edit .gl-validate-error .gl-validate-message {
+  display: inline-block;
+  color: red;
+}
+
+.gl-entity-table-edit .arco-table-cell {
+  padding: 1px !important;
+}
+
+
 .gl-entity-table-cols-opt {
   text-align: center;
 }
@@ -580,20 +632,4 @@ defineExpose({
   padding: 0 4px !important;
 }
 
-.gl-entity-table .gl-validate-message {
-  display: none;
-}
-
-.gl-entity-table .gl-validate-error .gl-component {
-  background-color: #fde5e5
-}
-
-.gl-entity-table .gl-validate-error .gl-validate-message {
-  display: inline-block;
-  color: red;
-}
-
-.gl-entity-table .arco-table-cell {
-  padding: 1px !important;
-}
 </style>

@@ -17,7 +17,7 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
         const hideCancel = props.hideCancel === true ? true : false
         return new ParseResult(
             `
-            const content = $gl.fn.loadPage("${props.pageId || ''}","${props.extendId}",${JSON.stringify(props.params)});
+            const content = $gl.fn.loadPage("${props.pageId || ''}","${props.extendId}",${JSON.stringify(props.params)},"${props.pageStatus}");
             $gl.fn.open${mode}({
                 title:${title},
                 content: content,
@@ -48,6 +48,8 @@ interface Props {
     // pageId 或 extendId 二选一，填写其中一个，优先采用pageId
     pageId: string
     extendId: string
+    // 页面状态
+    pageStatus: string
     width: string
     // 页面参数
     params?: Array<Param>

@@ -71,17 +71,20 @@ import DictMeta from "./setter-arco/dict/dictMeta";
 import DynamicSelectMeta from "./setter-arco/select/DynamicSelectMeta";
 import EncodeMeta from "./setter-arco/encode/EncodeMeta";
 import RefPageMeta from "./setter-arco/page/RefPageMeta";
-import commonProperties, {commonActions} from "./setter-arco/CommonProperties";
+import {commonPropsDataEntry, commonPropsOther, commonActions} from "./setter-arco/CommonProperties";
 import TextMeta from "./setter-arco/text/TextMeta";
 import AlertMeta from "./setter-arco/alert/AlertMeta";
 import MultiComponentsMeta from "./setter-arco/multiComponents/multiComponentsMeta";
 import GlButtonMeta from "./setter-arco/button/GlButtonMeta";
+import JsCodeBlockMeta from "./setter-block/code/JsCodeBlockMeta";
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [ButtonMeta, GlButtonMeta, TextMeta, AlertMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
-    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, TreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta, DividerMeta]
+    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, TreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta, DividerMeta,
+    JsCodeBlockMeta
+]
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance]
 const componentInstances: Array<ComponentInstance> = []
@@ -89,21 +92,35 @@ const dataEntryNameMap: { [key: string]: boolean } = {}
 // 不在sidebar中出现的组件
 const ignoreInstances: Array<ComponentMeta> = [DndPlaceholderMeta, VirtualMeta, TimelineMeta, TimelineItemMeta, CascaderMeta]
 // 不需要自动添加公共属性的组件
-const ignoreCommonPropertiesComponents = ['GlEntityTableSub']
+const ignoreCommonPropertiesComponents = ['GlEntityTableSub','GlEntityTablePlus']
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {
     const meta = componentMetas[index]
 
     //  设置僵入组件公共属性
-    if (meta.group === 'dataEntry' && ignoreCommonPropertiesComponents.indexOf(meta.componentName) === -1) {
-        commonProperties.forEach((commonProperty) => {
-            const foundProperty = meta.properties.find((property) => {
-                return property.name === commonProperty.name
+    if (meta.group === 'dataEntry') {
+        if (ignoreCommonPropertiesComponents.indexOf(meta.componentName) === -1) {
+            commonPropsDataEntry.forEach((commonProperty) => {
+                const foundProperty = meta.properties.find((property) => {
+                    return property.name === commonProperty.name
+                })
+                if (!foundProperty) {
+                    meta.properties.push(commonProperty)
+                }
             })
-            if (!foundProperty) {
-                meta.properties.push(commonProperty)
-            }
-        })
+        }
+    } else {
+        if (ignoreCommonPropertiesComponents.indexOf(meta.componentName) === -1) {
+            commonPropsOther.forEach((commonProperty) => {
+                const foundProperty = meta.properties.find((property) => {
+                    return property.name === commonProperty.name
+                })
+                if (!foundProperty) {
+                    meta.properties.push(commonProperty)
+                }
+            })
+        }
+
     }
 
     // 设置组件的加载完成事件

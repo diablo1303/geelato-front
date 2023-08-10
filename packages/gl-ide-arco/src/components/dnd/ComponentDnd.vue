@@ -64,7 +64,7 @@ const props = defineProps({
   addItem: Function,
   ...mixins.props
 })
-const emits = defineEmits(['onComponentClick', 'onComponentMounted'])
+const emits = defineEmits(['onComponentClick'])
 
 // console.log('ComponentDnD > props.componentStoreId:',props.componentStoreId)
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
@@ -132,11 +132,6 @@ const onDragLeave = (event: any) => {
     event.target.classList.remove('gl-drag-enter')
   }
 }
-
-onMounted(() => {
-  emitter.emit('onComponentMounted', {})
-})
-
 
 /**
  *  将页面内的子组件通过map进行引用，便于后续基于页面进行组件事件调用

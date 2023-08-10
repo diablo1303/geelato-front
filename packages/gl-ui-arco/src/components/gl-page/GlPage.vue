@@ -57,6 +57,12 @@ const props = defineProps({
       return ''
     }
   },
+  pageStatus: {
+    type: String,
+    default() {
+      return 'read'
+    }
+  },
   pageMargin: {
     type: String,
     default() {
@@ -99,6 +105,7 @@ const style = {
 const pageProvideProxy = new PageProvideProxy(props.glComponentInst, getCurrentInstance()!)
 pageProvideProxy.pageId = props.pageId
 pageProvideProxy.setVueInst(props.glComponentInst.id, getCurrentInstance())
+pageProvideProxy.setPageStatus(props.pageStatus)
 pageProvideProxy.setParams(props.params)
 const onPageMounted = () => {
   //  触发页面配置的事件，只限运行时

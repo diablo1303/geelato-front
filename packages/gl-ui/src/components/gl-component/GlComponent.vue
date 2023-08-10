@@ -1,5 +1,6 @@
 <template>
-  <component v-if="glComponentInst&&glComponentInst?.props.unRender!==true"
+  <component v-if="glComponentInst&&glComponentInst.props.unRender!==true"
+             v-show="glComponentInst.props._hidden!==true"
              :id="glComponentInst.id" :ref="glComponentInst.id"
              class="gl-component"
              :is="glComponentInst.componentName"
@@ -43,8 +44,9 @@ import mixins from "../mixins";
 import jsScriptExecutor from "../../m/actions/JsScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
 import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
 
-const emits = defineEmits(['update:modelValue', 'update', 'onAction', 'onComponentClick', 'onValueChange', 'onComponentMounted'])
+const emits = defineEmits(['update:modelValue', 'update', 'onAction', 'onComponentClick', 'onValueChange'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const props = defineProps({
@@ -119,25 +121,34 @@ const onValueChange = (...args: any) => {
  *   依据propsExpression设置的各属值的值表达式，计算出值，并合设置到props中，覆盖props中相应属性的值
  */
 const executePropsExpressions = () => {
-  if (props.glComponentInst.propsExpressions) {
-    Object.keys(props.glComponentInst.propsExpressions).forEach((key: string) => {
-      // @ts-ignore
-      const propsExpression = props.glComponentInst.propsExpressions[key]
-      if (propsExpression) {
-        if (key === '_valueExpression') {
-          // 组件值
-          props.glComponentInst.value = jsScriptExecutor.evalExpression(propsExpression, {
-            pageProxy: pageProvideProxy
-          })
-        } else {
-          // 属性计
-          props.glComponentInst.props[key] = jsScriptExecutor.evalExpression(propsExpression, {
-            pageProxy: pageProvideProxy
-          })
+  //
+
+  function executeInstPropsExpressions(inst: ComponentInstance) {
+    if (inst.propsExpressions) {
+      Object.keys(inst.propsExpressions).forEach((key: string) => {
+        // @ts-ignore
+        const propsExpression = inst.propsExpressions[key]
+        if (propsExpression) {
+          if (key === '_valueExpression') {
+            // 组件值
+            inst.value = jsScriptExecutor.evalExpression(propsExpression, {
+              pageProxy: pageProvideProxy,
+              ...props.glCtx
+            })
+          } else {
+            // 属性值
+            inst.props[key] = jsScriptExecutor.evalExpression(propsExpression, {
+              pageProxy: pageProvideProxy,
+              ...props.glCtx
+            })
+            console.log(inst.props.label, key, inst.props[key], propsExpression)
+          }
         }
-      }
-    })
+      })
+    }
   }
+
+  executeInstPropsExpressions(props.glComponentInst)
 
   // 对于对象型属性进行转换，如GlEntityTable的{base:{xx:yy,xx2:yy2}}
   function executeObjectPropsExpressions(obj: any) {
@@ -149,17 +160,24 @@ const executePropsExpressions = () => {
           executeObjectPropsExpressions(obj[objKey])
         }
       } else {
+        // 对象中有组件
+        if (obj.componentName) {
+          executeInstPropsExpressions(obj)
+        }
+
         // object
         if (obj._propsExpressions) {
           Object.keys(obj._propsExpressions).forEach((key: string) => {
             const expression = obj._propsExpressions[key]
             if (expression) {
               obj[key] = jsScriptExecutor.evalExpression(expression, {
-                pageProxy: pageProvideProxy
+                pageProxy: pageProvideProxy,
+                ...props.glCtx
               })
             }
           })
         }
+
         // 处理对象的子级
         for (const objKey in obj) {
           executeObjectPropsExpressions(obj[objKey])
@@ -198,59 +216,35 @@ watch(() => {
   mv.value = props.glComponentInst.value
 })
 
-// watch(() => {
-//   return props.modelValue
-// }, () => {
-//   mv.value = props.modelValue
-// })
+// 开启监控，待观察是否有副作用 8.8
+watch(() => {
+  return props.modelValue
+}, () => {
+  mv.value = props.modelValue
+})
 
-
-// @ts-ignore
 props.glComponentInst.value = mv.value
 watch(mv, (value, oldValue) => {
-  // @ts-ignore
   props.glComponentInst.value = value
-  onValueChange(value)
 
   // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
   emits('update:modelValue', value)
   emits('update', value)
+  // 这个需放在 'update:modelValue' 事件之后，确保组件的值已更新
+  onValueChange(value)
+
 }, {immediate: true})
 
 watch(() => {
-  return props.glComponentInst.props._hidden
+  return props.glComponentInst.props._hidden + '_' + props.glComponentInst.props.unRender
 }, (value, oldValue) => {
-  console.log('_hidden', value, oldValue)
+  // console.log('_hidden_unRender', props.glComponentInst.props.label, value, oldValue)
   refreshFlag.value = false
   nextTick(() => {
     refreshFlag.value = true
   })
 })
 
-let init = false
-onMounted(() => {
-
-  /**
-   *  将页面内的子组件通过map进行引用，便于后续基于页面进行组件事件调用
-   *  注意需在创建后即执行，以确保后续的运算可以用到该实例
-   */
-  if (!init) {
-
-  }
-  init = true
-  //  触发组件配置的事件，只限运行时，GlPage的onMounted另行触发，在此不执行
-  // if (props.glIsRuntime && props.glComponentInst.componentName !== 'GlPage') {
-  //   props.glComponentInst.actions?.forEach((action: Action) => {
-  //     if (action.name === 'onMounted') {
-  //       jsScriptExecutor.doAction(action, {
-  //         pageProxy: pageProvideProxy
-  //       })
-  //     }
-  //   })
-  // }
-
-  emits('onComponentMounted', {})
-})
 executePropsExpressions()
 defineExpose({onMouseLeave, onMouseOver})
 

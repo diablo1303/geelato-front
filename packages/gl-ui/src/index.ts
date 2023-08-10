@@ -38,6 +38,7 @@ import {Schema} from "b-validate";
 import type {ApiPagedResult, ApiResult, ApiResultStatus, PageType, Param} from "./m/types/global";
 import {paramStringify} from "./components/PageProvideProxy";
 import * as fileApi from "./m/datasource/FileApi"
+import * as encodingApi from "./m/datasource/EncodingApi"
 import './assets/style.css'
 
 const Utils = AllUtils
@@ -110,7 +111,8 @@ export {
     PluginUtil,
     useGlobal,
     jsScriptExecutor,
-    fileApi
+    fileApi,
+    encodingApi
 }
 // 默认导出组件
 export default component

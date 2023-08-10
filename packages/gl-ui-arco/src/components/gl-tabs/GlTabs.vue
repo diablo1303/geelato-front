@@ -13,6 +13,7 @@ const emits = defineEmits(['update:modelValue', 'update:items'])
 class TabItem {
   title: string = ''
   iconType: string = ''
+  value: string = ''
 }
 
 const props = defineProps({
@@ -26,7 +27,7 @@ const props = defineProps({
   ...mixins.props
 })
 
-console.log('props.items:', props.items)
+// console.log('props.items:', props.items)
 const tabItems = ref(props.items || <any>[])
 if (tabItems.value.length === 0) {
   tabItems.value.push(...[{
@@ -88,7 +89,7 @@ const mv = ref(props.modelValue)
 const onTabClick = (key: string | number) => {
   const item = tabItems.value[key]
   if (!item.disabled) {
-    mv.value = key
+    mv.value = item.value || key + ''
   }
 }
 watch(mv, () => {

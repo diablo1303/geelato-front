@@ -1,5 +1,4 @@
 import type {App, Plugin} from "vue";
-import PageProvideProxy from "@geelato/gl-ui";
 import GlPage from './components/gl-page/GlPage.vue'
 import GlEntityTablePlus from "./components/gl-entity-table-plus/index.vue";
 import GlEntityTree from "./components/gl-entity-tree/GlEntityTree.vue";
@@ -80,6 +79,6 @@ const component: Plugin = {
     },
 };
 
-export {PageProvideProxy, i18nMessage};
+export {i18nMessage};
 // 默认导出组件
 export default component;

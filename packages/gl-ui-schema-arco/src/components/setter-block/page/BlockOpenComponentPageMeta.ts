@@ -37,18 +37,7 @@ export default {
         "show": true,
         "expanded": true,
         "setterComponentName": "ASelect",
-        "setterComponentProps": {
-            "options": [
-                {
-                    "label": "抽屉",
-                    "value": "Drawer"
-                },
-                {
-                    "label": "弹层",
-                    "value": "Modal"
-                }
-            ]
-        }
+        "setterComponentProps": {"options": [{"label": "抽屉", "value": "Drawer"}, {"label": "弹层", "value": "Modal"}]}
     }, {
         "name": "title",
         "setterComponentProps": {"value": "默认为1024px"},
@@ -71,6 +60,25 @@ export default {
         "title": "页面宽度",
         "setterComponentName": "AInput",
         "enableValueExpress": true
+    }, {
+        "name": "pageStatus",
+        "setterComponentProps": {
+            "options": [{
+                "label": "新增",
+                "value": "create"
+            }, {"label": "只读",  "value": "read"}, {
+                "label": "修改",
+                "value": "update"
+            }]
+        },
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "title": "页面状态",
+        "setterComponentName": "ASelect"
     }, {
         "name": "params",
         "setterComponentProps": {},
@@ -100,7 +108,7 @@ export default {
             "setterComponentProps": {"showInput": true},
             "setterComponentVModelName": "modelValue",
             "setterComponentName": "GlExpressionSetter",
-            "title": "参数值",
+            "title": "参数值"
         }],
         "setterComponentName": "GlObjectArraySetter",
         "titleField": "name",
@@ -148,13 +156,11 @@ export default {
         "setterComponentProps": {
             "options": [{
                 "label": "确认操作时触发，如可做表单保存工作",
-                "value": "onBeforeOk",
-            }, {
-                "label": "页面关闭后（动画结束）触发",
-                "value": "onClose",
-            }, {"label": "页面打开后（动画结束）触发", "value": "onOpen", "__YJe434P13sWjPAcCS1": "onOpen"}],
-            "multiple": true,
-            "allowClear": false
+                "value": "onBeforeOk"
+            }, {"label": "页面关闭后（动画结束）触发", "value": "onClose"}, {
+                "label": "页面打开后（动画结束）触发",
+                "value": "onOpen",
+            }], "multiple": true, "allowClear": false
         },
         "setterComponentVModelName": "modelValue",
         "title": "调用指令",

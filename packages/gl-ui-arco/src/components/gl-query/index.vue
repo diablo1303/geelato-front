@@ -108,6 +108,7 @@ defineExpose({createEntityReaderParams, reset});
           :label-col-props="{ span: 6 }"
           :wrapper-col-props="{ span: 18 }"
           label-align="left"
+          :auto-label-width="true"
       >
         <!--  显示的区域  -->
         <a-row :gutter="16">

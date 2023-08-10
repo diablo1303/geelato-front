@@ -28,6 +28,8 @@ import {entityApi, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
+const enum TriggerMode {onCreated = 'onCreated', onInvoked = 'onInvoked'}
+
 const props = defineProps({
   modelValue: {
     type: String,
@@ -38,6 +40,12 @@ const props = defineProps({
   entityName: {
     type: String,
     required: true
+  },
+  /**
+   *  加载数据的触发模式
+   */
+  triggerMode: {
+    type: String as PropType<TriggerMode>
   },
   labelFieldName: {
     type: String,
@@ -120,11 +128,7 @@ const loadData = () => {
 }
 
 // console.log('GlDynamicSelect > create', props.entityName, useAttrs().id)
-watch(() => {
-  return props.entityName + props.valueFiledName + props.labelFieldName + props.extraFieldAndBindIds
-}, () => {
-  loadData()
-}, {immediate: true, deep: true})
+
 
 const selectOne = (value: any) => {
   // 将值设置到对应的组件中
@@ -136,6 +140,18 @@ const selectOne = (value: any) => {
   }
   mv.value = value ? value[props.valueFiledName] : ''
 }
+
+
+if (props.triggerMode !== TriggerMode.onInvoked) {
+  console.log('props.triggerMode !== TriggerMode.onInvoked', props.triggerMode)
+  watch(() => {
+    return props.entityName + props.valueFiledName + props.labelFieldName + props.extraFieldAndBindIds
+  }, () => {
+    loadData()
+  }, {immediate: true, deep: true})
+}
+
+defineExpose({fetchData: loadData})
 
 </script>
 
