@@ -97,6 +97,7 @@
       :bordered="{cell:true}"
       :columns="(cloneColumns as TableColumnData[])"
       :data="renderData"
+      :default-expand-all-rows="true"
       :loading="loading"
       :pagination="basePagination.pageSize>1000?false:pagination"
       :stripe="true"
@@ -104,12 +105,12 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('security.dictItem.index.form.index')" :width="80" align="center" data-index="index">
-        <template #cell="{  rowIndex }">
-          {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
-        </template>
-      </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemName')" :tooltip="true" :width="140" data-index="itemName"/>
+      <!--      <a-table-column :title="$t('security.dictItem.index.form.index')" :width="80" align="center" data-index="index">
+              <template #cell="{  rowIndex }">
+                {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
+              </template>
+            </a-table-column>-->
+      <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemName')" :tooltip="true" :width="200" data-index="itemName"/>
       <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemCode')" :tooltip="true" :width="140" data-index="itemCode"/>
       <a-table-column :title="$t('security.dictItem.index.form.seqNo')" :width="100" data-index="seqNo"/>
       <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" :width="100" data-index="enableStatus">
@@ -120,9 +121,12 @@
       <a-table-column :title="$t('security.dictItem.index.form.createAt')" :width="170" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemRemark')" :tooltip="true" :width="200" data-index="itemRemark"/>
       <a-table-column
-          v-show="pageData.formState==='edit'" :title="$t('security.dictItem.index.form.operations')" :width="170" align="center"
+          v-show="pageData.formState==='edit'" :title="$t('security.dictItem.index.form.operations')" :width="230" align="center"
           data-index="operations" fixed="right">
         <template #cell="{ record }">
+          <a-button size="small" type="text" @click="addChildTable(record.id)">
+            {{ $t('searchTable.operation.create') }}
+          </a-button>
           <a-button size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
@@ -151,7 +155,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, enableStatusOptions} from "@/views/security/dict/item/searchTable";
-import {deleteDictItem as deleteList, FilterDictItemForm as FilterForm, pageQueryDictItem as pageQueryList} from '@/api/security';
+import {deleteDictItem as deleteList, FilterDictItemForm as FilterForm, pageQueryDictItem as pageQueryList, QueryDictItemForm} from '@/api/security';
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 引用其他页面
 import DictItemDrawer from "@/views/security/dict/item/drawer.vue";
@@ -172,9 +176,45 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', dictId: '', itemName: '', itemCode: '', enableStatus: '', createAt: []};
+  return {id: '', pid: '', dictId: '', itemName: '', itemCode: '', enableStatus: '', createAt: []};
 };
 const filterData = ref(generateFilterData());
+
+/**
+ * tree
+ * @param cForms
+ * @param forms
+ */
+const formatTree = (cForms: QueryDictItemForm[], forms: QueryDictItemForm[]) => {
+  if (cForms && cForms.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const cItem of cForms) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of forms) {
+        if (cItem.id === item.pid) {
+          cItem.children?.push(item);
+        }
+      }
+      if (cItem.children && cItem.children.length > 0) {
+        formatTree(cItem.children, forms);
+      } else {
+        delete cItem.children;
+      }
+    }
+  } else {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of forms) {
+      if (!item.pid) {
+        item.children = [];
+        cForms.push(item);
+      }
+    }
+    if (cForms && cForms.length > 0) {
+      formatTree(cForms, forms);
+    }
+  }
+  return cForms;
+}
 
 /**
  * 分页查询方法
@@ -184,7 +224,8 @@ const fetchData = async (params: PageQueryRequest = {current: pageData.value.cur
   setLoading(true);
   try {
     const {data} = await pageQueryList(params);
-    renderData.value = data.items;
+    // @ts-ignore
+    renderData.value = formatTree([], data.items);
     pagination.current = params.current;
     pagination.pageSize = basePagination.pageSize;
     pagination.total = data.total;
@@ -230,6 +271,12 @@ const addTable = (ev: MouseEvent) => {
   }
 
 };
+const addChildTable = (id: string) => {
+  if (dictItemDrawerRef.value) {
+    // @ts-ignore
+    dictItemDrawerRef.value?.openForm({action: 'add', params: {parentId: id, ...pageData.value.params}, closeBack: reset});
+  }
+}
 const viewTable = (id: string) => {
   if (dictItemDrawerRef.value) {
     // @ts-ignore

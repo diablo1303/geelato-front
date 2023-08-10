@@ -240,16 +240,19 @@ export function deleteDict(id: string) {
 /* -----------------------------字典管理 - 字典项--------------------------- */
 export interface QueryDictItemForm {
   id: string;
+  pid: string;
   dictId: string;
   itemCode: string;
   itemName: string;
   itemRemark: string;
   enableStatus: number;
   seqNo: number;
+  children?: QueryDictItemForm[];
 }
 
 export interface FilterDictItemForm {
   id: string;
+  pid: string;
   dictId: string;
   itemCode: string;
   itemName: string;

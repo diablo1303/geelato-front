@@ -2,7 +2,7 @@
   <a-drawer
       v-model:visible="visibleModel"
       :cancel-text="$t('security.dictItem.index.model.cancel.text')"
-      :footer="pageData.button"
+      :footer="pageData.button&&!draggableData.sort"
       :ok-text="$t('security.dictItem.index.model.ok.text')"
       :title="$t(`security.dictItem.index.model.title.${pageData.formState}`)"
       width="64%"
@@ -25,20 +25,20 @@
     <a-row v-show="pageData.formState==='edit'" style="margin-bottom: 10px">
       <a-col :span="12">
         <a-space>
-          <a-button type="primary" @click="addTable($event)">
+          <a-button v-show="!draggableData.sort" type="primary" @click="addTable($event)">
             <template #icon>
               <icon-plus/>
             </template>
             {{ $t('searchTable.operation.create') }}
           </a-button>
-          <a-trigger
-              v-model:popup-visible="popupVisible"
-              :popup-translate="[0, 10]"
-              :unmount-on-close="false"
-              position="bl"
-              show-arrow
-              trigger="click">
-            <a-button type="primary">
+          <a-trigger v-show="!draggableData.sort"
+                     v-model:popup-visible="popupVisible"
+                     :popup-translate="[0, 10]"
+                     :unmount-on-close="false"
+                     position="bl"
+                     show-arrow
+                     trigger="click">
+            <a-button v-show="!draggableData.sort" type="primary">
               <template #icon>
                 <icon-plus/>
               </template>
@@ -59,19 +59,25 @@
               </a-form>
             </template>
           </a-trigger>
-          <a-button type="outline" @click="copyFilling($event)">
+          <a-button type="outline" @click="sortFilling($event)">
+            <template #icon>
+              <icon-copy/>
+            </template>
+            {{ draggableData.title }}
+          </a-button>
+          <a-button v-show="!draggableData.sort" type="outline" @click="copyFilling($event)">
             <template #icon>
               <icon-copy/>
             </template>
             复制(JSON)
           </a-button>
-          <a-button type="outline" @click="batchDeletes($event)">
+          <a-button v-show="!draggableData.sort" type="outline" @click="batchDeletes($event)">
             <template #icon>
               <icon-delete/>
             </template>
             批量删除
           </a-button>
-          <a-dropdown-button>
+          <a-dropdown-button v-show="!draggableData.sort">
             字典项填充
             <template #icon>
               <icon-down/>
@@ -83,7 +89,7 @@
               <a-doption @click="codedFilling('letter')">[编码]字母(a-z)</a-doption>
             </template>
           </a-dropdown-button>
-          <a-dropdown-button>
+          <a-dropdown-button v-show="!draggableData.sort">
             状态变更
             <template #icon>
               <icon-down/>
@@ -101,7 +107,8 @@
         :bordered="{cell:true}"
         :columns="columnTitle"
         :data="(columnData as TableData[])"
-        :draggable="{ type: 'handle', width: 30 }"
+        :default-expand-all-rows="true"
+        :draggable="draggableData.draggable"
         :pagination="false"
         :row-selection="rowSelection"
         :stripe="true"
@@ -109,7 +116,7 @@
         row-key="id"
         size="small" @change="handleChange">
       <template #columns>
-        <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemName')" :tooltip="true" :width="170" data-index="itemName">
+        <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemName')" :tooltip="true" :width="250" data-index="itemName">
           <template #cell="{record}">
             <a-input v-model.trim="record.itemName" :max-length="32" placeholder="必填项"/>
           </template>
@@ -132,9 +139,14 @@
           </template>
         </a-table-column>
         <a-table-column :title="$t('security.dictItem.index.form.createAt')" :width="170" data-index="createAt"/>
-        <a-table-column :title="$t('model.column.index.form.operations')" :width="80" align="center"
+        <a-table-column v-if="!draggableData.sort" :title="$t('model.column.index.form.operations')" :width="100" align="center"
                         data-index="operations" fixed="right">
           <template #cell="{record}">
+            <a-button status="danger" type="text" @click="addTable($event,record.id)">
+              <template #icon>
+                <IconPlus/>
+              </template>
+            </a-button>
             <a-button status="danger" type="text" @click="deleteItemColumn(record.id)">
               <template #icon>
                 <IconClose/>
@@ -175,22 +187,92 @@ const columnTitle = reactive([
 // 显示隐藏
 const visibleModel = ref(false);
 const selectedKeys = ref([]);
-const rowSelection = reactive({type: 'checkbox', showCheckedAll: true, onlyCurrent: true});
+const draggableData = ref({draggable: {}, sort: false, title: "排序"});
+const rowSelection = reactive({type: 'checkbox', showCheckedAll: true, checkStrictly: true, onlyCurrent: true});
 const fetchData = async (params: PageQueryRequest) => {
   try {
     const {data} = await pageQueryList(params);
-    columnData.value = data.items as unknown as QueryDictItemForm[];
+    // eslint-disable-next-line no-use-before-define
+    columnData.value = formatTree([], data.items as unknown as QueryDictItemForm[]);
   } catch (err) {
     console.log(err);
   }
 };
 
+/**
+ * tree
+ * @param cForms
+ * @param forms
+ */
+const formatTree = (cForms: QueryDictItemForm[], forms: QueryDictItemForm[]) => {
+  if (cForms && cForms.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const cItem of cForms) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of forms) {
+        if (cItem.id === item.pid) {
+          cItem.children?.push(item);
+        }
+      }
+      if (cItem.children && cItem.children.length > 0) {
+        formatTree(cItem.children, forms);
+      } else {
+        delete cItem.children;
+      }
+    }
+  } else {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of forms) {
+      if (!item.pid) {
+        item.children = [];
+        cForms.push(item);
+      }
+    }
+    if (cForms && cForms.length > 0) {
+      formatTree(cForms, forms);
+    }
+  }
+  return cForms;
+}
+const resetTree = (cForms: QueryDictItemForm[], forms: QueryDictItemForm[]) => {
+  if (forms && forms.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of forms) {
+      cForms.push({
+        "id": item.id,
+        // @ts-ignore
+        "createAt": item.createAt, "updateAt": item.updateAt, "creator": item.creator, "updater": item.updater,
+        // @ts-ignore
+        "delStatus": item.delStatus, "buId": item.buId, "deptId": item.deptId, "tenantCode": item.tenantCode,
+        "seqNo": item.seqNo,
+        "pid": item.pid,
+        "dictId": item.dictId,
+        "itemCode": item.itemCode,
+        "itemName": item.itemName,
+        "itemRemark": item.itemRemark,
+        "enableStatus": item.enableStatus,
+      });
+      if (item.children && item.children.length > 0) {
+        resetTree(cForms, item.children);
+      }
+    }
+  }
+  if (cForms && cForms.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of cForms) {
+      delete item.children;
+    }
+  }
+  return cForms;
+}
+
 const validateForm = (): boolean => {
   let isValid = true;
-  if (columnData.value && columnData.value.length > 0) {
+  const tableData = resetTree([], columnData.value);
+  if (tableData && tableData.length > 0) {
     const itemCodes: string[] = [];
     // eslint-disable-next-line no-restricted-syntax
-    for (const item of columnData.value) {
+    for (const item of tableData) {
       if (!item.itemCode || !item.itemName) {
         isValid = false;
         Notification.warning("请补充字典项的必填项！");
@@ -222,79 +304,96 @@ function UUID() {
 }
 
 /* 表单 */
-const copyEvent = (value: string) => {
-  copyToClipboard(value, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
+const sortFilling = (ev?: MouseEvent) => {
+  if (!draggableData.value.sort) {
+    columnData.value = resetTree([], columnData.value);
+    draggableData.value = {draggable: {type: 'handle', width: 30}, sort: true, title: "完成排序"};
+  } else {
+    columnData.value = formatTree([], columnData.value);
+    draggableData.value = {draggable: {}, sort: false, title: "排序"};
+  }
 }
 const copyFilling = (ev?: MouseEvent) => {
   const copyData: QueryDictItemForm[] = [];
-  if (columnData.value.length > 0) {
-    for (let i = 0; i < columnData.value.length; i += 1) {
+  const tableData = resetTree([], columnData.value);
+  if (tableData.length > 0) {
+    for (let i = 0; i < tableData.length; i += 1) {
       if (selectedKeys.value.length === 0 ||
-        (selectedKeys.value.length > 0 && selectedKeys.value.includes(columnData.value[i].id as never))) {
-        copyData.push(columnData.value[i]);
+        (selectedKeys.value.length > 0 && selectedKeys.value.includes(tableData[i].id as never))) {
+        copyData.push(tableData[i]);
       }
     }
   }
-  copyEvent(JSON.stringify(copyData));
+  copyToClipboard(JSON.stringify(copyData), t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
 }
 const codedFilling = (type: string) => {
   if (['name', 'code', 'number', 'letter'].includes(type) && columnData.value.length > 0) {
-    for (let i = 0; i < columnData.value.length; i += 1) {
+    const tableData = resetTree([], columnData.value);
+    for (let i = 0; i < tableData.length; i += 1) {
       if (selectedKeys.value.length === 0 ||
-        (selectedKeys.value.length > 0 && selectedKeys.value.includes(columnData.value[i].id as never))) {
+        (selectedKeys.value.length > 0 && selectedKeys.value.includes(tableData[i].id as never))) {
         switch (type) {
           case 'code':
-            columnData.value[i].itemName = columnData.value[i].itemCode;
+            tableData[i].itemName = tableData[i].itemCode;
             break;
           case 'name':
-            columnData.value[i].itemCode = columnData.value[i].itemName;
+            tableData[i].itemCode = tableData[i].itemName;
             break;
           case 'number':
-            columnData.value[i].itemCode = (i + 1).toString();
+            tableData[i].itemCode = (i + 1).toString();
             break;
           case 'letter':
-            columnData.value[i].itemCode = String.fromCharCode(i + 97);
+            tableData[i].itemCode = String.fromCharCode(i + 97);
             break;
           default:
             break;
         }
       }
     }
+    columnData.value = formatTree([], tableData);
   }
 }
 const changeStatusEnable = (status: number) => {
   if ([0, 1].includes(status) && columnData.value.length > 0) {
-    for (let i = 0; i < columnData.value.length; i += 1) {
+    const tableData = resetTree([], columnData.value);
+    for (let i = 0; i < tableData.length; i += 1) {
       if (selectedKeys.value.length === 0 ||
-        (selectedKeys.value.length > 0 && selectedKeys.value.includes(columnData.value[i].id as never))) {
-        columnData.value[i].enableStatus = status;
+        (selectedKeys.value.length > 0 && selectedKeys.value.includes(tableData[i].id as never))) {
+        tableData[i].enableStatus = status;
       }
     }
+    columnData.value = formatTree([], tableData);
   }
 }
 const batchDeletes = (ev?: MouseEvent) => {
   if (columnData.value.length > 0) {
     const indexs = [];
-    for (let i = 0; i < columnData.value.length; i += 1) {
-      if (selectedKeys.value.length > 0 && selectedKeys.value.includes(columnData.value[i].id as never)) {
+    const tableData = resetTree([], columnData.value);
+    for (let i = 0; i < tableData.length; i += 1) {
+      if (selectedKeys.value.length > 0 && selectedKeys.value.includes(tableData[i].id as never)) {
         indexs.push(i);
       }
     }
     for (let i = 0; i < indexs.length; i += 1) {
-      columnData.value.splice(indexs[i], 1);
+      tableData.splice(indexs[i], 1);
     }
     selectedKeys.value = [];
+    columnData.value = formatTree([], tableData);
   }
 }
-const addTable = (e: Event) => {
+const addTable = (e: Event, parentId?: string) => {
   if (validateForm()) {
-    columnData.value.push({
+    const tableData = resetTree([], columnData.value);
+    tableData.push({
       id: UUID(),
+      pid: parentId || '',
       dictId: pageData.value.pId,
       itemName: '',
       itemCode: '',
       enableStatus: 1
     } as QueryDictItemForm);
+    console.log(tableData);
+    columnData.value = formatTree([], tableData);
   }
 }
 const popupVisible = ref(false);
@@ -309,13 +408,15 @@ const handlePopupOk = (ev?: MouseEvent) => {
   const itemCodes = affixData.value.itemCode ? affixData.value.itemCode.replace(regex, ',').split(',') : [];
   const maxLen = itemCodes.length > itemNames.length ? itemCodes.length : itemNames.length;
   for (let i = 0; i < maxLen; i += 1) {
-    columnData.value.push({
+    const tableData = resetTree([], columnData.value);
+    tableData.push({
       id: UUID(),
       dictId: pageData.value.pId,
       itemName: itemNames[i] || '',
       itemCode: itemCodes[i] || '',
       enableStatus: 1
     } as QueryDictItemForm);
+    columnData.value = formatTree([], tableData);
   }
   handlePopupCancel();
 }
@@ -324,14 +425,14 @@ const okLoading = ref(false);
 const handleModelOk = async (done: any) => {
   okLoading.value = true;
   try {
-    console.log(columnData.value);
     if (columnData.value && columnData.value.length > 0) {
+      const tableData = resetTree([], columnData.value);
       // eslint-disable-next-line no-restricted-syntax
-      for (const item of columnData.value) {
+      for (const item of tableData) {
         if (item.id && item.id.length === 42) item.id = '';
       }
       if (validateForm()) {
-        await batchCreateOrUpdateDictItem(pageData.value.pId, columnData.value);
+        await batchCreateOrUpdateDictItem(pageData.value.pId, tableData);
         visibleModel.value = false;
         pageData.value.okBack({} as unknown as QueryModel);
       }
@@ -353,15 +454,17 @@ const handleChange = (_data: any[]) => {
 }
 const deleteItemColumn = (key: string) => {
   const indexs = [];
-  for (let i = 0; i < columnData.value.length; i += 1) {
-    if (columnData.value[i].id === key) {
+  const tableData = resetTree([], columnData.value);
+  for (let i = 0; i < tableData.length; i += 1) {
+    if (tableData[i].id === key) {
       indexs.push(i);
     }
   }
   for (let i = 0; i < indexs.length; i += 1) {
-    columnData.value.splice(indexs[i], 1);
+    tableData.splice(indexs[i], 1);
   }
   selectedKeys.value = [];
+  columnData.value = formatTree([], tableData);
 }
 
 const openForm = (urlParams: ListUrlParams) => {

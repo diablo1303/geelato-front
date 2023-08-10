@@ -56,7 +56,7 @@ const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
 /* 表单 */
 const generateFormData = (): QueryForm => {
-  return {id: '', dictId: '', itemName: '', itemCode: '', enableStatus: 1, seqNo: 999, itemRemark: ''};
+  return {id: '', pid: '', dictId: '', itemName: '', itemCode: '', enableStatus: 1, seqNo: 999, itemRemark: ''};
 }
 const formData = ref(generateFormData());
 
@@ -64,6 +64,7 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
+      delete params.children;
       const {data} = await createOrUpdateForm(params);
       successBack(data);
     } catch (err) {
@@ -93,11 +94,13 @@ const resetValidate = async () => {
 
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {
+  console.log(urlParams);
   // 全局
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
   pageData.value.formCol = urlParams.formCol || 1;
   formData.value = generateFormData();
+  formData.value.pid = urlParams.params?.parentId || '';
   formData.value.dictId = urlParams.params?.pId || '';
   // 重置验证
   resetValidate();
