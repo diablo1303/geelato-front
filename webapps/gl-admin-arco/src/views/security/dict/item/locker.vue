@@ -208,10 +208,11 @@ const formatTree = (cForms: QueryDictItemForm[], forms: QueryDictItemForm[]) => 
   if (cForms && cForms.length > 0) {
     // eslint-disable-next-line no-restricted-syntax
     for (const cItem of cForms) {
+      cItem.children = [];
       // eslint-disable-next-line no-restricted-syntax
       for (const item of forms) {
         if (cItem.id === item.pid) {
-          cItem.children?.push(item);
+          cItem.children.push(item);
         }
       }
       if (cItem.children && cItem.children.length > 0) {
@@ -382,6 +383,10 @@ const batchDeletes = (ev?: MouseEvent) => {
   }
 }
 const addTable = (e: Event, parentId?: string) => {
+  if (parentId && parentId.length === 42) {
+    Notification.warning("请先保存父级！");
+    return;
+  }
   if (validateForm()) {
     const tableData = resetTree([], columnData.value);
     tableData.push({

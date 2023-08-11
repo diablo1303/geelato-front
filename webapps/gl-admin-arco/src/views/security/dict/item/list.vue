@@ -186,34 +186,37 @@ const filterData = ref(generateFilterData());
  * @param forms
  */
 const formatTree = (cForms: QueryDictItemForm[], forms: QueryDictItemForm[]) => {
-  if (cForms && cForms.length > 0) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const cItem of cForms) {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const item of forms) {
-        if (cItem.id === item.pid) {
-          cItem.children?.push(item);
-        }
-      }
-      if (cItem.children && cItem.children.length > 0) {
-        formatTree(cItem.children, forms);
-      } else {
-        delete cItem.children;
-      }
-    }
-  } else {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const cItem of cForms) {
+    cItem.children = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const item of forms) {
-      if (!item.pid) {
-        item.children = [];
-        cForms.push(item);
+      if (cItem.id === item.pid) {
+        cItem.children.push(item);
       }
     }
-    if (cForms && cForms.length > 0) {
-      formatTree(cForms, forms);
+    if (cItem.children && cItem.children.length > 0) {
+      formatTree(cItem.children, forms);
+    } else {
+      delete cItem.children;
     }
   }
+
   return cForms;
+}
+
+const formatTree1 = (totalData: QueryDictItemForm[]) => {
+  const forms: QueryDictItemForm[] = [];
+  if (totalData && totalData.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of totalData) {
+      if (!item.pid) {
+        forms.push(item);
+      }
+    }
+  }
+  formatTree(forms, totalData);
+  return forms;
 }
 
 /**
@@ -225,7 +228,7 @@ const fetchData = async (params: PageQueryRequest = {current: pageData.value.cur
   try {
     const {data} = await pageQueryList(params);
     // @ts-ignore
-    renderData.value = formatTree([], data.items);
+    renderData.value = formatTree1(data.items);
     pagination.current = params.current;
     pagination.pageSize = basePagination.pageSize;
     pagination.total = data.total;
