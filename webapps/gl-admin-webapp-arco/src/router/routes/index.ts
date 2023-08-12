@@ -2,7 +2,7 @@ import type {RouteRecordNormalized} from 'vue-router';
 import {DEFAULT_LAYOUT} from "@/router/routes/base";
 import {getMenus, QueryMenuForm} from "@/api/user";
 /* eslint-disable-next-line */
-import globalConfig from '@/config/globalConfig.json';
+import globalConfig from '@/config/globalconfig';
 import {DEFAULT_ROUTE, URL_PREFIX} from "@/router/constants";
 
 const modules = import.meta.glob('./modules/*.ts', {eager: true});
