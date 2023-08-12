@@ -4,13 +4,9 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
-import {useIdeStore} from "@geelato/gl-ide";
-
-const componentMaterialStore = useComponentMaterialStore()
-componentMaterialStore.initRegisterComponentMetas()
-const ideStore = useIdeStore()
-ideStore.addComponentMetas(componentMaterialStore.componentMetas)
+import pinia from '../../store';
+import {provide} from "vue";
+provide('pinia',pinia)
 </script>
 <template>
   <GlIdeArco></GlIdeArco>

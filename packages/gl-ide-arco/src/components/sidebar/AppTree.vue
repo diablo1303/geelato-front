@@ -16,10 +16,14 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {useIdeStore, useAppStore, Page} from "@geelato/gl-ide";
+import {useIdeStore, useAppStore, Page, usePageStore} from "@geelato/gl-ide";
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()
+const pageStore = usePageStore()
+pageStore.addPageTemplate("formPage", import("../stage/formPageTemplate.json"))
+pageStore.addPageTemplate("freePage", import("../stage/freePageTemplate.json"))
+pageStore.addPageTemplate("listPage", import("../stage/listPageTemplate.json"))
 
 const onSelectNode = (params: any) => {
   console.log('onSelectNode() > params:', params)

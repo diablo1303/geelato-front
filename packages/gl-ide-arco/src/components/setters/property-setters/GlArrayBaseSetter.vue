@@ -94,7 +94,7 @@ export default defineComponent({
       try {
         return JSON.parse(JSON.stringify(template))
       } catch (e) {
-        console.error(e)
+        console.error('getDefaultItem', e)
       }
       return this.defaultItemForAdd
     },

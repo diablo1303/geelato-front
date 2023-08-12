@@ -9,18 +9,20 @@ import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
 import {plugin} from "./plugin";
 import { DndProvider } from 'vue3-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import {Utils} from "@geelato/gl-ui";
+import {inject} from "vue";
+import type {Pinia} from "pinia";
 
-const ideStore = useIdeStore()
+const pinia:Pinia = inject('pinia')!
+
+const componentMaterialStore = useComponentMaterialStore(pinia)
+componentMaterialStore.initRegisterComponentMetas()
+
+const ideStore = useIdeStore(pinia)
 // 安装插件
 ideStore.usePlugin(plugin)
-ideStore.addComponentMetas(useComponentMaterialStore().componentMetas)
+ideStore.addComponentMetas(componentMaterialStore.componentMetas)
 ideStore.setUiLibName('arco')
 
-// 获取应用id
-if(Utils.CheckUtil.isBrowser()){
-
-}
 </script>
 <template>
   <DndProvider :backend="HTML5Backend">
