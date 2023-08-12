@@ -11,7 +11,7 @@ export default mergeConfig(
   {
     mode: 'test',
     plugins: [
-      configCompressPlugin('gzip'),
+      // configCompressPlugin('gzip'),
       configVisualizerPlugin(),
       // configArcoResolverPlugin(),
       configStyleImportPlugin(),
