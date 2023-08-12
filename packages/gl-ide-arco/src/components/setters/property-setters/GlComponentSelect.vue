@@ -38,11 +38,11 @@ export default {
 </script>
 <script lang="ts" setup>
 import {type PropType, ref, watch} from "vue";
-import GlComponentSetter from "../GlComponentSetter.vue";
-import {useIdeStore} from "@geelato/gl-ide";
-import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
 import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
+import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
+import {useIdeStore} from "@geelato/gl-ide";
 import GlComponentSelectOptions from "./GlComponentSelectOptions";
+import GlComponentSetter from "../GlComponentSetter.vue";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps(

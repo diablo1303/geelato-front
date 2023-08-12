@@ -201,8 +201,9 @@ const t = (str: any) => {
   return str
 }
 // 渲染展示的数据
-const renderData = ref<Array<object>>([]);
-props.glComponentInst.value = renderData.value
+props.glComponentInst.value = props.glComponentInst.value || []
+// @ts-ignore
+const renderData = ref<Array<object>>(props.glComponentInst.value);
 
 // 编辑状态时删除的数据，
 const deleteDataWhenEnableEdit = ref<Array<{ id: string, [logicDeleteFieldName]: number }>>([]);
@@ -323,7 +324,7 @@ const fetchData = async (readerInfo?: {
 watch(() => {
   return props.glComponentInst.value
 }, () => {
-  console.log('update value:', props.glComponentInst.value)
+  // console.log('update value:', props.glComponentInst.value)
   renderData.value = []
   renderData.value = [...props.glComponentInst.value]
 }, {deep: true})
@@ -479,6 +480,7 @@ const addRow = () => {
     newRow[col.dataIndex] = col._component?.value
   })
   renderData.value.push(newRow)
+  props.glComponentInst.value = renderData.value
 }
 
 /**
@@ -511,9 +513,11 @@ const copyRecord = (record: object, rowIndex: number) => {
     newRecord.id = undefined
   }
   renderData.value.splice(rowIndex + 1, 0, newRecord)
+  props.glComponentInst.value = renderData.value
 }
 const deleteRecord = (record: object, rowIndex: number) => {
   const records = renderData.value.splice(rowIndex, 1)
+  props.glComponentInst.value = renderData.value
   if (records && records.length > 0) {
     const record: { [key: string]: any } = records[0]
     // 如可该记录没有id，即表示新添加且未保存的，在点删除时，直接删除，不需要再记录到待删除组数中
@@ -587,7 +591,9 @@ defineExpose({
         <GlComponent v-model="renderData[rowIndex][column.dataIndex]"
                      @update="updateRow(record,rowIndex,cloneColumns)"
                      :glComponentInst="cloneDeep(column._component)"
-                     :glCtx="{record,rowIndex,dataIndex:column.dataIndex,cellLastValue:renderData[rowIndex][column.dataIndex]}"></GlComponent>
+                     :glCtx="{record,rowIndex,dataIndex:column.dataIndex,cellLastValue:renderData[rowIndex][column.dataIndex]}"
+                     :disabled="isRead"
+        ></GlComponent>
         <!--        <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>-->
       </div>
     </template>

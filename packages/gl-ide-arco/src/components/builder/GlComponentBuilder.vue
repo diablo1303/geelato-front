@@ -298,7 +298,7 @@ import GlActionSetterBuilder from "./actions-builder/GlActionSetterBuilder.vue";
 import GlMethodSetterBuilder from "./method-builder/GlMethodSetterBuilder.vue";
 import GlOptions from "../setters/GlOptions.vue";
 import ClipboardJS from "clipboard";
-import VueJsonPretty from 'vue-json-pretty'
+// import VueJsonPretty from 'vue-json-pretty'
 import {ComponentMeta, ActionSetterMeta, MethodSetterMeta} from "@geelato/gl-ui-schema";
 import {ComponentInstance, PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
 import {useThemeStore} from "@geelato/gl-ide";
@@ -318,8 +318,7 @@ export default defineComponent({
     GlMethodSetterBuilder,
     Splitpanes,
     Pane,
-    GlOptions,
-    VueJsonPretty
+    GlOptions
   },
   props: {
     modelValue: {

@@ -1,7 +1,7 @@
 export default {
     "componentName": "GlHiddenArea",
     "title": "**隐藏区域**",
-    "props": {"title": "*隐藏区域*","bordered":false},
+    "props": {"title": "*隐藏区域*", "bordered": false},
     "slots": {},
     "children": [
         {

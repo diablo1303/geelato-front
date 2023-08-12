@@ -20,7 +20,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, nextTick, onMounted, type PropType, provide, ref, toRaw} from 'vue';
+import {inject, onMounted, type PropType, provide, ref} from 'vue';
 import type {FormInstance} from '@arco-design/web-vue/es/form';
 import useLoading from '../../hooks/loading';
 import {isDataEntry} from "@geelato/gl-ui-schema-arco";
@@ -227,7 +227,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
 const loadForm = async () => {
   if (!entityRecordId.value) {
     // 1、不需要从服务端获取
-    if (isRead) {
+    if (isRead&&props.glIsRuntime) {
       global.$notification.error({
         duration: 8000,
         title: '参数不全',

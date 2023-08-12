@@ -4,6 +4,9 @@ importers:
 
   packages/gl-ide:
     dependencies:
+      '@arco-design/web-vue':
+        specifier: ^2.47.0
+        version: 2.47.0(vue@3.3.4)
       '@geelato/gl-ui':
         specifier: workspace:^0.0.1
         version: link:../gl-ui
@@ -37,9 +40,6 @@ importers:
       vue:
         specifier: ^3.3.4
         version: 3.3.4
-      vue-json-pretty:
-        specifier: ^2.2.3
-        version: 2.2.3(vue@3.3.4)
     devDependencies:
       '@rushstack/eslint-patch':
         specifier: ^1.2.0
@@ -104,6 +104,9 @@ importers:
 
   packages/gl-ide-arco:
     dependencies:
+      '@arco-design/web-vue':
+        specifier: ^2.50.0
+        version: 2.50.0(vue@3.3.4)
       '@ckpack/vue-color':
         specifier: ^1.4.1
         version: 1.4.1(vue@3.3.4)
@@ -149,9 +152,6 @@ importers:
       vue:
         specifier: ^3.3.4
         version: 3.3.4
-      vue-json-pretty:
-        specifier: ^2.2.3
-        version: 2.2.3(vue@3.3.4)
       vue3-dnd:
         specifier: ^2.0.2
         version: 2.0.2(vue@3.3.4)
@@ -795,8 +795,8 @@ importers:
   webapps/gl-admin-webapp-arco:
     dependencies:
       '@arco-design/web-vue':
-        specifier: ^2.47.0
-        version: 2.47.0(vue@3.3.4)
+        specifier: ^2.50.0
+        version: 2.50.0(vue@3.3.4)
       '@geelato/gl-ide':
         specifier: workspace:^0.0.1
         version: link:../../packages/gl-ide
@@ -1193,6 +1193,22 @@ packages:
 
   /@arco-design/web-vue@2.47.0(vue@3.3.4):
     resolution: {integrity: sha512-gyazl9pi0irrKYojCfOpW/U26QKxZVkQLgLRhSj9VWi/dkDk+KVUOeQh1HjaneKtZhVg5KJ24jgcqGvsZl2cpQ==}
+    peerDependencies:
+      vue: ^3.1.0
+    dependencies:
+      '@arco-design/color': 0.4.0
+      b-tween: 0.3.3
+      b-validate: 1.4.6
+      compute-scroll-into-view: 1.0.20
+      dayjs: 1.11.7
+      number-precision: 1.6.0
+      resize-observer-polyfill: 1.5.1
+      scroll-into-view-if-needed: 2.2.31
+      vue: 3.3.4
+    dev: false
+
+  /@arco-design/web-vue@2.50.0(vue@3.3.4):
+    resolution: {integrity: sha512-/hQK0fbi1WMi6RXel5+Jrp6bM3d1xmGKL7Y7QRy4uMum7yqABoDS3X4fV2Ny5RE4wtyD+jmM1xcIC1QRhhmFHQ==}
     peerDependencies:
       vue: ^3.1.0
     dependencies:

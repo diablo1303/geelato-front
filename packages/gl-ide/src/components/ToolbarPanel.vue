@@ -98,8 +98,6 @@
               :fullscreen="true"
               @ok="codeViewerVisible=false"
               @cancel="codeViewerVisible=false">
-      <!--      <VueJsonPretty v-if="componentStore.currentComponentTree[0]"-->
-      <!--                     :data="componentStore.currentComponentTree[0]"></VueJsonPretty>-->
       <GlMonacoEditor v-model="json" :height="themeStore.modalBodyHeight-41"
                       language="json"></GlMonacoEditor>
       <template #footer>

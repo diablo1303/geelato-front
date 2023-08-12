@@ -20,11 +20,11 @@ import {
   type SizeProps,
   type Column,
   defaultTable,
-  type TableColumnDataPlus, BaseInfo, logicDeleteFieldName,
+  type TableColumnDataPlus, BaseInfo,
 } from "../gl-entity-table/table";
 import Toolbar, {defaultToolbar} from "../gl-toolbar/toolbar";
 import {useI18n} from "vue-i18n";
-import {CheckUtil, entityApi, PageProvideKey, PageProvideProxy, GlIconfont, utils, mixins} from "@geelato/gl-ui";
+import {entityApi, PageProvideKey, PageProvideProxy, GlIconfont, utils, mixins, CheckUtil} from "@geelato/gl-ui";
 import type {Action} from "../../types/global";
 
 /**
@@ -33,13 +33,14 @@ import type {Action} from "../../types/global";
 const emits = defineEmits(['changeRecord', 'fetchSuccess'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const isRead = !!pageProvideProxy?.isPageStatusRead()
-// const {t} = CheckUtil.isBrowser() ? useI18n() : {
-//   t: () => {
-//   }
-// };
-const t = (str: any) => {
-  return str
-}
+const {t} = CheckUtil.isBrowser() ? useI18n() : {
+  t: (str: any) => {
+    return str
+  }
+};
+// const t = (str: any) => {
+//   return str
+// }
 
 const props = defineProps({
   base: {
@@ -267,25 +268,9 @@ defineExpose({deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
         </div>
       </template>
       <template #rightItems>
-        <a-space>
-          <a-dropdown @select="handleSelectDensity">
-            <a-tooltip content="行高调整">
-              <div class="action-icon">
-                <GlIconfont type="gl-line-height"></GlIconfont>
-              </div>
-            </a-tooltip>
-            <template #content>
-              <a-doption
-                  v-for="item in densityList"
-                  :key="item.value"
-                  :value="item.value"
-                  :class="{ active: item.value === size }"
-              >
-                <span>{{ item.name }}</span>
-              </a-doption>
-            </template>
-          </a-dropdown>
-          <a-tooltip :content="t('searchTable.actions.columnSetting')">
+        <a-space v-if="!props.base?.enableEdit">
+          <!-- TODO 待提供按列设置展示 -->
+          <a-tooltip v-if="false" :content="t('searchTable.actions.columnSetting')">
             <a-popover
                 trigger="click"
                 position="bl"
@@ -306,11 +291,7 @@ defineExpose({deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
                       <!--                    <GlIconfont type="gl-drag-arrow"></GlIconfont>-->
                     </div>
                     <div>
-                      <a-checkbox
-                          v-model="item.checked"
-                          @change="changeShowColumns($event, item, index)"
-                      >
-                      </a-checkbox>
+                      <a-checkbox v-model="item.checked" @change="changeShowColumns($event, item, index)"/>
                     </div>
                     <div class="title">
                       {{ item.title === "#" ? "序号" : item.title }}
@@ -320,6 +301,23 @@ defineExpose({deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
               </template>
             </a-popover>
           </a-tooltip>
+          <a-dropdown @select="handleSelectDensity">
+            <a-tooltip content="行高调整">
+              <div class="action-icon">
+                <GlIconfont type="gl-line-height"></GlIconfont>
+              </div>
+            </a-tooltip>
+            <template #content>
+              <a-doption
+                  v-for="item in densityList"
+                  :key="item.value"
+                  :value="item.value"
+                  :class="{ active: item.value === size }"
+              >
+                <span>{{ item.name }}</span>
+              </a-doption>
+            </template>
+          </a-dropdown>
           <a-tooltip content="刷新">
             <div class="action-icon" @click="refresh">
               <GlIconfont type="gl-refresh"></GlIconfont>

@@ -5,7 +5,7 @@ import GlEntityTree from "./components/gl-entity-tree/GlEntityTree.vue";
 import GlEntityForm from "./components/gl-entity-form/GlEntityForm.vue";
 import GlRowColLayout from "./components/gl-row-col-layout/GlRowColLayout.vue";
 import GlCard from "./components/gl-card/index.vue";
-import GlHidden from "./components/gl-hidden-area/GlHiddenArea.vue";
+import GlHiddenArea from "./components/gl-hidden-area/GlHiddenArea.vue";
 import GlTab from "./components/gl-tabs/GlTab.vue";
 import GlTabs from "./components/gl-tabs/GlTabs.vue";
 import GlDynamicSelect from "./components/gl-dynamic-select/GlDynamicSelect.vue";
@@ -50,7 +50,7 @@ const component: Plugin = {
         app.component(GlEntityTree.name, GlEntityTree)
         app.component(GlEntityForm.name, GlEntityForm)
         app.component(GlCard.name, GlCard)
-        app.component(GlHidden.name, GlHidden)
+        app.component(GlHiddenArea.name, GlHiddenArea)
         app.component(GlRowColLayout.name, GlRowColLayout)
         app.component(GlTab.name, GlTab)
         app.component(GlTabs.name, GlTabs)

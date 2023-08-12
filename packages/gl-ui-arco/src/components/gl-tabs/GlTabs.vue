@@ -31,11 +31,30 @@ const props = defineProps({
 const tabItems = ref(props.items || <any>[])
 if (tabItems.value.length === 0) {
   tabItems.value.push(...[{
-    title: '标题1', iconType: ''
+    title: '标题1', iconType: '', value: '0'
   }, {
-    title: '标题2', iconType: ''
+    title: '标题2', iconType: '', value: '1'
   }])
 }
+
+const mv = ref(props.modelValue)
+// 初始化选中第一个
+if (!mv.value && tabItems.value.length > 0) {
+  mv.value = tabItems.value[0]
+}
+watch(() => {
+  return props.items
+}, () => {
+  tabItems.value = props.items
+  tabItems.value.forEach((item: TabItem, index: number) => {
+    item.value = item.value || (index + '')
+  })
+  if (!mv.value && tabItems.value.length > 0) {
+    mv.value = tabItems.value[0]
+  }
+}, {})
+
+console.log('mv.value', mv.value)
 
 const placeholderTemplate = () => {
   return {
@@ -85,18 +104,18 @@ const updateInst = () => {
 
 updateInst()
 
-const mv = ref(props.modelValue)
+
 const onTabClick = (key: string | number) => {
-  const item = tabItems.value[key]
-  if (!item.disabled) {
-    mv.value = item.value || key + ''
+  const foundItem = tabItems.value.find((item: TabItem) => {
+    return item.value == key
+  })
+  if (!foundItem.disabled) {
+    mv.value = key
   }
 }
+
 watch(mv, () => {
   emits('update:modelValue', mv.value)
-})
-onMounted(() => {
-  onTabClick(0)
 })
 
 </script>
@@ -107,7 +126,7 @@ onMounted(() => {
         <slot name="extra"></slot>
       </div>
     </template>
-    <a-tab-pane v-for="(item,index) in tabItems" :key="index" :disabled="item.disabled">
+    <a-tab-pane v-for="(item,index) in tabItems" :key="item.value" :disabled="item.disabled">
       <template #title>
         <GlIconfont v-if="item.iconType" :type="item.iconType"/>
         {{ item.title }}

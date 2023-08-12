@@ -5,10 +5,10 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {onMounted, ref, watch} from "vue";
+import {inject, onMounted, ref, watch} from "vue";
 import type {FileItem} from "@arco-design/web-vue";
 import {Notification} from "@arco-design/web-vue";
-import {entityApi, fileApi} from "@geelato/gl-ui";
+import {entityApi, fileApi, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -26,7 +26,7 @@ watch(mv, () => {
 })
 
 // 转成字符串格式，并去掉空项
-const accept = ref(props.acceptArray&&JSON.stringify(props.acceptArray?.filter((acceptItem) => {
+const accept = ref(props.acceptArray && JSON.stringify(props.acceptArray?.filter((acceptItem) => {
   return !acceptItem
 }) || []))
 
@@ -122,12 +122,16 @@ const loadFiles = () => {
 onMounted(() => {
   loadFiles()
 })
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
+
+const isRead = pageProvideProxy.isPageStatusRead()
 </script>
 
 <template>
   <a-upload :action="fileApi.getUploadUrl()" :file-list="fileList"
             :accept="accept"
             :headers="entityApi.getHeader()"
+            :show-remove-button="!isRead"
             @error="uploadError" @success="uploadSuccess" @before-remove="beforeRemove"/>
 </template>
 

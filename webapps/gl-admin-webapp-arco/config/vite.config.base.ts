@@ -42,4 +42,20 @@ export default defineConfig({
       },
     },
   },
+  rollupOptions: {
+    // 配置多入口
+    input: {
+      index: resolve(__dirname, '../index.html'),
+      ide: resolve(__dirname, '../ide.html'),
+      idePagePreview: resolve(__dirname, '../idePagePreview.html'),
+    },
+    // 确保外部化处理那些你不想打包进库的依赖
+    external: [],
+    output: {
+      // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
+      globals: {
+        // vue: 'Vue',
+      },
+    },
+  },
 });

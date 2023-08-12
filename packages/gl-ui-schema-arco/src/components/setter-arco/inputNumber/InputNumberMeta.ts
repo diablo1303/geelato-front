@@ -171,26 +171,15 @@ export default {
         "setterComponentName": "ASwitch",
         "enableValueExpress": false
     }, {
-        "name": "disabled",
+        "name": "hideButton",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
-        "title": "禁用",
+        "title": "隐藏按钮",
         "setterComponentName": "ASwitch",
         "show": true,
         "expanded": true,
-        "enableValueExpress": true
-    }, {
-        "name": "readOnly",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
-        "group": "base",
-        "type": "props",
-        "show": true,
-        "expanded": true,
-        "title": "只读",
-        "setterComponentName": "ASwitch",
         "enableValueExpress": true
     }],
     "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}]

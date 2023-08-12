@@ -1,7 +1,7 @@
 export default {
     "id":"GlCard",
     "componentName": "GlCard",
-    "props": {"label": "卡片标题","bordered":true},
+    "props": {"label": "卡片标题","bordered":false},
     "slots": {},
     "children": [
         {

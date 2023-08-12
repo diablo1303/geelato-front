@@ -1,7 +1,9 @@
+<!--glComponentInst.componentName!=='GlHiddenArea'提高安全性，降低通过修改组件的_hidden属性来显示内容的风险-->
 <template>
   <component v-if="glComponentInst&&glComponentInst.props.unRender!==true"
-             v-show="glComponentInst.props._hidden!==true"
-             :id="glComponentInst.id" :ref="glComponentInst.id"
+             v-show="glComponentInst.props._hidden!==true&&glComponentInst.componentName!=='GlHiddenArea'"
+             :id="glComponentInst.id"
+             :ref="glComponentInst.id"
              class="gl-component"
              :is="glComponentInst.componentName"
              v-model="mv"
@@ -39,12 +41,12 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {getCurrentInstance, inject, nextTick, onMounted, onUpdated, ref, watch} from 'vue'
+import {getCurrentInstance, inject, nextTick, ref, watch} from 'vue'
 import mixins from "../mixins";
 import jsScriptExecutor from "../../m/actions/JsScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
 import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const emits = defineEmits(['update:modelValue', 'update', 'onAction', 'onComponentClick', 'onValueChange'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
@@ -141,7 +143,7 @@ const executePropsExpressions = () => {
               pageProxy: pageProvideProxy,
               ...props.glCtx
             })
-            console.log(inst.props.label, key, inst.props[key], propsExpression)
+            // console.log(inst.props.label, key, inst.props[key], propsExpression)
           }
         }
       })
