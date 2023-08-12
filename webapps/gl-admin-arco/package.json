@@ -31,7 +31,7 @@
     ]
   },
   "dependencies": {
-    "@arco-design/web-vue": "^2.47.0",
+    "@arco-design/web-vue": "^2.50.0",
     "@geelato/gl-ide": "workspace:^0.0.1",
     "@geelato/gl-ide-arco": "workspace:^0.0.1",
     "@geelato/gl-ui": "workspace:^0.0.1",
@@ -51,7 +51,7 @@
     "monaco-editor": "0.38.0",
     "nprogress": "^0.2.0",
     "pinia": "^2.1.4",
-    "prettier": "2.2.1",
+    "prettier": "3.0.1",
     "query-string": "^8.0.3",
     "react-dnd-html5-backend": "^16.0.1",
     "sortablejs": "^1.15.0",
@@ -61,7 +61,6 @@
     "vue-cropper": "^1.0.9",
     "vue-echarts": "^6.2.3",
     "vue-i18n": "^9.2.2",
-    "vue-json-pretty": "^2.2.3",
     "vue-router": "^4.0.14",
     "vue3-dnd": "^2.0.2",
     "vuedraggable": "^4.1.0"
