@@ -2,7 +2,7 @@ import type {AxiosRequestConfig, AxiosResponse} from 'axios';
 import axios from 'axios';
 import {Message, Modal} from '@arco-design/web-vue';
 import {useUserStore} from '@/store';
-import globalConfig from '@/config/globalConfig.json';
+import globalConfig from '@/config/globalConfig';
 import {getToken} from '@/utils/auth';
 
 export interface HttpResponse<T = unknown> {

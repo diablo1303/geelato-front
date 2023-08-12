@@ -93,7 +93,7 @@
     "lint-staged": "^13.0.3",
     "mockjs": "^1.1.0",
     "postcss-html": "^1.5.0",
-    "prettier": "^2.7.1",
+    "prettier": "^3.0.1",
     "rollup": "^3.9.1",
     "rollup-plugin-visualizer": "^5.8.2",
     "stylelint": "^14.13.0",
