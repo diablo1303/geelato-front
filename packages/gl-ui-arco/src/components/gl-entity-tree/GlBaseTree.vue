@@ -19,7 +19,7 @@
       </template>
       <template #title="nodeData">
         <GlIconfont v-if="nodeData.flag" :title="nodeData.flag" type="gl-eye" style="color: #3370ff;"></GlIconfont>
-        {{nodeData.title}}
+        {{ nodeData.title }}
       </template>
       <template #extra="nodeData">
         <a-trigger ref="contextMenu" position="tl" auto-fit-position :click-to-close="true" :show-arrow="true"
@@ -273,21 +273,39 @@ const updateNode = (clickedNodeData: any, editNodeData: any) => {
  * @param pid
  */
 const updateNodeSeqNo = (pid: string) => {
+  // console.log('updateNodeSeqNo,pid:', pid, treeData.value)
 
-  const foundNode = treeData.value.find((nodeData: any) => {
-    return nodeData.key === pid
-  })
-  if (foundNode) {
-    // TODO 需要提供一个批量修改多个的方法，暂时逐个执行
-    foundNode.children.forEach((subNode: any, index: number) => {
-      if (props.updateNodeSeqNo) {
-        subNode.seqNo = index + 1
-        const params = {editNodeData: subNode}
-        props.updateNodeSeqNo(params).then((res: any) => {
-          emits('updateNodeSeqNo', params)
-        })
+  const findNode = (nodeData: any): any => {
+
+    if (nodeData.key === pid) {
+      return nodeData
+    }
+
+    if (nodeData.children && nodeData.children.length > 0) {
+      for (const nodeDataKey in nodeData.children) {
+        const foundSubNode = findNode(nodeData.children[nodeDataKey])
+        if (foundSubNode) {
+          return foundSubNode
+        }
       }
-    })
+    }
+    return undefined
+  }
+
+  if (treeData.value && treeData.value.length > 0) {
+    const foundNode = findNode(treeData.value[0])
+    if (foundNode) {
+      // TODO 需要提供一个批量修改多个的方法，暂时逐个执行
+      foundNode.children.forEach((subNode: any, index: number) => {
+        if (props.updateNodeSeqNo) {
+          subNode.seqNo = index + 1
+          const params = {editNodeData: subNode}
+          props.updateNodeSeqNo(params).then((res: any) => {
+            emits('updateNodeSeqNo', params)
+          })
+        }
+      })
+    }
   }
 }
 const addNode = (clickedNodeData: any, addNodeData: any) => {
@@ -416,9 +434,9 @@ const closeModal = () => {
 const reloadTreeData = () => {
   if (props.loadTreeData) {
     const treeDataPromise = props.loadTreeData()
-    if(treeDataPromise){
+    if (treeDataPromise) {
       props.loadTreeData().then((res: any) => {
-        // console.log('platform_tree_node:', res)
+        console.log('loadTreeData:', res)
         treeData.value = [
           {
             treeId: props.treeId,

@@ -114,7 +114,7 @@ const updateNodeNameFn = (params: any) => {
     id: params.editNodeData.key,
     text: params.editNodeData.title
   }
-  console.log('updateNodeName', params)
+  // console.log('updateNodeName', params)
   return entityApi.save(props.treeEntityName, data)
 }
 
@@ -127,7 +127,7 @@ const updateNodeFn = (params: any) => {
     type: params.editNodeData.nodeType,
     pid: params.editNodeData.pid
   }
-  console.log('updateNode', params)
+  // console.log('updateNode', params)
   return entityApi.save(props.treeEntityName, data)
 }
 
@@ -136,7 +136,7 @@ const updateNodeSeqNoFn = (params: any) => {
     id: params.editNodeData.key,
     seqNo: params.editNodeData.seqNo
   }
-  console.log('updateNodeSeqNoFn', params)
+  // console.log('updateNodeSeqNoFn', params)
   return entityApi.save(props.treeEntityName, data)
 }
 
