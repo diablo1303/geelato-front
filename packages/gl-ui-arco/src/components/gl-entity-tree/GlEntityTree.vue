@@ -22,10 +22,10 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {entityApi, EntityReader} from "@geelato/gl-ui";
-import {PropType, ref, toRaw} from "vue";
+import {entityApi, type EntityReader} from "@geelato/gl-ui";
+import {type PropType, ref, toRaw} from "vue";
 import GlBaseTree from "./GlBaseTree.vue";
-import {BindField} from "@geelato/gl-ui-schema";
+import type {BindField} from "@geelato/gl-ui-schema";
 import type {ContextMenuDataType} from "./types";
 
 const emits = defineEmits(['selectNode', 'addNode', 'updateNode', 'updateNodeName', 'deleteNode', 'clickContextMenuItem'])
