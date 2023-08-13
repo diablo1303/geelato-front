@@ -115,7 +115,7 @@ const props = defineProps({
 const pageStore = usePageStore()
 const componentStore = componentStoreFactory.useComponentStore('useComponentStore')
 
-console.log('GlComponentSetter > init > componentName:', props.componentInstance?.componentName, ',componentId:', props.componentInstance?.id)
+// console.log('GlComponentSetter > init > componentName:', props.componentInstance?.componentName, ',componentId:', props.componentInstance?.id)
 const componentSetterProvideProxy = new ComponentSetterProvideProxy()
 provide(ComponentSetterProvideKey, componentSetterProvideProxy)
 
@@ -128,7 +128,7 @@ const componentModel = ref(props.componentInstance)
 componentModel.value.id = componentModel.value.id ? componentModel.value.id : utils.gid('', 20)
 
 const setInstance = (instance: ComponentInstance, form: String) => {
-  console.log('GlComponentSetter > set instance:', instance, 'form', form)
+  // console.log('GlComponentSetter > set instance:', instance, 'form', form)
 }
 
 const showMoveToParent = computed(() => {
@@ -161,7 +161,7 @@ const onChangePropertyValue = (param: { type: string, name: string, value: any }
   pageStore.operationLog('改属性', pageStore.currentPage.sourceContent, componentStore.currentSelectedComponentInstance)
 }
 onUnmounted(() => {
-  console.log('GlComponentSetter > onUnmounted ...', props.componentInstance?.componentName, props.componentInstance?.id)
+  // console.log('GlComponentSetter > onUnmounted ...', props.componentInstance?.componentName, props.componentInstance?.id)
 })
 </script>
 

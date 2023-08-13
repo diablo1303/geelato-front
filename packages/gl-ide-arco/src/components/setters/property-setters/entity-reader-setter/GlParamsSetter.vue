@@ -2,8 +2,7 @@
   <table>
     <tr v-if="mv&&mv.length>0">
       <td></td>
-      <td>数据字段</td>
-      <td>比较操作</td>
+      <td>数据字段/比较操作/值</td>
       <td></td>
     </tr>
     <gl-draggable
@@ -17,38 +16,38 @@
     >
       <template #item="{element, index}">
         <tr>
-          <td style="width: 2em;text-align: center">
-              <span>
-                <GlIconfont title="拖动" type="gl-drag" class="gl-dnd-item" style="cursor: move"></GlIconfont>
-              </span>
+          <td class="gl-drag">
+            <GlIconfont title="拖动" type="gl-drag" class="gl-dnd-item" style="cursor: move"></GlIconfont>
           </td>
-          <td>
-            <a-select  size="small" v-model="mv[index].name" style="width: 8em"  @change="onChangeElement($event,element,index)">
-              <a-option v-for="item in entityFieldMetas" :value="item.name" :title="item.name">{{item.title}}</a-option>
+          <td style="width: 100%">
+            <a-select size="small" v-model="element.name"
+                      @change="onChangeElement($event,element,index)">
+              <a-option v-for="item in entityFieldMetas" :value="item.name" :title="item.name">
+                {{ item.title }}
+              </a-option>
             </a-select>
+            <a-space :size="1" style="width: 100%;">
+              <a-select size="small" v-model="element.cop"
+                        @change="onChangeElement($event,element,index)">
+                <a-option v-for="item in compareMeta.cops" :value="item.value" :title="item.text">{{ item.text }}
+                </a-option>
+              </a-select>
+              <a-input size="small" v-model="element.value" allow-clear
+                       @change="onChangeElement($event,element,index)"
+                       @click="onSelectElement($event,element,index)" style="width: 100%"
+                       placeholder="字段值"
+                       title="字段值"
+              />
+            </a-space>
           </td>
-          <td>
-            <a-select  size="small" v-model="mv[index].cop" style="width: 8em"  @change="onChangeElement($event,element,index)">
-              <a-option v-for="item in compareMeta.cops" :value="item.value" :title="item.text">{{item.text}}</a-option>
-            </a-select>
-          </td>
-          <!--                <td>-->
-          <!--                  <a-input size="small" v-model="mv[index].value" allowClear="true"-->
-          <!--                           @change="onChangeElement(element,index,$event)"-->
-          <!--                           @click="onSelectElement(element,index)" style="width: 99%">-->
-          <!--                  </a-input>-->
-          <!--                </td>-->
-          <td style="width: 2em;text-align: center">
-                  <span>
-                    <GlIconfont type="gl-delete" @click="removeElement(index)"
-                                style="cursor: pointer;color: red"></GlIconfont>
-                  </span>
+          <td class="gl-delete">
+            <GlIconfont type="gl-delete" @click="removeElement(index)" style="cursor: pointer;color: red"></GlIconfont>
           </td>
         </tr>
       </template>
     </gl-draggable>
     <tr>
-      <td colspan="4"  style="padding-left: 4px">
+      <td colspan="4" style="padding-left: 4px">
         <a @click="addElement" style="line-height: 2em;cursor: pointer">
           <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加</a>
       </td>
@@ -60,6 +59,7 @@
 import {defineComponent, type PropType} from 'vue'
 import GlOptions from "../../GlOptions.vue";
 import {FieldMeta, compareMeta, EntityReaderParam} from "@geelato/gl-ui";
+
 export default defineComponent({
   name: "FieldsSetter",
   components: {GlOptions},
@@ -73,8 +73,8 @@ export default defineComponent({
     /**
      *  供选择的实体字段集合
      */
-    entityFieldMetas:{
-      type:Array as PropType<Array<FieldMeta>>,
+    entityFieldMetas: {
+      type: Array as PropType<Array<FieldMeta>>,
       default() {
         return new Array<FieldMeta>()
       }
@@ -88,10 +88,10 @@ export default defineComponent({
   },
   data() {
     return {
-      compareMeta:compareMeta,
+      compareMeta: compareMeta,
       mv: this.modelValue as Array<EntityReaderParam>,
-      selectedElement:{},
-      selectedIndex:-1,
+      selectedElement: {},
+      selectedIndex: -1,
     }
   },
   watch: {
@@ -102,7 +102,7 @@ export default defineComponent({
       deep: true
     }
   },
-  methods:{
+  methods: {
     addElement() {
       const item = new EntityReaderParam()
       this.mv.push(item)
@@ -112,7 +112,7 @@ export default defineComponent({
       this.selectedIndex = this.mv.length - 1
       this.emitSelectedElement()
     },
-    removeElement(index:number) {
+    removeElement(index: number) {
       // let item = this.mv[index]
       if (this.selectedIndex === index) {
         this.selectedElement = {}
@@ -125,12 +125,12 @@ export default defineComponent({
       this.$emit('removeElement', {index: index})
       this.emitSelectedElement()
     },
-    onSelectElement($event:any,element:any, index:number) {
+    onSelectElement($event: any, element: any, index: number) {
       this.selectedElement = element
       this.selectedIndex = index
       this.emitSelectedElement()
     },
-    onChangeElement($event:any,element:any, index:number) {
+    onChangeElement($event: any, element: any, index: number) {
       this.selectedElement = element
       this.selectedIndex = index
       // console.log('onChangeElement>', element, $event.target)

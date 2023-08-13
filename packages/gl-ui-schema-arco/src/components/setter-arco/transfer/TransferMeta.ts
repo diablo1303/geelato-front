@@ -1,6 +1,6 @@
 export default {
     "componentName": "ATransfer",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-transfer",
     "group": "dataEntry",
     "title": "穿梭框",

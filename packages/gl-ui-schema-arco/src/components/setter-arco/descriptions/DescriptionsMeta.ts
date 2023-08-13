@@ -1,6 +1,6 @@
 export default {
     "componentName": "ADescriptions",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-description",
     "group": "dataDisplay",
     "title": "描述列表",

@@ -128,7 +128,7 @@ export default defineComponent({
     // 将dataIndex为value的转成其它，该字段会导致输入卡顿，每输一个字符会失去焦点
     convertColumns(columns: Array<any>) {
       let cols = JSON.parse(JSON.stringify(columns))
-      console.log('cols:', cols)
+      // console.log('cols:', cols)
       for (let index in cols) {
         const col = cols[index]
         if (col.dataIndex === 'value') {

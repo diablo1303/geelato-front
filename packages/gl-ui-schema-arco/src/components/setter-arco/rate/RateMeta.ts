@@ -1,6 +1,6 @@
 export default {
     "componentName": "ARate",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-rate",
     "group": "dataEntry",
     "title": "评分",

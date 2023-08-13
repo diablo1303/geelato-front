@@ -1,6 +1,6 @@
 export default {
     "componentName": "",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"",
     "group": "general",
     "title": "",

@@ -1,6 +1,6 @@
 export default {
     "componentName": "AList",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-list",
     "group": "dataDisplay",
     "title": "列表",

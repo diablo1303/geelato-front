@@ -1,6 +1,6 @@
 export default {
     "componentName": "AStatistic",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-statistic",
     "group": "dataDisplay",
     "title": "统计数值",

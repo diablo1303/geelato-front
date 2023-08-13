@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlUpload",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-upload",
     "title": "上传",
     "alias": "upload",

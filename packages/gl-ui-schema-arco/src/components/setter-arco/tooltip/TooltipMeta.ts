@@ -1,6 +1,6 @@
 export default {
     "componentName": "ATooltip",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-tooltip",
     "group": "dataDisplay",
     "title": "文字提示",

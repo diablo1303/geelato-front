@@ -1,6 +1,6 @@
 export default {
     "componentName": "ADivider",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-divider",
     "group": "layout",
     "title": "分割线",

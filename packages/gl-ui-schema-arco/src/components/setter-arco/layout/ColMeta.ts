@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlCol",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-layout",
     "group": "layout",
     "title": "列",

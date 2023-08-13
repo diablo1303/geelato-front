@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlBlockOpenThirdPage",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-file",
     "group": "block_page",
     "title": "打开外部页面",

@@ -1,6 +1,6 @@
 export default {
     "componentName": "ACascader",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-cascader",
     "group": "dataEntry",
     "title": "级联选择",

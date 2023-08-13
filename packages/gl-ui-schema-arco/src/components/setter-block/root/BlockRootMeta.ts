@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlBlockRoot",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-tree",
     "group": "other",
     "title": "根",

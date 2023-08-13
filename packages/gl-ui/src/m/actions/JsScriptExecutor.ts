@@ -446,7 +446,7 @@ export class JsScriptExecutor {
                 })
             }
         }
-        console.log('evalParams params:', params, 'ctx:', ctx, 'newParams:', newParams)
+        // console.log('evalParams params:', params, 'ctx:', ctx, 'newParams:', newParams)
         return newParams
     }
 
@@ -489,7 +489,7 @@ export class JsScriptExecutor {
                 }
             }
         }
-        console.log('{inst, insts}', {inst, insts})
+        // console.log('{inst, insts}', {inst, insts})
         return {inst, insts}
     }
 
@@ -567,7 +567,7 @@ export class JsScriptExecutor {
      */
     loadPage(pageId: string, extendId: string, params: Array<Param>, pageStatus?: string) {
         const pageProps = {params: params}
-        console.log('JsScriptExecutor > loadPage > pageId:', pageId, 'extendId:', extendId, 'pageStatus:', pageStatus, 'pageProps:', pageProps)
+        // console.log('JsScriptExecutor > loadPage > pageId:', pageId, 'extendId:', extendId, 'pageStatus:', pageStatus, 'pageProps:', pageProps)
         return h(GlPageViewer, {pageId, extendId, pageStatus, pageProps})
     }
 

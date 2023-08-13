@@ -52,7 +52,7 @@ import TagMeta from "./setter-arco/tag/TagMeta";
 import TimelineMeta from "./setter-arco/timeLine/TimelineMeta";
 import TimelineItemMeta from "./setter-arco/timeLine/TimelineItemMeta";
 import TooltipMeta from "./setter-arco/tooltip/TooltipMeta";
-import TreeMeta from "./setter-arco/tree/TreeMeta";
+import EntityTreeMeta from "./setter-arco/tree/EntityTreeMeta";
 import {ComponentMeta, ComponentInstance} from "@geelato/gl-ui-schema";
 import PageMeta from "./setter-arco/page/PageMeta";
 import DndPlaceholderMeta from "./setter-arco/dndPlaceholder/DndPlaceholderMeta";
@@ -82,7 +82,7 @@ const componentMetas: Array<ComponentMeta> = [ButtonMeta, GlButtonMeta, TextMeta
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
-    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, TreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta, DividerMeta,
+    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, EntityTreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta, DividerMeta,
     JsCodeBlockMeta
 ]
 // @ts-ignore

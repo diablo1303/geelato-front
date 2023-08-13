@@ -1,6 +1,6 @@
 export default {
     "componentName": "ADatePicker",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-datePicker",
     "group": "dataEntry",
     "title": "日期选择",

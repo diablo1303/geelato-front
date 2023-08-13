@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlReturnBlock",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-undo",
     "group": "block_other",
     "title": "返回结果",

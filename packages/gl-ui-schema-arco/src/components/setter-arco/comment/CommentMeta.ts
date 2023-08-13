@@ -1,6 +1,6 @@
 export default {
     "componentName": "AComment",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-comment",
     "group": "dataDisplay",
     "title": "评论",

@@ -1,6 +1,6 @@
 export default {
     "componentName": "ACheckboxGroup",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-checkbox",
     "group": "dataEntry",
     "title": "多选框",

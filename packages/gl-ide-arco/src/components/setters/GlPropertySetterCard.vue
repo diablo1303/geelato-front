@@ -13,8 +13,8 @@
       <template #item="{element, index}">
         <div>
           <div class="gl-m-header" v-if="maxCount!==1" @click="editElement(index)" style="cursor: pointer">
-            <span v-if="enableSort"><GlIconfont type="gl-drag" class="gl-dnd-item"
-                                                style="cursor: move"></GlIconfont></span>
+            <span v-if="enableSort">
+              <GlIconfont type="gl-drag" class="gl-dnd-item" style="cursor: move" /></span>
             <span class="gl-m-title" v-html="getElementTitle(element, titleField)"></span>
             <span class="gl-m-sub-title" v-html="getElementTitle(element, subTitleField,alarmIfNoSubTitle)"></span>
             <span class="gl-m-action" v-if="enableDelete"><GlIconfont type="gl-delete" @click="removeElement(index)"

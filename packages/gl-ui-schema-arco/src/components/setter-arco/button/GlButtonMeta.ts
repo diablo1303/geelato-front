@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlButton",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-button",
     "group": "dataDisplay",
     "title": "按钮",

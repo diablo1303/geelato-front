@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlBlockComponentInvoke",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-api",
     "group": "block_page",
     "title": "调用组件方法",

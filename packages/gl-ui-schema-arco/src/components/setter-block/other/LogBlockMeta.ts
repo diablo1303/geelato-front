@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlLogBlock",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-log",
     "group": "block_other",
     "title": "输出日志",

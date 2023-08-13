@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlSetValueBlock",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-value-mapper",
     "group": "block_page",
     "title": "设置组件值",

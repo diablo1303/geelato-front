@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlUserSelect",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-user",
     "group": "dataEntry",
     "title": "人员选择",

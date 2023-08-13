@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlSetVarBlock",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-var",
     "group": "block_var",
     "title": "变量",

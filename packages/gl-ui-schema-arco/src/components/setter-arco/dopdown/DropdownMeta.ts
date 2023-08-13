@@ -1,6 +1,6 @@
 export default {
     "componentName": "ADropdown",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-dropdown",
     "group": "dataEntry",
     "title": "下拉菜单",

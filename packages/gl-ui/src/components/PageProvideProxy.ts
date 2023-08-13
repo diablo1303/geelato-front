@@ -336,7 +336,7 @@ export default class PageProvideProxy {
      */
     getMethod(componentId: string, methodName: string) {
         const vueInst = this.getVueInst(componentId)
-        console.log('PageProvideProxy > getMethod() > vueInst:', vueInst, 'methodName:', methodName)
+        // console.log('PageProvideProxy > getMethod() > vueInst:', vueInst, 'methodName:', methodName)
         if (vueInst) {
             for (let exposedKey in vueInst.subTree.component?.exposed) {
                 const exposedObject = vueInst.subTree.component?.exposed[exposedKey]

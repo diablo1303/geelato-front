@@ -1,6 +1,6 @@
 export default {
     "componentName": "ASteps",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-steps",
     "group": "navigation",
     "title": "步骤条",

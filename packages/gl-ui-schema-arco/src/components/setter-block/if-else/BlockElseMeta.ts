@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlBlockElse",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-if",
     "group": "block_condition",
     "title": "Else 其它",

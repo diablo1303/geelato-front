@@ -6,18 +6,39 @@
   "description": "",
   "glyphs": [
     {
-      "icon_id": "879141",
-      "name": "prev",
-      "font_class": "prev",
-      "unicode": "e659",
-      "unicode_decimal": 58969
+      "icon_id": "15838561",
+      "name": "arrow-left-bold",
+      "font_class": "arrow-left",
+      "unicode": "e685",
+      "unicode_decimal": 59013
     },
     {
-      "icon_id": "879157",
-      "name": "next",
-      "font_class": "next",
-      "unicode": "e669",
-      "unicode_decimal": 58985
+      "icon_id": "15838562",
+      "name": "arrow-up-bold",
+      "font_class": "arrow-up",
+      "unicode": "e687",
+      "unicode_decimal": 59015
+    },
+    {
+      "icon_id": "15838566",
+      "name": "arrow-right-bold",
+      "font_class": "arrow-right",
+      "unicode": "e688",
+      "unicode_decimal": 59016
+    },
+    {
+      "icon_id": "2404491",
+      "name": "文本",
+      "font_class": "text",
+      "unicode": "e649",
+      "unicode_decimal": 58953
+    },
+    {
+      "icon_id": "35336073",
+      "name": "m",
+      "font_class": "m",
+      "unicode": "e8b0",
+      "unicode_decimal": 59568
     },
     {
       "icon_id": "6135295",
@@ -386,7 +407,7 @@
     {
       "icon_id": "15838564",
       "name": "arrow-down-bold",
-      "font_class": "dropdown",
+      "font_class": "arrow-down",
       "unicode": "e686",
       "unicode_decimal": 59014
     },

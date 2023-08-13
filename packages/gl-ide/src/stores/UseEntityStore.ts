@@ -18,7 +18,7 @@ export const useEntityStore = defineStore('GlEntityStore', () => {
             // @ts-ignore
             const res = await entityApi.queryEntityLiteMetas(appCode)
             entityLiteMetas.value = res?.data?.data
-            console.log('entityLiteMetas', entityLiteMetas)
+            // console.log('entityLiteMetas', entityLiteMetas)
         }
         return entityLiteMetas.value
     }

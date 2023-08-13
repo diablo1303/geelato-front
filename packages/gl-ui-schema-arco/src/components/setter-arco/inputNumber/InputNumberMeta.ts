@@ -1,6 +1,6 @@
 export default {
     "componentName": "AInputNumber",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-inputNumber",
     "group": "dataEntry",
     "title": "数字输入",

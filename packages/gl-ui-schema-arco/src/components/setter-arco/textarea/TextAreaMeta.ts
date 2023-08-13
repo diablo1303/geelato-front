@@ -1,6 +1,6 @@
 export default {
     "componentName": "ATextarea",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-textarea",
     "group": "dataEntry",
     "title": "多行输入",

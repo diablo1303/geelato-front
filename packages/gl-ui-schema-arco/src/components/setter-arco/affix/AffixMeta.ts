@@ -1,6 +1,6 @@
 export default {
     "componentName": "AAffix",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-affix",
     "group": "navigation",
     "title": "固钉",

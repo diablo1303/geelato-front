@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlDict",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-select",
     "group": "dataEntry",
     "title": "数据字典",

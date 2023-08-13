@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlBlockSetVisible",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-hide",
     "group": "block_page",
     "title": "设置组件隐藏",

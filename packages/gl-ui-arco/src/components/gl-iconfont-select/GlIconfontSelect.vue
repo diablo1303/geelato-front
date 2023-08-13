@@ -61,7 +61,9 @@ watch(mv, () => {
 </script>
 
 <style scoped>
-
+.gl-iconfont-setter{
+  line-height: 32px;
+}
 .gl-iconfont-setter-icon-item {
   display: inline-block;
   padding: 0.5em;

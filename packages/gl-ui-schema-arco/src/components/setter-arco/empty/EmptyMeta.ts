@@ -1,6 +1,6 @@
 export default {
     "componentName": "AEmpty",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-empty",
     "group": "dataDisplay",
     "title": "空状态",

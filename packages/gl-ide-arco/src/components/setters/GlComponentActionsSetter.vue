@@ -73,19 +73,19 @@ if (props.componentMeta.actions && props.componentMeta.actions.length > 0) {
 }
 
 const handleSelect = (val: Action) => {
-  console.log('handleSelect action:', val)
+  // console.log('handleSelect action:', val)
 }
 const update = () => {
 
 }
-console.log('GlComponentActionsSetter > props:', props)
+// console.log('GlComponentActionsSetter > props:', props)
 const refreshFlag = ref(true)
 
 const currentAction = ref(new Action())
 const currentActionIndex = ref(-1)
 const actionCodeEditorVisible = ref(false)
 const openActionSetter = (action: Action, actionIndex: number, actionMeta: Action) => {
-  console.log('openActionSetter,action, actionIndex, actionMeta:', action, actionIndex, actionMeta)
+  // console.log('openActionSetter,action, actionIndex, actionMeta:', action, actionIndex, actionMeta)
   if (!action.title) {
     action.title = actionMeta.title
   }
@@ -115,7 +115,7 @@ const openActionSetter = (action: Action, actionIndex: number, actionMeta: Actio
   })
 }
 const onUpdateAction = (action: Action) => {
-  console.log('onUpdateAction', action)
+  // console.log('onUpdateAction', action)
   // @ts-ignore
   props.componentInstance.actions[currentActionIndex.value] = action
 }
@@ -131,7 +131,7 @@ const closeActionCodeEditor = () => {
  */
 const generateScript = () => {
   const action = props.componentInstance?.actions[currentActionIndex.value]
-  console.log('generateScript action:', action)
+  // console.log('generateScript action:', action)
   if (action) {
     action.body = blocksHandler.parseToScript(action.__commandBlock)
   }

@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlRefPage",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-file",
     "group": "layout",
     "title": "引用页面",

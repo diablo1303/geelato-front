@@ -1,6 +1,6 @@
 export default {
     "componentName": "APageHeader",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-pageHeader",
     "group": "navigation",
     "title": "页头",

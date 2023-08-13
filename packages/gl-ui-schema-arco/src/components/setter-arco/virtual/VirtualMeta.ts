@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlVirtual",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-virtual",
     "group": "other",
     "title": "虚拟",

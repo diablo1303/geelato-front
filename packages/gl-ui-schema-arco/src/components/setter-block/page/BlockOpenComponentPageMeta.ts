@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlBlockOpenComponentPage",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-file",
     "group": "block_page",
     "title": "打开组件页面",

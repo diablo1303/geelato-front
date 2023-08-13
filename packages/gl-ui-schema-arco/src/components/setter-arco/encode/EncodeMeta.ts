@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlEncode",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-encode",
     "group": "dataEntry",
     "title": "编码",

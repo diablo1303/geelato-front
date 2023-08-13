@@ -1,6 +1,6 @@
 export default {
     "componentName": "ATreeSelect",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-treeSelect",
     "group": "dataEntry",
     "title": "树选择",

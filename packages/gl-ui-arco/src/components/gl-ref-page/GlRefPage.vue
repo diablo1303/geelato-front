@@ -9,7 +9,7 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {jsScriptExecutor, mixins, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
+import {mixins} from "@geelato/gl-ui";
 import {inject} from "vue";
 import {PageParamsKey} from "@geelato/gl-ui";
 
@@ -36,11 +36,6 @@ const props = defineProps({
 })
 
 const params = inject(PageParamsKey)
-
-const click = () => {
-
-}
-
 </script>
 
 <template>
@@ -51,7 +46,7 @@ const click = () => {
       </a-button>
     </div>
     <template v-if="pageType==='third'">
-      <iframe :src="pageSrc"></iframe>
+      <iframe class="gl-iframe" :src="pageSrc"></iframe>
     </template>
     <template v-else-if="pageType==='code'">
       平台编码轻应用页面Coming Soon ...
@@ -62,7 +57,7 @@ const click = () => {
           未配置页面
         </a-alert>
       </div>
-      <GlPageViewer v-if="extendId" :extendId="extendId" :pageProps="{params}"></GlPageViewer>
+      <GlPageViewer v-if="extendId" :pageProps="{params}" v-bind="props"></GlPageViewer>
     </template>
   </div>
 </template>
@@ -71,5 +66,10 @@ const click = () => {
 .gl-ref-page-drag-handler {
   position: absolute;
   z-index: 1;
+}
+.gl-iframe{
+  border: 0;
+  width: 100%;
+  height: 100%
 }
 </style>

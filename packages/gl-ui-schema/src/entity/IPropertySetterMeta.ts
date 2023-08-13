@@ -29,6 +29,9 @@ export default interface IPropertySetterMeta {
     // 是否在设置面板中展示，不显示时，常与默认值配合使用
     show?: Boolean
 
+    // 展示模式 tile | collapse
+    displayMode?: String
+
     // 绑定的值字段名称, 如 value、checked、modelValue
     setterComponentVModelName: String
 
@@ -86,6 +89,7 @@ export class PropertySetterMetaImpl implements IPropertySetterMeta {
     setterComponentProps: SetterComponentPropsMetaImpl;
     setterDefaultValue: undefined;
     show: boolean;
+    displayMode?:string;
     title: string;
     setterComponentVModelName: string;
     dataItems: Array<any>;

@@ -264,6 +264,21 @@
         <a-switch size="small" v-model="mv.expanded"/>
       </td>
     </tr>
+    <tr>
+      <td class="gl-table-cell gl-label" title="该属性是否是插槽TODO??">
+        <GlIconfont type="gl-info-circle"></GlIconfont>
+        显示模式
+      </td>
+      <td class="gl-table-cell">
+<!--        <template v-if="mv.displayMode=mv.displayMode||''"></template>-->
+<!--        <a-switch size="small" v-model="mv.displayMode"/>-->
+        <template v-if="mv.displayMode=mv.displayMode||'tile'"></template>
+        <a-radio-group size="small" v-model="mv.displayMode" type="button">
+          <a-radio value="collapse">折叠</a-radio>
+          <a-radio value="tile">平铺</a-radio>
+        </a-radio-group>
+      </td>
+    </tr>
     <tr v-if="mv.setterComponentName==='GlObjectArraySetter'">
       <td class="gl-table-cell gl-label"
           title="在属性设置器中，若该属性为数组对象属性时，指定数组中对象的某一属性作为标题">

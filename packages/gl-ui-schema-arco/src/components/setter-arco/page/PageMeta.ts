@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlPage",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-file",
     "group": "other",
     "title": "页面",

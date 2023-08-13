@@ -1,6 +1,6 @@
 export default {
     "componentName": "ACollapse",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-collapse",
     "group": "dataDisplay",
     "title": "折叠面板",

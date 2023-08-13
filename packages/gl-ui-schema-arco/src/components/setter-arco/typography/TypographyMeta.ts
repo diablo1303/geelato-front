@@ -1,6 +1,6 @@
 export default {
     "componentName": "ATypography",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-typography",
     "group": "dataDisplay",
     "title": "排版",

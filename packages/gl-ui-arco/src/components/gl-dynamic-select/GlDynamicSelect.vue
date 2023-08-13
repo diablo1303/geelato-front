@@ -143,7 +143,7 @@ const selectOne = (value: any) => {
 
 
 if (props.triggerMode !== TriggerMode.onInvoked) {
-  console.log('props.triggerMode !== TriggerMode.onInvoked', props.triggerMode)
+  // console.log('props.triggerMode !== TriggerMode.onInvoked', props.triggerMode)
   watch(() => {
     return props.entityName + props.valueFiledName + props.labelFieldName + props.extraFieldAndBindIds
   }, () => {

@@ -12,6 +12,7 @@
                 :deleteNode="deleteNodeFn"
                 @deleteNode="onDeleteNode"
                 @selectNode="onSelectNode"
+                :contextMenuData="contextMenuData"
     ></GlBaseTree>
   </div>
 </template>
@@ -21,9 +22,11 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {entityApi} from "@geelato/gl-ui";
-import {ref, toRaw} from "vue";
+import {entityApi, EntityReader} from "@geelato/gl-ui";
+import {PropType, ref, toRaw} from "vue";
 import GlBaseTree from "./GlBaseTree.vue";
+import {BindField} from "@geelato/gl-ui-schema";
+import type {ContextMenuDataType} from "./types";
 
 const emits = defineEmits(['selectNode', 'addNode', 'updateNode', 'updateNodeName', 'deleteNode', 'clickContextMenuItem'])
 const props = defineProps({
@@ -56,20 +59,28 @@ const props = defineProps({
     }
   },
   /**
-   *  树对应的扩展实体，如这是一棵页面树，则对应页面实体
+   * 数据实体
    */
-  extendEntityName: {
-    type: String,
+  entityReader: {
+    type: Object as PropType<EntityReader>,
     required: true
   },
   /**
-   *  树对应的扩展实体中指向树实体的外键字段名，默认为extendId
+   * 菜单项
    */
-  extendEntityIdFieldName: {
-    type: String,
+  contextMenuData: {
+    type: Array as PropType<Array<ContextMenuDataType>>,
     default() {
-      return 'extendId'
+      return []
     }
+  },
+  /**
+   * 树对应的扩展实体，如这是一棵页面树，则对应页面实体
+   * 树对应的扩展实体中指向树实体的外键字段名，默认为extendId
+   */
+  extendEntityField: {
+    type: Object as PropType<BindField>,
+    required: true
   }
 
 })
@@ -77,10 +88,9 @@ const props = defineProps({
 const glBaseTree = ref()
 
 const loadTreeDataFn = () => {
-  return entityApi.query(props.treeEntityName, 'treeId,id key,text title,pid,iconType,type nodeType,flag,seqNo', {
-    treeId: props.treeId,
-    delStatus: 0
-  }, false)
+  if (props.entityReader) {
+    return entityApi.queryByEntityReader(props.entityReader)
+  }
 }
 
 /**
@@ -139,12 +149,12 @@ const deleteNodeFn = (params: any) => {
     id: params.clickedNodeData.key,
   }
   const extendData = {
-    extendId: params.clickedNodeData.key
+    [props.extendEntityField.fieldName]: params.clickedNodeData.key
   }
   return entityApi.deleteBatch([{
     entityName: props.treeEntityName,
     keyValues: data
-  }, {entityName: props.extendEntityName, keyValues: extendData}])
+  }, {entityName: props.extendEntityField.entityName, keyValues: extendData}])
 }
 
 const onSelectNode = (params: any) => {

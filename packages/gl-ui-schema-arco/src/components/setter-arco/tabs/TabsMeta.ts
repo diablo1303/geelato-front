@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlTabs",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-tabs",
     "group": "layout",
     "title": "标签页",

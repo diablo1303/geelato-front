@@ -1,6 +1,6 @@
 export default {
     "componentName": "AIcon",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-icon",
     "group": "dataDisplay",
     "title": "图标",

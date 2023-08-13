@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlMultiComponents",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-component",
     "group": "dataEntry",
     "title": "多组件",

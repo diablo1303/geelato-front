@@ -1,6 +1,6 @@
 export default {
     "componentName": "AAvatar",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-avatar",
     "group": "dataDisplay",
     "title": "头像",

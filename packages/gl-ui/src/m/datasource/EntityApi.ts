@@ -147,7 +147,8 @@ export class EntityApi {
 
     /**
      * 基于实体数据源查询
-     * 分页默认为1页10条记录
+     * 分页默认为1页15条记录
+     * 如果没有传删除状态，默认会带上删除訚为0，即delStatus='0'
      * @param entityReader
      * @returns {*}
      */
@@ -158,7 +159,7 @@ export class EntityApi {
         if (entityReader.fields && entityReader.fields.length > 0) {
             const fieldNames: Array<string> = []
             entityReader.fields.forEach((item) => {
-                fieldNames.push(item.name)
+                fieldNames.push(item.name + (item.alias ? ' ' + item.alias : ''))
             })
             mql[entityReader.entity]['@fs'] = fieldNames.join(',');
         } else {
@@ -174,19 +175,27 @@ export class EntityApi {
             mql[entityReader.entity]['@order'] = orderStr;
         }
         // params
+        let hasDelStatus = false
         const params: LooseObject = {};
         if (entityReader.params && entityReader.params.length > 0) {
             for (const i in entityReader.params) {
                 const param: EntityReaderParam = entityReader.params[i];
+                if (param.name === 'delStatus') {
+                    hasDelStatus = true
+                }
                 // param.cop的值为：eq,neq,lt,lte,gt,gte,startwith,endwith,contains,in中的一个
                 const key = `${param.name}|${param.cop || "eq"}`;
                 params[key] = param.value;
+            }
+            // 检查是否有删除状态，默认为0
+            if (!hasDelStatus) {
+                params[`delStatus|eq`] = '0'
             }
         }
         Object.assign(mql[entityReader.entity], params);
 
         const pageNo = entityReader.pageNo || 1
-        const pageSize = entityReader.pageSize || 10
+        const pageSize = entityReader.pageSize || 15
         // page
         mql[entityReader.entity]['@p'] = pageNo + ',' + pageSize;
 

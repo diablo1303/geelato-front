@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlTriggerComponentActionBlock",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-thunderbolt",
     "group": "block_page",
     "title": "触发组件动作",

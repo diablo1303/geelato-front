@@ -3,7 +3,9 @@
     <GlEntityTree :treeId="appStore.currentApp.id"
                   :treeName="appStore.currentApp.name"
                   :draggable="true"
-                  extendEntityName="platform_app_page"
+                  :entityReader="entityReader"
+                  :contextMenuData="contextMenuData"
+                  :extendEntityField="{entityName:'platform_app_page',fieldName:'extendId'}"
                   @selectNode="onSelectNode"
                   @deleteNode="onDeleteNode"
     >
@@ -17,6 +19,7 @@ export default {
 </script>
 <script setup lang="ts">
 import {useIdeStore, useAppStore, Page, usePageStore} from "@geelato/gl-ide";
+import {EntityReader, EntityReaderParam, FieldMeta} from "@geelato/gl-ui";
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()
@@ -26,7 +29,7 @@ pageStore.addPageTemplate("freePage", import("../stage/freePageTemplate.json"))
 pageStore.addPageTemplate("listPage", import("../stage/listPageTemplate.json"))
 
 const onSelectNode = (params: any) => {
-  console.log('onSelectNode() > params:', params)
+  // console.log('onSelectNode() > params:', params)
   if (['root', 'folder'].indexOf(params.nodeType) >= 0) {
     // 根节点或目录节点
   } else {
@@ -66,6 +69,60 @@ const onIconClick = (nodeData: any) => {
   })
 }
 
+//
+const entityReader = new EntityReader()
+entityReader.entity = 'platform_tree_node'
+entityReader.fields = []
+entityReader.fields.push(new FieldMeta('treeId',))
+entityReader.fields.push(new FieldMeta('id', 'key'))
+entityReader.fields.push(new FieldMeta('text', 'title'))
+entityReader.fields.push(new FieldMeta('pid',))
+entityReader.fields.push(new FieldMeta('iconType',))
+entityReader.fields.push(new FieldMeta('type', 'nodeType'))
+entityReader.fields.push(new FieldMeta('flag',))
+entityReader.fields.push(new FieldMeta('seqNo',))
+entityReader.params = []
+entityReader.params.push(new EntityReaderParam('treeId', 'eq', appStore.currentApp.id))
+entityReader.pageSize = 1000
+const contextMenuData = [
+  {title: '新建目录', iconType: 'gl-folder', nodeType: 'folder', useFor: ['root', 'folder'], action: 'addNode'},
+  {title: '新建自由页面', iconType: 'gl-file', nodeType: 'freePage', useFor: ['folder'], action: 'addNode'},
+  {title: '新建表单页面', iconType: 'gl-form', nodeType: 'formPage', useFor: ['folder'], action: 'addNode'},
+  {title: '新建列表页面', iconType: 'gl-list', nodeType: 'listPage', useFor: ['folder'], action: 'addNode'},
+  {
+    title: '设置为菜单',
+    iconType: 'gl-menu',
+    nodeType: '*',
+    useFor: ['folder', 'freePage', 'formPage', 'listPage'],
+    action: 'updateNode',
+    actionParams: {flag: 'menuItem'},
+    show: '$gl.ctx.flag!=="menuItem"'
+  },
+  {
+    title: '取消设置为菜单',
+    iconType: 'gl-menu',
+    nodeType: '*',
+    useFor: ['folder', 'freePage', 'formPage', 'listPage'],
+    action: 'updateNode',
+    actionParams: {flag: ''},
+    show: '$gl.ctx.flag==="menuItem"'
+  },
+  {
+    title: '重命名',
+    iconType: 'gl-edit-square',
+    nodeType: 'freePage',
+    useFor: ['folder', 'freePage', 'formPage', 'listPage'],
+    action: 'updateNodeName'
+  },
+  {
+    title: '删除',
+    iconType: 'gl-delete',
+    iconColor: '#cc3636',
+    nodeType: 'freePage',
+    useFor: ['folder', 'freePage', 'formPage', 'listPage'],
+    action: 'deleteNode'
+  }
+]
 </script>
 <style>
 .gl-app-tree {

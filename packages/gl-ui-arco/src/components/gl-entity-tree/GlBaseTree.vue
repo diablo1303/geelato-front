@@ -17,6 +17,10 @@
       <template #switcher-icon="node, { isLeaf }">
         <GlIconfont :type="node.iconType" style="font-size: 1.2em;color:#3370ff"></GlIconfont>
       </template>
+      <template #title="nodeData">
+        <GlIconfont v-if="nodeData.flag" :title="nodeData.flag" type="gl-eye" style="color: #3370ff;"></GlIconfont>
+        {{nodeData.title}}
+      </template>
       <template #extra="nodeData">
         <a-trigger ref="contextMenu" position="tl" auto-fit-position :click-to-close="true" :show-arrow="true"
                    @popupVisibleChange="()=>onShowContextMenu(nodeData)">
@@ -65,6 +69,7 @@ export default {
 import {useGlobal, utils, Utils,} from "@geelato/gl-ui";
 import {type PropType, ref} from "vue";
 import type {TreeNodeData} from "@arco-design/web-vue";
+import type {ContextMenuDataType} from "./types";
 
 // onlyToFolder:叶子节点只能放在目录下
 enum DragModeType {
@@ -104,45 +109,7 @@ const props = defineProps({
   contextMenuData: {
     type: Array as PropType<Array<ContextMenuDataType>>,
     default() {
-      return [
-        {title: '新建目录', iconType: 'gl-folder', nodeType: 'folder', useFor: ['root', 'folder'], action: 'addNode'},
-        {title: '新建自由页面', iconType: 'gl-file', nodeType: 'freePage', useFor: ['folder'], action: 'addNode'},
-        {title: '新建表单页面', iconType: 'gl-form', nodeType: 'formPage', useFor: ['folder'], action: 'addNode'},
-        {title: '新建列表页面', iconType: 'gl-list', nodeType: 'listPage', useFor: ['folder'], action: 'addNode'},
-        {
-          title: '设置为菜单',
-          iconType: 'gl-menu',
-          nodeType: '*',
-          useFor: ['folder', 'freePage', 'formPage', 'listPage'],
-          action: 'updateNode',
-          actionParams: {flag: 'menuItem'},
-          show: '$gl.ctx.flag!=="menuItem"'
-        },
-        {
-          title: '取消设置为菜单',
-          iconType: 'gl-menu',
-          nodeType: '*',
-          useFor: ['folder', 'freePage', 'formPage', 'listPage'],
-          action: 'updateNode',
-          actionParams: {flag: ''},
-          show: '$gl.ctx.flag==="menuItem"'
-        },
-        {
-          title: '重命名',
-          iconType: 'gl-edit-square',
-          nodeType: 'freePage',
-          useFor: ['folder', 'freePage', 'formPage', 'listPage'],
-          action: 'updateNodeName'
-        },
-        {
-          title: '删除',
-          iconType: 'gl-delete',
-          iconColor: '#cc3636',
-          nodeType: 'freePage',
-          useFor: ['folder', 'freePage', 'formPage', 'listPage'],
-          action: 'deleteNode'
-        }
-      ]
+      return []
     }
   },
   loadTreeData: {
@@ -182,21 +149,6 @@ const titleInput = ref()
 enum NodeType {
   folder = 'folder',
   root = 'root'
-}
-
-type ContextMenuDataType = {
-  title: string,
-  iconType: string,
-  iconColor?: string,
-  nodeType: string,
-  useFor: Array<string>,
-  action: string,
-  // 节点操作的参数，如action为updateNode,actionsParams为：{flag:'menuItem'}，则处理之后，节点的flag属性，值为'menuItem'
-  actionParams?: Object,
-  // 节点标识，如用于区分是否为菜单项
-  flag?: Object,
-  // 基于node节点的show属性作是否展示的检查，这里的show是个表达式
-  show?: string
 }
 
 const refreshTree = () => {
@@ -463,31 +415,34 @@ const closeModal = () => {
 
 const reloadTreeData = () => {
   if (props.loadTreeData) {
-    props.loadTreeData().then((res: any) => {
-      // console.log('platform_tree_node:', res)
-      treeData.value = [
-        {
-          treeId: props.treeId,
-          pid: '',
-          key: props.treeId,
-          title: props.treeName,
-          iconType: "gl-folder",
-          nodeType: "root",
-          seqNo: "0",
-          children: []
-        }
-      ]
-      treeData.value[0].children.push(...Utils.ConvertUtil.listToTree({
-        data: res.data.result || res.data.data,
-        pid: props.treeId,
-        renameId: 'key',
-        compareFn: (a: any, b: any) => {
-          const aSeq = a.seqNo || 0
-          const bSeq = b.seqNo || 0
-          return aSeq - bSeq
-        }
-      }))
-    })
+    const treeDataPromise = props.loadTreeData()
+    if(treeDataPromise){
+      props.loadTreeData().then((res: any) => {
+        // console.log('platform_tree_node:', res)
+        treeData.value = [
+          {
+            treeId: props.treeId,
+            pid: '',
+            key: props.treeId,
+            title: props.treeName,
+            iconType: "gl-folder",
+            nodeType: "root",
+            seqNo: "0",
+            children: []
+          }
+        ]
+        treeData.value[0].children.push(...Utils.ConvertUtil.listToTree({
+          data: res.data.result || res.data.data,
+          pid: props.treeId,
+          renameId: 'key',
+          compareFn: (a: any, b: any) => {
+            const aSeq = a.seqNo || 0
+            const bSeq = b.seqNo || 0
+            return aSeq - bSeq
+          }
+        }))
+      })
+    }
   }
 }
 // 初始化加载

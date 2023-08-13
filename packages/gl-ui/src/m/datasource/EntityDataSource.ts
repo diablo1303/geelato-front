@@ -28,12 +28,14 @@ export const compareMeta = {cops, copDict}
 export class FieldMeta {
     name: string = '';
     title: string = '';
+    alias: string = '';
 
     [key: string]: any
 
-    constructor(title?: string, name?: string) {
+    constructor(name?: string, alias?: string, title?: string,) {
         this.title = title || ''
         this.name = name || ''
+        this.alias = alias || ''
     }
 }
 

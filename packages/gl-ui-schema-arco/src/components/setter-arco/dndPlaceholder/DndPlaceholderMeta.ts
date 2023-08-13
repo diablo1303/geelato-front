@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlDndPlaceholder",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-placeholder",
     "group": "other",
     "title": "占位",

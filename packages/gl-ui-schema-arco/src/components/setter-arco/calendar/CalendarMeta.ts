@@ -1,6 +1,6 @@
 export default {
     "componentName": "ACalendar",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-calendar",
     "group": "dataDisplay",
     "title": "日历",

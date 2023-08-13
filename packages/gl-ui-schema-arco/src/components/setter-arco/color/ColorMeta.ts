@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlColor",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-color",
     "group": "dataEntry",
     "title": "颜色",

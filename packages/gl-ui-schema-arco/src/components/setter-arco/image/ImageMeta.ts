@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlImage",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-image",
     "group": "dataDisplay",
     "title": "图片",

@@ -1,6 +1,6 @@
 export default {
     "componentName": "ATimelineItem",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-timeline",
     "group": "dataDisplay",
     "title": "时间轴项",

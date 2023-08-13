@@ -50,11 +50,11 @@ watch(mv, (val) => {
 })
 
 const setEntityAndLoadFieldMetas = (entityName: string) => {
-  console.log('setEntityAndLoadFieldMetas by entity:', entityName)
+  // console.log('setEntityAndLoadFieldMetas by entity:', entityName)
   entityStore.loadFieldMetas('', entityName)
 }
 const onEntityChange = (entityName: string) => {
-  console.log('onEntityChange', entityName, entityLiteMetas)
+  // console.log('onEntityChange', entityName, entityLiteMetas)
   let entityLiteMeta = {entityTitle: ''}
   for (let i in entityLiteMetas.value) {
     // @ts-ignore

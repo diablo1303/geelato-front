@@ -1,6 +1,6 @@
 export default {
     "componentName": "ATimePicker",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-timePicker",
     "group": "dataEntry",
     "title": "时间选择",

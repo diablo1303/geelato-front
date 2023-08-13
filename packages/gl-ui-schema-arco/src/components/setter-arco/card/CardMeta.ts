@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlCard",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-card",
     "group": "layout",
     "title": "卡片",

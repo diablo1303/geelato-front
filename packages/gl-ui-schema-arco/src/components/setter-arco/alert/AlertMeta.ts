@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlAlert",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-alert",
     "group": "dataDisplay",
     "title": "警告提示",

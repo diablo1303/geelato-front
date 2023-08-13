@@ -1,6 +1,6 @@
 export default {
     "componentName": "ARadioGroup",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-radio",
     "group": "dataEntry",
     "title": "单选框",

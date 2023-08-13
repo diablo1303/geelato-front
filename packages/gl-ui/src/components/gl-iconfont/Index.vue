@@ -1,5 +1,5 @@
 <template>
-  <span class="gl-icon-font">
+  <span class="gl-icon-font" :class="[type]">
     <svg v-if="type" aria-hidden="true" :style="iconStyle">
       <use :xlink:href="'#'+type"></use>
     </svg>

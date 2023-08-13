@@ -6,7 +6,7 @@ export default {
 <script lang="ts" setup>
 import {ref, watch} from "vue";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
-import {useGlobal} from "../../index";
+import {mixins, useGlobal} from "../../index";
 import {entityApi} from "../../m/datasource/EntityApi";
 
 const global = useGlobal()
@@ -33,6 +33,7 @@ const props = defineProps({
       return {}
     }
   },
+  ...mixins.props
 })
 // console.log('GlPageViewer > props.pageProps:', props.pageProps)
 const glComponentInst = ref(new ComponentInstance())
@@ -82,9 +83,9 @@ watch(() => {
     <!--            :pageProps="pageProps"-->
     <!--    >-->
     <!--    </GlInstRuntime>-->
-    <!--    TODO 表单项组件为通过GlInstRuntime渲染时，未能显示label-->
+    <!--    注意！！！ 表单项组件为通过GlInstRuntime渲染时，未能显示label，这里改为GlComponent渲染-->
     <GlComponent v-if="glComponentInst" :key="glComponentInst.id" :glComponentInst="glComponentInst"
-                 :glIsRuntime="true" glRuntimeFlag="Runtime" :pageStatus="pageStatus" v-bind="pageProps"></GlComponent>
+                 :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag" :pageStatus="pageStatus" v-bind="pageProps"></GlComponent>
   </div>
 </template>
 <style scoped>

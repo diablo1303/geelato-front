@@ -1,6 +1,6 @@
 export default {
     "componentName": "AMenu",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-menu",
     "group": "navigation",
     "title": "导航菜单",

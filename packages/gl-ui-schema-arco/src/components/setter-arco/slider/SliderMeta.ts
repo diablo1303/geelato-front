@@ -1,6 +1,6 @@
 export default {
     "componentName": "ASlider",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-slider",
     "group": "dataEntry",
     "title": "滑动输入条",

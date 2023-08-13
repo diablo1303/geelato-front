@@ -1,6 +1,6 @@
 export default {
     "componentName": "APagination",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-pagination",
     "group": "navigation",
     "title": "分页",

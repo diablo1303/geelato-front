@@ -415,10 +415,10 @@ const checkConfig = () => {
 
   checkFieldItem(props.glComponentInst)
 }
-console.log('GLEntityForm > create > id', props.glComponentInst.id)
+// console.log('GLEntityForm > create > id', props.glComponentInst.id)
 
 onMounted(() => {
-  console.log('GLEntityForm > onMounted() > id', props.glComponentInst.id)
+  // console.log('GLEntityForm > onMounted() > id', props.glComponentInst.id)
 })
 
 loadForm()

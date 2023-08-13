@@ -1,6 +1,6 @@
 export default {
     "componentName": "ATag",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-tag",
     "group": "dataDisplay",
     "title": "标签",

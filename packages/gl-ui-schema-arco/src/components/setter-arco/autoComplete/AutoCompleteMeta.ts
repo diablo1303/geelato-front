@@ -1,6 +1,6 @@
 export default {
     "componentName": "AAutoComplete",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-autoComplete",
     "group": "dataEntry",
     "title": "自动完成",

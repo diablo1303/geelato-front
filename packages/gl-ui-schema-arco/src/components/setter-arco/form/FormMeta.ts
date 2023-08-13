@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlEntityForm",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-form",
     "group": "dataEntry",
     "title": "实体表单",

@@ -8,6 +8,10 @@
     color: red;
 }
 
-.gl-required {
+.gl-required, .gl-delete {
     color: red;
+}
+
+.gl-tips:after {
+    content: '？'
 }

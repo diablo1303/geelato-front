@@ -60,11 +60,11 @@ watch(mv, (val) => {
 }, {deep: true})
 
 const setEntityAndLoadFieldMetas = (entityName: string) => {
-  console.log('setEntityAndLoadFieldMetas by entity:', entityName)
+  // console.log('setEntityAndLoadFieldMetas by entity:', entityName)
   entityStore.loadFieldMetas('', entityName)
 }
 const onEntityChange = (entityName: string) => {
-  console.log('onEntityChange', entityName, entityLiteMetas)
+  // console.log('onEntityChange', entityName, entityLiteMetas)
   let entityLiteMeta = {entityTitle: ''}
   for (let i in entityLiteMetas.value) {
     // @ts-ignore
@@ -74,7 +74,7 @@ const onEntityChange = (entityName: string) => {
     }
   }
   entityStore.loadFieldMetas('', entityName).then((fieldMetas) => {
-    console.log('fieldMetas', fieldMetas)
+    // console.log('fieldMetas', fieldMetas)
     // @ts-ignore
     ds.value.entityMeta = {
       entityName: entityName,

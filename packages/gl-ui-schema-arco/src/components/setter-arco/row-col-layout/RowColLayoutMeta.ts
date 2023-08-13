@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlRowColLayout",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-layout",
     "group": "layout",
     "title": "行列布局",

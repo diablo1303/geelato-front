@@ -1,6 +1,6 @@
 export default {
     "componentName": "AMentions",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-mentions",
     "group": "dataEntry",
     "title": "提及",

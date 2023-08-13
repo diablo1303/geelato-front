@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlText",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-text",
     "group": "dataEntry",
     "title": "文本",

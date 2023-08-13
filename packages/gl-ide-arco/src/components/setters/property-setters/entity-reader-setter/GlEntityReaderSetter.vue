@@ -1,32 +1,53 @@
 <template>
-  <table class="gl-table">
+  <table class="gl-entity-reader-setter gl-table">
     <tr>
-      <td class="gl-table-cell gl-label">实体编码</td>
+      <td class="gl-table-cell gl-label">绑定实体</td>
+    </tr>
+    <tr>
       <td class="gl-table-cell">
         <a-select v-model="mv.entity" @change="onEntityChange" allowSearch>
-          <a-option v-for="item in entityStore.entityLiteMetas" :value="item.entityName">{{item.entityTitle}} {{item.entityName}}</a-option>
+          <a-option v-for="item in entityStore.entityLiteMetas" :value="item.entityName">{{ item.entityTitle }}
+            {{ item.entityName }}
+          </a-option>
         </a-select>
       </td>
     </tr>
     <!--========================= 查询列 ===========================-->
     <tr>
       <td class="gl-table-cell gl-label">数据列</td>
+    </tr>
+    <tr>
       <td class="gl-table-cell">
-        <GlFieldsSetter v-model="mv.fields" :entityFieldMetas="entityStore.currentFieldMetas" @changeElement="onUpdate"></GlFieldsSetter>
+        <GlFieldsSetter v-model="mv.fields" :entityFieldMetas="entityStore.currentFieldMetas"
+                        @changeElement="onUpdate"></GlFieldsSetter>
       </td>
     </tr>
-   <!--=========================查询参数===========================-->
+    <!--=========================查询参数===========================-->
     <tr>
       <td class="gl-table-cell gl-label">数据筛选</td>
+    </tr>
+    <tr>
       <td class="gl-table-cell">
-        <GlParamsSetter v-model="mv.params" :entityFieldMetas="entityStore.currentFieldMetas" @changeElement="onUpdate"></GlParamsSetter>
+        <GlParamsSetter v-model="mv.params" :entityFieldMetas="entityStore.currentFieldMetas"
+                        @changeElement="onUpdate"></GlParamsSetter>
       </td>
     </tr>
     <!--=========================查询参数===========================-->
     <tr>
       <td class="gl-table-cell gl-label">排序字段</td>
+    </tr>
+    <tr>
       <td class="gl-table-cell">
-        <GlOrderSetter v-model="mv.order" :entityFieldMetas="entityStore.currentFieldMetas" @changeElement="onUpdate"></GlOrderSetter>
+        <GlOrderSetter v-model="mv.order" :entityFieldMetas="entityStore.currentFieldMetas"
+                       @changeElement="onUpdate"></GlOrderSetter>
+      </td>
+    </tr>
+    <tr>
+      <td class="gl-table-cell gl-label">最大记录数</td>
+    </tr>
+    <tr>
+      <td class="gl-table-cell">
+        <a-input-number v-model="mv.pageSize" :min="1" :max="1000" :precision="0"></a-input-number>
       </td>
     </tr>
   </table>
@@ -40,9 +61,10 @@ import {EntityReader} from "@geelato/gl-ui";
 import GlFieldsSetter from "./GlFieldsSetter.vue";
 import GlParamsSetter from "./GlParamsSetter.vue";
 import GlOrderSetter from "./GlOrderSetter.vue";
+
 export default defineComponent({
   name: "GlEntityReaderSetter",
-  components: {GlOptions,GlFieldsSetter,GlParamsSetter,GlOrderSetter},
+  components: {GlOptions, GlFieldsSetter, GlParamsSetter, GlOrderSetter},
   props: {
     modelValue: {
       type: Object as PropType<EntityReader>,
@@ -53,6 +75,9 @@ export default defineComponent({
   },
   created() {
     this.entityStore.loadEntityLiteMetas('')
+    if (this.modelValue && this.modelValue.entity) {
+      this.onEntityChange(this.modelValue.entity)
+    }
   },
   beforeUpdate() {
     // this.mv = this.modelValue
@@ -63,14 +88,13 @@ export default defineComponent({
       mv: this.modelValue as EntityReader,
     }
   },
-  watch: {
-  },
-  methods:{
-    onEntityChange(entityName:string){
-      console.log('onEntityChange',entityName)
-      this.entityStore.loadFieldMetas('',entityName)
+  watch: {},
+  methods: {
+    onEntityChange(entityName: string) {
+      console.log('onEntityChange', entityName)
+      this.entityStore.loadFieldMetas('', entityName)
     },
-    onUpdate(){
+    onUpdate() {
       console.log('onUpdate')
       this.$emit('update:modelValue', this.mv)
     }
@@ -78,6 +102,25 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
+<style>
+.gl-entity-reader-setter .gl-label {
+  padding-left: 0.5em;
+  text-align: left;
+  background-color: white;
+  font-weight: 550;
+}
 
+.gl-entity-reader-setter .gl-drag {
+  width: 1.5em;
+  text-align: center
+}
+
+.gl-entity-reader-setter .gl-extra {
+  min-width: 2em;
+  text-align: center;
+}
+
+.gl-entity-reader-setter .gl-icon-font {
+  cursor: pointer;
+}
 </style>

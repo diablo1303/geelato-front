@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlBlockConfirm",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-checkbox",
     "group": "block_feedback",
     "title": "弹出确认",

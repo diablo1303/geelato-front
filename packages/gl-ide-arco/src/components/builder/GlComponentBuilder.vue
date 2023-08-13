@@ -70,7 +70,7 @@
             <tr>
               <td class="gl-table-cell gl-label" title="组件设置器面板的显示模式">面板模式</td>
               <td class="gl-table-cell">
-                <template v-if="cMeta.displayMode=cMeta.displayMode||'Tile'"></template>
+                <template v-if="cMeta.displayMode=cMeta.displayMode||'tile'"></template>
                 <a-radio-group size="small" v-model="cMeta.displayMode" type="button">
                   <a-radio value="collapse">折叠</a-radio>
                   <a-radio value="tile">平铺</a-radio>

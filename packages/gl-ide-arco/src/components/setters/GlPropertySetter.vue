@@ -8,25 +8,25 @@
          :style="{width: isCollapseDisplayMode?'100%':'7em'}"
          @dblclick.ctrl="tryClearProp(propertySetterMeta.name)" title="">
       <template v-if="isCollapseDisplayMode">
-        <GlIconfont type="gl-left-circle" style="cursor: pointer;margin-left: 0.5em"
-                    v-if="propertySetterMeta.expanded!==false"
+        <GlIconfont v-if="propertySetterMeta.expanded!==false" type="gl-arrow-right"
+                    style="cursor: pointer;margin-left: 0.5em"
                     @click="propertySetterMeta.expanded=false"></GlIconfont>
-        <GlIconfont type="gl-down-circle" style="cursor: pointer;margin-left: 0.5em"
-                    v-if="propertySetterMeta.expanded===false"
+        <GlIconfont v-if="propertySetterMeta.expanded===false" type="gl-arrow-down"
+                    style="cursor: pointer;margin-left: 0.5em"
                     @click="propertySetterMeta.expanded=true"></GlIconfont>
-        <span v-if="propertySetterMeta.description">
-          <GlIconfont type="gl-info-circle" :title="propertySetterMeta.description"></GlIconfont>
-        </span>
-        <span style="cursor:pointer;font-weight: 580"
-              @click="propertySetterMeta.expanded=!propertySetterMeta.expanded">&nbsp;
+        <span class="gl-title"
+              :class="{'gl-tips':!!propertySetterMeta.description}"
+              :title="propertySetterMeta.description"
+              @click="propertySetterMeta.expanded=!propertySetterMeta.expanded">
           {{ propertySetterMeta.title }}
         </span>
       </template>
       <template v-if="!isCollapseDisplayMode">
-         <span v-if="propertySetterMeta.description">
-          <GlIconfont type="gl-info-circle" :title="propertySetterMeta.description"></GlIconfont>
-        </span>
-        <span>&nbsp;{{ propertySetterMeta.title }}</span>
+<!--         <span v-if="propertySetterMeta.description">-->
+<!--          <GlIconfont type="gl-info-circle" :title="propertySetterMeta.description"></GlIconfont>-->
+<!--        </span>-->
+        <span :class="{'gl-tips':!!propertySetterMeta.description}"
+              :title="propertySetterMeta.description">&nbsp;{{ propertySetterMeta.title }}</span>
       </template>
     </div>
     <!-- 这里需用 v-show，确保各属性都初始化，属性之间的数据依赖才能正常   -->
@@ -56,11 +56,12 @@
                                       @update="($event:any)=>{slotProps.item[property.name]=$event}">
                       <div v-if="property.enableValueExpress">
                         <!--设置属性表达式_propsExpression的初始值为：{}-->
-                        <template v-if="typeof slotProps.item._propsExpressions==='object'?true:slotProps.item._propsExpressions={}"></template>
+                        <template
+                            v-if="typeof slotProps.item._propsExpressions==='object'?true:slotProps.item._propsExpressions={}"></template>
                         <GlExpressionSetter
                             v-model="slotProps.item._propsExpressions[property.name]"></GlExpressionSetter>
-<!--                        <GlExpressionSetter-->
-<!--                            v-model="slotProps.item[property.type + 'Expressions'][property.name]"></GlExpressionSetter>-->
+                        <!--                        <GlExpressionSetter-->
+                        <!--                            v-model="slotProps.item[property.type + 'Expressions'][property.name]"></GlExpressionSetter>-->
                       </div>
                     </GlPropertySetter>
                   </template>
@@ -88,7 +89,8 @@
                                       @update="onSubPropertyUpdate(subPropertySetterMeta.name,$event)">
                       <div v-if="subPropertySetterMeta.enableValueExpress">
                         <!--设置属性表达式_propsExpression的初始值为：{}-->
-                        <template v-if="typeof propertyModel._propsExpressions==='object'?true:propertyModel._propsExpressions={}"></template>
+                        <template
+                            v-if="typeof propertyModel._propsExpressions==='object'?true:propertyModel._propsExpressions={}"></template>
                         <GlExpressionSetter
                             v-model="propertyModel._propsExpressions[subPropertySetterMeta.name]"></GlExpressionSetter>
                       </div>
@@ -120,7 +122,7 @@
           </template>
           <!-- 3 ========================type为children========================-->
           <template v-else-if="propertySetterMeta.type==='children'">
-            {{propertySetterMeta}}
+            {{ propertySetterMeta }}
             <GlPropertySetterCard v-slot:default="slotProps" v-model="propertyModel"
                                   :maxCount="propertySetterMeta.subComponentCount"
                                   :titleField="propertySetterMeta.titleField"
@@ -182,10 +184,13 @@ const props = defineProps({
   propertyValue: [String, Number, Boolean, Array, Object, Date, Function, Symbol]
 })
 
+// 优先取当前属性配置的显示模式，再取由整个组件配置的，传进来的显示模式
+const propertyDisplayMode = props.propertySetterMeta.displayMode || props.displayMode
 const propertyModel = ref<any>(props.propertyValue)
-const isCollapseDisplayMode = props.displayMode === 'collapse'
+// collapse | tile
+const isCollapseDisplayMode = propertyDisplayMode === 'collapse'
 const displayModeClass = computed(() => {
-  return {["gl-display-mode-" + props.displayMode || 'default']: true}
+  return {["gl-display-mode-" + propertyDisplayMode || 'default']: true}
 })
 const cellDisplayModeClass = computed(() => {
   return isCollapseDisplayMode ? {"gl-table-cell-collapse": true} : {"gl-table-cell": true}
@@ -287,6 +292,20 @@ initialized = true
   line-height: 40px;
   font-weight: 500;
   border-bottom: solid 1px #e7e7e7;
+}
+
+.gl-property-setter .gl-icon-font {
+  margin-left: .25em;
+}
+
+.gl-property-setter .gl-icon-font + .gl-title {
+  margin-left: .25em;
+  cursor: pointer;
+  font-weight: 580
+}
+
+.gl-property-setter-card .gl-icon-font + .gl-title {
+  font-weight: 500;
 }
 
 .gl-property-setter .gl-table.gl-table-as-tree > .gl-table-row > .gl-table-cell.gl-label {

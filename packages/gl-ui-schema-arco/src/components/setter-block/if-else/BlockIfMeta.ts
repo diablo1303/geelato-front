@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlBlockIf",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-if",
     "group": "block_condition",
     "title": "IF 条件",

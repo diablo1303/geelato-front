@@ -1,6 +1,6 @@
 export default {
     "componentName": "ASwitch",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-switch",
     "group": "dataEntry",
     "title": "开关",

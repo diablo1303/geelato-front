@@ -4,9 +4,10 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import pinia from '../../store';
 import {provide} from "vue";
-provide('pinia',pinia)
+import pinia from '../../store';
+
+provide('pinia', pinia)
 </script>
 <template>
   <GlIdeArco></GlIdeArco>

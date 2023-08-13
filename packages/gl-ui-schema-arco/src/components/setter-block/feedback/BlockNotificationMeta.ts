@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlBlockNotification",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-notification",
     "group": "block_feedback",
     "title": "通知提醒",

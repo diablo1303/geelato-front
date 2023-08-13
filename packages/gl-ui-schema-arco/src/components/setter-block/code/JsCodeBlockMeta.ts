@@ -1,6 +1,6 @@
 export default {
     "componentName": "GlJsCodeBlock",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType": "gl-code",
     "group": "block_code",
     "title": "JS代码",

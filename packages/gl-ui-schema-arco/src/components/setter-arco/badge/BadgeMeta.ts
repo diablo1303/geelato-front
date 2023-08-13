@@ -1,6 +1,6 @@
 export default {
     "componentName": "ABadge",
-    "displayMode": "Tile",
+    "displayMode": "tile",
     "iconType":"gl-badge",
     "group": "dataDisplay",
     "title": "徽标数",
