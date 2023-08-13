@@ -23,7 +23,7 @@
         </div>
         <div class="gl-table">
           <div class="gl-table-row">
-            <div class="gl-table-cell gl-label" style="width: 7em;">当前组件</div>
+            <div class="gl-table-cell gl-label" style="width: 6em;">当前组件</div>
             <div class="gl-table-cell">
               <span
                   style="font-size: 12px;line-height: 3em"
@@ -38,7 +38,7 @@
         </div>
         <div class="gl-table" style="margin: 0 0 2px 0;border-bottom: 2px solid #04559f">
           <div class="gl-table-row">
-            <div class="gl-table-cell gl-label" style="width: 7em;">唯一标识</div>
+            <div class="gl-table-cell gl-label" style="width: 6em;">唯一标识</div>
             <div class="gl-table-cell">
               <span style="font-size: 12px;line-height: 3em">{{ componentModel.id }}</span>
               <a-button size="mini" style="float: right;padding: 0 4px;margin: 1px" type="text"

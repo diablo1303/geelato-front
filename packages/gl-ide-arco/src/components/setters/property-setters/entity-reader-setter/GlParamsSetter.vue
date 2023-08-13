@@ -20,7 +20,7 @@
             <GlIconfont title="拖动" type="gl-drag" class="gl-dnd-item" style="cursor: move"></GlIconfont>
           </td>
           <td style="width: 100%">
-            <a-select size="small" v-model="element.name"
+            <a-select size="small" v-model="element.name" allow-search
                       @change="onChangeElement($event,element,index)">
               <a-option v-for="item in entityFieldMetas" :value="item.name" :title="item.name">
                 {{ item.title }}

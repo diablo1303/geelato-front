@@ -21,6 +21,7 @@
           </td>
           <td style="width: 100%">
             <a-select size="small" v-model="mv[index].name" style="width: 100%"
+                      allow-search
                       allow-clear
                       placeholder="数据字段"
                       @change="onFieldChange($event,element,index)">

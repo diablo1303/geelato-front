@@ -116,7 +116,7 @@ export default defineComponent({
 }
 
 .gl-entity-reader-setter .gl-extra {
-  min-width: 2em;
+  min-width: 1em;
   text-align: center;
 }
 

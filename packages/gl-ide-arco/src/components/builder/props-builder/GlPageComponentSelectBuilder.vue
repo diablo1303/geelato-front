@@ -1,7 +1,7 @@
 <template>
   <table class="gl-table">
     <tr>
-      <td class="gl-table-cell gl-label" style="width: 7em" title="该值应和Props中表示“页面extendId”的属性名称一致">
+      <td class="gl-table-cell gl-label" style="width: 6em" title="该值应和Props中表示“页面extendId”的属性名称一致">
         页面属性名
       </td>
       <td class="gl-table-cell">
