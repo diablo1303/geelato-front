@@ -170,9 +170,10 @@ const showFormItem = (inst: ComponentInstance) => {
         :key="index"
         :span="span"
     >
-      <component v-show="glComponentInst?.props._hidden!==true"
-                 :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst?.children[index]"
+      <div v-show="glComponentInst?.props._hidden!==true">
+        <GlInsts :glComponentInst="glComponentInst?.children[index]"
                  :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"/>
+      </div>
     </a-col>
   </a-row>
 

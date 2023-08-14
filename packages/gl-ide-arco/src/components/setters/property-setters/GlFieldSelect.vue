@@ -15,7 +15,7 @@ export default {
 
 import {inject, onMounted, provide, ref, watch} from 'vue'
 import type {FieldMeta} from "@geelato/gl-ui";
-import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "../ComponentSetterProvideProxy";
+import  {ComponentSetterProvideKey,ComponentSetterProvideProxy} from "@geelato/gl-ide";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({

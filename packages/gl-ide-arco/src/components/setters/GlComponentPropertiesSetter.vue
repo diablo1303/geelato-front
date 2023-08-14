@@ -12,8 +12,10 @@
             @change:propertyValue="changePropertyValue(propertySetterMeta.type,propertySetterMeta.name,$event)"
         >
           <div v-if="propertySetterMeta.enableValueExpress">
-            <template v-if="componentModel[propertySetterMeta.type + 'Expressions']?true:componentModel[propertySetterMeta.type + 'Expressions']={}"></template>
-            <GlExpressionSetter v-model="componentModel[propertySetterMeta.type + 'Expressions'][propertySetterMeta.name]"></GlExpressionSetter>
+            <template
+                v-if="componentModel[propertySetterMeta.type + 'Expressions']?true:componentModel[propertySetterMeta.type + 'Expressions']={}"></template>
+            <GlExpressionSetter
+                v-model="componentModel[propertySetterMeta.type + 'Expressions'][propertySetterMeta.name]"></GlExpressionSetter>
             <!--            <a-button size="mini" @click="openValueExpressModal(propertySetterMeta)"-->
             <!--                      :type="componentModel[propertySetterMeta.type+'Expression'][propertySetterMeta.name]?'primary':''"-->
             <!--                      style="padding: 0 0.1em;height: 2.6em;font-weight: 700">{ / }-->
@@ -69,7 +71,8 @@ export default defineComponent({
       required: true
     },
     componentInstance: {
-      type: ComponentInstance
+      type: Object as PropType<ComponentInstance>,
+      required: true
     }
   },
   data() {

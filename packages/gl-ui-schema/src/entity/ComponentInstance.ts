@@ -2,6 +2,30 @@ import type Action from "./actions/Action";
 import type BindField from "./model/BindField";
 import type BlockInstance from "./actions/BlockInstance";
 
+export interface FieldRule<FieldValue = any> {
+    type?: 'string' | 'number' | 'boolean' | 'array' | 'object' | 'email' | 'url' | 'ip';
+    required?: boolean;
+    message?: string;
+    length?: number;
+    maxLength?: number;
+    minLength?: number;
+    match?: RegExp;
+    uppercase?: boolean;
+    lowercase?: boolean;
+    min?: number;
+    max?: number;
+    equal?: number;
+    positive?: boolean;
+    negative?: boolean;
+    true?: boolean;
+    false?: boolean;
+    includes?: any[];
+    deepEqual?: any;
+    empty?: boolean;
+    hasKeys?: string[];
+    validator?: (value: FieldValue | undefined, callback: (error?: string) => void) => void;
+}
+
 export class ComponentInstanceProps {
     // 标题，如用于formItem的标题
     label?: string = ''
@@ -22,7 +46,7 @@ export class ComponentInstanceProps {
     // 是否隐藏(渲染但不可见)
     _hidden?: boolean
     // 验证规则，适用于表单项组件，如AInput
-    rules?: Array<any>
+    rules?: FieldRule<any> | FieldRule<any>[]
 }
 
 export class I18nItem {

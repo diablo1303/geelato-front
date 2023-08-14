@@ -15,3 +15,7 @@
 .gl-tips:after {
     content: '？'
 }
+
+.gl-thunderbolt-icon.gl-active{
+    color: royalblue;
+}

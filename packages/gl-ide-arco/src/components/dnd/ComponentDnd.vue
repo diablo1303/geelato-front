@@ -36,7 +36,7 @@
     <!--                          :glComponentInst="childElement" :componentStoreId="componentStoreId"></GlComponentDnd>-->
     <!--    <div>xxx</div>-->
     <!--    <GlInsts :items="glComponentInst.children" :componentStoreId="componentStoreId"></GlInsts>-->
-<!--    :key="inst.id"-->
+    <!--    :key="inst.id"-->
     <GlInst v-if="glComponentInst" v-for="(inst, index) in glComponentInst.children"
             :id="inst.id"
             :index="index"
@@ -54,16 +54,19 @@ export default {
 </script>
 <script setup lang="ts">
 import {emitter, mixins, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
-import {getCurrentInstance, inject, onMounted, type PropType} from "vue";
+import {getCurrentInstance, inject, type PropType} from "vue";
 import {componentStoreFactory} from "@geelato/gl-ide";
 
-const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const props = defineProps({
   moveItem: Function as PropType<(dragIndex: number, hoverIndex: number, sourceId: number, targetId: number) => void>,
   addItem: Function,
   ...mixins.props
 })
+const pageProvideProxy: PageProvideProxy | null = props.glComponentInst.componentName === 'GlPage' ? null : inject(PageProvideKey)!
+
+// console.log('ComponentDnD > pageProvideProxy:', props.glComponentInst.componentName, PageProvideKey, pageProvideProxy)
+
 const emits = defineEmits(['onComponentClick'])
 
 // console.log('ComponentDnD > props.componentStoreId:',props.componentStoreId)

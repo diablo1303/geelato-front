@@ -2,7 +2,7 @@ export type ContextMenuDataType = {
     title: string,
     iconType: string,
     iconColor?: string,
-    nodeType: string,
+    _nodeType: string,
     useFor: Array<string>,
     action: string,
     // 节点操作的参数，如action为updateNode,actionsParams为：{flag:'menuItem'}，则处理之后，节点的flag属性，值为'menuItem'

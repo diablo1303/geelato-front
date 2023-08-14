@@ -30,13 +30,13 @@ pageStore.addPageTemplate("listPage", import("../stage/listPageTemplate.json"))
 
 const onSelectNode = (params: any) => {
   // console.log('onSelectNode() > params:', params)
-  if (['root', 'folder'].indexOf(params.nodeType) >= 0) {
+  if (['root', 'folder'].indexOf(params._nodeType) >= 0) {
     // 根节点或目录节点
   } else {
     // 子节点
     const dataRef = params
     ideStore.openPage(<Page>{
-      type: dataRef.nodeType,
+      type: dataRef._nodeType,
       extendId: dataRef.key,
       title: dataRef.title,
       iconType: dataRef.iconType
@@ -45,13 +45,13 @@ const onSelectNode = (params: any) => {
 }
 
 const onDeleteNode = (params: any) => {
-  if (['root'].indexOf(params.nodeType) >= 0) {
+  if (['root'].indexOf(params._nodeType) >= 0) {
     // 根节点
   } else {
     // 子节点
     const dataRef = params
     ideStore.closePage(<Page>{
-      type: dataRef.nodeType,
+      type: dataRef._nodeType,
       extendId: dataRef.key,
       title: dataRef.title,
       iconType: dataRef.iconType
@@ -62,7 +62,7 @@ const onDeleteNode = (params: any) => {
 const onIconClick = (nodeData: any) => {
   console.log('onIconClick:', nodeData)
   ideStore.openPage(<Page>{
-    type: nodeData.nodeType,
+    type: nodeData._nodeType,
     extendId: nodeData.key,
     title: nodeData.title,
     iconType: nodeData.iconType
@@ -78,21 +78,21 @@ entityReader.fields.push(new FieldMeta('id', 'key'))
 entityReader.fields.push(new FieldMeta('text', 'title'))
 entityReader.fields.push(new FieldMeta('pid',))
 entityReader.fields.push(new FieldMeta('iconType',))
-entityReader.fields.push(new FieldMeta('type', 'nodeType'))
+entityReader.fields.push(new FieldMeta('type', '_nodeType'))
 entityReader.fields.push(new FieldMeta('flag',))
 entityReader.fields.push(new FieldMeta('seqNo',))
 entityReader.params = []
 entityReader.params.push(new EntityReaderParam('treeId', 'eq', appStore.currentApp.id))
 entityReader.pageSize = 1000
 const contextMenuData = [
-  {title: '新建目录', iconType: 'gl-folder', nodeType: 'folder', useFor: ['root', 'folder'], action: 'addNode'},
-  {title: '新建自由页面', iconType: 'gl-file', nodeType: 'freePage', useFor: ['folder'], action: 'addNode'},
-  {title: '新建表单页面', iconType: 'gl-form', nodeType: 'formPage', useFor: ['folder'], action: 'addNode'},
-  {title: '新建列表页面', iconType: 'gl-list', nodeType: 'listPage', useFor: ['folder'], action: 'addNode'},
+  {title: '新建目录', iconType: 'gl-folder', _nodeType: 'folder', useFor: ['root', 'folder'], action: 'addNode'},
+  {title: '新建自由页面', iconType: 'gl-file', _nodeType: 'freePage', useFor: ['folder'], action: 'addNode'},
+  {title: '新建表单页面', iconType: 'gl-form', _nodeType: 'formPage', useFor: ['folder'], action: 'addNode'},
+  {title: '新建列表页面', iconType: 'gl-list', _nodeType: 'listPage', useFor: ['folder'], action: 'addNode'},
   {
     title: '设置为菜单',
     iconType: 'gl-menu',
-    nodeType: '*',
+    _nodeType: '*',
     useFor: ['folder', 'freePage', 'formPage', 'listPage'],
     action: 'updateNode',
     actionParams: {flag: 'menuItem'},
@@ -101,7 +101,7 @@ const contextMenuData = [
   {
     title: '取消设置为菜单',
     iconType: 'gl-menu',
-    nodeType: '*',
+    _nodeType: '*',
     useFor: ['folder', 'freePage', 'formPage', 'listPage'],
     action: 'updateNode',
     actionParams: {flag: ''},
@@ -110,7 +110,7 @@ const contextMenuData = [
   {
     title: '重命名',
     iconType: 'gl-edit-square',
-    nodeType: 'freePage',
+    _nodeType: 'freePage',
     useFor: ['folder', 'freePage', 'formPage', 'listPage'],
     action: 'updateNodeName'
   },
@@ -118,7 +118,7 @@ const contextMenuData = [
     title: '删除',
     iconType: 'gl-delete',
     iconColor: '#cc3636',
-    nodeType: 'freePage',
+    _nodeType: 'freePage',
     useFor: ['folder', 'freePage', 'formPage', 'listPage'],
     action: 'deleteNode'
   }

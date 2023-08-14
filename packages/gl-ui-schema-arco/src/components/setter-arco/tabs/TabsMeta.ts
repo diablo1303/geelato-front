@@ -60,7 +60,7 @@ export default {
             "expanded": true,
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
-            "title": "是否禁用",
+            "title": "禁用",
             "setterComponentName": "ASwitch"
         }],
         "titleField": "title",

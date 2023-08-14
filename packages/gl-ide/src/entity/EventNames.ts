@@ -2,7 +2,7 @@
  *  事件命名规则：
  *  GlIde + [Sidebar|Stage|Settings] + [Component|Object_tree_node|Panel]+[Update/Remove/Open]
  */
-enum Events {
+enum EventNames {
     // 打开创建新项目页面
     GlIdeToolbarShowNewAppForm = 'GlIdeToolbarShowNewAppForm',
     // 打开项目修改页面
@@ -33,6 +33,8 @@ enum Events {
     GlIdeSetterObjectTreeNodeUpdate = 'GlIdeSetterObjectTreeNodeUpdate',
     // 更新组件绑定事件的状态
     GlIdeSetterComponentEventStateUpdate = 'GlIdeSetterComponentEventStateUpdate',
+    // 打开动作编辑器
+    GlIdeOpenActionEditor = 'GlIdeOpenActionEditor',
 
     // 舞台上选择组件
     GlIdeStageComponentSelected = 'GlIdeStageComponentSelected',
@@ -45,4 +47,4 @@ enum Events {
 
 }
 
-export default Events
+export default EventNames

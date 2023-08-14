@@ -21,7 +21,7 @@ export class AppEntitySelectResult {
 import {inject, type PropType, ref, watch} from 'vue'
 import {useEntityStore} from "@geelato/gl-ide";
 import {EntityMeta, type EntityLiteMeta} from "@geelato/gl-ui";
-import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "../ComponentSetterProvideProxy";
+import  {ComponentSetterProvideKey,ComponentSetterProvideProxy} from "@geelato/gl-ide";
 
 const props = defineProps({
   modelValue: {

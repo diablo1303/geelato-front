@@ -113,14 +113,13 @@
 import {ref} from 'vue'
 import {utils, CheckUtil} from "@geelato/gl-ui";
 import screenfull from 'screenfull'
-import Events from "../entity/Events"
 import {useIdeStore} from "../stores/UseIdeStore";
 import {usePageStore} from "../stores/UsePageStore";
 import {useThemeStore} from "../stores/UseThemeStore";
 import {emitter, useGlobal} from "@geelato/gl-ui";
 import {copyComponentInst, useComponentStore} from "../stores/UseComponentStore";
 import {useAppStore} from "../stores/UseAppStore";
-import EventNames from "../entity/Events";
+import EventNames from "../entity/EventNames";
 import ClipboardJS from "clipboard";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {isLogin} from "@geelato/gl-ui/src/m/utils/auth";
@@ -161,7 +160,7 @@ const setI18nLanguage = (lang: string) => {
 
 }
 const showProjectForm = () => {
-  emitter.emit(Events.GlIdeToolbarShowNewAppForm, {id: utils.gid('app'), name: '新项目'})
+  emitter.emit(EventNames.GlIdeToolbarShowNewAppForm, {id: utils.gid('app'), name: '新项目'})
 }
 const showCurrentProjectForm = () => {
   emitter.emit('GlDesignerToolbar.showCurrentProjectForm')
@@ -178,10 +177,6 @@ const showProjectList = () => {
 const saveFile = () => {
   ideStore.savePage()
   emitter.emit(EventNames.GlIdeToolbarSaveFile)
-}
-
-const projectConfig = () => {
-
 }
 
 const openCodeViewer = () => {

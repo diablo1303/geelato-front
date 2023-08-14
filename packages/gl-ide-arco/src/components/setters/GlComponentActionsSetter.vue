@@ -2,11 +2,13 @@
   <div v-if="componentInstance">
     <a-collapse :default-active-key="defaultActiveKey" expand-icon-position="right">
       <a-collapse-item v-for="(actionMeta,actionMetaIndex) in componentMeta.actions"
-                       :header="actionMeta.name+' '+actionMeta.title" :key="actionMetaIndex" :title="actionMeta.description"
+                       :header="actionMeta.name+' '+actionMeta.title" :key="actionMetaIndex"
+                       :title="actionMeta.description"
       >
         <div style="padding: 0 1em">
-          <GlArrayBaseSetter v-slot:default="slotProps" v-model="componentInstance.actions" :filter="(action:Action)=>{return action?.eventName===actionMeta.name}"
-                             :defaultItemForAdd="new Action({id:utils.uuid('act',20),name:actionMeta.name,eventName:actionMeta.name,title:actionMeta.title})"
+          <GlArrayBaseSetter v-slot:default="slotProps" v-model="componentInstance.actions"
+                             :filter="(action:Action)=>{return action?.eventName===actionMeta.name}"
+                             :defaultItemForAdd="new Action({id:utils.gid('act',20),name:actionMeta.name,eventName:actionMeta.name,title:actionMeta.title})"
                              @addItem="update"
                              @removeItem="update">
             <div style="width:100%;display: flex;margin-bottom: 1px">
@@ -46,13 +48,14 @@ export default {
 // @ts-nocheck
 // error TS2532: Object is possibly 'undefined'.
 // componentInstance.actions
-import {nextTick, type PropType, ref} from 'vue'
+import {nextTick, onUnmounted, type PropType, ref} from 'vue'
 import {Action, ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import GlArrayBaseSetter from "./property-setters/GlArrayBaseSetter.vue";
 import CommandEditor from "./action-setters/CommandEditor.vue";
-import {useGlobal, utils} from "@geelato/gl-ui";
+import {emitter, useGlobal, utils} from "@geelato/gl-ui";
 import {blocksHandler} from "./action-setters/blocks/BlockHandler";
 import type {ActionMeta} from "@geelato/gl-ui-schema";
+import {EventNames} from "@geelato/gl-ide";
 
 const global = useGlobal()
 const props = defineProps({
@@ -61,7 +64,8 @@ const props = defineProps({
     required: true
   },
   componentInstance: {
-    type: ComponentInstance
+    type: Object as PropType<ComponentInstance>,
+    required: true
   }
 })
 
@@ -84,16 +88,16 @@ const refreshFlag = ref(true)
 const currentAction = ref(new Action())
 const currentActionIndex = ref(-1)
 const actionCodeEditorVisible = ref(false)
-const openActionSetter = (action: Action, actionIndex: number, actionMeta: Action) => {
-  // console.log('openActionSetter,action, actionIndex, actionMeta:', action, actionIndex, actionMeta)
+const openActionSetter = (action: Action, actionIndex: number, actionMeta?: ActionMeta) => {
+  console.log('openActionSetter,action, actionIndex, actionMeta:', action, actionIndex, actionMeta)
   if (!action.title) {
-    action.title = actionMeta.title
+    action.title = actionMeta?.title || ''
   }
   if (!action.name) {
-    action.name = actionMeta.name
+    action.name = actionMeta?.name || ''
   }
   if (!action.eventName) {
-    action.eventName = actionMeta.name
+    action.eventName = actionMeta?.name || ''
   }
   if (!action.id) {
     action.id = utils.gid('act', 20)
@@ -136,6 +140,17 @@ const generateScript = () => {
     action.body = blocksHandler.parseToScript(action.__commandBlock)
   }
 }
+
+const openActionEditor = (args: any) => {
+  console.log('openActionSetter:', args)
+  openActionSetter(args.action, args.actionIndex)
+}
+emitter.on(EventNames.GlIdeOpenActionEditor, openActionEditor)
+
+onUnmounted(() => {
+  // console.log('GlComponentSetter > onUnmounted ...', props.componentInstance?.componentName, props.componentInstance?.id)
+  emitter.off(EventNames.GlIdeOpenActionEditor, openActionEditor)
+})
 </script>
 
 <style scoped>

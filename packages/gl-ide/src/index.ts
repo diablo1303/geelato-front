@@ -4,7 +4,7 @@
 import type {App, Plugin} from 'vue'
 import GlPlugin from "./entity/GlPlugin";
 import Panel from "./entity/Panel";
-import EventNames from "./entity/Events";
+import EventNames from "./entity/EventNames";
 import GlIde from './components/Index.vue'
 import {reactive} from 'vue'
 import Ide from "./entity/Ide";
@@ -21,6 +21,8 @@ import {useThemeStore} from "./stores/UseThemeStore";
 import {useAppStore} from "./stores/UseAppStore";
 import uiLibAdapter from "./utils/UiLibAdapter";
 import GlMonacoEditor from "./components/monaco/Index.vue"
+import ComponentSetterProvideProxy from "./stores/ComponentSetterProvideProxy";
+import {ComponentSetterProvideKey} from "./stores/ComponentSetterProvideProxy";
 import './assets/gl-root.css'
 import './assets/gl-table-form.css'
 
@@ -56,7 +58,9 @@ export {
     usePageStore,
     useComponentStore,
     useThemeStore,
-    uiLibAdapter
+    uiLibAdapter,
+    ComponentSetterProvideProxy,
+    ComponentSetterProvideKey
 }
 // 默认导出组件
 export default component

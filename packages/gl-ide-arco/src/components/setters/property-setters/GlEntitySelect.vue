@@ -14,7 +14,7 @@ export default {
 import {inject, ref, watch} from 'vue'
 import {useEntityStore} from "@geelato/gl-ide";
 import {type EntityLiteMeta, EntityMeta} from "@geelato/gl-ui";
-import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "../ComponentSetterProvideProxy";
+import  {ComponentSetterProvideKey,ComponentSetterProvideProxy} from "@geelato/gl-ide";
 
 const props = defineProps({
   modelValue: {

@@ -14,7 +14,7 @@ const props = defineProps({
     required: true
   },
   componentInstance: {
-    type: ComponentInstance,
+    type: Object as PropType<ComponentInstance>,
     required: true
   }
 })

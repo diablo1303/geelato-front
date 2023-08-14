@@ -344,6 +344,7 @@ defineExpose({deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData
                :glComponentInst="glComponentInst"
                :glIsRuntime="glIsRuntime"
                :glRuntimeFlag="glRuntimeFlag"
+               :tableSettingId="tableSettingId"
     ></component>
   </a-card>
 </template>

@@ -1,8 +1,8 @@
 <template>
   <div class="gl-component-setter" v-if="componentModel">
     <!-- 这里需加上 :destroy-on-hide="true"，默认值为false，否则在页面切换时，各个页面重复更新渲染，性能很差-->
-    <a-tabs size="small" :default-active-key="defaultActiveKey" :destroy-on-hide="true">
-      <a-tab-pane key="1" tab="属性" title="属性">
+    <a-tabs size="small" :active-key="mv" @tabClick="onTabClick" :destroy-on-hide="true">
+      <a-tab-pane key="props" tab="属性" title="属性">
         <div v-if="!hideToolbar&&(showMove||showMove||showSelectParent||showDelete)" style="padding: 0 0.5em 0.5em;">
           <a-button-group type="primary" size="mini" shape="round">
             <a-button status="primary" v-if="showSelectParent" @click="componentStore.selectParentComponent">选父组件
@@ -13,7 +13,8 @@
             <a-button status="warning" :disabled="!showMove" @click="componentStore.moveBackCurrentComponent"
                       title="移后或移下">移后
             </a-button>
-            <a-button status="warning" :disabled="!showMoveToParent" @click="componentStore.moveToParent" title="移后或移下">
+            <a-button status="warning" :disabled="!showMoveToParent" @click="componentStore.moveToParent"
+                      title="移后或移下">
               移上一层
             </a-button>
           </a-button-group>
@@ -51,7 +52,7 @@
                                      @change:propertyValue="onChangePropertyValue"/>
       </a-tab-pane>
 
-      <a-tab-pane key="2" tab="动作" title="动作">
+      <a-tab-pane key="actions" tab="动作" title="动作">
         <GlComponentActionsSetter :componentMeta="componentMeta" :componentInstance="componentInstance"
                                   @update="(val:any)=>{setInstance(val,'actions')}"/>
       </a-tab-pane>
@@ -59,10 +60,10 @@
       <!--        <GlComponentStyleSetter :componentMeta="componentMeta" :componentInstance="componentInstance"-->
       <!--                                @update="(val:any)=>{setInstance(val,'style')}"/>-->
       <!--      </a-tab-pane>-->
-      <a-tab-pane key="4" tab="权限" title="权限">
+      <a-tab-pane key="permission" tab="权限" title="权限">
         <a-alert>Coming Soon...</a-alert>
       </a-tab-pane>
-      <a-tab-pane key="5" tab="多语言" title="多语言">
+      <a-tab-pane key="lang" tab="多语言" title="多语言">
         <div style="margin: 0 0 0.5em 0.5em">
           <GlIconfont type="gl-earth"></GlIconfont>
           <span style="margin-left: 0.5em">
@@ -76,12 +77,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {computed, onUnmounted, type PropType, provide, ref, watch} from "vue";
+import {computed, type PropType, provide, ref} from "vue";
 import {ComponentInstance, type ComponentMeta} from "@geelato/gl-ui-schema";
 import ClipboardJS from "clipboard";
-import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "./ComponentSetterProvideProxy";
+import {ComponentSetterProvideKey, ComponentSetterProvideProxy, EventNames} from "@geelato/gl-ide";
 import {componentStoreFactory, usePageStore} from "@geelato/gl-ide";
-import {utils} from "@geelato/gl-ui";
+import {jsScriptExecutor, PageProvideKey, PageProvideProxy, utils} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update']);
 const props = defineProps({
@@ -103,7 +104,7 @@ const props = defineProps({
   defaultActiveKey: {
     type: String,
     default() {
-      return "1"
+      return "props"
     }
   },
   /**
@@ -112,8 +113,13 @@ const props = defineProps({
   hideToolbar: Boolean
 })
 
+const mv = ref(props.defaultActiveKey)
+
 const pageStore = usePageStore()
 const componentStore = componentStoreFactory.useComponentStore('useComponentStore')
+const pageProvideProxy = jsScriptExecutor.getPageProxy(pageStore.getCurrentPageInstId() || '')
+console.log('GlComponentSetter pageProvideProxy:', pageProvideProxy, jsScriptExecutor)
+provide(PageProvideKey, pageProvideProxy)
 
 // console.log('GlComponentSetter > init > componentName:', props.componentInstance?.componentName, ',componentId:', props.componentInstance?.id)
 const componentSetterProvideProxy = new ComponentSetterProvideProxy()
@@ -147,6 +153,10 @@ const showDelete = computed(() => {
   return componentStore.currentSelectedComponentMeta?.componentName !== 'GlPage'
 })
 
+const onTabClick = (key: any) => {
+  mv.value = key
+}
+
 const deleteCurrentSelectedComponentInst = () => {
   const inst = componentStore.deleteCurrentSelectedComponentInst()
   if (inst) {
@@ -160,9 +170,8 @@ const deleteCurrentSelectedComponentInst = () => {
 const onChangePropertyValue = (param: { type: string, name: string, value: any }) => {
   pageStore.operationLog('改属性', pageStore.currentPage.sourceContent, componentStore.currentSelectedComponentInstance)
 }
-onUnmounted(() => {
-  // console.log('GlComponentSetter > onUnmounted ...', props.componentInstance?.componentName, props.componentInstance?.id)
-})
+
+
 </script>
 
 <style scoped>

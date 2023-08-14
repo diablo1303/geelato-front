@@ -14,7 +14,6 @@ import {mixins, utils} from "@geelato/gl-ui"
 import {componentStoreFactory} from "@geelato/gl-ide";
 import {PageProvideProxy, PageProvideKey} from "@geelato/gl-ui";
 
-const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const props = defineProps({
   id: [String],
   index: Number,
@@ -22,6 +21,8 @@ const props = defineProps({
   addItem: Function,
   ...mixins.props
 })
+
+const pageProvideProxy: PageProvideProxy | null = props.glComponentInst.componentName === 'GlPage' ? null : inject(PageProvideKey)!
 
 const componentStoreId = props.componentStoreId || inject('componentStoreId')
 if (!componentStoreId) {
@@ -184,7 +185,7 @@ const onClick = (...args: any[]) => {
 </script>
 
 <template>
-  <div class="gl-dnd-wrapper" :style="{display:styleDisplay}" v-if="glComponentInst.id">
+  <div class="gl-dnd-wrapper" :style="{display:styleDisplay}" v-if="glComponentInst?.id">
     <div :ref="setRef"
          class="gl-component-wrapper"
          :style="{ opacity }"

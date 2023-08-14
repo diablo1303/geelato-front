@@ -193,7 +193,7 @@ export default {
         }],
         "setterComponentName": "GlObjectArraySetter",
         "titleField": "fieldName",
-        "alarmIfNoSubTitle": true,
+        "alarmIfNoSubTitle": "未设置",
         "subTitleField": ""
     }, {
         "name": "size",

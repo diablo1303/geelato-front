@@ -40,6 +40,11 @@ export class JsScriptExecutor {
         // console.log('addPageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
     }
 
+    getPageProxy(pageComponentId: string) {
+        console.log('getPageProxy() > pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
+        return pageProxyMap[pageComponentId]
+    }
+
     /**
      * 删除当前执行页面的代理对象
      * 一般在页面关闭时执行

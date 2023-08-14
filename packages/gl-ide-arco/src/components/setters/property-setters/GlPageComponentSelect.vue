@@ -24,7 +24,7 @@ export default {
  *  获取页面结构，列出页面内的组件，便于选择组件
  */
 import {inject, ref, watch} from "vue";
-import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "../ComponentSetterProvideProxy";
+import  {ComponentSetterProvideKey,ComponentSetterProvideProxy} from "@geelato/gl-ide";
 import {entityApi} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {useComponentStore} from "@geelato/gl-ide";

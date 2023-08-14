@@ -54,7 +54,7 @@ export default {
         "enableValueExpress": false,
         "show": true,
         "expanded": true,
-        "title": "数据字典名",
+        "title": "数据字典",
         "description": "数据字典选项集",
         "setterComponentName": "GlDynamicSelect"
     }, {

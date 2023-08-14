@@ -7,6 +7,7 @@ import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 export default class Page {
     isInitFromTemplate: boolean;
+    // 对应数据库中的页面id
     id: string = '';
     appId: string = '';
     extendId: any;

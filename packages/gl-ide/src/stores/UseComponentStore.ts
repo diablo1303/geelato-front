@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import {emitter, utils} from "@geelato/gl-ui";
-import {type Action, ComponentInstance} from "@geelato/gl-ui-schema";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 class ComponentMetaMap {
     [key: string]: any
@@ -134,7 +134,7 @@ class ComponentStoreFactory {
                         currentHoverComponentName: '',
                         currentDragComponentId: '',
                         currentDragComponentName: '',
-                        currentComponentTree: new Array<ComponentInstance>
+                        currentComponentTree: new Array<ComponentInstance>,
                     }
                 },
                 actions: {

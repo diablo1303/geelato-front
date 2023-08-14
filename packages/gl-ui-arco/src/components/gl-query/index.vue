@@ -98,13 +98,14 @@ const t = (value: any) => {
 onMounted(() => {
   onSearch()
 })
+const form = ref({})
 defineExpose({createEntityReaderParams, reset});
 </script>
 
 <template>
   <a-row>
     <a-col :flex="1">
-      <a-form
+      <a-form :model="form"
           :label-col-props="{ span: 6 }"
           :wrapper-col-props="{ span: 18 }"
           label-align="left"

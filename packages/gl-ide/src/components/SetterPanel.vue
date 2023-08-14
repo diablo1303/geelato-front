@@ -5,6 +5,7 @@
                        :componentInstance="componentStore.currentSelectedComponentInstance"
                        @update="(instance:any)=>{updateInstance(instance)}"
                        :key="componentStore.currentSelectedComponentId"
+                       :defaultActiveKey="defaultActiveKey"
     ></GlComponentSetter>
     <template v-else>
       <div style="text-align: center;line-height: 3;height: 3em;background-color: #e7e7e7;margin: 12px 12px 0px">
@@ -24,7 +25,8 @@ import {useThemeStore} from "../stores/UseThemeStore";
 import {useComponentStore} from "../stores/UseComponentStore";
 import {useIdeStore} from "../stores/UseIdeStore";
 import {emitter} from "@geelato/gl-ui";
-import EventNames from "../entity/Events";
+import EventNames from "../entity/EventNames";
+import {onUnmounted, ref} from "vue";
 
 const emits = defineEmits(['update'])
 const ideStore = useIdeStore()
@@ -41,6 +43,17 @@ const updateInstance = (instance: any) => {
   // ideStore.updateInstanceKey = false
   emits('update', instance)
 }
+const defaultActiveKey = ref(undefined)
+const switchPanel = (args: any) => {
+  defaultActiveKey.value = args.key
+  console.log('openActionSetter:', args)
+}
+emitter.on(EventNames.GlIdeSetterPanelSwitch, switchPanel)
+onUnmounted(() => {
+  // console.log('GlComponentSetter > onUnmounted ...', props.componentInstance?.componentName, props.componentInstance?.id)
+  emitter.off(EventNames.GlIdeSetterPanelSwitch, switchPanel)
+})
+
 
 </script>
 

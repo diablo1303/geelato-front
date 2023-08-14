@@ -15,6 +15,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
      *  当前打开激活的页面
      */
     const currentPage = ref(new Page())
+
     /**
      *  当前打开激活的页面索引
      */
@@ -69,6 +70,13 @@ export const usePageStore = defineStore('GlPageStore', () => {
         pageHistories[page.extendId] = new History()
 
         switchToPage(pages.value.length - 1)
+    }
+
+    /**
+     *  当前打开激活的页面实例id
+     */
+    function getCurrentPageInstId() {
+        return currentPage.value.sourceContent?.id
     }
 
     /**
@@ -223,7 +231,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
 
             function convertInst(inst: ComponentInstance) {
                 if (!inst) return
-                console.log('inst.componentName', inst.componentName)
+                // console.log('inst.componentName', inst.componentName)
 
                 if (inst.componentName) {
                     // @ts-ignore
@@ -365,7 +373,8 @@ export const usePageStore = defineStore('GlPageStore', () => {
         operationLogInit: logInit,
         operationLog: log,
         operationUndo: undo,
-        operationRedo: redo
+        operationRedo: redo,
+        getCurrentPageInstId
     }
 })
 

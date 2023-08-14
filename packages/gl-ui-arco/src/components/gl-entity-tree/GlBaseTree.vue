@@ -142,7 +142,7 @@ const selectedKeys = ref([])
 const treeData = ref(new Array<any>())
 const contextMenu = ref()
 const currentClickedNodeData = ref({title: ''})
-const currentEditNodeData = ref({title: '', iconType: '', nodeType: ''})
+const currentEditNodeData = ref({title: '', iconType: '', _nodeType: ''})
 const currentAction = ref({action: '', title: ''})
 const titleInput = ref()
 
@@ -167,9 +167,9 @@ const onShowContextMenu = (clickedNodeData: any) => {
     if (item.show) {
       const isShow = utils.evalExpression(item.show, {ctx: clickedNodeData})
       // @ts-ignore
-      return item.useFor.includes(clickedNodeData.nodeType) && isShow
+      return item.useFor.includes(clickedNodeData._nodeType) && isShow
     } else {
-      return item.useFor.includes(clickedNodeData.nodeType)
+      return item.useFor.includes(clickedNodeData._nodeType)
     }
   })
 }
@@ -186,7 +186,7 @@ const onMenuItemClick = (clickedNodeData: any, contextMenuItemData: ContextMenuD
     currentEditNodeData.value = {
       title: contextMenuItemData.title,
       iconType: contextMenuItemData.iconType,
-      nodeType: contextMenuItemData.nodeType
+      _nodeType: contextMenuItemData._nodeType
     }
     currentAction.value = {action: 'addNode', title: '添加节点'}
   } else if (contextMenuItemData.action === 'updateNodeName') {
@@ -376,7 +376,7 @@ const onDragLeave = (ev: DragEvent, node: TreeNodeData) => {
 const onDrop = ({dragNode, dropNode, dropPosition}: any) => {
   const data = treeData.value;
   console.log('onDrop dragNode:', dragNode, ' dropNode:', dropNode, ' dropPosition:', dropPosition)
-  if (dragMode === DragModeType.onlyToFolder && dropNode.nodeType !== NodeType.folder && dropNode.nodeType !== NodeType.root && dropPosition === 0) {
+  if (dragMode === DragModeType.onlyToFolder && dropNode._nodeType !== NodeType.folder && dropNode._nodeType !== NodeType.root && dropPosition === 0) {
     global.$message.info('不能放在叶子节点下')
     return
   }
@@ -436,7 +436,7 @@ const reloadTreeData = () => {
     const treeDataPromise = props.loadTreeData()
     if (treeDataPromise) {
       props.loadTreeData().then((res: any) => {
-        console.log('loadTreeData:', res)
+        // console.log('loadTreeData:', res)
         treeData.value = [
           {
             treeId: props.treeId,
@@ -444,7 +444,7 @@ const reloadTreeData = () => {
             key: props.treeId,
             title: props.treeName,
             iconType: "gl-folder",
-            nodeType: "root",
+            _nodeType: "root",
             seqNo: "0",
             children: []
           }

@@ -102,7 +102,7 @@ const addNodeFn = (params: any) => {
   const data = {
     flag: '',
     iconType: params.addNodeData.iconType,
-    type: params.addNodeData.nodeType,
+    type: params.addNodeData._nodeType,
     treeId: params.addNodeData.treeId,
     text: params.addNodeData.title,
     pid: params.clickedNodeData.key
@@ -124,7 +124,7 @@ const updateNodeFn = (params: any) => {
     text: params.editNodeData.title,
     flag: params.editNodeData.flag,
     iconType: params.editNodeData.iconType,
-    type: params.editNodeData.nodeType,
+    type: params.editNodeData._nodeType,
     pid: params.editNodeData.pid
   }
   // console.log('updateNode', params)

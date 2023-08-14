@@ -6,7 +6,7 @@ export default {
 <script lang="ts" setup>
 // @ts-nocheck
 import {ref, watch} from "vue";
-import {entityApi} from "@geelato/gl-ui";
+import {entityApi, mixins} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -54,7 +54,8 @@ const props = defineProps({
     default() {
       return false
     }
-  }
+  },
+  ...mixins.props
 })
 // console.log('props.modelValue', props.modelValue, props.dictId)
 const mv = ref(props.modelValue)
@@ -106,34 +107,35 @@ watch(() => {
 </script>
 
 <template>
-  <template v-if="displayType==='select'">
-    <a-select placeholder="请选择" v-model="mv" allow-clear allow-search @clear="onClear">
-      <a-option v-for="opt in options" :value="opt.itemCode">
-        {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
-      </a-option>
-    </a-select>
-  </template>
-  <template v-else-if="displayType==='checkbox'">
-    <template v-if="options&&options.length===0">
-      <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
+  <div class="gl-dict">
+    <template v-if="displayType==='select'">
+      <a-select placeholder="请选择" v-model="mv" allow-clear allow-search @clear="onClear">
+        <a-option v-for="opt in options" :value="opt.itemCode">
+          {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
+        </a-option>
+      </a-select>
     </template>
-    <a-checkbox-group v-model="mv" :max="maxCount">
-      <a-checkbox v-for="opt in options" :value="opt.itemCode">
-        {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
-      </a-checkbox>
-    </a-checkbox-group>
-  </template>
-  <template v-else>
-    <template v-if="options&&options.length===0">
-      <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
+    <template v-else-if="displayType==='checkbox'">
+      <template v-if="options&&options.length===0">
+        <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
+      </template>
+      <a-checkbox-group v-model="mv" :max="maxCount">
+        <a-checkbox v-for="opt in options" :value="opt.itemCode">
+          {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
+        </a-checkbox>
+      </a-checkbox-group>
     </template>
-    <a-radio-group v-model="mv">
-      <a-radio v-for="opt in options" :value="opt.itemCode">
-        {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
-      </a-radio>
-    </a-radio-group>
-  </template>
-
+    <template v-else>
+      <template v-if="options&&options.length===0">
+        <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
+      </template>
+      <a-radio-group v-model="mv">
+        <a-radio v-for="opt in options" :value="opt.itemCode">
+          {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
+        </a-radio>
+      </a-radio-group>
+    </template>
+  </div>
 </template>
 
 <style scoped>

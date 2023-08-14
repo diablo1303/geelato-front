@@ -22,7 +22,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {inject, onUnmounted, ref, watch} from "vue";
-import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "../ComponentSetterProvideProxy";
+import  {ComponentSetterProvideKey,ComponentSetterProvideProxy} from "@geelato/gl-ide";
 import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 
 const emits = defineEmits(['update:modelValue'])

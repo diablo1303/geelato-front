@@ -5,8 +5,10 @@ export default {
 </script>
 <script lang="ts" setup>
 import {onMounted, ref, watch} from "vue";
-import {useComponentStore} from "@geelato/gl-ide";
+import {EventNames, useComponentStore} from "@geelato/gl-ide";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import {Action} from "@geelato/gl-ui-schema";
+import {emitter, utils} from "@geelato/gl-ui";
 
 const componentStore = useComponentStore()
 const emits = defineEmits(['update:modelValue'])
@@ -32,10 +34,18 @@ const selectComponent = (inst: ComponentInstance) => {
   componentStore.setCurrentSelectedComponent(inst)
 }
 
+const openActionSetter = (inst: ComponentInstance, action: Action, actionIndex: number) => {
+  selectComponent(inst)
+  emitter.emit(EventNames.GlIdeSetterPanelSwitch, {key: 'actions'})
+  utils.sleep(100).then(() => {
+    emitter.emit(EventNames.GlIdeOpenActionEditor, {action, actionIndex})
+  })
+}
+
 </script>
 
 <template>
-  <div>
+  <div class="gl-action-list">
     <a-alert :show-icon="false" banner center>当前页面已配置的事件</a-alert>
     <a-collapse :default-active-key="['1']" :bordered="false">
       <a-collapse-item v-for="(inst,index) in componentStore.getActionList()"
@@ -43,32 +53,37 @@ const selectComponent = (inst: ComponentInstance) => {
         <template #extra>
           <a-tag size="small" color="blue" @click.stop="selectComponent(inst)">选择组件</a-tag>
         </template>
-        <GlArrayBaseSetter v-slot:default="slotProps" v-model="inst.actions">
-          <div style="width:100%;display: flex;margin-bottom: 1px">
-            <div style="flex:auto">
-              <a-input v-model="inst.actions[slotProps.index].name"></a-input>
-            </div>
-            <div style="flex: 0 0 2em;text-align: center;line-height: 2em">
-              <GlIconfont type="gl-thunderbolt" style="cursor: pointer"></GlIconfont>
-            </div>
+        <div v-for="(action,actionIndex) in inst.actions" class="gl-action-item"
+             @click="openActionSetter(inst,action,actionIndex)">
+          <div class="gl-title">
+            {{ action.title }}：{{ action.name }}
           </div>
-        </GlArrayBaseSetter>
+          <div style="flex: 0 0 2em;text-align: center;line-height: 2em">
+            <GlIconfont type="gl-thunderbolt" class="gl-active" style="cursor: pointer"/>
+          </div>
+        </div>
       </a-collapse-item>
     </a-collapse>
-<!--    <a-modal v-if="actionCodeEditorVisible" draggable :visible="actionCodeEditorVisible" title="动作（事件）编排"-->
-<!--             @ok="closeActionCodeEditor"-->
-<!--             @cancel="closeActionCodeEditor"-->
-<!--             :hide-cancel="true"-->
-<!--             ok-text="关闭"-->
-<!--             body-style="padding:0"-->
-<!--             fullscreen-->
-<!--    >-->
-<!--      <CommandEditor v-if="refreshFlag&&currentAction" :key="currentAction.id"-->
-<!--                     v-model:action="currentAction"></CommandEditor>-->
-<!--    </a-modal>-->
   </div>
 </template>
 
-<style scoped>
+<style>
+.gl-action-list .arco-collapse-item-content {
+  padding-left: 12px !important;
+}
 
+.gl-action-item {
+  width: 100%;
+  display: flex;
+  margin-bottom: 1px
+}
+
+.gl-action-item:hover {
+  background-color: #E8F7FF;
+}
+
+.gl-action-item .gl-title {
+  flex: auto;
+  cursor: pointer
+}
 </style>

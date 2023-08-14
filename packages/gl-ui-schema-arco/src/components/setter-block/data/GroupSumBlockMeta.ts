@@ -1,7 +1,7 @@
 export default {
     "componentName": "GlGroupSumBlock",
     "displayMode": "tile",
-    "iconType": "gl-data",
+    "iconType": "gl-sum",
     "group": "block_data",
     "title": "分组求和",
     "useBy": ["freePage"],

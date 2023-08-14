@@ -165,7 +165,7 @@ export default {
 // @ts-nocheck
 import {computed, inject, onMounted, onUpdated, type PropType, reactive, ref, toRaw, watch} from 'vue'
 import type {PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
-import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from "./ComponentSetterProvideProxy";
+import  {ComponentSetterProvideKey,ComponentSetterProvideProxy} from "@geelato/gl-ide";
 
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 let initialized = false
