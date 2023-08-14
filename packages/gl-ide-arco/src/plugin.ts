@@ -58,10 +58,6 @@ import GlCompareValueSetter from "./components/setters/property-setters/GlCompar
 import GlComponentMethodSelect from "./components/setters/property-setters/GlComponentMethodSelect.vue";
 import GlComponentActionSelect from "./components/setters/property-setters/GlComponentActionSelect.vue";
 import GlExpressionBuilder from "./components/builder/props-builder/GlExpressionBuilder.vue";
-import {CheckUtil} from "@geelato/gl-ui";
-
-
-// import formPageTemplate from "./components/stage/formPageTemplate.json";
 
 const plugin = new GlPlugin('gl-plugin-arco')
 
@@ -214,15 +210,6 @@ const component: Plugin = {
         // 组件别名
         // app.config.globalProperties.$gl.alias[GlX.name] = 'glx'
         app.config.globalProperties.$gl.alias[GlToolbarBreadcrumbs.name] = 'crumbs'
-
-        // 配置页面模板
-
-        // if (CheckUtil.isBrowser()) {
-        //     const pageStore = usePageStore()
-        //     pageStore.addPageTemplate("formPage", import("./components/stage/formPageTemplate.json"))
-        //     pageStore.addPageTemplate("freePage", import("./components/stage/freePageTemplate.json"))
-        //     pageStore.addPageTemplate("listPage", import("./components/stage/listPageTemplate.json"))
-        // }
     }
 }
 

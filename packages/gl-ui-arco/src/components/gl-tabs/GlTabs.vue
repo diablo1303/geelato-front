@@ -120,7 +120,7 @@ watch(mv, () => {
 
 </script>
 <template>
-  <a-tabs :active-key="mv" @tabClick="onTabClick" style="background-color:white">
+  <a-tabs class="gl-tabs" :active-key="mv" @tabClick="onTabClick" style="background-color:white">
     <template #extra>
       <div>
         <slot name="extra"></slot>

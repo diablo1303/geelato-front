@@ -1,6 +1,5 @@
 <template>
   <div class="gl-page" :style="style">
-    <!--    <ABreadcrumb :items="breadcrumb"/>-->
     <template v-if="glIsRuntime">
       <slot></slot>
     </template>
@@ -149,8 +148,6 @@ onUnmounted(() => {
 </script>
 <style lang="less">
 .gl-page {
-  //width: 100%;
-  //padding: 0 20px 20px 20px;
 }
 
 .gl-page-general-card > .arco-card-header {

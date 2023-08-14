@@ -191,7 +191,7 @@ watch(() => {
 </script>
 
 <template>
-  <div>
+  <div class="gl-user-select">
     <a-input :style="{width:'100%'}" allow-clear v-model="selectedNames" @clear="clearMultipleSelected(selectingItems)"
              readonly>
       <template #prefix>

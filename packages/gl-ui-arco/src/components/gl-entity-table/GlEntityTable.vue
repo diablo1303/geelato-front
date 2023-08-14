@@ -132,7 +132,7 @@ const props = defineProps({
   ...mixins.props
 });
 
-const formProvideProxy: FormProvideProxy | undefined = inject(FormProvideKey)
+const formProvideProxy: FormProvideProxy | undefined = props.isFormSubTable ? inject(FormProvideKey) : undefined
 const pageProvideProxy: PageProvideProxy | undefined = inject(PageProvideKey)
 let recordSchema = new Schema({})
 
@@ -239,7 +239,7 @@ const fetchData = async (readerInfo?: {
     entityReader.params = readerInfo?.params || [];
 
     // 如果是子查询
-    // 增加父表单主键，作为查询字段，若父表单无该主健id，则返回，不知查询
+    // 增加父表单主键，作为查询字段，若父表单无该主健id，则返回，不查询
     if (props.isFormSubTable) {
       const pid = formProvideProxy?.getRecordId()
       if (!pid) {

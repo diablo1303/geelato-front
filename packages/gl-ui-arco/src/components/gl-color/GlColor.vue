@@ -47,28 +47,30 @@ const visible = ref(false)
 </script>
 
 <template>
-  <a-input v-if="mode==='full'" readonly v-model="mv">
-    <template #append>
-      <a-button size="mini" :style="{'background-color': mv}" style="border: 1px solid #d2d2d2" @click="visible=true"></a-button>
-    </template>
-  </a-input>
-  <a-button v-else-if="mode==='simple'" size="mini" :style="{'background-color': mv}" style="border: 1px solid #d2d2d2" @click="visible=true">
-  </a-button>
-  <a-modal width="220px"
-           v-model:visible="visible"
-           body-style="margin: 0;padding: 0"
-           :header="false"
-           :footer="false"
-           esc-to-close="true"
-           @ok="visible=false"
-           @cancel="visible=false">
-    <template #title>
-      选择颜色
-    </template>
-    <div>
-      <Sketch v-model="color"/>
-    </div>
-  </a-modal>
+  <div class="gl-color">
+    <a-input v-if="mode==='full'" readonly v-model="mv">
+      <template #append>
+        <a-button size="mini" :style="{'background-color': mv}" style="border: 1px solid #d2d2d2" @click="visible=true"></a-button>
+      </template>
+    </a-input>
+    <a-button v-else-if="mode==='simple'" size="mini" :style="{'background-color': mv}" style="border: 1px solid #d2d2d2" @click="visible=true">
+    </a-button>
+    <a-modal width="220px"
+             v-model:visible="visible"
+             body-style="margin: 0;padding: 0"
+             :header="false"
+             :footer="false"
+             esc-to-close="true"
+             @ok="visible=false"
+             @cancel="visible=false">
+      <template #title>
+        选择颜色
+      </template>
+      <div>
+        <Sketch v-model="color"/>
+      </div>
+    </a-modal>
+  </div>
 </template>
 
 <style scoped>

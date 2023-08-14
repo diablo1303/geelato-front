@@ -103,7 +103,7 @@ defineExpose({createEntityReaderParams, reset});
 </script>
 
 <template>
-  <a-row>
+  <a-row class="gl-query">
     <a-col :flex="1">
       <a-form :model="form"
           :label-col-props="{ span: 6 }"

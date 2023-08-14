@@ -39,7 +39,7 @@ const params = inject(PageParamsKey)
 </script>
 
 <template>
-  <div>
+  <div class="gl-ref-page">
     <div class="gl-ref-page-drag-handler" v-if="!glIsRuntime">
       <a-button type="primary" title="拖动页面">
         <GlIconfont type="gl-drag" text="这是引用页面"></GlIconfont>

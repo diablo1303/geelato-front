@@ -118,7 +118,7 @@ const mv = ref(props.defaultActiveKey)
 const pageStore = usePageStore()
 const componentStore = componentStoreFactory.useComponentStore('useComponentStore')
 const pageProvideProxy = jsScriptExecutor.getPageProxy(pageStore.getCurrentPageInstId() || '')
-console.log('GlComponentSetter pageProvideProxy:', pageProvideProxy, jsScriptExecutor)
+// console.log('GlComponentSetter pageProvideProxy:', pageProvideProxy, jsScriptExecutor)
 provide(PageProvideKey, pageProvideProxy)
 
 // console.log('GlComponentSetter > init > componentName:', props.componentInstance?.componentName, ',componentId:', props.componentInstance?.id)

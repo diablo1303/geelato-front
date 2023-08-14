@@ -126,57 +126,58 @@ const showFormItem = (inst: ComponentInstance) => {
 </script>
 
 <template>
-  <a-row class="gl-row-col-layout" :gutter="gutter" v-if="glIsRuntime">
-    <a-col
-        v-for="(span, index) in spans"
-        :key="index"
-        :span="span"
-    >
-      <!-- glComponentInst.children[index]就虚拟节点
-        注意，label-col-flex的百分比为整数，如6%，若为6.9%有小数的则无效
-      -->
-      <template v-for="childComponentInst in glComponentInst?.children[index].children">
-        <a-form-item v-if="childComponentInst&&(childComponentInst.props.unRender!==true)"
-                     v-show="childComponentInst.props._hidden!==true"
-                     class="gl-form-item"
-                     :class="{'gl-hidden':childComponentInst.props.hideLabel===true||!showFormItem(childComponentInst)}"
-                     :label-col-flex="childComponentInst.props._labelColFlex"
-                     :field="childComponentInst.props?.bindField?.fieldName"
-                     :tooltip="i18nConvert(childComponentInst.props?.tooltip,childComponentInst.i18n)"
-                     :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"
-                     :rules="childComponentInst.props?.rules"
-                     :validate-trigger="[]">
-          <GlComponent v-if="childComponentInst" :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime"
-                       :glRuntimeFlag="glRuntimeFlag"></GlComponent>
-          <template v-if="childComponentInst.props?.extra" #extra>
-            <div>{{
-                i18nConvert(childComponentInst.props?.extra, childComponentInst.i18n)
-              }}
-            </div>
-          </template>
-          <template v-if="childComponentInst.props?.help" #help>
-            <div>{{
-                i18nConvert(childComponentInst.props?.help, childComponentInst.i18n)
-              }}
-            </div>
-          </template>
-        </a-form-item>
-      </template>
-    </a-col>
-  </a-row>
-  <a-row class="gl-row-col-layout" :gutter="gutter" v-else>
-    <a-col
-        v-for="(span, index) in spans"
-        :key="index"
-        :span="span"
-    >
-      <div v-show="glComponentInst?.props._hidden!==true">
-        <GlInsts :glComponentInst="glComponentInst?.children[index]"
-                 :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"/>
-      </div>
-    </a-col>
-  </a-row>
-
+  <div class="gl-row-col-layout">
+    <a-row :gutter="gutter" v-if="glIsRuntime">
+      <a-col
+          v-for="(span, index) in spans"
+          :key="index"
+          :span="span"
+      >
+        <!-- glComponentInst.children[index]就虚拟节点
+          注意，label-col-flex的百分比为整数，如6%，若为6.9%有小数的则无效
+        -->
+        <template v-for="childComponentInst in glComponentInst?.children[index].children">
+          <a-form-item v-if="childComponentInst&&(childComponentInst.props.unRender!==true)"
+                       v-show="childComponentInst.props._hidden!==true"
+                       class="gl-form-item"
+                       :class="{'gl-hidden':childComponentInst.props.hideLabel===true||!showFormItem(childComponentInst)}"
+                       :label-col-flex="childComponentInst.props._labelColFlex"
+                       :field="childComponentInst.props?.bindField?.fieldName"
+                       :tooltip="i18nConvert(childComponentInst.props?.tooltip,childComponentInst.i18n)"
+                       :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"
+                       :rules="childComponentInst.props?.rules"
+                       :validate-trigger="[]">
+            <GlComponent v-if="childComponentInst" :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime"
+                         :glRuntimeFlag="glRuntimeFlag"></GlComponent>
+            <template v-if="childComponentInst.props?.extra" #extra>
+              <div>{{
+                  i18nConvert(childComponentInst.props?.extra, childComponentInst.i18n)
+                }}
+              </div>
+            </template>
+            <template v-if="childComponentInst.props?.help" #help>
+              <div>{{
+                  i18nConvert(childComponentInst.props?.help, childComponentInst.i18n)
+                }}
+              </div>
+            </template>
+          </a-form-item>
+        </template>
+      </a-col>
+    </a-row>
+    <a-row :gutter="gutter" v-else>
+      <a-col
+          v-for="(span, index) in spans"
+          :key="index"
+          :span="span"
+      >
+        <div v-show="glComponentInst?.props._hidden!==true">
+          <GlInsts :glComponentInst="glComponentInst?.children[index]"
+                   :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"/>
+        </div>
+      </a-col>
+    </a-row>
+  </div>
 </template>
 
 <style>

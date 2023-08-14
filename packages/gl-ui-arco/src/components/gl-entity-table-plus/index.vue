@@ -11,7 +11,7 @@ export default {
 import GlQuery from "../gl-query/index.vue";
 import GlToolbar from "../gl-toolbar/index.vue";
 import GlEntityTable from "../gl-entity-table/GlEntityTable.vue";
-import GlEntityTableEditable from "../gl-entity-table/GlEntityTableEditable.vue";
+import GlEntityTableEditable from "../gl-entity-table/GlEntityTableEdit.vue";
 import {computed, inject, onMounted, type PropType, ref} from "vue";
 import type {EntityReaderParam, Param} from "@geelato/gl-ui";
 import QueryItem from "../gl-query/query";

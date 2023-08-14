@@ -1,5 +1,5 @@
 <template>
-  <div class="gl-iconfont-setter">
+  <div class="gl-iconfont-select">
     <span style="cursor: pointer;margin-left: 1em" @click="showIconSelect">
           <GlIconfont :type="mv"></GlIconfont>
     </span>
@@ -11,7 +11,7 @@
     </span>
     <a-modal v-model:visible="visible" title="选择图标" @ok="showIconSelect" :width="1024" style="top: 20px">
       <div style="height:640px;overflow-y: scroll;padding:1em;margin:-24px">
-        <div v-for="item in json.glyphs" class="gl-iconfont-setter-icon-item" @click="onSelected(item)">
+        <div v-for="item in json.glyphs" class="gl-iconfont-select-icon-item" @click="onSelected(item)">
           <div style="font-size: 2em;">
             <GlIconfont :type="json.css_prefix_text+item.font_class"></GlIconfont>
           </div>
@@ -61,10 +61,10 @@ watch(mv, () => {
 </script>
 
 <style scoped>
-.gl-iconfont-setter{
+.gl-iconfont-select{
   line-height: 32px;
 }
-.gl-iconfont-setter-icon-item {
+.gl-iconfont-select-icon-item {
   display: inline-block;
   padding: 0.5em;
   text-align: center;
@@ -75,7 +75,7 @@ watch(mv, () => {
   vertical-align: top;
 }
 
-.gl-iconfont-setter-icon-item:hover {
-  box-shadow: 0px 0px 4px #1890FF;
+.gl-iconfont-select-icon-item:hover {
+  box-shadow: 0 0 4px #1890FF;
 }
 </style>

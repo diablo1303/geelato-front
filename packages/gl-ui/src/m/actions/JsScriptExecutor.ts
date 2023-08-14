@@ -41,7 +41,7 @@ export class JsScriptExecutor {
     }
 
     getPageProxy(pageComponentId: string) {
-        console.log('getPageProxy() > pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
+        // console.log('getPageProxy() > pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap)
         return pageProxyMap[pageComponentId]
     }
 

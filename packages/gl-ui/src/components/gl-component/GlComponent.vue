@@ -1,6 +1,6 @@
 <!--glComponentInst.componentName!=='GlHiddenArea'提高安全性，降低通过修改组件的_hidden属性来显示内容的风险-->
 <template>
-  <component v-if="glComponentInst&&glComponentInst.props.unRender!==true"
+  <component v-if="glComponentInst&&glComponentInst.componentName&&glComponentInst.props.unRender!==true"
              v-show="glComponentInst.props._hidden!==true&&glComponentInst.componentName!=='GlHiddenArea'"
              :id="glComponentInst.id"
              :ref="glComponentInst.id"

@@ -6,13 +6,6 @@
         <GlIconfont v-else type="gl-right-circle"></GlIconfont>
       </span> <span>{{ label }}</span>
     </template>
-    <!--    <template v-if="glIsRuntime">-->
-    <!--&lt;!&ndash;      <slot></slot>&ndash;&gt;-->
-    <!--      <GlInstsRuntime :glComponentInst="glComponentInst"  :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></GlInstsRuntime>-->
-    <!--    </template>-->
-    <!--    <template v-else>-->
-    <!--      <GlInsts :glComponentInst="glComponentInst"></GlInsts>-->
-    <!--    </template>-->
     <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst" :glIsRuntime="glIsRuntime"
                :glRuntimeFlag="glRuntimeFlag"/>
   </a-card>

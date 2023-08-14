@@ -5,14 +5,8 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps({
-})
-
 </script>
 
 
-<style lang="less">
-.gl-tree-table {
-}
-
+<style>
 </style>

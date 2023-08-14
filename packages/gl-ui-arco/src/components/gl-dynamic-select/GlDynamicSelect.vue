@@ -1,5 +1,6 @@
 <template>
   <a-select v-model="mvItem"
+            class="gl-dynamic-select"
             :allow-clear="allowClear"
             :allow-search="allowSearch"
             :readonly="readonly"

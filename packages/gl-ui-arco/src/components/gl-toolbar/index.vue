@@ -45,7 +45,7 @@ defineProps({
 </script>
 
 <template>
-  <a-row>
+  <a-row class="gl-toolbar">
     <a-col :span="leftColSpan!">
       <a-space style="margin-left: -8px">
         <slot name="leftItems"></slot>

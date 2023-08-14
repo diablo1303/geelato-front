@@ -84,7 +84,7 @@ const i18nConvert = (value?: string) => {
 </script>
 
 <template>
-  <div class="gl-dnd-wrapper" :style="{display:displayStyle}">
+  <div class="gl-inst-runtime" :style="{display:displayStyle}">
     <div class="gl-component-wrapper">
       <template v-if="showLabel">
         <a-form-item v-show="glComponentInst?.props.unRender!==true" class="gl-form-item"
@@ -126,7 +126,7 @@ const i18nConvert = (value?: string) => {
 </template>
 
 <style lang="less" scoped>
-.gl-dnd-wrapper {
+.gl-inst-runtime {
   width: 100%;
   position: relative;
   vertical-align: top;

@@ -55,6 +55,6 @@ genOneCode()
 </script>
 
 <template>
-  <a-input v-model="mv"></a-input>
+  <a-input class="gl-encode" v-model="mv"></a-input>
 </template>
 

@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {computed, ref, watch} from "vue";
+import {computed} from "vue";
 import {fileApi} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue'])
@@ -18,8 +18,8 @@ const props = defineProps({
   },
   srcType: String,
   srcValue: String,
-  width: [Number,String],
-  height: [Number,String],
+  width: [String, Number],
+  height: [String, Number],
   defaultStyle: {
     type: Object,
     default() {
@@ -30,8 +30,6 @@ const props = defineProps({
     }
   }
 })
-
-
 
 const src = computed(() => {
   switch (props.srcType) {
@@ -48,7 +46,7 @@ const src = computed(() => {
 </script>
 
 <template>
-  <a-image :style="defaultStyle" :width="width" :height="height" :src="src" >
+  <a-image class="gl-image" :style="defaultStyle" :width="width" :height="height" :src="src">
   </a-image>
 </template>
 

@@ -142,12 +142,9 @@ const form = ref({})
 </script>
 
 <template>
-  <a-space v-if="refreshFlag">
+  <a-space class="gl-multi-components" v-if="refreshFlag">
     <template v-for="(modelProps,index) in mv">
-      <a-tag :size="tagSize" :color="tagColor"
-             @click="clickTag(modelProps,index)"
-             @close="closeTag(modelProps,index)"
-             bordered closable>{{
+      <a-tag :size="tagSize" :color="tagColor" @click="clickTag(modelProps,index)" @close="closeTag(modelProps,index)" bordered closable>{{
           getText(modelProps, index)
         }}
       </a-tag>

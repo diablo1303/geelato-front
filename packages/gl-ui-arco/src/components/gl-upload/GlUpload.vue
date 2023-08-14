@@ -128,13 +128,16 @@ const isRead = pageProvideProxy.isPageStatusRead()
 </script>
 
 <template>
-  <a-upload :action="fileApi.getUploadUrl()" :file-list="fileList"
+  <a-upload class="gl-upload"
+            :action="fileApi.getUploadUrl()"
+            :file-list="fileList"
             :accept="accept"
             :headers="entityApi.getHeader()"
             :show-remove-button="!isRead"
-            @error="uploadError" @success="uploadSuccess" @before-remove="beforeRemove"/>
+            @error="uploadError"
+            @success="uploadSuccess"
+            @before-remove="beforeRemove"/>
 </template>
 
-<style scoped>
-
+<style>
 </style>
