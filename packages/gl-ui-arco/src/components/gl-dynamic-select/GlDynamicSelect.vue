@@ -33,7 +33,6 @@ import {
   EntityReader, EntityReaderOrder,
   EntityReaderParam,
   executeObjectPropsExpressions,
-  FieldMeta,
   PageProvideKey,
   PageProvideProxy
 } from "@geelato/gl-ui";

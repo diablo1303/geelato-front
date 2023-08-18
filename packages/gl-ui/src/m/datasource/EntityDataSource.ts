@@ -99,7 +99,7 @@ export class EntityReader {
     // 第几页
     pageNo: number = 0;
     // 每页记录数
-    pageSize: number = 15;
+    pageSize: number = 500;
     // 排序字段
     order: Array<EntityReaderOrder> = [];
     // 查询时，是否同时加载元数据信息，默认为否
