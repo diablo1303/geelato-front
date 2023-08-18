@@ -253,12 +253,12 @@ const fetchData = async (readerInfo?: {
       entityReader.params.push(new EntityReaderParam(logicDeleteFieldName, 'eq', 0))
     }
     entityReader.pageSize = readerInfo?.pageSize || pagination.pageSize!
-    const response = await entityApi.queryByEntityReader(entityReader);
+    const response:any = await entityApi.queryByEntityReader(entityReader);
     // console.log('GlEntityTable > fetchData() > response:', response)
     renderData.value = response.data.data;
     pagination.pageSize = readerInfo?.pageSize || pagination.pageSize
     pagination.current = readerInfo?.pageNo || 1;
-    pagination.total = response.data.total;
+    pagination.total = Number.parseInt(response.data.total);
     emits('fetchSuccess', {data: renderData.value, pagination})
   } catch (err) {
     console.error(err)

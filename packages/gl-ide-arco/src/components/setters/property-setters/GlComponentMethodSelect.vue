@@ -34,7 +34,7 @@ const props = defineProps({
   },
   /**
    *  依赖于inject进来的componentSetterProvideProxy中的变量
-   *  一般不需要配置，当在同一个ComponentSetter中有多个entityMeta时，需要明确依赖哪一个
+   *  一般不需要配置，当在同一个ComponentSetter中有多个componentMeta时，需要明确依赖哪一个
    */
   dependVarComponentMeta: {
     type: String,

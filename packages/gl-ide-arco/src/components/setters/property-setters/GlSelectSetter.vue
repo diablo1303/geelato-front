@@ -14,7 +14,7 @@
       </td>
     </tr>
     <tr>
-      <td>
+      <td class="gl-table-cell gl-label" >
         模式
       </td>
       <td class="gl-table-cell">
@@ -51,7 +51,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {defineComponent, ref, watch} from 'vue'
+import {ref, watch} from 'vue'
 import GlOptions from "../GlOptions.vue";
 
 const props = defineProps({

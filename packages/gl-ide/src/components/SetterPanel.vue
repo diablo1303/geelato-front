@@ -26,7 +26,7 @@ import {useComponentStore} from "../stores/UseComponentStore";
 import {useIdeStore} from "../stores/UseIdeStore";
 import {emitter} from "@geelato/gl-ui";
 import EventNames from "../entity/EventNames";
-import {onUnmounted, ref} from "vue";
+import {onUnmounted, ref, watch} from "vue";
 
 const emits = defineEmits(['update'])
 const ideStore = useIdeStore()
@@ -38,15 +38,17 @@ const componentInstance = {}
 
 
 const updateInstance = (instance: any) => {
-  console.log('updateInstance:', instance)
+  // console.log('updateInstance:', instance)
   emitter.emit(EventNames.GlIdeSetterUpdateComponentInstance, instance)
   // ideStore.updateInstanceKey = false
   emits('update', instance)
 }
+
+
 const defaultActiveKey = ref(undefined)
 const switchPanel = (args: any) => {
   defaultActiveKey.value = args.key
-  console.log('openActionSetter:', args)
+  // console.log('openActionSetter:', args)
 }
 emitter.on(EventNames.GlIdeSetterPanelSwitch, switchPanel)
 onUnmounted(() => {
@@ -54,6 +56,11 @@ onUnmounted(() => {
   emitter.off(EventNames.GlIdeSetterPanelSwitch, switchPanel)
 })
 
+watch(() => {
+  return componentStore.currentSelectedComponentId
+}, () => {
+  defaultActiveKey.value = undefined
+})
 
 </script>
 

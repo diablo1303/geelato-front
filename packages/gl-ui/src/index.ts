@@ -4,6 +4,7 @@ import PageProvideProxy from "./components/PageProvideProxy";
 import type {PageParamConfigType} from "./components/PageProvideProxy";
 import GlHtml from './components/gl-html/Index.vue'
 import GlIconfont from './components/gl-iconfont/Index.vue'
+import GlVirtual from "./components/gl-virtual/GlVirtual.vue";
 import GlDndPlaceholder from './components/gl-dnd-placeholder/Index.vue'
 import GlComponent from "./components/gl-component/GlComponent.vue";
 import GlPageViewer from "./components/gl-page-viewer/GlPageViewer.vue";
@@ -15,6 +16,7 @@ import {
     EntityReader,
     EntityReaderParam,
     EntityReaderOrder,
+    EntityReaderOrderEnum,
     EntityMeta,
     EntityLiteMeta,
     FieldMeta,
@@ -36,7 +38,9 @@ import FormProvideProxy from "./components/FormProvideProxy";
 import {FormProvideKey} from "./components/FormProvideProxy";
 import {Schema} from "b-validate";
 import type {ApiPagedResult, ApiResult, ApiResultStatus, PageType, Param} from "./m/types/global";
+import {executeObjectPropsExpressions} from "./components/gl-component/GlComponentSupport";
 import {paramStringify} from "./components/PageProvideProxy";
+import * as dictApi from "./m/datasource/FileApi"
 import * as fileApi from "./m/datasource/FileApi"
 import * as encodingApi from "./m/datasource/EncodingApi"
 import './assets/style.css'
@@ -51,6 +55,7 @@ const component: Plugin = {
         jsScriptExecutor.setApp(app)
 
         // 注册图标库组件
+        app.component(GlVirtual.name, GlVirtual)
         app.component(GlIconfont.name, GlIconfont)
         app.component(GlHtml.name, GlHtml)
         app.component(GlDndPlaceholder.name, GlDndPlaceholder)
@@ -94,6 +99,7 @@ export {
     EntityReader,
     EntityReaderParam,
     EntityReaderOrder,
+    EntityReaderOrderEnum,
     EntityMeta,
     EntityLiteMeta,
     FieldMeta,
@@ -111,8 +117,10 @@ export {
     PluginUtil,
     useGlobal,
     jsScriptExecutor,
+    dictApi,
     fileApi,
-    encodingApi
+    encodingApi,
+    executeObjectPropsExpressions
 }
 // 默认导出组件
 export default component

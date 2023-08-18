@@ -142,7 +142,7 @@ const reset = () => {
 // }
 
 const updateInstance = (instance: ComponentInstance) => {
-  console.log('updateInstance() > block:', instance)
+  //console.log('updateInstance() > block:', instance)
   mv.value.__commandBlock = JSON.parse(JSON.stringify(instance))
   generateScript()
   emits("update:action", mv.value)

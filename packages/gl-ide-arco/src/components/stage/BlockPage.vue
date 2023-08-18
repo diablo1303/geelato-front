@@ -59,7 +59,7 @@ watch(() => {
   // 只需监控当前实体是否变化，来触发整个页面的更新事件
   return componentStore.currentSelectedComponentInstance
 }, () => {
-  console.log('update mv:', componentStore.currentComponentTree[0])
+  // console.log('update mv:', componentStore.currentComponentTree[0])
   emits("update", componentStore.currentComponentTree[0])
 }, {deep: true})
 const key = utils.gid('p')

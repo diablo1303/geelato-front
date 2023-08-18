@@ -3,16 +3,16 @@ import {entityApi} from "@geelato/gl-ui";
 
 
 export const useConstTreeData = async () => {
-    const sysConst = {
-        title: 'page.status 页面状态',
-        _description: '',
-        children: [
-            {title: '查看', _code: '"read"', _type: 'string', _description: '页页面各组件为只读状态'},
-            {title: '创建', _code: '"create"', _type: 'string', _description: '页页面各组件为创建状态'},
-            {title: '修改', _code: '"update"', _type: 'string', _description: '页页面各组件为修改状态'}
-        ],
-    }
-    return [sysConst]
+    // const sysConst = {
+    //     title: 'page.status 页面状态',
+    //     _description: '',
+    //     children: [
+    //         {title: '查看', _code: '"read"', _type: 'string', _description: '页页面各组件为只读状态'},
+    //         {title: '创建', _code: '"create"', _type: 'string', _description: '页页面各组件为创建状态'},
+    //         {title: '修改', _code: '"update"', _type: 'string', _description: '页页面各组件为修改状态'}
+    //     ],
+    // }
+    return []
 }
 
 

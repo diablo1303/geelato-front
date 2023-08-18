@@ -5,7 +5,7 @@
         {{ $t('page.runtime.alter') }}
       </a-alert>
     </div>
-    <GlPageViewer v-if="pageId" :pageId="pageId"></GlPageViewer>
+    <GlPageViewer v-if="pageId" :pageId="pageId" :glIsRuntime="true" glRuntimeFlag=""></GlPageViewer>
   </div>
 </template>
 

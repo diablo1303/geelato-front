@@ -397,6 +397,10 @@ class ComponentStoreFactory {
 
                         return findParentNodeFromTree(componentId, this.currentComponentTree[0]) || {}
                     },
+                    /**
+                     * TODO 引用的页面组件id找到的是空的对象{}
+                     * @param componentId
+                     */
                     findComponentFromTreeById(componentId: string) {
                         function findNodeFromTree(nodeId: string, nodes: Array<any>): any {
                             for (let index in nodes) {
@@ -410,7 +414,6 @@ class ComponentStoreFactory {
                                 }
                             }
                         }
-
                         return findNodeFromTree(componentId, this.currentComponentTree) || {}
                     },
                     setCurrentSelectedComponentId(componentId: string, fromPageId: string) {

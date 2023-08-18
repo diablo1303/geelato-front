@@ -7,6 +7,7 @@
                 :loadTreeData="loadTreeDataFn"
                 :addNode="addNodeFn"
                 :updateNodeName="updateNodeNameFn"
+                :updateNodeIcon="updateNodeIconFn"
                 :updateNode="updateNodeFn"
                 :updateNodeSeqNo="updateNodeSeqNoFn"
                 :deleteNode="deleteNodeFn"
@@ -114,9 +115,17 @@ const updateNodeNameFn = (params: any) => {
     id: params.editNodeData.key,
     text: params.editNodeData.title
   }
-  // console.log('updateNodeName', params)
   return entityApi.save(props.treeEntityName, data)
 }
+
+const updateNodeIconFn = (params: any) => {
+  const data = {
+    id: params.editNodeData.key,
+    iconType: params.editNodeData.iconType
+  }
+  return entityApi.save(props.treeEntityName, data)
+}
+
 
 const updateNodeFn = (params: any) => {
   const data = {

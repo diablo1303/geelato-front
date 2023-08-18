@@ -51,12 +51,12 @@ const _componentInstTreeData = ref<any[]>([])
 const _constTreeData = ref<any[]>([])
 const _dictTreeData = ref<any[]>([])
 
-const valueExpressModalVisible = ref(false)
+const visibleValueExpressModal = ref(false)
 /**
  * 打开值表达式设置窗口
  */
 const openValueExpressModal = async () => {
-  valueExpressModalVisible.value = true
+  visibleValueExpressModal.value = true
   _systemVarsTreeData.value = setKeys(useSystemVarsTreeData())
   _functionalFormulaTreeData.value = setKeys(functionalFormulaTreeData)
   _componentInstTreeData.value = setKeys(useComponentInstTreeData())
@@ -68,7 +68,7 @@ const clearValueExpress = () => {
   mv.value = ''
   // @ts-ignore
   // componentModel[propertySetterMeta.type + 'Expressions'][propertySetterMeta.name] = ''
-  valueExpressModalVisible.value = false
+  visibleValueExpressModal.value = false
   inputMv.value = mv.value
   emits('update:modelValue', mv.value)
 }
@@ -76,7 +76,7 @@ const handleOk = () => {
   // 由于代码做了格式化，会自动增加“;”换行等，需处理掉
   mv.value = mv.value ? mv.value.replace(new RegExp('[;,\\s]*$'), '') : ''
   inputMv.value = mv.value
-  valueExpressModalVisible.value = false
+  visibleValueExpressModal.value = false
   emits('update:modelValue', mv.value)
 }
 
@@ -158,40 +158,49 @@ const selectConstNode = async (selectedKeys: any, data: any, treeData: any) => {
   }
 }
 
+const replaceSelectOrInsert = (content: any) => {
+  monacoEditor.value.replaceSelectOrInsert(typeof content === 'string' ? `"${content}"` : content)
+}
+
 const expendDictItems = <{ [key: string]: any }>ref({})
-const dictItemsDisplay = ref(false)
+const visibleDictItemModal = ref(false)
 const expendDict = async (code: any) => {
   if (code && typeof code === 'function') {
     expendDictItems.value = JSON.parse(await code())
   }
-  dictItemsDisplay.value = true
+  visibleDictItemModal.value = true
 }
 const closeDict = () => {
-  dictItemsDisplay.value = false
+  visibleDictItemModal.value = false
 }
 
 const selectDictItem = (key: any) => {
   monacoEditor.value.replaceSelectOrInsert(`"${key}"`)
-  dictItemsDisplay.value = false
+  visibleDictItemModal.value = false
 }
 
 </script>
 
 <template>
   <div class="gl-expression-setter">
-    <a-input v-if="showInput" v-model="inputMv" @click="openValueExpressModal" readonly></a-input>
+    <a-input v-if="showInput" v-model="inputMv" @click="openValueExpressModal" readonly
+             style="color: blue">
+      <template #prefix>
+        <slot name="prefix"></slot>
+      </template>
+    </a-input>
     <a-button v-if="!showInput" size="mini" @click="openValueExpressModal"
               :type="mv?'primary':''"
               style="padding: 0 0.1em;height: 2.6em;font-weight: 700;border: none">{ / }
     </a-button>
-    <a-modal title="编辑表达式" v-model:visible="valueExpressModalVisible"
+    <a-modal title="编辑表达式" v-model:visible="visibleValueExpressModal"
              :width="1100"
              :modal-style="{height:'700px',maxHeight:'700px'}"
              :body-style="{padding:0,overflow:'hidden'}"
              :mask-style="{background:'rgba(0, 0, 0, 0.25)'}"
              @ok="handleOk"
              @cancel="handleCancel">
-      <div class="gl-expression-setter-editor" style="display: flex;" v-if="valueExpressModalVisible">
+      <div class="gl-expression-setter-editor" style="display: flex;" v-if="visibleValueExpressModal">
         <div style="flex: auto;border-right: solid 1px #d7d6d6">
           <!--      <a-textarea v-model="mv" placeholder="在此输入..."></a-textarea>-->
           <div>
@@ -233,6 +242,18 @@ const selectDictItem = (key: any) => {
             <!--              Coming Soon...-->
             <!--            </a-collapse-item>-->
             <a-collapse-item header="系统常量" key="3">
+              <div style="display: flex;line-height: 2.4em">
+                <div style="width: 5em;text-align: right;margin-right: 1em">颜色值</div>
+                <div style="flex: auto">
+                  <GlColor @update:modelValue="replaceSelectOrInsert"></GlColor>
+                </div>
+              </div>
+              <div style="display: flex;line-height: 2.4em">
+                <div style="width: 5em;text-align: right;margin-right: 1em">图标类型</div>
+                <div style="flex: auto">
+                  <GlIconfontSelect @update:modelValue="replaceSelectOrInsert"></GlIconfontSelect>
+                </div>
+              </div>
               <a-tree ref="enumVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_constTreeData"
                       @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_constTreeData)">
@@ -284,18 +305,6 @@ const selectDictItem = (key: any) => {
                             @click="expendDict(_code)">选择字典值
                   </a-button>
                   <span class="gl-extra">{{ _type }}</span>
-                  <a-modal>
-
-                  </a-modal>
-                  <a-modal v-model:visible="dictItemsDisplay" title="选择字典值" :footer="false"
-                           mask-style="opacity:0.05" @ok="handleOk" @cancel="closeDict">
-                    <a-space wrap>
-                      <a-tag v-for="key of Object.keys(expendDictItems)" style="cursor: pointer" clore="blue"
-                             @click="selectDictItem(key)">
-                        {{ expendDictItems[key] }}
-                      </a-tag>
-                    </a-space>
-                  </a-modal>
                 </template>
               </a-tree>
             </a-collapse-item>
@@ -340,6 +349,15 @@ const selectDictItem = (key: any) => {
           <a-button type="primary" @click="handleOk">确定</a-button>
         </a-space>
       </template>
+    </a-modal>
+    <a-modal title="选择字典值" v-model:visible="visibleDictItemModal" :footer="false"
+             @ok="handleOk" @cancel="closeDict">
+      <a-space wrap>
+        <a-tag v-for="key of Object.keys(expendDictItems)" style="cursor: pointer" clore="blue"
+               @click="selectDictItem(key)">
+          {{ expendDictItems[key] }}
+        </a-tag>
+      </a-space>
     </a-modal>
   </div>
 </template>

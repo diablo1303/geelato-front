@@ -19,12 +19,13 @@
     <tr>
       <td class="gl-table-cell">
         <GlFieldsSetter v-model="mv.fields" :entityFieldMetas="entityStore.currentFieldMetas"
+                        :aliasOptions="options"
                         @changeElement="onUpdate"></GlFieldsSetter>
       </td>
     </tr>
     <!--=========================查询参数===========================-->
     <tr>
-      <td class="gl-table-cell gl-label">数据筛选</td>
+      <td class="gl-table-cell gl-label" title="服务端数据筛选">数据筛选</td>
     </tr>
     <tr>
       <td class="gl-table-cell">
@@ -40,6 +41,38 @@
       <td class="gl-table-cell">
         <GlOrderSetter v-model="mv.order" :entityFieldMetas="entityStore.currentFieldMetas"
                        @changeElement="onUpdate"></GlOrderSetter>
+      </td>
+    </tr>
+    <tr>
+      <td class="gl-table-cell gl-label" title="数据加载的时机，一是组件初始化即加载，一是组件的加载数据方法被调用才加载">
+        加载时机？
+      </td>
+    </tr>
+    <tr>
+      <td class="gl-table-cell">
+        <a-switch v-model="mv.immediate">
+          <template #checked>
+            初化时
+          </template>
+          <template #unchecked>
+            调用时
+          </template>
+        </a-switch>
+      </td>
+    </tr>
+    <tr>
+      <td class="gl-table-cell gl-label" title="对于级联加载的数据可以配置懶加载即分层加载">懶加载？</td>
+    </tr>
+    <tr>
+      <td class="gl-table-cell">
+        <a-switch v-model="mv.lazyLoad">
+          <template #checked>
+            分批次触发加载
+          </template>
+          <template #unchecked>
+            一次性加载完毕
+          </template>
+        </a-switch>
       </td>
     </tr>
     <tr>
@@ -70,6 +103,15 @@ export default defineComponent({
       type: Object as PropType<EntityReader>,
       default() {
         return new EntityReader()
+      }
+    },
+    /**
+     *  重命名选项，指定实体需要重命名的字段，便于页面操作
+     */
+    options: {
+      type: Array as PropType<Record<"label" | "value", any>[]>,
+      default() {
+        return []
       }
     }
   },

@@ -24,8 +24,8 @@ export default {
  *  获取页面结构，列出页面内的组件，便于选择组件
  */
 import {inject, ref, watch} from "vue";
-import  {ComponentSetterProvideKey,ComponentSetterProvideProxy} from "@geelato/gl-ide";
-import {entityApi} from "@geelato/gl-ui";
+import {ComponentSetterProvideKey, ComponentSetterProvideProxy} from "@geelato/gl-ide";
+import {entityApi, jsScriptExecutor} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {useComponentStore} from "@geelato/gl-ide";
 
@@ -77,7 +77,7 @@ const props = defineProps({
 const selected = ref(typeof props.modelValue === 'string' ? props.modelValue : '')
 
 watch(selected, () => {
-  console.log('update:modelValue:', selected.value)
+  // console.log('update:modelValue:', selected.value)
   emits('update:modelValue', selected.value)
 }, {immediate: true})
 
@@ -91,10 +91,13 @@ const filterTreeNode = (searchValue: string, nodeData: any) => {
 const treeData = ref<any>([])
 
 const componentStore = useComponentStore()
-const onChange = (value: any) => {
-  // console.log('.............', value)
+/**
+ * @param instId 更换选择的组件ID
+ */
+const onChange = (instId: any) => {
+  // 递归查询方法
   const findInst: any = (inst: any) => {
-    if (inst.id === value) {
+    if (inst.id === instId) {
       return inst
     }
     for (let i in inst.children) {
@@ -105,14 +108,17 @@ const onChange = (value: any) => {
     }
     return null
   }
+
+  // 开始查找
   let foundInst = null
   if (treeData.value.length > 0) {
     foundInst = findInst(treeData.value[0])
   }
   if (foundInst) {
     // 如果当前组件页面存在该组件，则以当前页面的组件为准，确保为最新的状态，如组件新配置的动作
-    const isEditingComponent =  componentStore.findComponentFromTreeById(foundInst.id)
-    if(isEditingComponent){
+    const isEditingComponent = componentStore.findComponentFromTreeById(foundInst.id)
+    // console.log('foundInst:', foundInst, 'isEditingComponent:', isEditingComponent)
+    if (isEditingComponent && isEditingComponent.componentName) {
       foundInst = isEditingComponent
     }
     // 设置实例

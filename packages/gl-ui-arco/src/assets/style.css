@@ -3,12 +3,11 @@
     font-weight: 600;
 }
 
-.arco-picker input[disabled] {
-    -webkit-text-fill-color: rgb(119 121 124);
-}
 
-.arco-input-wrapper .arco-input[disabled] {
-    -webkit-text-fill-color: rgb(119 121 124);
+.arco-input-wrapper .arco-input[disabled],.arco-select-view-single.arco-select-view-disabled
+,.arco-radio-disabled .arco-radio-label,.arco-picker input[disabled],
+.arco-checkbox-disabled .arco-checkbox-label{
+    -webkit-text-fill-color: #696969;
 }
 
 .gl-tree .arco-tree-node-indent-block {

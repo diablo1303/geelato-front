@@ -4,7 +4,7 @@
       <slot></slot>
     </template>
     <template v-else>
-      <GlInsts :glComponentInst="glComponentInst"></GlInsts>
+      <component :is="'GlInsts'" :glComponentInst="glComponentInst"></component>
     </template>
   </div>
 </template>
@@ -21,7 +21,7 @@ import {
   PageProvideProxy,
   jsScriptExecutor,
   mixins,
-  PageProvideKey, type Param, utils,
+  PageProvideKey, type Param
 } from "@geelato/gl-ui";
 import type {Action} from "@geelato/gl-ui-schema";
 import {PageParamsKey} from "@geelato/gl-ui";
@@ -110,7 +110,8 @@ const onPageMounted = () => {
   //  触发页面配置的事件，只限运行时
   if (props.glIsRuntime) {
     props.glComponentInst.actions.forEach((action: Action) => {
-      if (action.name === 'onMounted') {
+      // console.log('onPageMounted() > action:', action)
+      if (action.eventName === 'onMounted') {
         jsScriptExecutor.doAction(action, {
           pageProxy: pageProvideProxy
         })

@@ -59,8 +59,12 @@ export const paramStringify = (params: Array<PageParamConfigType>) => {
     return strArray.join('')
 }
 
+// 不计入统计的组件
+const ignoreComponents = ['GlVirtual', 'GlPage', 'GlDndPlaceholder']
 
 export default class PageProvideProxy {
+    // 同pageInstId
+    id: string = ''
     // 数据库中的字段，页面id
     pageId: string = ''
     pageStatus: string = 'read'
@@ -76,13 +80,13 @@ export default class PageProvideProxy {
     constructor(pageInst: ComponentInstance, pageVueInst: ComponentInternalInstance) {
         this.pageInst = pageInst
         this.pageVueInst = pageVueInst
-
+        this.id = pageInst.id
 
         const statAllComponentIds = () => {
             const ids: { [key: string]: boolean } = {}
             const statId = (inst: ComponentInstance) => {
-                // 不记GlVirtual、GlPage
-                if (inst.componentName !== 'GlVirtual' && inst.componentName !== 'GlPage') {
+                // 过滤无效的组件
+                if (ignoreComponents.indexOf(inst.componentName) === -1) {
                     ids[inst.id] = true
                 }
                 if (inst.children?.length > 0) {
@@ -97,6 +101,8 @@ export default class PageProvideProxy {
         }
         // 设置未加载完成（未mounted）的组件ids
         this.unMountedIds = statAllComponentIds()
+
+        // console.log('new PageProvideProxy(),id:', this.id)
     }
 
     addPageMountedEvent(fn: Function) {
@@ -270,7 +276,7 @@ export default class PageProvideProxy {
      * @param value
      */
     setComponentValue(componentId: string, value: any) {
-        console.log('setComponentValue', componentId, value, this.pageInst, this.vueInstMap)
+        // console.log('setComponentValue', componentId, value, this.pageInst, this.vueInstMap)
         const vueInst = this.getVueInst(componentId)
         const proxy = vueInst?.proxy
         if (proxy) {
@@ -334,20 +340,10 @@ export default class PageProvideProxy {
      * @param componentId
      * @param methodName
      */
-    getMethod(componentId: string, methodName: string) {
+    getMethod(componentId: string, methodName: string): Function | undefined {
         const vueInst = this.getVueInst(componentId)
-        // console.log('PageProvideProxy > getMethod() > vueInst:', vueInst, 'methodName:', methodName)
-        if (vueInst) {
-            for (let exposedKey in vueInst.subTree.component?.exposed) {
-                const exposedObject = vueInst.subTree.component?.exposed[exposedKey]
-                // console.log('getMethod(),test exposedObject.name:', exposedObject.name, typeof exposedObject)
-                if (exposedObject.name === methodName && typeof exposedObject === 'function') {
-                    // console.log('getMethod(),return exposedObject:', exposedObject)
-                    return exposedObject
-                }
-            }
-        }
-        return null
+        console.log('PageProvideProxy > getMethod() > vueInst:', vueInst, 'methodName:', methodName, 'pageProxy', this)
+        return vueInst?.subTree?.component?.exposed![methodName]
     }
 
     setPageStatus(pageStatus: string) {

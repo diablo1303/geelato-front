@@ -9,9 +9,14 @@
     <span v-else style="cursor: pointer" @click="showIconSelect">
           选择图标
     </span>
-    <a-modal v-model:visible="visible" title="选择图标" @ok="showIconSelect" :width="1024" style="top: 20px">
+    <a-modal v-model:visible="visible" title="选择图标xx" @ok="showIconSelect" :width="1024" style="top: 20px">
+      <template #title>
+        选择图标
+        <a-input-search v-model="searchText" style="width: 18em;margin-left: 0.5em"
+                        placeholder="输入查询过滤图标"></a-input-search>
+      </template>
       <div style="height:640px;overflow-y: scroll;padding:1em;margin:-24px">
-        <div v-for="item in json.glyphs" class="gl-iconfont-select-icon-item" @click="onSelected(item)">
+        <div v-for="item in items" class="gl-iconfont-select-icon-item" @click="onSelected(item)">
           <div style="font-size: 2em;">
             <GlIconfont :type="json.css_prefix_text+item.font_class"></GlIconfont>
           </div>
@@ -28,7 +33,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {iconsJson, IconsJson} from "@geelato/gl-ui"
-import {ref, watch} from 'vue'
+import {ref, watch,computed} from 'vue'
 
 const props = defineProps({
   /**
@@ -58,6 +63,25 @@ const emitUpdate = () => {
 watch(mv, () => {
   emitUpdate()
 })
+
+const searchText = ref('')
+
+const items = computed(() => {
+  const text = searchText.value.trim()
+  if (!text) {
+    return json.glyphs
+  }
+  return json.glyphs.filter((glyph: any) => {
+    return (json.css_prefix_text + glyph.font_class).indexOf(text) != -1
+  })
+})
+
+const onChangeText = (x: string) => {
+  console.log('onChangeText', x)
+  emitUpdate()
+}
+
+defineExpose({showIconSelect})
 </script>
 
 <style scoped>

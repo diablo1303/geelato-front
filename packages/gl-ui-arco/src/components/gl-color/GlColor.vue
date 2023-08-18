@@ -7,6 +7,7 @@ export default {
 // @ts-nocheck
 import {Sketch} from '@ckpack/vue-color';
 import {ref, watch} from "vue";
+
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: {
@@ -38,8 +39,11 @@ const color = ref({[props.colorFormat]: props.modelValue})
 watch(color, () => {
   // @ts-ignore
   mv.value = color.value[props.colorFormat]
-  emits('update:modelValue', mv.value)
 }, {deep: true})
+
+watch(mv, () => {
+  emits('update:modelValue', mv.value)
+})
 
 const visible = ref(false)
 // etc: { h: 150, s: 0.66, v: 0.30 }, { r: 255, g: 0, b: 0 }, '#194d33'
@@ -48,12 +52,14 @@ const visible = ref(false)
 
 <template>
   <div class="gl-color">
-    <a-input v-if="mode==='full'" readonly v-model="mv">
+    <a-input v-if="mode==='full'" readonly v-model="mv" allow-clear>
       <template #append>
-        <a-button size="mini" :style="{'background-color': mv}" style="border: 1px solid #d2d2d2" @click="visible=true"></a-button>
+        <a-button size="mini" :style="{'background-color': mv}" style="border: 1px solid #d2d2d2"
+                  @click="visible=true"></a-button>
       </template>
     </a-input>
-    <a-button v-else-if="mode==='simple'" size="mini" :style="{'background-color': mv}" style="border: 1px solid #d2d2d2" @click="visible=true">
+    <a-button v-else-if="mode==='simple'" size="mini" :style="{'background-color': mv}"
+              style="border: 1px solid #d2d2d2" @click="visible=true">
     </a-button>
     <a-modal width="220px"
              v-model:visible="visible"

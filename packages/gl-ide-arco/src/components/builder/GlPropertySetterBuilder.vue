@@ -99,7 +99,9 @@
             title=""
             allow-search
         >
-          <a-option v-if="hasNoSub" v-for="item in setterItems" :value="item.name" :title="item.name">{{ item.label }}-{{ item.name }}
+          <a-option v-if="hasNoSub" v-for="item in setterItems" :value="item.name" :title="item.name">{{
+              item.label
+            }}-{{ item.name }}
           </a-option>
           <template v-else>
             <a-option v-if="mv.type==='children'" v-for="item in setterItemsForSubComponent"
@@ -152,7 +154,7 @@
       </td>
       <td class="gl-table-cell">
         <a-input v-model="mv.setterComponentVModelName"
-                 placeholder="默认值为modelValue，有些组件可能为checked（使用时v-model:checked）"></a-input>
+                 placeholder="默认值为modelValue，有些组件可能为checked（使用时v-model:checked）"/>
       </td>
     </tr>
     <tr v-if="selectedSetterItem.propsSetter">
@@ -161,8 +163,7 @@
         配置器Props
       </td>
       <td class="gl-table-cell">
-        <component v-if="selectedSetterItem" :is="selectedSetterItem.propsSetter"
-                   v-model="mv.setterComponentProps"></component>
+        <component v-if="selectedSetterItem" :is="selectedSetterItem.propsSetter" v-model="mv.setterComponentProps" />
       </td>
     </tr>
     <tr v-if="selectedSetterItem.slotComponentName">
@@ -186,7 +187,7 @@
                     v-model="mv.setterDefaultValue"></a-switch>
           <a-input-number v-else-if="defaultValueType==='Number'"
                           v-model="mv.setterDefaultValue"></a-input-number>
-          <a-input v-else v-model="mv.setterDefaultValue" placeholder="默认值"></a-input>
+          <a-input v-else v-model="mv.setterDefaultValue" placeholder="默认值"/>
         </template>
       </td>
     </tr>
@@ -197,7 +198,7 @@
         插槽渲染组件名
       </td>
       <td class="gl-table-cell">
-        <a-input v-model="mv.slotComponentName" placeholder=""></a-input>
+        <a-input v-model="mv.slotComponentName" placeholder=""/>
       </td>
     </tr>
     <tr v-if="hasNoSub&&mv.type==='slots'">
@@ -223,7 +224,7 @@
         值绑定目标名称
       </td>
       <td class="gl-table-cell">
-        <a-input v-model="mv.slotComponentBindName" placeholder=""></a-input>
+        <a-input v-model="mv.slotComponentBindName" placeholder=""/>
       </td>
     </tr>
     <template v-if="mv.type==='children'">
@@ -233,7 +234,7 @@
           子组件名称
         </td>
         <td class="gl-table-cell">
-          <a-input v-model="mv.subComponentName"></a-input>
+          <a-input v-model="mv.subComponentName"/>
         </td>
       </tr>
       <tr>
@@ -270,8 +271,8 @@
         显示模式
       </td>
       <td class="gl-table-cell">
-<!--        <template v-if="mv.displayMode=mv.displayMode||''"></template>-->
-<!--        <a-switch size="small" v-model="mv.displayMode"/>-->
+        <!--        <template v-if="mv.displayMode=mv.displayMode||''"></template>-->
+        <!--        <a-switch size="small" v-model="mv.displayMode"/>-->
         <template v-if="mv.displayMode=mv.displayMode||'tile'"></template>
         <a-radio-group size="small" v-model="mv.displayMode" type="button">
           <a-radio value="collapse">折叠</a-radio>

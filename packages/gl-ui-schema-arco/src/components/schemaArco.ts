@@ -16,6 +16,7 @@ import PageHeaderMeta from "./setter-arco/pageHeader/PageHeaderMeta";
 import PaginationMeta from "./setter-arco/pagination/PaginationMeta";
 import StepsMeta from "./setter-arco/steps/StepsMeta";
 import CascaderMeta from "./setter-arco/cascader/CascaderMeta";
+import CascaderInstance from "./setter-arco/cascader/CascaderInstance";
 import CheckboxGroupMeta from "./setter-arco/checkbox/CheckboxGroupMeta";
 import CheckboxGroupGroupInstance from "./setter-arco/checkbox/CheckboxGroupInstance";
 import DatePickerMeta from "./setter-arco/datePicker/DatePickerMeta";
@@ -50,7 +51,6 @@ import TableSubInstance from "./setter-arco/table/TableSubInstance";
 import TabsMeta from "./setter-arco/tabs/TabsMeta";
 import TagMeta from "./setter-arco/tag/TagMeta";
 import TimelineMeta from "./setter-arco/timeLine/TimelineMeta";
-import TimelineItemMeta from "./setter-arco/timeLine/TimelineItemMeta";
 import TooltipMeta from "./setter-arco/tooltip/TooltipMeta";
 import EntityTreeMeta from "./setter-arco/tree/EntityTreeMeta";
 import {ComponentMeta, ComponentInstance} from "@geelato/gl-ui-schema";
@@ -82,15 +82,15 @@ const componentMetas: Array<ComponentMeta> = [ButtonMeta, GlButtonMeta, TextMeta
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
-    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TimelineItemMeta, TooltipMeta, EntityTreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta, DividerMeta,
+    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TooltipMeta, EntityTreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta, DividerMeta,
     JsCodeBlockMeta
 ]
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance]
+const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance,CascaderInstance]
 const componentInstances: Array<ComponentInstance> = []
 const dataEntryNameMap: { [key: string]: boolean } = {}
 // 不在sidebar中出现的组件
-const ignoreInstances: Array<ComponentMeta> = [DndPlaceholderMeta, VirtualMeta, TimelineMeta, TimelineItemMeta, CascaderMeta]
+const ignoreInstances: Array<ComponentMeta> = [DndPlaceholderMeta, VirtualMeta]
 // 不需要自动添加公共属性的组件
 const ignoreCommonPropertiesComponents = ['GlEntityTableSub','GlEntityTablePlus','GlHiddenArea']
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息

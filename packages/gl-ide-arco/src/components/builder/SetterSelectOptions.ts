@@ -45,10 +45,16 @@ export const setterSelectOptions = [
     },
     {name: 'GlIconfontSelect', label: '图标选择器', vModelName: 'modelValue', type: 'Object'},
     {name: 'GlIconfontTextSetter', label: '图标文字选择器', vModelName: 'modelValue', type: 'Object'},
-    {name: 'GlIconfontSetterForSlot', label: '图标选择器（用于插槽）', vModelName: 'modelValue', type: 'String'},
+    // {name: 'GlIconfontSetterForSlot', label: '图标选择器（用于插槽）', vModelName: 'modelValue', type: 'String'},
     {name: 'GlHtmlSetterForSlot', label: 'Html设置（用于插槽）', vModelName: 'modelValue', type: 'String'},
     {name: 'GlValidateRulesSetter', label: '字段验证规则配置器', vModelName: 'modelValue', type: 'Object'},
-    {name: 'GlEntityReaderSetter', label: '实体数据源（Reader）配置器', vModelName: 'modelValue', type: 'Object'},
+    {
+        name: 'GlEntityReaderSetter',
+        label: '实体数据源（Reader）配置器',
+        vModelName: 'modelValue',
+        type: 'Object',
+        propsSetter: 'GlEntityReaderBuilder'
+    },
     {name: 'GlAppEntitySelect', label: '应用实体对象选择器', vModelName: 'modelValue', type: 'Object'},
     {name: 'GlEntityFieldSelect', label: '实体字段对象选择器', vModelName: 'modelValue', type: 'Object'},
     {name: 'GlEntitySelect', label: '实体名称选择器', vModelName: 'modelValue', type: 'String'},

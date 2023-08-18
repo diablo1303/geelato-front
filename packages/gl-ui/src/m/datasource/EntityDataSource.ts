@@ -23,16 +23,21 @@ const cops = [
     {text: '包括', value: 'contains'},
     {text: '在其中', value: 'in'}
 ]
+
+
 export const compareMeta = {cops, copDict}
 
 export class FieldMeta {
     name: string = '';
     title: string = '';
     alias: string = '';
+    // 是否本地计算字段，即基于查询回来的结果在本进行计算，该字段不转到服务端
+    isLocalComputeFiled: boolean = false;
+    valueExpression?: string = '';
 
     [key: string]: any
 
-    constructor(name?: string, alias?: string, title?: string,) {
+    constructor(name?: string, alias?: string, title?: string) {
         this.title = title || ''
         this.name = name || ''
         this.alias = alias || ''
@@ -62,11 +67,24 @@ export class EntityReaderParam {
     }
 }
 
+export enum EntityReaderOrderEnum {
+    ASE = '+',
+    DESC = '-'
+}
+
 export class EntityReaderOrder {
-    // 排序字段
     field: string = '';
-    // 上降序 '+' | '-'
     order: string = '+'
+
+    /**
+     *
+     * @param field 排序字段
+     * @param order 上降序 '+' | '-'
+     */
+    constructor(field?: string, order?: string) {
+        this.field = field || ''
+        this.order = order || '+'
+    }
 }
 
 export class EntityReader {
@@ -90,4 +108,30 @@ export class EntityReader {
     resultMapping: ResultMapping = new ResultMapping();
     // 实体数据查询描述
     description: string = '';
+    // 是否立即加载
+    immediate?: boolean = true
+    // 懒加载，默认为false，是指用于级联数据加载时，分步加载
+    lazyLoad?: boolean = false
+
+    /**
+     * 将字符串格式转成数组
+     * 字符串支持别名，如：id key
+     * @param fieldStr id key,name,age,...
+     */
+    public setFields(fieldStr: string) {
+        if (!fieldStr) return []
+        const fields: FieldMeta[] = []
+        const ary = fieldStr.split(",")
+        ary.forEach((field) => {
+            const fieldNameAliasName = field.split(new RegExp('\\s+'))
+            if (fieldNameAliasName.length === 2) {
+                fields.push(new FieldMeta(fieldNameAliasName[0], fieldNameAliasName[1]))
+            } else {
+                fields.push(new FieldMeta(field))
+            }
+        })
+        this.fields.length = 0
+        this.fields.push(...fields)
+        return this.fields
+    }
 }

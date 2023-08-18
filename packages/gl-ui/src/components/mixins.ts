@@ -29,7 +29,7 @@ const props = {
     glIsRuntime: {
         type: Boolean,
         default() {
-            return false
+            return true
         }
     },
     /**
@@ -39,11 +39,20 @@ const props = {
     glRuntimeFlag: {
         type: String,
         default() {
-            return ''
+            return 'Runtime'
         }
     },
     glIndex: {
         type: Number
+    },
+    /**
+     *  组件忽略注入页面代理
+     */
+    glIgnoreInjectPageProxy: {
+        type: Boolean,
+        default() {
+            return false
+        }
     },
     componentStoreId: {
         type: String,

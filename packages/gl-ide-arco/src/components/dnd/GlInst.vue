@@ -23,6 +23,7 @@ const props = defineProps({
 })
 
 const pageProvideProxy: PageProvideProxy | null = props.glComponentInst.componentName === 'GlPage' ? null : inject(PageProvideKey)!
+// console.log('GlInst > pageProvideProxy:', props.glComponentInst.componentName, PageProvideKey, pageProvideProxy)
 
 const componentStoreId = props.componentStoreId || inject('componentStoreId')
 if (!componentStoreId) {
@@ -203,6 +204,8 @@ const onClick = (...args: any[]) => {
         >
           <GlComponentDnd class="gl-dnd-item gl-x-item"
                           :glComponentInst="glComponentInst"
+                          :glIsRuntime="false"
+                          glRuntimeFlag=""
                           :componentStoreId="componentStoreId">
           </GlComponentDnd>
           <template v-if="glComponentInst?.props?.extra" #extra>
@@ -215,6 +218,8 @@ const onClick = (...args: any[]) => {
       </template>
       <template v-else>
         <GlComponentDnd :modelValue="utils.gid()" class="gl-dnd-item gl-x-item" style="flex: auto"
+                        :glIsRuntime="false"
+                        glRuntimeFlag=""
                         :glComponentInst="glComponentInst"
                         :componentStoreId="componentStoreId">
         </GlComponentDnd>

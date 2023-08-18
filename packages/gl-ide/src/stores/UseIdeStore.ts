@@ -8,8 +8,7 @@ import {useEntityStore} from "./UseEntityStore";
 import Page from "../entity/Page";
 import type {ComponentMeta, ComponentInstance} from "@geelato/gl-ui-schema";
 import {ref} from "vue";
-import {utils,useGlobal} from "@geelato/gl-ui";
-import History from "../utils/History";
+import {utils, useGlobal} from "@geelato/gl-ui";
 
 export const useIdeStore = defineStore('GlIdeStore', () => {
     const name = ref('Geelato Ide')

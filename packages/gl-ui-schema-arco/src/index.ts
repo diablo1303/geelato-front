@@ -11,7 +11,6 @@ export {default as TableMeta} from "./components/setter-arco/table/TableMeta";
 export {default as FormRowMeta} from "./components/setter-arco/layout/FormRowMeta";
 export {default as DatePickerMeta} from "./components/setter-arco/datePicker/DatePickerMeta"
 export {default as TimelineMeta} from "./components/setter-arco/timeLine/TimelineMeta"
-export {default as TimelineItemMeta} from "./components/setter-arco/timeLine/TimelineItemMeta"
 export {default as BlockNotificationMeta} from "./components/setter-block/feedback/BlockNotificationMeta";
 export {default as BlockOpenThirdPageMeta} from "./components/setter-block/page/BlockOpenThirdPageMeta";
 import {useComponentMaterialStore} from "./store/UseComponentMaterialStore";

@@ -2,7 +2,7 @@
  注意：dataIndex值为value时，在修改value所在input值时，页面会卡，比较慢，如：[{dataIndex: 'text', title: '显示名'}, {dataIndex: 'value', title: '值'}]
 -->
 <template>
-  <table>
+  <table v-if="items&&items.length>=0">
     <!--    <tr v-if="items&&items.length>0">-->
     <!--      <th v-for="(column,index) in convertedColumns" style="font-weight: normal;text-align: center"-->
     <!--          :style="{width: (100/convertedColumns.length+'%')}">{{ column.title }}-->

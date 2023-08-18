@@ -104,7 +104,6 @@ const addItem = (hoverIndex: number, item: ComponentInstance) => {
 }
 
 const refresh = () => {
-  console.log('refresh............................')
   freshFlag.value = false
   nextTick(() => {
     freshFlag.value = true

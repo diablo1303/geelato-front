@@ -56,6 +56,7 @@
         <a-input ref="titleInput" v-model="currentEditNodeData.title" @keyup.enter="saveNode"></a-input>
       </div>
     </a-modal>
+    <GlIconfontSelect v-show="false" @update:modelValue="onSelectIcon" ref="iconfontSelect"/>
   </div>
 </template>
 <script lang="ts">
@@ -111,32 +112,21 @@ const props = defineProps({
       return []
     }
   },
-  loadTreeData: {
-    type: Function
-  },
+  loadTreeData: Function,
   //  服务端添加node的方法
-  addNode: {
-    type: Function
-  },
+  addNode: Function,
   // 服务端删除node的方法
-  deleteNode: {
-    type: Function
-  },
+  deleteNode: Function,
   //  服务端更新node的方法
-  updateNode: {
-    type: Function
-  },
-  updateNodeSeqNo: {
-    type: Function
-  },
+  updateNode: Function,
+  updateNodeSeqNo: Function,
   //  服务端重命名node的方法
-  updateNodeName: {
-    type: Function
-  }
+  updateNodeName: Function,
+  updateNodeIcon: Function
 })
 // 注意，所有的contextMenuitem click都会触发clickContextMenuItem事件，若是内置的addNode等，还会先触发addNode等事件
 // selectNode:选择一个节点，和a-tree的select是有区别的
-const emits = defineEmits(['selectNode', 'addNode', 'updateNode', 'updateNodeSeqNo', 'updateNodeName', 'deleteNode', 'clickContextMenuItem'])
+const emits = defineEmits(['selectNode', 'addNode', 'updateNode', 'updateNodeSeqNo', 'updateNodeName', 'updateNodeIcon', 'deleteNode', 'clickContextMenuItem'])
 const selectedKeys = ref([])
 const treeData = ref(new Array<any>())
 const contextMenu = ref()
@@ -144,6 +134,7 @@ const currentClickedNodeData = ref({title: ''})
 const currentEditNodeData = ref({title: '', iconType: '', _nodeType: ''})
 const currentAction = ref({action: '', title: ''})
 const titleInput = ref()
+const iconfontSelect = ref()
 
 enum NodeType {
   folder = 'folder',
@@ -191,7 +182,11 @@ const onMenuItemClick = (clickedNodeData: any, contextMenuItemData: ContextMenuD
   } else if (contextMenuItemData.action === 'updateNodeName') {
     currentEditNodeData.value = JSON.parse(JSON.stringify(clickedNodeData))
     currentAction.value = {action: 'updateNodeName', title: '修改名称'}
-    // 这里不需调用 updateNodeName，会在弹出窗口修改，修改之后保存再调用
+    // modal的visible会依据currentAction的name为'updateNodeName'，弹出修改窗口
+  } else if (contextMenuItemData.action === 'updateNodeIcon') {
+    currentEditNodeData.value = JSON.parse(JSON.stringify(clickedNodeData))
+    currentAction.value = {action: 'updateNodeIcon', title: '修改图标'}
+    iconfontSelect.value.showIconSelect()
   } else if (contextMenuItemData.action === 'updateNode') {
     currentEditNodeData.value = JSON.parse(JSON.stringify(clickedNodeData))
     if (contextMenuItemData.actionParams) {
@@ -248,6 +243,25 @@ const updateNodeName = (clickedNodeData: any, editNodeData: any) => {
     })
   } else {
     emits('updateNodeName', params)
+  }
+}
+
+const onSelectIcon = (iconType: string) => {
+  currentEditNodeData.value.iconType = iconType
+  updateNodeIcon(currentClickedNodeData.value, currentEditNodeData.value)
+}
+
+const updateNodeIcon = (clickedNodeData: any, editNodeData: any) => {
+  const params = {editNodeData}
+  // console.log('updateNodeName() > clickedNodeData', clickedNodeData, 'editNodeData', editNodeData)
+  if (props.updateNodeIcon) {
+    props.updateNodeIcon(params).then((res: any) => {
+      clickedNodeData.iconType = editNodeData.iconType
+      refreshTree()
+      emits('updateNodeIcon', params)
+    })
+  } else {
+    emits('updateNodeIcon', params)
   }
 }
 

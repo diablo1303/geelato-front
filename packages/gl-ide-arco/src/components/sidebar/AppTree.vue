@@ -108,6 +108,13 @@ const contextMenuData = [
     show: '$gl.ctx.flag==="menuItem"'
   },
   {
+    title: '设置图标',
+    iconType: 'gl-edit-square',
+    _nodeType: 'freePage',
+    useFor: ['folder', 'freePage', 'formPage', 'listPage'],
+    action: 'updateNodeIcon'
+  },
+  {
     title: '重命名',
     iconType: 'gl-edit-square',
     _nodeType: 'freePage',

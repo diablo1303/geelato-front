@@ -8,6 +8,7 @@ import GlBasePage from './components/stage/BasePage.vue'
 import GlFormPage from './components/stage/FormPage.vue'
 import GlFreePage from './components/stage/FreePage.vue'
 import GlListPage from "./components/stage/ListPage.vue";
+import GlEntityReaderBuilder from "./components/builder/props-builder/GlEntityReaderBuilder.vue";
 import GlComponentBuilder from "./components/builder/GlComponentBuilder.vue";
 import GlSimpleArrayBuilder from "./components/builder/props-builder/GlSimpleArrayBuilder.vue";
 import GlSimpleArraySetter from "./components/setters/property-setters/GlSimpleArraySetter.vue";
@@ -19,7 +20,7 @@ import GlSimpleObjectSetter from "./components/setters/property-setters/GlSimple
 import GlPropertySetter from './components/setters/GlPropertySetter.vue'
 import GlPropertySetterCard from './components/setters/GlPropertySetterCard.vue'
 import GlIconfontTextSetter from "./components/setters/property-setters/GlIconfontTextSetter.vue";
-import GlIconfontSetterForSlot from "./components/setters/property-setters/GlIconfontSetterForSlot.vue";
+// import GlIconfontSetterForSlot from "./components/setters/property-setters/GlIconfontSetterForSlot.vue";
 import GlHtmlSetter from "./components/setters/property-setters/GlHtmlSetter.vue";
 import GlSelectSetter from "./components/setters/property-setters/GlSelectSetter.vue";
 import SwitchPropsBuilder from "./components/builder/props-builder/SwitchPropsBuilder.vue";
@@ -164,6 +165,7 @@ const component: Plugin = {
         app.component(GlOptionsDynamicBuilder.name, GlOptionsDynamicBuilder)
         app.component(SwitchPropsBuilder.name, SwitchPropsBuilder)
         app.component(GlExpressionBuilder.name, GlExpressionBuilder)
+        app.component(GlEntityReaderBuilder.name, GlEntityReaderBuilder)
         // 注册属性设置组件
         app.component('GlComponentSetter', GlComponentSetter)
         app.component(GlComponentPropertiesSetter.name, GlComponentPropertiesSetter)
@@ -186,7 +188,7 @@ const component: Plugin = {
         app.component(GlPropertySetter.name, GlPropertySetter)
         app.component(GlPropertySetterCard.name, GlPropertySetterCard)
         app.component(GlIconfontTextSetter.name, GlIconfontTextSetter)
-        app.component(GlIconfontSetterForSlot.name, GlIconfontSetterForSlot)
+        // app.component(GlIconfontSetterForSlot.name, GlIconfontSetterForSlot)
         app.component(GlSelectSetter.name, GlSelectSetter)
         app.component(GlOptionsSetter.name, GlOptionsSetter)
         app.component(GlPageSelect.name, GlPageSelect)

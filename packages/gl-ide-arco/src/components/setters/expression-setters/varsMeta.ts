@@ -112,11 +112,20 @@ export const useComponentInstTreeData = () => {
         return record
     }
 
+    const useCtxArgs = () => {
+        return {
+            title: '事件参数',
+            _code: 'args',
+            _type: 'array',
+            _description: '事件参数，假设onItemClick事件传了两个参数一个item，一个index，则可通过args[0]来获取item，通过args[1]来获取index。',
+            children: <any>[]
+        }
+    }
     const ctx = {
         title: '当前组件上下文',
         _code: 'ctx',
         _type: 'object',
-        children: [useCtxRecord()],
+        children: [useCtxRecord(), useCtxArgs()],
         _description: '表格、表单等组件的正下文环境'
     }
 

@@ -347,12 +347,12 @@ export class Utils {
     // }
 
     /**
-     *
+     * 默认data的id为“id”，pid为“pid”
      * @param data 列表数据
-     * @param pid  根id
+     * @param pid  根id的值
      * @returns {Array}
      */
-    listToTree(data: Array<any>, pid: string | number) {
+    listToTree<T extends { [key: string]: any }>(data: Array<T>, pid: string | number | null) {
         let tree = [];
         let temp;
         for (let i = 0; i < data.length; i++) {
@@ -360,6 +360,7 @@ export class Utils {
                 let obj = data[i];
                 temp = this.listToTree(data, data[i].id);
                 if (temp.length > 0) {
+                    // @ts-ignore
                     obj.children = temp;
                 }
                 tree.push(obj);

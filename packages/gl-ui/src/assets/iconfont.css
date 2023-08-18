@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2457479 */
-  src: url('iconfont.woff2?t=1691951446590') format('woff2'),
-       url('iconfont.woff?t=1691951446590') format('woff'),
-       url('iconfont.ttf?t=1691951446590') format('truetype');
+  src: url('iconfont.woff2?t=1692327415899') format('woff2'),
+       url('iconfont.woff?t=1692327415899') format('woff'),
+       url('iconfont.ttf?t=1692327415899') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,90 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.gl-database:before {
+  content: "\e61f";
+}
+
+.gl-to-sent:before {
+  content: "\e7c2";
+}
+
+.gl-to-pay:before {
+  content: "\e7c7";
+}
+
+.gl-address:before {
+  content: "\e7c8";
+}
+
+.gl-shopping-cart:before {
+  content: "\e7c9";
+}
+
+.gl-cooperation:before {
+  content: "\e7ca";
+}
+
+.gl-sign-in:before {
+  content: "\e7cb";
+}
+
+.gl-collect:before {
+  content: "\e7d0";
+}
+
+.gl-photo:before {
+  content: "\e7d6";
+}
+
+.gl-yaoqing:before {
+  content: "\e7d8";
+}
+
+.gl-zuji:before {
+  content: "\e7da";
+}
+
+.gl-money:before {
+  content: "\e832";
+}
+
+.gl-truck-container:before {
+  content: "\e634";
+}
+
+.gl-container:before {
+  content: "\e622";
+}
+
+.gl-airport:before {
+  content: "\e613";
+}
+
+.gl-warehouse:before {
+  content: "\e630";
+}
+
+.gl-anchor:before {
+  content: "\e9f4";
+}
+
+.gl-car:before {
+  content: "\e615";
+}
+
+.gl-airplane:before {
+  content: "\e612";
+}
+
+.gl-ship:before {
+  content: "\e750";
+}
+
+.gl-local:before {
+  content: "\e638";
 }
 
 .gl-sum:before {
@@ -555,10 +639,6 @@
 
 .gl-team:before {
   content: "\e7af";
-}
-
-.gl-database:before {
-  content: "\e7b0";
 }
 
 .gl-mobile:before {

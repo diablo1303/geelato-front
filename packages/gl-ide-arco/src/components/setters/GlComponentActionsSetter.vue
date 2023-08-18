@@ -89,7 +89,7 @@ const currentAction = ref(new Action())
 const currentActionIndex = ref(-1)
 const actionCodeEditorVisible = ref(false)
 const openActionSetter = (action: Action, actionIndex: number, actionMeta?: ActionMeta) => {
-  console.log('openActionSetter,action, actionIndex, actionMeta:', action, actionIndex, actionMeta)
+  // console.log('openActionSetter,action, actionIndex, actionMeta:', action, actionIndex, actionMeta)
   if (!action.title) {
     action.title = actionMeta?.title || ''
   }

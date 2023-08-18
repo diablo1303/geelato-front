@@ -118,6 +118,13 @@ watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
 
+// 默认选中第一项
+onMounted(() => {
+  if (tabItems.value.length > 0) {
+    mv.value = tabItems.value[0].value
+  }
+})
+
 </script>
 <template>
   <a-tabs class="gl-tabs" :active-key="mv" @tabClick="onTabClick" style="background-color:white">

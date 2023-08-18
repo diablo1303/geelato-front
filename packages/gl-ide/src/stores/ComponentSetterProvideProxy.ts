@@ -40,7 +40,6 @@ export default class ComponentSetterProvideProxy {
     }
 
 
-
     getVarValue(varName: string) {
         return this._varsValue.value[varName]
     }
@@ -87,7 +86,7 @@ export default class ComponentSetterProvideProxy {
         }
         this._varsValue.value[varName] = value
         this.varValueChangeCallbacks.forEach((item: { callback: Function, varName: string }) => {
-            console.log('ComponentSetterProvideProxy > setVarValue() > varName:', varName, item.varName, value, oldVal)
+            // console.log('ComponentSetterProvideProxy > setVarValue() > varName:', varName, 'val:', value, 'oldVal', oldVal, 'try to match callbackVarName:', item.varName)
             if (varName === item.varName) {
                 item.callback(value, oldVal)
             }

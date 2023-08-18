@@ -1,3 +1,4 @@
+<!-- runtime展示页面 -->
 <script lang="ts">
 export default {
   name: "GlPageViewer"
@@ -75,17 +76,11 @@ watch(() => {
 
 </script>
 <template>
-  <div>
-    <!--    <GlInstRuntime v-if="glComponentInst" :key="glComponentInst.id" :id="glComponentInst.id"-->
-    <!--            :text="glComponentInst.id"-->
-    <!--            :glComponentInst="glComponentInst"-->
-    <!--            componentStoreId="useComponentStore"-->
-    <!--            :pageProps="pageProps"-->
-    <!--    >-->
-    <!--    </GlInstRuntime>-->
-    <!--    注意！！！ 表单项组件为通过GlInstRuntime渲染时，未能显示label，这里改为GlComponent渲染-->
-    <GlComponent v-if="glComponentInst" :key="glComponentInst.id" :glComponentInst="glComponentInst"
-                 :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag" :pageStatus="pageStatus" v-bind="pageProps"></GlComponent>
+  <div class="gl-page-viewer">
+    <GlComponent v-if="glComponentInst&&glComponentInst.componentName" :key="glComponentInst.id"
+                 :glComponentInst="glComponentInst"
+                 :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag" :pageStatus="pageStatus" v-bind="pageProps"
+                 :glIgnoreInjectPageProxy="true"/>
   </div>
 </template>
 <style scoped>

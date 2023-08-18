@@ -35,7 +35,7 @@ const props = defineProps({
 const selected = ref(typeof props.modelValue === 'string' ? props.modelValue : '')
 
 watch(selected, () => {
-  console.log('update:modelValue:', selected.value)
+  // console.log('update:modelValue:', selected.value)
   emits('update:modelValue', selected.value)
 }, {immediate: true})
 const treeData = ref<any>([])

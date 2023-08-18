@@ -81,6 +81,27 @@ export class JsScriptExecutor {
                 }
             }
         }
+        console.warn(`通过组件Id(${componentId})获取不到ComponentInstance，很可能是因为此时该组件实例还未创建完成。`)
+        return null
+    }
+
+    /**
+     * 从多个pageProxy中获取vueInst
+     * @param componentId
+     */
+    getVueInst(componentId: string) {
+        if (componentId) {
+            for (const pageComponentId in pageProxyMap) {
+                const pageProxy = pageProxyMap[pageComponentId]
+                if (pageProxy) {
+                    const vueInst = pageProxy.getVueInst(componentId)
+                    if (vueInst) {
+                        return vueInst
+                    }
+                }
+            }
+        }
+        console.warn(`通过组件Id(${componentId})获取不到组件vue实例，很可能是因为此时该组件vue实例还未创建完成。`)
         return null
     }
 
@@ -98,20 +119,15 @@ export class JsScriptExecutor {
      * @param methodName
      */
     getComponentMethod(componentId: string, methodName: string) {
-        if (componentId) {
-            for (const pageComponentId in pageProxyMap) {
-                const pageProxy = pageProxyMap[pageComponentId]
-                if (pageProxy) {
-                    const method = pageProxy.getMethod(componentId, methodName)
-                    if (method) {
-                        return method
-                    }
-                }
-            }
+        // console.log('getComponentMethod() > pageProxyMap:', pageProxyMap)
+        const vueInst = this.getVueInst(componentId)
+        const fn = vueInst?.subTree?.component?.exposed![methodName]
+        if (fn) {
+            return fn
         }
+        console.warn(`获到不到组件(${componentId})的方法(${methodName})，当前组件vue实例为：`, vueInst)
         return null
     }
-
 
     /**
      * 设置组件属性
@@ -134,18 +150,18 @@ export class JsScriptExecutor {
      * @param componentId
      */
     getComponentProps(componentId: string) {
-        for (const pageComponentId in pageProxyMap) {
-            const pageProxy = pageProxyMap[pageComponentId]
-            if (pageProxy) {
-                const vueInst = pageProxy.getVueInst(componentId)
-                if (vueInst) {
-                    // @ts-ignore
-                    return vueInst?.props?.glComponentInst?.props
-                }
-                continue
-            }
-        }
-        return undefined
+        // for (const pageComponentId in pageProxyMap) {
+        //     const pageProxy = pageProxyMap[pageComponentId]
+        //     if (pageProxy) {
+        //         const vueInst = pageProxy.getVueInst(componentId)
+        //         if (vueInst) {
+        //             // @ts-ignore
+        //             return vueInst?.props?.glComponentInst?.props
+        //         }
+        //         continue
+        //     }
+        // }
+        return this.getComponentInst(componentId)?.props
     }
 
     /**
@@ -203,13 +219,11 @@ export class JsScriptExecutor {
                 if (vueInst) {
                     // @ts-ignore
                     const actions = vueInst?.props?.glComponentInst?.actions
-                    if (actions) {
-                        for (const actionsKey in actions) {
-                            const action = actions[actionsKey]
-                            // 按actionName进行触发
-                            if (action.name === actionName) {
-                                jsScriptExecutor.doAction(action, ctx = {pageProxy}, callback)
-                            }
+                    for (const actionsKey in actions) {
+                        const action = actions[actionsKey]
+                        // 按actionName进行触发
+                        if (action.name === actionName) {
+                            jsScriptExecutor.doAction(action, ctx = {pageProxy}, callback)
                         }
                     }
                 }
@@ -300,6 +314,9 @@ export class JsScriptExecutor {
                 if (method) {
                     return method(that.evalParams(params, $gl.ctx))
                 }
+                // else {
+                //     console.error('调用组件方法失败，找到不方法。componentId:', componentId, 'methodName:', methodName)
+                // }
                 return false
             },
             /**

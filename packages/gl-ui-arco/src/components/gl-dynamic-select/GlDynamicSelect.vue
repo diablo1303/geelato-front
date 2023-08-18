@@ -1,6 +1,7 @@
 <template>
-  <a-select v-model="mvItem"
-            class="gl-dynamic-select"
+  <a-select class="gl-dynamic-select"
+            v-model="mvItem"
+            v-model:input-value="inputMv"
             :allow-clear="allowClear"
             :allow-search="allowSearch"
             :readonly="readonly"
@@ -8,12 +9,14 @@
             :disabled="disabled"
             :placeholder="placeholder"
             @change="selectOne"
+            @search="handleSearch"
             :valueKey="valueFiledName"
   >
     <a-option v-for="item in selectOptions" :value="item" :label="item[labelFieldName]"
               :title="item[labelFieldName]"
               :class="{'gl-selected':mv===item[valueFiledName]}"></a-option>
   </a-select>
+  {{ inputMv }}
 </template>
 <script lang="ts">
 /**
@@ -24,8 +27,17 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, onMounted, type PropType, ref, useAttrs, watch} from 'vue'
-import {entityApi, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
+import {inject, type PropType, ref, watch} from 'vue'
+import {
+  entityApi,
+  EntityReader, EntityReaderOrder,
+  EntityReaderParam,
+  executeObjectPropsExpressions,
+  FieldMeta,
+  PageProvideKey,
+  PageProvideProxy
+} from "@geelato/gl-ui";
+import {EntityReaderOrderEnum} from "@geelato/gl-ui";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
@@ -58,6 +70,15 @@ const props = defineProps({
       return 'id'
     }
   },
+  /**
+   *  查询过滤条件
+   */
+  valueFilter: {
+    type: Array as PropType<Array<EntityReaderParam>>,
+    default() {
+      return []
+    }
+  },
   orderFiledName: {
     type: String,
     default() {
@@ -77,9 +98,9 @@ const props = defineProps({
    * asc or desc
    */
   ascOrDesc: {
-    type: String,
+    type: String as PropType<EntityReaderOrderEnum>,
     default() {
-      return '+'
+      return EntityReaderOrderEnum.ASE
     }
   },
   allowClear: {
@@ -99,9 +120,20 @@ const props = defineProps({
   placeholder: String,
   disabled: Boolean
 })
+
+// console.log('props:', props)
+const initValue = props.modelValue || ''
 const emits = defineEmits(['update:modelValue'])
-const mv = ref(props.modelValue)
-const mvItem = ref({[props.valueFiledName]: props.modelValue})
+const mv = ref(initValue)
+const inputMv = ref('')
+const mvItem = ref({[props.valueFiledName]: initValue})
+watch(() => {
+      return props.modelValue
+    },
+    (val: any) => {
+      mvItem.value = {[props.valueFiledName]: props.modelValue || ''}
+    }
+)
 watch(mv,
     (val: any) => {
       emits('update:modelValue', val)
@@ -111,8 +143,7 @@ watch(mv,
 const selectOptions = ref([])
 const loadData = () => {
   if (props.entityName && props.valueFiledName && props.labelFieldName) {
-    const params = props.orderFiledName ? {'@order': props.orderFiledName + '|' + props.ascOrDesc} : {}
-    Object.assign(params, {'delStatus|eq': '0'})
+
     // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'params:', params, 'extraFieldAndBindIds:', props.extraFieldAndBindIds)
     let fields = props.valueFiledName === props.labelFieldName ? `${props.valueFiledName}` : `${props.valueFiledName},${props.labelFieldName}`
     if (props.extraFieldAndBindIds?.length > 0) {
@@ -122,8 +153,35 @@ const loadData = () => {
       })
       fields = fields + ',' + extraFieldNames.join(',')
     }
-    entityApi.query(props.entityName, fields, params).then((resp: any) => {
+    // valueFilter
+    const entityReaderParams: EntityReaderParam[] = JSON.parse(JSON.stringify(props.valueFilter))
+    entityReaderParams.forEach((entityReaderParam) => {
+      // entityReaderParam = {
+      //   name:'xxx',
+      //   cop:'eq',
+      //   "_propsExpressions": {
+      //     "value": "$gl.inst.dict_bPMhDTpsMg95YZc.value||'-1'"
+      //   },
+      //   value:yyy
+      // }
+      executeObjectPropsExpressions(entityReaderParam, {})
+    })
+    entityReaderParams.push(new EntityReaderParam('delStatus', 'eq', '0'))
+
+    const entityReader = new EntityReader()
+    entityReader.entity = props.entityName
+    entityReader.setFields(fields)
+    entityReader.params = entityReaderParams
+    if (props.orderFiledName) {
+      entityReader.order.push(new EntityReaderOrder(props.orderFiledName, props.ascOrDesc))
+    }
+    return entityApi.queryByEntityReader(entityReader).then((resp: any) => {
       selectOptions.value = resp.data?.data || []
+      // console.log('selectOptions.value', selectOptions.value, selectOptions.value.length)
+      if (selectOptions.value.length === 0) {
+        inputMv.value = ''
+        mv.value = ''
+      }
     })
   }
 }
@@ -152,10 +210,16 @@ if (props.triggerMode !== TriggerMode.onInvoked) {
   }, {immediate: true, deep: true})
 }
 
+const handleSearch = () => {
+
+}
+
 defineExpose({fetchData: loadData})
 
 </script>
 
 <style scoped>
-
+.gl-dynamic-select {
+  width: 100%;
+}
 </style>

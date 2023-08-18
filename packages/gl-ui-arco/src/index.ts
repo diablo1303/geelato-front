@@ -27,6 +27,8 @@ import GlMultiComponents from "./components/gl-multi-components/GlMultiComponent
 import GlUpload from "./components/gl-upload/GlUpload.vue";
 import GlImage from "./components/gl-image/GlImage.vue";
 import GlButton from "./components/gl-button/GlButton.vue";
+import GlEntityCascader from "./components/gl-entity-cascader/GlEntityCascader.vue";
+import GlTimeline from "./components/gl-timeline/GlTimeline.vue";
 
 const i18nMessage = {en, cn};
 
@@ -36,6 +38,7 @@ const component: Plugin = {
         if (PluginUtil.markInstalledPlugin(app, "gl-ui-arco")) {
             return;
         }
+        app.component(GlTimeline.name,GlTimeline)
         app.component(GlButton.name,GlButton)
         app.component(GlAlert.name, GlAlert)
         app.component(GlText.name, GlText)
@@ -48,6 +51,7 @@ const component: Plugin = {
         app.component(GlRefPage.name, GlRefPage)
         app.component(GlEntityTree.name, GlEntityTree)
         app.component(GlEntityForm.name, GlEntityForm)
+        app.component(GlEntityCascader.name, GlEntityCascader)
         app.component(GlCard.name, GlCard)
         app.component(GlHiddenArea.name, GlHiddenArea)
         app.component(GlRowColLayout.name, GlRowColLayout)

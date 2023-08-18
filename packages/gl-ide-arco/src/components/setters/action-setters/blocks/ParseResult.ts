@@ -32,7 +32,7 @@ export default class ParseResult {
                 invokeBlockObj[this.invokeBlockNames[index]] = this.children[index].toString()
             }
 
-            console.log('ParseResult > toString() > invokeBlockObj:', invokeBlockObj, this.children)
+            // console.log('ParseResult > toString() > invokeBlockObj:', invokeBlockObj, this.children)
             if (this.startLine) {
                 let sLine = this.startLine
                 for (let key in invokeBlockObj) {

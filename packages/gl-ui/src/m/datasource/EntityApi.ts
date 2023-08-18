@@ -6,6 +6,7 @@ import type {EntityReader, EntityReaderParam} from "./EntityDataSource";
 import type {LooseObject} from "../mix/LooseObject";
 import AllUtils from "../utils/AllUtils";
 import {getToken} from "../utils/auth";
+import jsScriptExecutor from "../actions/JsScriptExecutor";
 
 export type MqlObject = { [key: string]: { [key: string]: any } }
 
@@ -159,7 +160,9 @@ export class EntityApi {
         if (entityReader.fields && entityReader.fields.length > 0) {
             const fieldNames: Array<string> = []
             entityReader.fields.forEach((item) => {
-                fieldNames.push(item.name + (item.alias ? ' ' + item.alias : ''))
+                if (!item.isLocalComputeFiled) {
+                    fieldNames.push(item.name + (item.alias ? ' ' + item.alias : ''))
+                }
             })
             mql[entityReader.entity]['@fs'] = fieldNames.join(',');
         } else {
@@ -199,7 +202,45 @@ export class EntityApi {
         // page
         mql[entityReader.entity]['@p'] = pageNo + ',' + pageSize;
 
-        return this.queryByGql(mql, entityReader.withMeta);
+        const promise = new Promise((resolve, reject) => {
+            this.queryByGql(mql, entityReader.withMeta).then((res) => {
+                // 是否需要处理返回结果
+                const foundLocalComputeField = entityReader.fields.find((field) => {
+                    return field.isLocalComputeFiled
+                })
+                if (foundLocalComputeField) {
+                    const newRows: any[] = []
+                    res.data.data.forEach((row: any) => {
+                        let newRow: Record<string, any> = {}
+                        for (let index in entityReader.fields) {
+                            const fieldMeta = entityReader.fields[index]
+                            if (fieldMeta.isLocalComputeFiled) {
+                                if (fieldMeta.valueExpression) {
+                                    newRow[fieldMeta.name] = jsScriptExecutor.evalExpression(fieldMeta.valueExpression, {
+                                        record: row,
+                                        index: Number.parseInt(index)
+                                    })
+                                } else {
+                                    newRow[fieldMeta.name] = undefined
+                                }
+                            } else {
+                                newRow[fieldMeta.alias || fieldMeta.name] = row[fieldMeta.alias || fieldMeta.name]
+                            }
+                        }
+                        newRows.push(newRow)
+                    })
+                    // console.log('foundLocalComputeField', res)
+                    res.data.data = newRows
+                    resolve(res)
+                } else {
+                    resolve(res)
+                }
+            }).catch((reason) => {
+                reject(reason)
+            })
+        })
+
+        return promise
     }
 
     /**

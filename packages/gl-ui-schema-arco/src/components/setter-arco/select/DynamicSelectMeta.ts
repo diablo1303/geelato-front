@@ -95,7 +95,7 @@ export default {
         "title": "数据过滤",
         "_showSub": false,
         "properties": [{
-            "name": "fieldName",
+            "name": "name",
             "group": "base",
             "type": "props",
             "enableValueExpress": false,
@@ -152,7 +152,7 @@ export default {
             "placeholder": ""
         }],
         "setterComponentName": "GlObjectArraySetter",
-        "titleField": "fieldName",
+        "titleField": "name",
         "subTitleField": "",
         "alarmIfNoSubTitle": ""
     }, {
