@@ -1,5 +1,7 @@
 <template>
-  <a-layout-footer class="footer">Geelato Admin Pro</a-layout-footer>
+  <a-layout-footer class="footer">Geelato Admin Pro  &nbsp;&nbsp; <a
+      href="https://beian.miit.gov.cn/" style="text-decoration:none" target="_blank">粤ICP备2023086045号</a>
+  </a-layout-footer>
 </template>
 
 <script lang="ts" setup></script>
