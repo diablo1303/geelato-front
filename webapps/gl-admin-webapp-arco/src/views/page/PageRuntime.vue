@@ -28,7 +28,7 @@ export default {
         请在url中传入pageId参数，如：【http://localhost:8000/:tenantCode/:appId/page/preview/:pageId】。
       </a-alert>
     </div>
-    <GlPageViewer v-if="pageId" :pageId="pageId"></GlPageViewer>
+    <GlPageViewer v-if="pageId" :pageId="pageId" :glIsRuntime="true" glRuntimeFlag=""></GlPageViewer>
   </div>
 </template>
 <style scoped>
