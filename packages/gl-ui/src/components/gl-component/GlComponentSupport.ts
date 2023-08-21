@@ -1,4 +1,4 @@
-import jsScriptExecutor from "../../m/actions/JsScriptExecutor";
+import jsScriptExecutor, {Ctx} from "../../m/actions/JsScriptExecutor";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 
@@ -74,7 +74,8 @@ export function executeObjectPropsExpressions(obj: any, ctx: object) {
  * @param glComponentInst
  * @param ctx
  */
-export const executePropsExpressions = (glComponentInst: any, ctx: object) => {
+export const executePropsExpressions = (glComponentInst: any, ctx: Ctx) => {
+    // console.log('executePropsExpressions() > ctx:', glComponentInst.componentName, glComponentInst.props.label, ctx)
     executeInstPropsExpressions(glComponentInst, ctx)
     executeObjectPropsExpressions(glComponentInst.props, ctx)
 }

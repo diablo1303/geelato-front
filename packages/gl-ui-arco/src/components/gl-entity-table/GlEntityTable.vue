@@ -411,7 +411,7 @@ defineExpose({
     <template ##="{ record,rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
         <template v-for="(columnAction,index) in columnActions" :key="index">
-          <template v-if="columnAction">
+          <template v-if="columnAction&&record">
             <GlComponent v-if="columnAction.props.unRender!==true" v-show="columnAction.props._hidden!==true"
                          :glComponentInst="columnAction" :glCtx="{record,rowIndex}"></GlComponent>
           </template>
@@ -420,7 +420,7 @@ defineExpose({
     </template>
     <template v-for="slotColumn in slotColumns"
               v-slot:[slotColumn.slotName]="{ record, column, rowIndex }">
-      <template v-if="column._component">
+      <template v-if="column._component&&record">
         <GlComponent :glComponentInst="column._component" v-model="record[column.dataIndex]"
                      :glCtx="{record,rowIndex}"></GlComponent>
       </template>

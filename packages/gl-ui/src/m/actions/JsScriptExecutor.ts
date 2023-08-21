@@ -1,11 +1,11 @@
-import type {App, ComponentInternalInstance} from "vue";
+import type {App} from "vue";
 import {h} from "vue";
 import type {Action} from "@geelato/gl-ui-schema";
 import utils from "../utils/Utils";
 import GlPageViewer from '../../components/gl-page-viewer/GlPageViewer.vue'
 import type PageProvideProxy from "../../components/PageProvideProxy";
 import type {Param} from "../types/global";
-import type {EntityReaderParam} from "../datasource/EntityDataSource";
+import { entityApi } from "../datasource/EntityApi";
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 type OptionsType = { [key: string]: any }
@@ -21,7 +21,7 @@ type OptionsType = { [key: string]: any }
 //     return  exposed![methodName]
 // }
 
-class Ctx {
+export class Ctx {
     pageProxy?: PageProvideProxy;
 
     [key: string]: any
@@ -571,7 +571,8 @@ export class JsScriptExecutor {
             insts: <{ [key: string]: any }>{},
             vueInsts: <{ [key: string]: any }>{},
             ctx: {},
-            fn: utils
+            fn: utils,
+            entityApi
         }
         // set logic fns
         Object.assign($gl.fn, this.getLogicFns($gl))

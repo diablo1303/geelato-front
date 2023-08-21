@@ -142,19 +142,18 @@ const onItemClick = (item: GlTimelineItem, index: number) => {
       <a-timeline-item v-for="(item,index) in timelineItems" :label="item.label" :dotColor="item.dotColor"
                        :dotType="item.dotType" :lineType="item.lineType" :lineColor="item.lineColor"
                        style="padding-bottom: -12px"
-                       @click="onItemClick(item,index)"
       >
-        <div v-if="item.iconType" :style="{ display: 'inline-flex', alignItems: 'center' }">
-          <GlIconfont :type="item.iconType" style="margin: 0 16px 0px 0"
+        <div v-if="item.iconType" :style="{ display: 'inline-flex', alignItems: 'center' }" @click="onItemClick(item,index)">
+          <GlIconfont :type="item.iconType" style="margin: 0 16px 0 0"
                       :style="{'font-size':props.iconSize,color:item.dotColor}"/>
-          <div :style="{ marginBottom: '0px' }">
+          <div :style="{ marginBottom: '0' }">
             {{ item.title }}
             <div :style="{ fontSize: '12px', color: '#4E5969' }">
               {{ item.content }}
             </div>
           </div>
         </div>
-        <div v-else>
+        <div v-else @click="onItemClick(item,index)">
           <div :style="{ marginBottom: '12px' }">
             {{ item.title }}
             <div :style="{ fontSize: '12px', color: '#4E5969' }">
