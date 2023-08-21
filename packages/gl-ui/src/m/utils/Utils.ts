@@ -68,7 +68,7 @@ export class Utils {
      * @param glName 指定上下文的参数名，默认为$gl
      * @returns {*}
      */
-    evalExpression(expression: string, $gl: object, glName = '$gl') {
+    evalExpression(expression: string | number, $gl: object, glName = '$gl') {
         try {
             if (typeof expression === 'number') {
                 console.log('gl-ui > utils > evalExpression() > expression: ', expression, 'result:', expression, '$gl', $gl)
@@ -242,7 +242,7 @@ export class Utils {
     }
 
     isNullOrEmpty(obj: Object | undefined | null) {
-        return obj === null || obj === undefined || (typeof obj === 'object' && Object.keys.length === 0)
+        return obj === null || obj === undefined || (typeof obj === 'object' && Object.keys(obj).length === 0)
     }
 
     /**

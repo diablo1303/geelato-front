@@ -17,7 +17,8 @@ export default {
         "title": "应用ID",
         "setterComponentName": "AInput",
         "placeholder": "不填写表示当前应用",
-        "enableValueExpress": false
+        "enableValueExpress": false,
+        "displayMode": "tile"
     }, {
         "name": "extendId",
         "setterComponentProps": {},
@@ -27,7 +28,9 @@ export default {
         "show": true,
         "expanded": true,
         "title": "打开的页面",
-        "setterComponentName": "GlPageSelect"
+        "setterComponentName": "GlPageSelect",
+        "enableValueExpress": false,
+        "displayMode": "tile"
     }, {
         "name": "mode",
         "title": "页面模式",
@@ -36,8 +39,16 @@ export default {
         "enableValueExpress": false,
         "show": true,
         "expanded": true,
-        "setterComponentName": "ASelect",
-        "setterComponentProps": {"options": [{"label": "抽屉", "value": "Drawer"}, {"label": "弹层", "value": "Modal"}]}
+        "setterComponentName": "ARadioGroup",
+        "setterComponentProps": {
+            "options": [{
+                "label": "抽屉",
+                "value": "Drawer",
+                "__ZJlQQm1EXOC5gVysMI": "Drawer"
+            }, {"label": "弹层", "value": "Modal", "__ZJlQQm1EXOC5gVysMI": "Modal"}]
+        },
+        "displayMode": "tile",
+        "setterComponentVModelName": "modelValue"
     }, {
         "name": "title",
         "setterComponentProps": {"value": "默认为1024px"},
@@ -48,7 +59,8 @@ export default {
         "expanded": true,
         "title": "页面标题",
         "setterComponentName": "AInput",
-        "enableValueExpress": true
+        "enableValueExpress": true,
+        "displayMode": "tile"
     }, {
         "name": "width",
         "setterComponentProps": {},
@@ -59,16 +71,19 @@ export default {
         "expanded": true,
         "title": "页面宽度",
         "setterComponentName": "AInput",
-        "enableValueExpress": true
+        "enableValueExpress": true,
+        "displayMode": "tile"
     }, {
         "name": "pageStatus",
         "setterComponentProps": {
             "options": [{
                 "label": "新增",
-                "value": "create"
-            }, {"label": "只读",  "value": "read"}, {
+                "value": "create",
+                "__5VmEVhTkf6I6m8Pgo1": "create"
+            }, {"label": "只读", "value": "read", "__5VmEVhTkf6I6m8Pgo1": "read"}, {
                 "label": "修改",
-                "value": "update"
+                "value": "update",
+                "__5VmEVhTkf6I6m8Pgo1": "update"
             }]
         },
         "setterComponentVModelName": "modelValue",
@@ -78,7 +93,8 @@ export default {
         "show": true,
         "expanded": true,
         "title": "页面状态",
-        "setterComponentName": "ASelect"
+        "setterComponentName": "ASelect",
+        "displayMode": "tile"
     }, {
         "name": "params",
         "setterComponentProps": {},
@@ -112,7 +128,10 @@ export default {
         }],
         "setterComponentName": "GlObjectArraySetter",
         "titleField": "name",
-        "enableValueExpress": false
+        "enableValueExpress": false,
+        "displayMode": "tile",
+        "subTitleField": "",
+        "alarmIfNoSubTitle": ""
     }, {
         "name": "okText",
         "setterComponentProps": {},
@@ -156,14 +175,19 @@ export default {
         "setterComponentProps": {
             "options": [{
                 "label": "确认操作时触发，如可做表单保存工作",
-                "value": "onBeforeOk"
-            }, {"label": "页面关闭后（动画结束）触发", "value": "onClose"}, {
-                "label": "页面打开后（动画结束）触发",
-                "value": "onOpen",
-            }], "multiple": true, "allowClear": false
+                "value": "onBeforeOk",
+                "__bm8YikAIyQpi61YiOR": "onBeforeOk"
+            }, {
+                "label": "页面关闭后（动画结束）触发",
+                "value": "onClose",
+                "__bm8YikAIyQpi61YiOR": "onClose"
+            }, {"label": "页面打开后（动画结束）触发", "value": "onOpen", "__bm8YikAIyQpi61YiOR": "onOpen"}],
+            "multiple": true,
+            "allowClear": false
         },
         "setterComponentVModelName": "modelValue",
         "title": "调用指令",
-        "setterComponentName": "ASelect"
+        "setterComponentName": "ASelect",
+        "displayMode": "tile"
     }]
 }

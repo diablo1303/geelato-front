@@ -1,6 +1,6 @@
 <template>
   <div class="gl-entity-form" v-if="refreshFlag">
-    <a-form ref="formRef" :model="formData" :layout="layout"
+    <a-form ref="formRef" :model="formData" :layout="layout!"
             :autoLabelWidth="autoLabelWidth" :disabled="isRead">
       <template v-if="glIsRuntime">
         <slot></slot>
@@ -227,7 +227,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
 const loadForm = async () => {
   if (!entityRecordId.value) {
     // 1、不需要从服务端获取
-    if (isRead&&props.glIsRuntime) {
+    if (isRead && props.glIsRuntime) {
       global.$notification.error({
         duration: 8000,
         title: '参数不全',
@@ -433,9 +433,10 @@ defineExpose({submitForm})
 /**
  * 在arco-drawer-body内，不显示提交按钮
  */
-.arco-drawer-body .gl-entity-form .formSubmit {
+.arco-drawer-body .gl-entity-form .formSubmit, .arco-modal-body .gl-entity-form .formSubmit {
   display: none;
 }
+
 
 .gl-entity-form-actions {
   position: fixed;

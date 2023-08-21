@@ -82,7 +82,7 @@ const stopPropagation = (...args: any) => {
  *  调用actionScriptExecutor.doAction
  *  @actionName 执行的动作名称
  */
-const doAction = (actionName: string, ...args: any) => {
+const doAction = (actionName: string, args: any) => {
   // console.log('GlComponent > doAction() > args:', actionName, args)
   if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
     props.glComponentInst.actions.forEach((action: Action) => {
@@ -90,9 +90,10 @@ const doAction = (actionName: string, ...args: any) => {
         // console.log('GlComponent > doAction > action', action)
         // let ctx = inject('$ctx') as object || {}
         let ctx = {}
-        Object.assign(ctx, props.glCtx, {args: args}, {
+        Object.assign(ctx, props.glCtx, {args}, {
           pageProxy: pageProvideProxy
         })
+        // console.log('GlComponent > doAction() > ctx:', actionName, ctx)
         jsScriptExecutor.doAction(action, ctx)
       }
     })

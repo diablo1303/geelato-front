@@ -1,7 +1,6 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
 import type {Param} from "@geelato/gl-ui";
-import {utils} from "@geelato/gl-ui";
 
 export default class ComponentInvokeBlockHandler implements IBlockHandler {
 

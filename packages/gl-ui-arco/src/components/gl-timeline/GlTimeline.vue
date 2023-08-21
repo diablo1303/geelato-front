@@ -5,10 +5,10 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {type PropType, type Ref, ref, watch} from "vue";
+import {inject, type PropType, type Ref, ref, watch} from "vue";
 import type {GlTimelineItem} from "./type";
 import type {EntityReader} from "@geelato/gl-ui";
-import {entityApi} from "@geelato/gl-ui";
+import {entityApi, jsScriptExecutor, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue', 'onItemClick'])
 
@@ -49,6 +49,8 @@ const props = defineProps({
   dotColor: String,
   dotColorRule: String as PropType<DotColorRuleEnum>,
 })
+
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const mv = ref(props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
@@ -85,7 +87,9 @@ const setTimelineItems = (value: GlTimelineItem[]) => {
 }
 
 const fetchData = () => {
+  jsScriptExecutor.evalValueExpressions(props.entityReader.params, {pageProxy: pageProvideProxy})
   entityApi.queryByEntityReader(props.entityReader).then((res: any) => {
+    // console.log('timeline res ',res.data.data)
     if (props.itemMode === 'dynamic') {
       setTimelineItems(res.data.data)
     } else if (props.itemMode === 'dynamicUpdateStatic') {
@@ -95,10 +99,14 @@ const fetchData = () => {
         // 将动态的数据合并到静态中，不增加项，只更新静态items的数据
         const foundDataItem = res.data.data.find((dataItem: Record<string, any>) => {
           // 基于code匹配
-          return item.code === dataItem.code
+          return item.code == dataItem.code
         })
+        // console.log('foundDataItem', foundDataItem, 'item', item)
+
         if (foundDataItem) {
           Object.assign(item, foundDataItem)
+        } else {
+          item.id = ''
         }
       })
       setTimelineItems(items)
@@ -123,18 +131,9 @@ const editingItem = ref({})
 const onItemClick = (item: GlTimelineItem, index: number) => {
   emits('onItemClick', item, index)
   editingItem.value = item
-  visible.value = true
 }
 
-const visible = ref(false)
-const handleOk = () => {
-  visible.value = false
-}
-const handleCancel = () => {
-  visible.value = false
-}
-const handleSubmit = () => {
-}
+
 </script>
 
 <template>
@@ -170,24 +169,6 @@ const handleSubmit = () => {
         无数据
       </a-timeline-item>
     </template>
-<!--    <a-modal v-model:visible="visible" @ok="handleOk" @cancel="handleCancel">-->
-<!--      <template #title>-->
-<!--        订单状态时间、路由轨道信息设置-->
-<!--      </template>-->
-<!--      <div>-->
-<!--        <a-form ref="formRef" :model="editingItem" @submit="handleSubmit">-->
-<!--          <a-form-item field="title" label="订单状态">-->
-<!--            {{ editingItem.title }}-->
-<!--          </a-form-item>-->
-<!--          <a-form-item field="label" label="状态时间">-->
-<!--            <a-date-picker v-model="editingItem.label" disabled-time="false" placeholder=""/>-->
-<!--          </a-form-item>-->
-<!--          <a-form-item field="content" label="状态备注">-->
-<!--            <a-textarea v-model="editingItem.content" placeholder=""/>-->
-<!--          </a-form-item>-->
-<!--        </a-form>-->
-<!--      </div>-->
-<!--    </a-modal>-->
   </a-timeline>
 </template>
 

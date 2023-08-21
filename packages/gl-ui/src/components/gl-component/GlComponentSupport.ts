@@ -37,7 +37,7 @@ export function executeInstPropsExpressions(inst: ComponentInstance, ctx: object
  */
 export function executeObjectPropsExpressions(obj: any, ctx: object) {
     // @ts-ignore
-    if (typeof obj === 'object') {
+    if (obj && typeof obj === 'object') {
         if (obj.length !== undefined) {
             // array
             for (const objKey in obj) {
