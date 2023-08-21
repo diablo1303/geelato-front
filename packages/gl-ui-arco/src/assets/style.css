@@ -19,3 +19,12 @@
 .arco-scrollbar-track-direction-horizontal {
     bottom: -1.1em !important;
 }
+
+.arco-list-item:hover{
+    background-color: rgb(239, 239, 239);
+}
+
+.arco-list-item.gl-active{
+    background-color: rgb(239, 239, 239);
+}
+

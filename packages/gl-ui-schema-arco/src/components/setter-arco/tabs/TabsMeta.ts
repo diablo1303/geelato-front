@@ -39,8 +39,9 @@ export default {
             "title": "值",
             "description": "切换tab时，选中的值",
             "setterComponentName": "AInput",
-            "enableValueExpress": true
-        },{
+            "enableValueExpress": true,
+            "displayMode": "tile"
+        }, {
             "name": "iconType",
             "group": "base",
             "type": "props",
@@ -64,7 +65,10 @@ export default {
             "setterComponentName": "ASwitch"
         }],
         "titleField": "title",
-        "enableValueExpress": false
+        "enableValueExpress": false,
+        "displayMode": "tile",
+        "subTitleField": "value",
+        "alarmIfNoSubTitle": "值为空"
     }, {
         "name": "position",
         "setterComponentProps": {
@@ -106,19 +110,19 @@ export default {
         "name": "type",
         "setterComponentProps": {
             "type": "radio",
-            "options": [{"label": "line", "__3pdrS40CCLpRbvsr7c": "line", "value": "line"}, {
+            "options": [{"label": "line", "value": "line", "__eGMOjRWzE5POvKO12X": "line"}, {
                 "label": "card",
-                "__3pdrS40CCLpRbvsr7c": "card",
-                "value": "card"
+                "value": "card",
+                "__eGMOjRWzE5POvKO12X": "card"
             }, {
                 "label": "card-gutter",
-                "__3pdrS40CCLpRbvsr7c": "card-gutter",
-                "value": "card-gutter"
-            }, {"label": "text", "__3pdrS40CCLpRbvsr7c": "text", "value": "text"}, {
+                "value": "card-gutter",
+                "__eGMOjRWzE5POvKO12X": "card-gutter"
+            }, {"label": "text", "value": "text", "__eGMOjRWzE5POvKO12X": "text"}, {
                 "label": "rounded",
-                "__3pdrS40CCLpRbvsr7c": "rounded",
-                "value": "rounded"
-            }, {"label": "capsule", "__3pdrS40CCLpRbvsr7c": "capsule", "value": "capsule"}]
+                "value": "rounded",
+                "__eGMOjRWzE5POvKO12X": "rounded"
+            }, {"label": "capsule", "value": "capsule", "__eGMOjRWzE5POvKO12X": "capsule"}]
         },
         "setterComponentVModelName": "modelValue",
         "group": "base",
@@ -127,7 +131,8 @@ export default {
         "show": true,
         "expanded": true,
         "title": "类型",
-        "setterComponentName": "ARadioGroup"
+        "setterComponentName": "ARadioGroup",
+        "displayMode": "tile"
     }],
     "actions": [{"name": "onValueChange", "description": "切换选项卡", "title": "切换选项卡"}]
 }

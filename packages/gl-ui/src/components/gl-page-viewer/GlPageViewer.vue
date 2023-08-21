@@ -1,9 +1,9 @@
-<!-- runtime展示页面 -->
 <script lang="ts">
 export default {
   name: "GlPageViewer"
 }
 </script>
+
 <script lang="ts" setup>
 import {ref, watch} from "vue";
 import {ComponentInstance} from "@geelato/gl-ui-schema";

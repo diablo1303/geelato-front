@@ -349,16 +349,25 @@ export class Utils {
     /**
      * 默认data的id为“id”，pid为“pid”
      * @param data 列表数据
-     * @param pid  根id的值
+     * @param pidValue  根id的值
+     * @param fieldsMapper id.pid字段映射
      * @returns {Array}
      */
-    listToTree<T extends { [key: string]: any }>(data: Array<T>, pid: string | number | null) {
+    listToTree<T extends {
+        [key: string]: any
+    }>(data: Array<T>, pidValue: string | number | null, fieldsMapper?: Record<string, string>) {
         let tree = [];
+        let idField = 'id'
+        let pidField = 'pid'
+        if (fieldsMapper) {
+            fieldsMapper.id ? idField = fieldsMapper.id : 'id'
+            fieldsMapper.pid ? pidField = fieldsMapper.pid : 'pid'
+        }
         let temp;
         for (let i = 0; i < data.length; i++) {
-            if (data[i].pid == pid) {
+            if (data[i][pidField] == pidValue) {
                 let obj = data[i];
-                temp = this.listToTree(data, data[i].id);
+                temp = this.listToTree(data, data[i][idField]);
                 if (temp.length > 0) {
                     // @ts-ignore
                     obj.children = temp;
@@ -367,6 +376,22 @@ export class Utils {
             }
         }
         return tree;
+    }
+
+    /**
+     * 树结构转成列表结构
+     * @param treeNodes
+     */
+    treeToList(treeNodes: Record<string, any>[]) {
+        const list = []
+        treeNodes.forEach((treeNode) => {
+            const addTreeNode = treeNode
+            list.push(addTreeNode)
+            if (addTreeNode.children) {
+                this.treeToList(treeNode.children)
+                delete addTreeNode.children
+            }
+        })
     }
 
     /**

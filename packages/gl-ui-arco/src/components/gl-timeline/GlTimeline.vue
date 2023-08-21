@@ -118,12 +118,23 @@ if (props.itemMode === 'static') {
   }
 }
 
+const editingItem = ref({})
 
 const onItemClick = (item: GlTimelineItem, index: number) => {
   emits('onItemClick', item, index)
+  editingItem.value = item
+  visible.value = true
 }
 
-
+const visible = ref(false)
+const handleOk = () => {
+  visible.value = false
+}
+const handleCancel = () => {
+  visible.value = false
+}
+const handleSubmit = () => {
+}
 </script>
 
 <template>
@@ -159,6 +170,24 @@ const onItemClick = (item: GlTimelineItem, index: number) => {
         无数据
       </a-timeline-item>
     </template>
+<!--    <a-modal v-model:visible="visible" @ok="handleOk" @cancel="handleCancel">-->
+<!--      <template #title>-->
+<!--        订单状态时间、路由轨道信息设置-->
+<!--      </template>-->
+<!--      <div>-->
+<!--        <a-form ref="formRef" :model="editingItem" @submit="handleSubmit">-->
+<!--          <a-form-item field="title" label="订单状态">-->
+<!--            {{ editingItem.title }}-->
+<!--          </a-form-item>-->
+<!--          <a-form-item field="label" label="状态时间">-->
+<!--            <a-date-picker v-model="editingItem.label" disabled-time="false" placeholder=""/>-->
+<!--          </a-form-item>-->
+<!--          <a-form-item field="content" label="状态备注">-->
+<!--            <a-textarea v-model="editingItem.content" placeholder=""/>-->
+<!--          </a-form-item>-->
+<!--        </a-form>-->
+<!--      </div>-->
+<!--    </a-modal>-->
   </a-timeline>
 </template>
 

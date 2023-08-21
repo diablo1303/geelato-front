@@ -340,10 +340,16 @@ export default class PageProvideProxy {
      * @param componentId
      * @param methodName
      */
-    getMethod(componentId: string, methodName: string): Function | undefined {
+    getMethod(componentId: string, methodName: string): Function | null {
         const vueInst = this.getVueInst(componentId)
-        console.log('PageProvideProxy > getMethod() > vueInst:', vueInst, 'methodName:', methodName, 'pageProxy', this)
-        return vueInst?.subTree?.component?.exposed![methodName]
+        // @ts-ignore
+        console.log('PageProvideProxy > getMethod() > componentName:', vueInst?.props?.glComponentInst?.componentName, 'methodName:', methodName, 'vueInst:', vueInst, 'pageProxy', this)
+        // GlPage组件的exposed通过vueInst?.exposed 取得，其它的通过vueInst?.subTree?.component?.exposed取得
+        let fn = vueInst?.subTree?.component?.exposed![methodName] || vueInst?.exposed![methodName]
+        if (fn) {
+            return fn
+        }
+        return null
     }
 
     setPageStatus(pageStatus: string) {

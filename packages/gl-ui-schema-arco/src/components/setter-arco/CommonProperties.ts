@@ -148,6 +148,16 @@ export const commonPropsOther = [{
 }]
 
 export const commonActions = [
-    {"name": "onMounted", "description": "组件加载完时触发，和Vue的onMounted一致", "title": "加载完"},
-    {"name": "onUpdated", "description": "组件更新时触发，和Vue的onUpdated一致", "title": "更新完"}
+    {
+        "eventName": "refresh",
+        "name": "refresh",
+        "description": "组件加载完时触发，和Vue的onMounted一致",
+        "title": "加载完"
+    },
+    {
+        "eventName": "onUpdated",
+        "name": "onUpdated",
+        "description": "组件更新时触发，和Vue的onUpdated一致",
+        "title": "更新完"
+    }
 ]

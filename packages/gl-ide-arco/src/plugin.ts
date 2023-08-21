@@ -33,6 +33,7 @@ import GlEntityReaderSetter from "./components/setters/property-setters/entity-r
 import GlToolbarBreadcrumbs from './components/stage/GlToolbarBreadcrumbs.vue'
 import GlExpressionSetter from "./components/setters/expression-setters/GlExpressionSetter.vue";
 import GlActionList from "./components/sidebar/GlActionList.vue";
+import GlPermissionList from "./components/sidebar/permissions/GlPermissionList.vue"
 // import GlX from './components/gl-x/GlX.vue'
 // import GlComponentRecursion from './components/gl-component-recursion/ComponentRecursion.vue'
 import "./assets/style.css"
@@ -91,6 +92,14 @@ plugin.sidebar.push(new Panel({
 }))
 
 plugin.sidebar.push(new Panel({
+    title: '页面权限',
+    name: '页面权限',
+    iconType: 'gl-security',
+    componentName: GlPermissionList.name
+}))
+
+
+plugin.sidebar.push(new Panel({
     title: '历史记录',
     name: '历史记录',
     iconType: 'gl-history',
@@ -147,6 +156,7 @@ const component: Plugin = {
         app.component(GlComponentsSidebar.name, GlComponentsSidebar)
         app.component(GlComponentTree.name, GlComponentTree)
         app.component(GlActionList.name, GlActionList)
+        app.component(GlPermissionList.name, GlPermissionList)
         app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
         app.component(GlIdePluginCoreHistory.name, GlIdePluginCoreHistory)
         app.component(GlBasePage.name, GlBasePage)

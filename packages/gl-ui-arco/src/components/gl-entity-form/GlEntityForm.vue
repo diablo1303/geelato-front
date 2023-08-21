@@ -127,7 +127,7 @@ const buildFieldItems = () => {
           value: subInst.value
         }
         const foundSameBindFiled = formItems.value.find((formItem: any) => {
-          return formItem.fieldName === subInst.props.bindField.fieldName
+          return formItem.fieldName === subInst.props.bindField?.fieldName
         })
         if (foundSameBindFiled) {
           const info = `多组件绑定同字段：${subInst.props.bindField.fieldName}，组件：${foundSameBindFiled.label}、${subInst.props.label}`
@@ -173,7 +173,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
       // 只要做了数据绑定，不管是输入还是展示类的组件，都需进行值设置
       if (subInst.props.bindField) {
         const foundFieldName = Object.keys(dataItem).find((key: string) => {
-          return key === subInst.props.bindField.fieldName
+          return key === subInst.props.bindField!.fieldName
         })
         if (foundFieldName) {
           const value = dataItem[subInst.props.bindField.fieldName]

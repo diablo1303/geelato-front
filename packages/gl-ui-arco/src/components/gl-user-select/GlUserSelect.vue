@@ -104,8 +104,8 @@ const loadUserDataItems = (ids?: Array<any>) => {
   const reader = new EntityReader()
   reader.entity = 'platform_user'
   reader.fields = []
-  reader.fields.push(new FieldMeta('id', '','ID'))
-  reader.fields.push(new FieldMeta('name', '','名称'))
+  reader.fields.push(new FieldMeta('id', '', 'ID'))
+  reader.fields.push(new FieldMeta('name', '', '名称'))
   reader.params = []
   reader.params.push(new EntityReaderParam('delStatus', 'eq', 0))
   if (ids && ids.length > 0) {
@@ -161,7 +161,7 @@ const onBeforeOpen = () => {
 
 
 const setUserSelectingInfo = (userDataItem: UserDataItem, index?: number) => {
-  console.log('setUserSelectingInfo', userDataItem)
+  // console.log('setUserSelectingInfo', userDataItem)
   selectingItems.value.length = 0
   selectingItems.value.push(userDataItem)
   selectingNames.value = userDataItem.name
@@ -172,6 +172,8 @@ const setUserSelectingInfo = (userDataItem: UserDataItem, index?: number) => {
 const clearMultipleSelected = (userDataItems: Array<any>) => {
   selectingItems.value.length = 0
   selectedNames.value = ''
+  selectedIds.value = ''
+  emits('update:modelValue', selectedIds.value)
 }
 const clearOneSelected = (userDataItem: any) => {
   const foundIndex = selectingItems.value.findIndex((item) => {
@@ -188,6 +190,7 @@ watch(() => {
 }, () => {
   init()
 })
+
 </script>
 
 <template>

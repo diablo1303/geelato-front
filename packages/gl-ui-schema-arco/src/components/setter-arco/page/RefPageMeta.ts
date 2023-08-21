@@ -71,5 +71,7 @@ export default {
         "setterComponentVModelName": "modelValue",
         "setterComponentName": "GlPageSelect",
         "title": "配置页面"
-    }]
+    }],
+    "methods": [{"name": "refresh", "title": "刷新", "description": "以当前一样的参数重新加载页面", "params": []}]
+
 }

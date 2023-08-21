@@ -248,13 +248,13 @@ export class EntityApi {
      * 更复杂、高级的查询@see queryByGql
      * @param entityName e.g. platform_dev_project
      * @param fieldNames 查询的列字段 e.g. id,name
-     * @param params 查询要件键值对 e.g. {id:123456,name:'张三'} or {'@order':'name|+'}
+     * @param params 查询要件键值对 e.g. {id:123456,name:'张三'} or {'@order':'name|+'}。不指定数据状态时，默认不查询已删除的数据
      * @param withMeta
      */
     query(
         entityName: string,
         fieldNames: string,
-        params: object,
+        params: Record<string, any>,
         withMeta?: boolean
     ) {
         // if (!fieldNames) {
@@ -270,7 +270,14 @@ export class EntityApi {
         mql[entityName] = {
             "@fs": fieldNames || "*",
         };
-        Object.assign(mql[entityName], params);
+        let copyParam = JSON.parse(JSON.stringify(params))
+        if (!copyParam.delStatus) {
+            copyParam.delStatus = '0'
+        }
+        if (!copyParam['@p']) {
+            copyParam['@p'] = '1,500'
+        }
+        Object.assign(mql[entityName], copyParam);
         return this.queryByGql(mql, withMeta);
     }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="gl-page" :style="style">
+  <div class="gl-page" v-if="visiblePage" :style="style" :key="key">
     <template v-if="glIsRuntime">
       <slot></slot>
     </template>
@@ -15,13 +15,13 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {type PropType, getCurrentInstance, onUnmounted, provide} from "vue";
+import {type PropType, getCurrentInstance, onUnmounted, provide, ref, nextTick} from "vue";
 import {
   type PageType,
   PageProvideProxy,
   jsScriptExecutor,
   mixins,
-  PageProvideKey, type Param
+  PageProvideKey, type Param, utils
 } from "@geelato/gl-ui";
 import type {Action} from "@geelato/gl-ui-schema";
 import {PageParamsKey} from "@geelato/gl-ui";
@@ -95,6 +95,9 @@ const props = defineProps({
   ...mixins.props
 })
 
+const visiblePage = ref(true)
+const key = ref(utils.gid())
+
 const style = {
   margin: props.pageMargin || '12px',
   padding: props.pagePadding || '0'
@@ -145,6 +148,21 @@ onUnmounted(() => {
   jsScriptExecutor.removePageProxy(props.glComponentInst.id)
   // console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
 })
+
+
+/**
+ *  以当前页面参数数据重新加载
+ */
+const refresh = () => {
+  console.log('page refresh')
+  key.value = utils.gid()
+  visiblePage.value = false
+  nextTick(() => {
+    visiblePage.value = true
+  })
+}
+
+defineExpose({refresh})
 
 </script>
 <style lang="less">

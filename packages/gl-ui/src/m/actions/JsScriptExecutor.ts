@@ -1,4 +1,4 @@
-import type {App} from "vue";
+import type {App, ComponentInternalInstance} from "vue";
 import {h} from "vue";
 import type {Action} from "@geelato/gl-ui-schema";
 import utils from "../utils/Utils";
@@ -8,6 +8,17 @@ import type {Param} from "../types/global";
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 type OptionsType = { [key: string]: any }
+
+// export const getInstMethod = (vueInst: ComponentInternalInstance | null, methodName: string) => {
+//     if (!vueInst) {
+//         return null
+//     }
+//     let exposed = vueInst?.subTree?.component?.exposed
+//     if (!vueInst?.subTree?.component) {
+//         exposed = vueInst?.exposed
+//     }
+//     return  exposed![methodName]
+// }
 
 export class JsScriptExecutor {
 
@@ -121,11 +132,12 @@ export class JsScriptExecutor {
     getComponentMethod(componentId: string, methodName: string) {
         // console.log('getComponentMethod() > pageProxyMap:', pageProxyMap)
         const vueInst = this.getVueInst(componentId)
-        const fn = vueInst?.subTree?.component?.exposed![methodName]
+        // 对于GlPage，vueInst?.exposed[methodName]
+        let fn = vueInst?.subTree?.component?.exposed![methodName] || vueInst?.exposed![methodName]
         if (fn) {
             return fn
         }
-        console.warn(`获到不到组件(${componentId})的方法(${methodName})，当前组件vue实例为：`, vueInst)
+        console.warn(`获到不到组件(${componentId})的方法(${methodName})，该组件vue实例为：`, vueInst)
         return null
     }
 

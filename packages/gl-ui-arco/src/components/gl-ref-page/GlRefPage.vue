@@ -9,8 +9,8 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {mixins} from "@geelato/gl-ui";
-import {inject} from "vue";
+import {mixins, utils} from "@geelato/gl-ui";
+import {inject, nextTick,ref} from "vue";
 import {PageParamsKey} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue'])
@@ -36,10 +36,27 @@ const props = defineProps({
 })
 
 const params = inject(PageParamsKey)
+
+const visiblePage = ref(true)
+const key = ref(utils.gid())
+
+/**
+ *  以当前页面参数数据重新加载
+ */
+const refresh = () => {
+  console.log('ref-page refresh')
+  key.value = utils.gid()
+  visiblePage.value = false
+  nextTick(() => {
+    visiblePage.value = true
+  })
+}
+defineExpose({refresh})
+
 </script>
 
 <template>
-  <div class="gl-ref-page">
+  <div class="gl-ref-page" v-if="visiblePage" :key="key">
     <div class="gl-ref-page-drag-handler" v-if="!glIsRuntime">
       <a-button type="primary" title="拖动页面">
         <GlIconfont type="gl-drag" text="这是引用页面"></GlIconfont>

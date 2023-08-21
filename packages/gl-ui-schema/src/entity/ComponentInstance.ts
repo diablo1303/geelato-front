@@ -30,7 +30,7 @@ export class ComponentInstanceProps {
     // 标题，如用于formItem的标题
     label?: string = ''
     // 绑定字段，对于输入组件，需要用到该属性
-    _bindField?: BindField
+    bindField?: BindField
 
     // 组件个性化属性
     [key: string]: any

@@ -90,5 +90,6 @@ export default {
         "name": "common",
         "title": "页面公共动作",
         "description": "页面公共动作，不会自动触发（即不受组件自身的事件影响），可由其它动作引用触发。"
-    }]
+    }],
+    "methods": [{"name": "refresh", "title": "刷新", "description": "以当前一样的参数重新加载页面", "params": []}]
 }

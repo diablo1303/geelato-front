@@ -5,7 +5,7 @@
       <a-tab-pane key="props" tab="属性" title="属性">
         <div v-if="!hideToolbar&&(showMove||showMove||showSelectParent||showDelete)" style="padding: 0 0.5em 0.5em;">
           <a-button-group type="primary" size="mini" shape="round">
-            <a-button status="primary" v-if="showSelectParent" @click="componentStore.selectParentComponent">选父组件
+            <a-button status="normal" v-if="showSelectParent" @click="componentStore.selectParentComponent">选父组件
             </a-button>
             <a-button status="warning" :disabled="!showMove" @click="componentStore.moveFrontCurrentComponent"
                       title="移前呀移上">移前
@@ -61,7 +61,7 @@
       <!--                                @update="(val:any)=>{setInstance(val,'style')}"/>-->
       <!--      </a-tab-pane>-->
       <a-tab-pane key="permission" tab="权限" title="权限">
-        <a-alert>Coming Soon...</a-alert>
+        <GlPermissionsSetter></GlPermissionsSetter>
       </a-tab-pane>
       <a-tab-pane key="lang" tab="多语言" title="多语言">
         <div style="margin: 0 0 0.5em 0.5em">
@@ -80,10 +80,10 @@
 import {computed, type PropType, provide, ref} from "vue";
 import {ComponentInstance, type ComponentMeta} from "@geelato/gl-ui-schema";
 import ClipboardJS from "clipboard";
-import {ComponentSetterProvideKey, ComponentSetterProvideProxy, EventNames} from "@geelato/gl-ide";
+import {ComponentSetterProvideKey, ComponentSetterProvideProxy} from "@geelato/gl-ide";
 import {componentStoreFactory, usePageStore} from "@geelato/gl-ide";
-import {jsScriptExecutor, PageProvideKey, PageProvideProxy, utils} from "@geelato/gl-ui";
-
+import {jsScriptExecutor, PageProvideKey, utils} from "@geelato/gl-ui";
+import GlPermissionsSetter from "./GlPermissionsSetter.vue";
 const emits = defineEmits(['update']);
 const props = defineProps({
   componentMeta: {

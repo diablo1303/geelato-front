@@ -1,5 +1,4 @@
 import type IPropertySetterMeta from "./IPropertySetterMeta";
-import type Action from "./actions/Action";
 import type {ActionMeta} from "./actions/Action";
 
 /**
@@ -41,7 +40,7 @@ export default class ComponentMeta {
     actions?: Array<ActionMeta> = []
 
     // 组件方法，对应组件defineExpose的内容
-    methods?: Array<Action> = []
+    methods?: Array<ActionMeta> = []
 
     // 引用的组件名称，如AButton
     // componentRefName: String
