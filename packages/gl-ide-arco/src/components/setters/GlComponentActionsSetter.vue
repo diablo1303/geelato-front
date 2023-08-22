@@ -46,8 +46,6 @@ export default {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-// error TS2532: Object is possibly 'undefined'.
-// componentInstance.actions
 import {nextTick, onUnmounted, type PropType, ref} from 'vue'
 import {Action, ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import GlArrayBaseSetter from "./property-setters/GlArrayBaseSetter.vue";
@@ -56,7 +54,6 @@ import {emitter, useGlobal, utils} from "@geelato/gl-ui";
 import {blocksHandler} from "./action-setters/blocks/BlockHandler";
 import type {ActionMeta} from "@geelato/gl-ui-schema";
 import {EventNames} from "@geelato/gl-ide";
-import {ac} from "vitest/dist/types-0373403c";
 
 const global = useGlobal()
 const props = defineProps({
