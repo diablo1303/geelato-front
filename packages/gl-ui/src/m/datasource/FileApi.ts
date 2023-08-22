@@ -1,8 +1,6 @@
 import type {ApiResult} from "../types/global";
 import {entityApi} from "./EntityApi";
 
-const axios = entityApi.getService()
-
 export interface AttachmentForm {
     id: string;
     name: string;
@@ -14,7 +12,7 @@ export interface AttachmentForm {
 }
 
 export function getAttachment(id: string) {
-    return axios.get<AttachmentForm>(`/api/attach/get/${id}`);
+    return entityApi.getAxios().get<AttachmentForm>(`/api/attach/get/${id}`);
 }
 
 /**
@@ -22,7 +20,7 @@ export function getAttachment(id: string) {
  * @param ids
  */
 export function getAttachmentByIds(ids: string) {
-    return axios.post<AttachmentForm[]>(`/api/attach/list`, {"ids": ids});
+    return entityApi.getAxios().post<AttachmentForm[]>(`/api/attach/list`, {"ids": ids});
 }
 
 /**
@@ -31,7 +29,7 @@ export function getAttachmentByIds(ids: string) {
  * @param isRemoveFile 删除文件，默认：false
  */
 export function deleteAttachment(id: string, isRemoveFile?: boolean) {
-    return axios.delete<ApiResult>(`/api/attach/remove/${id}?isRemoved=${!!isRemoveFile}`);
+    return entityApi.getAxios().delete<ApiResult>(`/api/attach/remove/${id}?isRemoved=${!!isRemoveFile}`);
 }
 
 /**
@@ -39,7 +37,7 @@ export function deleteAttachment(id: string, isRemoveFile?: boolean) {
  * @param isRename 重置文件名，默认：true
  */
 export function getUploadUrl(isRename?: boolean) {
-    return `${axios.defaults.baseURL}/api/upload/file?isRename=${!!isRename}`;
+    return `${entityApi.getAxios().defaults.baseURL}/api/upload/file?isRename=${!!isRename}`;
 }
 
 /**
@@ -47,7 +45,7 @@ export function getUploadUrl(isRename?: boolean) {
  * @param id 附件id
  */
 export function getDownloadUrlById(id: string) {
-    return id ? `${axios.defaults.baseURL}/resources/file?rstk=download&id=${id}` : '';
+    return id ? `${entityApi.getAxios().defaults.baseURL}/resources/file?rstk=download&id=${id}` : '';
 }
 
 /**
@@ -56,5 +54,5 @@ export function getDownloadUrlById(id: string) {
  * @param path 附件相对地址
  */
 export function getDownloadUrlByPath(name: string, path: string) {
-    return name && path ? `${axios.defaults.baseURL}/resources/file?rstk=download&name=${name}&path=${path}` : '';
+    return name && path ? `${entityApi.getAxios().defaults.baseURL}/resources/file?rstk=download&name=${name}&path=${path}` : '';
 }

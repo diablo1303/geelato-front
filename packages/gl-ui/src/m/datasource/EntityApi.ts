@@ -94,8 +94,30 @@ export class EntityApi {
             withCredentials: true,
             // crossDomain: true
         }
-        this.service = axios.create(opts);
 
+        axios.interceptors.request.use(
+            (config: any) => {
+                // let each request carry token
+                // this example using the JWT token
+                // Authorization is a custom headers key
+                // please modify it according to the actual situation
+                // const token = getToken();
+                // if (token) {
+                //     if (!config.headers) {
+                //         config.headers = {};
+                //     }
+                //     config.headers.Authorization = `Bearer ${token}`;
+                // }
+                config.headers.Authorization = this.getAuthorization()
+                return config;
+            },
+            (error) => {
+                // do something
+                return Promise.reject(error);
+            }
+        );
+
+        this.service = axios.create(opts);
         this.service.interceptors.request.use(
             (config: any) => {
                 // let each request carry token
@@ -121,6 +143,10 @@ export class EntityApi {
         // console.log('EntityApi > reCreate() > service options:', opts)
         this.options = opts
         return this.service
+    }
+
+    getAxios() {
+        return axios
     }
 
     /**
