@@ -67,6 +67,15 @@ const USER: AppRouteRecordRaw = {
         requiresAuth: true
       },
     },
+    {
+      path: 'fileList',
+      name: 'fileList',
+      component: () => import('@/views/security/file/index.vue'),
+      meta: {
+        locale: 'security.file.index.menu.list.searchTable',
+        requiresAuth: true
+      },
+    },
   ],
 };
 

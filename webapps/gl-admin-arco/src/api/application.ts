@@ -1,6 +1,7 @@
 import axios from "axios";
 import qs from "query-string";
 import {PageQueryRequest, PageQueryResponse, QueryResult} from "@/api/base";
+import {getToken} from '@/utils/auth';
 
 export interface QueryAppForm {
   id: string;
@@ -123,3 +124,11 @@ export const getAttachmentByIds = async (ids: string, successBack?: any, failBac
     failBack(err);
   }
 };
+
+export const uploadHeader = (): Record<string, string> => {
+  const token = getToken();
+  if (token) {
+    return {Authorization: `Bearer ${token}`};
+  }
+  return {Authorization: ''};
+}
