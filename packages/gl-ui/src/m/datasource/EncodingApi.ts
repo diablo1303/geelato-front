@@ -1,4 +1,6 @@
-import axios from "axios";
+import {entityApi} from "./EntityApi";
+
+const axios = entityApi.getService()
 
 /**
  * 基于编码id获取一个新的编码

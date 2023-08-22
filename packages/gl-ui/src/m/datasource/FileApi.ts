@@ -1,6 +1,7 @@
-import axios from "axios";
 import type {ApiResult} from "../types/global";
+import {entityApi} from "./EntityApi";
 
+const axios = entityApi.getService()
 
 export interface AttachmentForm {
     id: string;
