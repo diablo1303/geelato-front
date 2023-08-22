@@ -57,7 +57,6 @@
     "splitpanes": "^3.1.5",
     "dnd-core": "^16.0.1",
     "echarts": "^5.4.0",
-    "monaco-editor": "0.38.0",
     "pinia": "^2.1.4",
     "prettier": "2.2.1",
     "react-dnd-html5-backend": "^16.0.1",
