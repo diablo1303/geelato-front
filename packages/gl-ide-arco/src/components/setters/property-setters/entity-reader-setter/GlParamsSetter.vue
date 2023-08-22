@@ -32,12 +32,17 @@
                 <a-option v-for="item in compareMeta.cops" :value="item.value" :title="item.text">{{ item.text }}
                 </a-option>
               </a-select>
-              <a-input size="small" v-model="element.value" allow-clear
-                       @change="onChangeElement($event,element,index)"
-                       @click="onSelectElement($event,element,index)" style="width: 100%"
-                       placeholder="字段值"
-                       title="字段值"
-              />
+              <GlExpressionSetter size="small" v-model="element.valueExpression" :show-input="true"
+                                  @change="onChangeElement($event,element,index)"
+                                  @click="onSelectElement($event,element,index)"
+                                  placeholder="字段值"
+                                  title="值表达式"/>
+              <!--              <a-input size="small" v-model="element.value" allow-clear-->
+              <!--                       @change="onChangeElement($event,element,index)"-->
+              <!--                       @click="onSelectElement($event,element,index)" style="width: 100%"-->
+              <!--                       placeholder="字段值"-->
+              <!--                       title="字段值"-->
+              <!--              />-->
             </a-space>
           </td>
           <td class="gl-delete">
@@ -59,10 +64,11 @@
 import {defineComponent, type PropType} from 'vue'
 import GlOptions from "../../GlOptions.vue";
 import {FieldMeta, compareMeta, EntityReaderParam} from "@geelato/gl-ui";
+import GlExpressionSetter from "../../expression-setters/GlExpressionSetter.vue";
 
 export default defineComponent({
   name: "FieldsSetter",
-  components: {GlOptions},
+  components: {GlExpressionSetter, GlOptions},
   props: {
     modelValue: {
       type: Array as PropType<Array<EntityReaderParam>>,

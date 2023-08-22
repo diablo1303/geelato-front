@@ -154,6 +154,7 @@ export class EntityApi {
      * @returns {*}
      */
     queryByEntityReader(entityReader: EntityReader) {
+        // console.log('queryByEntityReader > entityReader', entityReader.entity, entityReader)
         const mql: LooseObject = {};
         mql[entityReader.entity] = {}
         // fields
@@ -456,10 +457,10 @@ export class EntityApi {
         res: LooseObject,
         resultMapping: ResultMapping
     ) {
-        console.log(
-            "gl-ui > Api.js > entityReaderResultHandler() > res: ",
-            res
-        );
+        // console.log(
+        //     "gl-ui > Api.js > entityReaderResultHandler() > res: ",
+        //     res
+        // );
         const resultSet: LooseObject = {
             //  依据传入参数resultMapping的定义处理后的数据
             data: [],
@@ -520,10 +521,10 @@ export class EntityApi {
             });
         });
         resultSet.data = res.data;
-        console.log(
-            "gl-ui > Api.js > entityReaderResultHandler() > resultSet: ",
-            resultSet
-        );
+        // console.log(
+        //     "gl-ui > Api.js > entityReaderResultHandler() > resultSet: ",
+        //     resultSet
+        // );
         return resultSet;
     }
 

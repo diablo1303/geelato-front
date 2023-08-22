@@ -1,10 +1,11 @@
-import type {App, ComponentInternalInstance} from "vue";
+import type {App} from "vue";
 import {h} from "vue";
 import type {Action} from "@geelato/gl-ui-schema";
 import utils from "../utils/Utils";
 import GlPageViewer from '../../components/gl-page-viewer/GlPageViewer.vue'
 import type PageProvideProxy from "../../components/PageProvideProxy";
 import type {Param} from "../types/global";
+import { entityApi } from "../datasource/EntityApi";
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 type OptionsType = { [key: string]: any }
@@ -19,6 +20,12 @@ type OptionsType = { [key: string]: any }
 //     }
 //     return  exposed![methodName]
 // }
+
+export class Ctx {
+    pageProxy?: PageProvideProxy;
+
+    [key: string]: any
+}
 
 export class JsScriptExecutor {
 
@@ -285,7 +292,7 @@ export class JsScriptExecutor {
                 return that.evalExpression(expression, $gl?.ctx) ? trueValue : falseValue
             },
             isPageParamEquals: (paramName: string, value: any) => {
-                console.log('isPageParamEquals', paramName, value, that.getPageParam(paramName, $gl))
+                // console.log('isPageParamEquals', paramName, value, that.getPageParam(paramName, $gl))
                 return that.getPageParam(paramName, $gl) === value
             }
         }
@@ -414,7 +421,7 @@ export class JsScriptExecutor {
      * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
      * @param callback
      */
-    doAction(action: Action, ctx: object, callback?: Function) {
+    doAction(action: Action, ctx: Ctx, callback?: Function) {
         // console.log('JsScriptExecutor > doAction(),action:', action, 'ctx:', ctx)
         return this.evalFn(action.body!, ctx, callback)
     }
@@ -429,7 +436,7 @@ export class JsScriptExecutor {
      * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
      * @param callback
      */
-    evalExpression(expression: string, ctx: { pageProxy?: PageProvideProxy, [key: string]: any }, callback?: Function) {
+    evalExpression(expression: string, ctx: Ctx, callback?: Function) {
         const $gl = this.getGl(ctx?.pageProxy)
         Object.assign($gl.ctx, ctx)
         let result = utils.evalExpression(expression, $gl)
@@ -445,7 +452,7 @@ export class JsScriptExecutor {
      * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
      * @param callback
      */
-    evalFn(fnBodyScript: string, ctx: { pageProxy?: PageProvideProxy, [key: string]: any }, callback?: Function) {
+    evalFn(fnBodyScript: string, ctx: Ctx, callback?: Function) {
         const $gl = this.getGl(ctx?.pageProxy)
         Object.assign($gl.ctx, ctx)
         // console.log('$gl.ctx', $gl.ctx)
@@ -462,8 +469,7 @@ export class JsScriptExecutor {
      * @param params
      * @param ctx
      */
-    evalParams(params: Array<Param>, ctx: object) {
-
+    evalParams(params: Array<Param>, ctx: Ctx) {
         const newParams: Array<Param> = []
         if (params && params.length > 0) {
             for (const index in params) {
@@ -485,12 +491,29 @@ export class JsScriptExecutor {
     }
 
     /**
+     *
+     * @param items
+     * @param ctx {pageProxy,...} 上下文中需要传输pageProxy
+     */
+    evalValueExpressions(items: Array<{ value?: any, valueExpression?: string, [key: string]: any }>, ctx: Ctx) {
+        if (items && items.length > 0) {
+            for (const index in items) {
+                const item = items[index]
+                if (item.valueExpression) {
+                    item.value = this.evalExpression(item.valueExpression, ctx)
+                }
+            }
+        }
+        return items
+    }
+
+    /**
      * 转换选项中的表达式
      * @param options
      * @param ctx
      * @param evalKeys 指定需要转换值的选项keys，如：['title', 'content']
      */
-    evalOptions(options: OptionsType, ctx: object, evalKeys: string[]): OptionsType {
+    evalOptions(options: OptionsType, ctx: Ctx, evalKeys: string[]): OptionsType {
         const newOptions = JSON.parse(JSON.stringify(options))
         evalKeys.forEach((key) => {
             newOptions[key] = this.evalExpression(newOptions[key], ctx)
@@ -548,7 +571,8 @@ export class JsScriptExecutor {
             insts: <{ [key: string]: any }>{},
             vueInsts: <{ [key: string]: any }>{},
             ctx: {},
-            fn: utils
+            fn: utils,
+            entityApi
         }
         // set logic fns
         Object.assign($gl.fn, this.getLogicFns($gl))

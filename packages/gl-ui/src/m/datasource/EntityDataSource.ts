@@ -55,10 +55,12 @@ export class EntityMeta extends EntityLiteMeta {
     [key: string]: any
 }
 
-export class EntityReaderParam {
+export class EntityReaderParam{
     name: string = '';
     cop: string = 'eq';
     value: string | number | Array<string | number> | undefined;
+    // 值表达式
+    valueExpression?: string
 
     constructor(name?: string, cop?: string, value?: string | number | Array<string | number>) {
         this.name = name || ''

@@ -14,7 +14,7 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
         const width = propsExpressions?.width || toStr(props.width || "1024px")
         const okText = propsExpressions?.okText || toStr(props.okText || "确定")
         const cancelText = propsExpressions?.cancelText || toStr(props.cancelText || "取消")
-        const hideCancel = props.hideCancel === true ? true : false
+        const hideCancel = props.hideCancel === true
         return new ParseResult(
             `
             const content = $gl.fn.loadPage("${props.pageId || ''}","${props.extendId}",${JSON.stringify(props.params)},"${props.pageStatus}");
@@ -41,8 +41,7 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
 }
 
 interface Props {
-    // Drawer | Modal
-    mode: string
+
     title: string
     appId: string
     // pageId 或 extendId 二选一，填写其中一个，优先采用pageId
@@ -50,6 +49,9 @@ interface Props {
     extendId: string
     // 页面状态
     pageStatus: string
+    // Drawer | Modal
+    mode?: string
+
     width: string
     // 页面参数
     params?: Array<Param>

@@ -7,7 +7,7 @@ export default class CheckUtil {
         return (
             obj === null ||
             obj === undefined ||
-            (typeof obj === 'object' && Object.keys.length === 0)
+            (typeof obj === 'object' && Object.keys(obj).length === 0)
         );
     }
 
