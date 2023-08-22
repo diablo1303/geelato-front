@@ -45,7 +45,7 @@ const genOneCode = () => {
     // 无编码值，且有编码模板id时
     if (!props.modelValue && props.codedId) {
       encodingApi.generateCode(props.codedId).then((res) => {
-        mv.value = res.data
+        mv.value = res.data?.data ? res.data.data : res.data
       })
     }
   }
