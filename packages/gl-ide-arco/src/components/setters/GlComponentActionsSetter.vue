@@ -8,7 +8,7 @@
         <div style="padding: 0 1em">
           <GlArrayBaseSetter v-slot:default="slotProps" v-model="componentInstance.actions"
                              :filter="(action:Action)=>{return action?.eventName===actionMeta.name}"
-                             :defaultItemForAdd="new Action({id:utils.gid('act',20),name:actionMeta.name,eventName:actionMeta.name,title:actionMeta.title})"
+                             :defaultItemForAdd="getDefaultItemForAdd(actionMeta)"
                              @addItem="update"
                              @removeItem="update">
             <div style="width:100%;display: flex;margin-bottom: 1px">
@@ -56,6 +56,7 @@ import {emitter, useGlobal, utils} from "@geelato/gl-ui";
 import {blocksHandler} from "./action-setters/blocks/BlockHandler";
 import type {ActionMeta} from "@geelato/gl-ui-schema";
 import {EventNames} from "@geelato/gl-ide";
+import {ac} from "vitest/dist/types-0373403c";
 
 const global = useGlobal()
 const props = defineProps({
@@ -69,6 +70,14 @@ const props = defineProps({
   }
 })
 
+const getDefaultItemForAdd = (actionMeta: ActionMeta) => {
+  return new Action({
+    id: utils.gid('act', 20),
+    name: actionMeta.name,
+    eventName: actionMeta.name,
+    title: actionMeta.title
+  })
+}
 const defaultActiveKey = ref<Array<number>>([])
 if (props.componentMeta.actions && props.componentMeta.actions.length > 0) {
   props.componentMeta.actions.forEach((action: ActionMeta, index: number) => {
