@@ -5,6 +5,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 import svgLoader from 'vite-svg-loader';
 
 export default defineConfig({
+  // @ts-ignore
   plugins: [vue(), vueJsx(), svgLoader({ svgoConfig: {} })],
   resolve: {
     alias: [
