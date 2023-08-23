@@ -29,8 +29,10 @@ export const useEntityStore = defineStore('GlEntityStore', () => {
      */
     const loadFieldMetas = async (appCode: string, entityName: string) => {
         const res = await entityApi.queryMeta(entityName)
+        console.log('loadFieldMetas res:',res)
         currentEntityName.value = entityName
-        currentFieldMetas.value = res?.data?.meta
+        // @ts-ignore
+        currentFieldMetas.value = res?.meta
         return currentFieldMetas.value
     }
     const setCurrentEntityName = async (entityName: string) => {

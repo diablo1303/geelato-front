@@ -86,13 +86,14 @@ const componentMetas: Array<ComponentMeta> = [ButtonMeta, GlButtonMeta, TextMeta
     JsCodeBlockMeta
 ]
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance,CascaderInstance]
+const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance, CascaderInstance]
 const componentInstances: Array<ComponentInstance> = []
 const dataEntryNameMap: { [key: string]: boolean } = {}
 // 不在sidebar中出现的组件
-const ignoreInstances: Array<ComponentMeta> = [DndPlaceholderMeta, VirtualMeta]
+// @ts-ignore
+const ignoreInstances: Array<ComponentMeta> = [DndPlaceholderMeta, VirtualMeta,ButtonMeta]
 // 不需要自动添加公共属性的组件
-const ignoreCommonPropertiesComponents = ['GlEntityTableSub','GlEntityTablePlus','GlHiddenArea']
+const ignoreCommonPropertiesComponents = ['GlEntityTableSub', 'GlEntityTablePlus', 'GlHiddenArea']
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {
     const meta = componentMetas[index]
