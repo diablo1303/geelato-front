@@ -67,7 +67,7 @@ res.then((data: Array<EntityLiteMeta>) => {
 const getLastEntityFieldSelectResult = () => {
   // 缓存结果
   let lastEntityFieldSelectResultStr = localStorage.getItem('lastEntityFieldSelectResult');
-  console.log('lastEntityFieldSelectResultStr', lastEntityFieldSelectResultStr)
+  // console.log('lastEntityFieldSelectResultStr', lastEntityFieldSelectResultStr)
   let lastEntityFieldSelectResult;
   if (lastEntityFieldSelectResultStr) {
     lastEntityFieldSelectResult = JSON.parse(lastEntityFieldSelectResultStr)
@@ -92,7 +92,7 @@ const setEntityAndLoadFieldMetas = (entityName: string) => {
 }
 
 const onEntityChange = (entityName: string) => {
-  console.log('onEntityChange', entityName, entityLiteMetas)
+  // console.log('onEntityChange', entityName, entityLiteMetas)
   let entityLiteMeta = {entityTitle: ''}
   for (let i in entityLiteMetas.value) {
     if (entityLiteMetas.value[i].entityName === entityName) {

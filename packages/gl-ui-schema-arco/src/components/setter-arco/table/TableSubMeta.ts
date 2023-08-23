@@ -75,7 +75,7 @@ export default {
             "enableValueExpress": false,
             "show": true,
             "expanded": true,
-            "title": "主表ID字段",
+            "title": "关联主表单ID",
             "description": "子表中，对应主表单主键ID的字段",
             "setterComponentName": "GlFieldSelect"
         }, {

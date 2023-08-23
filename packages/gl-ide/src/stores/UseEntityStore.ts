@@ -12,9 +12,10 @@ export const useEntityStore = defineStore('GlEntityStore', () => {
     /**
      * 从服务端加载指定应用有权访问的精简版实体元数据
      * @param appCode
+     * @param forceLoad  是否强行加载，是不管当前的entityLiteMetas是否有值
      */
-    const loadEntityLiteMetas = async (appCode: string, forceload?: boolean) => {
-        if (forceload || entityLiteMetas.value.length === 0) {
+    const loadEntityLiteMetas = async (appCode: string, forceLoad?: boolean) => {
+        if (forceLoad || entityLiteMetas.value.length === 0) {
             // @ts-ignore
             const res = await entityApi.queryEntityLiteMetas(appCode)
             entityLiteMetas.value = res?.data
@@ -29,7 +30,7 @@ export const useEntityStore = defineStore('GlEntityStore', () => {
      */
     const loadFieldMetas = async (appCode: string, entityName: string) => {
         const res = await entityApi.queryMeta(entityName)
-        console.log('loadFieldMetas res:',res)
+        // console.log('loadFieldMetas res:',res)
         currentEntityName.value = entityName
         // @ts-ignore
         currentFieldMetas.value = res?.meta

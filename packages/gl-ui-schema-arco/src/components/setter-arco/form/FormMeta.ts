@@ -18,7 +18,9 @@ export default {
         "setterComponentVModelName": "modelValue",
         "setterComponentProps": {},
         "type": "props",
-        "show": true
+        "show": true,
+        "enableValueExpress": false,
+        "displayMode": "tile"
     }, {
         "name": "bindEntity",
         "setterComponentProps": {},
@@ -28,7 +30,35 @@ export default {
         "show": true,
         "expanded": true,
         "title": "绑定实体",
-        "setterComponentName": "GlAppEntitySelect"
+        "setterComponentName": "GlAppEntitySelect",
+        "enableValueExpress": false,
+        "displayMode": "tile"
+    }, {
+        "name": "isSubForm",
+        "setterComponentProps": {"checkedText": "子表单", "uncheckedText": "非子表单"},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "displayMode": "tile",
+        "title": "作为子表单",
+        "setterComponentName": "ASwitch",
+        "description": "类型作为子表单，若是，在保存主表单时，需会同构建该子表单的内容作为关联子项进行保存，需与“主表单ID字段”一起使用。"
+    }, {
+        "name": "subFormPidName",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "displayMode": "tile",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "关联主表单ID",
+        "description": "子表单中，对应主表单主键ID的字段，需与“作为子表单”一起使用。",
+        "setterComponentName": "GlFieldSelect"
     }, {
         "name": "layout",
         "group": "base",
@@ -57,7 +87,58 @@ export default {
         "title": "自动标签宽",
         "setterComponentName": "ASwitch",
         "description": "设置 auto-label-width 开启自动标签宽度。仅在 layout=\"horizontal\" 布局下生效。"
+    }, {
+        "name": "_valueExpression",
+        "setterComponentProps": {"showInput": true},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "默认值",
+        "setterComponentName": "AInput",
+        "enableValueExpress": true,
+        "description": "基于表达式计算默认值"
+    }, {
+        "name": "_labelColFlex",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "标题宽度",
+        "setterComponentName": "AInput",
+        "description": "标题的宽度，默认的标题占比20%（精确值应为20.83%，这里需填整数去掉.83）",
+        "placeholder": "如：6% 或 100px"
+    }, {
+        "name": "placeholder",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "占位提示",
+        "setterComponentName": "AInput",
+        "enableValueExpress": true
+    }, {
+        "name": "description",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "描述",
+        "setterComponentName": "AInput",
+        "enableValueExpress": true
     }],
-    "actions": [{"name": "onLoadedData", "description": "表单加载完成数据并设置到各表单项之后触发。", "title": "加载完数据"}],
+    "actions": [{
+        "name": "onLoadedData",
+        "description": "表单加载完成数据并设置到各表单项之后触发。",
+        "title": "加载完数据"
+    }, {"eventName": "refresh", "name": "refresh", "description": "", "title": "刷新"}],
     "methods": [{"name": "submitForm", "title": "提交表单", "description": "", "params": []}]
 }

@@ -68,7 +68,7 @@ export default defineComponent({
   },
   methods: {
     onChangeText(x:string) {
-      console.log('onChangeText', x)
+      // console.log('onChangeText', x)
       this.emit()
     },
     onSelected(iconItem:any) {

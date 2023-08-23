@@ -72,11 +72,11 @@ const items = computed(() => {
 })
 
 const onChangeText = (x: string) => {
-  console.log('onChangeText', x)
+  // console.log('onChangeText', x)
   emitUpdate()
 }
 const onSelected = (iconItem: any) => {
-  console.log('iconItem', iconItem, json)
+  // console.log('iconItem', iconItem, json)
   mv.value.type = json.css_prefix_text + iconItem.font_class
   emitUpdate()
   visible.value = false

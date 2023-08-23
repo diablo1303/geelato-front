@@ -171,7 +171,7 @@ export default defineComponent({
     onChangeElement($event: any, element: any, index: number) {
       this.selectedElement = element
       this.selectedIndex = index
-      console.log('onChangeElement>', element, $event.target)
+      // console.log('onChangeElement>', element, $event.target)
       this.$emit('update:modelValue', this.mv)
       this.$emit('changeElement', element)
       // $event.target.focus()
@@ -184,7 +184,7 @@ export default defineComponent({
     },
 
     onFieldChange(fieldName: string, element: any, index: number) {
-      console.log('onFieldChange', fieldName, element, index)
+      // console.log('onFieldChange', fieldName, element, index)
       const fieldMeta = this.entityFieldMetas.find((fieldMeta) => {
         return fieldMeta.name === fieldName
       })

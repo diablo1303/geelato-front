@@ -1,7 +1,7 @@
 <template>
   <table class="gl-table">
     <tr>
-      <td class="gl-table-cell gl-label" style="width: 6em" title="">
+      <td class="gl-table-cell gl-label" style="width: 7em" title="">
         最大值
       </td>
       <td class="gl-table-cell">
@@ -9,7 +9,7 @@
       </td>
     </tr>
     <tr>
-      <td class="gl-table-cell gl-label" style="width: 6em" title="">
+      <td class="gl-table-cell gl-label" style="width: 7em" title="">
         最小值
       </td>
       <td class="gl-table-cell">
