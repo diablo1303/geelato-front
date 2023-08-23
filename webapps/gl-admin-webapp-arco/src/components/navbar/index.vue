@@ -213,6 +213,7 @@ import useLocale from '@/hooks/locale';
 import useUser from '@/hooks/user';
 import Menu from '@/components/menu/index.vue';
 import {getApp, getDownloadUrlById} from "@/api/application";
+import favicon from '@/assets/favicon.ico'
 import MessageBox from '../message-box/index.vue';
 
 const appStore = useAppStore();
@@ -274,7 +275,7 @@ const switchRoles = async () => {
 };
 const toggleDrawerMenu = inject('toggleDrawerMenu') as (ev: MouseEvent) => void;
 
-const appInfo = ref({appLogo: "/src/assets/favicon.ico", appName: "Geelato Admin Pro"});
+const appInfo = ref({appLogo: favicon, appName: "Geelato Admin Pro"});
 const getAppInfo = async () => {
   if (route.params && route.params.appId) {
     try {
