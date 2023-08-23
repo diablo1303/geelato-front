@@ -254,7 +254,7 @@ const loadForm = async () => {
     })
     if (checkBindEntity()) {
       entityApi.query(props.bindEntity.entityName, fieldNames.join(','), {id: entityRecordId.value}).then((resp) => {
-        const items = resp?.data?.data
+        const items = resp?.data
         if (items && items.length > 0) {
           setFormItemValues(items[0])
         }
@@ -373,7 +373,7 @@ const submitForm = async () => {
     setLoading(true);
     // console.log('submitForm() > formData', formData)
     const saveResult = await saveForm()
-    entityRecordId.value = saveResult?.data.data
+    entityRecordId.value = saveResult?.data
     // 将表单值，注册到表单的子项中
     formProvideProxy.setRecordId(entityRecordId.value)
     if (hasSubFormTable()) {

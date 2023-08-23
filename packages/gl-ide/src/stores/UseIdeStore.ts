@@ -123,11 +123,11 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
                 if (foundPanel) {
                     // 从后台服务中加载页面，若无则创建新页面
                     pageStore.loadPage({extendId}).then((res) => {
-                        // console.log('loadedPage:', res.data.data)
+                        // console.log('loadedPage:', res.data)
                         let page = new Page()
-                        if (res.data.data && res.data.data.length > 0) {
+                        if (res.data && res.data.length > 0) {
                             // 服务端加载的页面
-                            const pageItem = res.data.data[0]
+                            const pageItem = res.data[0]
                             page.id = pageItem.id
                             page.appId = pageItem.appId
                             page.extendId = pageItem.extendId

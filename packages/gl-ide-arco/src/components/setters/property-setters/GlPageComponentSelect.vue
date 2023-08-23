@@ -132,7 +132,7 @@ const onChange = (instId: any) => {
 
 const loadPage = () => {
   entityApi.queryPageByExtendId(componentSetterProvideProxy.getPropValue(props.dependPropPageIdFieldName)).then((resp: any) => {
-    const pages = resp.data.result || resp.data.data
+    const pages = resp.data
     if (pages && pages.length > 0) {
       const page = pages[0]
       // console.log('pageConfig', page)

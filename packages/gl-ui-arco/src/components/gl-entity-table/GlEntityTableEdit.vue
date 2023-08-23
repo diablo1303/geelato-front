@@ -305,7 +305,7 @@ const fetchData = async (readerInfo?: {
     entityReader.pageSize = readerInfo?.pageSize || pagination.pageSize!
     const response = await entityApi.queryByEntityReader(entityReader);
     // console.log('GlEntityTable > fetchData() > response:', response)
-    renderData.value = response.data.data;
+    renderData.value = response.data;
     pagination.pageSize = readerInfo?.pageSize || pagination.pageSize
     pagination.current = readerInfo?.pageNo || 1;
     pagination.total = response.data.total;

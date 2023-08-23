@@ -94,7 +94,7 @@ const loadData = () => {
       '@p': '1,2000',
       '@order': 'seqNo|' + props.dictAscOrDesc
     }).then((resp: any) => {
-      options.value = resp.data.data
+      options.value = resp.data
     })
   }
 }

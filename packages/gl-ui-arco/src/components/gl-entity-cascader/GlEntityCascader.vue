@@ -32,7 +32,7 @@ watch(mv, () => {
 const options: Ref<CascaderOption[]> = ref([])
 const fetchData = () => {
   entityApi.queryByEntityReader(props.entityReader).then((res: any) => {
-    options.value = utils.listToTree(res?.data?.data, null)
+    options.value = utils.listToTree(res?.data, null)
   })
 }
 

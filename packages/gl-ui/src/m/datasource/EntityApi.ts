@@ -1,4 +1,4 @@
-import axios, {type AxiosInstance, type AxiosRequestConfig} from "axios";
+import type {AxiosInstance, AxiosRequestConfig, AxiosStatic} from "axios";
 import ResultMapping from "../datasource/ResultMapping";
 import UrlConfig from "../datasource/UrlConfig";
 import MixUtil from "../utils/MixUtil";
@@ -43,32 +43,14 @@ const checkMqlObject = (mql: MqlObject | Array<MqlObject>): boolean => {
 export class EntityApi {
     url = new UrlConfig();
 
-    service: AxiosInstance;
+    // @ts-ignore
+    service: AxiosStatic | AxiosInstance;
 
     VITE_API_BASE_URL: string = ''
 
     options?: AxiosRequestConfig
 
-    constructor(url?: UrlConfig, options?: AxiosRequestConfig) {
-        if (url) {
-            this.url = url;
-        }
-        // console.log('import.meta.env', import.meta.env)
-        // console.log('import.meta.env.VITE_API_BASE_URL', import.meta.env.VITE_API_BASE_URL)
-        // this.VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL
-        // if (!this.VITE_API_BASE_URL) {
-        //     console.error('未配置环境变量VITE_API_BASE_URL')
-        // }
-        // axios.all('*', function (req, res, next) {
-        //   res.header("Access-Control-Allow-Origin", "*")
-        //   res.header("Access-Control-Allow-Headers", "Authorization,Origin, X-Requested-With, Content-Type, Accept")
-        //   res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS")
-        //   next()
-        // })
-        this.service = this.reCreate(options)
-        // if (options && typeof options.interceptors === 'function') {
-        //     options.interceptors(service)
-        // }
+    constructor() {
     }
 
     getAuthorization() {
@@ -80,73 +62,77 @@ export class EntityApi {
         }
     }
 
-    reCreate(options?: AxiosRequestConfig) {
-        const opts = {
-            baseURL: (options && options.baseURL) || (this.VITE_API_BASE_URL || ''), // api base url，在env文件中配置
-            timeout: (options && options.timeout) || 6000, // 请求超时时间
-            headers: (options && options.headers) || {
-                //   'Request-Method': 'PUT,POST,GET,DELETE,OPTIONS',
-                //   'Request-Headers': 'Authorization,Origin, X-Requested-With, Content-Type, Accept',
-                "Access-Control-Allow-Origin": "*",
-                //   'Allow-Methods': 'PUT,POST,GET,DELETE,OPTIONS',
-                //   'Allow-Headers': 'Authorization,Origin, X-Requested-With, Content-Type, Accept'
-            },
-            withCredentials: true,
-            // crossDomain: true
-        }
+    //reCreate(options?: AxiosRequestConfig) {
+    // const opts = {
+    //     baseURL: (options && options.baseURL) || (this.VITE_API_BASE_URL || ''), // api base url，在env文件中配置
+    //     timeout: (options && options.timeout) || 6000, // 请求超时时间
+    //     headers: (options && options.headers) || {
+    //         //   'Request-Method': 'PUT,POST,GET,DELETE,OPTIONS',
+    //         //   'Request-Headers': 'Authorization,Origin, X-Requested-With, Content-Type, Accept',
+    //         "Access-Control-Allow-Origin": "*",
+    //         //   'Allow-Methods': 'PUT,POST,GET,DELETE,OPTIONS',
+    //         //   'Allow-Headers': 'Authorization,Origin, X-Requested-With, Content-Type, Accept'
+    //     },
+    //     withCredentials: true,
+    //     // crossDomain: true
+    // }
+    //
+    // axios.interceptors.request.use(
+    //     (config: any) => {
+    //         // let each request carry token
+    //         // this example using the JWT token
+    //         // Authorization is a custom headers key
+    //         // please modify it according to the actual situation
+    //         // const token = getToken();
+    //         // if (token) {
+    //         //     if (!config.headers) {
+    //         //         config.headers = {};
+    //         //     }
+    //         //     config.headers.Authorization = `Bearer ${token}`;
+    //         // }
+    //         config.headers.Authorization = this.getAuthorization()
+    //         return config;
+    //     },
+    //     (error) => {
+    //         // do something
+    //         return Promise.reject(error);
+    //     }
+    // );
+    //
+    // this.service = axios.create(opts);
+    // this.service.interceptors.request.use(
+    //     (config: any) => {
+    //         // let each request carry token
+    //         // this example using the JWT token
+    //         // Authorization is a custom headers key
+    //         // please modify it according to the actual situation
+    //         // const token = getToken();
+    //         // if (token) {
+    //         //     if (!config.headers) {
+    //         //         config.headers = {};
+    //         //     }
+    //         //     config.headers.Authorization = `Bearer ${token}`;
+    //         // }
+    //         config.headers.Authorization = this.getAuthorization()
+    //         return config;
+    //     },
+    //     (error) => {
+    //         // do something
+    //         return Promise.reject(error);
+    //     }
+    // );
+    //
+    // // console.log('EntityApi > reCreate() > service options:', opts)
+    // this.options = opts
+    // return this.service
+    //}
 
-        axios.interceptors.request.use(
-            (config: any) => {
-                // let each request carry token
-                // this example using the JWT token
-                // Authorization is a custom headers key
-                // please modify it according to the actual situation
-                // const token = getToken();
-                // if (token) {
-                //     if (!config.headers) {
-                //         config.headers = {};
-                //     }
-                //     config.headers.Authorization = `Bearer ${token}`;
-                // }
-                config.headers.Authorization = this.getAuthorization()
-                return config;
-            },
-            (error) => {
-                // do something
-                return Promise.reject(error);
-            }
-        );
-
-        this.service = axios.create(opts);
-        this.service.interceptors.request.use(
-            (config: any) => {
-                // let each request carry token
-                // this example using the JWT token
-                // Authorization is a custom headers key
-                // please modify it according to the actual situation
-                // const token = getToken();
-                // if (token) {
-                //     if (!config.headers) {
-                //         config.headers = {};
-                //     }
-                //     config.headers.Authorization = `Bearer ${token}`;
-                // }
-                config.headers.Authorization = this.getAuthorization()
-                return config;
-            },
-            (error) => {
-                // do something
-                return Promise.reject(error);
-            }
-        );
-
-        // console.log('EntityApi > reCreate() > service options:', opts)
-        this.options = opts
-        return this.service
+    setup(axios: AxiosStatic | AxiosInstance) {
+        this.service = axios
     }
 
     getAxios() {
-        return axios
+        return this.service
     }
 
     /**
@@ -237,7 +223,7 @@ export class EntityApi {
                 })
                 if (foundLocalComputeField) {
                     const newRows: any[] = []
-                    res.data.data.forEach((row: any) => {
+                    res.data.forEach((row: any) => {
                         let newRow: Record<string, any> = {}
                         for (let index in entityReader.fields) {
                             const fieldMeta = entityReader.fields[index]
@@ -257,7 +243,7 @@ export class EntityApi {
                         newRows.push(newRow)
                     })
                     // console.log('foundLocalComputeField', res)
-                    res.data.data = newRows
+                    res.data = newRows
                     resolve(res)
                 } else {
                     resolve(res)

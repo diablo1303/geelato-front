@@ -331,7 +331,7 @@ const addNode = (clickedNodeData: any, addNodeData: any) => {
     props.addNode(params).then((res: any) => {
       // console.log('res:',res.data)
       // 获取后台返回的id作为key
-      node.key = res.data.data
+      node.key = res.data
       children.push(node)
       clickedNodeData.children = children
       refreshTree()
@@ -463,7 +463,7 @@ const reloadTreeData = () => {
           }
         ]
         treeData.value[0].children.push(...Utils.ConvertUtil.listToTree({
-          data: res.data.result || res.data.data,
+          data: res.data,
           pid: props.treeId,
           renameId: 'key',
           compareFn: (a: any, b: any) => {

@@ -64,14 +64,14 @@ const loadAppRoles = (appId: string) => {
   // TODO 待增加应用id条件
   entityApi.query('platform_role', 'id,name,code',
       {'@p': '1,1000'}).then((res) => {
-    appRoles.value = res.data.data
+    appRoles.value = res.data
   })
 }
 
 const loadAppMenuItems = (appId: string) => {
   entityApi.query('platform_tree_node', 'id key,pid,text name,iconType',
       {'@p': '1,2000', 'treeId': appId}).then((res) => {
-    appMenuItems.value = utils.listToTree(res.data.data, appId, {id: 'key'})
+    appMenuItems.value = utils.listToTree(res.data, appId, {id: 'key'})
   })
 }
 

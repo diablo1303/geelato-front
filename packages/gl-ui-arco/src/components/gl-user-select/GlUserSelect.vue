@@ -125,7 +125,7 @@ const init = () => {
   // console.log('init(), selectedIds.value is ', selectedIds.value, 'props.modelValue is', props.modelValue)
   if (selectedIds.value) {
     loadUserDataItems([selectedIds.value]).then((resp: any) => {
-      resp.data.data.forEach((dataItem: UserDataItem) => {
+      resp.data.forEach((dataItem: UserDataItem) => {
         setUserSelectingInfo(dataItem)
         selectedNames.value = dataItem.name
         pageProvideProxy.setComponentValue(props.nameFieldBindComponentId, selectedNames.value)
@@ -144,14 +144,14 @@ const init = () => {
 const onBeforeOpen = () => {
   if (userDataItems.value.length === 0) {
     loadUserDataItems().then((resp: any) => {
-      userDataItems.value = resp.data.data
+      userDataItems.value = resp.data
     })
   } else {
     const userIds = props.modelValue || selectedIds.value
     console.log('setSelectInfo(), userId is ', userIds, 'props.modelValue is', props.modelValue)
     if (userIds) {
       loadUserDataItems([userIds]).then((resp: any) => {
-        resp.data.data.forEach((dataItem: UserDataItem) => {
+        resp.data.forEach((dataItem: UserDataItem) => {
           setUserSelectingInfo(dataItem)
         })
       })

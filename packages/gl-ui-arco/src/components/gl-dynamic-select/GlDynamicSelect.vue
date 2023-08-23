@@ -175,7 +175,7 @@ const loadData = () => {
       entityReader.order.push(new EntityReaderOrder(props.orderFiledName, props.ascOrDesc))
     }
     return entityApi.queryByEntityReader(entityReader).then((resp: any) => {
-      selectOptions.value = resp.data?.data || []
+      selectOptions.value = resp.data || []
       // console.log('selectOptions.value', selectOptions.value, selectOptions.value.length)
       if (selectOptions.value.length === 0) {
         inputMv.value = ''

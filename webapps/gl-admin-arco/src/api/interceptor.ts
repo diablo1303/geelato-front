@@ -4,6 +4,7 @@ import {Message, Modal} from '@arco-design/web-vue';
 import {useUserStore} from '@/store';
 import globalConfig from '@/config/globalConfig';
 import {getToken} from '@/utils/auth';
+import {entityApi} from "@geelato/gl-ui";
 
 export interface HttpResponse<T = unknown> {
   status: number;
@@ -76,3 +77,6 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// @ts-ignore
+entityApi.setup(axios)

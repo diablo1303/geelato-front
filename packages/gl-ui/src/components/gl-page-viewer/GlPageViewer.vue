@@ -53,10 +53,10 @@ const load = () => {
   }
   if (loadedPage) {
     loadedPage.then((resp: any) => {
-      if (resp && resp.data && resp.data.data && resp.data.data[0]) {
-        glComponentInst.value = JSON.parse(resp.data.data[0].releaseContent)
+      if (resp && resp.data && resp.data && resp.data[0]) {
+        glComponentInst.value = JSON.parse(resp.data[0].releaseContent)
       } else {
-        // console.error('GlPageViewer > loadedPage > resp?.data?.data:', resp?.data?.data)
+        // console.error('GlPageViewer > loadedPage > resp?.data:', resp?.data)
         global.$notification.error({
           title: '加载页面失败',
           content: '可能页面不存在，或配置的页面加载参数不对。',

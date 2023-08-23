@@ -310,7 +310,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
             previewContent: JSON.stringify(convertToPreview(convertedRelease)),
             description: currentPage.value.description
         }).then((res) => {
-            currentPage.value.id = res.data.data
+            currentPage.value.id = res.data
         })
     }
 

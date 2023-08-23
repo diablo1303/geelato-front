@@ -89,15 +89,15 @@ const setTimelineItems = (value: GlTimelineItem[]) => {
 const fetchData = () => {
   jsScriptExecutor.evalValueExpressions(props.entityReader.params, {pageProxy: pageProvideProxy})
   entityApi.queryByEntityReader(props.entityReader).then((res: any) => {
-    // console.log('timeline res ',res.data.data)
+    // console.log('timeline res ',res.data)
     if (props.itemMode === 'dynamic') {
-      setTimelineItems(res.data.data)
+      setTimelineItems(res.data)
     } else if (props.itemMode === 'dynamicUpdateStatic') {
       // 获取第个节点，从动态数据中匹配最新的数据
       const items = props.items
       items.forEach((item) => {
         // 将动态的数据合并到静态中，不增加项，只更新静态items的数据
-        const foundDataItem = res.data.data.find((dataItem: Record<string, any>) => {
+        const foundDataItem = res.data.find((dataItem: Record<string, any>) => {
           // 基于code匹配
           return item.code == dataItem.code
         })

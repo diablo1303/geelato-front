@@ -54,7 +54,7 @@ entityApi.query('platform_tree_node', 'treeId,id key,text title,pid,iconType,typ
   // console.log('platform_tree_node:', res)
   treeData.value = []
   treeData.value.push(...Utils.ConvertUtil.listToTree({
-    data: res.data.result || res.data.data,
+    data: res.data,
     pid: appId,
     renameId: 'key',
     compareFn: (a: any, b: any) => {

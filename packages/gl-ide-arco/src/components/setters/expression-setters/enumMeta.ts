@@ -28,7 +28,7 @@ export const useDictTreeData = async () => {
         loading = true
         try {
             dict = await entityApi.query('platform_dict', 'id,dictCode,dictName', {}).then((res) => {
-                return res.data?.data
+                return res.data
             })
             dictConst.children.length = 0
             dict.forEach((dictOne) => {
@@ -55,7 +55,7 @@ const getDictItems = async (dictId: string) => {
         dictId,
         delStatus: 0
     }).then((res) => {
-        return res.data?.data
+        return res.data
     })
     const result = {}
     items?.forEach((item: any) => {
