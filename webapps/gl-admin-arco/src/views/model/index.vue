@@ -447,7 +447,7 @@ const treeIconSwapOne = (nodeData: TreeNode) => {
     setTimeout(() => {
       loadConnectList();
     }, 200);
-    Notification.info(t('model.connect.index.model.info.swap'));
+    // Notification.info(t('model.connect.index.model.info.swap'));
   });
 }
 
