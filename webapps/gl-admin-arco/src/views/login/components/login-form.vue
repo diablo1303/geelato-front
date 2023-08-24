@@ -85,9 +85,9 @@ const {loading, setLoading} = useLoading();
 const userStore = useUserStore();
 
 const loginConfig = useStorage('login-config', {
-  rememberPassword: true,
-  username: 'admin', // 演示默认值
-  password: 'admin', // demo default value
+  rememberPassword: false,
+  username: '', // 演示默认值
+  password: '', // demo default value
 });
 const userInfo = reactive({
   username: loginConfig.value.username,
