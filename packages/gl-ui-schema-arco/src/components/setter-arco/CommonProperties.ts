@@ -149,8 +149,8 @@ export const commonPropsOther = [{
 
 export const commonActions = [
     {
-        "eventName": "refresh",
-        "name": "refresh",
+        "eventName": "onMounted",
+        "name": "onMounted",
         "description": "组件加载完时触发，和Vue的onMounted一致",
         "title": "加载完"
     },

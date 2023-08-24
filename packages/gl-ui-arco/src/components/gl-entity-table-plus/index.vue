@@ -26,6 +26,8 @@ import Toolbar, {defaultToolbar} from "../gl-toolbar/toolbar";
 import {useI18n} from "vue-i18n";
 import {entityApi, PageProvideKey, PageProvideProxy, GlIconfont, utils, mixins, CheckUtil} from "@geelato/gl-ui";
 import type {Action} from "../../types/global";
+import {ComponentInstance} from "@geelato/gl-ui-schema";
+import type {EntitySavingObject} from "@/components/gl-entity-form/GlEntityForm";
 
 /**
  *  change:在表格编辑状态时，更换表格数据时触发
@@ -252,7 +254,52 @@ const onFetchSuccess = (args: { data: [], pagination: object }) => {
 const entityTable = computed(() => {
   return props.base?.enableEdit ? GlEntityTableEditable : GlEntityTable
 })
-defineExpose({deleteRow, refresh, getRenderData, getRenderColumns, getDeleteData, validateTable, reRender})
+
+/**
+ * 创建表格的实体保存GQL对象，可被父表单调用，集到父表单一起保存
+ * @param subFormPidValue 作为子表单时，本表单中，指向父表单ID的字段值
+ */
+const createEntitySavingObject = (subFormPidValue: string) => {
+  const entitySavingObject: EntitySavingObject = {
+    key: props.base.entityName,
+    value: []
+  }
+  // 处理需保存的子表单数据
+  const renderColumns = getRenderColumns()
+  const subFormTableData = getRenderData()
+  // console.log('GlEntityForm > submitForm() > subFormTableData', subFormTableData)
+  if (subFormTableData && subFormTableData.length > 0) {
+    // 子表中，对应主表单ID的字段名
+    const subTablePidName = props.base.subTablePidName!
+    subFormTableData.forEach((record: any) => {
+      // 设置主表父ID
+      // 如果是新增，则采用变量，在后台保存主表单后，更换该值 $parent.id
+      // 如果是修改，则直接获取当前的entityRecordId
+      record[subTablePidName] = subFormPidValue
+    })
+    entitySavingObject.value = subFormTableData
+  }
+  // 处理需删除子表单数据
+  // 当前为逻辑删除，可依据子表的isLogicDeleteMode来区分
+  // console.log('GlEntityForm > saveForm() > getDeleteDataFn', getDeleteDataFn)
+  const deleteData = getDeleteData()
+  // console.log('GlEntityForm > saveForm() > deleteData:', deleteData)
+  if (deleteData && deleteData.length > 0) {
+    entitySavingObject.value = entitySavingObject.value || []
+    entitySavingObject.value.push(...deleteData)
+  }
+  return entitySavingObject
+}
+defineExpose({
+  deleteRow,
+  refresh,
+  getRenderData,
+  getRenderColumns,
+  getDeleteData,
+  validateTable,
+  reRender,
+  createEntitySavingObject
+})
 </script>
 
 <template>

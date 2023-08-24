@@ -8,8 +8,8 @@ export default class NotificationBlockHandler implements IBlockHandler {
         return new ParseResult(
             `
             $gl.fn.notification.${method}({
-                title:"${propsExpressions?.title || props.title || ''}",
-                content:"${propsExpressions?.content || props.content}"
+                title:${propsExpressions?.title || "'" + (props.title || '') + "'"},
+                content:${propsExpressions?.content || "'" + props.content + "'"}
                 })
             `
         ).setBlockName('NotificationBlock');
