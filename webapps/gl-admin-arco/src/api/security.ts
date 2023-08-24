@@ -110,6 +110,7 @@ export interface QueryOrgForm {
   category: string; // 组织类别：inside-内部，outside-外部，virtule-虚拟
   status: number;
   description: string;
+  isLeaf?: boolean | string;
 }
 
 export interface FilterOrgForm {
@@ -125,6 +126,14 @@ export interface FilterOrgForm {
 
 export function queryOrgs(params: QueryOrgForm) {
   return axios.get<QueryOrgForm[]>('/api/security/org/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function queryTrees(params: QueryOrgForm) {
+  return axios.get<QueryOrgForm[]>('/api/security/org/queryTree', {
     params, paramsSerializer: (obj) => {
       return qs.stringify(obj);
     },

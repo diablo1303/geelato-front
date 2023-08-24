@@ -52,7 +52,7 @@ import {useI18n} from 'vue-i18n';
 import {Notification} from "@arco-design/web-vue";
 import {TreeNodeData, TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
 import UserList from '@/views/security/user/list.vue';
-import {QueryOrgForm, queryOrgs} from '@/api/security';
+import {QueryOrgForm, queryTrees} from '@/api/security';
 
 // 国际化
 const {t} = useI18n();
@@ -103,10 +103,10 @@ const originTreeData = computed(() => {
 const fetchOrgs = async (params: QueryOrgForm = {pid: '0'} as unknown as QueryOrgForm): Promise<TreeNodeProps[]> => {
   let treeOptions: TreeNodeProps[] = [];
   try {
-    const {data} = await queryOrgs(params);
+    const {data} = await queryTrees(params);
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {
-      treeOptions.push({title: item.name, key: item.id, level: 1} as TreeNodeProps);
+      treeOptions.push({title: item.name, key: item.id, level: 1, isLeaf: item.isLeaf === '1'} as TreeNodeProps);
     }
   } catch (err) {
     treeOptions = [];
