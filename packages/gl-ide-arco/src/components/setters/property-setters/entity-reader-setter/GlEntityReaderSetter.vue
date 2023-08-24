@@ -133,11 +133,11 @@ export default defineComponent({
   watch: {},
   methods: {
     onEntityChange(entityName: string) {
-      console.log('onEntityChange', entityName)
+      // console.log('onEntityChange', entityName)
       this.entityStore.loadFieldMetas('', entityName)
     },
     onUpdate() {
-      console.log('onUpdate')
+      // console.log('onUpdate')
       this.$emit('update:modelValue', this.mv)
     }
   }

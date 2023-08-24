@@ -325,7 +325,7 @@ const saveForm = async () => {
         }
       }
       // 处理需删除子表单数据
-      // 当前为逻辑删除，可依据子表的isLogicDeleteMode来区分，在非逻辑删除场景下的处理方式 TODO
+      // 当前为逻辑删除，可依据子表的isLogicDeleteMode来区分
       // console.log('GlEntityForm > saveForm() > getDeleteDataFn', getDeleteDataFn)
       if (typeof getDeleteDataFn === 'function') {
         const deleteData = getDeleteDataFn()

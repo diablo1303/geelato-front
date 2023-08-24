@@ -55,7 +55,7 @@ const onClick = () => {
 
 const setData = () => {
   // console.log('componentSetterProvideProxy.getVarsRef():', componentSetterProvideProxy.getVarsRef())
-  // console.log('componentSetterProvideProxy.getVar(props.dependVarEntityMeta):', componentSetterProvideProxy.getVar(props.dependVarEntityMeta))
+  // console.log('componentSetterProvideProxy.getVar(props.dependVarEntityMeta):', componentSetterProvideProxy.getVarValue(props.dependVarEntityMeta))
 
   // entityFieldMetas.value = componentSetterProvideProxy.getEntityDsRef()?.value?.entityMeta?.fieldMetas
   entityFieldMetas.value = componentSetterProvideProxy.getVarValue(props.dependVarEntityMeta)?.fieldMetas

@@ -36,7 +36,7 @@ const props = defineProps({
   exposeVarEntityMeta: {
     type: String,
     default() {
-      return 'entityMate'
+      return 'entityMeta'
     }
   }
 })

@@ -1,7 +1,7 @@
 <template>
   <table class="gl-table">
     <tr>
-      <td class="gl-table-cell gl-label" style="width: 6em" title="">
+      <td class="gl-table-cell gl-label" style="width: 7em" title="">
         数组类型</td>
       <td class="gl-table-cell">
         <a-select v-model="mv.mode" style="width: 100%">

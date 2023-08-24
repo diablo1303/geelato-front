@@ -13,7 +13,7 @@
         <div>
           <table class="gl-table" style="font-weight: normal">
             <tr>
-              <td class="gl-table-cell gl-label" style="width: 6em">分组</td>
+              <td class="gl-table-cell gl-label" style="width: 7em">分组</td>
               <td class="gl-table-cell">
                 <a-select v-model="cMeta.group" style="width: 100%">
                   <a-option value="general">通用</a-option>

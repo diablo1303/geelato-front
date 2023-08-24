@@ -5,7 +5,7 @@
   <div class="gl-property-setter gl-table-row"
        v-if="propertySetterMeta.setterComponentName!=='GlEmptySetter'&&propertySetterMeta.show!==false">
     <div :class="cellDisplayModeClass" class="gl-label" style="position: relative;"
-         :style="{width: isCollapseDisplayMode?'100%':'6em'}"
+         :style="{width: isCollapseDisplayMode?'100%':'7em'}"
          @dblclick.ctrl="tryClearProp(propertySetterMeta.name)" title="">
       <template v-if="isCollapseDisplayMode">
         <GlIconfont v-if="propertySetterMeta.expanded!==false" type="gl-arrow-right"
