@@ -167,10 +167,26 @@
       <a-table-column :title="$t('model.column.index.form.charMaxLength')" :width="130" data-index="charMaxLength"/>
       <a-table-column :title="$t('model.column.index.form.numericPrecision')" :width="130" data-index="numericPrecision"/>
       <a-table-column :title="$t('model.column.index.form.numericScale')" :width="130" data-index="numericScale"/>
-      <a-table-column :title="$t('model.column.index.form.nullable')" :width="110" data-index="nullable"/>
-      <a-table-column :title="$t('model.column.index.form.key')" :width="110" data-index="key"/>
-      <a-table-column :title="$t('model.column.index.form.uniqued')" :width="110" data-index="uniqued"/>
-      <a-table-column :title="$t('model.column.index.form.numericSigned')" :width="110" data-index="numericSigned"/>
+      <a-table-column :title="$t('model.column.index.form.nullable')" :width="110" data-index="nullable">
+        <template #cell="{ record }">
+          {{ $t(`model.column.index.form.nullable.${record.nullable}`) }}
+        </template>
+      </a-table-column>
+      <a-table-column :title="$t('model.column.index.form.key')" :width="110" data-index="key">
+        <template #cell="{ record }">
+          {{ $t(`model.column.index.form.key.${record.key}`) }}
+        </template>
+      </a-table-column>
+      <a-table-column :title="$t('model.column.index.form.uniqued')" :width="110" data-index="uniqued">
+        <template #cell="{ record }">
+          {{ $t(`model.column.index.form.uniqued.${record.uniqued}`) }}
+        </template>
+      </a-table-column>
+      <a-table-column :title="$t('model.column.index.form.numericSigned')" :width="110" data-index="numericSigned">
+        <template #cell="{ record }">
+          {{ $t(`model.column.index.form.numericSigned.${record.numericSigned}`) }}
+        </template>
+      </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.type')" :tooltip="true" :width="150" data-index="type"/>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.defaultValue')" :tooltip="true" :width="130" data-index="defaultValue"/>
       <a-table-column :title="$t('model.column.index.form.enableStatus')" :width="100" data-index="enableStatus">
