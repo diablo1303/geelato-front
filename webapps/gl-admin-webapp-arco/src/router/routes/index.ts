@@ -1,3 +1,4 @@
+import {ref} from "vue";
 import type {RouteRecordNormalized} from 'vue-router';
 import {DEFAULT_LAYOUT} from "@/router/routes/base";
 import {getMenus, QueryMenuForm} from "@/api/user";
@@ -23,6 +24,8 @@ const getRouter = (_modules: any, result: string[]) => {
   return result;
 }
 
+export const IS_ACCOUNT = ref<boolean>(false);
+export const IS_DATA_PAGE = ref<boolean>(false);
 export const currentPage = () => {
   const currentParams = {path: '', tenantCode: '', appId: ''};
   const currentUrl = window.location.href;
@@ -30,7 +33,15 @@ export const currentPage = () => {
   if (url) {
     const urlParams = url.searchParams;
     if (url.pathname) {
-      const routerPaths = getRouter(modules, ['/login', '/page/preview']);
+      // 是否是账户页面
+      if (url.pathname.startsWith('/account/')) {
+        IS_ACCOUNT.value = true;
+      }
+      // 是否是无指定的应用站点
+      if (url.pathname.endsWith('/page/') || url.pathname.endsWith('/page')) {
+        IS_DATA_PAGE.value = true;
+      }
+      const routerPaths = getRouter(modules, ['/login', '/page', '/page/preview']);
       // eslint-disable-next-line no-restricted-syntax
       for (const item of routerPaths) {
         if (url.pathname.indexOf(item) !== -1) {
@@ -63,6 +74,17 @@ const formatModules = (_modules: any, result: RouteRecordNormalized[]) => {
   Object.keys(_modules).forEach((key) => {
     const defaultModule = _modules[key].default;
     if (!defaultModule) return;
+    // 限制
+    if (IS_ACCOUNT.value && defaultModule.name !== 'account') {
+      return;
+    }
+    if (!IS_ACCOUNT.value && defaultModule.name === 'account') {
+      return;
+    }
+    // 租户下显示，应用下不显示
+    if (urlParams.appId) {
+      return;
+    }
     defaultModule.path = URL_PREFIX + path + defaultModule.path;
     if (defaultModule.children && defaultModule.children.length > 0) {
       defaultModule.children.forEach((value: any, index: number) => {

@@ -178,11 +178,20 @@
               </a-space>
             </a-doption>
             <!--     用户设置       -->
-            <a-doption>
+            <a-doption v-show="false">
               <a-space @click="$router.push({ name: 'Setting' })">
                 <icon-settings/>
                 <span>
                   {{ $t('messageBox.userSettings') }}
+                </span>
+              </a-space>
+            </a-doption>
+            <!--     账号设置       -->
+            <a-doption>
+              <a-space @click="accountSettingsClick($event)">
+                <icon-settings/>
+                <span>
+                  {{ $t('messageBox.accountSettings') }}
                 </span>
               </a-space>
             </a-doption>
@@ -207,24 +216,29 @@ import {computed, inject, ref} from 'vue';
 import {Message} from '@arco-design/web-vue';
 import {useDark, useFullscreen, useToggle} from '@vueuse/core';
 import {useAppStore, useUserStore} from '@/store';
-import {useRoute} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
 import {LOCALE_OPTIONS} from '@/locale';
 import useLocale from '@/hooks/locale';
 import useUser from '@/hooks/user';
 import Menu from '@/components/menu/index.vue';
-import {getApp, getDownloadUrlById} from "@/api/application";
+import {getApp} from "@/api/application";
+import defaultAvatar from '@/assets/images/default-avatar.png';
+import {ACCOUNT_ROUTE_PATH} from "@/router/constants";
+import {IS_ACCOUNT} from "@/router/routes";
 import favicon from '@/assets/favicon.ico'
 import MessageBox from '../message-box/index.vue';
 
 const appStore = useAppStore();
 const userStore = useUserStore();
+const router = useRouter();
 const route = useRoute();
 const {logout} = useUser();
 const {changeLocale, currentLocale} = useLocale();
 const {isFullscreen, toggle: toggleFullScreen} = useFullscreen();
 const locales = [...LOCALE_OPTIONS];
 const avatar = computed(() => {
-  return userStore.avatar;
+  const userAvatar = userStore.userInfo.avatar;
+  return userAvatar || defaultAvatar;
 });
 const theme = computed(() => {
   return appStore.theme;
@@ -276,14 +290,36 @@ const switchRoles = async () => {
 const toggleDrawerMenu = inject('toggleDrawerMenu') as (ev: MouseEvent) => void;
 
 const appInfo = ref({appLogo: favicon, appName: "Geelato Admin Pro"});
+const loadTag = () => {
+  // 标题
+  document.title = appInfo.value.appName;
+  // 图标
+  let link = null;
+  const links = document.getElementsByTagName('link');
+  for (let i = 0; i < links.length; i += 1) {
+    if (links[0].rel && links[0].rel.indexOf("shortcut icon") !== -1) {
+      // eslint-disable-next-line prefer-destructuring
+      link = links[0];
+      links[0].href = appInfo.value.appLogo;
+    }
+  }
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'shortcut icon';
+    link.type = 'image/x-icon';
+    link.href = appInfo.value.appLogo; // 这里填写您的图标路径
+    document.head.appendChild(link);
+  }
+}
 const getAppInfo = async () => {
   if (route.params && route.params.appId) {
     try {
       const {data} = await getApp(route.params.appId as string);
       appInfo.value.appName = data.name;
       if (data.logo) {
-        appInfo.value.appLogo = getDownloadUrlById(data.logo);
+        appInfo.value.appLogo = data.logo;
       }
+      loadTag();
     } catch (err) {
       console.log(err);
     }
@@ -291,6 +327,13 @@ const getAppInfo = async () => {
 }
 getAppInfo();
 
+const accountSettingsClick = (ev?: MouseEvent) => {
+  if (IS_ACCOUNT.value) {
+    router.push({path: ACCOUNT_ROUTE_PATH});
+  } else {
+    window.open(router.resolve({path: ACCOUNT_ROUTE_PATH}).href, "_blank");
+  }
+}
 </script>
 
 <style lang="less" scoped>

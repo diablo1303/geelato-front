@@ -290,6 +290,27 @@ const switchRoles = async () => {
 const toggleDrawerMenu = inject('toggleDrawerMenu') as (ev: MouseEvent) => void;
 
 const appInfo = ref({appLogo: favicon, appName: "Geelato Admin Pro"});
+const loadTag = () => {
+  // 标题
+  document.title = appInfo.value.appName;
+  // 图标
+  let link = null;
+  const links = document.getElementsByTagName('link');
+  for (let i = 0; i < links.length; i += 1) {
+    if (links[0].rel && links[0].rel.indexOf("shortcut icon") !== -1) {
+      // eslint-disable-next-line prefer-destructuring
+      link = links[0];
+      links[0].href = appInfo.value.appLogo;
+    }
+  }
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'shortcut icon';
+    link.type = 'image/x-icon';
+    link.href = appInfo.value.appLogo; // 这里填写您的图标路径
+    document.head.appendChild(link);
+  }
+}
 const getAppInfo = async () => {
   if (route.params && route.params.appId) {
     try {
@@ -298,6 +319,7 @@ const getAppInfo = async () => {
       if (data.logo) {
         appInfo.value.appLogo = data.logo;
       }
+      loadTag();
     } catch (err) {
       console.log(err);
     }
