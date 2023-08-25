@@ -94,13 +94,13 @@ const formParams = pageProvideProxy.getParamsByPrefixAsObject('form')
 // 这种带$的关键字来替换上面的form，避免实休名为form时冲突
 const formParamsByKeywordFlag = pageProvideProxy.getParamsByPrefixAsObject('$form')
 // 通过绑定实体名获取参数，确保多层的表单嵌套时，各层表单都能获取到各自的表单参数
-const formParamsByEntityName = pageProvideProxy.getParamsByPrefixAsObject(props.bindEntity.entityName)
+const formParamsByEntityName = props.bindEntity ? pageProvideProxy.getParamsByPrefixAsObject(props.bindEntity.entityName) : {}
 // console.log('formParams', formParams, 'formParamsByEntityName', formParamsByEntityName)
 // 合并两种模式下的传值
 Object.assign(formParams, formParamsByKeywordFlag, formParamsByEntityName)
 // formData中不包括记录id，记录id在entityRecordId中定义
 const formData = ref<Record<string, any>>(formParams);
-console.log('GlEntityForm[' + props.bindEntity.entityName + '] > formData:', formData.value, 'formParams:', formParams)
+console.log('GlEntityForm[' + props.bindEntity?.entityName + '] > formData:', formData.value, 'formParams:', formParams)
 let entityRecordId: Ref<string> = ref(formParams.id)
 formProvideProxy.setRecordId(entityRecordId.value)
 

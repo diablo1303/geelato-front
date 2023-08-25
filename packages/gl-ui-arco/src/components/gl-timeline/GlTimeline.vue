@@ -121,7 +121,7 @@ if (props.itemMode === 'static') {
   if (props.itemMode === 'dynamicUpdateStatic') {
     setTimelineItems(props.items)
   }
-  if (props.entityReader.immediate) {
+  if (props.entityReader?.immediate) {
     fetchData()
   }
 }

@@ -55,6 +55,8 @@ const props = defineProps({
       return false
     }
   },
+  disabled:Boolean,
+  readonly:Boolean,
   ...mixins.props
 })
 // console.log('props.modelValue', props.modelValue, props.dictId)
@@ -110,7 +112,7 @@ watch(() => {
 <template>
   <div class="gl-dict">
     <template v-if="displayType==='select'">
-      <a-select placeholder="请选择" v-model="mv" allow-clear allow-search @clear="onClear">
+      <a-select placeholder="请选择" v-model="mv" allow-clear allow-search @clear="onClear" :disabled="disabled||readonly" :readonly="readonly">
         <a-option v-for="opt in options" :value="opt.itemCode">
           {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
         </a-option>
@@ -120,7 +122,7 @@ watch(() => {
       <template v-if="options&&options.length===0">
         <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
       </template>
-      <a-checkbox-group v-model="mv" :max="maxCount">
+      <a-checkbox-group v-model="mv" :max="maxCount" :disabled="disabled" :readonly="readonly">
         <a-checkbox v-for="opt in options" :value="opt.itemCode">
           {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
         </a-checkbox>
@@ -130,7 +132,7 @@ watch(() => {
       <template v-if="options&&options.length===0">
         <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
       </template>
-      <a-radio-group v-model="mv">
+      <a-radio-group v-model="mv" :disabled="disabled" :readonly="readonly">
         <a-radio v-for="opt in options" :value="opt.itemCode">
           {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
         </a-radio>

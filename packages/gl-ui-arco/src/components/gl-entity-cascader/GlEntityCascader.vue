@@ -36,7 +36,7 @@ const fetchData = () => {
   })
 }
 
-if (props.entityReader.immediate) {
+if (props.entityReader?.immediate) {
   fetchData()
 }
 
