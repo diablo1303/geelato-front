@@ -1,7 +1,7 @@
 <template>
   <div class="gl-entity-form" v-if="refreshFlag">
     <a-form ref="formRef" :model="formData" :layout="layout!"
-            :autoLabelWidth="autoLabelWidth" :disabled="isRead">
+            :autoLabelWidth="autoLabelWidth" :disabled="isRead&&glIsRuntime">
       <template v-if="glIsRuntime">
         <slot></slot>
       </template>
@@ -20,7 +20,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, onMounted, type PropType, provide, ref} from 'vue';
+import {inject, onMounted, onUnmounted, type PropType, provide, type Ref, ref} from 'vue';
 import type {FormInstance} from '@arco-design/web-vue/es/form';
 import useLoading from '../../hooks/loading';
 import {isDataEntry} from "@geelato/gl-ui-schema-arco";
@@ -34,6 +34,7 @@ import {
   FormProvideKey,
   FormProvideProxy, utils
 } from "@geelato/gl-ui";
+import type {EntitySavingObject} from "@/components/gl-entity-form/GlEntityForm";
 
 // onLoadedData：从服务端加载完数据并设置到表单中
 const emits = defineEmits(['onLoadedData'])
@@ -63,6 +64,15 @@ const props = defineProps({
     type: Object,
     required: true
   },
+  /**
+   *  是否作为子表单
+   */
+  isSubForm: Boolean,
+
+  /**
+   *  如果作为子表单，那本表单中哪个字段指向父表单的id
+   */
+  subFormPidName: String,
   layout: {
     type: String as PropType<LayoutType>,
     default() {
@@ -78,27 +88,39 @@ const props = defineProps({
   ...mixins.props
 })
 const isRead = pageProvideProxy.isPageStatusRead()
+// 通过默认通用关键字form获取的表单值，好处就是在配置打开页面传参时，不需要配置具体表单名，配置方便
+// ！！！注意，该方式在同一页面多表单嵌套时，很可能会污染子级表单的值，没法做到精确控制表单传值
 const formParams = pageProvideProxy.getParamsByPrefixAsObject('form')
+// 这种带$的关键字来替换上面的form，避免实休名为form时冲突
+const formParamsByKeywordFlag = pageProvideProxy.getParamsByPrefixAsObject('$form')
+// 通过绑定实体名获取参数，确保多层的表单嵌套时，各层表单都能获取到各自的表单参数
+const formParamsByEntityName = pageProvideProxy.getParamsByPrefixAsObject(props.bindEntity.entityName)
+// console.log('formParams', formParams, 'formParamsByEntityName', formParamsByEntityName)
+// 合并两种模式下的传值
+Object.assign(formParams, formParamsByKeywordFlag, formParamsByEntityName)
 // formData中不包括记录id，记录id在entityRecordId中定义
-const formData = ref<{ [key: string]: any }>(formParams);
-// console.log('GlEntityForm > formData:', formData, 'formParams:', formParams)
-let entityRecordId = ref<string>(formParams.id)
+const formData = ref<Record<string, any>>(formParams);
+console.log('GlEntityForm[' + props.bindEntity.entityName + '] > formData:', formData.value, 'formParams:', formParams)
+let entityRecordId: Ref<string> = ref(formParams.id)
 formProvideProxy.setRecordId(entityRecordId.value)
 
-const formItems = ref<Array<FormItem>>([]);
-const subFormTableInstIds = ref<Array<string>>([])
+const formItems: Ref<Array<FormItem>> = ref([]);
+const subFormInstIds: Ref<string[]> = ref([])
 const formRef = ref<FormInstance>();
 
 const checkValidDataEntry = (componentName: string) => {
-  return isDataEntry(componentName) && componentName !== 'GlEntityTableSub'
+  return isDataEntry(componentName) && componentName !== 'GlEntityTableSub' && componentName !== 'GlEntityForm'
 }
 
 /**
- * 遍历取得所有表单项的值
+ * 遍历构建表单数据项，设置值
+ * 在初始化构建时，由于子表单不存在，不会调用子表单的构建方法，另外，各层级子表单组件在加载数据时，需自动加载各自的构建方法
+ * 在保存构建时，需要调用子表单的构建方法buildFieldItems,设置各子表单项的值
  */
 const buildFieldItems = () => {
+  console.log('buildFieldItems ', props.bindEntity.entityName)
   formItems.value.length = 0
-  subFormTableInstIds.value.length = 0
+  subFormInstIds.value.length = 0
 
   function buildFieldItem(inst: ComponentInstance) {
     for (let index in inst.children) {
@@ -126,6 +148,7 @@ const buildFieldItems = () => {
           fieldName: subInst.props.bindField.fieldName,
           value: subInst.value
         }
+        // console.log('formItem', formItem)
         const foundSameBindFiled = formItems.value.find((formItem: any) => {
           return formItem.fieldName === subInst.props.bindField?.fieldName
         })
@@ -144,10 +167,24 @@ const buildFieldItems = () => {
       } else if (subInst.componentName === 'GlEntityTableSub' && subInst.props?.base?.isFormSubTable) {
         // 处理从表信息，只有明确是子表的才算
         // 先记录，后续在其它方法中处理
-        subFormTableInstIds.value.push(subInst.id)
+        subFormInstIds.value.push(subInst.id)
+      } else if (subInst.componentName === 'GlEntityForm') {
+        // 处理从表信息，只有明确是子表的才算
+        // 先记录，后续在其它方法中处理
+        subFormInstIds.value.push(subInst.id)
       }
+      // 构建子项
       if (subInst.children && subInst.children.length > 0) {
-        buildFieldItem(subInst)
+        if (subInst.componentName === 'GlEntityForm') {
+          // ！！！由于是动态组件，子组件此时还可能未渲染完成，基于组件实例id获不到方法体
+          const subBuildFieldItems = pageProvideProxy.getMethod(subInst.id, 'buildFieldItems')
+          if (subBuildFieldItems) {
+            subBuildFieldItems()
+          }
+        } else {
+          // 嵌套的表单属性不计入主表单在，在子表单中build
+          buildFieldItem(subInst)
+        }
       }
     }
   }
@@ -165,7 +202,6 @@ const buildFieldItems = () => {
 const setFormItemValues = (dataItem: { [key: string]: any }) => {
   formItems.value.length = 0
 
-  // subFormTableInstIds.value.length = 0
   function setFieldItemValue(inst: ComponentInstance) {
     for (let index in inst.children) {
       let subInst = inst.children[index]
@@ -284,66 +320,54 @@ const checkBindEntity = () => {
   return true
 }
 
+
+/**
+ * 创建表格的实体保存GQL对象，递归创建子级表单（包括列表、表单形式）
+ * 可被父表单调用，集到父表单一起保存
+ * @param subFormPidValue 本表单中，指向父表单ID的字段值
+ */
+const createEntitySavingObject = (subFormPidValue: string): EntitySavingObject | null => {
+  const parentIdFlag = '$parent.id'
+  if (checkBindEntity()) {
+    // 先设置主表单部分
+    const entityKeyValues: Record<string, any> = {id: entityRecordId.value, ...formData.value}
+    console.log(props.bindEntity.entityName, 'formData', formData.value)
+    // 如果本表单作为另了个表单的子表单
+    if (props.isSubForm) {
+      entityKeyValues[props.subFormPidName!] = subFormPidValue || parentIdFlag
+    }
+
+    // 获取子表单值信息，并设置到保存表单中
+    subFormInstIds.value.forEach((instId: string) => {
+      const createEntitySavingObject = pageProvideProxy.getMethod(instId, 'createEntitySavingObject')
+      if (typeof createEntitySavingObject === 'function') {
+        const subEntitySavingObject: EntitySavingObject = createEntitySavingObject(entityRecordId.value || parentIdFlag)
+        if (subEntitySavingObject) {
+          const subEntityKey = '#' + subEntitySavingObject.key
+          entityKeyValues[subEntityKey] = entityKeyValues[subEntityKey] || []
+          entityKeyValues[subEntityKey].push(...subEntitySavingObject.value)
+        }
+      }
+    })
+    return {key: props.bindEntity.entityName, value: [entityKeyValues]}
+  }
+  return null
+}
+
 /**
  *  保存表单数据，将数据保存到服务端
  *  在submitForm方法内调用此方法
  */
 const saveForm = async () => {
-  if (checkBindEntity()) {
-    // 先设置主表单部分
-    const entityKeyValues: { [key: string]: any } = {id: entityRecordId.value, ...formData.value}
-    // console.log('GlEntityForm > saveForm() > formData:', formData.value, 'entityKeyValues:', entityKeyValues)
-
-    // 获取子表单值信息，并设置到保存表单中
-    subFormTableInstIds.value.forEach((instId: string) => {
-      const componentInst: ComponentInstance = pageProvideProxy.getComponentInst(instId)
-      const getRenderColumnsFn = pageProvideProxy.getMethod(instId, 'getRenderColumns')
-      const getDeleteDataFn = pageProvideProxy.getMethod(instId, 'getDeleteData')
-      // console.log('GlEntityForm > saveForm() > getRenderColumnsFn', getRenderColumnsFn)
-      const subEntityFlag = '#'
-      const subEntityKey = subEntityFlag + componentInst.props?.base?.entityName
-      // 处理需保存的子表单数据
-      if (typeof getRenderColumnsFn === 'function') {
-        const renderColumns = getRenderColumnsFn()
-        // console.log('GlEntityForm > submitForm() > subFormTableColumns', renderColumns)
-        const getRenderDataFn = pageProvideProxy.getMethod(instId, 'getRenderData')
-        // console.log('GlEntityForm > submitForm() > getRenderDataFn', getRenderDataFn)
-        if (typeof getRenderDataFn === 'function') {
-          const subFormTableData = getRenderDataFn()
-          // console.log('GlEntityForm > submitForm() > subFormTableData', subFormTableData)
-          if (subFormTableData && subFormTableData.length > 0) {
-            // 子表中，对应主表单ID的字段名
-            const subTablePidName = componentInst.props?.base?.subTablePidName
-            subFormTableData.forEach((record: any) => {
-              // 设置主表父ID
-              // 如果是新增，则采用变量，在后台保存主表单后，更换该值 $parent.id
-              // 如果是修改，则直接获取当前的entityRecordId
-              record[subTablePidName] = entityRecordId.value || '$parent.id'
-            })
-            entityKeyValues[subEntityKey] = subFormTableData
-          }
-        }
-      }
-      // 处理需删除子表单数据
-      // 当前为逻辑删除，可依据子表的isLogicDeleteMode来区分
-      // console.log('GlEntityForm > saveForm() > getDeleteDataFn', getDeleteDataFn)
-      if (typeof getDeleteDataFn === 'function') {
-        const deleteData = getDeleteDataFn()
-        // console.log('GlEntityForm > saveForm() > deleteData:', deleteData)
-        if (deleteData && deleteData.length > 0) {
-          entityKeyValues[subEntityKey] = entityKeyValues[subEntityKey] || []
-          entityKeyValues[subEntityKey].push(...deleteData)
-        }
-      }
-    })
-    // console.log('saveForm props.bindEntity:', props.bindEntity, 'entityKeyValues:', entityKeyValues)
-    return await entityApi.save(props.bindEntity.entityName, entityKeyValues)
+  const entitySavingObject = createEntitySavingObject(entityRecordId.value)
+  if (entitySavingObject?.value) {
+    return await entityApi.save(props.bindEntity.entityName, entitySavingObject?.value[0])
   }
 }
 
 const {loading, setLoading} = useLoading();
 const hasSubFormTable = () => {
-  return subFormTableInstIds.value.length > 0
+  return subFormInstIds.value.length > 0
 }
 /**
  *  提交表单：构建表单项、校验、保存到服务端
@@ -357,7 +381,7 @@ const submitForm = async () => {
   const validateResult = await formRef.value?.validate();
   // 验证子表单，若存在则验证
   let subFormTableValidError = false
-  subFormTableInstIds.value.forEach((instId: string) => {
+  subFormInstIds.value.forEach((instId: string) => {
     const validateTableFn = pageProvideProxy.getMethod(instId, 'validateTable')
     if (typeof validateTableFn === 'function') {
       const validateTableData = validateTableFn()
@@ -378,7 +402,7 @@ const submitForm = async () => {
     formProvideProxy.setRecordId(entityRecordId.value)
     if (hasSubFormTable()) {
       // 保存之后刷新子表
-      subFormTableInstIds.value.forEach((instId: string) => {
+      subFormInstIds.value.forEach((instId: string) => {
         const refreshFn = pageProvideProxy.getMethod(instId, 'refresh')
         if (typeof refreshFn === 'function') {
           refreshFn()
@@ -422,7 +446,11 @@ onMounted(() => {
 })
 
 loadForm()
-defineExpose({submitForm})
+// const loadFormFnId = pageProvideProxy.addPageMountedEvent(loadForm)
+// onUnmounted(() => {
+//   pageProvideProxy.removePageMountedEvent(loadFormFnId)
+// })
+defineExpose({submitForm, buildFieldItems, createEntitySavingObject})
 </script>
 
 <style>

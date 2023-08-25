@@ -388,9 +388,7 @@ export class JsScriptExecutor {
             getPageParam: (paramName: string) => that.getPageParam(paramName, $gl),
             getComponentMethod: that.getComponentMethod,
             getComponentValue: that.getComponentValue,
-            setComponentValue: (componentId: string, valueExpression: any) => {
-                return that.setComponentValue(componentId, that.evalExpression(valueExpression, $gl.ctx))
-            },
+            setComponentValue: that.setComponentValue,
             getComponentProps: that.getComponentProps,
             setComponentProps: that.setComponentProps,
             triggerComponentAction: that.triggerComponentAction,
