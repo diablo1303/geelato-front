@@ -396,6 +396,7 @@ export default {
   'security.roleUser.index.model.ok.text': '确认',
   /* 验证 */
   'security.form.rules.match.required': '这是必填项',
+  'security.form.rules.match.uniqueness': '不能重复',
   'security.form.rules.match.length.title': '长度',
 
   'security.encoding.index.menu.list': '应用管理',

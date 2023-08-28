@@ -395,6 +395,7 @@ export default {
   'security.roleUser.index.model.ok.text': 'Confirm',
   /* 验证 */
   'security.form.rules.match.required': 'this is required',
+  'security.form.rules.match.uniqueness': 'non-repeatability',
   'security.form.rules.match.length.title': 'length',
 
   'security.encoding.index.menu.list': 'System',

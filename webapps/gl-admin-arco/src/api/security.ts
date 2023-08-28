@@ -111,6 +111,7 @@ export interface QueryOrgForm {
   status: number;
   description: string;
   isLeaf?: boolean | string;
+  tenantCode: string;
 }
 
 export interface FilterOrgForm {
@@ -121,6 +122,7 @@ export interface FilterOrgForm {
   type: string;
   category: string;
   status: string;
+  tenantCode: string;
   createAt: string[];
 }
 
@@ -150,6 +152,10 @@ export function createOrUpdateOrg(params: QueryOrgForm) {
 
 export function deleteOrg(id: string) {
   return axios.delete<QueryResult>(`/api/security/org/isDelete/${id}`);
+}
+
+export function validateOrgCode(params: QueryOrgForm) {
+  return axios.post<QueryResult>('/api/security/org/validate', params);
 }
 
 /* -----------------------------用户管理--------------------------- */

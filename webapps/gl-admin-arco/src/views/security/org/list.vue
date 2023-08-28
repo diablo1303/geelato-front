@@ -180,8 +180,10 @@ import {deleteOrg as deleteList, FilterOrgForm as FilterForm, pageQueryOrg as pa
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 引用其他页面
 import OrgForm from "@/views/security/org/form.vue";
+import {useRoute} from "vue-router";
 
 /* 列表 */
+const route = useRoute();
 type Column = TableColumnData & { checked?: true };
 const pageData = ref({current: 1, pageSize: 10, formState: 'edit'});
 const orgFormRef = ref(null);
@@ -197,7 +199,10 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', pid: '', name: '', code: '', type: '', category: '', status: '', createAt: []};
+  return {
+    id: '', pid: '', name: '', code: '', type: '', category: '', status: '', createAt: [],
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+  };
 };
 const filterData = ref(generateFilterData());
 

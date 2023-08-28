@@ -20,7 +20,7 @@
       </a-form-item>
       <a-form-item
           :label="$t('security.org.index.form.code')"
-          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateCode}]"
           field="code">
         <a-input v-if="pageData.button" v-model="formData.code" :max-length="32"/>
         <span v-else>{{ formData.code }}</span>
@@ -85,10 +85,12 @@ import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {Modal} from "@arco-design/web-vue";
 import {categoryOptions, statusOptions, typeOptions} from "@/views/security/org/searchTable";
-import {createOrUpdateOrg as createOrUpdateForm, getOrg as getForm, QueryOrgForm, QueryOrgForm as QueryForm, queryOrgs} from '@/api/security'
+import {createOrUpdateOrg as createOrUpdateForm, getOrg as getForm, QueryOrgForm, QueryOrgForm as QueryForm, queryOrgs, validateOrgCode} from '@/api/security'
 import {ListUrlParams, SelectOption} from '@/api/base';
 import {FormInstance} from "@arco-design/web-vue/es/form";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const pageData = ref({formState: 'add', button: true, orgName: ''});
 const validateForm = ref<FormInstance>();
 const orgSelectOptions = ref<SelectOption[]>([]);
@@ -97,7 +99,18 @@ const orgOptions = ref<QueryForm[]>([]);
 const visibleModel = ref(false);
 // 表单数据
 const generateFormData = (): QueryForm => {
-  return {id: '', pid: '0', name: '', code: new Date().getTime().toString(), status: 1, type: '', category: 'inside', seqNo: 999, description: ''};
+  return {
+    id: '',
+    pid: '0',
+    name: '',
+    code: new Date().getTime().toString(),
+    status: 1,
+    type: '',
+    category: 'inside',
+    seqNo: 999,
+    description: '',
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+  };
 }
 const formData = ref(generateFormData());
 // 页面响应
@@ -190,6 +203,19 @@ const openModal = (content: string) => {
 const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
+/**
+ * 唯一性校验
+ * @param value
+ * @param callback
+ */
+const validateCode = async (value: any, callback: any) => {
+  try {
+    const {data} = await validateOrgCode(formData.value);
+    if (!data) callback(t('security.form.rules.match.uniqueness'));
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 /* 打开表单 */
 const openForm = (urlParams: ListUrlParams) => {
@@ -200,7 +226,7 @@ const openForm = (urlParams: ListUrlParams) => {
   formData.value = generateFormData();
   formData.value.id = urlParams.id || '';
   // 组织加载
-  getOrgOptions();
+  getOrgOptions({tenantCode: formData.value.tenantCode} as QueryOrgForm);
   // 重置验证
   resetValidate();
   // 特色
