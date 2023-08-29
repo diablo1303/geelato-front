@@ -45,7 +45,9 @@ import {getOrgUser as getForm, insertOrgUser as createOrUpdateForm, QueryOrgForm
 import {ListUrlParams, SelectOption} from '@/api/base';
 import {defaultOrgOptions} from "@/views/security/user/org/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const pageData = ref({formState: 'add', button: true});
 const validateForm = ref<FormInstance>();
 const orgSelectOptions = ref<SelectOption[]>([]);
@@ -53,7 +55,7 @@ const orgSelectOptions = ref<SelectOption[]>([]);
 const visibleModel = ref(false);
 // 表单数据
 const generateFormData = () => {
-  return {id: '', userId: '', userName: '', orgId: '', orgName: '', defaultOrg: 0};
+  return {id: '', userId: '', userName: '', orgId: '', orgName: '', defaultOrg: 0, tenantCode: (route.params && route.params.tenantCode as string) || ''};
 }
 const formData = ref(generateFormData());
 // 页面响应

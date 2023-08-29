@@ -372,6 +372,7 @@ export interface QueryOrgUserForm {
   orgId: string;
   orgName: string;
   defaultOrg: number;
+  tenantCode: string;
 }
 
 export interface FilterOrgUserForm {
@@ -381,6 +382,7 @@ export interface FilterOrgUserForm {
   orgId: string;
   orgName: string;
   defaultOrg: string;
+  tenantCode: string;
   createAt: string[]
 }
 

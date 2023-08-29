@@ -47,6 +47,8 @@
 
 <script lang="ts" setup>
 import {ref, shallowRef} from "vue";
+import {useI18n} from 'vue-i18n';
+import {useRoute} from "vue-router";
 import UserModel from '@/views/security/user/model.vue'
 import {ListUrlParams, PageQueryRequest, SelectOption} from '@/api/base';
 import {
@@ -60,6 +62,9 @@ import {
 } from "@/api/security";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 
+// 国际化
+const {t} = useI18n();
+const route = useRoute();
 const pageData = ref({formState: 'add', button: true, orgId: '', userId: ''});
 const userModelRef = shallowRef(UserModel);
 const orgUserOptions = ref<QueryOrgUserForm[]>([]);
@@ -89,6 +94,7 @@ const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[])
 }
 const getOrgOptions = async (params: QueryOrgForm = {status: 1} as unknown as QueryOrgForm) => {
   try {
+    params.tenantCode = (route.params && route.params.tenantCode as string) || '';
     const {data} = await queryOrgs(params);
     orgSelectOptions.value = buildOrgOptions([{value: '0', label: '根目录', children: []}], data);
     orgSelectOptions.value = orgSelectOptions.value[0].children || [];
@@ -98,6 +104,8 @@ const getOrgOptions = async (params: QueryOrgForm = {status: 1} as unknown as Qu
 }
 const fetchOrgUsers = async (params: PageQueryRequest) => {
   try {
+    // @ts-ignore
+    params.tenantCode = (route.params && route.params.tenantCode as string) || '';
     const {data} = await queryOrgUsers(params);
     orgUserOptions.value = data || [];
   } catch (err) {
@@ -119,7 +127,6 @@ const deleteData = async (id: string, successBack: any) => {
 const createOrUpdateData = async (params: QueryOrgUserForm) => {
   try {
     await createOrUpdateForm(params);
-
     orgUserRefresh();
   } catch (err) {
     // eslint-disable-next-line no-console
@@ -152,7 +159,8 @@ const addOrgUser = (value: any) => {
     createOrUpdateData({
       userId: pageData.value.userId,
       orgId: pageData.value.orgId,
-      defaultOrg: 0
+      defaultOrg: 0,
+      tenantCode: (route.params && route.params.tenantCode as string) || ''
     } as unknown as QueryOrgUserForm);
   }
 }
