@@ -137,11 +137,12 @@ import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
-import {deletePermission as deleteList, pageQueryPermission as pageQueryList} from '@/api/security';
+import {deletePermission as deleteList, FilterPermissionForm, pageQueryPermission as pageQueryList} from '@/api/security';
 import {PageQueryFilter, PageQueryRequest} from '@/api/base';
 import {columns} from '@/views/security/permission/searchTable';
 // 引用其他页面
 import PermissionForm from '@/views/security/permission/form.vue';
+import {useRoute} from "vue-router";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
@@ -149,6 +150,7 @@ const pageData = ref({current: 1, pageSize: 10, formState: 'edit'});
 const permissionFormRef = ref(null);
 // 国际化
 const {t} = useI18n();
+const route = useRoute();
 // 加载
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
@@ -159,8 +161,8 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 
 /* 列表 */
-const generateFilterData = () => {
-  return {id: '', name: '', text: '', createAt: []};
+const generateFilterData = (): FilterPermissionForm => {
+  return {id: '', name: '', text: '', createAt: [], tenantCode: (route.params && route.params.tenantCode as string) || '',};
 };
 const filterData = ref(generateFilterData());
 /**

@@ -20,7 +20,7 @@
       </a-form-item>
       <a-form-item
           :label="$t('security.permission.index.form.text')"
-          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateCode}]"
           field="text">
         <a-input v-if="pageData.button" v-model="formData.text" :max-length="32"/>
         <span v-else>{{ formData.text }}</span>
@@ -35,18 +35,28 @@
 
 <script lang="ts" setup>
 import {ref} from 'vue';
+import {useI18n} from 'vue-i18n';
 import {Modal} from "@arco-design/web-vue";
-import {createOrUpdatePermission as createOrUpdateForm, getPermission as getForm, QueryPermissionForm as QueryForm} from '@/api/security';
+import {
+  createOrUpdatePermission as createOrUpdateForm,
+  getPermission as getForm,
+  QueryPermissionForm as QueryForm,
+  validatePermissionCode
+} from '@/api/security';
 import {ListUrlParams} from '@/api/base';
 import {FormInstance} from "@arco-design/web-vue/es/form";
+import {useRoute} from "vue-router";
 
+// 国际化
+const {t} = useI18n();
+const route = useRoute();
 const pageData = ref({formState: 'add', button: true});
 const validateForm = ref<FormInstance>();
 // 显示隐藏
 const visibleModel = ref(false);
 // 表单数据
 const generateFormData = (): QueryForm => {
-  return {id: '', name: '', text: '', description: ''};
+  return {id: '', name: '', text: '', description: '', tenantCode: (route.params && route.params.tenantCode as string) || '',};
 }
 const formData = ref(generateFormData());
 // 页面响应
@@ -101,6 +111,19 @@ const openModal = (content: string) => {
 const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
+/**
+ * 唯一性校验
+ * @param value
+ * @param callback
+ */
+const validateCode = async (value: any, callback: any) => {
+  try {
+    const {data} = await validatePermissionCode(formData.value);
+    if (!data) callback(t('security.form.rules.match.uniqueness'));
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 /* 对外调用方法 */
 const openForm = (urlParams: ListUrlParams) => {

@@ -329,12 +329,14 @@ export interface QueryPermissionForm {
   name: string;
   text: string;
   description: string;
+  tenantCode: string;
 }
 
 export interface FilterPermissionForm {
   id: string;
   name: string;
   text: string;
+  tenantCode: string;
   createAt: string[]
 }
 
@@ -356,6 +358,10 @@ export function createOrUpdatePermission(params: QueryPermissionForm) {
 
 export function deletePermission(id: string) {
   return axios.delete<QueryResult>(`/api/security/permission/isDelete/${id}`);
+}
+
+export function validatePermissionCode(params: QueryPermissionForm) {
+  return axios.post<QueryResult>('/api/security/permission/validate', params);
 }
 
 /* -----------------------------用户组织关联表--------------------------- */
