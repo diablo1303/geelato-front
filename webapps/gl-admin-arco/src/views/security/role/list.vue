@@ -168,6 +168,7 @@ import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 import RoleForm from '@/views/security/role/form.vue';
 import RoleDrawer from '@/views/security/role/drawer.vue';
 import RoleTabForm from '@/views/security/role/tabForm.vue';
+import {useRoute} from "vue-router";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
@@ -177,6 +178,7 @@ const roleDrawerRef = ref(null);
 const roleTabFormRef = ref(null);
 // 国际化
 const {t} = useI18n();
+const route = useRoute();
 // 加载
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
@@ -187,7 +189,7 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', name: '', code: '', type: '', enableStatus: '', createAt: []};
+  return {id: '', name: '', code: '', type: '', enableStatus: '', createAt: [], tenantCode: (route.params && route.params.tenantCode as string) || '',};
 };
 
 const filterData = ref(generateFilterData());

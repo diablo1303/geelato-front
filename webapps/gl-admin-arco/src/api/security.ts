@@ -196,8 +196,12 @@ export interface FilterUserForm {
   createAt: string[];
 }
 
-export function queryUsers() {
-  return axios.get<QueryUserForm[]>('/api/security/user/query');
+export function queryUsers(params: QueryUserForm) {
+  return axios.get<QueryUserForm[]>('/api/security/user/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
 }
 
 export function getUser(id: string) {
@@ -334,8 +338,12 @@ export interface FilterPermissionForm {
   createAt: string[]
 }
 
-export function queryPermissions() {
-  return axios.get<QueryPermissionForm[]>('/api/security/permission/query');
+export function queryPermissions(params: QueryPermissionForm) {
+  return axios.get<QueryPermissionForm[]>('/api/security/permission/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
 }
 
 export function getPermission(id: string) {
@@ -399,6 +407,7 @@ export interface QueryRoleForm {
   enableStatus: number;
   seqNo: number;
   description: string;
+  tenantCode: string;
 }
 
 export interface FilterRoleForm {
@@ -407,7 +416,8 @@ export interface FilterRoleForm {
   code: string;
   type: string;
   enableStatus: string;
-  createAt: string[]
+  createAt: string[];
+  tenantCode: string;
 }
 
 export function getRole(id: string) {
@@ -422,6 +432,10 @@ export function deleteRole(id: string) {
   return axios.delete<QueryResult>(`/api/security/role/isDelete/${id}`);
 }
 
+export function validateRoleCode(params: QueryRoleForm) {
+  return axios.post<QueryResult>('/api/security/role/validate', params);
+}
+
 /* -----------------------------user app--------------------------- */
 export interface QueryRoleAppForm {
   id: string;
@@ -429,6 +443,7 @@ export interface QueryRoleAppForm {
   roleName: string;
   appId: string;
   appName: string;
+  tenantCode: string;
 }
 
 export interface QueryAppForm {
@@ -442,11 +457,16 @@ export interface FilterRoleAppForm {
   roleName: string;
   appId: string;
   appName: string;
+  tenantCode: string;
   createAt: string[]
 }
 
-export function queryApps() {
-  return axios.get<QueryAppForm[]>('/api/app/query');
+export function queryApps(params: QueryAppForm) {
+  return axios.get<QueryAppForm[]>('/api/app/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
 }
 
 export function getRoleApp(id: string) {
@@ -468,6 +488,7 @@ export interface QueryRolePermissionForm {
   roleName: string;
   permissionId: string;
   permissionName: string;
+  tenantCode: string;
 }
 
 export interface FilterRolePermissionForm {
@@ -476,6 +497,7 @@ export interface FilterRolePermissionForm {
   roleName: string;
   permissionId: string;
   permissionName: string;
+  tenantCode: string;
   createAt: string[]
 }
 
@@ -499,6 +521,7 @@ export interface QueryRoleTreeNodeForm {
   treeNodeId: string;
   treeNodeText: string;
   title: string;
+  tenantCode: string;
 }
 
 export interface FilterRoleTreeNodeForm {
@@ -508,6 +531,7 @@ export interface FilterRoleTreeNodeForm {
   treeNodeId: string;
   treeNodeText: string;
   title: string;
+  tenantCode: string;
   createAt: string[]
 }
 
@@ -524,10 +548,15 @@ export interface QueryTreeNodeForm {
   meta: string;
   flag: string;
   description: string;
+  tenantCode: string;
 }
 
-export function queryTreeNodes() {
-  return axios.get<QueryTreeNodeForm[]>('/api/treeNode/query');
+export function queryTreeNodes(params: QueryTreeNodeForm) {
+  return axios.get<QueryTreeNodeForm[]>('/api/treeNode/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
 }
 
 export function getRoleTreeNode(id: string) {
@@ -549,6 +578,7 @@ export interface QueryRoleUserForm {
   roleName: string;
   userId: string;
   userName: string;
+  tenantCode: string;
 }
 
 export interface FilterRoleUserForm {
@@ -557,6 +587,7 @@ export interface FilterRoleUserForm {
   roleName: string;
   userId: string;
   userName: string;
+  tenantCode: string;
   createAt: string[]
 }
 

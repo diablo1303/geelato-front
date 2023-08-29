@@ -32,13 +32,16 @@ import {ref} from 'vue';
 import {
   getRolePermission as getForm,
   insertRolePermission as createOrUpdateForm,
+  QueryPermissionForm,
   QueryPermissionForm as QuerySelectForm,
   queryPermissions as querySelectOptions,
   QueryRolePermissionForm as QueryForm
 } from '@/api/security';
 import {ListUrlParams} from '@/api/base';
 import {FormInstance} from "@arco-design/web-vue/es/form";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const pageData = ref({formState: 'add', button: true});
 const validateForm = ref<FormInstance>();
 const selectOptions = ref<QuerySelectForm[]>([]);
@@ -46,7 +49,7 @@ const selectOptions = ref<QuerySelectForm[]>([]);
 const visibleModel = ref(false);
 // 表单数据
 const generateFormData = (): QueryForm => {
-  return {id: '', roleId: '', roleName: '', permissionId: '', permissionName: ''};
+  return {id: '', roleId: '', roleName: '', permissionId: '', permissionName: '', tenantCode: (route.params && route.params.tenantCode as string) || '',};
 }
 const formData = ref(generateFormData());
 // 页面响应
@@ -54,7 +57,9 @@ let okSuccessBack: any;
 
 const getSelectOptions = async () => {
   try {
-    const {data} = await querySelectOptions();
+    const {data} = await querySelectOptions({
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+    } as unknown as QueryPermissionForm);
     selectOptions.value = data || [];
   } catch (err) {
     // eslint-disable-next-line no-console

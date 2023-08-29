@@ -153,6 +153,7 @@ import {deleteRoleTreeNode as deleteList, FilterRoleTreeNodeForm as FilterForm, 
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 引用其他页面
 import RoleTreeNodeForm from '@/views/security/role/treenode/form.vue';
+import {useRoute} from "vue-router";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
@@ -160,6 +161,7 @@ const pageData = ref({current: 1, pageSize: 10, formState: 'edit', isModal: fals
 const roleTreeNodeFormRef = ref(null);
 // 国际化
 const {t} = useI18n();
+const route = useRoute();
 // 加载
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
@@ -171,7 +173,16 @@ const renderData = ref<PageQueryFilter[]>([]);
 
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', title: '', roleId: '', roleName: '', treeNodeId: '', treeNodeText: '', createAt: []};
+  return {
+    id: '',
+    title: '',
+    roleId: '',
+    roleName: '',
+    treeNodeId: '',
+    treeNodeText: '',
+    createAt: [],
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+  };
 };
 const filterData = ref(generateFilterData());
 

@@ -46,7 +46,9 @@ import {QueryAppForm, queryApps, QueryOrgUserForm, QueryUserForm} from "@/api/se
 import {ListUrlParams, SelectOption} from '@/api/base';
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import RoleModel from "@/views/security/role/model.vue";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const pageData = ref({formState: 'add', button: true, appId: '', orgId: '', userId: ''});
 const validateForm = ref<FormInstance>();
 const orgUserOptions = ref<QueryOrgUserForm[]>([]);
@@ -60,7 +62,9 @@ let okSuccessBack: any;
 
 const getSelectOptions = async () => {
   try {
-    const {data} = await queryApps();
+    const {data} = await queryApps({
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+    } as unknown as QueryAppForm);
     selectAppOptions.value = data || [];
   } catch (err) {
     // eslint-disable-next-line no-console

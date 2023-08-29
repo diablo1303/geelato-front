@@ -33,12 +33,15 @@ import {
   getRoleUser as getForm,
   insertRoleUser as createOrUpdateForm,
   QueryRoleUserForm as QueryForm,
+  QueryUserForm,
   QueryUserForm as QuerySelectForm,
   queryUsers as querySelectOptions
 } from '@/api/security';
 import {ListUrlParams} from '@/api/base';
 import {FormInstance} from "@arco-design/web-vue/es/form";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const pageData = ref({formState: 'add', button: true});
 const validateForm = ref<FormInstance>();
 const selectOptions = ref<QuerySelectForm[]>([]);
@@ -46,7 +49,7 @@ const selectOptions = ref<QuerySelectForm[]>([]);
 const visibleModel = ref(false);
 // 表单数据
 const generateFormData = (): QueryForm => {
-  return {id: '', roleId: '', roleName: '', userId: '', userName: ''};
+  return {id: '', roleId: '', roleName: '', userId: '', userName: '', tenantCode: (route.params && route.params.tenantCode as string) || '',};
 }
 const formData = ref(generateFormData());
 // 页面响应
@@ -54,7 +57,9 @@ let okSuccessBack: any;
 
 const getSelectOptions = async () => {
   try {
-    const {data} = await querySelectOptions();
+    const {data} = await querySelectOptions({
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+    } as unknown as QueryUserForm);
     selectOptions.value = data || [];
   } catch (err) {
     // eslint-disable-next-line no-console
