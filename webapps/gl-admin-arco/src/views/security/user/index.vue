@@ -53,7 +53,9 @@ import {Notification} from "@arco-design/web-vue";
 import {TreeNodeData, TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
 import UserList from '@/views/security/user/list.vue';
 import {QueryOrgForm, queryTrees} from '@/api/security';
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 // 国际化
 const {t} = useI18n();
 // 全局变量
@@ -103,6 +105,7 @@ const originTreeData = computed(() => {
 const fetchOrgs = async (params: QueryOrgForm = {pid: '0'} as unknown as QueryOrgForm): Promise<TreeNodeProps[]> => {
   let treeOptions: TreeNodeProps[] = [];
   try {
+    params.tenantCode = (route.params && route.params.tenantCode as string) || '';
     const {data} = await queryTrees(params);
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {

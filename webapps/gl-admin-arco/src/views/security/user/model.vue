@@ -23,7 +23,7 @@
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('security.user.index.form.loginName')"
-            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateLoginName}]"
             field="loginName">
           <a-input v-if="pageData.button" v-model="formData.loginName" :max-length="32"/>
           <span v-else>{{ formData.loginName }}</span>
@@ -57,7 +57,7 @@
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('security.user.index.form.mobilePhone')"
-            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateMobilePhone}]"
             field="mobilePhone">
           <a-input v-if="pageData.button" v-model="formData.mobilePhone" :max-length="32">
             <template #prepend>
@@ -155,7 +155,15 @@
 <script lang="ts" setup>
 import {computed, ref} from "vue";
 import {Modal} from "@arco-design/web-vue";
-import {createOrUpdateUser as createOrUpdateForm, getUser as getForm, QueryOrgForm, queryOrgs, QueryUserForm as QueryForm} from '@/api/security';
+import {
+  createOrUpdateUser as createOrUpdateForm,
+  getUser as getForm,
+  QueryOrgForm,
+  queryOrgs,
+  QueryUserForm as QueryForm,
+  validateUserLoginName,
+  validateUserMobilePhone
+} from '@/api/security';
 import {ListUrlParams, SelectOption} from '@/api/base';
 import {sexOptions, sourceOptions, typeOptions} from "@/views/security/user/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";
@@ -163,7 +171,9 @@ import mobilePrefix from '@/config/mobilePrefix.json';
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
 import {useI18n} from "vue-i18n";
 import {copyToClipboard} from "@/utils/strings";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const {t} = useI18n();
 const pageData = ref({formState: 'add', button: true, formCol: 2});
 const validateForm = ref<FormInstance>();
@@ -190,7 +200,8 @@ const generateFormData = (): QueryForm => {
     cityCode: '',
     type: 0,
     source: 0,
-    description: ''
+    description: '',
+    tenantCode: (route.params && route.params.tenantCode as string) || ''
   };
 }
 const formData = ref(generateFormData());
@@ -222,6 +233,7 @@ const buildOrgOptions = (defaultData: SelectOption[], totalData: QueryOrgForm[])
 }
 const getOrgOptions = async (params: QueryOrgForm = {status: 1} as unknown as QueryOrgForm) => {
   try {
+    params.tenantCode = (route.params && route.params.tenantCode as string) || '';
     const {data} = await queryOrgs(params);
     orgSelectOptions.value = buildOrgOptions([{value: '0', label: '根目录', children: []}], data);
     orgSelectOptions.value = orgSelectOptions.value[0].children || [];
@@ -270,6 +282,27 @@ const openModal = (content: string) => {
 const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
+/**
+ * 唯一性校验
+ * @param value
+ * @param callback
+ */
+const validateLoginName = async (value: any, callback: any) => {
+  try {
+    const {data} = await validateUserLoginName(formData.value);
+    if (!data) callback(t('security.form.rules.match.uniqueness'));
+  } catch (err) {
+    console.log(err);
+  }
+}
+const validateMobilePhone = async (value: any, callback: any) => {
+  try {
+    const {data} = await validateUserMobilePhone(formData.value);
+    if (!data) callback(t('security.form.rules.match.uniqueness'));
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {

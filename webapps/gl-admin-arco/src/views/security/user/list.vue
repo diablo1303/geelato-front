@@ -200,8 +200,10 @@ import UserDrawer from '@/views/security/user/drawer.vue';
 import UserTabForm from '@/views/security/user/tabForm.vue';
 import {useI18n} from "vue-i18n";
 import {copyToClipboard} from "@/utils/strings";
+import {useRoute} from "vue-router";
 
 /* 列表 */
+const route = useRoute();
 type Column = TableColumnData & { checked?: true };
 const pageData = ref({current: 1, pageSize: 10, formState: 'edit', isModal: false, params: {orgId: '', orgName: ''}});
 const userFormRef = ref(null);
@@ -220,7 +222,10 @@ const scrollbar = ref(true);
 const scroll = {x: 2000};
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', name: '', orgId: '', orgName: '', sex: '', source: '', type: '', createAt: []};
+  return {
+    id: '', name: '', orgId: '', orgName: '', sex: '', source: '', type: '', createAt: [],
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+  };
 };
 const filterData = ref(generateFilterData());
 

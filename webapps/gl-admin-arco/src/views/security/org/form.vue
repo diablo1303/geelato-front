@@ -83,12 +83,12 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
+import {useRoute} from "vue-router";
 import {Modal} from "@arco-design/web-vue";
 import {categoryOptions, statusOptions, typeOptions} from "@/views/security/org/searchTable";
 import {createOrUpdateOrg as createOrUpdateForm, getOrg as getForm, QueryOrgForm, QueryOrgForm as QueryForm, queryOrgs, validateOrgCode} from '@/api/security'
 import {ListUrlParams, SelectOption} from '@/api/base';
 import {FormInstance} from "@arco-design/web-vue/es/form";
-import {useRoute} from "vue-router";
 
 const route = useRoute();
 const pageData = ref({formState: 'add', button: true, orgName: ''});
