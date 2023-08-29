@@ -103,7 +103,9 @@ import DictDrawer from "@/views/security/dict/drawer.vue";
 import DictItemList from '@/views/security/dict/item/list.vue';
 import DictItemDrawer from "@/views/security/dict/item/drawer.vue";
 import DictItemLocker from "@/views/security/dict/item/locker.vue";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 // 国际化
 const {t} = useI18n();
 // 全局变量
@@ -157,7 +159,11 @@ const originTreeData = computed(() => {
 const fetchDictionary = async (): Promise<TreeNodeProps[]> => {
   let treeOptions: TreeNodeProps[] = [];
   try {
-    const {data} = await queryDicts();
+
+    const {data} = await queryDicts({
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+      appId: (route.params && route.params.appId as string) || '',
+    } as unknown as QueryForm);
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {
       treeOptions.push({title: item.dictName, key: item.id, level: 1} as TreeNodeProps);

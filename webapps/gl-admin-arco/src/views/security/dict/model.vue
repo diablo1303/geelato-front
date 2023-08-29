@@ -13,18 +13,18 @@
     </a-form-item>
     <a-form-item
         :label="$t('security.dict.index.form.dictCode')"
-        :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+        :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateCode}]"
         field="dictCode">
       <a-input v-if="pageData.button" v-model.trim="formData.dictCode" :max-length="32"/>
       <span v-else>{{ formData.dictCode }}</span>
     </a-form-item>
-    <a-form-item
-        :label="$t('security.dict.index.form.tenantCode')"
-        :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-        field="tenantCode">
-      <a-input v-if="pageData.button" v-model.trim="formData.tenantCode" :max-length="32"/>
-      <span v-else>{{ formData.tenantCode }}</span>
-    </a-form-item>
+    <!--    <a-form-item
+            :label="$t('security.dict.index.form.tenantCode')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            field="tenantCode">
+          <a-input v-if="pageData.button" v-model.trim="formData.tenantCode" :max-length="32"/>
+          <span v-else>{{ formData.tenantCode }}</span>
+        </a-form-item>-->
     <a-form-item
         :label="$t('security.dict.index.form.enableStatus')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
@@ -53,17 +53,27 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
+import {useI18n} from 'vue-i18n';
 import {Modal} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/base';
-import {createOrUpdateDict as createOrUpdateForm, getDict as getForm, QueryDictForm as QueryForm} from '@/api/security'
+import {createOrUpdateDict as createOrUpdateForm, getDict as getForm, QueryDictForm as QueryForm, validateDictCode} from '@/api/security'
 import {enableStatusOptions} from "@/views/security/dict/item/searchTable";
+import {useRoute} from "vue-router";
 
+// 国际化
+const {t} = useI18n();
+const route = useRoute();
 const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
 /* 表单 */
 const generateFormData = (): QueryForm => {
-  return {id: '', tenantCode: '', appId: '', dictName: '', dictCode: '', dictRemark: '', enableStatus: 1, seqNo: 999};
+  return {
+    id: '',
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: (route.params && route.params.appId as string) || '',
+    dictName: '', dictCode: '', dictRemark: '', enableStatus: 1, seqNo: 999
+  };
 }
 const formData = ref(generateFormData());
 
@@ -97,6 +107,19 @@ const openModal = (content: string) => {
 const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
+/**
+ * 唯一性校验
+ * @param value
+ * @param callback
+ */
+const validateCode = async (value: any, callback: any) => {
+  try {
+    const {data} = await validateDictCode(formData.value);
+    if (!data) callback(t('security.form.rules.match.uniqueness'));
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {

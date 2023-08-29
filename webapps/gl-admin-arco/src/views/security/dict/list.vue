@@ -13,11 +13,11 @@
               <a-input v-model="filterData.dictCode" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
-          <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('security.dict.index.form.tenantCode')" field="tenantCode">
-              <a-input v-model="filterData.tenantCode" allow-clear @clear="search($event)" @press-enter="search($event)"/>
-            </a-form-item>
-          </a-col>
+          <!--          <a-col :span="pageData.isModal?12:8">
+                      <a-form-item :label="$t('security.dict.index.form.tenantCode')" field="tenantCode">
+                        <a-input v-model="filterData.tenantCode" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+                      </a-form-item>
+                    </a-col>-->
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('security.dict.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
@@ -109,7 +109,7 @@
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictName')" :tooltip="true" :width="150" data-index="dictName"></a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictCode')" :tooltip="true" :width="150" data-index="dictCode"></a-table-column>
-      <a-table-column :title="$t('security.dict.index.form.tenantCode')" :width="120" data-index="tenantCode"></a-table-column>
+      <!--      <a-table-column :title="$t('security.dict.index.form.tenantCode')" :width="120" data-index="tenantCode"/>-->
       <a-table-column :title="$t('security.dict.index.form.seqNo')" :width="100" data-index="seqNo"></a-table-column>
       <a-table-column :title="$t('security.dict.index.form.enableStatus')" :width="120" data-index="enableStatus">
         <template #cell="{ record }">
@@ -160,8 +160,10 @@ import DictForm from "@/views/security/dict/form.vue";
 import DictDrawer from "@/views/security/dict/drawer.vue";
 import DictItemLocker from "@/views/security/dict/item/locker.vue";
 import {QueryConnectForm as QueryForm} from "@/api/model";
+import {useRoute} from "vue-router";
 
 /* 列表 */
+const route = useRoute();
 type Column = TableColumnData & { checked?: true };
 const pageData = ref({
   current: 1, pageSize: 10, formState: 'edit', isModal: false, modalAddBack: (data: QueryForm) => {
@@ -182,7 +184,12 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', dictName: '', dictCode: '', enableStatus: '', tenantCode: '', appId: '', createAt: []};
+  return {
+    id: '', dictName: '', dictCode: '', enableStatus: '',
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: (route.params && route.params.appId as string) || '',
+    createAt: []
+  };
 };
 const filterData = ref(generateFilterData());
 

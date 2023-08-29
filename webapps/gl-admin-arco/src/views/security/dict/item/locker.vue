@@ -168,9 +168,11 @@ import {batchCreateOrUpdateDictItem, pageQueryDictItem as pageQueryList, QueryDi
 import {TableData} from "@arco-design/web-vue/es/table/interface";
 import {enableStatusOptions} from "@/views/security/dict/item/searchTable";
 import {copyToClipboard} from "@/utils/strings";
+import {useRoute} from "vue-router";
 
 // 表单
 const {t} = useI18n();
+const route = useRoute();
 const columnData = ref<QueryDictItemForm[]>([]);
 const pageData = ref({
   formState: 'add', button: true, pId: '', pName: '', okBack: (data: QueryModel) => {
@@ -191,6 +193,8 @@ const draggableData = ref({draggable: {}, sort: false, title: "排序"});
 const rowSelection = reactive({type: 'checkbox', showCheckedAll: true, checkStrictly: true, onlyCurrent: true});
 const fetchData = async (params: PageQueryRequest) => {
   try {
+    // @ts-ignore
+    params.tenantCode = (route.params && route.params.tenantCode as string) || '';
     const {data} = await pageQueryList(params);
     // eslint-disable-next-line no-use-before-define
     columnData.value = formatTree([], data.items as unknown as QueryDictItemForm[]);
@@ -395,7 +399,8 @@ const addTable = (e: Event, parentId?: string) => {
       dictId: pageData.value.pId,
       itemName: '',
       itemCode: '',
-      enableStatus: 1
+      enableStatus: 1,
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
     } as QueryDictItemForm);
     console.log(tableData);
     columnData.value = formatTree([], tableData);
@@ -419,7 +424,8 @@ const handlePopupOk = (ev?: MouseEvent) => {
       dictId: pageData.value.pId,
       itemName: itemNames[i] || '',
       itemCode: itemCodes[i] || '',
-      enableStatus: 1
+      enableStatus: 1,
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
     } as QueryDictItemForm);
     columnData.value = formatTree([], tableData);
   }

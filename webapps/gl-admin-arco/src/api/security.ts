@@ -181,6 +181,7 @@ export interface QueryUserForm {
   type: number;
   source: number;
   description: string;
+  tenantCode: string;
 }
 
 export interface FilterUserForm {
@@ -191,7 +192,8 @@ export interface FilterUserForm {
   orgName: string;
   type: string;
   source: string;
-  createAt: string[]
+  tenantCode: string;
+  createAt: string[];
 }
 
 export function queryUsers() {
@@ -212,6 +214,14 @@ export function deleteUser(id: string) {
 
 export function resetPassword(id: string) {
   return axios.post<QueryResult>(`/api/security/user/resetPwd/${id}`);
+}
+
+export function validateUserLoginName(params: QueryUserForm) {
+  return axios.post<QueryResult>('/api/security/user/validate/loginName', params);
+}
+
+export function validateUserMobilePhone(params: QueryUserForm) {
+  return axios.post<QueryResult>('/api/security/user/validate/mobilePhone', params);
 }
 
 /* -----------------------------字典管理 - 字典--------------------------- */
@@ -236,8 +246,12 @@ export interface FilterDictForm {
   createAt: string[];
 }
 
-export function queryDicts() {
-  return axios.get<QueryDictForm[]>('/api/dict/query');
+export function queryDicts(params: QueryDictForm) {
+  return axios.get<QueryDictForm[]>('/api/dict/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
 }
 
 export function getDict(id: string) {
@@ -252,6 +266,10 @@ export function deleteDict(id: string) {
   return axios.delete<QueryResult>(`/api/dict/isDelete/${id}`);
 }
 
+export function validateDictCode(params: QueryDictForm) {
+  return axios.post<QueryResult>('/api/dict/validate', params);
+}
+
 /* -----------------------------字典管理 - 字典项--------------------------- */
 export interface QueryDictItemForm {
   id: string;
@@ -263,6 +281,7 @@ export interface QueryDictItemForm {
   enableStatus: number;
   seqNo: number;
   children?: QueryDictItemForm[];
+  tenantCode: string;
 }
 
 export interface FilterDictItemForm {
@@ -273,6 +292,7 @@ export interface FilterDictItemForm {
   itemName: string;
   enableStatus: string;
   createAt: string[];
+  tenantCode: string;
 }
 
 export function getDictItem(id: string) {
@@ -293,6 +313,10 @@ export function deleteDictItem(id: string) {
 
 export function queryItemByDictCode(dictCode: string) {
   return axios.get<QueryDictItemForm[]>(`/api/dict/item/queryItemByDictCode/${dictCode}`);
+}
+
+export function validateDictItemCode(params: QueryDictItemForm) {
+  return axios.post<QueryResult>('/api/dict/item/validate', params);
 }
 
 /* -----------------------------权限管理--------------------------- */

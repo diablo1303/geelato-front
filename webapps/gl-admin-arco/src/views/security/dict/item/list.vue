@@ -159,8 +159,10 @@ import {deleteDictItem as deleteList, FilterDictItemForm as FilterForm, pageQuer
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 引用其他页面
 import DictItemDrawer from "@/views/security/dict/item/drawer.vue";
+import {useRoute} from "vue-router";
 
 /* 列表 */
+const route = useRoute();
 type Column = TableColumnData & { checked?: true };
 const pageData = ref({current: 1, pageSize: 10, formState: 'edit', isModal: false, params: {pId: '', pName: ''}});
 const dictItemDrawerRef = ref(null);
@@ -176,7 +178,10 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', pid: '', dictId: '', itemName: '', itemCode: '', enableStatus: '', createAt: []};
+  return {
+    id: '', pid: '', dictId: '', itemName: '', itemCode: '', enableStatus: '', createAt: [],
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+  };
 };
 const filterData = ref(generateFilterData());
 

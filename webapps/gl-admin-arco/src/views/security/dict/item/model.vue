@@ -13,7 +13,7 @@
     </a-form-item>
     <a-form-item
         :label="$t('security.dictItem.index.form.itemCode')"
-        :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+        :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateCode}]"
         field="itemCode">
       <a-input v-if="pageData.button" v-model.trim="formData.itemCode" :max-length="32"/>
       <span v-else>{{ formData.itemCode }}</span>
@@ -46,17 +46,25 @@
 
 <script lang="ts" setup>
 import {ref} from "vue";
+import {useI18n} from 'vue-i18n';
 import {Modal} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/base';
-import {createOrUpdateDictItem as createOrUpdateForm, getDictItem as getForm, QueryDictItemForm as QueryForm} from '@/api/security'
+import {createOrUpdateDictItem as createOrUpdateForm, getDictItem as getForm, QueryDictItemForm as QueryForm, validateDictItemCode} from '@/api/security'
 import {enableStatusOptions} from "@/views/security/dict/item/searchTable";
+import {useRoute} from "vue-router";
 
+// 国际化
+const {t} = useI18n();
+const route = useRoute();
 const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
 /* 表单 */
 const generateFormData = (): QueryForm => {
-  return {id: '', pid: '', dictId: '', itemName: '', itemCode: '', enableStatus: 1, seqNo: 999, itemRemark: ''};
+  return {
+    id: '', pid: '', dictId: '', itemName: '', itemCode: '', enableStatus: 1, seqNo: 999, itemRemark: '',
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+  };
 }
 const formData = ref(generateFormData());
 
@@ -91,6 +99,19 @@ const openModal = (content: string) => {
 const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
+/**
+ * 唯一性校验
+ * @param value
+ * @param callback
+ */
+const validateCode = async (value: any, callback: any) => {
+  try {
+    const {data} = await validateDictItemCode(formData.value);
+    if (!data) callback(t('security.form.rules.match.uniqueness'));
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {
