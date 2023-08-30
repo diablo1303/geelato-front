@@ -14,6 +14,7 @@ export interface QueryConnectForm {
   dbUserName: string; // 用户名
   dbPassword: string; // 密码
   enableStatus: number; // 状态
+  tenantCode: string;
 }
 
 export interface FilterConnectForm {
@@ -23,6 +24,7 @@ export interface FilterConnectForm {
   dbType: string;
   enableStatus: string;
   createAt: string[];
+  tenantCode: string;
 }
 
 export function pageQueryConnects(params: PageQueryRequest) {
@@ -71,6 +73,7 @@ export interface QueryTableForm {
   seqNo: number; // 排序
   tableComment: string; // 备注
   description: string; // 补充描述
+  tenantCode: string;
 }
 
 export interface FilterTableForm {
@@ -83,6 +86,7 @@ export interface FilterTableForm {
   enableStatus: string;
   linked: string;
   createAt: string[];
+  tenantCode: string;
 }
 
 export function pageQueryTables(params: PageQueryRequest) {
@@ -129,6 +133,10 @@ export function resetModelFormTable(tableId: string) {
   return axios.post<QueryResult>(`/api/model/table/reset/${tableId}`);
 }
 
+export function validateTableEntityName(params: QueryTableForm) {
+  return axios.post<QueryResult>('/api/model/table/validate', params);
+}
+
 /* *************************** 字段信息 ****************************** */
 export interface QueryTableColumnForm {
   id: string; // *
@@ -166,6 +174,7 @@ export interface QueryTableColumnForm {
   autoAdd: number | boolean | string | string[];
   autoName: string;
   seqNo: number;
+  tenantCode: string;
 }
 
 export interface FilterTableColumnForm {
@@ -181,6 +190,7 @@ export interface FilterTableColumnForm {
   uniqued: string; // 唯一约束
   enableStatus: string; // 状态
   createAt: string[];
+  tenantCode: string;
 }
 
 /* 分页查询 */
@@ -214,6 +224,10 @@ export function createOrUpdateTableColumn(params: QueryTableColumnForm) {
 
 export function deleteTableColumn(id: string) {
   return axios.delete<QueryResult>(`/api/model/table/column/isDelete/${id}`);
+}
+
+export function validateTableColumnName(params: QueryTableColumnForm) {
+  return axios.post<QueryResult>('/api/model/table/column/validate', params);
 }
 
 export interface DataTypeRadius {
@@ -251,6 +265,7 @@ export interface QueryTableForeignForm {
   enableStatus: number; // 状态
   description: string;// 备注
   seqNo: number;
+  tenantCode: string;
 }
 
 export interface FilterTableForeignForm {
@@ -261,6 +276,7 @@ export interface FilterTableForeignForm {
   foreignTableCol: string;
   enableStatus: string;
   createAt: string[];
+  tenantCode: string;
 }
 
 /* 分页查询 */
@@ -320,6 +336,7 @@ export interface QueryViewForm {
   linked: number; // 已链接
   enableStatus: number; // 状态
   seqNo: number; // 排序
+  tenantCode: string;
 }
 
 export interface FilterViewForm {
@@ -332,6 +349,7 @@ export interface FilterViewForm {
   enableStatus: string;
   linked: string;
   createAt: string[];
+  tenantCode: string;
 }
 
 export function pageQueryViews(params: PageQueryRequest) {
@@ -360,6 +378,10 @@ export function createOrUpdateView(params: QueryViewForm) {
 
 export function deleteView(id: string) {
   return axios.delete<QueryResult>(`/api/model/view/isDelete/${id}`);
+}
+
+export function validateViewName(params: QueryViewForm) {
+  return axios.post<QueryResult>('/api/model/view/validate', params);
 }
 
 /* --------------------------- 其他方法 --------------------------------- */

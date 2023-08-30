@@ -118,6 +118,7 @@ import ColumnList from '@/views/model/column/list.vue';
 import ConnectList from '@/views/model/connect/list.vue';
 import ForeignList from '@/views/model/foreign/list.vue';
 import ViewList from '@/views/model/view/list.vue';
+import {useRoute} from "vue-router";
 
 const pageData = ref({
   formState: 'edit', isModal: true, swap: true,
@@ -134,6 +135,7 @@ interface TreeNode extends TreeNodeProps {
 
 // 国际化
 const {t} = useI18n();
+const route = useRoute();
 // 链接页面
 const connectListRef = ref(null);
 const tableListRef = ref(null);
@@ -204,6 +206,8 @@ const swapTableTitle = (item: QueryTableForm): string => {
 const fetchConnects = async (params: PageQueryRequest = {current: 1, pageSize: 10000}): Promise<TreeNode[]> => {
   let treeOptions: TreeNode[] = [];
   try {
+    // @ts-ignore
+    params.tenantCode = (route.params && route.params.tenantCode as string) || '';
     const {data} = await queryConnects(params);
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {
@@ -227,6 +231,8 @@ const fetchConnects = async (params: PageQueryRequest = {current: 1, pageSize: 1
 const fetchTables = async (params: PageQueryRequest = {current: 1, pageSize: 10000}): Promise<TreeNode[]> => {
   let treeOptions: TreeNode[] = [];
   try {
+    // @ts-ignore
+    params.tenantCode = (route.params && route.params.tenantCode as string) || '';
     const {data} = await queryTables(params);
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {

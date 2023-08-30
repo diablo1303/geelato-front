@@ -142,6 +142,7 @@ import {
   queryTables
 } from '@/api/model';
 import {enableStatusOptions} from "@/views/model/foreign/searchTable";
+import {useRoute} from "vue-router";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1, mainTable: ''});
 const validateForm = ref<FormInstance>();
@@ -151,6 +152,7 @@ const foreignTableColOptions = ref<QueryTableColumnForm[]>([]);
 const actionTooltip = ref("");
 // 国际化
 const {t} = useI18n();
+const route = useRoute();
 /* 表单 */
 const generateFormData = (): QueryForm => {
   return {
@@ -163,7 +165,8 @@ const generateFormData = (): QueryForm => {
     deleteAction: 'NO ACTION',
     enableStatus: 1, // 状态
     description: '',
-    seqNo: 999
+    seqNo: 999,
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 }
 const formData = ref(generateFormData());

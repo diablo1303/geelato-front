@@ -1,5 +1,6 @@
 <template v-model="pageData">
-  <a-form ref="validateForm" :label-col-props="{ span: 8 }" :model="formData" :wrapper-col-props="{ span: 16 }" class="form">
+  <a-form ref="validateForm" :label-col-props="{ span: 8 }" :model="formData" :wrapper-col-props="{ span: 16 }"
+          class="form">
     <a-row :gutter="16">
       <a-col :span="24">
         <a-form-item v-show="false">
@@ -93,7 +94,8 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="enableStatus">
           <a-select v-if="pageData.button" v-model="formData.enableStatus">
-            <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of enableStatusOptions" :key="item.value as string"
+                      :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.connect.index.form.enableStatus.${formData.enableStatus}`) }}</span>
         </a-form-item>
@@ -109,7 +111,9 @@ import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/base';
 import {createOrUpdateConnect as createOrUpdateForm, getConnect as getForm, jdbcConnect, QueryConnectForm as QueryForm} from '@/api/model';
 import {dbTypeOptions, enableStatusOptions} from "@/views/model/connect/searchTable";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
 /* 表单 */
@@ -118,13 +122,14 @@ const generateFormData = (): QueryForm => {
     id: '',
     dbConnectName: '',
     dbName: '',
-    dbSchema: 'geelato',
+    dbSchema: '',
     dbType: '', // 数据库类型 mysql|oracle|sqlserver|postgresql
     dbHostnameIp: '', // 主机名或IP
     dbPort: 3306, // 连接端口
     dbUserName: '',// 用户名
     dbPassword: '', // 密码
-    enableStatus: 1 // 状态
+    enableStatus: 1, // 状态
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 }
 const formData = ref(generateFormData());

@@ -168,6 +168,7 @@ import {columns, enableStatusOptions} from '@/views/model/foreign/searchTable';
 import ForeignForm from '@/views/model/foreign/form.vue';
 import ForeignDrawer from '@/views/model/foreign/drawer.vue';
 import {Notification} from "@arco-design/web-vue";
+import {useRoute} from "vue-router";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
@@ -177,6 +178,7 @@ const foreignDrawerRef = ref(null);
 
 // 国际化
 const {t} = useI18n();
+const route = useRoute();
 // 加载
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
@@ -195,7 +197,8 @@ const generateFilterData = () => {
     foreignTable: '',
     foreignTableCol: '',
     enableStatus: '',
-    createAt: []
+    createAt: [],
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 };
 const filterData = ref(generateFilterData());

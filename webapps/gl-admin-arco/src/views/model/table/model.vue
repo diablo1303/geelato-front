@@ -25,7 +25,8 @@
         <a-form-item
             :label="$t('model.table.index.form.entityName')"
             :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')},
-            {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')}]"
+            {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')},
+            {validator:validateCode}]"
             field="entityName">
           <a-input v-if="pageData.editName" v-model.trim="formData.entityName" :max-length="32"/>
           <span v-else>{{ formData.entityName }}</span>
@@ -45,53 +46,54 @@
             :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
             field="tableType">
           <a-select v-if="pageData.formState==='add'" v-model="formData.tableType">
-            <a-option v-for="item of tableTypeOptions" :key="item.value as string" :disabled="item.disabled" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of tableTypeOptions" :key="item.value as string" :disabled="item.disabled"
+                      :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.tableType.${formData.tableType}`) }}</span>
         </a-form-item>
       </a-col>
-<!--      <a-col v-show="formData.tableType==='view'" :span="24">
-        <a-form-item
-            :label="$t('model.table.index.form.viewSql')"
-            :label-col-props="{ span: (pageData.formCol===1?6:3) }"
-            :rules="[{required: formData.tableType==='view',message: $t('model.form.rules.match.required')},
-            {match:/^select .* from .*$/i,message:$t('model.form.rules.match.viewSql.match')}]"
-            :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
-            field="viewSql">
-          <a-space>
-            <a-trigger :popup-offset="5" :unmount-on-close="false" position="left" show-arrow trigger="click">
-              <a-button>
-                {{ $t('model.table.index.form.viewSql.edit') }}
-                <template #icon>
-                  <icon-edit/>
-                </template>
-              </a-button>
-              <template #content>
-                <div
-                    :style="{width:`${pageStyle.width}px`,height:`${pageStyle.height}px`}"
-                    class="trigger-demo-translate">
-                  <MonacoEditor
-                      v-model="formData.viewSql"
-                      :language="'sql'"
-                      :read-only="false"
-                      :theme="pageStyle.theme"
-                      @editor-mounted="editorMounted"/>
-                </div>
-              </template>
-            </a-trigger>
-            <a-popconfirm
-                :content="$t('model.view.index.form.viewConstruct.validateMsg')"
-                position="tr" type="info" @ok="validateViewSql">
-              <a-button status="success" type="primary">
-                {{ $t('model.view.index.form.viewConstruct.validate') }}
-                <template #icon>
-                  <icon-scan/>
-                </template>
-              </a-button>
-            </a-popconfirm>
-          </a-space>
-        </a-form-item>
-      </a-col>-->
+      <!--      <a-col v-show="formData.tableType==='view'" :span="24">
+              <a-form-item
+                  :label="$t('model.table.index.form.viewSql')"
+                  :label-col-props="{ span: (pageData.formCol===1?6:3) }"
+                  :rules="[{required: formData.tableType==='view',message: $t('model.form.rules.match.required')},
+                  {match:/^select .* from .*$/i,message:$t('model.form.rules.match.viewSql.match')}]"
+                  :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
+                  field="viewSql">
+                <a-space>
+                  <a-trigger :popup-offset="5" :unmount-on-close="false" position="left" show-arrow trigger="click">
+                    <a-button>
+                      {{ $t('model.table.index.form.viewSql.edit') }}
+                      <template #icon>
+                        <icon-edit/>
+                      </template>
+                    </a-button>
+                    <template #content>
+                      <div
+                          :style="{width:`${pageStyle.width}px`,height:`${pageStyle.height}px`}"
+                          class="trigger-demo-translate">
+                        <MonacoEditor
+                            v-model="formData.viewSql"
+                            :language="'sql'"
+                            :read-only="false"
+                            :theme="pageStyle.theme"
+                            @editor-mounted="editorMounted"/>
+                      </div>
+                    </template>
+                  </a-trigger>
+                  <a-popconfirm
+                      :content="$t('model.view.index.form.viewConstruct.validateMsg')"
+                      position="tr" type="info" @ok="validateViewSql">
+                    <a-button status="success" type="primary">
+                      {{ $t('model.view.index.form.viewConstruct.validate') }}
+                      <template #icon>
+                        <icon-scan/>
+                      </template>
+                    </a-button>
+                  </a-popconfirm>
+                </a-space>
+              </a-form-item>
+            </a-col>-->
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.table.index.form.enableStatus')"
@@ -99,7 +101,8 @@
             field="enableStatus">
           <a-select v-if="pageData.button" v-model="formData.enableStatus">
             <a-option
-                v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)"
+                v-for="item of enableStatusOptions" :key="item.value as string"
+                :label="$t(`${item.label}`)"
                 :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.enableStatus.${formData.enableStatus}`) }}</span>
@@ -111,7 +114,8 @@
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="linked">
           <a-select v-if="pageData.button" v-model="formData.linked">
-            <a-option v-for="item of linkedOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-option v-for="item of linkedOptions" :key="item.value as string" :label="$t(`${item.label}`)"
+                      :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.linked.${formData.linked}`) }}</span>
         </a-form-item>
@@ -169,10 +173,17 @@ import {useI18n} from 'vue-i18n';
 import {Modal, Notification} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/base';
-import {createOrUpdateTable as createOrUpdateForm, getTable as getForm, QueryTableForm as QueryForm, validateMetaView} from '@/api/model';
+import {
+    createOrUpdateTable as createOrUpdateForm,
+    getTable as getForm,
+    QueryTableForm as QueryForm,
+    validateMetaView,
+    validateTableEntityName
+} from '@/api/model';
 import {enableStatusOptions, linkedOptions, tableTypeOptions} from "@/views/model/table/searchTable";
-import MonacoEditor from '@/components/monaco/index.vue';
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const pageData = ref({formState: 'add', button: true, formCol: 1, editName: true});
 const validateForm = ref<FormInstance>();
 // 国际化
@@ -208,7 +219,8 @@ const generateFormData = (): QueryForm => {
     enableStatus: 1, // 状态
     seqNo: 999, // 排序
     tableComment: '', // 备注
-    description: '' // 补充描述
+    description: '', // 补充描述
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 }
 const formData = ref(generateFormData());
@@ -268,6 +280,19 @@ const openModal = (content: string) => {
 const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
+/**
+ * 唯一性校验
+ * @param value
+ * @param callback
+ */
+const validateCode = async (value: any, callback: any) => {
+  try {
+    const {data} = await validateTableEntityName(formData.value);
+    if (!data) callback(t('security.form.rules.match.uniqueness'));
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {

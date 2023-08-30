@@ -1,7 +1,8 @@
 <template v-model="pageData">
   <a-row>
     <a-col :flex="1">
-      <a-form :label-col-props="{ span: 6 }" :model="filterData" :wrapper-col-props="{ span: 18 }" label-align="left">
+      <a-form :label-col-props="{ span: 6 }" :model="filterData" :wrapper-col-props="{ span: 18 }"
+              label-align="left">
         <a-row :gutter="16">
           <a-col :span="24">
             <a-form-item v-show="false">
@@ -10,12 +11,14 @@
           </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('model.table.index.form.title')" field="title">
-              <a-input v-model="filterData.title" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.title" allow-clear @clear="search($event)"
+                       @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('model.table.index.form.entityName')" field="entityName">
-              <a-input v-model="filterData.entityName" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.entityName" allow-clear @clear="search($event)"
+                       @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <!-- <a-col :span="pageData.isModal?12:8">
@@ -25,16 +28,20 @@
                     </a-col>-->
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('model.table.index.form.tableType')" field="tableType">
-              <a-select v-model="filterData.tableType" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of tableTypeOptions" :key="item.value as string" :disabled="item.disabled" :label="$t(`${item.label}`)"
+              <a-select v-model="filterData.tableType"
+                        :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="item of tableTypeOptions" :key="item.value as string"
+                          :disabled="item.disabled" :label="$t(`${item.label}`)"
                           :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('model.table.index.form.enableStatus')" field="enableStatus">
-              <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+              <a-select v-model="filterData.enableStatus"
+                        :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="item of enableStatusOptions" :key="item.value as string"
+                          :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
@@ -108,7 +115,8 @@
                   <icon-drag-arrow/>
                 </div>
                 <div>
-                  <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
+                  <a-checkbox v-model="item.checked"
+                              @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
                 </div>
                 <div class="title">
                   {{ item.title === '#' ? $t('model.table.index.form.index') : $t(`${item.title}`) }}
@@ -132,11 +140,17 @@
       @page-change="onPageChange">
     <template #columns>
       <a-table-column :title="$t('model.table.index.form.index')" :width="80" align="center" data-index="index">
-        <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
+        <template #cell="{  rowIndex }">{{
+            rowIndex + 1 + (pagination.current - 1) * pagination.pageSize
+          }}
+        </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.title')" :tooltip="true" :width="200" data-index="title"/>
-      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.entityName')" :tooltip="true" :width="200" data-index="entityName"/>
-      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.tableName')" :tooltip="true" :width="200" data-index="tableName"/>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.title')" :tooltip="true" :width="200"
+                      data-index="title"/>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.entityName')" :tooltip="true"
+                      :width="200" data-index="entityName"/>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.tableName')" :tooltip="true"
+                      :width="200" data-index="tableName"/>
       <a-table-column :title="$t('model.table.index.form.tableType')" :width="100" data-index="tableType">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.tableType.${record.tableType}`) }}
@@ -154,8 +168,10 @@
       </a-table-column>
       <a-table-column :title="$t('model.table.index.form.seqNo')" :width="100" data-index="seqNo"/>
       <a-table-column :title="$t('model.table.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.tableComment')" :tooltip="true" :width="200" data-index="tableComment"/>
-      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.description')" :tooltip="true" :width="200" data-index="description"/>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.tableComment')" :tooltip="true"
+                      :width="200" data-index="tableComment"/>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.description')" :tooltip="true"
+                      :width="200" data-index="description"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('model.table.index.form.operations')"
           :width="230" align="center" data-index="operations" fixed="right">
@@ -168,7 +184,8 @@
           <a-button size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
-          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
+          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
+                        @ok="deleteTable(record.id)">
             <a-button size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
@@ -202,8 +219,10 @@ import {columns, enableStatusOptions, tableTypeOptions} from '@/views/model/tabl
 import TableForm from '@/views/model/table/form.vue';
 import TableDrawer from '@/views/model/table/drawer.vue';
 import {Notification} from "@arco-design/web-vue";
+import {useRoute} from "vue-router";
 
 /* 列表 */
+const route = useRoute();
 type Column = TableColumnData & { checked?: true };
 const pageData = ref({
   current: 1, pageSize: 10, formState: 'edit', isModal: false, params: {pId: '', pName: ''},
@@ -237,7 +256,8 @@ const generateFilterData = () => {
     tableType: '',
     enableStatus: '',
     linked: '',
-    createAt: []
+    createAt: [],
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 };
 const filterData = ref(generateFilterData());
@@ -245,7 +265,10 @@ const filterData = ref(generateFilterData());
  * 分页查询方法
  * @param params
  */
-const fetchData = async (params: PageQueryRequest = {current: pageData.value.current, pageSize: pageData.value.pageSize}) => {
+const fetchData = async (params: PageQueryRequest = {
+  current: pageData.value.current,
+  pageSize: pageData.value.pageSize
+}) => {
   setLoading(true);
   try {
     const {data} = await pageQueryList(params);

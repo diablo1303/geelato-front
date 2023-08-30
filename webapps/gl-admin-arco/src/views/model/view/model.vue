@@ -25,7 +25,8 @@
             :label="$t('model.view.index.form.viewName')"
             :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')},
             {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.viewName.match')},
-            {match:pageData.formState==='add'?/^(?!v_|V_)/:/^[vV][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.viewName.match')}]"
+            {match:pageData.formState==='add'?/^(?!v_|V_)/:/^[vV][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.viewName.match')},
+            {validator:validateCode}]"
             field="viewName">
           <a-input v-if="pageData.formState==='add'" v-model.trim="formData.viewName" :max-length="32" @blur="viewNameBlur($event)">
             <template #prepend>
@@ -187,15 +188,24 @@ import {useI18n} from 'vue-i18n';
 import {Modal, Notification} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/base';
-import {createOrUpdateView as createOrUpdateForm, getView as getForm, QueryViewColumnForm, QueryViewForm as QueryForm, validateMetaView} from '@/api/model';
+import {
+  createOrUpdateView as createOrUpdateForm,
+  getView as getForm,
+  QueryViewColumnForm,
+  QueryViewForm as QueryForm,
+  validateMetaView,
+  validateViewName
+} from '@/api/model';
 import {enableStatusOptions, linkedOptions} from "@/views/model/view/searchTable";
 import MonacoEditor from '@/components/monaco/index.vue';
 import {TableData} from "@arco-design/web-vue/es/table/interface";
+import {useRoute} from "vue-router";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
 // 国际化
 const {t} = useI18n();
+const route = useRoute();
 // 页面样式
 const resetPageStyle = () => {
   return {
@@ -227,7 +237,8 @@ const generateFormData = (): QueryForm => {
     enableStatus: 1, // 状态
     seqNo: 1, // 排序
     linked: 0, // 已链接
-    description: '' // 补充描述
+    description: '', // 补充描述
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 }
 const formData = ref(generateFormData());
@@ -300,6 +311,22 @@ const openModal = (content: string) => {
 const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
+/**
+ * 唯一性校验
+ * @param value
+ * @param callback
+ */
+const validateCode = async (value: any, callback: any) => {
+  try {
+    const params = {...formData.value};
+    if (params.viewName && !params.viewName.startsWith("v_")) params.viewName = `v_${params.viewName}`;
+    const {data} = await validateViewName(params);
+    if (!data) callback(t('security.form.rules.match.uniqueness'));
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 const validateViewSql = () => {
   validateTableView(formData.value, (result: boolean) => {
     if (result === true) {

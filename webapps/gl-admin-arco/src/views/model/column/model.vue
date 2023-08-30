@@ -28,7 +28,8 @@
         <a-form-item
             :label="$t('model.column.index.form.name')"
             :rules="[{required: pageData.editName,message: $t('model.form.rules.match.required')},
-            {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')}]"
+            {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')},
+            {validator:validateCode}]"
             field="name">
           <a-input v-if="pageData.editName" v-model.trim="formData.name" :max-length="32" @blur="columnNameBlur($event)"/>
           <span v-else>{{ formData.name }}</span>
@@ -244,6 +245,7 @@
 
 <script lang="ts" setup>
 import {ref} from 'vue';
+import {useI18n} from 'vue-i18n';
 import {Modal} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/base';
@@ -257,9 +259,19 @@ import {
   selectTypeOptions,
   uniquedOptions
 } from "@/views/model/column/searchTable";
-import {ColumnSelectType, createOrUpdateTableColumn as createOrUpdateForm, getTableColumn as getForm, QueryTableColumnForm as QueryForm} from '@/api/model';
+import {
+  ColumnSelectType,
+  createOrUpdateTableColumn as createOrUpdateForm,
+  getTableColumn as getForm,
+  QueryTableColumnForm as QueryForm,
+  validateTableColumnName
+} from '@/api/model';
 import {formatSeparator, isBlank, isNotBlank, toCamelCase} from '@/utils/strings';
+import {useRoute} from "vue-router";
 
+// 国际化
+const {t} = useI18n();
+const route = useRoute();
 const pageData = ref({
   formState: 'add', button: true, formCol: 1,
   mainTable: '', maxNumber: -1, editName: true
@@ -302,7 +314,8 @@ const generateFormData = (): QueryForm => {
     refColName: '', // 外表字段名称
     autoAdd: '',
     autoName: '',
-    seqNo: 1
+    seqNo: 1,
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 }
 const formData = ref(generateFormData());
@@ -454,7 +467,19 @@ const openModal = (content: string) => {
 const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
-
+/**
+ * 唯一性校验
+ * @param value
+ * @param callback
+ */
+const validateCode = async (value: any, callback: any) => {
+  try {
+    const {data} = await validateTableColumnName(formData.value);
+    if (!data) callback(t('security.form.rules.match.uniqueness'));
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {

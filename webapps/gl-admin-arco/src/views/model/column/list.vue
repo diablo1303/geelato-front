@@ -156,6 +156,11 @@
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.title')" :tooltip="true" :width="180" data-index="title"/>
+      <a-table-column :title="$t('model.column.index.form.enableStatus')" :width="100" data-index="enableStatus">
+        <template #cell="{ record }">
+          {{ $t(`model.column.index.form.enableStatus.${record.enableStatus}`) }}
+        </template>
+      </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.fieldName')" :tooltip="true" :width="180" data-index="fieldName"/>
       <a-table-column v-if="pageData.params.pId===''" :ellipsis="true" :title="$t('model.column.index.form.tableName')" :tooltip="true" :width="250"
                       data-index="tableName"/>
@@ -189,11 +194,6 @@
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.type')" :tooltip="true" :width="150" data-index="type"/>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.defaultValue')" :tooltip="true" :width="130" data-index="defaultValue"/>
-      <a-table-column :title="$t('model.column.index.form.enableStatus')" :width="100" data-index="enableStatus">
-        <template #cell="{ record }">
-          {{ $t(`model.column.index.form.enableStatus.${record.enableStatus}`) }}
-        </template>
-      </a-table-column>
       <a-table-column :title="$t('model.column.index.form.ordinalPosition')" :width="100" data-index="ordinalPosition"/>
       <a-table-column :title="$t('model.column.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.comment')" :tooltip="true" :width="200" data-index="comment"/>
@@ -270,6 +270,7 @@ import {
 import ColumnForm from '@/views/model/column/form.vue';
 import ColumnDrawer from '@/views/model/column/drawer.vue';
 import {Notification} from "@arco-design/web-vue";
+import {useRoute} from "vue-router";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
@@ -282,6 +283,7 @@ const columnFormRef = ref(null);
 const columnDrawerRef = ref(null);
 // 国际化
 const {t} = useI18n();
+const route = useRoute();
 // 加载
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
@@ -305,7 +307,8 @@ const generateFilterData = (): FilterTableColumnForm => {
     nullable: '', // 是否可空 YES_OR_NO
     uniqued: '',//  // 唯一约束
     enableStatus: '', // 状态
-    createAt: []
+    createAt: [],
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 };
 const filterData = ref(generateFilterData());

@@ -213,6 +213,7 @@ import {columns, enableStatusOptions, viewTypeOptions} from '@/views/model/view/
 import ViewForm from '@/views/model/view/form.vue';
 import ViewDrawer from '@/views/model/view/drawer.vue';
 import {Notification} from "@arco-design/web-vue";
+import {useRoute} from "vue-router";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
@@ -229,6 +230,7 @@ const viewDrawerRef = ref(null);
 const isDefault = ref(false);
 // 国际化
 const {t} = useI18n();
+const route = useRoute();
 // 加载
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
@@ -249,7 +251,8 @@ const generateFilterData = (): FilterForm => {
     viewType: '',
     enableStatus: '',
     linked: '',
-    createAt: []
+    createAt: [],
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 };
 const filterData = ref(generateFilterData());
