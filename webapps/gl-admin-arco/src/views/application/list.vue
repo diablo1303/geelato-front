@@ -207,9 +207,10 @@ import {Notification} from "@arco-design/web-vue";
 // 引用其他页面
 import AppForm from '@/views/application/form.vue';
 import AppDrawer from '@/views/application/drawer.vue';
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 
 /* 列表 */
+const route = useRoute();
 type Column = TableColumnData & { checked?: true };
 const pageData = ref({
   current: 1, pageSize: 10, formState: 'edit', isModal: false, modalAddBack: (data: QueryForm) => {
@@ -229,7 +230,15 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', name: '', code: '', watermark: '', versionInfo: '', createAt: []};
+  return {
+    id: '',
+    name: '',
+    code: '',
+    watermark: '',
+    versionInfo: '',
+    createAt: [],
+    tenantCode: (route.params && route.params.tenantCode as string) || ''
+  };
 };
 const filterData = ref(generateFilterData());
 const router = useRouter();

@@ -30,6 +30,7 @@ export interface FilterAppForm {
   watermark: string;// 应用水印
   versionInfo: string;
   createAt: string[];
+  tenantCode: string;
 }
 
 export function pageQueryApps(params: PageQueryRequest) {
@@ -56,6 +57,10 @@ export function deleteApp(id: string) {
   return axios.delete<QueryResult>(`/api/app/isDelete/${id}`);
 }
 
+export function validateAppCode(params: QueryAppForm) {
+  return axios.post<QueryResult>('/api/app/validate', params);
+}
+
 export interface AttachmentForm {
   id: string;
   name: string;
@@ -63,7 +68,8 @@ export interface AttachmentForm {
   size: string;
   type: string;
   url: string;
-  delStatus: number
+  delStatus: number;
+  tenantCode: string;
 }
 
 export function getAttachment(id: string) {
