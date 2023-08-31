@@ -63,7 +63,7 @@ const onRoleMenuItemsCancel = () => {
 
 <template>
   <div class="gl-action-list">
-    <a-button type="outline" long @click="openRoleMenuItemsModal">点击配置页面访问授权</a-button>
+    <a-button type="outline" long @click="openRoleMenuItemsModal">点击配置页面菜单访问授权</a-button>
     <a-modal fullscreen v-model:visible="visibleRoleMenuItems"
              @ok="onRoleMenuItemsOk" @cancel="onRoleMenuItemsCancel"
              ok-text="保存"

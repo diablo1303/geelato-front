@@ -4,12 +4,19 @@
     <div class="gl-history-item" v-for="(item,index) in reverseItems">
       <span>{{ reverseItems.length - index }}.</span>
       <span :title="`【${item.createAt}】${item.description}`">{{ item.title }}</span>
-      <!--      <span style="float: right">{{ item.createAt }}</span>-->
     </div>
   </div>
 </template>
+<script lang="ts">
+/**
+ *  页面操作记录
+ */
+export default {
+  name: "GlPageOpHistory"
+}
+</script>
 <script setup lang="ts">
-import {computed, ref} from "vue";
+import {computed} from "vue";
 import {usePageStore} from "@geelato/gl-ide";
 
 function reverseArray(arr: Array<any>) {
@@ -26,11 +33,7 @@ const reverseItems = computed(() => {
 })
 
 </script>
-<script lang="ts">
-export default {
-  name: "GlIdePluginCoreHistory"
-}
-</script>
+
 
 <style>
 .gl-history-item {

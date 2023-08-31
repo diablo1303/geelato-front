@@ -77,13 +77,14 @@ import AlertMeta from "./setter-arco/alert/AlertMeta";
 import MultiComponentsMeta from "./setter-arco/multiComponents/multiComponentsMeta";
 import GlButtonMeta from "./setter-arco/button/GlButtonMeta";
 import JsCodeBlockMeta from "./setter-block/code/JsCodeBlockMeta";
+import OpRecordMeta from "./setter-arco/op-record/OpRecordMeta";
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [ButtonMeta, GlButtonMeta, TextMeta, AlertMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
     StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TooltipMeta, EntityTreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta, DividerMeta,
-    JsCodeBlockMeta
+    JsCodeBlockMeta,OpRecordMeta
 ]
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance, CascaderInstance]

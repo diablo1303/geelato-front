@@ -20,7 +20,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, onMounted, onUnmounted, type PropType, provide, type Ref, ref} from 'vue';
+import {inject, onMounted, type PropType, provide, type Ref, ref} from 'vue';
 import type {FormInstance} from '@arco-design/web-vue/es/form';
 import useLoading from '../../hooks/loading';
 import {isDataEntry} from "@geelato/gl-ui-schema-arco";
@@ -35,6 +35,7 @@ import {
   FormProvideProxy, utils
 } from "@geelato/gl-ui";
 import type {EntitySavingObject} from "@/components/gl-entity-form/GlEntityForm";
+import {getFormParams} from "./GlEntityForm";
 
 // onLoadedData：从服务端加载完数据并设置到表单中
 const emits = defineEmits(['onLoadedData'])
@@ -64,15 +65,7 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  /**
-   *  是否作为子表单
-   */
-  isSubForm: Boolean,
-
-  /**
-   *  如果作为子表单，那本表单中哪个字段指向父表单的id
-   */
-  subFormPidName: String,
+  ...mixins.subFormProps,
   layout: {
     type: String as PropType<LayoutType>,
     default() {
@@ -90,17 +83,10 @@ const props = defineProps({
 const isRead = pageProvideProxy.isPageStatusRead()
 // 通过默认通用关键字form获取的表单值，好处就是在配置打开页面传参时，不需要配置具体表单名，配置方便
 // ！！！注意，该方式在同一页面多表单嵌套时，很可能会污染子级表单的值，没法做到精确控制表单传值
-const formParams = pageProvideProxy.getParamsByPrefixAsObject('form')
-// 这种带$的关键字来替换上面的form，避免实休名为form时冲突
-const formParamsByKeywordFlag = pageProvideProxy.getParamsByPrefixAsObject('$form')
-// 通过绑定实体名获取参数，确保多层的表单嵌套时，各层表单都能获取到各自的表单参数
-const formParamsByEntityName = props.bindEntity ? pageProvideProxy.getParamsByPrefixAsObject(props.bindEntity.entityName) : {}
-// console.log('formParams', formParams, 'formParamsByEntityName', formParamsByEntityName)
-// 合并两种模式下的传值
-Object.assign(formParams, formParamsByKeywordFlag, formParamsByEntityName)
+const formParams = getFormParams(pageProvideProxy, props.bindEntity)
 // formData中不包括记录id，记录id在entityRecordId中定义
 const formData = ref<Record<string, any>>(formParams);
-console.log('GlEntityForm[' + props.bindEntity?.entityName + '] > formData:', formData.value, 'formParams:', formParams)
+// console.log('GlEntityForm[' + props.bindEntity?.entityName + '] > formData:', formData.value, 'formParams:', formParams)
 let entityRecordId: Ref<string> = ref(formParams.id)
 formProvideProxy.setRecordId(entityRecordId.value)
 
@@ -439,18 +425,26 @@ const checkConfig = () => {
 
   checkFieldItem(props.glComponentInst)
 }
-// console.log('GLEntityForm > create > id', props.glComponentInst.id)
+
+const getValue = async () => {
+  buildFieldItems()
+  // 再进一步进行表单数据项值校验
+  const validateResult = await formRef.value?.validate();
+  if (!validateResult) {
+    return formData.value
+  } else {
+    return {}
+  }
+}
 
 onMounted(() => {
   // console.log('GLEntityForm > onMounted() > id', props.glComponentInst.id)
 })
 
+
 loadForm()
-// const loadFormFnId = pageProvideProxy.addPageMountedEvent(loadForm)
-// onUnmounted(() => {
-//   pageProvideProxy.removePageMountedEvent(loadFormFnId)
-// })
-defineExpose({submitForm, buildFieldItems, createEntitySavingObject})
+
+defineExpose({submitForm, buildFieldItems, createEntitySavingObject, getValue})
 </script>
 
 <style>
@@ -459,7 +453,7 @@ defineExpose({submitForm, buildFieldItems, createEntitySavingObject})
 }
 
 /**
- * 在arco-drawer-body内，不显示提交按钮
+ * 在arco-drawer-body和arco-modal-body内，不显示提交按钮
  */
 .arco-drawer-body .gl-entity-form .formSubmit, .arco-modal-body .gl-entity-form .formSubmit {
   display: none;

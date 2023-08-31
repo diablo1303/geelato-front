@@ -140,5 +140,10 @@ export default {
         "description": "表单加载完成数据并设置到各表单项之后触发。",
         "title": "加载完数据"
     }, {"eventName": "refresh", "name": "refresh", "description": "", "title": "刷新"}],
-    "methods": [{"name": "submitForm", "title": "提交表单", "description": "", "params": []}]
+    "methods": [{"name": "submitForm", "title": "提交表单", "description": "", "params": []}, {
+        "name": "getValue",
+        "title": "获取表单值",
+        "description": "获取表单值对象，如：{id,'xx',name:'xxx'}",
+        "params": []
+    }]
 }

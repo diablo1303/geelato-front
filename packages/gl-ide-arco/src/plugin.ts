@@ -3,7 +3,7 @@ import {GlPlugin, Panel, usePageStore} from '@geelato/gl-ide'
 import GlIdePluginCoreAppTree from './components/sidebar/AppTree.vue'
 import GlComponentTree from './components/sidebar/ComponentTree.vue'
 import GlComponentsSidebar from './components/sidebar/components/ComponentsSidebar.vue'
-import GlIdePluginCoreHistory from './components/sidebar/History.vue'
+import GlPageOpHistory from './components/sidebar/GlPageOpHistory.vue'
 import GlBasePage from './components/stage/BasePage.vue'
 import GlFormPage from './components/stage/FormPage.vue'
 import GlFreePage from './components/stage/FreePage.vue'
@@ -20,7 +20,6 @@ import GlSimpleObjectSetter from "./components/setters/property-setters/GlSimple
 import GlPropertySetter from './components/setters/GlPropertySetter.vue'
 import GlPropertySetterCard from './components/setters/GlPropertySetterCard.vue'
 import GlIconfontTextSetter from "./components/setters/property-setters/GlIconfontTextSetter.vue";
-// import GlIconfontSetterForSlot from "./components/setters/property-setters/GlIconfontSetterForSlot.vue";
 import GlHtmlSetter from "./components/setters/property-setters/GlHtmlSetter.vue";
 import GlSelectSetter from "./components/setters/property-setters/GlSelectSetter.vue";
 import SwitchPropsBuilder from "./components/builder/props-builder/SwitchPropsBuilder.vue";
@@ -34,9 +33,6 @@ import GlToolbarBreadcrumbs from './components/stage/GlToolbarBreadcrumbs.vue'
 import GlExpressionSetter from "./components/setters/expression-setters/GlExpressionSetter.vue";
 import GlActionList from "./components/sidebar/GlActionList.vue";
 import GlPermissionList from "./components/sidebar/permissions/GlPermissionList.vue"
-// import GlX from './components/gl-x/GlX.vue'
-// import GlComponentRecursion from './components/gl-component-recursion/ComponentRecursion.vue'
-import "./assets/style.css"
 import GlArrayBaseSetter from "./components/setters/property-setters/GlArrayBaseSetter.vue";
 import GlArrayNumberSetter from "./components/setters/property-setters/GlArrayNumberSetter.vue";
 import GlArrayNumberBuilder from "./components/builder/props-builder/GlArrayNumberBuilder.vue";
@@ -60,6 +56,8 @@ import GlCompareValueSetter from "./components/setters/property-setters/GlCompar
 import GlComponentMethodSelect from "./components/setters/property-setters/GlComponentMethodSelect.vue";
 import GlComponentActionSelect from "./components/setters/property-setters/GlComponentActionSelect.vue";
 import GlExpressionBuilder from "./components/builder/props-builder/GlExpressionBuilder.vue";
+import GlPageSaveLog from "./components/sidebar/GlPageSaveLog.vue";
+import "./assets/style.css"
 
 const plugin = new GlPlugin('gl-plugin-arco')
 
@@ -100,10 +98,17 @@ plugin.sidebar.push(new Panel({
 
 
 plugin.sidebar.push(new Panel({
-    title: '历史记录',
-    name: '历史记录',
+    title: '操作记录',
+    name: '操作记录',
     iconType: 'gl-history',
-    componentName: GlIdePluginCoreHistory.name
+    componentName: GlPageOpHistory.name
+}))
+
+plugin.sidebar.push(new Panel({
+    title: '保存记录',
+    name: '保存记录',
+    iconType: 'gl-history',
+    componentName: GlPageSaveLog.name
 }))
 
 
@@ -158,7 +163,8 @@ const component: Plugin = {
         app.component(GlActionList.name, GlActionList)
         app.component(GlPermissionList.name, GlPermissionList)
         app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
-        app.component(GlIdePluginCoreHistory.name, GlIdePluginCoreHistory)
+        app.component(GlPageOpHistory.name, GlPageOpHistory)
+        app.component(GlPageSaveLog.name, GlPageSaveLog)
         app.component(GlBasePage.name, GlBasePage)
         app.component(GlFormPage.name, GlFormPage)
         app.component(GlFreePage.name, GlFreePage)

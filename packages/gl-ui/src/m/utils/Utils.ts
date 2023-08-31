@@ -218,7 +218,7 @@ export class Utils {
                 }
                 return newObj
             } else if (typeof toReplaceObj === 'string') {
-                console.log('this.deepConvertValue() > toReplaceString:', toReplaceObj)
+                // console.log('this.deepConvertValue() > toReplaceString:', toReplaceObj)
                 let newObj: LooseObject = that.evalExpression(toReplaceObj, ctx)
                 return newObj
             } else {
@@ -444,7 +444,7 @@ export class Utils {
             // 到了根节点，还找不到，可能是在设计器中执行该方案，设计器的舞台中不存在GlPage
             return undefined
         }
-        console.log('gl-ui > CtxHandler.js > findCurrentPage() > component.$parent):', component.$parent)
+        // console.log('gl-ui > CtxHandler.js > findCurrentPage() > component.$parent):', component.$parent)
         if (component.$parent.glType === 'page') {
             return component.$parent
         } else {
@@ -462,7 +462,7 @@ export class Utils {
             // 到了根节点，还找不到，可能是在设计器中执行该方案，设计器的舞台中不存在GlPage
             return undefined
         }
-        console.log('gl-ui > CtxHandler.js > findCurrentPage() > component.$parent):', component.$parent)
+        // console.log('gl-ui > CtxHandler.js > findCurrentPage() > component.$parent):', component.$parent)
         if (component.$parent.glType === 'component') {
             return component.$parent
         } else {
@@ -502,6 +502,32 @@ export class Utils {
         return RecordsUtil.groupSum(data, groupField, sumFields)
     }
 
+    /**
+     * 反转数组，返回新的数组，不改变原数据
+     * @param array
+     */
+    arrayReverse(array: Array<any>) {
+        const newAry = [];
+        for (let i = array.length - 1; i >= 0; i--) {
+            newAry.push(array[i]);
+        }
+        return newAry;
+    }
+
+    /**
+     * 移动数组内的项，改变原数据
+     * @param array
+     * @param oldIndex 被移动项的位置
+     * @param newIndex 移动到新的位置
+     */
+    arrayMoveItem = (array: any[], oldIndex: number, newIndex: number) => {
+        if (oldIndex > -1 && newIndex > -1 && oldIndex !== newIndex) {
+            // 先删老，后加新
+            const deleteItem = array.splice(oldIndex, 1)[0]
+            array.splice(newIndex, 0, deleteItem)
+        }
+        return array;
+    };
 }
 
 const utils = new Utils()

@@ -7,7 +7,7 @@ export default class SetVarBlockHandler implements IBlockHandler {
     parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
         return new ParseResult(
             `
-            let ${props.varName} = ${propsExpressions?.varValue || props.varValue};
+            $gl.vars.${props.varName} = ${propsExpressions?.varValue || props.varValue} ;
             `
         ).setBlockName('SetVarBlockHandler');
     }

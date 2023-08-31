@@ -14,7 +14,8 @@
               设计
             </template>
             <div style="width: 100%;line-height: 2em;min-height:38em;">
-              <BlockPage :key="mv.id" :glComponentInst="mv.__commandBlock" @update="updateInstance"></BlockPage>
+              <BlockPage v-if="refreshFlag" :key="mv.id" :glComponentInst="mv.__commandBlock"
+                         @update="updateInstance"></BlockPage>
             </div>
           </a-tab-pane>
           <a-tab-pane key="2">
@@ -57,7 +58,7 @@
               <a-button @click="componentStore.copyCurrentSelectedComponent()">
                 复制
               </a-button>
-              <a-button status="danger" @click="componentStore.deleteCurrentSelectedComponentInst">删除</a-button>
+              <a-button status="danger" @click="deleteSelectedComponent">删除</a-button>
             </a-button-group>
           </div>
           <GlComponentPropertiesSetter
@@ -75,7 +76,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {onMounted, type PropType, ref, watch} from "vue";
+import {nextTick, onMounted, type PropType, ref, watch} from "vue";
 import {Action, ComponentInstance} from "@geelato/gl-ui-schema";
 import {componentStoreFactory, useThemeStore} from "@geelato/gl-ide";
 import GlCommandEditorSidebar from './GlCommandEditorSidebar.vue'
@@ -127,7 +128,7 @@ const mv = ref(props.action)
 const mvStr = ref(JSON.stringify(mv.value))
 const mvBodyStr = ref('')
 watch(mv, () => {
-  mvStr.value = JSON.stringify(mv.value?.body)
+  mvStr.value = mv.value ? JSON.stringify(mv.value) : ''
 })
 onMounted(() => {
   reset()
@@ -140,21 +141,35 @@ const reset = () => {
 // const findBlockMeta = (componentName: string) => {
 //   return componentMaterialStore.findMetaByName(componentName)
 // }
+const refreshFlag = ref(true)
 
 const updateInstance = (instance: ComponentInstance) => {
   console.log('updateInstance() > block:', instance)
   mv.value.__commandBlock = JSON.parse(JSON.stringify(instance))
   generateScript()
+  // refreshFlag.value = false
+  // nextTick(() => {
+  //   refreshFlag.value = true
+  // })
   emits("update:action", mv.value)
   emits("updateAction", mv.value)
 }
 
 const generateScript = () => {
   mv.value.body = blocksHandler.parseToScript(componentStore.currentComponentTree[0])
-  mvStr.value = JSON.stringify(mv.value.body)
+  mvStr.value = JSON.stringify(mv.value)
   mvBodyStr.value = mv.value.body
 }
 
+const deleteSelectedComponent = () => {
+  const inst = componentStore.deleteCurrentSelectedComponentInst('')
+  // if(inst){
+  //   refreshFlag.value = false
+  //   nextTick(() => {
+  //     refreshFlag.value = true
+  //   })
+  // }
+}
 
 onMounted(() => {
   // setEditorValue()

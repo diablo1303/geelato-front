@@ -142,15 +142,5 @@ export default {
         "enableValueExpress": true,
         "displayMode": "tile"
     }],
-    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}, {
-        "eventName": "refresh",
-        "name": "refresh",
-        "description": "组件加载完时触发，和Vue的onMounted一致",
-        "title": "加载完"
-    }, {
-        "eventName": "onUpdated",
-        "name": "onUpdated",
-        "description": "组件更新时触发，和Vue的onUpdated一致",
-        "title": "更新完"
-    }]
+    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}]
 }

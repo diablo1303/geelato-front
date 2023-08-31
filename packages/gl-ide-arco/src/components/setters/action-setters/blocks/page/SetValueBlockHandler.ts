@@ -22,8 +22,6 @@ export class Props {
     appId: string = "";
     // 调用的组件Id
     componentId: string = "";
-    // 设置的值
+    // 设置的值，该值可为表达式，若是表达式会在执行时自动解析
     value?: any
-    // 设置的值表达式，若有设置，则取代value
-    valueExpression?: string
 }

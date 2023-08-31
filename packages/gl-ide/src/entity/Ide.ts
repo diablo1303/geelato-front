@@ -84,13 +84,13 @@ export default class Ide {
             () => this.currentComponentTree,
             (state, prevState) => {
                 this.history.pushStep('ComponentTree', this.currentComponentTree)
-                console.log(
-                    "deep ",
-                    JSON.stringify(state) === JSON.stringify(prevState),
-                    state,
-                    prevState
-                )
-                ;
+                // console.log(
+                //     "deep ",
+                //     JSON.stringify(state) === JSON.stringify(prevState),
+                //     state,
+                //     prevState
+                // )
+                // ;
             },
             {deep: true}
         );

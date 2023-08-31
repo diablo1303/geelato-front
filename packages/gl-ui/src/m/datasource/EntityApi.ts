@@ -204,7 +204,8 @@ export class EntityApi {
                 params[key] = param.value;
             }
             // 检查是否有删除状态，默认为0
-            if (!hasDelStatus) {
+            const ignoreDeleteStatusEntity = ['platform_oprecord']
+            if (!hasDelStatus && ignoreDeleteStatusEntity.indexOf(entityReader.entity) === -1) {
                 params[`delStatus|eq`] = '0'
             }
         }

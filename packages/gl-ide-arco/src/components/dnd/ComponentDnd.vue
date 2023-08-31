@@ -1,5 +1,6 @@
 <template>
   <component v-if="glComponentInst"
+             :key="glComponentInst.id"
              :id="glComponentInst.id"
              :ref="glComponentInst.id"
              :class="{'gl-hover':componentStore.currentHoverComponentId===glComponentInst.id,'gl-selected':componentStore.currentSelectedComponentId===glComponentInst.id}"

@@ -66,7 +66,7 @@ const [dropCollect, drop] = useDrop<DragItem,
     const dropItemId = props.id!
     const dragIndex = dragItem.index
     const hoverIndex = props.index || 0
-    console.log('drop() > dragIndex:', dragIndex, 'hoverIndex:', hoverIndex, 'dragItem:', dragItem, 'dropTargetMonitor:', dropTargetMonitor)
+    // console.log('drop() > dragIndex:', dragIndex, 'hoverIndex:', hoverIndex, 'dragItem:', dragItem, 'dropTargetMonitor:', dropTargetMonitor)
     // 从组件库新增时,item是模板实例对象
     // 可通过__isTemplateInst来进行检测
     if (dragItem.__isTemplateInst) {

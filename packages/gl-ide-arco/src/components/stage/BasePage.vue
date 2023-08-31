@@ -12,7 +12,7 @@ export default {
 import {componentStoreFactory} from "@geelato/gl-ide";
 import {useGlobal, emitter, utils} from "@geelato/gl-ui";
 import GlInst from "../dnd/GlInst.vue";
-import {onMounted, onUnmounted, provide} from "vue";
+import {onUnmounted, provide} from "vue";
 
 const emits = defineEmits(['drop'])
 
@@ -123,6 +123,7 @@ onUnmounted(() => {
             :componentStoreId="componentStoreId"
     >
     </GlInst>
+    {{componentStore.currentComponentTree[0].length}}
   </div>
 </template>
 <style>

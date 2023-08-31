@@ -12,7 +12,7 @@ import GlQuery from "../gl-query/index.vue";
 import GlToolbar from "../gl-toolbar/index.vue";
 import GlEntityTable from "../gl-entity-table/GlEntityTable.vue";
 import GlEntityTableEditable from "../gl-entity-table/GlEntityTableEdit.vue";
-import {computed, inject, onMounted, type PropType, ref} from "vue";
+import {computed, inject, onMounted, type PropType, ref, type Ref} from "vue";
 import type {EntityReaderParam, Param} from "@geelato/gl-ui";
 import QueryItem from "../gl-query/query";
 import cloneDeep from "lodash/cloneDeep";
@@ -20,11 +20,20 @@ import {
   type SizeProps,
   type Column,
   defaultTable,
-  type TableColumnDataPlus, BaseInfo,
+  type GlTableColumn, BaseInfo,
 } from "../gl-entity-table/table";
 import Toolbar, {defaultToolbar} from "../gl-toolbar/toolbar";
 import {useI18n} from "vue-i18n";
-import {entityApi, PageProvideKey, PageProvideProxy, GlIconfont, utils, mixins, CheckUtil} from "@geelato/gl-ui";
+import {
+  entityApi,
+  PageProvideKey,
+  PageProvideProxy,
+  GlIconfont,
+  utils,
+  mixins,
+  CheckUtil,
+  useGlobal
+} from "@geelato/gl-ui";
 import type {Action} from "../../types/global";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
 import type {EntitySavingObject} from "@/components/gl-entity-form/GlEntityForm";
@@ -47,6 +56,7 @@ const {t} = CheckUtil.isBrowser() ? useI18n() : {
 const props = defineProps({
   base: {
     type: Object as PropType<BaseInfo>,
+    required: true,
     default() {
       return new BaseInfo()
     }
@@ -66,7 +76,7 @@ const props = defineProps({
     },
   },
   columns: {
-    type: Array as PropType<TableColumnDataPlus[]>,
+    type: Array as PropType<GlTableColumn[]>,
     required: true,
     default() {
       return defaultTable;
@@ -86,6 +96,8 @@ const props = defineProps({
   },
   ...mixins.props
 });
+
+
 // 数据预处理
 onMounted(() => {
   props.columns.forEach((item, index) => {
@@ -144,7 +156,7 @@ const handleSelectDensity = (
 };
 
 // 用于工具条中控制哪些列显示与否
-const showColumns = ref<Column[]>([]);
+const showColumns: Ref<GlTableColumn[]> = ref([]);
 const tableRef = ref();
 // const search = (queryFormModal: object) => {
 //   tableRef.value.search(queryFormModal);
@@ -157,10 +169,10 @@ const changeShowColumns = (checked: boolean | (string | boolean | number)[],
                            index: number) => {
   tableRef.value.changeShowColumns(checked, column, index);
 };
-const updateColumns = (showColumnsValue: any) => {
+const updateColumns = (showColumnsValue: GlTableColumn) => {
   showColumns.value = showColumnsValue;
 };
-const onUpdateRow = (data: { record: object, rowIndex: number, columns: TableColumnDataPlus }) => {
+const onUpdateRow = (data: { record: object, rowIndex: number, columns: GlTableColumn }) => {
   // console.log('GlEntityTablePlus > onUpdateRow() > data:', data)
   emits('changeRecord', data)
 }
@@ -170,6 +182,8 @@ let lastEntityReaderParams: Array<EntityReaderParam>;
 const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
   // console.log("onSearch() > entityReaderParams:", entityReaderParams);
   if (tableRef.value) {
+    selectedKeys.value = []
+    tableRef.value.selectAll(false)
     tableRef.value.search(entityReaderParams);
     lastEntityReaderParams = entityReaderParams;
   }
@@ -177,6 +191,23 @@ const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
 const refresh = (event?: MouseEvent) => {
   onSearch(lastEntityReaderParams);
 };
+
+/**
+ *  如果在页面渲染后，由表格组件外部动态调整列不可见等，需要resetColumns生效
+ */
+const resetColumns = () => {
+  tableRef.value.resetColumns()
+}
+
+/**
+ * 设置哪些列不可见、可见
+ * 不指定的列保持原状
+ * @param hideDataIndexes 不可见的列
+ * @param showDataIndexes 可见的列
+ */
+const changeColumnsVisible = (hideDataIndexes: string[], showDataIndexes: string[]) => {
+  tableRef.value.changeColumnsVisible(hideDataIndexes, showDataIndexes)
+}
 
 const queryRef = ref(null);
 const addRow = () => {
@@ -220,6 +251,12 @@ const deleteRow = (params: Array<Param>) => {
 const saveRow = () => {
 
 }
+const selectedKeys = ref([])
+
+const selectionChange = (rowKeys: []) => {
+  selectedKeys.value = rowKeys
+}
+
 const rowSelection = computed(() => {
   return props.base.checkType === 'checkbox' || props.base.checkType === 'radio' ? {
     type: props.base.checkType,
@@ -290,7 +327,30 @@ const createEntitySavingObject = (subFormPidValue: string) => {
   }
   return entitySavingObject
 }
+
+const global = useGlobal()
+/**
+ *  批量更新
+ *  批量更新部分字段的内容
+ *  @record key为列名
+ */
+const batchUpdate = (data: Record<string, Record<string, any>>[]) => {
+  //
+  console.log('batchUpdate data', data)
+  if (selectedKeys.value.length === 0) {
+    global.$notification.error({
+      content: '请先选择列表的相关记录'
+    })
+  } else {
+
+  }
+}
+
+
 defineExpose({
+  resetColumns,
+  changeColumnsVisible,
+  batchUpdate,
   deleteRow,
   refresh,
   getRenderData,
@@ -316,11 +376,14 @@ defineExpose({
       </template>
       <template #rightItems>
         <a-space v-if="!props.base?.enableEdit">
+        <span v-if="selectedKeys.length" class="action-icon">
+          已选<a-badge :count="selectedKeys.length"/>
+        </span>
           <!-- TODO 待提供按列设置展示 -->
-          <a-tooltip v-if="false" :content="t('searchTable.actions.columnSetting')">
+          <a-tooltip v-if="true" :content="t('searchTable.actions.columnSetting')">
             <a-popover
                 trigger="click"
-                position="bl"
+                position="br"
                 @popup-visible-change="popupVisibleChange"
             >
               <div class="action-icon">
@@ -328,17 +391,12 @@ defineExpose({
               </div>
               <template #content>
                 <div :id="tableSettingId">
-                  <div
-                      v-for="(item, index) in showColumns"
-                      :key="item.dataIndex"
-                      class="setting"
-                  >
+                  <div v-for="(item, index) in showColumns" :key="item.dataIndex" class="setting">
                     <div style="margin-right: 4px; cursor: move">
-                      <!--   TODO 待支持拖拽排序 -->
-                      <!--                    <GlIconfont type="gl-drag-arrow"></GlIconfont>-->
+                      <GlIconfont type="gl-drag-arrow"></GlIconfont>
                     </div>
                     <div>
-                      <a-checkbox v-model="item.checked" @change="changeShowColumns($event, item, index)"/>
+                      <a-checkbox v-model="item._checked" @change="changeShowColumns($event, item, index)"/>
                     </div>
                     <div class="title">
                       {{ item.title === "#" ? "序号" : item.title }}
@@ -385,6 +443,7 @@ defineExpose({
                :subTablePidName="base.subTablePidName"
                :isLogicDeleteMode="base.isLogicDeleteMode"
                :rowSelection="rowSelection"
+               @selectionChange="selectionChange"
                @updateColumns="updateColumns"
                @updateRow="onUpdateRow"
                @fetchSuccess="onFetchSuccess"
@@ -402,10 +461,6 @@ defineExpose({
   cursor: pointer;
 }
 
-//.active {
-//  color: #0960bd;
-//  background-color: #e3f4fc;
-//}
 .setting {
   display: flex;
   align-items: center;
