@@ -120,12 +120,17 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('model.view.index.form.index')" :width="80" align="center" data-index="index">
+      <a-table-column :title="$t('model.view.index.form.index')" :width="80" align="center" data-index="index" fixed="left">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('model.view.index.form.viewName')" :tooltip="true" :width="200" data-index="viewName" fixed="left"/>
       <a-table-column :ellipsis="true" :title="$t('model.view.index.form.title')" :tooltip="true" :width="200" data-index="title"/>
       <!-- <a-table-column :title="$t('model.view.index.form.entityName')" data-index="entityName" :ellipsis="true" :tooltip="true" :width="200"/>-->
-      <a-table-column :ellipsis="true" :title="$t('model.view.index.form.viewName')" :tooltip="true" :width="200" data-index="viewName"/>
+      <a-table-column :title="$t('model.view.index.form.enableStatus')" :width="100" data-index="enableStatus">
+        <template #cell="{ record }">
+          {{ $t(`model.view.index.form.enableStatus.${record.enableStatus}`) }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('model.view.index.form.viewType')" :width="120" data-index="viewType">
         <template #cell="{ record }">
           {{ $t(`model.view.index.form.viewType.${record.viewType}`) }}
@@ -134,11 +139,6 @@
       <a-table-column :title="$t('model.view.index.form.linked')" :width="100" data-index="linked">
         <template #cell="{ record }">
           {{ $t(`model.view.index.form.linked.${record.linked}`) }}
-        </template>
-      </a-table-column>
-      <a-table-column :title="$t('model.view.index.form.enableStatus')" :width="100" data-index="enableStatus">
-        <template #cell="{ record }">
-          {{ $t(`model.view.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
       <a-table-column :title="$t('model.view.index.form.seqNo')" :width="100" data-index="seqNo"/>

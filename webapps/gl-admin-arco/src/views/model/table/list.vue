@@ -139,16 +139,21 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('model.table.index.form.index')" :width="80" align="center" data-index="index">
+      <a-table-column :title="$t('model.table.index.form.index')" :width="80" align="center" data-index="index" fixed="left">
         <template #cell="{  rowIndex }">{{
             rowIndex + 1 + (pagination.current - 1) * pagination.pageSize
           }}
         </template>
       </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.entityName')" :tooltip="true"
+                      :width="200" data-index="entityName" fixed="left"/>
       <a-table-column :ellipsis="true" :title="$t('model.table.index.form.title')" :tooltip="true" :width="200"
                       data-index="title"/>
-      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.entityName')" :tooltip="true"
-                      :width="200" data-index="entityName"/>
+      <a-table-column :title="$t('model.table.index.form.enableStatus')" :width="100" data-index="enableStatus">
+        <template #cell="{ record }">
+          {{ $t(`model.table.index.form.enableStatus.${record.enableStatus}`) }}
+        </template>
+      </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('model.table.index.form.tableName')" :tooltip="true"
                       :width="200" data-index="tableName"/>
       <a-table-column :title="$t('model.table.index.form.tableType')" :width="100" data-index="tableType">
@@ -161,11 +166,7 @@
           {{ $t(`model.table.index.form.linked.${record.linked}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.table.index.form.enableStatus')" :width="100" data-index="enableStatus">
-        <template #cell="{ record }">
-          {{ $t(`model.table.index.form.enableStatus.${record.enableStatus}`) }}
-        </template>
-      </a-table-column>
+
       <a-table-column :title="$t('model.table.index.form.seqNo')" :width="100" data-index="seqNo"/>
       <a-table-column :title="$t('model.table.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('model.table.index.form.tableComment')" :tooltip="true"

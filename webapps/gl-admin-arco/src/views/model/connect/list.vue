@@ -109,17 +109,17 @@
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbConnectName')" :tooltip="true" :width="150" data-index="dbConnectName"/>
-      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbSchema')" :tooltip="true" :width="150" data-index="dbSchema"/>
-      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbType')" :tooltip="true" :width="120" data-index="dbType"/>
       <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbName')" :tooltip="true" :width="150" data-index="dbName"/>
-      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbHostnameIp')" :tooltip="true" :width="150" data-index="dbHostnameIp"/>
-      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbPort')" :tooltip="true" :width="100" data-index="dbPort"/>
-      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbUserName')" :tooltip="true" :width="120" data-index="dbUserName"/>
       <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.enableStatus')" :tooltip="true" :width="100" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`model.connect.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbType')" :tooltip="true" :width="120" data-index="dbType"/>
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbHostnameIp')" :tooltip="true" :width="150" data-index="dbHostnameIp"/>
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbPort')" :tooltip="true" :width="100" data-index="dbPort"/>
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbUserName')" :tooltip="true" :width="120" data-index="dbUserName"/>
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbSchema')" :tooltip="true" :width="150" data-index="dbSchema"/>
       <a-table-column :title="$t('model.connect.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('model.connect.index.form.operations')" :width="170"
