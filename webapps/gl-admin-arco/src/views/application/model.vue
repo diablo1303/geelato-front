@@ -74,6 +74,24 @@
       </a-select>
       <span v-else>{{ $t(`application.app.list.watermark.${formData.watermark}`) }}</span>
     </a-form-item>
+    <a-form-item
+        :label="$t('application.app.list.applyStatus')"
+        :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+        field="applyStatus">
+      <a-select v-if="pageData.button" v-model="formData.applyStatus">
+        <a-option v-for="item of statusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+      </a-select>
+      <span v-else>{{ $t(`application.app.list.status.${formData.applyStatus}`) }}</span>
+    </a-form-item>
+    <a-form-item
+        :label="$t('application.app.list.designStatus')"
+        :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+        field="designStatus">
+      <a-select v-if="pageData.button" v-model="formData.designStatus">
+        <a-option v-for="item of statusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+      </a-select>
+      <span v-else>{{ $t(`application.app.list.status.${formData.designStatus}`) }}</span>
+    </a-form-item>
     <a-form-item :label="$t('application.app.list.powerInfo')" field="powerInfo">
       <a-textarea v-if="pageData.button" v-model="formData.powerInfo" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
       <span v-else :title="formData.powerInfo" class="textarea-span" @click="openModal(`${formData.powerInfo}`)">
@@ -123,7 +141,7 @@ import {Modal, Notification} from "@arco-design/web-vue";
 import {FormInstance} from "@arco-design/web-vue/es/form";
 import {ListUrlParams} from '@/api/base';
 import {createOrUpdateApp as createOrUpdateForm, getApp as getForm, QueryAppForm as QueryForm, validateAppCode} from '@/api/application'
-import {watermarkOptions} from "@/views/application/searchTable";
+import {statusOptions, watermarkOptions} from "@/views/application/searchTable";
 import {FileItem} from "@arco-design/web-vue/es/upload/interfaces";
 import {iconsJson} from "@geelato/gl-ui";
 import {uploadFile} from "@/components/vue-cropper/type";
@@ -154,6 +172,8 @@ const generateFormData = (): QueryForm => {
     versionInfo: '',
     description: '',// 描述
     seqNo: 999,
+    applyStatus: 1,
+    designStatus: 1,
     tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 }

@@ -109,21 +109,35 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('application.app.list.index')" :width="80" align="center" data-index="index">
+      <a-table-column :title="$t('application.app.list.index')" :width="80" align="center" data-index="index" fixed="left">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.logo')" :tooltip="true" :width="80"
-                      align="center" data-index="logo">
+                      align="center" data-index="logo" fixed="left">
         <template #cell="{record}">
           <img v-show="record.logo" :src="record.logo" alt="logo" style="width: 25px;height: 25px"/>
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.name')" :tooltip="true" :width="150"
-                      data-index="name"/>
+                      data-index="name" fixed="left"/>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.code')" :tooltip="true" :width="120"
                       data-index="code"/>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.versionInfo')" :tooltip="true" :width="120"
+                      data-index="versionInfo"/>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.applyStatus')" :tooltip="true" :width="120"
+                      data-index="applyStatus">
+        <template #cell="{ record }">
+          {{ [0, 1].includes(record.applyStatus) ? $t(`application.app.list.status.${record.applyStatus}`) : "" }}
+        </template>
+      </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.designStatus')" :tooltip="true" :width="120"
+                      data-index="designStatus">
+        <template #cell="{ record }">
+          {{ [0, 1].includes(record.designStatus) ? $t(`application.app.list.status.${record.designStatus}`) : "" }}
+        </template>
+      </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.icon')" :tooltip="true" :width="150"
                       data-index="icon">
         <template #cell="{record}">
@@ -134,11 +148,9 @@
       <a-table-column :ellipsis="true" :title="$t('application.app.list.watermark')" :tooltip="true" :width="100"
                       data-index="watermark">
         <template #cell="{ record }">
-          {{ $t(`application.app.list.watermark.${record.watermark}`) }}
+          {{ [0, 1].includes(record.watermark) ? $t(`application.app.list.watermark.${record.watermark}`) : "" }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.versionInfo')" :tooltip="true" :width="120"
-                      data-index="versionInfo"/>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.seqNo')" :tooltip="true" :width="80"
                       data-index="seqNo"/>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.createAt')" :tooltip="true" :width="180"
@@ -154,7 +166,7 @@
             </a-button>
             <template #content>
               <a-doption>
-                <a-button size="small" type="text" @click="enterTable(record,'index')">
+                <a-button :disabled="![1].includes(record.applyStatus)" size="small" type="text" @click="enterTable(record,'index')">
                   {{ $t('application.app.list.operations.enter.index') }}
                 </a-button>
               </a-doption>
@@ -164,7 +176,7 @@
                               </a-button>
                             </a-doption>-->
               <a-doption>
-                <a-button size="small" type="text" @click="enterTable(record,'design')">
+                <a-button :disabled="![1].includes(record.designStatus)" size="small" type="text" @click="enterTable(record,'design')">
                   {{ $t('application.app.list.operations.enter.design') }}
                 </a-button>
               </a-doption>
@@ -237,7 +249,9 @@ const generateFilterData = (): FilterForm => {
     watermark: '',
     versionInfo: '',
     createAt: [],
-    tenantCode: (route.params && route.params.tenantCode as string) || ''
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    applyStatus: '',
+    designStatus: ''
   };
 };
 const filterData = ref(generateFilterData());

@@ -14,5 +14,15 @@ const watermarkOptions = computed<SelectOptionData[]>(() => [
     value: 0,
   },
 ]);
+const statusOptions = computed<SelectOptionData[]>(() => [
+  {
+    label: 'application.app.list.status.1',
+    value: 1,
+  },
+  {
+    label: "application.app.list.status.0",
+    value: 0,
+  },
+]);
 
-export {columns, watermarkOptions};
+export {columns, watermarkOptions, statusOptions};

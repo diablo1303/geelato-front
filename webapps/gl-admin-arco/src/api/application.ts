@@ -21,6 +21,8 @@ export interface QueryAppForm {
   description: string;// 描述
   seqNo: number;
   tenantCode?: string;
+  applyStatus: number;
+  designStatus: number;
 }
 
 export interface FilterAppForm {
@@ -31,6 +33,8 @@ export interface FilterAppForm {
   versionInfo: string;
   createAt: string[];
   tenantCode: string;
+  applyStatus: string;
+  designStatus: string;
 }
 
 export function pageQueryApps(params: PageQueryRequest) {
