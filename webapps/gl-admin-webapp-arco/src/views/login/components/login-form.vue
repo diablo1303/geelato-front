@@ -55,7 +55,7 @@
         <a-button :loading="loading" html-type="submit" long type="primary">
           {{ $t('login.form.login') }}
         </a-button>
-        <a-button class="login-form-register-btn" long type="text">
+        <a-button class="login-form-register-btn" long type="text" v-show="false">
           {{ $t('login.form.register') }}
         </a-button>
       </a-space>

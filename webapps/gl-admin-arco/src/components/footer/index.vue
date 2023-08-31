@@ -24,7 +24,7 @@ const getAppInfo = async () => {
     }
   }
 }
-getAppInfo();
+// getAppInfo();
 </script>
 
 <style lang="less" scoped>
