@@ -1,7 +1,6 @@
-import type {PageParamConfigType} from "@geelato/gl-ui";
-import type {PageProvideProxy} from "@geelato/gl-ui";
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {jsScriptExecutor} from "@geelato/gl-ui";
+import type {Param} from "@geelato/gl-ui";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 export interface Params {
     [key: string]: string;
@@ -37,51 +36,79 @@ export default class BlockUtils {
         return result;
     }
 
+
+    /**
+     * 参数据对象序列化，形成代码块
+     */
+    // static convertParam = (params?: Param[]) => {
+    //     if (!params) return {}
+    //     const ary = []
+    //     ary.push('{')
+    //     params.forEach((param, index) => {
+    //         ary.push(`"${param.name}":${param.valueExpression || param.value}${index === params.length - 1 ? "" : ","}`)
+    //     })
+    //     ary.push('}')
+    //     return ary.join('\r\n');
+    // }
+
+    // /**
+    //  * 参数据对象序列化，形成代码块
+    //  * @param params
+    //  */
+    // static paramStringify = (params: Param[]) => {
+    //     return JSON.stringify(params, (key, value) => {
+    //         if (key === 'name'||key === 'id') {
+    //             return `"${value}"`
+    //         }
+    //         return value
+    //     })
+    // }
+
     /**
      * 参数据对象序列化，形成代码块
      * @param params
      */
-    static paramStringify = (params: Array<PageParamConfigType>) => {
-        const strArray = []
-        strArray.push("[")
-        let index = 1
-        params.forEach((param) => {
-            strArray.push("{")
-            strArray.push(`"${param.pName}":`)
-            switch (param.pType) {
-                case undefined:
-                    strArray.push(`"${param.pValue}"`)
-                    break
-                case "string" :
-                    strArray.push(`"${param.pValue}"`)
-                    break
-                case "number" :
-                    strArray.push(param.pValue)
-                    break
-                case "boolean" :
-                    strArray.push(param.pValue)
-                    break
-                case "express" :
-                    strArray.push(param.pValue)
-                    break
-                case "array" :
-                    strArray.push(param.pValue)
-                    break
-                case "object" :
-                    strArray.push(param.pValue)
-                    break
-                default:
-                    strArray.push(`"${param.pValue}"`)
-                    break
-            }
-            strArray.push("}")
-            if (index !== params.length) {
-                strArray.push(",")
-            }
-            index++
-        })
-        strArray.push("]")
-        return strArray.join('')
-    }
+    // static paramStringify = (params: Array<PageParamConfigType>) => {
+    //     const strArray = []
+    //     strArray.push("[")
+    //     let index = 1
+    //     params.forEach((param) => {
+    //         strArray.push("{")
+    //         strArray.push(`"${param.pName}":`)
+    //         switch (param.pType) {
+    //             case undefined:
+    //                 strArray.push(`"${param.pValue}"`)
+    //                 break
+    //             case "string" :
+    //                 strArray.push(`"${param.pValue}"`)
+    //                 break
+    //             case "number" :
+    //                 strArray.push(param.pValue)
+    //                 break
+    //             case "boolean" :
+    //                 strArray.push(param.pValue)
+    //                 break
+    //             case "express" :
+    //                 strArray.push(param.pValue)
+    //                 break
+    //             case "array" :
+    //                 strArray.push(param.pValue)
+    //                 break
+    //             case "object" :
+    //                 strArray.push(param.pValue)
+    //                 break
+    //             default:
+    //                 strArray.push(`"${param.pValue}"`)
+    //                 break
+    //         }
+    //         strArray.push("}")
+    //         if (index !== params.length) {
+    //             strArray.push(",")
+    //         }
+    //         index++
+    //     })
+    //     strArray.push("]")
+    //     return strArray.join('')
+    // }
 
 }

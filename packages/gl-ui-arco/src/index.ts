@@ -29,6 +29,8 @@ import GlImage from "./components/gl-image/GlImage.vue";
 import GlButton from "./components/gl-button/GlButton.vue";
 import GlEntityCascader from "./components/gl-entity-cascader/GlEntityCascader.vue";
 import GlTimeline from "./components/gl-timeline/GlTimeline.vue";
+import GlOpRecord from "./components/gl-op-record/GlOpRecord.vue";
+import  { getFormParams } from "./components/gl-entity-form/GlEntityForm";
 
 const i18nMessage = {en, cn};
 
@@ -38,8 +40,9 @@ const component: Plugin = {
         if (PluginUtil.markInstalledPlugin(app, "gl-ui-arco")) {
             return;
         }
-        app.component(GlTimeline.name,GlTimeline)
-        app.component(GlButton.name,GlButton)
+        app.component(GlOpRecord.name, GlOpRecord)
+        app.component(GlTimeline.name, GlTimeline)
+        app.component(GlButton.name, GlButton)
         app.component(GlAlert.name, GlAlert)
         app.component(GlText.name, GlText)
         app.component(GlIconfontSelect.name, GlIconfontSelect)
@@ -81,6 +84,6 @@ const component: Plugin = {
     },
 };
 
-export {i18nMessage};
+export {i18nMessage,getFormParams};
 // 默认导出组件
 export default component;

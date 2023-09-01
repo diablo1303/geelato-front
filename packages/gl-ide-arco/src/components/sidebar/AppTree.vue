@@ -130,6 +130,7 @@ const contextMenuData = [
     action: 'deleteNode'
   }
 ]
+
 </script>
 <style>
 .gl-app-tree {

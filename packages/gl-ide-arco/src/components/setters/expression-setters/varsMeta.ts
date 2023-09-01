@@ -141,6 +141,9 @@ export const useComponentInstTreeData = () => {
     }
     if (insts.inst) {
         for (const instKey in insts.inst) {
+            if (instKey.indexOf('ph_') !== -1) {
+                continue
+            }
             // @ts-ignore
             const inst = insts.inst[instKey]
             // {title: '获取组件实例', _code: 'xxxInstId', _type: 'object'},
@@ -158,6 +161,13 @@ export const useComponentInstTreeData = () => {
                 ]
             })
         }
+    }
+
+    const moreInstTree = {
+        title: '更多组件实例',
+        _description: '展示更多的组件实例，这些实例不在当前IDE打开的页面中。',
+        key: 'showMoreComponentInsts',
+        _code: 'inst'
     }
 
     const fn = {
@@ -178,12 +188,26 @@ export const useComponentInstTreeData = () => {
                 _type: 'any',
                 _brackets: '("参数名")',
                 _description: '获取页面参数值',
+            },
+            {
+                title: '设置组件的属性值',
+                _code: 'setComponentProps',
+                _type: 'void',
+                _brackets: '("组件ID",{ "属性名": 属性值 })',
+                _description: '设置组件的属性值，例如：setComponentProps("aDjnainSRp359kLJHhbc", { _hidden: true });',
+            },
+            {
+                title: '调用组件方法',
+                _code: 'invokeComponentMethod',
+                _type: 'any',
+                _brackets: '("组件ID","方法名",[])',
+                _description: '调用组件方法，例如：invokeComponentMethod: (componentId: string, methodName: string, params: Array<Param>)'
             }
         ],
         _description: ''
     }
 
-    return [ctx, instTreeItem, fn]
+    return [ctx, instTreeItem, moreInstTree, fn]
 }
 
 

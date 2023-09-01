@@ -5,7 +5,7 @@ import utils from "../utils/Utils";
 import GlPageViewer from '../../components/gl-page-viewer/GlPageViewer.vue'
 import type PageProvideProxy from "../../components/PageProvideProxy";
 import type {Param} from "../types/global";
-import { entityApi } from "../datasource/EntityApi";
+import {entityApi} from "../datasource/EntityApi";
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 type OptionsType = { [key: string]: any }
@@ -289,7 +289,7 @@ export class JsScriptExecutor {
         let that = this
         return {
             if: (expression: string, trueValue: any, falseValue: any) => {
-                return that.evalExpression(expression, $gl?.ctx) ? trueValue : falseValue
+                return that.evalExpression(expression, $gl?.ctx, undefined, $gl) ? trueValue : falseValue
             },
             isPageParamEquals: (paramName: string, value: any) => {
                 // console.log('isPageParamEquals', paramName, value, that.getPageParam(paramName, $gl))
@@ -312,7 +312,7 @@ export class JsScriptExecutor {
                 const paramsAry: Array<string> = []
                 urlParams.forEach((param) => {
                     if (param.valueExpression) {
-                        paramsAry.push(`${param.name}=${that.evalExpression(param.valueExpression, $gl?.ctx)}`)
+                        paramsAry.push(`${param.name}=${that.evalExpression(param.valueExpression, $gl?.ctx, undefined, $gl)}`)
                     } else {
                         paramsAry.push(`${param.name}=${param.value}`)
                     }
@@ -320,7 +320,7 @@ export class JsScriptExecutor {
                 window.open(`${url}?${paramsAry.join('&')}`, '_blank')
             },
             loadPage: (pageId: string, extendId: string, params: Array<Param>, pageStatus: string) => {
-                return that.loadPage(pageId, extendId, that.evalParams(params, $gl.ctx) || [], pageStatus)
+                return that.loadPage(pageId, extendId, that.evalParams(params, $gl.ctx, $gl) || [], pageStatus)
             },
             /**
              * 调用组件方法
@@ -331,7 +331,7 @@ export class JsScriptExecutor {
             invokeComponentMethod: (componentId: string, methodName: string, params: Array<Param>) => {
                 const method = this.getComponentMethod(componentId, methodName)
                 if (method) {
-                    return method(that.evalParams(params, $gl.ctx))
+                    return method(that.evalParams(params, $gl.ctx, $gl))
                 }
                 // else {
                 //     console.error('调用组件方法失败，找到不方法。componentId:', componentId, 'methodName:', methodName)
@@ -418,10 +418,11 @@ export class JsScriptExecutor {
      * @param action 组件中的事件配置信息
      * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
      * @param callback
+     * @param gl 如果多个表达式需要用同一下$gl时，可以传进来，不在本方法内创建
      */
-    doAction(action: Action, ctx: Ctx, callback?: Function) {
+    doAction(action: Action, ctx: Ctx, callback?: Function, gl?: any) {
         // console.log('JsScriptExecutor > doAction(),action:', action, 'ctx:', ctx)
-        return this.evalFn(action.body!, ctx, callback)
+        return this.evalFn(action.body!, ctx, callback, gl)
     }
 
     // executeFn(bodyScript: string, ctx: object, callback?: Function) {
@@ -433,9 +434,10 @@ export class JsScriptExecutor {
      * @param expression 脚本信息，方法体
      * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
      * @param callback
+     * @param gl 如果多个表达式需要用同一下$gl时，可以传进来，不在本方法内创建
      */
-    evalExpression(expression: string, ctx: Ctx, callback?: Function) {
-        const $gl = this.getGl(ctx?.pageProxy)
+    evalExpression(expression: string, ctx: Ctx, callback?: Function, gl?: any) {
+        const $gl = gl || this.getGl(ctx?.pageProxy)
         Object.assign($gl.ctx, ctx)
         let result = utils.evalExpression(expression, $gl)
         if (callback && typeof callback === 'function') {
@@ -449,9 +451,10 @@ export class JsScriptExecutor {
      * @param fnBodyScript 脚本信息，方法体
      * @param ctx 调用该方法的组件所在的上下文信息，如列表的行信息
      * @param callback
+     * @param gl 如果多个表达式需要用同一下$gl时，可以传进来，不在本方法内创建
      */
-    evalFn(fnBodyScript: string, ctx: Ctx, callback?: Function) {
-        const $gl = this.getGl(ctx?.pageProxy)
+    evalFn(fnBodyScript: string, ctx: Ctx, callback?: Function, gl?: any) {
+        const $gl = gl || this.getGl(ctx?.pageProxy)
         Object.assign($gl.ctx, ctx)
         // console.log('$gl.ctx', $gl.ctx)
         let result = utils.evalFn(fnBodyScript, $gl)
@@ -463,19 +466,20 @@ export class JsScriptExecutor {
 
 
     /**
-     * 执行参数，将参数中的valueExpression值表达式计算结果保存到value中
+     * 执行参数，valueExpression值优先，将参数中的valueExpression值表达式计算结果保存到value中
      * @param params
      * @param ctx
+     * @param gl 如果多个表达式需要用同一下$gl时，可以传进来，不在本方法内创建
      */
-    evalParams(params: Array<Param>, ctx: Ctx) {
+    evalParams(params: Array<Param>, ctx: Ctx, gl?: any) {
         const newParams: Array<Param> = []
         if (params && params.length > 0) {
             for (const index in params) {
                 const param: Param = params[index]
                 // console.log('param.value:', param.value)
                 // param.value未设置，且valueExpression有值时
-                if (param.valueExpression && !param.value) {
-                    param.value = this.evalExpression(param.valueExpression, ctx)
+                if (param.valueExpression) {
+                    param.value = this.evalExpression(param.valueExpression, ctx, undefined, gl)
                 }
                 newParams.push({
                     name: param.name,
@@ -492,13 +496,18 @@ export class JsScriptExecutor {
      *
      * @param items
      * @param ctx {pageProxy,...} 上下文中需要传输pageProxy
+     * @param gl 如果多个表达式需要用同一下$gl时，可以传进来，不在本方法内创建
      */
-    evalValueExpressions(items: Array<{ value?: any, valueExpression?: string, [key: string]: any }>, ctx: Ctx) {
+    evalValueExpressions(items: Array<{
+        value?: any,
+        valueExpression?: string,
+        [key: string]: any
+    }>, ctx: Ctx, gl?: any) {
         if (items && items.length > 0) {
             for (const index in items) {
                 const item = items[index]
                 if (item.valueExpression) {
-                    item.value = this.evalExpression(item.valueExpression, ctx)
+                    item.value = this.evalExpression(item.valueExpression, ctx, undefined, gl)
                 }
             }
         }
@@ -510,11 +519,12 @@ export class JsScriptExecutor {
      * @param options
      * @param ctx
      * @param evalKeys 指定需要转换值的选项keys，如：['title', 'content']
+     * @param gl 如果多个表达式需要用同一下$gl时，可以传进来，不在本方法内创建
      */
-    evalOptions(options: OptionsType, ctx: Ctx, evalKeys: string[]): OptionsType {
+    evalOptions(options: OptionsType, ctx: Ctx, evalKeys: string[], gl?: any): OptionsType {
         const newOptions = JSON.parse(JSON.stringify(options))
         evalKeys.forEach((key) => {
-            newOptions[key] = this.evalExpression(newOptions[key], ctx)
+            newOptions[key] = this.evalExpression(newOptions[key], ctx, undefined, gl)
         })
         return newOptions
     }
@@ -570,7 +580,9 @@ export class JsScriptExecutor {
             vueInsts: <{ [key: string]: any }>{},
             ctx: {},
             fn: utils,
-            entityApi
+            entityApi,
+            // 当前执行方法的变量
+            vars: {}
         }
         // set logic fns
         Object.assign($gl.fn, this.getLogicFns($gl))

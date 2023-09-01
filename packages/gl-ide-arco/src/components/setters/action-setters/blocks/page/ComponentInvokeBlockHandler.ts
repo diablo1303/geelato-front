@@ -1,6 +1,7 @@
+import type {Param} from "@geelato/gl-ui";
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
-import type {Param} from "@geelato/gl-ui";
+import BlockUtils from "../BlockUtils";
 
 export default class ComponentInvokeBlockHandler implements IBlockHandler {
 
@@ -11,14 +12,14 @@ export default class ComponentInvokeBlockHandler implements IBlockHandler {
         if (props.resultVar) {
             return new ParseResult(
                 `
-                ${props.resultVar} = ${props.enableAwait ? 'await ' : ''} $gl.fn.invokeComponentMethod("${props.componentId}","${props.methodName}",${JSON.stringify(params)});
-                ${props.enableReturn ? 'return ' + props.resultVar : ''}
+                $gl.vars.${props.resultVar} = ${props.enableAwait ? 'await ' : ''} $gl.fn.invokeComponentMethod("${props.componentId}","${props.methodName}",${JSON.stringify(params)});
+                ${props.enableReturn ? 'return $gl.vars.' + props.resultVar : ''}
                 `
             ).setBlockName('ComponentInvokeBlock');
         } else {
             return new ParseResult(
                 `
-                ${props.enableReturn ? 'return ' : ''} ${props.enableAwait ? 'await ' : ''} $gl.fn.invokeComponentMethod("${props.componentId}","${props.methodName}",${JSON.stringify(params)})
+                ${props.enableReturn ? 'return ' : ''} ${props.enableAwait ? 'await ' : ''} $gl.fn.invokeComponentMethod("${props.componentId}","${props.methodName}",${JSON.stringify(params)});
                 `
             ).setBlockName('ComponentInvokeBlock');
         }
@@ -41,3 +42,14 @@ export class Props {
     // 返回结果，存储到变量
     resultVar?: string
 }
+
+
+// const convertParams = (params: Param[]) => {
+//     const ary = []
+//     ary.push('{')
+//     params.forEach((param, index) => {
+//         ary.push(`"${param.name}":${param.valueExpression || param.value}${index === params.length - 1 ? "" : ","}`)
+//     })
+//     ary.push('}')
+//     return ary.join('\r\n');
+// }

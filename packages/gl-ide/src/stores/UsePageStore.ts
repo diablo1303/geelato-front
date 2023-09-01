@@ -1,10 +1,11 @@
 import {ref} from "vue";
 import {defineStore} from 'pinia'
-import {entityApi, type PageType} from "@geelato/gl-ui";
+import {emitter, entityApi, type PageType} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {useComponentStore} from "./UseComponentStore";
 import Page from "../entity/Page";
-import History, {HistoryStep} from "../utils/History";
+import History from "../utils/History";
+import EventNames from "../entity/EventNames";
 
 export const usePageStore = defineStore('GlPageStore', () => {
     /**
@@ -249,7 +250,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
                 }
 
                 if (['GlEntityTablePlus', 'GlEntityTable', 'GlEntityTableSub'].indexOf(inst.componentName) !== -1) {
-                    console.log('inst.componentName convert GlEntityTablePlus', inst)
+                    // console.log('inst.componentName convert GlEntityTablePlus', inst)
                     inst.props.query?.forEach((item: any) => {
                         convertInst(item?.component)
                     })
@@ -274,7 +275,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
                 }
 
                 if (inst.componentName === 'AButton' && inst.slots) {
-                    console.log('inst.componentName convert AButton')
+                    // console.log('inst.componentName convert AButton')
                     if (inst.slots?.icon?.componentName === 'GlIconfont') {
                         inst.props.label = inst.slots?.icon?.props?.text
                         inst.props.iconType = inst.slots?.icon?.props?.type
@@ -299,7 +300,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
 
         const convertedSource = convertToSource(currentPage.value.sourceContent)
         const convertedRelease = convertToRelease(convertedSource)
-        entityApi.save('platform_app_page', {
+        const savingPage = {
             id: currentPage.value.id,
             appId: currentPage.value.appId,
             extendId: currentPage.value.extendId,
@@ -309,13 +310,27 @@ export const usePageStore = defineStore('GlPageStore', () => {
             releaseContent: JSON.stringify(convertedRelease),
             previewContent: JSON.stringify(convertToPreview(convertedRelease)),
             description: currentPage.value.description
-        }).then((res) => {
+        }
+        entityApi.save('platform_app_page', savingPage).then((res) => {
             currentPage.value.id = res.data
+            savingPage.id = res.data
+            emitter.emit(EventNames.GlIdeToolbarSaveFile, {page: savingPage})
         })
     }
 
     function setCurrentSourceContent(content?: ComponentInstance) {
         currentPage.value.sourceContent = content
+    }
+
+    /**
+     * 回滚版本
+     * @param sourceContent 页面的配置源码
+     */
+    function rollbackPage(sourceContent: ComponentInstance) {
+        componentStore.$reset()
+        componentStore.currentComponentTree.push(sourceContent)
+        componentStore.clearCurrentSelectedComponent(currentPage.value.id)
+        setCurrentSourceContent(sourceContent)
     }
 
     function logInit(title: string, sourceContent: any, targetComponentInst: ComponentInstance) {
@@ -374,6 +389,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
         operationLog: log,
         operationUndo: undo,
         operationRedo: redo,
+        rollbackPage,
         getCurrentPageInstId
     }
 })

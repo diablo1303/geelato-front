@@ -475,7 +475,10 @@ export default {
         "title": "行记录更改",
         "description": "在数据表的行内编辑模式下，当数据表的行记录信息更换时触发"
     }],
-    "methods": [{"name": "refresh", "title": "刷新", "description": "刷新表格", "params": []}, {
+    "methods": [
+        {"name": "refresh", "title": "刷新", "description": "刷新表格", "params": []},
+        {"name": "changeColumnsVisible", "title": "展示/隐藏列", "description": "更改列的展示/隐藏属性，并更新列信息。", "params": []},
+        {"name": "batchUpdate", "title": "批量更新", "description": "批量更新表格的记录值，需要输入对象参数，更新的列键值对，如{orderNo:'912881'}", "params": []}, {
         "name": "deleteRow",
         "title": "删除行",
         "params": [{

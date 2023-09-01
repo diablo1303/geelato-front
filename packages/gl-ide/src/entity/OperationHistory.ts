@@ -40,8 +40,7 @@ export default class OperationHistory {
      * @param jsonObj
      */
     pushStep(type: string = 'ComponentTree', jsonObj: Object = {}) {
-        console.log('ide > history > ComponentTree():', jsonObj)
-
+        // console.log('ide > history > ComponentTree():', jsonObj)
         this.pushStepByHistoryItem(new OperationHistoryItem(type, jsonObj))
     }
 

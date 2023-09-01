@@ -166,7 +166,7 @@ export default class History {
      *  获取当前的值
      */
     getCurrentValue() {
-        console.log('this.currentValue:', this.currentValue)
+        // console.log('this.currentValue:', this.currentValue)
         return this.currentValue || this.irrevocableValue
     }
 

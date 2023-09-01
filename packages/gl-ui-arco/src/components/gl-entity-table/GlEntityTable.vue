@@ -1,33 +1,31 @@
 <script setup lang="ts">
 // @ts-nocheck
-import {
-  computed, inject,
-  nextTick,
-  type PropType,
-  reactive,
-  ref,
-  toRaw,
-  watch,
-} from "vue";
+import {inject, nextTick, type PropType, type Ref, ref, watch} from "vue";
 import type {
-  TableData,
   TableRowSelection,
   PaginationProps
 } from "@arco-design/web-vue";
 import useLoading from "../../hooks/loading";
-import cloneDeep from "lodash/cloneDeep";
 import Sortable from "sortablejs";
 import {
-  entityApi,
-  FieldMeta,
-  EntityReader,
+  mixins,
   EntityReaderParam,
-  utils, useGlobal, FormProvideProxy, FormProvideKey, jsScriptExecutor, PageProvideProxy, PageProvideKey
+  utils,
+  useGlobal,
+  FormProvideProxy,
+  FormProvideKey,
+  PageProvideProxy,
+  PageProvideKey
 } from "@geelato/gl-ui";
-import type {Column, TableColumnDataPlus} from "./table";
-import {Schema} from "b-validate";
-import {logicDeleteFieldName} from "./table";
-import {mixins} from "@geelato/gl-ui";
+import type {Column, EntityFetchDataProps, GlTableColumn} from "./table";
+import {
+  evalExpression,
+  genRenderColumns,
+  genShowColumns,
+  useFetchData,
+  genSlotColumnsWithNoOperation,
+  genQueryColumns
+} from "./table";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal;
@@ -42,10 +40,10 @@ const props = defineProps({
     required: true,
   },
   /**
-   * 展示的列配置
+   * 列配置列定义
    */
   columns: {
-    type: Array as PropType<TableColumnDataPlus[]>,
+    type: Array as PropType<GlTableColumn[]>,
     default() {
       return [];
     },
@@ -80,18 +78,19 @@ const props = defineProps({
       return false
     }
   },
+  ...mixins.subFormProps,
   isFormSubTable: {
     type: Boolean,
     default() {
       return false
     }
   },
-  isLogicDeleteMode: {
-    type: Boolean,
-    default() {
-      return true
-    }
-  },
+  // isLogicDeleteMode: {
+  //   type: Boolean,
+  //   default() {
+  //     return true
+  //   }
+  // },
   subTablePidName: {
     type: String
   },
@@ -134,138 +133,75 @@ const props = defineProps({
 
 const formProvideProxy: FormProvideProxy | undefined = props.isFormSubTable ? inject(FormProvideKey) : undefined
 const pageProvideProxy: PageProvideProxy | undefined = inject(PageProvideKey)
-let recordSchema = new Schema({})
 
-const slotNameFlag = '__slot'
+// 展示的列，create之后，通过方法调用设置
+let localShowDataIndexes: string[] = []
+// 隐藏的列，create之后，通过方法调用设置
+let localHideDataIndexes: string[] = []
+// 用于构建查询语句的列，包含一些隐藏的列；该列的数据基于输入的props.columns进行复制转换
+const queryColumns: Ref<GlTableColumn[]> = ref(genQueryColumns(props, localShowDataIndexes, localHideDataIndexes))
+// 可供展示的列，从这些列中选出最终展示的列存在renderColumns
+const showColumns: Ref<GlTableColumn[]> = ref(genShowColumns(queryColumns, false))
+// 最终展示的列
+const renderColumns: Ref<GlTableColumn[]> = ref(genRenderColumns(showColumns))
 
-const setSlotNames = () => {
-  // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确认列有slotName
-  props.columns.forEach((col: Column) => {
-    if (col._renderScript || col._component) {
-      col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
-    } else {
-      delete col.slotName
-    }
-  })
-  // console.log('GlEntityTable > columns after convert:', recordSchema)
+/**
+ *  重置所有的列
+ */
+const resetColumns = () => {
+  queryColumns.value = genQueryColumns(props, localShowDataIndexes, localHideDataIndexes)
+  showColumns.value = genShowColumns(queryColumns, false)
+  renderColumns.value = genRenderColumns(showColumns)
 }
+const resetRenderColumns = () => {
+  renderColumns.value = genRenderColumns(showColumns)
+}
+const changeShowColumns = (checked: boolean, column: Column, index: number) => {
+  // 改了renderColumn的_checked，即等同于改了showColumn的_checked
+  column._checked = checked
+  resetRenderColumns()
+};
 
-const refreshFlag = ref(true)
-setSlotNames()
-// 这个watch 用于设计时，监控列变化时，及时刷新（主要是用于让表达式生效）
-if (!props.glIsRuntime) {
-  watch(() => {
-    return props.columns
-  }, () => {
-    refreshFlag.value = false
+const popupVisibleChange = (val: boolean) => {
+  if (val) {
     nextTick(() => {
-      refreshFlag.value = true
-    })
-  }, {deep: true})
-}
-
+      const el = document.getElementById(props.tableSettingId) as HTMLElement;
+      new Sortable(el, {
+        onEnd(e: any) {
+          const {oldIndex, newIndex} = e;
+          utils.arrayMoveItem(showColumns.value, oldIndex, newIndex);
+          resetRenderColumns()
+          emits("updateColumns", showColumns.value);
+        },
+      });
+    });
+  }
+};
 
 const {loading, setLoading} = useLoading(false);
-const t = (str: any) => {
-  return str
-}
-// 渲染展示的数据
-const renderData = ref<Array<object>>([]);
 
-// // 编辑状态时删除的数据，
-// const deleteDataWhenEnableEdit = ref<Array<{ id: string, [logicDeleteFieldName]: number }>>([]);
-// const resetDeleteDataWhenEnableEdit = () => {
-//   deleteDataWhenEnableEdit.value = []
-// }
-const pagination = reactive({
+// 渲染展示的数据与查询出的结果集数据相同，
+const renderData = ref<Array<Record<string, any>>>([]);
+
+const pagination = ref({
   ...props.pagination,
 });
 
-const columns = computed<TableColumnDataPlus[]>(() => {
-  // 如果启用了多语言，则需要对标题进行翻译
-  let columnData: Array<TableColumnDataPlus> = [];
-  if (props.enableI18n && props.columns) {
-    columnData = JSON.parse(JSON.stringify(props.columns));
-    columnData.forEach((item) => {
-      // console.log("gl-entity-table > columns item:", item, item.title);
-      // @ts-ignore
-      item.title = item.title ? t(item.title + "") : "";
-    });
-  } else {
-    columnData = props.columns
-  }
-  return columnData;
-});
-
-const createEntityReader = () => {
-  let entityReader = new EntityReader();
-  entityReader.entity = props.entityName;
-  entityReader.order = [];
-
-  const fieldMetas = new Array<FieldMeta>();
-  props.columns?.forEach((column) => {
-    // 过滤掉操作列
-    if (column.slotName !== 'optional') {
-      const fm = new FieldMeta();
-      // @ts-ignore
-      fm.name = column.dataIndex;
-      // @ts-ignore
-      fm.title = column.title;
-      fieldMetas.push(fm);
-    }
-  });
-  entityReader.fields = fieldMetas;
-  return entityReader;
-};
 
 /**
  * 加载数据的最终方法，在查询、切换分页等场景中调用
  * @param readerInfo
  */
-const fetchData = async (readerInfo?: {
-  pageSize?: number,
-  pageNo?: number,
-  params?: Array<EntityReaderParam>
-}) => {
-  // resetDeleteDataWhenEnableEdit()
-  // 绑定了有效的实体才发起查询
-  // 作为子表时，必须指定子表外键，即对应主表ID的字段
-  if (!props.entityName || (props.isFormSubTable && !props.subTablePidName)) {
-    return
-  }
-  setLoading(true);
-  try {
-    const entityReader = createEntityReader();
-    entityReader.params = readerInfo?.params || [];
+const fetchData = useFetchData(props as EntityFetchDataProps, queryColumns, pagination, formProvideProxy?.getRecordId, (result: any) => {
+  renderData.value = result.data
+  emits('fetchSuccess', result)
+})
 
-    // 如果是子查询
-    // 增加父表单主键，作为查询字段，若父表单无该主健id，则返回，不查询
-    if (props.isFormSubTable) {
-      const pid = formProvideProxy?.getRecordId()
-      if (!pid) {
-        return
-      }
-      entityReader.params.push(new EntityReaderParam(props.subTablePidName, 'eq', pid))
-    }
 
-    // 逻辑删除模式下，增加逻辑删除的数据过滤条件
-    if (props.isLogicDeleteMode) {
-      entityReader.params.push(new EntityReaderParam(logicDeleteFieldName, 'eq', 0))
-    }
-    entityReader.pageSize = readerInfo?.pageSize || pagination.pageSize!
-    const response:any = await entityApi.queryByEntityReader(entityReader);
-    // console.log('GlEntityTable > fetchData() > response:', response)
-    renderData.value = response.data;
-    pagination.pageSize = readerInfo?.pageSize || pagination.pageSize
-    pagination.current = readerInfo?.pageNo || 1;
-    pagination.total = Number.parseInt(response.data.total);
-    emits('fetchSuccess', {data: renderData.value, pagination})
-  } catch (err) {
-    console.error(err)
-  } finally {
-    setLoading(false);
-  }
-};
+const tableRef = ref()
+const selectAll = (checked: boolean) => {
+  return tableRef.value.selectAll(checked)
+}
 
 const search = (entityReaderParams: Array<EntityReaderParam>) => {
   // console.log('search entityReaderParams:', entityReaderParams)
@@ -279,131 +215,73 @@ const onPageSizeChange = (pageSize: number) => {
   fetchData({pageSize})
 }
 
-const exchangeArray = <T extends Array<any>>(
-    array: T,
-    beforeIdx: number,
-    newIdx: number,
-    isDeep = false
-): T => {
-  const newArray = isDeep ? cloneDeep(array) : array;
-  if (beforeIdx > -1 && newIdx > -1) {
-    // 先替换后面的，然后拿到替换的结果替换前面的
-    newArray.splice(
-        beforeIdx,
-        1,
-        newArray.splice(newIdx, 1, newArray[beforeIdx]).pop()
-    );
-  }
-  return newArray;
-};
-// cloneColumns:TableColumnData[]
-const cloneColumns = ref<Column[]>([]);
-const showColumns = ref<Column[]>([]);
-const changeShowColumns = (
-    checked: boolean | (string | boolean | number)[],
-    column: Column,
-    index: number
-) => {
-  if (!checked) {
-    cloneColumns.value = showColumns.value.filter(
-        (item) => item.dataIndex !== column.dataIndex
-    );
-  } else {
-    cloneColumns.value.splice(index, 0, column);
-  }
-};
-const popupVisibleChange = (val: boolean) => {
-  if (val) {
-    nextTick(() => {
-      const el = document.getElementById(props.tableSettingId) as HTMLElement;
-      const sortable = new Sortable(el, {
-        onEnd(e: any) {
-          const {oldIndex, newIndex} = e;
-          exchangeArray(cloneColumns.value, oldIndex, newIndex);
-          exchangeArray(showColumns.value, oldIndex, newIndex);
-          emits("updateColumns", showColumns.value);
-        },
-      });
-    });
-  }
-};
-
-
-const optColumn = {title: '操作', slotName: '#', fixed: 'right', width: 140, align: 'center'}
-const scroll = {
-  x: "100%"
-}
-watch(() => columns.value,
-    (val) => {
-      // @ts-ignore
-      cloneColumns.value = cloneDeep(val);
-      cloneColumns.value.forEach((item, index) => {
-        item.checked = true;
-        item.width = item.width || 150
-        item.align = item.align || 'center'
-      });
-      cloneColumns.value.push(optColumn as Column)
-      showColumns.value = cloneDeep(cloneColumns.value);
-      // console.log('GlEntityTable > update cloneColumns:', cloneColumns)
-      emits("updateColumns", showColumns.value);
-    },
-    {deep: true, immediate: true}
-)
-
-const evalExpression = (data: {
-  record: TableData;
-  column: TableColumnDataPlus;
-  rowIndex: number;
-}) => {
-  if (!data.column._renderScript) {
-    return data.record[data.rowIndex]
-  }
-  const ctx = {
-    pageProxy: pageProvideProxy,
-    record: toRaw(data.record),
-    column: toRaw(data.column),
-    rowIndex: toRaw(data.rowIndex),
-  };
-  return jsScriptExecutor.evalExpression(ctx.column._renderScript, ctx);
-};
-
 /**
- *  计算出带有插槽的列
- *  这些列中，不包括操作列（即slotName为#的列）
+ * 设置哪些列不可见、可见
+ * 不指定的列保持原状
+ * @param showDataIndexes 可见的列
+ * @param hideDataIndexes 不可见的列
  */
-const slotColumns = computed(() => {
-  return cloneColumns.value.filter((column) => {
-    return column.slotName && column.slotName !== '#'
-  })
-})
+const changeColumnsVisible = (showDataIndexes: string[], hideDataIndexes: string[]) => {
+  localHideDataIndexes = hideDataIndexes
+  localShowDataIndexes = showDataIndexes
+  resetColumns()
+}
 
+const getQueryData = () => {
+  return renderData.value
+}
 const getRenderData = () => {
   return renderData.value
 }
 const getRenderColumns = () => {
-  return cloneColumns.value
+  return renderColumns.value
 }
+
+watch(() => showColumns.value,
+    (val) => {
+      emits("updateColumns", val);
+    },
+    {deep: true, immediate: true}
+)
+
+const refreshFlag = ref(true)
+// 这个watch 用于设计时，监控列变化时，及时刷新（主要是用于让表达式生效）
+if (!props.glIsRuntime) {
+  watch(() => {
+    return props.columns
+  }, () => {
+    resetColumns()
+    refreshFlag.value = false
+    nextTick(() => {
+      refreshFlag.value = true
+    })
+  }, {deep: true})
+}
+
 defineExpose({
+  resetColumns,
   search,
+  selectAll,
   popupVisibleChange,
   changeShowColumns,
+  getQueryData,
   getRenderData,
-  getRenderColumns
+  getRenderColumns,
+  changeColumnsVisible
 });
 </script>
 
 <template>
-  <a-table class="gl-entity-table" v-if="!enableEdit&&refreshFlag" row-key="id"
+  <a-table ref="tableRef" class="gl-entity-table" v-if="refreshFlag" row-key="id"
            :loading="loading"
            :pagination="pagination"
-           :row-selection="rowSelection"
-           :columns="cloneColumns"
+           :rowSelection="rowSelection"
+           :columns="renderColumns"
            :data="renderData"
            :bordered="{ cell: true }"
            :hoverable="true"
            :stripe="true"
            :column-resizable="columnResizable"
-           :size="size"
            :scroll="{}"
            @page-change="onPageChange"
            @page-size-change="onPageSizeChange"
@@ -418,14 +296,14 @@ defineExpose({
         </template>
       </a-space>
     </template>
-    <template v-for="slotColumn in slotColumns"
+    <template v-for="slotColumn in genSlotColumnsWithNoOperation(renderColumns)"
               v-slot:[slotColumn.slotName]="{ record, column, rowIndex }">
       <template v-if="column._component&&record">
         <GlComponent :glComponentInst="column._component" v-model="record[column.dataIndex]"
                      :glCtx="{record,rowIndex}"></GlComponent>
       </template>
       <span v-else>
-        {{ evalExpression({record, column, rowIndex}) }}
+        {{ evalExpression({record, column, rowIndex}, pageProvideProxy) }}
       </span>
     </template>
   </a-table>

@@ -25,7 +25,7 @@ export default {
  */
 import {inject, ref, watch} from "vue";
 import {ComponentSetterProvideKey, ComponentSetterProvideProxy} from "@geelato/gl-ide";
-import {entityApi, jsScriptExecutor} from "@geelato/gl-ui";
+import {entityApi} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {useComponentStore} from "@geelato/gl-ide";
 

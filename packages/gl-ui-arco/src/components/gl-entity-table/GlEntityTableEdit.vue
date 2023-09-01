@@ -23,7 +23,7 @@ import {
   EntityReaderParam,
   utils, useGlobal, FormProvideProxy, FormProvideKey, PageProvideProxy, PageProvideKey
 } from "@geelato/gl-ui";
-import type {Column, TableColumnDataPlus} from "./table";
+import type {Column, GlTableColumn} from "./table";
 import {Schema} from "b-validate";
 import {exchangeArray, logicDeleteFieldName} from "./table";
 import {mixins} from "@geelato/gl-ui";
@@ -50,7 +50,7 @@ const props = defineProps({
    * 展示的列配置
    */
   columns: {
-    type: Array as PropType<TableColumnDataPlus[]>,
+    type: Array as PropType<GlTableColumn[]>,
     default() {
       return [];
     },
@@ -95,12 +95,6 @@ const props = defineProps({
     type: Object as PropType<TableRowSelection>,
     default() {
       return undefined
-    },
-  },
-  size: {
-    type: String,
-    default() {
-      return "medium";
     },
   },
   pagination: {
@@ -219,11 +213,11 @@ const pagination = reactive({
  *  如果启用了多语言，则需要对标题进行翻译
  *  对于一些特殊的列，设置默认值，如ID的宽度
  */
-const columns = computed<TableColumnDataPlus[]>(() => {
-  let columnData: Array<TableColumnDataPlus> = [];
+const columns = computed<GlTableColumn[]>(() => {
+  let columnData: Array<GlTableColumn> = [];
   if (props.columns) {
     columnData = JSON.parse(JSON.stringify(props.columns));
-    columnData.forEach((item: TableColumnDataPlus) => {
+    columnData.forEach((item: GlTableColumn) => {
       // console.log("gl-entity-table > columns item:", item, item.title);
       item.title = item._component?.props?.label ? t(item._component?.props?.label + "") : "";
       // 增加必填标识
@@ -403,7 +397,7 @@ watch(() => columns.value,
 
 // const evalExpression = (data: {
 //   record: TableData;
-//   column: TableColumnDataPlus;
+//   column: GlTableColumn;
 //   rowIndex: number;
 // }) => {
 //   const ctx = {
@@ -502,7 +496,7 @@ const validateTable = () => {
   return {error, resultList}
 }
 
-const updateRow = (record: object, rowIndex: number, columns: TableColumnDataPlus[]) => {
+const updateRow = (record: object, rowIndex: number, columns: GlTableColumn[]) => {
   validateRecord(record, rowIndex)
   emits('updateRow', {record, rowIndex, columns})
 }
@@ -541,8 +535,12 @@ const getRenderColumns = () => {
 
 const isRead = !!pageProvideProxy?.isPageStatusRead()
 
-
+const tableRef = ref()
+const selectAll = (checked: boolean) => {
+  return tableRef.value.selectAll(checked)
+}
 defineExpose({
+  selectAll,
   search,
   popupVisibleChange,
   changeShowColumns,
@@ -557,7 +555,7 @@ defineExpose({
 </script>
 
 <template>
-  <a-table class="gl-entity-table-edit" v-if="refreshFlag" row-key="id"
+  <a-table ref="tableRef" class="gl-entity-table-edit" v-if="refreshFlag" row-key="id"
            :loading="loading"
            :pagination="false"
            :row-selection="rowSelection"
@@ -567,7 +565,6 @@ defineExpose({
            :hoverable="true"
            :stripe="true"
            :column-resizable="columnResizable"
-           :size="size"
            :scroll="scroll"
            @page-change="onPageChange"
            @page-size-change="onPageSizeChange"

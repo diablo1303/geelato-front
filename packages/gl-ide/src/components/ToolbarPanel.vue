@@ -12,7 +12,7 @@
        <span class="gl-item">
          {{ appStore.currentApp.name }}
       </span>
-      <span class="gl-item">
+      <span class="gl-item" v-if="pageStore.currentPage.sourceContent?.componentName" >
         <GlIconfont type="gl-save" text="保存" @click="saveFile"></GlIconfont>
       </span>
       <span class="gl-item" v-if="isLogin()" :disabled="!(pageStore.currentPage && pageStore.currentPage.id)">
@@ -176,7 +176,6 @@ const showProjectList = () => {
 
 const saveFile = () => {
   ideStore.savePage()
-  emitter.emit(EventNames.GlIdeToolbarSaveFile)
 }
 
 const openCodeViewer = () => {

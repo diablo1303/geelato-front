@@ -38,7 +38,7 @@ const freshFlag = ref(true)
  */
 const moveItem = (dragIndex: number, hoverIndex: number, dragItemId: string, dropItemId: string) => {
 
-  console.log(`moveItem() > dragIndex:${dragIndex}, hoverIndex:${hoverIndex}, dragItemId:${dragItemId}, dropItemId:${dropItemId}`, props.glComponentInst.children)
+  // console.log(`moveItem() > dragIndex:${dragIndex}, hoverIndex:${hoverIndex}, dragItemId:${dragItemId}, dropItemId:${dropItemId}`, props.glComponentInst.children)
   // 获取拖动项的上级组件
   const dragItemParentComponent = componentStore.findParentComponentFromTreeById(dragItemId)
   // console.log('findParentComponentFromTreeById，dragItemParentComponent:', dragItemParentComponent)
@@ -54,7 +54,7 @@ const moveItem = (dragIndex: number, hoverIndex: number, dragItemId: string, dro
   let isMoveUpInSameList = undefined
   if (isMoveInSameList) {
     const isValidMove = dragIndex !== hoverIndex && dragIndex - hoverIndex !== -1
-    console.log('moveItem() > ', isValidMove ? '有效拖放' : '无效拖放')
+    // console.log('moveItem() > ', isValidMove ? '有效拖放' : '无效拖放')
     if (!isValidMove) {
       return
     }
@@ -65,7 +65,7 @@ const moveItem = (dragIndex: number, hoverIndex: number, dragItemId: string, dro
       isMoveUpInSameList = true
     }
   }
-  console.log('moveItem() > isMoveInSameList:', isMoveInSameList)
+  // console.log('moveItem() > isMoveInSameList:', isMoveInSameList)
 
 
   const dragItem = dragItemParentComponent.children![dragIndex]
@@ -91,7 +91,7 @@ const moveItem = (dragIndex: number, hoverIndex: number, dragItemId: string, dro
 }
 
 const addItem = (hoverIndex: number, item: ComponentInstance) => {
-  console.log('GlInsts > addItem() > hoverIndex:', hoverIndex, 'item:', item)
+  // console.log('GlInsts > addItem() > hoverIndex:', hoverIndex, 'item:', item)
   item.id = utils.gid(componentStore.getAlias(item.componentName) || 'id')
   item.group = componentStore.getComponentGroupName(item.componentName)
   props.glComponentInst.children!.splice(hoverIndex, 0, item)
@@ -122,7 +122,7 @@ const tryRemoveDndPlaceholder = (items?: Array<any>) => {
 
     return item.componentName === GlDndPlaceholderName
   })
-  console.log('foundIndex', foundIndex)
+  // console.log('foundIndex', foundIndex)
   if (foundIndex >= 0) {
     items.splice(foundIndex, 1)
   }

@@ -8,15 +8,16 @@ export default {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import {ref} from "vue";
+import {getCurrentInstance, ref} from "vue";
 import {
   useSystemVarsTreeData,
   functionalFormulaTreeData,
   useComponentInstTreeData
 } from "./varsMeta";
-import {utils} from "@geelato/gl-ui";
+import {useGlobal, utils} from "@geelato/gl-ui";
 import {useConstTreeData, useDictTreeData} from "./enumMeta";
 
+const global = useGlobal()
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: {
@@ -143,9 +144,14 @@ const getKeyPath = (tree: any, key: string): string => {
 
 
 const selectNode = (selectedKeys: any, data: any, treeData: any) => {
-  const path = getKeyPath(treeData, data.node.key)
-  monacoEditor.value.replaceSelectOrInsert(path)
-  // console.log('selectNode:', selectedKeys, 'data:', data, 'path:', path)
+  if (data.node.title === '更多组件实例') {
+    // console.log('selectNode:', selectedKeys, 'data:', data)
+    global.$notification.info({content:'content'})
+  } else {
+    const path = getKeyPath(treeData, data.node.key)
+    monacoEditor.value.replaceSelectOrInsert(path)
+    // console.log('selectNode:', selectedKeys, 'data:', data, 'path:', path)
+  }
 }
 
 const selectConstNode = async (selectedKeys: any, data: any, treeData: any) => {
@@ -225,13 +231,33 @@ const selectDictItem = (key: any) => {
           </div>
         </div>
         <div style="flex: 1;min-width: 420px;max-height: 600px;overflow-y: auto">
-          <a-collapse size="small" :default-active-key="['1']" :bordered="false">
+          <a-collapse size="small" :default-active-key="['5']" :bordered="false">
             <a-collapse-item header="系统变量" key="1">
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_systemVarsTreeData"
                       @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_systemVarsTreeData)">
                 <template #title="{_code,title}">
                   <span>{{ _code }}<span class="gl-title">{{ title }}</span></span>
+                </template>
+                <template #extra="{_type}">
+                  <span class="gl-extra">{{ _type }}</span>
+                </template>
+              </a-tree>
+            </a-collapse-item>
+            <a-collapse-item header="组件实例变量" key="5">
+              <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
+                      :data="_componentInstTreeData"
+                      @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_componentInstTreeData)">
+                <template #title="{_code,title,_value,_description}">
+                  <a-tooltip background-color="#165DFF">
+                    <template #content>
+                      {{ _description }}
+                    </template>
+                    <span>{{ _code }}
+                      <!--  title和_code相同，则只显示_code -->
+                    <span class="gl-title" style="margin-left: 0!important;">{{ title === _code ? '' : title }}</span>
+                  </span>
+                  </a-tooltip>
                 </template>
                 <template #extra="{_type}">
                   <span class="gl-extra">{{ _type }}</span>
@@ -308,26 +334,7 @@ const selectDictItem = (key: any) => {
                 </template>
               </a-tree>
             </a-collapse-item>
-            <a-collapse-item header="组件实例变量" key="5">
-              <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
-                      :data="_componentInstTreeData"
-                      @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_componentInstTreeData)">
-                <template #title="{_code,title,_value,_description}">
-                  <a-tooltip background-color="#165DFF">
-                    <template #content>
-                      {{ _description }}
-                    </template>
-                    <span>{{ _code }}
-                      <!--  title和_code相同，则只显示_code -->
-                    <span class="gl-title" style="margin-left: 0!important;">{{ title === _code ? '' : title }}</span>
-                  </span>
-                  </a-tooltip>
-                </template>
-                <template #extra="{_type}">
-                  <span class="gl-extra">{{ _type }}</span>
-                </template>
-              </a-tree>
-            </a-collapse-item>
+
             <a-collapse-item header="函数公式" key="6">
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_functionalFormulaTreeData"

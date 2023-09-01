@@ -61,8 +61,20 @@ const props = {
         }
     }
 }
+const subFormProps = {
+    /**
+     *  是否作为子表单
+     */
+    isSubForm: Boolean,
+
+    /**
+     *  如果作为子表单，那本表单中哪个字段指向父表单的id
+     */
+    subFormPidName: String,
+}
 export default {
-    props: props
+    props: props,
+    subFormProps:subFormProps
 }
 
 
