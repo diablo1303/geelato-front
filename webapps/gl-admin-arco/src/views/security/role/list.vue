@@ -9,12 +9,12 @@
           </a-col>
           <a-col :span="8">
             <a-form-item :label="$t('security.role.index.form.name')" field="name">
-              <a-input v-model="filterData.name" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.name" allow-clear @clear="conditions($event)" @press-enter="conditions($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="8">
             <a-form-item :label="$t('security.role.index.form.code')" field="code">
-              <a-input v-model="filterData.code" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.code" allow-clear @clear="conditions($event)" @press-enter="conditions($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="8">
@@ -42,7 +42,7 @@
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
       <a-space :size="18" direction="vertical">
-        <a-button type="primary" @click="search($event)">
+        <a-button type="primary" @click="conditions($event)">
           <template #icon>
             <icon-search/>
           </template>
@@ -172,7 +172,7 @@ import {useRoute} from "vue-router";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
-const pageData = ref({current: 1, pageSize: 10, formState: 'edit'});
+const pageData = ref({current: 1, pageSize: 8, formState: 'edit'});
 const roleFormRef = ref(null);
 const roleDrawerRef = ref(null);
 const roleTabFormRef = ref(null);
@@ -217,6 +217,14 @@ const fetchData = async (params: PageQueryRequest = {current: pageData.value.cur
  */
 const search = (ev?: Event) => {
   fetchData({...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
+};
+/**
+ * 条件查询
+ * @param ev
+ */
+const conditions = (ev?: Event) => {
+  basePagination.current = pageData.value.current;
+  search();
 };
 /**
  * 条件查询 - 重置

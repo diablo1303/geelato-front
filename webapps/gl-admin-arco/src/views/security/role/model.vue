@@ -26,6 +26,28 @@
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
+            :label="$t('security.role.index.form.type')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            field="type">
+          <a-select v-if="pageData.button" v-model="formData.type" @change="typeChange">
+            <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+          </a-select>
+          <span v-else>{{ $t(`security.role.index.form.type.${formData.type}`) }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="24/pageData.formCol">
+        <a-form-item
+            :label="$t('security.roleApp.index.form.appName')"
+            :rules="[{required: ['app'].includes(formData.type),message: $t('security.form.rules.match.required')}]"
+            field="appId">
+          <a-select
+              v-if="pageData.button&&['app'].includes(formData.type)" v-model="formData.appId" :field-names="{value: 'id', label: 'name'}"
+              :options="selectOptions" allow-search/>
+          <span v-else>{{ formData.appName }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="24/pageData.formCol">
+        <a-form-item
             :label="$t('security.role.index.form.enableStatus')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="enableStatus">
@@ -33,17 +55,6 @@
             <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`security.role.index.form.enableStatus.${formData.enableStatus}`) }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('security.role.index.form.type')"
-            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-            field="type">
-          <a-select v-if="pageData.button" v-model="formData.type">
-            <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-          </a-select>
-          <span v-else>{{ $t(`security.role.index.form.type.${formData.type}`) }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
@@ -75,7 +86,15 @@
 import {ref} from "vue";
 import {useI18n} from 'vue-i18n';
 import {Modal} from "@arco-design/web-vue";
-import {createOrUpdateRole as createOrUpdateForm, getRole as getForm, QueryRoleForm as QueryForm, validateRoleCode} from '@/api/security';
+import {
+  createOrUpdateRole as createOrUpdateForm,
+  getRole as getForm,
+  QueryAppForm,
+  QueryAppForm as QuerySelectForm,
+  queryApps as querySelectOptions,
+  QueryRoleForm as QueryForm,
+  validateRoleCode
+} from '@/api/security';
 import {ListUrlParams} from '@/api/base';
 import {enableStatusOptions, typeOptions} from "@/views/security/role/searchTable";
 import {FormInstance} from "@arco-design/web-vue/es/form";
@@ -91,19 +110,35 @@ const generateFormData = (): QueryForm => {
     id: '',
     name: '',
     code: '',
-    type: '',
+    type: 'app',
     enableStatus: 1,
     seqNo: 999,
     description: '',
     tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: '',
+    appName: ''
   };
 }
 const formData = ref(generateFormData());
+const selectOptions = ref<QuerySelectForm[]>([]);
+
+const getSelectOptions = async () => {
+  try {
+    const {data} = await querySelectOptions({
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+    } as unknown as QueryAppForm);
+    selectOptions.value = data || [];
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
 
 const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
+      params.appId = ["app"].includes(params.type) ? params.appId : '';
       const {data} = await createOrUpdateForm(params);
       successBack(data);
     } catch (err) {
@@ -140,9 +175,15 @@ const validateCode = async (value: any, callback: any) => {
     console.log(err);
   }
 }
+const typeChange = () => {
+  formData.value.appId = '';
+  formData.value.appName = '';
+}
 
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {
+  // 组织加载
+  getSelectOptions();
   // 全局
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');

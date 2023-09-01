@@ -304,7 +304,7 @@ export default {
   // webapps/gl-admin-arco/src/views/security/role/app
   'security.role.index.menu.list': '应用管理',
   'security.role.index.menu.list.searchTable': '角色管理',
-  'security.role.form.tab.title.one': '用户基本信息',
+  'security.role.form.tab.title.one': '角色基本信息',
   'security.role.form.tab.title.two': '角色应用关联',
   'security.role.form.tab.title.three': '角色权限关联',
   'security.role.form.tab.title.four': '角色菜单关联',

@@ -416,6 +416,8 @@ export interface QueryRoleForm {
   seqNo: number;
   description: string;
   tenantCode: string;
+  appId: string;
+  appName?: string;
 }
 
 export interface FilterRoleForm {
