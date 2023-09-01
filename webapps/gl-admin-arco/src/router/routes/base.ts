@@ -40,7 +40,7 @@ export const APP_PAGE_MAIN: RouteRecordRaw = {
   },
   children: [
     {
-      path: 'preview/:pageId',
+      path: ':pageId',
       name: 'page',
       component: () => import('@/views/page/PageRuntime.vue'),
       meta: {

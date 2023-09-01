@@ -40,7 +40,7 @@ export const currentPage = () => {
       if (url.pathname.endsWith('/page/') || url.pathname.endsWith('/page')) {
         IS_DATA_PAGE.value = true;
       }
-      const routerPaths = getRouter(modules, ['/login', '/page', '/page/preview']);
+      const routerPaths = getRouter(modules, ['/login', '/page', '/page/id']);
       // eslint-disable-next-line no-restricted-syntax
       for (const item of routerPaths) {
         if (url.pathname.indexOf(item) !== -1) {
@@ -136,7 +136,7 @@ const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryM
           } as unknown as RouteRecordNormalized);
         } else if (["formPage", "listPage", "freePage"].includes(item.type)) {
           data.children?.push({
-            path: `preview/:pageId`,
+            path: `:pageId`,
             name: `${item.id}`,
             component: () => import('@/views/page/PageRuntime.vue'),
             meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: item.seqNo},
@@ -192,7 +192,7 @@ export const formatAppModules = async (result: RouteRecordNormalized[]) => {
         DEFAULT_ROUTE.params = result[0].children[0].params;
         if (IS_DATA_PAGE.value) {
           // @ts-ignore
-          const url1 = `preview/${DEFAULT_ROUTE.params.pageId}`;
+          const url1 = `${DEFAULT_ROUTE.params.pageId}`;
           const url2 = window.location.href.endsWith('/page') ? '/' : '';
           window.location.assign(window.location.href + url2 + url1);
         }
