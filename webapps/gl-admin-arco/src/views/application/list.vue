@@ -168,6 +168,7 @@
               <a-doption>
                 <a-button :disabled="![1].includes(record.applyStatus)" size="small" type="text" @click="enterTable(record,'index')">
                   {{ $t('application.app.list.operations.enter.index') }}
+                  {{ [1].includes(record.applyStatus) ? "" : '(' + $t('application.app.list.status.0') + ')' }}
                 </a-button>
               </a-doption>
               <!--              <a-doption>
@@ -178,6 +179,7 @@
               <a-doption>
                 <a-button :disabled="![1].includes(record.designStatus)" size="small" type="text" @click="enterTable(record,'design')">
                   {{ $t('application.app.list.operations.enter.design') }}
+                  {{ [1].includes(record.designStatus) ? "" : '(' + $t('application.app.list.status.0') + ')' }}
                 </a-button>
               </a-doption>
             </template>
