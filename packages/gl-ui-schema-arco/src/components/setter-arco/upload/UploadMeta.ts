@@ -2,6 +2,7 @@ export default {
     "componentName": "GlUpload",
     "displayMode": "tile",
     "iconType": "gl-upload",
+    "group": "dataEntry",
     "title": "上传",
     "alias": "upload",
     "useBy": ["freePage"],

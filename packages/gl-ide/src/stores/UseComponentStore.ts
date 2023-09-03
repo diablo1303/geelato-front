@@ -25,6 +25,11 @@ const convertId = (id: string) => {
     return utils.gid(prefix)
 }
 
+/**
+ * 递归创建idMap
+ * @param inst
+ * @param idMap
+ */
 const genIdMap = (inst: ComponentInstance, idMap: { [key: string]: string }) => {
     if (inst.id) {
         idMap[inst.id] = convertId(inst.id)

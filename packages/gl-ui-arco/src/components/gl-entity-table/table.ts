@@ -357,7 +357,6 @@ export const createEntityReader = (props: {
  */
 export const useFetchData = (props: EntityFetchDataProps, queryColumns: Ref<GlTableColumn[]>, pagination: Ref<any>, getPid?: Function, success?: Function) => {
     return (simpleReaderInfo?: EntityFetchDataInfo) => {
-        // resetDeleteDataWhenEnableEdit()
         // 绑定了有效的实体才发起查询
         // 作为子表时，必须指定子表外键，即对应主表ID的字段
         if (!props.entityName || (props.isSubForm && !props.subFormPidName)) {

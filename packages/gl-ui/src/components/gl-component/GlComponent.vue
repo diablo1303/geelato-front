@@ -185,7 +185,7 @@ executePropsExpressions(props.glComponentInst, {
 })
 
 
-console.log('props.glCtx', props.glCtx, props.glComponentInst.props?.label, '_hidden', props.glComponentInst.props?._hidden)
+// console.log('props.glCtx', props.glCtx, props.glComponentInst.props?.label, '_hidden', props.glComponentInst.props?._hidden)
 
 const isShow = computed(() => {
   return props.glComponentInst.props?._hidden

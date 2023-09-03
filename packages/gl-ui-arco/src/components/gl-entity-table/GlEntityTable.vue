@@ -204,16 +204,18 @@ const selectAll = (checked: boolean) => {
   return tableRef.value.selectAll(checked)
 }
 
+let lastEntityReaderParams: Array<EntityReaderParam>;
 const search = (entityReaderParams: Array<EntityReaderParam>) => {
   // console.log('search entityReaderParams:', entityReaderParams)
+  lastEntityReaderParams = entityReaderParams
   fetchData({params: entityReaderParams});
 };
 const onPageChange = (pageNo: number) => {
-  fetchData({pageNo});
+  fetchData({pageNo, params: lastEntityReaderParams});
 };
 
 const onPageSizeChange = (pageSize: number) => {
-  fetchData({pageSize})
+  fetchData({pageSize, params: lastEntityReaderParams})
 }
 
 /**
@@ -304,7 +306,8 @@ defineExpose({
       <a-space v-if="record" :size="0" class="gl-entity-table-cols-opt">
         <template v-for="(columnAction,index) in copyColumnActions()" :key="rowIndex+'_'+index">
           <!--          showAction({record, action:columnAction, rowIndex}, pageProvideProxy!)-->
-          <GlComponent v-show="columnAction.props?._hidden !== true&&columnAction.componentName!=='GlHiddenArea'" :glComponentInst="columnAction" :glCtx="{record,rowIndex}"></GlComponent>
+          <GlComponent v-show="columnAction.props?._hidden !== true&&columnAction.componentName!=='GlHiddenArea'"
+                       :glComponentInst="columnAction" :glCtx="{record,rowIndex}"></GlComponent>
         </template>
       </a-space>
     </template>

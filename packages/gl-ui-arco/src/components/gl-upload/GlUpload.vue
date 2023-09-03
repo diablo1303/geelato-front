@@ -21,10 +21,11 @@ const props = defineProps({
   acceptArray: Array
 })
 const mv = ref(props.modelValue)
+
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
-
+console.log('GlUpload props.modelValue:', props.modelValue)
 // 转成字符串格式，并去掉空项
 const accept = ref(props.acceptArray && JSON.stringify(props.acceptArray?.filter((acceptItem) => {
   return !acceptItem
@@ -118,10 +119,15 @@ const loadFiles = () => {
     console.log('getAttachmentByIds() > fileList:', fileList.value);
   });
 }
+
 // 初始化，加载文件
-onMounted(() => {
+watch(() => {
+  return props.modelValue
+}, () => {
+  mv.value = props.modelValue
   loadFiles()
-})
+},{immediate:true})
+
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const isRead = pageProvideProxy.isPageStatusRead()
