@@ -5,7 +5,7 @@ export default {
     "group": "block_page",
     "title": "调用组件方法",
     "useBy": ["freePage"],
-    "blockContent": "调用组件的方法,组件为:${componentId}，方法名为:${methodName}",
+    "blockContent": "调用组件的方法,组件为:${componentId}，方法名为:${methodName}，结果返回到变量:${resultVar}",
     "properties": [{
         "name": "appId",
         "setterComponentProps": {},

@@ -104,7 +104,7 @@ const checkValidDataEntry = (componentName: string) => {
  * 在保存构建时，需要调用子表单的构建方法buildFieldItems,设置各子表单项的值
  */
 const buildFieldItems = () => {
-  console.log('buildFieldItems ', props.bindEntity.entityName)
+  // console.log('buildFieldItems ', props.bindEntity.entityName)
   formItems.value.length = 0
   subFormInstIds.value.length = 0
 
@@ -292,13 +292,13 @@ const checkBindEntity = () => {
   // 检查实体
   if (!props.bindEntity || !props.bindEntity.entityName) {
     const title = `表单${props.glComponentInst?.id}未绑定实体`
+    console.error(title, props.glComponentInst)
     global.$notification.error({
       duration: 8000,
       title: title,
       content: '请在设计器中选择表单组件，右边的属性面板选择实体进行绑定。',
       closable: true
     })
-    console.error(title, props.glComponentInst)
     return false
   }
   // 检查字段
@@ -431,9 +431,9 @@ const getValue = async () => {
   // 再进一步进行表单数据项值校验
   const validateResult = await formRef.value?.validate();
   if (!validateResult) {
-    return formData.value
+    return {id:entityRecordId.value,...formData.value}
   } else {
-    return {}
+    return {id:entityRecordId.value}
   }
 }
 
