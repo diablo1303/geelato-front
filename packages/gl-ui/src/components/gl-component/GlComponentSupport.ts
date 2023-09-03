@@ -67,6 +67,12 @@ export function executeObjectPropsExpressions(obj: any, ctx: object) {
     }
 }
 
+export function executeArrayExpressions(ary: object[], ctx: object) {
+    ary?.forEach((item) => {
+        executeObjectPropsExpressions(item, ctx)
+    })
+}
+
 
 /**
  * 运行属性表达式
@@ -78,4 +84,5 @@ export const executePropsExpressions = (glComponentInst: any, ctx: Ctx) => {
     // console.log('executePropsExpressions() > ctx:', glComponentInst.componentName, glComponentInst.props.label, ctx)
     executeInstPropsExpressions(glComponentInst, ctx)
     executeObjectPropsExpressions(glComponentInst.props, ctx)
+    // console.log('_hidden',glComponentInst.props._hidden)
 }

@@ -72,8 +72,8 @@ export default class PageProvideProxy {
     pageVueInst: ComponentInternalInstance | null
     pageParams: Array<Param> = []
     pageCtx: object = {}
-    vueInstMap: { [key: string]: ComponentInternalInstance | null } = {}
-    componentInsts: { [key: string]: ComponentInstance } = {}
+    vueRefMap: { [key: string]: ComponentInternalInstance | null } = {}
+    componentInstMap: { [key: string]: ComponentInstance } = {}
     unMountedIds: { [key: string]: boolean } = {}
     onPageMountedEvents: { id: string, fn: Function }[] = []
 
@@ -124,15 +124,15 @@ export default class PageProvideProxy {
      * 页面内子组件引用（在组件mounted之后执行）
      * 同时计算有多少组件还未mounted，记录在unMountedIds
      * @param componentId
-     * @param vueInst vue实组件实例，这里的vueInst为GlComponent动态组件实例，需再进一步通过refs[componentId]获取最终的实例
+     * @param vueRef vue实组件实例，这里的vueRef为GlComponent动态组件实例，需再进一步通过refs[componentId]获取最终的实例
      */
-    setVueInst(componentId: string, vueInst: ComponentInternalInstance | null) {
-        if (componentId && vueInst) {
-            // console.log('setVueInst(),componentId:', componentId, ',vueInst:', vueInst, vueInst.props.glComponentInst)
-            this.vueInstMap[componentId] = vueInst
-            this.componentInsts[componentId] = vueInst.props.glComponentInst as ComponentInstance
+    setVueRef(componentId: string, vueRef: ComponentInternalInstance | null) {
+        if (componentId && vueRef) {
+            // console.log('setVueRef(),componentId:', componentId, ',vueRef:', vueRef, vueRef.props.glComponentInst)
+            this.vueRefMap[componentId] = vueRef
+            this.componentInstMap[componentId] = vueRef.props.glComponentInst as ComponentInstance
 
-            // vueInst.subTree.component?.exposed
+            // vueRef.subTree.component?.exposed
 
             // 由于动态组件的的onMounted事件次序中，父组件不是最后一个触发，这个自行实现
             if (this.unMountedIds[componentId]) {
@@ -151,8 +151,8 @@ export default class PageProvideProxy {
 
     removeVueInst(componentId: string) {
         if (componentId) {
-            delete this.vueInstMap[componentId]
-            delete this.componentInsts[componentId]
+            delete this.vueRefMap[componentId]
+            delete this.componentInstMap[componentId]
         }
     }
 
@@ -160,19 +160,26 @@ export default class PageProvideProxy {
      * 基于组件获取页面内的vue组件实例
      * @param componentId
      */
-    getVueInst(componentId: string) {
+    getRef(componentId: string) {
         if (componentId) {
-            // console.log('getVueInst() > vueInstMap:', this.vueInstMap)
-            return this.vueInstMap[componentId]
+            // console.log('getRef() > vueRefMap:', this.vueRefMap)
+            return this.vueRefMap[componentId]
         }
         return null
+    }
+
+    /**
+     *  基于组件获取页面内的vue组件实例
+     */
+    getRefs(): { [key: string]: ComponentInternalInstance | null } {
+        return this.vueRefMap
     }
 
     /**
      *  获取当前页面在下所有的组件配置实例
      */
     getInsts(): { [key: string]: ComponentInstance } {
-        return this.componentInsts
+        return this.componentInstMap
     }
 
     /**
@@ -276,9 +283,9 @@ export default class PageProvideProxy {
      * @param value
      */
     setComponentValue(componentId: string, value: any) {
-        // console.log('setComponentValue', componentId, value, this.pageInst, this.vueInstMap)
-        const vueInst = this.getVueInst(componentId)
-        const proxy = vueInst?.proxy
+        // console.log('setComponentValue', componentId, value, this.pageInst, this.vueRefMap)
+        const vueRef = this.getRef(componentId)
+        const proxy = vueRef?.proxy
         if (proxy) {
             // @ts-ignore
             proxy.glComponentInst.value = value
@@ -291,8 +298,8 @@ export default class PageProvideProxy {
      * @param componentId
      */
     getComponentInst(componentId: string) {
-        const vueInst = this.getVueInst(componentId)
-        const proxy = vueInst?.proxy
+        const vueRef = this.getRef(componentId)
+        const proxy = vueRef?.proxy
         if (proxy) {
             // @ts-ignore
             return proxy.glComponentInst
@@ -314,10 +321,10 @@ export default class PageProvideProxy {
      * @param props 按一个个的属性值进行设置
      */
     setComponentProps(componentId: string, props: { [key: string]: any }) {
-        const vueInst = this.getVueInst(componentId)
-        // console.log('setComponentProps() > vueInst:', vueInst, 'props:', props)
+        const vueRef = this.getRef(componentId)
+        // console.log('setComponentProps() > vueRef:', vueRef, 'props:', props)
         // @ts-ignore
-        const vueProps = vueInst?.props?.glComponentInst?.props
+        const vueProps = vueRef?.props?.glComponentInst?.props
         if (vueProps) {
             Object.assign(vueProps, props)
             return vueProps
@@ -330,9 +337,9 @@ export default class PageProvideProxy {
      * @param componentId
      */
     getComponentProps(componentId: string) {
-        const vueInst = this.getVueInst(componentId)
+        const vueRef = this.getRef(componentId)
         // @ts-ignore
-        return vueInst?.props?.glComponentInst?.props
+        return vueRef?.props?.glComponentInst?.props
     }
 
     /**
@@ -341,11 +348,11 @@ export default class PageProvideProxy {
      * @param methodName
      */
     getMethod(componentId: string, methodName: string): Function | null {
-        const vueInst = this.getVueInst(componentId)
+        const vueRef = this.getRef(componentId)
         // @ts-ignore
-        // console.log('PageProvideProxy > getMethod() > componentName:', vueInst?.props?.glComponentInst?.componentName, 'methodName:', methodName, 'componentId:', componentId, 'vueInst:', vueInst, 'pageProxy', this)
-        // GlPage组件的exposed通过vueInst?.exposed 取得，其它的通过vueInst?.subTree?.component?.exposed取得
-        let fn = vueInst?.subTree?.component?.exposed![methodName] || vueInst?.exposed![methodName]
+        // console.log('PageProvideProxy > getMethod() > componentName:', vueRef?.props?.glComponentInst?.componentName, 'methodName:', methodName, 'componentId:', componentId, 'vueRef:', vueRef, 'pageProxy', this)
+        // GlPage组件的exposed通过vueRef?.exposed 取得，其它的通过vueRef?.subTree?.component?.exposed取得
+        let fn = vueRef?.subTree?.component?.exposed![methodName] || vueRef?.exposed![methodName]
         if (fn) {
             return fn
         }

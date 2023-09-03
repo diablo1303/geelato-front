@@ -1,22 +1,23 @@
 <!--glComponentInst.componentName!=='GlHiddenArea'提高安全性，降低通过修改组件的_hidden属性来显示内容的风险-->
 <template>
-  <component v-if="glComponentInst&&glComponentInst.componentName&&glComponentInst.props.unRender!==true"
-             v-show="glComponentInst.props._hidden!==true&&glComponentInst.componentName!=='GlHiddenArea'"
-             :id="glComponentInst.id"
-             :ref="glComponentInst.id"
-             class="gl-component"
-             :is="glComponentInst.componentName"
-             v-model="mv"
-             :userId="glComponentInst.componentName"
-             v-bind="glComponentInst.propsWrapper?{[glComponentInst.propsWrapper]:glComponentInst.props}:glComponentInst.props"
-             :style="glComponentInst.style"
-             :parentId="glComponentInst.id"
-             :glChildren="glComponentInst.children"
-             :glIsRuntime="glIsRuntime"
-             :glRuntimeFlag="glRuntimeFlag"
-             :glIndex="glIndex"
-             :glComponentInst="glComponentInst"
-             v-on="onActionsHandler"
+  <component
+      v-if="glComponentInst&&glComponentInst.componentName&&glComponentInst.props.unRender!==true"
+      v-show="glComponentInst.props?._hidden !== true&&glComponentInst.componentName!=='GlHiddenArea'"
+      :id="glComponentInst.id"
+      :ref="glComponentInst.id"
+      class="gl-component"
+      :is="glComponentInst.componentName"
+      v-model="mv"
+      :userId="glComponentInst.componentName"
+      v-bind="glComponentInst.propsWrapper?{[glComponentInst.propsWrapper]:glComponentInst.props}:glComponentInst.props"
+      :style="glComponentInst.style"
+      :parentId="glComponentInst.id"
+      :glChildren="glComponentInst.children"
+      :glIsRuntime="glIsRuntime"
+      :glRuntimeFlag="glRuntimeFlag"
+      :glIndex="glIndex"
+      :glComponentInst="glComponentInst"
+      v-on="onActionsHandler"
   >
     <template v-for="(slotItem,slotName) in glComponentInst.slots" v-slot:[slotName]>
       <component v-if="slotItem.propsTarget==='v-bind'" :is="slotItem.componentName" v-bind="slotItem.props"
@@ -41,12 +42,13 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {getCurrentInstance, inject, nextTick, ref, watch} from 'vue'
+import {computed, getCurrentInstance, inject, nextTick, ref, watch} from 'vue'
 import mixins from "../mixins";
 import jsScriptExecutor from "../../m/actions/JsScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
 import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
 import {executePropsExpressions} from "./GlComponentSupport";
+
 
 const emits = defineEmits(['update:modelValue', 'update', 'onAction', 'onComponentClick', 'onValueChange'])
 
@@ -59,8 +61,8 @@ const props = defineProps({
 
 const pageProvideProxy: PageProvideProxy | undefined = props.glIgnoreInjectPageProxy ? undefined : inject(PageProvideKey)!
 
-// console.log('GlComponent > setVueInst >', props.glComponentInst.componentName, props.glComponentInst.id, getCurrentInstance(), pageProvideProxy)
-pageProvideProxy?.setVueInst(props.glComponentInst.id, getCurrentInstance())
+// console.log('GlComponent > setVueRef >', props.glComponentInst.componentName, props.glComponentInst.id, getCurrentInstance(), pageProvideProxy)
+pageProvideProxy?.setVueRef(props.glComponentInst.id, getCurrentInstance())
 
 const refreshFlag = ref(true)
 
@@ -122,80 +124,6 @@ const onValueChange = (...args: any) => {
   doAction('onValueChange', args)
 }
 
-// /**
-//  *   运行属性表达式
-//  *   依据propsExpression设置的各属值的值表达式，计算出值，并合设置到props中，覆盖props中相应属性的值
-//  */
-// const executePropsExpressions = () => {
-//   //
-//
-//   function executeInstPropsExpressions(inst: ComponentInstance) {
-//     if (inst.propsExpressions) {
-//       Object.keys(inst.propsExpressions).forEach((key: string) => {
-//         // @ts-ignore
-//         const propsExpression = inst.propsExpressions[key]
-//         if (propsExpression) {
-//           if (key === '_valueExpression') {
-//             // 组件值
-//             inst.value = jsScriptExecutor.evalExpression(propsExpression, {
-//               pageProxy: pageProvideProxy,
-//               ...props.glCtx
-//             })
-//           } else {
-//             // 属性值
-//             inst.props[key] = jsScriptExecutor.evalExpression(propsExpression, {
-//               pageProxy: pageProvideProxy,
-//               ...props.glCtx
-//             })
-//             // console.log(inst.props.label, key, inst.props[key], propsExpression)
-//           }
-//         }
-//       })
-//     }
-//   }
-//
-//   executeInstPropsExpressions(props.glComponentInst)
-//
-//   // 对于对象型属性进行转换，如GlEntityTable的{base:{xx:yy,xx2:yy2}}
-//   function executeObjectPropsExpressions(obj: any) {
-//     // @ts-ignore
-//     if (typeof obj === 'object') {
-//       if (obj.length !== undefined) {
-//         // array
-//         for (const objKey in obj) {
-//           executeObjectPropsExpressions(obj[objKey])
-//         }
-//       } else {
-//         // 对象中有组件
-//         if (obj.componentName) {
-//           executeInstPropsExpressions(obj)
-//         }
-//
-//         // object
-//         if (obj._propsExpressions) {
-//           Object.keys(obj._propsExpressions).forEach((key: string) => {
-//             const expression = obj._propsExpressions[key]
-//             if (expression) {
-//               obj[key] = jsScriptExecutor.evalExpression(expression, {
-//                 pageProxy: pageProvideProxy,
-//                 ...props.glCtx
-//               })
-//             }
-//           })
-//         }
-//
-//         // 处理对象的子级
-//         for (const objKey in obj) {
-//           executeObjectPropsExpressions(obj[objKey])
-//         }
-//       }
-//     }
-//   }
-//
-//   executeObjectPropsExpressions(props.glComponentInst.props)
-// }
-
-
 const onMouseOver = (...args: any[]) => {
   for (let i in args) {
     let event = args[i]
@@ -251,11 +179,18 @@ watch(() => {
   })
 })
 
-
 executePropsExpressions(props.glComponentInst, {
   pageProxy: pageProvideProxy,
   ...props.glCtx
 })
+
+
+console.log('props.glCtx', props.glCtx, props.glComponentInst.props?.label, '_hidden', props.glComponentInst.props?._hidden)
+
+const isShow = computed(() => {
+  return props.glComponentInst.props?._hidden
+})
+
 defineExpose({onMouseLeave, onMouseOver})
 
 </script>

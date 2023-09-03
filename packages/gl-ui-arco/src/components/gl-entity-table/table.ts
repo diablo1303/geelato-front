@@ -1,5 +1,11 @@
 import type {TableColumnData, TableData} from "@arco-design/web-vue";
-import {entityApi, EntityReader, EntityReaderParam, executeObjectPropsExpressions, utils} from "@geelato/gl-ui";
+import {
+    entityApi,
+    EntityReader,
+    EntityReaderParam,
+    executeObjectPropsExpressions,
+    utils
+} from "@geelato/gl-ui";
 import {FieldMeta, jsScriptExecutor, PageProvideProxy} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import cloneDeep from "lodash/cloneDeep";
@@ -117,6 +123,28 @@ export const evalExpression = (data: {
     return jsScriptExecutor.evalExpression(ctx.column._renderScript, ctx);
 };
 
+export const showAction = (data: {
+    record: TableData;
+    action: ComponentInstance;
+    rowIndex: number;
+}, pageProvideProxy: PageProvideProxy) => {
+    // 有配置了显示隐藏的才做转换
+    if (data.action.propsExpressions?._hidden || data.action.propsExpressions?.unRender) {
+        const actionCopy = JSON.parse(JSON.stringify(toRaw(data.action)))
+        const ctx = {
+            pageProxy: pageProvideProxy,
+            record: toRaw(data.record),
+            action: actionCopy,
+            rowIndex: toRaw(data.rowIndex),
+        };
+        executeObjectPropsExpressions(actionCopy, ctx)
+        console.log(data.record.id,data.action.props.label,actionCopy.props.unRender !== true && actionCopy.props._hidden !== true, data.record.recordLock)
+        return actionCopy.props.unRender !== true && actionCopy.props._hidden !== true
+    } else {
+        return data.action.props.unRender !== true && data.action.props._hidden !== true
+    }
+};
+
 
 export const t = (str: any) => {
     return str
@@ -181,7 +209,7 @@ export const genQueryColumns = (props: any, showDataIndexes: string[], hideDataI
     }
     // 设置列可见与不可见，未设置的列不影响
     changeColumnsVisible(qColumns, showDataIndexes, hideDataIndexes)
-    console.log('genQueryColumns props:', props)
+    // console.log('genQueryColumns props:', props)
     // 如果启用了多语言，则需要对标题进行翻译
     if (props.enableI18n) {
         qColumns.forEach((item) => {

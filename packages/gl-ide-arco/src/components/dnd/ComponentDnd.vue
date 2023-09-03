@@ -140,7 +140,7 @@ const onDragLeave = (event: any) => {
 /**
  *  将页面内的子组件通过map进行引用，便于后续基于页面进行组件事件调用
  */
-pageProvideProxy?.setVueInst(props.glComponentInst.id, getCurrentInstance())
+pageProvideProxy?.setVueRef(props.glComponentInst.id, getCurrentInstance())
 
 </script>
 

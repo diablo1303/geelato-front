@@ -1,20 +1,25 @@
 <template>
-    <div>
-      <a-select size="small" v-model="mv.entityName" @change="onEntityChange" allow-search allow-clear placeholder="选择实体">
-        <template #prefix>实体</template>
-        <a-option v-for="item in entityLiteMetas" :value="item.entityName" :title="item.entityName+' '+item.entityTitle"
-                  :class="{'gl-selected':mv.entityName===item.entityName}">
-          {{ item.entityTitle + ' ' + item.entityName }}
-        </a-option>
-      </a-select>
-      <a-select size="small" v-model="mv.fieldName" @change="onFieldChange" allow-search allow-clear placeholder="选择字段">
-        <template #prefix>字段</template>
-        <a-option v-for="item in entityFieldMetas" :value="item.name" :title="item.name+' '+item.title"
-                  :class="{'gl-selected':mv.fieldName===item.name}">
-          <span style="overflow: hidden"> {{ item.title + ' ' + item.name }}</span>
-        </a-option>
-      </a-select>
-    </div>
+  <div class="gl-entity-field-select">
+    <a-select size="small" v-model="mv.entityName" @change="onEntityChange" allow-search allow-clear
+              :class="{'gl-error':!mv.entityName}"
+              placeholder="选择实体">
+      <template #prefix>实体</template>
+      <a-option v-for="item in entityLiteMetas" :value="item.entityName" :title="item.entityName+' '+item.entityTitle"
+                :class="{'gl-selected':mv.entityName===item.entityName}">
+        {{ item.entityTitle + ' ' + item.entityName }}
+      </a-option>
+    </a-select>
+    <a-select size="small" v-model="mv.fieldName" @change="onFieldChange" allow-search allow-clear
+              :class="{'gl-error':!mv.fieldName}"
+              placeholder="选择字段">
+      <template #prefix>字段</template>
+      <a-option v-for="item in entityFieldMetas" :value="item.name" :title="item.name+' '+item.title"
+                :class="{'gl-selected':mv.fieldName===item.name}"
+      >
+        <span style="overflow: hidden"> {{ item.title + ' ' + item.name }}</span>
+      </a-option>
+    </a-select>
+  </div>
 </template>
 
 <script lang="ts">
@@ -130,6 +135,8 @@ const onFieldChange = () => {
 }
 </script>
 
-<style scoped>
-
+<style>
+.gl-entity-field-select .gl-error {
+  background-color: rgba(236, 100, 100, 0.30);
+}
 </style>

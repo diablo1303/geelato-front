@@ -38,7 +38,7 @@ import FormProvideProxy from "./components/FormProvideProxy";
 import {FormProvideKey} from "./components/FormProvideProxy";
 import {Schema} from "b-validate";
 import type {ApiPagedResult, ApiResult, ApiResultStatus, PageType, Param} from "./m/types/global";
-import {executeObjectPropsExpressions} from "./components/gl-component/GlComponentSupport";
+import {executeArrayExpressions, executeObjectPropsExpressions} from "./components/gl-component/GlComponentSupport";
 import {paramStringify} from "./components/PageProvideProxy";
 import * as dictApi from "./m/datasource/FileApi"
 import * as fileApi from "./m/datasource/FileApi"
@@ -120,7 +120,8 @@ export {
     dictApi,
     fileApi,
     encodingApi,
-    executeObjectPropsExpressions
+    executeObjectPropsExpressions,
+    executeArrayExpressions
 }
 // 默认导出组件
 export default component

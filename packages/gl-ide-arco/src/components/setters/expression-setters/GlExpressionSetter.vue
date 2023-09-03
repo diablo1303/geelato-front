@@ -142,14 +142,25 @@ const getKeyPath = (tree: any, key: string): string => {
   }
 }
 
-
 const selectNode = (selectedKeys: any, data: any, treeData: any) => {
-  if (data.node.title === '更多组件实例') {
-    // console.log('selectNode:', selectedKeys, 'data:', data)
-    global.$notification.info({content:'content'})
+  const path = getKeyPath(treeData, data.node.key)
+  monacoEditor.value.replaceSelectOrInsert(path)
+  // console.log('selectNode:', selectedKeys, 'data:', data, 'path:', path)
+}
+
+const selectInstNode = (selectedKeys: any, data: any, treeData: any) => {
+  console.log('selectNode:', selectedKeys, 'data:', data)
+  if (data.node._flag === 'moreInsts') {
+    global.$notification.info({content: '待支持'})
   } else {
     const path = getKeyPath(treeData, data.node.key)
-    monacoEditor.value.replaceSelectOrInsert(path)
+    if (data.node._flag === 'ref') {
+      console.log('xxx',path.replace('methods.', ''))
+      monacoEditor.value.replaceSelectOrInsert(path.replace('methods.', ''))
+    } else {
+      monacoEditor.value.replaceSelectOrInsert(path)
+    }
+
     // console.log('selectNode:', selectedKeys, 'data:', data, 'path:', path)
   }
 }
@@ -244,10 +255,10 @@ const selectDictItem = (key: any) => {
                 </template>
               </a-tree>
             </a-collapse-item>
-            <a-collapse-item header="组件实例变量" key="5">
+            <a-collapse-item header="组件实例" key="5">
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_componentInstTreeData"
-                      @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_componentInstTreeData)">
+                      @select="(selectedKeys:any,data:any)=>selectInstNode(selectedKeys,data,_componentInstTreeData)">
                 <template #title="{_code,title,_value,_description}">
                   <a-tooltip background-color="#165DFF">
                     <template #content>

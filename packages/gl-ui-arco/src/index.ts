@@ -30,8 +30,8 @@ import GlButton from "./components/gl-button/GlButton.vue";
 import GlEntityCascader from "./components/gl-entity-cascader/GlEntityCascader.vue";
 import GlTimeline from "./components/gl-timeline/GlTimeline.vue";
 import GlOpRecord from "./components/gl-op-record/GlOpRecord.vue";
-import  { getFormParams } from "./components/gl-entity-form/GlEntityForm";
-
+import {getFormParams} from "./components/gl-entity-form/GlEntityForm";
+import {getLabel} from "./components/MetaHelper";
 const i18nMessage = {en, cn};
 
 const component: Plugin = {
@@ -84,6 +84,6 @@ const component: Plugin = {
     },
 };
 
-export {i18nMessage,getFormParams};
+export {i18nMessage, getFormParams, getLabel};
 // 默认导出组件
 export default component;

@@ -6,6 +6,12 @@ export class ActionMeta {
     description = '' // 从服务端成功加数据（0到多条）后触发。
 }
 
+export class MethodMeta {
+    name: string = '' //  "fetchSuccess"
+    title: string = ' ' // "成功加载完数据"
+    description = '' // 从服务端成功加数据（0到多条）后触发。
+}
+
 export default class Action {
 
     id?: string;

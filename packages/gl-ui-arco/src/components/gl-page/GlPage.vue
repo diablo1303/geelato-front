@@ -106,7 +106,7 @@ const style = {
 // console.log('GlPage > props.params:', props.params, 'id:', props.glComponentInst.id)
 const pageProvideProxy = new PageProvideProxy(props.glComponentInst, getCurrentInstance()!)
 pageProvideProxy.pageId = props.pageId
-pageProvideProxy.setVueInst(props.glComponentInst.id, getCurrentInstance())
+pageProvideProxy.setVueRef(props.glComponentInst.id, getCurrentInstance())
 pageProvideProxy.setPageStatus(props.pageStatus)
 pageProvideProxy.setParams(props.params)
 const onPageMounted = () => {

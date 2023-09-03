@@ -1,5 +1,20 @@
 import {jsScriptExecutor} from "@geelato/gl-ui";
 import {useComponentStore} from "@geelato/gl-ide";
+import {getLabel} from "@geelato/gl-ui-arco";
+import type {MethodMeta} from "@geelato/gl-ui-schema";
+
+type TreeItem = {
+    title: string,
+    key?: string,
+    _code?: string,
+    _type?: string,
+    _value?: any,
+    _brackets?: string,
+    _description?: string,
+    // 特殊标记，用于在点击节点时进行特殊处理
+    _flag?: string,
+    children?: TreeItem[]
+}
 
 const user = {
     title: '当前用户',
@@ -90,6 +105,7 @@ export const useSystemVarsTreeData = () => {
  *  组件实例
  */
 export const useComponentInstTreeData = () => {
+    const componentStore = useComponentStore()
     const useCtxRecord = () => {
         const record = {
             title: '当前记录',
@@ -98,7 +114,7 @@ export const useComponentInstTreeData = () => {
             _description: '表格的行数据记录',
             children: <any>[]
         }
-        const componentStore = useComponentStore()
+
         if (componentStore.currentSelectedComponentInstance && ['GlEntityTablePlus', 'GlEntityTableSub'].indexOf(componentStore.currentSelectedComponentInstance.componentName) != -1) {
             const columns = componentStore.currentSelectedComponentInstance.props.columns
             if (columns && columns.length > 0) {
@@ -133,33 +149,75 @@ export const useComponentInstTreeData = () => {
     const insts = jsScriptExecutor.getComponentInsts()
 
     const instTreeItem = {
-        title: '当前组件实例集',
+        title: '当前页面组件实例（数据）',
         _code: 'inst',
         _type: 'object',
         children: <any>[],
-        _description: '当前组件的实体集，以组件id为key，通过inst.xxxInstId获取对应的组件'
+        _description: '当前页面组件实例（数据），以组件id为key，通过inst.xxxInstId获取对应的组件'
     }
     if (insts.inst) {
         for (const instKey in insts.inst) {
             if (instKey.indexOf('ph_') !== -1) {
                 continue
             }
-            // @ts-ignore
             const inst = insts.inst[instKey]
+            const instMeta: TreeItem = {
+                title: getLabel(inst), key: inst.id, _code: inst.id,
+                children: [{title: '值', _code: 'value', _description: '组件值', _value: inst.value, _type: 'any', children: []}]
+            }
             // {title: '获取组件实例', _code: 'xxxInstId', _type: 'object'},
-            const propItems = []
+            // props 属性
+            const props = []
             for (const propKey in inst.props) {
-                propItems.push({
+                props.push({
                     title: propKey, _code: propKey, _value: inst.props[propKey]
                 })
             }
-            instTreeItem.children.push({
-                title: inst.props?.label || inst.title, key: inst.id, _code: inst.id,
-                children: [
-                    {title: '值', _code: 'value', _description: '组件值', _value: inst.value},
-                    {title: '属性', _code: 'props', _type: 'object', _description: '组件属性', children: propItems}
-                ]
+            instMeta.children!.push(
+                {title: '属性', _code: 'props', _type: 'object', _description: '组件属性', children: props}
+            )
+
+            instTreeItem.children.push(instMeta)
+        }
+    }
+
+    const refs = jsScriptExecutor.getRefs()
+    const refTreeItem = {
+        title: '当前页面组件引用',
+        _code: 'ref',
+        _type: 'object',
+        children: <any>[],
+        _description: '当前页面组件引用，以组件id为key，通过ref.xxxRefId获取对应的组件对象的引用'
+    }
+    if (refs.ref) {
+        for (const instKey in refs.ref) {
+            if (instKey.indexOf('ph_') !== -1) {
+                continue
+            }
+            // 注意这里是inst不是ref
+            const inst = insts.inst[instKey]
+            const instMeta: TreeItem = {
+                title: getLabel(inst), key: inst.id, _code: inst.id,
+                children: []
+            }
+
+            // methods 方法
+            const methods: any[] = []
+            const meta = componentStore.getComponentMeta(inst.componentName)
+            meta.methods?.forEach((m: MethodMeta) => {
+                methods.push({
+                    title: m.title,
+                    _code: m.name,
+                    _flag: 'ref',
+                    _description: m.description || m.title,
+                    _brackets: '()'
+                })
             })
+            instMeta.children!.push(
+                {title: '方法', _code: 'methods', _type: 'object', _description: '组件方法', children: methods}
+            )
+
+            refTreeItem.children.push(instMeta)
         }
     }
 
@@ -167,7 +225,8 @@ export const useComponentInstTreeData = () => {
         title: '更多组件实例',
         _description: '展示更多的组件实例，这些实例不在当前IDE打开的页面中。',
         key: 'showMoreComponentInsts',
-        _code: 'inst'
+        _code: 'inst',
+        _flag: 'moreInsts'
     }
 
     const fn = {
@@ -200,14 +259,14 @@ export const useComponentInstTreeData = () => {
                 title: '调用组件方法',
                 _code: 'invokeComponentMethod',
                 _type: 'any',
-                _brackets: '("组件ID","方法名",[])',
+                _brackets: '("组件ID","方法名",[{"参数名":参数值}])',
                 _description: '调用组件方法，例如：invokeComponentMethod: (componentId: string, methodName: string, params: Array<Param>)'
             }
         ],
         _description: ''
     }
 
-    return [ctx, instTreeItem, moreInstTree, fn]
+    return [ctx, instTreeItem, refTreeItem, fn, moreInstTree]
 }
 
 

@@ -10,13 +10,13 @@ import {entityApi} from "../datasource/EntityApi";
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 type OptionsType = { [key: string]: any }
 
-// export const getInstMethod = (vueInst: ComponentInternalInstance | null, methodName: string) => {
-//     if (!vueInst) {
+// export const getInstMethod = (ref: ComponentInternalInstance | null, methodName: string) => {
+//     if (!ref) {
 //         return null
 //     }
-//     let exposed = vueInst?.subTree?.component?.exposed
-//     if (!vueInst?.subTree?.component) {
-//         exposed = vueInst?.exposed
+//     let exposed = ref?.subTree?.component?.exposed
+//     if (!ref?.subTree?.component) {
+//         exposed = ref?.exposed
 //     }
 //     return  exposed![methodName]
 // }
@@ -81,47 +81,7 @@ export class JsScriptExecutor {
         // console.log('removePageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap, ids)
     }
 
-    /**
-     * 获取组件配置实例信息
-     * @param componentId
-     */
-    getComponentInst(componentId: string) {
-        if (componentId) {
-            // console.log('pageProxyMap:', pageProxyMap)
-            for (const pageComponentId in pageProxyMap) {
-                const pageProxy = pageProxyMap[pageComponentId]
-                if (pageProxy) {
-                    const inst = pageProxy.getComponentInst(componentId)
-                    // console.log('getComponentInst() by componentId:', componentId, 'get', inst)
-                    if (inst) {
-                        return inst
-                    }
-                }
-            }
-        }
-        console.warn(`通过组件Id(${componentId})获取不到ComponentInstance，很可能是因为此时该组件实例还未创建完成。`)
-        return null
-    }
 
-    /**
-     * 从多个pageProxy中获取vueInst
-     * @param componentId
-     */
-    getVueInst(componentId: string) {
-        if (componentId) {
-            for (const pageComponentId in pageProxyMap) {
-                const pageProxy = pageProxyMap[pageComponentId]
-                if (pageProxy) {
-                    const vueInst = pageProxy.getVueInst(componentId)
-                    if (vueInst) {
-                        return vueInst
-                    }
-                }
-            }
-        }
-        console.warn(`通过组件Id(${componentId})获取不到组件vue实例，很可能是因为此时该组件vue实例还未创建完成。`)
-        return null
-    }
 
     /**
      * 获取组件名称
@@ -138,13 +98,13 @@ export class JsScriptExecutor {
      */
     getComponentMethod(componentId: string, methodName: string) {
         // console.log('getComponentMethod() > pageProxyMap:', pageProxyMap)
-        const vueInst = this.getVueInst(componentId)
-        // 对于GlPage，vueInst?.exposed[methodName]
-        let fn = vueInst?.subTree?.component?.exposed![methodName] || vueInst?.exposed![methodName]
+        const ref = this.getRef(componentId)
+        // 对于GlPage，ref?.exposed[methodName]
+        let fn = ref?.subTree?.component?.exposed![methodName] || ref?.exposed![methodName]
         if (fn) {
             return fn
         }
-        console.warn(`获到不到组件(${componentId})的方法(${methodName})，该组件vue实例为：`, vueInst)
+        console.warn(`获到不到组件(${componentId})的方法(${methodName})，该组件vue实例为：`, ref)
         return null
     }
 
@@ -172,10 +132,10 @@ export class JsScriptExecutor {
         // for (const pageComponentId in pageProxyMap) {
         //     const pageProxy = pageProxyMap[pageComponentId]
         //     if (pageProxy) {
-        //         const vueInst = pageProxy.getVueInst(componentId)
-        //         if (vueInst) {
+        //         const ref = pageProxy.getRef(componentId)
+        //         if (ref) {
         //             // @ts-ignore
-        //             return vueInst?.props?.glComponentInst?.props
+        //             return ref?.props?.glComponentInst?.props
         //         }
         //         continue
         //     }
@@ -233,11 +193,11 @@ export class JsScriptExecutor {
         for (const pageComponentId in pageProxyMap) {
             const pageProxy = pageProxyMap[pageComponentId]
             if (pageProxy) {
-                const vueInst = pageProxy.getVueInst(componentId)
-                // console.log('triggerComponentAction() > componentId:', componentId, 'vueInst:', vueInst, 'pageProxy:', pageProxy)
-                if (vueInst) {
+                const ref = pageProxy.getRef(componentId)
+                // console.log('triggerComponentAction() > componentId:', componentId, 'ref:', ref, 'pageProxy:', pageProxy)
+                if (ref) {
                     // @ts-ignore
-                    const actions = vueInst?.props?.glComponentInst?.actions
+                    const actions = ref?.props?.glComponentInst?.actions
                     for (const actionsKey in actions) {
                         const action = actions[actionsKey]
                         // 按actionName进行触发
@@ -258,8 +218,8 @@ export class JsScriptExecutor {
         for (const pageComponentId in pageProxyMap) {
             const pageProxy = pageProxyMap[pageComponentId]
             if (pageProxy) {
-                const vueInst = pageProxy.getVueInst(componentId)
-                if (vueInst) {
+                const ref = pageProxy.getRef(componentId)
+                if (ref) {
                     return pageProxy.getComponentValue(componentId)
                 }
             }
@@ -404,8 +364,8 @@ export class JsScriptExecutor {
         for (const pageComponentId in pageProxyMap) {
             const pageProxy = pageProxyMap[pageComponentId]
             if (pageProxy) {
-                const vueInst = pageProxy.getVueInst(componentId)
-                if (vueInst) {
+                const ref = pageProxy.getRef(componentId)
+                if (ref) {
                     return pageProxy.setComponentValue(componentId, value)
                 }
             }
@@ -529,6 +489,78 @@ export class JsScriptExecutor {
         return newOptions
     }
 
+
+
+    /**
+     * 从多个pageProxy中获取ref
+     * @param componentId
+     */
+    getRef(componentId: string) {
+        if (componentId) {
+            for (const pageComponentId in pageProxyMap) {
+                const pageProxy = pageProxyMap[pageComponentId]
+                if (pageProxy) {
+                    const ref = pageProxy.getRef(componentId)
+                    if (ref) {
+                        return ref
+                    }
+                }
+            }
+        }
+        console.warn(`通过组件Id(${componentId})获取不到组件vue实例，很可能是因为此时该组件vue实例还未创建完成。`)
+        return null
+    }
+
+    /**
+     *  获取组件实例信息
+     *  提供两种组织方式，inst和insts，对于inst,key为组件id，对于insts的key为页面id
+     */
+    getRefs(): { ref: object, refs: object } {
+        const ref: { [key: string]: any } = {}
+        const refs: { [key: string]: any } = {}
+        for (const pageComponentId in pageProxyMap) {
+            const pageProxy = pageProxyMap[pageComponentId]
+            if (pageProxy) {
+                // console.log('pageProxy.getRefs():', pageProxy.getRefs())
+                for (let refKey in pageProxy.getRefs()) {
+                    // 单页面模式，只留第一次出现的组件
+                    if (ref[refKey]) {
+                        // 如果已存在相同的组件id，应是页面引用了多个相同的页面，进行了页面嵌套
+                        // TODO
+                    } else {
+                        ref[refKey] = pageProxy.getRefs()[refKey]
+                    }
+                    // 多页面并存
+                    if (!refs[pageComponentId]) refs[pageComponentId] = {}
+                    refs[pageComponentId][refKey] = pageProxy.getRefs()[refKey]
+                }
+            }
+        }
+        return {ref, refs}
+    }
+
+    /**
+     * 获取组件配置实例信息
+     * @param componentId
+     */
+    getComponentInst(componentId: string) {
+        if (componentId) {
+            // console.log('pageProxyMap:', pageProxyMap)
+            for (const pageComponentId in pageProxyMap) {
+                const pageProxy = pageProxyMap[pageComponentId]
+                if (pageProxy) {
+                    const inst = pageProxy.getComponentInst(componentId)
+                    // console.log('getComponentInst() by componentId:', componentId, 'get', inst)
+                    if (inst) {
+                        return inst
+                    }
+                }
+            }
+        }
+        console.warn(`通过组件Id(${componentId})获取不到ComponentInstance，很可能是因为此时该组件实例还未创建完成。`)
+        return null
+    }
+
     /**
      *  获取组件实例信息
      *  提供两种组织方式，inst和insts，对于inst,key为组件id，对于insts的key为页面id
@@ -574,10 +606,10 @@ export class JsScriptExecutor {
             ...this.app?.config.globalProperties,
             page: {},
             inst: <{ [key: string]: any }>{},
-            vueInst: <{ [key: string]: any }>{},
+            ref: <{ [key: string]: any }>{},
             // 多页面嵌套场景
             insts: <{ [key: string]: any }>{},
-            vueInsts: <{ [key: string]: any }>{},
+            refs: <{ [key: string]: any }>{},
             ctx: {},
             fn: utils,
             entityApi,
@@ -611,15 +643,15 @@ export class JsScriptExecutor {
                         // TODO
                     } else {
                         $gl.inst[instKey] = pageProxy.getInsts()[instKey]
-                        $gl.vueInst[instKey] = pageProxy.getVueInst(instKey)?.refs[instKey]
+                        $gl.ref[instKey] = pageProxy.getRef(instKey)?.refs[instKey]
                     }
                     // 多页面并存
                     if (!$gl.insts[pageComponentId]) {
                         $gl.insts[pageComponentId] = {}
-                        $gl.vueInsts[pageComponentId] = {}
+                        $gl.refs[pageComponentId] = {}
                     }
                     $gl.insts[pageComponentId][instKey] = pageProxy.getInsts()[instKey]
-                    $gl.vueInsts[pageComponentId][instKey] = pageProxy.getVueInst(instKey)?.refs[instKey]
+                    $gl.refs[pageComponentId][instKey] = pageProxy.getRef(instKey)?.refs[instKey]
                 }
             }
         }

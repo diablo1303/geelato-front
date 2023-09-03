@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // @ts-nocheck
-import {inject, nextTick, type PropType, type Ref, ref, watch} from "vue";
+import {inject, nextTick, onMounted, onUpdated, type PropType, type Ref, ref, watch} from "vue";
 import type {
   TableRowSelection,
   PaginationProps
@@ -24,9 +24,10 @@ import {
   genShowColumns,
   useFetchData,
   genSlotColumnsWithNoOperation,
-  genQueryColumns
+  genQueryColumns, showAction
 } from "./table";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import cloneDeep from "lodash/cloneDeep";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal;
 // fetch 加载完成数据之后
@@ -258,6 +259,19 @@ if (!props.glIsRuntime) {
   }, {deep: true})
 }
 
+const copyColumnActions = () => {
+  // return cloneDeep(props.columnActions)
+  return JSON.parse(JSON.stringify(props.columnActions))
+  // return props.columnActions
+}
+
+// onMounted(()=>{
+//   console.log('onMounted table')
+//
+// })
+// onUpdated(()=>{
+//   console.log('onUpdated table')
+// })
 defineExpose({
   resetColumns,
   search,
@@ -287,12 +301,10 @@ defineExpose({
            @page-size-change="onPageSizeChange"
   >
     <template ##="{ record,rowIndex }">
-      <a-space :size="0" class="gl-entity-table-cols-opt">
-        <template v-for="(columnAction,index) in columnActions" :key="index">
-          <template v-if="columnAction&&record">
-            <GlComponent v-if="columnAction.props.unRender!==true" v-show="columnAction.props._hidden!==true"
-                         :glComponentInst="columnAction" :glCtx="{record,rowIndex}"></GlComponent>
-          </template>
+      <a-space v-if="record" :size="0" class="gl-entity-table-cols-opt">
+        <template v-for="(columnAction,index) in copyColumnActions()" :key="rowIndex+'_'+index">
+          <!--          showAction({record, action:columnAction, rowIndex}, pageProvideProxy!)-->
+          <GlComponent v-show="columnAction.props?._hidden !== true&&columnAction.componentName!=='GlHiddenArea'" :glComponentInst="columnAction" :glCtx="{record,rowIndex}"></GlComponent>
         </template>
       </a-space>
     </template>

@@ -12,7 +12,7 @@ import {PropertySetterBuilderMeta, PropertySetterSelectOption} from "./entity/Pr
 import {ActionSetterMeta} from "./entity/actions/ActionSetterMeta";
 import {MethodSetterMeta} from "./entity/methods/MethodSetterMeta";
 import {schema} from "./components/schema";
-import Action, {ActionMeta} from './entity/actions/Action';
+import Action, {ActionMeta, MethodMeta} from './entity/actions/Action';
 import BlockMetaGroup from './entity/actions/BlockMetaGroup';
 import {useValueTypeOptions, ValueTypes} from './entity/methods/ValueTypes';
 import BindField from './entity/model/BindField';
@@ -42,6 +42,7 @@ export {
     PropertySetterSelectOption,
     Action,
     ActionMeta,
+    MethodMeta,
     BindField
 }
 // 默认导出组件
