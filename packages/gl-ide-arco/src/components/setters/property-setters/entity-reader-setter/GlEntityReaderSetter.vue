@@ -87,6 +87,7 @@
 </template>
 
 <script lang="ts">
+// @ts-nocheck
 import {defineComponent, type PropType} from 'vue'
 import GlOptions from "../../GlOptions.vue";
 import {useEntityStore} from "@geelato/gl-ide";
@@ -133,7 +134,6 @@ export default defineComponent({
   watch: {},
   methods: {
     onEntityChange(entityName: string) {
-      // console.log('onEntityChange', entityName)
       this.entityStore.loadFieldMetas('', entityName)
     },
     onUpdate() {

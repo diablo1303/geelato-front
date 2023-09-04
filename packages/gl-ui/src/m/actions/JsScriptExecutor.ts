@@ -291,7 +291,7 @@ export class JsScriptExecutor {
             invokeComponentMethod: (componentId: string, methodName: string, params: Array<Param>) => {
                 const method = this.getComponentMethod(componentId, methodName)
                 if (method) {
-                    return method(that.evalParams(params, $gl.ctx, $gl))
+                    return method(that.convertParamsToObject(that.evalParams(params, $gl.ctx, $gl)))
                 }
                 // else {
                 //     console.error('调用组件方法失败，找到不方法。componentId:', componentId, 'methodName:', methodName)
@@ -453,6 +453,19 @@ export class JsScriptExecutor {
     }
 
     /**
+     * 数组参数格式转成对象参数格式
+     * 注意参数名不要重复
+     * @param params
+     */
+    convertParamsToObject(params: Array<Param>){
+        const result:Record<string, any> = {}
+        params.forEach((param)=>{
+            result[param.name] = param.value
+        })
+        return result
+    }
+
+    /**
      *
      * @param items
      * @param ctx {pageProxy,...} 上下文中需要传输pageProxy
@@ -565,7 +578,7 @@ export class JsScriptExecutor {
      *  获取组件实例信息
      *  提供两种组织方式，inst和insts，对于inst,key为组件id，对于insts的key为页面id
      */
-    getComponentInsts(): { inst: object, insts: object } {
+    getComponentInsts(): { inst: Record<string, any>, insts: Record<string, any> } {
         const inst: { [key: string]: any } = {}
         const insts: { [key: string]: any } = {}
         for (const pageComponentId in pageProxyMap) {

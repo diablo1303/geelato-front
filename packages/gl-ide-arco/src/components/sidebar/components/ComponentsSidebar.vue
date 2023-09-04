@@ -69,7 +69,7 @@ const ideStore = useIdeStore()
 const componentMaterialStore = useComponentMaterialStore()
 componentMaterialStore.initRegisterComponentMetas()
 const drag = ref(false)
-const chooseIndex = ref(-1)
+// const chooseIndex = ref(-1)
 
 
 const toUpperCase = (str: String) => {
@@ -78,12 +78,12 @@ const toUpperCase = (str: String) => {
   return str[0].toUpperCase() + str.substring(1)
 }
 
-const onChoose = (event: any, fromItems: Array<ComponentMaterial>) => {
-  chooseIndex.value = event.oldIndex
-  const item = JSON.parse(JSON.stringify(fromItems[chooseIndex.value].instance))
-}
-const onChange = () => {
-}
+// const onChoose = (event: any, fromItems: Array<ComponentMaterial>) => {
+//   chooseIndex.value = event.oldIndex
+//   const item = JSON.parse(JSON.stringify(fromItems[chooseIndex.value].instance))
+// }
+// const onChange = () => {
+// }
 const componentMaterialGroups = ref<Array<ComponentMaterialGroup>>([])
 
 const resetComponentMaterialGroups = () => {
@@ -101,9 +101,9 @@ const resetComponentMaterialGroups = () => {
   }
 }
 resetComponentMaterialGroups()
-const onStartNodeDrag = (e: MouseEvent, element: Object) => {
-  // this.$gl.bus.$emit('GlPluginCore_onStartNodeDrag', {e: e, element: element})
-}
+// const onStartNodeDrag = (e: MouseEvent, element: Object) => {
+//   // this.$gl.bus.$emit('GlPluginCore_onStartNodeDrag', {e: e, element: element})
+// }
 
 /**
  * 基于物料创建实例

@@ -33,6 +33,9 @@ const convertId = (id: string) => {
 const genIdMap = (inst: ComponentInstance, idMap: { [key: string]: string }) => {
     if (inst.id) {
         idMap[inst.id] = convertId(inst.id)
+        if (inst.__dragFlag) {
+            idMap[inst.__dragFlag] = convertId(inst.__dragFlag)
+        }
     }
     const otherIds = [inst.props.query?.id,]
     otherIds.forEach((otherId) => {
@@ -269,7 +272,7 @@ class ComponentStoreFactory {
                     /**
                      *  复制当前选中的组件
                      *  并重新生成组件及子组件的id
-                     *  组件id的引用不做调整，注意copy之后需自行按需进行重新引用配置
+                     *  组件id的引用不做调整
                      */
                     copyCurrentSelectedComponent() {
                         if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
@@ -369,12 +372,6 @@ class ComponentStoreFactory {
 
                     },
                     /**
-                     *  复制当前组件
-                     */
-                    copyCurrentComponent() {
-
-                    },
-                    /**
                      * 查询指定组件id的父组件
                      * @param componentId 查找的组件id
                      * @return 找不到时返回null，找到时返回对应的组件实例
@@ -419,6 +416,7 @@ class ComponentStoreFactory {
                                 }
                             }
                         }
+
                         return findNodeFromTree(componentId, this.currentComponentTree) || {}
                     },
                     setCurrentSelectedComponentId(componentId: string, fromPageId: string) {

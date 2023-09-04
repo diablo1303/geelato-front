@@ -18,7 +18,9 @@ export class AppEntitySelectResult {
 </script>
 
 <script lang="ts" setup>
-import {inject, type PropType, ref, watch} from 'vue'
+// @ts-nocheck
+
+import {inject, type PropType, type Ref, ref, watch} from 'vue'
 import {useEntityStore} from "@geelato/gl-ide";
 import {EntityMeta, type EntityLiteMeta} from "@geelato/gl-ui";
 import  {ComponentSetterProvideKey,ComponentSetterProvideProxy} from "@geelato/gl-ide";
@@ -42,7 +44,7 @@ const props = defineProps({
 })
 const emits = defineEmits(['update:modelValue'])
 const entityStore = useEntityStore()
-const entityLiteMetas = ref(new Array<EntityLiteMeta>)
+const entityLiteMetas:Ref<EntityLiteMeta[]> = ref([])
 // const ds = inject('$entityDS')
 // if (!ds) {
 //   console.error('未注入实体数据源：$entityDS，请检查是否已从服务端加载数据源。')

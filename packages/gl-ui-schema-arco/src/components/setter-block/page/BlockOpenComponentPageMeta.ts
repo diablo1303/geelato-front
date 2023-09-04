@@ -174,14 +174,12 @@ export default {
         "expanded": true,
         "setterComponentProps": {
             "options": [{
-                "label": "确认操作时触发，如可做表单保存工作",
-                "value": "onBeforeOk",
-                "__bm8YikAIyQpi61YiOR": "onBeforeOk"
+                "label": "点击确认操作时触发，在此可配置表单保存操作等",
+                "value": "onBeforeOk"
             }, {
-                "label": "页面关闭后（动画结束）触发",
+                "label": "页面关闭后触发，在此可配置列表刷新操作等",
                 "value": "onClose",
-                "__bm8YikAIyQpi61YiOR": "onClose"
-            }, {"label": "页面打开后（动画结束）触发", "value": "onOpen", "__bm8YikAIyQpi61YiOR": "onOpen"}],
+            }],
             "multiple": true,
             "allowClear": false
         },

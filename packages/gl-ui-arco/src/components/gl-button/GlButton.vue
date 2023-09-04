@@ -15,7 +15,7 @@ const props = defineProps({
       return ''
     }
   },
-  label:String,
+  label: String,
   iconType: String
 })
 const mv = ref(props.modelValue)
@@ -25,14 +25,20 @@ watch(mv, () => {
 </script>
 
 <template>
-  <a-button>
+  <a-button class="gl-button">
     <template #icon>
-      <GlIconfont :type="iconType">xx</GlIconfont>
+      <GlIconfont v-if="iconType" :type="iconType"></GlIconfont>
     </template>
-    {{ label}}
+    {{ label }}
   </a-button>
 </template>
 
-<style scoped>
+<style>
+.gl-button .arco-btn-icon {
+  margin-right: 0 !important;
+}
 
+.gl-button .gl-icon-font {
+  margin-right: 8px;
+}
 </style>

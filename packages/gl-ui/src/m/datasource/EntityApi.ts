@@ -377,6 +377,24 @@ export class EntityApi {
         });
     }
 
+    saveBatch(
+        entityName: string,
+        records: Array<Record<string, any>>,
+        biz?: string
+    ) {
+        const bizCode = biz || "0";
+        const data: LooseObject = {
+            "@biz": bizCode,
+        };
+        data[entityName] = records || []
+
+        return this.service({
+            url: `${this.url.apiMetaBatchSave}/${bizCode}`,
+            method: "POST",
+            data,
+        })
+    }
+
     /**
      * 逻辑删除（基于参数组合）
      * @param entityName

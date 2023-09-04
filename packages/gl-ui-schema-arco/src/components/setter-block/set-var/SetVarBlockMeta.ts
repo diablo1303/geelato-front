@@ -3,7 +3,7 @@ export default {
     "displayMode": "tile",
     "iconType": "gl-var",
     "group": "block_var",
-    "title": "变量",
+    "title": "设置变量",
     "useBy": ["freePage"],
     "blockContent": "设置变量名为：${varName}，值为：${varValue}。",
     "properties": [{

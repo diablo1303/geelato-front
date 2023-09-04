@@ -33,10 +33,11 @@ export default {
 
 </script>
 <script lang="ts" setup>
+// @ts-nocheck
 /**
  *  基于当前实体选择、字段选择
  */
-import {type PropType, ref, watch} from 'vue'
+import {type PropType, type Ref, ref, watch} from 'vue'
 import type {FieldMeta, EntityLiteMeta} from "@geelato/gl-ui";
 import {useEntityStore} from "@geelato/gl-ide";
 import {BindField} from "@geelato/gl-ui-schema";
@@ -58,8 +59,8 @@ const props = defineProps({
 })
 // 实体信息
 const entityStore = useEntityStore()
-const entityLiteMetas = ref(new Array<EntityLiteMeta>)
-const entityFieldMetas = ref(new Array<FieldMeta>())
+const entityLiteMetas: Ref<EntityLiteMeta[]> = ref([])
+const entityFieldMetas: Ref<FieldMeta[]> = ref([])
 
 const res = entityStore.loadEntityLiteMetas('')
 res.then((data: Array<EntityLiteMeta>) => {

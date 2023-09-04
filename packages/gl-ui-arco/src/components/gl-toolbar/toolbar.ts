@@ -7,5 +7,12 @@ export default interface Toolbar {
     rightItems?: [];
 }
 
-const defaultToolbar: Toolbar = {};
+const defaultToolbar: Toolbar = {
+    leftColSpan: 12,
+    centerColSpan: 0,
+    rightColSpan: 12,
+    leftItems: [],
+    centerItems: [],
+    rightItems: []
+};
 export {defaultToolbar};

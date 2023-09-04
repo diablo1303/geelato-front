@@ -1,5 +1,5 @@
 <template>
-  <template v-if="valueType==ValueTypes.Dict" field="dictValueSelect">
+  <template v-if="valueType==ValueTypes.Dict">
     <table class="gl-table">
       <tr class="gl-table-row">
         <td class="gl-table-cell gl-label" style="width: 5em">字典名</td>
@@ -17,7 +17,7 @@
       </tr>
     </table>
   </template>
-  <template v-else field="dictValueSelect">
+  <template v-else>
     <a-input v-model="mv"></a-input>
   </template>
 </template>
@@ -33,8 +33,8 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {inject, ref, watch} from 'vue'
-import  {ComponentSetterProvideKey,ComponentSetterProvideProxy} from "@geelato/gl-ide";
+import {inject, type Ref, ref, watch} from 'vue'
+import {ComponentSetterProvideKey, ComponentSetterProvideProxy} from "@geelato/gl-ide";
 import {ValueTypes} from "@geelato/gl-ui-schema";
 
 const emits = defineEmits(['update:modelValue'])
@@ -61,7 +61,6 @@ const props = defineProps({
 
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 
-
 const dictId = ref('')
 const valueType = ref('')
 watch(() => {
@@ -71,7 +70,8 @@ watch(() => {
   dictId.value = componentSetterProvideProxy.getPropValue(props.dependPropDictId)
 }, {deep: true, immediate: true})
 
-const mv = ref(props.modelValue)
+//@ts-ignore
+const mv: Ref<string | undefined> = ref(props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })

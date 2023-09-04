@@ -251,7 +251,7 @@ const deleteRow = (params: Array<Param>) => {
 const saveRow = () => {
 
 }
-const selectedKeys = ref([])
+const selectedKeys: Ref<string[]> = ref([])
 
 const selectionChange = (rowKeys: []) => {
   selectedKeys.value = rowKeys
@@ -267,11 +267,24 @@ const rowSelection = computed(() => {
 const getRenderData = () => {
   return tableRef.value.getRenderData()
 }
+const getRenderRecord = () => {
+  return tableRef.value.getRenderData()
+}
+
+const getSelectedRecords = () => {
+  return getRenderData().filter((record: Record<string, any>) => {
+    return selectedKeys.value.includes(record.id)
+  })
+
+}
 
 const getRenderColumns = () => {
   return tableRef.value.getRenderColumns()
 }
 const getDeleteData = () => {
+  return tableRef.value.getDeleteData()
+}
+const getDeleteRecord = () => {
   return tableRef.value.getDeleteData()
 }
 
@@ -332,18 +345,33 @@ const global = useGlobal()
 /**
  *  批量更新
  *  批量更新部分字段的内容
- *  @record key为列名
+ *  @record key为字段名，即列名,value为更新后的列值
  */
-const batchUpdate = (data: Record<string, Record<string, any>>[]) => {
+const batchUpdate = ({record}: { record: Record<string, any>[] }) => {
   //
-  console.log('batchUpdate data', data)
+  console.log('batchUpdate record', record)
   if (selectedKeys.value.length === 0) {
     global.$notification.error({
-      content: '请先选择列表的相关记录'
+      title: '批量更新失败',
+      content: '请先选择需要更新列表的相关记录'
     })
   } else {
-
+    const records = getSelectedRecords()
+    const recordKeys = Object.keys(record)
+    if (records) {
+      const copyRecords = JSON.parse(JSON.stringify(records))
+      copyRecords.forEach((copyRecord: Record<string, any>) => {
+        recordKeys.forEach((recordKey: string) => {
+          if (Object.keys(copyRecord).includes(recordKey)) {
+            // @ts-ignore
+            copyRecord[recordKey] = record[recordKey]
+          }
+        })
+      })
+      return entityApi.saveBatch(props.base.entityName, copyRecords)
+    }
   }
+  return null
 }
 
 
@@ -353,6 +381,8 @@ defineExpose({
   batchUpdate,
   deleteRow,
   refresh,
+  getRenderRecord,
+  getDeleteRecord,
   getRenderData,
   getRenderColumns,
   getDeleteData,
@@ -364,7 +394,7 @@ defineExpose({
 
 <template>
   <a-card class="general-card" :title="base.hideLabel===true?'':base.label" :body-style="{padding:base.tablePadding}"
-    :style="{'padding-top':(base.hideLabel===true?'1.2em':'0')}"
+          :style="{'padding-top':(base.hideLabel===true?'1.2em':'0')}"
   >
     <GlQuery v-if="query" v-show="base.showQuery!==false" ref="queryRef" :items="query" @search="onSearch"></GlQuery>
     <a-divider v-show="base.showQuery!==false" style="margin-top: 16px"/>

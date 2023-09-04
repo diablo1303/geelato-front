@@ -39,6 +39,7 @@
 </template>
 
 <script lang="ts">
+// @ts-nocheck
 import {defineComponent} from 'vue'
 import {ComponentSetterMetaImpl} from "@geelato/gl-ui-schema";
 import {LooseObject} from "@geelato/gl-ui";

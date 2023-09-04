@@ -6,6 +6,7 @@
 </template>
 
 <script lang="ts">
+// @ts-nocheck
 import {defineComponent} from 'vue'
 
 export default defineComponent({
@@ -20,7 +21,7 @@ export default defineComponent({
   },
   data() {
     return {
-      items: this.modelValue,
+      items: this.modelValue!,
     }
   },
   methods: {

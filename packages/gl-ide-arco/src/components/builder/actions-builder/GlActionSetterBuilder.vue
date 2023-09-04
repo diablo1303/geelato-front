@@ -26,6 +26,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+// @ts-nocheck
 import {type PropType, ref, watch} from 'vue'
 import {ActionSetterMeta} from "@geelato/gl-ui-schema";
 

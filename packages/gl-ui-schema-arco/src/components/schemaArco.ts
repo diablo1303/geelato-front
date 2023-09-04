@@ -1,3 +1,4 @@
+import {ComponentMeta, ComponentInstance} from "@geelato/gl-ui-schema";
 import ButtonMeta from "./setter-arco/button/ButtonMeta";
 import ButtonInstance from "./setter-arco/button/ButtonInstance";
 import RateMeta from "./setter-arco/rate/RateMeta";
@@ -53,7 +54,6 @@ import TagMeta from "./setter-arco/tag/TagMeta";
 import TimelineMeta from "./setter-arco/timeLine/TimelineMeta";
 import TooltipMeta from "./setter-arco/tooltip/TooltipMeta";
 import EntityTreeMeta from "./setter-arco/tree/EntityTreeMeta";
-import {ComponentMeta, ComponentInstance} from "@geelato/gl-ui-schema";
 import PageMeta from "./setter-arco/page/PageMeta";
 import DndPlaceholderMeta from "./setter-arco/dndPlaceholder/DndPlaceholderMeta";
 import FormMeta from "./setter-arco/form/FormMeta";

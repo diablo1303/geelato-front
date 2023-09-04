@@ -5,6 +5,8 @@ export default class UrlConfig {
 
     apiMetaSave = "/api/meta/save";
 
+    apiMetaBatchSave = "/api/meta/batchSave";
+
     apiMetaDelete = "/api/meta/delete";
 
     apiMetaDelete2 = "/api/meta/delete2";

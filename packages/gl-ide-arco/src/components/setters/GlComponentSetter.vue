@@ -5,7 +5,9 @@
       <a-tab-pane key="props" tab="属性" title="属性">
         <div v-if="!hideToolbar&&(showMove||showMove||showSelectParent||showDelete)" style="padding: 0 0.5em 0.5em;">
           <a-button-group type="primary" size="mini" shape="round">
-            <a-button status="normal" v-if="showSelectParent" @click="componentStore.selectParentComponent">选父组件
+<!--            <a-button status="normal" v-if="showSelectParent" @click="componentStore.selectParentComponent">选父组件-->
+<!--            </a-button>-->
+            <a-button status="normal" v-if="showSelectParent" @click="componentStore.copyCurrentSelectedComponent">复制
             </a-button>
             <a-button status="warning" :disabled="!showMove" @click="componentStore.moveFrontCurrentComponent"
                       title="移前呀移上">移前

@@ -32,10 +32,9 @@ import {
   PageProvideProxy,
   PageProvideKey,
   FormProvideKey,
-  FormProvideProxy, utils
+  FormProvideProxy,
 } from "@geelato/gl-ui";
-import type {EntitySavingObject} from "@/components/gl-entity-form/GlEntityForm";
-import {getFormParams} from "./GlEntityForm";
+import {type EntitySavingObject, getFormParams} from "./GlEntityForm";
 
 // onLoadedData：从服务端加载完数据并设置到表单中
 const emits = defineEmits(['onLoadedData'])
@@ -431,9 +430,9 @@ const getValue = async () => {
   // 再进一步进行表单数据项值校验
   const validateResult = await formRef.value?.validate();
   if (!validateResult) {
-    return {id:entityRecordId.value,...formData.value}
+    return {id: entityRecordId.value, ...formData.value}
   } else {
-    return {id:entityRecordId.value}
+    return {id: entityRecordId.value}
   }
 }
 

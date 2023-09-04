@@ -41,6 +41,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+// @ts-nocheck
 import {getCurrentInstance, type PropType, ref, watch} from "vue";
 import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";

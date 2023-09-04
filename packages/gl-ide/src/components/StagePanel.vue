@@ -28,6 +28,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+// @ts-nocheck
 import {usePageStore} from "../stores/UsePageStore";
 import uiLibAdapter from "../utils/UiLibAdapter";
 

@@ -6,6 +6,7 @@
 </template>
 
 <script lang="ts">
+// @ts-nocheck
 import {defineComponent} from 'vue'
 import GlArrayBaseSetter from "./GlArrayBaseSetter.vue";
 
@@ -22,7 +23,7 @@ export default defineComponent({
   },
   data() {
     return {
-      items: this.modelValue,
+      items: this.modelValue!,
     }
   },
   methods: {

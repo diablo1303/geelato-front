@@ -204,9 +204,9 @@
               </span>
                   </template>
                   <div style="background-color: #fafafa;padding: 0 0.5em;min-height: 4em">
-                    <a-button type="" shape="round" size="small" style="float: right" @click="copyJson(cMeta)">复制
+                    <a-button  shape="round" size="small" style="float: right" @click="copyJson(cMeta)">复制
                     </a-button>
-                    <a-button type="" shape="round" size="small" style="float: right"
+                    <a-button  shape="round" size="small" style="float: right"
                               @click="copyJson(cMeta,'export default ')">复制（+export）
                     </a-button>
                     <VueJsonPretty v-if="refreshFlag" :data="cMeta"></VueJsonPretty>
@@ -233,7 +233,7 @@
                       生成组件默认实例JSON
                     </span>
                   </template>
-                  <a-button type="" shape="round" size="small" style="float: right" @click="copyJson(cInstance)">复制
+                  <a-button shape="round" size="small" style="float: right" @click="copyJson(cInstance)">复制
                   </a-button>
                   <VueJsonPretty v-if="refreshFlag" :data="cInstance"></VueJsonPretty>
                 </a-tab-pane>
@@ -243,52 +243,12 @@
         </table>
 
       </pane>
-      <!--
-      ========================================================================================
-      -->
-      <!--      <pane :size="100-paneSize.A-paneSize.B-paneSize.C">-->
-      <!--        <template v-if="refreshFlag">-->
-      <!--          <splitpanes horizontal class="default-theme gl-bg-white" style="background-color:#FFF">-->
-      <!--            <pane size="80">-->
-      <!--              <div class="gl-title">-->
-      <!--              <span>-->
-      <!--                 <GlIconfont type="gl-eye"/>-->
-      <!--              生成组件实例预览（{{ cMeta.componentName || '未设置' }}）-->
-      <!--              </span>-->
-      <!--                <a-button-group>-->
-      <!--                  <a-button style="float: right" @click="refreshInstance">刷新</a-button>-->
-      <!--                  <a-button @click="previewEnable=!previewEnable;refreshInstance()">{{-->
-      <!--                      previewEnable ? '关闭预览' : '启用预览'-->
-      <!--                    }}-->
-      <!--                  </a-button>-->
-      <!--                </a-button-group>-->
-      <!--              </div>-->
-      <!--              <div v-if="previewEnable">-->
-      <!--                <template v-if="cInstance.id&&cInstance.componentName">-->
-      <!--                  <gl-component :glComponentInst="cInstance">-->
-      <!--                  </gl-component>-->
-      <!--                </template>-->
-      <!--              </div>-->
-      <!--            </pane>-->
-      <!--            <pane size="20" v-if="previewEnable">-->
-      <!--              <div class="gl-title">-->
-      <!--              <span>-->
-      <!--                <GlIconfont type="gl-json"/>-->
-      <!--              生成组件实例代码-->
-      <!--              </span>-->
-      <!--              </div>-->
-      <!--              <div style="background-color: #fafafa;padding: 0 0.5em;min-height: 4em">-->
-      <!--                {{ cInstance }}-->
-      <!--              </div>-->
-      <!--            </pane>-->
-      <!--          </splitpanes>-->
-      <!--        </template>-->
-      <!--      </pane>-->
     </splitpanes>
   </div>
 </template>
 
 <script lang="ts">
+// @ts-nocheck
 import {utils} from "@geelato/gl-ui";
 import {Splitpanes, Pane} from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
@@ -298,7 +258,6 @@ import GlActionSetterBuilder from "./actions-builder/GlActionSetterBuilder.vue";
 import GlMethodSetterBuilder from "./method-builder/GlMethodSetterBuilder.vue";
 import GlOptions from "../setters/GlOptions.vue";
 import ClipboardJS from "clipboard";
-// import VueJsonPretty from 'vue-json-pretty'
 import {ComponentMeta, ActionSetterMeta, MethodSetterMeta} from "@geelato/gl-ui-schema";
 import {ComponentInstance, PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
 import {useThemeStore} from "@geelato/gl-ide";
@@ -376,14 +335,14 @@ export default defineComponent({
   },
   watch: {
     'cMeta.componentName': {
-      handler: function (val, oval) {
+      handler: function (val) {
         this.cInstance.componentName = val
         this.emitUpdate()
       },
       immediate: true
     },
     'cMeta.alias': {
-      handler: function (val, oval) {
+      handler: function (val) {
         this.cInstance.id = this.modelValue.runtimeMeta.id || utils.gid(val)
         // this.cInstance.templateId = this.modelValue.runtimeMeta.templateId || utils.gid(val)
         this.emitUpdate()
@@ -391,14 +350,14 @@ export default defineComponent({
       immediate: true
     },
     'cMeta.title': {
-      handler: function (val, oval) {
+      handler: function (val) {
         this.cInstance.title = val
         this.emitUpdate()
       },
       immediate: true
     },
     'cMeta.group': {
-      handler: function (val, oval) {
+      handler: function (val) {
         // TODO cInstance需要group属性？
         // this.cInstance.group = val
         this.emitUpdate()
@@ -406,14 +365,14 @@ export default defineComponent({
       immediate: true
     },
     'cMeta.propsWrapper': {
-      handler: function (val, oval) {
+      handler: function (val) {
         this.cInstance.propsWrapper = val
         this.emitUpdate()
       },
       immediate: true
     },
     'cMeta.useBy': {
-      handler: function (val, oval) {
+      handler: function () {
         // TODO cInstance需要useBy属性？
         // this.cInstance.useBy = val
         this.emitUpdate()

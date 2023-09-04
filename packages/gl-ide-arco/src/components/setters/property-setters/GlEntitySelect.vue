@@ -11,7 +11,8 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, ref, watch} from 'vue'
+// @ts-nocheck
+import {inject, type Ref, ref, watch} from 'vue'
 import {useEntityStore} from "@geelato/gl-ide";
 import {type EntityLiteMeta, EntityMeta} from "@geelato/gl-ui";
 import  {ComponentSetterProvideKey,ComponentSetterProvideProxy} from "@geelato/gl-ide";
@@ -35,7 +36,7 @@ const props = defineProps({
 })
 const emits = defineEmits(['update:modelValue'])
 const entityStore = useEntityStore()
-const entityLiteMetas = ref(new Array<EntityLiteMeta>)
+const entityLiteMetas:Ref<EntityLiteMeta[]> = ref([])
 
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 const res = entityStore.loadEntityLiteMetas('')

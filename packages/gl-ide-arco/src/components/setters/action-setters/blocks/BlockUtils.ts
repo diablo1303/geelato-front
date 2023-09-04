@@ -39,6 +39,7 @@ export default class BlockUtils {
 
     /**
      * 参数据对象序列化，形成代码块
+     * 将数组参数转成对象参数
      */
     // static convertParam = (params?: Param[]) => {
     //     if (!params) return {}
