@@ -2,6 +2,7 @@ import localeMessageBox from '@/components/message-box/locale/en-US';
 
 import localeAccount from '@/views/account/locale/en-US';
 import localeApplication from '@/views/application/locale/en-US';
+import localeExport from '@/views/export/locale/en-US';
 import localeLogin from '@/views/login/locale/en-US';
 import localeModel from '@/views/model/locale/en-US';
 import localePage from '@/views/page/locale/en-US';
@@ -30,6 +31,7 @@ export default {
 
   ...localeAccount,
   ...localeApplication,
+  ...localeExport,
   ...localeLogin,
   ...localeModel,
   ...localePage,

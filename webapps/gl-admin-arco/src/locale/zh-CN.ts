@@ -2,6 +2,7 @@ import localeMessageBox from '@/components/message-box/locale/zh-CN';
 
 import localeAccount from '@/views/account/locale/zh-CN';
 import localeApplication from '@/views/application/locale/zh-CN';
+import localeExport from '@/views/export/locale/zh-CN';
 import localeLogin from '@/views/login/locale/zh-CN';
 import localeModel from '@/views/model/locale/zh-CN';
 import localePage from '@/views/page/locale/zh-CN';
@@ -30,6 +31,7 @@ export default {
 
   ...localeAccount,
   ...localeApplication,
+  ...localeExport,
   ...localeLogin,
   ...localeModel,
   ...localePage,

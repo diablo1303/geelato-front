@@ -74,6 +74,25 @@ export interface AttachmentForm {
   url: string;
   delStatus: number;
   tenantCode: string;
+  genre: string;
+}
+
+export interface FilterAttachmentForm {
+  name: string;
+  size: string;
+  type: string;
+  creator: string;
+  createAt: string[];
+  tenantCode: string;
+  genre: string;
+}
+
+export function exportFileList(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/export/file/list', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
 }
 
 export function getAttachment(id: string) {
@@ -105,8 +124,8 @@ export function getUploadUrl(isRename?: boolean) {
  * 下载附件
  * @param id 附件id
  */
-export function getDownloadUrlById(id: string) {
-  return id ? `${axios.defaults.baseURL}/resources/file?rstk=download&id=${id}` : '';
+export function getDownloadUrlById(id: string, isPdf?: boolean) {
+  return id ? `${axios.defaults.baseURL}/resources/file?rstk=download&id=${id}&isPdf=${isPdf === true}` : '';
 }
 
 /**

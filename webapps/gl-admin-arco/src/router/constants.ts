@@ -14,3 +14,5 @@ export const REDIRECT_ROUTE_NAME = 'Redirect';
 export const DEFAULT_ROUTE = {title: 'model.dataBase.index.menu.list', name: 'appList', fullPath: `/dev/appList`, params: {}};
 
 export const ACCOUNT_ROUTE_PATH = '/account/user';
+
+export const EXPORT_ROUTE_PATH = '/export/list';

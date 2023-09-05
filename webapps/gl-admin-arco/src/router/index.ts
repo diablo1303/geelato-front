@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router';
 import NProgress from 'nprogress'; // progress bar
 import 'nprogress/nprogress.css';
-import {APP_PAGE_MAIN, NOT_FOUND_ROUTE, REDIRECT_MAIN, RESET_PWD_MAIN} from "@/router/routes/base";
+import {APP_PAGE_MAIN, EXPORT_LIST_MAIN, NOT_FOUND_ROUTE, REDIRECT_MAIN, RESET_PWD_MAIN} from "@/router/routes/base";
 import {appLoginRoutes, appRoutes} from './routes';
 import createRouteGuard from './guard';
 
@@ -15,7 +15,8 @@ const router = createRouter({
     REDIRECT_MAIN,
     NOT_FOUND_ROUTE,
     APP_PAGE_MAIN,
-    RESET_PWD_MAIN
+    RESET_PWD_MAIN,
+    EXPORT_LIST_MAIN
   ],
   scrollBehavior() {
     return {top: 0};

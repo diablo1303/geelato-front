@@ -59,3 +59,12 @@ export const RESET_PWD_MAIN: RouteRecordRaw = {
     requiresAuth: false,
   },
 };
+
+export const EXPORT_LIST_MAIN: RouteRecordRaw = {
+  path: '/export/list',
+  name: `export`,
+  component: () => import('@/views/export/index.vue'),
+  meta: {
+    requiresAuth: false,
+  },
+}
