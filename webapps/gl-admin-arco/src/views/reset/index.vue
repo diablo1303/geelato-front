@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="logo">
-      <img alt="logo" src="/src/assets/favicon.ico" style="width: 14%"/>
+      <img alt="logo" :src="favicon" style="width: 14%"/>
       <div class="logo-text">Geelato Admin</div>
     </div>
     <ResetPasswordBanner/>
@@ -20,6 +20,7 @@
 import ResetPasswordBanner from '@/views/reset/password/banner.vue';
 import ResetPasswordForm from "@/views/reset/password/reset-password.vue";
 import Footer from '@/components/footer/index.vue';
+import favicon from '@/assets/favicon.ico';
 </script>
 
 <style lang="less" scoped>

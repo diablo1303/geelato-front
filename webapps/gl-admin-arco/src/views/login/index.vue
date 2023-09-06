@@ -3,7 +3,7 @@
     <div class="logo">
       <img
           alt="logo"
-          src="/src/assets/favicon.ico"
+          :src="favicon"
           style="width: 14%"
       />
       <div class="logo-text">Geelato Admin</div>
@@ -22,6 +22,7 @@
 
 <script lang="ts" setup>
 import Footer from '@/components/footer/index.vue';
+import favicon from '@/assets/favicon.ico';
 import LoginBanner from './components/banner.vue';
 import LoginForm from './components/login-form.vue';
 </script>
