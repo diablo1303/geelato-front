@@ -35,7 +35,7 @@
     </a-form-item>
     <a-form-item
         :label="$t('application.app.list.logo')"
-        :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+        :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
         field="logo">
       <a-space style="align-items: flex-end;">
         <a-image v-model:src="formData.logo" :preview="false" class="logo-img" width="82"/>
@@ -92,19 +92,19 @@
       </a-select>
       <span v-else>{{ $t(`application.app.list.status.${formData.designStatus}`) }}</span>
     </a-form-item>
-    <a-form-item :label="$t('application.app.list.powerInfo')" field="powerInfo">
+<!--    <a-form-item :label="$t('application.app.list.powerInfo')" field="powerInfo">
       <a-textarea v-if="pageData.button" v-model="formData.powerInfo" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
       <span v-else :title="formData.powerInfo" class="textarea-span" @click="openModal(`${formData.powerInfo}`)">
         {{ formData.powerInfo }}
       </span>
-    </a-form-item>
-    <a-form-item
+    </a-form-item>-->
+<!--    <a-form-item
         :label="$t('application.app.list.versionInfo')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
         field="versionInfo">
       <a-input v-if="pageData.button" v-model="formData.versionInfo" :max-length="32"/>
       <span v-else>{{ formData.versionInfo }}</span>
-    </a-form-item>
+    </a-form-item>-->
     <a-form-item
         :label="$t('application.app.list.seqNo')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"

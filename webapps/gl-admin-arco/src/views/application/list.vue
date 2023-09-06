@@ -117,15 +117,15 @@
       <a-table-column :ellipsis="true" :title="$t('application.app.list.logo')" :tooltip="true" :width="80"
                       align="center" data-index="logo" fixed="left">
         <template #cell="{record}">
-          <img v-show="record.logo" :src="record.logo" alt="logo" style="width: 25px;height: 25px"/>
+          <img :src="record.logo?record.logo:favicon" alt="logo" style="width: 25px;height: 25px"/>
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.name')" :tooltip="true" :width="150"
                       data-index="name" fixed="left"/>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.code')" :tooltip="true" :width="120"
                       data-index="code"/>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.versionInfo')" :tooltip="true" :width="120"
-                      data-index="versionInfo"/>
+      <!--      <a-table-column :ellipsis="true" :title="$t('application.app.list.versionInfo')" :tooltip="true" :width="120"
+                            data-index="versionInfo"/>-->
       <a-table-column :ellipsis="true" :title="$t('application.app.list.applyStatus')" :tooltip="true" :width="120"
                       data-index="applyStatus">
         <template #cell="{ record }">
@@ -222,6 +222,7 @@ import {Notification} from "@arco-design/web-vue";
 import AppForm from '@/views/application/form.vue';
 import AppDrawer from '@/views/application/drawer.vue';
 import {useRoute, useRouter} from "vue-router";
+import favicon from '@/assets/favicon.ico';
 
 /* 列表 */
 const route = useRoute();
