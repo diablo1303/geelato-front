@@ -474,7 +474,10 @@ const resetValidate = async () => {
  */
 const validateCode = async (value: any, callback: any) => {
   try {
-    const {data} = await validateTableColumnName(formData.value);
+    const params = {...formData.value};
+    params.autoAdd = Number(params.autoAdd.toString());
+    params.defaultValue = params.defaultValue && params.defaultValue.toString();
+    const {data} = await validateTableColumnName(params);
     if (!data) callback(t('security.form.rules.match.uniqueness'));
   } catch (err) {
     console.log(err);
