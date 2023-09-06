@@ -7,7 +7,7 @@ export default {
     "useBy": ["freePage"],
     "blockContent": "依据分组:${groupField}，对字段:${sumFields}进行求和。",
     "properties": [{
-        "name": "dataVarName",
+        "name": "varName",
         "group": "base",
         "type": "props",
         "show": true,

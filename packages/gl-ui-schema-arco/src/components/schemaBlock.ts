@@ -19,11 +19,12 @@ import SetValueBlockMeta from "./setter-block/page/SetValueBlockMeta";
 import ReturnBlockMeta from "./setter-block/other/ReturnBlockMeta";
 import SetVarBlockMeta from "./setter-block/set-var/SetVarBlockMeta";
 import GroupSumBlockMeta from "./setter-block/data/GroupSumBlockMeta";
-
+import ExportExcelMeta from "./setter-block/file/ExportExcelMeta";
+import GenerateMqlBlockMeta from "./setter-block/data/GenerateMqlBlockMeta";
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta,GroupSumBlockMeta, BlockNotificationMeta, BlockOpenThirdPageMeta, BlockOpenComponentPageMeta, BlockSetVisibleMeta, SetValueBlockMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
+const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, GenerateMqlBlockMeta, GroupSumBlockMeta, BlockNotificationMeta, BlockOpenThirdPageMeta, BlockOpenComponentPageMeta, BlockSetVisibleMeta, SetValueBlockMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
     BlockComponentInvokeMeta, BlockConfirmMeta, TriggerComponentActionMeta, ReturnBlockMeta,
-    LogBlockMeta]
+    LogBlockMeta, ExportExcelMeta]
 
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance]

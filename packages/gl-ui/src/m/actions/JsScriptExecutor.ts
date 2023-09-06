@@ -6,6 +6,8 @@ import GlPageViewer from '../../components/gl-page-viewer/GlPageViewer.vue'
 import type PageProvideProxy from "../../components/PageProvideProxy";
 import type {Param} from "../types/global";
 import {entityApi} from "../datasource/EntityApi";
+import * as fileApi from "../datasource/FileApi";
+import dayjs from "dayjs";
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 type OptionsType = { [key: string]: any }
@@ -80,7 +82,6 @@ export class JsScriptExecutor {
         }
         // console.log('removePageProxy(),pageComponentId:', pageComponentId, 'pageProxyMap:', pageProxyMap, ids)
     }
-
 
 
     /**
@@ -270,13 +271,18 @@ export class JsScriptExecutor {
             },
             openWin: (url: string, urlParams: Array<Param>) => {
                 const paramsAry: Array<string> = []
-                urlParams.forEach((param) => {
-                    if (param.valueExpression) {
-                        paramsAry.push(`${param.name}=${that.evalExpression(param.valueExpression, $gl?.ctx, undefined, $gl)}`)
-                    } else {
-                        paramsAry.push(`${param.name}=${param.value}`)
-                    }
+                const parsedParams = that.evalParams(urlParams,$gl.ctx,$gl)
+                parsedParams.forEach((param) => {
+                    paramsAry.push(`${param.name}=${param.value}`)
                 })
+                // urlParams.forEach((param) => {
+                //     if (param.valueExpression) {
+                //         // @ts-ignore
+                //         paramsAry.push(`${param.name}=${that.evalExpression(param.valueExpression, $gl?.ctx, undefined, $gl)}`)
+                //     } else {
+                //         paramsAry.push(`${param.name}=${param.value}`)
+                //     }
+                // })
                 window.open(`${url}?${paramsAry.join('&')}`, '_blank')
             },
             loadPage: (pageId: string, extendId: string, params: Array<Param>, pageStatus: string) => {
@@ -398,6 +404,9 @@ export class JsScriptExecutor {
      */
     evalExpression(expression: string, ctx: Ctx, callback?: Function, gl?: any) {
         const $gl = gl || this.getGl(ctx?.pageProxy)
+        // if (!gl) {
+        //     console.log('evalExpression', expression)
+        // }
         Object.assign($gl.ctx, ctx)
         let result = utils.evalExpression(expression, $gl)
         if (callback && typeof callback === 'function') {
@@ -416,7 +425,9 @@ export class JsScriptExecutor {
     evalFn(fnBodyScript: string, ctx: Ctx, callback?: Function, gl?: any) {
         const $gl = gl || this.getGl(ctx?.pageProxy)
         Object.assign($gl.ctx, ctx)
-        // console.log('$gl.ctx', $gl.ctx)
+        // if (!gl) {
+        //     console.log('evalExpression', fnBodyScript)
+        // }
         let result = utils.evalFn(fnBodyScript, $gl)
         if (callback && typeof callback === 'function') {
             callback()
@@ -439,7 +450,14 @@ export class JsScriptExecutor {
                 // console.log('param.value:', param.value)
                 // param.value未设置，且valueExpression有值时
                 if (param.valueExpression) {
-                    param.value = this.evalExpression(param.valueExpression, ctx, undefined, gl)
+                    if(typeof param.valueExpression === 'string'){
+                        // console.log('param.valueExpression:', param.valueExpression, gl,param)
+                        param.value = this.evalExpression(param.valueExpression, ctx, undefined, gl)
+                    }else{
+                        // valueExpression 为不带引号的值，相当于表达式已完成求值
+                        param.value = param.valueExpression
+                    }
+
                 }
                 newParams.push({
                     name: param.name,
@@ -457,9 +475,9 @@ export class JsScriptExecutor {
      * 注意参数名不要重复
      * @param params
      */
-    convertParamsToObject(params: Array<Param>){
-        const result:Record<string, any> = {}
-        params.forEach((param)=>{
+    convertParamsToObject(params: Array<Param>) {
+        const result: Record<string, any> = {}
+        params.forEach((param) => {
             result[param.name] = param.value
         })
         return result
@@ -501,7 +519,6 @@ export class JsScriptExecutor {
         })
         return newOptions
     }
-
 
 
     /**
@@ -610,6 +627,7 @@ export class JsScriptExecutor {
      */
     private getGl(pageProxy: PageProvideProxy | undefined) {
         let $gl = {
+            id: utils.gid(),
             jsEngine: this,
             getComponentValue: this.getComponentValue,
             setComponentValue: this.setComponentValue,
@@ -626,6 +644,8 @@ export class JsScriptExecutor {
             ctx: {},
             fn: utils,
             entityApi,
+            fileApi,
+            date: dayjs,
             // 当前执行方法的变量
             vars: {}
         }
@@ -680,7 +700,7 @@ export class JsScriptExecutor {
      */
     loadPage(pageId: string, extendId: string, params: Array<Param>, pageStatus?: string) {
         const pageProps = {params: params}
-        // console.log('JsScriptExecutor > loadPage > pageId:', pageId, 'extendId:', extendId, 'pageStatus:', pageStatus, 'pageProps:', pageProps)
+        console.log('JsScriptExecutor > loadPage > pageId:', pageId, 'extendId:', extendId, 'pageStatus:', pageStatus, 'pageProps:', pageProps)
         return h(GlPageViewer, {pageId, extendId, pageStatus, pageProps})
     }
 

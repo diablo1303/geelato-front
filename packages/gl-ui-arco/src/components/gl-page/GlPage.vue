@@ -131,7 +131,12 @@ if (props.params && props.params.length > 0) {
   for (const index in props.params) {
     const param: Param = props.params[index]
     if (param.valueExpression) {
-      param.value = jsScriptExecutor.evalExpression(param.valueExpression, {pageProxy: pageProvideProxy})
+      if (typeof param.valueExpression === 'string') {
+        param.value = jsScriptExecutor.evalExpression(param.valueExpression, {pageProxy: pageProvideProxy})
+      } else {
+        // 不需要解析
+        param.value = param.valueExpression
+      }
     }
   }
 }

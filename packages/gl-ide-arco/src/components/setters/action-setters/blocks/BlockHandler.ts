@@ -16,6 +16,8 @@ import ReturnBlockHandler from "./other/ReturnBlockHandler";
 import SetVarBlockHandler from "./var/SetVarBlockHandler";
 import GroupSumBlockHandler from "./data/GroupSumBlockHandler";
 import JsCodeBlockHandler from "./other/JsCodeBlockHandler";
+import ExportExcelBlockHandler from "./file/ExportExcelBlockHandler";
+import GenerateMqlBlockHandler from "./data/GenerateMqlBlockHandler";
 
 export default interface IBlockHandler {
     /**
@@ -51,7 +53,9 @@ export class BlocksHandler {
             GlReturnBlock: new ReturnBlockHandler(),
             GlSetVarBlock: new SetVarBlockHandler(),
             GlGroupSumBlock:new GroupSumBlockHandler(),
-            GlJsCodeBlock:new JsCodeBlockHandler()
+            GlJsCodeBlock:new JsCodeBlockHandler(),
+            GlExportExcelBlock:new ExportExcelBlockHandler(),
+            GlGenerateMqlBlock:new GenerateMqlBlockHandler()
         }
     }
 

@@ -5,7 +5,7 @@ export type PageType = 'freePage' | 'fromPage' | 'listPage' | 'blockPage' | ''
 export interface Param {
     name: string,
     value: any,
-    valueExpression?: string
+    valueExpression?: string | object
 }
 
 

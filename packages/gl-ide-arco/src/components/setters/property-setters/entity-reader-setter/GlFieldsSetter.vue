@@ -28,7 +28,7 @@
                         @change="onFieldChange($event,element,index)">
                 <template #prefix>数据字段</template>
                 <a-option v-for="item in entityFieldMetas" :value="item.name" :title="item.name+' '+item.title">
-                  {{ item.name }}
+                  {{ item.title + ' ' + item.name }}
                 </a-option>
               </a-select>
               <a-select size="small" v-model="element.alias" style="width: 100%"
