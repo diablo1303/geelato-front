@@ -9,12 +9,6 @@
         <span v-else>{{ formData.title }}</span>
       </a-form-item>
       <a-form-item
-          :label="$t('security.file.index.form.fileType')"
-          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-          field="fileType">
-        <span>{{ formData.fileType ? $t(`security.file.index.form.fileType.${formData.fileType}`) : '' }}</span>
-      </a-form-item>
-      <a-form-item
           :label="$t('security.file.index.form.template')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="template">
@@ -26,6 +20,14 @@
                   accept=".doc,.docx,.xls,.xlsx"
                   list-type="text"
                   @error="uploadError" @success="uploadTSuccess" @before-remove="beforeRemoveT"/>
+      </a-form-item>
+      <a-form-item
+          :label="$t('security.file.index.form.fileType')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          field="fileType">
+        <span>{{
+            formData.fileType ? $t(`security.file.index.form.fileType.${formData.fileType}`) : $t('security.file.index.form.fileType.placeholder')
+          }}</span>
       </a-form-item>
       <a-form-item
           :label="$t('security.file.index.form.templateRule')"
@@ -42,9 +44,10 @@
       </a-form-item>
       <a-form-item
           :label="$t('security.file.index.form.fileCode')"
-          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
           field="fileCodeFormat">
-        <a-input-tag v-if="pageData.button" v-model="formData.fileCodeFormat" :unique-value="true" allow-clear placeholder="Please Enter"/>
+        <a-input-tag v-if="pageData.button" v-model="formData.fileCodeFormat" :unique-value="true" allow-clear
+                     :placeholder="$t('security.file.index.form.fileCode.placeholder')"/>
         <a-space v-else :style="{'flex-wrap':'wrap'}">
           <a-tag v-for="(item, index) of formData.fileCodeFormat" :key="index" :style="{'margin-bottom':'4px'}">{{ item }}</a-tag>
         </a-space>

@@ -5,7 +5,7 @@
       :footer="pageData.button"
       :ok-text="$t('security.file.index.model.ok.text')"
       :title="$t(`security.file.index.model.title.${pageData.formState}`)"
-      width="32%"
+      width="36%"
       @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <FileTemplateModel ref="modelRef"/>
