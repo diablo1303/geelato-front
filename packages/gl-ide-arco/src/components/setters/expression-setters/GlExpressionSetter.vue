@@ -8,11 +8,11 @@ export default {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import {getCurrentInstance, ref} from "vue";
+import {type Ref, ref} from "vue";
 import {
   useSystemVarsTreeData,
   functionalFormulaTreeData,
-  useComponentInstTreeData
+  useComponentInstTreeData, useSrvTreeData
 } from "./varsMeta";
 import {useGlobal, utils} from "@geelato/gl-ui";
 import {useConstTreeData, useDictTreeData} from "./enumMeta";
@@ -46,12 +46,12 @@ const inputMv = ref(props.modelValue)
 //   emits('update:modelValue', mv.value)
 // })
 
-const _systemVarsTreeData = ref<any[]>([])
-const _functionalFormulaTreeData = ref<any[]>([])
-const _componentInstTreeData = ref<any[]>([])
-const _constTreeData = ref<any[]>([])
-const _dictTreeData = ref<any[]>([])
-
+const _systemVarsTreeData: Ref<any[]> = ref([])
+const _functionalFormulaTreeData: Ref<any[]> = ref([])
+const _componentInstTreeData: Ref<any[]> = ref([])
+const _constTreeData: Ref<any[]> = ref([])
+const _dictTreeData: Ref<any[]> = ref([])
+const _srvTreeData: Ref<any[]> = ref([])
 const visibleValueExpressModal = ref(false)
 /**
  * 打开值表达式设置窗口
@@ -63,6 +63,7 @@ const openValueExpressModal = async () => {
   _componentInstTreeData.value = setKeys(useComponentInstTreeData())
   _constTreeData.value = setKeys(await useConstTreeData())
   _dictTreeData.value = setKeys(await useDictTreeData())
+  _srvTreeData.value = setKeys(useSrvTreeData())
 }
 const clearValueExpress = () => {
   // const propertySetterMeta = currentOpenModalPropertySetterMeta
@@ -155,7 +156,7 @@ const selectInstNode = (selectedKeys: any, data: any, treeData: any) => {
   } else {
     const path = getKeyPath(treeData, data.node.key)
     if (data.node._flag === 'ref') {
-      console.log('xxx',path.replace('methods.', ''))
+      console.log('xxx', path.replace('methods.', ''))
       monacoEditor.value.replaceSelectOrInsert(path.replace('methods.', ''))
     } else {
       monacoEditor.value.replaceSelectOrInsert(path)
@@ -266,6 +267,25 @@ const selectDictItem = (key: any) => {
                     </template>
                     <span>{{ _code }}
                       <!--  title和_code相同，则只显示_code -->
+                    <span class="gl-title" style="margin-left: 0!important;">{{ title === _code ? '' : title }}</span>
+                  </span>
+                  </a-tooltip>
+                </template>
+                <template #extra="{_type}">
+                  <span class="gl-extra">{{ _type }}</span>
+                </template>
+              </a-tree>
+            </a-collapse-item>
+            <a-collapse-item header="服务接口" key="7">
+              <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode
+                      :data="_srvTreeData"
+                      @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_srvTreeData)">
+                <template #title="{_code,title,_value,_description}">
+                  <a-tooltip background-color="#165DFF">
+                    <template #content>
+                      {{ _description }}
+                    </template>
+                    <span>{{ _code }}
                     <span class="gl-title" style="margin-left: 0!important;">{{ title === _code ? '' : title }}</span>
                   </span>
                   </a-tooltip>

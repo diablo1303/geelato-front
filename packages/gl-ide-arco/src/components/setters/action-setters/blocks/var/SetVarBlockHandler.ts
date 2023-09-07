@@ -9,7 +9,7 @@ export default class SetVarBlockHandler implements IBlockHandler {
             `
             $gl.vars.${props.varName} = ${propsExpressions?.varValue || props.varValue} ;
             `
-        ).setBlockName('SetVarBlockHandler');
+        ).setBlockName('SetVarBlock');
     }
 }
 

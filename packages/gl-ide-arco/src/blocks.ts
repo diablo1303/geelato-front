@@ -24,6 +24,10 @@ const component: Plugin = {
         app.component('GlSetVarBlock', GlCommandBlockOne)
         app.component('GlGroupSumBlock', GlCommandBlockOne)
         app.component('GlJsCodeBlock', GlCommandBlockOne)
+        app.component('GlExportExcelBlock', GlCommandBlockOne)
+        app.component('GlExportWordBlock', GlCommandBlockOne)
+        app.component('GlExportPdfBlock', GlCommandBlockOne)
+        app.component('GlGenerateMqlBlock', GlCommandBlockOne)
     }
 }
 

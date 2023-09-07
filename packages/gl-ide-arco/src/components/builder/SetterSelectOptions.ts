@@ -55,6 +55,7 @@ export const setterSelectOptions = [
         type: 'Object',
         propsSetter: 'GlEntityReaderBuilder'
     },
+    {name: 'GlAppFileTemplateSelect', label: '应用文件模板选择器', vModelName: 'modelValue', type: 'Object'},
     {name: 'GlAppEntitySelect', label: '应用实体对象选择器', vModelName: 'modelValue', type: 'Object'},
     {name: 'GlEntityFieldSelect', label: '实体字段对象选择器', vModelName: 'modelValue', type: 'Object'},
     {name: 'GlEntitySelect', label: '实体名称选择器', vModelName: 'modelValue', type: 'String'},

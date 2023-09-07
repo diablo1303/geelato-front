@@ -163,7 +163,14 @@ export const useComponentInstTreeData = () => {
             const inst = insts.inst[instKey]
             const instMeta: TreeItem = {
                 title: getLabel(inst), key: inst.id, _code: inst.id,
-                children: [{title: '值', _code: 'value', _description: '组件值', _value: inst.value, _type: 'any', children: []}]
+                children: [{
+                    title: '值',
+                    _code: 'value',
+                    _description: '组件值',
+                    _value: inst.value,
+                    _type: 'any',
+                    children: []
+                }]
             }
             // {title: '获取组件实例', _code: 'xxxInstId', _type: 'object'},
             // props 属性
@@ -267,6 +274,42 @@ export const useComponentInstTreeData = () => {
     }
 
     return [ctx, instTreeItem, refTreeItem, fn, moreInstTree]
+}
+
+
+export const useSrvTreeData = () => {
+    const srv = {
+        title: '服务',
+        _code: 'srv',
+        _type: 'object',
+        // 在构建path时的内容
+        _pathName: '',
+        children: [
+            // _brackets 对于方法，需要同时生成参数内容
+            {
+                title: '实体API',
+                _code: 'entityApi',
+                _type: 'object',
+                _description: '基于实体的增删改查接口',
+            },
+            {
+                title: '文件API',
+                _code: 'fileApi',
+                _type: 'object',
+                _description: '文件操作接口，如导出excel、导出word等',
+                children: [
+                    {
+                        title: '导出excel',
+                        _code: 'exportExcel',
+                        _type: 'void',
+                        _brackets: '("文件名","文件模板ID","导出数据GQL")',
+                        _description: '导出excel',
+                    }
+                ]
+            },
+        ],
+    }
+    return [srv]
 }
 
 

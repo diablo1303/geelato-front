@@ -36,7 +36,36 @@ export default class BlockUtils {
         return result;
     }
 
+    static paramStringify = (params: Param[]) => {
 
+        const strArray = []
+        strArray.push("[")
+        params.forEach((param) => {
+            const valueType = typeof param.value
+            let newValue = undefined
+            switch (valueType) {
+                case "undefined" :
+                case "boolean" :
+                case "number" :
+                case "object" :
+                    newValue = `${param.value}`
+                    break
+                default:
+                    newValue = `"${param.value}"`
+                    break
+            }
+            strArray.push("{")
+            strArray.push("name:")
+            strArray.push(`"${param.name}"`)
+            strArray.push(",value:")
+            strArray.push(newValue)
+            strArray.push(",valueExpression:")
+            strArray.push(`${param.valueExpression}`)
+            strArray.push("},")
+        })
+        strArray.push("]")
+        return strArray.join('')
+    }
     /**
      * 参数据对象序列化，形成代码块
      * 将数组参数转成对象参数
@@ -52,10 +81,11 @@ export default class BlockUtils {
     //     return ary.join('\r\n');
     // }
 
-    // /**
-    //  * 参数据对象序列化，形成代码块
-    //  * @param params
-    //  */
+    /**
+     * 参数据对象序列化，形成代码块
+     *
+     * @param params
+     */
     // static paramStringify = (params: Param[]) => {
     //     return JSON.stringify(params, (key, value) => {
     //         if (key === 'name'||key === 'id') {

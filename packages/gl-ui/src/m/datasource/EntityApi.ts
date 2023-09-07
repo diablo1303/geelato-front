@@ -159,15 +159,13 @@ export class EntityApi {
     }
 
     /**
-     * 基于实体数据源查询
-     * 分页默认为1页15条记录
-     * 如果没有传删除状态，默认会带上删除訚为0，即delStatus='0'
+     * 将entityReader对象转换mql对象
+     * 若无设置delStatus值，默认加上条件delStatus|eq:0
      * @param entityReader
-     * @returns {*}
      */
-    queryByEntityReader(entityReader: EntityReader) {
+    convertEntityReaderToMql(entityReader: EntityReader) {
         // console.log('queryByEntityReader > entityReader', entityReader.entity, entityReader)
-        const mql: LooseObject = {};
+        const mql: Record<string, any> = {};
         mql[entityReader.entity] = {}
         // fields
         if (entityReader.fields && entityReader.fields.length > 0) {
@@ -215,8 +213,19 @@ export class EntityApi {
         const pageSize = entityReader.pageSize || 15
         // page
         mql[entityReader.entity]['@p'] = pageNo + ',' + pageSize;
+        return mql
+    }
 
-        const promise = new Promise((resolve, reject) => {
+    /**
+     * 基于实体数据源查询
+     * 分页默认为1页15条记录
+     * 如果没有传删除状态，默认会带上删除訚为0，即delStatus='0'
+     * @param entityReader
+     * @returns {*}
+     */
+    queryByEntityReader(entityReader: EntityReader) {
+        const mql = this.convertEntityReaderToMql(entityReader)
+        return new Promise((resolve, reject) => {
             this.queryByGql(mql, entityReader.withMeta).then((res) => {
                 // 是否需要处理返回结果
                 const foundLocalComputeField = entityReader.fields.find((field) => {
@@ -253,8 +262,6 @@ export class EntityApi {
                 reject(reason)
             })
         })
-
-        return promise
     }
 
     /**

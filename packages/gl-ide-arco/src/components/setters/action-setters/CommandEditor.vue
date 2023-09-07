@@ -144,7 +144,7 @@ const reset = () => {
 const refreshFlag = ref(true)
 
 const updateInstance = (instance: ComponentInstance) => {
-  console.log('updateInstance() > block:', instance)
+  // console.log('updateInstance() > block:', instance)
   mv.value.__commandBlock = JSON.parse(JSON.stringify(instance))
   generateScript()
   // refreshFlag.value = false

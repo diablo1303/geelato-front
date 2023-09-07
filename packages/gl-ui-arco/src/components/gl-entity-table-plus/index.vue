@@ -218,22 +218,23 @@ const addRow = () => {
  * 默认为逻辑删除，依据属性base.isLogicDeleteMode进行区分
  * @param params
  */
-const deleteRow = (params: Array<Param>) => {
+const deleteRow = (params: Record<string, any>) => {
   console.log('deleteRow() > params:', params)
 
-  if (!params || params.length === 0) {
+  if (!params || !params.id) {
     console.error('基于记录id进行删除失败，未配置参数id。')
     return
   }
 
-  const foundParam = params.find((param: Param) => {
-    return param.name === 'id'
-  })
-  let id = foundParam ? foundParam.value : undefined
-  if (!id) {
-    console.error('基于记录id进行删除失败，id为：', id)
-    return
-  }
+  let id = params.id
+  // const foundParam = params.find((param: Param) => {
+  //   return param.name === 'id'
+  // })
+  // let id = foundParam ? foundParam.value : undefined
+  // if (!id) {
+  //   console.error('基于记录id进行删除失败，id为：', id)
+  //   return
+  // }
   if (props.base.isLogicDeleteMode === false) {
     entityApi.delete(props.base.entityName, {id: id}).then(() => {
       refresh()
@@ -347,9 +348,10 @@ const global = useGlobal()
  *  批量更新部分字段的内容
  *  @record key为字段名，即列名,value为更新后的列值
  */
-const batchUpdate = ({record}: { record: Record<string, any>[] }) => {
+const batchUpdate = (params: Record<string, any>) => {
+  console.log('batchUpdate params', params)
   //
-  console.log('batchUpdate record', record)
+  const record = params.record
   if (selectedKeys.value.length === 0) {
     global.$notification.error({
       title: '批量更新失败',

@@ -2,6 +2,7 @@ import type IBlockHandler from "../BlockHandler";
 import type {PropsExpressions} from "../BlockHandler";
 import ParseResult from "../ParseResult";
 import type {Param} from "@geelato/gl-ui";
+import BlockUtils from "../BlockUtils";
 
 const toStr = (str: string) => {
     return `"${str}"`
@@ -16,8 +17,9 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
         const cancelText = propsExpressions?.cancelText || toStr(props.cancelText || "取消")
         const hideCancel = props.hideCancel === true
         return new ParseResult(
+            // 注意这里的参数转换采用JSON.stringify，不采用BlockUtils.paramStringify，因为这两种不同的方式，到导致获取的$gl的对象不是同一个，相应的参数值也会不同。
             `
-            const content = $gl.fn.loadPage("${props.pageId || ''}","${props.extendId}",${JSON.stringify(props.params)},"${props.pageStatus}");
+            const content = $gl.fn.loadPage("${props.pageId || ''}","${props.extendId}",${JSON.stringify(props.params || [])},"${props.pageStatus}");
             $gl.fn.open${mode}({
                 title:${title},
                 content: content,

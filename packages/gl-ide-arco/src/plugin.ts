@@ -55,6 +55,7 @@ import GlValueTypes from "./components/setters/property-setters/GlValueTypes.vue
 import GlCompareValueSetter from "./components/setters/property-setters/GlCompareValueSetter.vue";
 import GlComponentMethodSelect from "./components/setters/property-setters/GlComponentMethodSelect.vue";
 import GlComponentActionSelect from "./components/setters/property-setters/GlComponentActionSelect.vue";
+import GlAppFileTemplateSelect from "./components/setters/property-setters/GlAppFileTemplateSelect.vue";
 import GlExpressionBuilder from "./components/builder/props-builder/GlExpressionBuilder.vue";
 import GlPageSaveLog from "./components/sidebar/GlPageSaveLog.vue";
 import "./assets/style.css"
@@ -199,6 +200,7 @@ const component: Plugin = {
         app.component(GlCompareValueSetter.name, GlCompareValueSetter)
         app.component(GlComponentMethodSelect.name, GlComponentMethodSelect)
         app.component(GlComponentActionSelect.name, GlComponentActionSelect)
+        app.component(GlAppFileTemplateSelect.name, GlAppFileTemplateSelect)
         // app.component(GlSettingOptions.name, GlSettingOptions)
         // app.component(GlSettingProperty.name, GlSettingProperty)
         app.component(GlPropertySetter.name, GlPropertySetter)
