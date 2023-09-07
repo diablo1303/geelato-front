@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts" setup>
-import {reactive, ref} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import {RouteParamsRaw, useRoute, useRouter} from 'vue-router';
 import {Message} from '@arco-design/web-vue';
 import {ValidatedError} from '@arco-design/web-vue/es/form/interface';
@@ -76,6 +76,7 @@ import useLoading from '@/hooks/loading';
 import type {LoginData} from '@/api/user';
 import {DEFAULT_ROUTE} from "@/router/constants";
 import {appDataBaseRoutes, formatAppModules} from "@/router/routes";
+import {getToken} from "@/utils/auth";
 
 const router = useRouter();
 const route = useRoute();
@@ -105,6 +106,18 @@ const getDataBaseRouters = async () => {
   }
 }
 
+const enterApp = () => {
+  const {redirect, ...othersQuery} = router.currentRoute.value.query;
+  if (redirect) {
+    router.push({name: redirect as string, params: {...othersQuery} as RouteParamsRaw});
+  } else {
+    router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
+  }
+}
+onMounted(() => {
+  if (getToken()) enterApp();
+});
+
 const handleSubmit = async ({errors, values,}: {
   errors: Record<string, ValidatedError> | undefined;
   values: Record<string, any>;
@@ -115,12 +128,7 @@ const handleSubmit = async ({errors, values,}: {
     try {
       await userStore.login(values as LoginData);
       // getDataBaseRouters();
-      const {redirect, ...othersQuery} = router.currentRoute.value.query;
-      if (redirect) {
-        router.push({name: redirect as string, params: {...othersQuery} as RouteParamsRaw});
-      } else {
-        router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
-      }
+      enterApp();
       Message.success(t('login.form.login.success'));
       const {rememberPassword} = loginConfig.value;
       const {username, password} = values;
