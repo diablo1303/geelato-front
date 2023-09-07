@@ -106,7 +106,16 @@
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.file.index.form.title')" :tooltip="true" :width="150" data-index="title"/>
+      <a-table-column :ellipsis="true" :title="$t('security.file.index.form.title')" :tooltip="true" :width="150" data-index="title">
+        <template #cell="{ record }">
+          <a-button type="text" :title="$t('copy.to.clipboard.button.title')" @click="copyPrimaryKey(record.id)">
+            <template #icon>
+              <icon-copy/>
+            </template>
+          </a-button>
+          {{ record.title }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('security.file.index.form.fileType')" :width="120" data-index="fileType">
         <template #cell="{ record }">
           {{ record.fileType ? $t(`security.file.index.form.fileType.${record.fileType}`) : '' }}

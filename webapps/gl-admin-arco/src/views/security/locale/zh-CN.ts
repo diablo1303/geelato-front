@@ -435,6 +435,7 @@ export default {
 
   'copy.to.clipboard.success': '复制成功！',
   'copy.to.clipboard.fail': '复制失败！',
+  'copy.to.clipboard.button.title': '点击，复制主键',
 
   'security.file.index.menu.list': '应用管理',
   'security.file.index.menu.list.searchTable': '文件管理',

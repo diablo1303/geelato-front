@@ -433,6 +433,7 @@ export default {
 
   'copy.to.clipboard.success': 'Text copied to clipboard successfully！',
   'copy.to.clipboard.fail': 'Failed to copy text！',
+  'copy.to.clipboard.button.title': 'Click and copy the primary key',
 
   'security.file.index.menu.list': 'System',
   'security.file.index.menu.list.searchTable': 'File',

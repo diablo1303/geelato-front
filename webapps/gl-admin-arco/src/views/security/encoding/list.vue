@@ -101,7 +101,7 @@
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.encoding.index.form.id')" :tooltip="true" :width="120" data-index="title">
         <template #cell="{ record }">
-          <a-button type="text" @click="copyPrimaryKey(record.id)">
+          <a-button type="text" :title="$t('copy.to.clipboard.button.title')" @click="copyPrimaryKey(record.id)">
             <template #icon>
               <icon-copy/>
             </template>
