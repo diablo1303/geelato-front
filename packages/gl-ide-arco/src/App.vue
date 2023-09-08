@@ -27,7 +27,7 @@ ideStore.setUiLibName('arco')
 
 const global = useGlobal()
 const savedPage = (data: any) => {
-  console.log('global', global,data)
+  // console.log('global', global,data)
   global.$message.info({
     content: '页面保存成功'
   })

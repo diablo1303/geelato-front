@@ -71,7 +71,7 @@ export class Utils {
     evalExpression(expression: string | number, $gl: object, glName = '$gl') {
         try {
             if (typeof expression === 'number') {
-                console.log('gl-ui > utils > evalExpression() > expression: ', expression, 'result:', expression, '$gl', $gl)
+                // console.log('gl-ui > utils > evalExpression() > expression: ', expression, 'result:', expression, '$gl', $gl)
                 return expression
             }
 

@@ -179,7 +179,7 @@ export class JsScriptExecutor {
         if (pageProxy) {
             return pageProxy.getParamValue(paramName)
         }
-        console.error('在获取页面参数值时，获取不到当前页面信息。')
+        console.error('在获取页面参数（'+paramName+'）的值时，获取不到当前页面代理对象（pageProxy）。' )
         return null
     }
 
@@ -271,7 +271,7 @@ export class JsScriptExecutor {
             },
             openWin: (url: string, urlParams: Array<Param>) => {
                 const paramsAry: Array<string> = []
-                const parsedParams = that.evalParams(urlParams,$gl.ctx,$gl)
+                const parsedParams = that.evalParams(urlParams, $gl.ctx, $gl)
                 parsedParams.forEach((param) => {
                     paramsAry.push(`${param.name}=${param.value}`)
                 })
@@ -450,10 +450,10 @@ export class JsScriptExecutor {
                 // console.log('param.value:', param.value)
                 // param.value未设置，且valueExpression有值时
                 if (param.valueExpression) {
-                    if(typeof param.valueExpression === 'string'){
+                    if (typeof param.valueExpression === 'string') {
                         // console.log('param.valueExpression:', param.valueExpression, gl,param)
                         param.value = this.evalExpression(param.valueExpression, ctx, undefined, gl)
-                    }else{
+                    } else {
                         // valueExpression 为不带引号的值，相当于表达式已完成求值
                         param.value = param.valueExpression
                     }

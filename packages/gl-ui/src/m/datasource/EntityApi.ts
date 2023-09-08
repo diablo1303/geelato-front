@@ -2,8 +2,7 @@ import type {AxiosInstance, AxiosRequestConfig, AxiosStatic} from "axios";
 import ResultMapping from "../datasource/ResultMapping";
 import UrlConfig from "../datasource/UrlConfig";
 import MixUtil from "../utils/MixUtil";
-import type {EntityReader, EntityReaderParam} from "./EntityDataSource";
-import type {LooseObject} from "../mix/LooseObject";
+import type {EntityReader, EntityReaderParam, EntitySaver} from "./EntityDataSource";
 import AllUtils from "../utils/AllUtils";
 import {getToken} from "../utils/auth";
 import jsScriptExecutor from "../actions/JsScriptExecutor";
@@ -61,71 +60,6 @@ export class EntityApi {
             return undefined
         }
     }
-
-    //reCreate(options?: AxiosRequestConfig) {
-    // const opts = {
-    //     baseURL: (options && options.baseURL) || (this.VITE_API_BASE_URL || ''), // api base url，在env文件中配置
-    //     timeout: (options && options.timeout) || 6000, // 请求超时时间
-    //     headers: (options && options.headers) || {
-    //         //   'Request-Method': 'PUT,POST,GET,DELETE,OPTIONS',
-    //         //   'Request-Headers': 'Authorization,Origin, X-Requested-With, Content-Type, Accept',
-    //         "Access-Control-Allow-Origin": "*",
-    //         //   'Allow-Methods': 'PUT,POST,GET,DELETE,OPTIONS',
-    //         //   'Allow-Headers': 'Authorization,Origin, X-Requested-With, Content-Type, Accept'
-    //     },
-    //     withCredentials: true,
-    //     // crossDomain: true
-    // }
-    //
-    // axios.interceptors.request.use(
-    //     (config: any) => {
-    //         // let each request carry token
-    //         // this example using the JWT token
-    //         // Authorization is a custom headers key
-    //         // please modify it according to the actual situation
-    //         // const token = getToken();
-    //         // if (token) {
-    //         //     if (!config.headers) {
-    //         //         config.headers = {};
-    //         //     }
-    //         //     config.headers.Authorization = `Bearer ${token}`;
-    //         // }
-    //         config.headers.Authorization = this.getAuthorization()
-    //         return config;
-    //     },
-    //     (error) => {
-    //         // do something
-    //         return Promise.reject(error);
-    //     }
-    // );
-    //
-    // this.service = axios.create(opts);
-    // this.service.interceptors.request.use(
-    //     (config: any) => {
-    //         // let each request carry token
-    //         // this example using the JWT token
-    //         // Authorization is a custom headers key
-    //         // please modify it according to the actual situation
-    //         // const token = getToken();
-    //         // if (token) {
-    //         //     if (!config.headers) {
-    //         //         config.headers = {};
-    //         //     }
-    //         //     config.headers.Authorization = `Bearer ${token}`;
-    //         // }
-    //         config.headers.Authorization = this.getAuthorization()
-    //         return config;
-    //     },
-    //     (error) => {
-    //         // do something
-    //         return Promise.reject(error);
-    //     }
-    // );
-    //
-    // // console.log('EntityApi > reCreate() > service options:', opts)
-    // this.options = opts
-    // return this.service
-    //}
 
     setup(axios: AxiosStatic | AxiosInstance) {
         this.service = axios
@@ -190,7 +124,7 @@ export class EntityApi {
         }
         // params
         let hasDelStatus = false
-        const params: LooseObject = {};
+        const params: Record<string, any> = {};
         if (entityReader.params && entityReader.params.length > 0) {
             for (const i in entityReader.params) {
                 const param: EntityReaderParam = entityReader.params[i];
@@ -287,7 +221,7 @@ export class EntityApi {
         //     throw `查询${entityName}失败，列（fieldNames）格式不对,存在连续的",,"：${fieldNames}`;
         // }
         // mql查询语句
-        const mql: LooseObject = {};
+        const mql: Record<string, any> = {};
         mql[entityName] = {
             "@fs": fieldNames || "*",
         };
@@ -310,8 +244,8 @@ export class EntityApi {
     queryBatch(queryParamArray: Array<object>, withMeta: boolean) {
         const mqlAry: Array<any> = [];
         queryParamArray.forEach((item, index) => {
-            const queryParam: LooseObject = item;
-            const mql: LooseObject = {};
+            const queryParam: Record<string, any> = item;
+            const mql: Record<string, any> = {};
             mql[queryParam.entityName] = {
                 "@fs": queryParam.fieldNames || "*",
             };
@@ -330,7 +264,7 @@ export class EntityApi {
         errorMsg?: string
     ) {
         const bizCode = biz || "0";
-        const data: LooseObject = {
+        const data: Record<string, any> = {
             "@biz": bizCode,
         };
         data[entityName] = keyValues || {};
@@ -338,6 +272,48 @@ export class EntityApi {
             url: `${url}/${bizCode}`,
             method: "POST",
             data,
+        });
+    }
+
+    convertEntitySaverToMql(entitySaver: EntitySaver, biz?: string) {
+        const pidValue = '$parent.id'
+        // subFormPidValue
+        const entitySaverCopy = JSON.parse(JSON.stringify(entitySaver))
+        type ParsedMqlResult = { key: string, mqlObj: Record<string, any> }
+        const toMql = (es: EntitySaver, isChildren: boolean): ParsedMqlResult => {
+            const mqlObj: Record<string, any> = {}
+            const entityName = isChildren ? '#' + es.entity : es.entity
+            if (isChildren) {
+                // 设置子实体的外键字段值
+                if (es.pidName && !es.record[es.pidName]) {
+                    es.record[es.pidName] = pidValue
+                }
+                mqlObj[entityName] = mqlObj[entityName] || []
+                mqlObj[entityName].push(es.record)
+            } else {
+                // 根节点只能有一条记录
+                mqlObj[entityName] = es.record;
+            }
+
+            es.children?.forEach((subEs) => {
+                const subMqlResult = toMql(subEs, true)
+                mqlObj[entityName][subMqlResult.key] = mqlObj[entityName][subMqlResult.key] || []
+                mqlObj[entityName][subMqlResult.key].push(subMqlResult.mqlObj)
+            })
+            return {key: entityName, mqlObj: mqlObj}
+        }
+        const bizCode = biz || "0";
+        return Object.assign(toMql(entitySaverCopy, false).mqlObj, {"@biz": bizCode})
+    }
+
+    saveEntity(entitySaver: EntitySaver, biz?: string) {
+        const bizCode = biz || "0";
+        const mqlObj = this.convertEntitySaverToMql(entitySaver, bizCode)
+        console.log('saveEntity > entitySaver:', entitySaver, 'mql:', mqlObj)
+        return this.service({
+            url: `${this.url.apiMetaSave}/${bizCode}`,
+            method: "POST",
+            data: mqlObj,
         });
     }
 
@@ -366,13 +342,14 @@ export class EntityApi {
         );
     }
 
+
     /**
      * 基于mql对象进行查询
      * @param mqlObject or mqlArray
      * @param biz 业务代码
      * @returns {*}
      */
-    saveByGql(biz: string, mql: LooseObject) {
+    saveByGql(biz: string, mql: Record<string, any>) {
         const path = Array.isArray(mql)
             ? this.url.apiMetaSave
             : this.url.apiMetaSave;
@@ -390,7 +367,7 @@ export class EntityApi {
         biz?: string
     ) {
         const bizCode = biz || "0";
-        const data: LooseObject = {
+        const data: Record<string, any> = {
             "@biz": bizCode,
         };
         data[entityName] = records || []
@@ -492,14 +469,14 @@ export class EntityApi {
      * @returns {{data: Array, resultMapping: {}}}
      */
     static entityReaderResultHandler(
-        res: LooseObject,
+        res: Record<string, any>,
         resultMapping: ResultMapping
     ) {
         // console.log(
         //     "gl-ui > Api.js > entityReaderResultHandler() > res: ",
         //     res
         // );
-        const resultSet: LooseObject = {
+        const resultSet: Record<string, any> = {
             //  依据传入参数resultMapping的定义处理后的数据
             data: [],
             // 经转换之后的列映射，key为组件中用到的变量名，value为data中的列名。
@@ -508,7 +485,7 @@ export class EntityApi {
 
         // 返回结果预处理
         // 获取返回结果的列名
-        const resColumns: LooseObject = {};
+        const resColumns: Record<string, any> = {};
         if (res.data && res.data.length > 0) {
             const item = res.data[0];
             const resultFieldNameAry = Object.keys(item);
@@ -572,8 +549,8 @@ export class EntityApi {
      * @param dataMapping  可为可层对象，如两层对像：{query: {fullName: '$ctx.name'}}
      * @return <Object> 若dataMapping为空，则直接返回data，{query: {fullName: '张三'}}
      */
-    entityDataMappingHandler(data: LooseObject, dataMapping: LooseObject = {}) {
-        const convertedData: LooseObject = {};
+    entityDataMappingHandler(data: Record<string, any>, dataMapping: Record<string, any> = {}) {
+        const convertedData: Record<string, any> = {};
         Object.keys(dataMapping).forEach((value, key) => {
             if (typeof value === "object") {
                 convertedData[key] = this.entityDataMappingHandler(data, value);

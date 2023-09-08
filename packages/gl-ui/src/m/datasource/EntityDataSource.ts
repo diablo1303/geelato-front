@@ -55,7 +55,7 @@ export class EntityMeta extends EntityLiteMeta {
     [key: string]: any
 }
 
-export class EntityReaderParam{
+export class EntityReaderParam {
     name: string = '';
     cop: string = 'eq';
     value: string | number | Array<string | number> | undefined;
@@ -136,4 +136,44 @@ export class EntityReader {
         this.fields.push(...fields)
         return this.fields
     }
+}
+
+/**
+ *  实体保存对象，一条记录对应一个EntitySaver
+ */
+export class EntitySaver {
+    /**
+     *  实体名称
+     */
+    entity: string = ''
+    /**
+     *  本实体作为子实体时，指向父实体id字段的外健字段的名称
+     */
+    pidName?: string = ''
+    /**
+     *  保存的记录
+     */
+    record: Record<string, any> = {}
+    /**
+     *  子表单
+     */
+    children: EntitySaver[] = []
+
+    constructor(entity?: string) {
+        this.entity = entity || ''
+    }
+}
+
+/**
+ *  调用组件getEntitySavers方法的获取返回结果
+ *  默认值为失败
+ */
+export class GetEntitySaversResult {
+    // 如果在获取时，组件对数据验证不通过，则为true
+    error: boolean = true
+    // 获取的结果
+    values: EntitySaver[] = []
+    // 数据验证不通过，未能成功构建并获取保存对象！
+    message: string = '数据验证不通过，未能成功构建并获取保存对象'
+
 }

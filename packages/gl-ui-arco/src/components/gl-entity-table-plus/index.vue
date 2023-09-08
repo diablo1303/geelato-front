@@ -32,7 +32,7 @@ import {
   utils,
   mixins,
   CheckUtil,
-  useGlobal
+  useGlobal, EntitySaver, GetEntitySaversResult
 } from "@geelato/gl-ui";
 import type {Action} from "../../types/global";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
@@ -169,7 +169,7 @@ const changeShowColumns = (checked: boolean | (string | boolean | number)[],
                            index: number) => {
   tableRef.value.changeShowColumns(checked, column, index);
 };
-const updateColumns = (showColumnsValue: GlTableColumn) => {
+const updateColumns = (showColumnsValue: GlTableColumn[]) => {
   showColumns.value = showColumnsValue;
 };
 const onUpdateRow = (data: { record: object, rowIndex: number, columns: GlTableColumn }) => {
@@ -247,11 +247,9 @@ const deleteRow = (params: Record<string, any>) => {
     //   refresh()
     // })
   }
-  console.log('GlEntityTablePlus > deleteRow() > params:', params)
+  // console.log('GlEntityTablePlus > deleteRow() > params:', params)
 }
-const saveRow = () => {
 
-}
 const selectedKeys: Ref<string[]> = ref([])
 
 const selectionChange = (rowKeys: []) => {
@@ -289,8 +287,8 @@ const getDeleteRecord = () => {
   return tableRef.value.getDeleteData()
 }
 
-const validateTable = () => {
-  return tableRef.value.validateTable()
+const validate = (): { error: boolean, resultList: Array<any> } => {
+  return tableRef.value.validate()
 }
 
 const reRender = () => {
@@ -310,25 +308,62 @@ const entityTable = computed(() => {
  * 创建表格的实体保存GQL对象，可被父表单调用，集到父表单一起保存
  * @param subFormPidValue 作为子表单时，本表单中，指向父表单ID的字段值
  */
-const createEntitySavingObject = (subFormPidValue: string) => {
-  const entitySavingObject: EntitySavingObject = {
-    key: props.base.entityName,
-    value: []
-  }
+// const createEntitySavingObject = (subFormPidValue: string) => {
+//   const entitySavingObject: EntitySavingObject = {
+//     key: props.base.entityName,
+//     value: []
+//   }
+//   // 处理需保存的子表单数据
+//   const renderColumns = getRenderColumns()
+//   const subFormTableData = getRenderData()
+//   // console.log('GlEntityForm > submitForm() > subFormTableData', subFormTableData)
+//   if (subFormTableData && subFormTableData.length > 0) {
+//     // 子表中，对应主表单ID的字段名
+//     const subTablePidName = props.base.subTablePidName!
+//     subFormTableData.forEach((record: any) => {
+//       // 设置主表父ID
+//       // 如果是新增，则采用变量，在后台保存主表单后，更换该值 $parent.id
+//       // 如果是修改，则直接获取当前的entityRecordId
+//       record[subTablePidName] = subFormPidValue
+//     })
+//     entitySavingObject.value = subFormTableData
+//   }
+//   // 处理需删除子表单数据
+//   // 当前为逻辑删除，可依据子表的isLogicDeleteMode来区分
+//   // console.log('GlEntityForm > saveForm() > getDeleteDataFn', getDeleteDataFn)
+//   const deleteData = getDeleteData()
+//   // console.log('GlEntityForm > saveForm() > deleteData:', deleteData)
+//   if (deleteData && deleteData.length > 0) {
+//     entitySavingObject.value = entitySavingObject.value || []
+//     entitySavingObject.value.push(...deleteData)
+//   }
+//   return entitySavingObject
+// }
+
+/**
+ * 创建表格的实体保存对象，可被父表单调用，集到父表单一起保存
+ * @param subFormPidValue 作为子表单时，本表单中，指向父表单ID的字段值
+ */
+const createEntitySavers = (subFormPidValue?: string) => {
+  const entitySavers: EntitySaver[] = []
   // 处理需保存的子表单数据
   const renderColumns = getRenderColumns()
   const subFormTableData = getRenderData()
-  // console.log('GlEntityForm > submitForm() > subFormTableData', subFormTableData)
+  console.log('createEntitySavers() > subFormTableData', subFormTableData)
+  // 子表中，对应主表单ID的字段名
+  const subTablePidName = props.base.subTablePidName!
   if (subFormTableData && subFormTableData.length > 0) {
-    // 子表中，对应主表单ID的字段名
-    const subTablePidName = props.base.subTablePidName!
-    subFormTableData.forEach((record: any) => {
+    subFormTableData.forEach((record: Record<any, any>) => {
       // 设置主表父ID
       // 如果是新增，则采用变量，在后台保存主表单后，更换该值 $parent.id
       // 如果是修改，则直接获取当前的entityRecordId
       record[subTablePidName] = subFormPidValue
+      const entitySaver = new EntitySaver(props.base.entityName)
+      entitySaver.pidName = props.base.subTablePidName
+      entitySaver.record = record
+      entitySavers.push(entitySaver)
     })
-    entitySavingObject.value = subFormTableData
+
   }
   // 处理需删除子表单数据
   // 当前为逻辑删除，可依据子表的isLogicDeleteMode来区分
@@ -336,10 +371,24 @@ const createEntitySavingObject = (subFormPidValue: string) => {
   const deleteData = getDeleteData()
   // console.log('GlEntityForm > saveForm() > deleteData:', deleteData)
   if (deleteData && deleteData.length > 0) {
-    entitySavingObject.value = entitySavingObject.value || []
-    entitySavingObject.value.push(...deleteData)
+    deleteData.forEach((record: Record<any, any>) => {
+      record[subTablePidName] = subFormPidValue
+      const entitySaver = new EntitySaver(props.base.entityName)
+      entitySaver.pidName = props.base.subTablePidName
+      entitySaver.record = record
+      entitySavers.push(entitySaver)
+    })
   }
-  return entitySavingObject
+  console.log('GlEntityTablePlus > createEntitySavers() > entitySavers:', entitySavers)
+  return entitySavers
+}
+
+const getEntitySavers = (subFormPidValue?: string) => {
+  const result = new GetEntitySaversResult()
+  if (!validate().error) {
+    result.error = false
+    result.values = createEntitySavers(subFormPidValue)
+  }
 }
 
 const global = useGlobal()
@@ -388,9 +437,10 @@ defineExpose({
   getRenderData,
   getRenderColumns,
   getDeleteData,
-  validateTable,
+  validate,
   reRender,
-  createEntitySavingObject
+  getEntitySavers,
+  createEntitySavers
 })
 </script>
 

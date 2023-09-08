@@ -159,7 +159,7 @@ onUnmounted(() => {
  *  以当前页面参数数据重新加载
  */
 const refresh = () => {
-  console.log('page[' + props.glComponentInst.id + '] refresh.')
+  // console.log('page[' + props.glComponentInst.id + '] refresh.')
   key.value = utils.gid()
   visiblePage.value = false
   nextTick(() => {
