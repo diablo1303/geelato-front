@@ -40,7 +40,7 @@ export const currentPage = () => {
       if (url.pathname.endsWith('/page/') || url.pathname.endsWith('/page')) {
         IS_DATA_PAGE.value = true;
       }
-      const routerPaths = getRouter(modules, ['/login', '/page', '/page/id']);
+      const routerPaths = getRouter(modules, ['/login', '/page', '/export', '/export/list']);
       // eslint-disable-next-line no-restricted-syntax
       for (const item of routerPaths) {
         if (url.pathname.indexOf(item) !== -1) {
@@ -129,7 +129,7 @@ const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryM
           data.children?.push({
             path: `${item.treeEntity || item.id}`,
             name: `${item.id}`,
-            component: DEFAULT_LAYOUT,
+            component: null,
             meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: item.seqNo},
             children: [],
             props: item
@@ -137,7 +137,7 @@ const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryM
         } else if (["formPage", "listPage", "freePage"].includes(item.type)) {
           data.children?.push({
             path: `:pageId`,
-            name: `${item.id}`,
+            name: `${item.pageId || item.id}`,
             component: () => import('@/views/page/PageRuntime.vue'),
             meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: item.seqNo},
             children: [],
@@ -161,6 +161,26 @@ const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryM
   return defaultData;
 }
 
+const setRoute = (fullPath: string, result: RouteRecordNormalized) => {
+  fullPath += result.path.startsWith("/") ? result.path : `/${result.path}`;
+  if (result.children && result.children.length > 0) {
+    for (let i = 0; i < result.children.length; i += 1) {
+      // @ts-ignore
+      if (DEFAULT_ROUTE.params.pageId) {
+        break;
+      }
+      setRoute(fullPath, result.children[i] as RouteRecordNormalized);
+    }
+  } else if (result.path === ':pageId') {
+    // @ts-ignore
+    DEFAULT_ROUTE.params = result.params;
+    DEFAULT_ROUTE.name = result.name as string;
+    DEFAULT_ROUTE.fullPath = fullPath;
+  } else {
+    fullPath = "";
+  }
+}
+
 export const formatAppModules = async (result: RouteRecordNormalized[]) => {
   try {
     const {data} = await getMenus({flag: "menuItem", ...urlParams} as unknown as QueryMenuForm);
@@ -169,9 +189,9 @@ export const formatAppModules = async (result: RouteRecordNormalized[]) => {
     const folderOptions: RouteRecordNormalized[] = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const item of menuForms) {
-      if (item.type === 'folder') {
+      if (item.type === 'folder' && (!item.pid || item.pid === urlParams.appId)) {
         folderOptions.push({
-          path: `${URL_PREFIX}/:tenantCode/:appId/page`,
+          path: `${URL_PREFIX}/:tenantCode/:appId/page/${item.id}`,
           name: `${item.id}`,
           component: DEFAULT_LAYOUT,
           meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: item.seqNo},
@@ -183,19 +203,18 @@ export const formatAppModules = async (result: RouteRecordNormalized[]) => {
     result = buildOrgOptions(folderOptions, menuForms);
     // 默认页面 取第一个
     if (result && result.length > 0) {
-      DEFAULT_ROUTE.fullPath += result[0].path;
-      DEFAULT_ROUTE.name = result[0].name as string;
-      if (result[0].children && result[0].children.length > 0) {
-        DEFAULT_ROUTE.name = result[0].children[0].name as string;
-        DEFAULT_ROUTE.fullPath += `/${result[0].children[0].path}`
+      for (let i = 0; i < result.length; i += 1) {
+        setRoute("", result[i]);
         // @ts-ignore
-        DEFAULT_ROUTE.params = result[0].children[0].params;
-        if (IS_DATA_PAGE.value) {
-          // @ts-ignore
-          const url1 = `${DEFAULT_ROUTE.params.pageId}`;
-          const url2 = window.location.href.endsWith('/page') ? '/' : '';
-          window.location.assign(window.location.href + url2 + url1);
+        if (DEFAULT_ROUTE.params.pageId) {
+          break;
         }
+      }
+      // @ts-ignore
+      if (IS_DATA_PAGE.value && DEFAULT_ROUTE.params.pageId && DEFAULT_ROUTE.fullPath.endsWith(":pageId")) {
+        // @ts-ignore
+        const url = DEFAULT_ROUTE.fullPath.replace(":pageId", DEFAULT_ROUTE.params.pageId).replace(":appId", DEFAULT_ROUTE.params.appId).replace(":tenantCode", DEFAULT_ROUTE.params.tenantCode);
+        window.location.assign(window.location.origin + url);
       }
     }
     console.log(result)
