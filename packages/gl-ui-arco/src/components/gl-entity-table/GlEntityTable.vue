@@ -267,19 +267,34 @@ const copyColumnActions = () => {
   // return props.columnActions
 }
 
-// onMounted(()=>{
-//   console.log('onMounted table')
-//
-// })
-// onUpdated(()=>{
-//   console.log('onUpdated table')
-// })
+/**
+ *  表格在编辑模式下，验证表格数据
+ */
+const validate = () => {
+  const resultList: Array<any> = []
+  let error = false
+  // TODO 待与tableEdit统一
+  // renderData.value.forEach((record, rowIndex) => {
+  //   const result = validateRecord(record, rowIndex)
+  //   resultList.push({record, rowIndex, result})
+  //   if (result && Object.keys(result).length > 0) {
+  //     // 有异常
+  //     error = true
+  //   } else {
+  //     // 无异常
+  //   }
+  // })
+  return {error, resultList}
+}
+
+
 defineExpose({
   resetColumns,
   search,
   selectAll,
   popupVisibleChange,
   changeShowColumns,
+  validate,
   getQueryData,
   getRenderData,
   getRenderColumns,

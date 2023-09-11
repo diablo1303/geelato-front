@@ -480,7 +480,7 @@ const addRow = () => {
 /**
  *  表格在编辑模式下，验证表格数据
  */
-const validateTable = () => {
+const validate = () => {
   const resultList: Array<any> = []
   let error = false
   renderData.value.forEach((record, rowIndex) => {
@@ -544,7 +544,7 @@ defineExpose({
   search,
   popupVisibleChange,
   changeShowColumns,
-  validateTable,
+  validate,
   validateRecord,
   addRow,
   reRender,

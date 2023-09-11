@@ -36,7 +36,7 @@ export default class FormProvideProxy {
     }
 
     getFieldValue(fieldName: string) {
-        console.log('form state:', this.state)
+        // console.log('form state:', this.state)
         return this.state.value[fieldName]
     }
 

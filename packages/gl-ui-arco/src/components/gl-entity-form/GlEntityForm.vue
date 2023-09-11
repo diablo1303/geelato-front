@@ -33,8 +33,10 @@ import {
   PageProvideKey,
   FormProvideKey,
   FormProvideProxy,
+  EntitySaver, utils,
 } from "@geelato/gl-ui";
 import {type EntitySavingObject, getFormParams} from "./GlEntityForm";
+import {GetEntitySaversResult} from "@geelato/gl-ui/src/m/datasource/EntityDataSource";
 
 // onLoadedData：从服务端加载完数据并设置到表单中
 const emits = defineEmits(['onLoadedData'])
@@ -311,30 +313,58 @@ const checkBindEntity = () => {
  * 可被父表单调用，集到父表单一起保存
  * @param subFormPidValue 本表单中，指向父表单ID的字段值
  */
-const createEntitySavingObject = (subFormPidValue: string): EntitySavingObject | null => {
-  const parentIdFlag = '$parent.id'
+// const createEntitySavingObject = (subFormPidValue: string): EntitySavingObject | null => {
+//   const parentIdFlag = '$parent.id'
+//   if (checkBindEntity()) {
+//     // 先设置主表单部分
+//     const entityKeyValues: Record<string, any> = {id: entityRecordId.value, ...formData.value}
+//     console.log(props.bindEntity.entityName, 'formData', formData.value)
+//     // 如果本表单作为另了个表单的子表单
+//     if (props.isSubForm) {
+//       entityKeyValues[props.subFormPidName!] = subFormPidValue || parentIdFlag
+//     }
+//
+//     // 获取子表单值信息，并设置到保存表单中
+//     subFormInstIds.value.forEach((instId: string) => {
+//       const createEntitySavingObject = pageProvideProxy.getMethod(instId, 'createEntitySavingObject')
+//       if (typeof createEntitySavingObject === 'function') {
+//         const subEntitySavingObject: EntitySavingObject = createEntitySavingObject(entityRecordId.value || parentIdFlag)
+//         if (subEntitySavingObject) {
+//           const subEntityKey = '#' + subEntitySavingObject.key
+//           entityKeyValues[subEntityKey] = entityKeyValues[subEntityKey] || []
+//           entityKeyValues[subEntityKey].push(...subEntitySavingObject.value)
+//         }
+//       }
+//     })
+//     return {key: props.bindEntity.entityName, value: [entityKeyValues]}
+//   }
+//   return null
+// }
+
+const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
   if (checkBindEntity()) {
+    const entitySaver = new EntitySaver(props.bindEntity.entityName)
     // 先设置主表单部分
-    const entityKeyValues: Record<string, any> = {id: entityRecordId.value, ...formData.value}
-    console.log(props.bindEntity.entityName, 'formData', formData.value)
+    const record: Record<string, any> = {id: entityRecordId.value, ...formData.value}
     // 如果本表单作为另了个表单的子表单
     if (props.isSubForm) {
-      entityKeyValues[props.subFormPidName!] = subFormPidValue || parentIdFlag
+      entitySaver.pidName = props.subFormPidName
+      record[props.subFormPidName!] = subFormPidValue
     }
 
     // 获取子表单值信息，并设置到保存表单中
     subFormInstIds.value.forEach((instId: string) => {
-      const createEntitySavingObject = pageProvideProxy.getMethod(instId, 'createEntitySavingObject')
-      if (typeof createEntitySavingObject === 'function') {
-        const subEntitySavingObject: EntitySavingObject = createEntitySavingObject(entityRecordId.value || parentIdFlag)
-        if (subEntitySavingObject) {
-          const subEntityKey = '#' + subEntitySavingObject.key
-          entityKeyValues[subEntityKey] = entityKeyValues[subEntityKey] || []
-          entityKeyValues[subEntityKey].push(...subEntitySavingObject.value)
+      const subCreateEntitySaver = pageProvideProxy.getMethod(instId, 'createEntitySavers')
+      if (typeof subCreateEntitySaver === 'function') {
+        const subEntitySavers: EntitySaver[] = subCreateEntitySaver(entityRecordId.value)
+        if (subEntitySavers && typeof subEntitySavers === 'object') {
+          entitySaver.children.push(...subEntitySavers)
         }
       }
     })
-    return {key: props.bindEntity.entityName, value: [entityKeyValues]}
+    entitySaver.record = record
+    // console.log('entitySaver', entitySaver)
+    return [entitySaver]
   }
   return null
 }
@@ -343,22 +373,22 @@ const createEntitySavingObject = (subFormPidValue: string): EntitySavingObject |
  *  保存表单数据，将数据保存到服务端
  *  在submitForm方法内调用此方法
  */
-const saveForm = async () => {
-  const entitySavingObject = createEntitySavingObject(entityRecordId.value)
-  if (entitySavingObject?.value) {
-    return await entityApi.save(props.bindEntity.entityName, entitySavingObject?.value[0])
-  }
-}
+// const saveForm = async (entitySaver: EntitySaver) => {
+//   // const entitySavingObject = createEntitySavingObject(entityRecordId.value)
+//   // if (entitySavingObject?.value) {
+//   //   return await entityApi.save(props.bindEntity.entityName, entitySavingObject?.value[0])
+//   // }
+//   if (entitySaver) {
+//     return await entityApi.saveEntity(entitySaver)
+//   }
+// }
 
 const {loading, setLoading} = useLoading();
 const hasSubFormTable = () => {
   return subFormInstIds.value.length > 0
 }
-/**
- *  提交表单：构建表单项、校验、保存到服务端
- *  submitForm() --> saveForm()
- */
-const submitForm = async () => {
+
+const getEntitySavers = async () => {
   // checkConfig()
   // 构建表单数据项，设置值
   buildFieldItems()
@@ -367,21 +397,42 @@ const submitForm = async () => {
   // 验证子表单，若存在则验证
   let subFormTableValidError = false
   subFormInstIds.value.forEach((instId: string) => {
-    const validateTableFn = pageProvideProxy.getMethod(instId, 'validateTable')
-    if (typeof validateTableFn === 'function') {
-      const validateTableData = validateTableFn()
+    const validateFn = pageProvideProxy.getMethod(instId, 'validate')
+    if (typeof validateFn === 'function') {
+      const validateTableData = validateFn()
       // console.log('GlEntityForm > submitForm() > validateTableData', validateTableData)
       if (validateTableData.error) {
         subFormTableValidError = true
       }
     }
   })
-
-  // console.log('submitForm() > validate form:', formRef.value, ' result:', validateResult)
+  const result = new GetEntitySaversResult()
+  // 数据验证
   if (!validateResult && !subFormTableValidError) {
+    // 配置验证，并获取savers对象
+    const savers = createEntitySavers(entityRecordId.value)
+    if (savers) {
+      result.values = savers
+      result.message = ""
+      result.error = false
+    } else {
+      result.message = "表单配置验证失败，表单或字段未绑定。"
+    }
+  }
+  return result
+}
+
+/**
+ *  提交表单：构建表单项、校验、保存到服务端
+ *  submitForm() --> saveForm()
+ */
+const submitForm = async () => {
+
+  const entitySavers = await getEntitySavers()
+  if (!entitySavers.error) {
     setLoading(true);
     // console.log('submitForm() > formData', formData)
-    const saveResult = await saveForm()
+    const saveResult = await entityApi.saveEntity(entitySavers.values[0])
     entityRecordId.value = saveResult?.data
     // 将表单值，注册到表单的子项中
     formProvideProxy.setRecordId(entityRecordId.value)
@@ -398,9 +449,50 @@ const submitForm = async () => {
     setLoading(false)
     return true
   } else {
-    // console.error('保存表单验证失败', validateResult, subFormTableValidError)
     return false
   }
+  // // checkConfig()
+  // // 构建表单数据项，设置值
+  // buildFieldItems()
+  // // 再进一步进行表单数据项值校验
+  // const validateResult = await formRef.value?.validate();
+  // // 验证子表单，若存在则验证
+  // let subFormTableValidError = false
+  // subFormInstIds.value.forEach((instId: string) => {
+  //   const validateFn = pageProvideProxy.getMethod(instId, 'validate')
+  //   if (typeof validateFn === 'function') {
+  //     const validateTableData = validateFn()
+  //     // console.log('GlEntityForm > submitForm() > validateTableData', validateTableData)
+  //     if (validateTableData.error) {
+  //       subFormTableValidError = true
+  //     }
+  //   }
+  // })
+  //
+  // // console.log('submitForm() > validate form:', formRef.value, ' result:', validateResult)
+  // if (!validateResult && !subFormTableValidError) {
+  //   setLoading(true);
+  //   // console.log('submitForm() > formData', formData)
+  //   const saveResult = await saveForm()
+  //   entityRecordId.value = saveResult?.data
+  //   // 将表单值，注册到表单的子项中
+  //   formProvideProxy.setRecordId(entityRecordId.value)
+  //   if (hasSubFormTable()) {
+  //     // 保存之后刷新子表
+  //     subFormInstIds.value.forEach((instId: string) => {
+  //       const refreshFn = pageProvideProxy.getMethod(instId, 'refresh')
+  //       if (typeof refreshFn === 'function') {
+  //         refreshFn()
+  //       }
+  //     })
+  //   }
+  //   // console.log('saveResult:', saveResult)
+  //   setLoading(false)
+  //   return true
+  // } else {
+  //   // console.error('保存表单验证失败', validateResult, subFormTableValidError)
+  //   return false
+  // }
 };
 
 /**
@@ -443,7 +535,7 @@ onMounted(() => {
 
 loadForm()
 
-defineExpose({submitForm, buildFieldItems, createEntitySavingObject, getValue})
+defineExpose({submitForm, buildFieldItems, getEntitySavers, createEntitySavers, getValue})
 </script>
 
 <style>

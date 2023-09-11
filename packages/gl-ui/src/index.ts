@@ -20,7 +20,9 @@ import {
     EntityMeta,
     EntityLiteMeta,
     FieldMeta,
-    compareMeta
+    compareMeta,
+    EntitySaver,
+    GetEntitySaversResult
 } from "./m/datasource/EntityDataSource";
 import utils from "./m/utils/Utils";
 import mixins from "./components/mixins";
@@ -102,6 +104,8 @@ export {
     EntityReaderOrderEnum,
     EntityMeta,
     EntityLiteMeta,
+    EntitySaver,
+    GetEntitySaversResult,
     FieldMeta,
     compareMeta,
     utils,

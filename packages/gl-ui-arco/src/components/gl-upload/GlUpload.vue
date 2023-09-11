@@ -99,7 +99,7 @@ const resetMv = () => {
 const loadFiles = () => {
   // mv.value like 1,2,3,4...
   if (!mv.value) return
-  console.log('loadFiles() > mv.value:', mv.value)
+  // console.log('loadFiles() > mv.value:', mv.value)
   fileApi.getAttachmentByIds(mv.value).then((value) => {
     const attaches = value.data
     if (attaches && attaches.length > 0) {

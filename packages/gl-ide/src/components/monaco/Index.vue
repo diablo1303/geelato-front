@@ -196,7 +196,7 @@ const init = () => {
       () => props.readOnly,
       () => {
         // eslint-disable-next-line no-console
-        console.log('props.readOnly', props.readOnly)
+        // console.log('props.readOnly', props.readOnly)
         editor.updateOptions({readOnly: props.readOnly})
       },
       {deep: true},
@@ -245,7 +245,7 @@ const onInsetText = (text: string) => {
  */
 const replaceSelectOrInsert = (text: string) => {
   editor.focus()
-  console.log('editor', text, editor.getSelection(), editor.getPosition())
+  // console.log('editor', text, editor.getSelection(), editor.getPosition())
   const curSelection = editor.getSelection() // 获取光标的信息
   const {startLineNumber, startColumn, endLineNumber, endColumn} = curSelection
   // 在光标位置插入文本
