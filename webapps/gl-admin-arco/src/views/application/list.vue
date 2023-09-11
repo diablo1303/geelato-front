@@ -22,12 +22,12 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('application.app.list.versionInfo')" field="versionInfo">
-              <a-input v-model="filterData.versionInfo" allow-clear @clear="search($event)"
-                       @press-enter="search($event)"/>
-            </a-form-item>
-          </a-col>
+          <!-- <a-col :span="pageData.isModal?12:8">
+                      <a-form-item :label="$t('application.app.list.versionInfo')" field="versionInfo">
+                        <a-input v-model="filterData.versionInfo" allow-clear @clear="search($event)"
+                                 @press-enter="search($event)"/>
+                      </a-form-item>
+                    </a-col>-->
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('security.dictItem.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>

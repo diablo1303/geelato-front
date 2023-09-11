@@ -11,8 +11,8 @@
           </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('security.rolePermission.index.form.roleName')" field="roleName">
-              <a-input v-model="filterData.roleName" :readonly="pageData.params.roleName!=''" allow-clear @clear="search($event)"
-                       @press-enter="search($event)"/>
+              <a-input v-model="filterData.roleName" :allow-clear="pageData.params.roleName==''" :readonly="pageData.params.roleName!=''"
+                       @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">

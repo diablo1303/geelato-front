@@ -10,14 +10,14 @@
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('model.table.index.form.title')" field="title">
-              <a-input v-model="filterData.title" allow-clear @clear="search($event)"
+            <a-form-item :label="$t('model.table.index.form.entityName')" field="entityName">
+              <a-input v-model="filterData.entityName" allow-clear @clear="search($event)"
                        @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('model.table.index.form.entityName')" field="entityName">
-              <a-input v-model="filterData.entityName" allow-clear @clear="search($event)"
+            <a-form-item :label="$t('model.table.index.form.title')" field="title">
+              <a-input v-model="filterData.title" allow-clear @clear="search($event)"
                        @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
