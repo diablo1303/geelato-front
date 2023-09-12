@@ -77,6 +77,7 @@ import type {LoginData} from '@/api/user';
 import {DEFAULT_ROUTE} from "@/router/constants";
 import {appDataBaseRoutes, formatAppModules} from "@/router/routes";
 import {getToken} from "@/utils/auth";
+import {QueryAppForm, queryApps} from "@/api/application";
 
 const router = useRouter();
 const route = useRoute();
@@ -106,14 +107,30 @@ const getDataBaseRouters = async () => {
   }
 }
 
-const enterApp = () => {
-  const {redirect, ...othersQuery} = router.currentRoute.value.query;
-  if (redirect) {
-    router.push({name: redirect as string, params: {...othersQuery} as RouteParamsRaw});
-  } else if (DEFAULT_ROUTE.name) {
-    router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
+const enterApp = async () => {
+  // http://localhost:5173/:tenantCode/:appId/login
+  if (route && route.params && route.params.tenantCode && route.params.appId) {
+    const {redirect, ...othersQuery} = router.currentRoute.value.query;
+    if (redirect) {
+      router.push({name: redirect as string, params: {...othersQuery} as RouteParamsRaw});
+    } else if (DEFAULT_ROUTE.name) {
+      router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
+    } else {
+      Message.warning('应用下没有菜单，请先添加！');
+    }
   } else {
-    Message.warning('应用下没有菜单，请先添加！');
+    // http://localhost:5173/login => http://localhost:5173/:tenantCode/:appId/page
+    const {tenantCode} = userStore.userInfo;
+    if (tenantCode) {
+      const {data} = await queryApps({"tenantCode": tenantCode} as QueryAppForm);
+      if (data && data.length > 0) {
+        window.location.assign(`${window.location.origin}/${tenantCode}/${data[0].id}/page`);
+      } else {
+        Message.warning('租户下没有应用，请先添加！');
+      }
+    } else {
+      Message.warning('当前用户缺失租户编码，请联系管理员！');
+    }
   }
 }
 onMounted(() => {
@@ -129,8 +146,8 @@ const handleSubmit = async ({errors, values,}: {
     setLoading(true);
     try {
       await userStore.login(values as LoginData);
-      // getDataBaseRouters();
-      enterApp();
+      await userStore.info();
+      await enterApp();
       Message.success(t('login.form.login.success'));
       const {rememberPassword} = loginConfig.value;
       const {username, password} = values;
