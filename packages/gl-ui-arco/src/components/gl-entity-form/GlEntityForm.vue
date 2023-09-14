@@ -66,6 +66,13 @@ const props = defineProps({
     type: Object,
     required: true
   },
+  // 是否立即加载
+  immediate: {
+    type: Boolean,
+    default() {
+      return true
+    }
+  },
   ...mixins.subFormProps,
   layout: {
     type: String as PropType<LayoutType>,
@@ -85,9 +92,14 @@ const isRead = pageProvideProxy.isPageStatusRead()
 // 通过默认通用关键字form获取的表单值，好处就是在配置打开页面传参时，不需要配置具体表单名，配置方便
 // ！！！注意，该方式在同一页面多表单嵌套时，很可能会污染子级表单的值，没法做到精确控制表单传值
 const formParams = getFormParams(pageProvideProxy, props.bindEntity)
+
 // formData中不包括记录id，记录id在entityRecordId中定义
-const formData = ref<Record<string, any>>(formParams);
-// console.log('GlEntityForm[' + props.bindEntity?.entityName + '] > formData:', formData.value, 'formParams:', formParams)
+const formData = ref<Record<string, any>>(JSON.parse(JSON.stringify(formParams)));
+const setFormData = (key: string, value: any, src?: string) => {
+  // console.log(src, props.bindEntity.entityName, 'setFormData', key, value)
+  formData.value[key] = value
+}
+// console.log(props.bindEntity?.entityName + '> formData:', formData.value)
 let entityRecordId: Ref<string> = ref(formParams.id)
 formProvideProxy.setRecordId(entityRecordId.value)
 
@@ -99,6 +111,25 @@ const checkValidDataEntry = (componentName: string) => {
   return isDataEntry(componentName) && componentName !== 'GlEntityTableSub' && componentName !== 'GlEntityForm'
 }
 
+// 传进来的参数是否包括了所有的字段值
+const isFormParamsContainAllFields = (items: FormItem[]) => {
+  console.log('传进来的参数是否包括了所有的字段值', items, formParams)
+  if (!formParams) return false
+  const paramNames = Object.keys(formParams)
+  let isContain = true
+  for (let key in items) {
+    const item = items[key]
+    const foundResult = paramNames.find((paramName: string) => {
+      return paramName === item.fieldName
+    })
+    if (!foundResult) {
+      isContain = false
+      break
+    }
+  }
+  console.log('传进来的参数是否包括了所有的字段值', isContain)
+  return isContain
+}
 /**
  * 遍历构建表单数据项，设置值
  * 在初始化构建时，由于子表单不存在，不会调用子表单的构建方法，另外，各层级子表单组件在加载数据时，需自动加载各自的构建方法
@@ -109,6 +140,9 @@ const buildFieldItems = () => {
   formItems.value.length = 0
   subFormInstIds.value.length = 0
 
+  /**
+   * @param inst 表单实例，也可以是子表单实例
+   */
   function buildFieldItem(inst: ComponentInstance) {
     for (let index in inst.children) {
       // @ts-ignore
@@ -148,7 +182,7 @@ const buildFieldItems = () => {
           })
           return
         } else {
-          formData.value[subInst.props.bindField.fieldName] = subInst.value
+          setFormData(subInst.props.bindField.fieldName, subInst.value, 'buildFieldItem')
         }
         formItems.value.push(formItem)
       } else if (subInst.componentName === 'GlEntityTableSub' && subInst.props?.base?.isFormSubTable) {
@@ -206,6 +240,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
             subInst.value = typeof value !== 'number' ? Number(value) : value
           } else {
             subInst.value = value
+            // console.log('set inst value:', subInst.componentName, subInst.props.label, subInst.id, subInst.value)
           }
 
           // 对于输入表单项，需要另外记录formItems、formData
@@ -219,7 +254,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
             }
             formItems.value.push(formItem)
             // @ts-ignore
-            formData.value[subInst.props.bindField.fieldName] = subInst.value
+            setFormData(subInst.props.bindField.fieldName, subInst.value, 'setFieldItemValue')
           }
         }
       }
@@ -240,7 +275,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
   //   refreshFlag.value = true
   // })
 
-  // console.log('GlEntityForm > setFormItemValues() > formData:', formData.value, dataItem)
+  console.log('GlEntityForm > setFormItemValues() > formData:', formData.value, dataItem)
   emits('onLoadedData', {data: formData.value})
 }
 
@@ -248,8 +283,9 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
  *  加载表单数据
  */
 const loadForm = async () => {
+
   if (!entityRecordId.value) {
-    // 1、不需要从服务端获取
+    // 1、不需要从服务端获取，没有id表示新增，不需要从服务端获取表单值
     if (isRead && props.glIsRuntime) {
       global.$notification.error({
         duration: 8000,
@@ -263,7 +299,7 @@ const loadForm = async () => {
       setFormItemValues(formData.value)
     })
   } else {
-    // 2、需要从服务端获取
+    // 2、需要从服务端获取，有ID
     // 2.1 构建表单数据项
     buildFieldItems()
     // 2.2基于上面构建的表单项，构建数据加载字段
@@ -276,12 +312,20 @@ const loadForm = async () => {
       }
     })
     if (checkBindEntity()) {
-      entityApi.query(props.bindEntity.entityName, fieldNames.join(','), {id: entityRecordId.value}).then((resp) => {
-        const items = resp?.data
-        if (items && items.length > 0) {
-          setFormItemValues(items[0])
-        }
-      })
+      /**
+       *  默认在初始化时加载数据
+       */
+      if (loadDataImmediate()) {
+        entityApi.query(props.bindEntity.entityName, fieldNames.join(','), {id: entityRecordId.value}).then((resp) => {
+          const items = resp?.data
+          if (items && items.length > 0) {
+            console.log(props.bindEntity.entityName, '从服务端加载数据并设置到当前页面中', items[0])
+            setFormItemValues(items[0])
+          }
+        })
+      } else {
+        setFormItemValues(formParams)
+      }
     }
   }
 }
@@ -451,48 +495,6 @@ const submitForm = async () => {
   } else {
     return false
   }
-  // // checkConfig()
-  // // 构建表单数据项，设置值
-  // buildFieldItems()
-  // // 再进一步进行表单数据项值校验
-  // const validateResult = await formRef.value?.validate();
-  // // 验证子表单，若存在则验证
-  // let subFormTableValidError = false
-  // subFormInstIds.value.forEach((instId: string) => {
-  //   const validateFn = pageProvideProxy.getMethod(instId, 'validate')
-  //   if (typeof validateFn === 'function') {
-  //     const validateTableData = validateFn()
-  //     // console.log('GlEntityForm > submitForm() > validateTableData', validateTableData)
-  //     if (validateTableData.error) {
-  //       subFormTableValidError = true
-  //     }
-  //   }
-  // })
-  //
-  // // console.log('submitForm() > validate form:', formRef.value, ' result:', validateResult)
-  // if (!validateResult && !subFormTableValidError) {
-  //   setLoading(true);
-  //   // console.log('submitForm() > formData', formData)
-  //   const saveResult = await saveForm()
-  //   entityRecordId.value = saveResult?.data
-  //   // 将表单值，注册到表单的子项中
-  //   formProvideProxy.setRecordId(entityRecordId.value)
-  //   if (hasSubFormTable()) {
-  //     // 保存之后刷新子表
-  //     subFormInstIds.value.forEach((instId: string) => {
-  //       const refreshFn = pageProvideProxy.getMethod(instId, 'refresh')
-  //       if (typeof refreshFn === 'function') {
-  //         refreshFn()
-  //       }
-  //     })
-  //   }
-  //   // console.log('saveResult:', saveResult)
-  //   setLoading(false)
-  //   return true
-  // } else {
-  //   // console.error('保存表单验证失败', validateResult, subFormTableValidError)
-  //   return false
-  // }
 };
 
 /**
@@ -532,6 +534,11 @@ onMounted(() => {
   // console.log('GLEntityForm > onMounted() > id', props.glComponentInst.id)
 })
 
+
+const loadDataImmediate = () => {
+  console.log('props.immediate', props.immediate, props.bindEntity.entityName)
+  return props.immediate !== false
+}
 
 loadForm()
 

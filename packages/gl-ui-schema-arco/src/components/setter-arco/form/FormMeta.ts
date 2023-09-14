@@ -34,6 +34,18 @@ export default {
         "enableValueExpress": false,
         "displayMode": "tile"
     }, {
+        "name": "immediate",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterDefaultValue": true,
+        "setterComponentVModelName": "modelValue",
+        "title": "立即加载",
+        "setterComponentName": "ASwitch",
+        "description": "默认立即从服务端中加载数据，若选择为否，则打开表单时，不从服务端加载表单数据，一般是用于由外部传参数并填充表单的场景"
+    }, {
         "name": "isSubForm",
         "setterComponentProps": {"checkedText": "子表单", "uncheckedText": "非子表单"},
         "setterComponentVModelName": "modelValue",
@@ -145,5 +157,10 @@ export default {
         "title": "获取表单值",
         "description": "获取表单值对象，如：{id,'xx',name:'xxx'}",
         "params": []
-    }]
+    }, {
+        "name": "getEntitySavers",
+        "title": "获取实体保存对象",
+        "description": "获取实体保存对象，返回{error:boolean,values:EntitySaver[]}",
+        "params": []
+    },]
 }

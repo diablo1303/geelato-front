@@ -155,9 +155,9 @@ const showFormItem = (inst: ComponentInstance) => {
                 }}
               </div>
             </template>
-            <template v-if="childComponentInst.props?.help" #help>
+            <template v-if="childComponentInst.props?.description" #help>
               <div>{{
-                  i18nConvert(childComponentInst.props?.help, childComponentInst.i18n)
+                  i18nConvert(childComponentInst.props?.description, childComponentInst.i18n)
                 }}
               </div>
             </template>

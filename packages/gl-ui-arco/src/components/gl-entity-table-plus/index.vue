@@ -13,7 +13,7 @@ import GlToolbar from "../gl-toolbar/index.vue";
 import GlEntityTable from "../gl-entity-table/GlEntityTable.vue";
 import GlEntityTableEditable from "../gl-entity-table/GlEntityTableEdit.vue";
 import {computed, inject, onMounted, type PropType, ref, type Ref} from "vue";
-import type {EntityReaderParam, Param} from "@geelato/gl-ui";
+import type {EntityReaderParam} from "@geelato/gl-ui";
 import QueryItem from "../gl-query/query";
 import cloneDeep from "lodash/cloneDeep";
 import {
@@ -35,8 +35,6 @@ import {
   useGlobal, EntitySaver, GetEntitySaversResult
 } from "@geelato/gl-ui";
 import type {Action} from "../../types/global";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
-import type {EntitySavingObject} from "@/components/gl-entity-form/GlEntityForm";
 
 /**
  *  change:在表格编辑状态时，更换表格数据时触发
@@ -281,10 +279,10 @@ const getRenderColumns = () => {
   return tableRef.value.getRenderColumns()
 }
 const getDeleteData = () => {
-  return tableRef.value.getDeleteData()
+  return tableRef.value.getDeleteRecords()
 }
-const getDeleteRecord = () => {
-  return tableRef.value.getDeleteData()
+const getDeleteRecords = () => {
+  return tableRef.value.getDeleteRecords()
 }
 
 const validate = (): { error: boolean, resultList: Array<any> } => {
@@ -347,9 +345,9 @@ const entityTable = computed(() => {
 const createEntitySavers = (subFormPidValue?: string) => {
   const entitySavers: EntitySaver[] = []
   // 处理需保存的子表单数据
-  const renderColumns = getRenderColumns()
+  // const renderColumns = getRenderColumns()
   const subFormTableData = getRenderData()
-  console.log('createEntitySavers() > subFormTableData', subFormTableData)
+  console.log('GlEntityTablePlus > createEntitySavers() > subFormTableData', subFormTableData)
   // 子表中，对应主表单ID的字段名
   const subTablePidName = props.base.subTablePidName!
   if (subFormTableData && subFormTableData.length > 0) {
@@ -363,13 +361,12 @@ const createEntitySavers = (subFormPidValue?: string) => {
       entitySaver.record = record
       entitySavers.push(entitySaver)
     })
-
   }
   // 处理需删除子表单数据
   // 当前为逻辑删除，可依据子表的isLogicDeleteMode来区分
   // console.log('GlEntityForm > saveForm() > getDeleteDataFn', getDeleteDataFn)
   const deleteData = getDeleteData()
-  // console.log('GlEntityForm > saveForm() > deleteData:', deleteData)
+  console.log('GlEntityTablePlus > createEntitySavers() > deleteData:', deleteData)
   if (deleteData && deleteData.length > 0) {
     deleteData.forEach((record: Record<any, any>) => {
       record[subTablePidName] = subFormPidValue
@@ -389,6 +386,7 @@ const getEntitySavers = (subFormPidValue?: string) => {
     result.error = false
     result.values = createEntitySavers(subFormPidValue)
   }
+  return result
 }
 
 const global = useGlobal()
@@ -433,7 +431,7 @@ defineExpose({
   deleteRow,
   refresh,
   getRenderRecord,
-  getDeleteRecord,
+  getDeleteRecords,
   getRenderData,
   getRenderColumns,
   getDeleteData,

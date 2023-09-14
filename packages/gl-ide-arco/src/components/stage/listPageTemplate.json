@@ -236,7 +236,6 @@
           {
             "title": "类型",
             "dataIndex": "type",
-            "xRenderScript": "",
             "sortable": {}
           },
           {

@@ -36,6 +36,7 @@ export function executeInstPropsExpressions(inst: ComponentInstance, ctx: object
  * @param ctx
  */
 export function executeObjectPropsExpressions(obj: any, ctx: object) {
+    // console.log('executeObjectPropsExpressions() > obj:', obj, 'ctx:', ctx)
     // @ts-ignore
     if (obj && typeof obj === 'object') {
         if (obj.length !== undefined) {
@@ -81,8 +82,16 @@ export function executeArrayExpressions(ary: object[], ctx: object) {
  * @param ctx
  */
 export const executePropsExpressions = (glComponentInst: any, ctx: Ctx) => {
-    // console.log('executePropsExpressions() > ctx:', glComponentInst.componentName, glComponentInst.props.label, ctx)
+    // console.log('executePropsExpressions() > ctx:', glComponentInst.componentName, glComponentInst.props.label, ctx, glComponentInst)
     executeInstPropsExpressions(glComponentInst, ctx)
     executeObjectPropsExpressions(glComponentInst.props, ctx)
     // console.log('_hidden',glComponentInst.props._hidden)
 }
+
+/**
+ * 组件设置到pageProxy的时机，对于最原子的组件，即组件不引用其它动态组件，则
+ * @param componentName
+ */
+// export const isSetRefOnMounted = (componentName:string)=>{
+//
+// }

@@ -27,7 +27,6 @@ import {
   genQueryColumns, showAction
 } from "./table";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
-import cloneDeep from "lodash/cloneDeep";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal;
 // fetch 加载完成数据之后
@@ -287,6 +286,9 @@ const validate = () => {
   return {error, resultList}
 }
 
+const getDeleteRecords = () => {
+  return []
+}
 
 defineExpose({
   resetColumns,
@@ -295,6 +297,7 @@ defineExpose({
   popupVisibleChange,
   changeShowColumns,
   validate,
+  getDeleteRecords,
   getQueryData,
   getRenderData,
   getRenderColumns,

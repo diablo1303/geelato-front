@@ -22,9 +22,9 @@
         </span>
       </template>
       <template v-if="!isCollapseDisplayMode">
-<!--         <span v-if="propertySetterMeta.description">-->
-<!--          <GlIconfont type="gl-info-circle" :title="propertySetterMeta.description"></GlIconfont>-->
-<!--        </span>-->
+        <!--         <span v-if="propertySetterMeta.description">-->
+        <!--          <GlIconfont type="gl-info-circle" :title="propertySetterMeta.description"></GlIconfont>-->
+        <!--        </span>-->
         <span :class="{'gl-tips':!!propertySetterMeta.description}"
               :title="propertySetterMeta.description">&nbsp;{{ propertySetterMeta.title }}</span>
       </template>
@@ -165,7 +165,7 @@ export default {
 // @ts-nocheck
 import {computed, inject, onMounted, onUpdated, type PropType, reactive, ref, toRaw, watch} from 'vue'
 import type {PropertySetterMetaImpl} from "@geelato/gl-ui-schema";
-import  {ComponentSetterProvideKey,ComponentSetterProvideProxy} from "@geelato/gl-ide";
+import {ComponentSetterProvideKey, ComponentSetterProvideProxy} from "@geelato/gl-ide";
 
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 let initialized = false
@@ -225,8 +225,8 @@ const setPropertyModel = (isCreate: boolean) => {
         propsName: props.propertySetterMeta.slotComponentBindName
       }
     } else {
-      if (isCreate && props.propertySetterMeta.setterDefaultValue !== undefined) {
-        // 若组件配置了默认值，则设置默认值
+      if (isCreate && props.propertySetterMeta.setterDefaultValue !== undefined && propertyModel.value === undefined) {
+        // 若组件配置了默认值,且组件还未有值，则设置默认值
         propertyModel.value = props.propertySetterMeta.setterDefaultValue
       } else {
         // 若组件未配置默认值，则按类型进行设置值设置

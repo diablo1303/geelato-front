@@ -123,27 +123,37 @@ export default class PageProvideProxy {
     /**
      * 页面内子组件引用（在组件mounted之后执行）
      * 同时计算有多少组件还未mounted，记录在unMountedIds
+     *
+     * 注意！！！
+     * 本方法可在gl-component的setup先执行一次，再在onMounted再执行一次
+     * 第一次执行是为了确保基础组件的VueRef都已创建，便于后续的组件在事件中引用前端创建的组件
+     * 第二次在onMounted中再执行一次，是为了确保像table这类复合的组件在create时，vueRef的refs为{}，无实际的组件实例，需要onMounted时才产生
      * @param componentId
      * @param vueRef vue实组件实例，这里的vueRef为GlComponent动态组件实例，需再进一步通过refs[componentId]获取最终的实例
      */
     setVueRef(componentId: string, vueRef: ComponentInternalInstance | null) {
+        // console.log('setVueRef() > pageProxyId:', this.id, 'componentId:', componentId, 'vueRef:', vueRef)
         if (componentId && vueRef) {
             // console.log('setVueRef(),componentId:', componentId, ',vueRef:', vueRef, vueRef.props.glComponentInst)
             this.vueRefMap[componentId] = vueRef
             this.componentInstMap[componentId] = vueRef.props.glComponentInst as ComponentInstance
 
-            // vueRef.subTree.component?.exposed
-
             // 由于动态组件的的onMounted事件次序中，父组件不是最后一个触发，这个自行实现
             if (this.unMountedIds[componentId]) {
-                delete this.unMountedIds[componentId]
-                // console.log('delete unMounted id:', componentId, 'current unMountedIds:', Object.keys(this.unMountedIds).length, this.unMountedIds,)
-                if (Object.keys(this.unMountedIds).length === 0) {
-                    if (this.onPageMountedEvents.length > 0) {
-                        for (const index in this.onPageMountedEvents) {
-                            this.onPageMountedEvents[index].fn()
+                // vueRef.refs有实例时，才算有效设置，这时就可以标记已经onMounted
+                if (vueRef.refs && Object.keys(vueRef.refs).length > 0) {
+                    delete this.unMountedIds[componentId]
+                    // console.log('delete unMounted id:', componentId, 'current unMountedIds:', Object.keys(this.unMountedIds).length, this.unMountedIds,)
+                    if (Object.keys(this.unMountedIds).length === 0) {
+                        if (this.onPageMountedEvents.length > 0) {
+                            for (const index in this.onPageMountedEvents) {
+                                this.onPageMountedEvents[index].fn()
+                            }
                         }
                     }
+                    // console.log('setVueRef() > 组件（' + componentId + '）已完成onMounted。', vueRef.refs)
+                } else {
+                    // console.log('setVueRef() > 组件（' + componentId + '）未完成onMounted，当前的vueRef为空或vueRef.refs的对象为空。', vueRef.refs)
                 }
             }
         }
@@ -250,32 +260,8 @@ export default class PageProvideProxy {
             return param.name === paramName
         })
         return foundParam ? foundParam.value : null
-        // let pName = ''
-        // const foundParam = this.pageParams?.find((param: { [key: string]: any }) => {
-        //     const foundKey = Object.keys(param).find((key: string) => {
-        //         return key === paramName
-        //     })
-        //     if (foundKey) {
-        //         pName = foundKey
-        //         return true
-        //     }
-        //     return false
-        // })
-        //
-        // if (foundParam) {
-        //     return foundParam[pName]
-        // }
-        // return null
     }
 
-
-    // setCtx(ctx: object) {
-    //     this.pageCtx = ctx
-    // }
-    //
-    // getCtx() {
-    //     return this.pageCtx
-    // }
 
     /**
      * 设置组件值glComponentInst.value

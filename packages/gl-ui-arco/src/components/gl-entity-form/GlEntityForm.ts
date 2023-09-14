@@ -15,5 +15,5 @@ export const getFormParams = (pageProvideProxy: PageProvideProxy, bindEntity?: R
 // console.log('formParams', formParams, 'formParamsByEntityName', formParamsByEntityName)
 // 合并两种模式下的传值
     Object.assign(formParams, formParamsByKeywordFlag, formParamsByEntityName)
-    return formParams
+    return formParams || {}
 }

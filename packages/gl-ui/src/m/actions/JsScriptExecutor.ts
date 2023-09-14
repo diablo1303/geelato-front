@@ -179,7 +179,7 @@ export class JsScriptExecutor {
         if (pageProxy) {
             return pageProxy.getParamValue(paramName)
         }
-        console.error('在获取页面参数（'+paramName+'）的值时，获取不到当前页面代理对象（pageProxy）。' )
+        console.error('在获取页面参数（' + paramName + '）的值时，获取不到当前页面代理对象（pageProxy）,返回参数值null')
         return null
     }
 
@@ -372,6 +372,7 @@ export class JsScriptExecutor {
             if (pageProxy) {
                 const ref = pageProxy.getRef(componentId)
                 if (ref) {
+                    console.log('$gl.fn.setComponentValue', componentId, value)
                     return pageProxy.setComponentValue(componentId, value)
                 }
             }
@@ -641,7 +642,7 @@ export class JsScriptExecutor {
             // 多页面嵌套场景
             insts: <{ [key: string]: any }>{},
             refs: <{ [key: string]: any }>{},
-            ctx: {},
+            ctx: {record: {}},
             fn: utils,
             entityApi,
             fileApi,
@@ -668,7 +669,7 @@ export class JsScriptExecutor {
         for (const pageComponentId in pageProxyMap) {
             const pageProxy = pageProxyMap[pageComponentId]
             if (pageProxy) {
-                // console.log('pageProxy.getInsts():', pageProxy.getInsts())
+                // console.log('set refs and insts to $gl,pageProxy:', pageProxy.id, '$gl.id:', $gl.id, pageProxy.getInsts(), pageProxy.getRefs())
                 for (let instKey in pageProxy.getInsts()) {
                     // 单页面模式，只留第一次出现的组件
                     if ($gl.inst[instKey]) {
@@ -676,7 +677,9 @@ export class JsScriptExecutor {
                         // TODO
                     } else {
                         $gl.inst[instKey] = pageProxy.getInsts()[instKey]
-                        $gl.ref[instKey] = pageProxy.getRef(instKey)?.refs[instKey]
+                        // !!!注意组件的子组件未加载时，refs可能为空{}
+                        $gl.ref[instKey] = pageProxy.getRef(instKey)!.refs[instKey]
+                        // console.log('instKey', instKey, $gl.ref[instKey],Object.keys(pageProxy.getRef(instKey)?.refs!))
                     }
                     // 多页面并存
                     if (!$gl.insts[pageComponentId]) {
