@@ -9,7 +9,8 @@ const copDict = {
     gte: '大于等于',
     sw: '开头包括',
     ew: '结尾包括',
-    contains: '包括'
+    contains: '包括',
+    nil:'是否空'
 }
 const cops = [
     {text: '等于', value: 'eq'},
@@ -21,7 +22,8 @@ const cops = [
     {text: '开头包括', value: 'sw'},
     {text: '结尾包括', value: 'ew'},
     {text: '包括', value: 'contains'},
-    {text: '在其中', value: 'in'}
+    {text: '在范围', value: 'in'},
+    {text: '是否空', value: 'nil'}
 ]
 
 

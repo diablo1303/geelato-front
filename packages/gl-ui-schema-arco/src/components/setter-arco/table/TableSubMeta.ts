@@ -449,7 +449,9 @@ export default {
         "title": "行记录更改",
         "description": "在数据表的行内编辑模式下，当数据表的行记录信息更换时触发"
     }],
-    "methods": [{"name": "refresh", "title": "刷新", "description": "刷新表格", "params": []}, {"name": "reRender", "title": "重新渲染", "description": "基于当前的表格数据重新渲染", "params": []},{
+    "methods": [{"name": "refresh", "title": "刷新", "description": "刷新表格", "params": []},
+        {"name": "getEntitySavers", "title": "获取实体保存对象", "description": "获取实体保存对象，返回{error:boolean,values:EntitySaver[]}", "params": []},
+        {"name": "reRender", "title": "重新渲染", "description": "基于当前的表格数据重新渲染", "params": []},{
         "name": "deleteRow",
         "title": "删除行",
         "params": [{

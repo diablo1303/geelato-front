@@ -92,7 +92,7 @@ export class Utils {
             // console.log('gl-ui > utils > evalExpression() > expression: ', expression, 'result:', result, '$gl', $gl)
             return result
         } catch (e: any) {
-            console.error('执行脚本出错', e.message, '表达式为：', expression)
+            console.error('执行脚本出错', e.message, '表达式为：', expression, '$gl为：', $gl)
             return ''
         }
     }

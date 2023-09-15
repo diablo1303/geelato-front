@@ -42,7 +42,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {computed, getCurrentInstance, inject, nextTick, ref, watch} from 'vue'
+import {computed, getCurrentInstance, inject, nextTick, onMounted, ref, watch} from 'vue'
 import mixins from "../mixins";
 import jsScriptExecutor from "../../m/actions/JsScriptExecutor";
 import type {Action} from "@geelato/gl-ui-schema";
@@ -62,6 +62,7 @@ const props = defineProps({
 const pageProvideProxy: PageProvideProxy | undefined = props.glIgnoreInjectPageProxy ? undefined : inject(PageProvideKey)!
 
 // console.log('GlComponent > setVueRef >', props.glComponentInst.componentName, props.glComponentInst.id, getCurrentInstance(), pageProvideProxy)
+// 在setup阶段先setVueRef，对于有些组件如GlTable
 pageProvideProxy?.setVueRef(props.glComponentInst.id, getCurrentInstance())
 
 const refreshFlag = ref(true)
@@ -178,19 +179,28 @@ watch(() => {
     refreshFlag.value = true
   })
 })
-
-executePropsExpressions(props.glComponentInst, {
-  pageProxy: pageProvideProxy,
-  ...props.glCtx
-})
-
-
 // console.log('props.glCtx', props.glCtx, props.glComponentInst.props?.label, '_hidden', props.glComponentInst.props?._hidden)
-
 const isShow = computed(() => {
   return props.glComponentInst.props?._hidden
 })
 
+// const onSubMounted = (args: any) => {
+//   console.log('......onSubMounted', args)
+// }
+onMounted(() => {
+  // 在此再调用setVueRef，确保pageProvideProxy的onMounted事件在各组件的加载完成之后触发
+  pageProvideProxy?.setVueRef(props.glComponentInst.id, getCurrentInstance())
+
+  // console.log('executePropsExpressions ctx', props.glComponentInst.componentName, {
+  //   pageProxy: pageProvideProxy,
+  //   ...props.glCtx
+  // })
+  // 2023-9-13 将脚本执行移到onMounted事件中，确保此时vueRef已存在
+  executePropsExpressions(props.glComponentInst, {
+    pageProxy: pageProvideProxy,
+    ...props.glCtx
+  })
+})
 defineExpose({onMouseLeave, onMouseOver})
 
 </script>

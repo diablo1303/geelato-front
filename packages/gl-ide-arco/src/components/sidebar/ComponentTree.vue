@@ -16,45 +16,66 @@ const componentTree = ref()
  */
 const treeFieldNames = {
   key: 'id',
-  title: 'componentName',
 }
 const selectedKeys = ref([])
+
+type Node = {
+  id: string,
+  title: string,
+  children: Node[]
+}
 
 /**
  *  选择一个节点，可能是点击选择，也可以是新增之后选择
  *  并触发selectNode事件，将当前的节点为作参数
  */
-const selectNode = (node: any) => {
+const selectNode = (node: Node) => {
   console.log('selectNode', node)
   // 定位到新增的节点
   selectedKeys.value = []
   // @ts-ignore
   selectedKeys.value.push(node.id)
   console.log('selectedKeys', selectedKeys.value)
-  componentStore.setCurrentSelectedComponentById(node.id)
+  componentStore.setCurrentSelectedComponentById(node.id, '')
 
   // emits('selectNode', {selectedNode:node})
 }
 
 const searchKey = ref('');
 const treeData = computed(() => {
-  if (!searchKey.value) return componentStore.currentComponentTree;
+  // return componentStore.currentComponentTree;
+  // if (!searchKey.value) return componentStore.currentComponentTree;
   return searchData(searchKey.value);
 })
 
 const searchData = (keyword: String) => {
+  console.log('searchData', keyword)
   const loop = (data: Array<any>) => {
-    const result: Array<any> = [];
+    const result: Array<Node> = [];
     data.forEach(item => {
-      if (item.componentName.toLowerCase().indexOf(keyword.toLowerCase()) > -1) {
-        result.push({...item});
-      } else if (item.children) {
-        const filterData = loop(item.children);
-        if (filterData.length) {
-          result.push({
-            ...item,
-            children: filterData
-          })
+      const title = (item.props.label || item.componentName) + ' ' + item.id
+      const node: Node = {
+        id: item.id,
+        title: title,
+        children: []
+      }
+      if (!keyword) {
+        if (item.children) {
+          const filterData: Array<Node> = loop(item.children);
+          if (filterData.length) {
+            node.children = filterData
+          }
+        }
+        result.push(node);
+      } else {
+        if (title.toLowerCase().indexOf(keyword.toLowerCase()) > -1) {
+          result.push(node);
+        } else if (item.children) {
+          const filterData: Array<Node> = loop(item.children);
+          if (filterData.length) {
+            node.children.push(...filterData)
+            result.push(node);
+          }
         }
       }
     })
@@ -82,20 +103,15 @@ function getMatchIndex(componentName: String) {
             :selectedKeys="selectedKeys">
       <template #title="nodeData">
         <span @click="selectNode(nodeData)" :title="nodeData.componentName">
-          <template v-if="index = getMatchIndex(nodeData?.componentName), index < 0">
-            <template v-if="nodeData.props.label ">
-              {{nodeData.props.label || nodeData.componentName}}
-            </template>
-            <template v-else>
-              {{nodeData.componentName}}
-            </template>
-        </template>
-        <span v-else>
-          {{ nodeData?.componentName?.substring(0, index) }}
-          <span style="color: var(--color-primary-light-4);">
-            {{ nodeData?.componentName?.substring(index, searchKey.length) }}
-          </span>{{ nodeData?.componentName?.substring(index + searchKey.length) }}
-        </span>
+          <template v-if="index = getMatchIndex(nodeData?.title),index<0">
+            {{ nodeData.title }}
+          </template>
+          <span v-else>
+            {{ nodeData?.title?.substring(0, index) }}
+            <span style="color: var(--color-primary-light-4);">
+              {{ nodeData?.title?.substring(index, searchKey.length) }}
+            </span>{{ nodeData?.title?.substring(index + searchKey.length) }}
+          </span>
         </span>
       </template>
     </a-tree>

@@ -26,13 +26,28 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
                 width:${width},
                 okText:${okText},
                 onBeforeOk: async ()=>{
-                    #{onBeforeOk}
+                    try{
+                        #{onBeforeOk}
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
                 },
                 onOpen:async ()=>{
-                    #{onOpen}
+                    try{
+                        #{onOpen}
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
                 },
                 onClose:async ()=>{
-                    #{onClose}
+                    try{
+                        #{onClose}
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
                 },
                 cancelText:${cancelText},
                 hideCancel:${hideCancel}

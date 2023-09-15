@@ -120,6 +120,7 @@ export const evalExpression = (data: {
         column: toRaw(data.column),
         rowIndex: toRaw(data.rowIndex),
     };
+    // console.log('evalExpression', data)
     return jsScriptExecutor.evalExpression(ctx.column._renderScript, ctx);
 };
 
@@ -137,8 +138,8 @@ export const showAction = (data: {
             action: actionCopy,
             rowIndex: toRaw(data.rowIndex),
         };
+        console.log('showAction()', data.record.id, data.action.props.label, actionCopy.props.unRender !== true && actionCopy.props._hidden !== true, data.record.recordLock)
         executeObjectPropsExpressions(actionCopy, ctx)
-        console.log(data.record.id,data.action.props.label,actionCopy.props.unRender !== true && actionCopy.props._hidden !== true, data.record.recordLock)
         return actionCopy.props.unRender !== true && actionCopy.props._hidden !== true
     } else {
         return data.action.props.unRender !== true && data.action.props._hidden !== true
@@ -236,8 +237,8 @@ export const genShowColumns = (queryColumns: Ref<GlTableColumn[]>, isShowByCompo
         queryColumn.width = queryColumn.width || 150
         queryColumn.align = queryColumn.align || 'center'
 
+        console.log('genShowColumns() > queryColumn', queryColumn)
         executeObjectPropsExpressions(queryColumn, {})
-        // console.log('queryColumn', queryColumn)
         // 设置隐藏的列
         if (isShowByComponent) {
             // 场景1，应用于编辑表，按组件_component的属性来控制，

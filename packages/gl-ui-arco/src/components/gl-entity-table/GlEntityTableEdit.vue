@@ -526,7 +526,7 @@ const getRenderData = () => {
   return renderData.value
 }
 
-const getDeleteData = () => {
+const getDeleteRecords = () => {
   return deleteDataWhenEnableEdit.value
 }
 const getRenderColumns = () => {
@@ -550,7 +550,7 @@ defineExpose({
   reRender,
   getRenderData,
   getRenderColumns,
-  getDeleteData
+  getDeleteRecords
 });
 </script>
 

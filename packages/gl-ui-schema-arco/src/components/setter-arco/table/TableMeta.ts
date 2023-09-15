@@ -212,7 +212,8 @@ export default {
                     "value": "ew",
                     "__sIGch6bIhRKB7cNZod": "ew"
                 }, {"label": "包括", "value": "contains", "__sIGch6bIhRKB7cNZod": "contains"},
-                    {"label": "在范围(in)", "value": "in"}],
+                    {"label": "在范围(in)", "value": "in"},
+                    {"label": "是否空", "value": "nil"}],
                 "buttonStyle": "solid"
             },
             "setterComponentVModelName": "modelValue",
@@ -477,6 +478,7 @@ export default {
     }],
     "methods": [
         {"name": "refresh", "title": "刷新", "description": "刷新表格", "params": []},
+        {"name": "getEntitySavers", "title": "获取实体保存对象", "description": "获取实体保存对象，返回{error:boolean,values:EntitySaver[]}", "params": []},
         {"name": "changeColumnsVisible", "title": "展示/隐藏列", "description": "更改列的展示/隐藏属性，并更新列信息。", "params": []},
         {"name": "batchUpdate", "title": "批量更新", "description": "批量更新表格的记录值，需要输入对象参数，更新的列键值对，如{orderNo:'912881'}", "params": []}, {
         "name": "deleteRow",

@@ -46,6 +46,7 @@ import * as dictApi from "./m/datasource/FileApi"
 import * as fileApi from "./m/datasource/FileApi"
 import * as encodingApi from "./m/datasource/EncodingApi"
 import './assets/style.css'
+import GlInsts from "./components/gl-component/GlInsts.vue";
 
 const Utils = AllUtils
 
@@ -56,7 +57,8 @@ const component: Plugin = {
         }
         jsScriptExecutor.setApp(app)
 
-        // 注册图标库组件
+        // 注册组件
+        app.component(GlInsts.name, GlInsts)
         app.component(GlVirtual.name, GlVirtual)
         app.component(GlIconfont.name, GlIconfont)
         app.component(GlHtml.name, GlHtml)

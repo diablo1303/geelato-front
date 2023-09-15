@@ -17,8 +17,7 @@ export default interface IPropertySetterMeta {
     // 占位符
     placeholder?: String
 
-    // 配置该属性的配置器组件名称
-    setterComponentName: String
+    setterComponentDefaultValue?: any
 
     // 配置器组件属性
     setterComponentProps: SetterComponentPropsMetaImpl
@@ -89,7 +88,7 @@ export class PropertySetterMetaImpl implements IPropertySetterMeta {
     setterComponentProps: SetterComponentPropsMetaImpl;
     setterDefaultValue: undefined;
     show: boolean;
-    displayMode?:string;
+    displayMode?: string;
     title: string;
     setterComponentVModelName: string;
     dataItems: Array<any>;
