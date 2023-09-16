@@ -6,8 +6,8 @@ export default {
 <script setup lang="ts">
 
 import {mixins, utils} from "@geelato/gl-ui";
-import {nextTick, onMounted, onUpdated, type PropType, Ref, ref, watch} from "vue";
-import {type ComponentInstance} from "@geelato/gl-ui-schema";
+import {nextTick, onMounted, onUpdated, type PropType, type Ref, ref, watch} from "vue";
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const emits = defineEmits(['update:modelValue', 'update:items'])
 
