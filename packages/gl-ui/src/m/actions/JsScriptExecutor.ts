@@ -8,6 +8,7 @@ import type {Param} from "../types/global";
 import {entityApi} from "../datasource/EntityApi";
 import * as fileApi from "../datasource/FileApi";
 import dayjs from "dayjs";
+import {getDateTimeFns} from "./fns/datetime";
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 type OptionsType = { [key: string]: any }
@@ -650,6 +651,8 @@ export class JsScriptExecutor {
             // 当前执行方法的变量
             vars: {}
         }
+        // set datetime fns
+        Object.assign($gl.fn, getDateTimeFns($gl))
         // set logic fns
         Object.assign($gl.fn, this.getLogicFns($gl))
         // set components fns
@@ -703,7 +706,7 @@ export class JsScriptExecutor {
      */
     loadPage(pageId: string, extendId: string, params: Array<Param>, pageStatus?: string) {
         const pageProps = {params: params}
-        console.log('JsScriptExecutor > loadPage > pageId:', pageId, 'extendId:', extendId, 'pageStatus:', pageStatus, 'pageProps:', pageProps)
+        console.log('JsScriptExecutor > loadPage > pageId:', pageId, ',extendId:', extendId, ',pageStatus:', pageStatus, ',pageProps:', pageProps)
         return h(GlPageViewer, {pageId, extendId, pageStatus, pageProps})
     }
 

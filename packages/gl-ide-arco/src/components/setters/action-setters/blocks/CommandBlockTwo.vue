@@ -83,7 +83,7 @@ const convertTitle = (title: string) => {
 }
 
 watch(props.glComponentInst, () => {
-  highlightedStr.value = BlockUtils.replaceVariables(highlightedVarStr, props.glComponentInst.props)
+  highlightedStr.value = BlockUtils.replaceVariables(highlightedVarStr, props.glComponentInst.props, props.glComponentInst.propsExpressions)
 }, {immediate: true, deep: true})
 
 const show = ref(true)

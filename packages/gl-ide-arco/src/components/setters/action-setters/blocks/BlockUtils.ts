@@ -11,26 +11,53 @@ export default class BlockUtils {
     static highlightVariables = (str: string | undefined) => {
         if (!str) return ''
         const regex = /\${(\w+)}/g;
-        return str.replace(regex, "<span class='gl-var'>$&</span>");
+        // title='$t$&' 这里用于后续替换展示完整的代码信息
+        return str.replace(regex, "<span class='gl-var' title='$t$&'>$&</span>");
     }
 
-    static replaceVariables = (message: string, params: Params): string => {
+    /**
+     *
+     * @param message
+     * @param props
+     * @param propsExpressions
+     */
+    static replaceVariables = (message: string, props: Params, propsExpressions?: Record<string, any>): string => {
         let result: string = message;
-        Object.keys(params).forEach((paramKey: string) => {
-            let paramValue = params[paramKey]
-            if (paramValue !== undefined) {
+        // 合并props和propsExpressions的所有key，因为没设置值时，key不会出现在props和propsExpressions中。
+        const keys = Object.keys(props)
+        if (propsExpressions) {
+            Object.keys(propsExpressions).forEach((key: string) => {
+                if (!keys.includes(key)) {
+                    keys.push(key)
+                }
+            })
+        }
+        // 获取每个key进行替换
+        keys.forEach((propKey: string) => {
+            let propExpression = propsExpressions ? (propsExpressions[propKey] || '') : ''
+            let simpleParamExpression = ''
+            if (propExpression) {
+                let maxLength = 30
+                let moreInfo = propExpression.length > maxLength ? '...' : ''
+                simpleParamExpression = propExpression.toString().substring(0, maxLength) + moreInfo
+            }
+            // 脚本优先
+            let propValue = simpleParamExpression || props[propKey]
+            let titleValue = propExpression || props[propKey] || ''
+            result = result.replace(new RegExp('\\$t\\${' + propKey + '}', 'g'), titleValue);
+            if (propValue !== undefined) {
                 // 尝试看是不是组件，如果是否组件，取组件label进行展示
-                const componentInst: ComponentInstance = jsScriptExecutor.getComponentInst(paramValue)
-                // console.log('BlockUtils > try to find inst by paramKey:', paramKey, ' paramValue:', paramValue, ',and get', componentInst)
+                const componentInst: ComponentInstance = jsScriptExecutor.getComponentInst(propValue)
+                // console.log('BlockUtils > try to find inst by propKey:', propKey, ' propValue:', propValue, ',and get', componentInst)
                 if (componentInst) {
                     if (componentInst.componentName === 'GlEntityTablePlus') {
-                        paramValue = componentInst.props.base.label || componentInst.id;
+                        propValue = componentInst.props.base.label || componentInst.id;
                     } else {
-                        paramValue = componentInst.props.label || componentInst.id
+                        propValue = componentInst.props.label || componentInst.id
                     }
                 }
-                result = result.replace(new RegExp('\\${' + paramKey + '}', 'g'), paramValue);
-                result = result.replace(new RegExp('{' + paramKey + '}', 'g'), `"${paramValue}"`);
+                result = result.replace(new RegExp('\\${' + propKey + '}', 'g'), propValue);
+                result = result.replace(new RegExp('{' + propKey + '}', 'g'), `"${propValue}"`);
             }
         });
         return result;

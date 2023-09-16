@@ -5,7 +5,7 @@ export default {
     "group": "block_code",
     "title": "JS代码",
     "useBy": ["freePage"],
-    "blockContent": "自定义JS代码，${description}",
+    "blockContent": "自定义JS代码，${description} 代码：${code}",
     "properties": [{
         "name": "code",
         "group": "base",
@@ -18,7 +18,7 @@ export default {
         "setterComponentName": "GlExpressionSetter",
         "enableValueExpress": false,
         "placeholder": "代码内容"
-    },{
+    }, {
         "name": "description",
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",

@@ -109,7 +109,7 @@ const getInvokeBlockLabel = (invokeBlockKey: string) => {
 }
 
 watch(props.glComponentInst, () => {
-  highlightedStr.value = BlockUtils.replaceVariables(highlightedVarStr, props.glComponentInst.props)
+  highlightedStr.value = BlockUtils.replaceVariables(highlightedVarStr, props.glComponentInst.props,props.glComponentInst.propsExpressions)
 }, {immediate: true, deep: true})
 
 onUnmounted(() => {

@@ -5,7 +5,7 @@ export default {
     "group": "block_var",
     "title": "设置变量",
     "useBy": ["freePage"],
-    "blockContent": "设置变量名为：${varName}，值为：${varValue}。",
+    "blockContent": "设置变量：${varName} 值为：${varValue}。",
     "properties": [{
         "name": "varName",
         "setterComponentProps": {},

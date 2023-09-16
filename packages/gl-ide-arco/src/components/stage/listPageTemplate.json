@@ -538,7 +538,7 @@
                 "eventName": "click",
                 "name": "click",
                 "title": "点击",
-                "body": "let varName = 'undefined' || 'confirm'\n            let vars = {}\n            $gl.fn.confirm({\n                width:'15em',\n                title: \"是否删除\",\n                content: \"删除之后将不可恢复！\",\n                onOk: ()=>{\n                  vars[varName] = true;\n                  $gl.fn.notification.info({\n                title:\"'xxxxxxxxxxxxxxx'\",\n                content:\"undefined\"\n                });$gl.fn.invokeComponentMethod(\"table_pX9hXl0mKpq0E3\",\"deleteRow\",[{\"id\":\"0L8pc4NOoZGlyoevMZvJ\",\"name\":\"id\",\"valueExpression\":\"$gl.ctx.record.id\"}])\n                },\n                onCancel: ()=>{\n                  vars[varName] = false;\n                  \n                }\n            })",
+                "body": "let varName = 'undefined' || 'confirm'\n            let vars = {}\n            $gl.fn.confirm({\n                width:'15em',\n                title: \"是否删除\",\n                content: \"删除之后将不可恢复！\",\n                onOk: ()=>{\n                  vars[varName] = true;\n                  $gl.fn.notification.info({\n                title:\"'xxxxxxxxxxxxxxx'\",\n                content:\"undefined\"\n                });$gl.fn.invokeComponentMethod(\"table_pX9hXl0mKpq0E3\",\"deleteRecord\",[{\"id\":\"0L8pc4NOoZGlyoevMZvJ\",\"name\":\"id\",\"valueExpression\":\"$gl.ctx.record.id\"}])\n                },\n                onCancel: ()=>{\n                  vars[varName] = false;\n                  \n                }\n            })",
                 "__commandBlock": {
                   "componentName": "GlPage",
                   "id": "br_5s4ck5lGkzFtoSGvV",
@@ -594,7 +594,7 @@
                               "props": {
                                 "extendId": "3743144604162629401",
                                 "componentId": "table_pX9hXl0mKpq0E3",
-                                "methodName": "deleteRow",
+                                "methodName": "deleteRecord",
                                 "params": [
                                   {
                                     "id": "0L8pc4NOoZGlyoevMZvJ",

@@ -312,6 +312,23 @@ export const useSrvTreeData = () => {
     return [srv]
 }
 
+const date = {
+    title: '日期时间',
+    _code: 'datetime',
+    _type: 'object',
+    // 在构建path时的内容
+    _pathName: 'fn',
+    children: [
+        // _brackets 对于方法，需要同时生成参数内容
+        {
+            title: '当前时间格式化',
+            _code: 'dateText',
+            _type: 'string',
+            _brackets: '()',
+            _description: '无参数时默认为当前时间，格式为YYYY-MM-DD HH:mm:ss，也可以指定两个参数(Date.now(), "YYYY-MM-DD HH:mm:ss")。',
+        }
+    ],
+}
 
 const text = {
     title: '文本',
@@ -365,4 +382,4 @@ const logic = {
 }
 
 
-export const functionalFormulaTreeData = [text, logic]
+export const functionalFormulaTreeData = [date, text, logic]

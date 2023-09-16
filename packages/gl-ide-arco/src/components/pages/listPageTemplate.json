@@ -472,7 +472,7 @@
                 "eventName": "click",
                 "name": "click",
                 "title": "点击",
-                "body": "let varName = 'undefined' || 'confirm'\n            let vars = {}\n            $gl.$modal.open({\n                width:'15em',\n                title: \"危险操作\",\n                content: \"是否确定删除？\",\n                onOk: ()=>{\n                  vars[varName] = true;\n                  return $gl.fn.invokeComponentMethod(\"table_0pDf5U7y3vESsa\",\"deleteRow\",[{\"id\":\"EKkXhRgN52MoRXVmicZT\",\"name\":\"id\",\"valueExpression\":\"$gl.ctx.record.id\"}]);\n                },\n                onCancel: ()=>{\n                  vars[varName] = false;\n                  \n                }\n            })",
+                "body": "let varName = 'undefined' || 'confirm'\n            let vars = {}\n            $gl.$modal.open({\n                width:'15em',\n                title: \"危险操作\",\n                content: \"是否确定删除？\",\n                onOk: ()=>{\n                  vars[varName] = true;\n                  return $gl.fn.invokeComponentMethod(\"table_0pDf5U7y3vESsa\",\"deleteRecord\",[{\"id\":\"EKkXhRgN52MoRXVmicZT\",\"name\":\"id\",\"valueExpression\":\"$gl.ctx.record.id\"}]);\n                },\n                onCancel: ()=>{\n                  vars[varName] = false;\n                  \n                }\n            })",
                 "__commandBlock": {
                   "componentName": "GlPage",
                   "id": "blockPage_wWqxzlu4jp",
@@ -514,7 +514,7 @@
                               "props": {
                                 "extendId": "3711081760969760541",
                                 "componentId": "table_0pDf5U7y3vESsa",
-                                "methodName": "deleteRow",
+                                "methodName": "deleteRecord",
                                 "params": [
                                   {
                                     "id": "EKkXhRgN52MoRXVmicZT",

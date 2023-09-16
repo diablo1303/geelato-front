@@ -451,8 +451,9 @@ export default {
     }],
     "methods": [{"name": "refresh", "title": "刷新", "description": "刷新表格", "params": []},
         {"name": "getEntitySavers", "title": "获取实体保存对象", "description": "获取实体保存对象，返回{error:boolean,values:EntitySaver[]}", "params": []},
-        {"name": "reRender", "title": "重新渲染", "description": "基于当前的表格数据重新渲染", "params": []},{
-        "name": "deleteRow",
+        {"name": "reRender", "title": "重新渲染", "description": "基于当前的表格数据重新渲染", "params": []},
+        {"name": "updateRecord", "title": "单条更新", "description": "更新表格的指定一条记录，需要输传递需更新的记录record，该记录需要有id值。在表格行操作中，值示例：$gl.ctx.record", "params": []},{
+        "name": "deleteRecord",
         "title": "删除行",
         "params": [{
             "name": "id",

@@ -5,7 +5,7 @@ export default {
     "group": "block_page",
     "title": "调用组件方法",
     "useBy": ["freePage"],
-    "blockContent": "调用组件的方法,组件为:${componentId}，方法名为:${methodName}，结果返回到变量:${resultVar}",
+    "blockContent": "调用组件：${componentId}，方法：${methodName}，结果存到变量:${resultVar}",
     "properties": [{
         "name": "appId",
         "setterComponentProps": {},
@@ -106,7 +106,7 @@ export default {
         "title": "返回结果",
         "setterComponentName": "ASwitch",
         "enableValueExpress": false,
-        "placeholder": "返回该方法的调用执行结果，就在方法调用前添加return"
+        "description": "返回该方法的调用执行结果，启用则在方法调用前添加return"
     }, {
         "name": "enableAwait",
         "group": "base",
@@ -118,7 +118,7 @@ export default {
         "title": "同步调用",
         "setterComponentName": "ASwitch",
         "enableValueExpress": false,
-        "placeholder": "是否同步调用该方法，对于自身为异步的方法有效，如服务端请求"
+        "description": "是否同步调用该方法，对于自身为异步的方法有效，如服务端请求，启用则在方法调用前加await"
     }],
     "actions": []
 }

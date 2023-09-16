@@ -216,8 +216,8 @@ const addRow = () => {
  * 默认为逻辑删除，依据属性base.isLogicDeleteMode进行区分
  * @param params
  */
-const deleteRow = (params: Record<string, any>) => {
-  console.log('deleteRow() > params:', params)
+const deleteRecord = (params: Record<string, any>) => {
+  console.log('deleteRecord() > params:', params)
 
   if (!params || !params.id) {
     console.error('基于记录id进行删除失败，未配置参数id。')
@@ -245,7 +245,7 @@ const deleteRow = (params: Record<string, any>) => {
     //   refresh()
     // })
   }
-  // console.log('GlEntityTablePlus > deleteRow() > params:', params)
+  // console.log('GlEntityTablePlus > deleteRecord() > params:', params)
 }
 
 const selectedKeys: Ref<string[]> = ref([])
@@ -392,17 +392,17 @@ const getEntitySavers = (subFormPidValue?: string) => {
 const global = useGlobal()
 /**
  *  批量更新
- *  批量更新部分字段的内容
+ *  批量更新已选中列的部分字段的内容
  *  @record key为字段名，即列名,value为更新后的列值
  */
-const batchUpdate = (params: Record<string, any>) => {
+const batchUpdate = (params: { record: Record<string, any> }) => {
   console.log('batchUpdate params', params)
   //
   const record = params.record
   if (selectedKeys.value.length === 0) {
     global.$notification.error({
       title: '批量更新失败',
-      content: '请先选择需要更新列表的相关记录'
+      content: '请先选择列表中需要更新记录'
     })
   } else {
     const records = getSelectedRecords()
@@ -423,12 +423,35 @@ const batchUpdate = (params: Record<string, any>) => {
   return null
 }
 
+/**
+ * 更新一条记录，该记录必须带有id，确保能更新指定的记录
+ * @param params
+ */
+const updateRecord = (params: { record: Record<string, any> }) => {
+  console.log('updateRecord params', params)
+  const record = params.record
+  if (!record.id) {
+    global.$notification.error({
+      title: '更新失败',
+      content: '参数record对象，需要有id属性，且不为空。'
+    })
+  } else {
+    // TODO 检查record的内容，是否有保存超出本表格的数据列
+    const saveResult = entityApi.save(props.base.entityName, record).then(() => {
+      refresh()
+    })
+    return saveResult
+  }
+  return null
+}
+
 
 defineExpose({
   resetColumns,
   changeColumnsVisible,
   batchUpdate,
-  deleteRow,
+  updateRecord,
+  deleteRecord,
   refresh,
   getRenderRecord,
   getDeleteRecords,
