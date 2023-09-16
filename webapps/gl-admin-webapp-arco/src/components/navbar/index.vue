@@ -207,6 +207,14 @@
           </template>
         </a-dropdown>
       </li>
+      <!--   用户名称和登录名   -->
+      <li>
+        <a-tooltip :content="userName.loginName as string">
+          <a-space>
+            {{ userName.name }}
+          </a-space>
+        </a-tooltip>
+      </li>
     </ul>
   </div>
 </template>
@@ -239,6 +247,9 @@ const locales = [...LOCALE_OPTIONS];
 const avatar = computed(() => {
   const userAvatar = userStore.userInfo.avatar;
   return userAvatar || defaultAvatar;
+});
+const userName = computed(() => {
+  return {name: userStore.userInfo.name, loginName: userStore.userInfo.loginName};
 });
 const theme = computed(() => {
   return appStore.theme;

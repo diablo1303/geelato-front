@@ -39,7 +39,7 @@ export function pageQueryApps(params: PageQueryRequest) {
   });
 }
 
-export function queryApps() {
+export function queryApps(params: QueryAppForm) {
   return axios.get<QueryAppForm[]>('/api/app/query');
 }
 
