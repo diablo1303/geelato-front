@@ -91,7 +91,14 @@ const onOpenModal = () => {
 const handleOk = () => {
   selectedNames.value = selectingNames.value
   selectedIds.value = selectingIds.value
-  pageProvideProxy.setComponentValue(props.nameFieldBindComponentId, selectedNames.value)
+
+  if (props.nameFieldBindComponentId) {
+    const ids = props.nameFieldBindComponentId.split(',')
+    ids.forEach((id: string) => {
+      pageProvideProxy.setComponentValue(id, selectedNames.value)
+    })
+  }
+
   emits('update:modelValue', selectedIds.value)
   visible.value = false
 }

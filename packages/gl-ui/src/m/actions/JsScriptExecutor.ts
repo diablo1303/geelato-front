@@ -353,6 +353,18 @@ export class JsScriptExecutor {
             // },
             getPageParams: () => that.getPageParams($gl),
             getPageParam: (paramName: string) => that.getPageParam(paramName, $gl),
+            isPageStatusRead: () => {
+                return $gl.ctx.pageProxy.isPageStatusRead()
+                // return that.getPageParam('pageStatus', $gl) === 'read'
+            },
+            isPageStatusCreate: () => {
+                return $gl.ctx.pageProxy.isPageStatusCreate()
+                // return that.getPageParam('pageStatus', $gl) === 'create'
+            },
+            isPageStatusUpdate: () => {
+                return $gl.ctx.pageProxy.isPageStatusUpdate()
+                // return that.getPageParam('pageStatus', $gl) === 'update'
+            },
             getComponentMethod: that.getComponentMethod,
             getComponentValue: that.getComponentValue,
             setComponentValue: that.setComponentValue,

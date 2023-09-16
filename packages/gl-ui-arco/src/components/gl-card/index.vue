@@ -1,6 +1,6 @@
 <template>
   <a-card class="gl-card" :class="{'gl-hidden':isHidden}">
-    <template #title>
+    <template #title v-if="showLabel!==false">
       <span @click="switchHide" style="cursor: pointer">
         <GlIconfont v-if="isHidden" type="gl-down-circle"></GlIconfont>
         <GlIconfont v-else type="gl-right-circle"></GlIconfont>
@@ -22,9 +22,12 @@ import {ref} from "vue";
 
 const props = defineProps({
   label: String,
+  // 默认显示标题
+  showLabel: Boolean,
   ...mixins.props
 })
 
+// 是否隐藏卡片的内容，即折叠
 const isHidden = ref(false)
 
 const switchHide = () => {

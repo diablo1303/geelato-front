@@ -211,9 +211,9 @@ const selectDictItem = (key: any) => {
               :type="mv?'primary':''"
               style="padding: 0 0.1em;height: 2.6em;font-weight: 700;border: none">{ / }
     </a-button>
-    <a-modal title="编辑表达式" v-model:visible="visibleValueExpressModal"
-             :width="1100"
-             :modal-style="{height:'700px',maxHeight:'700px'}"
+    <a-modal title="编辑脚本(JavaScript)" v-model:visible="visibleValueExpressModal"
+             :width="1300"
+             :modal-style="{height:'800px',maxHeight:'800px'}"
              :body-style="{padding:0,overflow:'hidden'}"
              :mask-style="{background:'rgba(0, 0, 0, 0.25)'}"
              @ok="handleOk"
@@ -222,8 +222,8 @@ const selectDictItem = (key: any) => {
         <div style="flex: auto;border-right: solid 1px #d7d6d6">
           <!--      <a-textarea v-model="mv" placeholder="在此输入..."></a-textarea>-->
           <div>
-            <GlMonacoEditor ref="monacoEditor" v-model="mv" :height="245"
-                            language="typescript" style="max-height:245px"></GlMonacoEditor>
+            <GlMonacoEditor ref="monacoEditor" v-model="mv" :height="345"
+                            language="typescript" style="max-height:345px"></GlMonacoEditor>
           </div>
           <!--          <a-button style="float: right" type="outline" size="mini" status="danger"-->
           <!--                    @click="clearValueExpress">清除绑定-->
@@ -242,7 +242,7 @@ const selectDictItem = (key: any) => {
             <div>空值: null</div>
           </div>
         </div>
-        <div style="flex: 1;min-width: 420px;max-height: 600px;overflow-y: auto">
+        <div style="flex: 1;min-width: 500px;max-height: 700px;overflow-y: auto">
           <a-collapse size="small" :default-active-key="['5']" :bordered="false">
             <a-collapse-item header="系统变量" key="1">
               <a-tree ref="systemVarsTree" :default-expanded-keys="[]" size="small" blockNode

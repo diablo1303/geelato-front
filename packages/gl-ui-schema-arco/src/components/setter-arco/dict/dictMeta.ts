@@ -58,6 +58,30 @@ export default {
         "description": "数据字典选项集",
         "setterComponentName": "GlDynamicSelect"
     }, {
+        "name": "nameFieldBindComponentId",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "名回填组件",
+        "setterComponentName": "AInput",
+        "description": "字典选择时，可同时将字典项的名称回填到另一个组件中，在此设置回填的目标组件唯一标识，也可以同时设置多个唯一标识，多个唯一标识之间用“,”分隔。",
+        "placeholder": "名称回填组件唯一标识"
+    }, {
+        "name": "valueFieldBindComponentId",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "group": "base",
+        "type": "props",
+        "show": true,
+        "expanded": true,
+        "title": "值回填组件",
+        "setterComponentName": "AInput",
+        "description": "字典选择时，可同时将字典项的值回填到另一个组件中，在此设置回填的目标组件唯一标识，也可以同时设置多个唯一标识，多个唯一标识之间用“,”分隔。",
+        "placeholder": "值回填组件唯一标识"
+    }, {
         "name": "dictAscOrDesc",
         "group": "base",
         "type": "props",

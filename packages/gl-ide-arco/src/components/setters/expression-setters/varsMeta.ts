@@ -249,6 +249,27 @@ export const useComponentInstTreeData = () => {
                 _description: '页面参数值是否等于某值',
             },
             {
+                title: '页面是否为只读状态',
+                _code: 'isPageStatusRead',
+                _type: 'boolean',
+                _brackets: '()',
+                _description: '页面是否为只读状态',
+            },
+            {
+                title: '页面是否为新增状态',
+                _code: 'isPageStatusCreate',
+                _type: 'boolean',
+                _brackets: '()',
+                _description: '页面是否为新增状态',
+            },
+            {
+                title: '页面是否为更新状态',
+                _code: 'isPageStatusUpdate',
+                _type: 'boolean',
+                _brackets: '()',
+                _description: '页面是否为更新状态',
+            },
+            {
                 title: '获取页面参数值',
                 _code: 'getPageParam',
                 _type: 'any',

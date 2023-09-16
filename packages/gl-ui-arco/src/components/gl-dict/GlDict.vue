@@ -5,8 +5,8 @@ export default {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import {ref, watch} from "vue";
-import {entityApi, mixins} from "@geelato/gl-ui";
+import {inject, ref, watch} from "vue";
+import {entityApi, mixins, PageProvideKey, type PageProvideProxy} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -21,6 +21,23 @@ const props = defineProps({
    */
   dictId: {
     type: String
+  },
+  /**
+   *  选择的名称绑定的组件id
+   *  在选择字典时，同时将名称值绑定到另一个组件中，如果不设置，则不需绑定
+   *  可以有多个id，多个id之间用“,”分隔
+   */
+  nameFieldBindComponentId: {
+    type: String,
+    default() {
+      return ''
+    }
+  },
+  valueFieldBindComponentId: {
+    type: String,
+    default() {
+      return ''
+    }
   },
   /**
    * 升序降序
@@ -55,10 +72,13 @@ const props = defineProps({
       return false
     }
   },
-  disabled:Boolean,
-  readonly:Boolean,
+  disabled: Boolean,
+  readonly: Boolean,
   ...mixins.props
 })
+
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
+
 // console.log('props.modelValue', props.modelValue, props.dictId)
 const mv = ref(props.modelValue)
 watch(() => {
@@ -76,15 +96,34 @@ watch(() => {
   mv.value = props.modelValue
 }, {deep: true})
 
+let options = ref<Array<{ itemCode: string, itemName: string }>>([])
+
 watch(mv, () => {
+  // 回写名称
+  const foundOption = options.value.find((option: any) => {
+    return option.itemCode === mv.value
+  })
+  const itemName = foundOption?.itemName || ''
+  if (props.nameFieldBindComponentId) {
+    const ids = props.nameFieldBindComponentId.split(',')
+    ids.forEach((id: string) => {
+      pageProvideProxy.setComponentValue(id, itemName)
+    })
+  }
+  // 回写值
+  if (props.valueFieldBindComponentId) {
+    const ids = props.valueFieldBindComponentId.split(',')
+    ids.forEach((id: string) => {
+      pageProvideProxy.setComponentValue(id, mv.value)
+    })
+  }
+
   emits('update:modelValue', mv.value)
 }, {deep: true})
 
 const onClear = () => {
   mv.value = undefined
 }
-
-let options = ref<Array<{ itemCode: string, itemName: string }>>([])
 
 const loadData = () => {
   // TODO 增加多租户支持
@@ -112,7 +151,8 @@ watch(() => {
 <template>
   <div class="gl-dict">
     <template v-if="displayType==='select'">
-      <a-select placeholder="请选择" v-model="mv" allow-clear allow-search @clear="onClear" :disabled="disabled||readonly" :readonly="readonly">
+      <a-select placeholder="请选择" v-model="mv" allow-clear allow-search @clear="onClear"
+                :disabled="disabled||readonly" :readonly="readonly">
         <a-option v-for="opt in options" :value="opt.itemCode">
           {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
         </a-option>

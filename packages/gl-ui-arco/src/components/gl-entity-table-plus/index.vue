@@ -225,14 +225,7 @@ const deleteRecord = (params: Record<string, any>) => {
   }
 
   let id = params.id
-  // const foundParam = params.find((param: Param) => {
-  //   return param.name === 'id'
-  // })
-  // let id = foundParam ? foundParam.value : undefined
-  // if (!id) {
-  //   console.error('基于记录id进行删除失败，id为：', id)
-  //   return
-  // }
+
   if (props.base.isLogicDeleteMode === false) {
     entityApi.delete(props.base.entityName, {id: id}).then(() => {
       refresh()
@@ -241,9 +234,6 @@ const deleteRecord = (params: Record<string, any>) => {
     entityApi.deleteById(props.base.entityName, id).then(() => {
       refresh()
     })
-    // entityApi.save(props.base.entityName, {id, [logicDeleteFieldName]: 1}).then(() => {
-    //   refresh()
-    // })
   }
   // console.log('GlEntityTablePlus > deleteRecord() > params:', params)
 }

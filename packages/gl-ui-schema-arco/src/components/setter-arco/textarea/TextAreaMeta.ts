@@ -56,7 +56,8 @@ export default {
         "setterComponentProps": {},
         "setterComponentVModelName": "",
         "description": "是否让文本框自适应内容高度",
-        "title": "适应高度"
+        "title": "适应高度",
+        "setterComponentName": "ASwitch"
     }, {
         "name": "placeholder",
         "setterComponentProps": {},

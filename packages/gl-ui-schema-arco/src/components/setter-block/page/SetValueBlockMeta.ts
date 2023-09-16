@@ -36,7 +36,7 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "触发的组件",
+        "title": "设置的组件",
         "setterComponentName": "GlPageComponentSelect",
         "enableValueExpress": false
     }, {

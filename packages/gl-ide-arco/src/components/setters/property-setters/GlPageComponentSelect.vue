@@ -152,7 +152,11 @@ const convertTitle = (componentInst: ComponentInstance, title?: string) => {
 
   if (componentInst.group === 'dataEntry') {
     // componentInst.title = componentInst.props.label || componentInst.title || componentInst.componentName
-    componentInst.title += "【表单字段】"
+    if (componentInst.componentName === 'GlEntityForm') {
+      componentInst.title += "【表单】"
+    } else {
+      componentInst.title += "【表单字段】"
+    }
   }
   if (componentInst.children) {
     componentInst.children.forEach((childComponentInst: ComponentInstance, index: number) => {

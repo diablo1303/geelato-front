@@ -290,7 +290,7 @@ const loadForm = async () => {
       global.$notification.error({
         duration: 8000,
         title: '参数不全',
-        content: '当前表单为只读模式，但没有传递参数"form.id"或具体实体名点id“xxx.id”，请检查表单页面的打开事件配置中，是否已配置了参数，如参数名：form.id，值$ctx.record.id。',
+        content: '当前表单('+props.bindEntity.entityName+')为只读模式，但没有传递参数"form.id"或具体实体名点id“xxx.id”，请检查表单页面的打开事件配置中，是否已配置了参数，如参数名：form.id，值$ctx.record.id。',
         closable: true
       })
     }

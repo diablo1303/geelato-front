@@ -32,6 +32,7 @@ import GlTimeline from "./components/gl-timeline/GlTimeline.vue";
 import GlOpRecord from "./components/gl-op-record/GlOpRecord.vue";
 import {getFormParams} from "./components/gl-entity-form/GlEntityForm";
 import {getLabel} from "./components/MetaHelper";
+import GlEmpty from "./components/gl-empty/GlEmpty.vue";
 const i18nMessage = {en, cn};
 
 const component: Plugin = {
@@ -40,6 +41,7 @@ const component: Plugin = {
         if (PluginUtil.markInstalledPlugin(app, "gl-ui-arco")) {
             return;
         }
+        app.component(GlEmpty.name, GlEmpty)
         app.component(GlOpRecord.name, GlOpRecord)
         app.component(GlTimeline.name, GlTimeline)
         app.component(GlButton.name, GlButton)

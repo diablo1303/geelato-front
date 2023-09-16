@@ -19,6 +19,19 @@ export default {
         "type": "props",
         "show": true
     }, {
+        "name": "showLabel",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "description": "是否显示标题",
+        "title": "显示标题",
+        "setterComponentName": "ASwitch",
+        "setterDefaultValue": true
+    }, {
         "name": "bordered",
         "setterComponentProps": {"defaultValue": true},
         "setterComponentVModelName": "modelValue",
