@@ -93,21 +93,23 @@ const setTreeItemChecked = (menuItems: AppMenuItem[], treeNodeId: string) => {
  *  加载某角色已授权的菜单
  */
 const loadRoleGrantedMenuItem = (appId: string, roleId: string) => {
-  entityApi
-    .query('platform_role_r_tree_node', 'id,treeNodeId key,roleId', {
-      treeId: appId,
-      roleId: roleId
-    })
-    .then((res) => {
-      // 从服务端获取已有权限
-      currentRoleGrantedMenuItems.value = res.data
-      // 重置当前的角色菜单
-      const appMenuItemsCopy: AppMenuItem[] = JSON.parse(JSON.stringify(appMenuItems.value))
-      currentRoleGrantedMenuItems.value?.forEach((item: RoleGrantedMenuItem) => {
-        setTreeItemChecked(appMenuItemsCopy, item.treeNodeId)
+  if (roleId) {
+    entityApi
+      .query('platform_role_r_tree_node', 'id,treeNodeId key,roleId', {
+        treeId: appId,
+        roleId: roleId
       })
-      currentRoleAppMenuItems.value = appMenuItemsCopy
-    })
+      .then((res) => {
+        // 从服务端获取已有权限
+        currentRoleGrantedMenuItems.value = res.data
+        // 重置当前的角色菜单
+        const appMenuItemsCopy: AppMenuItem[] = JSON.parse(JSON.stringify(appMenuItems.value))
+        currentRoleGrantedMenuItems.value?.forEach((item: RoleGrantedMenuItem) => {
+          setTreeItemChecked(appMenuItemsCopy, item.treeNodeId)
+        })
+        currentRoleAppMenuItems.value = appMenuItemsCopy
+      })
+  }
 }
 
 const selectAllMenuItem = () => {
@@ -149,7 +151,7 @@ const save = () => {
   const toDeleteItems: RoleGrantedMenuItem[] = []
 
   // 当前角色可配置授权的菜单
-  const currentRoleAppMenuItemMap:Record<string, any> = {}
+  const currentRoleAppMenuItemMap: Record<string, any> = {}
   utils.treeToMap(currentRoleAppMenuItems.value, 'key', currentRoleAppMenuItemMap)
   currentRoleGrantedMenuItems.value.forEach((grantedItem: RoleGrantedMenuItem) => {
     const appMenuItem = currentRoleAppMenuItemMap[grantedItem.treeNodeId]
