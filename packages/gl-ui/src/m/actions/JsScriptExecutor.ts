@@ -73,7 +73,7 @@ export class JsScriptExecutor {
      */
     removePageProxy(pageComponentId: string) {
         delete pageProxyMap[pageComponentId]
-        let ids = this.pageIds
+        const ids = this.pageIds
         if (ids && ids.length > 0) {
             this.pageIds.forEach((id, index) => {
                 if (id === pageComponentId) {
@@ -102,7 +102,7 @@ export class JsScriptExecutor {
         // console.log('getComponentMethod() > pageProxyMap:', pageProxyMap)
         const ref = this.getRef(componentId)
         // 对于GlPage，ref?.exposed[methodName]
-        let fn = ref?.subTree?.component?.exposed![methodName] || ref?.exposed![methodName]
+        const fn = ref?.subTree?.component?.exposed![methodName] || ref?.exposed![methodName]
         if (fn) {
             return fn
         }
@@ -230,7 +230,6 @@ export class JsScriptExecutor {
     }
 
     private getFeedbackFns($gl: any) {
-        let that = this
         return {
             notification: $gl.$notification,
             confirm: $gl.$modal.open
@@ -238,7 +237,6 @@ export class JsScriptExecutor {
     }
 
     private getOtherFns($gl: any) {
-        let that = this
         return {
             log(options: OptionsType) {
                 // console.log(that.evalOptions(options, $gl?.ctx, ['content']).content)
@@ -248,7 +246,7 @@ export class JsScriptExecutor {
     }
 
     private getLogicFns($gl: any) {
-        let that = this
+        const that = this
         return {
             if: (expression: string, trueValue: any, falseValue: any) => {
                 return that.evalExpression(expression, $gl?.ctx, undefined, $gl) ? trueValue : falseValue
@@ -261,7 +259,7 @@ export class JsScriptExecutor {
     }
 
     private getComponentFns($gl: any) {
-        let that = this
+        const that = this
         return {
             openModal: (options: OptionsType) => {
                 return $gl.$modal.open(options)
@@ -421,12 +419,12 @@ export class JsScriptExecutor {
         // if (!gl) {
         //     console.log('evalExpression', expression)
         // }
-        Object.assign($gl.ctx, ctx)
-        let result = utils.evalExpression(expression, $gl)
-        if (callback && typeof callback === 'function') {
-            callback()
-        }
-        return result
+      Object.assign($gl.ctx, ctx)
+      const result = utils.evalExpression(expression, $gl)
+      if (callback && typeof callback === 'function') {
+        callback()
+      }
+      return result
     }
 
     /**
@@ -442,7 +440,7 @@ export class JsScriptExecutor {
         // if (!gl) {
         //     console.log('evalExpression', fnBodyScript)
         // }
-        let result = utils.evalFn(fnBodyScript, $gl)
+        const result = utils.evalFn(fnBodyScript, $gl)
         if (callback && typeof callback === 'function') {
             callback()
         }
@@ -461,7 +459,7 @@ export class JsScriptExecutor {
         if (params && params.length > 0) {
             for (const index in params) {
                 const param: Param = params[index]
-                // console.log('param.value:', param.value)
+                // console.log('param.value:', param.value,'param.valueExpression',param.valueExpression)
                 // param.value未设置，且valueExpression有值时
                 if (param.valueExpression) {
                     if (typeof param.valueExpression === 'string') {
@@ -494,6 +492,7 @@ export class JsScriptExecutor {
         params.forEach((param) => {
             result[param.name] = param.value
         })
+        // console.log('convertParamsToObject:',params,result)
         return result
     }
 
@@ -566,7 +565,7 @@ export class JsScriptExecutor {
             const pageProxy = pageProxyMap[pageComponentId]
             if (pageProxy) {
                 // console.log('pageProxy.getRefs():', pageProxy.getRefs())
-                for (let refKey in pageProxy.getRefs()) {
+                for (const refKey in pageProxy.getRefs()) {
                     // 单页面模式，只留第一次出现的组件
                     if (ref[refKey]) {
                         // 如果已存在相同的组件id，应是页面引用了多个相同的页面，进行了页面嵌套
@@ -616,7 +615,7 @@ export class JsScriptExecutor {
             const pageProxy = pageProxyMap[pageComponentId]
             if (pageProxy) {
                 // console.log('pageProxy.getInsts():', pageProxy.getInsts())
-                for (let instKey in pageProxy.getInsts()) {
+                for (const instKey in pageProxy.getInsts()) {
                     // 单页面模式，只留第一次出现的组件
                     if (inst[instKey]) {
                         // 如果已存在相同的组件id，应是页面引用了多个相同的页面，进行了页面嵌套
@@ -640,7 +639,7 @@ export class JsScriptExecutor {
      * @private
      */
     private getGl(pageProxy: PageProvideProxy | undefined) {
-        let $gl = {
+        const $gl = {
             id: utils.gid(),
             jsEngine: this,
             getComponentValue: this.getComponentValue,
@@ -685,7 +684,7 @@ export class JsScriptExecutor {
             const pageProxy = pageProxyMap[pageComponentId]
             if (pageProxy) {
                 // console.log('set refs and insts to $gl,pageProxy:', pageProxy.id, '$gl.id:', $gl.id, pageProxy.getInsts(), pageProxy.getRefs())
-                for (let instKey in pageProxy.getInsts()) {
+                for (const instKey in pageProxy.getInsts()) {
                     // 单页面模式，只留第一次出现的组件
                     if ($gl.inst[instKey]) {
                         // 如果已存在相同的组件id，应是页面引用了多个相同的页面，进行了页面嵌套

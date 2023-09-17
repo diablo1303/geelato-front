@@ -217,7 +217,7 @@ const addRow = () => {
  * @param params
  */
 const deleteRecord = (params: Record<string, any>) => {
-  console.log('deleteRecord() > params:', params)
+  // console.log('deleteRecord() > params:', params)
 
   if (!params || !params.id) {
     console.error('基于记录id进行删除失败，未配置参数id。')
