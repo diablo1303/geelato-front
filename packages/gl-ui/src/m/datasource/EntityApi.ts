@@ -1,11 +1,11 @@
-import type {AxiosInstance, AxiosRequestConfig, AxiosStatic} from "axios";
-import ResultMapping from "../datasource/ResultMapping";
-import UrlConfig from "../datasource/UrlConfig";
-import MixUtil from "../utils/MixUtil";
-import type {EntityReader, EntityReaderParam, EntitySaver} from "./EntityDataSource";
-import AllUtils from "../utils/AllUtils";
-import {getToken} from "../utils/auth";
-import jsScriptExecutor from "../actions/JsScriptExecutor";
+import type {AxiosInstance, AxiosRequestConfig, AxiosStatic} from 'axios'
+import ResultMapping from '../datasource/ResultMapping'
+import UrlConfig from '../datasource/UrlConfig'
+import MixUtil from '../utils/MixUtil'
+import type {EntityReader, EntityReaderParam, EntitySaver} from './EntityDataSource'
+import AllUtils from '../utils/AllUtils'
+import {getToken} from '../utils/auth'
+import jsScriptExecutor from '../actions/JsScriptExecutor'
 
 export type MqlObject = { [key: string]: { [key: string]: any } }
 
@@ -28,11 +28,11 @@ const checkMqlObject = (mql: MqlObject | Array<MqlObject>): boolean => {
 
         if (!fieldNames) {
             // eslint-disable-next-line no-throw-literal
-            throw `查询${entityName},失败，列（fieldNames）不能为空。`;
+            throw `查询${entityName},失败，列（fieldNames）不能为空。`
         }
         if (fieldNames.indexOf(',,') >= 0) {
             // eslint-disable-next-line no-throw-literal
-            throw `查询${entityName}失败，列（fieldNames）格式不对,存在连续的",,"：${fieldNames}`;
+            throw `查询${entityName}失败，列（fieldNames）格式不对,存在连续的",,"：${fieldNames}`
         }
         // TODO 子对象验证
         return true
@@ -40,10 +40,10 @@ const checkMqlObject = (mql: MqlObject | Array<MqlObject>): boolean => {
 }
 
 export class EntityApi {
-    url = new UrlConfig();
+    url = new UrlConfig()
 
     // @ts-ignore
-    service: AxiosStatic | AxiosInstance;
+    service: AxiosStatic | AxiosInstance
 
     VITE_API_BASE_URL: string = ''
 
@@ -53,9 +53,9 @@ export class EntityApi {
     }
 
     getAuthorization() {
-        const token = getToken();
+        const token = getToken()
         if (token) {
-            return `Bearer ${token}`;
+            return `Bearer ${token}`
         } else {
             return undefined
         }
@@ -77,19 +77,19 @@ export class EntityApi {
      */
     queryByGql(mql: MqlObject | Array<MqlObject>, withMeta?: boolean) {
         const isArray = Array.isArray(mql)
-        const path = isArray ? this.url.metaMultiList : this.url.metaList;
+        const path = isArray ? this.url.metaMultiList : this.url.metaList
 
         // 检查查询对象格式
         checkMqlObject(mql)
 
         return this.service({
             url: `${path}?withMeta=${!!withMeta}&e=${isArray ? '_multiEntity' : Object.keys(mql)[0]}`,
-            method: "POST",
+            method: 'POST',
             data: mql,
             headers: {
-                "Access-Control-Allow-Origin": "*",
-            },
-        });
+                'Access-Control-Allow-Origin': '*'
+            }
+        })
     }
 
     /**
@@ -99,7 +99,7 @@ export class EntityApi {
      */
     convertEntityReaderToMql(entityReader: EntityReader) {
         // console.log('queryByEntityReader > entityReader', entityReader.entity, entityReader)
-        const mql: Record<string, any> = {};
+        const mql: Record<string, any> = {}
         mql[entityReader.entity] = {}
         // fields
         if (entityReader.fields && entityReader.fields.length > 0) {
@@ -109,9 +109,9 @@ export class EntityApi {
                     fieldNames.push(item.name + (item.alias ? ' ' + item.alias : ''))
                 }
             })
-            mql[entityReader.entity]['@fs'] = fieldNames.join(',');
+            mql[entityReader.entity]['@fs'] = fieldNames.join(',')
         } else {
-            mql[entityReader.entity] = {"@fs": "*"};
+            mql[entityReader.entity] = {'@fs': '*'}
         }
         // order
         if (entityReader.order && entityReader.order.length > 0) {
@@ -120,20 +120,20 @@ export class EntityApi {
                 orderStr = item.field + ' ' + item.order + ' '
             })
             orderStr = AllUtils.ConvertUtil.trim(orderStr)
-            mql[entityReader.entity]['@order'] = orderStr;
+            mql[entityReader.entity]['@order'] = orderStr
         }
         // params
         let hasDelStatus = false
-        const params: Record<string, any> = {};
+        const params: Record<string, any> = {}
         if (entityReader.params && entityReader.params.length > 0) {
             for (const i in entityReader.params) {
-                const param: EntityReaderParam = entityReader.params[i];
+                const param: EntityReaderParam = entityReader.params[i]
                 if (param.name === 'delStatus') {
                     hasDelStatus = true
                 }
                 // param.cop的值为：eq,neq,lt,lte,gt,gte,startwith,endwith,contains,in中的一个
-                const key = `${param.name}|${param.cop || "eq"}`;
-                params[key] = param.value;
+                const key = `${param.name}|${param.cop || 'eq'}`
+                params[key] = param.value
             }
             // 检查是否有删除状态，默认为0
             const ignoreDeleteStatusEntity = ['platform_oprecord']
@@ -141,12 +141,12 @@ export class EntityApi {
                 params[`delStatus|eq`] = '0'
             }
         }
-        Object.assign(mql[entityReader.entity], params);
+        Object.assign(mql[entityReader.entity], params)
 
         const pageNo = entityReader.pageNo || 1
         const pageSize = entityReader.pageSize || 15
         // page
-        mql[entityReader.entity]['@p'] = pageNo + ',' + pageSize;
+        mql[entityReader.entity]['@p'] = pageNo + ',' + pageSize
         return mql
     }
 
@@ -160,41 +160,46 @@ export class EntityApi {
     queryByEntityReader(entityReader: EntityReader) {
         const mql = this.convertEntityReaderToMql(entityReader)
         return new Promise((resolve, reject) => {
-            this.queryByGql(mql, entityReader.withMeta).then((res) => {
-                // 是否需要处理返回结果
-                const foundLocalComputeField = entityReader.fields.find((field) => {
-                    return field.isLocalComputeFiled
-                })
-                if (foundLocalComputeField) {
-                    const newRows: any[] = []
-                    res.data.forEach((row: any) => {
-                        let newRow: Record<string, any> = {}
-                        for (let index in entityReader.fields) {
-                            const fieldMeta = entityReader.fields[index]
-                            if (fieldMeta.isLocalComputeFiled) {
-                                if (fieldMeta.valueExpression) {
-                                    newRow[fieldMeta.name] = jsScriptExecutor.evalExpression(fieldMeta.valueExpression, {
-                                        record: row,
-                                        index: Number.parseInt(index)
-                                    })
-                                } else {
-                                    newRow[fieldMeta.name] = undefined
-                                }
-                            } else {
-                                newRow[fieldMeta.alias || fieldMeta.name] = row[fieldMeta.alias || fieldMeta.name]
-                            }
-                        }
-                        newRows.push(newRow)
+            this.queryByGql(mql, entityReader.withMeta)
+                .then((res) => {
+                    // 是否需要处理返回结果
+                    const foundLocalComputeField = entityReader.fields.find((field) => {
+                        return field.isLocalComputeFiled
                     })
-                    // console.log('foundLocalComputeField', res)
-                    res.data = newRows
-                    resolve(res)
-                } else {
-                    resolve(res)
-                }
-            }).catch((reason) => {
-                reject(reason)
-            })
+                    if (foundLocalComputeField) {
+                        const newRows: any[] = []
+                        res.data.forEach((row: any) => {
+                            let newRow: Record<string, any> = {}
+                            for (let index in entityReader.fields) {
+                                const fieldMeta = entityReader.fields[index]
+                                if (fieldMeta.isLocalComputeFiled) {
+                                    if (fieldMeta.valueExpression) {
+                                        newRow[fieldMeta.name] = jsScriptExecutor.evalExpression(
+                                            fieldMeta.valueExpression,
+                                            {
+                                                record: row,
+                                                index: Number.parseInt(index)
+                                            }
+                                        )
+                                    } else {
+                                        newRow[fieldMeta.name] = undefined
+                                    }
+                                } else {
+                                    newRow[fieldMeta.alias || fieldMeta.name] = row[fieldMeta.alias || fieldMeta.name]
+                                }
+                            }
+                            newRows.push(newRow)
+                        })
+                        // console.log('foundLocalComputeField', res)
+                        res.data = newRows
+                        resolve(res)
+                    } else {
+                        resolve(res)
+                    }
+                })
+                .catch((reason) => {
+                    reject(reason)
+                })
         })
     }
 
@@ -206,12 +211,7 @@ export class EntityApi {
      * @param params 查询要件键值对 e.g. {id:123456,name:'张三'} or {'@order':'name|+'}。不指定数据状态时，默认不查询已删除的数据
      * @param withMeta
      */
-    query(
-        entityName: string,
-        fieldNames: string,
-        params: Record<string, any>,
-        withMeta?: boolean
-    ) {
+    query(entityName: string, fieldNames: string, params: Record<string, any>, withMeta?: boolean) {
         // if (!fieldNames) {
         //     // eslint-disable-next-line no-throw-literal
         //     throw `查询${entityName},失败，列（fieldNames）不能为空。`;
@@ -221,10 +221,10 @@ export class EntityApi {
         //     throw `查询${entityName}失败，列（fieldNames）格式不对,存在连续的",,"：${fieldNames}`;
         // }
         // mql查询语句
-        const mql: Record<string, any> = {};
+        const mql: Record<string, any> = {}
         mql[entityName] = {
-            "@fs": fieldNames || "*",
-        };
+            '@fs': fieldNames || '*'
+        }
         let copyParam = JSON.parse(JSON.stringify(params))
         if (!copyParam.delStatus) {
             copyParam.delStatus = '0'
@@ -232,8 +232,8 @@ export class EntityApi {
         if (!copyParam['@p']) {
             copyParam['@p'] = '1,500'
         }
-        Object.assign(mql[entityName], copyParam);
-        return this.queryByGql(mql, withMeta);
+        Object.assign(mql[entityName], copyParam)
+        return this.queryByGql(mql, withMeta)
     }
 
     /**
@@ -242,17 +242,17 @@ export class EntityApi {
      *        @see query
      */
     queryBatch(queryParamArray: Array<object>, withMeta: boolean) {
-        const mqlAry: Array<any> = [];
+        const mqlAry: Array<any> = []
         queryParamArray.forEach((item, index) => {
-            const queryParam: Record<string, any> = item;
-            const mql: Record<string, any> = {};
+            const queryParam: Record<string, any> = item
+            const mql: Record<string, any> = {}
             mql[queryParam.entityName] = {
-                "@fs": queryParam.fieldNames || "*",
-            };
-            Object.assign(mql[queryParam.entityName], queryParam.keyValues);
-            mqlAry.push(mql);
-        });
-        return this.queryByGql(mqlAry, withMeta);
+                '@fs': queryParam.fieldNames || '*'
+            }
+            Object.assign(mql[queryParam.entityName], queryParam.keyValues)
+            mqlAry.push(mql)
+        })
+        return this.queryByGql(mqlAry, withMeta)
     }
 
     update(
@@ -263,23 +263,23 @@ export class EntityApi {
         successMsg?: string,
         errorMsg?: string
     ) {
-        const bizCode = biz || "0";
+        const bizCode = biz || '0'
         const data: Record<string, any> = {
-            "@biz": bizCode,
-        };
-        data[entityName] = keyValues || {};
+            '@biz': bizCode
+        }
+        data[entityName] = keyValues || {}
         return this.service({
             url: `${url}/${bizCode}`,
-            method: "POST",
-            data,
-        });
+            method: 'POST',
+            data
+        })
     }
 
     convertEntitySaverToMql(entitySaver: EntitySaver, biz?: string) {
         const pidValue = '$parent.id'
         // subFormPidValue
         const entitySaverCopy = JSON.parse(JSON.stringify(entitySaver))
-        type ParsedMqlResult = { key: string, mqlObj: Record<string, any> }
+        type ParsedMqlResult = { key: string; mqlObj: Record<string, any> }
         const toMql = (es: EntitySaver, isChildren: boolean): ParsedMqlResult => {
             const mqlObj: Record<string, any> = {}
             const entityName = isChildren ? '#' + es.entity : es.entity
@@ -292,29 +292,31 @@ export class EntityApi {
                 mqlObj[entityName].push(es.record)
             } else {
                 // 根节点只能有一条记录
-                mqlObj[entityName] = es.record;
+                mqlObj[entityName] = es.record
             }
 
             es.children?.forEach((subEs) => {
                 const subMqlResult = toMql(subEs, true)
-                mqlObj[entityName][subMqlResult.key] = mqlObj[entityName][subMqlResult.key] || []
-                mqlObj[entityName][subMqlResult.key].push(subMqlResult.mqlObj)
+                if (subMqlResult.mqlObj && subMqlResult.mqlObj[subMqlResult.key] && subMqlResult.mqlObj[subMqlResult.key].length > 0) {
+                    mqlObj[entityName][subMqlResult.key] = mqlObj[entityName][subMqlResult.key] || []
+                    mqlObj[entityName][subMqlResult.key].push(...subMqlResult.mqlObj[subMqlResult.key])
+                }
             })
             return {key: entityName, mqlObj: mqlObj}
         }
-        const bizCode = biz || "0";
-        return Object.assign(toMql(entitySaverCopy, false).mqlObj, {"@biz": bizCode})
+        const bizCode = biz || '0'
+        return Object.assign(toMql(entitySaverCopy, false).mqlObj, {'@biz': bizCode})
     }
 
     saveEntity(entitySaver: EntitySaver, biz?: string) {
-        const bizCode = biz || "0";
+        const bizCode = biz || '0'
         const mqlObj = this.convertEntitySaverToMql(entitySaver, bizCode)
         console.log('saveEntity > entitySaver:', entitySaver, 'mql:', mqlObj)
         return this.service({
             url: `${this.url.apiMetaSave}/${bizCode}`,
-            method: "POST",
-            data: mqlObj,
-        });
+            method: 'POST',
+            data: mqlObj
+        })
     }
 
     /**
@@ -337,11 +339,10 @@ export class EntityApi {
             entityName,
             keyValues,
             biz,
-            successMsg || "保存成功",
-            errorMsg || "保存失败"
-        );
+            successMsg || '保存成功',
+            errorMsg || '保存失败'
+        )
     }
-
 
     /**
      * 基于mql对象进行查询
@@ -350,32 +351,26 @@ export class EntityApi {
      * @returns {*}
      */
     saveByGql(biz: string, mql: Record<string, any>) {
-        const path = Array.isArray(mql)
-            ? this.url.apiMetaSave
-            : this.url.apiMetaSave;
-        const bizCode = biz || "0";
+        const path = Array.isArray(mql) ? this.url.apiMetaSave : this.url.apiMetaSave
+        const bizCode = biz || '0'
         return this.service({
             url: `${path}/${bizCode}`,
-            method: "POST",
-            data: mql,
-        });
+            method: 'POST',
+            data: mql
+        })
     }
 
-    saveBatch(
-        entityName: string,
-        records: Array<Record<string, any>>,
-        biz?: string
-    ) {
-        const bizCode = biz || "0";
+    saveBatch(entityName: string, records: Array<Record<string, any>>, biz?: string) {
+        const bizCode = biz || '0'
         const data: Record<string, any> = {
-            "@biz": bizCode,
-        };
+            '@biz': bizCode
+        }
         data[entityName] = records || []
 
         return this.service({
             url: `${this.url.apiMetaBatchSave}/${bizCode}`,
-            method: "POST",
-            data,
+            method: 'POST',
+            data
         })
     }
 
@@ -386,7 +381,7 @@ export class EntityApi {
      * @param biz
      */
     delete(entityName: string, keyValues: object, biz?: string) {
-        return this.update(this.url.apiMetaDelete2, entityName, keyValues, biz);
+        return this.update(this.url.apiMetaDelete2, entityName, keyValues, biz)
     }
 
     /**
@@ -395,7 +390,7 @@ export class EntityApi {
     deleteById(entityName: string, id: string, biz?: string) {
         return this.service({
             url: `${this.url.apiMetaDelete}/${entityName}/${id}`,
-            method: "POST",
+            method: 'POST',
             data: {}
         })
     }
@@ -405,7 +400,7 @@ export class EntityApi {
      * @param items
      * @param biz
      */
-    deleteBatch(items: Array<{ entityName: string, keyValues: object }>, biz?: string) {
+    deleteBatch(items: Array<{ entityName: string; keyValues: object }>, biz?: string) {
         if (!items) {
             return
         }
@@ -427,17 +422,17 @@ export class EntityApi {
         // mql查询语句
         const mql = {
             platform_app_page: {
-                "@p": "1,1",
-                "@fs": "id,code,releaseContent",
+                '@p': '1,1',
+                '@fs': 'id,code,releaseContent',
                 delStatus: 0,
-                id: pageId,
-            },
-        };
+                id: pageId
+            }
+        }
         return this.service({
             url: this.url.metaList,
-            method: "POST",
-            data: mql,
-        });
+            method: 'POST',
+            data: mql
+        })
     }
 
     /**
@@ -449,17 +444,17 @@ export class EntityApi {
         // mql查询语句
         const mql = {
             platform_app_page: {
-                "@p": "1,1",
-                "@fs": "id,code,releaseContent",
+                '@p': '1,1',
+                '@fs': 'id,code,releaseContent',
                 delStatus: 0,
-                extendId: extendId,
-            },
-        };
+                extendId: extendId
+            }
+        }
         return this.service({
             url: this.url.metaList,
-            method: "POST",
-            data: mql,
-        });
+            method: 'POST',
+            data: mql
+        })
     }
 
     /**
@@ -468,10 +463,7 @@ export class EntityApi {
      * @param resultMapping res中的数据返回结果转换定义
      * @returns {{data: Array, resultMapping: {}}}
      */
-    static entityReaderResultHandler(
-        res: Record<string, any>,
-        resultMapping: ResultMapping
-    ) {
+    static entityReaderResultHandler(res: Record<string, any>, resultMapping: ResultMapping) {
         // console.log(
         //     "gl-ui > Api.js > entityReaderResultHandler() > res: ",
         //     res
@@ -480,32 +472,32 @@ export class EntityApi {
             //  依据传入参数resultMapping的定义处理后的数据
             data: [],
             // 经转换之后的列映射，key为组件中用到的变量名，value为data中的列名。
-            resultMapping: new ResultMapping(),
-        };
+            resultMapping: new ResultMapping()
+        }
 
         // 返回结果预处理
         // 获取返回结果的列名
-        const resColumns: Record<string, any> = {};
+        const resColumns: Record<string, any> = {}
         if (res.data && res.data.length > 0) {
-            const item = res.data[0];
-            const resultFieldNameAry = Object.keys(item);
+            const item = res.data[0]
+            const resultFieldNameAry = Object.keys(item)
             // eslint-disable-next-line guard-for-in,no-restricted-syntax
             for (const i in resultFieldNameAry) {
-                resColumns[resultFieldNameAry[i]] = resultFieldNameAry[i];
+                resColumns[resultFieldNameAry[i]] = resultFieldNameAry[i]
             }
         }
         // 先找出需处理的列：resultMapping的key和value不相同，mapping，e.g. [{avatar:'https://xxxxx/xx/xx.jpg'}]
-        const toStatMappingItems: Array<any> = [];
+        const toStatMappingItems: Array<any> = []
         // console.log('gl-ui > toStatMappingItems>', toStatMappingItems)
-        const mapping = resultMapping.getMapping();
+        const mapping = resultMapping.getMapping()
         // eslint-disable-next-line guard-for-in,no-restricted-syntax
         for (const key in mapping) {
-            const field = mapping[key];
+            const field = mapping[key]
             // let resultName = resColumns[field]
             if (key !== field) {
-                const isRename = resColumns[field] !== undefined && !!resColumns[field];
-                toStatMappingItems.push({key, value: field, isRename});
-                resultSet.resultMapping[key] = key;
+                const isRename = resColumns[field] !== undefined && !!resColumns[field]
+                toStatMappingItems.push({key, value: field, isRename})
+                resultSet.resultMapping[key] = key
             }
         }
         // console.log(
@@ -522,25 +514,22 @@ export class EntityApi {
         // );
 
         // 如增加静态的列，列值格式化、列值组合;重命名列(在原有列的基础上增加重命名的列)等
-        const dataItems = res.data as Array<any>;
+        const dataItems = res.data as Array<any>
         dataItems.forEach((dataItem) => {
             toStatMappingItems.forEach((mappingItem) => {
                 if (mappingItem.isRename) {
-                    dataItem[mappingItem.key] = dataItem[mappingItem.value];
+                    dataItem[mappingItem.key] = dataItem[mappingItem.value]
                 } else {
-                    dataItem[mappingItem.key] = MixUtil.evalPlus(
-                        mappingItem.value,
-                        dataItem
-                    );
+                    dataItem[mappingItem.key] = MixUtil.evalPlus(mappingItem.value, dataItem)
                 }
-            });
-        });
-        resultSet.data = res.data;
+            })
+        })
+        resultSet.data = res.data
         // console.log(
         //     "gl-ui > Api.js > entityReaderResultHandler() > resultSet: ",
         //     resultSet
         // );
-        return resultSet;
+        return resultSet
     }
 
     /**
@@ -550,18 +539,18 @@ export class EntityApi {
      * @return <Object> 若dataMapping为空，则直接返回data，{query: {fullName: '张三'}}
      */
     entityDataMappingHandler(data: Record<string, any>, dataMapping: Record<string, any> = {}) {
-        const convertedData: Record<string, any> = {};
+        const convertedData: Record<string, any> = {}
         Object.keys(dataMapping).forEach((value, key) => {
-            if (typeof value === "object") {
-                convertedData[key] = this.entityDataMappingHandler(data, value);
+            if (typeof value === 'object') {
+                convertedData[key] = this.entityDataMappingHandler(data, value)
             } else {
-                convertedData[key] = MixUtil.evalPlus(value, data);
+                convertedData[key] = MixUtil.evalPlus(value, data)
             }
-        });
+        })
         // for (const key in dataMapping) {
         //
         // }
-        return convertedData;
+        return convertedData
     }
 
     /**
@@ -572,29 +561,29 @@ export class EntityApi {
     queryMeta(entityName: string) {
         return this.service({
             url: `${this.url.apiMetaDefined}/${entityName}`,
-            method: "POST",
-            data: "",
-        });
+            method: 'POST',
+            data: ''
+        })
     }
 
     queryEntityNames() {
         return this.service({
             url: `${this.url.apiMetaEntityNames}/`,
-            method: "POST",
-            data: "",
-        });
+            method: 'POST',
+            data: ''
+        })
     }
 
-    queryEntityLiteMetas(appCode: string = "platform") {
+    queryEntityLiteMetas(appCode: string = 'platform') {
         return this.service({
             url: `${this.url.apiEntityLiteMetas}?appCode=${appCode}`,
-            method: "GET",
-            data: "",
-        });
+            method: 'GET',
+            data: ''
+        })
     }
 
     getService() {
-        return this.service;
+        return this.service
     }
 
     // /**
