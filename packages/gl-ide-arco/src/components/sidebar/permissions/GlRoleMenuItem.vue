@@ -97,7 +97,7 @@ const setTreeItemChecked = (menuItems: AppMenuItem[], treeNodeId: string) => {
 const loadRoleGrantedMenuItem = (appId: string, roleId: string) => {
   entityApi.query('platform_role_r_tree_node', 'id,treeNodeId key,roleId',
       {'treeId': appId, roleId: roleId}).then((res) => {
-    currentRoleGrantedMenuItems.value = res.data.data
+    currentRoleGrantedMenuItems.value = res.data
     // 重置当前的角色菜单
     const appMenuItemsCopy: AppMenuItem[] = JSON.parse(JSON.stringify(appMenuItems.value))
     currentRoleGrantedMenuItems.value?.forEach((item: RoleGrantedMenuItem) => {
@@ -138,7 +138,6 @@ const selectRole = (role: any, roleIndex: number) => {
   currentRole.value = role
   currentRoleAppMenuItems.value = []
   currentRoleGrantedMenuItems.value = []
-  // console.log('role', role)
   loadRoleGrantedMenuItem(appId, currentRole.value.id)
 }
 
