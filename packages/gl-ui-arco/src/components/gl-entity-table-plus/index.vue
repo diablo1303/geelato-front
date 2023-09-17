@@ -283,6 +283,7 @@ const reRender = () => {
   return tableRef.value.reRender()
 }
 const onFetchSuccess = (args: { data: [], pagination: object }) => {
+  // @ts-ignore
   props.glComponentInst.value = args.data
   emits('fetchSuccess', args)
 }

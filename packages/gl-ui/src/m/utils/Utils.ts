@@ -129,112 +129,6 @@ export class Utils {
     }
   }
 
-  /**
-   * 替换对象中的变量，若字符串以“js:”开头，则还需执行(eval)
-   * @param obj e.g. js:@.id > 0，变量标识：“@.”
-   * @param keyValues 基本数据类型键值对
-   * @returns {*} 如上示例，当id=1jf ,结果为执行1>0即true
-   */
-  // invoke(obj: object, keyValues: object) {
-  //     let keyword = '@.'
-  //     let jsFlag = 'js:'
-  //     // let objCopy
-  //     if (typeof obj === 'string') {
-  //         let expression: string = obj
-  //         if (expression.startsWith(jsFlag)) {
-  //             return this.evalExpression(expression.replace(jsFlag, '').replace(/@\./g, '$ctx.'), keyValues)
-  //         } else {
-  //             if (expression.indexOf(keyword) !== -1) {
-  //                 return this.evalExpression(expression.replace(/@\./g, '$ctx.'), keyValues)
-  //                 // return this.compileString(expression, keyValues)
-  //             } else {
-  //                 return expression
-  //             }
-  //         }
-  //     } else if (Array.isArray(obj)) {
-  //         let arrayCopy: Array<any> = []
-  //         for (let index in obj) {
-  //             arrayCopy[index] = this.invoke(obj[index], keyValues)
-  //         }
-  //         return arrayCopy
-  //     } else if (typeof obj === 'object') {
-  //         let objCopy: LooseObject = {}
-  //         Object.assign(objCopy, obj)
-  //         for (let i in objCopy) {
-  //             // console.log('gl-ui > 解析替换' + i, objCopy[i], keyValues, this.invoke(objCopy[i], keyValues))
-  //             objCopy[i] = this.invoke(objCopy[i], keyValues)
-  //         }
-  //         return objCopy
-  //     }
-  //     return obj
-  // }
-
-  /**
-   * 依据上下文信息，编译字符串
-   * @param expression
-   * @returns {*}
-   */
-  // compileString(expression: string, $ctx: object) {
-  //     let Fn = Function
-  //     // console.log(new Fn('$ctx', 'return "' + expression + '"'))
-  //     return new Fn('$ctx', 'return "' + expression + '"')($ctx)
-  // }
-
-  /**
-   * 检查安全性
-   */
-  // checkJsExpressionSecurity(jsExpression: string) {
-  //     return true
-  // }
-
-  /**
-   *
-   * @param jsExpression 格式：js:xxx
-   * @param ctx 上下文信息
-   * @param ctxName 默认为 'ctx'
-   * @return 符合格式要求的时，将js:xxx，中的xxx为作脚本执行；不符合时，直接返回当前jsExpression
-   */
-  // runJs(jsExpression: string, ctx: object, ctxName = 'ctx') {
-  //     if (/^\s*js\s*:/.test(jsExpression)) {
-  //         return this.evalExpression(jsExpression.replace(/^\s*js\s*:/, ''), ctx, 'ctx')
-  //     }
-  //     return jsExpression
-  // }
-
-  /**
-   *  遍历对象各层的键值，并进行变量替换
-   */
-  // deepConvertValue(obj: object, $_ctxLoader: object | Function) {
-  //   const ctx = typeof $_ctxLoader === 'function' ? $_ctxLoader() : $_ctxLoader
-  //   const that = this
-  //
-  //   function replace(toReplaceObj: Array<any> | object | string | Record<string,any>) {
-  //     if (toReplaceObj instanceof Array) {
-  //       const newObj: Array<any> = []
-  //       for (const key in toReplaceObj) {
-  //         newObj.push(replace(toReplaceObj[key]))
-  //       }
-  //       return newObj
-  //     } else if (toReplaceObj instanceof Object) {
-  //       const newObj: Record<string,any> = {}
-  //       for (const key in toReplaceObj) {
-  //         const x: Record<string,any> = toReplaceObj
-  //         newObj[key] = replace(x[key])
-  //       }
-  //       return newObj
-  //     } else if (typeof toReplaceObj === 'string') {
-  //       // console.log('this.deepConvertValue() > toReplaceString:', toReplaceObj)
-  //       const newObj: Record<string,any> = that.evalExpression(toReplaceObj, ctx)
-  //       return newObj
-  //     } else {
-  //       const newObj: Record<string,any> = toReplaceObj
-  //       return newObj
-  //     }
-  //   }
-  //
-  //   return replace(obj)
-  // }
-
   isEmpty(str: string) {
     return str === undefined || str === null || str.replace(/\s/g, '') === ''
   }
@@ -319,23 +213,6 @@ export class Utils {
   }
 
   /**
-   *函数定义
-   * @param data 需转换的数组
-   * @param id
-   * @param pid
-   */
-  // array2treetreeUtil (data, id, pid) {
-  //   let data = data
-  //   let id = id
-  //   let pid = pid
-  //   let tree = {}
-  //
-  //   function f () {
-  //
-  //   }
-  // }
-
-  /**
    * 数组指定列去重，返回去重后的列对象
    * @param arr 数组
    * @param col
@@ -348,21 +225,6 @@ export class Utils {
       return result
     }, {})
   }
-
-  // stopPropagationAndPreventDefault(e) {
-  //     if (e && e.stopPropagation) {
-  //         e.stopPropagation()
-  //     } else {
-  //         // IE
-  //         window.event.cancelBubble = true
-  //     }
-  //     // stopDefault 默认事件,比如点击a标签以后会跳转至href链接的页面
-  //     if (e && e.preventDefault) {
-  //         e.preventDefault()
-  //     } else {
-  //         window.event.returnValue = false
-  //     }
-  // }
 
   /**
    * 默认data的id为“id”，pid为“pid”
@@ -403,13 +265,30 @@ export class Utils {
    * @param treeNodes
    */
   treeToList(treeNodes: Record<string, any>[]) {
-    const list = []
+    const list: Record<string, any>[] = []
     treeNodes.forEach((treeNode) => {
       const addTreeNode = treeNode
       list.push(addTreeNode)
       if (addTreeNode.children) {
         this.treeToList(treeNode.children)
         delete addTreeNode.children
+      }
+    })
+    return list
+  }
+
+  /**
+   * 将树结构数据，转成以主键为key,value为节点的Map
+   * @param treeNodes
+   * @param keyName
+   * @param map
+   */
+  treeToMap(treeNodes: Record<string, any>[], keyName: string, map: Record<any, any>) {
+    treeNodes.forEach((treeNode) => {
+      map[treeNode[keyName]] = treeNode
+      if (treeNode.children) {
+        this.treeToMap(treeNode.children, keyName, map)
+        delete treeNode.children
       }
     })
   }
@@ -462,7 +341,7 @@ export class Utils {
    * @param component 组件实例
    * @return 查找到当前组件所处的页面，若找不到则返回undefined
    */
-  findCurrentPage(component: Record<string, any>): any {
+  findCurrentPage(component: any): any {
     if (!component.$parent.$vnode) {
       // 到了根节点，还找不到，可能是在设计器中执行该方案，设计器的舞台中不存在GlPage
       return undefined
@@ -480,7 +359,7 @@ export class Utils {
    * @param component 组件实例
    * @return 查找到当前组件所处的页面，若找不到则返回undefined
    */
-  findCurrentComponent(component: Record<string, any>): any {
+  findCurrentComponent(component: any): any {
     if (!component.$parent.$vnode) {
       // 到了根节点，还找不到，可能是在设计器中执行该方案，设计器的舞台中不存在GlPage
       return undefined

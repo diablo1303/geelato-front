@@ -343,12 +343,6 @@ export class JsScriptExecutor {
                 }
                 return valueAry.join(',') || keys
             },
-            // evalExpression: (expression: string) => {
-            //     return that.evalExpression(expression, $gl.ctx)
-            // },
-            // evalFn: (expression: string, ctx: { pageProxy?: PageProvideProxy, [key: string]: any }, callback?: Function) => {
-            //     return that.evalFn(expression, ctx, callback)
-            // },
             getPageParams: () => that.getPageParams($gl),
             getPageParam: (paramName: string) => that.getPageParam(paramName, $gl),
             isPageStatusRead: () => {
@@ -642,11 +636,11 @@ export class JsScriptExecutor {
         const $gl = {
             id: utils.gid(),
             jsEngine: this,
-            getComponentValue: this.getComponentValue,
-            setComponentValue: this.setComponentValue,
-            getComponentProps: this.getComponentProps,
-            setComponentProps: this.setComponentProps,
-            triggerComponentAction: this.triggerComponentAction,
+            // getComponentValue: this.getComponentValue,
+            // setComponentValue: this.setComponentValue,
+            // getComponentProps: this.getComponentProps,
+            // setComponentProps: this.setComponentProps,
+            // triggerComponentAction: this.triggerComponentAction,
             ...this.app?.config.globalProperties,
             page: {},
             inst: <{ [key: string]: any }>{},
@@ -658,6 +652,7 @@ export class JsScriptExecutor {
             fn: utils,
             entityApi,
             fileApi,
+            // todo,date待转成具体的方法合到fn中
             date: dayjs,
             // 当前执行方法的变量
             vars: {}
