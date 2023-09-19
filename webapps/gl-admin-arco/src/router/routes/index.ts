@@ -243,8 +243,9 @@ export const appLoginRoutes = (result: any[]) => {
     meta: {
       requiresAuth: false,
     },
+    params: {...urlParams}
   });
-  result.push({path: '/', redirect: loginPath});
+  result.push({path: '/', redirect: loginPath, params: {...urlParams}});
 
   if (URL_PREFIX) {
     const ta = URL_PREFIX.split('');
@@ -257,12 +258,12 @@ export const appLoginRoutes = (result: any[]) => {
     }
     // eslint-disable-next-line no-restricted-syntax
     for (const position of positions) {
-      result.push({path: position, redirect: `${URL_PREFIX}/login`})
+      result.push({path: position, redirect: `${URL_PREFIX}/login`, params: {...urlParams}})
     }
     // 前缀完全版
-    result.push({path: `${URL_PREFIX}`, redirect: loginPath})
+    result.push({path: `${URL_PREFIX}`, redirect: loginPath, params: {...urlParams}})
     if (path) {
-      result.push({path: `${URL_PREFIX}${path}`, redirect: loginPath})
+      result.push({path: `${URL_PREFIX}${path}`, redirect: loginPath, params: {...urlParams}})
     }
   }
   return result;

@@ -18,9 +18,11 @@ export default function setupUserLoginInfoGuard(router: Router) {
           await userStore.logout();
           next({
             name: 'login',
+            params: to.params,
             query: {
               redirect: to.name,
               ...to.query,
+              ...to.params
             } as LocationQueryRaw,
           });
         }
@@ -32,9 +34,11 @@ export default function setupUserLoginInfoGuard(router: Router) {
       }
       next({
         name: 'login',
+        params: to.params,
         query: {
           redirect: to.name,
           ...to.query,
+          ...to.params
         } as LocationQueryRaw,
       });
     }
