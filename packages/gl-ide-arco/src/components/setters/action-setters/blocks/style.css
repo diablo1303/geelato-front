@@ -42,6 +42,11 @@
     background-color: #ecf5ff;
 }
 
+.gl-command-block .gl-right > .gl-description.gl-annotation .gl-var,.gl-command-block-callback  .gl-description.gl-annotation .gl-var {
+    color: #487c00;
+    background-color: #edfff2;
+}
+
 .gl-command-block.gl-disabled .gl-title {
     font-weight: 500;
     color: #cccccc !important;

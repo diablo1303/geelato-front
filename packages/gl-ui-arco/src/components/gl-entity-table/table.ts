@@ -32,6 +32,8 @@ export interface GlTableColumn extends TableColumnData {
     _checked?: boolean;
     // ！！！【待删除】需要自定义render函数时使用，目前暂未应用，优先采用_renderScript
     _renderFnBody: string;
+    // 背景色
+    _bgColor?:string
 
     // 脚本运算时动态加入的
     _propsExpressions?: object
@@ -121,7 +123,25 @@ export const evalExpression = (data: {
         rowIndex: toRaw(data.rowIndex),
     };
     // console.log('evalExpression', data)
-    return jsScriptExecutor.evalExpression(ctx.column._renderScript, ctx);
+    return jsScriptExecutor.evalExpression(data.column._renderScript, ctx);
+};
+
+export const evalColorExpression = (data: {
+    record: TableData;
+    column: GlTableColumn;
+    rowIndex: number;
+}, pageProvideProxy: PageProvideProxy) => {
+    if (!data.column._bgColor) {
+        return ''
+    }
+    const ctx = {
+        pageProxy: pageProvideProxy,
+        record: toRaw(data.record),
+        column: toRaw(data.column),
+        rowIndex: toRaw(data.rowIndex),
+    };
+    // console.log('evalExpression', data)
+    return jsScriptExecutor.evalExpression(data.column._bgColor, ctx);
 };
 
 export const showAction = (data: {
@@ -162,7 +182,7 @@ const slotNameOperation = '#'
 export const setSlotNames = (queryColumns: GlTableColumn[]) => {
     // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确认列有slotName
     queryColumns.forEach((col: Column) => {
-        if (col._renderScript || col._component) {
+        if (col._renderScript || col._component || col._bgColor) {
             col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
         } else {
             delete col.slotName
@@ -226,12 +246,12 @@ export const genQueryColumns = (props: any, showDataIndexes: string[], hideDataI
 }
 
 /**
- * 构建新可供展示的列（用于选择是否展示），但不是最终的展示例
+ * 构建新可供展示的列（用于选择是否展示），但不是最终展示例
  * @param queryColumns
  * @param isShowByComponent 是否通过组件来控制列是否展示，场景1，应用于编辑表，值为true;场景2，应用于查询表，值为false
  */
 export const genShowColumns = (queryColumns: Ref<GlTableColumn[]>, isShowByComponent: boolean) => {
-    let cols: Array<GlTableColumn> = [];
+    const cols: Array<GlTableColumn> = [];
     queryColumns?.value.forEach((queryColumn) => {
         queryColumn._checked = true;
         queryColumn.width = queryColumn.width || 150
@@ -266,7 +286,7 @@ export const genShowColumns = (queryColumns: Ref<GlTableColumn[]>, isShowByCompo
  * @param showColumns 可选择的展示的列
  */
 export const genRenderColumns = (showColumns: Ref<GlTableColumn[]>) => {
-    let cols: Array<GlTableColumn> = [];
+    const cols: Array<GlTableColumn> = [];
     showColumns?.value.forEach((column) => {
         if (column._checked !== false) {
             cols.push(column)
@@ -309,7 +329,7 @@ export const createEntityReader = (props: {
     isSubForm: boolean,
     subFormPidName: string
 }, queryColumns: GlTableColumn[], simpleReaderInfo?: EntityFetchDataInfo, getPid?: Function) => {
-    let entityReader = new EntityReader();
+    const entityReader = new EntityReader();
     entityReader.entity = props.entityName;
     entityReader.order = [];
     entityReader.params = simpleReaderInfo?.params || [];

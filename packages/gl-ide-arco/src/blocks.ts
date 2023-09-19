@@ -28,6 +28,7 @@ const component: Plugin = {
         app.component('GlExportWordBlock', GlCommandBlockOne)
         app.component('GlExportPdfBlock', GlCommandBlockOne)
         app.component('GlGenerateMqlBlock', GlCommandBlockOne)
+        app.component('GlAnnotationBlock', GlCommandBlockOne)
     }
 }
 

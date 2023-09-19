@@ -9,7 +9,7 @@
           <span>{{ glComponentInst._disabled ? '【已停用】' : '' }}</span>
           <span>{{ blockMeta.title }}</span>
         </div>
-        <div class="gl-description">
+        <div class="gl-description" :class="{'gl-annotation':blockMeta.title==='注释'}">
           <span v-html="highlightedStr"></span>
         </div>
       </div>

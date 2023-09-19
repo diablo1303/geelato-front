@@ -167,6 +167,12 @@ const onTabClick = (key: string | number) => {
   }
 }
 
+watch(()=>{
+  return props.glComponentInst.value
+}, (value) => {
+  // @ts-ignore
+  mv.value = value
+})
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })

@@ -26,6 +26,7 @@ import InputMeta from "./setter-arco/input/InputMeta";
 import InputNumberMeta from "./setter-arco/inputNumber/InputNumberMeta";
 import MentionsMeta from "./setter-arco/mentions/MentionsMeta";
 import SelectMeta from "./setter-arco/select/SelectMeta";
+import ASelectMeta from "./setter-arco/select/ASelectMeta";
 import SliderMeta from "./setter-arco/slider/SliderMeta";
 import TimePickerMeta from "./setter-arco/timePicker/TimePickerMeta";
 import TransferMeta from "./setter-arco/transfer/TransferMeta";
@@ -78,8 +79,10 @@ import MultiComponentsMeta from "./setter-arco/multiComponents/multiComponentsMe
 import GlButtonMeta from "./setter-arco/button/GlButtonMeta";
 import JsCodeBlockMeta from "./setter-block/code/JsCodeBlockMeta";
 import OpRecordMeta from "./setter-arco/op-record/OpRecordMeta";
+
+
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [ButtonMeta, GlButtonMeta, TextMeta, AlertMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
+const componentMetas: Array<ComponentMeta> = [ButtonMeta, GlButtonMeta, TextMeta, AlertMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta,ASelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
@@ -92,7 +95,7 @@ const componentInstances: Array<ComponentInstance> = []
 const dataEntryNameMap: { [key: string]: boolean } = {}
 // 不在sidebar中出现的组件
 // @ts-ignore
-const ignoreInstances: Array<ComponentMeta> = [DndPlaceholderMeta, VirtualMeta,ButtonMeta]
+const ignoreInstances: Array<ComponentMeta> = [DndPlaceholderMeta, VirtualMeta,ButtonMeta,ASelectMeta]
 // 不需要自动添加公共属性的组件
 const ignoreCommonPropertiesComponents = ['GlEntityTableSub', 'GlEntityTablePlus', 'GlHiddenArea']
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
