@@ -400,10 +400,12 @@ const batchUpdate = (params: { record: Record<string, any> }) => {
           }
         })
       })
-      return entityApi.saveBatch(props.base.entityName, copyRecords)
+      entityApi.saveBatch(props.base.entityName, copyRecords).then(() => {
+        refresh()
+        global.$notification.info({ title: '更新成功',content: `更新${records.length}条记录` })
+      })
     }
   }
-  return null
 }
 
 /**
