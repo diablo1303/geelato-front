@@ -1,7 +1,12 @@
 <template>
   <div class="gl-entity-form" v-if="refreshFlag">
-    <a-form ref="formRef" :model="formData" :layout="layout!"
-            :autoLabelWidth="autoLabelWidth" :disabled="isRead&&glIsRuntime">
+    <a-form
+      ref="formRef"
+      :model="formData"
+      :layout="layout!"
+      :autoLabelWidth="autoLabelWidth"
+      :disabled="isRead && glIsRuntime"
+    >
       <template v-if="glIsRuntime">
         <slot></slot>
       </template>
@@ -9,22 +14,22 @@
         <GlInsts :glComponentInst="glComponentInst"></GlInsts>
       </template>
     </a-form>
-    <div class="formSubmit" style="text-align: center;padding: 2em 1em">
+    <div class="formSubmit" style="text-align: center; padding: 2em 1em">
       <a-button type="primary" @click="submitForm">保存</a-button>
     </div>
   </div>
 </template>
 <script lang="ts">
 export default {
-  name: "GlEntityForm"
+  name: 'GlEntityForm'
 }
 </script>
 <script lang="ts" setup>
-import {inject, onMounted, type PropType, provide, type Ref, ref} from 'vue';
-import type {FormInstance} from '@arco-design/web-vue/es/form';
-import useLoading from '../../hooks/loading';
-import {isDataEntry} from "@geelato/gl-ui-schema-arco";
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import { inject, onMounted, type PropType, provide, type Ref, ref } from 'vue'
+import type { FormInstance } from '@arco-design/web-vue/es/form'
+import useLoading from '../../hooks/loading'
+import { isDataEntry } from '@geelato/gl-ui-schema-arco'
+import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import {
   entityApi,
   mixins,
@@ -33,10 +38,11 @@ import {
   PageProvideKey,
   FormProvideKey,
   FormProvideProxy,
-  EntitySaver, utils,
-} from "@geelato/gl-ui";
-import {type EntitySavingObject, getFormParams} from "./GlEntityForm";
-import {GetEntitySaversResult} from "@geelato/gl-ui/src/m/datasource/EntityDataSource";
+  EntitySaver,
+  utils
+} from '@geelato/gl-ui'
+import { getFormParams, type ValidatedError } from './GlEntityForm'
+import { GetEntitySaversResult } from '@geelato/gl-ui'
 
 // onLoadedData：从服务端加载完数据并设置到表单中
 const emits = defineEmits(['onLoadedData'])
@@ -49,7 +55,7 @@ const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const refreshFlag = ref(true)
 const global = useGlobal()
 
-type LayoutType = "inline" | "horizontal" | "vertical"
+type LayoutType = 'inline' | 'horizontal' | 'vertical'
 
 class FormItem {
   componentName: string = ''
@@ -94,7 +100,7 @@ const isRead = pageProvideProxy.isPageStatusRead()
 const formParams = getFormParams(pageProvideProxy, props.bindEntity)
 
 // formData中不包括记录id，记录id在entityRecordId中定义
-const formData = ref<Record<string, any>>(JSON.parse(JSON.stringify(formParams)));
+const formData = ref<Record<string, any>>(JSON.parse(JSON.stringify(formParams)))
 const setFormData = (key: string, value: any, src?: string) => {
   // console.log(src, props.bindEntity.entityName, 'setFormData', key, value)
   formData.value[key] = value
@@ -103,33 +109,45 @@ const setFormData = (key: string, value: any, src?: string) => {
 let entityRecordId: Ref<string> = ref(formParams.id)
 formProvideProxy.setRecordId(entityRecordId.value)
 
-const formItems: Ref<Array<FormItem>> = ref([]);
+const formItems: Ref<Array<FormItem>> = ref([])
 const subFormInstIds: Ref<string[]> = ref([])
-const formRef = ref<FormInstance>();
+const formRef = ref<FormInstance>()
+
+/**
+ * 验证表单
+ * 将异步改成同步
+ */
+const validate = (): undefined | Promise<undefined | Record<string, ValidatedError>> => {
+  return formRef.value?.validate()
+}
 
 const checkValidDataEntry = (componentName: string) => {
-  return isDataEntry(componentName) && componentName !== 'GlEntityTableSub' && componentName !== 'GlEntityForm'
+  return (
+    isDataEntry(componentName) &&
+    componentName !== 'GlEntityTableSub' &&
+    componentName !== 'GlEntityForm'
+  )
 }
 
 // 传进来的参数是否包括了所有的字段值
-const isFormParamsContainAllFields = (items: FormItem[]) => {
-  console.log('传进来的参数是否包括了所有的字段值', items, formParams)
-  if (!formParams) return false
-  const paramNames = Object.keys(formParams)
-  let isContain = true
-  for (let key in items) {
-    const item = items[key]
-    const foundResult = paramNames.find((paramName: string) => {
-      return paramName === item.fieldName
-    })
-    if (!foundResult) {
-      isContain = false
-      break
-    }
-  }
-  console.log('传进来的参数是否包括了所有的字段值', isContain)
-  return isContain
-}
+// const isFormParamsContainAllFields = (items: FormItem[]) => {
+//   console.log('传进来的参数是否包括了所有的字段值', items, formParams)
+//   if (!formParams) return false
+//   const paramNames = Object.keys(formParams)
+//   let isContain = true
+//   for (let key in items) {
+//     const item = items[key]
+//     const foundResult = paramNames.find((paramName: string) => {
+//       return paramName === item.fieldName
+//     })
+//     if (!foundResult) {
+//       isContain = false
+//       break
+//     }
+//   }
+//   console.log('传进来的参数是否包括了所有的字段值', isContain)
+//   return isContain
+// }
 /**
  * 遍历构建表单数据项，设置值
  * 在初始化构建时，由于子表单不存在，不会调用子表单的构建方法，另外，各层级子表单组件在加载数据时，需自动加载各自的构建方法
@@ -159,7 +177,7 @@ const buildFieldItems = () => {
             moreInfo = moreInfo ? '，' + moreInfo : ''
           }
           const content = `组件未进行数据绑定，组件标识为：${subInst.id}${moreInfo}`
-          global.$notification.error({title: '组件未绑定', content: content})
+          global.$notification.error({ title: '组件未绑定', content: content })
           // console.error('GlEntityForm > ', content)
           continue
         }
@@ -185,7 +203,10 @@ const buildFieldItems = () => {
           setFormData(subInst.props.bindField.fieldName, subInst.value, 'buildFieldItem')
         }
         formItems.value.push(formItem)
-      } else if (subInst.componentName === 'GlEntityTableSub' && subInst.props?.base?.isFormSubTable) {
+      } else if (
+        subInst.componentName === 'GlEntityTableSub' &&
+        subInst.props?.base?.isFormSubTable
+      ) {
         // 处理从表信息，只有明确是子表的才算
         // 先记录，后续在其它方法中处理
         subFormInstIds.value.push(subInst.id)
@@ -276,26 +297,27 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
   // })
 
   // console.log('GlEntityForm > setFormItemValues() > formData:', formData.value)
-  emits('onLoadedData', {data: formData.value})
+  emits('onLoadedData', { data: formData.value })
 }
 
 /**
  *  加载表单数据
  */
 const loadForm = async () => {
-
   if (!entityRecordId.value) {
     // 1、不需要从服务端获取，没有id表示新增，不需要从服务端获取表单值
     if (isRead && props.glIsRuntime) {
       global.$notification.error({
         duration: 8000,
         title: '参数不全',
-        content: '当前表单('+props.bindEntity.entityName+')为只读模式，但没有传递参数"form.id"或具体实体名点id“xxx.id”，请检查表单页面的打开事件配置中，是否已配置了参数，如参数名：form.id，值$ctx.record.id。',
+        content:
+          '当前表单(' +
+          props.bindEntity.entityName +
+          ')为只读模式，但没有传递参数"form.id"或具体实体名点id“xxx.id”，请检查表单页面的打开事件配置中，是否已配置了参数，如参数名：form.id，值$ctx.record.id。',
         closable: true
       })
     }
     pageProvideProxy.addPageMountedEvent(() => {
-      // await utils.sleep(100)
       setFormItemValues(formData.value)
     })
   } else {
@@ -316,13 +338,19 @@ const loadForm = async () => {
        *  默认在初始化时加载数据
        */
       if (loadDataImmediate()) {
-        entityApi.query(props.bindEntity.entityName, fieldNames.join(','), {id: entityRecordId.value}).then((resp) => {
-          const items = resp?.data
-          if (items && items.length > 0) {
-            console.log(props.bindEntity.entityName, '从服务端加载数据并设置到当前页面中', items[0])
-            setFormItemValues(items[0])
-          }
-        })
+        entityApi
+          .query(props.bindEntity.entityName, fieldNames.join(','), { id: entityRecordId.value })
+          .then((resp) => {
+            const items = resp?.data
+            if (items && items.length > 0) {
+              // console.log(
+              //   props.bindEntity.entityName,
+              //   '从服务端加载数据并设置到当前页面中',
+              //   items[0]
+              // )
+              setFormItemValues(items[0])
+            }
+          })
       } else {
         setFormItemValues(formParams)
       }
@@ -351,45 +379,16 @@ const checkBindEntity = () => {
   return true
 }
 
-
 /**
- * 创建表格的实体保存GQL对象，递归创建子级表单（包括列表、表单形式）
+ * 创建基于元数据的实体保存MQL对象，递归创建子级表单（包括列表、表单形式）
  * 可被父表单调用，集到父表单一起保存
  * @param subFormPidValue 本表单中，指向父表单ID的字段值
  */
-// const createEntitySavingObject = (subFormPidValue: string): EntitySavingObject | null => {
-//   const parentIdFlag = '$parent.id'
-//   if (checkBindEntity()) {
-//     // 先设置主表单部分
-//     const entityKeyValues: Record<string, any> = {id: entityRecordId.value, ...formData.value}
-//     console.log(props.bindEntity.entityName, 'formData', formData.value)
-//     // 如果本表单作为另了个表单的子表单
-//     if (props.isSubForm) {
-//       entityKeyValues[props.subFormPidName!] = subFormPidValue || parentIdFlag
-//     }
-//
-//     // 获取子表单值信息，并设置到保存表单中
-//     subFormInstIds.value.forEach((instId: string) => {
-//       const createEntitySavingObject = pageProvideProxy.getMethod(instId, 'createEntitySavingObject')
-//       if (typeof createEntitySavingObject === 'function') {
-//         const subEntitySavingObject: EntitySavingObject = createEntitySavingObject(entityRecordId.value || parentIdFlag)
-//         if (subEntitySavingObject) {
-//           const subEntityKey = '#' + subEntitySavingObject.key
-//           entityKeyValues[subEntityKey] = entityKeyValues[subEntityKey] || []
-//           entityKeyValues[subEntityKey].push(...subEntitySavingObject.value)
-//         }
-//       }
-//     })
-//     return {key: props.bindEntity.entityName, value: [entityKeyValues]}
-//   }
-//   return null
-// }
-
 const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
   if (checkBindEntity()) {
     const entitySaver = new EntitySaver(props.bindEntity.entityName)
     // 先设置主表单部分
-    const record: Record<string, any> = {id: entityRecordId.value, ...formData.value}
+    const record: Record<string, any> = { id: entityRecordId.value, ...formData.value }
     // 如果本表单作为另了个表单的子表单
     if (props.isSubForm) {
       entitySaver.pidName = props.subFormPidName
@@ -407,27 +406,12 @@ const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
       }
     })
     entitySaver.record = record
-    // console.log('entitySaver', entitySaver)
     return [entitySaver]
   }
   return null
 }
 
-/**
- *  保存表单数据，将数据保存到服务端
- *  在submitForm方法内调用此方法
- */
-// const saveForm = async (entitySaver: EntitySaver) => {
-//   // const entitySavingObject = createEntitySavingObject(entityRecordId.value)
-//   // if (entitySavingObject?.value) {
-//   //   return await entityApi.save(props.bindEntity.entityName, entitySavingObject?.value[0])
-//   // }
-//   if (entitySaver) {
-//     return await entityApi.saveEntity(entitySaver)
-//   }
-// }
-
-const {loading, setLoading} = useLoading();
+const { loading, setLoading } = useLoading()
 const hasSubFormTable = () => {
   return subFormInstIds.value.length > 0
 }
@@ -437,30 +421,38 @@ const getEntitySavers = async () => {
   // 构建表单数据项，设置值
   buildFieldItems()
   // 再进一步进行表单数据项值校验
-  const validateResult = await formRef.value?.validate();
-  // 验证子表单，若存在则验证
-  let subFormTableValidError = false
-  subFormInstIds.value.forEach((instId: string) => {
+  const validateResult = await validate()
+  // 验证子表单（Form表单、可编辑列表表单等），若存在则验证
+  let subFormValidError = false
+  for (const instId of subFormInstIds.value) {
     const validateFn = pageProvideProxy.getMethod(instId, 'validate')
     if (typeof validateFn === 'function') {
-      const validateTableData = validateFn()
-      // console.log('GlEntityForm > submitForm() > validateTableData', validateTableData)
-      if (validateTableData.error) {
-        subFormTableValidError = true
+      const validateData = await validateFn()
+      console.log(
+        'GlEntityForm > getEntitySavers() > subForm(' + instId + ') validate',
+        validateData
+      )
+      if (validateData) {
+        subFormValidError = true
       }
     }
-  })
+  }
   const result = new GetEntitySaversResult()
+  result.componentName = props.glComponentInst.componentName
   // 数据验证
-  if (!validateResult && !subFormTableValidError) {
-    // 配置验证，并获取savers对象
+  if (validateResult) {
+    result.message = '验证表单' + props.bindEntity?.entityName + '不通过'
+  } else if (subFormValidError) {
+    result.message = '验证表单' + props.bindEntity?.entityName + '的子表单不通过'
+  } else {
+    // 获取savers对象
     const savers = createEntitySavers(entityRecordId.value)
     if (savers) {
       result.values = savers
-      result.message = ""
+      result.message = ''
       result.error = false
     } else {
-      result.message = "表单配置验证失败，表单或字段未绑定。"
+      result.message = '表单配置验证失败，表单或字段未绑定。'
     }
   }
   return result
@@ -471,10 +463,10 @@ const getEntitySavers = async () => {
  *  submitForm() --> saveForm()
  */
 const submitForm = async () => {
-
   const entitySavers = await getEntitySavers()
+  console.log('submitForm() > entitySavers', entitySavers)
   if (!entitySavers.error) {
-    setLoading(true);
+    setLoading(true)
     // console.log('submitForm() > formData', formData)
     const saveResult = await entityApi.saveEntity(entitySavers.values[0])
     entityRecordId.value = saveResult?.data
@@ -495,7 +487,7 @@ const submitForm = async () => {
   } else {
     return false
   }
-};
+}
 
 /**
  *  检查配置是否正常
@@ -507,7 +499,9 @@ const checkConfig = () => {
       let subInst = inst.children[index]
       if (checkValidDataEntry(subInst.componentName)) {
         if (!subInst.props.bindField || !subInst.props.bindField.fieldName) {
-          global.$notification.error(`组件[${subInst.componentName}],标题：${subInst.props.label},未绑定模型字段。`)
+          global.$notification.error(
+            `组件[${subInst.componentName}],标题：${subInst.props.label},未绑定模型字段。`
+          )
         }
       }
       if (subInst.children && subInst.children.length > 0) {
@@ -519,21 +513,20 @@ const checkConfig = () => {
   checkFieldItem(props.glComponentInst)
 }
 
-const getValue = async () => {
+const getValue = () => {
   buildFieldItems()
   // 再进一步进行表单数据项值校验
-  const validateResult = await formRef.value?.validate();
+  const validateResult = validate()
   if (!validateResult) {
-    return {id: entityRecordId.value, ...formData.value}
+    return { id: entityRecordId.value, ...formData.value }
   } else {
-    return {id: entityRecordId.value}
+    return { id: entityRecordId.value }
   }
 }
 
 onMounted(() => {
   // console.log('GLEntityForm > onMounted() > id', props.glComponentInst.id)
 })
-
 
 const loadDataImmediate = () => {
   // console.log('props.immediate', props.immediate, props.bindEntity.entityName)
@@ -542,7 +535,14 @@ const loadDataImmediate = () => {
 
 loadForm()
 
-defineExpose({submitForm, buildFieldItems, getEntitySavers, createEntitySavers, getValue})
+defineExpose({
+  submitForm,
+  buildFieldItems,
+  getEntitySavers,
+  createEntitySavers,
+  getValue,
+  validate
+})
 </script>
 
 <style>
@@ -553,10 +553,10 @@ defineExpose({submitForm, buildFieldItems, getEntitySavers, createEntitySavers, 
 /**
  * 在arco-drawer-body和arco-modal-body内，不显示提交按钮
  */
-.arco-drawer-body .gl-entity-form .formSubmit, .arco-modal-body .gl-entity-form .formSubmit {
+.arco-drawer-body .gl-entity-form .formSubmit,
+.arco-modal-body .gl-entity-form .formSubmit {
   display: none;
 }
-
 
 .gl-entity-form-actions {
   position: fixed;

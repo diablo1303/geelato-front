@@ -1,11 +1,12 @@
-import type {AxiosInstance, AxiosRequestConfig, AxiosStatic} from 'axios'
+import type { AxiosInstance, AxiosRequestConfig, AxiosStatic } from 'axios'
 import ResultMapping from '../datasource/ResultMapping'
 import UrlConfig from '../datasource/UrlConfig'
 import MixUtil from '../utils/MixUtil'
-import type {EntityReader, EntityReaderParam, EntitySaver} from './EntityDataSource'
+import type { EntityReader, EntityReaderParam, EntitySaver } from './EntityDataSource'
 import AllUtils from '../utils/AllUtils'
-import {getToken} from '../utils/auth'
+import { getToken } from '../utils/auth'
 import jsScriptExecutor from '../actions/JsScriptExecutor'
+import utils from '../utils/Utils'
 
 export type MqlObject = { [key: string]: { [key: string]: any } }
 
@@ -278,7 +279,6 @@ export class EntityApi {
     convertEntitySaverToMql(entitySaver: EntitySaver, biz?: string) {
         const pidValue = '$parent.id'
         // subFormPidValue
-        const entitySaverCopy = JSON.parse(JSON.stringify(entitySaver))
         type ParsedMqlResult = { key: string; mqlObj: Record<string, any> }
         const toMql = (es: EntitySaver, isChildren: boolean): ParsedMqlResult => {
             const mqlObj: Record<string, any> = {}
@@ -297,15 +297,23 @@ export class EntityApi {
 
             es.children?.forEach((subEs) => {
                 const subMqlResult = toMql(subEs, true)
+                // console.log('convertEntitySaverToMql() > entitySaver.entity',entityName,'result:',subMqlResult)
                 if (subMqlResult.mqlObj && subMqlResult.mqlObj[subMqlResult.key] && subMqlResult.mqlObj[subMqlResult.key].length > 0) {
-                    mqlObj[entityName][subMqlResult.key] = mqlObj[entityName][subMqlResult.key] || []
-                    mqlObj[entityName][subMqlResult.key].push(...subMqlResult.mqlObj[subMqlResult.key])
+                    if (utils.isArray(mqlObj[entityName])){
+                        es.record[subMqlResult.key] =  es.record[subMqlResult.key] || []
+                        es.record[subMqlResult.key].push(...subMqlResult.mqlObj[subMqlResult.key])
+                    }else{
+                        mqlObj[entityName][subMqlResult.key] = mqlObj[entityName][subMqlResult.key] || []
+                        mqlObj[entityName][subMqlResult.key].push(...subMqlResult.mqlObj[subMqlResult.key])
+                    }
+                    // console.log('convertEntitySaverToMql() > parent mqlObj',mqlObj,entityName)
                 }
             })
             return {key: entityName, mqlObj: mqlObj}
         }
         const bizCode = biz || '0'
-        return Object.assign(toMql(entitySaverCopy, false).mqlObj, {'@biz': bizCode})
+      const entitySaverCopy = JSON.parse(JSON.stringify(entitySaver))
+      return Object.assign(toMql(entitySaverCopy, false).mqlObj, {'@biz': bizCode})
     }
 
     saveEntity(entitySaver: EntitySaver, biz?: string) {

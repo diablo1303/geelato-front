@@ -240,7 +240,7 @@ export class JsScriptExecutor {
         return {
             log(options: OptionsType) {
                 // console.log(that.evalOptions(options, $gl?.ctx, ['content']).content)
-                console.log(options)
+                // console.log(options)
             }
         }
     }
@@ -377,7 +377,7 @@ export class JsScriptExecutor {
             if (pageProxy) {
                 const ref = pageProxy.getRef(componentId)
                 if (ref) {
-                    console.log('$gl.fn.setComponentValue', componentId, value)
+                    // console.log('$gl.fn.setComponentValue', componentId, value)
                     return pageProxy.setComponentValue(componentId, value)
                 }
             }

@@ -3,27 +3,28 @@
  *  整合gl-query、gl-toolbar、gl-table形成完整可直接使用的table应用
  */
 export default {
-  name: "GlEntityTablePlus"
+  name: 'GlEntityTablePlus'
 }
 </script>
 <script setup lang="ts">
 // @ts-nocheck
-import GlQuery from "../gl-query/index.vue";
-import GlToolbar from "../gl-toolbar/index.vue";
-import GlEntityTable from "../gl-entity-table/GlEntityTable.vue";
-import GlEntityTableEditable from "../gl-entity-table/GlEntityTableEdit.vue";
-import {computed, inject, onMounted, type PropType, ref, type Ref} from "vue";
-import type {EntityReaderParam} from "@geelato/gl-ui";
-import QueryItem from "../gl-query/query";
-import cloneDeep from "lodash/cloneDeep";
+import GlQuery from '../gl-query/index.vue'
+import GlToolbar from '../gl-toolbar/index.vue'
+import GlEntityTable from '../gl-entity-table/GlEntityTable.vue'
+import GlEntityTableEditable from '../gl-entity-table/GlEntityTableEdit.vue'
+import { computed, inject, onMounted, type PropType, ref, type Ref } from 'vue'
+import type { EntityReaderParam } from '@geelato/gl-ui'
+import QueryItem from '../gl-query/query'
+import cloneDeep from 'lodash/cloneDeep'
 import {
   type SizeProps,
   type Column,
   defaultTable,
-  type GlTableColumn, BaseInfo,
-} from "../gl-entity-table/table";
-import Toolbar, {defaultToolbar} from "../gl-toolbar/toolbar";
-import {useI18n} from "vue-i18n";
+  type GlTableColumn,
+  BaseInfo
+} from '../gl-entity-table/table'
+import Toolbar, { defaultToolbar } from '../gl-toolbar/toolbar'
+import { useI18n } from 'vue-i18n'
 import {
   entityApi,
   PageProvideKey,
@@ -32,9 +33,11 @@ import {
   utils,
   mixins,
   CheckUtil,
-  useGlobal, EntitySaver, GetEntitySaversResult
-} from "@geelato/gl-ui";
-import type {Action} from "../../types/global";
+  useGlobal,
+  EntitySaver,
+  GetEntitySaversResult
+} from '@geelato/gl-ui'
+import type { Action } from '../../types/global'
 
 /**
  *  change:在表格编辑状态时，更换表格数据时触发
@@ -42,11 +45,13 @@ import type {Action} from "../../types/global";
 const emits = defineEmits(['changeRecord', 'fetchSuccess'])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const isRead = !!pageProvideProxy?.isPageStatusRead()
-const {t} = CheckUtil.isBrowser() ? useI18n() : {
-  t: (str: any) => {
-    return str
-  }
-};
+const { t } = CheckUtil.isBrowser()
+  ? useI18n()
+  : {
+      t: (str: any) => {
+        return str
+      }
+    }
 // const t = (str: any) => {
 //   return str
 // }
@@ -63,22 +68,22 @@ const props = defineProps({
     type: Array as PropType<Array<QueryItem>>,
     required: true,
     default() {
-      return [];
-    },
+      return []
+    }
   },
   toolbar: {
     type: Object as PropType<Toolbar>,
     required: true,
     default() {
-      return defaultToolbar;
-    },
+      return defaultToolbar
+    }
   },
   columns: {
     type: Array as PropType<GlTableColumn[]>,
     required: true,
     default() {
-      return defaultTable;
-    },
+      return defaultTable
+    }
   },
   /**
    *  列上的操作配置
@@ -90,105 +95,99 @@ const props = defineProps({
     }
   },
   size: {
-    type: String as PropType<SizeProps>,
+    type: String as PropType<SizeProps>
   },
   ...mixins.props
-});
-
+})
 
 // 数据预处理
 onMounted(() => {
   props.columns.forEach((item, index) => {
     if (item._renderFnBody) {
-      const fn = `(record,column,rowIndex)=>{return ${item._renderFnBody}}`;
+      const fn = `(record,column,rowIndex)=>{return ${item._renderFnBody}}`
       // eslint-disable-next-line no-eval
-      item.render = eval(fn);
+      item.render = eval(fn)
     }
-  });
+  })
   // console.log("转换后的table:", props.columns);
 })
 
 const tableSettingId = utils.gid('tSetting', 20)
-const size = ref<SizeProps>(props.size || "medium");
+const size = ref<SizeProps>(props.size || 'medium')
 const densityList = computed(() => [
   {
-    name: t("searchTable.size.mini"),
-    value: "mini",
+    name: t('searchTable.size.mini'),
+    value: 'mini'
   },
   {
-    name: t("searchTable.size.small"),
-    value: "small",
+    name: t('searchTable.size.small'),
+    value: 'small'
   },
   {
-    name: t("searchTable.size.medium"),
-    value: "medium",
+    name: t('searchTable.size.medium'),
+    value: 'medium'
   },
   {
-    name: t("searchTable.size.large"),
-    value: "large",
-  },
-]);
+    name: t('searchTable.size.large'),
+    value: 'large'
+  }
+])
 const exchangeArray = <T extends Array<any>>(
-    array: T,
-    beforeIdx: number,
-    newIdx: number,
-    isDeep = false
+  array: T,
+  beforeIdx: number,
+  newIdx: number,
+  isDeep = false
 ): T => {
-  const newArray = isDeep ? cloneDeep(array) : array;
+  const newArray = isDeep ? cloneDeep(array) : array
   if (beforeIdx > -1 && newIdx > -1) {
     // 先替换后面的，然后拿到替换的结果替换前面的
-    newArray.splice(
-        beforeIdx,
-        1,
-        newArray.splice(newIdx, 1, newArray[beforeIdx]).pop()
-    );
+    newArray.splice(beforeIdx, 1, newArray.splice(newIdx, 1, newArray[beforeIdx]).pop())
   }
-  return newArray;
-};
+  return newArray
+}
 
-const handleSelectDensity = (
-    val: string | number | Record<string, any> | undefined,
-    e: Event
-) => {
-  size.value = val as SizeProps;
-};
+const handleSelectDensity = (val: string | number | Record<string, any> | undefined, e: Event) => {
+  size.value = val as SizeProps
+}
 
 // 用于工具条中控制哪些列显示与否
-const showColumns: Ref<GlTableColumn[]> = ref([]);
-const tableRef = ref();
+const showColumns: Ref<GlTableColumn[]> = ref([])
+const tableRef = ref()
 // const search = (queryFormModal: object) => {
 //   tableRef.value.search(queryFormModal);
 // };
 const popupVisibleChange = (val: boolean) => {
-  tableRef.value.popupVisibleChange(val);
-};
-const changeShowColumns = (checked: boolean | (string | boolean | number)[],
-                           column: Column,
-                           index: number) => {
-  tableRef.value.changeShowColumns(checked, column, index);
-};
+  tableRef.value.popupVisibleChange(val)
+}
+const changeShowColumns = (
+  checked: boolean | (string | boolean | number)[],
+  column: Column,
+  index: number
+) => {
+  tableRef.value.changeShowColumns(checked, column, index)
+}
 const updateColumns = (showColumnsValue: GlTableColumn[]) => {
-  showColumns.value = showColumnsValue;
-};
-const onUpdateRow = (data: { record: object, rowIndex: number, columns: GlTableColumn }) => {
+  showColumns.value = showColumnsValue
+}
+const onUpdateRow = (data: { record: object; rowIndex: number; columns: GlTableColumn }) => {
   // console.log('GlEntityTablePlus > onUpdateRow() > data:', data)
   emits('changeRecord', data)
 }
 
-let lastEntityReaderParams: Array<EntityReaderParam>;
+let lastEntityReaderParams: Array<EntityReaderParam>
 // 在初始化（init）时，GlQuery组件的事件会触发：@search="onSearch"
 const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
   // console.log("onSearch() > entityReaderParams:", entityReaderParams);
   if (tableRef.value) {
     selectedKeys.value = []
     tableRef.value.selectAll(false)
-    tableRef.value.search(entityReaderParams);
-    lastEntityReaderParams = entityReaderParams;
+    tableRef.value.search(entityReaderParams)
+    lastEntityReaderParams = entityReaderParams
   }
 }
 const refresh = (event?: MouseEvent) => {
-  onSearch(lastEntityReaderParams);
-};
+  onSearch(lastEntityReaderParams)
+}
 
 /**
  *  如果在页面渲染后，由表格组件外部动态调整列不可见等，需要resetColumns生效
@@ -207,7 +206,7 @@ const changeColumnsVisible = (hideDataIndexes: string[], showDataIndexes: string
   tableRef.value.changeColumnsVisible(hideDataIndexes, showDataIndexes)
 }
 
-const queryRef = ref(null);
+const queryRef = ref(null)
 const addRow = () => {
   tableRef.value.addRow()
 }
@@ -227,7 +226,7 @@ const deleteRecord = (params: Record<string, any>) => {
   let id = params.id
 
   if (props.base.isLogicDeleteMode === false) {
-    entityApi.delete(props.base.entityName, {id: id}).then(() => {
+    entityApi.delete(props.base.entityName, { id: id }).then(() => {
       refresh()
     })
   } else {
@@ -245,10 +244,12 @@ const selectionChange = (rowKeys: []) => {
 }
 
 const rowSelection = computed(() => {
-  return props.base.checkType === 'checkbox' || props.base.checkType === 'radio' ? {
-    type: props.base.checkType,
-    showCheckedAll: props.base.showCheckAll && props.base.checkType === 'checkbox'
-  } : undefined
+  return props.base.checkType === 'checkbox' || props.base.checkType === 'radio'
+    ? {
+        type: props.base.checkType,
+        showCheckedAll: props.base.showCheckAll && props.base.checkType === 'checkbox'
+      }
+    : undefined
 })
 
 const getRenderData = () => {
@@ -262,7 +263,6 @@ const getSelectedRecords = () => {
   return getRenderData().filter((record: Record<string, any>) => {
     return selectedKeys.value.includes(record.id)
   })
-
 }
 
 const getRenderColumns = () => {
@@ -275,59 +275,22 @@ const getDeleteRecords = () => {
   return tableRef.value.getDeleteRecords()
 }
 
-const validate = (): { error: boolean, resultList: Array<any> } => {
+const validate = () => {
   return tableRef.value.validate()
 }
 
 const reRender = () => {
   return tableRef.value.reRender()
 }
-const onFetchSuccess = (args: { data: [], pagination: object }) => {
+const onFetchSuccess = (args: { data: []; pagination: object }) => {
   // @ts-ignore
   props.glComponentInst.value = args.data
   emits('fetchSuccess', args)
 }
 
-
 const entityTable = computed(() => {
   return props.base?.enableEdit ? GlEntityTableEditable : GlEntityTable
 })
-
-/**
- * 创建表格的实体保存GQL对象，可被父表单调用，集到父表单一起保存
- * @param subFormPidValue 作为子表单时，本表单中，指向父表单ID的字段值
- */
-// const createEntitySavingObject = (subFormPidValue: string) => {
-//   const entitySavingObject: EntitySavingObject = {
-//     key: props.base.entityName,
-//     value: []
-//   }
-//   // 处理需保存的子表单数据
-//   const renderColumns = getRenderColumns()
-//   const subFormTableData = getRenderData()
-//   // console.log('GlEntityForm > submitForm() > subFormTableData', subFormTableData)
-//   if (subFormTableData && subFormTableData.length > 0) {
-//     // 子表中，对应主表单ID的字段名
-//     const subTablePidName = props.base.subTablePidName!
-//     subFormTableData.forEach((record: any) => {
-//       // 设置主表父ID
-//       // 如果是新增，则采用变量，在后台保存主表单后，更换该值 $parent.id
-//       // 如果是修改，则直接获取当前的entityRecordId
-//       record[subTablePidName] = subFormPidValue
-//     })
-//     entitySavingObject.value = subFormTableData
-//   }
-//   // 处理需删除子表单数据
-//   // 当前为逻辑删除，可依据子表的isLogicDeleteMode来区分
-//   // console.log('GlEntityForm > saveForm() > getDeleteDataFn', getDeleteDataFn)
-//   const deleteData = getDeleteData()
-//   // console.log('GlEntityForm > saveForm() > deleteData:', deleteData)
-//   if (deleteData && deleteData.length > 0) {
-//     entitySavingObject.value = entitySavingObject.value || []
-//     entitySavingObject.value.push(...deleteData)
-//   }
-//   return entitySavingObject
-// }
 
 /**
  * 创建表格的实体保存对象，可被父表单调用，集到父表单一起保存
@@ -338,15 +301,24 @@ const createEntitySavers = (subFormPidValue?: string) => {
   // 处理需保存的子表单数据
   // const renderColumns = getRenderColumns()
   const subFormTableData = getRenderData()
-  console.log('GlEntityTablePlus > createEntitySavers() > subFormTableData', subFormTableData)
   // 子表中，对应主表单ID的字段名
   const subTablePidName = props.base.subTablePidName!
+  console.log(
+    'GlEntityTablePlus > createEntitySavers() > subTablePidName:',
+    subTablePidName,
+    'subFormPidValue:',
+    subFormPidValue,
+    'subFormTableData:',
+    subFormTableData ? JSON.parse(JSON.stringify(subFormTableData)) : subFormTableData
+  )
   if (subFormTableData && subFormTableData.length > 0) {
     subFormTableData.forEach((record: Record<any, any>) => {
       // 设置主表父ID
       // 如果是新增，则采用变量，在后台保存主表单后，更换该值 $parent.id
       // 如果是修改，则直接获取当前的entityRecordId
-      record[subTablePidName] = subFormPidValue
+      if (subTablePidName) {
+        record[subTablePidName] = subFormPidValue
+      }
       const entitySaver = new EntitySaver(props.base.entityName)
       entitySaver.pidName = props.base.subTablePidName
       entitySaver.record = record
@@ -360,7 +332,9 @@ const createEntitySavers = (subFormPidValue?: string) => {
   console.log('GlEntityTablePlus > createEntitySavers() > deleteData:', deleteData)
   if (deleteData && deleteData.length > 0) {
     deleteData.forEach((record: Record<any, any>) => {
-      record[subTablePidName] = subFormPidValue
+      if (subTablePidName) {
+        record[subTablePidName] = subFormPidValue
+      }
       const entitySaver = new EntitySaver(props.base.entityName)
       entitySaver.pidName = props.base.subTablePidName
       entitySaver.record = record
@@ -371,12 +345,14 @@ const createEntitySavers = (subFormPidValue?: string) => {
   return entitySavers
 }
 
-const getEntitySavers = (subFormPidValue?: string) => {
+const getEntitySavers = async (params: { subFormPidValue?: string }) => {
   const result = new GetEntitySaversResult()
-  if (!validate().error) {
+  if (!(await validate())) {
     result.error = false
-    result.values = createEntitySavers(subFormPidValue)
+    result.values = createEntitySavers(params.subFormPidValue)
+    result.message = ''
   }
+  result.componentName = props.glComponentInst.componentName
   return result
 }
 
@@ -436,7 +412,6 @@ const updateRecord = (params: { record: Record<string, any> }) => {
   return null
 }
 
-
 defineExpose({
   resetColumns,
   changeColumnsVisible,
@@ -457,12 +432,26 @@ defineExpose({
 </script>
 
 <template>
-  <a-card class="general-card" :title="base.hideLabel===true?'':base.label" :body-style="{padding:base.tablePadding}"
-          :style="{'padding-top':(base.hideLabel===true?'1.2em':'0')}"
+  <a-card
+    class="general-card"
+    :title="base.hideLabel === true ? '' : base.label"
+    :body-style="{ padding: base.tablePadding }"
+    :style="{ 'padding-top': base.hideLabel === true ? '1.2em' : '0' }"
   >
-    <GlQuery v-if="query" v-show="base.showQuery!==false" ref="queryRef" :items="query" @search="onSearch"></GlQuery>
-    <a-divider v-show="base.showQuery!==false" style="margin-top: 16px"/>
-    <GlToolbar v-show="base.showToolbar!==false" v-bind="toolbar" style="margin-bottom: 8px" :disabled="isRead">
+    <GlQuery
+      v-if="query"
+      v-show="base.showQuery !== false"
+      ref="queryRef"
+      :items="query"
+      @search="onSearch"
+    ></GlQuery>
+    <a-divider v-show="base.showQuery !== false" style="margin-top: 16px" />
+    <GlToolbar
+      v-show="base.showToolbar !== false"
+      v-bind="toolbar"
+      style="margin-bottom: 8px"
+      :disabled="isRead"
+    >
       <template #leftItems>
         <div v-if="base.enableEdit" class="action-icon">
           <a-button @click="addRow" shape="round" type="text" size="small" :disabled="isRead">
@@ -472,16 +461,12 @@ defineExpose({
       </template>
       <template #rightItems>
         <a-space v-if="!props.base?.enableEdit">
-        <span v-if="selectedKeys.length" class="action-icon">
-          已选<a-badge :count="selectedKeys.length"/>
-        </span>
+          <span v-if="selectedKeys.length" class="action-icon">
+            已选<a-badge :count="selectedKeys.length" />
+          </span>
           <!-- TODO 待提供按列设置展示 -->
           <a-tooltip v-if="true" :content="t('searchTable.actions.columnSetting')">
-            <a-popover
-                trigger="click"
-                position="br"
-                @popup-visible-change="popupVisibleChange"
-            >
+            <a-popover trigger="click" position="br" @popup-visible-change="popupVisibleChange">
               <div class="action-icon">
                 <GlIconfont type="gl-setting"></GlIconfont>
               </div>
@@ -492,10 +477,13 @@ defineExpose({
                       <GlIconfont type="gl-drag-arrow"></GlIconfont>
                     </div>
                     <div>
-                      <a-checkbox v-model="item._checked" @change="changeShowColumns($event, item, index)"/>
+                      <a-checkbox
+                        v-model="item._checked"
+                        @change="changeShowColumns($event, item, index)"
+                      />
                     </div>
                     <div class="title">
-                      {{ item.title === "#" ? "序号" : item.title }}
+                      {{ item.title === '#' ? '序号' : item.title }}
                     </div>
                   </div>
                 </div>
@@ -510,10 +498,10 @@ defineExpose({
             </a-tooltip>
             <template #content>
               <a-doption
-                  v-for="item in densityList"
-                  :key="item.value"
-                  :value="item.value"
-                  :class="{ active: item.value === size }"
+                v-for="item in densityList"
+                :key="item.value"
+                :value="item.value"
+                :class="{ active: item.value === size }"
               >
                 <span>{{ item.name }}</span>
               </a-doption>
@@ -527,26 +515,27 @@ defineExpose({
         </a-space>
       </template>
     </GlToolbar>
-    <component :is="entityTable"
-               ref="tableRef"
-               :entityName="base.entityName"
-               :columns="columns"
-               :columnActions="columnActions"
-               :size="size"
-               :showPagination=base.showPagination
-               :enableEdit="base.enableEdit"
-               :isFormSubTable="base.isFormSubTable"
-               :subTablePidName="base.subTablePidName"
-               :isLogicDeleteMode="base.isLogicDeleteMode"
-               :rowSelection="rowSelection"
-               @selectionChange="selectionChange"
-               @updateColumns="updateColumns"
-               @updateRow="onUpdateRow"
-               @fetchSuccess="onFetchSuccess"
-               :glComponentInst="glComponentInst"
-               :glIsRuntime="glIsRuntime"
-               :glRuntimeFlag="glRuntimeFlag"
-               :tableSettingId="tableSettingId"
+    <component
+      :is="entityTable"
+      ref="tableRef"
+      :entityName="base.entityName"
+      :columns="columns"
+      :columnActions="columnActions"
+      :size="size"
+      :showPagination="base.showPagination"
+      :enableEdit="base.enableEdit"
+      :isFormSubTable="base.isFormSubTable"
+      :subTablePidName="base.subTablePidName"
+      :isLogicDeleteMode="base.isLogicDeleteMode"
+      :rowSelection="rowSelection"
+      @selectionChange="selectionChange"
+      @updateColumns="updateColumns"
+      @updateRow="onUpdateRow"
+      @fetchSuccess="onFetchSuccess"
+      :glComponentInst="glComponentInst"
+      :glIsRuntime="glIsRuntime"
+      :glRuntimeFlag="glRuntimeFlag"
+      :tableSettingId="tableSettingId"
     ></component>
   </a-card>
 </template>

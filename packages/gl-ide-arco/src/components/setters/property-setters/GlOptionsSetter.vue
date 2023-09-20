@@ -35,7 +35,3 @@ watch(mv,
 )
 
 </script>
-
-<style scoped>
-
-</style>
