@@ -9,9 +9,6 @@ export class ComponentI18nMeta {
     props?: Object = {}
 }
 
-export class ComponentMethod {
-
-}
 
 export default class ComponentMeta {
     // 组件英文名称，注册到全局环境的名称GlButton
@@ -53,6 +50,7 @@ export default class ComponentMeta {
     // 如：打开第三方网页，地址为：{url}。其中url为属性properties中的其中一直属性，在展示时动态渲染
     blockContent?: string = ''
 
-    constructor() {
-    }
+    // 用于设计时，标识是否弃用true，默认为启用即false。弃用时，在sidebar中不可以选择，但在已应用的页面中还可以使用
+    deprecated?:Boolean = false
+
 }

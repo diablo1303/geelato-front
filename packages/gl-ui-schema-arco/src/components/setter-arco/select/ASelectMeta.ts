@@ -6,6 +6,7 @@ export default {
     "title": "自定义选择",
     "alias": "select",
     "useBy": ["freePage"],
+    "deprecated":true,
     "properties": [{
         "name": "label",
         "setterComponentProps": {},

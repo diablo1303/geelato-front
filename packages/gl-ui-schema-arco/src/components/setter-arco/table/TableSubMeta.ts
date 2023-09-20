@@ -450,7 +450,10 @@ export default {
         "description": "在数据表的行内编辑模式下，当数据表的行记录信息更换时触发"
     }],
     "methods": [{"name": "refresh", "title": "刷新", "description": "刷新表格", "params": []},
+        {"name": "getSelectedRecords", "title": "获取已选的记录", "description": "获取已选的记录，返回记录数据组,没记录时返回空数组[]。", "params": []},
         {"name": "getEntitySavers", "title": "获取实体保存对象", "description": "获取实体保存对象，返回{error:boolean,values:EntitySaver[]}", "params": []},
+        {"name": "getSelectedEntitySavers", "title": "获取选择的实体保存对象", "description": "获取选择的实体保存对象，返回{error:boolean,values:EntitySaver[]}", "params": []},
+        {"name": "hasSelectedRecords", "title": "是否选择了记录", "description": "是否选择了记录，返回true | false", "params": []},
         {"name": "reRender", "title": "重新渲染", "description": "基于当前的表格数据重新渲染", "params": []},
         {"name": "updateRecord", "title": "单条更新", "description": "更新表格的指定一条记录，需要输传递需更新的记录record，该记录需要有id值。在表格行操作中，值示例：$gl.ctx.record", "params": []},{
         "name": "deleteRecord",

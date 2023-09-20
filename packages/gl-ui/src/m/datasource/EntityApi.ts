@@ -86,10 +86,7 @@ export class EntityApi {
         return this.service({
             url: `${path}?withMeta=${!!withMeta}&e=${isArray ? '_multiEntity' : Object.keys(mql)[0]}`,
             method: 'POST',
-            data: mql,
-            headers: {
-                'Access-Control-Allow-Origin': '*'
-            }
+            data: mql
         })
     }
 
@@ -277,16 +274,16 @@ export class EntityApi {
     }
 
     convertEntitySaverToMql(entitySaver: EntitySaver, biz?: string) {
-        const pidValue = '$parent.id'
+        const defaultPidValue = '$parent.id'
         // subFormPidValue
         type ParsedMqlResult = { key: string; mqlObj: Record<string, any> }
-        const toMql = (es: EntitySaver, isChildren: boolean): ParsedMqlResult => {
+        const toMql = (es: EntitySaver, isChildren: boolean,pidValue?:string): ParsedMqlResult => {
             const mqlObj: Record<string, any> = {}
             const entityName = isChildren ? '#' + es.entity : es.entity
             if (isChildren) {
-                // 设置子实体的外键字段值
+                // 设置子实体的外键字段值，条件：已设置了字段名，且字段无值
                 if (es.pidName && !es.record[es.pidName]) {
-                    es.record[es.pidName] = pidValue
+                    es.record[es.pidName] = pidValue || defaultPidValue
                 }
                 mqlObj[entityName] = mqlObj[entityName] || []
                 mqlObj[entityName].push(es.record)
@@ -296,7 +293,7 @@ export class EntityApi {
             }
 
             es.children?.forEach((subEs) => {
-                const subMqlResult = toMql(subEs, true)
+                const subMqlResult = toMql(subEs, true,es.record.id)
                 // console.log('convertEntitySaverToMql() > entitySaver.entity',entityName,'result:',subMqlResult)
                 if (subMqlResult.mqlObj && subMqlResult.mqlObj[subMqlResult.key] && subMqlResult.mqlObj[subMqlResult.key].length > 0) {
                     if (utils.isArray(mqlObj[entityName])){
@@ -313,7 +310,7 @@ export class EntityApi {
         }
         const bizCode = biz || '0'
       const entitySaverCopy = JSON.parse(JSON.stringify(entitySaver))
-      return Object.assign(toMql(entitySaverCopy, false).mqlObj, {'@biz': bizCode})
+      return Object.assign(toMql(entitySaverCopy, false).mqlObj, {'@biz': bizCode},undefined)
     }
 
     saveEntity(entitySaver: EntitySaver, biz?: string) {

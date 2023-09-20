@@ -1,15 +1,26 @@
 <template>
   <div class="gl-ide-sidebar-components gl-scrollbar-small">
     <div v-for="componentMaterialGroup in componentMaterialGroups">
-      <div class="gl-group-title" @click="componentMaterialGroup.opened=!componentMaterialGroup.opened"
-           style="border-bottom: 1px solid #04559f;width: 90%">
-        <span :title="componentMaterialGroup.name" style="font-weight: 600;color: #7d7d7f">{{ componentMaterialGroup.text }}</span>
+      <div
+        class="gl-group-title"
+        @click="componentMaterialGroup.opened = !componentMaterialGroup.opened"
+        style="border-bottom: 1px solid #04559f; width: 90%"
+      >
+        <span :title="componentMaterialGroup.name" style="font-weight: 600; color: #7d7d7f">{{
+          componentMaterialGroup.text
+        }}</span>
         <span class="gl-tag">{{ componentMaterialGroup.items?.length }}</span>
       </div>
       <div class="gl-group-cards" v-if="componentMaterialGroup.opened">
-        <ComponentsDndItem v-for="element in componentMaterialGroup.items" :element="element"
-                           :templateInst="createTemplateInst(element)" :size="size">
-        </ComponentsDndItem>
+        <template v-for="element in componentMaterialGroup.items">
+          <ComponentsDndItem
+            v-if="!element.meta.deprecated"
+            :element="element"
+            :templateInst="createTemplateInst(element)"
+            :size="size"
+          >
+          </ComponentsDndItem>
+        </template>
       </div>
     </div>
   </div>
@@ -21,14 +32,17 @@ export default {
 </script>
 
 <script setup lang="ts">
-import {computed, type PropType, ref} from "vue";
-import {useIdeStore} from "@geelato/gl-ide";
-import {utils} from "@geelato/gl-ui";
-import {type ComponentMaterial, ComponentMaterialGroup, type ComponentInstance} from "@geelato/gl-ui-schema";
-import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
-import ComponentsDndItem from "../../dnd/ComponentDndItem.vue";
-import {SizeType} from "../../setters/Types";
-
+import { computed, type PropType, ref } from 'vue'
+import { useIdeStore } from '@geelato/gl-ide'
+import { utils } from '@geelato/gl-ui'
+import {
+  type ComponentMaterial,
+  ComponentMaterialGroup,
+  type ComponentInstance
+} from '@geelato/gl-ui-schema'
+import { useComponentMaterialStore } from '@geelato/gl-ui-schema-arco'
+import ComponentsDndItem from '../../dnd/ComponentDndItem.vue'
+import { SizeType } from '../../setters/Types'
 
 const props = defineProps({
   size: {
@@ -42,12 +56,13 @@ const props = defineProps({
     default() {
       // {name: 'other', text: '其它', opened: true}
       return [
-        {name: 'layout', text: '布局', opened: true},
-        {name: 'dataEntry', text: '表单', opened: true},
-        {name: 'dataDisplay', text: '展示', opened: true},
-        {name: 'feedback', text: '反馈', opened: true},
-        {name: 'navigation', text: '导航', opened: false},
-        {name: 'chart', text: '图表', opened: true}]
+        { name: 'layout', text: '布局', opened: true },
+        { name: 'dataEntry', text: '表单', opened: true },
+        { name: 'dataDisplay', text: '展示', opened: true },
+        { name: 'feedback', text: '反馈', opened: true },
+        { name: 'navigation', text: '导航', opened: false },
+        { name: 'chart', text: '图表', opened: true }
+      ]
     }
   }
 })
@@ -71,10 +86,8 @@ componentMaterialStore.initRegisterComponentMetas()
 const drag = ref(false)
 // const chooseIndex = ref(-1)
 
-
 const toUpperCase = (str: String) => {
-  if (str.indexOf('_') !== -1)
-    return str
+  if (str.indexOf('_') !== -1) return str
   return str[0].toUpperCase() + str.substring(1)
 }
 
@@ -89,9 +102,11 @@ const componentMaterialGroups = ref<Array<ComponentMaterialGroup>>([])
 const resetComponentMaterialGroups = () => {
   componentMaterialGroups.value = []
   for (let index in props.componentGroups) {
-    const componentMaterialItems = componentMaterialStore.componentMaterials.filter((componentMaterial: ComponentMaterial) => {
-      return componentMaterial.group === props.componentGroups[index].name
-    })
+    const componentMaterialItems = componentMaterialStore.componentMaterials.filter(
+      (componentMaterial: ComponentMaterial) => {
+        return componentMaterial.group === props.componentGroups[index].name
+      }
+    )
     const componentMaterialGroup = new ComponentMaterialGroup()
     componentMaterialGroup.name = props.componentGroups[index].name
     componentMaterialGroup.text = props.componentGroups[index].text
@@ -109,9 +124,10 @@ resetComponentMaterialGroups()
  * 基于物料创建实例
  * @param element 物料元素
  */
-const createTemplateInst = (element:ComponentMaterial) => {
+const createTemplateInst = (element: ComponentMaterial) => {
   const item = JSON.parse(JSON.stringify(element.instance))
   item.__isTemplateInst = true
+
   // 更改id
   function generateId(item: ComponentInstance) {
     // @ts-ignore
@@ -136,9 +152,7 @@ const createTemplateInst = (element:ComponentMaterial) => {
   return result
 }
 
-
 resetComponentMaterialGroups()
 </script>
 
-<style>
-</style>
+<style></style>
