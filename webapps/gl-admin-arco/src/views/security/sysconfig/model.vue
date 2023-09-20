@@ -5,14 +5,14 @@
           :label="$t('security.sysConfig.index.form.configKey')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateCode}]"
           field="configKey">
-        <a-input v-if="pageData.button" v-model.trim="formData.configKey" :max-length="32"/>
+        <a-textarea v-if="pageData.button" v-model.trim="formData.configKey" :auto-size="{minRows:1}" :max-length="100" show-word-limit/>
         <span v-else>{{ formData.configKey }}</span>
       </a-form-item>
       <a-form-item
           :label="$t('security.sysConfig.index.form.configValue')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="configValue">
-        <a-input v-if="pageData.button" v-model.trim="formData.configValue" :max-length="32"/>
+        <a-textarea v-if="pageData.button" v-model.trim="formData.configValue" :auto-size="{minRows:1}" :max-length="2000" show-word-limit/>
         <span v-else>{{ formData.configValue }}</span>
       </a-form-item>
       <a-form-item
