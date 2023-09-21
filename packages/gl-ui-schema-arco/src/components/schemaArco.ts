@@ -95,7 +95,7 @@ const componentInstances: Array<ComponentInstance> = []
 const dataEntryNameMap: { [key: string]: boolean } = {}
 // 不在sidebar中出现的组件
 // @ts-ignore
-const ignoreInstances: Array<ComponentMeta> = [DndPlaceholderMeta, VirtualMeta,ButtonMeta,ASelectMeta]
+// const ignoreInstances: Array<ComponentMeta> = [DndPlaceholderMeta, VirtualMeta,ButtonMeta,ASelectMeta]
 // 不需要自动添加公共属性的组件
 const ignoreCommonPropertiesComponents = ['GlEntityTableSub', 'GlEntityTablePlus', 'GlHiddenArea']
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
@@ -132,26 +132,26 @@ for (const index in componentMetas) {
     meta.actions = meta.actions || []
     meta.actions.push(...commonActions)
 
-    if (ignoreInstances.findIndex((componentMeta: ComponentMeta) => {
-        return meta.componentName === componentMeta.componentName
-    }) !== -1) {
-        continue
-    }
-    const foundInstance = customInstances.find((item: ComponentInstance) => {
+
+    let inst = customInstances.find((item: ComponentInstance) => {
         return item.componentName === meta.componentName
     })
-    if (foundInstance) {
-        componentInstances.push(foundInstance)
-    } else {
-        const componentInstance = new ComponentInstance()
-        componentInstance.componentName = meta.componentName
-        componentInstance.props = {
+    if (!inst) {
+        inst = new ComponentInstance()
+        inst.componentName = meta.componentName
+        inst.props = {
             "label": meta.title,
         }
-        componentInstance.slots = {}
-        componentInstance.children = []
-        componentInstances.push(componentInstance)
+        inst.slots = {}
+        inst.children = []
     }
+
+    // if (ignoreInstances.findIndex((componentMeta: ComponentMeta) => {
+    //     return meta.componentName === componentMeta.componentName
+    // }) !== -1) {
+    // }
+
+    componentInstances.push(inst)
     // 设置input表单项
     if (meta.group === 'dataEntry') {
         dataEntryNameMap[meta.componentName] = true

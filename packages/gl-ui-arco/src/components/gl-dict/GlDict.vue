@@ -5,8 +5,8 @@ export default {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import {inject, ref, watch} from "vue";
-import {entityApi, mixins, PageProvideKey, type PageProvideProxy} from "@geelato/gl-ui";
+import { inject, ref, watch } from 'vue'
+import { entityApi, mixins, PageProvideKey, type PageProvideProxy } from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -81,24 +81,31 @@ const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 // console.log('props.modelValue', props.modelValue, props.dictId)
 const mv = ref(props.modelValue)
-watch(() => {
-  return props.displayType
-}, (val) => {
-  if (val === 'checkbox') {
-    mv.value = []
-  } else {
-    mv.value = undefined
+watch(
+  () => {
+    return props.displayType
+  },
+  (val) => {
+    if (val === 'checkbox') {
+      mv.value = []
+    } else {
+      mv.value = undefined
+    }
   }
-})
-watch(() => {
-  return props.modelValue
-}, () => {
-  mv.value = props.modelValue
-}, {deep: true})
+)
+watch(
+  () => {
+    return props.modelValue
+  },
+  () => {
+    mv.value = props.modelValue
+  },
+  { deep: true }
+)
 
-let options = ref<Array<{ itemCode: string, itemName: string }>>([])
+let options = ref<Array<{ itemCode: string; itemName: string }>>([])
 
-watch(mv, () => {
+const callBackToSetValue = () => {
   // 回写名称
   const foundOption = options.value.find((option: any) => {
     return option.itemCode === mv.value
@@ -117,9 +124,16 @@ watch(mv, () => {
       pageProvideProxy.setComponentValue(id, mv.value)
     })
   }
+}
 
-  emits('update:modelValue', mv.value)
-}, {deep: true})
+watch(
+  mv,
+  () => {
+    callBackToSetValue()
+    emits('update:modelValue', mv.value)
+  },
+  { deep: true }
+)
 
 const onClear = () => {
   mv.value = undefined
@@ -128,38 +142,51 @@ const onClear = () => {
 const loadData = () => {
   // TODO 增加多租户支持
   if (props.dictId) {
-    entityApi.query('platform_dict_item', 'id,itemCode,itemName', {
-      dictId: props.dictId,
-      enableStatus: 1,
-      delStatus: 0,
-      '@p': '1,2000',
-      '@order': 'seqNo|' + props.dictAscOrDesc
-    }).then((resp: any) => {
-      options.value = resp.data
-    })
+    entityApi
+      .query('platform_dict_item', 'id,itemCode,itemName', {
+        dictId: props.dictId,
+        enableStatus: 1,
+        delStatus: 0,
+        '@p': '1,2000',
+        '@order': 'seqNo|' + props.dictAscOrDesc
+      })
+      .then((resp: any) => {
+        options.value = resp.data
+        callBackToSetValue()
+      })
   }
 }
 
-watch(() => {
-  return props.dictId
-}, () => {
-  loadData()
-}, {immediate: true})
-
+watch(
+  () => {
+    return props.dictId
+  },
+  () => {
+    loadData()
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
   <div class="gl-dict">
-    <template v-if="displayType==='select'">
-      <a-select placeholder="请选择" v-model="mv" allow-clear allow-search @clear="onClear"
-                :disabled="disabled||readonly" :readonly="readonly">
+    <template v-if="displayType === 'select'">
+      <a-select
+        placeholder="请选择"
+        v-model="mv"
+        allow-clear
+        allow-search
+        @clear="onClear"
+        :disabled="disabled || readonly"
+        :readonly="readonly"
+      >
         <a-option v-for="opt in options" :value="opt.itemCode">
           {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
         </a-option>
       </a-select>
     </template>
-    <template v-else-if="displayType==='checkbox'">
-      <template v-if="options&&options.length===0">
+    <template v-else-if="displayType === 'checkbox'">
+      <template v-if="options && options.length === 0">
         <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
       </template>
       <a-checkbox-group v-model="mv" :max="maxCount" :disabled="disabled" :readonly="readonly">
@@ -169,7 +196,7 @@ watch(() => {
       </a-checkbox-group>
     </template>
     <template v-else>
-      <template v-if="options&&options.length===0">
+      <template v-if="options && options.length === 0">
         <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
       </template>
       <a-radio-group v-model="mv" :disabled="disabled" :readonly="readonly">
@@ -181,6 +208,4 @@ watch(() => {
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

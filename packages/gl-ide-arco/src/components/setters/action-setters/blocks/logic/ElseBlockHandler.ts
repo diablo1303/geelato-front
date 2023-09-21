@@ -1,12 +1,15 @@
-import type IBlockHandler from "../BlockHandler";
-import ParseResult from "../ParseResult";
-
+import type IBlockHandler from '../BlockHandler'
+import ParseResult from '../ParseResult'
 
 export default class ElseBlockHandler implements IBlockHandler {
-    parseToScript(props: Props): ParseResult {
-        return new ParseResult(`else{`,`}`).setBlockName('ElseBlock');
+  parseToScript(props: Props): ParseResult {
+    if (!props.description) {
+      props.description = ''
     }
+    return new ParseResult(`else{`, `}`).setBlockName('ElseBlock')
+  }
 }
 
 export class Props {
+  description: string | undefined
 }

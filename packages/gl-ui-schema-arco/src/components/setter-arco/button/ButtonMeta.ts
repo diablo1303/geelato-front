@@ -6,6 +6,7 @@ export default {
     "title": "按钮X",
     "alias": "btn",
     "useBy": ["freePage"],
+    "deprecated":true,
     "properties": [{
         "type": "slots",
         "expanded": true,

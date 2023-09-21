@@ -10,6 +10,7 @@ import type {ComponentMeta, ComponentInstance} from "@geelato/gl-ui-schema";
 import {ref} from "vue";
 import {utils, useGlobal} from "@geelato/gl-ui";
 
+
 export const useIdeStore = defineStore('GlIdeStore', () => {
     const name = ref('Geelato Ide')
     // 主UI库，如：ant | arco
@@ -187,7 +188,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
         } else {
             pageStore.setCurrentSourceContent()
         }
-        pageStore.saveCurrentPage()
+        return pageStore.saveCurrentPage()
     }
 
     /**

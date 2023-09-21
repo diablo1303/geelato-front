@@ -54,7 +54,8 @@ export const useComponentMaterialStore = defineStore('GlComponentMaterialStore',
     /**
      * 注册单个组件实例，在注册实例的同时会同步注册对应的组件物料（包括元数据信息）
      * 在注册前，需先注册元数据componentMeta
-     * @param componentInstance: ComponentInstance
+     * @param componentInstance
+     * @param options
      */
     function registerComponentMaterial(componentInstance: ComponentInstance, options?: { title: string, group: string, iconType: string, useBy: Array<string> }) {
         const name = componentInstance.componentName
@@ -66,9 +67,7 @@ export const useComponentMaterialStore = defineStore('GlComponentMaterialStore',
             console.error('注册组件物料时，找不到对应的组件元数据。')
             return
         }
-        const componentMaterial = new ComponentMaterial()
-        componentMaterial.instance = componentInstance
-        componentMaterial.meta = componentMetaMap[name]
+        const componentMaterial = new ComponentMaterial(componentMetaMap[name],componentInstance)
         componentMaterial.title = (options && options.title) || componentMetaMap[name].title
         componentMaterial.group = (options && options.group) || componentMetaMap[name].group
         componentMaterial.iconType = (options && options.iconType) || componentMetaMap[name].iconType
@@ -80,7 +79,8 @@ export const useComponentMaterialStore = defineStore('GlComponentMaterialStore',
 
     /**
      * 注册多个组件实例
-     * @param componentInstances: Array<ComponentInstance>
+     * @param componentInstances
+     * @param optionsArray
      */
     function registerComponentMaterials(componentInstances: Array<ComponentInstance>, optionsArray?: Array<{ title: string, group: string, iconType: string, useBy: Array<string> }>) {
         if (componentInstances && componentInstances.length > 0) {

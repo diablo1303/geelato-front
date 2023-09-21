@@ -265,6 +265,10 @@ const getSelectedRecords = () => {
   })
 }
 
+const hasSelectedRecords = () => {
+  return getSelectedRecords().length > 0
+}
+
 const getRenderColumns = () => {
   return tableRef.value.getRenderColumns()
 }
@@ -295,22 +299,23 @@ const entityTable = computed(() => {
 /**
  * 创建表格的实体保存对象，可被父表单调用，集到父表单一起保存
  * @param subFormPidValue 作为子表单时，本表单中，指向父表单ID的字段值
+ * @param isSelectedOnly 是否只生成选择部分的记录，否则为当前渲染的记录集
  */
-const createEntitySavers = (subFormPidValue?: string) => {
+const createEntitySavers = (subFormPidValue?: string, isSelectedOnly?: boolean) => {
   const entitySavers: EntitySaver[] = []
   // 处理需保存的子表单数据
   // const renderColumns = getRenderColumns()
-  const subFormTableData = getRenderData()
+  const subFormTableData = isSelectedOnly ? getSelectedRecords() : getRenderData()
   // 子表中，对应主表单ID的字段名
   const subTablePidName = props.base.subTablePidName!
-  console.log(
-    'GlEntityTablePlus > createEntitySavers() > subTablePidName:',
-    subTablePidName,
-    'subFormPidValue:',
-    subFormPidValue,
-    'subFormTableData:',
-    subFormTableData ? JSON.parse(JSON.stringify(subFormTableData)) : subFormTableData
-  )
+  // console.log(
+  //   'GlEntityTablePlus > createEntitySavers() > subTablePidName:',
+  //   subTablePidName,
+  //   'subFormPidValue:',
+  //   subFormPidValue,
+  //   'subFormTableData:',
+  //   subFormTableData ? JSON.parse(JSON.stringify(subFormTableData)) : subFormTableData
+  // )
   if (subFormTableData && subFormTableData.length > 0) {
     subFormTableData.forEach((record: Record<any, any>) => {
       // 设置主表父ID
@@ -356,6 +361,17 @@ const getEntitySavers = async (params: { subFormPidValue?: string }) => {
   return result
 }
 
+const getSelectedEntitySavers = async (params: { subFormPidValue?: string }) => {
+  const result = new GetEntitySaversResult()
+  if (!(await validate())) {
+    result.error = false
+    result.values = createEntitySavers(params.subFormPidValue, true)
+    result.message = ''
+  }
+  result.componentName = props.glComponentInst.componentName
+  return result
+}
+
 const global = useGlobal()
 /**
  *  批量更新
@@ -384,10 +400,12 @@ const batchUpdate = (params: { record: Record<string, any> }) => {
           }
         })
       })
-      return entityApi.saveBatch(props.base.entityName, copyRecords)
+      entityApi.saveBatch(props.base.entityName, copyRecords).then(() => {
+        refresh()
+        global.$notification.info({ title: '更新成功',content: `更新${records.length}条记录` })
+      })
     }
   }
-  return null
 }
 
 /**
@@ -421,12 +439,15 @@ defineExpose({
   refresh,
   getRenderRecord,
   getDeleteRecords,
+  getSelectedRecords,
   getRenderData,
   getRenderColumns,
   getDeleteData,
+  hasSelectedRecords,
   validate,
   reRender,
   getEntitySavers,
+  getSelectedEntitySavers,
   createEntitySavers
 })
 </script>
