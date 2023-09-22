@@ -4,11 +4,10 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-
-import {inject, onMounted, ref, watch} from "vue";
-import type {FileItem} from "@arco-design/web-vue";
-import {Notification} from "@arco-design/web-vue";
-import {entityApi, fileApi, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
+import { inject, type Ref, ref, watch } from 'vue'
+import type { FileItem } from '@arco-design/web-vue'
+import { Notification } from '@arco-design/web-vue'
+import { entityApi, fileApi, PageProvideKey, PageProvideProxy } from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -27,11 +26,16 @@ watch(mv, () => {
 })
 // console.log('GlUpload props.modelValue:', props.modelValue)
 // 转成字符串格式，并去掉空项
-const accept = ref(props.acceptArray && JSON.stringify(props.acceptArray?.filter((acceptItem) => {
-  return !acceptItem
-}) || []))
+const accept = ref(
+  props.acceptArray &&
+    JSON.stringify(
+      props.acceptArray?.filter((acceptItem) => {
+        return !acceptItem
+      }) || []
+    )
+)
 
-const fileList = ref<FileItem[]>([]);
+const fileList: Ref<FileItem[]> = ref([])
 
 /**
  * 从前端中清除指定的文件
@@ -44,7 +48,7 @@ const clearLocalFileItem = (fileList: FileItem[], delUid: string) => {
       return fileItem.uid === delUid
     })
     if (delIndex > -1) {
-      fileList.splice(delIndex, 1);
+      fileList.splice(delIndex, 1)
     }
   }
   resetMv()
@@ -56,29 +60,31 @@ const clearLocalFileItem = (fileList: FileItem[], delUid: string) => {
  */
 const beforeRemove = (fileItem: FileItem): Promise<boolean> => {
   return new Promise((resolve, reject) => {
-    fileApi.deleteAttachment(fileItem.uid).then(() => {
-      clearLocalFileItem(fileList.value, fileItem.uid);
-      Notification.success("删除成功");
-      resolve(true)
-    }).catch((e) => {
-      Notification.success("删除失败");
-      console.error('删除失败', e)
-      reject(false)
-    })
+    fileApi
+      .deleteAttachment(fileItem.uid)
+      .then(() => {
+        clearLocalFileItem(fileList.value, fileItem.uid)
+        Notification.success('删除成功')
+        resolve(true)
+      })
+      .catch((e) => {
+        Notification.success('删除失败')
+        console.error('删除失败', e)
+        reject(false)
+      })
   })
 }
 
 const uploadError = (fileItem: FileItem) => {
   console.error('上传失败', fileItem)
-  Notification.error("上传失败，请重试！");
+  Notification.error('上传失败，请重试！')
 }
 
 const uploadSuccess = (fileItem: FileItem) => {
-  fileItem.uid = fileItem.response.data.id;
+  fileItem.uid = fileItem.response.data.id
   fileList.value.push(fileItem)
-  console.log('fileList:', fileList)
   resetMv()
-  Notification.success("上传成功");
+  Notification.success('上传成功')
 }
 
 const resetMv = () => {
@@ -105,28 +111,38 @@ const loadFiles = () => {
     if (attaches && attaches.length > 0) {
       attaches.forEach((value, index, array) => {
         if (value.delStatus === 0) {
-          fileList.value.push({
-            uid: value.id,
-            name: value.name,
-            url: fileApi.getDownloadUrlById(value.id)
-          });
+          // 本地已存在的，则不放入
+          const foundItem = fileList.value.find((fileItem: FileItem) => {
+            return fileItem.uid === value.id
+          })
+          if (!foundItem) {
+            fileList.value.push({
+              uid: value.id,
+              name: value.name,
+              url: fileApi.getDownloadUrlById(value.id)
+            })
+          }
         }
-      });
+      })
     } else if (attaches && attaches.length === 0) {
       fileList.value.length = 0
     }
     resetMv()
-    console.log('getAttachmentByIds() > fileList:', fileList.value);
-  });
+    // console.log('getAttachmentByIds() > fileList:', fileList.value)
+  })
 }
 
 // 初始化，加载文件
-watch(() => {
-  return props.modelValue
-}, () => {
-  mv.value = props.modelValue
-  loadFiles()
-},{immediate:true})
+watch(
+  () => {
+    return props.modelValue
+  },
+  () => {
+    mv.value = props.modelValue
+    loadFiles()
+  },
+  { immediate: true }
+)
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
@@ -134,16 +150,15 @@ const isRead = pageProvideProxy.isPageStatusRead()
 </script>
 
 <template>
-  <a-upload class="gl-upload"
-            :action="fileApi.getUploadUrl()"
-            :file-list="fileList"
-            :accept="accept"
-            :headers="entityApi.getHeader()"
-            :show-remove-button="!isRead"
-            @error="uploadError"
-            @success="uploadSuccess"
-            @before-remove="beforeRemove"/>
+  <a-upload
+    class="gl-upload"
+    :action="fileApi.getUploadUrl()"
+    :file-list="fileList"
+    :accept="accept"
+    :headers="entityApi.getHeader()"
+    :show-remove-button="!isRead"
+    @error="uploadError"
+    @success="uploadSuccess"
+    @before-remove="beforeRemove"
+  />
 </template>
-
-<style>
-</style>

@@ -313,6 +313,11 @@ export class EntityApi {
       return Object.assign(toMql(entitySaverCopy, false).mqlObj, {'@biz': bizCode},undefined)
     }
 
+  /**
+   * 基于实体保存对象进行保存，支持父子实体对象保存
+   * @param entitySaver 实体保存对象
+   * @param biz
+   */
     saveEntity(entitySaver: EntitySaver, biz?: string) {
         const bizCode = biz || '0'
         const mqlObj = this.convertEntitySaverToMql(entitySaver, bizCode)
@@ -321,6 +326,27 @@ export class EntityApi {
             url: `${this.url.apiMetaSave}/${bizCode}`,
             method: 'POST',
             data: mqlObj
+        })
+    }
+
+
+  /**
+   * 多个实体批量保存，用于如批量更新列表的数据，或在批量更新列表数据时，需同步更新或创建列表每一行的子表单数据
+   * @param entitySavers
+   * @param biz
+   */
+    saveMultiEntity(entitySavers: EntitySaver[], biz?: string) {
+        const bizCode = biz || '0'
+        const mqObjs:any[] = []
+        entitySavers.forEach((entitySaver: EntitySaver)=>{
+            const mqlObj = this.convertEntitySaverToMql(entitySaver, bizCode)
+            console.log('saveEntity > entitySaver:', entitySaver, 'mql:', mqlObj)
+            mqObjs.push(mqlObj)
+        })
+        return this.service({
+            url: `${this.url.apiMetaMultiSave}/${bizCode}`,
+            method: 'POST',
+            data: mqObjs
         })
     }
 

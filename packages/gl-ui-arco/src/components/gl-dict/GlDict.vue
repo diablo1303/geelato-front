@@ -5,10 +5,11 @@ export default {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import { inject, ref, watch } from 'vue'
+import { inject, type Ref, ref, watch } from 'vue'
 import { entityApi, mixins, PageProvideKey, type PageProvideProxy } from '@geelato/gl-ui'
 
-const emits = defineEmits(['update:modelValue'])
+const emits = defineEmits(['update:modelValue', 'onOptionChange'])
+type OptionType = { value: string; label: string }
 const props = defineProps({
   modelValue: {
     type: [String, Number, Array<String | Number>],
@@ -78,9 +79,9 @@ const props = defineProps({
 })
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
-
 // console.log('props.modelValue', props.modelValue, props.dictId)
 const mv = ref(props.modelValue)
+let selectedOption: Ref<OptionType | undefined> = ref({ value: '', label: '' })
 watch(
   () => {
     return props.displayType
@@ -103,18 +104,20 @@ watch(
   { deep: true }
 )
 
-let options = ref<Array<{ itemCode: string; itemName: string }>>([])
+let options: Ref<Array<OptionType>> = ref([])
 
 const callBackToSetValue = () => {
+  // 下拉列表还没有加载完成之前不执行
+  if (options.value.length === 0) return
   // 回写名称
-  const foundOption = options.value.find((option: any) => {
-    return option.itemCode === mv.value
+  const foundOption = options.value.find((option: OptionType) => {
+    return option.value === mv.value
   })
-  const itemName = foundOption?.itemName || ''
+  const label = foundOption?.label || ''
   if (props.nameFieldBindComponentId) {
     const ids = props.nameFieldBindComponentId.split(',')
     ids.forEach((id: string) => {
-      pageProvideProxy.setComponentValue(id, itemName)
+      pageProvideProxy.setComponentValue(id, label)
     })
   }
   // 回写值
@@ -124,6 +127,8 @@ const callBackToSetValue = () => {
       pageProvideProxy.setComponentValue(id, mv.value)
     })
   }
+  selectedOption.value = foundOption
+  emits('onOptionChange', selectedOption.value)
 }
 
 watch(
@@ -143,7 +148,7 @@ const loadData = () => {
   // TODO 增加多租户支持
   if (props.dictId) {
     entityApi
-      .query('platform_dict_item', 'id,itemCode,itemName', {
+      .query('platform_dict_item', 'id,itemCode value,itemName label', {
         dictId: props.dictId,
         enableStatus: 1,
         delStatus: 0,
@@ -166,6 +171,14 @@ watch(
   },
   { immediate: true }
 )
+/**
+ *  注意，需在onOptionChange之后调用
+ */
+const getSelectedOption = () => {
+  return selectedOption.value
+}
+
+defineExpose({ getSelectedOption })
 </script>
 
 <template>
@@ -180,8 +193,8 @@ watch(
         :disabled="disabled || readonly"
         :readonly="readonly"
       >
-        <a-option v-for="opt in options" :value="opt.itemCode">
-          {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
+        <a-option v-for="opt in options" :value="opt.value">
+          {{ opt.label + (showValueInLabel ? '(' + opt.value + ')' : '') }}
         </a-option>
       </a-select>
     </template>
@@ -190,8 +203,8 @@ watch(
         <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
       </template>
       <a-checkbox-group v-model="mv" :max="maxCount" :disabled="disabled" :readonly="readonly">
-        <a-checkbox v-for="opt in options" :value="opt.itemCode">
-          {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
+        <a-checkbox v-for="opt in options" :value="opt.value">
+          {{ opt.label + (showValueInLabel ? '(' + opt.value + ')' : '') }}
         </a-checkbox>
       </a-checkbox-group>
     </template>
@@ -200,8 +213,8 @@ watch(
         <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
       </template>
       <a-radio-group v-model="mv" :disabled="disabled" :readonly="readonly">
-        <a-radio v-for="opt in options" :value="opt.itemCode">
-          {{ opt.itemName + (showValueInLabel ? '(' + opt.itemCode + ')' : '') }}
+        <a-radio v-for="opt in options" :value="opt.value">
+          {{ opt.label + (showValueInLabel ? '(' + opt.value + ')' : '') }}
         </a-radio>
       </a-radio-group>
     </template>

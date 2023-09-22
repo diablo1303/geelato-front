@@ -255,6 +255,16 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
         })
         if (foundFieldName) {
           const value = dataItem[subInst.props.bindField.fieldName]
+
+          // if ((value===null||value===undefined)&&subInst.value!==null&&subInst.value!==undefined){
+          //   // 对于表单一些字段在修改状态时在出现的场景，此时字段的默认值也是需要出现的
+          //   // 所以若加载的字段数据为null或undefined且表单已有默认值时，以表单已有的默认值为准
+          //   console.log('set inst value by defaultValue:', subInst.componentName, subInst.props.label, subInst.id, subInst.value)
+          //   // TODO 这里
+          // }else{
+          //
+          // }
+
           // 注意！！ 由于AInputNumber的值不支持设置字符串，这里对可能的字符串值进行转换
           if (subInst.componentName === 'AInputNumber') {
             // @ts-ignore

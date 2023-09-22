@@ -1,20 +1,20 @@
 <script lang="ts">
 export default {
-  name: "GlRowColLayout"
+  name: 'GlRowColLayout'
 }
 </script>
 <script setup lang="ts">
-import {nextTick, onUpdated, type PropType} from "vue";
-import {mixins, utils} from "@geelato/gl-ui";
-import type {I18nItem} from "@geelato/gl-ui-schema";
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import { nextTick, onUpdated, type PropType, toRaw } from 'vue'
+import { mixins, utils } from '@geelato/gl-ui'
+import type { I18nItem } from '@geelato/gl-ui-schema'
+import type { ComponentInstance } from '@geelato/gl-ui-schema'
 
 const props = defineProps({
   spans: {
     type: Array as PropType<Array<number>>,
     default() {
-      return [8, 8, 8];
-    },
+      return [8, 8, 8]
+    }
   },
   label: String,
   /**
@@ -24,14 +24,14 @@ const props = defineProps({
   offsets: {
     type: Array as PropType<Array<number>>,
     default() {
-      return [0, 0, 0];
-    },
+      return [0, 0, 0]
+    }
   },
   gutter: {
     type: Number,
     default() {
-      return 4;
-    },
+      return 4
+    }
   },
   /**
    * 通过 justify 来进行水平布局。
@@ -52,37 +52,39 @@ const props = defineProps({
     type: String
   },
   ...mixins.props
-});
+})
 
 const colTemplate = () => {
   return {
-    "id": utils.gid('virtual'),
-    "componentName": "GlVirtual",
-    "title": "项",
-    "props": {},
-    "slots": {},
-    "children": [
+    id: utils.gid('virtual'),
+    componentName: 'GlVirtual',
+    title: '项',
+    props: {},
+    slots: {},
+    children: [
       {
-        "id": utils.gid('ph'),
-        "componentName": "GlDndPlaceholder",
-        "title": "占位符",
-        "props": {},
-        "slots": {},
-        "children": []
+        id: utils.gid('ph'),
+        componentName: 'GlDndPlaceholder',
+        title: '占位符',
+        props: {},
+        slots: {},
+        children: []
       }
     ]
   }
 }
 
 const updateInst = () => {
-  if (props.glComponentInst.children && props.glComponentInst.children.length != props.spans.length) {
+  if (
+    props.glComponentInst.children &&
+    props.glComponentInst.children.length != props.spans.length
+  ) {
     // console.log('colSpans:', colSpans)
     while (props.glComponentInst.children.length < props.spans.length) {
       props.glComponentInst.children.push(JSON.parse(JSON.stringify(colTemplate())))
     }
     props.glComponentInst.children.length = props.spans.length
-    nextTick(() => {
-    })
+    nextTick(() => {})
   }
 }
 onUpdated(() => {
@@ -123,42 +125,54 @@ const showFormItem = (inst: ComponentInstance) => {
   return inst.group === 'dataEntry'
 }
 
+/**
+ * 控制台输出实体对象，便于调试
+ * @param inst
+ */
+const consoleLog = (inst: ComponentInstance) => {
+  console.log(
+    `onClickFormItem > ${inst.props.label}     字段：${inst.props.bindField?.fieldName}    值：${inst.value}`
+  )
+  console.log(`onClickFormItem > inst:`, toRaw(inst))
+}
 </script>
 
 <template>
   <div class="gl-row-col-layout">
     <a-row :gutter="gutter" v-if="glIsRuntime">
-      <a-col
-          v-for="(span, index) in spans"
-          :key="index"
-          :span="span"
-      >
+      <a-col v-for="(span, index) in spans" :key="index" :span="span">
         <!-- glComponentInst.children[index]就虚拟节点
           注意，label-col-flex的百分比为整数，如6%，若为6.9%有小数的则无效
         -->
         <template v-for="childComponentInst in glComponentInst?.children[index].children">
-          <a-form-item v-if="childComponentInst&&(childComponentInst.props.unRender!==true)"
-                       v-show="childComponentInst.props._hidden!==true"
-                       class="gl-form-item"
-                       :class="{'gl-hidden':childComponentInst.props.hideLabel===true||!showFormItem(childComponentInst)}"
-                       :label-col-flex="childComponentInst.props._labelColFlex"
-                       :field="childComponentInst.props?.bindField?.fieldName"
-                       :tooltip="i18nConvert(childComponentInst.props?.tooltip,childComponentInst.i18n)"
-                       :label="i18nConvert(childComponentInst.props?.label,childComponentInst.i18n)"
-                       :rules="childComponentInst.props?.rules"
-                       :validate-trigger="[]">
-            <GlComponent v-if="childComponentInst" :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime"
-                         :glRuntimeFlag="glRuntimeFlag"></GlComponent>
+          <a-form-item
+            v-if="childComponentInst && childComponentInst.props.unRender !== true"
+            v-show="childComponentInst.props._hidden !== true"
+            class="gl-form-item"
+            :class="{
+              'gl-hidden':
+                childComponentInst.props.hideLabel === true || !showFormItem(childComponentInst)
+            }"
+            :label-col-flex="childComponentInst.props._labelColFlex"
+            :field="childComponentInst.props?.bindField?.fieldName"
+            :tooltip="i18nConvert(childComponentInst.props?.tooltip, childComponentInst.i18n)"
+            :label="i18nConvert(childComponentInst.props?.label, childComponentInst.i18n)"
+            :rules="childComponentInst.props?.rules"
+            :validate-trigger="[]"
+            @click="consoleLog(childComponentInst)"
+          >
+            <GlComponent
+              v-if="childComponentInst"
+              :glComponentInst="childComponentInst"
+              :glIsRuntime="glIsRuntime"
+              :glRuntimeFlag="glRuntimeFlag"
+            ></GlComponent>
             <template v-if="childComponentInst.props?.extra" #extra>
-              <div>{{
-                  i18nConvert(childComponentInst.props?.extra, childComponentInst.i18n)
-                }}
-              </div>
+              <div>{{ i18nConvert(childComponentInst.props?.extra, childComponentInst.i18n) }}</div>
             </template>
             <template v-if="childComponentInst.props?.description" #help>
-              <div>{{
-                  i18nConvert(childComponentInst.props?.description, childComponentInst.i18n)
-                }}
+              <div>
+                {{ i18nConvert(childComponentInst.props?.description, childComponentInst.i18n) }}
               </div>
             </template>
           </a-form-item>
@@ -166,14 +180,13 @@ const showFormItem = (inst: ComponentInstance) => {
       </a-col>
     </a-row>
     <a-row :gutter="gutter" v-else>
-      <a-col
-          v-for="(span, index) in spans"
-          :key="index"
-          :span="span"
-      >
-        <div v-show="glComponentInst?.props._hidden!==true">
-          <GlInsts :glComponentInst="glComponentInst?.children[index]"
-                   :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"/>
+      <a-col v-for="(span, index) in spans" :key="index" :span="span">
+        <div v-show="glComponentInst?.props._hidden !== true">
+          <GlInsts
+            :glComponentInst="glComponentInst?.children[index]"
+            :glIsRuntime="glIsRuntime"
+            :glRuntimeFlag="glRuntimeFlag"
+          />
         </div>
       </a-col>
     </a-row>

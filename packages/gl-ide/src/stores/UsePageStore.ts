@@ -270,6 +270,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
                         if (item._editComponent) {
                             item._component = JSON.parse(JSON.stringify(item._editComponent))
                             delete item._editComponent
+                            convertInst(item._component)
                         }
                     })
                 }

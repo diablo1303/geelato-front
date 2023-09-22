@@ -1,6 +1,5 @@
-import jsScriptExecutor, {Ctx} from "../../m/actions/JsScriptExecutor";
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
-
+import jsScriptExecutor, { Ctx } from '../../m/actions/JsScriptExecutor'
+import type { ComponentInstance } from '@geelato/gl-ui-schema'
 
 /**
  * 一级属性为非对象、非数据组的场景
@@ -9,24 +8,35 @@ import type {ComponentInstance} from "@geelato/gl-ui-schema";
  * @param ctx
  */
 export function executeInstPropsExpressions(inst: ComponentInstance, ctx: object) {
-    if (inst && inst.propsExpressions) {
-        Object.keys(inst.propsExpressions).forEach((key: string) => {
-            // @ts-ignore
-            const propsExpression = inst.propsExpressions[key]
-            if (propsExpression) {
-                if (key === '_valueExpression') {
-                    // 组件值
-                    inst.value = jsScriptExecutor.evalExpression(propsExpression, ctx)
-                } else {
-                    // 属性值
-                    inst.props[key] = jsScriptExecutor.evalExpression(propsExpression, ctx)
-                    // console.log(inst.props.label, key, inst.props[key], propsExpression)
-                }
-            }
-        })
+  if (inst) {
+    let hasValueExpression = false
+    if (inst.propsExpressions) {
+      Object.keys(inst.propsExpressions).forEach((key: string) => {
+        // @ts-ignore
+        const propsExpression = inst.propsExpressions[key]
+        if (propsExpression) {
+          if (key === '_valueExpression') {
+            hasValueExpression = true
+            // 组件值
+            inst.value = jsScriptExecutor.evalExpression(propsExpression, ctx)
+          } else {
+            // 属性值
+            inst.props[key] = jsScriptExecutor.evalExpression(propsExpression, ctx)
+            // console.log(inst.props.label, key, inst.props[key], propsExpression)
+          }
+        }
+      })
     }
+    if (!hasValueExpression) {
+      // 属性配置了默认值(props._valueExpression指默认值，不是表达式)
+      // 若前面属性的值表达式中(inst.propsExpressions._valueExpression)没有设置时，则以此值为准，若有，以表达式的值为准
+      if (inst.props && inst.props._valueExpression) {
+        // TODO 需依据组件类型，进行值转换，如数值，boolean
+        inst.value = inst.props._valueExpression
+      }
+    }
+  }
 }
-
 
 /**
  * 一级属性为对象、数据组的场景
@@ -36,44 +46,43 @@ export function executeInstPropsExpressions(inst: ComponentInstance, ctx: object
  * @param ctx
  */
 export function executeObjectPropsExpressions(obj: any, ctx: object) {
-    // console.log('executeObjectPropsExpressions() > obj:', obj, 'ctx:', ctx)
-    // @ts-ignore
-    if (obj && typeof obj === 'object') {
-        if (obj.length !== undefined) {
-            // array
-            for (const objKey in obj) {
-                executeObjectPropsExpressions(obj[objKey], ctx)
-            }
-        } else {
-            // 对象中有组件
-            if (obj.componentName) {
-                executeInstPropsExpressions(obj, ctx)
-            }
+  // console.log('executeObjectPropsExpressions() > obj:', obj, 'ctx:', ctx)
+  // @ts-ignore
+  if (obj && typeof obj === 'object') {
+    if (obj.length !== undefined) {
+      // array
+      for (const objKey in obj) {
+        executeObjectPropsExpressions(obj[objKey], ctx)
+      }
+    } else {
+      // 对象中有组件
+      if (obj.componentName) {
+        executeInstPropsExpressions(obj, ctx)
+      }
 
-            // object
-            if (obj._propsExpressions) {
-                Object.keys(obj._propsExpressions).forEach((key: string) => {
-                    const expression = obj._propsExpressions[key]
-                    if (expression) {
-                        obj[key] = jsScriptExecutor.evalExpression(expression, ctx)
-                    }
-                })
-            }
+      // object
+      if (obj._propsExpressions) {
+        Object.keys(obj._propsExpressions).forEach((key: string) => {
+          const expression = obj._propsExpressions[key]
+          if (expression) {
+            obj[key] = jsScriptExecutor.evalExpression(expression, ctx)
+          }
+        })
+      }
 
-            // 处理对象的子级
-            for (const objKey in obj) {
-                executeObjectPropsExpressions(obj[objKey], ctx)
-            }
-        }
+      // 处理对象的子级
+      for (const objKey in obj) {
+        executeObjectPropsExpressions(obj[objKey], ctx)
+      }
     }
+  }
 }
 
 export function executeArrayExpressions(ary: object[], ctx: object) {
-    ary?.forEach((item) => {
-        executeObjectPropsExpressions(item, ctx)
-    })
+  ary?.forEach((item) => {
+    executeObjectPropsExpressions(item, ctx)
+  })
 }
-
 
 /**
  * 运行属性表达式
@@ -82,10 +91,10 @@ export function executeArrayExpressions(ary: object[], ctx: object) {
  * @param ctx
  */
 export const executePropsExpressions = (glComponentInst: any, ctx: Ctx) => {
-    // console.log('executePropsExpressions() > ctx:', glComponentInst.componentName, glComponentInst.props.label, ctx, glComponentInst)
-    executeInstPropsExpressions(glComponentInst, ctx)
-    executeObjectPropsExpressions(glComponentInst.props, ctx)
-    // console.log('_hidden',glComponentInst.props._hidden)
+  // console.log('executePropsExpressions() > ctx:', glComponentInst.componentName, glComponentInst.props.label, ctx, glComponentInst)
+  executeInstPropsExpressions(glComponentInst, ctx)
+  executeObjectPropsExpressions(glComponentInst.props, ctx)
+  // console.log('_hidden',glComponentInst.props._hidden)
 }
 
 /**

@@ -5,7 +5,11 @@ export default class UrlConfig {
 
     apiMetaSave = "/api/meta/save";
 
+    // 批量保存，针对同一实体，多条记录批量保存
     apiMetaBatchSave = "/api/meta/batchSave";
+
+    // 多实体同时保存
+    apiMetaMultiSave = "/api/meta/multiSave"
 
     apiMetaDelete = "/api/meta/delete";
 

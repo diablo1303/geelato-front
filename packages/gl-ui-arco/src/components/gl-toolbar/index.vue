@@ -1,72 +1,82 @@
 <script setup lang="ts">
-import type {PropType} from "vue";
-import type {ComponentMeta} from "@geelato/gl-ui-schema";
+import { type PropType } from 'vue'
+import { type ComponentInstance } from '@geelato/gl-ui-schema'
 
-defineProps({
-  leftColSpan: {
-    type: Number,
-    default() {
-      return 12;
-    },
-  },
-  centerColSpan: {
-    type: Number,
-    default() {
-      return 0;
-    },
-  },
-  rightColSpan: {
-    type: Number,
-    default() {
-      return 12;
-    },
-  },
+const props = defineProps({
+  leftColSpan: Number,
+  centerColSpan: Number,
+  rightColSpan: Number,
   leftItems: {
-    type: Array as PropType<ComponentMeta[]>,
+    type: Array as PropType<ComponentInstance[]>,
     default() {
-      return [];
-    },
+      return []
+    }
   },
   centerItems: {
-    type: Array as PropType<ComponentMeta[]>,
+    type: Array as PropType<ComponentInstance[]>,
     default() {
-      return [];
-    },
+      return []
+    }
   },
   rightItems: {
-    type: Array as PropType<ComponentMeta[]>,
+    type: Array as PropType<ComponentInstance[]>,
     default() {
-      return [];
-    },
+      return []
+    }
   },
   disabled: Boolean
-});
+})
 
+// const leftItemsCompute = computed(() => {
+//   return props.leftItems.filter((inst) => {
+//     return inst.props._hidden !== true
+//   })
+// })
+// const leftItemsComputeHidden = computed(() => {
+//   return props.leftItems.filter((inst) => {
+//     return inst.props._hidden === true
+//   })
+// })
+//
+// const rightItemsCompute = computed(() => {
+//   return props.rightItems.filter((inst) => {
+//     return inst.props._hidden !== true
+//   })
+// })
+//
+// const centerItemsCompute = computed(() => {
+//   return props.centerItems.filter((inst) => {
+//     return inst.props._hidden !== true
+//   })
+// })
 </script>
 
 <template>
   <a-row class="gl-toolbar">
-    <a-col :span="leftColSpan!">
+    <a-col :span="leftColSpan || 12">
       <a-space style="margin-left: -8px">
         <slot name="leftItems"></slot>
         <span></span>
-        <template v-for="(item, index) in leftItems" :key="index">
-          <GlComponent v-if="item" :glComponentInst="item"></GlComponent>
+        <template v-for="(inst, index) in leftItems" :key="index">
+          <GlComponent v-if="inst" :glComponentInst="inst"></GlComponent>
         </template>
       </a-space>
     </a-col>
-    <a-col :span="centerColSpan!">
+    <a-col :span="centerColSpan || 0">
       <a-space>
         <span></span>
-        <template v-for="(item, index) in centerItems" :key="index">
-          <GlComponent v-if="item" :glComponentInst="item"></GlComponent>
+        <template v-for="(inst, index) in centerItems" :key="index">
+          <GlComponent v-if="inst" :glComponentInst="inst"></GlComponent>
         </template>
       </a-space>
     </a-col>
-    <a-col :span="rightColSpan!" style="display: flex; align-items: center; justify-content: end">
+    <a-col
+      :span="rightColSpan || 12"
+      style="display: flex; align-items: center; justify-content: end"
+    >
       <a-space>
-        <template v-for="(item, index) in rightItems" :key="index">
-          <GlComponent v-if="item" :glComponentInst="item"></GlComponent>
+        <template v-for="(inst, index) in rightItems" :key="index">
+          <GlComponent v-if="inst" :glComponentInst="inst"></GlComponent>
         </template>
         <slot name="rightItems"></slot>
         <span></span>
@@ -74,5 +84,3 @@ defineProps({
     </a-col>
   </a-row>
 </template>
-
-<style scoped></style>

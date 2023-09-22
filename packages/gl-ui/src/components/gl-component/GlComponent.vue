@@ -160,8 +160,12 @@ watch(() => {
 
 props.glComponentInst.value = mv.value
 watch(mv, (value, oldValue) => {
+  // 过滤掉一些无效的值改变undefined null
+  if ((value===undefined||value===null)&&(oldValue=== undefined)){
+    return
+  }
   props.glComponentInst.value = value
-
+  // console.log('watch mv update > ',props.glComponentInst.componentName,value,oldValue)
   // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
   emits('update:modelValue', value)
   emits('update', value)
