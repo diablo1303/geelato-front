@@ -141,7 +141,7 @@ import {useI18n} from 'vue-i18n';
 import useLoading from '@/hooks/loading';
 // 分页列表
 import {Pagination} from '@/types/global';
-import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
+import type {TableColumnData} from '@arco-design/web-vue';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法

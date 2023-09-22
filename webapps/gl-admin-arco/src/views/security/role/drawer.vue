@@ -44,7 +44,7 @@
 import {ref} from "vue";
 import {QueryAppForm, queryApps, QueryOrgUserForm, QueryUserForm} from "@/api/security";
 import {ListUrlParams, SelectOption} from '@/api/base';
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FormInstance} from "@arco-design/web-vue";
 import RoleModel from "@/views/security/role/model.vue";
 import {useRoute} from "vue-router";
 

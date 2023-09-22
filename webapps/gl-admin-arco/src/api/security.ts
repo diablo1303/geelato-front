@@ -1,7 +1,7 @@
 import axios from 'axios';
 import qs from 'query-string';
 import {PageQueryRequest, PageQueryResponse, QueryResult} from '@/api/base'
-import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
+import {SelectOptionData} from "@arco-design/web-vue";
 
 
 /* 组织分页查询 */

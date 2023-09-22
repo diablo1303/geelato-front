@@ -107,9 +107,9 @@
 <script lang="ts" setup>
 import {computed, h, ref} from "vue";
 import {useI18n} from 'vue-i18n';
-import {Modal, Notification} from "@arco-design/web-vue";
+import {Modal, Notification, TreeNodeData} from "@arco-design/web-vue";
 import {IconFolder, IconLink} from '@arco-design/web-vue/es/icon';
-import {TreeNodeData, TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
+import {TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
 import {createOrUpdateModelToTable, QueryConnectForm, queryConnects, QueryTableForm, queryTables, resetModelFormTable} from "@/api/model";
 import {PageQueryRequest} from "@/api/base";
 // 引用其他页面

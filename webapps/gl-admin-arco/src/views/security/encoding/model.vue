@@ -148,8 +148,7 @@
 import {computed, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
-import {Modal, Notification} from "@arco-design/web-vue";
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FormInstance, Modal, Notification} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
 import {
   createOrUpdateEncoding as createOrUpdateForm,

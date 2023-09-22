@@ -60,7 +60,7 @@ import {
   queryOrgUsers,
   QueryUserForm
 } from "@/api/security";
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FormInstance} from "@arco-design/web-vue";
 
 // 国际化
 const {t} = useI18n();

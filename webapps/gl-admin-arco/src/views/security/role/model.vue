@@ -97,7 +97,7 @@ import {
 } from '@/api/security';
 import {ListUrlParams} from '@/api/base';
 import {enableStatusOptions, typeOptions} from "@/views/security/role/searchTable";
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FormInstance} from "@arco-design/web-vue";
 import {useRoute} from "vue-router";
 
 // 国际化

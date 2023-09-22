@@ -36,8 +36,7 @@
 import {ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
-import {Modal} from "@arco-design/web-vue";
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FormInstance, Modal} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
 import {createOrUpdateSysConfig as createOrUpdateForm, getSysConfig as getForm, QuerySysConfigForm as QueryForm, validateSysConfigKey} from '@/api/sysconfig'
 import {enableStatusOptions} from "@/views/security/sysconfig/searchTable";

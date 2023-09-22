@@ -154,7 +154,7 @@
 
 <script lang="ts" setup>
 import {computed, ref} from "vue";
-import {Modal} from "@arco-design/web-vue";
+import {FormInstance, Modal, SelectOptionData} from "@arco-design/web-vue";
 import {
   createOrUpdateUser as createOrUpdateForm,
   getUser as getForm,
@@ -166,9 +166,7 @@ import {
 } from '@/api/security';
 import {ListUrlParams, SelectOption} from '@/api/base';
 import {sexOptions, sourceOptions, typeOptions} from "@/views/security/user/searchTable";
-import {FormInstance} from "@arco-design/web-vue/es/form";
 import mobilePrefix from '@/config/mobilePrefix.json';
-import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
 import {useI18n} from "vue-i18n";
 import {copyToClipboard} from "@/utils/strings";
 import {useRoute} from "vue-router";

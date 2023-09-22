@@ -185,8 +185,7 @@
 <script lang="ts" setup>
 import {reactive, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {Modal, Notification} from "@arco-design/web-vue";
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FormInstance, Modal, Notification, TableData} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
 import {
   createOrUpdateView as createOrUpdateForm,
@@ -198,7 +197,6 @@ import {
 } from '@/api/model';
 import {enableStatusOptions, linkedOptions} from "@/views/model/view/searchTable";
 import MonacoEditor from '@/components/monaco/index.vue';
-import {TableData} from "@arco-design/web-vue/es/table/interface";
 import {useRoute} from "vue-router";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1});

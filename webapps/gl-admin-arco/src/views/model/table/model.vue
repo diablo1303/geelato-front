@@ -170,15 +170,14 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {Modal, Notification} from "@arco-design/web-vue";
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FormInstance, Modal, Notification} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
 import {
-    createOrUpdateTable as createOrUpdateForm,
-    getTable as getForm,
-    QueryTableForm as QueryForm,
-    validateMetaView,
-    validateTableEntityName
+  createOrUpdateTable as createOrUpdateForm,
+  getTable as getForm,
+  QueryTableForm as QueryForm,
+  validateMetaView,
+  validateTableEntityName
 } from '@/api/model';
 import {enableStatusOptions, linkedOptions, tableTypeOptions} from "@/views/model/table/searchTable";
 import {useRoute} from "vue-router";

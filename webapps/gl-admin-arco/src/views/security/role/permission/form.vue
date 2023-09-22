@@ -38,7 +38,7 @@ import {
   QueryRolePermissionForm as QueryForm
 } from '@/api/security';
 import {ListUrlParams} from '@/api/base';
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FormInstance} from "@arco-design/web-vue";
 import {useRoute} from "vue-router";
 
 const route = useRoute();

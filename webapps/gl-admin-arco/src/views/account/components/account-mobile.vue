@@ -46,11 +46,9 @@
 <script lang="ts" setup>
 import {computed, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
-import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
 import {AuthCodeForm, bindAccount, generateAuthCode} from "@/api/user";
-import {FormInstance} from "@arco-design/web-vue/es/form";
 import mobilePrefix from '@/config/mobilePrefix.json';
-import {Message} from "@arco-design/web-vue";
+import {FormInstance, Message, SelectOptionData} from "@arco-design/web-vue";
 import {useUserStore} from "@/store";
 
 const props = defineProps({modelValue: {type: Boolean, default: false}});

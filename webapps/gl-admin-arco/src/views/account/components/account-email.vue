@@ -39,8 +39,7 @@
 import {ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {AuthCodeForm, bindAccount, generateAuthCode} from "@/api/user";
-import {FormInstance} from "@arco-design/web-vue/es/form";
-import {Message} from "@arco-design/web-vue";
+import {FormInstance, Message} from "@arco-design/web-vue";
 import {useUserStore} from "@/store";
 
 const props = defineProps({modelValue: {type: Boolean, default: false}});

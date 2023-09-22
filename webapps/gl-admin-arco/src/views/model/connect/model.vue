@@ -106,8 +106,7 @@
 
 <script lang="ts" setup>
 import {ref} from 'vue';
-import {Modal} from "@arco-design/web-vue";
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FormInstance, Modal} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
 import {createOrUpdateConnect as createOrUpdateForm, getConnect as getForm, jdbcConnect, QueryConnectForm as QueryForm} from '@/api/model';
 import {dbTypeOptions, enableStatusOptions} from "@/views/model/connect/searchTable";

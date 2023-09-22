@@ -48,12 +48,10 @@
 <script lang="ts" setup>
 import {computed, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
-import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
 import {abbreviateValue, AuthCodeForm, generateAuthCode, validateUser} from "@/api/user";
-import {FormInstance} from "@arco-design/web-vue/es/form";
 import {clearValidUser, setValidUser} from "@/utils/auth";
 import {useUserStore} from "@/store";
-import {Message} from "@arco-design/web-vue";
+import {FormInstance, Message, SelectOptionData} from "@arco-design/web-vue";
 
 const props = defineProps({modelValue: {type: Boolean, default: false}});
 const emits = defineEmits(['update:modelValue', 'validEvent']);

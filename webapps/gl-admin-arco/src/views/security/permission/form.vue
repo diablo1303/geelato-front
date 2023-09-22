@@ -36,7 +36,7 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {Modal} from "@arco-design/web-vue";
+import {FormInstance, Modal} from "@arco-design/web-vue";
 import {
   createOrUpdatePermission as createOrUpdateForm,
   getPermission as getForm,
@@ -44,7 +44,6 @@ import {
   validatePermissionCode
 } from '@/api/security';
 import {ListUrlParams} from '@/api/base';
-import {FormInstance} from "@arco-design/web-vue/es/form";
 import {useRoute} from "vue-router";
 
 // 国际化

@@ -1,6 +1,5 @@
 import {computed} from 'vue';
-import type {SelectOptionData} from '@arco-design/web-vue/es/select/interface';
-import type {TableColumnData} from '@arco-design/web-vue/es/table/interface';
+import type {SelectOptionData, TableColumnData} from '@arco-design/web-vue';
 
 const columns = computed<TableColumnData[]>(() => []);
 

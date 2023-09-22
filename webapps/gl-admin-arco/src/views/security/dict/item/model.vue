@@ -47,8 +47,7 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import {useI18n} from 'vue-i18n';
-import {Modal} from "@arco-design/web-vue";
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FormInstance, Modal} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
 import {createOrUpdateDictItem as createOrUpdateForm, getDictItem as getForm, QueryDictItemForm as QueryForm, validateDictItemCode} from '@/api/security'
 import {enableStatusOptions} from "@/views/security/dict/item/searchTable";

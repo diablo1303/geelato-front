@@ -162,10 +162,9 @@
 <script lang="ts" setup>
 import {reactive, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {Notification} from "@arco-design/web-vue";
+import {Notification, TableData} from "@arco-design/web-vue";
 import {ListUrlParams, PageQueryRequest} from '@/api/base';
 import {batchCreateOrUpdateDictItem, pageQueryDictItem as pageQueryList, QueryDictForm as QueryModel, QueryDictItemForm} from "@/api/security";
-import {TableData} from "@arco-design/web-vue/es/table/interface";
 import {enableStatusOptions} from "@/views/security/dict/item/searchTable";
 import {copyToClipboard} from "@/utils/strings";
 import {useRoute} from "vue-router";

@@ -92,19 +92,19 @@
       </a-select>
       <span v-else>{{ $t(`application.app.list.status.${formData.designStatus}`) }}</span>
     </a-form-item>
-<!--    <a-form-item :label="$t('application.app.list.powerInfo')" field="powerInfo">
-      <a-textarea v-if="pageData.button" v-model="formData.powerInfo" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
-      <span v-else :title="formData.powerInfo" class="textarea-span" @click="openModal(`${formData.powerInfo}`)">
-        {{ formData.powerInfo }}
-      </span>
-    </a-form-item>-->
-<!--    <a-form-item
-        :label="$t('application.app.list.versionInfo')"
-        :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-        field="versionInfo">
-      <a-input v-if="pageData.button" v-model="formData.versionInfo" :max-length="32"/>
-      <span v-else>{{ formData.versionInfo }}</span>
-    </a-form-item>-->
+    <!--    <a-form-item :label="$t('application.app.list.powerInfo')" field="powerInfo">
+          <a-textarea v-if="pageData.button" v-model="formData.powerInfo" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+          <span v-else :title="formData.powerInfo" class="textarea-span" @click="openModal(`${formData.powerInfo}`)">
+            {{ formData.powerInfo }}
+          </span>
+        </a-form-item>-->
+    <!--    <a-form-item
+            :label="$t('application.app.list.versionInfo')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            field="versionInfo">
+          <a-input v-if="pageData.button" v-model="formData.versionInfo" :max-length="32"/>
+          <span v-else>{{ formData.versionInfo }}</span>
+        </a-form-item>-->
     <a-form-item
         :label="$t('application.app.list.seqNo')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
@@ -137,12 +137,10 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import {useI18n} from 'vue-i18n';
-import {Modal, Notification} from "@arco-design/web-vue";
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FileItem, FormInstance, Modal, Notification} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
 import {createOrUpdateApp as createOrUpdateForm, getApp as getForm, QueryAppForm as QueryForm, validateAppCode} from '@/api/application'
 import {statusOptions, watermarkOptions} from "@/views/application/searchTable";
-import {FileItem} from "@arco-design/web-vue/es/upload/interfaces";
 import {iconsJson} from "@geelato/gl-ui";
 import {uploadFile} from "@/components/vue-cropper/type";
 import {useRoute} from "vue-router";

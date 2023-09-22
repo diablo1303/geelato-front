@@ -73,13 +73,11 @@
 import {ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
-import {Modal, Notification} from "@arco-design/web-vue";
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FileItem, FormInstance, Modal, Notification} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
 import {createOrUpdateFileTemplate as createOrUpdateForm, getFileTemplate as getForm, QueryFileTemplateForm as QueryForm} from '@/api/template'
 import {enableStatusOptions,} from "@/views/security/file/searchTable";
 import {AttachmentForm, getAttachmentByIds, getDownloadUrlById, getUploadUrl, uploadHeader} from "@/api/application";
-import {FileItem} from "@arco-design/web-vue/es/upload/interfaces";
 
 const route = useRoute();
 const {t} = useI18n();

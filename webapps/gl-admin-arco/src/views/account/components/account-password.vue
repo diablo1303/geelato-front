@@ -36,7 +36,7 @@
 import {ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {AuthCodeForm, bindAccount} from "@/api/user";
-import {FormInstance} from "@arco-design/web-vue/es/form";
+import {FormInstance} from "@arco-design/web-vue";
 import {useUserStore} from "@/store";
 
 const props = defineProps({modelValue: {type: Boolean, default: false}});
