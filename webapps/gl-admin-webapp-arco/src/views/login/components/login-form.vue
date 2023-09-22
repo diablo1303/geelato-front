@@ -111,7 +111,11 @@ const enterApp = async () => {
   if (route && route.params && route.params.tenantCode && route.params.appId) {
     const {redirect, ...othersQuery} = router.currentRoute.value.query;
     if (redirect) {
-      router.push({name: redirect as string, params: {...othersQuery} as RouteParamsRaw});
+      if (redirect.toString().toLowerCase().startsWith("http")) {
+        window.location.assign(redirect as string);
+      } else {
+        router.push({name: redirect as string, params: {...othersQuery} as RouteParamsRaw});
+      }
     } else if (DEFAULT_ROUTE.name) {
       router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
     } else {
