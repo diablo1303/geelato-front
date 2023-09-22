@@ -84,8 +84,7 @@
 
 <script lang="ts" setup>
 import {computed, ref} from 'vue';
-import {FormInstance} from "@arco-design/web-vue/es/form";
-import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
+import {FormInstance, SelectOptionData} from "@arco-design/web-vue";
 import {forgetPasswordEdit, forgetPasswordValid, ResetPasswordForm} from "@/api/user";
 import mobilePrefix from '@/config/mobilePrefix.json';
 
