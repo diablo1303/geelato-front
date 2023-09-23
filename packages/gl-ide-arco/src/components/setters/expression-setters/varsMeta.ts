@@ -319,6 +319,13 @@ export const useSrvTreeData = () => {
                         _type: 'Promise',
                         _brackets: '({entity:"",pidName:"",record:{},children:[]})',
                         _description: '保存实体，entitySaver为实体保存对象，格式如：{entity:"实体名称",pidName:"作为子表时需填写该值，即子表单中指向父表单id的字段名",record:"{},实体的记录数据对象",children:"[],有子表单时，可设置子表单entitySaver在此"}',
+                    },
+                    {
+                        title: '批量保存实体',
+                        _code: 'saveBatchEntity',
+                        _type: 'Promise',
+                        _brackets: '([{entity:"批量实体同一名称",pidName:"",record:{},children:[]}])',
+                        _description: '批量保存实体(同一实体名称)，entitySaver为实体保存对象，格式如：{entity:"实体名称",pidName:"作为子表时需填写该值，即子表单中指向父表单id的字段名",record:"{},实体的记录数据对象",children:"[],有子表单时，可设置子表单entitySaver在此"}',
                     }
                 ]
             },
