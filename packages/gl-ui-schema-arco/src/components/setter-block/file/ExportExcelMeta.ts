@@ -63,7 +63,7 @@ export default {
         "setterComponentVModelName": "modelValue",
         "placeholder": "",
         "description": "上下文中可获取的最终数据对象或GQL查询数据对象的变量名",
-        "title": "变量名",
+        "title": "数据变量名",
         "setterComponentName": "AInput"
     }, {
         "name": "enableAwait",

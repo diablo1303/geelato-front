@@ -2,6 +2,7 @@ import {jsScriptExecutor} from "@geelato/gl-ui";
 import {useComponentStore} from "@geelato/gl-ide";
 import {getLabel} from "@geelato/gl-ui-arco";
 import type {MethodMeta} from "@geelato/gl-ui-schema";
+import {downloadFileById} from "@geelato/gl-ui/src/m/datasource/FileApi";
 
 type TreeItem = {
     title: string,
@@ -341,6 +342,13 @@ export const useSrvTreeData = () => {
                         _type: 'void',
                         _brackets: '("文件名","文件模板ID","导出数据GQL")',
                         _description: '导出excel',
+                    },
+                    {
+                        title: '下载文件',
+                        _code: 'downloadFileById',
+                        _type: 'void',
+                        _brackets: '("文件id")',
+                        _description: '下载文件',
                     }
                 ]
             },

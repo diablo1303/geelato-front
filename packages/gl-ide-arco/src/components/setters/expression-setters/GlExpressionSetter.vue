@@ -217,7 +217,8 @@ const selectDictItem = (key: any) => {
              :body-style="{padding:0,overflow:'hidden'}"
              :mask-style="{background:'rgba(0, 0, 0, 0.25)'}"
              @ok="handleOk"
-             @cancel="handleCancel">
+             @cancel="handleCancel"
+             draggable>
       <div class="gl-expression-setter-editor" style="display: flex;" v-if="visibleValueExpressModal">
         <div style="flex: auto;border-right: solid 1px #d7d6d6">
           <!--      <a-textarea v-model="mv" placeholder="在此输入..."></a-textarea>-->

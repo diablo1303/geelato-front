@@ -129,6 +129,10 @@ const props = defineProps({
   ...mixins.props
 })
 
+const showOptColumn = () => {
+  return props.columnActions?.length > 0
+}
+
 const formProvideProxy: FormProvideProxy | undefined = props.isFormSubTable
   ? inject(FormProvideKey)
   : undefined
@@ -143,7 +147,7 @@ const queryColumns: Ref<GlTableColumn[]> = ref(
   genQueryColumns(props, localShowDataIndexes, localHideDataIndexes)
 )
 // 可供展示的列，从这些列中选出最终展示的列存在renderColumns
-const showColumns: Ref<GlTableColumn[]> = ref(genShowColumns(queryColumns, false))
+const showColumns: Ref<GlTableColumn[]> = ref(genShowColumns(queryColumns, false, showOptColumn()))
 // 最终展示的列
 const renderColumns: Ref<GlTableColumn[]> = ref(genRenderColumns(showColumns))
 

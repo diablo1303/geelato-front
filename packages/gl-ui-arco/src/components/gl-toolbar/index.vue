@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { type PropType } from 'vue'
-import { type ComponentInstance } from '@geelato/gl-ui-schema'
+import type { PropType } from 'vue'
+import type { ComponentInstance } from '@geelato/gl-ui-schema'
 
 const props = defineProps({
   leftColSpan: Number,

@@ -1,18 +1,18 @@
-import type {ApiResult} from "../types/global";
-import {entityApi} from "./EntityApi";
+import type { ApiResult } from '../types/global'
+import { entityApi } from './EntityApi'
 
 export interface AttachmentForm {
-    id: string;
-    name: string;
-    path: string;
-    size: string;
-    type: string;
-    url: string;
-    delStatus: number
+  id: string
+  name: string
+  path: string
+  size: string
+  type: string
+  url: string
+  delStatus: number
 }
 
 export function getAttachment(id: string) {
-    return entityApi.getAxios().get<AttachmentForm>(`/api/attach/get/${id}`);
+  return entityApi.getAxios().get<AttachmentForm>(`/api/attach/get/${id}`)
 }
 
 /**
@@ -20,7 +20,7 @@ export function getAttachment(id: string) {
  * @param ids
  */
 export function getAttachmentByIds(ids: string) {
-    return entityApi.getAxios().post<AttachmentForm[]>(`/api/attach/list`, {"ids": ids});
+  return entityApi.getAxios().post<AttachmentForm[]>(`/api/attach/list`, { ids: ids })
 }
 
 /**
@@ -29,7 +29,9 @@ export function getAttachmentByIds(ids: string) {
  * @param isRemoveFile 删除文件，默认：false
  */
 export function deleteAttachment(id: string, isRemoveFile?: boolean) {
-    return entityApi.getAxios().delete<ApiResult>(`/api/attach/remove/${id}?isRemoved=${!!isRemoveFile}`);
+  return entityApi
+    .getAxios()
+    .delete<ApiResult>(`/api/attach/remove/${id}?isRemoved=${!!isRemoveFile}`)
 }
 
 /**
@@ -37,7 +39,7 @@ export function deleteAttachment(id: string, isRemoveFile?: boolean) {
  * @param isRename 重置文件名，默认：true
  */
 export function getUploadUrl(isRename?: boolean) {
-    return `${entityApi.getAxios().defaults.baseURL}/api/upload/file?isRename=${!!isRename}`;
+  return `${entityApi.getAxios().defaults.baseURL}/api/upload/file?isRename=${!!isRename}`
 }
 
 /**
@@ -45,7 +47,7 @@ export function getUploadUrl(isRename?: boolean) {
  * @param id 附件id
  */
 export function getDownloadUrlById(id: string) {
-    return id ? `${entityApi.getAxios().defaults.baseURL}/resources/file?rstk=download&id=${id}` : '';
+  return id ? `${entityApi.getAxios().defaults.baseURL}/resources/file?rstk=download&id=${id}` : ''
 }
 
 /**
@@ -54,7 +56,11 @@ export function getDownloadUrlById(id: string) {
  * @param path 附件相对地址
  */
 export function getDownloadUrlByPath(name: string, path: string) {
-    return name && path ? `${entityApi.getAxios().defaults.baseURL}/resources/file?rstk=download&name=${name}&path=${path}` : '';
+  return name && path
+    ? `${
+        entityApi.getAxios().defaults.baseURL
+      }/resources/file?rstk=download&name=${name}&path=${path}`
+    : ''
 }
 
 /**
@@ -65,5 +71,22 @@ export function getDownloadUrlByPath(name: string, path: string) {
  * @param data 数据
  */
 export function exportExcel(fileName: string, templateId: string, dataType: string, data: object) {
-    return entityApi.getAxios().post(`/api/export/file/excel/${dataType}/${templateId}?fileName=${fileName}`, data);
+  return entityApi
+    .getAxios()
+    .post(`/api/export/file/wps/${dataType}/${templateId}?fileName=${fileName}`, data)
+}
+
+/**
+ * 文件下载
+ * @param id
+ */
+export function downloadFileById(id: string) {
+  let iframe = document.createElement('iframe')
+  iframe.style.display = 'none' // 防止影响页面
+  iframe.style.height = '0' // 防止影响页面
+  iframe.src = getDownloadUrlById(id)
+  document.body.appendChild(iframe) // 这一行必须，iframe挂在到dom树上才会发请求
+  setTimeout(function () {
+    document.body.removeChild(iframe)
+  }, 100)
 }

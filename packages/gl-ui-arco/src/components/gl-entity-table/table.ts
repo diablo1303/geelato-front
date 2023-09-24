@@ -249,8 +249,9 @@ export const genQueryColumns = (props: any, showDataIndexes: string[], hideDataI
  * 构建新可供展示的列（用于选择是否展示），但不是最终展示例
  * @param queryColumns
  * @param isShowByComponent 是否通过组件来控制列是否展示，场景1，应用于编辑表，值为true;场景2，应用于查询表，值为false
+ * @param showOptColumn 是否需要展示操作列，默认需要，可按需设置是否展示，如在没有Actions时可以设置为无
  */
-export const genShowColumns = (queryColumns: Ref<GlTableColumn[]>, isShowByComponent: boolean) => {
+export const genShowColumns = (queryColumns: Ref<GlTableColumn[]>, isShowByComponent: boolean,showOptColumn?:boolean) => {
     const cols: Array<GlTableColumn> = [];
     queryColumns?.value.forEach((queryColumn) => {
         queryColumn._checked = true;
@@ -276,8 +277,11 @@ export const genShowColumns = (queryColumns: Ref<GlTableColumn[]>, isShowByCompo
             }
         }
     })
-    const optColumn = {title: '操作', slotName: '#', fixed: 'right', width: 140, align: 'center', _checked: true}
-    cols.push(optColumn as Column)
+    // 默认需要展示操作列
+    if (showOptColumn!==false){
+        const optColumn = {title: '操作', slotName: '#', fixed: 'right', width: 140, align: 'center', _checked: true}
+        cols.push(optColumn as Column)
+    }
     return cols;
 }
 
