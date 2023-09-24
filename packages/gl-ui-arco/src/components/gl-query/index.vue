@@ -63,10 +63,15 @@ const onSearch = () => {
   const entityReaderParams = createEntityReaderParams()
   emits("search", entityReaderParams);
 };
+/**
+ *  隐藏的查询字段不进行重置
+ */
 const reset = () => {
   props.items?.forEach((item: QueryItem) => {
     if (item.component?.value) {
-      item.component.value = defaultValue[item.id]
+      if (item.component.props._hidden!==true){
+        item.component.value = defaultValue[item.id]
+      }
     }
   });
   onSearch()
