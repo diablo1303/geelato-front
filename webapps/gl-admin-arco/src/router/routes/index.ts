@@ -113,6 +113,7 @@ const formatExternalModules = (_modules: any, result: RouteRecordNormalized[]) =
 }
 
 const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryMenuForm[]): RouteRecordNormalized[] => {
+  let pageOrder = 99;
   // eslint-disable-next-line no-restricted-syntax
   for (const data of defaultData) {
     // eslint-disable-next-line no-restricted-syntax
@@ -130,16 +131,18 @@ const buildOrgOptions = (defaultData: RouteRecordNormalized[], totalData: QueryM
             path: `${item.treeEntity || item.id}`,
             name: `${item.id}`,
             component: null,
-            meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: item.seqNo},
+            // eslint-disable-next-line no-plusplus
+            meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: pageOrder++},
             children: [],
             props: item
           } as unknown as RouteRecordNormalized);
         } else if (["formPage", "listPage", "freePage"].includes(item.type)) {
           data.children?.push({
-            path: `:pageId`,
-            name: `${item.pageId || item.id}`,
+            path: `${item.id}/:pageId`,
+            name: `${item.id}`,
             component: () => import('@/views/page/PageRuntime.vue'),
-            meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: item.seqNo},
+            // eslint-disable-next-line no-plusplus
+            meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: pageOrder++},
             children: [],
             props: item,
             params: {...urlParams, pageId: `${item.pageId}`}
@@ -171,7 +174,7 @@ const setRoute = (fullPath: string, result: RouteRecordNormalized) => {
       }
       setRoute(fullPath, result.children[i] as RouteRecordNormalized);
     }
-  } else if (result.path === ':pageId') {
+  } else if (result.path.endsWith(':pageId')) {
     // @ts-ignore
     DEFAULT_ROUTE.params = result.params;
     DEFAULT_ROUTE.name = result.name as string;
@@ -187,6 +190,7 @@ export const formatAppModules = async (result: RouteRecordNormalized[]) => {
     // @ts-ignore
     const menuForms = data.code === globalConfig.interceptorCode ? data.data : data;
     const folderOptions: RouteRecordNormalized[] = [];
+    let folderOrder = 0;
     // eslint-disable-next-line no-restricted-syntax
     for (const item of menuForms) {
       if (item.type === 'folder' && (!item.pid || item.pid === urlParams.appId)) {
@@ -194,7 +198,8 @@ export const formatAppModules = async (result: RouteRecordNormalized[]) => {
           path: `${URL_PREFIX}/:tenantCode/:appId/page/${item.id}`,
           name: `${item.id}`,
           component: DEFAULT_LAYOUT,
-          meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: item.seqNo},
+          // eslint-disable-next-line no-plusplus
+          meta: {locale: item.text, icon: item.iconType, requiresAuth: true, order: folderOrder++},
           children: [],
           props: item
         } as unknown as RouteRecordNormalized);
