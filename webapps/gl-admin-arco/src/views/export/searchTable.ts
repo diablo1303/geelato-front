@@ -1,5 +1,6 @@
 import {computed} from 'vue';
 import type {TableColumnData} from '@arco-design/web-vue';
+import {SelectOptionData} from "@arco-design/web-vue";
 
 const columns = computed<TableColumnData[]>(() => [
   {
@@ -30,5 +31,27 @@ const columns = computed<TableColumnData[]>(() => [
   }
 ]);
 
-// eslint-disable-next-line import/prefer-default-export
-export {columns};
+const fileTypeOptions = computed<SelectOptionData[]>(() => [
+  {
+    label: 'PDF',
+    value: 'application/pdf',
+  },
+  {
+    label: 'WORD[DOC]',
+    value: 'application/msword',
+  },
+  {
+    label: 'EXCEL[XLS]',
+    value: 'application/vnd.ms-excel',
+  },
+  {
+    label: 'WORD[DOCX]',
+    value: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  },
+  {
+    label: 'EXCEL[XLSX]',
+    value: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  }
+]);
+
+export {columns, fileTypeOptions};

@@ -10,7 +10,9 @@
           </a-col>
           <a-col :span="8">
             <a-form-item :label="$t('export.file.index.form.type')" field="type">
-              <a-input v-model="filterData.type" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="item of fileTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="8">
@@ -58,8 +60,16 @@
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('export.file.index.form.name')" :tooltip="true" :width="150" data-index="name"/>
-      <a-table-column :ellipsis="true" :title="$t('export.file.index.form.type')" :tooltip="true" :width="150" data-index="type"/>
-      <a-table-column :ellipsis="true" :title="$t('export.file.index.form.size')" :tooltip="true" :width="150" data-index="size"/>
+      <a-table-column :ellipsis="true" :title="$t('export.file.index.form.type')" :tooltip="true" :width="150" data-index="type">
+        <template #cell="{  record }">
+          {{ getLabel(record.type, fileTypeOptions) }}
+        </template>
+      </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('export.file.index.form.size')" :tooltip="true" :width="150" data-index="size">
+        <template #cell="{  record }">
+          {{ record.size }} KB
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('export.file.index.form.createAt')" :width="180" data-index="createAt"></a-table-column>
       <a-table-column :title="$t('export.file.index.form.operations')" :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
@@ -83,16 +93,16 @@ import {useI18n} from 'vue-i18n';
 import useLoading from '@/hooks/loading';
 import {useUserStore} from "@/store";
 import {useRoute} from "vue-router";
-import {Notification} from "@arco-design/web-vue";
+import type {TableColumnData} from '@arco-design/web-vue';
+import {Notification, SelectOptionData} from "@arco-design/web-vue";
 // 分页列表
 import {Pagination} from '@/types/global';
-import type {TableColumnData} from '@arco-design/web-vue';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {PageQueryFilter, PageQueryRequest} from '@/api/base';
 import {exportFileList, FilterAttachmentForm, getDownloadUrlById} from "@/api/application";
-import {columns} from "@/views/export/searchTable";
+import {columns, fileTypeOptions} from "@/views/export/searchTable";
 
 
 /* 列表 */
@@ -171,6 +181,17 @@ const onPageChange = (current: number) => {
   search();
 };
 
+const getLabel = (value: string, options: SelectOptionData[]) => {
+  if (value && options && options.length > 0) {
+    // eslint-disable-next-line no-import-assign,no-restricted-syntax
+    for (let i = 0; i < options.length; i += 1) {
+      if (options[i]?.value === value) {
+        return options[i]?.label || "";
+      }
+    }
+  }
+  return "";
+}
 /* 列表，按钮、操作列 */
 const downloadFile = (id: string, isPdf?: boolean) => {
   const url = getDownloadUrlById(id, isPdf);
