@@ -307,8 +307,8 @@ export function createOrUpdateDictItem(params: QueryDictItemForm) {
   return axios.post<QueryResult>('/api/dict/item/createOrUpdate', params);
 }
 
-export function batchCreateOrUpdateDictItem(dictId: string, params: QueryDictItemForm[]) {
-  return axios.post<QueryResult>(`/api/dict/item/batchCreateOrUpdate?dictId=${dictId}`, params);
+export function batchCreateOrUpdateDictItem(dictId: string, parentId: string, params: QueryDictItemForm[]) {
+  return axios.post<QueryResult>(`/api/dict/item/batchCreateOrUpdate?dictId=${dictId}&parentId=${parentId}`, params);
 }
 
 export function deleteDictItem(id: string) {

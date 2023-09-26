@@ -124,9 +124,12 @@
           v-show="pageData.formState==='edit'" :title="$t('security.dictItem.index.form.operations')" :width="230" align="center"
           data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-button size="small" type="text" @click="addChildTable(record.id)">
-            {{ $t('searchTable.operation.create') }}
+          <a-button size="small" type="text" @click="configTable(record.id)">
+            {{ $t('searchTable.columns.operations.config') }}
           </a-button>
+          <!--          <a-button size="small" type="text" @click="addChildTable(record.id)">
+                      {{ $t('searchTable.operation.create') }}
+                    </a-button>-->
           <a-button size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
@@ -140,17 +143,18 @@
     </template>
   </a-table>
   <DictItemDrawer ref="dictItemDrawerRef"></DictItemDrawer>
+  <DictItemLocker ref="dictItemLockerRef"></DictItemLocker>
 </template>
 
 <script lang="ts" setup>
 /* 导入 */
-import {nextTick, reactive, ref, watch} from 'vue';
+import {nextTick, reactive, ref, shallowRef, watch} from 'vue';
 import {useI18n} from 'vue-i18n';
+import type {TableColumnData} from '@arco-design/web-vue';
 import {Notification} from '@arco-design/web-vue';
 import useLoading from '@/hooks/loading';
 // 分页列表
 import {Pagination} from '@/types/global';
-import type {TableColumnData} from '@arco-design/web-vue';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
@@ -158,14 +162,16 @@ import {columns, enableStatusOptions} from "@/views/security/dict/item/searchTab
 import {deleteDictItem as deleteList, FilterDictItemForm as FilterForm, pageQueryDictItem as pageQueryList, QueryDictItemForm} from '@/api/security';
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 引用其他页面
-import DictItemDrawer from "@/views/security/dict/item/drawer.vue";
 import {useRoute} from "vue-router";
+import DictItemDrawer from "@/views/security/dict/item/drawer.vue";
+import DictItemLocker from "@/views/security/dict/item/locker.vue";
 
 /* 列表 */
 const route = useRoute();
 type Column = TableColumnData & { checked?: true };
 const pageData = ref({current: 1, pageSize: 10, formState: 'edit', isModal: false, params: {pId: '', pName: ''}});
 const dictItemDrawerRef = ref(null);
+const dictItemLockerRef = shallowRef(DictItemLocker);
 // 国际化
 const {t} = useI18n();
 // 加载
@@ -268,6 +274,11 @@ const onPageChange = (current: number) => {
 };
 
 /* 列表，按钮、操作列 */
+const configTable = (id: string) => {
+  if (dictItemLockerRef.value) {
+    dictItemLockerRef.value?.openForm({action: 'edit', params: {parentId: id, ...pageData.value.params}, closeBack: reset});
+  }
+}
 const addTable = (ev: MouseEvent) => {
   if (pageData.value.isModal && !pageData.value.params.pId) {
     Notification.warning(t('security.dict.index.notice.warning2'));
