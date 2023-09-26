@@ -73,7 +73,7 @@ export function getDownloadUrlByPath(name: string, path: string) {
 export function exportExcel(fileName: string, templateId: string, dataType: string, data: object) {
   return entityApi
     .getAxios()
-    .post(`/api/export/file/wps/${dataType}/${templateId}?fileName=${fileName}`, data)
+    .post(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}`, data)
 }
 
 /**
