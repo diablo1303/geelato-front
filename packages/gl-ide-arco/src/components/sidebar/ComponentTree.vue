@@ -118,6 +118,3 @@ function getMatchIndex(componentName: String) {
   </div>
 </template>
 
-<style scoped>
-
-</style>

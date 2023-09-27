@@ -1,39 +1,60 @@
 <template>
   <div class="gl-designer-toolbar" :style="btnStyle" style="text-align: center">
     <span class="gl-left" style="vertical-align: middle">
-<!--      <img src="../../public/logo_words.svg" style="width: 84px;height: 24px"/>-->
-            <img src="../../public/logo.png" style="padding:2px;width: 24px;height: 24px;" title="GEELATO IDE"/>
+      <!--      <img src="../../public/logo_words.svg" style="width: 84px;height: 24px"/>-->
+      <img
+        src="../../public/logo.png"
+        style="padding: 2px; width: 24px; height: 24px"
+        title="GEELATO IDE"
+      />
     </span>
     <span class="gl-left">
       <!--      <span title="项目名称">-->
       <!--        {{ appStore.currentApp.name }}-->
       <!--      </span>-->
       <!--<a size="small" :style="btnStyle" @click="comingSoon('设置管理')">设置</a>-->
-       <span class="gl-item">
-         {{ appStore.currentApp.name }}
+      <span class="gl-item">
+        {{ appStore.currentApp.name }}
       </span>
-      <span class="gl-item" v-if="pageStore.currentPage.sourceContent?.componentName" >
+      <span class="gl-item" v-if="pageStore.currentPage.sourceContent?.componentName">
         <GlIconfont type="gl-save" text="保存" @click="saveFile"></GlIconfont>
       </span>
-      <span class="gl-item" v-if="isLogin()" :disabled="!(pageStore.currentPage && pageStore.currentPage.id)">
+      <span
+        class="gl-item"
+        v-if="isLogin()"
+        :disabled="!(pageStore.currentPage && pageStore.currentPage.id)"
+      >
         <GlIconfont type="gl-preview" text="预览" @click="preview"></GlIconfont>
       </span>
-
     </span>
 
     <span>
-        <a-button size="small" :style="btnStyle" :disabled="!pageStore.currentPageHistory.undoAble"
-                  :title="pageStore.currentPageHistory.undoAble?'回撤上一步':'无法回撤'"
-                  @click="pageStore.operationUndo()">
-                 <GlIconfont type="gl-undo" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"
-                             @click="currentIconSelected='gl-desktop'"></GlIconfont>
-              </a-button>
-             <a-button size="small" :style="btnStyle" :disabled="!pageStore.currentPageHistory.redoAble"
-                       :title="pageStore.currentPageHistory.redoAble?'重做':'无法重做'"
-                       @click="pageStore.operationRedo()">
-               <GlIconfont type="gl-redo" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"
-                           @click="currentIconSelected='gl-desktop'"></GlIconfont>
-             </a-button>
+      <a-button
+        size="small"
+        :style="btnStyle"
+        :disabled="!pageStore.currentPageHistory.undoAble"
+        :title="pageStore.currentPageHistory.undoAble ? '回撤上一步' : '无法回撤'"
+        @click="pageStore.operationUndo()"
+      >
+        <GlIconfont
+          type="gl-undo"
+          :class="{ 'gl-selected': currentIconSelected === 'gl-desktop' }"
+          @click="currentIconSelected = 'gl-desktop'"
+        ></GlIconfont>
+      </a-button>
+      <a-button
+        size="small"
+        :style="btnStyle"
+        :disabled="!pageStore.currentPageHistory.redoAble"
+        :title="pageStore.currentPageHistory.redoAble ? '重做' : '无法重做'"
+        @click="pageStore.operationRedo()"
+      >
+        <GlIconfont
+          type="gl-redo"
+          :class="{ 'gl-selected': currentIconSelected === 'gl-desktop' }"
+          @click="currentIconSelected = 'gl-desktop'"
+        ></GlIconfont>
+      </a-button>
       <!--      <span class="gl-item" v-if="isLogin()">-->
       <!--        <GlIconfont type="gl-desktop" :class="{'gl-selected':currentIconSelected==='gl-desktop'}"-->
       <!--                    @click="currentIconSelected='gl-desktop'"></GlIconfont>-->
@@ -57,34 +78,45 @@
       <!--       <GlIconfont type="gl-mobile" :class="{'gl-selected':currentIconSelected==='gl-mobile'}"-->
       <!--                   @click="currentIconSelected='gl-mobile'"></GlIconfont>-->
       <!--      </span>-->
-       <span class="gl-item" v-if="isLogin()">
-       <GlIconfont type="gl-json" @click="openCodeViewer"></GlIconfont>
+      <span class="gl-item" v-if="isLogin()">
+        <GlIconfont type="gl-json" @click="openCodeViewer"></GlIconfont>
       </span>
     </span>
 
-    <span style="float: right;padding-right: 1em">
+    <span style="float: right; padding-right: 1em">
+      <span class="gl-item" v-if="isLogin()">
+        <GlIconfont
+          type="gl-component"
+          text="页面查询替换"
+          @click="showPageReplaceEditor"
+        ></GlIconfont>
+      </span>
       <span class="gl-item" v-if="isLogin()">
         <GlIconfont type="gl-component" text="组件库" @click="showComponents"></GlIconfont>
       </span>
       <span class="gl-item">
-        <GlIconfont v-if="currentLocalOption" type="gl-earth" :text="currentLocalOption.label"
-                    @click="switchLanguages"></GlIconfont>
+        <GlIconfont
+          v-if="currentLocalOption"
+          type="gl-earth"
+          :text="currentLocalOption.label"
+          @click="switchLanguages"
+        ></GlIconfont>
       </span>
       <span class="gl-item" v-if="isLogin()">
         <GlIconfont type="gl-logout" text="退出"></GlIconfont>
       </span>
-       <span class="gl-item" v-if="!isLogin()">
+      <span class="gl-item" v-if="!isLogin()">
         <GlIconfont type="gl-preview" text="登录"></GlIconfont>
       </span>
-       <span class="gl-item">
+      <span class="gl-item">
         <GlIconfont type="gl-help" text="帮助" @click="gotoHelpPage"></GlIconfont>
       </span>
-       <span class="gl-item" @click="toggleFullScreen" title="按ESC键即可退出全屏">
+      <span class="gl-item" @click="toggleFullScreen" title="按ESC键即可退出全屏">
         <template v-if="isFullscreen">
           <GlIconfont type="gl-fullscreen-exit" text="退出全屏"></GlIconfont>
         </template>
         <template v-else>
-        <GlIconfont type="gl-fullscreen" text="全屏"></GlIconfont>
+          <GlIconfont type="gl-fullscreen" text="全屏"></GlIconfont>
         </template>
       </span>
 
@@ -93,13 +125,18 @@
       <!--{{$i18n.locale==='zh-CN'?'English':'中文'}}-->
       <!--</a>-->
     </span>
-    <gl-modal :visible="codeViewerVisible"
-              title="生成的配置代码预览"
-              :fullscreen="true"
-              @ok="codeViewerVisible=false"
-              @cancel="codeViewerVisible=false">
-      <GlMonacoEditor v-model="json" :height="themeStore.modalBodyHeight-41"
-                      language="json"></GlMonacoEditor>
+    <gl-modal
+      :visible="codeViewerVisible"
+      title="生成的配置代码预览"
+      :fullscreen="true"
+      @ok="codeViewerVisible = false"
+      @cancel="codeViewerVisible = false"
+    >
+      <GlMonacoEditor
+        v-model="json"
+        :height="themeStore.modalBodyHeight - 41"
+        language="json"
+      ></GlMonacoEditor>
       <template #footer>
         <a-button type="primary" @click="saveCode">保存</a-button>
         <a-button type="primary" @click="copyCode">复制(完全复制)</a-button>
@@ -110,19 +147,19 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue'
-import {utils, CheckUtil} from "@geelato/gl-ui";
+import { ref } from 'vue'
+import { utils, CheckUtil } from '@geelato/gl-ui'
 import screenfull from 'screenfull'
-import {useIdeStore} from "../stores/UseIdeStore";
-import {usePageStore} from "../stores/UsePageStore";
-import {useThemeStore} from "../stores/UseThemeStore";
-import {emitter, useGlobal} from "@geelato/gl-ui";
-import {copyComponentInst, useComponentStore} from "../stores/UseComponentStore";
-import {useAppStore} from "../stores/UseAppStore";
-import EventNames from "../entity/EventNames";
-import ClipboardJS from "clipboard";
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
-import {isLogin} from "@geelato/gl-ui/src/m/utils/auth";
+import { useIdeStore } from '../stores/UseIdeStore'
+import { usePageStore } from '../stores/UsePageStore'
+import { useThemeStore } from '../stores/UseThemeStore'
+import { emitter, useGlobal } from '@geelato/gl-ui'
+import { copyComponentInst, useComponentStore } from '../stores/UseComponentStore'
+import { useAppStore } from '../stores/UseAppStore'
+import EventNames from '../entity/EventNames'
+import ClipboardJS from 'clipboard'
+import type { ComponentInstance } from '@geelato/gl-ui-schema'
+import { isLogin } from '@geelato/gl-ui/src/m/utils/auth'
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()
@@ -133,7 +170,7 @@ const codeViewerVisible = ref(false)
 
 const global = useGlobal()
 
-const btnStyle = {background: themeStore.theme.background}
+const btnStyle = { background: themeStore.theme.background }
 const isFullscreen = ref(false)
 
 // 从查询参数中获取参数值
@@ -156,23 +193,23 @@ const json = ref('')
 const currentLanguage = ref(zh)
 const currentIconSelected = ref('')
 
-const setI18nLanguage = (lang: string) => {
+// const setI18nLanguage = (lang: string) => {
+//
+// }
+// const showProjectForm = () => {
+//   emitter.emit(EventNames.GlIdeToolbarShowNewAppForm, {id: utils.gid('app'), name: '新项目'})
+// }
+// const showCurrentProjectForm = () => {
+//   emitter.emit('GlDesignerToolbar.showCurrentProjectForm')
+// }
 
-}
-const showProjectForm = () => {
-  emitter.emit(EventNames.GlIdeToolbarShowNewAppForm, {id: utils.gid('app'), name: '新项目'})
-}
-const showCurrentProjectForm = () => {
-  emitter.emit('GlDesignerToolbar.showCurrentProjectForm')
-}
+// const showTemplateProjectForm = () => {
+//   emitter.emit('GlDesignerToolbar.showTemplateProjectForm')
+// }
 
-const showTemplateProjectForm = () => {
-  emitter.emit('GlDesignerToolbar.showTemplateProjectForm')
-}
-
-const showProjectList = () => {
-  emitter.emit('GlDesignerToolbar.showProjectList')
-}
+// const showProjectList = () => {
+//   emitter.emit('GlDesignerToolbar.showProjectList')
+// }
 
 const saveFile = () => {
   ideStore.savePage()
@@ -202,12 +239,18 @@ const showPlugins = () => {
 const preview = () => {
   if (pageStore.currentPage && pageStore.currentPage.id) {
     console.log('preview(),currentPage', pageStore.currentPage)
-    window.open(`${window.location.origin}/idePagePreview.html?pageId=${pageStore.currentPage.id}`, '_blank')
+    window.open(
+      `${window.location.origin}/idePagePreview.html?pageId=${pageStore.currentPage.id}`,
+      '_blank'
+    )
   } else {
     global.$message.info('当前无预览的页面。')
   }
 }
 
+const showPageReplaceEditor = () => {
+  emitter.emit(EventNames.GlIdeToolbarShowPagesReplaceEditor)
+}
 /**
  *  打开组件库
  */
@@ -227,15 +270,15 @@ const gotoHelpPage = () => {
 }
 
 const LOCALE_OPTIONS = [
-  {label: '中文', value: 'zh-CN'},
-  {label: 'English', value: 'en-US'},
+  { label: '中文', value: 'zh-CN' },
+  { label: 'English', value: 'en-US' }
 ]
 const getLocalOption = (value: string) => {
   return LOCALE_OPTIONS.find((option) => {
     return option.value === value
   })
 }
-const currentLocaleValue = localStorage.getItem('gl-locale') || 'zh-CN';
+const currentLocaleValue = localStorage.getItem('gl-locale') || 'zh-CN'
 const currentLocalOption = ref(getLocalOption(currentLocaleValue))
 const switchLanguages = () => {
   // console.log('this.$i18n:', this.$i18n)
@@ -243,17 +286,17 @@ const switchLanguages = () => {
   // this.currentLanguage = this.currentLanguage.locale === 'zh-CN' ? this.en : this.zh
   // this.setI18nLanguage(this.currentLanguage.locale)
   // console.log('this.$i18n.locale:', this.$i18n.locale)
-  const localValue = localStorage.getItem('gl-locale') || 'zh-CN';
+  const localValue = localStorage.getItem('gl-locale') || 'zh-CN'
   const newLocalValue = localValue === 'zh-CN' ? 'en-US' : 'zh-CN'
   currentLocalOption.value = getLocalOption(newLocalValue)
-  localStorage.setItem('gl-locale', newLocalValue);
+  localStorage.setItem('gl-locale', newLocalValue)
 }
 
 const saveCode = () => {
   if (json.value) {
     const inst: ComponentInstance = JSON.parse(json.value)
     componentStore.currentComponentTree[0] = inst
-    pageStore.operationLog("改代码", inst, inst)
+    pageStore.operationLog('改代码', inst, inst)
     codeViewerVisible.value = false
   }
 }
@@ -270,11 +313,9 @@ const copyCodeAndChangeId = () => {
     ClipboardJS.copy(JSON.stringify(copyComponentInst(componentStore.currentComponentTree[0])))
   }
 }
-
 </script>
 
 <style>
-
 .gl-designer-toolbar {
   /*padding: 4px 4px*/
 }
@@ -297,7 +338,7 @@ const copyCodeAndChangeId = () => {
 }
 
 .gl-designer-toolbar .gl-item:hover {
-  color: #1890FF;
+  color: #1890ff;
   cursor: pointer;
 }
 
@@ -306,7 +347,7 @@ const copyCodeAndChangeId = () => {
 }
 
 .gl-designer-toolbar .gl-item.gl-selected {
-  color: #1890FF;
+  color: #1890ff;
 }
 
 .full-modal .ant-modal {
@@ -325,5 +366,4 @@ const copyCodeAndChangeId = () => {
 .full-modal .ant-modal-body {
   flex: 1;
 }
-
 </style>

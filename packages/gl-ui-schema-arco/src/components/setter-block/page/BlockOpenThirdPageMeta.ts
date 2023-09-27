@@ -1,5 +1,5 @@
 export default {
-    "componentName": "GlBlockOpenThirdPage",
+    "componentName": "GlOpenThirdPageBlock",
     "displayMode": "tile",
     "iconType": "gl-file",
     "group": "block_page",

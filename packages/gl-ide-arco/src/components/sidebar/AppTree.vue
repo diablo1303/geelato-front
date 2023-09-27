@@ -8,8 +8,7 @@
                   :extendEntityField="{entityName:'platform_app_page',fieldName:'extendId'}"
                   @selectNode="onSelectNode"
                   @deleteNode="onDeleteNode"
-    >
-    </GlEntityTree>
+     />
   </div>
 </template>
 <script lang="ts">

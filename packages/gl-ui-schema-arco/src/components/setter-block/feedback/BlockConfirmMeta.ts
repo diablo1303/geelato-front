@@ -1,5 +1,5 @@
 export default {
-    "componentName": "GlBlockConfirm",
+    "componentName": "GlConfirmBlock",
     "displayMode": "tile",
     "iconType": "gl-checkbox",
     "group": "block_feedback",

@@ -2,6 +2,7 @@ import type {Param} from "@geelato/gl-ui";
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
 import BlockUtils from "../BlockUtils";
+import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class ComponentInvokeBlockHandler implements IBlockHandler {
 
@@ -15,13 +16,13 @@ export default class ComponentInvokeBlockHandler implements IBlockHandler {
                 $gl.vars.${props.resultVar} = ${props.enableAwait ? 'await ' : ''} $gl.fn.invokeComponentMethod("${props.componentId}","${props.methodName}",${BlockUtils.paramStringify(params)});
                 ${props.enableReturn ? 'return $gl.vars.' + props.resultVar : ''}
                 `
-            ).setBlockName('ComponentInvokeBlock');
+            )
         } else {
             return new ParseResult(
                 `
                 ${props.enableReturn ? 'return ' : ''} ${props.enableAwait ? 'await ' : ''} $gl.fn.invokeComponentMethod("${props.componentId}","${props.methodName}",${BlockUtils.paramStringify(params)});
                 `
-            ).setBlockName('ComponentInvokeBlock');
+            )
         }
 
     }
@@ -54,3 +55,5 @@ const convertParams = (params: Param[]) => {
     ary.push('}')
     return ary.join('\r\n');
 }
+
+blocksHandler.register(new ComponentInvokeBlockHandler(), CommandBlocks.CommandBlockOne)

@@ -1,5 +1,5 @@
 export default {
-    "componentName": "GlBlockElse",
+    "componentName": "GlElseBlock",
     "title": "ELSE 其它",
     "props": {},
     "slots": {},

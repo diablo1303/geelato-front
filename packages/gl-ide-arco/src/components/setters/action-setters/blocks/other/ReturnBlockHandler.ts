@@ -1,6 +1,7 @@
 import type IBlockHandler from "../BlockHandler";
 import type {PropsExpressions} from "../BlockHandler";
 import ParseResult from "../ParseResult";
+import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class ReturnBlockHandler implements IBlockHandler {
@@ -9,10 +10,12 @@ export default class ReturnBlockHandler implements IBlockHandler {
             `
             return ${propsExpressions?.content || props.content};
             `
-        ).setBlockName('ReturnBlockHandler');
+        )
     }
 }
 
 export class Props {
     content: string = ''
 }
+
+blocksHandler.register(new ReturnBlockHandler(), CommandBlocks.CommandBlockOne)

@@ -17,7 +17,8 @@ enum EventNames {
     GlIdeToolbarIconSelected = 'GlIdeToolbarIconSelected',
     // 显示代码
     GlIdeToolbarShowCodeViewer = 'GlIdeToolbarShowCodeViewer',
-
+    // 打开页面代码替换界面
+    GlIdeToolbarShowPagesReplaceEditor = 'GlIdeToolbarShowPagesReplaceEditor',
     // 侧边组件栏上选择组件
     GlIdeSidebarComponentSelected = 'GlIdeSidebarComponentSelected',
 

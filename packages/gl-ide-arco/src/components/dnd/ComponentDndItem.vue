@@ -55,7 +55,3 @@ const [, drag] = useDrag(() => ({
     <div class="gl-title">{{ element.title }}</div>
   </div>
 </template>
-
-<style lang="less" scoped>
-
-</style>

@@ -91,12 +91,6 @@ const toUpperCase = (str: String) => {
   return str[0].toUpperCase() + str.substring(1)
 }
 
-// const onChoose = (event: any, fromItems: Array<ComponentMaterial>) => {
-//   chooseIndex.value = event.oldIndex
-//   const item = JSON.parse(JSON.stringify(fromItems[chooseIndex.value].instance))
-// }
-// const onChange = () => {
-// }
 const componentMaterialGroups = ref<Array<ComponentMaterialGroup>>([])
 
 const resetComponentMaterialGroups = () => {
@@ -154,5 +148,3 @@ const createTemplateInst = (element: ComponentMaterial) => {
 
 resetComponentMaterialGroups()
 </script>
-
-<style></style>

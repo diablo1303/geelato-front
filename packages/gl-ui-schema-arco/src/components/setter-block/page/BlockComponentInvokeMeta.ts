@@ -1,5 +1,5 @@
 export default {
-    "componentName": "GlBlockComponentInvoke",
+    "componentName": "GlComponentInvokeBlock",
     "displayMode": "tile",
     "iconType": "gl-api",
     "group": "block_page",

@@ -1,6 +1,6 @@
 export default class ParseResult {
 
-    blockName: string = ''
+    blockHandlerName: string = ''
     startLine: string = ''
     children: Array<ParseResult> = []
     endLine: string = ''
@@ -15,15 +15,15 @@ export default class ParseResult {
         return this
     }
 
-    setBlockName(blockName: string) {
-        this.blockName = blockName
+    setBlockName(blockHandlerName: string) {
+        this.blockHandlerName = blockHandlerName
         return this
     }
 
     toString(): string {
         const lines = []
         let result = ''
-        // console.log('ParseResult > toString() > blockName:', this.blockName)
+        // console.log('ParseResult > toString() > blockHandlerName:', this.blockHandlerName)
         // console.log('ParseResult > toString() > invokeBlockNames:', this.invokeBlockNames)
         if (this.invokeBlockNames.length > 0) {
             // 有占位符替换的情况

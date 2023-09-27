@@ -87,7 +87,7 @@
                       {
                         "id": "id_q1Rr8MEwkgjndKF9r",
                         "title": "",
-                        "componentName": "GlBlockOpenComponentPage",
+                        "componentName": "GlOpenComponentPageBlock",
                         "group": "block_page",
                         "props": {
                           "extendId": "3711266248572051212",
@@ -111,7 +111,7 @@
                               {
                                 "id": "id_gRL9oxFaYa2YF1NT4",
                                 "title": "",
-                                "componentName": "GlBlockComponentInvoke",
+                                "componentName": "GlComponentInvokeBlock",
                                 "group": "block_page",
                                 "props": {
                                   "extendId": "3711266248572051212",
@@ -143,7 +143,7 @@
                               {
                                 "id": "id_2JCfEfvKnoEe8XF4T",
                                 "title": "",
-                                "componentName": "GlBlockComponentInvoke",
+                                "componentName": "GlComponentInvokeBlock",
                                 "group": "block_page",
                                 "props": {
                                   "extendId": "3711081760969760541",
@@ -255,7 +255,7 @@
                     {
                       "id": "id_lNZRkif4zb5lT3LeJ",
                       "title": "",
-                      "componentName": "GlBlockOpenComponentPage",
+                      "componentName": "GlOpenComponentPageBlock",
                       "group": "block_page",
                       "props": {
                         "extendId": "3711266248572051212",
@@ -336,7 +336,7 @@
                     {
                       "id": "id_qjZ1zQnNraKc4AU6z",
                       "title": "",
-                      "componentName": "GlBlockOpenComponentPage",
+                      "componentName": "GlOpenComponentPageBlock",
                       "group": "block_page",
                       "props": {
                         "extendId": "3711266248572051212",
@@ -367,7 +367,7 @@
                             {
                               "id": "id_fUHNPlkWsDolgMuFw",
                               "title": "",
-                              "componentName": "GlBlockComponentInvoke",
+                              "componentName": "GlComponentInvokeBlock",
                               "group": "block_page",
                               "props": {
                                 "extendId": "3711266248572051212",
@@ -399,7 +399,7 @@
                             {
                               "id": "id_yQsqGtZgdQ7fakp0e",
                               "title": "",
-                              "componentName": "GlBlockComponentInvoke",
+                              "componentName": "GlComponentInvokeBlock",
                               "group": "block_page",
                               "props": {
                                 "extendId": "3711081760969760541",
@@ -487,7 +487,7 @@
                     {
                       "id": "id_rdjzBWteu4k4P4y9Y",
                       "title": "",
-                      "componentName": "GlBlockConfirm",
+                      "componentName": "GlConfirmBlock",
                       "group": "block_feedback",
                       "props": {
                         "invokeBlocks": [
@@ -509,7 +509,7 @@
                             {
                               "id": "id_SxB0bGvn04TFtDeaD",
                               "title": "",
-                              "componentName": "GlBlockComponentInvoke",
+                              "componentName": "GlComponentInvokeBlock",
                               "group": "block_page",
                               "props": {
                                 "extendId": "3711081760969760541",

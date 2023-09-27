@@ -1,6 +1,7 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
 import type {PropsExpressions} from "../BlockHandler";
+import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class LogBlockHandler implements IBlockHandler {
@@ -9,10 +10,12 @@ export default class LogBlockHandler implements IBlockHandler {
             `
             $gl.fn.log({content:${propsExpressions?.content || props.content}});
             `
-        ).setBlockName('LogBlockHandler');
+        )
     }
 }
 
 export class Props {
     content: string = ''
 }
+
+blocksHandler.register(new LogBlockHandler(), CommandBlocks.CommandBlockOne)

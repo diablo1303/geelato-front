@@ -14,7 +14,7 @@ const componentGroups = [
   {name: 'block_var', text: '变量', opened: true},
   {name: 'block_page', text: '页面和组件', opened: true},
   {name: 'block_condition', text: '条件判断', opened: true},
-  {name: 'block_circulate', text: '循环', opened: true},
+  {name: 'block_loop', text: '循环', opened: true},
   {name: 'block_data', text: '数据', opened: true},
   {name: 'block_feedback', text: '反馈', opened: true},
   {name: 'block_code', text: '代码', opened: true},

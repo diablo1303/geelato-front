@@ -1,5 +1,6 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
+import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class TriggerComponentActionBlockHandler implements IBlockHandler {
@@ -8,7 +9,7 @@ export default class TriggerComponentActionBlockHandler implements IBlockHandler
             `
             $gl.fn.triggerComponentAction("${props.componentId}","${props.actionName}");
             `
-        ).setBlockName('TriggerComponentActionBlock');
+        )
     }
 }
 
@@ -19,3 +20,5 @@ interface Props {
     eventName: string
     actionName: string
 }
+
+blocksHandler.register(new TriggerComponentActionBlockHandler(), CommandBlocks.CommandBlockTwo)

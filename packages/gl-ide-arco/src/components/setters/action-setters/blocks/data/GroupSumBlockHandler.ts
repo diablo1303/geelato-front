@@ -1,6 +1,7 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
 import type {PropsExpressions} from "../BlockHandler";
+import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class GroupSumBlockHandler implements IBlockHandler {
     parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
@@ -10,7 +11,7 @@ export default class GroupSumBlockHandler implements IBlockHandler {
             `
             $gl.fn.groupSum(${props.dataVar},${props.groupField},${props.sumFields})
             `
-        ).setBlockName('GroupSumBlock');
+        )
     }
 }
 
@@ -19,3 +20,5 @@ interface Props {
     groupField: string
     sumFields: string[]
 }
+
+blocksHandler.register(new GroupSumBlockHandler(), CommandBlocks.CommandBlockOne)

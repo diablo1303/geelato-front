@@ -22,10 +22,11 @@ import GroupSumBlockMeta from "./setter-block/data/GroupSumBlockMeta";
 import ExportExcelMeta from "./setter-block/file/ExportExcelMeta";
 import GenerateMqlBlockMeta from "./setter-block/data/GenerateMqlBlockMeta";
 import AnnotaionBlockMeta from "./setter-block/other/AnnotaionBlockMeta";
+import ForListBlockMeta from "./setter-block/loop/ForListBlockMeta";
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, GenerateMqlBlockMeta, GroupSumBlockMeta, BlockNotificationMeta, BlockOpenThirdPageMeta, BlockOpenComponentPageMeta, BlockSetVisibleMeta, SetValueBlockMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
     BlockComponentInvokeMeta, BlockConfirmMeta, TriggerComponentActionMeta, ReturnBlockMeta,
-    LogBlockMeta, ExportExcelMeta,AnnotaionBlockMeta]
+    LogBlockMeta, ExportExcelMeta,AnnotaionBlockMeta,ForListBlockMeta]
 
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance]

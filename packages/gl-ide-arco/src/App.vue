@@ -4,15 +4,16 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {useIdeStore} from "@geelato/gl-ide";
-import {useComponentMaterialStore} from "@geelato/gl-ui-schema-arco";
-import {plugin} from "./plugin";
-import {DndProvider} from 'vue3-dnd'
-import {HTML5Backend} from 'react-dnd-html5-backend'
-import {inject, onUnmounted} from "vue";
-import type {Pinia} from "pinia";
-import {emitter, useGlobal} from "@geelato/gl-ui";
-import EventNames from "@geelato/gl-ide/src/entity/EventNames";
+import { useIdeStore } from '@geelato/gl-ide'
+import { useComponentMaterialStore } from '@geelato/gl-ui-schema-arco'
+import { plugin } from './plugin'
+import { DndProvider } from 'vue3-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { inject, onUnmounted, ref } from 'vue'
+import type { Pinia } from 'pinia'
+import { emitter, useGlobal } from '@geelato/gl-ui'
+import { EventNames } from '@geelato/gl-ide'
+import PageReplaceEditor from './components/toolbar/PageReplaceEditor.vue'
 
 const pinia: Pinia = inject('pinia')!
 
@@ -28,21 +29,38 @@ ideStore.setUiLibName('arco')
 const global = useGlobal()
 const savedPage = (data: any) => {
   // console.log('global', global,data)
-  global.$message.info({
+  global.$message.success({
     content: '页面保存成功'
   })
 }
 
+const modalVisible = ref(false)
+const showPageReplaceModal = () => {
+  console.log('showPageReplaceModal')
+  modalVisible.value = true
+}
+const handleOk = () => {
+  modalVisible.value = false
+}
+const handleCancel = () => {
+  modalVisible.value = false
+}
 emitter.on(EventNames.GlIdeToolbarSaveFile, savedPage)
+emitter.on(EventNames.GlIdeToolbarShowPagesReplaceEditor, showPageReplaceModal)
 
 onUnmounted(() => {
   emitter.off(EventNames.GlIdeToolbarSaveFile, savedPage)
+  emitter.off(EventNames.GlIdeToolbarShowPagesReplaceEditor, showPageReplaceModal)
 })
 </script>
 <template>
   <DndProvider :backend="HTML5Backend">
-    <GlIde/>
+    <GlIde />
+    <a-modal v-if="modalVisible"> </a-modal>
+    <a-modal v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel" fullscreen>
+      <template #title> 页面重构（危险操作） </template>
+      <PageReplaceEditor></PageReplaceEditor>
+    </a-modal>
   </DndProvider>
 </template>
-<style>
-</style>
+<style></style>
