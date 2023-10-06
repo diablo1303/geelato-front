@@ -339,7 +339,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
    * 保存当前的页面到后台服务中
    */
   function saveCurrentPage() {
-    savePage(currentPage.value)
+    return savePage(currentPage.value)
   }
 
   function setCurrentSourceContent(content?: ComponentInstance) {

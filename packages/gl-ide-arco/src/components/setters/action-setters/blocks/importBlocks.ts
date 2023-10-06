@@ -1,3 +1,6 @@
+/**
+ *  在blocks的相关子目录下，添加Handler之后，需要在这里导入
+ */
 import OpenThirdPageBlockHandler from './page/OpenThirdPageBlockHandler'
 import NotificationBlockHandler from './feedback/NotificationBlockHandler'
 import IfBlockHandler from './logic/IfBlockHandler'
@@ -15,10 +18,11 @@ import SetVarBlockHandler from './var/SetVarBlockHandler'
 import GroupSumBlockHandler from './data/GroupSumBlockHandler'
 import JsCodeBlockHandler from './other/JsCodeBlockHandler'
 import ExportExcelBlockHandler from './file/ExportExcelBlockHandler'
-import GenerateMqlBlockHandler from './data/GenerateMqlBlockHandler'
+import GenerateEntityReaderBlockHandler from './data/GenerateEntityReaderBlockHandler'
+import EntityQueryBlockHandler from './data/EntityQueryBlockHandler'
+import DictQueryBlockHandler from './data/DictQueryBlockHandler'
 import AnnotationBlockHandler from './other/AnnotationBlockHandler'
 import ForListBlockHandler from './loop/ForListBlockHandler'
-
 export {
   OpenThirdPageBlockHandler,
   NotificationBlockHandler,
@@ -37,7 +41,9 @@ export {
   GroupSumBlockHandler,
   JsCodeBlockHandler,
   ExportExcelBlockHandler,
-  GenerateMqlBlockHandler,
+  GenerateEntityReaderBlockHandler,
+  EntityQueryBlockHandler,
+  DictQueryBlockHandler,
   AnnotationBlockHandler,
-  ForListBlockHandler
+  ForListBlockHandler,
 }

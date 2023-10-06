@@ -4,16 +4,15 @@ import ParseResult from '../ParseResult'
 import type { EntityReader } from '@geelato/gl-ui'
 import { blocksHandler, CommandBlocks } from '../BlockHandler'
 
-export default class ExportExcelBlockHandler implements IBlockHandler {
+export default class GenerateEntityReaderBlockHandler implements IBlockHandler {
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-    console.log('props', props)
-    return new ParseResult(
-      `
-            $gl.vars.${props.varName} = $gl.entityApi.convertEntityReaderToMql(${JSON.stringify(
-        props.entityReader
-      )})
+      return new ParseResult(
+          `
+            $gl.vars.${props.varName} = ${JSON.stringify(
+              props.entityReader
+          )}
             `
-    )
+      )
   }
 }
 
@@ -23,4 +22,4 @@ interface Props {
   varName: string
 }
 
-blocksHandler.register(new ExportExcelBlockHandler(), CommandBlocks.CommandBlockOne)
+blocksHandler.register(new GenerateEntityReaderBlockHandler(), CommandBlocks.CommandBlockOne)

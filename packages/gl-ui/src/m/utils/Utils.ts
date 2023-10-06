@@ -108,13 +108,13 @@ export class Utils {
    * @param fnBody 方法体的内容，如果内容
    * @param $gl 用于fnBody的上下文参数
    * @param glName 指定上下文的参数名，默认为$gl
+   * @param async 对于fnBody里有wait的场景，可以设置async为true
    * @returns {*}
    */
-  evalFn(fnBody: string, $gl: object, glName = '$gl') {
+  evalFn(fnBody: string, $gl: object, glName = '$gl', async?: boolean) {
     try {
       // console.log('gl-ui > utils > evalFn() > blocks: ', fnBody)
       // console.log('gl-ui > utils > evalFn() > ctx: ', ctx)
-      const Fn = Function
       let bodyScript = this.trim(fnBody)
       // 去掉头尾分号
       bodyScript = bodyScript.replace(/^;+|;+$/g, '')
@@ -122,10 +122,15 @@ export class Utils {
       if (!bodyScript.match(/[\r\n;]/g) && !bodyScript.toLowerCase().startsWith('return ')) {
         bodyScript = 'return ' + bodyScript
       }
-      return new Fn(glName, bodyScript)($gl)
+      if (async) {
+        bodyScript = `(async () => {
+              ${bodyScript}
+          })()`
+      }
+
+      return new Function(glName, bodyScript)($gl)
     } catch (e: any) {
-      console.error('执行脚本出错', e.message, '方法体为：', fnBody, 'e:', e)
-      return ''
+      console.error('执行脚本出错', e.message, '方法体为：', fnBody, '详细异常e:', e)
     }
   }
 
@@ -380,6 +385,7 @@ export class Utils {
     function sleepMs(ms: number) {
       return new Promise((resolve) => setTimeout(resolve, ms))
     }
+
     await sleepMs(ms)
   }
 

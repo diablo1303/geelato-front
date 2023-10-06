@@ -5,7 +5,7 @@ export default {
     "group": "block_file",
     "title": "导出Excel",
     "useBy": ["freePage"],
-    "blockContent": "导出Excel（${fileName}）。",
+    "blockContent": `将数据$\{varName}导出到Excel（$\{fileName}）。`,
     "properties": [{
         "name": "fileName",
         "setterComponentProps": {},

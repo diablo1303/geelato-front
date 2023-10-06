@@ -76,7 +76,7 @@ export class EntityApi {
    * @param withMeta 是否需同时查询出各列表字段的元数据信息
    * @returns {*}
    */
-  queryByGql(mql: MqlObject | Array<MqlObject>, withMeta?: boolean): Promise<any> {
+  queryByMql(mql: MqlObject | Array<MqlObject>, withMeta?: boolean): Promise<any> {
     const isArray = Array.isArray(mql)
     const path = isArray ? this.url.metaMultiList : this.url.metaList
 
@@ -158,7 +158,7 @@ export class EntityApi {
   queryByEntityReader(entityReader: EntityReader): Promise<any> {
     const mql = this.convertEntityReaderToMql(entityReader)
     return new Promise((resolve, reject) => {
-      this.queryByGql(mql, entityReader.withMeta)
+      this.queryByMql(mql, entityReader.withMeta)
         .then((res) => {
           // 是否需要处理返回结果
           const foundLocalComputeField = entityReader.fields.find((field) => {
@@ -203,7 +203,7 @@ export class EntityApi {
 
   /**
    * 实体查询，内部依据参数构建mql对象进行查询
-   * 更复杂、高级的查询@see queryByGql
+   * 更复杂、高级的查询@see queryByMql
    * @param entityName e.g. platform_dev_project
    * @param fieldNames 查询的列字段 e.g. id,name
    * @param params 查询要件键值对 e.g. {id:123456,name:'张三'} or {'@order':'name|+'}。不指定数据状态时，默认不查询已删除的数据
@@ -231,7 +231,7 @@ export class EntityApi {
       copyParam['@p'] = '1,500'
     }
     Object.assign(mql[entityName], copyParam)
-    return this.queryByGql(mql, withMeta)
+    return this.queryByMql(mql, withMeta)
   }
 
   /**
@@ -250,7 +250,7 @@ export class EntityApi {
       Object.assign(mql[queryParam.entityName], queryParam.keyValues)
       mqlAry.push(mql)
     })
-    return this.queryByGql(mqlAry, withMeta)
+    return this.queryByMql(mqlAry, withMeta)
   }
 
   update(
@@ -364,7 +364,12 @@ export class EntityApi {
     const mqObjs: Record<string, any> = {}
     entitySavers.forEach((entitySaver: EntitySaver) => {
       const mqlObject = this.convertEntitySaverToMql(entitySaver, bizCode)
-      console.log('saveBatchEntity > convertEntitySaverToMql > entitySaver:', entitySaver, 'mql:', mqlObject)
+      console.log(
+        'saveBatchEntity > convertEntitySaverToMql > entitySaver:',
+        entitySaver,
+        'mql:',
+        mqlObject
+      )
       const entity: string = Object.keys(mqlObject)[0]
       mqObjs[entity] = mqObjs[entity] || []
       mqObjs[entity].push(mqlObject[entity])
@@ -403,11 +408,11 @@ export class EntityApi {
 
   /**
    * 基于mql对象进行查询
-   * @param mqlObject or mqlArray
+   * @param mql or mqlArray
    * @param biz 业务代码
    * @returns {*}
    */
-  saveByGql(biz: string, mql: Record<string, any>) {
+  saveByMql(biz: string, mql: MqlObject | Array<MqlObject>) {
     const path = Array.isArray(mql) ? this.url.apiMetaSave : this.url.apiMetaSave
     const bizCode = biz || '0'
     return this.service({
@@ -511,6 +516,33 @@ export class EntityApi {
       url: this.url.metaList,
       method: 'POST',
       data: mql
+    })
+  }
+
+  /**
+   * 查询当前租户所有的字典
+   */
+  queryAllDict() {
+    return this.query('platform_dict', 'id value,appId,dictCode,dictName label', {
+      enableStatus: 1,
+      delStatus: 0,
+      '@p': '1,3000',
+      '@order': 'seqNo|+'
+    })
+  }
+
+  /**
+   *  查询字典项名称
+   * @param dictId 字典ID
+   * @param dictItemCode 字典项编码
+   */
+  queryDictItem(dictId: string, dictItemCode: string) {
+    return this.query('platform_dict_item', 'id,itemCode value,itemName label', {
+      dictId: `${dictId}`,
+      itemCode: dictItemCode,
+      enableStatus: 1,
+      delStatus: 0,
+      '@p': '1,1'
     })
   }
 
@@ -642,22 +674,6 @@ export class EntityApi {
   getService() {
     return this.service
   }
-
-  // /**
-  //  * 获取文件上传地址
-  //  * @param isRename
-  //  */
-  // getUploadUrl(isRename?: boolean) {
-  //     return `${this.options?.baseURL}/api/upload/file?isRename=${!!isRename}`;
-  // }
-  //
-  // /**
-  //  * 获文件下载地址
-  //  * @param id
-  //  */
-  // getDownloadUrlById(id: string) {
-  //     return id ? `${this.options?.baseURL}/resources/file?rstk=download&id=${id}` : '';
-  // }
 
   getHeader() {
     return {

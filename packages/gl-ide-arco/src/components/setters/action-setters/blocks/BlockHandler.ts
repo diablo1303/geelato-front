@@ -64,7 +64,7 @@ export class BlocksHandler {
     // console.log('BlocksHandler > parseOne() > block:', block)
     if (block) {
       const handler: IBlockHandler = this.handlers[block.componentName]
-      // console.log('BlocksHandler > parseOne() > parse blocks and get handler:', handler, 'by nane:', block.componentName, ',handlers:', this.handlers)
+      console.log('BlocksHandler > parseOne() > parse blocks and get handler:', handler, 'by nane:', block.componentName, ',handlers:', this.handlers)
       const parseResult =
         handler
           ?.parseToScript(block.props, block.propsExpressions, block)
