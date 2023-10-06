@@ -20,7 +20,7 @@ export default {
       enableValueExpress: false,
       displayMode: 'tile',
     }, {
-      name: 'dictItemCode',
+      name: 'dictItemValue',
       group: 'base',
       type: 'props',
       show: true,

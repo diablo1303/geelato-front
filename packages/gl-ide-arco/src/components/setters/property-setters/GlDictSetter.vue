@@ -2,9 +2,9 @@
   <a-select @change="onChange" v-model="mv" allow-search allow-clear>
     <a-option
       v-for="item in items"
-      :value="item.value"
+      :value="`${item.value}`"
       :title="item.label"
-      :class="{ 'gl-selected': mv === item.value }"
+      :class="{ 'gl-selected': mv === `${item.value}` }"
     >
       {{ item.label}}
     </a-option>
@@ -41,7 +41,6 @@ const emits = defineEmits(['update:modelValue'])
 
 // const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 
-const ds = ref({ entityMeta: new EntityMeta() })
 const mv = ref('')
 mv.value = props.modelValue
 watch(mv, (val) => {

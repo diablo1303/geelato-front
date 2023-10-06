@@ -11,7 +11,9 @@ export default class DictQueryBlockHandler implements IBlockHandler {
     let dataVarName = props.dataVarName || utils.gid('dataVarName')
     return new ParseResult(
       `
-          $gl.vars.${respVarName} = await $gl.entityApi.queryDictItem(${props.dictId},${props.dictItemValue || propsExpressions?.dictItemValue})
+          $gl.vars.${respVarName} = await $gl.entityApi.queryDictItem('${props.dictId}',${
+        propsExpressions?.dictItemValue || props.dictItemValue
+      })
           $gl.vars.${dataVarName} = $gl.vars.${respVarName}.data
             `
     )
