@@ -263,10 +263,16 @@ export default {
   // webapps/gl-admin-arco/src/views/security/permission - list|form
   'security.permission.index.form.index': '序号',
   'security.permission.index.form.name': '名称',
-  'security.permission.index.form.text': '权限描述符',
+  'security.permission.index.form.code': '编码',
+  'security.permission.index.form.type': '类型',
+  'security.permission.index.form.type.dp': '表格级权限',
+  'security.permission.index.form.type.ep': '字段级权限',
+  'security.permission.index.form.object': '对象',
+  'security.permission.index.form.rule': '规则',
   'security.permission.index.form.description': '描述',
   'security.permission.index.form.createAt': '创建时间',
   'security.permission.index.form.operations': '操作',
+  'searchTable.columns.operations.subset': '子集',
   // webapps/gl-admin-arco/src/views/security/permission - list.operation
   // 同 org
   // webapps/gl-admin-arco/src/views/security/permission - form.operation

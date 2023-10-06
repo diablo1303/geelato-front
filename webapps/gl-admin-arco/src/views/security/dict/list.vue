@@ -251,7 +251,7 @@ const addTable = (ev: MouseEvent) => {
 };
 const configTable = (id: string) => {
   if (dictItemLockerRef.value) {
-    dictItemLockerRef.value?.openForm({action: 'edit', params: {pId: id}, closeBack: reset});
+    dictItemLockerRef.value?.openForm({action: 'edit', params: {pId: id, parentId: ''}, closeBack: reset});
   }
 }
 const viewTable = (id: string) => {

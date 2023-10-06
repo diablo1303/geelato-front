@@ -12,8 +12,25 @@
                 </a-form-item>
               </a-col>
               <a-col :span="8">
-                <a-form-item :label="$t('security.permission.index.form.text')" field="text">
-                  <a-input v-model="filterData.text" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+                <a-form-item :label="$t('security.permission.index.form.code')" field="code">
+                  <a-input v-model="filterData.code" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-item :label="$t('security.permission.index.form.type')" field="type">
+                  <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
+                    <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-item :label="$t('security.permission.index.form.object')" field="object">
+                  <a-input v-model="filterData.object" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="8">
+                <a-form-item :label="$t('security.permission.index.form.rule')" field="rule">
+                  <a-input v-model="filterData.rule" allow-clear @clear="search($event)" @press-enter="search($event)"/>
                 </a-form-item>
               </a-col>
               <a-col :span="8">
@@ -98,7 +115,14 @@
             <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
           </a-table-column>
           <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.name')" :tooltip="true" :width="150" data-index="name"/>
-          <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.text')" :tooltip="true" :width="150" data-index="text"/>
+          <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.code')" :tooltip="true" :width="150" data-index="code"/>
+          <a-table-column :title="$t('security.permission.index.form.code')" :width="120" data-index="type">
+            <template #cell="{ record }">
+              {{ record.type ? $t(`security.permission.index.form.type.${record.type}`) : '' }}
+            </template>
+          </a-table-column>
+          <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.object')" :tooltip="true" :width="120" data-index="object"/>
+          <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.rule')" :tooltip="true" :width="150" data-index="rule"/>
           <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.description')" :tooltip="true" :width="200" data-index="description"/>
           <a-table-column :title="$t('security.permission.index.form.createAt')" :width="180" data-index="createAt"/>
           <a-table-column
@@ -139,7 +163,7 @@ import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {deletePermission as deleteList, FilterPermissionForm, pageQueryPermission as pageQueryList} from '@/api/security';
 import {PageQueryFilter, PageQueryRequest} from '@/api/base';
-import {columns} from '@/views/security/permission/searchTable';
+import {columns, typeOptions} from '@/views/security/permission/searchTable';
 // 引用其他页面
 import PermissionForm from '@/views/security/permission/form.vue';
 import {useRoute} from "vue-router";
@@ -162,7 +186,16 @@ const renderData = ref<PageQueryFilter[]>([]);
 
 /* 列表 */
 const generateFilterData = (): FilterPermissionForm => {
-  return {id: '', name: '', text: '', createAt: [], tenantCode: (route.params && route.params.tenantCode as string) || '',};
+  return {
+    id: '',
+    name: '',
+    code: '',
+    type: '',
+    object: '',
+    rule: '',
+    description: '',
+    createAt: [],
+    tenantCode: (route.params && route.params.tenantCode as string) || '',};
 };
 const filterData = ref(generateFilterData());
 /**

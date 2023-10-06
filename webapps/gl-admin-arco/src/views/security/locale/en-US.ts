@@ -262,10 +262,16 @@ export default {
   // webapps/gl-admin-arco/src/views/security/permission - list|form
   'security.permission.index.form.index': 'index',
   'security.permission.index.form.name': 'name',
-  'security.permission.index.form.text': 'text',
+  'security.permission.index.form.code': 'code',
+  'security.permission.index.form.type': 'type',
+  'security.permission.index.form.type.dp': 'Table',
+  'security.permission.index.form.type.ep': 'Column',
+  'security.permission.index.form.object': 'object',
+  'security.permission.index.form.rule': 'rule',
   'security.permission.index.form.description': 'description',
   'security.permission.index.form.createAt': 'createTime',
   'security.permission.index.form.operations': 'operation',
+  'searchTable.columns.operations.subset': 'Subset',
   // webapps/gl-admin-arco/src/views/security/permission - list.operation
   // 同 org
   // webapps/gl-admin-arco/src/views/security/permission - form.operation

@@ -19,11 +19,34 @@
         <span v-else>{{ formData.name }}</span>
       </a-form-item>
       <a-form-item
-          :label="$t('security.permission.index.form.text')"
+          :label="$t('security.permission.index.form.code')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateCode}]"
-          field="text">
-        <a-input v-if="pageData.button" v-model="formData.text" :max-length="32"/>
-        <span v-else>{{ formData.text }}</span>
+          field="code">
+        <a-input v-if="pageData.button&&!formData.default" v-model="formData.code" :max-length="32"/>
+        <span v-else>{{ formData.code }}</span>
+      </a-form-item>
+      <a-form-item
+          :label="$t('security.permission.index.form.type')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          field="type">
+        <a-select v-if="pageData.button&&pageData.params.type===''" v-model="formData.type">
+          <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+        </a-select>
+        <span v-else>{{ $t(`security.permission.index.form.type.${formData.type}`) }}</span>
+      </a-form-item>
+      <a-form-item
+          :label="$t('security.permission.index.form.object')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          field="object">
+        <a-input v-if="pageData.button&&pageData.params.object===''" v-model="formData.object" :max-length="32"/>
+        <span v-else>{{ formData.object }}</span>
+      </a-form-item>
+      <a-form-item
+          :label="$t('security.permission.index.form.rule')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          field="rule">
+        <a-textarea v-if="pageData.button" v-model="formData.rule" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+        <span v-else :title="formData.rule" class="textarea-span" @click="openModal(`${formData.rule}`)">{{ formData.rule }}</span>
       </a-form-item>
       <a-form-item :label="$t('security.permission.index.form.description')" field="description">
         <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
@@ -45,17 +68,32 @@ import {
 } from '@/api/security';
 import {ListUrlParams} from '@/api/base';
 import {useRoute} from "vue-router";
+import {typeOptions} from "@/views/security/permission/searchTable";
 
 // 国际化
 const {t} = useI18n();
 const route = useRoute();
-const pageData = ref({formState: 'add', button: true});
+const pageData = ref({
+  formState: 'add', button: true, params: {
+    type: '', object: ''
+  }
+});
 const validateForm = ref<FormInstance>();
 // 显示隐藏
 const visibleModel = ref(false);
 // 表单数据
 const generateFormData = (): QueryForm => {
-  return {id: '', name: '', text: '', description: '', tenantCode: (route.params && route.params.tenantCode as string) || '',};
+  return {
+    id: '',
+    name: '',
+    code: '',
+    type: '',
+    object: '',
+    rule: '',
+    description: '',
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    default: false
+  };
 }
 const formData = ref(generateFormData());
 // 页面响应
@@ -129,7 +167,9 @@ const openForm = (urlParams: ListUrlParams) => {
   // 全局
   pageData.value.formState = urlParams.action;
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
-  formData.value = generateFormData();
+  pageData.value.params.type = urlParams.params?.type || '';
+  pageData.value.params.object = urlParams.params?.object || '';
+  formData.value = {...generateFormData(), ...pageData.value.params};
   // 重置验证
   resetValidate();
   // 特色

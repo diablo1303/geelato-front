@@ -327,15 +327,23 @@ export function validateDictItemCode(params: QueryDictItemForm) {
 export interface QueryPermissionForm {
   id: string;
   name: string;
-  text: string;
+  code: string;
+  type: string;
+  object: string;
+  rule: string;
   description: string;
   tenantCode: string;
+  default?: boolean;
 }
 
 export interface FilterPermissionForm {
   id: string;
   name: string;
-  text: string;
+  code: string;
+  type: string;
+  object: string;
+  rule: string;
+  description: string;
   tenantCode: string;
   createAt: string[]
 }
@@ -511,6 +519,12 @@ export interface FilterRolePermissionForm {
   createAt: string[]
 }
 
+export interface QueryTableRolePermissionForm {
+  role: QueryRoleForm[];
+  permission: QueryPermissionForm[];
+  table: Record<string, boolean | string>[];
+}
+
 export function getRolePermission(id: string) {
   return axios.get<QueryRolePermissionForm>(`/api/security/role/permission/get/${id}`);
 }
@@ -521,6 +535,22 @@ export function insertRolePermission(params: QueryRolePermissionForm) {
 
 export function deleteRolePermission(id: string) {
   return axios.delete<QueryResult>(`/api/security/role/permission/isDelete/${id}`);
+}
+
+export function queryTableRolePermissions(type: string, object: string, params: PageQueryRequest) {
+  return axios.get<QueryTableRolePermissionForm>(`/api/security/role/permission/queryTable/${type}/${object}`, {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function insertTableRolePermission(params: QueryRolePermissionForm) {
+  return axios.post<QueryResult>('/api/security/role/permission/insertTable', params);
+}
+
+export function resetDefaultPermission(type: string, object: string) {
+  return axios.post<QueryResult>(`/api/security/permission/default/${type}/${object}`, {});
 }
 
 /* -----------------------------role tree node--------------------------- */

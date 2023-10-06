@@ -147,7 +147,7 @@
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
       <a-table-column
-          :ellipsis="true" :title="$t('model.column.index.form.name')" :tooltip="true" :width="180" data-index="name" fixed="left">
+          :ellipsis="true" :title="$t('model.column.index.form.name')" :tooltip="true" :width="150" data-index="name" fixed="left">
         <template #cell="{record}">
           {{ record.name }}
           <a-button v-if="record.key===true" class="list-action-button-default" type="outline">
@@ -155,13 +155,13 @@
           </a-button>
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.title')" :tooltip="true" :width="180" data-index="title"/>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.title')" :tooltip="true" :width="150" data-index="title"/>
       <a-table-column :title="$t('model.column.index.form.enableStatus')" :width="100" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`model.column.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.fieldName')" :tooltip="true" :width="180" data-index="fieldName"/>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.fieldName')" :tooltip="true" :width="150" data-index="fieldName"/>
       <a-table-column v-if="pageData.params.pId===''" :ellipsis="true" :title="$t('model.column.index.form.tableName')" :tooltip="true" :width="250"
                       data-index="tableName"/>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.dataType')" :tooltip="true" :width="150" data-index="selectType">
@@ -199,8 +199,11 @@
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.comment')" :tooltip="true" :width="200" data-index="comment"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('model.column.index.form.operations')"
-          :width="230" align="center" data-index="operations" fixed="right">
+          :width="280" align="center" data-index="operations" fixed="right">
         <template #cell="{ record,isDefault = defaultColumnMetas.includes(record.name)}">
+          <a-button size="small" type="text" @click="addPermission(record)">
+            {{ $t('searchTable.columns.operations.permission') }}
+          </a-button>
           <a-tooltip v-if="isDefault" :content="$t('model.column.index.form.operations.disabled')">
             <a-button class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.alter') }}
@@ -242,6 +245,7 @@
   </a-table>
   <ColumnForm ref="columnFormRef"></ColumnForm>
   <ColumnDrawer ref="columnDrawerRef"></ColumnDrawer>
+  <PermissionDrawer ref="permissionDrawerRef"></PermissionDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -252,6 +256,7 @@ import useLoading from '@/hooks/loading';
 // 分页列表
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue';
+import {Notification} from "@arco-design/web-vue";
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
@@ -269,8 +274,8 @@ import {
 // 引用其他页面
 import ColumnForm from '@/views/model/column/form.vue';
 import ColumnDrawer from '@/views/model/column/drawer.vue';
-import {Notification} from "@arco-design/web-vue";
 import {useRoute} from "vue-router";
+import PermissionDrawer from "@/views/model/permission/drawer.vue";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
@@ -281,6 +286,7 @@ const pageData = ref({
 });
 const columnFormRef = ref(null);
 const columnDrawerRef = ref(null);
+const permissionDrawerRef = ref(null);
 // 国际化
 const {t} = useI18n();
 const route = useRoute();
@@ -429,6 +435,16 @@ const alterTable = (id: string) => {
     formParams.editName = true;
     // @ts-ignore
     columnDrawerRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
+  }
+}
+const addPermission = (record: QueryTableColumnForm) => {
+  if (permissionDrawerRef.value) {
+    // @ts-ignore
+    permissionDrawerRef.value?.openForm({
+      action: pageData.value.formState, pageSize: 10000,
+      isModal: pageData.value.isModal,
+      params: {pId: record.id, pName: record.name, pType: 'ep'}
+    });
   }
 }
 

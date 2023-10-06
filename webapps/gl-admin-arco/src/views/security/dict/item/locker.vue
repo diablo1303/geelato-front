@@ -179,7 +179,17 @@ const rowSelection = reactive({type: 'checkbox', showCheckedAll: true, onlyCurre
 const fetchData = async (params: PageQueryRequest) => {
   try {
     const {data} = await pageQueryList(params);
-    columnData.value = data.items as unknown as QueryDictItemForm[];
+    const dictItems = data.items as unknown as QueryDictItemForm[];
+    if (dictItems.length > 0 && !pageData.value.parentId) {
+      const indexs = [];
+      for (let i = 0; i < dictItems.length; i += 1) {
+        if (dictItems[i].pid == null || dictItems[i].pid.length <= 0) {
+          columnData.value.push(dictItems[i]);
+        }
+      }
+    } else {
+      columnData.value = dictItems;
+    }
   } catch (err) {
     console.log(err);
   }

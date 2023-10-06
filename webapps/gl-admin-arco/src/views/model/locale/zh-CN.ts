@@ -79,7 +79,7 @@ export default {
 
   // webapps/gl-admin-arco/src/views/model/view - list|form
   'model.view.index.menu.list': '模型管理',
-  'model.view.index.menu.list.searchTable': '表格视图',
+  'model.view.index.menu.list.searchTable': '模型视图',
   // webapps/gl-admin-arco/src/views/model/view - list|form
   'model.view.index.form.index': '序号',
   'model.view.index.form.entityName': '实体名称',
@@ -120,7 +120,7 @@ export default {
 
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
   'model.foreign.index.menu.list': '模型管理',
-  'model.foreign.index.menu.list.searchTable': '表格外键',
+  'model.foreign.index.menu.list.searchTable': '模型外键',
   'model.foreign.index.menu.list.tab.tip': '仅展示表格之间的关联，不同步至数据表中。',
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
   'model.foreign.index.form.index': '序号',
@@ -147,7 +147,7 @@ export default {
 
   // webapps/gl-admin-arco/src/views/model/column - list|form
   'model.column.index.menu.list': '模型管理',
-  'model.column.index.menu.list.searchTable': '表格字段',
+  'model.column.index.menu.list.searchTable': '模型字段',
   // webapps/gl-admin-arco/src/views/model/column - list|form
   'model.column.index.form.index': '序号',
   'model.column.index.form.tableSchema': '数据模式',
@@ -226,6 +226,7 @@ export default {
   'model.column.index.form.operations': '操作',
   'model.column.index.form.operations.disabled': '系统字段不可编辑',
   'model.column.index.form.name.key': '主键',
+  'searchTable.columns.operations.permission': '权限',
   'searchTable.columns.operations.alter': '变更',
   'searchTable.columns.operations.alter.warning': '变更“字段标识”并同步至数据库',
   'searchTable.columns.operations.switch.tip': '隐藏基础字段如’id‘、’creator‘...',
@@ -235,6 +236,14 @@ export default {
   'model.column.index.model.title.view': '查看字段',
   'model.column.index.model.cancel.text': '取消',
   'model.column.index.model.ok.text': '确认',
+
+  'model.permission.index.menu.list.searchTable': '模型权限',
+  'model.permission.index.model.role.add': '新增角色',
+  'model.permission.index.model.permission.add': '自定义权限',
+  'model.permission.index.model.permission.reset': '重置默认权限',
+  'model.permission.index.model.refresh': '刷新',
+  'model.permission.index.list.role': '角色',
+
   /* 是否 */
   'model.column.index.form.yes': '是',
   'model.column.index.form.no': '否',

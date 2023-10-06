@@ -81,6 +81,11 @@
                 <ViewList ref="viewListRef"></ViewList>
               </a-card>
             </a-tab-pane>
+            <a-tab-pane key="4" :title="$t('model.permission.index.menu.list.searchTable')" class="a-tabs-four">
+              <a-card class="general-card">
+                <PermissionForm ref="permissionFormRef"></PermissionForm>
+              </a-card>
+            </a-tab-pane>
             <template #extra>
               <a-space>
                 <a-button v-if="pageData.level===2" type="outline" @click="syncFromTableToModel($event)">
@@ -118,6 +123,7 @@ import ColumnList from '@/views/model/column/list.vue';
 import ConnectList from '@/views/model/connect/list.vue';
 import ForeignList from '@/views/model/foreign/list.vue';
 import ViewList from '@/views/model/view/list.vue';
+import PermissionForm from '@/views/model/permission/form.vue';
 import {useRoute} from "vue-router";
 
 const pageData = ref({
@@ -142,6 +148,7 @@ const tableListRef = ref(null);
 const columnListRef = ref(null);
 const foreignListRef = ref(null);
 const viewListRef = ref(null);
+const permissionFormRef = ref(null);
 // Tree
 const treeData = ref<TreeNode[]>([]);
 const searchKey = ref('');
@@ -423,6 +430,14 @@ const loadColumnAndForeignList = (tableId: string, tableName: string, connectId:
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
       params: {pId: connectId, pName: tableName, isSync: pageData.value.isSync}
+    });
+  }
+  if (permissionFormRef.value) {
+    // @ts-ignore
+    permissionFormRef.value?.loadList({
+      action: pageData.value.formState, pageSize: 10000,
+      isModal: pageData.value.isModal,
+      params: {pId: connectId, pName: tableName, pType: 'dp'}
     });
   }
 }

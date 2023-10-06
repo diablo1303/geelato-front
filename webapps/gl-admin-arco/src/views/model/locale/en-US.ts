@@ -228,6 +228,7 @@ export default {
   'model.column.index.form.operations': 'operation',
   'model.column.index.form.name.key': 'Primary Key',
   'model.column.index.form.operations.disabled': 'System fields cannot be edited',
+  'searchTable.columns.operations.permission': 'Permission',
   'searchTable.columns.operations.alter': 'Alter',
   'searchTable.columns.operations.alter.warning': 'Alter “name” and synchronize it to the database',
   'searchTable.columns.operations.switch.tip': 'Hide basic fields such as ‘id’、‘creator’...',
@@ -237,6 +238,13 @@ export default {
   'model.column.index.model.title.view': 'View Table Column',
   'model.column.index.model.cancel.text': 'Cancel',
   'model.column.index.model.ok.text': 'Confirm',
+
+  'model.permission.index.menu.list.searchTable': 'Permission',
+  'model.permission.index.model.role.add': 'Add Role',
+  'model.permission.index.model.permission.add': 'Custom Permission',
+  'model.permission.index.model.permission.reset': 'Reset Default Permission',
+  'model.permission.index.model.refresh': 'Refresh',
+  'model.permission.index.list.role': 'Role',
 
   'searchTable.actions.swap': 'swap',
   /* 验证 */

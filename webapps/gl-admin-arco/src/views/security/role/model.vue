@@ -29,7 +29,7 @@
             :label="$t('security.role.index.form.type')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="type">
-          <a-select v-if="pageData.button" v-model="formData.type" @change="typeChange">
+          <a-select v-if="pageData.button&&pageData.params.type===''" v-model="formData.type" @change="typeChange">
             <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`security.role.index.form.type.${formData.type}`) }}</span>
@@ -41,7 +41,8 @@
             :rules="[{required: ['app'].includes(formData.type),message: $t('security.form.rules.match.required')}]"
             field="appId">
           <a-select
-              v-if="pageData.button&&['app'].includes(formData.type)" v-model="formData.appId" :field-names="{value: 'id', label: 'name'}"
+              v-if="pageData.button&&['app'].includes(formData.type)&&pageData.params.appId===''" v-model="formData.appId"
+              :field-names="{value: 'id', label: 'name'}"
               :options="selectOptions" allow-search/>
           <span v-else>{{ formData.appName }}</span>
         </a-form-item>
@@ -85,7 +86,7 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import {useI18n} from 'vue-i18n';
-import {Modal} from "@arco-design/web-vue";
+import {FormInstance, Modal} from "@arco-design/web-vue";
 import {
   createOrUpdateRole as createOrUpdateForm,
   getRole as getForm,
@@ -97,20 +98,24 @@ import {
 } from '@/api/security';
 import {ListUrlParams} from '@/api/base';
 import {enableStatusOptions, typeOptions} from "@/views/security/role/searchTable";
-import {FormInstance} from "@arco-design/web-vue";
 import {useRoute} from "vue-router";
 
 // 国际化
 const {t} = useI18n();
 const route = useRoute();
-const pageData = ref({formState: 'add', button: true, formCol: 2});
+const pageData = ref({
+  formState: 'add',
+  button: true,
+  formCol: 2,
+  params: {type: 'app', appId: ''}
+});
 const validateForm = ref<FormInstance>();
 const generateFormData = (): QueryForm => {
   return {
     id: '',
     name: '',
     code: '',
-    type: 'app',
+    type: '',
     enableStatus: 1,
     seqNo: 999,
     description: '',
@@ -188,7 +193,9 @@ const loadModel = (urlParams: ListUrlParams) => {
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
   pageData.value.formCol = urlParams.formCol || 2;
-  formData.value = generateFormData();
+  pageData.value.params.appId = urlParams.params?.appId || '';
+  pageData.value.params.type = urlParams.params?.type || '';
+  formData.value = {...generateFormData(), ...pageData.value.params};
   // 重置验证
   resetValidate();
   // 特色

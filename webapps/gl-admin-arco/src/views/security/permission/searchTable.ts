@@ -1,8 +1,9 @@
 import {computed} from 'vue';
 import type {TableColumnData} from '@arco-design/web-vue';
+import {SelectOptionData} from "@arco-design/web-vue";
 
 // eslint-disable-next-line import/prefer-default-export
-export const columns = computed<TableColumnData[]>(() => [
+const columns = computed<TableColumnData[]>(() => [
   {
     title: 'security.permission.index.form.index',
     dataIndex: 'index',
@@ -13,8 +14,20 @@ export const columns = computed<TableColumnData[]>(() => [
     dataIndex: 'name'
   },
   {
-    title: 'security.permission.index.form.text',
-    dataIndex: 'text'
+    title: 'security.permission.index.form.code',
+    dataIndex: 'code'
+  },
+  {
+    title: 'security.permission.index.form.type',
+    dataIndex: 'type'
+  },
+  {
+    title: 'security.permission.index.form.object',
+    dataIndex: 'object'
+  },
+  {
+    title: 'security.permission.index.form.rule',
+    dataIndex: 'rule'
   },
   {
     title: 'security.permission.index.form.description',
@@ -30,3 +43,16 @@ export const columns = computed<TableColumnData[]>(() => [
     slotName: 'operations'
   }
 ]);
+
+const typeOptions = computed<SelectOptionData[]>(() => [
+  {
+    label: 'security.permission.index.form.type.dp',
+    value: 'dp',
+  },
+  {
+    label: 'security.permission.index.form.type.ep',
+    value: 'ep',
+  },
+]);
+
+export {columns, typeOptions}

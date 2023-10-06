@@ -125,7 +125,7 @@
           data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button size="small" type="text" @click="configTable(record.id)">
-            {{ $t('searchTable.columns.operations.config') }}
+            {{ $t('searchTable.columns.operations.subset') }}
           </a-button>
           <!--          <a-button size="small" type="text" @click="addChildTable(record.id)">
                       {{ $t('searchTable.operation.create') }}
