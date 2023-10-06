@@ -1,5 +1,5 @@
 export default {
-    "componentName": "GlBlockIf",
+    "componentName": "GlIfBlock",
     "displayMode": "tile",
     "iconType": "gl-if",
     "group": "block_condition",

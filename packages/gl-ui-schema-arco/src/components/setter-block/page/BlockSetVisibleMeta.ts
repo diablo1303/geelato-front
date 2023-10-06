@@ -1,5 +1,5 @@
 export default {
-    "componentName": "GlBlockSetVisible",
+    "componentName": "GlSetVisibleBlock",
     "displayMode": "tile",
     "iconType": "gl-hide",
     "group": "block_page",

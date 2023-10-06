@@ -3,6 +3,7 @@ import type {PropsExpressions} from "../BlockHandler";
 import ParseResult from "../ParseResult";
 import type {Param} from "@geelato/gl-ui";
 import BlockUtils from "../BlockUtils";
+import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 const toStr = (str: string) => {
     return `"${str}"`
@@ -53,7 +54,7 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
                 hideCancel:${hideCancel}
             })
             `
-        ).setBlockName('OpenComponentPageBlock');
+        )
     }
 }
 
@@ -88,3 +89,5 @@ interface Props {
     closeInvokeMethodName?: string
 
 }
+
+blocksHandler.register(new OpenComponentPageBlockHandler(), CommandBlocks.CommandBlockOne)

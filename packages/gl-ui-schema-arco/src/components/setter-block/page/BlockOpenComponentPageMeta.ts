@@ -1,5 +1,5 @@
 export default {
-    "componentName": "GlBlockOpenComponentPage",
+    "componentName": "GlOpenComponentPageBlock",
     "displayMode": "tile",
     "iconType": "gl-file",
     "group": "block_page",

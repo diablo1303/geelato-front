@@ -1,6 +1,7 @@
 import type IBlockHandler from "../BlockHandler";
 import type {PropsExpressions} from "../BlockHandler";
 import ParseResult from "../ParseResult";
+import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class ExportExcelBlockHandler implements IBlockHandler {
     parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
@@ -9,7 +10,7 @@ export default class ExportExcelBlockHandler implements IBlockHandler {
             `
             ${props.enableAwait ? 'await ' : ''} $gl.fileApi.exportExcel(${fileName},"${props.fileTemplate?.templateId}","${props.dataType}",$gl.vars.${props.varName})
             `
-        ).setBlockName('ExportExcelBlock');
+        )
     }
 }
 
@@ -23,3 +24,5 @@ interface Props {
     // 是否同步执行
     enableAwait?:boolean
 }
+
+blocksHandler.register(new ExportExcelBlockHandler(), CommandBlocks.CommandBlockOne)

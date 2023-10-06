@@ -1,6 +1,7 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
 import type {PageParamConfigType} from "@geelato/gl-ui";
+import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class SetPropsBlockHandler implements IBlockHandler {
 
@@ -14,7 +15,7 @@ export default class SetPropsBlockHandler implements IBlockHandler {
             `
             $gl.fn.setComponentProps("${props.componentId}","${vueProps}");
             `
-        ).setBlockName('SetPropsBlock');
+        )
     }
 }
 
@@ -25,3 +26,5 @@ export class Props {
     // 调用方法的参数
     vueProps?: Array<PageParamConfigType>
 }
+
+blocksHandler.register(new SetPropsBlockHandler(), CommandBlocks.CommandBlockOne)

@@ -1,36 +1,19 @@
-import type {App, Plugin} from 'vue'
-import GlCommandBlockOne from "./components/setters/action-setters/blocks/CommandBlockOne.vue";
-import GlCommandBlockTwo from "./components/setters/action-setters/blocks/CommandBlockTwo.vue";
+import type { App, Plugin } from 'vue'
+import { blocksHandler } from './components/setters/action-setters/blocks/BlockHandler'
+// 这里需引入importBlocks
+import * as blocks from './components/setters/action-setters/blocks/importBlocks'
 
 const component: Plugin = {
-    install: function (app: App) {
-        // 注册组件
-        app.component('GlCommandBlock', GlCommandBlockOne)
-        app.component('GlBlockMessage', GlCommandBlockOne)
-        app.component('GlBlockNotification', GlCommandBlockOne)
-        app.component('GlBlockOpenComponentPage', GlCommandBlockOne)
-        app.component('GlBlockOpenThirdPage', GlCommandBlockOne)
-        app.component('GlBlockSetVar', GlCommandBlockOne)
-        app.component('GlBlockIf', GlCommandBlockTwo)
-        app.component('GlBlockElse', GlCommandBlockTwo)
-        app.component('GlIfComponentValueBlock', GlCommandBlockTwo)
-        app.component('GlBlockComponentInvoke', GlCommandBlockOne)
-        app.component('GlBlockConfirm', GlCommandBlockOne)
-        app.component('GlBlockSetVisible', GlCommandBlockOne)
-        app.component('GlTriggerComponentActionBlock', GlCommandBlockOne)
-        app.component('GlLogBlock', GlCommandBlockOne)
-        app.component('GlSetValueBlock', GlCommandBlockOne)
-        app.component('GlReturnBlock', GlCommandBlockOne)
-        app.component('GlSetVarBlock', GlCommandBlockOne)
-        app.component('GlGroupSumBlock', GlCommandBlockOne)
-        app.component('GlJsCodeBlock', GlCommandBlockOne)
-        app.component('GlExportExcelBlock', GlCommandBlockOne)
-        app.component('GlExportWordBlock', GlCommandBlockOne)
-        app.component('GlExportPdfBlock', GlCommandBlockOne)
-        app.component('GlGenerateMqlBlock', GlCommandBlockOne)
-        app.component('GlAnnotationBlock', GlCommandBlockOne)
-    }
+  install: function (app: App) {
+    // 注册组件
+    Object.keys(blocksHandler.blockComponents).forEach((componentName) => {
+      // console.log('注册block', componentName, blocksHandler.blockComponents[componentName])
+      app.component(componentName, blocksHandler.blockComponents[componentName])
+    })
+  }
 }
+
+export { blocks }
 
 // 默认导出组件
 export default component

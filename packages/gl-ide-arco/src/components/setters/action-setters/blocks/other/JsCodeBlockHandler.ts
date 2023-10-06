@@ -1,6 +1,7 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
 import type {PropsExpressions} from "../BlockHandler";
+import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class JsCodeBlockHandler implements IBlockHandler {
@@ -9,7 +10,7 @@ export default class JsCodeBlockHandler implements IBlockHandler {
             `
             ${propsExpressions?.code || props.code};
             `
-        ).setBlockName('JsCodeBlockHandler');
+        )
     }
 }
 
@@ -17,3 +18,4 @@ interface Props {
     code: string
     description: string
 }
+blocksHandler.register(new JsCodeBlockHandler(), CommandBlocks.CommandBlockOne)

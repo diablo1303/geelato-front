@@ -1,5 +1,6 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
+import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class SetVisibleBlockHandler implements IBlockHandler {
 
@@ -8,7 +9,7 @@ export default class SetVisibleBlockHandler implements IBlockHandler {
             `
             $gl.fn.setComponentProps("${props.componentId}",{_hidden:${!!props._hidden}});
             `
-        ).setBlockName('SetVisibleBlock');
+        )
     }
 }
 
@@ -19,3 +20,5 @@ export class Props {
     // 组件是否不渲染
     _hidden: boolean = true
 }
+
+blocksHandler.register(new SetVisibleBlockHandler(), CommandBlocks.CommandBlockOne)

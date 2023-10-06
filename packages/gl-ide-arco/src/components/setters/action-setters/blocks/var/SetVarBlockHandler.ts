@@ -1,6 +1,7 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
 import type {PropsExpressions} from "../BlockHandler";
+import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class SetVarBlockHandler implements IBlockHandler {
@@ -9,7 +10,7 @@ export default class SetVarBlockHandler implements IBlockHandler {
             `
             $gl.vars.${props.varName} = ${propsExpressions?.varValue || props.varValue} ;
             `
-        ).setBlockName('SetVarBlock');
+        )
     }
 }
 
@@ -18,3 +19,5 @@ interface Props {
     varValue: any,
     remark?: string
 }
+
+blocksHandler.register(new SetVarBlockHandler(), CommandBlocks.CommandBlockOne)

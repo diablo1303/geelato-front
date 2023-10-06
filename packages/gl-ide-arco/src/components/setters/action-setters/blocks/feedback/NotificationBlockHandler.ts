@@ -1,6 +1,7 @@
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
 import type {PropsExpressions} from "../BlockHandler";
+import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class NotificationBlockHandler implements IBlockHandler {
     parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
@@ -12,7 +13,7 @@ export default class NotificationBlockHandler implements IBlockHandler {
                 content:${propsExpressions?.content || "'" + props.content + "'"}
                 })
             `
-        ).setBlockName('NotificationBlock');
+        )
     }
 }
 
@@ -21,3 +22,5 @@ interface Props {
     content: string
     method: string
 }
+
+blocksHandler.register(new NotificationBlockHandler(), CommandBlocks.CommandBlockOne)

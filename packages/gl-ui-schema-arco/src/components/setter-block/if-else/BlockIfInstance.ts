@@ -1,5 +1,5 @@
 export default {
-    "componentName": "GlBlockIf",
+    "componentName": "GlIfBlock",
     "title": "IF 条件",
     "props": {},
     "slots": {},

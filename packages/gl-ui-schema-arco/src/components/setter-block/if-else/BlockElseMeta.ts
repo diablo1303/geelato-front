@@ -1,5 +1,5 @@
 export default {
-    "componentName": "GlBlockElse",
+    "componentName": "GlElseBlock",
     "displayMode": "tile",
     "iconType": "gl-if",
     "group": "block_condition",
