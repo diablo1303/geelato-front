@@ -37,6 +37,10 @@ const useAppStore = defineStore('app', {
         document.body.removeAttribute('arco-theme');
       }
     },
+    toggleNavStyle(navStyle: string) {
+      this.navStyle = navStyle;
+      document.body.setAttribute('gl-nav-style', navStyle);
+    },
     toggleDevice(device: string) {
       this.device = device;
     },
