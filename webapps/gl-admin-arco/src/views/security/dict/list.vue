@@ -102,13 +102,13 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('security.dict.index.form.index')" :width="80" align="center" data-index="index">
+      <a-table-column :title="$t('security.dict.index.form.index')" :width="80" align="center" data-index="index" fixed="left">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictName')" :tooltip="true" :width="150" data-index="dictName"></a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictCode')" :tooltip="true" :width="150" data-index="dictCode"></a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictName')" :tooltip="true" :width="150" data-index="dictName" fixed="left"/>
+      <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictCode')" :tooltip="true" :width="150" data-index="dictCode"/>
       <!--      <a-table-column :title="$t('security.dict.index.form.tenantCode')" :width="120" data-index="tenantCode"/>-->
       <a-table-column :title="$t('security.dict.index.form.seqNo')" :width="100" data-index="seqNo"></a-table-column>
       <a-table-column :title="$t('security.dict.index.form.enableStatus')" :width="120" data-index="enableStatus">
@@ -119,7 +119,7 @@
       <a-table-column :title="$t('security.dict.index.form.createAt')" :width="180" data-index="createAt"></a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictRemark')" :tooltip="{position:'right'}" :width="200" data-index="dictRemark"/>
       <a-table-column
-          v-show="pageData.formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="230" align="center"
+          v-show="pageData.formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="240" align="center"
           data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button size="small" type="text" @click="configTable(record.id)">

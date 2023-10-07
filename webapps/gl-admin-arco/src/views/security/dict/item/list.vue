@@ -105,12 +105,12 @@
       row-key="id"
       @page-change="onPageChange">
     <template #columns>
-      <!--      <a-table-column :title="$t('security.dictItem.index.form.index')" :width="80" align="center" data-index="index">
-              <template #cell="{  rowIndex }">
-                {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
-              </template>
-            </a-table-column>-->
-      <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemName')" :tooltip="true" :width="200" data-index="itemName"/>
+      <a-table-column :title="$t('security.dictItem.index.form.index')" :width="80" align="center" data-index="index" fixed="left">
+        <template #cell="{  rowIndex }">
+          {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
+        </template>
+      </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemName')" :tooltip="true" :width="150" data-index="itemName" fixed="left"/>
       <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemCode')" :tooltip="true" :width="140" data-index="itemCode"/>
       <a-table-column :title="$t('security.dictItem.index.form.seqNo')" :width="100" data-index="seqNo"/>
       <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" :width="100" data-index="enableStatus">
@@ -121,7 +121,7 @@
       <a-table-column :title="$t('security.dictItem.index.form.createAt')" :width="170" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemRemark')" :tooltip="true" :width="200" data-index="itemRemark"/>
       <a-table-column
-          v-show="pageData.formState==='edit'" :title="$t('security.dictItem.index.form.operations')" :width="230" align="center"
+          v-show="pageData.formState==='edit'" :title="$t('security.dictItem.index.form.operations')" :width="240" align="center"
           data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button size="small" type="text" @click="configTable(record.id)">

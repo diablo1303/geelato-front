@@ -28,6 +28,7 @@ export default {
   'model.connect.index.model.title.link.fail': 'The connection is failed！',
   'model.connect.index.model.sync.model': 'Sync from database to model',
   'model.connect.index.model.sync.table': 'Sync from model to database',
+  'model.connect.index.model.sync.more': 'More',
   'model.connect.index.model.info.refresh': 'Refresh Successfully！',
   'model.connect.index.model.info.swap': 'Swap Successfully！',
   'model.connect.index.model.cancel.text': 'Cancel',

@@ -88,18 +88,24 @@
             </a-tab-pane>
             <template #extra>
               <a-space>
-                <a-button v-if="pageData.level===2" type="outline" @click="syncFromTableToModel($event)">
-                  <template #icon>
-                    <icon-sync/>
-                  </template>
-                  {{ $t('model.connect.index.model.sync.model') }}
-                </a-button>
                 <a-button v-if="pageData.level===2" type="outline" @click="syncFromModelToTable($event)">
                   <template #icon>
                     <icon-sync/>
                   </template>
                   {{ $t('model.connect.index.model.sync.table') }}
                 </a-button>
+                <a-dropdown v-if="pageData.level===2" position="br">
+                  <a-button type="outline">{{ $t('model.connect.index.model.sync.more') }}&nbsp;<icon-down/>
+                  </a-button>
+                  <template #content>
+                    <a-doption @click="syncFromTableToModel($event)">
+                      <template #icon>
+                        <icon-sync/>
+                      </template>
+                      {{ $t('model.connect.index.model.sync.model') }}
+                    </a-doption>
+                  </template>
+                </a-dropdown>
               </a-space>
             </template>
           </a-tabs>

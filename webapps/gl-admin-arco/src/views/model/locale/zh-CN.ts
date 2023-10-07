@@ -28,6 +28,7 @@ export default {
   'model.connect.index.model.title.link.fail': '连接失败！',
   'model.connect.index.model.sync.model': '从数据库同步至模型',
   'model.connect.index.model.sync.table': '从模型同步至数据库',
+  'model.connect.index.model.sync.more': '更多',
   'model.connect.index.model.info.refresh': '刷新成功！',
   'model.connect.index.model.info.swap': '交换成功！',
   'model.connect.index.model.cancel.text': '取消',

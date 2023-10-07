@@ -18,8 +18,8 @@
               </a-button>
             </a-space>-->
       <a-space>
-        <a-button @click="handleModelCancel($event)">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
-        <a-button :loading="okLoading" type="primary" @click="handleModelOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
+        <a-button @click="handleModelCancel($event)">{{ $t('security.dictItem.index.model.cancel.text') }}</a-button>
+        <a-button :loading="okLoading" type="primary" @click="handleModelOk($event)">{{ $t('security.dictItem.index.model.ok.text') }}</a-button>
       </a-space>
     </template>
     <a-row v-show="pageData.formState==='edit'" style="margin-bottom: 10px">
@@ -42,7 +42,7 @@
               <template #icon>
                 <icon-plus/>
               </template>
-              粘贴
+              {{ $t('security.dictItem.index.model.affix.text') }}
             </a-button>
             <template #content>
               <a-form :label-col-props="{ span: 3 }" :model="affixData" :wrapper-col-props="{ span: 21 }" class="affix-form">
@@ -53,8 +53,8 @@
                   <a-textarea v-model.trim="affixData.itemCode" :auto-size="{minRows:1,maxRows:3}" show-word-limit/>
                 </a-form-item>
                 <a-space style="justify-content: flex-end;">
-                  <a-button @click="handlePopupCancel($event)">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
-                  <a-button type="primary" @click="handlePopupOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
+                  <a-button @click="handlePopupCancel($event)">{{ $t('security.dictItem.index.model.cancel.text') }}</a-button>
+                  <a-button type="primary" @click="handlePopupOk($event)">{{ $t('security.dictItem.index.model.ok.text') }}</a-button>
                 </a-space>
               </a-form>
             </template>
@@ -63,34 +63,34 @@
             <template #icon>
               <icon-copy/>
             </template>
-            复制(JSON)
+            {{ $t('security.dictItem.index.model.copy.text') }}
           </a-button>
           <a-button type="outline" @click="batchDeletes($event)">
             <template #icon>
               <icon-delete/>
             </template>
-            批量删除
+            {{ $t('security.dictItem.index.model.delete.text') }}
           </a-button>
           <a-dropdown-button>
-            字典项填充
+            {{ $t('security.dictItem.index.model.padding.text') }}
             <template #icon>
               <icon-down/>
             </template>
             <template #content>
-              <a-doption @click="codedFilling('code')">[编码]填入[名称]</a-doption>
-              <a-doption @click="codedFilling('name')">[名称]填入[编码]</a-doption>
-              <a-doption @click="codedFilling('number')">[编码]数值(从1开始)</a-doption>
-              <a-doption @click="codedFilling('letter')">[编码]字母(a-z)</a-doption>
+              <a-doption @click="codedFilling('code')">{{ $t('security.dictItem.index.model.padding.name') }}</a-doption>
+              <a-doption @click="codedFilling('name')">{{ $t('security.dictItem.index.model.padding.code') }}</a-doption>
+              <a-doption @click="codedFilling('number')">{{ $t('security.dictItem.index.model.padding.number') }}</a-doption>
+              <a-doption @click="codedFilling('letter')">{{ $t('security.dictItem.index.model.padding.letter') }}</a-doption>
             </template>
           </a-dropdown-button>
           <a-dropdown-button>
-            状态变更
+            {{ $t('security.dictItem.index.model.status.text') }}
             <template #icon>
               <icon-down/>
             </template>
             <template #content>
-              <a-doption @click="changeStatusEnable(1)">启用</a-doption>
-              <a-doption @click="changeStatusEnable(0)">禁用</a-doption>
+              <a-doption @click="changeStatusEnable(1)">{{ $t('security.dictItem.index.form.enableStatus.1') }}</a-doption>
+              <a-doption @click="changeStatusEnable(0)">{{ $t('security.dictItem.index.form.enableStatus.0') }}</a-doption>
             </template>
           </a-dropdown-button>
         </a-space>
@@ -119,7 +119,7 @@
             <a-input v-model.trim="record.itemCode" :max-length="32" placeholder="必填项" @blur="itemCodeValidate($event)"/>
           </template>
         </a-table-column>
-        <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" :width="110" data-index="enableStatus">
+        <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" :width="140" data-index="enableStatus">
           <template #cell="{ record }">
             <a-select v-model="record.enableStatus">
               <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
