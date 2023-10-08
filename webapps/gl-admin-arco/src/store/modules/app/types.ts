@@ -2,6 +2,7 @@ import type {RouteRecordNormalized} from 'vue-router';
 
 export interface AppState {
   theme: string;
+  navStyle:string;
   colorWeak: boolean;
   navbar: boolean;
   menu: boolean;
@@ -11,6 +12,7 @@ export interface AppState {
   footer: boolean;
   themeColor: string;
   menuWidth: number;
+  menuCollapseWidth:number;
   globalSettings: boolean;
   device: string;
   tabBar: boolean;
