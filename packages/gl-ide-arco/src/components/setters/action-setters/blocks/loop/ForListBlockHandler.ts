@@ -9,7 +9,7 @@ export default class ForListBlockHandler implements IBlockHandler {
     const items = propsExpressions?.items || props.items || []
     return new ParseResult(
       `for(let ${props.loopItemIndex} in ${items}){
-          let ${props.loopItem} = ${items[props.loopItemIndex]}
+          let ${props.loopItem} = ${items}[${props.loopItemIndex}];
       `,
 
       `}`

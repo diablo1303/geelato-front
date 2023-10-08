@@ -240,7 +240,7 @@ export class JsScriptExecutor {
     return {
       log(options: OptionsType) {
         // console.log(that.evalOptions(options, $gl?.ctx, ['content']).content)
-        // console.log(options)
+        console.log(options)
       }
     }
   }

@@ -24,6 +24,7 @@ import GenerateEntityReaderBlockMeta from "./setter-block/data/GenerateEntityRea
 import EntityQueryBlockMeta from "./setter-block/data/EntityQueryBlockMeta";
 import AnnotaionBlockMeta from "./setter-block/other/AnnotaionBlockMeta";
 import ForListBlockMeta from "./setter-block/loop/ForListBlockMeta";
+import ForListBlockInstance from "./setter-block/loop/ForListBlockInstance";
 import DictQueryBlockMeta from './setter-block/data/DictQueryBlockMeta'
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, GenerateEntityReaderBlockMeta, GroupSumBlockMeta, BlockNotificationMeta, BlockOpenThirdPageMeta, BlockOpenComponentPageMeta, BlockSetVisibleMeta, SetValueBlockMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
@@ -31,7 +32,7 @@ const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, Ge
     LogBlockMeta, ExportExcelMeta,AnnotaionBlockMeta,ForListBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta]
 
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance]
+const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance,ForListBlockInstance]
 const componentInstances: Array<ComponentInstance> = []
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {
