@@ -65,21 +65,16 @@
             {
               "id": "TjEwD1o2v9vELXHSbd9M",
               "title": "",
-              "componentName": "AButton",
+              "componentName": "GlButton",
               "group": "",
-              "props": { "type": "primary", "status": "normal" },
-              "propsExpress": {},
-              "slots": {
-                "icon": {
-                  "componentName": "GlIconfont",
-                  "props": {
-                    "type": "gl-plus-circle",
-                    "text": "新增",
-                    "rotate": 0
-                  },
-                  "propsTarget": "v-bind"
-                }
+              "props": {
+                "type": "primary",
+                "status": "normal",
+                "label": "新增",
+                "iconType": "gl-plus-circle"
               },
+              "propsExpress": {},
+              "slots": {},
               "slotsExpress": {},
               "children": [],
               "actions": [
@@ -281,17 +276,16 @@
           {
             "id": "EcSU00XMHL5VaMee7cTZ",
             "title": "",
-            "componentName": "AButton",
+            "componentName": "GlButton",
             "group": "",
-            "props": { "type": "text", "shape": "default", "size": "small" },
-            "propsExpress": {},
-            "slots": {
-              "icon": {
-                "componentName": "GlIconfont",
-                "props": { "type": "", "text": "查看", "rotate": 0 },
-                "propsTarget": "v-bind"
-              }
+            "props": {
+              "type": "text",
+              "shape": "default",
+              "size": "small",
+              "label": "详细"
             },
+            "propsExpress": {},
+            "slots": {},
             "slotsExpress": {},
             "children": [],
             "actions": [
@@ -360,17 +354,16 @@
           {
             "id": "X4b6tYlW9MDiHFFhHlCp",
             "title": "",
-            "componentName": "AButton",
+            "componentName": "GlButton",
             "group": "",
-            "props": { "type": "text", "shape": "default", "size": "small" },
-            "propsExpress": {},
-            "slots": {
-              "icon": {
-                "componentName": "GlIconfont",
-                "props": { "type": "", "text": "编辑", "rotate": 0 },
-                "propsTarget": "v-bind"
-              }
+            "props": {
+              "type": "text",
+              "shape": "default",
+              "size": "small",
+              "label": "修改"
             },
+            "propsExpress": {},
+            "slots": {},
             "slotsExpress": {},
             "children": [],
             "actions": [
@@ -514,22 +507,17 @@
           {
             "id": "rtwD86NdSF3lz6kp3Mx4",
             "title": "",
-            "componentName": "AButton",
+            "componentName": "GlButton",
             "group": "",
             "props": {
               "status": "danger",
               "type": "text",
               "shape": "default",
-              "size": "small"
+              "size": "small",
+              "label": "删除"
             },
             "propsExpress": {},
-            "slots": {
-              "icon": {
-                "componentName": "GlIconfont",
-                "props": { "type": "", "text": "删除", "rotate": 0 },
-                "propsTarget": "v-bind"
-              }
-            },
+            "slots": {},
             "slotsExpress": {},
             "children": [],
             "actions": [

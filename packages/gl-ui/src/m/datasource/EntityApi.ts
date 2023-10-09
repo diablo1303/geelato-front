@@ -430,7 +430,7 @@ export class EntityApi {
     data[entityName] = records || []
 
     return this.service({
-      url: `${this.url.apiMetaBatchSave}/${bizCode}`,
+      url: `${this.url.apiMetaBatchSave}`,
       method: 'POST',
       data
     })
