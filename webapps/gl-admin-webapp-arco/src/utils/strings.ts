@@ -39,7 +39,7 @@ const isNotBlank = (s: string): boolean => {
  * @param s
  */
 const toCamelCase = (s: string): string => {
-  if (isNotBlank(s) && s.match(/^[a-zA-Z][a-zA-Z0-9_]*$/)) {
+  if (isNotBlank(s) && s.match(/^[a-zA-Z0-9][a-zA-Z0-9_]*$/)) {
     return s.replace(/_([a-zA-Z])/g, (match, c) => c.toUpperCase());
   }
   return '';
