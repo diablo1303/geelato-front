@@ -19,17 +19,22 @@ import SetValueBlockMeta from "./setter-block/page/SetValueBlockMeta";
 import ReturnBlockMeta from "./setter-block/other/ReturnBlockMeta";
 import SetVarBlockMeta from "./setter-block/set-var/SetVarBlockMeta";
 import GroupSumBlockMeta from "./setter-block/data/GroupSumBlockMeta";
-import ExportExcelMeta from "./setter-block/file/ExportExcelMeta";
+import ExportExcelBlockMeta from "./setter-block/file/ExportExcelBlockMeta";
 import GenerateEntityReaderBlockMeta from "./setter-block/data/GenerateEntityReaderBlockMeta";
 import EntityQueryBlockMeta from "./setter-block/data/EntityQueryBlockMeta";
 import AnnotaionBlockMeta from "./setter-block/other/AnnotaionBlockMeta";
 import ForListBlockMeta from "./setter-block/loop/ForListBlockMeta";
 import ForListBlockInstance from "./setter-block/loop/ForListBlockInstance";
 import DictQueryBlockMeta from './setter-block/data/DictQueryBlockMeta'
+import ExportWordBlockMeta from './setter-block/file/ExportWordBlockMeta'
+import JsCodeBlockMeta from "./setter-block/code/JsCodeBlockMeta";
+import ExportPdfBlockMeta from './setter-block/file/ExportPdfBlockMeta';
+import ImportExcelBlockMeta from './setter-block/file/ImportExcelBlockMeta';
+
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, GenerateEntityReaderBlockMeta, GroupSumBlockMeta, BlockNotificationMeta, BlockOpenThirdPageMeta, BlockOpenComponentPageMeta, BlockSetVisibleMeta, SetValueBlockMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
-    BlockComponentInvokeMeta, BlockConfirmMeta, TriggerComponentActionMeta, ReturnBlockMeta,
-    LogBlockMeta, ExportExcelMeta,AnnotaionBlockMeta,ForListBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta]
+const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, JsCodeBlockMeta,GenerateEntityReaderBlockMeta, GroupSumBlockMeta, BlockNotificationMeta, BlockOpenComponentPageMeta,BlockComponentInvokeMeta, TriggerComponentActionMeta, BlockSetVisibleMeta, SetValueBlockMeta, BlockOpenThirdPageMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
+    BlockConfirmMeta,  ReturnBlockMeta,
+    LogBlockMeta, ExportExcelBlockMeta,ExportWordBlockMeta,ExportPdfBlockMeta,ImportExcelBlockMeta,AnnotaionBlockMeta,ForListBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta]
 
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance,ForListBlockInstance]
