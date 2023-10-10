@@ -1,7 +1,7 @@
 export default {
   componentName: 'GlGenerateEntityReaderBlock',
   displayMode: 'tile',
-  iconType: 'gl-api',
+  iconType: 'gl-file-json',
   group: 'block_data',
   title: '构建查询',
   useBy: ['freePage'],

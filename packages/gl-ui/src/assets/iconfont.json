@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "15214524",
+      "name": "json",
+      "font_class": "file-json",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "18169759",
+      "name": "实体查询",
+      "font_class": "entity-query",
+      "unicode": "e93f",
+      "unicode_decimal": 59711
+    },
+    {
       "icon_id": "28902784",
       "name": "字典",
       "font_class": "dict",

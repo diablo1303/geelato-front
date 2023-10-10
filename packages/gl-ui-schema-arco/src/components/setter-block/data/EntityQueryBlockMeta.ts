@@ -1,7 +1,7 @@
 export default {
   componentName: 'GlEntityQueryBlock',
   displayMode: 'tile',
-  iconType: 'gl-api',
+  iconType: 'gl-entity-query',
   group: 'block_data',
   title: '实体查询',
   useBy: ['freePage'],

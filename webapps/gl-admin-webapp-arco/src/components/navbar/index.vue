@@ -1,19 +1,21 @@
 <template>
-  <div class="navbar">
+  <div class="navbar" :class="{'gl-menu-collapse':appStore.appCurrentSetting.menuCollapse}">
     <!--  头部菜单，左侧菜单，应用图标、应用名称  -->
-    <div class="left-side">
+    <div class="left-side"  :style="{'max-width':leftSideWidth+'px','min-width':leftSideWidth+'px'}">
       <a-space>
         <span style="text-align: center;width: 32px;height: 32px;">
             <img :src="appInfo.appLogo" alt="logo" style="width: 100%;height: 100%"/>
         </span>
-        <a-typography-title :heading="5" :style="{ margin: 0, fontSize: '18px' }">
-          {{ appInfo.appName }}
-        </a-typography-title>
-        <icon-menu-fold
-            v-if="!topMenu && appStore.device === 'mobile'"
-            style="font-size: 22px; cursor: pointer"
-            @click="toggleDrawerMenu($event)"
-        />
+        <template v-if="!appStore.appCurrentSetting.menuCollapse">
+          <a-typography-title :heading="5" :style="{ margin: 0, fontSize: appInfo.appName.length<14?'17px':'16px' }">
+            {{ appInfo.appName }}
+          </a-typography-title>
+          <icon-menu-fold
+              v-if="!topMenu && appStore.device === 'mobile'"
+              style="font-size: 22px; cursor: pointer"
+              @click="toggleDrawerMenu($event)"
+          />
+        </template>
       </a-space>
     </div>
     <!--  头部菜单，中部菜单  -->
@@ -62,28 +64,50 @@
           </template>
         </a-dropdown>
       </li>
-      <!--   明暗背景   -->
+      <!--   导航风格   -->
       <li>
         <a-tooltip
             :content="
-            theme === 'light'
-              ? $t('settings.navbar.theme.toDark')
-              : $t('settings.navbar.theme.toLight')
-          "
+                  navStyle === 'leftLight'
+                    ? $t('settings.navbar.navStyle.toLeftBlue')
+                    : $t('settings.navbar.navStyle.toLeftLight')
+                "
         >
           <a-button
               :shape="'circle'"
               class="nav-btn"
               type="outline"
-              @click="handleToggleTheme($event)"
+              @click="handleToggleNavStyle(navStyle === 'leftBlue'?'leftLight':'leftBlue')"
           >
             <template #icon>
-              <icon-moon-fill v-if="theme === 'dark'"/>
+              <icon-moon-fill v-if="navStyle === 'leftLight'"/>
               <icon-sun-fill v-else/>
             </template>
           </a-button>
         </a-tooltip>
       </li>
+      <!--   明暗背景   -->
+<!--      <li>-->
+<!--        <a-tooltip-->
+<!--            :content="-->
+<!--            theme === 'light'-->
+<!--              ? $t('settings.navbar.theme.toDark')-->
+<!--              : $t('settings.navbar.theme.toLight')-->
+<!--          "-->
+<!--        >-->
+<!--          <a-button-->
+<!--              :shape="'circle'"-->
+<!--              class="nav-btn"-->
+<!--              type="outline"-->
+<!--              @click="handleToggleTheme($event)"-->
+<!--          >-->
+<!--            <template #icon>-->
+<!--              <icon-moon-fill v-if="theme === 'dark'"/>-->
+<!--              <icon-sun-fill v-else/>-->
+<!--            </template>-->
+<!--          </a-button>-->
+<!--        </a-tooltip>-->
+<!--      </li>-->
       <!--   消息   -->
       <li>
         <a-tooltip :content="$t('settings.navbar.alerts')">
@@ -254,6 +278,20 @@ const userName = computed(() => {
 const theme = computed(() => {
   return appStore.theme;
 });
+
+const localNavStyle = localStorage.getItem('gl-nav-style') || appStore.navStyle;
+const navStyle  = computed(() => {
+  return appStore.navStyle;
+});
+const handleToggleNavStyle = (nStyle:string) => {
+  localStorage.setItem('gl-nav-style',nStyle)
+  appStore.toggleNavStyle(nStyle)
+};
+handleToggleNavStyle(localNavStyle)
+const leftSideWidth = computed(()=>{
+  return appStore.appCurrentSetting.menuCollapse?appStore.appCurrentSetting.menuCollapseWidth:appStore.appCurrentSetting.menuWidth
+})
+
 const topMenu = computed(() => appStore.topMenu && appStore.menu);
 const isDark = useDark({
   selector: 'body',
@@ -359,7 +397,7 @@ const accountSettingsClick = (ev?: MouseEvent) => {
 .left-side {
   display: flex;
   align-items: center;
-  padding-left: 20px;
+  padding-left: 12px;
 }
 
 .center-side {
