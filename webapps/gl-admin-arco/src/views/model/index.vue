@@ -81,9 +81,14 @@
                 <ViewList ref="viewListRef"></ViewList>
               </a-card>
             </a-tab-pane>
-            <a-tab-pane key="4" :title="$t('model.permission.index.menu.list.searchTable')" class="a-tabs-four">
+            <a-tab-pane key="4" :title="$t('model.table.permission.index.menu.list.searchTable')" class="a-tabs-four">
               <a-card class="general-card">
-                <PermissionForm ref="permissionFormRef"></PermissionForm>
+                <TablePermissionForm ref="tablePermissionFormRef"></TablePermissionForm>
+              </a-card>
+            </a-tab-pane>
+            <a-tab-pane key="5" :title="$t('model.column.permission.index.menu.list.searchTable')" class="a-tabs-five">
+              <a-card class="general-card">
+                <ColumnPermissionForm ref="columnPermissionFormRef"></ColumnPermissionForm>
               </a-card>
             </a-tab-pane>
             <template #extra>
@@ -118,6 +123,7 @@
 <script lang="ts" setup>
 import {computed, h, ref} from "vue";
 import {useI18n} from 'vue-i18n';
+import {useRoute} from "vue-router";
 import {Modal, Notification, TreeNodeData} from "@arco-design/web-vue";
 import {IconFolder, IconLink} from '@arco-design/web-vue/es/icon';
 import {TreeNodeProps} from "@arco-design/web-vue/es/tree/interface";
@@ -129,8 +135,8 @@ import ColumnList from '@/views/model/column/list.vue';
 import ConnectList from '@/views/model/connect/list.vue';
 import ForeignList from '@/views/model/foreign/list.vue';
 import ViewList from '@/views/model/view/list.vue';
-import PermissionForm from '@/views/model/permission/form.vue';
-import {useRoute} from "vue-router";
+import TablePermissionForm from '@/views/model/table/permission/form.vue';
+import ColumnPermissionForm from '@/views/model/column/permission/form.vue';
 
 const pageData = ref({
   formState: 'edit', isModal: true, swap: true,
@@ -154,7 +160,8 @@ const tableListRef = ref(null);
 const columnListRef = ref(null);
 const foreignListRef = ref(null);
 const viewListRef = ref(null);
-const permissionFormRef = ref(null);
+const tablePermissionFormRef = ref(null);
+const columnPermissionFormRef = ref(null);
 // Tree
 const treeData = ref<TreeNode[]>([]);
 const searchKey = ref('');
@@ -199,14 +206,14 @@ const originTreeData = computed(() => {
  * @param item
  */
 const swapConnect = (item: QueryConnectForm): string => {
-  return `${pageData.value.swap ? item.dbName : item.dbConnectName}`;
+  return `${pageData.value.swap ? `${item.dbConnectName} | ${item.dbName}` : item.dbName}`;
 }
 const swapConnectTitle = (item: QueryConnectForm): string => {
   // mysql://localhost/geelato
   return `${item.dbConnectName}（${item.dbType && item.dbType.toLowerCase()}://${item.dbHostnameIp}:${item.dbPort}/${item.dbName}）`;
 }
 const swapTable = (item: QueryTableForm): string => {
-  return pageData.value.swap ? (item.entityName || item.tableName) : item.title;
+  return pageData.value.swap ? `${item.title} | ${item.entityName || item.tableName}` : (item.entityName || item.tableName);
 }
 const swapTableTitle = (item: QueryTableForm): string => {
   pageData.value.isSync = item.tableName != null && item.tableName.length > 0;
@@ -394,9 +401,12 @@ const loadTableList = (connectId: string, connectName: string) => {
     tableListRef.value?.loadList({
       action: pageData.value.formState, pageSize: 6,
       isModal: pageData.value.isModal,
-      params: {pId: connectId, pName: connectName}, modalAddBack: () => {
-        fetchTables({connectId: `${connectId}`} as unknown as PageQueryRequest).then((data) => {
-          refreshTreeTwo(connectId, data);
+      params: {pId: connectId, pName: connectName}, modalAddBack: (data: QueryTableForm) => {
+        fetchTables({connectId: `${connectId}`} as unknown as PageQueryRequest).then((nodes) => {
+          refreshTreeTwo(connectId, nodes);
+          selectedKeys.value = [data.id];
+          // eslint-disable-next-line no-use-before-define
+          treeSelected(data.id, {level: 2, key: data.id, title: data.title, formData: data} as TreeNode);
         });
       }, modalEditBack: (data: QueryTableForm) => {
         tableEditFeedBack(connectId, data);
@@ -438,12 +448,20 @@ const loadColumnAndForeignList = (tableId: string, tableName: string, connectId:
       params: {pId: connectId, pName: tableName, isSync: pageData.value.isSync}
     });
   }
-  if (permissionFormRef.value) {
+  if (tablePermissionFormRef.value) {
     // @ts-ignore
-    permissionFormRef.value?.loadList({
+    tablePermissionFormRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
       params: {pId: connectId, pName: tableName, pType: 'dp'}
+    });
+  }
+  if (columnPermissionFormRef.value) {
+    // @ts-ignore
+    columnPermissionFormRef.value?.loadList({
+      action: pageData.value.formState, pageSize: 10000,
+      isModal: pageData.value.isModal,
+      params: {pId: tableId, pName: tableName, pType: 'ep'}
     });
   }
 }

@@ -162,12 +162,21 @@
       </a-col>
       <a-col v-if="['BIT'].includes(formData.dataType)" :span="24/pageData.formCol">
         <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
-          <a-checkbox-group v-model="formData.defaultValue" :max="1">
-            <a-checkbox value="1">TRUE</a-checkbox>
-            <a-checkbox value="0">FALSE</a-checkbox>
-          </a-checkbox-group>
+          <a-radio-group v-model="formData.defaultValue">
+            <a-radio value="1">TRUE</a-radio>
+            <a-radio value="0">FALSE</a-radio>
+            <a-radio value="">NULL</a-radio>
+          </a-radio-group>
         </a-form-item>
       </a-col>
+      <!--      <a-col v-if="['BIT'].includes(formData.dataType)" :span="24/pageData.formCol">
+              <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
+                <a-checkbox-group v-model="formData.defaultValue" :max="1">
+                  <a-checkbox value="1">TRUE</a-checkbox>
+                  <a-checkbox value="0">FALSE</a-checkbox>
+                </a-checkbox-group>
+              </a-form-item>
+            </a-col>-->
       <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.dataType)" :span="24/pageData.formCol">
         <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
           <a-input-number
@@ -514,7 +523,7 @@ const loadModel = (urlParams: ListUrlParams) => {
         data.defaultValue = (data.defaultValue == null || data.defaultValue === '') ? data.defaultValue : Number(data.defaultValue);
       }
       if (['BIT'].includes(data.dataType)) {
-        data.defaultValue = (data.defaultValue == null || data.defaultValue === '') ? '' : [data.defaultValue.toString()];
+        data.defaultValue = (data.defaultValue == null || data.defaultValue === '') ? '' : data.defaultValue.toString();
       }
 
       formData.value = data;

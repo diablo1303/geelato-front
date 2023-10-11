@@ -2,6 +2,7 @@ import axios from 'axios';
 import qs from 'query-string';
 import {PageQueryRequest, PageQueryResponse, QueryResult} from '@/api/base'
 import {SelectOptionData} from "@arco-design/web-vue";
+import {QueryTableColumnForm} from "@/api/model";
 
 
 /* 组织分页查询 */
@@ -525,6 +526,12 @@ export interface QueryTableRolePermissionForm {
   table: Record<string, boolean | string>[];
 }
 
+export interface QueryColumnRolePermissionForm {
+  role: QueryRoleForm[];
+  column: QueryTableColumnForm[];
+  table: Record<string, boolean | string>[];
+}
+
 export function getRolePermission(id: string) {
   return axios.get<QueryRolePermissionForm>(`/api/security/role/permission/get/${id}`);
 }
@@ -551,6 +558,18 @@ export function insertTableRolePermission(params: QueryRolePermissionForm) {
 
 export function resetDefaultPermission(type: string, object: string) {
   return axios.post<QueryResult>(`/api/security/permission/default/${type}/${object}`, {});
+}
+
+export function queryColumnRolePermissions(type: string, object: string, params: PageQueryRequest) {
+  return axios.get<QueryColumnRolePermissionForm>(`/api/security/role/permission/queryColumn/${type}/${object}`, {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function insertColumnRolePermission(params: Record<string, boolean | string>) {
+  return axios.post<QueryResult>('/api/security/role/permission/insertColumn', params);
 }
 
 /* -----------------------------role tree node--------------------------- */

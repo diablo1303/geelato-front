@@ -14,7 +14,7 @@
 import {ref} from "vue";
 import {QueryTableColumnForm as QueryModel} from '@/api/model';
 import {ListUrlParams} from '@/api/base';
-import PermissionForm from "@/views/model/permission/form.vue";
+import PermissionForm from "@/views/model/table/permission/form.vue";
 
 const pageData = ref({formState: 'add', button: true});
 const permissionFormRef = ref(null);

@@ -6,19 +6,19 @@
           <template #icon>
             <icon-plus/>
           </template>
-          {{ $t('model.permission.index.model.role.add') }}
+          {{ $t('model.table.permission.index.model.role.add') }}
         </a-button>
         <a-button type="primary" @click="addTablePermission($event)">
           <template #icon>
             <icon-plus/>
           </template>
-          {{ $t('model.permission.index.model.permission.add') }}
+          {{ $t('model.table.permission.index.model.permission.add') }}
         </a-button>
         <a-button type="primary" @click="resetTableDefaultPermission($event)">
           <template #icon>
             <icon-undo/>
           </template>
-          {{ $t('model.permission.index.model.permission.reset') }}
+          {{ $t('model.table.permission.index.model.permission.reset') }}
         </a-button>
       </a-space>
     </a-col>
@@ -28,7 +28,7 @@
           <template #icon>
             <icon-refresh/>
           </template>
-          {{ $t('model.permission.index.model.refresh') }}
+          {{ $t('model.table.permission.index.model.refresh') }}
         </a-button>
       </a-space>
     </a-col>
@@ -44,10 +44,10 @@
       column-resizable
       row-key="id">
     <template #columns>
-      <a-table-column :ellipsis="true" :title="$t('model.permission.index.list.role')" :tooltip="false" :width="150" data-index="name" fixed="left">
+      <a-table-column :ellipsis="true" :title="$t('model.table.permission.index.list.role')" :tooltip="false" :width="150" data-index="name" fixed="left">
         <template #cell="{record}">
           <a-popover :title="record.name" position="right" style="max-width: 300px">
-            <span style="cursor: pointer;">{{ record.name }}</span>
+            <span style="cursor: pointer;">{{ record.name }} <icon-info-circle/></span>
             <template #content>
                     <span>
                       <strong>{{ $t('security.role.index.form.code') }}：</strong>
@@ -89,7 +89,7 @@
       <a-table-column v-for="item of cowColumns" :key="item.id" :data-index="item.id" :ellipsis="true" :tooltip="true" :width="120" align="center">
         <template #title>
           <a-popover :title="item.name" position="br" style="max-width: 300px">
-            <span style="cursor: pointer;">{{ item.name }}</span>
+            <span style="cursor: pointer;">{{ item.name }} <icon-info-circle/></span>
             <template #content>
                     <span>
                       <strong>{{ $t('security.permission.index.form.code') }}：</strong>

@@ -199,11 +199,11 @@
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.comment')" :tooltip="true" :width="200" data-index="comment"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('model.column.index.form.operations')"
-          :width="280" align="center" data-index="operations" fixed="right">
+          :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record,isDefault = defaultColumnMetas.includes(record.name)}">
-          <a-button size="small" type="text" @click="addPermission(record)">
-            {{ $t('searchTable.columns.operations.permission') }}
-          </a-button>
+          <!--          <a-button size="small" type="text" @click="addPermission(record)">
+                      {{ $t('searchTable.columns.operations.permission') }}
+                    </a-button>-->
           <a-tooltip v-if="isDefault" :content="$t('model.column.index.form.operations.disabled')">
             <a-button class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.alter') }}
@@ -275,7 +275,7 @@ import {
 import ColumnForm from '@/views/model/column/form.vue';
 import ColumnDrawer from '@/views/model/column/drawer.vue';
 import {useRoute} from "vue-router";
-import PermissionDrawer from "@/views/model/permission/drawer.vue";
+import PermissionDrawer from "@/views/model/table/permission/drawer.vue";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
