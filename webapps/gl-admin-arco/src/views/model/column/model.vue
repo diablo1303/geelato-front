@@ -311,7 +311,7 @@ const generateFormData = (): QueryForm => {
     charMaxLength: 64, // 长度
     numericPrecision: 0, // 整数位
     numericScale: 0, // 小数位
-    numericSigned: 1, // 是否有符号，默认有，若无符号，则需在type中增加：unsigned
+    numericSigned: 0, // 是否有符号，默认有，若无符号，则需在type中增加：unsigned
     datetimePrecision: '', // datetime 时间类型
     enableStatus: 1, // 状态
     linked: 0, // 链接
@@ -399,7 +399,7 @@ const selectTypeChange = (value: string) => {
   formData.value.defaultValue = '';
   formData.value.numericPrecision = 0;
   formData.value.numericScale = 0;
-  formData.value.numericSigned = 1;
+  formData.value.numericSigned = 0;
   formData.value.autoIncrement = 0;
   // 数据类型
   formData.value.dataType = cst.mysql && cst.mysql.toUpperCase();
@@ -423,9 +423,9 @@ const selectTypeChange = (value: string) => {
   if (['DECIMAL'].includes(formData.value.dataType)) {
     formData.value.numericPrecision = 12;
     formData.value.numericScale = 2;
-    // eslint-disable-next-line no-use-before-define
-    numericPrecisionBlur();
   }
+  // eslint-disable-next-line no-use-before-define
+  numericPrecisionBlur();
 }
 const numericPrecisionBlur = (ev?: FocusEvent) => {
   const cst: ColumnSelectType = formatSelectType(formData.value.selectType);
