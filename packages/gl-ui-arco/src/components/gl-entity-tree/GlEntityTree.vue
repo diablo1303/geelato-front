@@ -13,6 +13,7 @@
                 :deleteNode="deleteNodeFn"
                 @deleteNode="onDeleteNode"
                 @selectNode="onSelectNode"
+                @clickContextMenuItem="clickContextMenuItem"
                 :contextMenuData="contextMenuData"
     ></GlBaseTree>
   </div>
@@ -171,6 +172,10 @@ const onSelectNode = (params: any) => {
 }
 const onDeleteNode = (params: any) => {
   emits('deleteNode', toRaw(params.clickedNodeData))
+}
+
+const clickContextMenuItem = (params: any) => {
+  emits('clickContextMenuItem', params)
 }
 
 </script>

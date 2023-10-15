@@ -42,7 +42,7 @@ const props = defineProps({
     }
   }
 })
-const emits = defineEmits(['update:modelValue'])
+const emits = defineEmits(['update:modelValue','change','loadFieldMetas'])
 const entityStore = useEntityStore()
 const entityLiteMetas:Ref<EntityLiteMeta[]> = ref([])
 // const ds = inject('$entityDS')
@@ -59,6 +59,7 @@ const ds = ref({entityMeta: new EntityMeta()})
 const mv = ref(props.modelValue)
 watch(mv, (val) => {
   emits('update:modelValue', val)
+  emits('change', val)
 }, {deep: true})
 
 const setEntityAndLoadFieldMetas = (entityName: string) => {
@@ -87,8 +88,8 @@ const onEntityChange = (entityName: string) => {
     // ds.value.fieldMetas = fieldMetas
     // console.log('inject ds:', ds)
     // componentSetterProvideProxy.setEntityDsRef(ds)
-    componentSetterProvideProxy.setVarValue(props.exposeVarEntityMeta, ds.value.entityMeta)
-
+    componentSetterProvideProxy?.setVarValue(props.exposeVarEntityMeta, ds.value.entityMeta)
+    emits('loadFieldMetas', ds.value.entityMeta)
   })
 }
 

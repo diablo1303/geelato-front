@@ -85,10 +85,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
 
   /**
    * 在舞台stage中打开页面
-   * @param type
-   * @param extendId 页面所处的节点id
-   * @param title
-   * @param iconType
+   * @param { type, extendId, title, iconType }  extendId 页面所处的节点id
    */
   function openPage({ type, extendId, title, iconType }: Page) {
     // console.log('try to open page:', {type, extendId, title, iconType}, openingPageExtendId.value)
