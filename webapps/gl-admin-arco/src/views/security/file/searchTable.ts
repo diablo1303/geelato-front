@@ -12,6 +12,10 @@ const columns = computed<TableColumnData[]>(() => [
     dataIndex: 'title'
   },
   {
+    title: 'security.file.index.form.useType',
+    dataIndex: 'useType'
+  },
+  {
     title: 'security.file.index.form.fileType',
     dataIndex: 'fileType'
   },
@@ -63,5 +67,16 @@ const fileTypeOptions = computed<SelectOptionData[]>(() => [
   }
 ]);
 
+const useTypeOptions = computed<SelectOptionData[]>(() => [
+  {
+    label: 'security.file.index.form.useType.import',
+    value: 'import',
+  },
+  {
+    label: 'security.file.index.form.useType.export',
+    value: 'export',
+  }
+]);
 
-export {columns, enableStatusOptions, fileTypeOptions};
+
+export {columns, enableStatusOptions, fileTypeOptions, useTypeOptions};

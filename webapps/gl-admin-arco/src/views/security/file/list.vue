@@ -9,6 +9,13 @@
             </a-form-item>
           </a-col>
           <a-col :span="8">
+            <a-form-item :label="$t('security.file.index.form.useType')" field="useType">
+              <a-select v-model="filterData.useType" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="item of useTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="8">
             <a-form-item :label="$t('security.file.index.form.fileType')" field="fileType">
               <a-select v-model="filterData.fileType" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of fileTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
@@ -116,6 +123,11 @@
           {{ record.title }}
         </template>
       </a-table-column>
+      <a-table-column :title="$t('security.file.index.form.useType')" :width="120" data-index="useType">
+        <template #cell="{ record }">
+          {{ record.useType ? $t(`security.file.index.form.useType.${record.useType}`) : '' }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('security.file.index.form.fileType')" :width="120" data-index="fileType">
         <template #cell="{ record }">
           {{ record.fileType ? $t(`security.file.index.form.fileType.${record.fileType}`) : '' }}
@@ -164,7 +176,7 @@ import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 import {deleteFileTemplate as deleteList, FilterFileTemplateForm as FilterForm, pageQueryFileTemplate as pageQueryList} from '@/api/template';
-import {columns, enableStatusOptions, fileTypeOptions} from "@/views/security/file/searchTable";
+import {columns, enableStatusOptions, fileTypeOptions, useTypeOptions} from "@/views/security/file/searchTable";
 // 引用其他页面
 import FileTemplateDrawer from "@/views/security/file/drawer.vue";
 import {copyToClipboard} from "@/utils/strings";

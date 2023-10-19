@@ -5,6 +5,7 @@ import {PageQueryRequest, PageQueryResponse, QueryResult} from "@/api/base";
 export interface QueryFileTemplateForm {
   id: string;
   title: string;
+  useType: string;
   fileType: string;
   fileCode: string;
   template: string;
@@ -19,6 +20,7 @@ export interface QueryFileTemplateForm {
 export interface FilterFileTemplateForm {
   id: string;
   title: string;
+  useType: string;
   fileType: string;
   fileCode: string;
   template: string;

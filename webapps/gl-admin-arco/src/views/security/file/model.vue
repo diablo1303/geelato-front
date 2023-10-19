@@ -9,6 +9,15 @@
         <span v-else>{{ formData.title }}</span>
       </a-form-item>
       <a-form-item
+          :label="$t('security.file.index.form.useType')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          field="useType">
+        <a-select v-if="pageData.button" v-model="formData.useType">
+          <a-option v-for="item of useTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+        </a-select>
+        <span v-else>{{ $t(`security.file.index.form.useType.${formData.useType}`) }}</span>
+      </a-form-item>
+      <a-form-item
           :label="$t('security.file.index.form.template')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="template">
@@ -17,7 +26,7 @@
                   :headers="uploadHeader()"
                   :limit="1"
                   :show-remove-button="pageData.button"
-                  accept=".doc,.docx,.xls,.xlsx"
+                  :accept="formData.useType==='import'?'.xls,.xlsx':'.doc,.docx,.xls,.xlsx'"
                   list-type="text"
                   @error="uploadError" @success="uploadTSuccess" @before-remove="beforeRemoveT"/>
       </a-form-item>
@@ -76,7 +85,7 @@ import {useRoute} from "vue-router";
 import {FileItem, FormInstance, Modal, Notification} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
 import {createOrUpdateFileTemplate as createOrUpdateForm, getFileTemplate as getForm, QueryFileTemplateForm as QueryForm} from '@/api/template'
-import {enableStatusOptions,} from "@/views/security/file/searchTable";
+import {enableStatusOptions, useTypeOptions,} from "@/views/security/file/searchTable";
 import {AttachmentForm, getAttachmentByIds, getDownloadUrlById, getUploadUrl, uploadHeader} from "@/api/application";
 
 const route = useRoute();
@@ -88,6 +97,7 @@ const generateFormData = (): QueryForm => {
   return {
     id: '',
     title: '',
+    useType: '',
     fileType: '',
     fileCode: '',
     fileCodeFormat: [],
