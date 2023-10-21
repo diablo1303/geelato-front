@@ -7,7 +7,7 @@ export const useCordConfig = (options: PageCreatorOptions): ComponentInstance =>
   const inst = new ComponentInstance()
   inst.id = utils.gid('card')
   inst.componentName = 'GlCard'
-  inst.props = { label: '卡片', bordered: false }
+  inst.props = { label: `${options.entityMeta.entityTitle}卡片`, bordered: false }
   return inst
 }
 
@@ -120,6 +120,13 @@ export class FormPageCreator extends PageCreator {
         return true
       }
     })
+    // TODO 对不是独占一行的字段进行排序
+    // 最后一个字相同的放在一起
+    // 人员组件放在一起
+    // 组织组件放在一起
+    // 字段有数字的放在一起
+    // 时间先后，如开始XX在结束XX之前，生效XX在失效XX之前
+
     const rows = this.groupByRow(notOneRowInsts, options.colSpan)
     rows.forEach((row: LayoutRow) => {
       const rcl = useRowColLayoutConfig(row)

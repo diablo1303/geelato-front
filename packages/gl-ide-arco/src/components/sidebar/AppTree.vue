@@ -19,7 +19,7 @@
       @cancel="handleCancel"
     >
       <template #title> 创建页面向导</template>
-      <CreateFromTemplate />
+      <CreatePageNav ref="createPageNav" />
     </a-modal>
   </div>
 </template>
@@ -31,8 +31,9 @@ export default {
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useIdeStore, useAppStore, Page, usePageStore } from '@geelato/gl-ide'
-import { EntityReader, EntityReaderParam, FieldMeta } from '@geelato/gl-ui'
-import CreateFromTemplate from './create-page/CreateFromTemplate.vue'
+import { entityApi, EntityReader, EntityReaderParam, EntitySaver, FieldMeta } from '@geelato/gl-ui'
+import CreatePageNav from './create-page/CreatePageNav.vue'
+import type { ComponentInstance } from '@geelato/gl-ui-schema'
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()
@@ -41,13 +42,8 @@ pageStore.addPageTemplate('formPage', import('../stage/formPageTemplate.json'))
 pageStore.addPageTemplate('freePage', import('../stage/freePageTemplate.json'))
 pageStore.addPageTemplate('listPage', import('../stage/listPageTemplate.json'))
 
-const visible = ref(false)
-const handleOk = () => {
-  visible.value = true
-}
-const handleCancel = () => {
-  visible.value = false
-}
+const createPageNav = ref(null)
+
 const onSelectNode = (params: any) => {
   // console.log('onSelectNode() > params:', params)
   if (['root', 'folder'].indexOf(params._nodeType) >= 0) {
@@ -100,7 +96,7 @@ const onDeleteNode = (params: any) => {
 //   })
 // }
 
-//
+// 树实体查询
 const entityReader = new EntityReader()
 entityReader.entity = 'platform_tree_node'
 entityReader.fields = []
@@ -192,6 +188,40 @@ const contextMenuData = [
     action: 'deleteNode'
   }
 ]
+
+const createAddNodeEntitySaver = (params: any) => {
+  const es: EntitySaver = new EntitySaver()
+  es.entity = 'platform_tree_node'
+  es.record = {
+    flag: '',
+    iconType: params.addNodeData.iconType,
+    type: params.addNodeData._nodeType,
+    treeId: appStore.currentApp.id,
+    text: params.addNodeData.title,
+    pid: params.clickedNodeData.key
+  }
+}
+
+const createAddPageEntitySaver = (params: any) => {
+  const es: EntitySaver = new EntitySaver()
+  es.entity = 'platform_app_page'
+  es.record = {}
+}
+
+const visible = ref(false)
+const handleOk = () => {
+  // @ts-ignore
+  const pages: ComponentInstance[] = createPageNav.value?.getPages()
+  console.log('pages', pages)
+  pages.forEach((page) => {
+
+  })
+
+  visible.value = true
+}
+const handleCancel = () => {
+  visible.value = false
+}
 </script>
 <style>
 .gl-app-tree {

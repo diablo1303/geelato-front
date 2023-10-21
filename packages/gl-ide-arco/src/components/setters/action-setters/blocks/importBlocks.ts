@@ -18,6 +18,7 @@ import SetVarBlockHandler from './var/SetVarBlockHandler'
 import GroupSumBlockHandler from './data/GroupSumBlockHandler'
 import JsCodeBlockHandler from './other/JsCodeBlockHandler'
 import ExportExcelBlockHandler from './file/ExportExcelBlockHandler'
+import ImportExcelBlockHandler from './file/ImportExcelBlockHandler'
 import GenerateEntityReaderBlockHandler from './data/GenerateEntityReaderBlockHandler'
 import EntityQueryBlockHandler from './data/EntityQueryBlockHandler'
 import DictQueryBlockHandler from './data/DictQueryBlockHandler'
@@ -40,6 +41,7 @@ export {
   SetVarBlockHandler,
   GroupSumBlockHandler,
   JsCodeBlockHandler,
+  ImportExcelBlockHandler,
   ExportExcelBlockHandler,
   GenerateEntityReaderBlockHandler,
   EntityQueryBlockHandler,

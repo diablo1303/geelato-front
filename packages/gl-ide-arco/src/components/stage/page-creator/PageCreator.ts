@@ -6,6 +6,8 @@ export class PageCreatorOptions {
   appId: string = ''
   // 页面名称
   pageLabel: string = ''
+  // 页面类型，如formPage
+  pageType: string = ''
   // 实体元数据
   entityMeta: EntityMeta = new EntityMeta()
   // 该属性表单适用 每行默认三列

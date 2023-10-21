@@ -1,36 +1,44 @@
 <template>
   <div class="gl-entity-tree">
-    <GlBaseTree ref="glBaseTree"
-                :treeId="treeId"
-                :treeName="treeName"
-                :draggable="draggable"
-                :loadTreeData="loadTreeDataFn"
-                :addNode="addNodeFn"
-                :updateNodeName="updateNodeNameFn"
-                :updateNodeIcon="updateNodeIconFn"
-                :updateNode="updateNodeFn"
-                :updateNodeSeqNo="updateNodeSeqNoFn"
-                :deleteNode="deleteNodeFn"
-                @deleteNode="onDeleteNode"
-                @selectNode="onSelectNode"
-                @clickContextMenuItem="clickContextMenuItem"
-                :contextMenuData="contextMenuData"
+    <GlBaseTree
+      ref="glBaseTree"
+      :treeId="treeId"
+      :treeName="treeName"
+      :draggable="draggable"
+      :loadTreeData="loadTreeDataFn"
+      :addNode="addNodeFn"
+      :updateNodeName="updateNodeNameFn"
+      :updateNodeIcon="updateNodeIconFn"
+      :updateNode="updateNodeFn"
+      :updateNodeSeqNo="updateNodeSeqNoFn"
+      :deleteNode="deleteNodeFn"
+      @deleteNode="onDeleteNode"
+      @selectNode="onSelectNode"
+      @clickContextMenuItem="clickContextMenuItem"
+      :contextMenuData="contextMenuData"
     ></GlBaseTree>
   </div>
 </template>
 <script lang="ts">
 export default {
-  name: "GlEntityTree",
-};
+  name: 'GlEntityTree'
+}
 </script>
 <script setup lang="ts">
-import {entityApi, type EntityReader} from "@geelato/gl-ui";
-import {type PropType, ref, toRaw} from "vue";
-import GlBaseTree from "./GlBaseTree.vue";
-import type {BindField} from "@geelato/gl-ui-schema";
-import type {ContextMenuDataType} from "./types";
+import { entityApi, type EntityReader } from '@geelato/gl-ui'
+import { type PropType, ref, toRaw } from 'vue'
+import GlBaseTree from './GlBaseTree.vue'
+import type { BindField } from '@geelato/gl-ui-schema'
+import type { ContextMenuDataType } from './types'
 
-const emits = defineEmits(['selectNode', 'addNode', 'updateNode', 'updateNodeName', 'deleteNode', 'clickContextMenuItem'])
+const emits = defineEmits([
+  'selectNode',
+  'addNode',
+  'updateNode',
+  'updateNodeName',
+  'deleteNode',
+  'clickContextMenuItem'
+])
 const props = defineProps({
   treeId: {
     type: [String, Number],
@@ -84,7 +92,6 @@ const props = defineProps({
     type: Object as PropType<BindField>,
     required: true
   }
-
 })
 
 const glBaseTree = ref()
@@ -111,6 +118,7 @@ const addNodeFn = (params: any) => {
   }
   return entityApi.save(props.treeEntityName, data)
 }
+
 const updateNodeNameFn = (params: any) => {
   const data = {
     id: params.editNodeData.key,
@@ -126,7 +134,6 @@ const updateNodeIconFn = (params: any) => {
   }
   return entityApi.save(props.treeEntityName, data)
 }
-
 
 const updateNodeFn = (params: any) => {
   const data = {
@@ -156,15 +163,18 @@ const updateNodeSeqNoFn = (params: any) => {
  */
 const deleteNodeFn = (params: any) => {
   const data = {
-    id: params.clickedNodeData.key,
+    id: params.clickedNodeData.key
   }
   const extendData = {
     [props.extendEntityField.fieldName]: params.clickedNodeData.key
   }
-  return entityApi.deleteBatch([{
-    entityName: props.treeEntityName,
-    keyValues: data
-  }, {entityName: props.extendEntityField.entityName, keyValues: extendData}])
+  return entityApi.deleteBatch([
+    {
+      entityName: props.treeEntityName,
+      keyValues: data
+    },
+    { entityName: props.extendEntityField.entityName, keyValues: extendData }
+  ])
 }
 
 const onSelectNode = (params: any) => {
@@ -177,7 +187,6 @@ const onDeleteNode = (params: any) => {
 const clickContextMenuItem = (params: any) => {
   emits('clickContextMenuItem', params)
 }
-
 </script>
 <style>
 .gl-entity-tree {

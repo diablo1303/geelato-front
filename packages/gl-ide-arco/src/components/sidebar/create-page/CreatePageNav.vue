@@ -1,11 +1,12 @@
 <script lang="ts">
 export default {
-  name: 'CreateFromTemplate'
+  name: 'CreatePageNav'
 }
 </script>
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import {ref, toRaw, watch} from 'vue'
 import FormPageConfig from './FormPageConfig.vue'
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -16,20 +17,32 @@ const props = defineProps({
     }
   }
 })
+
 const mv = ref(props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
 
 const currentPageConfigName = ref('')
+const currentPage = ref({})
 
 const selectPageTemplate = (selectedTemplate: string) => {
   currentPageConfigName.value = selectedTemplate
 }
+
+/**
+ *  需要创建的页面
+ */
+const getPages = ():ComponentInstance[] => {
+  // @ts-ignore
+  return [toRaw(currentPage.value)]
+}
+
+defineExpose({ getPages })
 </script>
 
 <template>
-  <div class="gl-create-from-template">
+  <div class="gl-create-from-nav">
     <div class="gl-left">
       <div class="gl-title">自定义创建</div>
       <a-button style="width: 120px; height: 120px">
@@ -77,13 +90,16 @@ const selectPageTemplate = (selectedTemplate: string) => {
       </a-card>
     </div>
     <div class="gl-right">
-      <FormPageConfig v-if="currentPageConfigName === 'FormPageConfig'"></FormPageConfig>
+      <FormPageConfig
+        v-model="currentPage"
+        v-if="currentPageConfigName === 'FormPageConfig'"
+      ></FormPageConfig>
     </div>
   </div>
 </template>
 
 <style lang="less">
-.gl-create-from-template {
+.gl-create-from-nav {
   max-height: 800px;
   min-height: 800px;
 
@@ -118,7 +134,7 @@ const selectPageTemplate = (selectedTemplate: string) => {
   .gl-item:hover,
   .gl-item.gl-selected {
     border: 1px solid royalblue;
-    box-shadow: 2px 2px 2px 1px rgba(4, 103, 194,0.2);
+    box-shadow: 2px 2px 2px 1px rgba(4, 103, 194, 0.2);
   }
 }
 </style>

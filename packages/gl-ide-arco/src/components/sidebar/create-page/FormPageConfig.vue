@@ -11,16 +11,15 @@ import { PageCreatorOptions } from '../../stage/page-creator/PageCreator'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
+  /**
+   *  page配置
+   */
   modelValue: {
-    type: String,
+    type: Object,
     default() {
-      return ''
+      return {}
     }
   }
-})
-const mv = ref(props.modelValue)
-watch(mv, () => {
-  emits('update:modelValue', mv.value)
 })
 
 const entityName = ref('')
@@ -28,7 +27,7 @@ const form: any = ref({ fieldRange: 'ALL', colSpan: 3 })
 const pageCreatorOptions = ref(new PageCreatorOptions())
 
 const formPageCreator = new FormPageCreator()
-const page = ref({})
+const page = ref(props.modelValue)
 
 watch(
   form,
@@ -37,6 +36,7 @@ watch(
     pageCreatorOptions.value.pageLabel = form.value.pageLabel
     pageCreatorOptions.value.colSpan = form.value.colSpan
     page.value = formPageCreator.create(pageCreatorOptions.value)
+    emits('update:modelValue', page.value)
   },
   { deep: true }
 )
@@ -49,8 +49,11 @@ const loadFieldMetas = (entityMeta: EntityMeta) => {
       'id',
       'createAt',
       'creator',
+      'creatorName',
       'updateAt',
       'updater',
+      'updaterName',
+      'updatorName',
       'delStatus',
       'seqNo',
       'deptId',
@@ -64,6 +67,14 @@ const loadFieldMetas = (entityMeta: EntityMeta) => {
   page.value = formPageCreator.create(pageCreatorOptions.value)
   console.log('loadFieldMetas', em)
 }
+/**
+ *  获取页面配置
+ */
+const getPage = () => {
+  return page.value
+}
+
+defineExpose({ getPage })
 </script>
 
 <template>
