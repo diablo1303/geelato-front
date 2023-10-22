@@ -50,8 +50,12 @@ export function pageQueryEncoding(params: PageQueryRequest) {
   });
 }
 
-export function queryEncodings() {
-  return axios.get<QueryEncodingForm[]>('/api/encoding/query');
+export function queryEncodings(params: QueryEncodingForm) {
+  return axios.get<QueryEncodingForm[]>('/api/encoding/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
 }
 
 export function getEncoding(id: string) {

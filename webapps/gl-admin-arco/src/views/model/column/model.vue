@@ -92,7 +92,7 @@
             :label="$t('model.column.index.form.dataType')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="selectType">
-          <a-select v-model="formData.selectType" :options="selectTypeOptions" @change="selectTypeChange(formData.selectType)"/>
+          <a-select v-model="formData.selectType" :options="selectTypeOptions" allow-search @change="selectTypeChange(formData.selectType)"/>
         </a-form-item>
       </a-col>
       <!-- 字符串 长度设置 -->
@@ -106,7 +106,7 @@
               :max="selectData.max"
               :min="1"
               :placeholder="$t('model.form.rules.match.length.title')+`[1,${selectData.max}]`"
-              :precision="0" :read-only="selectData.fixed"/>
+              :precision="0" :disabled="selectData.fixed"/>
         </a-form-item>
       </a-col>
       <!-- 数值类型，是否有符号 -->
@@ -115,8 +115,7 @@
             :label="$t('model.column.index.form.numericSigned')"
             :rules="[{required: ['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.dataType),message: $t('model.form.rules.match.required')}]"
             field="numericSigned">
-          <a-radio-group v-model="formData.numericSigned"
-                         :options="numericSignedOptions"
+          <a-radio-group v-model="formData.numericSigned" :disabled="['SCORE'].includes(formData.selectType)" :options="numericSignedOptions"
                          @change="numericSignedChange(formData.numericSigned as boolean,$event)">
             <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
           </a-radio-group>
@@ -151,7 +150,7 @@
         </a-form-item>
       </a-col>
       <!-- 默认值 defaultValue -->
-      <a-col v-if="['CHAR','VARCHAR','TEXT','MEDIUMTEXT','LONGTEXT'].includes(formData.dataType)" :span="24">
+      <a-col v-if="['CHAR','VARCHAR','REMARK','TEXT','RICHTEXT','SCRIPT'].includes(formData.selectType)" :span="24">
         <a-form-item
             :label="$t('model.column.index.form.defaultValue')"
             :label-col-props="{ span: (pageData.formCol===1?8:4) }"
@@ -160,12 +159,31 @@
           <a-textarea v-model="formData.defaultValue" :auto-size="{minRows:2,maxRows:4}" :max-length="formData.charMaxLength" show-word-limit/>
         </a-form-item>
       </a-col>
+      <!--   默认范围 defaultValue 字典项、流水号、实体   -->
+      <a-col v-if="['DICTIONARY','CODE','ENTITY'].includes(formData.selectType)" :span="24">
+        <a-form-item
+            :label="$t('model.column.index.form.defaultRange')"
+            :label-col-props="{ span: (pageData.formCol===1?8:4) }"
+            :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
+            field="defaultValue">
+          <a-select v-if="pageData.button&&['DICTIONARY'].includes(formData.selectType)" v-model="formData.defaultValue" allow-clear allow-search>
+            <a-option v-for="item of selectDictionaryOptions" :key="item.id" :label="`${item.dictName}[${item.dictCode}]`" :value="item.dictCode"/>
+          </a-select>
+          <a-select v-if="pageData.button&&['CODE'].includes(formData.selectType)" v-model="formData.defaultValue" allow-clear allow-search>
+            <a-option v-for="item of selectCodeOptions" :key="item.id" :label="`${item.title}[${item.example}]`" :value="item.id"/>
+          </a-select>
+          <a-select v-if="pageData.button&&['ENTITY'].includes(formData.selectType)" v-model="formData.defaultValue" allow-clear allow-search>
+            <a-option v-for="item of selectEntityOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.id"/>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <!--  布尔值 defaultValue -->
       <a-col v-if="['BIT'].includes(formData.dataType)" :span="24/pageData.formCol">
         <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
           <a-radio-group v-model="formData.defaultValue">
             <a-radio value="1">TRUE</a-radio>
             <a-radio value="0">FALSE</a-radio>
-            <a-radio value="">NULL</a-radio>
+            <a-radio v-if="['BIT'].includes(formData.selectType)" value="">NULL</a-radio>
           </a-radio-group>
         </a-form-item>
       </a-col>
@@ -177,7 +195,8 @@
                 </a-checkbox-group>
               </a-form-item>
             </a-col>-->
-      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.dataType)" :span="24/pageData.formCol">
+      <!--  数值类型 number   -->
+      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.selectType)" :span="24/pageData.formCol">
         <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
           <a-input-number
               v-model="formData.defaultValue"
@@ -185,6 +204,106 @@
               :min="selectData.min"
               :placeholder="$t('model.form.rules.match.length.title')+`[${selectData.min},${selectData.max}]`"
               :precision="formData.numericScale"/>
+        </a-form-item>
+      </a-col>
+      <!--   最大分数 score   -->
+      <a-col v-if="['SCORE'].includes(formData.selectType)" :span="24/pageData.formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.defaultMaxValue')"
+            :rules="[{required: ['SCORE'].includes(formData.selectType),message: $t('model.form.rules.match.required')}]"
+            field="defaultValue">
+          <a-input-number
+              v-model="formData.defaultValue"
+              :max="selectData.max"
+              :min="selectData.min"
+              :placeholder="$t('model.form.rules.match.length.title')+`[${selectData.min},${selectData.max}]`"
+              :precision="formData.numericScale"/>
+        </a-form-item>
+      </a-col>
+
+      <!--  json类型，多组件   -->
+      <a-divider v-if="['MULTICOMPONENT'].includes(formData.selectType)" style="margin: 5px 0;"/>
+      <a-col v-if="['MULTICOMPONENT'].includes(formData.selectType)" :span="24">
+        <a-form-item :wrapper-col-props="{ span: 24 }" field="defaultValue">
+          <a-space :style="{'width':'100%'}" direction="vertical" size="mini">
+            <a-card v-for="(item,index) of multiComponentData" :key="index" :title="item.title" hoverable size="small">
+              <template #extra>
+                <a-space>
+                  <a-tooltip v-if="(index+1)===multiComponentData.length" :content="$t('model.column.index.multi.add.text')">
+                    <a-link @click="clickAddMulti($event)">
+                      <icon-plus/>
+                    </a-link>
+                  </a-tooltip>
+                  <a-tooltip v-if="item.isEdit" :content="$t('model.column.index.multi.save.text')">
+                    <a-link status="success" @click="clickSaveMulti(item)">
+                      <icon-save/>
+                    </a-link>
+                  </a-tooltip>
+                  <a-tooltip v-if="!item.isEdit" :content="$t('model.column.index.multi.edit.text')">
+                    <a-link @click="clickEditMulti(item)">
+                      <icon-edit/>
+                    </a-link>
+                  </a-tooltip>
+                  <a-tooltip v-if="1!==multiComponentData.length" :content="$t('model.column.index.multi.delete.text')">
+                    <a-link status="danger" @click="clickDeleteMulti(item)">
+                      <icon-delete/>
+                    </a-link>
+                  </a-tooltip>
+                </a-space>
+              </template>
+              <a-col v-if="item.isEdit" :span="24">
+                <a-form-item :label="$t('model.column.index.form.title')" :required="true" :style="{'margin-bottom': '5px'}">
+                  <a-input v-model.trim="item.title" :max-length="32" size="small"/>
+                </a-form-item>
+              </a-col>
+              <a-col v-if="item.isEdit" :span="24">
+                <a-form-item :label="$t('model.column.index.form.fieldName')" :required="true" :style="{'margin-bottom': '5px'}">
+                  <a-input v-model.trim="item.fieldName" :max-length="32" size="small"/>
+                </a-form-item>
+              </a-col>
+              <a-col v-if="item.isEdit" :span="24">
+                <a-form-item :label="$t('model.column.index.form.dataType')" :required="true" :style="{'margin-bottom': '5px'}">
+                  <a-select v-model="item.selectType" :options="selectTypeOptions" allow-search size="small" @change="selectTypeMultiChange(item)"/>
+                </a-form-item>
+              </a-col>
+              <a-col v-if="item.isEdit&&['CHAR','VARCHAR','TEXT','MEDIUMTEXT','LONGTEXT'].includes(item.dataType)" :span="24">
+                <a-form-item :label="$t('model.column.index.form.charMaxLength')" :required="true" :style="{'margin-bottom': '5px'}">
+                  <a-input-number v-model="item.charMaxLength" :max="item.columnSelectType.radius.max" :min="1" :precision="0"
+                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.max}]`"
+                                  :disabled="item.columnSelectType.fixed"/>
+                </a-form-item>
+              </a-col>
+              <a-col v-if="item.isEdit&&['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(item.dataType)" :span="24">
+                <a-form-item :label="$t('model.column.index.form.numericPrecision')" :required="true" :style="{'margin-bottom': '5px'}">
+                  <a-input-number v-model="item.numericPrecision" :max="item.columnSelectType.radius.unDigit" :min="1" :precision="0"
+                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.unDigit}]`"/>
+                </a-form-item>
+              </a-col>
+              <a-col v-if="item.isEdit&&['DECIMAL'].includes(item.dataType)" :span="24">
+                <a-form-item :label="$t('model.column.index.form.numericScale')" :required="true" :style="{'margin-bottom': '5px'}">
+                  <a-input-number v-model="item.numericScale" :max="item.columnSelectType.radius.precision" :min="1" :precision="0"
+                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.precision}]`"/>
+                </a-form-item>
+              </a-col>
+              <div v-if="!item.isEdit">
+                <div v-if="['CHAR','VARCHAR','REMARK','ORG','USER','UPLOAD'].includes(item.selectType)">
+                  {{ `${item.fieldName} | ${item.dataType}(${item.charMaxLength}) | ${getFormatSelectType(item.selectType)}` }}
+                </div>
+                <div v-else-if="['DICTIONARY','RADIO','CODE','COLOR','ENTITY','TEXT','RICHTEXT','SCRIPT'].includes(item.selectType)">
+                  {{ `${item.fieldName} | ${getFormatSelectType(item.selectType)}` }}
+                </div>
+                <div v-else-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT'].includes(item.selectType)">
+                  {{ `${item.fieldName} | ${item.dataType}(${item.numericPrecision}) | ${getFormatSelectType(item.selectType)}` }}
+                </div>
+                <div v-else-if="['DECIMAL','SCORE'].includes(item.selectType)">
+                  {{ `${item.fieldName} | ${item.dataType}(${item.numericPrecision}, ${item.numericScale}) | ${getFormatSelectType(item.selectType)}` }}
+                </div>
+                <div v-else>
+                  {{ `${item.fieldName} | ${getFormatSelectType(item.selectType)}` }}
+                </div>
+              </div>
+            </a-card>
+          </a-space>
         </a-form-item>
       </a-col>
 
@@ -232,6 +351,7 @@
           </a-radio-group>
         </a-form-item>
       </a-col>
+      <!--  数值类型，自动递增    -->
       <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT'].includes(formData.dataType)&&formData.key===1" :span="24/pageData.formCol">
         <a-form-item :label="$t('model.column.index.form.autoIncrement')" field="autoIncrement">
           <a-radio-group v-model="formData.autoIncrement" :options="autoIncrementOptions">
@@ -255,8 +375,8 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import {useI18n} from 'vue-i18n';
-import {FormInstance, Modal} from "@arco-design/web-vue";
-import {ListUrlParams} from '@/api/base';
+import {FormInstance, Modal, Notification} from "@arco-design/web-vue";
+import {ListUrlParams, PageQueryRequest} from '@/api/base';
 import {
   autoIncrementOptions,
   columnSelectType,
@@ -271,11 +391,16 @@ import {
   ColumnSelectType,
   createOrUpdateTableColumn as createOrUpdateForm,
   getTableColumn as getForm,
+  QueryMultiComponentForm,
   QueryTableColumnForm as QueryForm,
+  QueryTableForm,
+  queryTables,
   validateTableColumnName
 } from '@/api/model';
 import {formatSeparator, isBlank, isNotBlank, toCamelCase} from '@/utils/strings';
 import {useRoute} from "vue-router";
+import {QueryDictForm, queryDicts} from "@/api/security";
+import {QueryEncodingForm, queryEncodings} from "@/api/encoding";
 
 // 国际化
 const {t} = useI18n();
@@ -328,12 +453,175 @@ const generateFormData = (): QueryForm => {
 }
 const formData = ref(generateFormData());
 const selectData = ref({fixed: false, max: 21845, min: 0, digit: 5, precision: 0});
+const multiComponentData = ref<QueryMultiComponentForm[]>([]);
+const generateMultiComponentData = (): QueryMultiComponentForm => {
+  return {
+    title: '', fieldName: '', selectType: 'VARCHAR', dataType: 'VARCHAR',
+    charMaxLength: 64, numericPrecision: 0, numericScale: 0, isEdit: true,
+    // eslint-disable-next-line no-use-before-define
+    columnSelectType: formatSelectType('VARCHAR')
+  };
+}
+const validateMulti = () => {
+  let isValid = true;
+  if (multiComponentData.value.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of multiComponentData.value) {
+      item.isEdit = false;
+      if (!item.title || !item.fieldName || !item.selectType) {
+        item.isEdit = true;
+        isValid = false;
+      }
+    }
+  }
+  if (!isValid) {
+    Notification.warning(t('model.column.index.multi.valid.text'));
+  }
+  return isValid;
+}
+const clickAddMulti = (ev?: MouseEvent) => {
+  if (validateMulti()) {
+    multiComponentData.value.push(generateMultiComponentData());
+  }
+}
+const clickEditMulti = (data: QueryMultiComponentForm) => {
+  if (validateMulti()) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of multiComponentData.value) {
+      if (item.fieldName === data.fieldName) {
+        item.isEdit = true;
+      } else {
+        item.isEdit = false;
+      }
+    }
+  }
+}
+const clickSaveMulti = (data: QueryMultiComponentForm) => {
+  if (validateMulti()) {
+    data.isEdit = false;
+  }
+}
+const clickDeleteMulti = (data: QueryMultiComponentForm) => {
+  if (multiComponentData.value.length > 0) {
+    const indexs = [];
+    for (let i = 0; i < multiComponentData.value.length; i += 1) {
+      multiComponentData.value[i].isEdit = false;
+      if (multiComponentData.value[i].fieldName === data.fieldName) {
+        indexs.push(i);
+      }
+    }
+    for (let i = 0; i < indexs.length; i += 1) {
+      multiComponentData.value.splice(indexs[i], 1);
+    }
+  }
+}
+const getMultiData = () => {
+  if (multiComponentData.value.length > 0) {
+    const indexs = [];
+    for (let i = 0; i < multiComponentData.value.length; i += 1) {
+      const item = multiComponentData.value[i];
+      delete item.isEdit;
+      delete item.columnSelectType;
+      if (!item.title || !item.fieldName || !item.selectType) {
+        indexs.push(i);
+      }
+    }
+    for (let i = 0; i < indexs.length; i += 1) {
+      multiComponentData.value.splice(indexs[i], 1);
+    }
+  }
+  return multiComponentData.value.length > 0 ? JSON.stringify(multiComponentData.value) : '';
+}
+const selectTypeMultiChange = (data: QueryMultiComponentForm) => {
+  // eslint-disable-next-line no-use-before-define
+  data.columnSelectType = formatSelectType(data.selectType);
+  // 数据类型
+  data.dataType = data.columnSelectType.mysql && data.columnSelectType.mysql.toUpperCase();
+  // 字符串 默认长度
+  if (data.columnSelectType.extent > 0) {
+    data.charMaxLength = data.columnSelectType.extent;
+  } else if (['CHAR', 'VARCHAR', 'TEXT', 'MEDIUMTEXT', 'LONGTEXT'].includes(data.dataType)) {
+    data.charMaxLength = data.columnSelectType.radius.max;
+  }
+  // 数值 默认长度
+  if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT'].includes(data.dataType)) {
+    data.numericPrecision = data.columnSelectType.radius.digit;
+    data.numericScale = data.columnSelectType.radius.precision;
+  }
+  if (['DECIMAL'].includes(data.selectType)) {
+    data.numericPrecision = 12;
+    data.numericScale = 2;
+  }
+  if (['SCORE'].includes(data.selectType)) {
+    data.numericPrecision = 3;
+    data.numericScale = 1;
+  }
+}
+const loadMultiData = (list: QueryMultiComponentForm[]) => {
+  if (list != null && list.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of list) {
+      item.isEdit = false;
+      selectTypeMultiChange(item);
+    }
+  }
+  return list;
+}
+
+const selectDictionaryOptions = ref<QueryDictForm[]>([]);
+const getSelectDictionaryOptions = async () => {
+  try {
+    const {data} = await queryDicts({
+      enableStatus: 1,
+      appId: (route.params && route.params.appId as string) || '',
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+    } as unknown as QueryDictForm);
+    selectDictionaryOptions.value = data || [];
+  } catch (err) {
+    selectDictionaryOptions.value = [];
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+const selectCodeOptions = ref<QueryEncodingForm[]>([]);
+const getSelectCodeOptions = async () => {
+  try {
+    const {data} = await queryEncodings({
+      enableStatus: 1,
+      appId: (route.params && route.params.appId as string) || '',
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+    } as unknown as QueryEncodingForm);
+    selectCodeOptions.value = data || [];
+  } catch (err) {
+    selectCodeOptions.value = [];
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+const selectEntityOptions = ref<QueryTableForm[]>([]);
+const getSelectEntityOptions = async (params: PageQueryRequest = {
+  appId: (route.params && route.params.appId as string) || '',
+  tenantCode: (route.params && route.params.tenantCode as string) || '',
+  enableStatus: 1, tableType: 'table'
+} as unknown as PageQueryRequest) => {
+  try {
+    const {data} = await queryTables(params);
+    selectEntityOptions.value = data;
+  } catch (err) {
+    selectEntityOptions.value = [];
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
 
 const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
   if (!res) {
     params.autoAdd = Number(params.autoAdd.toString());
     params.defaultValue = params.defaultValue && params.defaultValue.toString();
+    if (['MULTICOMPONENT'].includes(params.selectType)) {
+      params.defaultValue = getMultiData();
+    }
     try {
       const {data} = await createOrUpdateForm(params);
       successBack(data);
@@ -375,15 +663,18 @@ const formatSelectType = (value: string): ColumnSelectType => {
   // eslint-disable-next-line no-restricted-syntax
   for (const item of columnSelectType) {
     if (item.value === value) {
-      item.radius = item.radius ? item.radius : {max: 1, min: 1, digit: 1, unDigit: 1, precision: 0};
-      // 数据类型范围处理
-      // eslint-disable-next-line no-restricted-globals
-      item.radius.max = !isNaN(item.radius.max) ? Number(item.radius.max) : 0;
-      // eslint-disable-next-line no-restricted-globals
-      item.radius.min = !isNaN(item.radius.min) ? Number(item.radius.min) : 0;
-      // eslint-disable-next-line no-restricted-globals
-      item.extent = !isNaN(item.extent) ? Number(item.extent) : 0;
-
+      if (value === "SCORE") {
+        item.radius = {max: 10000, min: 0, digit: 5, unDigit: 5, precision: 2};
+      } else {
+        item.radius = item.radius ? item.radius : {max: 1, min: 1, digit: 1, unDigit: 1, precision: 0};
+        // 数据类型范围处理
+        // eslint-disable-next-line no-restricted-globals
+        item.radius.max = !isNaN(item.radius.max) ? Number(item.radius.max) : 0;
+        // eslint-disable-next-line no-restricted-globals
+        item.radius.min = !isNaN(item.radius.min) ? Number(item.radius.min) : 0;
+        // eslint-disable-next-line no-restricted-globals
+        item.extent = !isNaN(item.extent) ? Number(item.extent) : 0;
+      }
       return item;
     }
   }
@@ -416,16 +707,26 @@ const selectTypeChange = (value: string) => {
   selectData.value.digit = formData.value.numericSigned ? cst.radius.digit : cst.radius.unDigit;
   selectData.value.precision = cst.radius.precision;
   // 数值 默认长度
-  if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT'].includes(formData.value.dataType)) {
-    formData.value.numericPrecision = cst.radius.digit;
-    formData.value.numericScale = cst.radius.precision;
+  if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT', 'DECIMAL'].includes(formData.value.dataType)) {
+    if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT'].includes(formData.value.dataType)) {
+      formData.value.numericPrecision = cst.radius.digit;
+      formData.value.numericScale = cst.radius.precision;
+    }
+    if (['DECIMAL'].includes(formData.value.selectType)) {
+      formData.value.numericPrecision = 12;
+      formData.value.numericScale = 2;
+    }
+    if (['SCORE'].includes(formData.value.selectType)) {
+      formData.value.numericPrecision = 3;
+      formData.value.numericScale = 1;
+    }
+    // eslint-disable-next-line no-use-before-define
+    numericPrecisionBlur();
   }
-  if (['DECIMAL'].includes(formData.value.dataType)) {
-    formData.value.numericPrecision = 12;
-    formData.value.numericScale = 2;
+  // 布尔值 开关
+  if (['SWITCH'].includes(formData.value.selectType)) {
+    formData.value.defaultValue = '0';
   }
-  // eslint-disable-next-line no-use-before-define
-  numericPrecisionBlur();
 }
 const numericPrecisionBlur = (ev?: FocusEvent) => {
   const cst: ColumnSelectType = formatSelectType(formData.value.selectType);
@@ -439,6 +740,13 @@ const numericPrecisionBlur = (ev?: FocusEvent) => {
   const currentMax = currentMaxPrecision + currentMaxScale;
   selectData.value.max = currentMax > selectData.value.max ? selectData.value.max : currentMax;
   selectData.value.min = (0 - currentMax) < selectData.value.min ? selectData.value.min : (0 - currentMax);
+  // 评分默认值
+  if (['SCORE'].includes(formData.value.selectType)) {
+    setTimeout(() => {
+      formData.value.defaultValue = '';
+      formData.value.defaultValue = Number(formData.value.numericPrecision <= 1 ? 5 : 10 ** (formData.value.numericPrecision - 1));
+    }, 50);
+  }
 }
 const numericScaleBlur = (ev?: FocusEvent) => {
   numericPrecisionBlur();
@@ -468,6 +776,15 @@ const autoNameBlur = (ev?: FocusEvent) => {
 const autoAddChange = (value: string) => {
   autoNameBlur();
 }
+const getFormatSelectType = (value: string): string => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of columnSelectType) {
+    if (item.value === value) {
+      return item.label;
+    }
+  }
+  return '';
+}
 
 const openModal = (content: string) => {
   Modal.open({'content': content, 'footer': false, 'simple': true});
@@ -494,6 +811,9 @@ const validateCode = async (value: any, callback: any) => {
 
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {
+  getSelectDictionaryOptions();
+  getSelectCodeOptions();
+  getSelectEntityOptions();
   // 全局
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
@@ -504,6 +824,7 @@ const loadModel = (urlParams: ListUrlParams) => {
   formData.value.tableName = urlParams.params?.pName || '';
 // 重置验证
   resetValidate();
+  multiComponentData.value = [generateMultiComponentData()];
 // 特色
   if (urlParams.id) {
     getData(urlParams.id, (data: QueryForm) => {
@@ -524,6 +845,10 @@ const loadModel = (urlParams: ListUrlParams) => {
       }
       if (['BIT'].includes(data.dataType)) {
         data.defaultValue = (data.defaultValue == null || data.defaultValue === '') ? '' : data.defaultValue.toString();
+      }
+      if (['MULTICOMPONENT'].includes(data.selectType)) {
+        multiComponentData.value = (data.defaultValue == null || data.defaultValue === '' || data.defaultValue === '[]')
+          ? [generateMultiComponentData()] : loadMultiData(JSON.parse(data.defaultValue as string) as QueryMultiComponentForm[]);
       }
 
       formData.value = data;

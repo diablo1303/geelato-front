@@ -161,6 +161,8 @@ export default {
   'model.column.index.form.comment': '注释(中文)',
   'model.column.index.form.ordinalPosition': '次序',
   'model.column.index.form.defaultValue': '默认值',
+  'model.column.index.form.defaultRange': '默认范围',
+  'model.column.index.form.defaultMaxValue': '最大值',
   'model.column.index.form.type': '数据约束',
   'model.column.index.form.key': '是否主键',
   'model.column.index.form.key.1': '是',
@@ -237,6 +239,12 @@ export default {
   'model.column.index.model.title.view': '查看字段',
   'model.column.index.model.cancel.text': '取消',
   'model.column.index.model.ok.text': '确认',
+
+  'model.column.index.multi.add.text': '新增',
+  'model.column.index.multi.save.text': '保存',
+  'model.column.index.multi.edit.text': '编辑',
+  'model.column.index.multi.delete.text': '删除',
+  'model.column.index.multi.valid.text': '请补全必填数据',
 
   'model.table.permission.index.menu.list.searchTable': '模型权限',
   'model.table.permission.index.model.role.add': '新增角色',

@@ -138,6 +138,19 @@ export function validateTableEntityName(params: QueryTableForm) {
 }
 
 /* *************************** 字段信息 ****************************** */
+export interface QueryMultiComponentForm {
+  title: string; // 实体属性中文,中文名
+  fieldName: string;// 列名
+  selectType: string;
+  dataType: string;
+  charMaxLength: number; // 长度
+  numericPrecision: number; // 整数位
+  numericScale: number; // 小数位
+  // eslint-disable-next-line no-use-before-define
+  columnSelectType?: ColumnSelectType;
+  isEdit?: boolean;
+}
+
 export interface QueryTableColumnForm {
   id: string; // *
   tableId: string; // 表id *

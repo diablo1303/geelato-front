@@ -163,6 +163,8 @@ export default {
   'model.column.index.form.comment': 'comment',
   'model.column.index.form.ordinalPosition': 'order',
   'model.column.index.form.defaultValue': 'defaultValue',
+  'model.column.index.form.defaultRange': 'defaultRange',
+  'model.column.index.form.defaultMaxValue': 'maxValue',
   'model.column.index.form.type': 'restraint',
   'model.column.index.form.key': 'primaryKey',
   'model.column.index.form.key.1': 'YES',
@@ -239,6 +241,12 @@ export default {
   'model.column.index.model.title.view': 'View Table Column',
   'model.column.index.model.cancel.text': 'Cancel',
   'model.column.index.model.ok.text': 'Confirm',
+
+  'model.column.index.multi.add.text': 'Add',
+  'model.column.index.multi.save.text': 'Save',
+  'model.column.index.multi.edit.text': 'Edit',
+  'model.column.index.multi.delete.text': 'Delete',
+  'model.column.index.multi.valid.text': 'Please complete the required data',
 
   'model.table.permission.index.menu.list.searchTable': 'Table Permission',
   'model.table.permission.index.model.role.add': 'Add Role',
