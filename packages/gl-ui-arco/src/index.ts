@@ -21,7 +21,6 @@ import GlInstsRuntime from './components/gl-inst-runtime/GlInstsRuntime.vue'
 import GlRefPage from './components/gl-ref-page/GlRefPage.vue'
 import GlIconfontSelect from './components/gl-iconfont-select/GlIconfontSelect.vue'
 import GlText from './components/gl-text/GlText.vue'
-import { Drawer, Modal } from '@arco-design/web-vue'
 import GlAlert from './components/gl-alert/GlAlert.vue'
 import GlMultiComponents from './components/gl-multi-components/GlMultiComponents.vue'
 import GlUpload from './components/gl-upload/GlUpload.vue'
@@ -34,6 +33,8 @@ import { getFormParams } from './components/gl-entity-form/GlEntityForm'
 import { getLabel } from './components/MetaHelper'
 import GlEmpty from './components/gl-empty/GlEmpty.vue'
 import GlSelect from './components/gl-select/GlSelect.vue'
+import GlImport from './components/gl-import/GlImport.vue'
+import { Drawer, Modal,RangePicker } from '@arco-design/web-vue'
 
 const i18nMessage = { en, cn }
 
@@ -73,7 +74,9 @@ const component: Plugin = {
     app.component(GlMultiComponents.name, GlMultiComponents)
     app.component(GlUpload.name, GlUpload)
     app.component(GlImage.name, GlImage)
+    app.component(GlImport.name, GlImport)
 
+    app.component('GlRangePicker', RangePicker)
     app.component('GlModal', Modal)
     app.component('GlDrawer', Drawer)
     // const i18n = createI18n({
@@ -89,6 +92,6 @@ const component: Plugin = {
   }
 }
 
-export {i18nMessage, getFormParams, getLabel};
+export { i18nMessage, getFormParams, getLabel }
 // 默认导出组件
-export default component;
+export default component

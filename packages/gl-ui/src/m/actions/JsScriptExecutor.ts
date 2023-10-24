@@ -292,6 +292,9 @@ export class JsScriptExecutor {
           pageStatus
         )
       },
+      loadComponent:(componentName:string,props: Record<string, any>)=>{
+        return that.loadComponent(componentName,props)
+      },
       /**
        * 调用组件方法
        * @param componentId
@@ -736,6 +739,14 @@ export class JsScriptExecutor {
       pageProps
     )
     return h(GlPageViewer, { pageId, extendId, pageStatus, pageProps })
+  }
+
+  /**
+   *  加载全局注册的组件
+   */
+  loadComponent(componentName: string,props: Record<string, any>) {
+    const component =  this.app!.component(componentName)
+    return h(component!,props)
   }
 }
 

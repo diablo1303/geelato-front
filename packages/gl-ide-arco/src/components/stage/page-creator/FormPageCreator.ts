@@ -179,6 +179,7 @@ export class FormPageCreator extends PageCreator {
     const inst = new ComponentInstance()
     inst.props = {
       label: fieldMeta.title,
+      group:'dataEntry',
       rules: [],
       bindField: {
         appCode: '',

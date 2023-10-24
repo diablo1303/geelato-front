@@ -9,6 +9,7 @@ export default [
     {componentName: 'GlDynamicSelect', title: '实体选择器'},
     {componentName: 'ADatePicker', title: '日期选择器'},
     {componentName: 'ATimePicker', title: '时间选择器'},
+    {componentName: 'GlRangePicker', title: '日期范围选择器'},
     {componentName: 'GlUserSelect', title: '人员选择器'},
     {componentName: 'GlUpload', title: '文件上传'},
     {componentName: 'GlText', title: '文本展示'},

@@ -2,7 +2,6 @@ import type IBlockHandler from "../BlockHandler";
 import type {PropsExpressions} from "../BlockHandler";
 import ParseResult from "../ParseResult";
 import type {Param} from "@geelato/gl-ui";
-import BlockUtils from "../BlockUtils";
 import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 const toStr = (str: string) => {
