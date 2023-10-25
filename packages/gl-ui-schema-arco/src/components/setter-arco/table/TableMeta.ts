@@ -213,7 +213,7 @@ export default {
                     "__sIGch6bIhRKB7cNZod": "ew"
                 }, {"label": "包括", "value": "contains", "__sIGch6bIhRKB7cNZod": "contains"},
                     {"label": "在范围(in)", "value": "in"},
-                    {"label": "在范围(in)", "value": "bt"},
+                    {"label": "在...之间(between)", "value": "bt"},
                     {"label": "是否空", "value": "nil"}],
                 "buttonStyle": "solid"
             },

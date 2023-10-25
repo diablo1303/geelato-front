@@ -18,6 +18,7 @@ const componentGroups = [
   {name: 'block_data', text: '数据', opened: true},
   {name: 'block_feedback', text: '反馈', opened: true},
   {name: 'block_file', text: '文件', opened: true},
+  {name: 'block_network', text: '网络', opened: true},
   {name: 'block_other', text: '其它', opened: true}]
 
 </script>
