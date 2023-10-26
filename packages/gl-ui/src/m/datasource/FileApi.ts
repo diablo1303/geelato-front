@@ -66,7 +66,7 @@ export function getDownloadUrlByPath(name: string, path: string) {
 /**
  * 导出excel
  * @param fileName 文件名称
- * @param templateId 模板文档Id
+ * @param templateId 模型文档id
  * @param dataType 数据类型，mql | data，数据类型有可能是最新的数据结果（data），也有可能是用于后端查询获取数据结果的（mql）
  * @param data 数据
  */
@@ -75,6 +75,19 @@ export function exportExcel(fileName: string, templateId: string, dataType: stri
     .getAxios()
     .post(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}`, data)
 }
+
+/**
+ * 导入excel
+ * @param templateId 模型文档id
+ * @param attachId 已上传的数据文件id，如已上传的Excel文件id
+ * @param importType 导入的方式，“part”部分成功也导入，“all”全部成功才导入
+ */
+export function importFile(templateId: string, attachId: string, importType?: string) {
+  return entityApi
+    .getAxios()
+    .post(`/api/import/attach/${importType || 'part'}/${templateId}/${attachId}`)
+}
+
 
 /**
  * 文件下载
@@ -89,4 +102,23 @@ export function downloadFileById(id: string) {
   setTimeout(function () {
     document.body.removeChild(iframe)
   }, 100)
+}
+
+/**
+ * 获取导入模板信息
+ * @param templateId
+ */
+export function getImportTemplateInfo(templateId: string) {
+  return entityApi.getAxios().get(`/api/import/template/${templateId}`)
+}
+
+
+/**
+ * 下载导入模板文件
+ * @param templateId
+ */
+export function downloadImportTemplateFile(templateId: string) {
+  getImportTemplateInfo(templateId).then((res) => {
+    downloadFileById(res.data.template)
+  })
 }

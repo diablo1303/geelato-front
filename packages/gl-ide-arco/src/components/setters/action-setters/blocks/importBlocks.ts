@@ -24,6 +24,9 @@ import EntityQueryBlockHandler from './data/EntityQueryBlockHandler'
 import DictQueryBlockHandler from './data/DictQueryBlockHandler'
 import AnnotationBlockHandler from './other/AnnotationBlockHandler'
 import ForListBlockHandler from './loop/ForListBlockHandler'
+import ForTimesBlockHandler from './loop/ForTimesBlockHandler'
+import HttpRequestBlockHandler from './network/HttpRequestBlockHandler'
+
 export {
   OpenThirdPageBlockHandler,
   NotificationBlockHandler,
@@ -48,4 +51,6 @@ export {
   DictQueryBlockHandler,
   AnnotationBlockHandler,
   ForListBlockHandler,
+  ForTimesBlockHandler,
+  HttpRequestBlockHandler
 }

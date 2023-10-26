@@ -1,28 +1,72 @@
-import type IBlockHandler from "../BlockHandler";
-import type {PropsExpressions} from "../BlockHandler";
-import ParseResult from "../ParseResult";
-import {blocksHandler, CommandBlocks} from "../BlockHandler";
+import type IBlockHandler from '../BlockHandler'
+import type { PropsExpressions } from '../BlockHandler'
+import ParseResult from '../ParseResult'
+import { blocksHandler, CommandBlocks } from '../BlockHandler'
 
+const toStr = (str: string) => {
+  return `"${str}"`
+}
 export default class ImportExcelBlockHandler implements IBlockHandler {
-    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-        const fileName = propsExpressions?.fileName ? propsExpressions.fileName : `"${props.fileName}"`;
-        return new ParseResult(
-            `
-            ${props.enableAwait ? 'await ' : ''} $gl.fileApi.exportExcel(${fileName},"${props.fileTemplate?.templateId}","${props.dataType}",$gl.vars.${props.varName})
-            `
-        )
+  parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+    const params = {
+      templateId: props.fileTemplate?.templateId,
+      importType: props.importType
     }
+    return new ParseResult(
+      `
+        const content = $gl.fn.loadComponent('GlImport',${JSON.stringify(params)})
+        console.log('content',content)
+        $gl.fn.openModal({
+            title:'导入文件',
+            content: content,
+            width:'800px',
+            okText:'导入',
+            onBeforeOk: async ()=>{
+                try{
+                    const importResult = await content.component.exposed.importFile()
+                    if(importResult===undefined){
+                      return false
+                    }
+                    console.log('importResult',importResult)
+                }catch(e){
+                    console.error(e)
+                    return false
+                }
+            },
+            onOpen:async ()=>{
+                try{
+                    #{onOpen}
+                }catch(e){
+                    console.error(e)
+                    return false
+                }
+            },
+            onClose:async ()=>{
+                try{
+                    #{onClose}
+                }catch(e){
+                    console.error(e)
+                    return false
+                }
+            },
+            cancelText:'取消'
+        })
+    `
+    )
+  }
 }
 
 interface Props {
-    fileName: string
-    fileTemplate: any
-    // mql | data，数据类型有可能是最新的数据结果（data），也有可能是用于后端查询获取数据结果的（gql）
-    dataType: string
-    // 从上下文中的数据变量名
-    varName?: object
-    // 是否同步执行
-    enableAwait?:boolean
+  // 导入窗口标题
+  // title:string
+  //
+  fileTemplate: { appCode: string; templateId: string }
+  // part:可以部分导入；all:需要全部导入，错误即中断并回滚。
+  importType: string
+  // 从上下文中的数据变量名
+  // varName?: object
+  // 是否同步执行
+  // enableAwait?:boolean
 }
 
 blocksHandler.register(new ImportExcelBlockHandler(), CommandBlocks.CommandBlockOne)

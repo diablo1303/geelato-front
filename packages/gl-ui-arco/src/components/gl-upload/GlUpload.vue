@@ -146,7 +146,7 @@ watch(
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
-const isRead = pageProvideProxy.isPageStatusRead()
+const isRead = !!pageProvideProxy?.isPageStatusRead()
 </script>
 
 <template>

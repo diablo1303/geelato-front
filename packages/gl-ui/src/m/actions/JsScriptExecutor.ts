@@ -9,6 +9,7 @@ import { entityApi } from '../datasource/EntityApi'
 import * as fileApi from '../datasource/FileApi'
 import dayjs from 'dayjs'
 import { getDateTimeFns } from './fns/datetime'
+import axios, { type CreateAxiosDefaults } from 'axios'
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 type OptionsType = { [key: string]: any }
@@ -241,6 +242,9 @@ export class JsScriptExecutor {
       log(options: OptionsType) {
         // console.log(that.evalOptions(options, $gl?.ctx, ['content']).content)
         console.log(options)
+      },
+      createAxios:(config: CreateAxiosDefaults<any> | undefined)=> {
+        return axios.create(config)
       }
     }
   }
@@ -291,6 +295,9 @@ export class JsScriptExecutor {
           that.evalParams(params, $gl.ctx, $gl) || [],
           pageStatus
         )
+      },
+      loadComponent: (componentName: string, props: Record<string, any>) => {
+        return that.loadComponent(componentName, props)
       },
       /**
        * 调用组件方法
@@ -736,6 +743,14 @@ export class JsScriptExecutor {
       pageProps
     )
     return h(GlPageViewer, { pageId, extendId, pageStatus, pageProps })
+  }
+
+  /**
+   *  加载全局注册的组件
+   */
+  loadComponent(componentName: string, props: Record<string, any>) {
+    const component = this.app!.component(componentName)
+    return h(component!, props)
   }
 }
 

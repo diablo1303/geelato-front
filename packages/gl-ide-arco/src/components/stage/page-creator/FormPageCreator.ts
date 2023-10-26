@@ -176,9 +176,11 @@ export class FormPageCreator extends PageCreator {
    * @param fieldMeta
    */
   convertOne(entityName: string, fieldMeta: FieldMeta) {
+    console.log('convertOne', entityName, fieldMeta)
     const inst = new ComponentInstance()
     inst.props = {
       label: fieldMeta.title,
+      group: 'dataEntry',
       rules: [],
       bindField: {
         appCode: '',

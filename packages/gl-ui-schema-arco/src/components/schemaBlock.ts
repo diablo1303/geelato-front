@@ -25,19 +25,21 @@ import EntityQueryBlockMeta from "./setter-block/data/EntityQueryBlockMeta";
 import AnnotaionBlockMeta from "./setter-block/other/AnnotaionBlockMeta";
 import ForListBlockMeta from "./setter-block/loop/ForListBlockMeta";
 import ForListBlockInstance from "./setter-block/loop/ForListBlockInstance";
+import ForTimesBlockMeta from "./setter-block/loop/ForTimesBlockMeta";
+import ForTimesBlockInstance from "./setter-block/loop/ForTimesBlockInstance";
 import DictQueryBlockMeta from './setter-block/data/DictQueryBlockMeta'
 import ExportWordBlockMeta from './setter-block/file/ExportWordBlockMeta'
 import JsCodeBlockMeta from "./setter-block/code/JsCodeBlockMeta";
 import ExportPdfBlockMeta from './setter-block/file/ExportPdfBlockMeta';
 import ImportExcelBlockMeta from './setter-block/file/ImportExcelBlockMeta';
-
+import HttpRequestBlockMeta from "./setter-block/network/HttpRequestBlockMeta";
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, JsCodeBlockMeta,GenerateEntityReaderBlockMeta, GroupSumBlockMeta, BlockNotificationMeta, BlockOpenComponentPageMeta,BlockComponentInvokeMeta, TriggerComponentActionMeta, BlockSetVisibleMeta, SetValueBlockMeta, BlockOpenThirdPageMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
     BlockConfirmMeta,  ReturnBlockMeta,
-    LogBlockMeta, ExportExcelBlockMeta,ExportWordBlockMeta,ExportPdfBlockMeta,ImportExcelBlockMeta,AnnotaionBlockMeta,ForListBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta]
+    LogBlockMeta, ExportExcelBlockMeta,ExportWordBlockMeta,ExportPdfBlockMeta,ImportExcelBlockMeta,AnnotaionBlockMeta,ForListBlockMeta,ForTimesBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta,HttpRequestBlockMeta]
 
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance,ForListBlockInstance]
+const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance,ForListBlockInstance,ForTimesBlockInstance]
 const componentInstances: Array<ComponentInstance> = []
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {
