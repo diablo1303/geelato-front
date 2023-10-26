@@ -115,7 +115,7 @@
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.file.index.form.title')" :tooltip="true" :width="150" data-index="title">
         <template #cell="{ record }">
-          <a-button type="text" :title="$t('copy.to.clipboard.button.title')" @click="copyPrimaryKey(record.id)">
+          <a-button :title="$t('copy.to.clipboard.button.title')" type="text" @click="copyPrimaryKey(record.id)">
             <template #icon>
               <icon-copy/>
             </template>
@@ -202,6 +202,7 @@ const generateFilterData = (): FilterForm => {
   return {
     id: '',
     title: '',
+    useType: '',
     fileType: '',
     fileCode: '',
     template: '',

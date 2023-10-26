@@ -52,6 +52,7 @@ export function createOrUpdateFileTemplate(params: QueryFileTemplateForm) {
   return axios.post<QueryResult>('/api/export/template/createOrUpdate', params);
 }
 
+// @ts-ignore
 export function deleteFileTemplate(id: string) {
   return axios.delete<QueryResult>(`/api/export/template/isDelete/${id}`);
 }
