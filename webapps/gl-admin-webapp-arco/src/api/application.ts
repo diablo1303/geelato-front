@@ -94,8 +94,8 @@ export function getUploadUrl(isRename?: boolean) {
  * 下载附件
  * @param id 附件id
  */
-export function getDownloadUrlById(id: string) {
-  return id ? `${axios.defaults.baseURL}/resources/file?rstk=download&id=${id}` : '';
+export function getDownloadUrlById(id: string, isPdf?: boolean) {
+  return id ? `${axios.defaults.baseURL}/resources/file?rstk=download&id=${id}&isPdf=${isPdf === true}` : '';
 }
 
 /**
