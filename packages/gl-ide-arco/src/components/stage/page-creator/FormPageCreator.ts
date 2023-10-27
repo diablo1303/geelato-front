@@ -7,7 +7,7 @@ export const useCordConfig = (options: PageCreatorOptions): ComponentInstance =>
   const inst = new ComponentInstance()
   inst.id = utils.gid('card')
   inst.componentName = 'GlCard'
-  inst.props = { label: `${options.entityMeta.entityTitle}卡片`, bordered: false }
+  inst.props = { label: `${options.entityMeta.entityTitle}卡片`, bordered: false, showLabel: false }
   return inst
 }
 
@@ -178,9 +178,9 @@ export class FormPageCreator extends PageCreator {
   convertOne(entityName: string, fieldMeta: FieldMeta) {
     console.log('convertOne', entityName, fieldMeta)
     const inst = new ComponentInstance()
+    inst.group = 'dataEntry'
     inst.props = {
       label: fieldMeta.title,
-      group: 'dataEntry',
       rules: [],
       bindField: {
         appCode: '',

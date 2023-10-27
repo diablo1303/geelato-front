@@ -80,7 +80,3 @@ watch(mv, () => {
 <template>
   <ASelect :options="options" v-model="mv"></ASelect>
 </template>
-
-<style scoped>
-
-</style>
