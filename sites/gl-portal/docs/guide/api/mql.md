@@ -132,7 +132,7 @@ as 别名，格式name as alias，例如agesum:age|sum表示将求和的列名�
 * 查询：
 * 大于、小于、分组、in、
 * eq("eq"), neq("neq"), lt("lt"), lte("lte"), gt("gt"), gte("gte"), startWith("sw"), endWith("ew"), contains("contains");
-* in 已支持
+* in("in") between("bt")已支持
   **/
 *
 
