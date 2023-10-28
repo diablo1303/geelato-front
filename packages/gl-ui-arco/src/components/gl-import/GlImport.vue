@@ -5,9 +5,8 @@ export default {
 </script>
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
-import { entityApi, fileApi, useGlobal } from '@geelato/gl-ui'
+import { fileApi, useGlobal } from '@geelato/gl-ui'
 import { template } from 'lodash'
-import { downloadImportTemplateFile } from '@geelato/gl-ui/src/m/datasource/FileApi'
 
 const global = useGlobal()
 const emits = defineEmits(['update:modelValue'])
@@ -86,7 +85,26 @@ defineExpose({
 <template>
   <div>
     <div>
-      <GlUpload v-model="fileId" v-bind="uploadProps" />
+      <GlUpload v-model="fileId" v-bind="uploadProps">
+        <template #upload-button>
+          <div
+            style="
+              background-color: var(--color-fill-2);
+              color: var(--color-text-1);
+              border: 1px dashed var(--color-fill-4);
+              height: 100px;
+              width: 100%;
+              line-height: 100px;
+              text-align: center;
+            "
+          >
+            <div>
+              <GlIconfont type="gl-upload"></GlIconfont>
+              <span style="color: #3370ff; margin-left: 1em">点击上传</span>
+            </div>
+          </div>
+        </template>
+      </GlUpload>
     </div>
     <div>
       <p></p>

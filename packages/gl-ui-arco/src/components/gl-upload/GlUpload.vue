@@ -160,5 +160,9 @@ const isRead = !!pageProvideProxy?.isPageStatusRead()
     @error="uploadError"
     @success="uploadSuccess"
     @before-remove="beforeRemove"
-  />
+  >
+    <template #upload-button>
+      <slot name="upload-button"></slot>
+    </template>
+  </a-upload>
 </template>
