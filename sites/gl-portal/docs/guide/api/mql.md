@@ -66,19 +66,18 @@ select id,name,age from platform_user where sex=0 and age>20 and name like '%张
 
 ```
 
- @order [可选]指定排序字段，如果有@order，则服务端默认排序无效。例如："@order":"name|-,age|+"
+@order [可选]指定排序字段，如果有@order，则服务端默认排序无效。例如："@order":"name|-,age|+"
 
 ```javascript
 
 ```
 
+@key 在客户端发请求前自动生成，用于服务端解析缓存的key，客户端查询时，会自动依据实体名称、实体查询条件自动生成，规则如下：实体名称+属性数+@fs的字段数+TODO
 
 
-  @key 在客户端发请求前自动生成，用于服务端解析缓存的key，客户端查询时，会自动依据实体名称、实体查询条件自动生成，规则如下：实体名称+属性数+@fs的字段数+TODO
-
-  @w    [可选]where的简写，更高级的查询语句片段，暂不支持
+@b [可选]brackets的简写，用于通过括号来组合条件
 ```javascript
-'@w':[{
+'@b':[{
   "or": [
     {"effectiveDate1|bt": ["2023-9-1", "2023-9-10"]},
     {"otherDate1|bt": ["2023-9-1", "2023-9-10"]}
@@ -93,6 +92,12 @@ select id,name,age from platform_user where sex=0 and age>20 and name like '%张
   ]
 }]
 ```
+
+@w    [可选]where的简写，更高级的查询语句片段
+```javascript
+'@w':'sex=1'
+```
+
 
 **$ 指变量**，查询的字段变量
 **~ 指子查询或子实体**，用于查询是子查询，用于保存则是子实体信息
