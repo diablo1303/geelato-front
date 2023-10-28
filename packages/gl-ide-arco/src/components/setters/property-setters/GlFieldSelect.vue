@@ -1,6 +1,10 @@
 <template>
-  <a-select size="small" v-model="mv" @change="onChange" allow-search allow-clear @click="onClick">
-    <a-option v-for="item in entityFieldMetas" :value="item.name" :class="{'gl-selected':mv===item.name}">
+  <a-select size="small" v-model="mv" @change="onChange" allow-search allow-clear :multiple="multiple" @click="onClick">
+    <a-option
+      v-for="item in entityFieldMetas"
+      :value="item.name"
+      :class="{ 'gl-selected': mv === item.name }"
+    >
       {{ item.title + ' ' + item.name }}
     </a-option>
   </a-select>
@@ -12,10 +16,9 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-
-import {inject, onMounted, provide, ref, watch} from 'vue'
-import type {FieldMeta} from "@geelato/gl-ui";
-import  {ComponentSetterProvideKey,ComponentSetterProvideProxy} from "@geelato/gl-ide";
+import { inject, onMounted, provide, ref, watch } from 'vue'
+import type { FieldMeta } from '@geelato/gl-ui'
+import { ComponentSetterProvideKey, ComponentSetterProvideProxy } from '@geelato/gl-ide'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -34,10 +37,10 @@ const props = defineProps({
     default() {
       return 'entityMeta'
     }
-  }
+  },
+  multiple: Boolean
 })
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
-
 
 const entityFieldMetas = ref(new Array<FieldMeta>())
 const mv = ref(props.modelValue)
@@ -46,9 +49,7 @@ watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
 
-const onChange = () => {
-
-}
+const onChange = () => {}
 const onClick = () => {
   setData()
 }
@@ -58,14 +59,13 @@ const setData = () => {
   // console.log('componentSetterProvideProxy.getVar(props.dependVarEntityMeta):', componentSetterProvideProxy.getVarValue(props.dependVarEntityMeta))
 
   // entityFieldMetas.value = componentSetterProvideProxy.getEntityDsRef()?.value?.entityMeta?.fieldMetas
-  entityFieldMetas.value = componentSetterProvideProxy.getVarValue(props.dependVarEntityMeta)?.fieldMetas
-
+  entityFieldMetas.value = componentSetterProvideProxy.getVarValue(
+    props.dependVarEntityMeta
+  )?.fieldMetas
 }
 onMounted(() => {
   setData()
 })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

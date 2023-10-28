@@ -13,7 +13,7 @@
     @change="selectOne"
     @search="handleSearch"
     :valueKey="valueFiledName"
-    :field-names="{ label: labelFieldName, value: 'record' }"
+    :field-names="{ label: '__label', value: '__record' }"
     :virtual-list-props="{ height: 200 }"
     :options="selectOptions"
   >
@@ -36,8 +36,8 @@
     <a-option
       v-for="item in selectOptions"
       :value="item"
-      :label="item[labelFieldName]"
-      :title="item[labelFieldName]"
+      :label="item.__label"
+      :title="item.__label"
       :class="{ 'gl-selected': mv === item[valueFiledName] }"
     ></a-option>
   </a-select>
@@ -51,7 +51,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { inject, type PropType, type Ref, ref, watch } from 'vue'
+import { computed, inject, type PropType, type Ref, ref, watch } from 'vue'
 import {
   entityApi,
   EntityReader,
@@ -59,8 +59,7 @@ import {
   EntityReaderParam,
   executeObjectPropsExpressions,
   PageProvideKey,
-  PageProvideProxy,
-  utils
+  PageProvideProxy
 } from '@geelato/gl-ui'
 import { EntityReaderOrderEnum } from '@geelato/gl-ui'
 
@@ -90,6 +89,10 @@ const props = defineProps({
   },
   labelFieldName: {
     type: String,
+    required: true
+  },
+  labelFieldNames: {
+    type: Array as PropType<string[]>,
     required: true
   },
   valueFiledName: {
@@ -143,12 +146,32 @@ const props = defineProps({
       return true
     }
   },
+  maxRecordCount: {
+    type: Number,
+    default() {
+      return 2000
+    }
+  },
   readonly: Boolean,
   size: String as PropType<'medium' | 'small' | 'mini' | 'large' | undefined>,
   placeholder: String,
   disabled: Boolean
 })
 
+let theLabelFieldNames: string[] = props.labelFieldNames
+// 处理历史数据原来的字段值labelFieldName
+// if (typeof props.labelFieldName === 'object') {
+//   theLabelFieldNames = props.labelFieldName
+// }else{
+//   theLabelFieldNames = [props.labelFieldName]
+// }
+// if (props.labelFieldNames&&props.labelFieldNames.length>0){
+//   theLabelFieldNames = props.labelFieldNames
+// }
+
+const isMultiLabelFieldName = computed(() => {
+  return theLabelFieldNames.length > 1
+})
 const enableVirtualList = ref(false)
 const autoEnableVirtualListWhenRecordCount = 1500
 // console.log('props:', props)
@@ -161,7 +184,7 @@ watch(
   () => {
     return props.modelValue
   },
-  (val: any) => {
+  () => {
     mvItem.value = { [props.valueFiledName]: props.modelValue || '' }
   }
 )
@@ -174,30 +197,29 @@ watch(
 )
 const selectOptions: Ref<Record<string, any>[]> = ref([])
 const loadData = () => {
-  if (props.entityName && props.valueFiledName && props.labelFieldName) {
+  if (props.entityName && props.valueFiledName && theLabelFieldNames) {
     // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'params:', params, 'extraFieldAndBindIds:', props.extraFieldAndBindIds)
-    let fields =
-      props.valueFiledName === props.labelFieldName
-        ? `${props.valueFiledName}`
-        : `${props.valueFiledName},${props.labelFieldName}`
-    if (props.extraFieldAndBindIds?.length > 0) {
-      const extraFieldNames: string[] = []
-      props.extraFieldAndBindIds.forEach((item) => {
-        extraFieldNames.push(item.fieldName)
+    const fieldSet = new Set<string>().add(props.valueFiledName)
+    if (isMultiLabelFieldName.value) {
+      theLabelFieldNames.forEach((name) => {
+        fieldSet.add(name)
       })
-      fields = fields + ',' + extraFieldNames.join(',')
     }
+    if (props.extraFieldAndBindIds?.length > 0) {
+      props.extraFieldAndBindIds.forEach((item) => {
+        fieldSet.add(item.fieldName)
+      })
+    }
+
+    let fieldAry: string[] = []
+    fieldSet.forEach((val: string) => {
+      fieldAry.push(val)
+    })
+    let fields = fieldAry.join(',')
+
     // valueFilter
     const entityReaderParams: EntityReaderParam[] = JSON.parse(JSON.stringify(props.valueFilter))
     entityReaderParams.forEach((entityReaderParam) => {
-      // entityReaderParam = {
-      //   name:'xxx',
-      //   cop:'eq',
-      //   "_propsExpressions": {
-      //     "value": "$gl.inst.dict_bPMhDTpsMg95YZc.value||'-1'"
-      //   },
-      //   value:yyy
-      // }
       executeObjectPropsExpressions(entityReaderParam, {})
     })
     entityReaderParams.push(new EntityReaderParam('delStatus', 'eq', '0'))
@@ -206,7 +228,7 @@ const loadData = () => {
     entityReader.entity = props.entityName
     entityReader.setFields(fields)
     entityReader.params = entityReaderParams
-    entityReader.pageSize = 5000
+    entityReader.pageSize = props.maxRecordCount
     if (props.orderFiledName) {
       entityReader.order.push(new EntityReaderOrder(props.orderFiledName, props.ascOrDesc))
     }
@@ -217,17 +239,34 @@ const loadData = () => {
         inputMv.value = ''
         mv.value = ''
         selectOptions.value = []
+        enableVirtualList.value = false
       } else {
         enableVirtualList.value = items.length > autoEnableVirtualListWhenRecordCount
         // 数据加工
         const newItems: Record<string, any>[] = []
-        items.forEach((item: Record<string, any>) => {
-          newItems.push({
-            [props.labelFieldName]: item[props.labelFieldName],
-            [props.valueFiledName]: item[props.valueFiledName],
-            record: item
+        if (isMultiLabelFieldName.value) {
+          items.forEach((item: Record<string, any>) => {
+            const labels: string[] = []
+            theLabelFieldNames.forEach((fieldName) => {
+              // @ts-ignore
+              labels.push(item[fieldName])
+            })
+            newItems.push({
+              __label: labels.join(' '),
+              [props.valueFiledName]: item[props.valueFiledName],
+              __record: item
+            })
           })
-        })
+        } else {
+          items.forEach((item: Record<string, any>) => {
+            newItems.push({
+              // @ts-ignore
+              __label: item[theLabelFieldNames[0]],
+              [props.valueFiledName]: item[props.valueFiledName],
+              __record: item
+            })
+          })
+        }
         selectOptions.value = newItems
       }
     })
@@ -238,7 +277,7 @@ const loadData = () => {
 
 const selectOne = (value: any) => {
   // 将值设置到对应的组件中
-  console.log('selectOne', value)
+  // console.log('selectOne', value)
   if (value && props.extraFieldAndBindIds.length > 0) {
     props.extraFieldAndBindIds.forEach((extraFieldAndBindId) => {
       pageProvideProxy.setComponentValue(
@@ -255,7 +294,10 @@ if (props.triggerMode !== TriggerMode.onInvoked) {
   watch(
     () => {
       return (
-        props.entityName + props.valueFiledName + props.labelFieldName + props.extraFieldAndBindIds
+        props.entityName +
+        props.valueFiledName +
+        props.labelFieldNames?.join(' ') +
+        props.extraFieldAndBindIds
       )
     },
     () => {

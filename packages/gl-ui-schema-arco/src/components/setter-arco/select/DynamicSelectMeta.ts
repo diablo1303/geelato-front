@@ -64,7 +64,7 @@ export default {
         "enableValueExpress": false,
         "show": true,
         "expanded": true,
-        "setterComponentProps": {},
+        "setterComponentProps": {multiple:true},
         "setterComponentVModelName": "modelValue",
         "description": "在下拉列表中显示的实体字段名",
         "placeholder": "在下拉列表中显示的实体字段名",
@@ -84,6 +84,20 @@ export default {
         "placeholder": "实体值字段名",
         "setterComponentName": "GlFieldSelect"
     }, {
+        "name": "maxRecordCount",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "最大记录",
+        "description": "加载的最大记录数，默认2000",
+        "placeholder": "最大记录数,默认2000",
+        "setterComponentName": "AInputNumber"
+    }
+    , {
         "name": "valueFilter",
         "setterComponentProps": {},
         "setterComponentVModelName": "",
