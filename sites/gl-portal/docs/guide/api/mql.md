@@ -41,34 +41,34 @@ select id,name,age from platform_user where sex=0 and age>20 and name like '%张
 
   @p[可选]  page的简写，有则表示分页查询，无则表示查询所有
 
-``` javascript
+``` json
 // 分页，每页10条记录，取第0页的数据
-'@p':'0,10'
+{'@p':'0,10'}
 ```
 
   @fs[可选]  fields的简写，有则表示查询指定列，无则表示查询所有
 
-```javascript
+``` json
 // 查询列表，共三个列
-'@fs':'id,name,description'
+{'@fs':'id,name,description'}
 ```
 
 @group [可选]"userId|maxId>=100"、"userId|sum(age)>=100"
 
-```javascript
+``` json
 // 分组
 
 ```
 
 @having[可选]与@group一起使用
 
-```javascript
+``` json
 
 ```
 
 @order [可选]指定排序字段，如果有@order，则服务端默认排序无效。例如："@order":"name|-,age|+"
 
-```javascript
+``` json
 
 ```
 
@@ -76,26 +76,39 @@ select id,name,age from platform_user where sex=0 and age>20 and name like '%张
 
 
 @b [可选]brackets的简写，用于通过括号来组合条件
-```javascript
-'@b':[{
-  "or": [
-    {"effectiveDate1|bt": ["2023-9-1", "2023-9-10"]},
-    {"otherDate1|bt": ["2023-9-1", "2023-9-10"]}
-  ],
-  "or": [
-    {"effectiveDate2|bt": ["2023-9-1", "2023-9-10"]},
-    {"otherDate2|bt": ["2023-9-1", "2023-9-10"]}
-  ],
-  "and": [
-    {"effectiveDate3|bt": ["2023-9-1", "2023-9-10"]},
-    {"otherDate3|bt": ["2023-9-1", "2023-9-10"]}
+```json
+{
+  "@b":[
+    {"or": [
+      {"effectiveDate1|bt": ["2023-9-1", "2023-9-10"]},
+      {"otherDate1|bt": ["2023-9-1", "2023-9-10"]}
+    ]},
+    {"or": [
+      {"effectiveDate2|bt": ["2023-9-1", "2023-9-10"]},
+      {"otherDate2|bt": ["2023-9-1", "2023-9-10"]}
+    ]},
+    {"and": [
+      {"effectiveDate3|bt": ["2023-9-1", "2023-9-10"]},
+      {"otherDate3|bt": ["2023-9-1", "2023-9-10"]}
+    ]}
   ]
-}]
+}
 ```
 
-@w    [可选]where的简写，更高级的查询语句片段
-```javascript
-'@w':'sex=1'
+@w    [可选]where的简写，更高级的查询语句片段，查询片段存在服务端，需在调用时进行组合
+```json
+{
+  "@w":{
+    "key":"sqlKey，格式为19位字符，用于在服务端存储key-value",
+    "value":"paramNameA=$.paramNameA and (paramNameB=$.paramNameB or paramNameC=$.paramNameC)",
+    "mode": "combined或alone，combined表示和其它条件一起，alone表时有此@w，其它条件无效，默认为combined",
+    "params":{
+      "paramNameA":"valueA",
+      "paramNameB":"valueB",
+      "paramNameC":"valueC"
+    }
+  }
+}
 ```
 
 
