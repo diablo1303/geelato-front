@@ -248,6 +248,18 @@ export default {
             "setterComponentName": "ASwitch",
             "show": true,
             "enableValueExpress": false
+        }, {
+            "name": "groupName",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "title": "分组名称",
+            "description": "非必填，将该条件加到某一分组中，在同一分组中的条件会用括号()组合，默认括号()内的条件为or关系",
+            "expanded": true,
+            "setterComponentName": "AInput",
+            "show": true,
+            "enableValueExpress": false
         }],
         "setterComponentName": "GlObjectArraySetter",
         "show": true,

@@ -10,7 +10,8 @@ const copDict = {
   sw: '开头包括',
   ew: '结尾包括',
   contains: '包括',
-  nil: '是否空'
+  nil: '是否空',
+  bt: '在...之间'
 }
 const cops = [
   { text: '等于', value: 'eq' },
@@ -23,7 +24,8 @@ const cops = [
   { text: '结尾包括', value: 'ew' },
   { text: '包括', value: 'contains' },
   { text: '在范围', value: 'in' },
-  { text: '是否空', value: 'nil' }
+  { text: '是否空', value: 'nil' },
+  { text: '在...之间', value: 'bt' }
 ]
 
 export const compareMeta = { cops, copDict }
@@ -57,16 +59,46 @@ export class EntityMeta extends EntityLiteMeta {
 }
 
 export class EntityReaderParam {
+  groupName: string = ''
   name: string = ''
+  // cop的值为：eq,neq,lt,lte,gt,gte,sw(startwith),ew(endwith),contains,in,between,nil中的一个
   cop: string = 'eq'
-  value: string | number | Array<string | number> | undefined
+  value: string | number | boolean | Array<string | number | boolean> | undefined
   // 值表达式
   valueExpression?: string
 
-  constructor(name?: string, cop?: string, value?: string | number | Array<string | number>) {
+  constructor(
+    name?: string,
+    cop?: string,
+    value?: string | number | boolean | Array<string | number | boolean>,
+    groupName?: string
+  ) {
     this.name = name || ''
     this.cop = cop || 'eq'
     this.value = value
+    this.groupName = groupName || ''
+  }
+
+  /**
+   *  转换成Mql格式的参数名
+   */
+  static getMqlParamName(param: EntityReaderParam) {
+    return `${param.name}|${param.cop || 'eq'}`
+  }
+
+  /**
+   *  转换成Mql格式的参数值
+   *  将boolean转成tinyint，和服务端数据库存储的数据一致
+   */
+  static getMqlParamValue(param: EntityReaderParam) {
+    return typeof param.value === 'boolean' ? (param.value ? 1 : 0) : param.value
+  }
+
+  /**
+   *  转换成Mql格式的参数对象
+   */
+  static getMqlParam(param: EntityReaderParam) {
+    return { [EntityReaderParam.getMqlParamName(param)]: EntityReaderParam.getMqlParamValue(param) }
   }
 }
 

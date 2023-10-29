@@ -15,4 +15,6 @@ export default class QueryItem {
     // valueExpression?: string
     // 组件
     component?: ComponentInstance
+    // 该条件加入分组，和其它同组名的条件形成or条件分组，组合后与其它无组件的条件形成and条件
+    groupName?:string
 }

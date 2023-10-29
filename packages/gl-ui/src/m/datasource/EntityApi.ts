@@ -2,7 +2,7 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosStatic } from 'axios'
 import ResultMapping from '../datasource/ResultMapping'
 import UrlConfig from '../datasource/UrlConfig'
 import MixUtil from '../utils/MixUtil'
-import type { EntityReader, EntityReaderParam, EntitySaver } from './EntityDataSource'
+import { type EntityReader, type EntitySaver, EntityReaderParam } from './EntityDataSource'
 import AllUtils from '../utils/AllUtils'
 import { getToken } from '../utils/auth'
 import jsScriptExecutor from '../actions/JsScriptExecutor'
@@ -96,10 +96,10 @@ export class EntityApi {
    * @param entityReader
    */
   convertEntityReaderToMql(entityReader: EntityReader): MqlObject {
-    // console.log('queryByEntityReader > entityReader', entityReader.entity, entityReader)
+    console.log('queryByEntityReader > entityReader', entityReader.entity, entityReader)
     const mql: Record<string, any> = {}
     mql[entityReader.entity] = {}
-    // fields
+    // 1-fields
     if (entityReader.fields && entityReader.fields.length > 0) {
       const fieldNames: Array<string> = []
       entityReader.fields.forEach((item) => {
@@ -111,7 +111,7 @@ export class EntityApi {
     } else {
       mql[entityReader.entity] = { '@fs': '*' }
     }
-    // order
+    // 2-order
     if (entityReader.order && entityReader.order.length > 0) {
       let orderStr = ''
       entityReader.order.forEach((item) => {
@@ -120,26 +120,67 @@ export class EntityApi {
       orderStr = AllUtils.ConvertUtil.trim(orderStr)
       mql[entityReader.entity]['@order'] = orderStr
     }
-    // params
+    // 3-params
+    const defaultGroupName = '__'
     let hasDelStatus = false
-    const params: Record<string, any> = {}
+
     if (entityReader.params && entityReader.params.length > 0) {
+      // 1、先进行分组 2、再将eq条件放在前面 3、再放like条件
+      const paramsGroups: Record<string, EntityReaderParam[]> = {}
       for (const i in entityReader.params) {
         const param: EntityReaderParam = entityReader.params[i]
+        const groupName = param.groupName || defaultGroupName
+        paramsGroups[groupName] = paramsGroups[groupName] || []
+        paramsGroups[groupName].push(param)
         if (param.name === 'delStatus') {
           hasDelStatus = true
         }
-        // param.cop的值为：eq,neq,lt,lte,gt,gte,startwith,endwith,contains,in中的一个
-        const key = `${param.name}|${param.cop || 'eq'}`
-        params[key] = param.value
       }
+
       // 检查是否有删除状态，默认为0
       const ignoreDeleteStatusEntity = ['platform_oprecord']
       if (!hasDelStatus && ignoreDeleteStatusEntity.indexOf(entityReader.entity) === -1) {
-        params[`delStatus|eq`] = '0'
+        paramsGroups[defaultGroupName].push(
+          new EntityReaderParam('delStatus', 'eq', '0', defaultGroupName)
+        )
       }
+
+      const params: Record<string, any> = {}
+      // 默认参数部分
+      paramsGroups[defaultGroupName].forEach((param) => {
+        // console.log('param',param)
+        params[EntityReaderParam.getMqlParamName(param)] = EntityReaderParam.getMqlParamValue(param)
+      })
+      // 其它分组参数部分，其它分组,统一以or分组进行处理，因为and不需要分组
+      Object.keys(paramsGroups).forEach((key) => {
+        if (key !== defaultGroupName) {
+          const subParams: any[] = []
+          paramsGroups[key].forEach((param) => {
+            // const key = `${param.name}|${param.cop || 'eq'}`
+            // params[key] = param.value
+            subParams.push(EntityReaderParam.getMqlParam(param))
+          })
+          // @b brackets的简写，用于通过括号来组合条件
+          params['@b'] = params['@b'] || []
+          params['@b'].push({'or':subParams})
+        }
+      })
+
+      // for (const i in entityReader.params) {
+      //   const param: EntityReaderParam = entityReader.params[i]
+      //   if (param.name === 'delStatus') {
+      //     hasDelStatus = true
+      //   }
+      //   const key = `${param.name}|${param.cop || 'eq'}`
+      //   params[key] = param.value
+      // }
+      // // 检查是否有删除状态，默认为0
+      // const ignoreDeleteStatusEntity = ['platform_oprecord']
+      // if (!hasDelStatus && ignoreDeleteStatusEntity.indexOf(entityReader.entity) === -1) {
+      //   params[`delStatus|eq`] = '0'
+      // }
+      Object.assign(mql[entityReader.entity], params)
     }
-    Object.assign(mql[entityReader.entity], params)
 
     const pageNo = entityReader.pageNo || 1
     const pageSize = entityReader.pageSize || 15
