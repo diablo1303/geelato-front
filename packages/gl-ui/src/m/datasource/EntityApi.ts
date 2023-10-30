@@ -96,7 +96,7 @@ export class EntityApi {
    * @param entityReader
    */
   convertEntityReaderToMql(entityReader: EntityReader): MqlObject {
-    console.log('queryByEntityReader > entityReader', entityReader.entity, entityReader)
+    // console.log('queryByEntityReader > entityReader', entityReader.entity, entityReader)
     const mql: Record<string, any> = {}
     mql[entityReader.entity] = {}
     // 1-fields

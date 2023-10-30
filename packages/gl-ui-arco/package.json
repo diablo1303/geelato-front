@@ -20,6 +20,7 @@
     "@geelato/gl-ui": "workspace:^0.0.1",
     "@geelato/gl-ui-schema": "workspace:^0.0.1",
     "@geelato/gl-ui-schema-arco": "workspace:^0.0.1",
+    "@vueuse/core": "^9.3.0",
     "b-validate": "^1.4.6",
     "lodash": "^4.17.21",
     "pinia": "^2.1.4",

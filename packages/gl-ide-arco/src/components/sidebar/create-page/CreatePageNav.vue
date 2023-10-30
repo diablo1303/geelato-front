@@ -4,9 +4,10 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {ref, toRaw, watch} from 'vue'
-import FormPageConfig from './FormPageConfig.vue'
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import { type Ref, ref, toRaw, watch } from 'vue'
+import FormPage from './FormPage.vue'
+import {PageInfo} from './CreatePageNav'
+import {PageType} from "@geelato/gl-ui";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -23,19 +24,25 @@ watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
 
-const currentPageConfigName = ref('')
-const currentPage = ref({})
+const currentPageType = ref('')
+const currentPageInfo: Ref<PageInfo> = ref(new PageInfo())
 
-const selectPageTemplate = (selectedTemplate: string) => {
-  currentPageConfigName.value = selectedTemplate
+const selectPageTemplate = (selectedTemplate: PageType) => {
+  if (selectedTemplate !== currentPageType.value) {
+    currentPageType.value = selectedTemplate
+    currentPageInfo.value = new PageInfo(selectedTemplate)
+  }
 }
 
 /**
  *  需要创建的页面
  */
-const getPages = ():ComponentInstance[] => {
-  // @ts-ignore
-  return [toRaw(currentPage.value)]
+const getPages = (): PageInfo[] => {
+  if (currentPageType.value === PageType.formPage) {
+    return [toRaw(currentPageInfo.value)]
+  } else {
+    return []
+  }
 }
 
 defineExpose({ getPages })
@@ -52,22 +59,22 @@ defineExpose({ getPages })
         </div>
       </a-button>
       <div class="gl-title">从模板创建</div>
+<!--      <a-card-->
+<!--        class="gl-item"-->
+<!--        @click="selectPageTemplate('TableAndFormPage')"-->
+<!--        :class="{ 'gl-selected': currentPageType === 'TableAndFormPage' }"-->
+<!--      >-->
+<!--        <template #cover>-->
+<!--          <div :style="{ height: '150px', overflow: 'hidden' }">-->
+<!--            <img :style="{ width: '100%' }" src="../../../assets/pages/tableAndForm.jpg" />-->
+<!--          </div>-->
+<!--        </template>-->
+<!--        <a-card-meta title="表单+列表" description="创建增删改查（CRUD）页面组合。"></a-card-meta>-->
+<!--      </a-card>-->
       <a-card
         class="gl-item"
-        @click="selectPageTemplate('TableAndFormPageConfig')"
-        :class="{ 'gl-selected': currentPageConfigName === 'TableAndFormPageConfig' }"
-      >
-        <template #cover>
-          <div :style="{ height: '150px', overflow: 'hidden' }">
-            <img :style="{ width: '100%' }" src="../../../assets/pages/tableAndForm.jpg" />
-          </div>
-        </template>
-        <a-card-meta title="表单+列表" description="创建增删改查（CRUD）页面组合。"></a-card-meta>
-      </a-card>
-      <a-card
-        class="gl-item"
-        @click="selectPageTemplate('FormPageConfig')"
-        :class="{ 'gl-selected': currentPageConfigName === 'FormPageConfig' }"
+        @click="selectPageTemplate(PageType.formPage)"
+        :class="{ 'gl-selected': currentPageType === 'FormPage' }"
       >
         <template #cover>
           <div :style="{ height: '150px', overflow: 'hidden' }">
@@ -78,8 +85,8 @@ defineExpose({ getPages })
       </a-card>
       <a-card
         class="gl-item"
-        @click="selectPageTemplate('TablePageConfig')"
-        :class="{ 'gl-selected': currentPageConfigName === 'TablePageConfig' }"
+        @click="selectPageTemplate(PageType.listPage)"
+        :class="{ 'gl-selected': currentPageType === 'TablePageConfig' }"
       >
         <template #cover>
           <div :style="{ height: '150px', overflow: 'hidden' }">
@@ -90,10 +97,7 @@ defineExpose({ getPages })
       </a-card>
     </div>
     <div class="gl-right">
-      <FormPageConfig
-        v-model="currentPage"
-        v-if="currentPageConfigName === 'FormPageConfig'"
-      ></FormPageConfig>
+      <FormPage v-model="currentPageInfo" v-if="currentPageType === PageType.formPage"></FormPage>
     </div>
   </div>
 </template>

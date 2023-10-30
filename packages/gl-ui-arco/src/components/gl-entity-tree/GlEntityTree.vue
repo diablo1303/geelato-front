@@ -187,6 +187,15 @@ const onDeleteNode = (params: any) => {
 const clickContextMenuItem = (params: any) => {
   emits('clickContextMenuItem', params)
 }
+
+const refresh = () => {
+  glBaseTree.value.refreshTree()
+}
+const selectNode = (node: any) => {
+  glBaseTree.value.selectNode(node)
+}
+
+defineExpose({ refresh, selectNode })
 </script>
 <style>
 .gl-entity-tree {

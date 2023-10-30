@@ -5,6 +5,7 @@ import { EntityReaderParam } from '@geelato/gl-ui'
 import { ConvertUtil } from '@geelato/gl-ui'
 import QueryItem from './query'
 import { GlIconfont } from '@geelato/gl-ui'
+import { useDebounceFn } from '@vueuse/core'
 
 const emits = defineEmits(['search'])
 const props = defineProps({
@@ -56,15 +57,16 @@ const createEntityReaderParams = () => {
   })
   return entityReaderParams
 }
-/**
- *  基于页面的组件，设置form表单的值
- */
 
-const onSearch = () => {
+/**
+ *  基于页面的组件，设置form表单的值，并构建查询参数
+ *  增加100ms的防抖动，解决短时间内连续多次触发查询的问题
+ */
+const onSearch = useDebounceFn(() => {
   formModel.value = generateFormModel()
   const entityReaderParams = createEntityReaderParams()
   emits('search', entityReaderParams)
-}
+}, 100)
 /**
  *  隐藏的查询字段不进行重置
  */

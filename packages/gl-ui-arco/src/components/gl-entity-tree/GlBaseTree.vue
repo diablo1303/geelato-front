@@ -546,7 +546,7 @@ const reloadTreeData = () => {
 // 初始化加载
 reloadTreeData()
 // 对外提供方法
-// defineExpose(['reloadTreeData'])
+defineExpose({refreshTree,selectNode})
 </script>
 <style>
 .gl-base-tree .arco-tree-node-drag-icon {
@@ -571,7 +571,7 @@ reloadTreeData()
   font-weight: 600;
   //background-color: #f2f6ff;
   cursor: pointer;
-  text-shadow: 0 0 5px #7caef6
+  text-shadow: 0 0 5px #7caef6;
 }
 
 .gl-context-menu-item {

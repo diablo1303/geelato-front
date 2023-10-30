@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { emitter, entityApi, type PageType } from '@geelato/gl-ui'
+import { emitter, entityApi, EntitySaver, type PageType } from '@geelato/gl-ui'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import { useComponentStore } from './UseComponentStore'
 import Page from '../entity/Page'
@@ -179,11 +179,12 @@ export const usePageStore = defineStore('GlPageStore', () => {
   }
 
   /**
-   * 保存页面
+   * 在保存页面之前，转换页面内容
+   * @param page
    */
-  function savePage(page:any) {
+  function convertPageContent(page: Page) {
     // 需要删除的属性名
-    const deleteProps = ['']
+    // const deleteProps = ['']
 
     function convertToRelease(sourceContent?: object) {
       if (!sourceContent) return sourceContent
@@ -317,21 +318,54 @@ export const usePageStore = defineStore('GlPageStore', () => {
 
     const convertedSource = convertToSource(page.sourceContent)
     const convertedRelease = convertToRelease(convertedSource)
-    const savingPage = {
+    const convertedPreview = convertToPreview(convertedRelease)
+    return { source: convertedSource, release: convertedRelease, preview: convertedPreview }
+  }
+
+  function getPageEntitySaver(page: Page) {
+    const convertedPageContent = convertPageContent(page)
+    const es: EntitySaver = new EntitySaver()
+    es.entity = 'platform_app_page'
+    es.record = {
       id: page.id,
       appId: page.appId,
       extendId: page.extendId,
       code: page.code,
       type: 'GlPageLayout',
-      sourceContent: JSON.stringify(convertedSource),
-      releaseContent: JSON.stringify(convertedRelease),
-      previewContent: JSON.stringify(convertToPreview(convertedRelease)),
+      sourceContent: JSON.stringify(convertedPageContent.source),
+      releaseContent: JSON.stringify(convertedPageContent.release),
+      previewContent: JSON.stringify(convertedPageContent.preview),
       description: page.description
     }
-    return entityApi.save('platform_app_page', savingPage).then((res) => {
+    return es
+  }
+
+  /**
+   * 保存页面
+   */
+  function savePage(page: any) {
+    // const convertedPageContent = convertPageContent(page)
+    // const savingPage = {
+    //   id: page.id,
+    //   appId: page.appId,
+    //   extendId: page.extendId,
+    //   code: page.code,
+    //   type: 'GlPageLayout',
+    //   sourceContent: JSON.stringify(convertedPageContent.source),
+    //   releaseContent: JSON.stringify(convertedPageContent.release),
+    //   previewContent: JSON.stringify(convertedPageContent.preview),
+    //   description: page.description
+    // }
+    // return entityApi.save('platform_app_page', savingPage).then((res) => {
+    //   page.id = res.data
+    //   savingPage.id = res.data
+    //   emitter.emit(EventNames.GlIdeToolbarSaveFile, { page: savingPage })
+    // })
+    const entitySaver = getPageEntitySaver(page)
+    return entityApi.saveEntity(entitySaver).then((res) => {
       page.id = res.data
-      savingPage.id = res.data
-      emitter.emit(EventNames.GlIdeToolbarSaveFile, { page: savingPage })
+      entitySaver.record.id = res.data
+      emitter.emit(EventNames.GlIdeToolbarSaveFile, { page: entitySaver.record })
     })
   }
 
@@ -417,6 +451,8 @@ export const usePageStore = defineStore('GlPageStore', () => {
     operationUndo: undo,
     operationRedo: redo,
     rollbackPage,
-    getCurrentPageInstId
+    getCurrentPageInstId,
+    convertPageContent,
+    getPageEntitySaver
   }
 })

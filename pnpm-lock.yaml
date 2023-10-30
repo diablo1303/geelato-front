@@ -325,6 +325,9 @@ importers:
       '@geelato/gl-ui-schema-arco':
         specifier: workspace:^0.0.1
         version: link:../gl-ui-schema-arco
+      '@vueuse/core':
+        specifier: ^9.3.0
+        version: 9.13.0(vue@3.3.4)
       b-validate:
         specifier: ^1.4.6
         version: 1.4.6
@@ -3034,7 +3037,7 @@ packages:
       '@babel/core': 7.21.0
       '@babel/plugin-transform-typescript': 7.21.0(@babel/core@7.21.0)
       '@vue/babel-plugin-jsx': 1.1.1(@babel/core@7.21.0)
-      vite: 4.1.4(@types/node@18.14.1)
+      vite: 4.1.4(@types/node@18.14.1)(less@4.1.3)
       vue: 3.3.4
     transitivePeerDependencies:
       - supports-color
@@ -3058,7 +3061,7 @@ packages:
       vite: ^4.0.0
       vue: ^3.2.25
     dependencies:
-      vite: 4.1.4(@types/node@18.14.1)
+      vite: 4.1.4(@types/node@18.14.1)(less@4.1.3)
       vue: 3.3.4
     dev: true
 
@@ -3397,7 +3400,7 @@ packages:
       '@types/web-bluetooth': 0.0.16
       '@vueuse/metadata': 9.13.0
       '@vueuse/shared': 9.13.0(vue@3.3.4)
-      vue-demi: 0.13.11(vue@3.3.4)
+      vue-demi: 0.14.5(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -11540,7 +11543,7 @@ packages:
       chalk: 4.1.2
       debug: 4.3.4
       fs-extra: 10.1.0
-      vite: 4.1.4(@types/node@18.14.1)
+      vite: 4.1.4(@types/node@18.14.1)(less@4.1.3)
     transitivePeerDependencies:
       - supports-color
     dev: true

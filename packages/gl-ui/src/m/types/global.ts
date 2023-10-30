@@ -1,5 +1,13 @@
 // 页面类型
-export type PageType = 'freePage' | 'fromPage' | 'listPage' | 'blockPage' | ''
+// export type PageType = 'freePage' | 'formPage' | 'listPage' | 'blockPage' | ''
+
+export enum PageType {
+    freePage = 'freePage',
+    formPage = 'formPage',
+    listPage = 'listPage',
+    blockPage = 'blockPage',
+    emptyPage = 'emptyPage'
+}
 
 // 页面参数、方法调用参数
 export interface Param {

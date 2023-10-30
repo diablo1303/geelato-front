@@ -2,7 +2,7 @@
  *  动态页面结构定义
  *  对应数据库中的页面模型
  */
-import type {PageType} from "@geelato/gl-ui";
+import  {PageType} from "@geelato/gl-ui";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
 
 export default class Page {
@@ -12,7 +12,7 @@ export default class Page {
     appId: string = '';
     extendId: any;
     title: string = '';
-    type: PageType = '';
+    type: PageType = PageType.emptyPage;
     iconType: string = '';
     code: string = '';
     description: string = '';
@@ -32,7 +32,7 @@ export default class Page {
 
     /**
      * @param options
-     * @param isFromRemote 是否从模板初始化，默认为false，方便打开页面时区分是否要加载模板的配置信息还是从服务器加载配置信息
+     * @param isInitFromTemplate 是否从模板初始化，默认为false，方便打开页面时区分是否要加载模板的配置信息还是从服务器加载配置信息
      */
     constructor(options: any = {}, isInitFromTemplate: boolean = false) {
         this.reset(options)

@@ -4,10 +4,12 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { type PropType, type Ref, ref, watch } from 'vue'
 import type { EntityMeta, FieldMeta } from '@geelato/gl-ui'
 import { FormPageCreator } from '../../stage/page-creator/FormPageCreator'
 import { PageCreatorOptions } from '../../stage/page-creator/PageCreator'
+import type { PageInfo } from './CreatePageNav'
+import { PageType } from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -15,7 +17,7 @@ const props = defineProps({
    *  page配置
    */
   modelValue: {
-    type: Object,
+    type: Object as PropType<PageInfo>,
     default() {
       return {}
     }
@@ -23,20 +25,25 @@ const props = defineProps({
 })
 
 const entityName = ref('')
-const form: any = ref({ fieldRange: 'ALL', colSpan: 3 })
+const form: any = ref({
+  fieldRange: 'ALL',
+  colSpan: 3
+})
 const pageCreatorOptions = ref(new PageCreatorOptions())
 
 const formPageCreator = new FormPageCreator()
-const page = ref(props.modelValue)
-
+const pageInfo: Ref<PageInfo> = ref(props.modelValue)
+pageInfo.value.type = PageType.formPage
+pageInfo.value.iconType = 'gl-form'
 watch(
   form,
   () => {
     pageCreatorOptions.value.entityMeta.entityName = form.value.bindEntity?.entityName
     pageCreatorOptions.value.pageLabel = form.value.pageLabel
     pageCreatorOptions.value.colSpan = form.value.colSpan
-    page.value = formPageCreator.create(pageCreatorOptions.value)
-    emits('update:modelValue', page.value)
+    pageInfo.value.label = form.value.pageLabel
+    pageInfo.value.content = formPageCreator.create(pageCreatorOptions.value)
+    emits('update:modelValue', pageInfo.value)
   },
   { deep: true }
 )
@@ -64,14 +71,14 @@ const loadFieldMetas = (entityMeta: EntityMeta) => {
   pageCreatorOptions.value.entityMeta.entityName = em.entityName
   pageCreatorOptions.value.entityMeta.entityTitle = em.entityTitle
   form.value.pageLabel = entityMeta.entityTitle + '信息页面'
-  page.value = formPageCreator.create(pageCreatorOptions.value)
-  console.log('loadFieldMetas', em)
+  pageInfo.value.content = formPageCreator.create(pageCreatorOptions.value)
+  // console.log('loadFieldMetas', em)
 }
 /**
  *  获取页面配置
  */
 const getPage = () => {
-  return page.value
+  return pageInfo.value
 }
 
 defineExpose({ getPage })
@@ -102,7 +109,6 @@ defineExpose({ getPage })
         <div v-if="form.fieldRange === 'SOME'"></div>
       </a-form-item>
     </a-form>
-    {{ page }}
   </div>
 </template>
 

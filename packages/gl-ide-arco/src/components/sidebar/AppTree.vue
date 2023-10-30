@@ -1,6 +1,7 @@
 <template>
   <div class="gl-app-tree">
     <GlEntityTree
+      ref="glEntityTree"
       :treeId="appStore.currentApp.id"
       :treeName="appStore.currentApp.name"
       :draggable="true"
@@ -29,12 +30,20 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { type Ref, ref } from 'vue'
 import { useIdeStore, useAppStore, Page, usePageStore } from '@geelato/gl-ide'
-import { entityApi, EntityReader, EntityReaderParam, EntitySaver, FieldMeta } from '@geelato/gl-ui'
+import {
+  entityApi,
+  EntityReader,
+  EntityReaderParam,
+  EntitySaver,
+  FieldMeta,
+  PageType
+} from '@geelato/gl-ui'
 import CreatePageNav from './create-page/CreatePageNav.vue'
-import type { ComponentInstance } from '@geelato/gl-ui-schema'
+import type { PageInfo } from './create-page/CreatePageNav'
 
+const glEntityTree = ref()
 const ideStore = useIdeStore()
 const appStore = useAppStore()
 const pageStore = usePageStore()
@@ -42,6 +51,15 @@ pageStore.addPageTemplate('formPage', import('../stage/formPageTemplate.json'))
 pageStore.addPageTemplate('freePage', import('../stage/freePageTemplate.json'))
 pageStore.addPageTemplate('listPage', import('../stage/listPageTemplate.json'))
 
+type ClickContextMenuItemType = {
+  clickedNodeData: Record<string, any>
+  contextMenuItemData: Record<string, any>
+}
+// 当前右键菜单点击记录的内容
+const currentClickContextMenuItem: Ref<ClickContextMenuItemType> = ref({
+  clickedNodeData: {},
+  contextMenuItemData: {}
+})
 const createPageNav = ref(null)
 
 const onSelectNode = (params: any) => {
@@ -64,9 +82,10 @@ const onSelectNode = (params: any) => {
  *
  * @param params
  */
-const clickContextMenuItem = (params: { clickedNodeData: any; contextMenuItemData: any }) => {
+const clickContextMenuItem = (params: ClickContextMenuItemType) => {
   console.log('clickContextMenuItem() > params:', params)
   if (params.contextMenuItemData._nodeType === 'templatePage') {
+    currentClickContextMenuItem.value = params
     visible.value = true
   }
 }
@@ -189,32 +208,53 @@ const contextMenuData = [
   }
 ]
 
-const createAddNodeEntitySaver = (params: any) => {
+const createAddNodeEntitySaver = (page: PageInfo) => {
   const es: EntitySaver = new EntitySaver()
   es.entity = 'platform_tree_node'
   es.record = {
-    flag: '',
-    iconType: params.addNodeData.iconType,
-    type: params.addNodeData._nodeType,
+    flag: page.isMenuitem ? 'menuItem' : '',
+    iconType: page.iconType,
+    type: page.type,
     treeId: appStore.currentApp.id,
-    text: params.addNodeData.title,
-    pid: params.clickedNodeData.key
+    text: page.label,
+    pid: currentClickContextMenuItem.value.clickedNodeData.key
   }
-}
-
-const createAddPageEntitySaver = (params: any) => {
-  const es: EntitySaver = new EntitySaver()
-  es.entity = 'platform_app_page'
-  es.record = {}
+  return es
 }
 
 const visible = ref(false)
 const handleOk = () => {
   // @ts-ignore
-  const pages: ComponentInstance[] = createPageNav.value?.getPages()
-  console.log('pages', pages)
-  pages.forEach((page) => {
+  const pageInfos: PageInfo[] = createPageNav.value?.getPages()
+  console.log('pageInfos', pageInfos)
+  pageInfos.forEach((pageInfo: PageInfo) => {
+    // 保存菜单、页面
+    const page = new Page()
+    page.appId = appStore.currentApp.id
+    page.extendId = '$parent.id'
+    page.title = pageInfo.label
+    page.type = pageInfo.type
+    page.iconType = pageInfo.iconType
+    page.code = ''
+    page.sourceContent = pageInfo.content
+    const pageSaver = pageStore.getPageEntitySaver(page)
 
+    const nodeSaver = createAddNodeEntitySaver(pageInfo)
+    nodeSaver.children = [pageSaver]
+
+    entityApi.saveEntity(nodeSaver).then((res) => {
+      // 构建前端的节点
+      const node = {
+        title: page.title,
+        iconType: page.iconType,
+        _nodeType: page.type,
+        treeId: page.appId,
+        key: res.data
+      }
+      currentClickContextMenuItem.value.clickedNodeData.children.push(node)
+      glEntityTree.value.refresh()
+      glEntityTree.value.selectNode(node)
+    })
   })
 
   visible.value = true
