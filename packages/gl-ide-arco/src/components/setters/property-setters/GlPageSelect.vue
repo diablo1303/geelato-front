@@ -14,7 +14,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, ref, watch} from "vue";
+import {ref, watch} from "vue";
 import {entityApi, Utils} from "@geelato/gl-ui";
 import {useAppStore} from "@geelato/gl-ide";
 

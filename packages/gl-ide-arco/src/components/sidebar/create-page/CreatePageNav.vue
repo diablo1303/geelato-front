@@ -6,8 +6,9 @@ export default {
 <script lang="ts" setup>
 import { type Ref, ref, toRaw, watch } from 'vue'
 import FormPage from './FormPage.vue'
-import {PageInfo} from './CreatePageNav'
-import {PageType} from "@geelato/gl-ui";
+import ListPage from './ListPage.vue'
+import { PageInfo } from './CreatePageNav'
+import { PageType } from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -34,15 +35,33 @@ const selectPageTemplate = (selectedTemplate: PageType) => {
   }
 }
 
+const listPage = ref()
+const formPage = ref()
 /**
  *  需要创建的页面
  */
-const getPages = (): PageInfo[] => {
-  if (currentPageType.value === PageType.formPage) {
-    return [toRaw(currentPageInfo.value)]
-  } else {
-    return []
+const getPages = async (): Promise<PageInfo[]> => {
+  if (currentPageType.value === PageType.emptyPage) {
+    // TODO
+  } else if (currentPageType.value === PageType.formPage) {
+    if (formPage.value) {
+      const errors = await formPage.value.validate()
+      if (errors) {
+        return []
+      }
+      return [toRaw(currentPageInfo.value)]
+    }
   }
+  if (currentPageType.value === PageType.listPage) {
+    if (listPage.value) {
+      const errors = await listPage.value.validate()
+      if (errors) {
+        return []
+      }
+      return [toRaw(currentPageInfo.value)]
+    }
+  }
+  return [toRaw(currentPageInfo.value)]
 }
 
 defineExpose({ getPages })
@@ -51,30 +70,30 @@ defineExpose({ getPages })
 <template>
   <div class="gl-create-from-nav">
     <div class="gl-left">
-      <div class="gl-title">自定义创建</div>
-      <a-button style="width: 120px; height: 120px">
-        <div>
-          <span style="font-size: 48px">+</span>
-          <div style="font-size: 14px">从空白创建</div>
-        </div>
-      </a-button>
+<!--      <div class="gl-title">自定义创建</div>-->
+<!--      <a-button style="width: 120px; height: 120px">-->
+<!--        <div>-->
+<!--          <span style="font-size: 48px">+</span>-->
+<!--          <div style="font-size: 14px">从空白创建</div>-->
+<!--        </div>-->
+<!--      </a-button>-->
       <div class="gl-title">从模板创建</div>
-<!--      <a-card-->
-<!--        class="gl-item"-->
-<!--        @click="selectPageTemplate('TableAndFormPage')"-->
-<!--        :class="{ 'gl-selected': currentPageType === 'TableAndFormPage' }"-->
-<!--      >-->
-<!--        <template #cover>-->
-<!--          <div :style="{ height: '150px', overflow: 'hidden' }">-->
-<!--            <img :style="{ width: '100%' }" src="../../../assets/pages/tableAndForm.jpg" />-->
-<!--          </div>-->
-<!--        </template>-->
-<!--        <a-card-meta title="表单+列表" description="创建增删改查（CRUD）页面组合。"></a-card-meta>-->
-<!--      </a-card>-->
+      <!--      <a-card-->
+      <!--        class="gl-item"-->
+      <!--        @click="selectPageTemplate('TableAndFormPage')"-->
+      <!--        :class="{ 'gl-selected': currentPageType === 'TableAndFormPage' }"-->
+      <!--      >-->
+      <!--        <template #cover>-->
+      <!--          <div :style="{ height: '150px', overflow: 'hidden' }">-->
+      <!--            <img :style="{ width: '100%' }" src="../../../assets/pages/tableAndForm.jpg" />-->
+      <!--          </div>-->
+      <!--        </template>-->
+      <!--        <a-card-meta title="表单+列表" description="创建增删改查（CRUD）页面组合。"></a-card-meta>-->
+      <!--      </a-card>-->
       <a-card
         class="gl-item"
         @click="selectPageTemplate(PageType.formPage)"
-        :class="{ 'gl-selected': currentPageType === 'FormPage' }"
+        :class="{ 'gl-selected': currentPageType === PageType.formPage }"
       >
         <template #cover>
           <div :style="{ height: '150px', overflow: 'hidden' }">
@@ -86,7 +105,7 @@ defineExpose({ getPages })
       <a-card
         class="gl-item"
         @click="selectPageTemplate(PageType.listPage)"
-        :class="{ 'gl-selected': currentPageType === 'TablePageConfig' }"
+        :class="{ 'gl-selected': currentPageType === PageType.listPage }"
       >
         <template #cover>
           <div :style="{ height: '150px', overflow: 'hidden' }">
@@ -97,7 +116,16 @@ defineExpose({ getPages })
       </a-card>
     </div>
     <div class="gl-right">
-      <FormPage v-model="currentPageInfo" v-if="currentPageType === PageType.formPage"></FormPage>
+      <FormPage
+        ref="formPage"
+        v-if="currentPageType === PageType.formPage"
+        v-model="currentPageInfo"
+      ></FormPage>
+      <ListPage
+        ref="listPage"
+        v-if="currentPageType === PageType.listPage"
+        v-model="currentPageInfo"
+      ></ListPage>
     </div>
   </div>
 </template>
