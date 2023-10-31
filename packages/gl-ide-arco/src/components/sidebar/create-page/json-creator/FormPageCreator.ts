@@ -1,8 +1,8 @@
-import { entityApi, FieldMeta, utils } from '@geelato/gl-ui'
+import { utils } from '@geelato/gl-ui'
 import { ComponentInstance } from '@geelato/gl-ui-schema'
 import { PageCreator, PageCreatorOptions } from './PageCreator'
 import { useComponentStore } from '@geelato/gl-ide'
-import {useFieldMetaToComponentInst} from "@/components/sidebar/create-page/json-creator/useFieldMetaToComponentInst";
+import {useFieldMetaToComponentInst} from "./useFieldMetaToComponentInst";
 
 export const useCardConfig = (options: PageCreatorOptions): ComponentInstance => {
   const inst = new ComponentInstance()
