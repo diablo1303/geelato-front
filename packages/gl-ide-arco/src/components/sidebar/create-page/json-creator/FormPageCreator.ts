@@ -1,9 +1,10 @@
-import { entityApi, FieldMeta, utils } from '@geelato/gl-ui'
+import { utils } from '@geelato/gl-ui'
 import { ComponentInstance } from '@geelato/gl-ui-schema'
-import { PageCreator, PageCreatorOptions } from '../../stage/page-creator/PageCreator'
+import { PageCreator, PageCreatorOptions } from './PageCreator'
 import { useComponentStore } from '@geelato/gl-ide'
+import {useFieldMetaToComponentInst} from "./useFieldMetaToComponentInst";
 
-export const useCordConfig = (options: PageCreatorOptions): ComponentInstance => {
+export const useCardConfig = (options: PageCreatorOptions): ComponentInstance => {
   const inst = new ComponentInstance()
   inst.id = utils.gid('card')
   inst.componentName = 'GlCard'
@@ -23,49 +24,6 @@ export const useEntityFormConfig = (options: PageCreatorOptions): ComponentInsta
   }
   inst.children = []
   return inst
-}
-
-export const useFieldConfig = (options: PageCreatorOptions) => {
-  return {
-    id: 'input_1ZbHypdPWdnRT3',
-    componentName: 'AInput',
-    group: 'dataEntry',
-    props: {
-      label: '名称',
-      bindField: {
-        appCode: '',
-        entityName: 'demo_entity',
-        fieldName: 'name'
-      },
-      rules: [
-        {
-          required: true,
-          message: '必填',
-          ruleName: 'required',
-          type: 'boolean'
-        }
-      ]
-    },
-    propsExpressions: {},
-    slots: {
-      prefix: {
-        componentName: 'GlText',
-        propsTarget: 'v-model'
-      },
-      suffix: {
-        componentName: 'GlText',
-        propsTarget: 'v-model'
-      }
-    },
-    slotsExpressions: {},
-    children: [],
-    actions: [],
-    style: {},
-    propsWrapper: '',
-    i18n: [],
-    __validateError: null,
-    __dragFlag: 'dragFlag_FUvMGFAVjSd'
-  }
 }
 
 export const useVirtualConfig = (label?: string) => {
@@ -103,11 +61,10 @@ export class FormPageCreator extends PageCreator {
   componentStore = useComponentStore()
 
   buildChildren(page: ComponentInstance, options: PageCreatorOptions): ComponentInstance {
-    // 获取字段信息
+    const card = useCardConfig(options)
 
-    const card = useCordConfig(options)
+    const insts = useFieldMetaToComponentInst(options.entityMeta.entityName,options.entityMeta.fieldMetas)
 
-    const insts = this.convertAll(options.entityMeta.entityName, options.entityMeta.fieldMetas)
     // 占用一行的组件
     const oneRowComponentNames = ['ATextarea']
     const oneRowInsts: ComponentInstance[] = []
@@ -168,88 +125,6 @@ export class FormPageCreator extends PageCreator {
     // 找出remark放到最后
     insts.filter(() => {})
     return insts
-  }
-
-  /**
-   * 基于模型字段元数据，转成单个组件实例
-   * @param entityName
-   * @param fieldMeta
-   */
-  convertOne(entityName: string, fieldMeta: FieldMeta) {
-    console.log('convertOne', entityName, fieldMeta)
-    const inst = new ComponentInstance()
-    inst.group = 'dataEntry'
-    inst.props = {
-      label: fieldMeta.title,
-      rules: [],
-      bindField: {
-        appCode: '',
-        fieldName: fieldMeta.name,
-        entityName: entityName
-      }
-    }
-    inst.slots = {}
-    inst.children = []
-
-    // 规则配置
-    if (fieldMeta.nullable === false) {
-      // @ts-ignore
-      inst.props.rules.push({
-        required: true,
-        message: '必填',
-        ruleName: 'required',
-        type: 'boolean'
-      })
-    }
-
-    switch (fieldMeta.type) {
-      case 'String':
-        // TODO 可按醋类型细化，发编码组件、颜色组件、字典组件...
-        if (parseInt(fieldMeta.charMaxLength) > 200) {
-          inst.componentName = 'ATextarea'
-        } else {
-          inst.componentName = 'AInput'
-        }
-        break
-      case 'Date':
-        // TODO 可按模型类型细化
-        inst.componentName = 'ADatePicker'
-        inst.props.format = 'YYYY-MM-DD HH:mm'
-        break
-      case 'Double':
-        inst.componentName = 'AInputNumber'
-        inst.props.max = 10 ** fieldMeta.precision - 1
-        inst.props.precision = fieldMeta.scale
-        break
-      case 'Integer':
-      case 'Long':
-        inst.componentName = 'AInputNumber'
-        inst.props.max = 10 ** fieldMeta.precision - 1
-        break
-      case 'Boolean':
-        inst.componentName = 'ASwitch'
-        break
-      default:
-        inst.componentName = 'AInput'
-        break
-    }
-
-    inst.id = utils.gid(this.componentStore.getAlias(inst.componentName))
-    return inst
-  }
-
-  /**
-   * 基于模型字段元数据，转成所有组件实例
-   * @param entityName
-   * @param fieldMetas
-   */
-  convertAll(entityName: string, fieldMetas: FieldMeta[]) {
-    const result: ComponentInstance[] = []
-    fieldMetas.forEach((fieldMeta: FieldMeta) => {
-      const inst: ComponentInstance = this.convertOne(entityName, fieldMeta)
-      result.push(inst)
-    })
-    return result
   }
 
   getSpans(colSpan: number) {

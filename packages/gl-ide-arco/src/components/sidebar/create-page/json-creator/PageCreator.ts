@@ -1,17 +1,23 @@
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
-import { EntityMeta, utils } from '@geelato/gl-ui'
+import { EntityMeta, type FieldMeta, PageType, utils } from '@geelato/gl-ui'
+import { PageInfo } from '../CreatePageNav'
 
 export class PageCreatorOptions {
   // 应用Id
   appId: string = ''
-  // 页面名称
-  pageLabel: string = ''
-  // 页面类型，如formPage
-  pageType: string = ''
+  // // 页面名称
+  // pageLabel: string = ''
+  // // 页面类型，如formPage
+  // pageType: string = ''
+  pageInfo: PageInfo = new PageInfo(PageType.emptyPage)
   // 实体元数据
   entityMeta: EntityMeta = new EntityMeta()
   // 该属性表单适用 每行默认三列
   colSpan: number = 3
+  // 展示的字段，用于列表时，表示列，用于表单时，表示指定展示的表单字段
+  showFields: FieldMeta[] = []
+  // 该属性列表页面适用 每行默认三列
+  queryFields: FieldMeta[] = []
 }
 
 export const usePageConfig = (label?: string) => {
@@ -31,7 +37,7 @@ export const usePageConfig = (label?: string) => {
 
 export abstract class PageCreator {
   create(options: PageCreatorOptions) {
-    const page = usePageConfig(options.pageLabel)
+    const page = usePageConfig(options.pageInfo.label)
     return this.buildChildren(page, options)
   }
 

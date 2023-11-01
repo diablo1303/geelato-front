@@ -16,11 +16,11 @@
       width="1200px"
       :body-style="{ height: '800px', padding: 0, margin: 0 }"
       v-model:visible="visible"
-      @ok="handleOk"
+      :onBeforeOk="onBeforeOk"
       @cancel="handleCancel"
     >
       <template #title> 创建页面向导</template>
-      <CreatePageNav ref="createPageNav" />
+      <CreatePageNav v-if="visible" ref="createPageNav" />
     </a-modal>
   </div>
 </template>
@@ -60,7 +60,7 @@ const currentClickContextMenuItem: Ref<ClickContextMenuItemType> = ref({
   clickedNodeData: {},
   contextMenuItemData: {}
 })
-const createPageNav = ref(null)
+const createPageNav = ref()
 
 const onSelectNode = (params: any) => {
   // console.log('onSelectNode() > params:', params)
@@ -139,33 +139,33 @@ const contextMenuData = [
     action: 'addNode'
   },
   {
-    title: '创建页面向导',
+    title: '从模板新建页面',
     iconType: 'gl-file',
     _nodeType: 'templatePage',
     useFor: ['folder'],
     action: 'createPageNav'
   },
   {
-    title: '新建自由页面',
+    title: '新建空白页面',
     iconType: 'gl-file',
     _nodeType: 'freePage',
     useFor: ['folder'],
     action: 'addNode'
   },
-  {
-    title: '新建表单页面',
-    iconType: 'gl-form',
-    _nodeType: 'formPage',
-    useFor: ['folder'],
-    action: 'addNode'
-  },
-  {
-    title: '新建列表页面',
-    iconType: 'gl-list',
-    _nodeType: 'listPage',
-    useFor: ['folder'],
-    action: 'addNode'
-  },
+  // {
+  //   title: '新建表单页面',
+  //   iconType: 'gl-form',
+  //   _nodeType: 'formPage',
+  //   useFor: ['folder'],
+  //   action: 'addNode'
+  // },
+  // {
+  //   title: '新建列表页面',
+  //   iconType: 'gl-list',
+  //   _nodeType: 'listPage',
+  //   useFor: ['folder'],
+  //   action: 'addNode'
+  // },
   {
     title: '设置为菜单',
     iconType: 'gl-menu',
@@ -223,41 +223,45 @@ const createAddNodeEntitySaver = (page: PageInfo) => {
 }
 
 const visible = ref(false)
-const handleOk = () => {
-  // @ts-ignore
-  const pageInfos: PageInfo[] = createPageNav.value?.getPages()
-  console.log('pageInfos', pageInfos)
-  pageInfos.forEach((pageInfo: PageInfo) => {
-    // 保存菜单、页面
-    const page = new Page()
-    page.appId = appStore.currentApp.id
-    page.extendId = '$parent.id'
-    page.title = pageInfo.label
-    page.type = pageInfo.type
-    page.iconType = pageInfo.iconType
-    page.code = ''
-    page.sourceContent = pageInfo.content
-    const pageSaver = pageStore.getPageEntitySaver(page)
+const onBeforeOk = async () => {
+  const pageInfos: PageInfo[] = await createPageNav.value?.getPages()
+  if (pageInfos.length === 0) {
+    return false
+  }
+  try {
+    pageInfos.forEach((pageInfo: PageInfo) => {
+      // 保存菜单、页面
+      const page = new Page()
+      page.appId = appStore.currentApp.id
+      page.extendId = '$parent.id'
+      page.title = pageInfo.label
+      page.type = pageInfo.type
+      page.iconType = pageInfo.iconType
+      page.code = ''
+      page.sourceContent = pageInfo.content
+      const pageSaver = pageStore.getPageEntitySaver(page)
 
-    const nodeSaver = createAddNodeEntitySaver(pageInfo)
-    nodeSaver.children = [pageSaver]
+      const nodeSaver = createAddNodeEntitySaver(pageInfo)
+      nodeSaver.children = [pageSaver]
 
-    entityApi.saveEntity(nodeSaver).then((res) => {
-      // 构建前端的节点
-      const node = {
-        title: page.title,
-        iconType: page.iconType,
-        _nodeType: page.type,
-        treeId: page.appId,
-        key: res.data
-      }
-      currentClickContextMenuItem.value.clickedNodeData.children.push(node)
-      glEntityTree.value.refresh()
-      glEntityTree.value.selectNode(node)
+      entityApi.saveEntity(nodeSaver).then((res) => {
+        // 构建前端的节点
+        const node = {
+          title: page.title,
+          iconType: page.iconType,
+          _nodeType: page.type,
+          treeId: page.appId,
+          key: res.data
+        }
+        currentClickContextMenuItem.value.clickedNodeData.children.push(node)
+        glEntityTree.value.refresh()
+        glEntityTree.value.selectNode(node)
+      })
     })
-  })
-
-  visible.value = true
+  } catch (e) {
+    console.error(e)
+    return false
+  }
 }
 const handleCancel = () => {
   visible.value = false
