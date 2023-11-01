@@ -35,7 +35,7 @@
   >
     <a-option
       v-for="item in selectOptions"
-      :value="item"
+      :value="item.__record"
       :label="item.__label"
       :title="item.__label"
       :class="{ 'gl-selected': mv === item[valueFiledName] }"
@@ -200,11 +200,14 @@ const loadData = () => {
   if (props.entityName && props.valueFiledName && theLabelFieldNames) {
     // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'params:', params, 'extraFieldAndBindIds:', props.extraFieldAndBindIds)
     const fieldSet = new Set<string>().add(props.valueFiledName)
-    if (isMultiLabelFieldName.value) {
-      theLabelFieldNames.forEach((name) => {
+    // if (isMultiLabelFieldName.value) {
+    //
+    // }
+    theLabelFieldNames.forEach((name) => {
+      if (name) {
         fieldSet.add(name)
-      })
-    }
+      }
+    })
     if (props.extraFieldAndBindIds?.length > 0) {
       props.extraFieldAndBindIds.forEach((item) => {
         fieldSet.add(item.fieldName)

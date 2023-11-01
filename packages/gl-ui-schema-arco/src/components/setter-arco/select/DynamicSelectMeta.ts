@@ -58,7 +58,7 @@ export default {
         "setterComponentName": "ARadioGroup",
         "description": "不选择时，默认为组件创建时"
     }, {
-        "name": "labelFieldName",
+        "name": "labelFieldNames",
         "group": "base",
         "type": "props",
         "enableValueExpress": false,
