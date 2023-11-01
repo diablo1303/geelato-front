@@ -183,6 +183,7 @@ const generateFilterData = (): FilterForm => {
   return {
     id: '',
     configKey: '',
+    configType: '',
     configValue: '',
     remark: '',
     enableStatus: '',

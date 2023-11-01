@@ -481,6 +481,7 @@ export default {
   'security.sysConfig.index.menu.list.searchTable': 'Config',
   'security.sysConfig.index.form.index': 'index',
   'security.sysConfig.index.form.configKey': 'configKey',
+  'security.sysConfig.index.form.configType': 'configType',
   'security.sysConfig.index.form.configValue': 'configValue',
   'security.sysConfig.index.form.remark': 'remark',
   'security.sysConfig.index.form.enableStatus': 'status',

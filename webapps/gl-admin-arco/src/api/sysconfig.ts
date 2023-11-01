@@ -6,6 +6,7 @@ import qs from "query-string";
 export interface QuerySysConfigForm {
   id: string;
   configKey: string;
+  configType: string;
   configValue: string;
   remark: string;
   enableStatus: number;
@@ -16,6 +17,7 @@ export interface QuerySysConfigForm {
 export interface FilterSysConfigForm {
   id: string;
   configKey: string;
+  configType: string;
   configValue: string;
   remark: string;
   enableStatus: string;
@@ -54,4 +56,8 @@ export function deleteSysConfig(id: string) {
 
 export function validateSysConfigKey(params: QuerySysConfigForm) {
   return axios.post<QueryResult>('/api/sys/config/validate', params);
+}
+
+export function getValueByKeys(configKey: string) {
+  return axios.get<string>(`/api/sys/config/getValue/${configKey}`);
 }

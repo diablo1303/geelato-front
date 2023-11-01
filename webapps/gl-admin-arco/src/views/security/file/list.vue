@@ -65,6 +65,22 @@
           </template>
           {{ $t('searchTable.operation.create') }}
         </a-button>
+        <a-tooltip :content="$t('security.file.index.example.import.tip')">
+          <a-button type="outline" @click="downloadImportOrExportExample('ImportExampleTypeMeta')">
+            <template #icon>
+              <icon-download/>
+            </template>
+            {{ $t('security.file.index.example.import.text') }}
+          </a-button>
+        </a-tooltip>
+        <a-tooltip :content="$t('security.file.index.example.export.tip')">
+          <a-button type="outline" @click="downloadImportOrExportExample('ExportExampleMeta')">
+            <template #icon>
+              <icon-download/>
+            </template>
+            {{ $t('security.file.index.example.export.text') }}
+          </a-button>
+        </a-tooltip>
       </a-space>
     </a-col>
     <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
@@ -180,6 +196,8 @@ import {columns, enableStatusOptions, fileTypeOptions, useTypeOptions} from "@/v
 // 引用其他页面
 import FileTemplateDrawer from "@/views/security/file/drawer.vue";
 import {copyToClipboard} from "@/utils/strings";
+import {getValueByKeys} from "@/api/sysconfig";
+import {getDownloadUrlById} from "@/api/application";
 
 
 /* 列表 */
@@ -264,6 +282,27 @@ const addTable = (ev: MouseEvent) => {
     formRef.value?.openForm({action: 'add', closeBack: reset});
   }
 };
+
+const downloadFileById = (id: string) => {
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none' // 防止影响页面
+  iframe.style.height = '0' // 防止影响页面
+  iframe.src = getDownloadUrlById(id, false);
+  document.body.appendChild(iframe) // 这一行必须，iframe挂在到dom树上才会发请求
+  setTimeout(function () {
+    document.body.removeChild(iframe)
+  }, 100)
+}
+
+const downloadImportOrExportExample = async (configKey: string) => {
+  try {
+    const {data} = await getValueByKeys(configKey);
+    downloadFileById(data);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 const copyPrimaryKey = (id: string) => {
   copyToClipboard(id, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
 }
