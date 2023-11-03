@@ -5,13 +5,13 @@ import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class OpenThirdPageBlockHandler implements IBlockHandler {
     parseToScript(props: Props): ParseResult {
-        return new ParseResult(`$.fn.openWin("${props.url}",${JSON.stringify(props.params)})`)
+        return new ParseResult(`$gl.fn.openWin("${props.url}",${JSON.stringify(props.params || [])})`)
     }
 }
 
 export class Props {
     url: string = '';
-    params: Array<Param> = []
+    params?: Array<Param> = []
 }
 
 blocksHandler.register(new OpenThirdPageBlockHandler(), CommandBlocks.CommandBlockOne)

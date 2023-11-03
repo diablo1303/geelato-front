@@ -273,8 +273,8 @@ export class JsScriptExecutor {
         return $gl.$drawer.open(options)
       },
       openWin: (url: string, urlParams: Array<Param>) => {
+        const parsedParams = that.evalParams(urlParams, $gl.ctx, $gl) || []
         const paramsAry: Array<string> = []
-        const parsedParams = that.evalParams(urlParams, $gl.ctx, $gl)
         parsedParams.forEach((param) => {
           paramsAry.push(`${param.name}=${param.value}`)
         })
