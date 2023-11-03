@@ -159,6 +159,7 @@ const consoleLog = (inst: ComponentInstance) => {
             :label="i18nConvert(childComponentInst.props?.label, childComponentInst.i18n)"
             :rules="childComponentInst.props?.rules"
             :validate-trigger="[]"
+            :disabled="childComponentInst.props.disabled"
             @click="consoleLog(childComponentInst)"
           >
             <GlComponent
