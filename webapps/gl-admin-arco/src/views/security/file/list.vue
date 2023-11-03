@@ -187,6 +187,7 @@ import useLoading from '@/hooks/loading';
 // 分页列表
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue';
+import {Message, Modal} from "@arco-design/web-vue";
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
@@ -234,6 +235,9 @@ const generateFilterData = (): FilterForm => {
 };
 const filterData = ref(generateFilterData());
 
+const copyPrimaryKey = (id: string) => {
+  copyToClipboard(id, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
+}
 /**
  * 分页查询方法
  * @param params
@@ -293,19 +297,49 @@ const downloadFileById = (id: string) => {
     document.body.removeChild(iframe)
   }, 100)
 }
-
+const downloadFileFailed = (key: string, title: string) => {
+  Modal.error({
+    title: `${title}`, content: t('security.file.index.example.failed.content'),
+    okText: `${t('security.file.index.example.failed.okText')} ${key}`,
+    async onOk() {
+      copyPrimaryKey(`${key}`);
+    }
+  });
+}
+const downloadFile = async (id: string, key: string) => {
+  try {
+    const url = getDownloadUrlById(id, false);
+    const response = await fetch(url);
+    if (response.ok) {
+      const data = await response.blob();
+      const fileName = `${key}`;
+      const fileUrl = URL.createObjectURL(data);
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      // @ts-ignore
+      link.download = fileName;
+      link.click();
+      URL.revokeObjectURL(fileUrl);
+    } else {
+      downloadFileFailed(key, t('security.file.index.example.file.failed'));
+    }
+  } catch (err) {
+    Message.error({content: `Error`, duration: 5 * 1000});
+  }
+}
 const downloadImportOrExportExample = async (configKey: string) => {
   try {
     const {data} = await getValueByKeys(configKey);
-    downloadFileById(data);
+    if (data) {
+      await downloadFile(data, configKey);
+    } else {
+      downloadFileFailed(configKey, t('security.file.index.example.get.failed'));
+    }
   } catch (err) {
     console.log(err);
   }
 }
 
-const copyPrimaryKey = (id: string) => {
-  copyToClipboard(id, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
-}
 const viewTable = (id: string) => {
   if (formRef.value) {
     // @ts-ignore
