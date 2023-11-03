@@ -147,6 +147,7 @@ export function deleteOrg(id: string) {
 export interface QueryUserForm {
   id: string;
   name: string;
+  enName: string;
   loginName: string;
   seqNo: number;
   sex: number;
@@ -170,6 +171,7 @@ export interface QueryUserForm {
 export interface FilterUserForm {
   id: string;
   name: string;
+  enName: string;
   sex: string;
   orgId: string;
   orgName: string;

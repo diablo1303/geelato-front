@@ -161,6 +161,7 @@ export default {
   'security.user.forml.tab.title.two': 'User Of Organization',
   'security.user.index.form.index': 'index',
   'security.user.index.form.name': 'name',
+  'security.user.index.form.enName': 'englishName',
   'security.user.index.form.loginName': 'loginName',
   'security.user.index.form.sex': 'sex',
   'security.user.index.form.sex.0': 'female',

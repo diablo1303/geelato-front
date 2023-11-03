@@ -184,10 +184,10 @@
 /* 导入 */
 import {nextTick, reactive, ref, watch} from 'vue';
 import useLoading from '@/hooks/loading';
+import type {TableColumnData} from '@arco-design/web-vue';
 import {Modal} from "@arco-design/web-vue";
 // 分页列表
 import {Pagination} from '@/types/global';
-import type {TableColumnData} from '@arco-design/web-vue';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
@@ -223,7 +223,7 @@ const scroll = {x: 2000};
 // 搜索条件
 const generateFilterData = (): FilterForm => {
   return {
-    id: '', name: '', orgId: '', orgName: '', sex: '', source: '', type: '', createAt: [],
+    id: '', name: '', enName: '', orgId: '', orgName: '', sex: '', source: '', type: '', createAt: [],
     tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 };
