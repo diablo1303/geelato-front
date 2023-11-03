@@ -110,10 +110,10 @@
         </a-form-item>
       </a-col>
       <!-- 数值类型，是否有符号 -->
-      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.dataType)" :span="24/pageData.formCol">
+      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(formData.selectType)" :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.column.index.form.numericSigned')"
-            :rules="[{required: ['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.dataType),message: $t('model.form.rules.match.required')}]"
+            :rules="[{required: ['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.selectType),message: $t('model.form.rules.match.required')}]"
             field="numericSigned">
           <a-radio-group v-model="formData.numericSigned" :disabled="['SCORE'].includes(formData.selectType)" :options="numericSignedOptions"
                          @change="numericSignedChange(formData.numericSigned as boolean,$event)">
@@ -122,10 +122,10 @@
         </a-form-item>
       </a-col>
       <!-- 数值类型，整数位 -->
-      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.dataType)" :span="24/pageData.formCol">
+      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(formData.selectType)" :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.column.index.form.numericPrecision')"
-            :rules="[{required: ['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.dataType),message: $t('model.form.rules.match.required')}]"
+            :rules="[{required: ['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(formData.selectType),message: $t('model.form.rules.match.required')}]"
             field="numericPrecision">
           <a-input-number
               v-model="formData.numericPrecision"
@@ -178,7 +178,7 @@
         </a-form-item>
       </a-col>
       <!--  布尔值 defaultValue -->
-      <a-col v-if="['BIT'].includes(formData.dataType)" :span="24/pageData.formCol">
+      <a-col v-if="['BIT','SWITCH'].includes(formData.selectType)" :span="24/pageData.formCol">
         <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
           <a-radio-group v-model="formData.defaultValue">
             <a-radio value="1">TRUE</a-radio>
@@ -273,7 +273,7 @@
                                   :disabled="item.columnSelectType.fixed"/>
                 </a-form-item>
               </a-col>
-              <a-col v-if="item.isEdit&&['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(item.dataType)" :span="24">
+              <a-col v-if="item.isEdit&&['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(item.selectType)" :span="24">
                 <a-form-item :label="$t('model.column.index.form.numericPrecision')" :required="true" :style="{'margin-bottom': '5px'}">
                   <a-input-number v-model="item.numericPrecision" :max="item.columnSelectType.radius.unDigit" :min="1" :precision="0"
                                   :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.unDigit}]`"/>
@@ -352,7 +352,7 @@
         </a-form-item>
       </a-col>
       <!--  数值类型，自动递增    -->
-      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT'].includes(formData.dataType)&&formData.key===1" :span="24/pageData.formCol">
+      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT'].includes(formData.selectType)&&formData.key===1" :span="24/pageData.formCol">
         <a-form-item :label="$t('model.column.index.form.autoIncrement')" field="autoIncrement">
           <a-radio-group v-model="formData.autoIncrement" :options="autoIncrementOptions">
             <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
@@ -544,7 +544,7 @@ const selectTypeMultiChange = (data: QueryMultiComponentForm) => {
     data.charMaxLength = data.columnSelectType.radius.max;
   }
   // 数值 默认长度
-  if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT'].includes(data.dataType)) {
+  if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT'].includes(data.selectType)) {
     data.numericPrecision = data.columnSelectType.radius.digit;
     data.numericScale = data.columnSelectType.radius.precision;
   }
@@ -707,8 +707,8 @@ const selectTypeChange = (value: string) => {
   selectData.value.digit = formData.value.numericSigned ? cst.radius.digit : cst.radius.unDigit;
   selectData.value.precision = cst.radius.precision;
   // 数值 默认长度
-  if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT', 'DECIMAL'].includes(formData.value.dataType)) {
-    if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT'].includes(formData.value.dataType)) {
+  if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT', 'DECIMAL', 'SCORE'].includes(formData.value.selectType)) {
+    if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT'].includes(formData.value.selectType)) {
       formData.value.numericPrecision = cst.radius.digit;
       formData.value.numericScale = cst.radius.precision;
     }
@@ -840,10 +840,10 @@ const loadModel = (urlParams: ListUrlParams) => {
       data.autoIncrement = data.autoIncrement === true ? 1 : 0;
       data.isRefColumn = data.isRefColumn === true ? 1 : 0;
       data.autoAdd = [(data.autoAdd === true ? 1 : 0).toString()];
-      if (['TINYINT', 'INT', 'BIGINT', 'DECIMAL'].includes(data.dataType)) {
+      if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT', 'DECIMAL', 'SCORE'].includes(data.selectType)) {
         data.defaultValue = (data.defaultValue == null || data.defaultValue === '') ? data.defaultValue : Number(data.defaultValue);
       }
-      if (['BIT'].includes(data.dataType)) {
+      if (['BIT', 'SWITCH'].includes(data.selectType)) {
         data.defaultValue = (data.defaultValue == null || data.defaultValue === '') ? '' : data.defaultValue.toString();
       }
       if (['MULTICOMPONENT'].includes(data.selectType)) {
