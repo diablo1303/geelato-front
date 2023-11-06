@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import ResetPasswordBanner from '@/views/reset/password/banner.vue';
+import ResetPasswordBanner from '@/components/banner/index.vue';
 import ResetPasswordForm from "@/views/reset/password/reset-password.vue";
 import Footer from '@/components/footer/index.vue';
 import favicon from '@/assets/favicon.ico';
