@@ -33,10 +33,11 @@ import JsCodeBlockMeta from "./setter-block/code/JsCodeBlockMeta";
 import ExportPdfBlockMeta from './setter-block/file/ExportPdfBlockMeta';
 import ImportExcelBlockMeta from './setter-block/file/ImportExcelBlockMeta';
 import HttpRequestBlockMeta from "./setter-block/network/HttpRequestBlockMeta";
+import DownloadBlockMeta from "./setter-block/file/DownloadBlockMeta";
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, JsCodeBlockMeta,GenerateEntityReaderBlockMeta, GroupSumBlockMeta, BlockNotificationMeta, BlockOpenComponentPageMeta,BlockComponentInvokeMeta, TriggerComponentActionMeta, BlockSetVisibleMeta, SetValueBlockMeta, BlockOpenThirdPageMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
     BlockConfirmMeta,  ReturnBlockMeta,
-    LogBlockMeta, ExportExcelBlockMeta,ExportWordBlockMeta,ExportPdfBlockMeta,ImportExcelBlockMeta,AnnotaionBlockMeta,ForListBlockMeta,ForTimesBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta,HttpRequestBlockMeta]
+    LogBlockMeta, ExportExcelBlockMeta,ExportWordBlockMeta,ExportPdfBlockMeta,ImportExcelBlockMeta,DownloadBlockMeta,AnnotaionBlockMeta,ForListBlockMeta,ForTimesBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta,HttpRequestBlockMeta]
 
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance,ForListBlockInstance,ForTimesBlockInstance]

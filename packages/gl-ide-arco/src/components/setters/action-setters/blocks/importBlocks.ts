@@ -26,6 +26,7 @@ import AnnotationBlockHandler from './other/AnnotationBlockHandler'
 import ForListBlockHandler from './loop/ForListBlockHandler'
 import ForTimesBlockHandler from './loop/ForTimesBlockHandler'
 import HttpRequestBlockHandler from './network/HttpRequestBlockHandler'
+import DownloadBlockHandler from "./file/DownloadBlockHandler";
 
 export {
   OpenThirdPageBlockHandler,
@@ -52,5 +53,6 @@ export {
   AnnotationBlockHandler,
   ForListBlockHandler,
   ForTimesBlockHandler,
-  HttpRequestBlockHandler
+  HttpRequestBlockHandler,
+  DownloadBlockHandler
 }
