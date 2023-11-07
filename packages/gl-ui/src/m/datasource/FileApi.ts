@@ -47,7 +47,7 @@ export function getUploadUrl(isRename?: boolean) {
  * @param id 附件id
  */
 export function getDownloadUrlById(id: string) {
-  return id ? `${entityApi.getAxios().defaults.baseURL}/resources/file?rstk=download&id=${id}` : ''
+  return id ? `${entityApi.getAxios().defaults.baseURL}/api/resources/file?rstk=download&id=${id}` : ''
 }
 
 /**
@@ -59,7 +59,7 @@ export function getDownloadUrlByPath(name: string, path: string) {
   return name && path
     ? `${
         entityApi.getAxios().defaults.baseURL
-      }/resources/file?rstk=download&name=${name}&path=${path}`
+      }/api/resources/file?rstk=download&name=${name}&path=${path}`
     : ''
 }
 
