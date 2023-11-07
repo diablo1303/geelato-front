@@ -26,20 +26,19 @@ watch(mv, () => {
   <div class="gl-banner">
     <div class="gl-banner-slogan">
       <div class="gl-banner-slogan-title">
-        自主可控的服务平台
+        海纳百川，桥通世界
       </div>
       <!--        <div class="banner-slogan-sub-title">-->
-      <!--          自主可控的服务平台-->
       <!--        </div>-->
       <div class="gl-banner-slogan-keys">
         <div>
-          提供单证发送服务
+          客户、物流、跟踪等一站式服务
         </div>
         <div>
-          提高数据使用效率
+          自主可控、符合企业数字化需求
         </div>
         <div>
-          助力代订舱服务品质
+          敏捷响应、助力业务高效发展
         </div>
       </div>
     </div>

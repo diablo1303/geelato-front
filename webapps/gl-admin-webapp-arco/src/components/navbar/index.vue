@@ -109,33 +109,33 @@
 <!--        </a-tooltip>-->
 <!--      </li>-->
       <!--   消息   -->
-      <li>
-        <a-tooltip :content="$t('settings.navbar.alerts')">
-          <div class="message-box-trigger">
-            <a-badge :count="9" dot>
-              <a-button
-                  :shape="'circle'"
-                  class="nav-btn"
-                  type="outline"
-                  @click="setPopoverVisible($event)"
-              >
-                <icon-notification/>
-              </a-button>
-            </a-badge>
-          </div>
-        </a-tooltip>
-        <a-popover
-            :arrow-style="{ display: 'none' }"
-            :content-style="{ padding: 0, minWidth: '400px' }"
-            content-class="message-popover"
-            trigger="click"
-        >
-          <div ref="refBtn" class="ref-btn"></div>
-          <template #content>
-            <message-box/>
-          </template>
-        </a-popover>
-      </li>
+<!--      <li>-->
+<!--        <a-tooltip :content="$t('settings.navbar.alerts')">-->
+<!--          <div class="message-box-trigger">-->
+<!--            <a-badge :count="9" dot>-->
+<!--              <a-button-->
+<!--                  :shape="'circle'"-->
+<!--                  class="nav-btn"-->
+<!--                  type="outline"-->
+<!--                  @click="setPopoverVisible($event)"-->
+<!--              >-->
+<!--                <icon-notification/>-->
+<!--              </a-button>-->
+<!--            </a-badge>-->
+<!--          </div>-->
+<!--        </a-tooltip>-->
+<!--        <a-popover-->
+<!--            :arrow-style="{ display: 'none' }"-->
+<!--            :content-style="{ padding: 0, minWidth: '400px' }"-->
+<!--            content-class="message-popover"-->
+<!--            trigger="click"-->
+<!--        >-->
+<!--          <div ref="refBtn" class="ref-btn"></div>-->
+<!--          <template #content>-->
+<!--            <message-box/>-->
+<!--          </template>-->
+<!--        </a-popover>-->
+<!--      </li>-->
       <!--   全屏模式   -->
       <li>
         <a-tooltip
