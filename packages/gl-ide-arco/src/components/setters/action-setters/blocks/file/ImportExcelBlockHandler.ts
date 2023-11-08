@@ -3,9 +3,6 @@ import type { PropsExpressions } from '../BlockHandler'
 import ParseResult from '../ParseResult'
 import { blocksHandler, CommandBlocks } from '../BlockHandler'
 
-const toStr = (str: string) => {
-  return `"${str}"`
-}
 export default class ImportExcelBlockHandler implements IBlockHandler {
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     const params = {
@@ -24,10 +21,10 @@ export default class ImportExcelBlockHandler implements IBlockHandler {
             onBeforeOk: async ()=>{
                 try{
                     const importResult = await content.component.exposed.importFile()
+                    console.log('importResult',importResult)
                     if(importResult===undefined){
                       return false
                     }
-                    console.log('importResult',importResult)
                 }catch(e){
                     console.error(e)
                     return false

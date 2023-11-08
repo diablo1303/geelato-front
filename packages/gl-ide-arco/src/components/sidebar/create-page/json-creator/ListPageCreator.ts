@@ -1,8 +1,8 @@
-import { FieldMeta, utils } from '@geelato/gl-ui'
-import { ComponentInstance } from '@geelato/gl-ui-schema'
+import { entityApi, FieldMeta, utils } from '@geelato/gl-ui'
+import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import { useComponentStore } from '@geelato/gl-ide'
 import { PageCreator, PageCreatorOptions } from './PageCreator'
-import {useFieldMetaToComponentInst} from "./useFieldMetaToComponentInst";
+import { useFieldMetaToComponentInst } from './useFieldMetaToComponentInst'
 
 const useToolbarInst = (
   options: PageCreatorOptions,
@@ -34,13 +34,13 @@ const useToolbarInst = (
             title: '点击',
             body: `const content = $gl.fn.loadPage("","${options.pageInfo.pageExtendId}",[],"create");
             $gl.fn.openDrawer({
-                title:"${formInst.props.label}",
+                title:"${options.pageInfo.label}",
                 content: content,
-                width:"1024px",
+                width:"80%",
                 okText:"保存",
                 onBeforeOk: async ()=>{
                     try{
-                        return   $gl.fn.invokeComponentMethod("${formInst.id}","submitForm",[]);
+                        return $gl.fn.invokeComponentMethod("${formInst.id}","submitForm",[]);
                     }catch(e){
                         console.error(e)
                         return false
@@ -83,17 +83,15 @@ const useToolbarInst = (
                   group: 'block_page',
                   props: {
                     extendId: `${options.pageInfo.pageExtendId}`,
-                    title: `${formInst.props.label}`,
+                    title: `${options.pageInfo.label}`,
                     params: [],
                     okText: '保存',
                     hideCancel: true,
                     invokeBlocks: ['onBeforeOk', 'onClose'],
-                    width: '1024px',
+                    width: '80%',
                     pageStatus: 'create'
                   },
-                  propsExpress: {},
                   slots: {},
-                  slotsExpress: {},
                   children: [
                     {
                       componentName: 'GlVirtual',
@@ -113,17 +111,12 @@ const useToolbarInst = (
                             methodName: 'submitForm',
                             enableReturn: true
                           },
-                          propsExpress: {},
                           slots: {},
-                          slotsExpress: {},
                           children: [],
                           actions: [],
                           style: {},
                           propsWrapper: '',
                           i18n: [],
-                          valueExpress: '',
-                          __validateError: null,
-                          __dragFlag: utils.gid('dragFlag'),
                           propsExpressions: {},
                           slotsExpressions: {}
                         }
@@ -148,17 +141,12 @@ const useToolbarInst = (
                             methodName: 'refresh',
                             params: []
                           },
-                          propsExpress: {},
                           slots: {},
-                          slotsExpress: {},
                           children: [],
                           actions: [],
                           style: {},
                           propsWrapper: '',
                           i18n: [],
-                          valueExpress: '',
-                          __validateError: null,
-                          __dragFlag: utils.gid('dragFlag'),
                           propsExpressions: {},
                           slotsExpressions: {}
                         }
@@ -171,9 +159,6 @@ const useToolbarInst = (
                   style: {},
                   propsWrapper: '',
                   i18n: [],
-                  valueExpress: '',
-                  __validateError: null,
-                  __dragFlag: utils.gid('dragFlag'),
                   propsExpressions: {},
                   slotsExpressions: {}
                 }
@@ -186,9 +171,6 @@ const useToolbarInst = (
         style: {},
         propsWrapper: '',
         i18n: [],
-        valueExpress: '',
-        __validateError: null,
-        __dragFlag: '',
         propsExpressions: {},
         slotsExpressions: {}
       }
@@ -199,11 +181,10 @@ const useToolbarInst = (
 }
 
 const useQueryInst = (options: PageCreatorOptions) => {
-
-  const insts = useFieldMetaToComponentInst(options.entityMeta.entityName,options.queryFields)
+  const insts = useFieldMetaToComponentInst(options.entityMeta.entityName, options.queryFields)
 
   const items: any[] = []
-  insts.forEach((inst: ComponentInstance,index:number) => {
+  insts.forEach((inst: ComponentInstance, index: number) => {
     const fieldMeta = options.queryFields[index]
 
     items.push({
@@ -219,6 +200,10 @@ const useQueryInst = (options: PageCreatorOptions) => {
 
 const useColumnsInst = (options: PageCreatorOptions) => {
   const columns: any[] = []
+  columns.push({
+    title: 'ID',
+    dataIndex: 'id'
+  })
   options.showFields.forEach((fieldMeta: FieldMeta) => {
     columns.push({
       title: fieldMeta.title,
@@ -230,6 +215,117 @@ const useColumnsInst = (options: PageCreatorOptions) => {
   })
 
   return columns
+}
+
+const useColumnActionsInst = (options: PageCreatorOptions) => {
+  const pageExtendId = options.pageInfo.pageExtendId
+  const paramFormId = utils.gid()
+  const paramPageStatusId = utils.gid()
+  const actions: any[] = []
+  actions.push({
+    id: utils.gid('btn'),
+    componentName: 'GlButton',
+    group: '',
+    props: { type: 'text', label: '详细', iconType: '' },
+    propsExpressions: {},
+    slots: {},
+    slotsExpressions: {},
+    children: [],
+    actions: [
+      {
+        id: utils.gid('act'),
+        eventName: 'click',
+        name: 'click',
+        title: '点击',
+        body: `const content = $gl.fn.loadPage("","${pageExtendId}",[{"id":"${paramFormId}","name":"form.id","valueExpression":"$gl.ctx.record.id"},{"id":"${paramPageStatusId}","name":"page.status","valueExpression":"\\"read\\""}],"read");
+            $gl.fn.openDrawer({
+                title:"详细信息",
+                content: content,
+                width:"1024px",
+                okText:"关闭",
+                onBeforeOk: async ()=>{
+                    try{
+                        
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
+                },
+                onOpen:async ()=>{
+                    try{
+                        
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
+                },
+                onClose:async ()=>{
+                    try{
+                        
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
+                },
+                cancelText:"取消",
+                hideCancel:true
+            })`,
+        __commandBlock: {
+          componentName: 'GlPage',
+          id: utils.gid('blockPage'),
+          props: {
+            pageType: 'blockPage',
+            pageTitle: '指令',
+            pageMargin: '0',
+            pagePadding: '0'
+          },
+          slots: {},
+          children: [
+            {
+              id: utils.gid('id'),
+              title: '',
+              componentName: 'GlOpenComponentPageBlock',
+              group: 'block_page',
+              props: {
+                extendId: pageExtendId,
+                title: '详细信息',
+                params: [
+                  {
+                    id: paramFormId,
+                    name: 'form.id',
+                    valueExpression: '$gl.ctx.record.id'
+                  },
+                  {
+                    id: paramPageStatusId,
+                    name: 'page.status',
+                    valueExpression: '"read"'
+                  }
+                ],
+                pageStatus: 'read',
+                okText: '关闭',
+                hideCancel: true
+              },
+              propsExpressions: {},
+              slots: {},
+              slotsExpressions: {},
+              children: [],
+              actions: [],
+              style: {},
+              propsWrapper: '',
+              i18n: []
+            }
+          ],
+          actions: [],
+          style: {}
+        }
+      }
+    ],
+    style: {},
+    propsWrapper: '',
+    i18n: []
+  })
+
+  return actions
 }
 
 const useTableInst = (options: PageCreatorOptions): ComponentInstance => {
@@ -265,9 +361,10 @@ export class ListPageCreator extends PageCreator {
   buildChildren(page: ComponentInstance, options: PageCreatorOptions): ComponentInstance {
     // 获取字段信息
     const tableInst = useTableInst(options)
-    const formInst: ComponentInstance = new ComponentInstance()
+    const formInst: ComponentInstance = options.pageInfo.pageExtendContent
     tableInst.props.toolbar = useToolbarInst(options, tableInst, formInst)
     tableInst.props.columns = useColumnsInst(options)
+    tableInst.props.columnActions = useColumnActionsInst(options)
     tableInst.props.query = useQueryInst(options)
     page.children.push(tableInst)
     return page

@@ -1,4 +1,4 @@
-import type { AxiosInstance, AxiosRequestConfig, AxiosStatic } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosStatic } from 'axios'
 import ResultMapping from '../datasource/ResultMapping'
 import UrlConfig from '../datasource/UrlConfig'
 import MixUtil from '../utils/MixUtil'
@@ -162,7 +162,7 @@ export class EntityApi {
           })
           // @b brackets的简写，用于通过括号来组合条件
           params['@b'] = params['@b'] || []
-          params['@b'].push({'or':subParams})
+          params['@b'].push({ or: subParams })
         }
       })
 
@@ -519,14 +519,15 @@ export class EntityApi {
   /**
    * 通过页面ID获取页面配置信息
    * @param pageId
-   * @returns {*}
+   * @param contentType 查询为source内容还是release内容
+   * @returns
    */
-  queryPageById(pageId: string) {
+  queryPageById(pageId: string, contentType?: string): Promise<AxiosResponse> {
     // mql查询语句
     const mql = {
       platform_app_page: {
         '@p': '1,1',
-        '@fs': 'id,code,releaseContent',
+        '@fs': `id,code,${contentType === 'source' ? 'sourceContent' : 'releaseContent'}`,
         delStatus: 0,
         id: pageId
       }
@@ -541,14 +542,15 @@ export class EntityApi {
   /**
    * 通过应用页面树节点ID获取页面配置信息
    * @param extendId
-   * @returns {*}
+   * @param contentType 查询为source内容还是release内容
+   * @returns
    */
-  queryPageByExtendId(extendId: string) {
+  queryPageByExtendId(extendId: string, contentType?: string): Promise<AxiosResponse> {
     // mql查询语句
     const mql = {
       platform_app_page: {
         '@p': '1,1',
-        '@fs': 'id,code,releaseContent',
+        '@fs': `id,code,${contentType === 'source' ? 'sourceContent' : 'releaseContent'}`,
         delStatus: 0,
         extendId: extendId
       }

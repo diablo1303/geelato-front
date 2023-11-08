@@ -78,7 +78,7 @@
       <!--       <GlIconfont type="gl-mobile" :class="{'gl-selected':currentIconSelected==='gl-mobile'}"-->
       <!--                   @click="currentIconSelected='gl-mobile'"></GlIconfont>-->
       <!--      </span>-->
-      <span class="gl-item" v-if="isLogin()">
+      <span class="gl-item" v-if="isLogin()&&pageStore.currentPage.sourceContent?.componentName">
         <GlIconfont type="gl-json" @click="openCodeViewer"></GlIconfont>
       </span>
     </span>

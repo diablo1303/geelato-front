@@ -9,7 +9,7 @@ import type { EntityMeta, FieldMeta } from '@geelato/gl-ui'
 import { ListPageCreator } from './json-creator/ListPageCreator'
 import { PageCreatorOptions } from './json-creator/PageCreator'
 import type { PageInfo } from './CreatePageNav'
-import { PageType } from '@geelato/gl-ui'
+import { entityApi, PageType } from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -29,7 +29,8 @@ const entityName = ref('')
 const form: any = ref({
   fieldRange: 'ALL',
   pageLabel: '',
-  pageExtendId: ''
+  pageExtendId: '',
+  queryFields: []
 })
 const pageCreatorOptions = ref(new PageCreatorOptions())
 
@@ -41,12 +42,10 @@ watch(
   form,
   () => {
     pageCreatorOptions.value.entityMeta.entityName = form.value.bindEntity?.entityName
-    pageInfo.value.label = form.value.pageLabel
-    pageInfo.value.pageExtendId = form.value.pageExtendId
-    pageInfo.value.label = form.value.pageLabel
-    pageInfo.value.content = listPageCreator.create(pageCreatorOptions.value)
-    pageCreatorOptions.value.pageInfo = pageInfo.value
     pageCreatorOptions.value.queryFields = form.value.queryFields
+    pageCreatorOptions.value.pageInfo = pageInfo.value
+    pageInfo.value.label = form.value.pageLabel
+    pageInfo.value.content =  listPageCreator.create(pageCreatorOptions.value)
     emits('update:modelValue', pageInfo.value)
   },
   { deep: true }
@@ -77,7 +76,14 @@ const loadFieldMetas = (entityMeta: EntityMeta) => {
   fieldMetas.value = pageCreatorOptions.value.entityMeta.fieldMetas
   form.value.pageLabel = entityMeta.entityTitle + '列表页面'
   pageCreatorOptions.value.showFields = fieldMetas.value
-  pageInfo.value.content = listPageCreator.create(pageCreatorOptions.value)
+  pageInfo.value.content =  listPageCreator.create(pageCreatorOptions.value)
+}
+const changePageExtendId = async (pageExtendId: string) => {
+  return entityApi.queryPageByExtendId(pageExtendId, 'source').then((res) => {
+    // console.log('changePageExtendId', pageExtendId, res)
+    pageInfo.value.pageExtendId = form.value.pageExtendId
+    pageInfo.value.pageExtendContent = JSON.parse(res.data[0].sourceContent)
+  })
 }
 const myForm = ref()
 /**
@@ -117,7 +123,7 @@ defineExpose({ getPage, validate })
         label="关联的表单页面"
         :rules="[{ required: true, message: '必填' }]"
       >
-        <GlPageSelect v-model="form.pageExtendId"></GlPageSelect>
+        <GlPageSelect v-model="form.pageExtendId" @change="changePageExtendId"></GlPageSelect>
       </a-form-item>
       <a-form-item field="queryFields" label="查询条件字段">
         <a-select v-model="form.queryFields" multiple value-key="name" placeholder="请先选择模型">

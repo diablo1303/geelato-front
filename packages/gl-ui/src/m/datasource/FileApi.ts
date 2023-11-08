@@ -99,6 +99,7 @@ export function downloadFileById(id: string) {
   iframe.style.height = '0' // 防止影响页面
   iframe.src = getDownloadUrlById(id)
   document.body.appendChild(iframe) // 这一行必须，iframe挂在到dom树上才会发请求
+  // TODO 若文件不存在，需要有提醒信息
   setTimeout(function () {
     document.body.removeChild(iframe)
   }, 100)

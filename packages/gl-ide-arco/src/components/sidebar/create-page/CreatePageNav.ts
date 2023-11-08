@@ -10,12 +10,12 @@ export class PageInfo {
   type: PageType = PageType.emptyPage
   // 是否为菜单项
   isMenuitem: boolean = false
-  // 页面内容
+  // 页面内容，最终创建的页面内容源码，用于保存到数据库
   content: ComponentInstance = new ComponentInstance()
   // 对应树节点的id
   pageExtendId: string = ''
   // 引用的页面页面，如在配置列表时，引用的是表单页面
-  refPageContent: ComponentInstance = new ComponentInstance()
+  pageExtendContent: ComponentInstance = new ComponentInstance()
 
   constructor(type?: PageType) {
     if (PageType.listPage === type) {

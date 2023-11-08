@@ -100,7 +100,7 @@ defineExpose({
           >
             <div>
               <GlIconfont type="gl-upload"></GlIconfont>
-              <span style="color: #3370ff; margin-left: 1em">点击上传</span>
+              <span style="color: #3370ff; margin-left: 1em">先点击上传文件，再点击右下角的【导入】</span>
             </div>
           </div>
         </template>

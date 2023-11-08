@@ -243,7 +243,6 @@ const onBeforeOk = async () => {
 
       const nodeSaver = createAddNodeEntitySaver(pageInfo)
       nodeSaver.children = [pageSaver]
-
       entityApi.saveEntity(nodeSaver).then((res) => {
         // 构建前端的节点
         const node = {
@@ -252,6 +251,9 @@ const onBeforeOk = async () => {
           _nodeType: page.type,
           treeId: page.appId,
           key: res.data
+        }
+        if (!currentClickContextMenuItem.value.clickedNodeData.children) {
+          currentClickContextMenuItem.value.clickedNodeData.children = []
         }
         currentClickContextMenuItem.value.clickedNodeData.children.push(node)
         glEntityTree.value.refresh()
