@@ -5,7 +5,7 @@ import {useUserStore} from '@/store';
 import globalConfig from '@/config/globalConfig';
 import {getToken} from '@/utils/auth';
 import {entityApi} from "@geelato/gl-ui";
-import {getDownloadUrlById} from "@/api/application";
+import {downloadFileById} from "@geelato/gl-ui/src/m/datasource/FileApi";
 
 export interface HttpResponse<T = unknown> {
   status: number;
@@ -60,7 +60,7 @@ axios.interceptors.response.use(
       } else if ([1216].includes(res.code)) {
         // 12.6 File Content Validate Failed Exception：For more information, see the error file.
         // @ts-ignore
-        if (res.data && res.data.id) window.open(getDownloadUrlById(res.data.id, false));
+        if (res.data && res.data.id) downloadFileById(res.data.id);
       }
       return Promise.reject(new Error(res.msg || 'Error'));
     }

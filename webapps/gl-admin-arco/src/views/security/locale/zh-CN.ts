@@ -483,8 +483,8 @@ export default {
   'security.file.index.example.import.tip': '导入示例：数据类型+元数据，说明。',
   'security.file.index.example.export.text': '导出示例',
   'security.file.index.example.export.tip': '导出示例：元数据，说明。',
-  'security.file.index.example.get.failed': '配置值不存在',
-  'security.file.index.example.file.failed': '文件不存在',
+  'security.file.index.example.get.failed': '配置值查询失败',
+  'security.file.index.example.file.failed': '文件查询失败',
   'security.file.index.example.failed.okText': '复制 键',
   'security.file.index.example.failed.content': '请在【系统配置】中配置示例的键值对。',
 

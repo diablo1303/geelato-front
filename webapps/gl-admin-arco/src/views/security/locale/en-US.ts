@@ -481,8 +481,8 @@ export default {
   'security.file.index.example.import.tip': 'Import example: DataType + Meta, Explain.',
   'security.file.index.example.export.text': 'Export example',
   'security.file.index.example.export.tip': 'Export example: Meta, Explain.',
-  'security.file.index.example.get.failed': 'ConfigValue doesn‘t exist',
-  'security.file.index.example.file.failed': 'File doesn‘t exist',
+  'security.file.index.example.get.failed': 'ConfigValue Query Failure',
+  'security.file.index.example.file.failed': 'File Query Failure',
   'security.file.index.example.failed.okText': 'Copy Key',
   'security.file.index.example.failed.content': 'Configure the key-value pairs for the example in System Configuration.',
 
