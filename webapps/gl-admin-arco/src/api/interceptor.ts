@@ -44,9 +44,9 @@ axios.interceptors.response.use(
     const res = response.data;
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== globalConfig.interceptorCode) {
-      Message.error({content: res.msg || 'Error', duration: 5 * 1000,});
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if ([50008, 50012, 50014].includes(res.code) && response.config.url !== '/api/user/info') {
+        Message.error({content: res.msg || 'Error', duration: 5 * 1000,});
         Modal.error({
           title: 'Confirm logout',
           content: 'You have been logged out, you can cancel to stay on this page, or log in again',
@@ -58,9 +58,22 @@ axios.interceptors.response.use(
           },
         });
       } else if ([1216].includes(res.code)) {
-        // 12.6 File Content Validate Failed Exception：For more information, see the error file.
         // @ts-ignore
-        if (res.data && res.data.id) downloadFileById(res.data.id);
+        if (res.data && res.data.id) {
+          Modal.error({
+            title: `文件错误`, content: '[1216]文件内容校验失败：更多内容，请查看错误提示文件。',
+            okText: "下载错误提示文件",
+            async onOk() {
+              // @ts-ignore
+              downloadFileById(res.data.id)
+            }
+          });
+        } else {
+          Message.error({content: '[1216]文件内容校验失败。' || 'Error', duration: 10 * 1000,});
+        }
+        // 12.6 File Content Validate Failed Exception：For more information, see the error file.
+      } else {
+        Message.error({content: res.msg || 'Error', duration: 5 * 1000,});
       }
       return Promise.reject(new Error(res.msg || 'Error'));
     }
