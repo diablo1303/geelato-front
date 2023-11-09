@@ -14,15 +14,20 @@
             </a-form-item>
           </a-col>
           <a-col :span="pageData.isModal?12:8">
+            <a-form-item :label="$t('security.user.index.form.loginName')" field="name">
+              <a-input v-model="filterData.loginName" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('security.user.index.form.orgName')" field="code">
               <a-input v-model="filterData.orgName" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
-          <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('security.user.index.form.createAt')" field="createAt">
-              <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
-            </a-form-item>
-          </a-col>
+          <!-- <a-col :span="pageData.isModal?12:8">
+                      <a-form-item :label="$t('security.user.index.form.createAt')" field="createAt">
+                        <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
+                      </a-form-item>
+                    </a-col>-->
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('security.user.index.form.sex')" field="sex">
               <a-select v-model="filterData.sex" :placeholder="$t('searchTable.form.selectDefault')">
@@ -123,7 +128,8 @@
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.name')" :tooltip="true" :width="120" data-index="name"></a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.name')" :tooltip="true" :width="120" data-index="name"/>
+      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.loginName')" :tooltip="true" :width="120" data-index="loginName"/>
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.orgName')" :tooltip="true" :width="200" data-index="orgName"></a-table-column>
       <a-table-column :title="$t('security.user.index.form.mobilePhone')" :width="150" data-index="mobilePhone"></a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.email')" :tooltip="true" :width="200" data-index="email"></a-table-column>
@@ -223,7 +229,7 @@ const scroll = {x: 2000};
 // 搜索条件
 const generateFilterData = (): FilterForm => {
   return {
-    id: '', name: '', enName: '', orgId: '', orgName: '', sex: '', source: '', type: '', createAt: [],
+    id: '', name: '', loginName: '', enName: '', orgId: '', orgName: '', sex: '', source: '', type: '', createAt: [],
     tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 };
