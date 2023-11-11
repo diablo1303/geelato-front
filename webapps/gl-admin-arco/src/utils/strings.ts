@@ -123,4 +123,19 @@ const copyToClipboard = async (value: string, successMsg?: string, failMsg?: str
   }
 }
 
-export {isEmpty, isNotEmpty, isBlank, isNotBlank, toCamelCase, formatSeparator, buildUrl, copyToClipboard};
+const isJSON = function (val: string) {
+  let isJ = false;
+  try {
+    if (typeof val === 'string' && val) {
+      const obj = JSON.parse(val);
+      if (typeof obj === 'object' && obj) {
+        isJ = true;
+      }
+    }
+  } catch (e) {
+    isJ = false;
+  }
+  return isJ;
+}
+
+export {isEmpty, isNotEmpty, isBlank, isNotBlank, toCamelCase, formatSeparator, buildUrl, copyToClipboard, isJSON};

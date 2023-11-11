@@ -1,5 +1,5 @@
-import type { ApiResult } from '../types/global'
-import { entityApi } from './EntityApi'
+import type {ApiResult} from '../types/global'
+import {entityApi} from './EntityApi'
 
 export interface AttachmentForm {
   id: string
@@ -20,7 +20,7 @@ export function getAttachment(id: string) {
  * @param ids
  */
 export function getAttachmentByIds(ids: string) {
-  return entityApi.getAxios().post<AttachmentForm[]>(`/api/attach/list`, { ids: ids })
+  return entityApi.getAxios().post<AttachmentForm[]>(`/api/attach/list`, {ids: ids})
 }
 
 /**
@@ -58,8 +58,8 @@ export function getDownloadUrlById(id: string) {
 export function getDownloadUrlByPath(name: string, path: string) {
   return name && path
     ? `${
-        entityApi.getAxios().defaults.baseURL
-      }/api/resources/file?rstk=download&name=${name}&path=${path}`
+      entityApi.getAxios().defaults.baseURL
+    }/api/resources/file?rstk=download&name=${name}&path=${path}`
     : ''
 }
 
@@ -94,15 +94,19 @@ export function importFile(templateId: string, attachId: string, importType?: st
  * @param id
  */
 export function downloadFileById(id: string) {
-  let iframe = document.createElement('iframe')
+  const iframe = document.createElement('iframe')
   iframe.style.display = 'none' // 防止影响页面
   iframe.style.height = '0' // 防止影响页面
   iframe.src = getDownloadUrlById(id)
   document.body.appendChild(iframe) // 这一行必须，iframe挂在到dom树上才会发请求
-  // TODO 若文件不存在，需要有提醒信息
-  setTimeout(function () {
-    document.body.removeChild(iframe)
-  }, 100)
+  // 等待iframe加载完成
+  iframe.onload = () => {
+    document.body.removeChild(iframe);
+  };
+  // 等待iframe加载失败
+  iframe.onerror = () => {
+    document.body.removeChild(iframe);
+  }
 }
 
 /**

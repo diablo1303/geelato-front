@@ -187,7 +187,7 @@ import useLoading from '@/hooks/loading';
 // 分页列表
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue';
-import {Message, Modal} from "@arco-design/web-vue";
+import {Modal} from "@arco-design/web-vue";
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
@@ -196,9 +196,9 @@ import {deleteFileTemplate as deleteList, FilterFileTemplateForm as FilterForm, 
 import {columns, enableStatusOptions, fileTypeOptions, useTypeOptions} from "@/views/security/file/searchTable";
 // 引用其他页面
 import FileTemplateDrawer from "@/views/security/file/drawer.vue";
-import {copyToClipboard} from "@/utils/strings";
+import {copyToClipboard, isJSON} from "@/utils/strings";
 import {getValueByKeys} from "@/api/sysconfig";
-import {getDownloadUrlById} from "@/api/application";
+import {downloadFileByBase65, fetchFileById} from "@/api/application";
 
 
 /* 列表 */
@@ -287,16 +287,6 @@ const addTable = (ev: MouseEvent) => {
   }
 };
 
-const downloadFileById = (id: string) => {
-  const iframe = document.createElement('iframe');
-  iframe.style.display = 'none' // 防止影响页面
-  iframe.style.height = '0' // 防止影响页面
-  iframe.src = getDownloadUrlById(id, false);
-  document.body.appendChild(iframe) // 这一行必须，iframe挂在到dom树上才会发请求
-  setTimeout(function () {
-    document.body.removeChild(iframe)
-  }, 100)
-}
 const downloadFileFailed = (key: string, title: string) => {
   Modal.error({
     title: `${title}`, content: t('security.file.index.example.failed.content'),
@@ -306,32 +296,17 @@ const downloadFileFailed = (key: string, title: string) => {
     }
   });
 }
-const downloadFile = async (id: string, key: string) => {
-  try {
-    const url = getDownloadUrlById(id, false);
-    const response = await fetch(url);
-    if (response.ok) {
-      const data = await response.blob();
-      const fileName = `${key}`;
-      const fileUrl = URL.createObjectURL(data);
-      const link = document.createElement('a');
-      link.href = fileUrl;
-      // @ts-ignore
-      link.download = fileName;
-      link.click();
-      URL.revokeObjectURL(fileUrl);
-    } else {
-      downloadFileFailed(key, t('security.file.index.example.file.failed'));
-    }
-  } catch (err) {
-    Message.error({content: `Error`, duration: 5 * 1000});
-  }
-}
 const downloadImportOrExportExample = async (configKey: string) => {
   try {
     const {data} = await getValueByKeys(configKey);
     if (data) {
-      await downloadFile(data, configKey);
+      if (isJSON(data)) {
+        downloadFileByBase65(JSON.parse(data));
+      } else {
+        fetchFileById(data, () => {
+          downloadFileFailed(configKey, t('security.file.index.example.file.failed'));
+        });
+      }
     } else {
       downloadFileFailed(configKey, t('security.file.index.example.get.failed'));
     }

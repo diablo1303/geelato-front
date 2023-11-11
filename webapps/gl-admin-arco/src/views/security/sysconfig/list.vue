@@ -106,7 +106,7 @@
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.configKey')" :tooltip="true" :width="150" data-index="configKey">
         <template #cell="{ record }">
-          <a-button type="text" :title="$t('copy.to.clipboard.button.title')" @click="copyPrimaryKey(record.id)">
+          <a-button :title="$t('copy.to.clipboard.button.title')" type="text" @click="copyPrimaryKey(record.id)">
             <template #icon>
               <icon-copy/>
             </template>
@@ -114,8 +114,28 @@
           {{ record.configKey }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.configValue')" :tooltip="true" :width="150" data-index="configValue"/>
-      <a-table-column :title="$t('security.sysConfig.index.form.enableStatus')" :width="120" data-index="enableStatus">
+      <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.configValue')" :tooltip="true" :width="200" data-index="configValue">
+        <template #cell="{ record }">
+          <span v-if="['UPLOAD'].includes(record.configType)&&record.configValue">
+            <a-button type="text" @click="fetchFileById(record.configValue)">
+            <template #icon>
+              <IconDownload/>
+            </template>
+          </a-button>
+            {{ record.configAssist }}
+          </span>
+          <span v-else-if="['BASE64'].includes(record.configType)&&record.configValue">
+            <a-button type="text" @click="downloadFileByBase65(JSON.parse(record.configValue) as Base64FileParams)">
+            <template #icon>
+              <IconDownload/>
+            </template>
+          </a-button>
+            {{ (JSON.parse(record.configValue) as Base64FileParams).name }}
+          </span>
+          <span v-else>{{ record.configValue }}</span>
+        </template>
+      </a-table-column>
+      <a-table-column :title="$t('security.sysConfig.index.form.enableStatus')" :width="100" data-index="enableStatus">
         <template #cell="{ record }">
           {{ record.enableStatus ? $t(`security.sysConfig.index.form.enableStatus.${record.enableStatus}`) : '' }}
         </template>
@@ -155,12 +175,13 @@ import type {TableColumnData} from '@arco-design/web-vue';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
+import {Base64FileParams, ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 import {deleteSysConfig as deleteList, FilterSysConfigForm as FilterForm, pageQuerySysConfig as pageQueryList} from '@/api/sysconfig';
 import {columns, enableStatusOptions} from "@/views/security/sysconfig/searchTable";
 // 引用其他页面
 import SystemConfigDrawer from "@/views/security/sysconfig/drawer.vue";
 import {copyToClipboard} from "@/utils/strings";
+import {downloadFileByBase65, fetchFileById} from "@/api/application";
 
 
 /* 列表 */

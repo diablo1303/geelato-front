@@ -8,6 +8,7 @@ export interface QuerySysConfigForm {
   configKey: string;
   configType: string;
   configValue: string;
+  configAssist?: string;
   remark: string;
   enableStatus: number;
   appId: string;

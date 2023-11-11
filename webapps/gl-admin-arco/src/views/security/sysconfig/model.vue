@@ -12,7 +12,8 @@
           :label="$t('security.sysConfig.index.form.configType')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="configType">
-        <a-select v-model="formData.configType" :options="selectTypeOptions" allow-search @change="selectTypeChange(formData.configType)"/>
+        <a-select v-model="formData.configType" :disabled="!pageData.button" :options="selectTypeOptions" allow-search
+                  @change="selectTypeChange(formData.configType)"/>
       </a-form-item>
       <a-form-item
           v-if="['UPLOAD'].includes(formData.configType)"
@@ -26,6 +27,13 @@
                   :show-remove-button="pageData.button"
                   list-type="text"
                   @error="uploadError" @success="uploadTSuccess" @before-remove="beforeRemoveT"/>
+      </a-form-item>
+      <a-form-item
+          v-else-if="['BASE64'].includes(formData.configType)"
+          :label="$t('security.sysConfig.index.form.configValue')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          field="configValue">
+        <UploadBase64 v-model="formData.configValue" :disabled="!pageData.button"/>
       </a-form-item>
       <a-form-item v-else
                    :label="$t('security.sysConfig.index.form.configValue')"
@@ -56,11 +64,13 @@ import {ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
 import {FileItem, FormInstance, Modal, Notification} from "@arco-design/web-vue";
-import {ListUrlParams} from '@/api/base';
+import {Base64FileParams, ListUrlParams} from '@/api/base';
 import {createOrUpdateSysConfig as createOrUpdateForm, getSysConfig as getForm, QuerySysConfigForm as QueryForm, validateSysConfigKey} from '@/api/sysconfig'
 import {enableStatusOptions} from "@/views/security/sysconfig/searchTable";
 import {selectTypeOptions} from "@/views/model/column/searchTable";
 import {AttachmentForm, getAttachmentByIds, getDownloadUrlById, getUploadUrl, uploadHeader} from "@/api/application";
+import UploadBase64 from "@/components/upload-base64/index.vue";
+import {isJSON} from "@/utils/strings";
 
 const route = useRoute();
 const {t} = useI18n();
@@ -71,8 +81,9 @@ const generateFormData = (): QueryForm => {
   return {
     id: '',
     configKey: '',
-    configType: 'VARCHAR',
+    configType: 'BASE64',
     configValue: '',
+    configAssist: '',
     remark: '',
     enableStatus: 1,
     appId: (route.params && route.params.appId as string) || '',
@@ -86,6 +97,7 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
+      delete params.configAssist;
       const {data} = await createOrUpdateForm(params);
       templateFile.value = [];
       successBack(data);
@@ -129,6 +141,7 @@ const validateCode = async (value: any, callback: any) => {
 
 const selectTypeChange = (value: string) => {
   formData.value.configValue = '';
+  formData.value.configAssist = '';
 }
 
 const deleteFileItem = (fileList: FileItem[], delUid: string) => {
@@ -199,9 +212,12 @@ const loadModel = (urlParams: ListUrlParams) => {
     getData(urlParams.id, (data: QueryForm) => {
       formData.value = data;
       if (['UPLOAD'].includes(formData.value.configType)) {
-        loadFiles(data.configValue);
+        loadFiles(formData.value.configValue);
+      } else if (['BASE64'].includes(formData.value.configType) && isJSON(formData.value.configValue)) {
+        const baseData: Base64FileParams = JSON.parse(formData.value.configValue);
+        formData.value.configAssist = baseData && baseData.name || '';
       }
-      urlParams.loadSuccessBack(data);
+      urlParams.loadSuccessBack(formData.value);
     }, urlParams.loadFailBack);
   }
 }
