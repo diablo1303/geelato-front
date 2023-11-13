@@ -224,6 +224,7 @@ const onPageChange = (pageNo: number) => {
 }
 
 const onPageSizeChange = (pageSize: number) => {
+  pagination.value.pageSize = pageSize
   fetchData({ pageSize, params: lastEntityReaderParams })
 }
 
