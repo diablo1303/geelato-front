@@ -3,6 +3,7 @@ import {UserState} from '@/store/modules/user/types';
 import {RouteRecordNormalized} from "vue-router";
 import {QueryAppForm} from "@/api/application";
 import {QueryResult} from "@/api/base";
+import {getToken} from "@/utils/auth";
 
 const urlOrigin = import.meta.env.VITE_API_BASE_URL;
 
@@ -65,10 +66,15 @@ export function getApp(id: string) {
  * @param params
  */
 export function getMenus(params: QueryMenuForm) {
+  const token = getToken();
+  if (token) axios.defaults.headers.common.Authorization = `Bearer ${token}`;
   return axios.post<QueryMenuForm[]>(`${urlOrigin}/api/user/menu`, params);
 }
 
+export type AuthCodeAction = 'forgetPassword' | 'validateUser' | 'updateMobile' | 'updatePassword' | 'updateEmail';
+
 export interface ResetPasswordForm {
+  action: AuthCodeAction;
   validType: string;
   prefix: string;
   validBox: string;
@@ -84,4 +90,25 @@ export function forgetPasswordValid(params: ResetPasswordForm) {
 
 export function forgetPasswordEdit(params: ResetPasswordForm) {
   return axios.post<QueryResult>(`/api/user/forget`, params);
+}
+
+export interface AuthCodeForm {
+  action: AuthCodeAction;
+  validType: string;
+  prefix: string;
+  validBox: string;
+  userId: string;
+  authCode: string;
+}
+
+export function generateAuthCode(params: AuthCodeForm) {
+  return axios.post<QueryResult>(`/api/code/generate`, params);
+}
+
+export function validateUser(params: AuthCodeForm) {
+  return axios.post<QueryResult>(`/api/user/validate`, params);
+}
+
+export function bindAccount(params: AuthCodeForm) {
+  return axios.post<QueryResult>(`/api/user/bindAccount`, params);
 }

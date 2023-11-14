@@ -1,5 +1,6 @@
 import localeMessageBox from '@/components/message-box/locale/en-US';
 import localeLogin from '@/views/login/locale/en-US';
+import localReset from '@/views/reset/locale/zh-CN';
 
 import localeSettings from './en-US/settings';
 
@@ -22,4 +23,5 @@ export default {
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
+  ...localReset,
 };
