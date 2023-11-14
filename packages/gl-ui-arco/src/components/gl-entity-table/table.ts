@@ -1,7 +1,7 @@
 import type { TableColumnData, TableData } from '@arco-design/web-vue'
 import {
   entityApi,
-  EntityReader,
+  EntityReader, EntityReaderOrder,
   EntityReaderParam,
   executeObjectPropsExpressions,
   utils
@@ -344,6 +344,8 @@ export const genSlotColumnsWithNoOperation = (renderColumns: GlTableColumn[]) =>
 export type EntityFetchDataInfo = {
   pageSize?: number
   pageNo?: number
+  // 排序字段
+  order?: Array<EntityReaderOrder>
   params?: Array<EntityReaderParam>
 }
 
@@ -375,7 +377,7 @@ export const createEntityReader = (
 ) => {
   const entityReader = new EntityReader()
   entityReader.entity = props.entityName
-  entityReader.order = []
+  entityReader.order = simpleReaderInfo?.order || []
   entityReader.params = simpleReaderInfo?.params || []
   entityReader.pageNo = simpleReaderInfo?.pageNo || 1
   entityReader.pageSize = simpleReaderInfo?.pageSize || 15
@@ -427,6 +429,7 @@ export const useFetchData = (
   success?: Function
 ) => {
   return (simpleReaderInfo?: EntityFetchDataInfo) => {
+    // console.log('simpleReaderInfo',simpleReaderInfo)
     // 绑定了有效的实体才发起查询
     // 作为子表时，必须指定子表外键，即对应主表ID的字段
     if (!props.entityName || (props.isSubForm && !props.subFormPidName)) {
@@ -437,6 +440,7 @@ export const useFetchData = (
       simpleReaderInfo.pageSize = simpleReaderInfo.pageSize || pagination.value.pageSize
     }
 
+
     const entityReader = createEntityReader(props, queryColumns.value, simpleReaderInfo, getPid)!
 
     entityApi.queryByEntityReader(entityReader).then(
@@ -444,14 +448,14 @@ export const useFetchData = (
         pagination.value.pageSize = simpleReaderInfo?.pageSize || pagination.value.pageSize
         pagination.value.current = simpleReaderInfo?.pageNo || 1
         pagination.value.total = Number.parseInt(res.total)
-        console.log(
-          'GlEntityTable > fetchData() > response:',
-          res,
-          'readerInfo:',
-          entityReader,
-          'pagination:',
-          pagination
-        )
+        // console.log(
+        //   'GlEntityTable > fetchData() > response:',
+        //   res,
+        //   'readerInfo:',
+        //   entityReader,
+        //   'pagination:',
+        //   pagination
+        // )
         if (success && typeof success === 'function') {
           success({ data: res.data, pagination })
         }

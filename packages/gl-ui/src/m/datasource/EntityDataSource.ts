@@ -1,4 +1,5 @@
 import ResultMapping from './ResultMapping'
+import utils from "../utils/Utils";
 
 const copDict = {
   eq: '等于',
@@ -91,7 +92,20 @@ export class EntityReaderParam {
    *  将boolean转成tinyint，和服务端数据库存储的数据一致
    */
   static getMqlParamValue(param: EntityReaderParam) {
-    return typeof param.value === 'boolean' ? (param.value ? 1 : 0) : param.value
+    // console.log('getMqlParamValue>param:',param)
+    const valueType = typeof param.value
+    switch (valueType) {
+      case 'boolean':
+        return param.value ? 1 : 0
+      case 'object':
+        if (param.value&&param.cop==='in'&&utils.isArray(param.value)){
+          // @ts-ignore
+          return  param.value.join(',')
+        }
+        return param.value
+      default:
+        return param.value
+    }
   }
 
   /**
@@ -118,7 +132,18 @@ export class EntityReaderOrder {
    */
   constructor(field?: string, order?: string) {
     this.field = field || ''
-    this.order = order || '+'
+    this.order = this.convert(order) || '+'
+  }
+
+  convert(order?: string) {
+    switch (order) {
+      case 'ascend':
+        return '+'
+      case 'descend':
+        return '-'
+      default :
+        return order
+    }
   }
 }
 

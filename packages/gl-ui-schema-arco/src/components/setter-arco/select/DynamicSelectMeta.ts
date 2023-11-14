@@ -210,6 +210,17 @@ export default {
         "alarmIfNoSubTitle": "未设置",
         "subTitleField": ""
     }, {
+            "name": "multiple",
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "group": "base",
+            "type": "props",
+            "title": "多选",
+            "setterComponentName": "ASwitch",
+            "show": true,
+            "expanded": true,
+            "enableValueExpress": true
+        }, {
         "name": "size",
         "setterComponentProps": {
             "mode": "SECRET_COMBOBOX_MODE_DO_NOT_USE",

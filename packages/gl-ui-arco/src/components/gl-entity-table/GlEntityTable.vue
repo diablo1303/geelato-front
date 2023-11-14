@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // @ts-nocheck
-import { inject, nextTick, onMounted, onUpdated, type PropType, type Ref, ref, watch } from 'vue'
+import { inject, nextTick, type PropType, type Ref, ref, watch } from 'vue'
 import type { TableRowSelection, PaginationProps } from '@arco-design/web-vue'
 import useLoading from '../../hooks/loading'
 import Sortable from 'sortablejs'
@@ -12,7 +12,8 @@ import {
   FormProvideProxy,
   FormProvideKey,
   PageProvideProxy,
-  PageProvideKey
+  PageProvideKey,
+  EntityReaderOrder
 } from '@geelato/gl-ui'
 import type { Column, EntityFetchDataProps, GlTableColumn } from './table'
 import {
@@ -112,6 +113,7 @@ const props = defineProps({
         pageSize: 15,
         showTotal: true,
         showPageSize: true,
+        showJumper: true,
         pageSizeOptions: [5, 10, 15, 20, 30, 40, 50]
       }
     }
@@ -228,6 +230,12 @@ const onPageSizeChange = (pageSize: number) => {
   fetchData({ pageSize, params: lastEntityReaderParams })
 }
 
+const onSorterChange = (dataIndex: string, direction: string) => {
+  console.log(dataIndex, direction)
+  const order: EntityReaderOrder[] = [new EntityReaderOrder(dataIndex, direction)]
+  fetchData({ order, params: lastEntityReaderParams })
+}
+
 /**
  * 设置哪些列不可见、可见
  * 不指定的列保持原状
@@ -326,6 +334,7 @@ defineExpose({
     :scroll="{}"
     @page-change="onPageChange"
     @page-size-change="onPageSizeChange"
+    @sorter-change="onSorterChange"
   >
     <template ##="{ record, rowIndex }">
       <a-space v-if="record" :size="0" class="gl-entity-table-cols-opt">
