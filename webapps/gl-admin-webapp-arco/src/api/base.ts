@@ -48,3 +48,11 @@ export interface ListUrlParams {
   modalEditBack?: any; //  页面 编辑按钮反馈，list
   modalDeleteBack?: any; //  页面 删除按钮反馈，list
 }
+
+/* base64参数 */
+export interface Base64FileParams {
+  name: string;
+  size: number;
+  type: string;
+  base64: string;
+}

@@ -52,7 +52,7 @@ export const APP_PAGE_MAIN: RouteRecordRaw = {
 };
 
 export const RESET_PWD_MAIN: RouteRecordRaw = {
-  path: `${URL_PREFIX}/forget`,
+  path: `${URL_PREFIX}/:tenantCode/:appId/forget`,
   name: `forget`,
   component: () => import('@/views/reset/index.vue'),
   meta: {

@@ -94,4 +94,23 @@ const buildUrl = (url: string, params: any): string => {
   return url;
 }
 
-export {isEmpty, isNotEmpty, isBlank, isNotBlank, toCamelCase, formatSeparator, buildUrl};
+/**
+ * 是否是Json字符串
+ * @param val
+ */
+const isJSON = function (val: string) {
+  let isJ = false;
+  try {
+    if (typeof val === 'string' && val) {
+      const obj = JSON.parse(val);
+      if (typeof obj === 'object' && obj) {
+        isJ = true;
+      }
+    }
+  } catch (e) {
+    isJ = false;
+  }
+  return isJ;
+}
+
+export {isEmpty, isNotEmpty, isBlank, isNotBlank, toCamelCase, formatSeparator, buildUrl, isJSON};

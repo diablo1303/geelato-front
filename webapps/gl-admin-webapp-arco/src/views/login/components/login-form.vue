@@ -114,12 +114,14 @@ const enterApp = async () => {
       if (redirect.toString().toLowerCase().startsWith("http")) {
         window.location.assign(redirect as string);
       } else {
-        router.push({name: redirect as string, params: {...othersQuery} as RouteParamsRaw});
+        window.open(router.resolve({name: redirect as string, params: {...othersQuery} as RouteParamsRaw}).href, "_self");
       }
     } else if (DEFAULT_ROUTE.name) {
-      router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
+      window.open(router.resolve({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params}).href, "_self");
     } else {
-      Message.warning('应用下没有菜单，请先添加！');
+      window.open(router.resolve({
+        name: 'pageWrapper', params: {tenantCode: route.params.tenantCode, appId: route.params.appId}
+      }).href, "_self");
     }
   } else {
     // http://localhost:5173/login => http://localhost:5173/:tenantCode/:appId/page
