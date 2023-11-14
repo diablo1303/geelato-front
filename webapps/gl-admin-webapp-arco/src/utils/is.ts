@@ -51,3 +51,22 @@ export function isExist(obj: any): boolean {
 export function isWindow(el: any): el is Window {
   return el === window;
 }
+
+/**
+ * 是否是Json字符串
+ * @param val
+ */
+export function isJSON(val: string) {
+  let isJ = false;
+  try {
+    if (typeof val === 'string' && val) {
+      const obj = JSON.parse(val);
+      if (typeof obj === 'object' && obj) {
+        isJ = true;
+      }
+    }
+  } catch (e) {
+    isJ = false;
+  }
+  return isJ;
+}
