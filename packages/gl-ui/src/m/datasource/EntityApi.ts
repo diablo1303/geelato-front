@@ -113,12 +113,12 @@ export class EntityApi {
     }
     // 2-order
     if (entityReader.order && entityReader.order.length > 0) {
-      let orderStr = ''
+      let orderStrs: string[] = []
       entityReader.order.forEach((item) => {
-        orderStr = item.field + ' ' + item.order + ' '
+        orderStrs.push(item.field + '|' + item.order)
       })
-      orderStr = AllUtils.ConvertUtil.trim(orderStr)
-      mql[entityReader.entity]['@order'] = orderStr
+      // orderStr = AllUtils.ConvertUtil.trim(orderStr)
+      mql[entityReader.entity]['@order'] = orderStrs.join(',')
     }
     // 3-params
     const defaultGroupName = '__'
