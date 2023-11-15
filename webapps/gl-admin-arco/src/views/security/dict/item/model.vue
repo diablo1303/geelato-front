@@ -15,7 +15,7 @@
         :label="$t('security.dictItem.index.form.itemCode')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateCode}]"
         field="itemCode">
-      <a-input v-if="pageData.button" v-model.trim="formData.itemCode" :max-length="32"/>
+      <a-textarea v-if="pageData.button" v-model.trim="formData.itemCode" :auto-size="{minRows:1,maxRows:4}" :max-length="512" show-word-limit/>
       <span v-else>{{ formData.itemCode }}</span>
     </a-form-item>
     <a-form-item

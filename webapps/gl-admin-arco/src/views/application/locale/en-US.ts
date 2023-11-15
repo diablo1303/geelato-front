@@ -10,6 +10,8 @@ export default {
   'application.app.list.tree': 'tree',
   'application.app.list.logo': 'logo',
   'application.app.list.logo.button.delete': 'Delete',
+  'application.app.list.logo.button.download': 'Download',
+  'application.app.list.logo.button.preview': 'Preview',
   'application.app.list.logo.button.select': 'Select',
   'application.app.list.theme': 'theme',
   'application.app.list.watermark': 'watermark',

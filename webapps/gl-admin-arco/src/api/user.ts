@@ -1,10 +1,8 @@
 import axios from 'axios';
 import {UserState} from '@/store/modules/user/types';
 import {RouteRecordNormalized} from "vue-router";
-import {QueryAppForm} from "@/api/application";
 import {QueryResult} from "@/api/base";
 
-const urlOrigin = import.meta.env.VITE_API_BASE_URL;
 
 export interface LoginData {
   username: string;
@@ -15,27 +13,6 @@ export interface LoginRes {
   token: string;
 }
 
-export interface QueryMenuForm {
-  id: string;
-  pid: string;
-  appId: string;
-  pageId: string;// 页面id
-  flag: string;// menuItem
-  icon: string;
-  iconType: string;
-  type: string;// folder formPage listPage freePage
-  meta: string;// 路径
-  treeEntity: string;
-  extendEntity: string;
-  text: string;
-  seqNo: number;
-  tenantCode: string;
-  children?: QueryMenuForm[];
-}
-
-// export function login(data: LoginData) {
-//   return axios.post<LoginRes>('/api/user/login', data);
-// }
 export function login(data: LoginData) {
   return axios.post<LoginRes>('/api/user/login', data);
 }
@@ -65,22 +42,6 @@ export interface AccountUserInfo {
 
 export function updateUserInfo(userId: string, formData: AccountUserInfo) {
   return axios.post<UserState>(`/api/user/update/${userId}`, formData);
-}
-
-/**
- * 获取应用信息
- * @param id
- */
-export function getApp(id: string) {
-  return axios.get<QueryAppForm>(`${urlOrigin}/api/app/get/${id}`);
-}
-
-/**
- * 获取应用菜单
- * @param params
- */
-export function getMenus(params: QueryMenuForm) {
-  return axios.post<QueryMenuForm[]>(`${urlOrigin}/api/user/menu`, params);
 }
 
 export type AuthCodeAction = 'forgetPassword' | 'validateUser' | 'updateMobile' | 'updatePassword' | 'updateEmail';

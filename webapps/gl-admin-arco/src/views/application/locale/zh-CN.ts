@@ -10,6 +10,8 @@ export default {
   'application.app.list.tree': 'tree',
   'application.app.list.logo': '标识',
   'application.app.list.logo.button.delete': '移除',
+  'application.app.list.logo.button.download': '下载',
+  'application.app.list.logo.button.preview': '预览',
   'application.app.list.logo.button.select': '选择',
   'application.app.list.theme': '主题',
   'application.app.list.watermark': '水印',

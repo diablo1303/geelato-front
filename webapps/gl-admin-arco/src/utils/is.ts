@@ -51,3 +51,56 @@ export function isExist(obj: any): boolean {
 export function isWindow(el: any): el is Window {
   return el === window;
 }
+
+/**
+ * 字符串是为空[null，'']
+ * @param s
+ * @returns {boolean}
+ */
+export function isEmpty(s: string) {
+  return s == null || s.length === 0;
+}
+
+/**
+ * 字符串不为空
+ * @param s
+ * @returns {boolean}
+ */
+export function isNotEmpty(s: string) {
+  return !isEmpty(s);
+}
+
+/**
+ * 字符串是空白的
+ * @param s
+ */
+export function isBlank(s: string) {
+  if (isNotEmpty(s)) {
+    return s.trim().length === 0;
+  }
+  return true;
+}
+
+/**
+ * 字符串不是空白的
+ * @param s
+ * @returns {boolean}
+ */
+export function isNotBlank(s: string) {
+  return !isBlank(s);
+}
+
+export function isJSON(val: string) {
+  let isJ = false;
+  try {
+    if (typeof val === 'string' && val) {
+      const obj = JSON.parse(val);
+      if (typeof obj === 'object' && obj) {
+        isJ = true;
+      }
+    }
+  } catch (e) {
+    isJ = false;
+  }
+  return isJ;
+}

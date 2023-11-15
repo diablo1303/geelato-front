@@ -65,6 +65,22 @@
           </template>
           {{ $t('searchTable.operation.create') }}
         </a-button>
+        <a-tooltip :content="$t('security.file.index.example.import.tip')">
+          <a-button type="outline" @click="downloadImportOrExportExample('ImportExampleTypeMeta')">
+            <template #icon>
+              <icon-download/>
+            </template>
+            {{ $t('security.file.index.example.import.text') }}
+          </a-button>
+        </a-tooltip>
+        <a-tooltip :content="$t('security.file.index.example.export.tip')">
+          <a-button type="outline" @click="downloadImportOrExportExample('ExportExampleMeta')">
+            <template #icon>
+              <icon-download/>
+            </template>
+            {{ $t('security.file.index.example.export.text') }}
+          </a-button>
+        </a-tooltip>
       </a-space>
     </a-col>
     <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
@@ -171,6 +187,7 @@ import useLoading from '@/hooks/loading';
 // 分页列表
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue';
+import {Modal} from "@arco-design/web-vue";
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
@@ -180,6 +197,9 @@ import {columns, enableStatusOptions, fileTypeOptions, useTypeOptions} from "@/v
 // 引用其他页面
 import FileTemplateDrawer from "@/views/security/file/drawer.vue";
 import {copyToClipboard} from "@/utils/strings";
+import {getValueByKeys} from "@/api/sysconfig";
+import {downloadFileByBase65, fetchFileById} from "@/api/attachment";
+import {isJSON} from "@/utils/is";
 
 
 /* 列表 */
@@ -216,6 +236,9 @@ const generateFilterData = (): FilterForm => {
 };
 const filterData = ref(generateFilterData());
 
+const copyPrimaryKey = (id: string) => {
+  copyToClipboard(id, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
+}
 /**
  * 分页查询方法
  * @param params
@@ -264,9 +287,35 @@ const addTable = (ev: MouseEvent) => {
     formRef.value?.openForm({action: 'add', closeBack: reset});
   }
 };
-const copyPrimaryKey = (id: string) => {
-  copyToClipboard(id, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
+
+const downloadFileFailed = (key: string, title: string) => {
+  Modal.error({
+    title: `${title}`, content: t('security.file.index.example.failed.content'),
+    okText: `${t('security.file.index.example.failed.okText')} ${key}`,
+    async onOk() {
+      copyPrimaryKey(`${key}`);
+    }
+  });
 }
+const downloadImportOrExportExample = async (configKey: string) => {
+  try {
+    const {data} = await getValueByKeys(configKey);
+    if (data) {
+      if (isJSON(data)) {
+        downloadFileByBase65(JSON.parse(data));
+      } else {
+        fetchFileById(data, () => {
+          downloadFileFailed(configKey, t('security.file.index.example.file.failed'));
+        });
+      }
+    } else {
+      downloadFileFailed(configKey, t('security.file.index.example.get.failed'));
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 const viewTable = (id: string) => {
   if (formRef.value) {
     // @ts-ignore

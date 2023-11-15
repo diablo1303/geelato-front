@@ -273,8 +273,8 @@ export class JsScriptExecutor {
         return $gl.$drawer.open(options)
       },
       openWin: (url: string, urlParams: Array<Param>) => {
+        const parsedParams = that.evalParams(urlParams, $gl.ctx, $gl) || []
         const paramsAry: Array<string> = []
-        const parsedParams = that.evalParams(urlParams, $gl.ctx, $gl)
         parsedParams.forEach((param) => {
           paramsAry.push(`${param.name}=${param.value}`)
         })
@@ -559,10 +559,14 @@ export class JsScriptExecutor {
           }
         }
       }
+      console.warn(
+          `通过组件Id(${componentId})获取不到组件vue实例，很可能是因为此时该组件vue实例还未创建完成。`
+      )
+    }else{
+      console.warn(
+          `组件Id为空(${componentId})，获取不到组件vue实例。`
+      )
     }
-    console.warn(
-      `通过组件Id(${componentId})获取不到组件vue实例，很可能是因为此时该组件vue实例还未创建完成。`
-    )
     return null
   }
 

@@ -22,6 +22,15 @@
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
+            :label="$t('security.user.index.form.enName')"
+            :rules="[{required: false,message: $t('security.form.rules.match.required')},{validator:validateLoginName}]"
+            field="enName">
+          <a-input v-if="pageData.button" v-model="formData.enName" :max-length="32"/>
+          <span v-else>{{ formData.enName }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="24/pageData.formCol">
+        <a-form-item
             :label="$t('security.user.index.form.loginName')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateLoginName}]"
             field="loginName">
@@ -180,6 +189,7 @@ const generateFormData = (): QueryForm => {
   return {
     id: '',
     name: '',
+    enName: '',
     loginName: '',
     seqNo: 999,
     sex: 0,

@@ -1,11 +1,14 @@
 import {ref} from "vue";
-import type {RouteRecordNormalized} from 'vue-router';
+import type {RouteParamsRaw, RouteRecordNormalized} from 'vue-router';
+import {Router} from "vue-router";
 import {DEFAULT_LAYOUT} from "@/router/routes/base";
-import {getMenus, QueryMenuForm} from "@/api/user";
+import {getMenus, QueryMenuForm} from "@/api/application";
 /* eslint-disable-next-line */
 import globalConfig from '@/config/globalconfig';
 import {DEFAULT_ROUTE, URL_PREFIX} from "@/router/constants";
+import {getToken} from "@/utils/auth";
 
+const token = getToken();
 const modules = import.meta.glob('./modules/*.ts', {eager: true});
 const externalModules = import.meta.glob('./externalModules/*.ts', {eager: true,});
 
@@ -26,8 +29,9 @@ const getRouter = (_modules: any, result: string[]) => {
 
 export const IS_ACCOUNT = ref<boolean>(false);
 export const IS_DATA_PAGE = ref<boolean>(false);
+const routerPaths = getRouter(modules, ['/login', '/page', '/forget']);
 export const currentPage = () => {
-  const currentParams = {path: '', tenantCode: '', appId: ''};
+  const currentParams = {path: '', pathValue: '', tenantCode: '', appId: ''};
   const currentUrl = window.location.href;
   const url = new URL(currentUrl);
   if (url) {
@@ -41,34 +45,44 @@ export const currentPage = () => {
       if (url.pathname.endsWith('/page/') || url.pathname.endsWith('/page')) {
         IS_DATA_PAGE.value = true;
       }
-      const routerPaths = getRouter(modules, ['/login', '/page']);
+      let pathName = url.pathname;
+      if (`${URL_PREFIX}` && pathName.startsWith(`${URL_PREFIX}`)) {
+        pathName = pathName.replace(`${URL_PREFIX}`, '');
+      }
+      let pathNames: string[] = [];
       // eslint-disable-next-line no-restricted-syntax
       for (const item of routerPaths) {
-        if (url.pathname.indexOf(item) !== -1) {
-          const tb = url.pathname.replace(`${URL_PREFIX}`, '').split(item);
-          if (tb && tb.length > 0) {
-            const ta = tb[0].split("/");
-            currentParams.tenantCode = ta && ta[1] || '';
-            currentParams.appId = ta && ta[2] || '';
-            break;
-          }
+        if (pathName.indexOf(item) !== -1) {
+          pathNames = pathName.split(item) || [];
+          break;
         }
       }
+      pathName = pathNames && pathNames.length > 0 ? pathNames[0] : pathName;
+      const params = pathName.split("/") || [];
+      currentParams.tenantCode = params && params[1] || '';
+      currentParams.appId = params && params[2] || '';
     }
     currentParams.tenantCode = currentParams.tenantCode || urlParams.get("tenantCode") || '';
     currentParams.appId = currentParams.appId || urlParams.get("appId") || '';
   }
   if (currentParams.tenantCode) {
     currentParams.path += `/:tenantCode`
+    currentParams.pathValue += `/${currentParams.tenantCode}`;
     if (currentParams.appId) {
       currentParams.path += `/:appId`
+      currentParams.pathValue += `/${currentParams.appId}`;
     }
+  }
+  // 未登录时，没有个人菜单，无法匹配个人菜单路径
+  if (!token && currentParams.tenantCode && currentParams.appId &&
+    url.pathname.startsWith(`${URL_PREFIX}${currentParams.pathValue}/page`)) {
+    window.location.assign(`${url.origin}${URL_PREFIX}${currentParams.pathValue}/login?redirect=${url.href}`);
   }
 
   return currentParams;
 }
 
-const {path, ...urlParams} = currentPage();
+const {path, pathValue, ...urlParams} = currentPage();
 
 const formatModules = (_modules: any, result: RouteRecordNormalized[]) => {
   Object.keys(_modules).forEach((key) => {
@@ -182,6 +196,7 @@ const setRoute = (fullPath: string, result: RouteRecordNormalized) => {
 
 export const formatAppModules = async (result: RouteRecordNormalized[]) => {
   try {
+    if (!token) return result;
     const {data} = await getMenus({flag: "menuItem", ...urlParams} as unknown as QueryMenuForm);
     // @ts-ignore
     const menuForms = data.code === globalConfig.interceptorCode ? data.data : data;
@@ -236,7 +251,10 @@ const appExternalRoutes: RouteRecordNormalized[] = formatExternalModules(externa
 
 export const appLoginRoutes = (result: any[]) => {
   const loginPath = `${URL_PREFIX}${path}/login`;
+  const loginPathValue = `${URL_PREFIX}${pathValue}/login`;
   // 基础版
+  result.push({path: '/', redirect: loginPathValue, params: {...urlParams}});
+  // 完整版
   result.push({
     path: loginPath,
     name: `login`,
@@ -245,8 +263,7 @@ export const appLoginRoutes = (result: any[]) => {
       requiresAuth: false,
     }, params: {...urlParams}
   });
-  result.push({path: '/', redirect: loginPath, params: {...urlParams}});
-
+  // 前缀功能版
   if (URL_PREFIX) {
     const ta = URL_PREFIX.split('');
     const positions = new Set();
@@ -258,15 +275,49 @@ export const appLoginRoutes = (result: any[]) => {
     }
     // eslint-disable-next-line no-restricted-syntax
     for (const position of positions) {
-      result.push({path: position, redirect: `${URL_PREFIX}/login`, params: {...urlParams}})
+      result.push({path: position, redirect: loginPathValue, params: {...urlParams}})
     }
     // 前缀完全版
-    result.push({path: `${URL_PREFIX}`, redirect: loginPath, params: {...urlParams}})
+    result.push({path: `${URL_PREFIX}`, redirect: loginPathValue, params: {...urlParams}})
     if (path) {
-      result.push({path: `${URL_PREFIX}${path}`, redirect: loginPath, params: {...urlParams}})
+      result.push({path: `${URL_PREFIX}${path}`, redirect: loginPathValue, params: {...urlParams}})
+    }
+  } else {
+    result.push({path: `${path}`, redirect: loginPathValue, params: {...urlParams}});
+  }
+
+  return result;
+}
+
+/**
+ * page功能，参数是否完整
+ * @param params
+ */
+export const pageParamsIsFull = (params: object, type?: number) => {
+  if (params) {
+    if (type === 1 && 'tenantCode' in params && 'appId' in params) {
+      if (!!params.tenantCode && !!params.appId) {
+        return true;
+      }
+    } else if ('tenantCode' in params && 'appId' in params && 'pageId' in params) {
+      if (!!params.tenantCode && !!params.appId && !!params.pageId) {
+        return true;
+      }
     }
   }
-  return result;
+  return false;
+}
+
+/**
+ * 指向个人默认页面，或page基础页面
+ * @param pageParams
+ */
+export const pageBaseRoute = (router: Router, pageParams: RouteParamsRaw, callBack?: any) => {
+  if (DEFAULT_ROUTE.name && pageParamsIsFull(DEFAULT_ROUTE.params)) {
+    window.open(router.resolve({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params}).href, "_self");
+  } else if (pageParamsIsFull(pageParams, 1)) {
+    window.open(router.resolve({name: 'pageWrapper', params: pageParams}).href, "_self");
+  } else if (callBack && typeof callBack === 'function') callBack();
 }
 
 export {appDataBaseRoutes, appRoutes, appExternalRoutes};

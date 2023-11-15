@@ -38,5 +38,27 @@ export default {
         "description": "在导入的过程中若有异常是否中断，是否回滚并取消导入",
         "setterComponentName": "GlSelect",
         "setterDefaultValue": "part"
+    }, {
+        "name": "invokeBlocks",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {
+            "options": [{
+                "label": "点击确认操作时触发，在此可配置表单保存操作等",
+                "value": "onBeforeOk"
+            }, {
+                "label": "页面关闭后触发，在此可配置列表刷新操作等",
+                "value": "onClose",
+            }],
+            "multiple": true,
+            "allowClear": false
+        },
+        "setterComponentVModelName": "modelValue",
+        "title": "调用指令",
+        "setterComponentName": "ASelect",
+        "displayMode": "tile"
     }]
 }

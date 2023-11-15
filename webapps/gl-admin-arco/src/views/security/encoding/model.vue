@@ -150,14 +150,8 @@ import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
 import {FormInstance, Modal, Notification} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
-import {
-  createOrUpdateEncoding as createOrUpdateForm,
-  EncodingItem,
-  formatTime,
-  generateRandom,
-  getEncoding as getForm,
-  QueryEncodingForm as QueryForm
-} from '@/api/encoding'
+import {createOrUpdateEncoding as createOrUpdateForm, EncodingItem, getEncoding as getForm, QueryEncodingForm as QueryForm} from '@/api/encoding'
+import {formatTime, generateRandom} from '@/utils/strings';
 import {dateTypeOptions, enableStatusOptions, separatorsOptions, serialTypeOptions} from "@/views/security/encoding/searchTable";
 import {TableData} from "@arco-design/web-vue/es/table/interface";
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";

@@ -1,40 +1,5 @@
 import {Message} from "@arco-design/web-vue";
-
-/**
- * 字符串是为空[null，'']
- * @param s
- * @returns {boolean}
- */
-const isEmpty = (s: string): boolean => {
-  return s == null || s.length === 0;
-}
-
-/**
- * 字符串不为空
- * @param s
- * @returns {boolean}
- */
-const isNotEmpty = (s: string): boolean => {
-  return !isEmpty(s);
-}
-/**
- * 字符串是空白的
- * @param s
- */
-const isBlank = (s: string): boolean => {
-  if (isNotEmpty(s)) {
-    return s.trim().length === 0;
-  }
-  return true;
-}
-/**
- * 字符串不是空白的
- * @param s
- * @returns {boolean}
- */
-const isNotBlank = (s: string): boolean => {
-  return !isBlank(s);
-}
+import {isBlank, isNotBlank} from '@/utils/is';
 
 /**
  * 将特定字符串转为驼峰字符串
@@ -123,4 +88,40 @@ const copyToClipboard = async (value: string, successMsg?: string, failMsg?: str
   }
 }
 
-export {isEmpty, isNotEmpty, isBlank, isNotBlank, toCamelCase, formatSeparator, buildUrl, copyToClipboard};
+/**
+ * 生成随机数
+ * @param extent
+ * @constructor
+ */
+const generateRandom = function (extent?: number) {
+  extent = extent && extent > 0 ? extent : 32;
+  const chars = '0123456789';
+  let result = '';
+  for (let i = 0; i < extent; i += 1) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    result += chars[randomIndex];
+  }
+  return result;
+}
+
+/**
+ * 日期格式化
+ * @param date
+ * @param format
+ */
+const formatTime = function (date: Date, format?: string) {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
+  if (format) {
+    return format.replace('yyyy', String(year)).replace('yy', String(year).substring(2, 4))
+      .replace('MM', month).replace('dd', day).replace('HH', hours)
+      .replace('mm', minutes).replace('ss', seconds);
+  }
+  return `${year}${month}${day}${hours}${minutes}${seconds}`;
+}
+
+export {toCamelCase, formatSeparator, buildUrl, copyToClipboard, generateRandom, formatTime};

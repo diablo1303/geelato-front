@@ -1,12 +1,14 @@
-import {PageQueryRequest, PageQueryResponse, QueryResult} from "@/api/base";
 import axios from "axios";
 import qs from "query-string";
+import {PageQueryRequest, PageQueryResponse, QueryResult} from "@/api/base";
 
 
 export interface QuerySysConfigForm {
   id: string;
   configKey: string;
+  configType: string;
   configValue: string;
+  configAssist?: string;
   remark: string;
   enableStatus: number;
   appId: string;
@@ -16,6 +18,7 @@ export interface QuerySysConfigForm {
 export interface FilterSysConfigForm {
   id: string;
   configKey: string;
+  configType: string;
   configValue: string;
   remark: string;
   enableStatus: string;
@@ -54,4 +57,8 @@ export function deleteSysConfig(id: string) {
 
 export function validateSysConfigKey(params: QuerySysConfigForm) {
   return axios.post<QueryResult>('/api/sys/config/validate', params);
+}
+
+export function getValueByKeys(configKey: string) {
+  return axios.get<string>(`/api/sys/config/getValue/${configKey}`);
 }

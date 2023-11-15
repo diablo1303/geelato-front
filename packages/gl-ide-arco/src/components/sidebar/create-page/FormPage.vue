@@ -37,12 +37,12 @@ pageInfo.value.type = PageType.formPage
 pageInfo.value.iconType = 'gl-form'
 watch(
   form,
-  () => {
+   () => {
     pageCreatorOptions.value.entityMeta.entityName = form.value.bindEntity?.entityName
     pageCreatorOptions.value.pageInfo.label = form.value.pageLabel
     pageCreatorOptions.value.colSpan = form.value.colSpan
     pageInfo.value.label = form.value.pageLabel
-    pageInfo.value.content = formPageCreator.create(pageCreatorOptions.value)
+    pageInfo.value.content =  formPageCreator.create(pageCreatorOptions.value)
     emits('update:modelValue', pageInfo.value)
   },
   { deep: true }
@@ -115,5 +115,3 @@ defineExpose({ getPage,validate })
     </a-form>
   </div>
 </template>
-
-<style scoped></style>

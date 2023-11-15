@@ -2,7 +2,7 @@ import { utils } from '@geelato/gl-ui'
 import { ComponentInstance } from '@geelato/gl-ui-schema'
 import { PageCreator, PageCreatorOptions } from './PageCreator'
 import { useComponentStore } from '@geelato/gl-ide'
-import {useFieldMetaToComponentInst} from "./useFieldMetaToComponentInst";
+import { useFieldMetaToComponentInst } from './useFieldMetaToComponentInst'
 
 export const useCardConfig = (options: PageCreatorOptions): ComponentInstance => {
   const inst = new ComponentInstance()
@@ -63,7 +63,10 @@ export class FormPageCreator extends PageCreator {
   buildChildren(page: ComponentInstance, options: PageCreatorOptions): ComponentInstance {
     const card = useCardConfig(options)
 
-    const insts = useFieldMetaToComponentInst(options.entityMeta.entityName,options.entityMeta.fieldMetas)
+    const insts = useFieldMetaToComponentInst(
+      options.entityMeta.entityName,
+      options.entityMeta.fieldMetas
+    )
 
     // 占用一行的组件
     const oneRowComponentNames = ['ATextarea']

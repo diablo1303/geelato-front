@@ -116,7 +116,8 @@
         </a-table-column>
         <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemCode')" :tooltip="true" :width="170" data-index="itemCode">
           <template #cell="{record}">
-            <a-input v-model.trim="record.itemCode" :max-length="32" placeholder="必填项" @blur="itemCodeValidate($event)"/>
+            <a-textarea v-model.trim="record.itemCode" :auto-size="{minRows:1,maxRows:4}" :max-length="512" placeholder="必填项" show-word-limit
+                        @blur="itemCodeValidate($event)"/>
           </template>
         </a-table-column>
         <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" :width="140" data-index="enableStatus">

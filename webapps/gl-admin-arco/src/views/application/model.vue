@@ -37,34 +37,8 @@
         :label="$t('application.app.list.logo')"
         :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
         field="logo">
-      <a-space style="align-items: flex-end;">
-        <a-image v-model:src="formData.logo" :preview="false" class="logo-img" width="82"/>
-        <a-space v-if="pageData.button" style="flex-direction: column;align-items: flex-start;">
-          <a-button size="mini" style="border-radius: 6px;margin-bottom: 5px;" type="outline" @click="logoDeleteClick($event)">
-            <template #icon>
-              <GlIconfont type="gl-delete"/>
-            </template>
-            {{ $t('application.app.list.logo.button.delete') }}
-          </a-button>
-          <a-button size="mini" style="border-radius: 6px;" type="outline" @click="logoSelectClick($event)">
-            <template #icon>
-              <GlIconfont type="gl-edit-square"/>
-            </template>
-            {{ $t('application.app.list.logo.button.select') }}
-          </a-button>
-        </a-space>
-      </a-space>
+      <UploadImageBase64 v-model="formData.logo" :disabled="!pageData.button" image-name="logo"/>
     </a-form-item>
-    <!--    <a-form-item
-            :label="$t('application.app.list.logo')"
-            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-            field="logo">
-          <a-upload :action="getUploadUrl()" :disabled="!pageData.button" :file-list="logoFile"
-                    :limit="1" accept="image/*"
-                    image-preview
-                    list-type="picture-card"
-                    @error="uploadLogoError" @success="uploadLogoSuccess" @before-remove="beforeRemoveLogo"/>
-        </a-form-item>-->
     <a-form-item
         :label="$t('application.app.list.watermark')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
@@ -137,13 +111,13 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import {useI18n} from 'vue-i18n';
-import {FileItem, FormInstance, Modal, Notification} from "@arco-design/web-vue";
+import {FileItem, FormInstance, Modal} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
 import {createOrUpdateApp as createOrUpdateForm, getApp as getForm, QueryAppForm as QueryForm, validateAppCode} from '@/api/application'
 import {statusOptions, watermarkOptions} from "@/views/application/searchTable";
 import {iconsJson} from "@geelato/gl-ui";
-import {uploadFile} from "@/components/vue-cropper/type";
 import {useRoute} from "vue-router";
+import UploadImageBase64 from '@/components/upload-base64/image.vue';
 
 // 国际化
 const {t} = useI18n();
@@ -205,23 +179,6 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
   }
 };
 
-const logoDeleteClick = (ev?: MouseEvent) => {
-  formData.value.logo = "";
-}
-const logoSelectClick = (ev?: MouseEvent) => {
-  uploadFile((file: File, url: string) => {
-    if (!file) { // 如果没有选择文件，则返回
-      return;
-    }
-    const reader = new FileReader(); // 创建FileReader对象
-    reader.onload = function (e) { // 当读取完成时触发该事件
-      formData.value.logo = (e && e.target && e.target.result as string) || '';
-      console.log(formData.value.logo);
-    };
-    reader.readAsDataURL(file); // 以DataURL格式读取文件内容
-  });
-}
-
 const getData = async (id: string, successBack?: any, failBack?: any) => {
   try {
     const {data} = await getForm(id);
@@ -232,49 +189,6 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
     failBack(err);
   }
 };
-
-const deleteFileItem = (fileList: FileItem[], delUid: string) => {
-  if (fileList != null && fileList.length > 0) {
-    let delIndex = -1;
-    for (let i = 0; i < fileList.length; i += 1) {
-      if (fileList[i].uid === delUid) {
-        delIndex = i;
-      }
-    }
-    if (delIndex > -1) {
-      fileList.splice(delIndex, 1);
-    }
-  }
-}
-
-const setLogo = () => {
-  formData.value.logo = logoFile.value.map((item) => {
-    return item.uid;
-  }).join(",");
-}
-
-const beforeRemoveLogo = async (fileItem: FileItem): Promise<boolean> => {
-  try {
-    // await deleteAttachment(fileItem.uid);
-    Notification.success("删除成功");
-    deleteFileItem(logoFile.value, fileItem.uid);
-    setLogo();
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
-
-const uploadLogoError = (fileItem: FileItem) => {
-  Notification.error("上传失败，请重试！");
-}
-
-const uploadLogoSuccess = (fileItem: FileItem) => {
-  Notification.success("上传成功");
-  fileItem.uid = fileItem.response.data.id;
-  logoFile.value.push(fileItem);
-  setLogo();
-}
 
 const openModal = (content: string) => {
   Modal.open({'content': content, 'footer': false, 'simple': true});
@@ -310,23 +224,6 @@ const loadModel = (urlParams: ListUrlParams) => {
   if (urlParams.id) {
     getData(urlParams.id, (data: QueryForm) => {
       data.seqNo = Number(data.seqNo);
-      /* if (data.logo !== null && data.logo !== '') {
-        getAttachmentByIds(data.logo, (attachs: AttachmentForm[]) => {
-          if (attachs != null && attachs.length > 0) {
-            attachs.forEach((value, index, array) => {
-              if (value.delStatus === 0) {
-                logoFile.value.push({
-                  uid: value.id,
-                  name: value.name,
-                  url: getDownloadUrlById(value.id)
-                });
-              }
-            });
-          }
-          console.log(logoFile.value);
-        }, () => {
-        });
-      } */
       formData.value = data;
       urlParams.loadSuccessBack(data);
     }, urlParams.loadFailBack);
@@ -373,11 +270,5 @@ defineExpose({loadModel, submitModel});
 
 .gl-iconfont-setter-icon-item:hover {
   box-shadow: 0px 0px 4px #1890FF;
-}
-
-.logo-img {
-  border-radius: 2px;
-  border: 1px solid #e8e8e8;
-  box-shadow: 2px 2px 5px 3px rgba(0, 0, 0, 0.08);
 }
 </style>

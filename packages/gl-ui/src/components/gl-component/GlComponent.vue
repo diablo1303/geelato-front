@@ -7,7 +7,8 @@
       :ref="glComponentInst.id"
       class="gl-component"
       :is="glComponentInst.componentName"
-      v-model="mv"
+      :modelValue="mv"
+      @update:modelValue="onUpdateModelValue"
       :userId="glComponentInst.componentName"
       v-bind="glComponentInst.propsWrapper?{[glComponentInst.propsWrapper]:glComponentInst.props}:glComponentInst.props"
       :style="glComponentInst.style"
@@ -145,6 +146,7 @@ const onMouseLeave = (...args: any[]) => {
 
 const mv = <any>ref(props.modelValue || props.glComponentInst.value)
 
+
 watch(() => {
   return props.glComponentInst.value
 }, () => {
@@ -157,6 +159,21 @@ watch(() => {
 }, () => {
   mv.value = props.modelValue
 })
+
+const onUpdateModelValue = (value:any) => {
+  mv.value = value
+  // console.log('onUpdateModelValue',value,typeof mv.value)
+  if (typeof mv.value === 'object'){
+    // 如果组件值为对象时，触发值改变操作
+    props.glComponentInst.value = value
+    // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
+    emits('update:modelValue', value)
+    emits('update', value)
+    // 这个需放在 'update:modelValue' 事件之后，确保组件的值已更新
+    onValueChange(value)
+  }
+}
+
 
 props.glComponentInst.value = mv.value
 watch(mv, (value, oldValue) => {
@@ -171,8 +188,9 @@ watch(mv, (value, oldValue) => {
   emits('update', value)
   // 这个需放在 'update:modelValue' 事件之后，确保组件的值已更新
   onValueChange(value)
-
+  // 由于考虑到多层组件嵌套，watch的mv可能是个组合的组件，不是最原子级的组件，这里没有用deep属性
 }, {immediate: true})
+
 
 watch(() => {
   return props.glComponentInst.props._hidden + '_' + props.glComponentInst.props.unRender

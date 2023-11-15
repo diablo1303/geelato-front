@@ -466,7 +466,7 @@ defineExpose({
       :items="query"
       @search="onSearch"
     ></GlQuery>
-    <a-divider v-show="base.showQuery !== false" style="margin-top: 16px" />
+    <a-divider v-show="base.showQuery !== false" style="margin: 8px 0 12px" />
     <GlToolbar
       v-show="base.showToolbar !== false"
       v-bind="toolbar"

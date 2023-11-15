@@ -9,6 +9,7 @@
     :readonly="readonly"
     :size="size"
     :disabled="disabled"
+    :multiple="multiple"
     :placeholder="placeholder"
     @change="selectOne"
     @search="handleSearch"
@@ -28,6 +29,7 @@
     :readonly="readonly"
     :size="size"
     :disabled="disabled"
+    :multiple="multiple"
     :placeholder="placeholder"
     @change="selectOne"
     @search="handleSearch"
@@ -35,7 +37,7 @@
   >
     <a-option
       v-for="item in selectOptions"
-      :value="item"
+      :value="item.__record"
       :label="item.__label"
       :title="item.__label"
       :class="{ 'gl-selected': mv === item[valueFiledName] }"
@@ -51,7 +53,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { computed, inject, type PropType, type Ref, ref, watch } from 'vue'
+import {computed, inject, type PropType, type Ref, ref, toRaw, watch} from 'vue'
 import {
   entityApi,
   EntityReader,
@@ -72,10 +74,7 @@ const enum TriggerMode {
 
 const props = defineProps({
   modelValue: {
-    type: String,
-    default() {
-      return ''
-    }
+    type: [String, Array]
   },
   entityName: {
     type: String,
@@ -155,9 +154,21 @@ const props = defineProps({
   readonly: Boolean,
   size: String as PropType<'medium' | 'small' | 'mini' | 'large' | undefined>,
   placeholder: String,
-  disabled: Boolean
+  disabled: Boolean,
+  multiple: {
+    type: Boolean,
+    default() {
+      return false
+    }
+  }
 })
 
+const getPropValue = (val?: string | Array<any>) => {
+  return props.multiple ? (typeof val === 'string' ? [] : val) : val
+}
+const getDefaultValue = () => {
+  return props.multiple ? [] : ''
+}
 let theLabelFieldNames: string[] = props.labelFieldNames
 // 处理历史数据原来的字段值labelFieldName
 // if (typeof props.labelFieldName === 'object') {
@@ -175,22 +186,23 @@ const isMultiLabelFieldName = computed(() => {
 const enableVirtualList = ref(false)
 const autoEnableVirtualListWhenRecordCount = 1500
 // console.log('props:', props)
-const initValue = props.modelValue || ''
+const initValue = getPropValue(props.modelValue) || getDefaultValue()
 const emits = defineEmits(['update:modelValue'])
-const mv = ref(initValue)
-const inputMv = ref('')
-const mvItem = ref({ [props.valueFiledName]: initValue })
+const mv:Ref<string|Array<string>> = ref(initValue)
+const inputMv = ref(undefined)
+const mvItem = ref(props.multiple?[]:{ [props.valueFiledName]: initValue })
 watch(
   () => {
     return props.modelValue
   },
   () => {
-    mvItem.value = { [props.valueFiledName]: props.modelValue || '' }
+    mvItem.value = { [props.valueFiledName]: getPropValue(props.modelValue) || getDefaultValue() }
   }
 )
 watch(
   mv,
   (val: any) => {
+    // console.log('update:modelValue', val)
     emits('update:modelValue', val)
   },
   { deep: true }
@@ -200,11 +212,12 @@ const loadData = () => {
   if (props.entityName && props.valueFiledName && theLabelFieldNames) {
     // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'params:', params, 'extraFieldAndBindIds:', props.extraFieldAndBindIds)
     const fieldSet = new Set<string>().add(props.valueFiledName)
-    if (isMultiLabelFieldName.value) {
-      theLabelFieldNames.forEach((name) => {
+
+    theLabelFieldNames.forEach((name) => {
+      if (name) {
         fieldSet.add(name)
-      })
-    }
+      }
+    })
     if (props.extraFieldAndBindIds?.length > 0) {
       props.extraFieldAndBindIds.forEach((item) => {
         fieldSet.add(item.fieldName)
@@ -236,8 +249,12 @@ const loadData = () => {
       const items = resp.data || []
       // console.log('selectOptions.value', selectOptions.value, selectOptions.value.length)
       if (items.length === 0) {
-        inputMv.value = ''
-        mv.value = ''
+        inputMv.value = undefined
+        if (props.multiple){
+          mv.value.slice(0)
+        }else{
+          mv.value = ''
+        }
         selectOptions.value = []
         enableVirtualList.value = false
       } else {
@@ -274,7 +291,6 @@ const loadData = () => {
 }
 
 // console.log('GlDynamicSelect > create', props.entityName, useAttrs().id)
-
 const selectOne = (value: any) => {
   // 将值设置到对应的组件中
   // console.log('selectOne', value)
@@ -286,7 +302,16 @@ const selectOne = (value: any) => {
       )
     })
   }
-  mv.value = value ? value[props.valueFiledName] : ''
+  // 如果值为数组对象
+  if (props.multiple){
+    mv.value.slice(0)
+    value.forEach((vItem:any)=>{
+      // @ts-ignore
+      mv.value.push(vItem[props.valueFiledName])
+    })
+  }else{
+    mv.value = value ? value[props.valueFiledName] : ''
+  }
 }
 
 if (props.triggerMode !== TriggerMode.onInvoked) {

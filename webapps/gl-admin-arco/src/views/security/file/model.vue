@@ -21,14 +21,17 @@
           :label="$t('security.file.index.form.template')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="template">
-        <a-upload :action="getUploadUrl()"
-                  :file-list="templateFile"
-                  :headers="uploadHeader()"
-                  :limit="1"
-                  :show-remove-button="pageData.button"
-                  :accept="formData.useType==='import'?'.xls,.xlsx':'.doc,.docx,.xls,.xlsx'"
-                  list-type="text"
-                  @error="uploadError" @success="uploadTSuccess" @before-remove="beforeRemoveT"/>
+        <!--        <a-upload :action="getUploadUrl()"
+                          :file-list="templateFile"
+                          :headers="uploadHeader()"
+                          :limit="1"
+                          :show-remove-button="pageData.button"
+                          :accept="formData.useType==='import'?'.xls,.xlsx':'.doc,.docx,.xls,.xlsx'"
+                          list-type="text"
+                          @error="uploadError" @success="uploadTSuccess" @before-remove="beforeRemoveT"/>-->
+        <UploadBase64 v-model="formData.template"
+                      :accept="formData.useType==='import'?'.xls,.xlsx':'.doc,.docx,.xls,.xlsx'"
+                      :disabled="!pageData.button" @change="configValueBase64"/>
       </a-form-item>
       <a-form-item
           :label="$t('security.file.index.form.fileType')"
@@ -42,21 +45,23 @@
           :label="$t('security.file.index.form.templateRule')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="templateRule">
-        <a-upload :action="getUploadUrl()"
-                  :file-list="templateRuleFile"
-                  :headers="uploadHeader()"
-                  :limit="1"
-                  :show-remove-button="pageData.button"
-                  accept=".xls,.xlsx"
-                  list-type="text"
-                  @error="uploadError" @success="uploadTRSuccess" @before-remove="beforeRemoveTR"/>
+        <!--        <a-upload :action="getUploadUrl()"
+                          :file-list="templateRuleFile"
+                          :headers="uploadHeader()"
+                          :limit="1"
+                          :show-remove-button="pageData.button"
+                          accept=".xls,.xlsx"
+                          list-type="text"
+                          @error="uploadError" @success="uploadTRSuccess" @before-remove="beforeRemoveTR"/>-->
+        <UploadBase64 v-model="formData.templateRule" :disabled="!pageData.button" accept=".xls,.xlsx"/>
       </a-form-item>
       <a-form-item
           :label="$t('security.file.index.form.fileCode')"
           :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
           field="fileCodeFormat">
-        <a-input-tag v-if="pageData.button" v-model="formData.fileCodeFormat" :unique-value="true" allow-clear
-                     :placeholder="$t('security.file.index.form.fileCode.placeholder')"/>
+        <a-input-tag v-if="pageData.button" v-model="formData.fileCodeFormat" :placeholder="$t('security.file.index.form.fileCode.placeholder')"
+                     :unique-value="true"
+                     allow-clear/>
         <a-space v-else :style="{'flex-wrap':'wrap'}">
           <a-tag v-for="(item, index) of formData.fileCodeFormat" :key="index" :style="{'margin-bottom':'4px'}">{{ item }}</a-tag>
         </a-space>
@@ -86,7 +91,9 @@ import {FileItem, FormInstance, Modal, Notification} from "@arco-design/web-vue"
 import {ListUrlParams} from '@/api/base';
 import {createOrUpdateFileTemplate as createOrUpdateForm, getFileTemplate as getForm, QueryFileTemplateForm as QueryForm} from '@/api/template'
 import {enableStatusOptions, useTypeOptions,} from "@/views/security/file/searchTable";
-import {AttachmentForm, getAttachmentByIds, getDownloadUrlById, getUploadUrl, uploadHeader} from "@/api/application";
+import {AttachmentForm, Base64FileParams, fetchFileToBase64, getAttachmentByIds} from "@/api/attachment";
+import UploadBase64 from "@/components/upload-base64/index.vue";
+import {isJSON} from "@/utils/is";
 
 const route = useRoute();
 const {t} = useI18n();
@@ -211,17 +218,24 @@ const uploadTRSuccess = (fileItem: FileItem) => {
   setTemplateRule();
 }
 const loadFiles = (attachmentIds: string, type: string) => {
-  if (attachmentIds !== null && attachmentIds !== '') {
+  if (attachmentIds !== null && attachmentIds !== '' && !isJSON(attachmentIds)) {
     getAttachmentByIds(attachmentIds, (attachs: AttachmentForm[]) => {
       if (attachs != null && attachs.length > 0) {
         attachs.forEach((value, index, array) => {
           if (value.delStatus === 0) {
-            const file = {uid: value.id, name: value.name, url: getDownloadUrlById(value.id)};
-            if (type === 't') {
-              templateFile.value.push(file);
-            } else if (type === 'tr') {
-              templateRuleFile.value.push(file);
-            }
+            fetchFileToBase64(value.id, (base64String: string) => {
+              if (base64String) {
+                const data: Base64FileParams = {
+                  base64: base64String.split(",")[1],
+                  name: value.name, size: Number(value.size), type: value.type
+                };
+                if (type === 't') {
+                  formData.value.template = JSON.stringify(data);
+                } else if (type === 'tr') {
+                  formData.value.templateRule = JSON.stringify(data);
+                }
+              }
+            });
           }
         });
       }
@@ -236,6 +250,21 @@ const openModal = (content: string) => {
 const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
+
+const configValueBase64 = (base64String: string) => {
+  formData.value.fileType = '';
+  if (base64String && isJSON(base64String)) {
+    const baseData: Base64FileParams = JSON.parse(base64String);
+    if (baseData && baseData.name) {
+      const suffix = baseData.name.split(".").pop() || '';
+      if (['xls', 'xlsx'].includes(suffix)) {
+        formData.value.fileType = 'excel';
+      } else if (['doc', 'docs'].includes(suffix)) {
+        formData.value.fileType = 'doc';
+      }
+    }
+  }
+}
 
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {
