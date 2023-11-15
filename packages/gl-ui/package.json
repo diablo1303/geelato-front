@@ -1,7 +1,7 @@
 {
   "name": "@geelato/gl-ui",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "main": "src/index.ts",
   "scripts": {
     "dev": "vite",
