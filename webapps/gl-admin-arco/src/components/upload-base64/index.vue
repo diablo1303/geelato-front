@@ -5,9 +5,9 @@ export default {
 </script>
 <script lang="ts" setup>
 import {reactive, ref, watch} from 'vue';
-import {Base64FileParams} from "@/api/base";
-import {downloadFileByBase66} from "@/api/application";
-import {isJSON} from "@/utils/strings";
+import {Base64FileParams} from "@/api/attachment";
+import {downloadFileByBase66} from "@/api/attachment";
+import {isJSON} from "@/utils/is";
 
 const emits = defineEmits(['update:modelValue', 'change']);
 const props = defineProps({

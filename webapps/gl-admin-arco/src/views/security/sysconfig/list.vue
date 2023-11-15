@@ -175,13 +175,13 @@ import type {TableColumnData} from '@arco-design/web-vue';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
-import {Base64FileParams, ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
+import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 import {deleteSysConfig as deleteList, FilterSysConfigForm as FilterForm, pageQuerySysConfig as pageQueryList} from '@/api/sysconfig';
 import {columns, enableStatusOptions} from "@/views/security/sysconfig/searchTable";
 // 引用其他页面
 import SystemConfigDrawer from "@/views/security/sysconfig/drawer.vue";
 import {copyToClipboard} from "@/utils/strings";
-import {downloadFileByBase65, fetchFileById} from "@/api/application";
+import {Base64FileParams, downloadFileByBase65, fetchFileById} from "@/api/attachment";
 
 
 /* 列表 */

@@ -64,13 +64,13 @@ import {ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
 import {FileItem, FormInstance, Modal, Notification} from "@arco-design/web-vue";
-import {Base64FileParams, ListUrlParams} from '@/api/base';
+import {ListUrlParams} from '@/api/base';
 import {createOrUpdateSysConfig as createOrUpdateForm, getSysConfig as getForm, QuerySysConfigForm as QueryForm, validateSysConfigKey} from '@/api/sysconfig'
 import {enableStatusOptions} from "@/views/security/sysconfig/searchTable";
 import {selectTypeOptions} from "@/views/model/column/searchTable";
-import {AttachmentForm, getAttachmentByIds, getDownloadUrlById, getUploadUrl, uploadHeader} from "@/api/application";
+import {AttachmentForm, Base64FileParams, getAttachmentByIds, getDownloadUrlById, getUploadUrl, uploadHeader} from "@/api/attachment";
 import UploadBase64 from "@/components/upload-base64/index.vue";
-import {isJSON} from "@/utils/strings";
+import {isJSON} from "@/utils/is";
 
 const route = useRoute();
 const {t} = useI18n();

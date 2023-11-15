@@ -397,7 +397,8 @@ import {
   queryTables,
   validateTableColumnName
 } from '@/api/model';
-import {formatSeparator, isBlank, isNotBlank, toCamelCase} from '@/utils/strings';
+import {formatSeparator,  toCamelCase} from '@/utils/strings';
+import {isBlank, isNotBlank} from '@/utils/is';
 import {useRoute} from "vue-router";
 import {QueryDictForm, queryDicts} from "@/api/security";
 import {QueryEncodingForm, queryEncodings} from "@/api/encoding";

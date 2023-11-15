@@ -37,18 +37,7 @@ export const APP_PAGE_MAIN: RouteRecordRaw = {
   meta: {
     requiresAuth: true,
     hideInMenu: true,
-  },
-  children: [
-    {
-      path: ':pageId',
-      name: 'page',
-      component: () => import('@/views/page/PageRuntime.vue'),
-      meta: {
-        requiresAuth: true,
-        hideInMenu: true,
-      },
-    },
-  ],
+  }
 };
 
 export const RESET_PWD_MAIN: RouteRecordRaw = {
@@ -61,7 +50,7 @@ export const RESET_PWD_MAIN: RouteRecordRaw = {
 };
 
 export const EXPORT_LIST_MAIN: RouteRecordRaw = {
-  path: '/export/list',
+  path: `${URL_PREFIX}/export/list`,
   name: `export`,
   component: () => import('@/views/export/index.vue'),
   meta: {

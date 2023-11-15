@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {reactive, ref, watch} from 'vue';
-import {downloadFileByBase64} from "@/api/application";
+import {downloadFileByBase64} from "@/api/attachment";
 import {uploadFile} from "@/components/vue-cropper/type";
 
 const emits = defineEmits(['update:modelValue', 'change']);
@@ -45,7 +45,6 @@ watch(() => mv.value.imageSrc, () => {
  * 元组件参数变更，初始化
  */
 watch(() => props, () => {
-  console.log(props);
   const {modelValue, ...mvParams} = props;
   Object.assign(mv.value, reactive({
     ...mvParams,

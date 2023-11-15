@@ -196,9 +196,10 @@ import {deleteFileTemplate as deleteList, FilterFileTemplateForm as FilterForm, 
 import {columns, enableStatusOptions, fileTypeOptions, useTypeOptions} from "@/views/security/file/searchTable";
 // 引用其他页面
 import FileTemplateDrawer from "@/views/security/file/drawer.vue";
-import {copyToClipboard, isJSON} from "@/utils/strings";
+import {copyToClipboard} from "@/utils/strings";
 import {getValueByKeys} from "@/api/sysconfig";
-import {downloadFileByBase65, fetchFileById} from "@/api/application";
+import {downloadFileByBase65, fetchFileById} from "@/api/attachment";
+import {isJSON} from "@/utils/is";
 
 
 /* 列表 */

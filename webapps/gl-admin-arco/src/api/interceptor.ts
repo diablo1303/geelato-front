@@ -5,7 +5,7 @@ import {useUserStore} from '@/store';
 import globalConfig from '@/config/globalConfig';
 import {getToken} from '@/utils/auth';
 import {entityApi} from "@geelato/gl-ui";
-import {fetchFileById} from "@/api/application";
+import {fetchFileById} from "@/api/attachment";
 
 export interface HttpResponse<T = unknown> {
   status: number;

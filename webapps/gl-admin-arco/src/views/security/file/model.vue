@@ -88,12 +88,12 @@ import {ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
 import {FileItem, FormInstance, Modal, Notification} from "@arco-design/web-vue";
-import {Base64FileParams, ListUrlParams} from '@/api/base';
+import {ListUrlParams} from '@/api/base';
 import {createOrUpdateFileTemplate as createOrUpdateForm, getFileTemplate as getForm, QueryFileTemplateForm as QueryForm} from '@/api/template'
 import {enableStatusOptions, useTypeOptions,} from "@/views/security/file/searchTable";
-import {AttachmentForm, fetchFileToBase64, getAttachmentByIds} from "@/api/application";
+import {AttachmentForm, Base64FileParams, fetchFileToBase64, getAttachmentByIds} from "@/api/attachment";
 import UploadBase64 from "@/components/upload-base64/index.vue";
-import {isJSON} from "@/utils/strings";
+import {isJSON} from "@/utils/is";
 
 const route = useRoute();
 const {t} = useI18n();

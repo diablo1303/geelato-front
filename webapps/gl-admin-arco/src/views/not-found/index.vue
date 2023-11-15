@@ -14,7 +14,11 @@ import {DEFAULT_ROUTE} from "@/router/constants";
 const router = useRouter();
 const back = (ev: MouseEvent) => {
   // warning： Go to the node that has the permission
-  router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
+  if (DEFAULT_ROUTE.name) {
+    router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
+  } else {
+    router.push({path: '/'});
+  }
 };
 </script>
 

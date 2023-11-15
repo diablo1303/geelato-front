@@ -74,7 +74,7 @@ import {useUserStore} from '@/store';
 import useLoading from '@/hooks/loading';
 import type {LoginData} from '@/api/user';
 import {DEFAULT_ROUTE} from "@/router/constants";
-import {appDataBaseRoutes, formatAppModules} from "@/router/routes";
+import {appDataBaseRoutes, formatAppModules, IS_DATA_PAGE, pageParamsIsFull} from "@/router/routes";
 import {getToken} from "@/utils/auth";
 
 const router = useRouter();
@@ -106,15 +106,33 @@ const getDataBaseRouters = async () => {
 }
 
 const enterApp = () => {
+  if (IS_DATA_PAGE.value) getDataBaseRouters();// 获取当前用户个人菜单（所有菜单、首页）
+  const baseParams = {
+    tenantCode: (route && route.params && route.params.tenantCode) as string || '',
+    appId: (route && route.params && route.params.appId) as string || ''
+  };
   const {redirect, ...othersQuery} = router.currentRoute.value.query;
-  if (redirect) {
-    if (redirect.toString().toLowerCase().startsWith("http")) {
+  if (redirect) {// 重定向
+    if (redirect.toString().toLowerCase().startsWith("http")) {// 用于将当前窗口的URL更改为指定的URL
       window.location.assign(redirect as string);
+    } else if (router.hasRoute(redirect as string)) {
+      window.open(router.resolve({name: redirect as string, params: {...othersQuery} as RouteParamsRaw}).href, "_self");
+    } else if (DEFAULT_ROUTE.name) {// 不存在路由，指向默认首页
+      window.open(router.resolve({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params}).href, "_self");
+    } else if (IS_DATA_PAGE.value && pageParamsIsFull(baseParams, 1)) {// 不存在路由，page功能
+      window.open(router.resolve({name: 'pageWrapper', params: baseParams}).href, "_self");
     } else {
-      router.push({name: redirect as string, params: {...othersQuery} as RouteParamsRaw});
+      Message.warning("无法进入页面，请检查路由是否正确！");
     }
   } else {
-    router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
+    Object.assign(DEFAULT_ROUTE.params, baseParams);// 个人菜单首页
+    if (DEFAULT_ROUTE.name) {
+      window.open(router.resolve({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params}).href, "_self");
+    } else if (IS_DATA_PAGE.value && pageParamsIsFull(baseParams, 1)) {
+      window.open(router.resolve({name: 'pageWrapper', params: baseParams}).href, "_self");
+    } else {
+      Message.warning("无法进入页面，请检查路由是否正确！");
+    }
   }
 }
 onMounted(() => {

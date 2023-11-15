@@ -101,7 +101,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {PageQueryFilter, PageQueryRequest} from '@/api/base';
-import {exportFileList, FilterAttachmentForm, getDownloadUrlById} from "@/api/application";
+import {exportFileList, FilterAttachmentForm, getDownloadUrlById} from "@/api/attachment";
 import {columns, fileTypeOptions} from "@/views/export/searchTable";
 
 

@@ -1,6 +1,6 @@
-import {PageQueryRequest, PageQueryResponse, QueryResult} from "@/api/base";
 import axios from "axios";
 import qs from "query-string";
+import {PageQueryRequest, PageQueryResponse, QueryResult} from "@/api/base";
 
 
 export interface QuerySysConfigForm {
