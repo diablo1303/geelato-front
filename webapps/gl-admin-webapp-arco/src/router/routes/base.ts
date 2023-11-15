@@ -37,22 +37,11 @@ export const APP_PAGE_MAIN: RouteRecordRaw = {
   meta: {
     requiresAuth: true,
     hideInMenu: true,
-  },
-  children: [
-    {
-      path: ':pageId',
-      name: 'page',
-      component: () => import('@/views/page/PageRuntime.vue'),
-      meta: {
-        requiresAuth: true,
-        hideInMenu: true,
-      },
-    },
-  ],
+  }
 };
 
 export const RESET_PWD_MAIN: RouteRecordRaw = {
-  path: `${URL_PREFIX}/:tenantCode/:appId/forget`,
+  path: `${URL_PREFIX}/forget`,
   name: `forget`,
   component: () => import('@/views/reset/index.vue'),
   meta: {

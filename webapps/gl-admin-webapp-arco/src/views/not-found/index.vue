@@ -8,14 +8,23 @@
 </template>
 
 <script lang="ts" setup>
-import {useRouter} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
 import {DEFAULT_ROUTE} from "@/router/constants";
+// eslint-disable-next-line import/no-cycle
+import {pageBaseRoute} from "@/router/routes";
 
 const router = useRouter();
+const route = useRoute();
 const back = (ev: MouseEvent) => {
-  console.log(DEFAULT_ROUTE)
-  // warning： Go to the node that has the permission
-  router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
+  console.log(DEFAULT_ROUTE);
+  const tenantCode = (route && route.params && route.params.tenantCode as string) || '';
+  const appId = (route && route.params && route.params.appId as string) || '';
+  console.log(`${tenantCode}/${appId}`);
+  if (tenantCode && appId) {
+    pageBaseRoute(router, {'tenantCode': tenantCode, 'appId': appId});
+  } else {
+    router.push({path: '/'});
+  }
 };
 </script>
 

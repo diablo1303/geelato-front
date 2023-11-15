@@ -74,7 +74,7 @@ import {useUserStore} from '@/store';
 import useLoading from '@/hooks/loading';
 import type {LoginData} from '@/api/user';
 import {DEFAULT_ROUTE} from "@/router/constants";
-import {appDataBaseRoutes, formatAppModules} from "@/router/routes";
+import {appDataBaseRoutes, formatAppModules, pageBaseRoute, pageParamsIsFull} from "@/router/routes";
 import {getToken} from "@/utils/auth";
 import {QueryAppForm, queryApps} from "@/api/application";
 
@@ -106,22 +106,29 @@ const getDataBaseRouters = async () => {
   }
 }
 
+/**
+ *
+ */
 const enterApp = async () => {
   // http://localhost:5173/:tenantCode/:appId/login
-  if (route && route.params && route.params.tenantCode && route.params.appId) {
+  if (route && route.params && route.params.tenantCode && route.params.appId) {// 路径完整
+    await getDataBaseRouters();// 获取当前用户个人菜单（所有菜单、首页）
+    const baseParams = {tenantCode: route.params.tenantCode, appId: route.params.appId};
+    // ?redirect=3821943302748938008&tenantCode=geelato&appId=1976169388038462609&pageId=3821943418964713243
     const {redirect, ...othersQuery} = router.currentRoute.value.query;
-    if (redirect) {
-      if (redirect.toString().toLowerCase().startsWith("http")) {
+    // 填充，tenantCode、appId
+    Object.assign(othersQuery, baseParams);// 重定向
+    Object.assign(DEFAULT_ROUTE.params, baseParams);// 个人菜单首页
+    if (redirect) {// 重定向
+      if (redirect.toString().toLowerCase().startsWith("http")) {// 用于将当前窗口的URL更改为指定的URL
         window.location.assign(redirect as string);
-      } else {
+      } else if (router.hasRoute(redirect as string) && pageParamsIsFull(othersQuery)) {// 存在路由，且参数完整
         window.open(router.resolve({name: redirect as string, params: {...othersQuery} as RouteParamsRaw}).href, "_self");
+      } else {// page功能页面
+        pageBaseRoute(router, baseParams);
       }
-    } else if (DEFAULT_ROUTE.name) {
-      window.open(router.resolve({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params}).href, "_self");
-    } else {
-      window.open(router.resolve({
-        name: 'pageWrapper', params: {tenantCode: route.params.tenantCode, appId: route.params.appId}
-      }).href, "_self");
+    } else {// page功能页面
+      pageBaseRoute(router, baseParams);
     }
   } else {
     // http://localhost:5173/login => http://localhost:5173/:tenantCode/:appId/page
@@ -129,7 +136,9 @@ const enterApp = async () => {
     if (tenantCode) {
       const {data} = await queryApps({"tenantCode": tenantCode} as QueryAppForm);
       if (data && data.length > 0) {
-        window.location.assign(`${window.location.origin}/${tenantCode}/${data[0].id}/page`);
+        const appIds = [...new Set(data.map((item) => item.id).filter((id) => !!id))];
+        console.log(appIds);
+        pageBaseRoute(router, {'tenantCode': tenantCode, 'appId': appIds[0]});
       } else {
         Message.warning('租户下没有应用，请先添加！');
       }

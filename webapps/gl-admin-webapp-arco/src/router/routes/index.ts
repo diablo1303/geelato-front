@@ -1,5 +1,6 @@
 import {ref} from "vue";
-import type {RouteRecordNormalized} from 'vue-router';
+import type {RouteParamsRaw, RouteRecordNormalized} from 'vue-router';
+import {Router} from "vue-router";
 import {DEFAULT_LAYOUT} from "@/router/routes/base";
 import {getMenus, QueryMenuForm} from "@/api/application";
 /* eslint-disable-next-line */
@@ -7,6 +8,7 @@ import globalConfig from '@/config/globalconfig';
 import {DEFAULT_ROUTE, URL_PREFIX} from "@/router/constants";
 import {getToken} from "@/utils/auth";
 
+const token = getToken();
 const modules = import.meta.glob('./modules/*.ts', {eager: true});
 const externalModules = import.meta.glob('./externalModules/*.ts', {eager: true,});
 
@@ -70,6 +72,11 @@ export const currentPage = () => {
       currentParams.path += `/:appId`
       currentParams.pathValue += `/${currentParams.appId}`;
     }
+  }
+  // 未登录时，没有个人菜单，无法匹配个人菜单路径
+  if (!token && currentParams.tenantCode && currentParams.appId &&
+    url.pathname.startsWith(`${URL_PREFIX}${currentParams.pathValue}/page`)) {
+    window.location.assign(`${url.origin}${URL_PREFIX}${currentParams.pathValue}/login?redirect=${url.href}`);
   }
 
   return currentParams;
@@ -189,7 +196,7 @@ const setRoute = (fullPath: string, result: RouteRecordNormalized) => {
 
 export const formatAppModules = async (result: RouteRecordNormalized[]) => {
   try {
-    if (!getToken()) return result;
+    if (!token) return result;
     const {data} = await getMenus({flag: "menuItem", ...urlParams} as unknown as QueryMenuForm);
     // @ts-ignore
     const menuForms = data.code === globalConfig.interceptorCode ? data.data : data;
@@ -280,6 +287,37 @@ export const appLoginRoutes = (result: any[]) => {
   }
 
   return result;
+}
+
+/**
+ * page功能，参数是否完整
+ * @param params
+ */
+export const pageParamsIsFull = (params: object, type?: number) => {
+  if (params) {
+    if (type === 1 && 'tenantCode' in params && 'appId' in params) {
+      if (!!params.tenantCode && !!params.appId) {
+        return true;
+      }
+    } else if ('tenantCode' in params && 'appId' in params && 'pageId' in params) {
+      if (!!params.tenantCode && !!params.appId && !!params.pageId) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * 指向个人默认页面，或page基础页面
+ * @param pageParams
+ */
+export const pageBaseRoute = (router: Router, pageParams: RouteParamsRaw, callBack?: any) => {
+  if (DEFAULT_ROUTE.name && pageParamsIsFull(DEFAULT_ROUTE.params)) {
+    window.open(router.resolve({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params}).href, "_self");
+  } else if (pageParamsIsFull(pageParams, 1)) {
+    window.open(router.resolve({name: 'pageWrapper', params: pageParams}).href, "_self");
+  } else if (callBack && typeof callBack === 'function') callBack();
 }
 
 export {appDataBaseRoutes, appRoutes, appExternalRoutes};
