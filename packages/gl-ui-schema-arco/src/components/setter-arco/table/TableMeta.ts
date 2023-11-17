@@ -448,6 +448,57 @@ export default {
             "setterComponentName": "GlSimpleObjectSetter",
             "title": "排序"
         }, {
+            "name": "align",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {
+                "type": "button",
+                "options": [
+                    {"label": "左","value": "left"},
+                    {"label": "中","value": "center"},
+                    {"label": "右", "value": "right"}]
+            },
+            "setterComponentVModelName": "modelValue",
+            "title": "对齐方向",
+            "setterComponentName": "ARadioGroup"
+        }, {
+            "name": "fixed",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {
+                "type": "button",
+                "options": [
+                    {"label": "左","value": "left"},
+                    {"label": "右", "value": "right"},
+                    {"label": "无", "value": ""}]
+            },
+            "setterComponentVModelName": "modelValue",
+            "title": "固定位置",
+            "setterComponentName": "ARadioGroup"
+        }, {
+            "name": "ellipsis",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {
+                "type": "button",
+                "options": [
+                    {"label": "是","value": true},
+                    {"label": "否", "value": false}],
+                "defaultValue": false
+            },
+            "setterComponentVModelName": "modelValue",
+            "title": "省略号",
+            "setterComponentName": "ARadioGroup"
+        },{
             "name": "width",
             "group": "base",
             "type": "props",
