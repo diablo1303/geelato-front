@@ -91,7 +91,7 @@ const doAction = (actionName: string, args: any) => {
   if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
     props.glComponentInst.actions.forEach((action: Action) => {
       if (action.eventName === actionName) {
-        // console.log('GlComponent > doAction > action', action)
+        console.log('GlComponent > doAction > action', action)
         // let ctx = inject('$ctx') as object || {}
         let ctx = {}
         Object.assign(ctx, props.glCtx, {args}, {
@@ -160,9 +160,12 @@ watch(() => {
   mv.value = props.modelValue
 })
 
+/**
+ * 值为object格式时，值改变没有被watch(mv)检测到，这里改用，事件来处理值改变
+ * @param value
+ */
 const onUpdateModelValue = (value:any) => {
   mv.value = value
-  // console.log('onUpdateModelValue',value,typeof mv.value)
   if (typeof mv.value === 'object'){
     // 如果组件值为对象时，触发值改变操作
     props.glComponentInst.value = value
@@ -174,7 +177,6 @@ const onUpdateModelValue = (value:any) => {
   }
 }
 
-
 props.glComponentInst.value = mv.value
 watch(mv, (value, oldValue) => {
   // 过滤掉一些无效的值改变undefined null
@@ -182,7 +184,7 @@ watch(mv, (value, oldValue) => {
     return
   }
   props.glComponentInst.value = value
-  // console.log('watch mv update > ',props.glComponentInst.componentName,value,oldValue)
+  console.log('watch mv update > ',props.glComponentInst.componentName,value,oldValue)
   // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
   emits('update:modelValue', value)
   emits('update', value)

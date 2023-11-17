@@ -99,8 +99,12 @@ export class EntityReaderParam {
         return param.value ? 1 : 0
       case 'object':
         if (param.value&&param.cop==='in'&&utils.isArray(param.value)){
+          // const valueItems: Array<string|number> = []
+          // param.value.forEach((valueItem:string|number)=>{
+          //
+          // })
           // @ts-ignore
-          return  param.value.join(',')
+          return  JSON.stringify(param.value)
         }
         return param.value
       default:

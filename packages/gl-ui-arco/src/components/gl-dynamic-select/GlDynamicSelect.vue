@@ -293,7 +293,7 @@ const loadData = () => {
 // console.log('GlDynamicSelect > create', props.entityName, useAttrs().id)
 const selectOne = (value: any) => {
   // 将值设置到对应的组件中
-  // console.log('selectOne', value)
+
   if (value && props.extraFieldAndBindIds.length > 0) {
     props.extraFieldAndBindIds.forEach((extraFieldAndBindId) => {
       pageProvideProxy.setComponentValue(
@@ -304,7 +304,8 @@ const selectOne = (value: any) => {
   }
   // 如果值为数组对象
   if (props.multiple){
-    mv.value.slice(0)
+    // @ts-ignore
+    mv.value.splice(0)
     value.forEach((vItem:any)=>{
       // @ts-ignore
       mv.value.push(vItem[props.valueFiledName])
