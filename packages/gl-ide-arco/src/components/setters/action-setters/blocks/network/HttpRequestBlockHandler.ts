@@ -14,13 +14,12 @@ export default class HttpRequestBlockHandler implements IBlockHandler {
     const url = propsExpressions?.url || toStr(props.url)
     const method = propsExpressions?.method || toStr(props.method)
     const data = propsExpressions?.data || props.data || undefined
-    const header = propsExpressions?.header || props.header || undefined
     const respVarName = props.respVarName || utils.gid('respVarName')
 
     return new ParseResult(
       // 注意这里的参数转换采用JSON.stringify，不采用BlockUtils.paramStringify，因为这两种不同的方式，到导致获取的$gl的对象不是同一个，相应的参数值也会不同。
       `
-        const axios = $gl.fn.createAxios({header:${header}})
+        const axios = $gl.fn.createAxios({header:${convertParams(props.header)}})
         
         $gl.vars.${respVarName} = await axios({
           method:${method},
@@ -58,7 +57,7 @@ interface Props {
   // 请求体
   data?: string
   // 请求头
-  header?: string
+  header?:  Array<Param>
   // 请返回的结果，ApiResult，保存的变量
   respVarName: string
 }

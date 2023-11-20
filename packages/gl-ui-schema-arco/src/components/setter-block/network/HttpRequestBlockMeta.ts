@@ -116,8 +116,37 @@ export default {
       show: true,
       expanded: true,
       title: '请求header',
-      setterComponentName: 'AInput',
-      enableValueExpress: true
+      _showSub: false,
+      properties: [
+        {
+          name: 'name',
+          group: 'base',
+          type: 'props',
+          show: true,
+          expanded: true,
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          title: '参数名',
+          setterComponentName: 'AInput'
+        },
+        {
+          name: 'valueExpression',
+          group: 'base',
+          type: 'props',
+          show: true,
+          expanded: true,
+          setterComponentProps: { showInput: true },
+          setterComponentVModelName: 'modelValue',
+          setterComponentName: 'GlExpressionSetter',
+          title: '参数值'
+        }
+      ],
+      setterComponentName: 'GlObjectArraySetter',
+      titleField: 'name',
+      enableValueExpress: false,
+      displayMode: 'tile',
+      subTitleField: '',
+      alarmIfNoSubTitle: ''
     },
     {
       name: 'respVarName',
