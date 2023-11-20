@@ -289,6 +289,7 @@ export interface QueryDictItemForm {
   enableStatus: number;
   seqNo: number;
   children?: QueryDictItemForm[];
+  appId: string;
   tenantCode: string;
 }
 
@@ -300,6 +301,7 @@ export interface FilterDictItemForm {
   itemName: string;
   enableStatus: string;
   createAt: string[];
+  appId: string;
   tenantCode: string;
 }
 
@@ -336,6 +338,7 @@ export interface QueryPermissionForm {
   object: string;
   rule: string;
   description: string;
+  appId: string;
   tenantCode: string;
   default?: boolean;
 }
@@ -348,6 +351,7 @@ export interface FilterPermissionForm {
   object: string;
   rule: string;
   description: string;
+  appId: string;
   tenantCode: string;
   createAt: string[]
 }
@@ -439,6 +443,7 @@ export interface FilterRoleForm {
   type: string;
   enableStatus: string;
   createAt: string[];
+  appId: string;
   tenantCode: string;
 }
 
@@ -510,6 +515,7 @@ export interface QueryRolePermissionForm {
   roleName: string;
   permissionId: string;
   permissionName: string;
+  appId: string;
   tenantCode: string;
 }
 
@@ -519,6 +525,7 @@ export interface FilterRolePermissionForm {
   roleName: string;
   permissionId: string;
   permissionName: string;
+  appId: string;
   tenantCode: string;
   createAt: string[]
 }
@@ -583,6 +590,7 @@ export interface QueryRoleTreeNodeForm {
   treeNodeId: string;
   treeNodeText: string;
   title: string;
+  appId: string;
   tenantCode: string;
 }
 
@@ -593,6 +601,7 @@ export interface FilterRoleTreeNodeForm {
   treeNodeId: string;
   treeNodeText: string;
   title: string;
+  appId: string;
   tenantCode: string;
   createAt: string[]
 }
@@ -610,6 +619,7 @@ export interface QueryTreeNodeForm {
   meta: string;
   flag: string;
   description: string;
+  appId: string;
   tenantCode: string;
 }
 

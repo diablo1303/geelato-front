@@ -63,6 +63,7 @@ const generateFormData = (): QueryForm => {
     roleName: '',
     treeNodeId: '',
     treeNodeText: '',
+    appId: (route.params && route.params.appId as string) || '',
     tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 }
