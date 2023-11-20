@@ -30,7 +30,7 @@ export default {
       expanded: true,
       title: '请求地址',
       setterComponentName: 'AInput',
-      enableValueExpress: false,
+      enableValueExpress: true,
       displayMode: 'tile'
     },
     {
