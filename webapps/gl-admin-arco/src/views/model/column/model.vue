@@ -28,7 +28,7 @@
         <a-form-item
             :label="$t('model.column.index.form.name')"
             :rules="[{required: pageData.editName,message: $t('model.form.rules.match.required')},
-            {match: /^[a-z0-9][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')},
+            {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')},
             {validator:validateCode}]"
             field="name">
           <a-input v-if="pageData.editName" v-model.trim="formData.name" :max-length="32" @blur="columnNameBlur($event)"/>
@@ -325,7 +325,7 @@
         <a-form-item
             :label="$t('model.column.index.form.autoName')"
             :rules="[{required: formData.autoAdd.toString()==='1',message: $t('model.form.rules.match.required')},
-            {match: /^[a-z0-9][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')}]"
+            {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')}]"
             :tooltip="$t('model.column.index.form.autoName.tip')"
             field="autoName">
           <a-input v-model="formData.autoName" :max-length="32" @blur="autoNameBlur($event)"/>
