@@ -667,6 +667,10 @@ export function getRoleUser(id: string) {
   return axios.get<QueryRoleUserForm>(`/api/security/role/user/get/${id}`);
 }
 
+export function queryRoleByUser(userId: string, appId: string, tenantCode: string) {
+  return axios.get<QueryRoleForm[]>(`/api/security/role/user/queryRoles/${userId}?appId=${appId}&tenantCode=${tenantCode}`);
+}
+
 export function insertRoleUser(params: QueryRoleUserForm) {
   return axios.post<QueryResult>('/api/security/role/user/insert', params);
 }

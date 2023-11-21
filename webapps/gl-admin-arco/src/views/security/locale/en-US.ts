@@ -174,6 +174,7 @@ export default {
   'security.user.index.form.telephone': 'telephone',
   'security.user.index.form.orgName': 'organization',
   'security.user.index.form.partOrgName': 'Part-time Organization',
+  'security.user.index.form.addRoleName': 'Added Role',
   'security.user.index.form.email': 'email',
   'security.user.index.form.post': 'post',
   'security.user.index.form.address': 'address',
@@ -450,6 +451,7 @@ export default {
   'copy.to.clipboard.success': 'Text copied to clipboard successfully！',
   'copy.to.clipboard.fail': 'Failed to copy text！',
   'copy.to.clipboard.button.title': 'Click and copy the primary key',
+  'copy.to.clipboard.button.code.title': 'Click and copy the code',
 
   'security.file.index.menu.list': 'System',
   'security.file.index.menu.list.searchTable': 'File',
