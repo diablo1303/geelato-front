@@ -180,14 +180,16 @@ import ColumnDrawer from "@/views/model/column/drawer.vue";
 
 /* 列表 */
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 type Column = TableColumnData & { checked?: true };
 const scrollbar = ref(true);
 const scroll = {y: "100%"};
 const pageData = ref({
   current: 1, pageSize: 10000, formState: 'edit', isModal: false,
   params: {pId: '', pName: '', type: ''},
-  appId: (route.params && route.params.appId as string) || '',
-  tenantCode: (route.params && route.params.tenantCode as string) || '',
   modalAddBack: (data: QueryForm) => {
   }, modalEditBack: (data: QueryForm) => {
   }, modalDeleteBack: (id: string) => {
@@ -220,11 +222,7 @@ const columnPermissionOptions = computed<SelectOptionData[]>(() => [
 const fetchData = async (params: PageQueryRequest = {current: pageData.value.current, pageSize: pageData.value.pageSize}) => {
   setLoading(true);
   try {
-    // @ts-ignore
-    params.appId = pageData.value.appId;
-    // @ts-ignore
-    params.tenantCode = pageData.value.tenantCode;
-    const {data} = await queryColumnRolePermissions(pageData.value.params.type, pageData.value.params.pName, params);
+    const {data} = await queryColumnRolePermissions(pageData.value.params.type, pageData.value.params.pName, {...params, ...routeParams.value});
     cowColumns.value = data.column;
     rowColumns.value = data.role;
     renderData.value = data.table;
@@ -253,7 +251,7 @@ const columnRolePermissionCopy = (text: string) => {
 const addColumnRole = (ev: MouseEvent) => {
   if (roleDrawerRef.value) {
     // @ts-ignore
-    roleDrawerRef.value?.openForm({action: 'add', params: {type: 'app', appId: pageData.value.appId}, closeBack: tableRefresh});
+    roleDrawerRef.value?.openForm({action: 'add', params: {type: 'app', appId: routeParams.value.appId}, closeBack: tableRefresh});
   }
 };
 const editColumnRole = (id: string) => {
@@ -264,7 +262,7 @@ const editColumnRole = (id: string) => {
       'id': id,
       pageSize: 5,
       isModal: true,
-      params: {type: 'app', appId: pageData.value.appId},
+      params: {type: 'app', appId: routeParams.value.appId},
       closeBack: tableRefresh
     });
   }

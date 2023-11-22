@@ -103,10 +103,10 @@
             field="charMaxLength">
           <a-input-number
               v-model="formData.charMaxLength"
+              :disabled="selectData.fixed"
               :max="selectData.max"
               :min="1"
-              :placeholder="$t('model.form.rules.match.length.title')+`[1,${selectData.max}]`"
-              :precision="0" :disabled="selectData.fixed"/>
+              :placeholder="$t('model.form.rules.match.length.title')+`[1,${selectData.max}]`" :precision="0"/>
         </a-form-item>
       </a-col>
       <!-- 数值类型，是否有符号 -->
@@ -268,21 +268,23 @@
               </a-col>
               <a-col v-if="item.isEdit&&['CHAR','VARCHAR','TEXT','MEDIUMTEXT','LONGTEXT'].includes(item.dataType)" :span="24">
                 <a-form-item :label="$t('model.column.index.form.charMaxLength')" :required="true" :style="{'margin-bottom': '5px'}">
-                  <a-input-number v-model="item.charMaxLength" :max="item.columnSelectType.radius.max" :min="1" :precision="0"
+                  <a-input-number v-model="item.charMaxLength" :disabled="item.columnSelectType.fixed" :max="item.columnSelectType.radius.max" :min="1"
                                   :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.max}]`"
-                                  :disabled="item.columnSelectType.fixed"/>
+                                  :precision="0"/>
                 </a-form-item>
               </a-col>
               <a-col v-if="item.isEdit&&['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(item.selectType)" :span="24">
                 <a-form-item :label="$t('model.column.index.form.numericPrecision')" :required="true" :style="{'margin-bottom': '5px'}">
-                  <a-input-number v-model="item.numericPrecision" :max="item.columnSelectType.radius.unDigit" :min="1" :precision="0"
-                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.unDigit}]`"/>
+                  <a-input-number v-model="item.numericPrecision" :max="item.columnSelectType.radius.unDigit" :min="1"
+                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.unDigit}]`"
+                                  :precision="0"/>
                 </a-form-item>
               </a-col>
               <a-col v-if="item.isEdit&&['DECIMAL'].includes(item.dataType)" :span="24">
                 <a-form-item :label="$t('model.column.index.form.numericScale')" :required="true" :style="{'margin-bottom': '5px'}">
-                  <a-input-number v-model="item.numericScale" :max="item.columnSelectType.radius.precision" :min="1" :precision="0"
-                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.precision}]`"/>
+                  <a-input-number v-model="item.numericScale" :max="item.columnSelectType.radius.precision" :min="1"
+                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.precision}]`"
+                                  :precision="0"/>
                 </a-form-item>
               </a-col>
               <div v-if="!item.isEdit">
@@ -397,7 +399,7 @@ import {
   queryTables,
   validateTableColumnName
 } from '@/api/model';
-import {formatSeparator,  toCamelCase} from '@/utils/strings';
+import {formatSeparator, toCamelCase} from '@/utils/strings';
 import {isBlank, isNotBlank} from '@/utils/is';
 import {useRoute} from "vue-router";
 import {QueryDictForm, queryDicts} from "@/api/security";
@@ -406,6 +408,10 @@ import {QueryEncodingForm, queryEncodings} from "@/api/encoding";
 // 国际化
 const {t} = useI18n();
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 const pageData = ref({
   formState: 'add', button: true, formCol: 1,
   mainTable: '', maxNumber: -1, editName: true
@@ -449,7 +455,8 @@ const generateFormData = (): QueryForm => {
     autoAdd: '',
     autoName: '',
     seqNo: 1,
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: routeParams.value.appId,
+    tenantCode: routeParams.value.tenantCode,
   };
 }
 const formData = ref(generateFormData());
@@ -572,11 +579,7 @@ const loadMultiData = (list: QueryMultiComponentForm[]) => {
 const selectDictionaryOptions = ref<QueryDictForm[]>([]);
 const getSelectDictionaryOptions = async () => {
   try {
-    const {data} = await queryDicts({
-      enableStatus: 1,
-      appId: (route.params && route.params.appId as string) || '',
-      tenantCode: (route.params && route.params.tenantCode as string) || '',
-    } as unknown as QueryDictForm);
+    const {data} = await queryDicts({enableStatus: 1, ...routeParams.value} as unknown as QueryDictForm);
     selectDictionaryOptions.value = data || [];
   } catch (err) {
     selectDictionaryOptions.value = [];
@@ -587,11 +590,7 @@ const getSelectDictionaryOptions = async () => {
 const selectCodeOptions = ref<QueryEncodingForm[]>([]);
 const getSelectCodeOptions = async () => {
   try {
-    const {data} = await queryEncodings({
-      enableStatus: 1,
-      appId: (route.params && route.params.appId as string) || '',
-      tenantCode: (route.params && route.params.tenantCode as string) || '',
-    } as unknown as QueryEncodingForm);
+    const {data} = await queryEncodings({enableStatus: 1, ...routeParams.value} as unknown as QueryEncodingForm);
     selectCodeOptions.value = data || [];
   } catch (err) {
     selectCodeOptions.value = [];
@@ -600,11 +599,7 @@ const getSelectCodeOptions = async () => {
   }
 }
 const selectEntityOptions = ref<QueryTableForm[]>([]);
-const getSelectEntityOptions = async (params: PageQueryRequest = {
-  appId: (route.params && route.params.appId as string) || '',
-  tenantCode: (route.params && route.params.tenantCode as string) || '',
-  enableStatus: 1, tableType: 'table'
-} as unknown as PageQueryRequest) => {
+const getSelectEntityOptions = async (params: PageQueryRequest = {enableStatus: 1, tableType: 'table', ...routeParams.value} as unknown as PageQueryRequest) => {
   try {
     const {data} = await queryTables(params);
     selectEntityOptions.value = data;

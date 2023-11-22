@@ -181,14 +181,16 @@ import {copyToClipboard} from "@/utils/strings";
 
 /* 列表 */
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 type Column = TableColumnData & { checked?: true };
 const scrollbar = ref(true);
 const scroll = {y: "100%"};
 const pageData = ref({
   current: 1, pageSize: 10000, formState: 'edit', isModal: false,
   params: {connectId: '', object: '', type: ''},
-  appId: (route.params && route.params.appId as string) || '',
-  tenantCode: (route.params && route.params.tenantCode as string) || '',
   modalAddBack: (data: QueryForm) => {
   }, modalEditBack: (data: QueryForm) => {
   }, modalDeleteBack: (id: string) => {
@@ -216,11 +218,7 @@ const renderData = ref<Record<string, boolean | string>[]>([]);
 const fetchData = async (params: PageQueryRequest = {current: pageData.value.current, pageSize: pageData.value.pageSize}) => {
   setLoading(true);
   try {
-    // @ts-ignore
-    params.appId = pageData.value.appId;
-    // @ts-ignore
-    params.tenantCode = pageData.value.tenantCode;
-    const {data} = await queryTableRolePermissions(pageData.value.params.type, pageData.value.params.object, params);
+    const {data} = await queryTableRolePermissions(pageData.value.params.type, pageData.value.params.object, {...params, ...routeParams.value});
     cowColumns.value = data.permission;
     rowColumns.value = data.role;
     renderData.value = data.table;
@@ -240,7 +238,7 @@ const tableRolePermissionCopy = (text: string) => {
 const addTableRole = (ev: MouseEvent) => {
   if (roleDrawerRef.value) {
     // @ts-ignore
-    roleDrawerRef.value?.openForm({action: 'add', params: {type: 'app', appId: pageData.value.appId}, closeBack: tableRefresh});
+    roleDrawerRef.value?.openForm({action: 'add', params: {type: 'app', appId: routeParams.value.appId}, closeBack: tableRefresh});
   }
 };
 const editTableRole = (id: string) => {
@@ -251,7 +249,7 @@ const editTableRole = (id: string) => {
       'id': id,
       pageSize: 5,
       isModal: true,
-      params: {type: 'app', appId: pageData.value.appId},
+      params: {type: 'app', appId: routeParams.value.appId},
       closeBack: tableRefresh
     });
   }
@@ -313,7 +311,7 @@ const switchBeforeChange = async (permission: string, role: string) => {
     await insertTableRolePermission({
       permissionId: permission,
       roleId: role,
-      tenantCode: pageData.value.tenantCode
+      tenantCode: routeParams.value.tenantCode
     } as QueryRolePermissionForm);
     isSuccess = true;
   } catch (err) {

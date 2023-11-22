@@ -154,6 +154,10 @@ interface TreeNode extends TreeNodeProps {
 // 国际化
 const {t} = useI18n();
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 // 链接页面
 const connectListRef = ref(null);
 const tableListRef = ref(null);
@@ -226,9 +230,7 @@ const swapTableTitle = (item: QueryTableForm): string => {
 const fetchConnects = async (params: PageQueryRequest = {current: 1, pageSize: 10000}): Promise<TreeNode[]> => {
   let treeOptions: TreeNode[] = [];
   try {
-    // @ts-ignore
-    params.tenantCode = (route.params && route.params.tenantCode as string) || '';
-    const {data} = await queryConnects(params);
+    const {data} = await queryConnects({...params, ...routeParams.value});
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {
       treeOptions.push({
@@ -251,9 +253,7 @@ const fetchConnects = async (params: PageQueryRequest = {current: 1, pageSize: 1
 const fetchTables = async (params: PageQueryRequest = {current: 1, pageSize: 10000}): Promise<TreeNode[]> => {
   let treeOptions: TreeNode[] = [];
   try {
-    // @ts-ignore
-    params.tenantCode = (route.params && route.params.tenantCode as string) || '';
-    const {data} = await queryTables(params);
+    const {data} = await queryTables({...params, ...routeParams.value});
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {
       treeOptions.push({

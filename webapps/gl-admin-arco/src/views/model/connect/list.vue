@@ -164,7 +164,6 @@ import ConnectDrawer from '@/views/model/connect/drawer.vue';
 import {useRoute} from "vue-router";
 
 /* 列表 */
-const route = useRoute();
 type Column = TableColumnData & { checked?: true };
 const pageData = ref({
   current: 1, pageSize: 10, formState: 'edit', isModal: false, modalAddBack: (data: QueryForm) => {
@@ -177,6 +176,11 @@ const connectDrawerRef = ref(null);
 
 // 国际化
 const {t} = useI18n();
+const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 // 加载
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
@@ -195,7 +199,8 @@ const generateFilterData = () => {
     dbType: '',
     enableStatus: '',
     createAt: [],
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: routeParams.value.appId,
+    tenantCode: routeParams.value.tenantCode,
   };
 };
 const filterData = ref(generateFilterData());

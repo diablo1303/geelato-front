@@ -290,6 +290,10 @@ const permissionDrawerRef = ref(null);
 // 国际化
 const {t} = useI18n();
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 // 加载
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
@@ -314,7 +318,8 @@ const generateFilterData = (): FilterTableColumnForm => {
     uniqued: '',//  // 唯一约束
     enableStatus: '', // 状态
     createAt: [],
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: routeParams.value.appId,
+    tenantCode: routeParams.value.tenantCode,
   };
 };
 const filterData = ref(generateFilterData());
