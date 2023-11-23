@@ -204,6 +204,10 @@ const validateForm = ref<FormInstance>();
 // 国际化
 const {t} = useI18n();
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 // 页面样式
 const resetPageStyle = () => {
   return {
@@ -236,7 +240,8 @@ const generateFormData = (): QueryForm => {
     seqNo: 1, // 排序
     linked: 0, // 已链接
     description: '', // 补充描述
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: routeParams.value.appId,
+    tenantCode: routeParams.value.tenantCode,
   };
 }
 const formData = ref(generateFormData());

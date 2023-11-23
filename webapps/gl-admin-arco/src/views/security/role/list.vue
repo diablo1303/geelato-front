@@ -189,7 +189,11 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 // 搜索条件
 const generateFilterData = (): FilterForm => {
-  return {id: '', name: '', code: '', type: '', enableStatus: '', createAt: [], tenantCode: (route.params && route.params.tenantCode as string) || '',};
+  return {
+    id: '', name: '', code: '', type: '', enableStatus: '', createAt: [],
+    appId: (route.params && route.params.appId as string) || '',
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+  };
 };
 
 const filterData = ref(generateFilterData());

@@ -113,6 +113,10 @@ import {dbTypeOptions, enableStatusOptions} from "@/views/model/connect/searchTa
 import {useRoute} from "vue-router";
 
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
 /* 表单 */
@@ -128,7 +132,8 @@ const generateFormData = (): QueryForm => {
     dbUserName: '',// 用户名
     dbPassword: '', // 密码
     enableStatus: 1, // 状态
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: routeParams.value.appId,
+    tenantCode: routeParams.value.tenantCode,
   };
 }
 const formData = ref(generateFormData());

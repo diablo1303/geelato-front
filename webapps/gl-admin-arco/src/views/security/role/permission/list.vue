@@ -177,6 +177,7 @@ const generateFilterData = (): FilterForm => {
     permissionId: '',
     permissionName: '',
     createAt: [],
+    appId: (route.params && route.params.appId as string) || '',
     tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 };

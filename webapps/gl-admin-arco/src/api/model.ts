@@ -14,6 +14,7 @@ export interface QueryConnectForm {
   dbUserName: string; // 用户名
   dbPassword: string; // 密码
   enableStatus: number; // 状态
+  appId: string;
   tenantCode: string;
 }
 
@@ -24,6 +25,7 @@ export interface FilterConnectForm {
   dbType: string;
   enableStatus: string;
   createAt: string[];
+  appId: string;
   tenantCode: string;
 }
 
@@ -73,6 +75,7 @@ export interface QueryTableForm {
   seqNo: number; // 排序
   tableComment: string; // 备注
   description: string; // 补充描述
+  appId: string;
   tenantCode: string;
 }
 
@@ -86,6 +89,7 @@ export interface FilterTableForm {
   enableStatus: string;
   linked: string;
   createAt: string[];
+  appId: string;
   tenantCode: string;
 }
 
@@ -187,6 +191,7 @@ export interface QueryTableColumnForm {
   autoAdd: number | boolean | string | string[];
   autoName: string;
   seqNo: number;
+  appId: string;
   tenantCode: string;
 }
 
@@ -203,6 +208,7 @@ export interface FilterTableColumnForm {
   uniqued: string; // 唯一约束
   enableStatus: string; // 状态
   createAt: string[];
+  appId: string;
   tenantCode: string;
 }
 
@@ -278,6 +284,7 @@ export interface QueryTableForeignForm {
   enableStatus: number; // 状态
   description: string;// 备注
   seqNo: number;
+  appId: string;
   tenantCode: string;
 }
 
@@ -289,6 +296,7 @@ export interface FilterTableForeignForm {
   foreignTableCol: string;
   enableStatus: string;
   createAt: string[];
+  appId: string;
   tenantCode: string;
 }
 
@@ -349,6 +357,7 @@ export interface QueryViewForm {
   linked: number; // 已链接
   enableStatus: number; // 状态
   seqNo: number; // 排序
+  appId: string;
   tenantCode: string;
 }
 
@@ -362,6 +371,7 @@ export interface FilterViewForm {
   enableStatus: string;
   linked: string;
   createAt: string[];
+  appId: string;
   tenantCode: string;
 }
 

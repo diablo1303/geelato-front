@@ -12,16 +12,19 @@ import {useRoute, useRouter} from 'vue-router';
 import {DEFAULT_ROUTE} from "@/router/constants";
 // eslint-disable-next-line import/no-cycle
 import {pageBaseRoute} from "@/router/routes";
+import {ref} from "vue";
 
 const router = useRouter();
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 const back = (ev: MouseEvent) => {
   console.log(DEFAULT_ROUTE);
-  const tenantCode = (route && route.params && route.params.tenantCode as string) || '';
-  const appId = (route && route.params && route.params.appId as string) || '';
-  console.log(`${tenantCode}/${appId}`);
-  if (tenantCode && appId) {
-    pageBaseRoute(router, {'tenantCode': tenantCode, 'appId': appId});
+  console.log(`${routeParams.value.tenantCode}/${routeParams.value.appId}`);
+  if (routeParams.value.tenantCode && routeParams.value.appId) {
+    pageBaseRoute(router, routeParams.value);
   } else {
     router.push({path: '/'});
   }

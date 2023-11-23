@@ -49,7 +49,11 @@ const selectOptions = ref<QuerySelectForm[]>([]);
 const visibleModel = ref(false);
 // 表单数据
 const generateFormData = (): QueryForm => {
-  return {id: '', roleId: '', roleName: '', permissionId: '', permissionName: '', tenantCode: (route.params && route.params.tenantCode as string) || '',};
+  return {
+    id: '', roleId: '', roleName: '', permissionId: '', permissionName: '',
+    appId: (route.params && route.params.appId as string) || '',
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+  };
 }
 const formData = ref(generateFormData());
 // 页面响应

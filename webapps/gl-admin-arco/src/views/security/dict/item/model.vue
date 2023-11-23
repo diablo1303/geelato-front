@@ -62,6 +62,7 @@ const validateForm = ref<FormInstance>();
 const generateFormData = (): QueryForm => {
   return {
     id: '', pid: '', dictId: '', itemName: '', itemCode: '', enableStatus: 1, seqNo: 999, itemRemark: '',
+    appId: (route.params && route.params.appId as string) || '',
     tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 }

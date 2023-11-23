@@ -120,7 +120,7 @@ const generateFormData = (): QueryForm => {
     seqNo: 999,
     description: '',
     tenantCode: (route.params && route.params.tenantCode as string) || '',
-    appId: '',
+    appId: (route.params && route.params.appId as string) || '',
     appName: ''
   };
 }

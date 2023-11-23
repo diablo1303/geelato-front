@@ -186,6 +186,7 @@ const renderData = ref<PageQueryFilter[]>([]);
 const generateFilterData = (): FilterForm => {
   return {
     id: '', pid: '', dictId: '', itemName: '', itemCode: '', enableStatus: '', createAt: [],
+    appId: (route.params && route.params.appId as string) || '',
     tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
 };

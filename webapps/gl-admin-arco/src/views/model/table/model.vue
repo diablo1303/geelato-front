@@ -182,11 +182,15 @@ import {
 import {enableStatusOptions, linkedOptions, tableTypeOptions} from "@/views/model/table/searchTable";
 import {useRoute} from "vue-router";
 
-const route = useRoute();
 const pageData = ref({formState: 'add', button: true, formCol: 1, editName: true});
 const validateForm = ref<FormInstance>();
 // 国际化
 const {t} = useI18n();
+const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 // 页面样式
 const resetPageStyle = () => {
   return {
@@ -219,7 +223,8 @@ const generateFormData = (): QueryForm => {
     seqNo: 999, // 排序
     tableComment: '', // 备注
     description: '', // 补充描述
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: routeParams.value.appId,
+    tenantCode: routeParams.value.tenantCode,
   };
 }
 const formData = ref(generateFormData());

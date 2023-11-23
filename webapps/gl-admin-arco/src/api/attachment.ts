@@ -13,6 +13,7 @@ export interface AttachmentForm {
   type: string;
   url: string;
   delStatus: number;
+  appId: string;
   tenantCode: string;
   genre: string;
 }
@@ -23,6 +24,7 @@ export interface FilterAttachmentForm {
   type: string;
   creator: string;
   createAt: string[];
+  appId: string;
   tenantCode: string;
   genre: string;
 }

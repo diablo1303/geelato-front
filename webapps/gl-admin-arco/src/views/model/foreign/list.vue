@@ -158,6 +158,7 @@ import useLoading from '@/hooks/loading';
 // 分页列表
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue';
+import {Notification} from "@arco-design/web-vue";
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
@@ -167,7 +168,6 @@ import {columns, enableStatusOptions} from '@/views/model/foreign/searchTable';
 // 引用其他页面
 import ForeignForm from '@/views/model/foreign/form.vue';
 import ForeignDrawer from '@/views/model/foreign/drawer.vue';
-import {Notification} from "@arco-design/web-vue";
 import {useRoute} from "vue-router";
 
 /* 列表 */
@@ -179,6 +179,10 @@ const foreignDrawerRef = ref(null);
 // 国际化
 const {t} = useI18n();
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 // 加载
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
@@ -198,7 +202,8 @@ const generateFilterData = () => {
     foreignTableCol: '',
     enableStatus: '',
     createAt: [],
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: routeParams.value.appId,
+    tenantCode: routeParams.value.tenantCode,
   };
 };
 const filterData = ref(generateFilterData());
