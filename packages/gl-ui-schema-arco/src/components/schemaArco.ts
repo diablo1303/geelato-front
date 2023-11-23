@@ -79,6 +79,7 @@ import MultiComponentsMeta from "./setter-arco/multiComponents/multiComponentsMe
 import GlButtonMeta from "./setter-arco/button/GlButtonMeta";
 import OpRecordMeta from "./setter-arco/op-record/OpRecordMeta";
 import RangePickerMeta from "./setter-arco/datePicker/RangePickerMeta";
+import BlocksMeta from "./setter-arco/blocks/BlocksMeta";
 
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [ButtonMeta, GlButtonMeta, TextMeta, AlertMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta,ASelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta,RangePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,
@@ -86,7 +87,7 @@ const componentMetas: Array<ComponentMeta> = [ButtonMeta, GlButtonMeta, TextMeta
     CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
     StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TooltipMeta, EntityTreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta, DividerMeta,
-    OpRecordMeta
+    OpRecordMeta,BlocksMeta
 ]
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance, CascaderInstance]
