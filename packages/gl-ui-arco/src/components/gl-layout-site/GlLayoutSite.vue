@@ -1,6 +1,10 @@
 <script lang="ts">
+/**
+ *  站点主页面布局
+ *  内置了站点主页面使用的一些元素
+ */
 export default {
-  name: 'GlLayout'
+  name: 'GlLayoutSite'
 }
 </script>
 <script lang="ts" setup>

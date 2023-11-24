@@ -34,7 +34,8 @@ import { getLabel } from './components/MetaHelper'
 import GlEmpty from './components/gl-empty/GlEmpty.vue'
 import GlSelect from './components/gl-select/GlSelect.vue'
 import GlImport from './components/gl-import/GlImport.vue'
-import GlLayout from './components/gl-layout/GlLayout.vue'
+import GlLayoutPage from "./components/gl-layout-page/GlLayoutPage.vue";
+import GlLayoutSite from './components/gl-layout-site/GlLayoutSite.vue'
 import { Drawer, Modal,RangePicker } from '@arco-design/web-vue'
 import GlBlocks from "./components/gl-blocks/GlBlocks.vue";
 
@@ -56,7 +57,8 @@ const component: Plugin = {
     app.component(GlIconfontSelect.name, GlIconfontSelect)
     app.component(GlDict.name, GlDict)
     app.component(GlPage.name, GlPage)
-    app.component(GlLayout.name,GlLayout)
+    app.component(GlLayoutSite.name,GlLayoutSite)
+    app.component(GlLayoutPage.name,GlLayoutPage)
     app.component('GlEntityTablePlus', GlEntityTablePlus)
     app.component(GlBlocks.name,GlBlocks)
     // 表格注册多一个，作为子表单，在配置时减少一些不必要的配置项

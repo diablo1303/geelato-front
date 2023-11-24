@@ -27,7 +27,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <gl-layout></gl-layout>
+  <gl-layout-site></gl-layout-site>
 </template>
 <style scoped>
 
