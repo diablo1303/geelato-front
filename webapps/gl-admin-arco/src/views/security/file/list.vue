@@ -193,7 +193,7 @@ import {columns, enableStatusOptions, fileTypeOptions, useTypeOptions} from "@/v
 // 引用其他页面
 import FileTemplateDrawer from "@/views/security/file/drawer.vue";
 import {getValueByKeys} from "@/api/sysconfig";
-import {downloadFileByBase65, fetchFileById} from "@/api/attachment";
+import {downloadFileByBase64Data, fetchFileById} from "@/api/attachment";
 import {isJSON} from "@/utils/is";
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 import {copyToClipboard} from "@/utils/strings";
@@ -295,7 +295,7 @@ const downloadImportOrExportExample = async (configKey: string) => {
     const {data} = await getValueByKeys(configKey);
     if (data) {
       if (isJSON(data)) {
-        downloadFileByBase65(JSON.parse(data));
+        downloadFileByBase64Data(JSON.parse(data));
       } else {
         fetchFileById(data, () => {
           downloadFileFailed(configKey, t('security.file.index.example.file.failed'));

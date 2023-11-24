@@ -6,7 +6,7 @@ export default {
 <script lang="ts" setup>
 import {reactive, ref, watch} from 'vue';
 import {Base64FileParams} from "@/api/attachment";
-import {downloadFileByBase66} from "@/api/attachment";
+import {downloadFileByBase64String} from "@/api/attachment";
 import {isJSON} from "@/utils/is";
 
 const emits = defineEmits(['update:modelValue', 'change']);
@@ -95,7 +95,8 @@ const base64Remove = (ev?: MouseEvent) => {
       <a-button v-if="mv.showButtonUpload" class="input-button input-button-primary" type="dashed" @click="base64Upload($event)">
         <IconUpload/>
       </a-button>
-      <a-button v-if="mv.showButtonDownload&&mv.baseJson" class="input-button input-button-primary" type="dashed" @click="downloadFileByBase66(mv.baseJson)">
+      <a-button v-if="mv.showButtonDownload&&mv.baseJson" class="input-button input-button-primary" type="dashed"
+                @click="downloadFileByBase64String(mv.baseJson)">
         <IconDownload/>
       </a-button>
       <a-button v-if="mv.showButtonRemove" class="input-button input-button-close" type="dashed" @click="base64Remove($event)">
@@ -104,7 +105,7 @@ const base64Remove = (ev?: MouseEvent) => {
     </template>
   </a-input>
   <span v-else>
-    <a class="arco-upload-list-item-name-link" @click="downloadFileByBase66(mv.baseJson)">
+    <a class="arco-upload-list-item-name-link" @click="downloadFileByBase64String(mv.baseJson)">
       {{ mv.baseName }}
     </a>
   </span>

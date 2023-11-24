@@ -147,9 +147,9 @@ export const fetchFileById = (id: string, fetchFailed?: any) => {
 
 /**
  * 将base64编码的字符串转为文件，并下载
- * @param base64Str
- * @param fileType
- * @param fileName
+ * @param base64Str base64编码字符串
+ * @param fileType 文件mine
+ * @param fileName 文件名称
  */
 export const downloadFileByBase64 = (base64Str: string, fileType: string, fileName: string) => {
   try {
@@ -175,17 +175,23 @@ export const downloadFileByBase64 = (base64Str: string, fileType: string, fileNa
     Message.error({content: (err && err.message) || "文件下载失败", duration: 5 * 1000});
   }
 }
-
-export const downloadFileByBase65 = (baseData: Base64FileParams) => {
-  downloadFileByBase64(baseData.base64, baseData.type, baseData.name);
+/**
+ * 将base64编码的字符串转为文件，并下载
+ * @param base64Data Base64FileParams
+ */
+export const downloadFileByBase64Data = (base64Data: Base64FileParams) => {
+  downloadFileByBase64(base64Data.base64, base64Data.type, base64Data.name);
 }
-
-export const downloadFileByBase66 = (base64String: string) => {
+/**
+ * 将base64编码的字符串转为文件，并下载
+ * @param base64String base64编码字符串
+ */
+export const downloadFileByBase64String = (base64String: string) => {
   if (base64String && isJSON(base64String)) {
     // 解码Base64字符串
     const data: Base64FileParams = JSON.parse(base64String);
     // 下载文件
-    downloadFileByBase65(data);
+    downloadFileByBase64Data(data);
   }
 }
 

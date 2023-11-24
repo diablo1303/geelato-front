@@ -134,7 +134,7 @@ export function downloadImportTemplateFile(templateId: string) {
   getImportTemplateInfo(templateId).then((res) => {
     const templateIdOrBase64 = res.data.template
     if (templateIdOrBase64 && templateIdOrBase64.length > 64 && utils.isJSON(templateIdOrBase64)) {
-      downloadFileByBase66(templateIdOrBase64);
+      downloadFileByBase64String(templateIdOrBase64);
     } else {
       downloadFileById(res.data.template)
     }
@@ -173,20 +173,20 @@ export const downloadFileByBase64 = (base64Str: string, fileType: string, fileNa
 }
 /**
  * 将base64编码的字符串转为文件，并下载
- * @param baseData Base64FileParams
+ * @param base64Data Base64FileParams
  */
-export const downloadFileByBase65 = (baseData: Base64FileParams) => {
-  downloadFileByBase64(baseData.base64, baseData.type, baseData.name);
+export const downloadFileByBase64Data = (base64Data: Base64FileParams) => {
+  downloadFileByBase64(base64Data.base64, base64Data.type, base64Data.name);
 }
 /**
  * 将base64编码的字符串转为文件，并下载
  * @param base64String base64编码字符串
  */
-export const downloadFileByBase66 = (base64String: string) => {
+export const downloadFileByBase64String = (base64String: string) => {
   if (base64String && utils.isJSON(base64String)) {
     // 解码Base64字符串
     const data: Base64FileParams = JSON.parse(base64String);
     // 下载文件
-    downloadFileByBase65(data);
+    downloadFileByBase64Data(data);
   }
 }

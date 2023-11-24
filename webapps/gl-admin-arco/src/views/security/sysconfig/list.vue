@@ -121,7 +121,7 @@
             {{ record.configAssist }}
           </span>
           <span v-else-if="['BASE64'].includes(record.configType)&&record.configValue">
-            <a-button type="text" @click="downloadFileByBase65(JSON.parse(record.configValue) as Base64FileParams)">
+            <a-button type="text" @click="downloadFileByBase64Data(JSON.parse(record.configValue) as Base64FileParams)">
             <template #icon>
               <IconDownload/>
             </template>
@@ -176,7 +176,7 @@ import {deleteSysConfig as deleteList, FilterSysConfigForm as FilterForm, pageQu
 import {columns, enableStatusOptions} from "@/views/security/sysconfig/searchTable";
 // 引用其他页面
 import SystemConfigDrawer from "@/views/security/sysconfig/drawer.vue";
-import {Base64FileParams, downloadFileByBase65, fetchFileById} from "@/api/attachment";
+import {Base64FileParams, downloadFileByBase64Data, fetchFileById} from "@/api/attachment";
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 
 
