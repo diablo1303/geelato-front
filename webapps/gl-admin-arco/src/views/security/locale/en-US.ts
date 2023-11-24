@@ -448,9 +448,9 @@ export default {
   'security.encoding.index.model.cancel.text': 'Cancel',
   'security.encoding.index.model.ok.text': 'Confirm',
 
-  'copy.to.clipboard.success': 'Text copied to clipboard successfully！',
-  'copy.to.clipboard.fail': 'Failed to copy text！',
-  'copy.to.clipboard.button.title': 'Click and copy the primary key',
+  'copy.to.clipboard.success': 'Text copied to clipboard successfully',
+  'copy.to.clipboard.fail': 'Failed to copy text',
+  'copy.to.clipboard.button.key.title': 'Click and copy the primary key',
   'copy.to.clipboard.button.code.title': 'Click and copy the code',
 
   'security.file.index.menu.list': 'System',

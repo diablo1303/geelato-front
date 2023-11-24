@@ -52,11 +52,7 @@
                     <span>
                       <strong>{{ $t('security.role.index.form.code') }}：</strong>
                       {{ record.code }}
-                      <a-button :title="$t('copy.to.clipboard.button.title')" type="text" @click="columnRolePermissionCopy(record.code)">
-                        <template #icon>
-                          <icon-copy/>
-                        </template>
-                      </a-button>
+                      <CopyToClipboard v-model="record.code" :title="$t('copy.to.clipboard.button.code.title')"/>
                     </span>
               <br/>
               <span>
@@ -104,11 +100,7 @@
               <span>
                       <strong>{{ $t('model.column.permission.index.form.name') }}：</strong>
                       {{ `${item.name} | ${item.fieldName}` }}
-                      <a-button :title="$t('copy.to.clipboard.button.title')" type="text" @click="columnRolePermissionCopy(`${item.name} | ${item.fieldName}`)">
-                        <template #icon>
-                          <icon-copy/>
-                        </template>
-                      </a-button>
+                <CopyToClipboard :model-value="`${item.name} | ${item.fieldName}`"/>
                     </span>
               <br/>
               <span>
@@ -173,9 +165,9 @@ import {deleteRole, insertColumnRolePermission, queryColumnRolePermissions, Quer
 import {deleteTableColumn, QueryTableColumnForm, QueryViewForm as QueryForm} from "@/api/model";
 import RoleDrawer from "@/views/security/role/drawer.vue";
 import RoleTabForm from "@/views/security/role/tabForm.vue";
-import {copyToClipboard} from "@/utils/strings";
 import {columnSelectType, defaultColumnMetas} from "@/views/model/column/searchTable";
 import ColumnDrawer from "@/views/model/column/drawer.vue";
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 // 引用其他页面
 
 /* 列表 */
@@ -245,9 +237,7 @@ const formatSelectType = (value: string): string => {
 const tableRefresh = (ev?: Event) => {
   fetchData();
 };
-const columnRolePermissionCopy = (text: string) => {
-  copyToClipboard(text, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
-}
+
 const addColumnRole = (ev: MouseEvent) => {
   if (roleDrawerRef.value) {
     // @ts-ignore

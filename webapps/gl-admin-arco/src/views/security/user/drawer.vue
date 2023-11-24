@@ -52,12 +52,7 @@
         <a-list-item-meta>
           <template #title>
             {{ `${item.name}（${item.code}）` }}
-            <a-button :title="$t('copy.to.clipboard.button.code.title')" style="width: 16px;height: 16px;"
-                      type="text" @click="copyPrimaryKey(item.code)">
-              <template #icon>
-                <icon-copy/>
-              </template>
-            </a-button>
+            <CopyToClipboard v-model="item.code" :title="$t('copy.to.clipboard.button.code.title')"/>
           </template>
           <template #description>
             <div>
@@ -105,7 +100,7 @@ import {
   QueryUserForm
 } from "@/api/security";
 import {FormInstance} from "@arco-design/web-vue";
-import {copyToClipboard} from "@/utils/strings";
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 
 // 国际化
 const {t} = useI18n();
@@ -170,9 +165,7 @@ const fetchRoleUsers = async (userId: string) => {
     console.log(err);
   }
 }
-const copyPrimaryKey = (id: string) => {
-  copyToClipboard(id, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
-}
+
 const orgUserRefresh = () => {
   fetchOrgUsers({userId: pageData.value.userId} as unknown as PageQueryRequest);
 }

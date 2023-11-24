@@ -450,10 +450,10 @@ export default {
   'security.encoding.index.model.cancel.text': '取消',
   'security.encoding.index.model.ok.text': '确认',
 
-  'copy.to.clipboard.success': '复制成功！',
-  'copy.to.clipboard.fail': '复制失败！',
-  'copy.to.clipboard.button.title': '点击，复制主键',
-  'copy.to.clipboard.button.code.title': '点击，复制编码',
+  'copy.to.clipboard.success': '复制成功',
+  'copy.to.clipboard.fail': '复制失败',
+  'copy.to.clipboard.button.key.title': '点击复制主键',
+  'copy.to.clipboard.button.code.title': '点击复制编码',
 
   'security.file.index.menu.list': '应用管理',
   'security.file.index.menu.list.searchTable': '文件管理',

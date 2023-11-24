@@ -52,11 +52,7 @@
                     <span>
                       <strong>{{ $t('security.role.index.form.code') }}：</strong>
                       {{ record.code }}
-                      <a-button :title="$t('copy.to.clipboard.button.title')" type="text" @click="tableRolePermissionCopy(record.code)">
-                        <template #icon>
-                          <icon-copy/>
-                        </template>
-                      </a-button>
+                      <CopyToClipboard v-model="record.code" :title="$t('copy.to.clipboard.button.code.title')"/>
                     </span>
               <br/>
               <span>
@@ -94,11 +90,7 @@
                     <span>
                       <strong>{{ $t('security.permission.index.form.code') }}：</strong>
                       {{ item.code }}
-                      <a-button :title="$t('copy.to.clipboard.button.title')" type="text" @click="tableRolePermissionCopy(item.code)">
-                        <template #icon>
-                          <icon-copy/>
-                        </template>
-                      </a-button>
+                      <CopyToClipboard v-model="item.code" :title="$t('copy.to.clipboard.button.code.title')"/>
                     </span>
               <br/>
               <span>
@@ -176,7 +168,7 @@ import {QueryViewForm as QueryForm} from "@/api/model";
 import RoleDrawer from "@/views/security/role/drawer.vue";
 import PermissionForm from "@/views/security/permission/form.vue";
 import RoleTabForm from "@/views/security/role/tabForm.vue";
-import {copyToClipboard} from "@/utils/strings";
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 // 引用其他页面
 
 /* 列表 */
@@ -232,9 +224,7 @@ const fetchData = async (params: PageQueryRequest = {current: pageData.value.cur
 const tableRefresh = (ev?: Event) => {
   fetchData();
 };
-const tableRolePermissionCopy = (text: string) => {
-  copyToClipboard(text, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
-}
+
 const addTableRole = (ev: MouseEvent) => {
   if (roleDrawerRef.value) {
     // @ts-ignore

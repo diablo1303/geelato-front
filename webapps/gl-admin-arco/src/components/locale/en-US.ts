@@ -1,4 +1,9 @@
 export default {
+  /* 复制到粘贴板 */
+  'copyToClipboard.success': 'Text copied to clipboard successfully',
+  'copyToClipboard.fail': 'Failed to copy text',
+  'copyToClipboard.button.tip': 'Click and Copy',
+  /* 消息通知 */
   'messageBox.tab.title.message': 'Message',
   'messageBox.tab.title.notice': 'Notice',
   'messageBox.tab.title.todo': 'Todo',

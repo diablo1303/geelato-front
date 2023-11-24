@@ -106,11 +106,7 @@
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.configKey')" :tooltip="true" :width="150" data-index="configKey">
         <template #cell="{ record }">
-          <a-button :title="$t('copy.to.clipboard.button.title')" type="text" @click="copyPrimaryKey(record.id)">
-            <template #icon>
-              <icon-copy/>
-            </template>
-          </a-button>
+          <CopyToClipboard v-model="record.id" :title="$t('copy.to.clipboard.button.key.title')"/>
           {{ record.configKey }}
         </template>
       </a-table-column>
@@ -180,8 +176,8 @@ import {deleteSysConfig as deleteList, FilterSysConfigForm as FilterForm, pageQu
 import {columns, enableStatusOptions} from "@/views/security/sysconfig/searchTable";
 // 引用其他页面
 import SystemConfigDrawer from "@/views/security/sysconfig/drawer.vue";
-import {copyToClipboard} from "@/utils/strings";
 import {Base64FileParams, downloadFileByBase65, fetchFileById} from "@/api/attachment";
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 
 
 /* 列表 */
@@ -263,9 +259,6 @@ const addTable = (ev: MouseEvent) => {
     formRef.value?.openForm({action: 'add', closeBack: reset});
   }
 };
-const copyPrimaryKey = (id: string) => {
-  copyToClipboard(id, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
-}
 const viewTable = (id: string) => {
   if (formRef.value) {
     // @ts-ignore

@@ -131,11 +131,7 @@
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.file.index.form.title')" :tooltip="true" :width="150" data-index="title">
         <template #cell="{ record }">
-          <a-button :title="$t('copy.to.clipboard.button.title')" type="text" @click="copyPrimaryKey(record.id)">
-            <template #icon>
-              <icon-copy/>
-            </template>
-          </a-button>
+          <CopyToClipboard v-model="record.id" :title="$t('copy.to.clipboard.button.key.title')"/>
           {{ record.title }}
         </template>
       </a-table-column>
@@ -196,10 +192,11 @@ import {deleteFileTemplate as deleteList, FilterFileTemplateForm as FilterForm, 
 import {columns, enableStatusOptions, fileTypeOptions, useTypeOptions} from "@/views/security/file/searchTable";
 // 引用其他页面
 import FileTemplateDrawer from "@/views/security/file/drawer.vue";
-import {copyToClipboard} from "@/utils/strings";
 import {getValueByKeys} from "@/api/sysconfig";
 import {downloadFileByBase65, fetchFileById} from "@/api/attachment";
 import {isJSON} from "@/utils/is";
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
+import {copyToClipboard} from "@/utils/strings";
 
 
 /* 列表 */
@@ -235,10 +232,6 @@ const generateFilterData = (): FilterForm => {
   };
 };
 const filterData = ref(generateFilterData());
-
-const copyPrimaryKey = (id: string) => {
-  copyToClipboard(id, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
-}
 /**
  * 分页查询方法
  * @param params
@@ -293,7 +286,7 @@ const downloadFileFailed = (key: string, title: string) => {
     title: `${title}`, content: t('security.file.index.example.failed.content'),
     okText: `${t('security.file.index.example.failed.okText')} ${key}`,
     async onOk() {
-      copyPrimaryKey(`${key}`);
+      await copyToClipboard(`${key}`, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
     }
   });
 }
