@@ -131,13 +131,14 @@ export function getImportTemplateInfo(templateId: string) {
  * @param templateId
  */
 export function downloadImportTemplateFile(templateId: string) {
-  if (templateId && templateId.length > 64 && utils.isJSON(templateId)) {
-    downloadFileByBase66(templateId);
-  } else {
-    getImportTemplateInfo(templateId).then((res) => {
+  getImportTemplateInfo(templateId).then((res) => {
+    const templateIdOrBase64 = res.data.template
+    if (templateIdOrBase64 && templateIdOrBase64.length > 64 && utils.isJSON(templateIdOrBase64)) {
+      downloadFileByBase66(templateIdOrBase64);
+    } else {
       downloadFileById(res.data.template)
-    })
-  }
+    }
+  })
 }
 
 /**
