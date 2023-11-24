@@ -1,7 +1,8 @@
-import { RecordsUtil } from './RecordsUtil'
+import {RecordsUtil} from './RecordsUtil'
 
 export class Utils {
-  constructor() {}
+  constructor() {
+  }
 
   trim(str: string) {
     return str.replace(/(^\s*)|(\s*$)/g, '')
@@ -434,6 +435,25 @@ export class Utils {
       array.splice(newIndex, 0, deleteItem)
     }
     return array
+  }
+
+  /**
+   * 字符串是否是json字符串
+   * @param val
+   */
+  isJSON(val: string) {
+    let isJ = false;
+    try {
+      if (typeof val === 'string' && val) {
+        const obj = JSON.parse(val);
+        if (typeof obj === 'object' && obj) {
+          isJ = true;
+        }
+      }
+    } catch (e) {
+      isJ = false;
+    }
+    return isJ;
   }
 }
 

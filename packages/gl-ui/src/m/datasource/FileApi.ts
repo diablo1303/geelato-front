@@ -1,5 +1,6 @@
 import type {ApiResult} from '../types/global'
 import {entityApi} from './EntityApi'
+import utils from '../utils/Utils'
 
 export interface AttachmentForm {
   id: string
@@ -9,6 +10,13 @@ export interface AttachmentForm {
   type: string
   url: string
   delStatus: number
+}
+
+export interface Base64FileParams {
+  name: string;
+  size: number;
+  type: string;
+  base64: string;
 }
 
 export function getAttachment(id: string) {
@@ -123,7 +131,61 @@ export function getImportTemplateInfo(templateId: string) {
  * @param templateId
  */
 export function downloadImportTemplateFile(templateId: string) {
-  getImportTemplateInfo(templateId).then((res) => {
-    downloadFileById(res.data.template)
-  })
+  if (templateId && templateId.length > 64 && utils.isJSON(templateId)) {
+    downloadFileByBase66(templateId);
+  } else {
+    getImportTemplateInfo(templateId).then((res) => {
+      downloadFileById(res.data.template)
+    })
+  }
+}
+
+/**
+ * 将base64编码的字符串转为文件，并下载
+ * @param base64Str base64编码字符串
+ * @param fileType 文件mine
+ * @param fileName 文件名称
+ */
+export const downloadFileByBase64 = (base64Str: string, fileType: string, fileName: string) => {
+  try {
+    if (!base64Str || !fileType || !fileName) {
+      throw new Error("文件下载参数缺失！");
+    }
+    const decodedData = window.atob(base64Str);
+    const binaryData = new Uint8Array(decodedData.length);
+    for (let i = 0; i < decodedData.length; i += 1) {
+      binaryData[i] = decodedData.charCodeAt(i);
+    }
+    // 创建Blob对象
+    const blob = new Blob([binaryData], {type: fileType});
+    // 获取Blob对象的URL
+    const url = URL.createObjectURL(blob);
+    // 下载文件
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (err: any) {
+    throw new Error((err && err.message) || "文件下载失败");
+  }
+}
+/**
+ * 将base64编码的字符串转为文件，并下载
+ * @param baseData Base64FileParams
+ */
+export const downloadFileByBase65 = (baseData: Base64FileParams) => {
+  downloadFileByBase64(baseData.base64, baseData.type, baseData.name);
+}
+/**
+ * 将base64编码的字符串转为文件，并下载
+ * @param base64String base64编码字符串
+ */
+export const downloadFileByBase66 = (base64String: string) => {
+  if (base64String && utils.isJSON(base64String)) {
+    // 解码Base64字符串
+    const data: Base64FileParams = JSON.parse(base64String);
+    // 下载文件
+    downloadFileByBase65(data);
+  }
 }
