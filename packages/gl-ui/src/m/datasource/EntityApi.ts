@@ -93,6 +93,7 @@ export class EntityApi {
   /**
    * 将entityReader对象转换mql对象
    * 若无设置delStatus值，默认加上条件delStatus|eq:0
+   * 若无设置排序，则默认加上排序updateAt|-
    * @param entityReader
    */
   convertEntityReaderToMql(entityReader: EntityReader): MqlObject {
@@ -119,6 +120,9 @@ export class EntityApi {
       })
       // orderStr = AllUtils.ConvertUtil.trim(orderStr)
       mql[entityReader.entity]['@order'] = orderStrs.join(',')
+    } else {
+      // 无排序时，加默认排序，新增（即更新时间）的放前面
+      mql[entityReader.entity]['@order'] = 'updateAt|-'
     }
     // 3-params
     const defaultGroupName = '__'
