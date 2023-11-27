@@ -99,6 +99,8 @@ const i18nConvert = (value?: string) => {
                        :componentStoreId="componentStoreId"
                        :glRuntimeFlag="glRuntimeFlag"
                        :glIsRuntime="glIsRuntime"
+                       :glLoopItem="glLoopItem"
+                       :glLoopIndex="glLoopIndex"
                        v-bind="pageProps"
           >
           </GlComponent>
@@ -117,6 +119,8 @@ const i18nConvert = (value?: string) => {
                      :componentStoreId="componentStoreId"
                      :glRuntimeFlag="glRuntimeFlag"
                      :glIsRuntime="glIsRuntime"
+                     :glLoopItem="glLoopItem"
+                     :glLoopIndex="glLoopIndex"
                      v-bind="pageProps"
         >
         </GlComponent>

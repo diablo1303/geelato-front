@@ -237,38 +237,51 @@ defineExpose({ save })
       </a-list>
     </div>
     <div class="gl-layout-right">
-      <a-table
-        :data="currentRoleAppMenuItems"
-        v-model:expandedKeys="expandedKeys"
-        stripe
-        style="margin-left: 20px"
-        :bordered="{ wrapper: true, cell: true }"
-        :pagination="false"
-      >
-        <template #columns>
-          <a-table-column title="菜单项" data-index="name">
-            <template #cell="{ record }">
-              <GlIconfont :type="record.iconType"></GlIconfont>
-              {{ record.name }}
+      <a-tabs>
+        <a-tab-pane key="1">
+          <template #title>
+            <icon-calendar/> 菜单页面权限
+          </template>
+          <a-table
+              :data="currentRoleAppMenuItems"
+              v-model:expandedKeys="expandedKeys"
+              stripe
+              style="margin-left: 20px"
+              :bordered="{ wrapper: true, cell: true }"
+              :pagination="false"
+          >
+            <template #columns>
+              <a-table-column title="菜单项" data-index="name">
+                <template #cell="{ record }">
+                  <GlIconfont :type="record.iconType"></GlIconfont>
+                  {{ record.name }}
+                </template>
+              </a-table-column>
+              <a-table-column data-index="checked">
+                <template #title>
+                  是否授权访问
+                  <a-button-group type="primary" size="mini" shape="round">
+                    <a-button @click="selectAllMenuItem">全选</a-button>
+                    <a-button @click="reverseSelectAllMenuItem">反选</a-button>
+                  </a-button-group>
+                </template>
+                <template #cell="{ record }">
+                  <a-switch v-model="record.checked" />
+                </template>
+              </a-table-column>
+              <a-table-column title="该页面相关的模型" data-index="entities">
+                <template #cell="{ record }"></template>
+              </a-table-column>
             </template>
-          </a-table-column>
-          <a-table-column data-index="checked">
-            <template #title>
-              是否授权访问
-              <a-button-group type="primary" size="mini" shape="round">
-                <a-button @click="selectAllMenuItem">全选</a-button>
-                <a-button @click="reverseSelectAllMenuItem">反选</a-button>
-              </a-button-group>
-            </template>
-            <template #cell="{ record }">
-              <a-switch v-model="record.checked" />
-            </template>
-          </a-table-column>
-          <a-table-column title="该页面相关的模型" data-index="entities">
-            <template #cell="{ record }"></template>
-          </a-table-column>
-        </template>
-      </a-table>
+          </a-table>
+        </a-tab-pane>
+        <a-tab-pane key="2">
+          <template #title>
+            <icon-clock-circle/> 页面元素权限
+          </template>
+          Content of Tab Panel 2
+        </a-tab-pane>
+      </a-tabs>
     </div>
   </div>
 </template>

@@ -424,26 +424,8 @@ export default {
                     }, {"label": "降序", "value": "descend", "__tIT53h6CwaIY5gI5Tg": "descend"}], "multiple": true
                 },
                 "setterComponentVModelName": "modelValue",
-                "title": "支持的排序",
+                "title": "方向",
                 "setterComponentName": "ASelect"
-            }, {
-                "name": "sortOrder",
-                "group": "base",
-                "type": "props",
-                "enableValueExpress": false,
-                "show": true,
-                "expanded": true,
-                "setterComponentProps": {
-                    "options": [{
-                        "label": "升序",
-                        "value": "ascend",
-                        "__ZdVwo6BfhrvLj0GlaI": "ascend"
-                    }, {"label": "降序", "value": "descend", "__ZdVwo6BfhrvLj0GlaI": "descend"}, {"label": "无"}],
-                    "type": "radio"
-                },
-                "setterComponentVModelName": "modelValue",
-                "title": "排序方向",
-                "setterComponentName": "ARadioGroup"
             }],
             "setterComponentName": "GlSimpleObjectSetter",
             "title": "排序"

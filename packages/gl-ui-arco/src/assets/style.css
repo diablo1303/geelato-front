@@ -1,3 +1,20 @@
+:root{
+    --gl_nav_main: #157cc4;
+    --gl_nav_dark-main: #9f9c9c;
+    --gl_nav_light-main: #00C5FF;
+    --gl_nav_white: #ffffff;
+    --gl_nav_black: #777c88;
+    --gl_nav_dark-black: #262626;
+    --gl_nav_light-black: #8c8c8c;
+    --gl_nav_gray: #f6f7f9;
+    --gl_nav_dark-gray: #eceef2;
+    --gl_nav_warning: #ffa941;
+    --gl_nav_success: #64d16d;
+    --gl_nav_error: #e62412;
+    --gl_nav_dark-layer: linear-gradient(to right, rgba(38, 38, 38, 0.2), rgba(38, 38, 38, 0.2));
+    --gl_nav_light-layer: linear-gradient(to right, rgba(38, 38, 38, 0.5), rgba(38, 38, 38, 0.5));
+    --gl_nav_bar-width: 80px;
+}
 /* 重置卡片标题样式 */
 .arco-card-header-title {
     font-weight: 600;

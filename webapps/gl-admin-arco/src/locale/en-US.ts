@@ -1,4 +1,4 @@
-import localeMessageBox from '@/components/message-box/locale/en-US';
+import localeComponents from '@/components/locale/en-US';
 
 import localeAccount from '@/views/account/locale/en-US';
 import localeApplication from '@/views/application/locale/en-US';
@@ -27,7 +27,7 @@ export default {
   'menu.faq': 'FAQ',
   'navbar.docs': 'Docs',
   'navbar.action.locale': 'Switch to English',
-  ...localeMessageBox,
+  ...localeComponents,
 
   ...localeAccount,
   ...localeApplication,

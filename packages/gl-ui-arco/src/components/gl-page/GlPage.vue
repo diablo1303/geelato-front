@@ -15,7 +15,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {type PropType, getCurrentInstance, onUnmounted, provide, ref, nextTick, onMounted} from "vue";
+import {type PropType, getCurrentInstance, onUnmounted, provide, ref, nextTick} from "vue";
 import {
   type PageType,
   PageProvideProxy,

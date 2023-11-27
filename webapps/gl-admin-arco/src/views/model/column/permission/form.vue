@@ -52,11 +52,7 @@
                     <span>
                       <strong>{{ $t('security.role.index.form.code') }}：</strong>
                       {{ record.code }}
-                      <a-button :title="$t('copy.to.clipboard.button.title')" type="text" @click="columnRolePermissionCopy(record.code)">
-                        <template #icon>
-                          <icon-copy/>
-                        </template>
-                      </a-button>
+                      <CopyToClipboard v-model="record.code" :title="$t('copy.to.clipboard.button.code.title')"/>
                     </span>
               <br/>
               <span>
@@ -104,11 +100,7 @@
               <span>
                       <strong>{{ $t('model.column.permission.index.form.name') }}：</strong>
                       {{ `${item.name} | ${item.fieldName}` }}
-                      <a-button :title="$t('copy.to.clipboard.button.title')" type="text" @click="columnRolePermissionCopy(`${item.name} | ${item.fieldName}`)">
-                        <template #icon>
-                          <icon-copy/>
-                        </template>
-                      </a-button>
+                <CopyToClipboard :model-value="`${item.name} | ${item.fieldName}`"/>
                     </span>
               <br/>
               <span>
@@ -173,21 +165,23 @@ import {deleteRole, insertColumnRolePermission, queryColumnRolePermissions, Quer
 import {deleteTableColumn, QueryTableColumnForm, QueryViewForm as QueryForm} from "@/api/model";
 import RoleDrawer from "@/views/security/role/drawer.vue";
 import RoleTabForm from "@/views/security/role/tabForm.vue";
-import {copyToClipboard} from "@/utils/strings";
 import {columnSelectType, defaultColumnMetas} from "@/views/model/column/searchTable";
 import ColumnDrawer from "@/views/model/column/drawer.vue";
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 // 引用其他页面
 
 /* 列表 */
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 type Column = TableColumnData & { checked?: true };
 const scrollbar = ref(true);
 const scroll = {y: "100%"};
 const pageData = ref({
   current: 1, pageSize: 10000, formState: 'edit', isModal: false,
   params: {pId: '', pName: '', type: ''},
-  appId: (route.params && route.params.appId as string) || '',
-  tenantCode: (route.params && route.params.tenantCode as string) || '',
   modalAddBack: (data: QueryForm) => {
   }, modalEditBack: (data: QueryForm) => {
   }, modalDeleteBack: (id: string) => {
@@ -220,11 +214,7 @@ const columnPermissionOptions = computed<SelectOptionData[]>(() => [
 const fetchData = async (params: PageQueryRequest = {current: pageData.value.current, pageSize: pageData.value.pageSize}) => {
   setLoading(true);
   try {
-    // @ts-ignore
-    params.appId = pageData.value.appId;
-    // @ts-ignore
-    params.tenantCode = pageData.value.tenantCode;
-    const {data} = await queryColumnRolePermissions(pageData.value.params.type, pageData.value.params.pName, params);
+    const {data} = await queryColumnRolePermissions(pageData.value.params.type, pageData.value.params.pName, {...params, ...routeParams.value});
     cowColumns.value = data.column;
     rowColumns.value = data.role;
     renderData.value = data.table;
@@ -247,13 +237,11 @@ const formatSelectType = (value: string): string => {
 const tableRefresh = (ev?: Event) => {
   fetchData();
 };
-const columnRolePermissionCopy = (text: string) => {
-  copyToClipboard(text, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
-}
+
 const addColumnRole = (ev: MouseEvent) => {
   if (roleDrawerRef.value) {
     // @ts-ignore
-    roleDrawerRef.value?.openForm({action: 'add', params: {type: 'app', appId: pageData.value.appId}, closeBack: tableRefresh});
+    roleDrawerRef.value?.openForm({action: 'add', params: {type: 'app', appId: routeParams.value.appId}, closeBack: tableRefresh});
   }
 };
 const editColumnRole = (id: string) => {
@@ -264,7 +252,7 @@ const editColumnRole = (id: string) => {
       'id': id,
       pageSize: 5,
       isModal: true,
-      params: {type: 'app', appId: pageData.value.appId},
+      params: {type: 'app', appId: routeParams.value.appId},
       closeBack: tableRefresh
     });
   }

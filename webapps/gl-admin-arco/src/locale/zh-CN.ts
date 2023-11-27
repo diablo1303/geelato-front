@@ -1,4 +1,4 @@
-import localeMessageBox from '@/components/message-box/locale/zh-CN';
+import localeComponents from '@/components/locale/zh-CN';
 
 import localeAccount from '@/views/account/locale/zh-CN';
 import localeApplication from '@/views/application/locale/zh-CN';
@@ -27,7 +27,7 @@ export default {
   'menu.faq': '常见问题',
   'navbar.docs': '文档中心',
   'navbar.action.locale': '切换为中文',
-  ...localeMessageBox,
+  ...localeComponents,
 
   ...localeAccount,
   ...localeApplication,

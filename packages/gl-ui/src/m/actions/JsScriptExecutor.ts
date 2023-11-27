@@ -243,9 +243,14 @@ export class JsScriptExecutor {
         // console.log(that.evalOptions(options, $gl?.ctx, ['content']).content)
         console.log(options)
       },
-      createAxios:(config: CreateAxiosDefaults<any> | undefined)=> {
-        return axios.create(config)
-      }
+      createAxios:(config: CreateAxiosDefaults<any> | undefined,params:{widthDefaultHeader:boolean})=> {
+        const headers = {}
+        params?.widthDefaultHeader?Object.assign(headers,entityApi.getHeader()):null
+        Object.assign(headers,config?.headers)
+        let cfg = config || {}
+        cfg.headers = headers
+        return axios.create(cfg)
+      },
     }
   }
 

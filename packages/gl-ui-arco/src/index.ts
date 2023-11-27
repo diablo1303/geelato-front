@@ -34,51 +34,57 @@ import { getLabel } from './components/MetaHelper'
 import GlEmpty from './components/gl-empty/GlEmpty.vue'
 import GlSelect from './components/gl-select/GlSelect.vue'
 import GlImport from './components/gl-import/GlImport.vue'
+import GlLayoutPage from "./components/gl-layout-page/GlLayoutPage.vue";
+import GlLayoutSite from './components/gl-layout-site/GlLayoutSite.vue'
 import { Drawer, Modal,RangePicker } from '@arco-design/web-vue'
+import GlBlocks from "./components/gl-blocks/GlBlocks.vue";
 
 const i18nMessage = { en, cn }
 
 const component: Plugin = {
-  install: function (app: App) {
+  install: function (Vue: App) {
     // @ts-ignore
-    if (PluginUtil.markInstalledPlugin(app, 'gl-ui-arco')) {
+    if (PluginUtil.markInstalledPlugin(Vue, 'gl-ui-arco')) {
       return
     }
-    app.component(GlSelect.name, GlSelect)
-    app.component(GlEmpty.name, GlEmpty)
-    app.component(GlOpRecord.name, GlOpRecord)
-    app.component(GlTimeline.name, GlTimeline)
-    app.component(GlButton.name, GlButton)
-    app.component(GlAlert.name, GlAlert)
-    app.component(GlText.name, GlText)
-    app.component(GlIconfontSelect.name, GlIconfontSelect)
-    app.component(GlDict.name, GlDict)
-    app.component(GlPage.name, GlPage)
-    app.component('GlEntityTablePlus', GlEntityTablePlus)
+    Vue.component(GlSelect.name, GlSelect)
+    Vue.component(GlEmpty.name, GlEmpty)
+    Vue.component(GlOpRecord.name, GlOpRecord)
+    Vue.component(GlTimeline.name, GlTimeline)
+    Vue.component(GlButton.name, GlButton)
+    Vue.component(GlAlert.name, GlAlert)
+    Vue.component(GlText.name, GlText)
+    Vue.component(GlIconfontSelect.name, GlIconfontSelect)
+    Vue.component(GlDict.name, GlDict)
+    Vue.component(GlPage.name, GlPage)
+    Vue.component(GlLayoutSite.name,GlLayoutSite)
+    Vue.component(GlLayoutPage.name,GlLayoutPage)
+    Vue.component('GlEntityTablePlus', GlEntityTablePlus)
+    Vue.component(GlBlocks.name,GlBlocks)
     // 表格注册多一个，作为子表单，在配置时减少一些不必要的配置项
-    app.component('GlEntityTableSub', GlEntityTablePlus)
-    app.component(GlRefPage.name, GlRefPage)
-    app.component(GlEntityTree.name, GlEntityTree)
-    app.component(GlEntityForm.name, GlEntityForm)
-    app.component(GlEntityCascader.name, GlEntityCascader)
-    app.component(GlCard.name, GlCard)
-    app.component(GlHiddenArea.name, GlHiddenArea)
-    app.component(GlRowColLayout.name, GlRowColLayout)
-    app.component(GlTabs.name, GlTabs)
-    app.component(GlUserSelect.name, GlUserSelect)
-    app.component(GlDynamicSelect.name, GlDynamicSelect)
-    app.component(GlColor.name, GlColor)
-    app.component(GlEncode.name, GlEncode)
-    app.component(GlInstRuntime.name, GlInstRuntime)
-    app.component(GlInstsRuntime.name, GlInstsRuntime)
-    app.component(GlMultiComponents.name, GlMultiComponents)
-    app.component(GlUpload.name, GlUpload)
-    app.component(GlImage.name, GlImage)
-    app.component(GlImport.name, GlImport)
+    Vue.component('GlEntityTableSub', GlEntityTablePlus)
+    Vue.component(GlRefPage.name, GlRefPage)
+    Vue.component(GlEntityTree.name, GlEntityTree)
+    Vue.component(GlEntityForm.name, GlEntityForm)
+    Vue.component(GlEntityCascader.name, GlEntityCascader)
+    Vue.component("GlCard", GlCard)
+    Vue.component(GlHiddenArea.name, GlHiddenArea)
+    Vue.component(GlRowColLayout.name, GlRowColLayout)
+    Vue.component(GlTabs.name, GlTabs)
+    Vue.component(GlUserSelect.name, GlUserSelect)
+    Vue.component(GlDynamicSelect.name, GlDynamicSelect)
+    Vue.component(GlColor.name, GlColor)
+    Vue.component(GlEncode.name, GlEncode)
+    Vue.component(GlInstRuntime.name, GlInstRuntime)
+    Vue.component(GlInstsRuntime.name, GlInstsRuntime)
+    Vue.component(GlMultiComponents.name, GlMultiComponents)
+    Vue.component(GlUpload.name, GlUpload)
+    Vue.component(GlImage.name, GlImage)
+    Vue.component(GlImport.name, GlImport)
 
-    app.component('GlRangePicker', RangePicker)
-    app.component('GlModal', Modal)
-    app.component('GlDrawer', Drawer)
+    Vue.component('GlRangePicker', RangePicker)
+    Vue.component('GlModal', Modal)
+    Vue.component('GlDrawer', Drawer)
     // const i18n = createI18n({
     //   locale: localStorage.getItem("arco-locale") || "zh-CN",
     //   fallbackLocale: "en-US",
@@ -88,7 +94,7 @@ const component: Plugin = {
     //     "zh-CN": cn,
     //   },
     // });
-    // app.use(i18n);
+    // Vue.use(i18n);
   }
 }
 

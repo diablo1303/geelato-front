@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'GlVirtual'
+  name: 'GlLayoutModeCollapse'
 }
 </script>
 <script lang="ts" setup>
@@ -23,8 +23,8 @@ watch(mv, () => {
 </script>
 
 <template>
-  <div class="gl-virtual">
-
+  <div>
+    GlLayoutModeCollapse
   </div>
 </template>
 

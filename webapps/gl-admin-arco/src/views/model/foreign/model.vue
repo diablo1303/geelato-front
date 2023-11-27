@@ -152,6 +152,10 @@ const actionTooltip = ref("");
 // 国际化
 const {t} = useI18n();
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 /* 表单 */
 const generateFormData = (): QueryForm => {
   return {
@@ -165,7 +169,8 @@ const generateFormData = (): QueryForm => {
     enableStatus: 1, // 状态
     description: '',
     seqNo: 999,
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: routeParams.value.appId,
+    tenantCode: routeParams.value.tenantCode,
   };
 }
 const formData = ref(generateFormData());

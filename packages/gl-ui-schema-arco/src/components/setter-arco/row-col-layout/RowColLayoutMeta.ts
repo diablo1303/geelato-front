@@ -1,9 +1,9 @@
 export default {
     "componentName": "GlRowColLayout",
     "displayMode": "tile",
-    "iconType": "gl-layout",
+    "iconType": "gl-grid",
     "group": "layout",
-    "title": "行列布局",
+    "title": "栅格布局",
     "alias": "rclayout",
     "useBy": ["freePage"],
     "properties": [{

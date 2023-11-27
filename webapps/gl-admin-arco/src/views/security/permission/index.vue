@@ -195,7 +195,9 @@ const generateFilterData = (): FilterPermissionForm => {
     rule: '',
     description: '',
     createAt: [],
-    tenantCode: (route.params && route.params.tenantCode as string) || '',};
+    appId: (route.params && route.params.appId as string) || '',
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+  };
 };
 const filterData = ref(generateFilterData());
 /**

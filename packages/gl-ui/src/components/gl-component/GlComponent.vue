@@ -17,6 +17,8 @@
       :glIsRuntime="glIsRuntime"
       :glRuntimeFlag="glRuntimeFlag"
       :glIndex="glIndex"
+      :glLoopItem="glLoopItem"
+      :glLoopIndex="glLoopIndex"
       :glComponentInst="glComponentInst"
       v-on="onActionsHandler"
   >
@@ -37,11 +39,6 @@
   </component>
 </template>
 
-<script lang="ts">
-export default {
-  name: "GlComponent"
-}
-</script>
 <script lang="ts" setup>
 import {computed, getCurrentInstance, inject, nextTick, onMounted, ref, watch} from 'vue'
 import mixins from "../mixins";
@@ -50,6 +47,7 @@ import type {Action} from "@geelato/gl-ui-schema";
 import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
 import {executePropsExpressions} from "./GlComponentSupport";
 
+defineOptions({name: "GlComponent"})
 
 const emits = defineEmits(['update:modelValue', 'update', 'onAction', 'onComponentClick', 'onValueChange'])
 

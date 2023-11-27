@@ -46,6 +46,14 @@ const props = {
         type: Number
     },
     /**
+     *  组件在loop组件内时，会接收到glLoopItem对象
+     */
+    glLoopItem: Object,
+    /**
+     *  组件在loop组件内时，会接收到glLoopIndex索引
+     */
+    glLoopIndex: Number,
+    /**
      *  组件忽略注入页面代理
      */
     glIgnoreInjectPageProxy: {

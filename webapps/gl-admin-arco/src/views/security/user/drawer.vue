@@ -9,6 +9,7 @@
       @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <UserModel ref="userModelRef"></UserModel>
+    <!--  兼职用户  -->
     <a-divider v-if="pageData.formState!=='add'" orientation="left">
       <strong>{{ $t('security.user.index.form.partOrgName') }}</strong>
       <a-tree-select
@@ -31,7 +32,7 @@
           </template>
         </a-list-item-meta>
         <template #actions>
-          <a-button v-if="item.defaultOrg===1" class="list-action-button-default" type="outline">
+          <a-button v-if="item.defaultOrg===1" class="list-action-button-default1" type="outline">
             {{ $t('security.orgUser.index.form.default') }}
           </a-button>
           <a-popconfirm
@@ -40,6 +41,42 @@
             <icon-delete v-if="pageData.formState==='edit'&&item.defaultOrg!==1" class="icon-danger"/>
           </a-popconfirm>
         </template>
+      </a-list-item>
+    </a-list>
+    <!-- 用户角色 -->
+    <a-divider v-if="pageData.formState!=='add'" orientation="left">
+      <strong>{{ $t('security.user.index.form.addRoleName') }}</strong>
+    </a-divider>
+    <a-list v-if="pageData.formState!=='add'">
+      <a-list-item v-for="(item,index) in roleUserOptions" :key="item.id" style="padding: 5px 20px;">
+        <a-list-item-meta>
+          <template #title>
+            {{ `${item.name}（${item.code}）` }}
+            <CopyToClipboard v-model="item.code" :title="$t('copy.to.clipboard.button.code.title')"/>
+          </template>
+          <template #description>
+            <div>
+              <a-space>
+                <a-button v-if="[0,1].includes(item.enableStatus)" class="list-action-button-default" type="outline">
+                  {{ $t(`security.role.index.form.enableStatus.${item.enableStatus}`) }}
+                </a-button>
+                <a-button v-if="['app','platform'].includes(item.type)" class="list-action-button-default" type="outline">
+                  {{ $t(`security.role.index.form.type.${item.type}`) }}
+                </a-button>
+                {{ item.appName }}
+              </a-space>
+            </div>
+            <div v-if="item.description">
+              <a-divider style="margin: 4px 0 2px 0;"/>
+              {{ item.description }}
+            </div>
+          </template>
+          <template #avatar>
+            <a-avatar shape="square" style="width: 20px;height: 20px;font-size: 16px;">
+              {{ index + 1 }}
+            </a-avatar>
+          </template>
+        </a-list-item-meta>
       </a-list-item>
     </a-list>
   </a-drawer>
@@ -58,9 +95,12 @@ import {
   queryOrgs,
   QueryOrgUserForm,
   queryOrgUsers,
+  queryRoleByUser,
+  QueryRoleForm,
   QueryUserForm
 } from "@/api/security";
 import {FormInstance} from "@arco-design/web-vue";
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 
 // 国际化
 const {t} = useI18n();
@@ -68,6 +108,7 @@ const route = useRoute();
 const pageData = ref({formState: 'add', button: true, orgId: '', userId: ''});
 const userModelRef = shallowRef(UserModel);
 const orgUserOptions = ref<QueryOrgUserForm[]>([]);
+const roleUserOptions = ref<QueryRoleForm[]>([]);
 const validateForm = ref<FormInstance>();
 const orgSelectOptions = ref<SelectOption[]>([]);
 // 显示隐藏
@@ -113,6 +154,18 @@ const fetchOrgUsers = async (params: PageQueryRequest) => {
     console.log(err);
   }
 }
+const fetchRoleUsers = async (userId: string) => {
+  try {
+    const appId = (route.params && route.params.appId as string) || '';
+    const tenantCode = (route.params && route.params.tenantCode as string) || '';
+    const {data} = await queryRoleByUser(userId, appId, tenantCode);
+    roleUserOptions.value = data || [];
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+
 const orgUserRefresh = () => {
   fetchOrgUsers({userId: pageData.value.userId} as unknown as PageQueryRequest);
 }
@@ -179,6 +232,7 @@ const openForm = (urlParams: ListUrlParams) => {
   }
   if (pageData.value.userId) {
     fetchOrgUsers({userId: pageData.value.userId} as unknown as PageQueryRequest);
+    fetchRoleUsers(pageData.value.userId);
     getOrgOptions();
   }
   // 加载页面
@@ -207,7 +261,7 @@ defineExpose({openForm});
   color: rgb(245, 63, 63);
 }
 
-.list-action-button-default {
+.list-action-button-default1 {
   cursor: auto;
   height: 20px;
   font-size: 12px;
@@ -215,5 +269,14 @@ defineExpose({openForm});
   line-height: 20px;
   padding: 0 5px;
   margin-right: -20px;
+}
+
+.list-action-button-default {
+  cursor: auto;
+  height: 20px;
+  font-size: 12px;
+  border-radius: 5px;
+  line-height: 20px;
+  padding: 0 5px;
 }
 </style>

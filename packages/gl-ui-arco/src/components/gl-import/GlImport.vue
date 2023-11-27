@@ -6,7 +6,6 @@ export default {
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import { fileApi, useGlobal } from '@geelato/gl-ui'
-import { template } from 'lodash'
 
 const global = useGlobal()
 const emits = defineEmits(['update:modelValue'])

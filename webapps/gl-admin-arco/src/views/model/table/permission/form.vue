@@ -52,11 +52,7 @@
                     <span>
                       <strong>{{ $t('security.role.index.form.code') }}：</strong>
                       {{ record.code }}
-                      <a-button :title="$t('copy.to.clipboard.button.title')" type="text" @click="tableRolePermissionCopy(record.code)">
-                        <template #icon>
-                          <icon-copy/>
-                        </template>
-                      </a-button>
+                      <CopyToClipboard v-model="record.code" :title="$t('copy.to.clipboard.button.code.title')"/>
                     </span>
               <br/>
               <span>
@@ -94,11 +90,7 @@
                     <span>
                       <strong>{{ $t('security.permission.index.form.code') }}：</strong>
                       {{ item.code }}
-                      <a-button :title="$t('copy.to.clipboard.button.title')" type="text" @click="tableRolePermissionCopy(item.code)">
-                        <template #icon>
-                          <icon-copy/>
-                        </template>
-                      </a-button>
+                      <CopyToClipboard v-model="item.code" :title="$t('copy.to.clipboard.button.code.title')"/>
                     </span>
               <br/>
               <span>
@@ -176,19 +168,21 @@ import {QueryViewForm as QueryForm} from "@/api/model";
 import RoleDrawer from "@/views/security/role/drawer.vue";
 import PermissionForm from "@/views/security/permission/form.vue";
 import RoleTabForm from "@/views/security/role/tabForm.vue";
-import {copyToClipboard} from "@/utils/strings";
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 // 引用其他页面
 
 /* 列表 */
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 type Column = TableColumnData & { checked?: true };
 const scrollbar = ref(true);
 const scroll = {y: "100%"};
 const pageData = ref({
   current: 1, pageSize: 10000, formState: 'edit', isModal: false,
   params: {connectId: '', object: '', type: ''},
-  appId: (route.params && route.params.appId as string) || '',
-  tenantCode: (route.params && route.params.tenantCode as string) || '',
   modalAddBack: (data: QueryForm) => {
   }, modalEditBack: (data: QueryForm) => {
   }, modalDeleteBack: (id: string) => {
@@ -216,11 +210,7 @@ const renderData = ref<Record<string, boolean | string>[]>([]);
 const fetchData = async (params: PageQueryRequest = {current: pageData.value.current, pageSize: pageData.value.pageSize}) => {
   setLoading(true);
   try {
-    // @ts-ignore
-    params.appId = pageData.value.appId;
-    // @ts-ignore
-    params.tenantCode = pageData.value.tenantCode;
-    const {data} = await queryTableRolePermissions(pageData.value.params.type, pageData.value.params.object, params);
+    const {data} = await queryTableRolePermissions(pageData.value.params.type, pageData.value.params.object, {...params, ...routeParams.value});
     cowColumns.value = data.permission;
     rowColumns.value = data.role;
     renderData.value = data.table;
@@ -234,13 +224,11 @@ const fetchData = async (params: PageQueryRequest = {current: pageData.value.cur
 const tableRefresh = (ev?: Event) => {
   fetchData();
 };
-const tableRolePermissionCopy = (text: string) => {
-  copyToClipboard(text, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
-}
+
 const addTableRole = (ev: MouseEvent) => {
   if (roleDrawerRef.value) {
     // @ts-ignore
-    roleDrawerRef.value?.openForm({action: 'add', params: {type: 'app', appId: pageData.value.appId}, closeBack: tableRefresh});
+    roleDrawerRef.value?.openForm({action: 'add', params: {type: 'app', appId: routeParams.value.appId}, closeBack: tableRefresh});
   }
 };
 const editTableRole = (id: string) => {
@@ -251,7 +239,7 @@ const editTableRole = (id: string) => {
       'id': id,
       pageSize: 5,
       isModal: true,
-      params: {type: 'app', appId: pageData.value.appId},
+      params: {type: 'app', appId: routeParams.value.appId},
       closeBack: tableRefresh
     });
   }
@@ -313,7 +301,7 @@ const switchBeforeChange = async (permission: string, role: string) => {
     await insertTableRolePermission({
       permissionId: permission,
       roleId: role,
-      tenantCode: pageData.value.tenantCode
+      tenantCode: routeParams.value.tenantCode
     } as QueryRolePermissionForm);
     isSuccess = true;
   } catch (err) {

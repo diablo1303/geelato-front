@@ -59,6 +59,7 @@ import GlComponentActionSelect from './components/setters/property-setters/GlCom
 import GlAppFileTemplateSelect from './components/setters/property-setters/GlAppFileTemplateSelect.vue'
 import GlExpressionBuilder from './components/builder/props-builder/GlExpressionBuilder.vue'
 import GlPageSaveLog from './components/sidebar/GlPageSaveLog.vue'
+import GlVueEditor from './components/setters/property-setters/GlVueEditor.vue'
 import './assets/style.css'
 
 const plugin = new GlPlugin('gl-plugin-arco')
@@ -220,6 +221,7 @@ const component: Plugin = {
     app.component(GlComponentActionSelect.name, GlComponentActionSelect)
     app.component(GlAppFileTemplateSelect.name, GlAppFileTemplateSelect)
     app.component(GlDictSetter.name, GlDictSetter)
+    app.component(GlVueEditor.name, GlVueEditor)
     // app.component(GlSettingOptions.name, GlSettingOptions)
     // app.component(GlSettingProperty.name, GlSettingProperty)
     app.component(GlPropertySetter.name, GlPropertySetter)

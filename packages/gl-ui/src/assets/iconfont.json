@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5203323",
+      "name": "栅格",
+      "font_class": "grid",
+      "unicode": "e63f",
+      "unicode_decimal": 58943
+    },
+    {
+      "icon_id": "5634901",
+      "name": "vuejs",
+      "font_class": "vue",
+      "unicode": "f25f",
+      "unicode_decimal": 62047
+    },
+    {
       "icon_id": "15214524",
       "name": "json",
       "font_class": "file-json",
@@ -554,7 +568,7 @@
     {
       "icon_id": "12309969",
       "name": "grid",
-      "font_class": "grid",
+      "font_class": "sharp",
       "unicode": "e838",
       "unicode_decimal": 59448
     },

@@ -101,11 +101,7 @@
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.encoding.index.form.id')" :tooltip="true" :width="120" data-index="title">
         <template #cell="{ record }">
-          <a-button type="text" :title="$t('copy.to.clipboard.button.title')" @click="copyPrimaryKey(record.id)">
-            <template #icon>
-              <icon-copy/>
-            </template>
-          </a-button>
+          <CopyToClipboard v-model="record.id" :title="$t('copy.to.clipboard.button.key.title')"/>
           {{ record.id }}
         </template>
       </a-table-column>
@@ -156,7 +152,7 @@ import {deleteEncoding as deleteList, FilterEncodingForm as FilterForm, pageQuer
 import {columns, enableStatusOptions} from "@/views/security/encoding/searchTable";
 // 引用其他页面
 import EncodingDrawer from "@/views/security/encoding/drawer.vue";
-import {copyToClipboard} from "@/utils/strings";
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 
 
 /* 列表 */
@@ -238,9 +234,7 @@ const addTable = (ev: MouseEvent) => {
     formRef.value?.openForm({action: 'add', closeBack: reset});
   }
 };
-const copyPrimaryKey = (id: string) => {
-  copyToClipboard(id, t('copy.to.clipboard.success'), t('copy.to.clipboard.fail'));
-}
+
 const viewTable = (id: string) => {
   if (formRef.value) {
     // @ts-ignore

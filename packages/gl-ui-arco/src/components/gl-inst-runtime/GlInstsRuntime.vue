@@ -24,6 +24,8 @@ const props = defineProps({
                  :glComponentInst="inst"
                  :glIsRuntime="glIsRuntime"
                  :glRuntimeFlag="glRuntimeFlag"
+                 :glLoopItem="glLoopItem"
+                 :glLoopIndex="glLoopIndex"
   />
 </template>
 

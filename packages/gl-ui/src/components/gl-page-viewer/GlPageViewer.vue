@@ -1,14 +1,12 @@
-<script lang="ts">
-export default {
-  name: "GlPageViewer"
-}
-</script>
-
 <script lang="ts" setup>
 import {ref, watch} from "vue";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
 import {mixins, useGlobal} from "../../index";
 import {entityApi} from "../../m/datasource/EntityApi";
+
+defineOptions({
+  name: "GlPageViewer"
+})
 
 const global = useGlobal()
 const props = defineProps({

@@ -334,6 +334,13 @@ export const useSrvTreeData = () => {
                         _type: 'Promise',
                         _brackets: '("字典id","字典项值")',
                         _description: '通过字典id，字典项值，查询字典项：[{id: string, value: string, label: string}]',
+                    },
+                    {
+                        title: '获取请求头Authorization',
+                        _code: 'getAuthorization',
+                        _type: 'string',
+                        _brackets: '()',
+                        _description: '获取当前的客户端的Authorization信息（token）',
                     }
                 ]
             },

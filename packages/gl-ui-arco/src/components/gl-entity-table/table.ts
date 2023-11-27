@@ -191,6 +191,7 @@ const slotNameOperation = '#'
 export const setSlotNames = (queryColumns: GlTableColumn[]) => {
   // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确认列有slotName
   queryColumns.forEach((col: Column) => {
+    // col.tooltip = true
     if (col._renderScript || col._component || col._bgColor) {
       col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
     } else {
