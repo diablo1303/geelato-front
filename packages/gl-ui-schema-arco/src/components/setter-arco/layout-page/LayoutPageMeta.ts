@@ -59,10 +59,9 @@ export default {
             options: [
               {
                 label: '暗色',
-                value: 'dark',
-                __8rArOJ48w8InIwLkip: 'dark'
+                value: 'dark'
               },
-              { label: '亮色', value: 'light', __8rArOJ48w8InIwLkip: 'light' }
+              { label: '亮色', value: 'light' }
             ],
             type: 'button'
           },

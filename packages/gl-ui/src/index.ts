@@ -4,7 +4,7 @@ import PageProvideProxy from './components/PageProvideProxy'
 import type { PageParamConfigType } from './components/PageProvideProxy'
 import GlHtml from './components/gl-html/Index.vue'
 import GlIconfont from './components/gl-iconfont/Index.vue'
-import GlVirtual from './components/gl-virtual/GlVirtual.vue'
+import GlVirtual from './components/gl-virtual/Index.vue'
 import GlDndPlaceholder from './components/gl-dnd-placeholder/Index.vue'
 import GlComponent from './components/gl-component/GlComponent.vue'
 import GlPageViewer from './components/gl-page-viewer/GlPageViewer.vue'
@@ -49,8 +49,10 @@ import { paramStringify } from './components/PageProvideProxy'
 import * as dictApi from './m/datasource/FileApi'
 import * as fileApi from './m/datasource/FileApi'
 import * as encodingApi from './m/datasource/EncodingApi'
-import './assets/style.css'
 import GlInsts from './components/gl-component/GlInsts.vue'
+import GlLoop from './components/gl-loop/GlLoop.vue'
+import GlTemplate from './components/gl-template/GlTemplate.vue'
+import './assets/style.css'
 
 const Utils = AllUtils
 
@@ -69,6 +71,8 @@ const component: Plugin = {
     app.component(GlDndPlaceholder.name, GlDndPlaceholder)
     app.component(GlComponent.name, GlComponent)
     app.component(GlPageViewer.name, GlPageViewer)
+    app.component(GlLoop.name, GlLoop)
+    app.component(GlTemplate.name, GlTemplate)
 
     if (!app.config.globalProperties.$gl) {
       app.config.globalProperties.$gl = reactive({

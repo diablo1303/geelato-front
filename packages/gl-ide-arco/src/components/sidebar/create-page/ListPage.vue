@@ -45,6 +45,7 @@ watch(
     pageCreatorOptions.value.queryFields = form.value.queryFields
     pageCreatorOptions.value.pageInfo = pageInfo.value
     pageInfo.value.label = form.value.pageLabel
+    // 检测到配置信息变化之后即重新生成页面内容
     pageInfo.value.content =  listPageCreator.create(pageCreatorOptions.value)
     emits('update:modelValue', pageInfo.value)
   },
@@ -63,7 +64,6 @@ const loadFieldMetas = (entityMeta: EntityMeta) => {
       'updateAt',
       'updater',
       'updaterName',
-      'updatorName',
       'delStatus',
       'seqNo',
       'deptId',

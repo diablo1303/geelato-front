@@ -361,8 +361,28 @@ export class ListPageCreator extends PageCreator {
   buildChildren(page: ComponentInstance, options: PageCreatorOptions): ComponentInstance {
     // 获取字段信息
     const tableInst = useTableInst(options)
-    const formInst: ComponentInstance = options.pageInfo.pageExtendContent
-    tableInst.props.toolbar = useToolbarInst(options, tableInst, formInst)
+    const pageInst: ComponentInstance = options.pageInfo.pageExtendContent
+    //
+    const findFormInst = (inst: ComponentInstance): ComponentInstance | null => {
+      for (let index in inst.children) {
+        const subInst = inst.children[index]
+        if (subInst.componentName) {
+          if (subInst.componentName === 'GlEntityForm') {
+            return subInst
+          }
+          const foundForm: ComponentInstance | null = findFormInst(subInst)
+          if (foundForm) {
+            return foundForm
+          }
+        }
+      }
+      return null
+    }
+    const formInst: ComponentInstance | null = findFormInst(pageInst)
+
+    if (formInst){
+      tableInst.props.toolbar = useToolbarInst(options, tableInst, formInst!)
+    }
     tableInst.props.columns = useColumnsInst(options)
     tableInst.props.columnActions = useColumnActionsInst(options)
     tableInst.props.query = useQueryInst(options)

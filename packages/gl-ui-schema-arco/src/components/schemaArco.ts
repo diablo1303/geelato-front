@@ -4,12 +4,10 @@ import ButtonInstance from "./setter-arco/button/ButtonInstance";
 import RateMeta from "./setter-arco/rate/RateMeta";
 import SwitchMeta from "./setter-arco/switch/SwitchMeta";
 import AutoCompleteMeta from "./setter-arco/autoComplete/AutoCompleteMeta";
-import AutoCompleteInstance from "./setter-arco/autoComplete/AutoCompleteInstance";
 import DividerMeta from "./setter-arco/divider/DividerMeta";
 import IconMeta from "./setter-arco/icon/IconMeta";
 import TypographyMeta from "./setter-arco/typography/TypographyMeta";
 import AffixMeta from "./setter-arco/affix/AffixMeta";
-import AffixInstance from "./setter-arco/affix/AffixInstance";
 import BreadcrumbMeta from "./setter-arco/breadcrumb/BreadcrumbMeta";
 import DropdownMeta from "./setter-arco/dopdown/DropdownMeta";
 import MenuMeta from "./setter-arco/menu/MenuMeta";
@@ -82,17 +80,21 @@ import RangePickerMeta from "./setter-arco/datePicker/RangePickerMeta";
 import BlocksMeta from "./setter-arco/blocks/BlocksMeta";
 import LayoutPageMeta from "./setter-arco/layout-page/LayoutPageMeta";
 import LayoutPageInstance from "./setter-arco/layout-page/LayoutPageInstance";
+import LoopMeta from "./setter-arco/loop/LoopMeta";
+import LoopInstance from "./setter-arco/loop/LoopInstance";
+import TemplateMeta from "./setter-arco/template/TemplateMeta";
+import TemplateInstance from "./setter-arco/template/TemplateInstance";
 
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [ButtonMeta, GlButtonMeta, TextMeta, AlertMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta,ASelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta,RangePickerMeta, SwitchMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,LayoutPageMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
-    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TooltipMeta, EntityTreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta, DividerMeta,
+    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TooltipMeta, EntityTreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta,LoopMeta,TemplateMeta, DividerMeta,
     OpRecordMeta,BlocksMeta
 ]
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance, CascaderInstance,LayoutPageInstance]
+const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance, CascaderInstance,LayoutPageInstance,TemplateInstance,LoopInstance]
 const componentInstances: Array<ComponentInstance> = []
 const dataEntryNameMap: { [key: string]: boolean } = {}
 // 不在sidebar中出现的组件

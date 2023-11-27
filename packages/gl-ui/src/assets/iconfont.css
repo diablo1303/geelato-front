@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2457479 */
-  src: url('iconfont.woff2?t=1696906370947') format('woff2'),
-       url('iconfont.woff?t=1696906370947') format('woff'),
-       url('iconfont.ttf?t=1696906370947') format('truetype');
+  src: url('iconfont.woff2?t=1700891367262') format('woff2'),
+       url('iconfont.woff?t=1700891367262') format('woff'),
+       url('iconfont.ttf?t=1700891367262') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,14 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.gl-grid:before {
+  content: "\e63f";
+}
+
+.gl-vue:before {
+  content: "\f25f";
 }
 
 .gl-file-json:before {
@@ -325,7 +333,7 @@
   content: "\e605";
 }
 
-.gl-grid:before {
+.gl-sharp:before {
   content: "\e838";
 }
 
