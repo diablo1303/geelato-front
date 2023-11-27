@@ -19,7 +19,7 @@ export default class HttpRequestBlockHandler implements IBlockHandler {
     return new ParseResult(
       // 注意这里的参数转换采用JSON.stringify，不采用BlockUtils.paramStringify，因为这两种不同的方式，到导致获取的$gl的对象不是同一个，相应的参数值也会不同。
       `
-        const axios = $gl.fn.createAxios({header:${convertParams(props.header)}})
+        const axios = $gl.fn.createAxios({header:${convertParams(props.header)}},{widthDefaultHeader:${propsExpressions?.widthDefaultHeader || props.widthDefaultHeader}})
         
         $gl.vars.${respVarName} = await axios({
           method:${method},
@@ -60,6 +60,8 @@ interface Props {
   header?:  Array<Param>
   // 请返回的结果，ApiResult，保存的变量
   respVarName: string
+  // 是否带上平台默认的header，如header有token信息
+  widthDefaultHeader:boolean
 }
 
 blocksHandler.register(new HttpRequestBlockHandler(), CommandBlocks.CommandBlockOne)

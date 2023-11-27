@@ -44,10 +44,7 @@ export default {
       setterComponentName: 'ASelect',
       setterComponentProps: {
         options: [
-          {
-            label: 'Get',
-            value: 'get'
-          },
+          { label: 'Get', value: 'get' },
           { label: 'Post', value: 'post' }
         ]
       },
@@ -149,6 +146,24 @@ export default {
       alarmIfNoSubTitle: ''
     },
     {
+      name: 'widthDefaultHeader',
+      setterComponentProps: {
+        uncheckedText: '不带上平台默认header',
+        checkedText: '带上平台默认header'
+      },
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      displayMode: 'tile',
+      title: '默认header',
+      description:
+        '请求时是否携带平台默认的header，请如请求平台的自有的应用时需要带上，请求第三方应用不需带上。',
+      setterComponentName: 'ASwitch'
+    },
+    {
       name: 'respVarName',
       setterComponentProps: {},
       setterComponentVModelName: 'modelValue',
@@ -160,7 +175,8 @@ export default {
       setterComponentName: 'AInput',
       enableValueExpress: false,
       displayMode: 'tile',
-      description: 'axios请求返回结果{config:object,data:object,header:object,request:XMLHttpRequest,status:number,statusText:string}'
+      description:
+        'axios请求返回结果{config:object,data:object,header:object,request:XMLHttpRequest,status:number,statusText:string}'
     }
   ]
 }

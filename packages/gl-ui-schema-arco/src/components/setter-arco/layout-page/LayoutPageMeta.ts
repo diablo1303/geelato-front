@@ -83,19 +83,6 @@ export default {
           setterComponentName: 'ASwitch'
         },
         {
-          name: 'collapsible',
-          group: 'base',
-          type: 'props',
-          enableValueExpress: true,
-          show: true,
-          expanded: true,
-          displayMode: 'tile',
-          setterComponentProps: {},
-          setterComponentVModelName: 'modelValue',
-          title: '是否可收起',
-          setterComponentName: 'ASwitch'
-        },
-        {
           name: 'width',
           group: 'base',
           type: 'props',
@@ -151,6 +138,19 @@ export default {
           title: '可伸缩',
           description: '可以用鼠标进行拖拽放大缩小的侧边栏',
           setterComponentName: 'ASelect'
+        },
+        {
+          name: 'collapsible',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: true,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          title: '是否可折叠',
+          setterComponentName: 'ASwitch'
         },
         {
           name: 'hideTrigger',

@@ -6,11 +6,6 @@ import i18n from '../../locale';
 import IdeMain from './GlMain.vue';
 import '@arco-design/web-vue/dist/arco.css';
 import geelatoMain from "../ide/ide.geelato";
-import {useGlobal} from "@geelato/gl-ui";
-
-
-const global = useGlobal()
-global.$gl.user = 'xx'
 
 const app = createApp(IdeMain);
 
