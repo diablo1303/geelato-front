@@ -224,12 +224,8 @@ export function resetPassword(id: string) {
   return axios.post<QueryResult>(`/api/security/user/resetPwd/${id}`);
 }
 
-export function validateUserLoginName(params: QueryUserForm) {
-  return axios.post<QueryResult>('/api/security/user/validate/loginName', params);
-}
-
-export function validateUserMobilePhone(params: QueryUserForm) {
-  return axios.post<QueryResult>('/api/security/user/validate/mobilePhone', params);
+export function validateUserParams(type: string, params: QueryUserForm) {
+  return axios.post<QueryResult>(`/api/security/user/validate/${type}`, params);
 }
 
 /* -----------------------------字典管理 - 字典--------------------------- */

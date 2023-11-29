@@ -23,7 +23,7 @@
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('security.user.index.form.enName')"
-            :rules="[{required: false,message: $t('security.form.rules.match.required')},{validator:validateLoginName}]"
+            :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
             field="enName">
           <a-input v-if="pageData.button" v-model="formData.enName" :max-length="32"/>
           <span v-else>{{ formData.enName }}</span>
@@ -170,8 +170,7 @@ import {
   QueryOrgForm,
   queryOrgs,
   QueryUserForm as QueryForm,
-  validateUserLoginName,
-  validateUserMobilePhone
+  validateUserParams
 } from '@/api/security';
 import {ListUrlParams, SelectOption} from '@/api/base';
 import {sexOptions, sourceOptions, typeOptions} from "@/views/security/user/searchTable";
@@ -295,9 +294,17 @@ const resetValidate = async () => {
  * @param value
  * @param callback
  */
+const validateEnName = async (value: any, callback: any) => {
+  try {
+    const {data} = await validateUserParams('enName', formData.value);
+    if (!data) callback(t('security.form.rules.match.uniqueness'));
+  } catch (err) {
+    console.log(err);
+  }
+}
 const validateLoginName = async (value: any, callback: any) => {
   try {
-    const {data} = await validateUserLoginName(formData.value);
+    const {data} = await validateUserParams('loginName', formData.value);
     if (!data) callback(t('security.form.rules.match.uniqueness'));
   } catch (err) {
     console.log(err);
@@ -305,7 +312,7 @@ const validateLoginName = async (value: any, callback: any) => {
 }
 const validateMobilePhone = async (value: any, callback: any) => {
   try {
-    const {data} = await validateUserMobilePhone(formData.value);
+    const {data} = await validateUserParams('mobilePhone', formData.value);
     if (!data) callback(t('security.form.rules.match.uniqueness'));
   } catch (err) {
     console.log(err);
