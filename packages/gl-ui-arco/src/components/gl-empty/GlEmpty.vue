@@ -13,7 +13,7 @@ const props = defineProps({
   description: String
 })
 
-const mv = ref(props.modelValue || props.description)
+const mv = ref(props.description || props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
@@ -26,7 +26,7 @@ watch(() => {
 </script>
 
 <template>
-  <a-empty>
+  <a-empty style="margin: auto 0">
     {{ mv }}
   </a-empty>
 </template>

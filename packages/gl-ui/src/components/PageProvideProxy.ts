@@ -248,6 +248,7 @@ export default class PageProvideProxy {
                 obj[param.name.substring(prefix.length + 1)] = param.value
             }
         })
+        // console.log('pageParams',prefix,this.pageParams)
         return obj
     }
 
@@ -260,6 +261,17 @@ export default class PageProvideProxy {
             return param.name === paramName
         })
         return foundParam ? foundParam.value : null
+    }
+
+    /**
+     * 是否存在参数
+     * @param paramName
+     */
+    hasPageParam(paramName: string){
+        const foundParam = this.pageParams?.find((param: Param) => {
+            return param.name === paramName
+        })
+        return !!foundParam
     }
 
 

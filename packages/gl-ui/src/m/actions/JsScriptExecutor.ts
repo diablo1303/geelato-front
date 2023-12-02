@@ -186,6 +186,24 @@ export class JsScriptExecutor {
   }
 
   /**
+   * 是否存在参数
+   * @param paramName
+   * @param $gl
+   */
+  hasPageParam(paramName: string, $gl: any){
+    const pageProxy: PageProvideProxy = $gl.ctx.pageProxy
+    if (pageProxy) {
+      return pageProxy.hasPageParam(paramName)
+    }
+    console.error(
+        '在获取页面参数（' +
+        paramName +
+        '）的值时，获取不到当前页面代理对象（pageProxy）,返回参数值false'
+    )
+    return false
+  }
+
+  /**
    * 触发组件的动作事件
    * @param componentId
    * @param actionName 动名名（注意，非事件名eventName，一个事件可以触发多个动作）
@@ -367,6 +385,7 @@ export class JsScriptExecutor {
       },
       getPageParams: () => that.getPageParams($gl),
       getPageParam: (paramName: string) => that.getPageParam(paramName, $gl),
+      hasPageParam: (paramName: string) => that.hasPageParam(paramName, $gl),
       isPageStatusRead: () => {
         return $gl.ctx.pageProxy.isPageStatusRead()
         // return that.getPageParam('pageStatus', $gl) === 'read'

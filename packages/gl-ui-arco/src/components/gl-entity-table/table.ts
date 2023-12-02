@@ -1,7 +1,8 @@
 import type { TableColumnData, TableData } from '@arco-design/web-vue'
 import {
   entityApi,
-  EntityReader, EntityReaderOrder,
+  EntityReader,
+  EntityReaderOrder,
   EntityReaderParam,
   executeObjectPropsExpressions,
   utils
@@ -74,6 +75,8 @@ export class BaseInfo {
   checkType: 'checkbox' | 'radio' | undefined = undefined
   // checkType 为checkbox时，showCheckAll才有效
   showCheckAll?: boolean = false
+  // 点击行数据时，选中该行，相当于点击了行的选择器
+  clickAsCheck?: boolean = false
   // 数据删除模式是否为逻辑删除模式
   isLogicDeleteMode?: boolean = true
   //  基于表达式计算出来的值，_propsExpression的示例值：{label:“用户列表”}
@@ -440,7 +443,6 @@ export const useFetchData = (
     if (simpleReaderInfo) {
       simpleReaderInfo.pageSize = simpleReaderInfo.pageSize || pagination.value.pageSize
     }
-
 
     const entityReader = createEntityReader(props, queryColumns.value, simpleReaderInfo, getPid)!
 

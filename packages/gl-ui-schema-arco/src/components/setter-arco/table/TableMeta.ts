@@ -168,6 +168,18 @@ export default {
             "title": "显示全选",
             "setterComponentName": "ASwitch",
             "description": "该属性在选择类型为复选时有效"
+        }, {
+            "name": "clickAsCheck",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "title": "点击选中",
+            "setterComponentName": "ASwitch",
+            "description": "点击行数据时，选中该行，相当于点击了行的选择器"
         }],
         "title": "基本设置",
         "setterComponentName": "GlSimpleObjectSetter"
@@ -519,14 +531,52 @@ export default {
         "description": "从服务端成功加数据（0到多条）后触发。"
     }, {
         "name": "changeRecord",
-        "title": "行记录更改",
+        "title": "行记录(内容)更改",
         "description": "在数据表的行内编辑模式下，当数据表的行记录信息更换时触发"
+    }, {
+        "name": "select",
+        "title": "点击行选择器",
+        "description": "点击行选择器时触发"
+    }, {
+        "name": "cellClick",
+        "title": "点击单元格",
+        "description": "点击单元格时触发"
+    }, {
+        "name": "rowClick",
+        "title": "点击行数据",
+        "description": "点击行数据时触发"
+    }, {
+        "name": "cellDblclick",
+        "title": "双击单元格",
+        "description": "双击单元格时触发"
+    }, {
+        "name": "rowDblclick",
+        "title": "双击行数据",
+        "description": "双击行数据时触发"
+    }, {
+        "name": "cellContextmenu",
+        "title": "右击单元格",
+        "description": "右击单元格时触发"
+    }, {
+        "name": "rowContextmenu",
+        "title": "右击行数据",
+        "description": "右击行数据时触发"
+    }, {
+        "name": "headerClick",
+        "title": "点击表头数据",
+        "description": "点击表头数据时触发"
+    }, {
+        "name": "columnResize",
+        "title": "调整列宽",
+        "description": "调整列宽时触发"
     }],
     "methods": [
         {"name": "refresh", "title": "刷新", "description": "刷新表格", "params": []},
         {"name": "getRenderRecord", "title": "获取页面展示的记录", "description": "获取当前列表页面展示的记录，返回记录数据组,没记录时返回空数组[]。", "params": []},
         {"name": "getEntitySavers", "title": "获取实体保存对象", "description": "获取实体保存对象，返回{error:boolean,values:EntitySaver[]}", "params": []},
         {"name": "getSelectedRecords", "title": "获取已选的记录", "description": "获取已选的记录，返回记录数据组,没记录时返回空数组[]。", "params": []},
+        {"name": "getFirstSelectedRecord", "title": "获取已选第一条记录", "description": "获取已选第一条记录,没记录时返回空对象{}。", "params": []},
+        {"name": "getLastSelectedRecord", "title": "获取已选最后一条记录", "description": "获取已选最后一条记录,没记录时返回空对象{}。", "params": []},
         {"name": "getSelectedEntitySavers", "title": "获取已选记录的实体保存对象", "description": "获取已选记录的实体保存对象，返回{error:boolean,values:EntitySaver[]}", "params": []},
         {"name": "hasSelectedRecords", "title": "是否选择了记录", "description": "是否选择了记录，返回true | false", "params": []},
         {"name": "changeColumnsVisible", "title": "展示/隐藏列", "description": "更改列的展示/隐藏属性，并更新列信息。", "params": []},

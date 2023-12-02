@@ -8,10 +8,9 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-
-import {mixins, utils} from "@geelato/gl-ui";
-import {inject, nextTick,ref} from "vue";
-import {PageParamsKey} from "@geelato/gl-ui";
+import { mixins, type Param, utils } from '@geelato/gl-ui'
+import { inject, nextTick, type PropType, ref } from 'vue'
+import { PageParamsKey } from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -33,26 +32,55 @@ const props = defineProps({
   appId: String,
   // 引用平台的页面，页面的extendId
   extendId: String,
+  /**
+   *  支持转换前PageParamConfigType和转换后的参数类型PageParam
+   */
+  params: {
+    type: Array as PropType<Array<Param>>,
+    default() {
+      return []
+    }
+  }
 })
 
-const params = inject(PageParamsKey)
+/**
+ *  参数合并
+ *  RefPage设置的参数props.params优先于外部页面inject的参数
+ */
+const getParams = () => {
+  const allParams = props.params || []
+  const injectParams: Array<Param> = inject(PageParamsKey) || []
+
+  injectParams.forEach((param: Param) => {
+    const foundParam = allParams.find((p: Param) => {
+      return p.name === param.name
+    })
+    if (!foundParam) {
+      allParams.push(param)
+    }
+  })
+  return allParams
+}
+
+let params: Array<Param> = getParams()
 
 const visiblePage = ref(true)
 const key = ref(utils.gid())
 
 /**
- *  以当前页面参数数据重新加载
+ *  以最新的页面参数数据重新加载
  */
 const refresh = () => {
-  console.log('ref-page refresh')
+  params = getParams()
+  console.log('ref-page refresh() > params:',params)
+
   key.value = utils.gid()
   visiblePage.value = false
   nextTick(() => {
     visiblePage.value = true
   })
 }
-defineExpose({refresh})
-
+defineExpose({ refresh })
 </script>
 
 <template>
@@ -62,19 +90,15 @@ defineExpose({refresh})
         <GlIconfont type="gl-drag" text="这是引用页面"></GlIconfont>
       </a-button>
     </div>
-    <template v-if="pageType==='third'">
+    <template v-if="pageType === 'third'">
       <iframe class="gl-iframe" :src="pageSrc"></iframe>
     </template>
-    <template v-else-if="pageType==='code'">
-      平台编码轻应用页面Coming Soon ...
-    </template>
+    <template v-else-if="pageType === 'code'"> 平台编码轻应用页面Coming Soon ... </template>
     <template v-else>
       <div v-if="!extendId">
-        <a-alert type="error">
-          未配置页面
-        </a-alert>
+        <a-alert type="error"> 未配置页面 </a-alert>
       </div>
-      <GlPageViewer v-if="extendId" :pageProps="{params}" v-bind="props"></GlPageViewer>
+      <GlPageViewer v-if="extendId" :pageProps="{ params }" v-bind="props"></GlPageViewer>
     </template>
   </div>
 </template>
@@ -84,9 +108,10 @@ defineExpose({refresh})
   position: absolute;
   z-index: 1;
 }
-.gl-iframe{
+
+.gl-iframe {
   border: 0;
   width: 100%;
-  height: 100%
+  height: 100%;
 }
 </style>

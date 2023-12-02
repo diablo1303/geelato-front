@@ -301,6 +301,10 @@ const getDeleteRecords = () => {
   return []
 }
 
+const getRef = () => {
+  return tableRef.value
+}
+
 defineExpose({
   resetColumns,
   search,
@@ -312,7 +316,8 @@ defineExpose({
   getQueryData,
   getRenderData,
   getRenderColumns,
-  changeColumnsVisible
+  changeColumnsVisible,
+  getRef
 })
 </script>
 

@@ -572,6 +572,11 @@ const tableRef = ref()
 const selectAll = (checked: boolean) => {
   return tableRef.value.selectAll(checked)
 }
+
+const getRef = () => {
+  return tableRef.value
+}
+
 defineExpose({
   selectAll,
   search,
@@ -583,7 +588,8 @@ defineExpose({
   reRender,
   getRenderData,
   getRenderColumns,
-  getDeleteRecords
+  getDeleteRecords,
+  getRef
 })
 </script>
 

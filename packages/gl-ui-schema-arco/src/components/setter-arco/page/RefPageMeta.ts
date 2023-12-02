@@ -71,6 +71,41 @@ export default {
         "setterComponentVModelName": "modelValue",
         "setterComponentName": "GlPageSelect",
         "title": "配置页面"
+    }, {
+        "name": "params",
+        "setterComponentProps": {},
+        "setterComponentVModelName": "",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "title": "页面参数",
+        "setterComponentName": "GlObjectArraySetter",
+        "_showSub": true,
+        "properties": [{
+            "name": "name",
+            "group": "base",
+            "type": "props",
+            "enableValueExpress": false,
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {},
+            "setterComponentVModelName": "modelValue",
+            "setterComponentName": "AInput",
+            "title": "参数名"
+        }, {
+            "name": "valueExpression",
+            "group": "base",
+            "type": "props",
+            "show": true,
+            "expanded": true,
+            "setterComponentProps": {"showInput": true},
+            "setterComponentVModelName": "modelValue",
+            "setterComponentName": "GlExpressionSetter",
+            "title": "参数值"
+        }],
+        "titleField": "name"
     }],
     "methods": [{"name": "refresh", "title": "刷新", "description": "以当前一样的参数重新加载页面", "params": []}]
 

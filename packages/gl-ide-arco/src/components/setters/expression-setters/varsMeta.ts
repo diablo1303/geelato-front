@@ -278,6 +278,13 @@ export const useComponentInstTreeData = () => {
                 _description: '获取页面参数值',
             },
             {
+                title: '是否存在页面参数',
+                _code: 'hasPageParam',
+                _type: 'any',
+                _brackets: '("参数名")',
+                _description: '是否存在页面参数',
+            },
+            {
                 title: '设置组件的属性值',
                 _code: 'setComponentProps',
                 _type: 'void',

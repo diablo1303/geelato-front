@@ -14,7 +14,7 @@
         <GlInsts :glComponentInst="glComponentInst"></GlInsts>
       </template>
     </a-form>
-    <div class="formSubmit" style="text-align: center; padding: 2em 1em">
+    <div v-if="!isRead" class="formSubmit" style="text-align: center; padding: 2em 1em">
       <a-button type="primary" @click="submitForm">保存</a-button>
     </div>
   </div>
@@ -94,7 +94,7 @@ const props = defineProps({
   },
   ...mixins.props
 })
-const isRead = pageProvideProxy.isPageStatusRead()
+const isRead = ref(pageProvideProxy.isPageStatusRead())
 // 通过默认通用关键字form获取的表单值，好处就是在配置打开页面传参时，不需要配置具体表单名，配置方便
 // ！！！注意，该方式在同一页面多表单嵌套时，很可能会污染子级表单的值，没法做到精确控制表单传值
 const formParams = getFormParams(pageProvideProxy, props.bindEntity)
@@ -316,7 +316,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
 const loadForm = async () => {
   if (!entityRecordId.value) {
     // 1、不需要从服务端获取，没有id表示新增，不需要从服务端获取表单值
-    if (isRead && props.glIsRuntime) {
+    if (isRead.value && props.glIsRuntime) {
       global.$notification.error({
         duration: 8000,
         title: '参数不全',

@@ -38,11 +38,25 @@ import {
   GetEntitySaversResult
 } from '@geelato/gl-ui'
 import type { Action } from '../../types/global'
+import { TableData, TableColumnData } from '@arco-design/web-vue'
 
 /**
  *  change:在表格编辑状态时，更换表格数据时触发
  */
-const emits = defineEmits(['changeRecord', 'fetchSuccess'])
+const emits = defineEmits([
+  'changeRecord',
+  'fetchSuccess',
+  'select',
+  'selectionChange',
+  'rowClick',
+  'cellClick',
+  'headerClick',
+  'columnResize',
+  'rowDblclick',
+  'cellDblclick',
+  'rowContextmenu',
+  'cellContextmenu'
+])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const isRead = !!pageProvideProxy?.isPageStatusRead()
 const { t } = CheckUtil.isBrowser()
@@ -169,6 +183,10 @@ const changeShowColumns = (
 const updateColumns = (showColumnsValue: GlTableColumn[]) => {
   showColumns.value = showColumnsValue
 }
+/**
+ * 更新行数据
+ * @param data
+ */
 const onUpdateRow = (data: { record: object; rowIndex: number; columns: GlTableColumn }) => {
   // console.log('GlEntityTablePlus > onUpdateRow() > data:', data)
   emits('changeRecord', data)
@@ -239,8 +257,101 @@ const deleteRecord = (params: Record<string, any>) => {
 
 const selectedKeys: Ref<string[]> = ref([])
 
+/**
+ * 点击行选择器时触发
+ * @param rowKeys
+ * @param rowKey
+ * @param record
+ */
+const select = (rowKeys: string | number[], rowKey: string | number, record: TableData) => {
+  emits('select', rowKeys, rowKey, record)
+}
+
+/**
+ * 已选择的数据行发生改变时触发
+ * @param rowKeys (string | number)[]
+ */
 const selectionChange = (rowKeys: []) => {
   selectedKeys.value = rowKeys
+  emits('selectionChange', rowKeys)
+}
+
+/**
+ * 点击行数据时触发
+ * @param record
+ * @param ev
+ */
+const rowClick = (record: TableData, ev: Event) => {
+  if (props.base.clickAsCheck) {
+    tableRef.value.getRef().select(record.key || record.id)
+  }
+  emits('rowClick', record, ev)
+}
+
+/**
+ * 点击单元格时触发
+ * @param record
+ * @param column
+ * @param ev
+ */
+const cellClick = (record: TableData, column: TableColumnData, ev: Event) => {
+  emits('cellClick', record, column, ev)
+}
+
+/**
+ * 点击表头数据时触发
+ * @param column
+ * @param ev
+ */
+const headerClick = (column: TableColumnData, ev: Event) => {
+  emits('headerClick', column, ev)
+}
+
+/**
+ * 调整列宽时触发
+ * @param dataIndex
+ * @param width
+ */
+const columnResize = (dataIndex: string, width: number) => {
+  emits('columnResize', dataIndex, width)
+}
+
+/**
+ * 双击行数据时触发
+ * @param record
+ * @param ev
+ */
+const rowDblclick = (record: TableData, ev: Event) => {
+  emits('rowDblclick', record, ev)
+}
+
+/**
+ * 双击单元格时触发
+ * @param record
+ * @param column
+ * @param ev
+ */
+const cellDblclick = (record: TableData, column: TableColumnData, ev: Event) => {
+  emits('cellDblclick', record, column, ev)
+}
+
+/**
+ * 右击行数据时触发
+ * @param record
+ * @param ev
+ */
+const rowContextmenu = (record: TableData, ev: Event) => {
+  emits('rowContextmenu', record, ev)
+}
+
+/**
+ * 右击单元格时触发
+ * @param record
+ * @param column
+ * @param ev
+ */
+const cellContextmenu = (record: TableData, column: TableColumnData, ev: Event) => {
+  emits('cellContextmenu', record, column, ev)
 }
 
 const rowSelection = computed(() => {
@@ -263,6 +374,30 @@ const getSelectedRecords = () => {
   return getRenderData().filter((record: Record<string, any>) => {
     return selectedKeys.value.includes(record.id)
   })
+}
+
+/**
+ *  获取已选择记录的第一行
+ */
+const getFirstSelectedRecord = () => {
+  const records = getSelectedRecords()
+  if (records && records.length > 0) {
+    return records[0]
+  } else {
+    return {}
+  }
+}
+
+/**
+ *  获取已选择记录的最后一行
+ */
+const getLastSelectedRecord = () => {
+  const records = getSelectedRecords()
+  if (records && records.length > 0) {
+    return records[records.length - 1]
+  } else {
+    return {}
+  }
 }
 
 const hasSelectedRecords = () => {
@@ -402,7 +537,7 @@ const batchUpdate = (params: { record: Record<string, any> }) => {
       })
       entityApi.saveBatch(props.base.entityName, copyRecords).then(() => {
         refresh()
-        global.$notification.info({ title: '更新成功',content: `更新${records.length}条记录` })
+        global.$notification.info({ title: '更新成功', content: `更新${records.length}条记录` })
       })
     }
   }
@@ -440,6 +575,8 @@ defineExpose({
   getRenderRecord,
   getDeleteRecords,
   getSelectedRecords,
+  getFirstSelectedRecord,
+  getLastSelectedRecord,
   getRenderData,
   getRenderColumns,
   getDeleteData,
@@ -549,14 +686,23 @@ defineExpose({
       :subTablePidName="base.subTablePidName"
       :isLogicDeleteMode="base.isLogicDeleteMode"
       :rowSelection="rowSelection"
-      @selectionChange="selectionChange"
-      @updateColumns="updateColumns"
-      @updateRow="onUpdateRow"
-      @fetchSuccess="onFetchSuccess"
       :glComponentInst="glComponentInst"
       :glIsRuntime="glIsRuntime"
       :glRuntimeFlag="glRuntimeFlag"
       :tableSettingId="tableSettingId"
+      @select="select"
+      @selectionChange="selectionChange"
+      @headerClick="headerClick"
+      @columnResize="columnResize"
+      @updateColumns="updateColumns"
+      @updateRow="onUpdateRow"
+      @fetchSuccess="onFetchSuccess"
+      @rowClick="rowClick"
+      @rowContextmenu="rowContextmenu"
+      @rowDblclick="rowDblclick"
+      @cellClick="cellClick"
+      @cellContextmenu="cellContextmenu"
+      @cellDblclick="cellDblclick"
     ></component>
   </a-card>
 </template>

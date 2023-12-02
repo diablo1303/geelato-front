@@ -5,6 +5,16 @@ import type { PageProvideProxy } from '@geelato/gl-ui'
 //   value: Array<Record<string, any>>
 // }
 
+/**
+ *
+ * 取值方式A、通过默认通用关键字form获取的表单值，好处就是在配置打开页面传参时，不需要配置具体表单名，配置方便
+ * 取值方式B、同时支持通过关键字$form来获取表单值
+ * 取值方式C、同时支持通过当前表单绑定的对象实体名称来获取表单值
+ * 取值方式C会覆盖B方式，会覆盖A方式
+ * ！！！注意，该方式在同一页面多表单嵌套时，通过form或$form很可能会污染子级表单的值，没法做到精确控制表单传值
+ * @param pageProvideProxy
+ * @param bindEntity
+ */
 export const getFormParams = (
   pageProvideProxy: PageProvideProxy,
   bindEntity?: Record<string, any>
@@ -16,20 +26,27 @@ export const getFormParams = (
   const formParamsByEntityName = bindEntity
     ? pageProvideProxy.getParamsByPrefixAsObject(bindEntity.entityName)
     : {}
-  // console.log('formParams', formParams, 'formParamsByEntityName', formParamsByEntityName)
-  // 合并两种模式下的传值
+  console.log(
+    '获取的表单参数来源，form.xxx:',
+    formParams,
+    '$form.xxx:',
+    formParamsByKeywordFlag,
+    (bindEntity?.entityName || 'entityName') + '.xxx:',
+    formParamsByEntityName
+  )
+  // 合并三种模式下的传值
   Object.assign(formParams, formParamsByKeywordFlag, formParamsByEntityName)
+  console.log('获取的表单参数合并为：', formParams)
   return formParams || {}
 }
 
-
 export interface ValidatedError {
-  label: string;
-  field: string;
-  value: any;
-  type: string;
-  isRequiredError: boolean;
-  message: string;
+  label: string
+  field: string
+  value: any
+  type: string
+  isRequiredError: boolean
+  message: string
 }
 
 /**
