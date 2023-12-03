@@ -4,13 +4,16 @@ import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class TriggerComponentActionBlockHandler implements IBlockHandler {
-    parseToScript(props: Props): ParseResult {
-        return new ParseResult(
-            `
+  getName(): string {
+    return 'TriggerComponentActionBlockHandler'
+  }
+  parseToScript(props: Props): ParseResult {
+    return new ParseResult(
+      `
             $gl.fn.triggerComponentAction("${props.componentId}","${props.actionName}");
             `
-        )
-    }
+    )
+  }
 }
 
 interface Props {

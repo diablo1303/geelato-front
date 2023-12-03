@@ -5,13 +5,16 @@ import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class ReturnBlockHandler implements IBlockHandler {
-    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-        return new ParseResult(
-            `
+  getName(): string {
+    return 'ReturnBlockHandler'
+  }
+  parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+    return new ParseResult(
+      `
             return ${propsExpressions?.content || props.content};
             `
-        )
-    }
+    )
+  }
 }
 
 export class Props {

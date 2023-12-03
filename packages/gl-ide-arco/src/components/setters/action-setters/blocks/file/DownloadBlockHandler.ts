@@ -4,14 +4,18 @@ import ParseResult from "../ParseResult";
 import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class DownloadBlockHandler implements IBlockHandler {
-    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-        const fileId = propsExpressions?.fileId ? propsExpressions.fileId : `"${props.fileId}"`;
-        return new ParseResult(
-            `
+  getName(): string {
+    return 'DownloadBlockHandler'
+  }
+
+  parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+    const fileId = propsExpressions?.fileId ? propsExpressions.fileId : `"${props.fileId}"`
+    return new ParseResult(
+      `
             $gl.fileApi.downloadFileById(${fileId})
             `
-        )
-    }
+    )
+  }
 }
 
 interface Props {

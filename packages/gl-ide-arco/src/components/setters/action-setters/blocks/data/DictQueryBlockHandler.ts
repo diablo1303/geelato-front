@@ -5,6 +5,10 @@ import { utils } from '@geelato/gl-ui'
 import { blocksHandler, CommandBlocks } from '../BlockHandler'
 
 export default class DictQueryBlockHandler implements IBlockHandler {
+  getName(): string {
+    return "DictQueryBlockHandler";
+  }
+  
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     console.log('props', props)
     let respVarName = props.respVarName || utils.gid('respVarName')

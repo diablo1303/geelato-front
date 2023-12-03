@@ -9,6 +9,9 @@ const toStr = (str: string) => {
   return `"${str}"`
 }
 export default class HttpRequestBlockHandler implements IBlockHandler {
+  getName(): string {
+    return 'HttpRequestBlockHandler'
+  }
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     // console.log("OpenComponentPageBlockHandler > parseToScript > props:", props)
     const url = propsExpressions?.url || toStr(props.url)
@@ -19,7 +22,11 @@ export default class HttpRequestBlockHandler implements IBlockHandler {
     return new ParseResult(
       // 注意这里的参数转换采用JSON.stringify，不采用BlockUtils.paramStringify，因为这两种不同的方式，到导致获取的$gl的对象不是同一个，相应的参数值也会不同。
       `
-        const axios = $gl.fn.createAxios({header:${convertParams(props.header)}},{widthDefaultHeader:${propsExpressions?.widthDefaultHeader || props.widthDefaultHeader}})
+        const axios = $gl.fn.createAxios({header:${convertParams(
+          props.header
+        )}},{widthDefaultHeader:${
+        propsExpressions?.widthDefaultHeader || props.widthDefaultHeader
+      }})
         
         $gl.vars.${respVarName} = await axios({
           method:${method},

@@ -5,27 +5,37 @@ import BlockUtils from "../BlockUtils";
 import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class ComponentInvokeBlockHandler implements IBlockHandler {
+  getName(): string {
+    return 'ComponentInvokeBlockHandler'
+  }
 
-    parseToScript(props: Props): ParseResult {
-        // console.log("ComponentInvokeBlockHandler > parseToScript > props:", props)
-        const params = props.params || []
+  parseToScript(props: Props): ParseResult {
+    // console.log("ComponentInvokeBlockHandler > parseToScript > props:", props)
+    const params = props.params || []
 
-        if (props.resultVar) {
-            return new ParseResult(
-                `
-                $gl.vars.${props.resultVar} = ${props.enableAwait ? 'await ' : ''} $gl.fn.invokeComponentMethod("${props.componentId}","${props.methodName}",${BlockUtils.paramStringify(params)});
+    if (props.resultVar) {
+      return new ParseResult(
+        `
+                $gl.vars.${props.resultVar} = ${
+          props.enableAwait ? 'await ' : ''
+        } $gl.fn.invokeComponentMethod("${props.componentId}","${
+          props.methodName
+        }",${BlockUtils.paramStringify(params)});
                 ${props.enableReturn ? 'return $gl.vars.' + props.resultVar : ''}
                 `
-            )
-        } else {
-            return new ParseResult(
+      )
+    } else {
+      return new ParseResult(
+        `
+                ${props.enableReturn ? 'return ' : ''} ${
+          props.enableAwait ? 'await ' : ''
+        } $gl.fn.invokeComponentMethod("${props.componentId}","${
+          props.methodName
+        }",${BlockUtils.paramStringify(params)});
                 `
-                ${props.enableReturn ? 'return ' : ''} ${props.enableAwait ? 'await ' : ''} $gl.fn.invokeComponentMethod("${props.componentId}","${props.methodName}",${BlockUtils.paramStringify(params)});
-                `
-            )
-        }
-
+      )
     }
+  }
 }
 
 export class Props {

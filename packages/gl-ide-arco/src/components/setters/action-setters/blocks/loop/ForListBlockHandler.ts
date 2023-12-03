@@ -5,6 +5,9 @@ import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class ForListBlockHandler implements IBlockHandler {
+  getName(): string {
+    return 'ForListBlockHandler'
+  }
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     const items = propsExpressions?.items || props.items || []
     return new ParseResult(

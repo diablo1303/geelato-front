@@ -5,13 +5,16 @@ import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class LogBlockHandler implements IBlockHandler {
-    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-        return new ParseResult(
-            `
+  getName(): string {
+    return 'LogBlockHandler'
+  }
+  parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+    return new ParseResult(
+      `
             $gl.fn.log({content:${propsExpressions?.content || props.content}});
             `
-        )
-    }
+    )
+  }
 }
 
 export class Props {

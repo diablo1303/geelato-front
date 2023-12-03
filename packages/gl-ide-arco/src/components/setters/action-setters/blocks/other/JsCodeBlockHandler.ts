@@ -5,13 +5,16 @@ import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class JsCodeBlockHandler implements IBlockHandler {
-    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-        return new ParseResult(
-            `
+  getName(): string {
+    return 'JsCodeBlockHandler'
+  }
+  parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+    return new ParseResult(
+      `
             ${propsExpressions?.code || props.code};
             `
-        )
-    }
+    )
+  }
 }
 
 interface Props {

@@ -9,19 +9,24 @@ const toStr = (str: string) => {
     return `"${str}"`
 }
 export default class OpenComponentPageBlockHandler implements IBlockHandler {
-    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-        // console.log("OpenComponentPageBlockHandler > parseToScript > props:", props)
-        const mode = props.mode || 'Drawer'
-        const title = propsExpressions?.title || toStr(props.title)
-        const width = propsExpressions?.width || toStr(props.width || "1024px")
-        const okText = propsExpressions?.okText || toStr(props.okText || "确定")
-        const cancelText = propsExpressions?.cancelText || toStr(props.cancelText || "取消")
-        const hideCancel = props.hideCancel === true
-        const contentName = utils.gid('content')
-        return new ParseResult(
-            // 注意这里的参数转换采用JSON.stringify，不采用BlockUtils.paramStringify，因为这两种不同的方式，到导致获取的$gl的对象不是同一个，相应的参数值也会不同。
-            `
-            const ${contentName} = $gl.fn.loadPage("${props.pageId || ''}","${props.extendId}",${JSON.stringify(props.params || [])},"${props.pageStatus}");
+  getName(): string {
+    return 'OpenComponentPageBlockHandler'
+  }
+  parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+    // console.log("OpenComponentPageBlockHandler > parseToScript > props:", props)
+    const mode = props.mode || 'Drawer'
+    const title = propsExpressions?.title || toStr(props.title)
+    const width = propsExpressions?.width || toStr(props.width || '1024px')
+    const okText = propsExpressions?.okText || toStr(props.okText || '确定')
+    const cancelText = propsExpressions?.cancelText || toStr(props.cancelText || '取消')
+    const hideCancel = props.hideCancel === true
+    const contentName = utils.gid('content')
+    return new ParseResult(
+      // 注意这里的参数转换采用JSON.stringify，不采用BlockUtils.paramStringify，因为这两种不同的方式，到导致获取的$gl的对象不是同一个，相应的参数值也会不同。
+      `
+            const ${contentName} = $gl.fn.loadPage("${props.pageId || ''}","${
+        props.extendId
+      }",${JSON.stringify(props.params || [])},"${props.pageStatus}");
             $gl.fn.open${mode}({
                 title:${title},
                 content: ${contentName},
@@ -55,8 +60,8 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
                 hideCancel:${hideCancel}
             })
             `
-        )
-    }
+    )
+  }
 }
 
 interface Props {

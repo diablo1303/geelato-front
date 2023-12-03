@@ -4,6 +4,9 @@ import ParseResult from '../ParseResult'
 import { blocksHandler, CommandBlocks } from '../BlockHandler'
 
 export default class ImportExcelBlockHandler implements IBlockHandler {
+  getName(): string {
+    return 'ImportExcelBlockHandler'
+  }
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     const params = {
       templateId: props.fileTemplate?.templateId,
