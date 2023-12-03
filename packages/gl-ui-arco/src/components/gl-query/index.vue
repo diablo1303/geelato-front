@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // @ts-nocheck
 import { computed, onMounted, type PropType, ref } from 'vue'
-import { EntityReaderParam } from '@geelato/gl-ui'
+import {EntityReaderParam, utils} from '@geelato/gl-ui'
 import { ConvertUtil } from '@geelato/gl-ui'
 import QueryItem from './query'
 import { GlIconfont } from '@geelato/gl-ui'
@@ -108,11 +108,19 @@ onMounted(() => {
   onSearch()
 })
 const form = ref({})
+const glQuery = ref()
+const gid = utils.gid()
+const showTitle = computed(()=>{
+  // 宽度大于600时会显示按钮标题
+  return glQuery.value?.$el.offsetWidth>600
+})
+
+
 defineExpose({ createEntityReaderParams, reset })
 </script>
 
 <template>
-  <a-row class="gl-query">
+  <a-row class="gl-query" ref="glQuery">
     <a-col :flex="1">
       <a-form
         :model="form"
@@ -154,13 +162,13 @@ defineExpose({ createEntityReaderParams, reset })
           <template #icon>
             <GlIconfont type="gl-search"></GlIconfont>
           </template>
-          查询
+          <span v-if="showTitle">查询</span>
         </a-button>
         <a-button @click="reset">
           <template #icon>
             <GlIconfont type="gl-reset"></GlIconfont>
           </template>
-          重置
+          <span v-if="showTitle">重置</span>
         </a-button>
       </a-space>
     </a-col>

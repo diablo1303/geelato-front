@@ -36,7 +36,7 @@ watch(mv, () => {
 </script>
 
 <template>
-  <a-layout v-if="glComponentInst">
+  <a-layout v-if="glComponentInst" style="min-height: 900px">
     <a-layout-header v-if="showHeader">
       <component
         :is="'GlInsts' + glRuntimeFlag"

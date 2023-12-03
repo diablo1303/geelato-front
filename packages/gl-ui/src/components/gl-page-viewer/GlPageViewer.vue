@@ -82,4 +82,7 @@ watch(() => {
   </div>
 </template>
 <style scoped>
+.gl-page-viewer{
+  height: 100%;
+}
 </style>

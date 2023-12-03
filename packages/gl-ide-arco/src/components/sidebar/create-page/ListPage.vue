@@ -4,25 +4,12 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { type PropType, type Ref, ref, watch } from 'vue'
+import { type Ref, ref, watch } from 'vue'
 import type { EntityMeta, FieldMeta } from '@geelato/gl-ui'
+import { entityApi, PageType } from '@geelato/gl-ui'
 import { ListPageCreator } from './json-creator/ListPageCreator'
 import { PageCreatorOptions } from './json-creator/PageCreator'
-import type { PageInfo } from './CreatePageNav'
-import { entityApi, PageType } from '@geelato/gl-ui'
-
-const emits = defineEmits(['update:modelValue'])
-const props = defineProps({
-  /**
-   *  page配置
-   */
-  modelValue: {
-    type: Object as PropType<PageInfo>,
-    default() {
-      return {}
-    }
-  }
-})
+import { PageInfo } from './CreatePageNav'
 
 const fieldMetas: Ref<FieldMeta[]> = ref([])
 const entityName = ref('')
@@ -35,7 +22,7 @@ const form: any = ref({
 const pageCreatorOptions = ref(new PageCreatorOptions())
 
 const listPageCreator = new ListPageCreator()
-const pageInfo: Ref<PageInfo> = ref(props.modelValue)
+const pageInfo: Ref<PageInfo> = ref(new PageInfo(PageType.listPage))
 pageInfo.value.type = PageType.listPage
 pageInfo.value.iconType = 'gl-list'
 watch(
@@ -45,9 +32,6 @@ watch(
     pageCreatorOptions.value.queryFields = form.value.queryFields
     pageCreatorOptions.value.pageInfo = pageInfo.value
     pageInfo.value.label = form.value.pageLabel
-    // 检测到配置信息变化之后即重新生成页面内容
-    pageInfo.value.content =  listPageCreator.create(pageCreatorOptions.value)
-    emits('update:modelValue', pageInfo.value)
   },
   { deep: true }
 )
@@ -76,11 +60,9 @@ const loadFieldMetas = (entityMeta: EntityMeta) => {
   fieldMetas.value = pageCreatorOptions.value.entityMeta.fieldMetas
   form.value.pageLabel = entityMeta.entityTitle + '列表页面'
   pageCreatorOptions.value.showFields = fieldMetas.value
-  pageInfo.value.content =  listPageCreator.create(pageCreatorOptions.value)
 }
 const changePageExtendId = async (pageExtendId: string) => {
   return entityApi.queryPageByExtendId(pageExtendId, 'source').then((res) => {
-    // console.log('changePageExtendId', pageExtendId, res)
     pageInfo.value.pageExtendId = form.value.pageExtendId
     pageInfo.value.pageExtendContent = JSON.parse(res.data[0].sourceContent)
   })
@@ -89,7 +71,9 @@ const myForm = ref()
 /**
  *  获取页面配置
  */
-const getPage = async () => {
+const getPage = () => {
+  pageInfo.value.content = listPageCreator.create(pageCreatorOptions.value)
+  console.log('create listPage pageInfo:', pageInfo.value)
   return pageInfo.value
 }
 

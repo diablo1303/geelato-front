@@ -4,25 +4,13 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { type PropType, type Ref, ref, watch } from 'vue'
+import { type Ref, ref, watch } from 'vue'
 import type { EntityMeta, FieldMeta } from '@geelato/gl-ui'
+import { PageType } from '@geelato/gl-ui'
 import { FormPageCreator } from './json-creator/FormPageCreator'
 import { PageCreatorOptions } from './json-creator/PageCreator'
-import type { PageInfo } from './CreatePageNav'
-import { PageType } from '@geelato/gl-ui'
+import { PageInfo } from './CreatePageNav'
 
-const emits = defineEmits(['update:modelValue'])
-const props = defineProps({
-  /**
-   *  page配置
-   */
-  modelValue: {
-    type: Object as PropType<PageInfo>,
-    default() {
-      return {}
-    }
-  }
-})
 
 const entityName = ref('')
 const form: any = ref({
@@ -32,7 +20,7 @@ const form: any = ref({
 const pageCreatorOptions = ref(new PageCreatorOptions())
 
 const formPageCreator = new FormPageCreator()
-const pageInfo: Ref<PageInfo> = ref(props.modelValue)
+const pageInfo: Ref<PageInfo> = ref(new PageInfo(PageType.formPage))
 pageInfo.value.type = PageType.formPage
 pageInfo.value.iconType = 'gl-form'
 watch(
@@ -42,8 +30,7 @@ watch(
     pageCreatorOptions.value.pageInfo.label = form.value.pageLabel
     pageCreatorOptions.value.colSpan = form.value.colSpan
     pageInfo.value.label = form.value.pageLabel
-    pageInfo.value.content =  formPageCreator.create(pageCreatorOptions.value)
-    emits('update:modelValue', pageInfo.value)
+    // pageInfo.value.content =  formPageCreator.create(pageCreatorOptions.value)
   },
   { deep: true }
 )
@@ -71,7 +58,7 @@ const loadFieldMetas = (entityMeta: EntityMeta) => {
   pageCreatorOptions.value.entityMeta.entityName = em.entityName
   pageCreatorOptions.value.entityMeta.entityTitle = em.entityTitle
   form.value.pageLabel = entityMeta.entityTitle + '信息页面'
-  pageInfo.value.content = formPageCreator.create(pageCreatorOptions.value)
+  // pageInfo.value.content = formPageCreator.create(pageCreatorOptions.value)
   // console.log('loadFieldMetas', em)
 }
 const myForm = ref()
@@ -79,6 +66,8 @@ const myForm = ref()
  *  获取页面配置
  */
 const getPage = () => {
+  pageInfo.value.content = formPageCreator.create(pageCreatorOptions.value)
+  console.log('create formPage pageInfo:', pageInfo.value)
   return pageInfo.value
 }
 const validate = () => {

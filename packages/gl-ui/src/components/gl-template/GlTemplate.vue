@@ -78,8 +78,8 @@ console.log('create template ...',props.glLoopIndex)
 </script>
 
 <template>
-  <div class="gl-template" :key="refreshKey" @click="onClick" style="min-height: 1em">
-    <template v-if="content===''">
+  <div class="gl-template" :key="refreshKey" @click="onClick">
+    <template v-if="!content">
       <a-empty >
         模板内容为空
       </a-empty>
@@ -87,3 +87,8 @@ console.log('create template ...',props.glLoopIndex)
     <component v-else :is="MyComponent" :loopItem="glLoopItem" :loopIndex="glLoopIndex" :params="params" />
   </div>
 </template>
+<style scoped>
+  .gl-template{
+    min-height: 1em
+  }
+</style>

@@ -4,7 +4,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { type Ref, ref, toRaw, watch } from 'vue'
+import { ref, toRaw, watch } from 'vue'
 import FormPage from './FormPage.vue'
 import ListPage from './ListPage.vue'
 import { PageInfo } from './CreatePageNav'
@@ -26,12 +26,10 @@ watch(mv, () => {
 })
 
 const currentPageType = ref('')
-const currentPageInfo: Ref<PageInfo> = ref(new PageInfo())
 
 const selectPageTemplate = (selectedTemplate: PageType) => {
   if (selectedTemplate !== currentPageType.value) {
     currentPageType.value = selectedTemplate
-    currentPageInfo.value = new PageInfo(selectedTemplate)
   }
 }
 
@@ -49,7 +47,8 @@ const getPages = async (): Promise<PageInfo[]> => {
       if (errors) {
         return []
       }
-      return [toRaw(currentPageInfo.value)]
+
+      return [toRaw(formPage.value.getPage())]
     }
   }
   if (currentPageType.value === PageType.listPage) {
@@ -58,10 +57,10 @@ const getPages = async (): Promise<PageInfo[]> => {
       if (errors) {
         return []
       }
-      return [toRaw(currentPageInfo.value)]
+      return [toRaw(listPage.value.getPage())]
     }
   }
-  return [toRaw(currentPageInfo.value)]
+  return [toRaw(new PageInfo())]
 }
 
 defineExpose({ getPages })
@@ -119,12 +118,10 @@ defineExpose({ getPages })
       <FormPage
         ref="formPage"
         v-if="currentPageType === PageType.formPage"
-        v-model="currentPageInfo"
       ></FormPage>
       <ListPage
         ref="listPage"
         v-if="currentPageType === PageType.listPage"
-        v-model="currentPageInfo"
       ></ListPage>
     </div>
   </div>

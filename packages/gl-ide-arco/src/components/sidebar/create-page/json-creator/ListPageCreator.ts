@@ -1,4 +1,4 @@
-import { entityApi, FieldMeta, utils } from '@geelato/gl-ui'
+import { FieldMeta, utils } from '@geelato/gl-ui'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import { useComponentStore } from '@geelato/gl-ide'
 import { PageCreator, PageCreatorOptions } from './PageCreator'
@@ -9,6 +9,7 @@ const useToolbarInst = (
   tableInst: ComponentInstance,
   formInst: ComponentInstance
 ) => {
+  const tablePageId = '${createPage.tablePageExtendId}'
   return {
     leftColSpan: 12,
     centerColSpan: 0,
@@ -136,7 +137,7 @@ const useToolbarInst = (
                           componentName: 'GlComponentInvokeBlock',
                           group: 'block_page',
                           props: {
-                            extendId: `${options.pageInfo.pageExtendId}`,
+                            extendId: tablePageId,
                             componentId: `${tableInst.id}`,
                             methodName: 'refresh',
                             params: []
@@ -185,7 +186,7 @@ const useQueryInst = (options: PageCreatorOptions) => {
 
   const items: any[] = []
   insts.forEach((inst: ComponentInstance, index: number) => {
-    const fieldMeta = options.queryFields[index]
+    // const fieldMeta = options.queryFields[index]
 
     items.push({
       id: utils.gid('query'),
@@ -217,8 +218,13 @@ const useColumnsInst = (options: PageCreatorOptions) => {
   return columns
 }
 
-const useColumnActionsInst = (options: PageCreatorOptions) => {
-  const pageExtendId = options.pageInfo.pageExtendId
+const useColumnActionsInst = (
+  options: PageCreatorOptions,
+  tableInst: ComponentInstance,
+  formInst: ComponentInstance
+) => {
+  const tablePageId = '${createPage.tablePageExtendId}'
+  const formPageId = options.pageInfo.pageExtendId
   const paramFormId = utils.gid()
   const paramPageStatusId = utils.gid()
   const actions: any[] = []
@@ -237,11 +243,11 @@ const useColumnActionsInst = (options: PageCreatorOptions) => {
         eventName: 'click',
         name: 'click',
         title: '点击',
-        body: `const content = $gl.fn.loadPage("","${pageExtendId}",[{"id":"${paramFormId}","name":"form.id","valueExpression":"$gl.ctx.record.id"},{"id":"${paramPageStatusId}","name":"page.status","valueExpression":"\\"read\\""}],"read");
+        body: `const content = $gl.fn.loadPage("","${formPageId}",[{"id":"${paramFormId}","name":"form.id","valueExpression":"$gl.ctx.record.id"},{"id":"${paramPageStatusId}","name":"page.status","valueExpression":"\\"read\\""}],"read");
             $gl.fn.openDrawer({
                 title:"详细信息",
                 content: content,
-                width:"1024px",
+                width:"80%",
                 okText:"关闭",
                 onBeforeOk: async ()=>{
                     try{
@@ -287,7 +293,7 @@ const useColumnActionsInst = (options: PageCreatorOptions) => {
               componentName: 'GlOpenComponentPageBlock',
               group: 'block_page',
               props: {
-                extendId: pageExtendId,
+                extendId: formPageId,
                 title: '详细信息',
                 params: [
                   {
@@ -322,6 +328,263 @@ const useColumnActionsInst = (options: PageCreatorOptions) => {
     ],
     style: {},
     propsWrapper: '',
+    i18n: []
+  })
+
+  actions.push({
+    id: utils.gid('btn'),
+    componentName: 'GlButton',
+    group: '',
+    props: { type: 'text', label: '修改', iconType: '' },
+    propsExpressions: {},
+    slots: {},
+    slotsExpressions: {},
+    children: [],
+    actions: [
+      {
+        id: utils.gid('act'),
+        eventName: 'click',
+        name: 'click',
+        title: '点击',
+        body: `const content = $gl.fn.loadPage("","${formPageId}",[{"id":"${paramFormId}","name":"form.id","valueExpression":"$gl.ctx.record.id"}],"update");
+            $gl.fn.openDrawer({
+                title:"修改信息",
+                content: content,
+                width:"80%",
+                okText:"保存",
+                onBeforeOk: async ()=>{
+                    try{
+                        return $gl.fn.invokeComponentMethod("${formInst.id}","submitForm",[]);
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
+                },
+                onOpen:async ()=>{
+                    try{
+                        
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
+                },
+                onClose:async ()=>{
+                    try{
+                        $gl.fn.invokeComponentMethod("${tableInst.id}","refresh",[]);
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
+                },
+                cancelText:"取消",
+                hideCancel:true
+            })`,
+        __commandBlock: {
+          componentName: 'GlPage',
+          id: utils.gid('blockPage'),
+          props: {
+            pageType: 'blockPage',
+            pageTitle: '指令',
+            pageMargin: '0',
+            pagePadding: '0'
+          },
+          slots: {},
+          children: [
+            {
+              id: utils.gid('id'),
+              title: '',
+              componentName: 'GlOpenComponentPageBlock',
+              group: 'block_page',
+              props: {
+                extendId: formPageId,
+                title: '修改信息',
+                params: [
+                  {
+                    id: paramFormId,
+                    name: 'form.id',
+                    valueExpression: '$gl.ctx.record.id'
+                  }
+                ],
+                pageStatus: 'update',
+                okText: '保存',
+                hideCancel: true,
+                invokeBlocks: ['onBeforeOk', 'onClose'],
+                width: '80%'
+              },
+              propsExpressions: {},
+              slots: {},
+              slotsExpressions: {},
+              children: [
+                {
+                  componentName: 'GlVirtual',
+                  id: utils.gid('v'),
+                  props: {},
+                  slots: {},
+                  children: [
+                    {
+                      id: utils.gid('id'),
+                      title: '',
+                      componentName: 'GlComponentInvokeBlock',
+                      group: 'block_page',
+                      props: {
+                        extendId: formPageId,
+                        componentId: `${formInst.id}`,
+                        params: [],
+                        methodName: 'submitForm',
+                        enableReturn: true
+                      },
+                      slots: {},
+                      children: [],
+                      actions: [],
+                      style: {},
+                      propsWrapper: '',
+                      i18n: [],
+                      propsExpressions: {},
+                      slotsExpressions: {}
+                    }
+                  ],
+                  actions: [],
+                  style: {}
+                },
+                {
+                  componentName: 'GlVirtual',
+                  id: utils.gid('v'),
+                  props: {},
+                  slots: {},
+                  children: [
+                    {
+                      id: utils.gid('id'),
+                      title: '',
+                      componentName: 'GlComponentInvokeBlock',
+                      group: 'block_page',
+                      props: {
+                        extendId: tablePageId,
+                        componentId: `${tableInst.id}`,
+                        methodName: 'refresh',
+                        params: []
+                      },
+                      slots: {},
+                      children: [],
+                      actions: [],
+                      style: {},
+                      propsWrapper: '',
+                      i18n: [],
+                      propsExpressions: {},
+                      slotsExpressions: {}
+                    }
+                  ],
+                  actions: [],
+                  style: {}
+                }
+              ],
+              actions: [],
+              style: {},
+              i18n: []
+            }
+          ]
+        }
+      }
+    ],
+    style: {},
+    propsWrapper: '',
+    i18n: []
+  })
+
+  actions.push({
+    id: utils.gid('btn'),
+    componentName: 'GlButton',
+    group: '',
+    props: { type: 'text', label: '删除', status: 'danger', iconType: '' },
+    propsExpressions: {},
+    slots: {},
+    slotsExpressions: {},
+    children: [],
+    actions: [
+      {
+        id: utils.gid('act'),
+        eventName: 'click',
+        name: 'click',
+        title: '点击',
+        body:
+          'let varName = "undefined" || "confirm";\n' +
+          'let vars = {};\n' +
+          '$gl.fn.confirm({\n' +
+          '  width: "15em",\n' +
+          '  title: "危险操作",\n' +
+          '  content: "是否确定删除？",\n' +
+          '  onOk: () => {\n' +
+          '    vars[varName] = true;\n' +
+          '    $gl.fn.invokeComponentMethod("' +
+          tableInst.id +
+          '", "deleteRecord", [\n' +
+          '      { name: "id", value: undefined, valueExpression: $gl.ctx.record.id },\n' +
+          '    ]);\n' +
+          '  },\n' +
+          '  onCancel: () => {\n' +
+          '    vars[varName] = false;\n' +
+          '  },\n' +
+          '});',
+        __commandBlock: {
+          componentName: 'GlPage',
+          id: utils.gid('blockPage'),
+          props: {
+            pageType: 'blockPage',
+            pageTitle: '指令',
+            pageMargin: '0',
+            pagePadding: '0'
+          },
+          slots: {},
+          children: [
+            {
+              id: utils.gid('id'),
+              title: '',
+              componentName: 'GlConfirmBlock',
+              group: 'block_feedback',
+              props: {
+                invokeBlocks: ['onOk'],
+                title: '危险操作',
+                content: '是否确定删除？'
+              },
+              children: [
+                {
+                  componentName: 'GlVirtual',
+                  id: utils.gid('v'),
+                  props: {},
+                  slots: {},
+                  children: [
+                    {
+                      id: utils.gid('id'),
+                      title: '',
+                      componentName: 'GlComponentInvokeBlock',
+                      group: 'block_page',
+                      props: {
+                        extendId: tablePageId,
+                        componentId: `${tableInst.id}`,
+                        methodName: 'deleteRecord',
+                        params: [
+                          {
+                            id: utils.gid('p'),
+                            name: 'id',
+                            valueExpression: '$gl.ctx.record.id'
+                          }
+                        ]
+                      },
+                      propsExpressions: {},
+                      slots: {},
+                      slotsExpressions: {},
+                      children: [],
+                      actions: [],
+                      i18n: [],
+                    }
+                  ],
+                  actions: []
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
     i18n: []
   })
 
@@ -364,27 +627,26 @@ export class ListPageCreator extends PageCreator {
     const pageInst: ComponentInstance = options.pageInfo.pageExtendContent
     //
     const findFormInst = (inst: ComponentInstance): ComponentInstance | null => {
+      console.log('findFormInst', inst)
+      if (inst.componentName && inst.componentName === 'GlEntityForm') {
+        return inst
+      }
       for (let index in inst.children) {
         const subInst = inst.children[index]
-        if (subInst.componentName) {
-          if (subInst.componentName === 'GlEntityForm') {
-            return subInst
-          }
-          const foundForm: ComponentInstance | null = findFormInst(subInst)
-          if (foundForm) {
-            return foundForm
-          }
+        const foundForm: ComponentInstance | null = findFormInst(subInst)
+        if (foundForm) {
+          return foundForm
         }
       }
       return null
     }
     const formInst: ComponentInstance | null = findFormInst(pageInst)
 
-    if (formInst){
+    if (formInst) {
       tableInst.props.toolbar = useToolbarInst(options, tableInst, formInst!)
+      tableInst.props.columnActions = useColumnActionsInst(options, tableInst, formInst!)
     }
     tableInst.props.columns = useColumnsInst(options)
-    tableInst.props.columnActions = useColumnActionsInst(options)
     tableInst.props.query = useQueryInst(options)
     page.children.push(tableInst)
     return page
