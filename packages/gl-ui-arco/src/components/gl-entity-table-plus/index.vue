@@ -38,7 +38,7 @@ import {
   GetEntitySaversResult
 } from '@geelato/gl-ui'
 import type { Action } from '../../types/global'
-import { TableData, TableColumnData } from '@arco-design/web-vue'
+import type { TableData, TableColumnData } from '@arco-design/web-vue'
 
 /**
  *  change:在表格编辑状态时，更换表格数据时触发
