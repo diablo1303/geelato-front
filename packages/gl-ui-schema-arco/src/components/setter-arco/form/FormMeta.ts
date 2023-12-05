@@ -146,6 +146,22 @@ export default {
         "title": "描述",
         "setterComponentName": "AInput",
         "enableValueExpress": true
+    }, {
+        "name": "alarmWhenReadInRuntime",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": false,
+        "show": true,
+        "expanded": true,
+        "displayMode": "tile",
+        "setterComponentProps": {
+            "uncheckedText": "表单只读未传id时不提醒",
+            "checkedText": "表单只读未传id时提醒"
+        },
+        "setterComponentVModelName": "modelValue",
+        "title": "告警提醒",
+        "description": "在表单为只读状态时，若未传相应的表单id，是否告警提醒；默认为否，在开发调试阶段可以配置为true，便于及时发现问题（如漏了传表单id）",
+        "setterComponentName": "ASwitch"
     }],
     "actions": [{
         "name": "onLoadedData",
