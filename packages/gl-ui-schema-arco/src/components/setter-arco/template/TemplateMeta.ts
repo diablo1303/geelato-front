@@ -4,14 +4,14 @@ export default {
   iconType: 'gl-vue',
   group: 'layout',
   title: '自定模板',
-  alias: 'loop',
+  alias: 'tmpl',
   useBy: ['freePage'],
   properties: [
     {
       name: 'content',
       group: 'base',
       type: 'props',
-      enableValueExpress: false,
+      enableValueExpress: true,
       show: true,
       expanded: true,
       setterComponentProps: { },

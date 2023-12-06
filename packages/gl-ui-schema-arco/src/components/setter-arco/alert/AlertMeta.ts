@@ -7,7 +7,7 @@ export default {
     "alias": "alert",
     "useBy": ["freePage"],
     "properties": [{
-        "name": "title",
+        "name": "label",
         "group": "base",
         "type": "props",
         "enableValueExpress": true,
