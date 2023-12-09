@@ -591,7 +591,7 @@ defineExpose({
 
 <template>
   <a-card
-    class="general-card"
+    class="gl-entity-table-plus"
     :title="base.hideLabel === true ? '' : base.label"
     :body-style="{ padding: base.tablePadding }"
     :style="{ 'padding-top': base.hideLabel === true ? '1.2em' : '0' }"

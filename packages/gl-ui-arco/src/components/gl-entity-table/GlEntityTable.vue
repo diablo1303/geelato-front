@@ -216,24 +216,31 @@ const selectAll = (checked: boolean) => {
 }
 
 let lastEntityReaderParams: Array<EntityReaderParam>
+let lastOrder: EntityReaderOrder[] = []
 const search = (entityReaderParams: Array<EntityReaderParam>) => {
   // console.log('search entityReaderParams:', entityReaderParams)
   lastEntityReaderParams = entityReaderParams
-  fetchData({ params: entityReaderParams })
+  fetchData({ order: lastOrder, params: entityReaderParams })
 }
 const onPageChange = (pageNo: number) => {
-  fetchData({ pageNo, params: lastEntityReaderParams })
+  fetchData({ pageNo, order: lastOrder, params: lastEntityReaderParams })
 }
 
 const onPageSizeChange = (pageSize: number) => {
   pagination.value.pageSize = pageSize
-  fetchData({ pageSize, params: lastEntityReaderParams })
+  fetchData({ pageSize, order: lastOrder, params: lastEntityReaderParams })
 }
 
 const onSorterChange = (dataIndex: string, direction: string) => {
-  console.log(dataIndex, direction)
-  const order: EntityReaderOrder[] = [new EntityReaderOrder(dataIndex, direction)]
-  fetchData({ order, params: lastEntityReaderParams })
+  // console.log(dataIndex, direction)
+  if (!direction) {
+    // 如果清空了当前字段的排序
+    lastOrder = []
+  } else {
+    const order: EntityReaderOrder[] = [new EntityReaderOrder(dataIndex, direction)]
+    lastOrder = order
+  }
+  fetchData({  order: lastOrder, params: lastEntityReaderParams })
 }
 
 /**
