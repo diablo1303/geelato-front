@@ -3,7 +3,7 @@ import axios from 'axios';
 import {Message, Modal} from '@arco-design/web-vue';
 import {useUserStore} from '@/store';
 /* eslint-disable-next-line */
-import globalConfig from '@/config/globalconfig';
+import globalConfig from '@/config/globalConfig';
 import {getToken} from '@/utils/auth';
 import {entityApi} from "@geelato/gl-ui";
 import {fetchFileById} from "@/api/attachment";
