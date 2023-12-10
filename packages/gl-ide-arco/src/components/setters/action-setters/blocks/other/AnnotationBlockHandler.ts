@@ -5,11 +5,12 @@ import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class AnnotationBlockHandler implements IBlockHandler {
-    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-        return new ParseResult(
-            ``
-        )
-    }
+  getName(): string {
+    return 'AnnotationBlockHandler'
+  }
+  parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+    return new ParseResult(``)
+  }
 }
 
 interface Props {

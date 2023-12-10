@@ -4,19 +4,22 @@ import type {PageParamConfigType} from "@geelato/gl-ui";
 import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class SetPropsBlockHandler implements IBlockHandler {
+  getName(): string {
+    return 'SetPropsBlockHandler'
+  }
 
-    parseToScript(props: Props): ParseResult {
-        const vueProps = props.vueProps || []
-        const propsObj: { [key: string]: any } = {}
-        vueProps.forEach((prop: PageParamConfigType) => {
-            propsObj[prop.pName] = prop.pValue
-        })
-        return new ParseResult(
-            `
+  parseToScript(props: Props): ParseResult {
+    const vueProps = props.vueProps || []
+    const propsObj: { [key: string]: any } = {}
+    vueProps.forEach((prop: PageParamConfigType) => {
+      propsObj[prop.pName] = prop.pValue
+    })
+    return new ParseResult(
+      `
             $gl.fn.setComponentProps("${props.componentId}","${vueProps}");
             `
-        )
-    }
+    )
+  }
 }
 
 export class Props {

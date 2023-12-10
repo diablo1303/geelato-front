@@ -5,14 +5,19 @@ import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class IfComponentValueBlockHandler implements IBlockHandler {
-    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-
-        return new ParseResult(
-            `
-            ${props.mode === 'if' ? 'if' : 'else if'}($gl.fn.getComponentValue("${props.componentId}") ${props.relationship} ${propsExpressions?.compareValue || props.compareValue}){
-            `
-            , "}")
-    }
+  getName(): string {
+    return 'IfComponentValueBlockHandler'
+  }
+  parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+    return new ParseResult(
+      `
+            ${props.mode === 'if' ? 'if' : 'else if'}($gl.fn.getComponentValue("${
+        props.componentId
+      }") ${props.relationship} ${propsExpressions?.compareValue || props.compareValue}){
+            `,
+      '}'
+    )
+  }
 }
 
 export class Props {

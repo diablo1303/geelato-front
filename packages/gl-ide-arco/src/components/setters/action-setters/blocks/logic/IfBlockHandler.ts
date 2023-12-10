@@ -3,9 +3,18 @@ import ParseResult from "../ParseResult";
 import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class IfBlockHandler implements IBlockHandler {
-    parseToScript(props: Props): ParseResult {
-        return new ParseResult(`${props.mode === 'if' ? 'if' : 'else if'}(${props.target1} ${props.relationship} ${props.target2}){`, `}`)
-    }
+  getName(): string {
+    return 'IfBlockHandler'
+  }
+
+  parseToScript(props: Props): ParseResult {
+    return new ParseResult(
+      `${props.mode === 'if' ? 'if' : 'else if'}(${props.target1} ${props.relationship} ${
+        props.target2
+      }){`,
+      `}`
+    )
+  }
 }
 
 export class Props {

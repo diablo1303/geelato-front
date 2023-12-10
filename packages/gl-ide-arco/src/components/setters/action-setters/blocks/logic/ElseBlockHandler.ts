@@ -3,6 +3,9 @@ import ParseResult from '../ParseResult'
 import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class ElseBlockHandler implements IBlockHandler {
+  getName(): string {
+    return 'ElseBlockHandler'
+  }
   parseToScript(props: Props): ParseResult {
     if (!props.description) {
       props.description = ''

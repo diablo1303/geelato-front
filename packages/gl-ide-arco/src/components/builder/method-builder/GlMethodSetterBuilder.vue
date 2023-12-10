@@ -67,7 +67,7 @@
                   参数说明
                 </td>
                 <td class="gl-table-cell">
-                  <a-input v-model="slotProps.item.description"></a-input>
+                  <a-textarea v-model="slotProps.item.description"></a-textarea>
                 </td>
               </tr>
             </table>

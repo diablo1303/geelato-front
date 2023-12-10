@@ -54,8 +54,11 @@ import Footer from '@/components/footer/index.vue';
 import TabBar from '@/components/tab-bar/index.vue';
 import usePermission from '@/hooks/permission';
 import useResponsive from '@/hooks/responsive';
+import {getSysConfig} from "@/api/user";
+import {useGlobal} from "@geelato/gl-ui";
 import PageLayout from './page-layout.vue';
 
+const global = useGlobal();
 const isInit = ref(false);
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -102,6 +105,10 @@ provide('toggleDrawerMenu', () => {
 });
 onMounted(() => {
   isInit.value = true;
+  getSysConfig(global, {
+    tenantCode: (route && route.params && route.params.tenantCode) as string || '',
+    appId: (route && route.params && route.params.appId) as string || ''
+  });
 });
 </script>
 

@@ -4,14 +4,19 @@ import ParseResult from "../ParseResult";
 import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class ExportExcelBlockHandler implements IBlockHandler {
-    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-        const fileName = propsExpressions?.fileName ? propsExpressions.fileName : `"${props.fileName}"`;
-        return new ParseResult(
+  getName(): string {
+    return 'ExportExcelBlockHandler'
+  }
+  parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+    const fileName = propsExpressions?.fileName ? propsExpressions.fileName : `"${props.fileName}"`
+    return new ParseResult(
+      `
+            ${props.enableAwait ? 'await ' : ''} $gl.fileApi.exportExcel(${fileName},"${
+        props.fileTemplate?.templateId
+      }","${props.dataType}",$gl.vars.${props.varName})
             `
-            ${props.enableAwait ? 'await ' : ''} $gl.fileApi.exportExcel(${fileName},"${props.fileTemplate?.templateId}","${props.dataType}",$gl.vars.${props.varName})
-            `
-        )
-    }
+    )
+  }
 }
 
 interface Props {

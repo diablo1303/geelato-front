@@ -4,6 +4,9 @@ import GlCommandBlockTwo from './CommandBlockTwo.vue'
 import ParseResult from './ParseResult'
 
 export default interface IBlockHandler {
+
+  getName(): string
+
   /**
    * @param props
    * @param propsExpressions   属性性的表达式，若有配置，与props的实属对应；有配置该值时，以
@@ -18,9 +21,9 @@ export default interface IBlockHandler {
   ): ParseResult
 }
 
-export const CommandBlocks  = {
-  CommandBlockOne : GlCommandBlockOne,
-  CommandBlockTwo : GlCommandBlockTwo
+export const CommandBlocks = {
+  CommandBlockOne: GlCommandBlockOne,
+  CommandBlockTwo: GlCommandBlockTwo
 }
 
 export type PropsExpressions = { [key: string]: any }
@@ -31,12 +34,12 @@ export class BlocksHandler {
   // key为componentName
   blockComponents: Record<string, any> = {}
 
-  constructor() {
-  }
+  constructor() {}
 
   register<T extends IBlockHandler>(handler: T, blockComponent?: any) {
     // handler
-    const handlerName = handler.constructor.name
+    // 注意，由于在build时，handler.constructor.name的值变改变，会被压缩，不可直接当作handlerName，需采用getName
+    const handlerName = handler.getName()
     const componentName = 'Gl' + handlerName.replace('Handler', '')
     this.handlers[componentName] = handler
     this.blockComponents[componentName] = blockComponent || CommandBlocks.CommandBlockOne
@@ -64,7 +67,14 @@ export class BlocksHandler {
     // console.log('BlocksHandler > parseOne() > block:', block)
     if (block) {
       const handler: IBlockHandler = this.handlers[block.componentName]
-      console.log('BlocksHandler > parseOne() > parse blocks and get handler:', handler, 'by nane:', block.componentName, ',handlers:', this.handlers)
+      // console.log(
+      //   'BlocksHandler > parseOne() > parse blocks and get handler:',
+      //   handler,
+      //   'by nane:',
+      //   block.componentName,
+      //   ',handlers:',
+      //   this.handlers
+      // )
       const parseResult =
         handler
           ?.parseToScript(block.props, block.propsExpressions, block)

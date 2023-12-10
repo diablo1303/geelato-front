@@ -3,20 +3,23 @@ import ParseResult from "../ParseResult";
 import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class SetValueBlockHandler implements IBlockHandler {
+  getName(): string {
+    return 'SetValueBlockHandler'
+  }
 
-    parseToScript(props: Props, propsExpressions: Props): ParseResult {
-        // let value
-        // if (propsExpressions?.value) {
-        //     value = `$gl.jsEngine.evalExpression('${propsExpressions.value}', {})`
-        // } else {
-        //     value = `${props.value}`
-        // }
-        return new ParseResult(
-            `
+  parseToScript(props: Props, propsExpressions: Props): ParseResult {
+    // let value
+    // if (propsExpressions?.value) {
+    //     value = `$gl.jsEngine.evalExpression('${propsExpressions.value}', {})`
+    // } else {
+    //     value = `${props.value}`
+    // }
+    return new ParseResult(
+      `
             $gl.fn.setComponentValue("${props.componentId}",${props.value});
             `
-        )
-    }
+    )
+  }
 }
 
 export class Props {

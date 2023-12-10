@@ -5,6 +5,9 @@ import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 
 export default class ForTimesBlockHandler implements IBlockHandler {
+  getName(): string {
+    return 'ForTimesBlockHandler'
+  }
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     const startNumber = propsExpressions?.startNumber || props.startNumber || 0
     const endNumber = propsExpressions?.endNumber || props.endNumber || 1

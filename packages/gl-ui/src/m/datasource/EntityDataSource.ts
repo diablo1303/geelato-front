@@ -132,13 +132,16 @@ export class EntityReaderOrder {
   /**
    *
    * @param field 排序字段
-   * @param order 上降序 '+' | '-'
+   * @param order 上降序 'ascend' | 'descend' | ''
    */
   constructor(field?: string, order?: string) {
     this.field = field || ''
     this.order = this.convert(order) || '+'
   }
 
+  /**
+   * @param order 'ascend' | 'descend' | ''
+   */
   convert(order?: string) {
     switch (order) {
       case 'ascend':

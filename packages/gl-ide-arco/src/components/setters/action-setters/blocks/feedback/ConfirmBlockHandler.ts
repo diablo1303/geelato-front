@@ -4,9 +4,12 @@ import type {PropsExpressions} from "../BlockHandler";
 import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class ConfirmBlockHandler implements IBlockHandler {
-    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-        return new ParseResult(
-            `
+  getName(): string {
+    return 'ConfirmBlockHandler'
+  }
+  parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+    return new ParseResult(
+      `
             let varName = '${props.varName}' || 'confirm'
             let vars = {};
             $gl.fn.confirm({
@@ -23,8 +26,8 @@ export default class ConfirmBlockHandler implements IBlockHandler {
                 }
             })
             `
-        )
-    }
+    )
+  }
 }
 
 interface Props {

@@ -4,17 +4,20 @@ import type {PropsExpressions} from "../BlockHandler";
 import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class NotificationBlockHandler implements IBlockHandler {
-    parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-        const method = props.method || 'info'
-        return new ParseResult(
-            `
+  getName(): string {
+    return 'NotificationBlockHandler'
+  }
+  parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+    const method = props.method || 'info'
+    return new ParseResult(
+      `
             $gl.fn.notification.${method}({
                 title:${propsExpressions?.title || "'" + (props.title || '') + "'"},
                 content:${propsExpressions?.content || "'" + props.content + "'"}
                 })
             `
-        )
-    }
+    )
+  }
 }
 
 interface Props {

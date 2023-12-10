@@ -73,9 +73,11 @@ import {useStorage} from '@vueuse/core';
 import {useUserStore} from '@/store';
 import useLoading from '@/hooks/loading';
 import type {LoginData} from '@/api/user';
+import {getSysConfig} from "@/api/user";
 import {DEFAULT_ROUTE} from "@/router/constants";
 import {appDataBaseRoutes, formatAppModules, IS_DATA_PAGE, pageParamsIsFull} from "@/router/routes";
 import {getToken} from "@/utils/auth";
+import {useGlobal} from "@geelato/gl-ui";
 
 const router = useRouter();
 const route = useRoute();
@@ -83,6 +85,7 @@ const {t} = useI18n();
 const errorMessage = ref('');
 const {loading, setLoading} = useLoading();
 const userStore = useUserStore();
+const global = useGlobal();
 
 const loginConfig = useStorage('login-config', {
   rememberPassword: false,
@@ -136,6 +139,10 @@ const enterApp = () => {
   }
 }
 onMounted(() => {
+  getSysConfig(global, {
+    tenantCode: (route && route.params && route.params.tenantCode) as string || '',
+    appId: (route && route.params && route.params.appId) as string || ''
+  });
   if (getToken()) enterApp();
 });
 

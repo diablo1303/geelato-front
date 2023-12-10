@@ -138,9 +138,9 @@
         language="json"
       ></GlMonacoEditor>
       <template #footer>
-        <a-button type="primary" @click="saveCode">保存</a-button>
-        <a-button type="primary" @click="copyCode">复制(完全复制)</a-button>
-        <a-button type="primary" @click="copyCodeAndChangeId">复制(组件相关Id更改)</a-button>
+        <a-button type="primary" @click="saveCode">暂存（未保存到服务端）</a-button>
+        <a-button type="primary" @click="copyCode">仅复制</a-button>
+        <a-button type="primary" @click="copyCodeAndChangeId">复制（组件复制成新的Id）</a-button>
       </template>
     </gl-modal>
   </div>

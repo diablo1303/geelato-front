@@ -4,9 +4,12 @@ import type {Param} from "@geelato/gl-ui";
 import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class OpenThirdPageBlockHandler implements IBlockHandler {
-    parseToScript(props: Props): ParseResult {
-        return new ParseResult(`$gl.fn.openWin("${props.url}",${JSON.stringify(props.params || [])})`)
-    }
+  getName(): string {
+    return 'OpenThirdPageBlockHandler'
+  }
+  parseToScript(props: Props): ParseResult {
+    return new ParseResult(`$gl.fn.openWin("${props.url}",${JSON.stringify(props.params || [])})`)
+  }
 }
 
 export class Props {

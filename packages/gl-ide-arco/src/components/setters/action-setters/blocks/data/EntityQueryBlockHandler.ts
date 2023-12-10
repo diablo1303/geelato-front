@@ -5,10 +5,14 @@ import { utils, type EntityReader } from '@geelato/gl-ui'
 import { blocksHandler, CommandBlocks } from '../BlockHandler'
 
 export default class EntityQueryBlockHandler implements IBlockHandler {
+  getName(): string {
+    return 'EntityQueryBlockHandler'
+  }
+
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     console.log('props', props)
     let respVarName = props.respVarName || utils.gid('respVarName')
-    let dataVarName = props.dataVarName|| utils.gid('dataVarName')
+    let dataVarName = props.dataVarName || utils.gid('dataVarName')
     return new ParseResult(
       `
           $gl.vars.${respVarName} = await $gl.entityApi.queryByEntityReader(${JSON.stringify(

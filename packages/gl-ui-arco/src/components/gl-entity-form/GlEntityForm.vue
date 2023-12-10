@@ -92,6 +92,11 @@ const props = defineProps({
       return false
     }
   },
+  /**
+   *  在表单为只读状态时，若未传相应的表单id，是否告警提醒
+   *  默认为否，在开发调试阶段可以配置为true，便于及时发现问题（如漏了传表单id）
+   */
+  alarmWhenReadInRuntime: Boolean,
   ...mixins.props
 })
 const isRead = ref(pageProvideProxy.isPageStatusRead())
@@ -316,7 +321,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
 const loadForm = async () => {
   if (!entityRecordId.value) {
     // 1、不需要从服务端获取，没有id表示新增，不需要从服务端获取表单值
-    if (isRead.value && props.glIsRuntime) {
+    if (isRead.value && props.glIsRuntime && props.alarmWhenReadInRuntime) {
       global.$notification.error({
         duration: 8000,
         title: '参数不全',

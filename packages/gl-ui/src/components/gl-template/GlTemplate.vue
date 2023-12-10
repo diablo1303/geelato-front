@@ -4,14 +4,8 @@ import mixins from '../mixins'
 import utils from '../../m/utils/Utils'
 
 defineOptions({ name: 'GlTemplate' })
-const emits = defineEmits(['update:modelValue', 'clickTemplate'])
+const emits = defineEmits(['update:content', 'clickTemplate'])
 const props = defineProps({
-  modelValue: {
-    type: String,
-    default() {
-      return ''
-    }
-  },
   /**
    *  vue模板内容
    */
@@ -27,17 +21,15 @@ const props = defineProps({
   },
   ...mixins.props
 })
-const mv = ref(props.modelValue)
-watch(mv, () => {
-  emits('update:modelValue', mv.value)
-})
 
+const mv = ref(props.content)
 const refreshKey = ref(utils.gid())
 watch(
   () => {
     return props.content
   },
   () => {
+    mv.value = props.content
     refreshKey.value = utils.gid()
   }
 )
@@ -63,7 +55,7 @@ const MyComponent = computed(() => {
         type: Object
       }
     },
-    template: props.content
+    template: mv.value
   }
 })
 
@@ -74,21 +66,25 @@ const onClick = () => {
     params: props.params
   })
 }
-console.log('create template ...',props.glLoopIndex)
+console.log('create template ...', props.glLoopIndex)
 </script>
 
 <template>
   <div class="gl-template" :key="refreshKey" @click="onClick">
-    <template v-if="!content">
-      <a-empty >
-        模板内容为空
-      </a-empty>
+    <template v-if="!mv">
+      <a-empty> 模板内容为空 </a-empty>
     </template>
-    <component v-else :is="MyComponent" :loopItem="glLoopItem" :loopIndex="glLoopIndex" :params="params" />
+    <component
+      v-else
+      :is="MyComponent"
+      :loopItem="glLoopItem"
+      :loopIndex="glLoopIndex"
+      :params="params"
+    />
   </div>
 </template>
 <style scoped>
-  .gl-template{
-    min-height: 1em
-  }
+.gl-template {
+  min-height: 1em;
+}
 </style>

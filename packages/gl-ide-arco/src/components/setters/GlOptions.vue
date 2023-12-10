@@ -2,7 +2,7 @@
  注意：dataIndex值为value时，在修改value所在input值时，页面会卡，比较慢，如：[{dataIndex: 'text', title: '显示名'}, {dataIndex: 'value', title: '值'}]
 -->
 <template>
-  <table v-if="items&&items.length>=0">
+  <table class="gl-options" v-if="items&&items.length>=0">
     <!--    <tr v-if="items&&items.length>0">-->
     <!--      <th v-for="(column,index) in convertedColumns" style="font-weight: normal;text-align: center"-->
     <!--          :style="{width: (100/convertedColumns.length+'%')}">{{ column.title }}-->
@@ -20,7 +20,7 @@
       <template #item="{element, index}">
         <tr>
           <td style="width: 100%">
-            <table>
+            <table style="width: 100%">
               <tr>
                 <td v-for="(column,columnIndex) in convertedColumns" :key="index+'_'+columnIndex">
                   <a-input size="small" v-model="element[column.dataIndex]"
@@ -227,5 +227,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+  .gl-options{
+    width: 100%;
+  }
 </style>

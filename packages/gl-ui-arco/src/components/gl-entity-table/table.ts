@@ -364,6 +364,7 @@ export type EntityFetchDataProps = {
 
 /**
  * 基于查询列创建实体数据源
+ * 依据查询列中的默认排序配置，生成默认排序，当未传入新的排序时，采用默认排序进行查询
  * @param props
  * @param queryColumns 需要查询的列
  * @param simpleReaderInfo 简单的查询信息
@@ -400,6 +401,7 @@ export const createEntityReader = (
   // 逻辑删除模式下，增加逻辑删除的数据过滤条件
   entityReader.params.push(new EntityReaderParam(logicDeleteFieldName, 'eq', 0))
 
+  const defaultOrders:EntityReaderOrder[] = []
   const fieldMetas = new Array<FieldMeta>()
   queryColumns?.forEach((column) => {
     // 过滤掉操作列，操作列的slotName，在geelato中约定为“#”
@@ -411,7 +413,16 @@ export const createEntityReader = (
       fm.title = column.title
       fieldMetas.push(fm)
     }
+    // 构建
+    if (column.sortable?.defaultSortOrder){
+      const order = new EntityReaderOrder(column.dataIndex,column.sortable?.defaultSortOrder)
+      defaultOrders.push(order)
+    }
   })
+  // 如未设置排序，采用默认排序
+  if (entityReader.order.length===0){
+    entityReader.order.push(...defaultOrders)
+  }
   entityReader.fields = fieldMetas
   return entityReader
 }
