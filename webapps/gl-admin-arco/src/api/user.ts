@@ -110,7 +110,7 @@ export function abbreviateValue(value: string, type: string) {
 export function getSystemConfig(params: Record<string, any>) {
   const token = getToken();
   if (token) axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-  return axios.get<QueryResult>(`/api/config`, params);
+  return axios.get<QueryResult>(`/api/config?${Object.entries(params).map(([key, value]) => `${key}=${value}`).join('&')}`);
 }
 
 /**
