@@ -1,7 +1,7 @@
 <template>
   <div class="navbar" :class="{'gl-menu-collapse':appStore.appCurrentSetting.menuCollapse}">
     <!--  头部菜单，左侧菜单，应用图标、应用名称  -->
-    <div class="left-side"  :style="{'max-width':leftSideWidth+'px','min-width':leftSideWidth+'px'}">
+    <div class="left-side" :style="{'max-width':leftSideWidth+'px','min-width':leftSideWidth+'px'}">
       <a-space>
         <span style="text-align: center;width: 32px;height: 32px;">
             <img :src="appInfo.appLogo" alt="logo" style="width: 100%;height: 100%"/>
@@ -66,77 +66,77 @@
         </a-dropdown>
       </li>
       <!--   导航风格   -->
-            <li>
-              <a-tooltip
-                  :content="
+      <li>
+        <a-tooltip
+            :content="
                   navStyle === 'leftLight'
                     ? $t('settings.navbar.navStyle.toLeftBlue')
                     : $t('settings.navbar.navStyle.toLeftLight')
                 "
-              >
-                <a-button
-                    :shape="'circle'"
-                    class="nav-btn"
-                    type="outline"
-                    @click="handleToggleNavStyle(navStyle === 'leftBlue'?'leftLight':'leftBlue')"
-                >
-                  <template #icon>
-                    <icon-moon-fill v-if="navStyle === 'leftLight'"/>
-                    <icon-sun-fill v-else/>
-                  </template>
-                </a-button>
-              </a-tooltip>
-            </li>
+        >
+          <a-button
+              :shape="'circle'"
+              class="nav-btn"
+              type="outline"
+              @click="handleToggleNavStyle(navStyle === 'leftBlue'?'leftLight':'leftBlue')"
+          >
+            <template #icon>
+              <icon-moon-fill v-if="navStyle === 'leftLight'"/>
+              <icon-sun-fill v-else/>
+            </template>
+          </a-button>
+        </a-tooltip>
+      </li>
       <!--   明暗背景   -->
-<!--      <li>-->
-<!--        <a-tooltip-->
-<!--            :content="-->
-<!--            theme === 'light'-->
-<!--              ? $t('settings.navbar.theme.toDark')-->
-<!--              : $t('settings.navbar.theme.toLight')-->
-<!--          "-->
-<!--        >-->
-<!--          <a-button-->
-<!--              :shape="'circle'"-->
-<!--              class="nav-btn"-->
-<!--              type="outline"-->
-<!--              @click="handleToggleTheme($event)"-->
-<!--          >-->
-<!--            <template #icon>-->
-<!--              <icon-moon-fill v-if="theme === 'dark'"/>-->
-<!--              <icon-sun-fill v-else/>-->
-<!--            </template>-->
-<!--          </a-button>-->
-<!--        </a-tooltip>-->
-<!--      </li>-->
+      <!--      <li>-->
+      <!--        <a-tooltip-->
+      <!--            :content="-->
+      <!--            theme === 'light'-->
+      <!--              ? $t('settings.navbar.theme.toDark')-->
+      <!--              : $t('settings.navbar.theme.toLight')-->
+      <!--          "-->
+      <!--        >-->
+      <!--          <a-button-->
+      <!--              :shape="'circle'"-->
+      <!--              class="nav-btn"-->
+      <!--              type="outline"-->
+      <!--              @click="handleToggleTheme($event)"-->
+      <!--          >-->
+      <!--            <template #icon>-->
+      <!--              <icon-moon-fill v-if="theme === 'dark'"/>-->
+      <!--              <icon-sun-fill v-else/>-->
+      <!--            </template>-->
+      <!--          </a-button>-->
+      <!--        </a-tooltip>-->
+      <!--      </li>-->
       <!--   消息   -->
-<!--      <li>-->
-<!--        <a-tooltip :content="$t('settings.navbar.alerts')">-->
-<!--          <div class="message-box-trigger">-->
-<!--            <a-badge :count="9" dot>-->
-<!--              <a-button-->
-<!--                  :shape="'circle'"-->
-<!--                  class="nav-btn"-->
-<!--                  type="outline"-->
-<!--                  @click="setPopoverVisible($event)"-->
-<!--              >-->
-<!--                <icon-notification/>-->
-<!--              </a-button>-->
-<!--            </a-badge>-->
-<!--          </div>-->
-<!--        </a-tooltip>-->
-<!--        <a-popover-->
-<!--            :arrow-style="{ display: 'none' }"-->
-<!--            :content-style="{ padding: 0, minWidth: '400px' }"-->
-<!--            content-class="message-popover"-->
-<!--            trigger="click"-->
-<!--        >-->
-<!--          <div ref="refBtn" class="ref-btn"></div>-->
-<!--          <template #content>-->
-<!--            <message-box/>-->
-<!--          </template>-->
-<!--        </a-popover>-->
-<!--      </li>-->
+      <!--      <li>-->
+      <!--        <a-tooltip :content="$t('settings.navbar.alerts')">-->
+      <!--          <div class="message-box-trigger">-->
+      <!--            <a-badge :count="9" dot>-->
+      <!--              <a-button-->
+      <!--                  :shape="'circle'"-->
+      <!--                  class="nav-btn"-->
+      <!--                  type="outline"-->
+      <!--                  @click="setPopoverVisible($event)"-->
+      <!--              >-->
+      <!--                <icon-notification/>-->
+      <!--              </a-button>-->
+      <!--            </a-badge>-->
+      <!--          </div>-->
+      <!--        </a-tooltip>-->
+      <!--        <a-popover-->
+      <!--            :arrow-style="{ display: 'none' }"-->
+      <!--            :content-style="{ padding: 0, minWidth: '400px' }"-->
+      <!--            content-class="message-popover"-->
+      <!--            trigger="click"-->
+      <!--        >-->
+      <!--          <div ref="refBtn" class="ref-btn"></div>-->
+      <!--          <template #content>-->
+      <!--            <message-box/>-->
+      <!--          </template>-->
+      <!--        </a-popover>-->
+      <!--      </li>-->
       <!--   全屏模式   -->
       <li>
         <a-tooltip
@@ -211,6 +211,15 @@
                 </span>
               </a-space>
             </a-doption>
+            <!--     修改密码       -->
+            <a-doption>
+              <a-space @click="resetPasswordClick($event)">
+                <icon-edit/>
+                <span>
+                  {{ $t('messageBox.resetPassword') }}
+                </span>
+              </a-space>
+            </a-doption>
             <!--     账号设置       -->
             <a-doption>
               <a-space @click="accountSettingsClick($event)">
@@ -242,6 +251,8 @@
       </li>
     </ul>
   </div>
+  <AccountValid v-model="visibleData.valid" @validEvent="validEvent"/>
+  <AccountPassword v-model="visibleData.password" @completeEvent="completeEvent"/>
 </template>
 
 <script lang="ts" setup>
@@ -259,7 +270,9 @@ import defaultAvatar from '@/assets/images/default-avatar.png';
 import {ACCOUNT_ROUTE_PATH} from "@/router/constants";
 import {IS_ACCOUNT} from "@/router/routes";
 import favicon from '@/assets/favicon.ico'
-import MessageBox from '../message-box/index.vue';
+import AccountValid from "@/views/account/components/account-valid.vue";
+import AccountPassword from "@/views/account/components/account-password.vue";
+import {isValidUser} from "@/utils/auth";
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -280,16 +293,16 @@ const theme = computed(() => {
   return appStore.theme;
 });
 const localNavStyle = localStorage.getItem('gl-nav-style') || appStore.navStyle;
-const navStyle  = computed(() => {
+const navStyle = computed(() => {
   return appStore.navStyle;
 });
-const handleToggleNavStyle = (nStyle:string) => {
-  localStorage.setItem('gl-nav-style',nStyle)
+const handleToggleNavStyle = (nStyle: string) => {
+  localStorage.setItem('gl-nav-style', nStyle)
   appStore.toggleNavStyle(nStyle)
 };
 handleToggleNavStyle(localNavStyle)
-const leftSideWidth = computed(()=>{
-  return appStore.appCurrentSetting.menuCollapse?appStore.appCurrentSetting.menuCollapseWidth:appStore.appCurrentSetting.menuWidth
+const leftSideWidth = computed(() => {
+  return appStore.appCurrentSetting.menuCollapse ? appStore.appCurrentSetting.menuCollapseWidth : appStore.appCurrentSetting.menuWidth
 })
 const topMenu = computed(() => appStore.topMenu && appStore.menu);
 const isDark = useDark({
@@ -375,11 +388,34 @@ const getAppInfo = async () => {
 }
 getAppInfo();
 
+/**
+ * 账户管理
+ * @param ev
+ */
 const accountSettingsClick = (ev?: MouseEvent) => {
   if (IS_ACCOUNT.value) {
     router.push({path: ACCOUNT_ROUTE_PATH});
   } else {
     window.open(router.resolve({path: ACCOUNT_ROUTE_PATH}).href, "_blank");
+  }
+}
+
+const visibleData = ref({valid: false, password: false});
+const validEvent = () => {
+  visibleData.value.password = true;
+}
+const completeEvent = () => {
+  userStore.info();
+}
+/**
+ * 修改密码
+ * @param ev
+ */
+const resetPasswordClick = (ev?: MouseEvent) => {
+  if (isValidUser()) {
+    visibleData.value.password = true;
+  } else {
+    visibleData.value.valid = true;
   }
 }
 </script>

@@ -75,7 +75,7 @@ import useLoading from '@/hooks/loading';
 import type {LoginData} from '@/api/user';
 import {getSysConfig} from "@/api/user";
 import {DEFAULT_ROUTE} from "@/router/constants";
-import {appDataBaseRoutes, formatAppModules, pageBaseRoute, pageParamsIsFull} from "@/router/routes";
+import {appDataBaseRoutes, formatAppModules, IS_ACCOUNT, pageBaseRoute, pageParamsIsFull} from "@/router/routes";
 import {getToken} from "@/utils/auth";
 import {QueryAppForm, queryApps} from "@/api/application";
 import {useGlobal} from "@geelato/gl-ui";
@@ -133,6 +133,11 @@ const enterApp = async () => {
     } else {// page功能页面
       pageBaseRoute(router, baseParams);
     }
+  } else if (IS_ACCOUNT.value) {
+    const {redirect, ...othersQuery} = router.currentRoute.value.query;
+    if (router.hasRoute(redirect as string)) {
+      window.open(router.resolve({name: redirect as string, params: {...othersQuery} as RouteParamsRaw}).href, "_self");
+    }
   } else {
     // http://localhost:5173/login => http://localhost:5173/:tenantCode/:appId/page
     const {tenantCode} = userStore.userInfo;
@@ -152,7 +157,7 @@ const enterApp = async () => {
 }
 onMounted(() => {
   getSysConfig(global, {
-    tenantCode: (route && route.params && route.params.tenantCode) as string || '',
+    tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore.userInfo && userStore.userInfo.tenantCode) || '',
     appId: (route && route.params && route.params.appId) as string || ''
   });
   if (getToken()) enterApp();

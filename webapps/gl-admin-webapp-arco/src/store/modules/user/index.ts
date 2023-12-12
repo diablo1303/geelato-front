@@ -57,10 +57,10 @@ const useUserStore = defineStore('user', {
     },
 
     // Get user's information
-    async info() {
+    async info(successCallBack?: any) {
       const res = await getUserInfo();
-
       this.setInfo(res.data);
+      if (typeof successCallBack === "function") successCallBack();
     },
 
     // Login

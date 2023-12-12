@@ -59,7 +59,7 @@
 
 
     "vue": "3.3.4",
-
+    "vue-cropper": "^1.0.9",
     "vue-echarts": "^6.2.3",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.0.14",

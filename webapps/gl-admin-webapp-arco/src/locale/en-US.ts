@@ -1,4 +1,5 @@
 import localeMessageBox from '@/components/message-box/locale/en-US';
+import localeAccount from '@/views/account/locale/en-US';
 import localeLogin from '@/views/login/locale/en-US';
 import localReset from '@/views/reset/locale/zh-CN';
 
@@ -22,6 +23,7 @@ export default {
   'navbar.action.locale': 'Switch to English',
   ...localeSettings,
   ...localeMessageBox,
+  ...localeAccount,
   ...localeLogin,
   ...localReset,
 };

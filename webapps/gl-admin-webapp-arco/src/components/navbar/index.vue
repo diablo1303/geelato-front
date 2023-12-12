@@ -210,6 +210,15 @@
                 </span>
               </a-space>
             </a-doption>
+            <!--     修改密码       -->
+            <a-doption>
+              <a-space @click="resetPasswordClick($event)">
+                <icon-edit/>
+                <span>
+                  {{ $t('messageBox.resetPassword') }}
+                </span>
+              </a-space>
+            </a-doption>
             <!--     账号设置       -->
             <a-doption>
               <a-space @click="accountSettingsClick($event)">
@@ -241,6 +250,8 @@
       </li>
     </ul>
   </div>
+  <AccountValid v-model="visibleData.valid" @validEvent="validEvent"/>
+  <AccountPassword v-model="visibleData.password" @completeEvent="completeEvent"/>
 </template>
 
 <script lang="ts" setup>
@@ -258,7 +269,9 @@ import defaultAvatar from '@/assets/images/default-avatar.png';
 import {ACCOUNT_ROUTE_PATH} from "@/router/constants";
 import {IS_ACCOUNT} from "@/router/routes";
 import favicon from '@/assets/favicon.ico'
-import MessageBox from '../message-box/index.vue';
+import AccountValid from "@/views/account/components/account-valid.vue";
+import AccountPassword from "@/views/account/components/account-password.vue";
+import {isValidUser} from "@/utils/auth";
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -381,6 +394,23 @@ const accountSettingsClick = (ev?: MouseEvent) => {
     router.push({path: ACCOUNT_ROUTE_PATH});
   } else {
     window.open(router.resolve({path: ACCOUNT_ROUTE_PATH}).href, "_blank");
+  }
+}
+/**
+ * 修改密码
+ */
+const visibleData = ref({valid: false, password: false});
+const validEvent = () => {
+  visibleData.value.password = true;
+}
+const completeEvent = () => {
+  userStore.info();
+}
+const resetPasswordClick = (ev?: MouseEvent) => {
+  if (isValidUser()) {
+    visibleData.value.password = true;
+  } else {
+    visibleData.value.valid = true;
   }
 }
 </script>

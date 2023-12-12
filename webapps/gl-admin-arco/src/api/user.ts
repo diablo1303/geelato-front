@@ -119,10 +119,7 @@ export function getSystemConfig(params: Record<string, any>) {
  */
 export const getSysConfig = async (global: ComponentCustomProperties & Record<string, any>, params?: Record<string, string>) => {
   try {
-    const {data} = await getSystemConfig({
-      appId: params && params.appId || '',
-      tenantCode: params && params.tenantCode || ''
-    });
+    const {data} = await getSystemConfig(params || {});
     const config = data.code === globalConfig.interceptorCode ? data.data : data;
     if (config && global) {
       global.$gl = global.$gl || {};

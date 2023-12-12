@@ -4,7 +4,6 @@ import {UserState} from '@/store/modules/user/types';
 import {RouteRecordNormalized} from "vue-router";
 import {QueryResult} from "@/api/base";
 import {getToken} from "@/utils/auth";
-// eslint-disable-next-line import/no-unresolved
 import globalConfig from "@/config/globalConfig";
 
 export interface LoginData {
@@ -30,6 +29,21 @@ export function getUserInfo() {
 
 export function getMenuList() {
   return axios.post<RouteRecordNormalized[]>('/api/user/menu');
+}
+
+export function uploadAvatar(userId: string, formData: FormData) {
+  return axios.post<UserState>(`/api/user/avatar/${userId}`, formData, {
+    headers: {'Content-Type': 'multipart/form-data'}
+  });
+}
+
+export interface AccountUserInfo {
+  description: string;
+  address: string;
+}
+
+export function updateUserInfo(userId: string, formData: AccountUserInfo) {
+  return axios.post<UserState>(`/api/user/update/${userId}`, formData);
 }
 
 export type AuthCodeAction = 'forgetPassword' | 'validateUser' | 'updateMobile' | 'updatePassword' | 'updateEmail';
@@ -74,10 +88,28 @@ export function bindAccount(params: AuthCodeForm) {
   return axios.post<QueryResult>(`/api/user/bindAccount`, params);
 }
 
+export interface BindAccountData {
+  index: number;
+  title: string;
+  description: string;
+  isNull: boolean;
+}
+
+export function abbreviateValue(value: string, type: string) {
+  if (value) {
+    if (type === '1') {
+      value = `${value.substring(0, 3)}******${value.substring(value.length - 3)}`
+    } else if (type === '2') {
+      value = `${value.substring(0, 3)}****${value.substring(value.lastIndexOf('@'))}`;
+    }
+  }
+  return value;
+}
+
 export function getSystemConfig(params: Record<string, any>) {
   const token = getToken();
   if (token) axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-  return axios.get<QueryResult>(`/api/config`, params);
+  return axios.get<QueryResult>(`/api/config?${Object.entries(params).map(([key, value]) => `${key}=${value}`).join('&')}`);
 }
 
 /**
@@ -86,10 +118,7 @@ export function getSystemConfig(params: Record<string, any>) {
  */
 export const getSysConfig = async (global: ComponentCustomProperties & Record<string, any>, params?: Record<string, string>) => {
   try {
-    const {data} = await getSystemConfig({
-      appId: params && params.appId || '',
-      tenantCode: params && params.tenantCode || ''
-    });
+    const {data} = await getSystemConfig(params || {});
     const config = data.code === globalConfig.interceptorCode ? data.data : data;
     if (config && global) {
       global.$gl = global.$gl || {};

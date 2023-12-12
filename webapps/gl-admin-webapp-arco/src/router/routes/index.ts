@@ -5,10 +5,14 @@ import {DEFAULT_LAYOUT} from "@/router/routes/base";
 import {getMenus, QueryMenuForm} from "@/api/application";
 /* eslint-disable-next-line */
 import globalConfig from '@/config/globalConfig';
-import {DEFAULT_ROUTE, URL_PREFIX} from "@/router/constants";
+import {DEFAULT_ROUTE, DEFAULT_ROUTE_ACCOUNT, URL_PREFIX} from "@/router/constants";
 import {getToken} from "@/utils/auth";
 
 const token = getToken();
+export const IS_ACCOUNT = ref<boolean>(false);
+export const IS_DATA_PAGE = ref<boolean>(false);
+const IS_DATA_END_PAGE = ref<boolean>(false);
+const IS_DATA_REDIRECT_PAGE = ref<boolean>(false);
 const modules = import.meta.glob('./modules/*.ts', {eager: true});
 const externalModules = import.meta.glob('./externalModules/*.ts', {eager: true,});
 
@@ -27,10 +31,74 @@ const getRouter = (_modules: any, result: string[]) => {
   return result;
 }
 
-export const IS_ACCOUNT = ref<boolean>(false);
-export const IS_DATA_PAGE = ref<boolean>(false);
-const routerPaths = getRouter(modules, ['/login', '/page', '/forget']);
+/**
+ * page功能，参数是否完整
+ * @param params
+ */
+export const pageParamsIsFull = (params: object, type?: number) => {
+  if (params) {
+    if (type === 1 && 'tenantCode' in params && 'appId' in params) {
+      // @ts-ignore
+      if (!!params.tenantCode && !!params.appId) {
+        return true;
+      }
+    } else if ('tenantCode' in params && 'appId' in params && 'pageId' in params) {
+      // @ts-ignore
+      if (!!params.tenantCode && !!params.appId && !!params.pageId) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+const isPageApp = (url: URL, curParams: Record<string, string>) => {
+  if (curParams.tenantCode && curParams.appId) {
+    const pagePathValue = `${URL_PREFIX}${curParams.pathValue}/page`;
+    const loginPathValue = `${URL_PREFIX}${curParams.pathValue}/login`;
+    // http://localhost:5173/:prefix/:tenantCode/:appId/page/xx/xx/:pageId
+    if (url.pathname.startsWith(`${pagePathValue}/`) || url.pathname.startsWith(`${pagePathValue}`)) {
+      IS_DATA_PAGE.value = true;
+      if (!token) {
+        window.location.assign(`${url.origin}${URL_PREFIX}${loginPathValue}?redirect=${url.href}`);
+      }
+    }
+    // http://localhost:5173/:prefix/:tenantCode/:appId/page
+    if ([pagePathValue, `${pagePathValue}/`].includes(url.pathname)) {
+      IS_DATA_END_PAGE.value = true;
+      IS_DATA_PAGE.value = true;
+    }
+    // http://localhost:5173/:prefix/:tenantCode/:appId/login?redirect=
+    if (url.pathname.startsWith(`${loginPathValue}`) && url.search.indexOf('redirect=') !== -1) {
+      const redirectValue = url.searchParams.get("redirect") || '';
+      if (redirectValue.indexOf(`${pagePathValue}`) !== -1) {
+        // redirect=http://localhost:5173/:prefix/:tenantCode/:appId/page
+        IS_DATA_PAGE.value = true;
+      } else if (url.search.indexOf('&pageId=') !== -1) {
+        // redirect=&tenantCode=&appId=&pageId=
+        IS_DATA_REDIRECT_PAGE.value = true;
+        IS_DATA_PAGE.value = true;
+      }
+    }
+  }
+}
+
+const isAccountApp = (url: URL, curParams: Record<string, string>) => {
+  // http://localhost:5173/account/user | http://localhost:5173/account/manage
+  if (['/account', '/account/', '/account/user', '/account/user/', '/account/manage', '/account/manage/'].includes(url.pathname)) {
+    IS_ACCOUNT.value = true;
+  }
+  // http://localhost:5173/login?redirect=userAccount
+  if (url.pathname.endsWith("/login") && url.search.indexOf('redirect=') !== -1) {
+    const redirectValue = url.searchParams.get("redirect") || '';
+    if (['account', 'userAccount', 'manageAccount'].includes(redirectValue)) {
+      IS_ACCOUNT.value = true;
+    }
+  }
+}
+
 export const currentPage = () => {
+  const routerPaths = getRouter(modules, ['/login', '/page', 'forget', '/export/list', '/export']);
   const currentParams = {path: '', pathValue: '', tenantCode: '', appId: ''};
   const currentUrl = window.location.href;
   const url = new URL(currentUrl);
@@ -40,10 +108,6 @@ export const currentPage = () => {
       // 是否是账户页面
       if (url.pathname.startsWith('/account/')) {
         IS_ACCOUNT.value = true;
-      }
-      // 是否是无指定的应用站点
-      if (url.pathname.endsWith('/page/') || url.pathname.endsWith('/page')) {
-        IS_DATA_PAGE.value = true;
       }
       let pathName = url.pathname;
       if (`${URL_PREFIX}` && pathName.startsWith(`${URL_PREFIX}`)) {
@@ -73,11 +137,10 @@ export const currentPage = () => {
       currentParams.pathValue += `/${currentParams.appId}`;
     }
   }
-  // 未登录时，没有个人菜单，无法匹配个人菜单路径
-  if (!token && currentParams.tenantCode && currentParams.appId &&
-    url.pathname.startsWith(`${URL_PREFIX}${currentParams.pathValue}/page`)) {
-    window.location.assign(`${url.origin}${URL_PREFIX}${currentParams.pathValue}/login?redirect=${url.href}`);
-  }
+  // 判断路由是否时account功能
+  isAccountApp(url, currentParams);
+  // 判断路由是否时page功能
+  isPageApp(url, currentParams);
 
   return currentParams;
 }
@@ -108,7 +171,9 @@ const formatModules = (_modules: any, result: RouteRecordNormalized[]) => {
     const moduleList = Array.isArray(defaultModule) ? [...defaultModule] : [defaultModule];
     result.push(...moduleList);
   });
+  if (IS_ACCOUNT.value) Object.assign(DEFAULT_ROUTE, DEFAULT_ROUTE_ACCOUNT);
 
+  console.log(DEFAULT_ROUTE);
   return result;
 }
 
@@ -226,14 +291,19 @@ export const formatAppModules = async (result: RouteRecordNormalized[]) => {
           break;
         }
       }
-      // @ts-ignore
-      if (IS_DATA_PAGE.value && DEFAULT_ROUTE.params.pageId && DEFAULT_ROUTE.fullPath.endsWith(":pageId")) {
-        // @ts-ignore
-        const url = DEFAULT_ROUTE.fullPath.replace(":pageId", DEFAULT_ROUTE.params.pageId).replace(":appId", DEFAULT_ROUTE.params.appId).replace(":tenantCode", DEFAULT_ROUTE.params.tenantCode);
+      // ---page -- 默认首页 /:tenantCode/:appId/page/xx/xx/:pageId
+      if (IS_DATA_PAGE.value && IS_DATA_END_PAGE.value && DEFAULT_ROUTE.name && pageParamsIsFull(DEFAULT_ROUTE.params)) {
+        let fullPaths: string[] = DEFAULT_ROUTE.fullPath.split('/');
+        // eslint-disable-next-line no-restricted-syntax,guard-for-in
+        for (const obj in DEFAULT_ROUTE.params) {
+          // @ts-ignore
+          fullPaths = fullPaths.map(item => item === `:${obj}` ? (DEFAULT_ROUTE.params[obj] || '') : item);
+        }
+        const url = fullPaths.join('/');
         window.location.assign(window.location.origin + url);
       }
     }
-    console.log(DEFAULT_ROUTE);
+    console.log(result);
   } catch (err) {
     console.log(err);
     result = [];
@@ -287,25 +357,6 @@ export const appLoginRoutes = (result: any[]) => {
   }
 
   return result;
-}
-
-/**
- * page功能，参数是否完整
- * @param params
- */
-export const pageParamsIsFull = (params: object, type?: number) => {
-  if (params) {
-    if (type === 1 && 'tenantCode' in params && 'appId' in params) {
-      if (!!params.tenantCode && !!params.appId) {
-        return true;
-      }
-    } else if ('tenantCode' in params && 'appId' in params && 'pageId' in params) {
-      if (!!params.tenantCode && !!params.appId && !!params.pageId) {
-        return true;
-      }
-    }
-  }
-  return false;
 }
 
 /**

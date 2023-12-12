@@ -14,6 +14,7 @@ export default {
   'messageBox.switchRoles': 'Switch Roles',
   'messageBox.userCenter': 'User Center',
   'messageBox.userSettings': 'User Settings',
+  'messageBox.resetPassword': 'Reset Password',
   'messageBox.accountSettings': 'Account Settings',
   'messageBox.logout': 'Logout',
 };

@@ -14,6 +14,7 @@ export default {
   'messageBox.switchRoles': '切换角色',
   'messageBox.userCenter': '用户中心',
   'messageBox.userSettings': '用户设置',
+  'messageBox.resetPassword': '修改密码',
   'messageBox.accountSettings': '账号设置',
   'messageBox.logout': '登出登录',
 };
