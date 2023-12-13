@@ -4,9 +4,9 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { type Ref, ref, watch } from 'vue'
-import { useAppStore } from '@geelato/gl-ide'
-import { entityApi, utils } from '@geelato/gl-ui'
+import {type Ref, ref, watch} from 'vue'
+import {useAppStore} from '@geelato/gl-ide'
+import {entityApi, utils} from '@geelato/gl-ui'
 
 interface RoleGrantedMenuItem {
   id: string
@@ -61,16 +61,16 @@ const currentRoleAppMenuItems: Ref<AppMenuItem[]> = ref([])
 // 当前应用的角色
 const loadAppRoles = (appId: string) => {
   // TODO 待增加应用id条件
-  entityApi.query('platform_role', 'id,name,code', { '@p': '1,1000' }).then((res) => {
+  entityApi.query('platform_role', 'id,name,code', {'@p': '1,1000'}).then((res) => {
     appRoles.value = res.data
   })
 }
 
 const loadAppMenuItems = (appId: string) => {
   entityApi
-    .query('platform_tree_node', 'id key,pid,text name,iconType', { '@p': '1,2000', treeId: appId })
+    .query('platform_tree_node', 'id key,pid,text name,iconType', {'@p': '1,2000', treeId: appId})
     .then((res) => {
-      appMenuItems.value = utils.listToTree(res.data, appId, { id: 'key' })
+      appMenuItems.value = utils.listToTree(res.data, appId, {id: 'key'})
     })
 }
 
@@ -175,6 +175,7 @@ const save = () => {
         if (!foundNotToAddItem) {
           toAddItems.push({
             treeId: appId,
+            'appId': appId,
             roleId: currentRole.value.id,
             treeNodeId: item.key,
             title: item.name,
@@ -192,7 +193,7 @@ const save = () => {
   let promises: Promise<any>[] = []
   // TODO 需放到事务中
   toDeleteItems.forEach((item) => {
-    const promise = entityApi.delete('platform_role_r_tree_node', { id: item.id })
+    const promise = entityApi.delete('platform_role_r_tree_node', {id: item.id})
     promises.push(promise)
   })
 
@@ -215,7 +216,7 @@ const reset = () => {
 
 reset()
 
-defineExpose({ save })
+defineExpose({save})
 </script>
 
 <template>
@@ -228,9 +229,9 @@ defineExpose({ save })
           </div>
         </template>
         <a-list-item
-          v-for="(role, roleIndex) in appRoles"
-          :class="{ 'gl-active': roleIndex === currentRoleIndex }"
-          @click="selectRole(role, roleIndex)"
+            v-for="(role, roleIndex) in appRoles"
+            :class="{ 'gl-active': roleIndex === currentRoleIndex }"
+            @click="selectRole(role, roleIndex)"
         >
           <span>{{ role.name }}</span>
         </a-list-item>
@@ -240,7 +241,8 @@ defineExpose({ save })
       <a-tabs>
         <a-tab-pane key="1">
           <template #title>
-            <icon-calendar/> 菜单页面权限
+            <icon-calendar/>
+            菜单页面权限
           </template>
           <a-table
               :data="currentRoleAppMenuItems"
@@ -266,7 +268,7 @@ defineExpose({ save })
                   </a-button-group>
                 </template>
                 <template #cell="{ record }">
-                  <a-switch v-model="record.checked" />
+                  <a-switch v-model="record.checked"/>
                 </template>
               </a-table-column>
               <a-table-column title="该页面相关的模型" data-index="entities">
@@ -277,7 +279,8 @@ defineExpose({ save })
         </a-tab-pane>
         <a-tab-pane key="2">
           <template #title>
-            <icon-clock-circle/> 页面元素权限
+            <icon-clock-circle/>
+            页面元素权限
           </template>
           Content of Tab Panel 2
         </a-tab-pane>
@@ -288,24 +291,24 @@ defineExpose({ save })
 
 <style>
 .gl-role-menuitem {
-  display: flex;
-  min-height: 800px;
+    display: flex;
+    min-height: 800px;
 }
 
 .gl-role-menuitem .gl-title {
-  font-weight: 600;
+    font-weight: 600;
 }
 
 .gl-role-menuitem .arco-list-header {
-  background-color: #efefef;
+    background-color: #efefef;
 }
 
 .gl-role-menuitem .gl-layout-left {
-  width: 250px;
+    width: 250px;
 }
 
 .gl-role-menuitem .gl-layout-right {
-  min-width: 800px;
-  flex: auto;
+    min-width: 800px;
+    flex: auto;
 }
 </style>
