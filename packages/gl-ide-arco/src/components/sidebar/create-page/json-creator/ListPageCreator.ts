@@ -524,6 +524,7 @@ const useColumnActionsInst = (
           '    vars[varName] = false;\n' +
           '  },\n' +
           '});',
+        body2: `$gl.fn.invokeComponentMethod(\\"${tableInst.id}\\",\\"deleteRecordWithConfirm\\",[{name:\\"id\\",value:undefined,valueExpression:$gl.ctx.record.id},]);`,
         __commandBlock: {
           componentName: 'GlPage',
           id: utils.gid('blockPage'),
@@ -538,48 +539,26 @@ const useColumnActionsInst = (
             {
               id: utils.gid('id'),
               title: '',
-              componentName: 'GlConfirmBlock',
-              group: 'block_feedback',
+              componentName: 'GlComponentInvokeBlock',
+              group: 'block_page',
               props: {
-                invokeBlocks: ['onOk'],
-                title: '危险操作',
-                content: '是否确定删除？'
+                extendId: tablePageId,
+                componentId: `${tableInst.id}`,
+                methodName: 'deleteRecordWithConfirm',
+                params: [
+                  {
+                    id: utils.gid('p'),
+                    name: 'id',
+                    valueExpression: '$gl.ctx.record.id'
+                  }
+                ]
               },
-              children: [
-                {
-                  componentName: 'GlVirtual',
-                  id: utils.gid('v'),
-                  props: {},
-                  slots: {},
-                  children: [
-                    {
-                      id: utils.gid('id'),
-                      title: '',
-                      componentName: 'GlComponentInvokeBlock',
-                      group: 'block_page',
-                      props: {
-                        extendId: tablePageId,
-                        componentId: `${tableInst.id}`,
-                        methodName: 'deleteRecord',
-                        params: [
-                          {
-                            id: utils.gid('p'),
-                            name: 'id',
-                            valueExpression: '$gl.ctx.record.id'
-                          }
-                        ]
-                      },
-                      propsExpressions: {},
-                      slots: {},
-                      slotsExpressions: {},
-                      children: [],
-                      actions: [],
-                      i18n: [],
-                    }
-                  ],
-                  actions: []
-                }
-              ]
+              propsExpressions: {},
+              slots: {},
+              slotsExpressions: {},
+              children: [],
+              actions: [],
+              i18n: []
             }
           ]
         }

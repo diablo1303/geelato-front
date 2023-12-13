@@ -39,6 +39,7 @@ import {
 } from '@geelato/gl-ui'
 import type { Action } from '../../types/global'
 import type { TableData, TableColumnData } from '@arco-design/web-vue'
+const global = useGlobal()
 
 /**
  *  change:在表格编辑状态时，更换表格数据时触发
@@ -228,34 +229,76 @@ const queryRef = ref(null)
 const addRow = () => {
   tableRef.value.addRow()
 }
+const selectedKeys: Ref<string[]> = ref([])
+
 /**
  * 删除行，并刷新
- * 默认为逻辑删除，依据属性base.isLogicDeleteMode进行区分
  * @param params
  */
 const deleteRecord = (params: Record<string, any>) => {
   // console.log('deleteRecord() > params:', params)
-
   if (!params || !params.id) {
     console.error('基于记录id进行删除失败，未配置参数id。')
     return
   }
-
-  let id = params.id
-
-  if (props.base.isLogicDeleteMode === false) {
-    entityApi.delete(props.base.entityName, { id: id }).then(() => {
-      refresh()
-    })
-  } else {
-    entityApi.deleteById(props.base.entityName, id).then(() => {
-      refresh()
-    })
-  }
-  // console.log('GlEntityTablePlus > deleteRecord() > params:', params)
+  return entityApi.deleteById(props.base.entityName, params.id).then(() => {
+    refresh()
+  })
 }
 
-const selectedKeys: Ref<string[]> = ref([])
+/**
+ * 删除行，并刷新
+ * @param params
+ */
+const deleteRecordWithConfirm = (params: Record<string, any>) => {
+  if (!params || !params.id) {
+    console.error('基于记录id进行删除失败，未配置参数id。')
+    return
+  }
+  global.$modal.confirm({
+    width: '15em',
+    title: '危险操作',
+    content: '是否确定删除？',
+    onOk: () => {
+      deleteRecord(params)
+    },
+    onCancel: () => {}
+  })
+}
+
+/**
+ * 删除已选择的行，并刷新
+ * @param withConfirm 是否带确认提醒，默认为否
+ */
+const deleteSelectedRecords = (withConfirm?: boolean) => {
+  if (selectedKeys.value && selectedKeys.value.length > 0) {
+    if (withConfirm === true) {
+      global.$modal.confirm({
+        width: '15em',
+        title: '危险操作',
+        content: '是否确定删除？',
+        onOk: () => {
+          entityApi.deleteByIds(props.base.entityName, selectedKeys.value).then(() => {
+            refresh()
+          })
+        },
+        onCancel: () => {}
+      })
+    } else {
+      return entityApi.deleteByIds(props.base.entityName, selectedKeys.value).then(() => {
+        refresh()
+      })
+    }
+  } else {
+    global.$notification.warning({ content: '请先选择记录' })
+  }
+}
+/**
+ * 删除已选择的行，并刷新，带删除确认提醒
+ */
+const deleteSelectedRecordsWithConfirm = () => {
+  return deleteSelectedRecords(true)
+}
 
 /**
  * 点击行选择器时触发
@@ -507,7 +550,6 @@ const getSelectedEntitySavers = async (params: { subFormPidValue?: string }) => 
   return result
 }
 
-const global = useGlobal()
 /**
  *  批量更新
  *  批量更新已选中列的部分字段的内容
@@ -571,6 +613,9 @@ defineExpose({
   batchUpdate,
   updateRecord,
   deleteRecord,
+  deleteRecordWithConfirm,
+  deleteSelectedRecords,
+  deleteSelectedRecordsWithConfirm,
   refresh,
   getRenderRecord,
   getDeleteRecords,
@@ -579,6 +624,9 @@ defineExpose({
   getLastSelectedRecord,
   getRenderData,
   getRenderColumns,
+  /**
+   *  只适用于编辑表格，获取删除掉的数据
+   */
   getDeleteData,
   hasSelectedRecords,
   validate,

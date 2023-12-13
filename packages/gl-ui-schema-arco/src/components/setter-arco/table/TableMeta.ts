@@ -581,9 +581,10 @@ export default {
         {"name": "hasSelectedRecords", "title": "是否选择了记录", "description": "是否选择了记录，返回true | false", "params": []},
         {"name": "changeColumnsVisible", "title": "展示/隐藏列", "description": "更改列的展示/隐藏属性，并更新列信息。", "params": []},
         {"name": "batchUpdate", "title": "批量更新所选", "description": "批量更新表格的记录值，需要输入对象参数，更新的列键值对，如{orderNo:'912881'}", "params": []},
-        {"name": "updateRecord", "title": "更新单条记录", "description": "更新表格的指定一条记录，需要输传递需更新的记录record，该记录需要有id值。在表格行操作中，值示例：$gl.ctx.record", "params": []},{
+        {"name": "updateRecord", "title": "更新单条记录", "description": "更新表格的指定一条记录，需要输传递需更新的记录record，该记录需要有id值。在表格行操作中，值示例：$gl.ctx.record", "params": []},
+        {
         "name": "deleteRecord",
-        "title": "删除一行记录",
+        "title": "删除一行记录（基于ID）",
         "params": [{
             "name": "id",
             "type": "String",
@@ -591,5 +592,35 @@ export default {
             "title": "记录ID",
             "defaultValue": ""
         }]
-    }]
+    },{
+            "name": "deleteRecordWithConfirm",
+            "title": "删除一行记录（基于ID）,带删除确认提醒",
+            "params": [{
+                "name": "id",
+                "type": "String",
+                "description": "带删除确认提醒，在表格行操作中，值示例：$gl.ctx.record.id",
+                "title": "记录ID",
+                "defaultValue": ""
+            }]
+        },{
+            "name": "deleteSelectedRecords",
+            "title": "删除选择的记录（基于ID）",
+            "params": [{
+                "name": "id",
+                "type": "String",
+                "description": "",
+                "title": "记录ID",
+                "defaultValue": ""
+            }]
+        },{
+            "name": "deleteSelectedRecordsWithConfirm",
+            "title": "删除选择的记录（基于ID）,带删除确认提醒",
+            "params": [{
+                "name": "id",
+                "type": "String",
+                "description": "带删除确认提醒",
+                "title": "记录IDs",
+                "defaultValue": ""
+            }]
+        }]
 }

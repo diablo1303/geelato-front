@@ -11,8 +11,10 @@ export default class UrlConfig {
     // 多实体同时保存
     apiMetaMultiSave = "/api/meta/multiSave"
 
+    // 基于id删除单条记录
     apiMetaDelete = "/api/meta/delete";
 
+    // 支持按参数删除，即可以删除多个
     apiMetaDelete2 = "/api/meta/delete2";
 
     apiMetaEntityNames = "/api/meta/entityNames";
