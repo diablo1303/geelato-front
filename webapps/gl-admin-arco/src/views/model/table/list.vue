@@ -83,6 +83,15 @@
           </template>
           {{ $t('searchTable.operation.create') }}
         </a-button>
+        <a-popconfirm :content="$t('model.table.index.model.title.init.dataMsg')" position="tr" type="warning"
+                      @ok="tableInit">
+          <a-button v-show="pageData.formState==='edit'&&routeParams.appId" type="primary">
+            <template #icon>
+              <icon-sync/>
+            </template>
+            {{ $t('model.table.index.model.title.init.data') }}
+          </a-button>
+        </a-popconfirm>
         <a-button v-show="pageData.formState==='edit1'" type="primary">
           <template #icon>
             <icon-sync/>
@@ -215,7 +224,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
-import {deleteTable as deleteList, pageQueryTables as pageQueryList, QueryTableForm as QueryForm} from '@/api/model';
+import {deleteTable as deleteList, initTables, pageQueryTables as pageQueryList, QueryTableForm as QueryForm} from '@/api/model';
 import {columns, enableStatusOptions, tableTypeOptions} from '@/views/model/table/searchTable';
 // 引用其他页面
 import TableForm from '@/views/model/table/form.vue';
@@ -333,6 +342,15 @@ const addTable = (ev: MouseEvent) => {
     });
   }
 };
+const tableInit = async () => {
+  try {
+    const {data} = await initTables(routeParams.value.appId);
+    reset();
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
 const viewTable = (id: string) => {
   if (tableDrawerRef.value) {
     const formParams: Record<string, any> = pageData.value.params || {};

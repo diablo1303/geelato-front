@@ -67,6 +67,8 @@ export default {
   'model.table.index.model.title.edit': 'Edit Data Table',
   'model.table.index.model.title.delete': 'Add Data Table',
   'model.table.index.model.title.sync.data': 'Update Data Model',
+  'model.table.index.model.title.init.data': 'Init Data Model',
+  'model.table.index.model.title.init.dataMsg': 'Whether to initialize the data model? ',
   'model.table.index.model.title.sync.model': 'Update Data Table',
   'model.table.index.model.cancel.text': 'Cancel',
   'model.table.index.model.ok.text': 'Confirm',

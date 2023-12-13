@@ -129,6 +129,10 @@ export function resetDefaultView(params: QueryTableForm) {
   return axios.post<QueryResult>('/api/model/table/resetDefaultView', params);
 }
 
+export function initTables(appId: string) {
+  return axios.post<QueryResult>(`/api/meta/ddl/tables/${appId}`);
+}
+
 /**
  * 重置实体模型（从数据库同步至模型）
  * @param tableId

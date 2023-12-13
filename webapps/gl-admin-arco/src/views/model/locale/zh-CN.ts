@@ -67,6 +67,8 @@ export default {
   'model.table.index.model.title.view': '查看数据表',
   'model.table.index.model.title.delete': '删除数据表',
   'model.table.index.model.title.sync.data': '更新数据模型',
+  'model.table.index.model.title.init.data': '模型初始化',
+  'model.table.index.model.title.init.dataMsg': '是否初始化数据模型？',
   'model.table.index.model.title.sync.model': '更新数据库表单',
   'model.table.index.model.cancel.text': '取消',
   'model.table.index.model.ok.text': '确认',
