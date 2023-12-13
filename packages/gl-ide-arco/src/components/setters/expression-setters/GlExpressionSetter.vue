@@ -58,7 +58,7 @@ const visibleValueExpressModal = ref(false)
  */
 const openValueExpressModal = async () => {
   visibleValueExpressModal.value = true
-  _systemVarsTreeData.value = setKeys(useSystemVarsTreeData())
+  _systemVarsTreeData.value = setKeys(useSystemVarsTreeData(global))
   _functionalFormulaTreeData.value = setKeys(functionalFormulaTreeData)
   _componentInstTreeData.value = setKeys(useComponentInstTreeData())
   _constTreeData.value = setKeys(await useConstTreeData())

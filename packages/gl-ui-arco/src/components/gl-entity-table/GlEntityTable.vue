@@ -354,7 +354,6 @@ defineExpose({
           v-for="(columnAction, index) in copyColumnActions()"
           :key="rowIndex + '_' + index"
         >
-          <!--          showAction({record, action:columnAction, rowIndex}, pageProvideProxy!)-->
           <GlComponent
             v-show="
               columnAction.props?._hidden !== true && columnAction.componentName !== 'GlHiddenArea'

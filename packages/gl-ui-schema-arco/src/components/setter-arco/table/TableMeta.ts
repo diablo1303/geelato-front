@@ -438,6 +438,34 @@ export default {
                 "setterComponentVModelName": "modelValue",
                 "title": "方向",
                 "setterComponentName": "ASelect"
+            },{
+                "name": "defaultSortOrder",
+                "group": "base",
+                "type": "props",
+                "enableValueExpress": false,
+                "show": true,
+                "expanded": true,
+                "displayMode": "tile",
+                "setterComponentProps": {
+                    "options": [
+                        {
+                            "label": "升序",
+                            "value": "ascend"
+                        },
+                        {
+                            "label": "降序",
+                            "value": "descend"
+                        }
+                        ,
+                        {
+                            "label": "无",
+                            "value": ""
+                        }
+                    ]
+                },
+                "setterComponentVModelName": "modelValue",
+                "title": "初始方向",
+                "setterComponentName": "ASelect"
             }],
             "setterComponentName": "GlSimpleObjectSetter",
             "title": "排序"
@@ -475,6 +503,18 @@ export default {
             "setterComponentVModelName": "modelValue",
             "title": "固定位置",
             "setterComponentName": "ARadioGroup"
+        },{
+          "name": "width",
+          "group": "base",
+          "type": "props",
+          "enableValueExpress": false,
+          "show": true,
+          "expanded": true,
+          "setterComponentProps": {},
+          "setterComponentVModelName": "modelValue",
+          "title": "宽度",
+          "setterComponentName": "AInputNumber",
+          "placeholder": "单位象素(px)"
         }, {
             "name": "ellipsis",
             "group": "base",
@@ -482,28 +522,21 @@ export default {
             "enableValueExpress": false,
             "show": true,
             "expanded": true,
-            "setterComponentProps": {
-                "type": "button",
-                "options": [
-                    {"label": "是","value": true},
-                    {"label": "否", "value": false}],
-                "defaultValue": false
-            },
-            "setterComponentVModelName": "modelValue",
-            "title": "省略号",
-            "setterComponentName": "ARadioGroup"
-        },{
-            "name": "width",
-            "group": "base",
-            "type": "props",
-            "enableValueExpress": false,
-            "show": true,
-            "expanded": true,
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
-            "title": "宽度",
-            "setterComponentName": "AInputNumber",
-            "placeholder": "单位象素(px)"
+            "title": "文本省略",
+            "setterComponentName": "ASwitch"
+        }, {
+          "name": "tooltip",
+          "group": "base",
+          "type": "props",
+          "enableValueExpress": false,
+          "show": true,
+          "expanded": true,
+          "setterComponentProps": {},
+          "setterComponentVModelName": "modelValue",
+          "title": "文本提示",
+          "setterComponentName": "ASwitch"
         }],
         "setterComponentName": "GlObjectArraySetter",
         "title": "数据列",

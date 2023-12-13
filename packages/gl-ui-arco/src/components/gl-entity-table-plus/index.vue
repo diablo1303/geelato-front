@@ -39,6 +39,7 @@ import {
 } from '@geelato/gl-ui'
 import type { Action } from '../../types/global'
 import type { TableData, TableColumnData } from '@arco-design/web-vue'
+
 const global = useGlobal()
 
 /**
