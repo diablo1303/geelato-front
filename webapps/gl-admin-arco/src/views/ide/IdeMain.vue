@@ -4,25 +4,35 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {onMounted, provide} from "vue";
+import {onMounted, onUnmounted, provide} from "vue";
 import {getToken} from "@/utils/auth";
 import {getSysConfig} from "@/api/user";
-import {useGlobal} from "@geelato/gl-ui";
+import {EventNames} from "@geelato/gl-ide";
+import {emitter, useGlobal} from "@geelato/gl-ui";
+import useUser from '@/hooks/user';
 import pinia from '../../store';
 
 provide('pinia', pinia)
 const global = useGlobal();
+const {ideRedirect, ideLogout} = useUser();
+
+const handleLogout = () => {
+  ideLogout();
+};
 
 onMounted(() => {
+  // 未登录重定向
+  if (!getToken()) ideRedirect();
+  // 注册 登出 事件监听器的函数
+  emitter.on(EventNames.GlIdeLogout, handleLogout);
+  // 加载配置变量
   const urlParams = new URL(window.location.href).searchParams;
-  if (!getToken()) {
-    const tenantCode = urlParams.get("tenantCode") || "";
-    const appId = urlParams.get("appId") || "";
-    const currentUrl = encodeURIComponent(window.location.href);
-    window.location.assign(`${window.location.origin}/${tenantCode}/${appId}/login?redirect=${currentUrl}`);
-  }
   getSysConfig(global, {tenantCode: urlParams.get("tenantCode") || '', appId: urlParams.get("appId") || ''});
 });
+
+onUnmounted(() => {
+  emitter.off(EventNames.GlIdeLogout, handleLogout);
+})
 </script>
 <template>
   <GlIdeArco></GlIdeArco>
