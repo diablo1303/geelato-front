@@ -7,6 +7,8 @@
       </span> <span>{{ label }}</span>
     </template>
     <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst" :glIsRuntime="glIsRuntime"
+               :glLoopItem="glLoopItem"
+               :glLoopIndex="glLoopIndex"
                :glRuntimeFlag="glRuntimeFlag"/>
   </a-card>
 </template>

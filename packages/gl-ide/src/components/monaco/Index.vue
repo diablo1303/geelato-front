@@ -241,7 +241,7 @@ const onInsetText = (text: string) => {
 /**
  *  如果当前已选中，则替换
  *  如果当前未选中，则插入
- * @param content
+ * @param text
  */
 const replaceSelectOrInsert = (text: string) => {
   editor.focus()
