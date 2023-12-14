@@ -1,24 +1,40 @@
 <template>
-  <a-card class="gl-card" :class="{'gl-hidden':isHidden}">
-    <template #title v-if="showLabel!==false">
+  <a-card class="gl-card" :class="{ 'gl-hidden': isHidden }">
+    <template #extra>
+      <a-space>
+        <component
+          :is="'GlInsts' + glRuntimeFlag"
+          :glComponentInst="glComponentInst?.extra"
+          :glIsRuntime="glIsRuntime"
+          :glRuntimeFlag="glRuntimeFlag"
+        />
+      </a-space>
+    </template>
+    <template #title v-if="showLabel !== false">
       <span @click="switchHide" style="cursor: pointer">
         <GlIconfont v-if="isHidden" type="gl-down-circle"></GlIconfont>
         <GlIconfont v-else type="gl-right-circle"></GlIconfont>
-      </span> <span>{{ label }}</span>
+      </span>
+      <span>{{ label }}</span>
     </template>
-    <component :is="'GlInsts'+glRuntimeFlag" :glComponentInst="glComponentInst" :glIsRuntime="glIsRuntime"
-               :glRuntimeFlag="glRuntimeFlag"/>
+    <component
+      :is="'GlInsts' + glRuntimeFlag"
+      :glComponentInst="glComponentInst"
+      :glIsRuntime="glIsRuntime"
+      :glLoopItem="glLoopItem"
+      :glLoopIndex="glLoopIndex"
+      :glRuntimeFlag="glRuntimeFlag"
+    />
   </a-card>
 </template>
 <script lang="ts">
 export default {
-  name: "GlCard"
+  name: 'GlCard'
 }
 </script>
 <script lang="ts" setup>
-
-import {mixins} from "@geelato/gl-ui";
-import {ref} from "vue";
+import { mixins } from '@geelato/gl-ui'
+import { ref } from 'vue'
 
 const props = defineProps({
   label: String,

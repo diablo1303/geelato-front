@@ -492,13 +492,29 @@ export class EntityApi {
   }
 
   /**
-   * 逻辑删除（基于id）
+   * 删除（基于id）
    */
   deleteById(entityName: string, id: string, biz?: string) {
     return this.service({
       url: `${this.url.apiMetaDelete}/${entityName}/${id}`,
       method: 'POST',
       data: {}
+    })
+  }
+
+  /**
+   * 删除多条记录（基于id）
+   */
+  deleteByIds(entityName: string, ids: string[], biz?: string) {
+    const mql = {
+      [entityName]: {
+        'id|in': ids
+      }
+    }
+    return this.service({
+      url: `${this.url.apiMetaDelete2}/${biz || entityName}`,
+      method: 'POST',
+      data: mql
     })
   }
 

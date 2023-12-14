@@ -4,15 +4,10 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {
-  inject,
-  nextTick,
-  ref
-} from 'vue'
-import {mixins, utils} from "@geelato/gl-ui";
+import { inject, nextTick, ref} from 'vue'
+import {mixins, utils,PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {componentStoreFactory, usePageStore} from "@geelato/gl-ide";
-import {PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const emits = defineEmits(['update:items'])

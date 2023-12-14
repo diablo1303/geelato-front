@@ -438,6 +438,34 @@ export default {
                 "setterComponentVModelName": "modelValue",
                 "title": "方向",
                 "setterComponentName": "ASelect"
+            },{
+                "name": "defaultSortOrder",
+                "group": "base",
+                "type": "props",
+                "enableValueExpress": false,
+                "show": true,
+                "expanded": true,
+                "displayMode": "tile",
+                "setterComponentProps": {
+                    "options": [
+                        {
+                            "label": "升序",
+                            "value": "ascend"
+                        },
+                        {
+                            "label": "降序",
+                            "value": "descend"
+                        }
+                        ,
+                        {
+                            "label": "无",
+                            "value": ""
+                        }
+                    ]
+                },
+                "setterComponentVModelName": "modelValue",
+                "title": "初始方向",
+                "setterComponentName": "ASelect"
             }],
             "setterComponentName": "GlSimpleObjectSetter",
             "title": "排序"
@@ -475,6 +503,18 @@ export default {
             "setterComponentVModelName": "modelValue",
             "title": "固定位置",
             "setterComponentName": "ARadioGroup"
+        },{
+          "name": "width",
+          "group": "base",
+          "type": "props",
+          "enableValueExpress": false,
+          "show": true,
+          "expanded": true,
+          "setterComponentProps": {},
+          "setterComponentVModelName": "modelValue",
+          "title": "宽度",
+          "setterComponentName": "AInputNumber",
+          "placeholder": "单位象素(px)"
         }, {
             "name": "ellipsis",
             "group": "base",
@@ -482,28 +522,21 @@ export default {
             "enableValueExpress": false,
             "show": true,
             "expanded": true,
-            "setterComponentProps": {
-                "type": "button",
-                "options": [
-                    {"label": "是","value": true},
-                    {"label": "否", "value": false}],
-                "defaultValue": false
-            },
-            "setterComponentVModelName": "modelValue",
-            "title": "省略号",
-            "setterComponentName": "ARadioGroup"
-        },{
-            "name": "width",
-            "group": "base",
-            "type": "props",
-            "enableValueExpress": false,
-            "show": true,
-            "expanded": true,
             "setterComponentProps": {},
             "setterComponentVModelName": "modelValue",
-            "title": "宽度",
-            "setterComponentName": "AInputNumber",
-            "placeholder": "单位象素(px)"
+            "title": "文本省略",
+            "setterComponentName": "ASwitch"
+        }, {
+          "name": "tooltip",
+          "group": "base",
+          "type": "props",
+          "enableValueExpress": false,
+          "show": true,
+          "expanded": true,
+          "setterComponentProps": {},
+          "setterComponentVModelName": "modelValue",
+          "title": "文本提示",
+          "setterComponentName": "ASwitch"
         }],
         "setterComponentName": "GlObjectArraySetter",
         "title": "数据列",
@@ -581,9 +614,10 @@ export default {
         {"name": "hasSelectedRecords", "title": "是否选择了记录", "description": "是否选择了记录，返回true | false", "params": []},
         {"name": "changeColumnsVisible", "title": "展示/隐藏列", "description": "更改列的展示/隐藏属性，并更新列信息。", "params": []},
         {"name": "batchUpdate", "title": "批量更新所选", "description": "批量更新表格的记录值，需要输入对象参数，更新的列键值对，如{orderNo:'912881'}", "params": []},
-        {"name": "updateRecord", "title": "更新单条记录", "description": "更新表格的指定一条记录，需要输传递需更新的记录record，该记录需要有id值。在表格行操作中，值示例：$gl.ctx.record", "params": []},{
+        {"name": "updateRecord", "title": "更新单条记录", "description": "更新表格的指定一条记录，需要输传递需更新的记录record，该记录需要有id值。在表格行操作中，值示例：$gl.ctx.record", "params": []},
+        {
         "name": "deleteRecord",
-        "title": "删除一行记录",
+        "title": "删除一行记录（基于ID）",
         "params": [{
             "name": "id",
             "type": "String",
@@ -591,5 +625,35 @@ export default {
             "title": "记录ID",
             "defaultValue": ""
         }]
-    }]
+    },{
+            "name": "deleteRecordWithConfirm",
+            "title": "删除一行记录（基于ID）,带删除确认提醒",
+            "params": [{
+                "name": "id",
+                "type": "String",
+                "description": "带删除确认提醒，在表格行操作中，值示例：$gl.ctx.record.id",
+                "title": "记录ID",
+                "defaultValue": ""
+            }]
+        },{
+            "name": "deleteSelectedRecords",
+            "title": "删除选择的记录（基于ID）",
+            "params": [{
+                "name": "id",
+                "type": "String",
+                "description": "",
+                "title": "记录ID",
+                "defaultValue": ""
+            }]
+        },{
+            "name": "deleteSelectedRecordsWithConfirm",
+            "title": "删除选择的记录（基于ID）,带删除确认提醒",
+            "params": [{
+                "name": "id",
+                "type": "String",
+                "description": "带删除确认提醒",
+                "title": "记录IDs",
+                "defaultValue": ""
+            }]
+        }]
 }

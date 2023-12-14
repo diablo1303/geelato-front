@@ -27,7 +27,7 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "title": "打开的页面",
+        "title": "打开页面",
         "setterComponentName": "GlPageSelect",
         "enableValueExpress": false,
         "displayMode": "tile"

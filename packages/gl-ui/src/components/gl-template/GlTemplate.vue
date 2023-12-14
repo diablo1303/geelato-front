@@ -34,26 +34,19 @@ watch(
   }
 )
 
+// const isUseLoopItem = computed(() => {
+//   return mv.value?.includes('glLoopItem')
+// })
+
 // 基于配置的模板内容content，生成动态组件
 const MyComponent = computed(() => {
   return {
     name: 'MyComponent',
     props: {
-      loopItem: {
-        type: Object,
-        default() {
-          return {}
-        }
-      },
-      loopIndex: {
-        type: Number,
-        default() {
-          return -1
-        }
-      },
       params: {
         type: Object
-      }
+      },
+      ...mixins.props
     },
     template: mv.value
   }
@@ -72,15 +65,16 @@ console.log('create template ...', props.glLoopIndex)
 <template>
   <div class="gl-template" :key="refreshKey" @click="onClick">
     <template v-if="!mv">
-      <a-empty> 模板内容为空 </a-empty>
+      <a-empty> 模板内容为空</a-empty>
     </template>
-    <component
-      v-else
-      :is="MyComponent"
-      :loopItem="glLoopItem"
-      :loopIndex="glLoopIndex"
-      :params="params"
-    />
+    <template v-else>
+      <component
+        :is="MyComponent"
+        :glLoopItem="glLoopItem"
+        :glLoopIndex="glLoopIndex"
+        :params="params"
+      />
+    </template>
   </div>
 </template>
 <style scoped>
