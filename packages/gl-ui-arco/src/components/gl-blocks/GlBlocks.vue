@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {type PropType, type Ref, ref, watch} from 'vue'
-import { entityApi, EntityReader } from '@geelato/gl-ui'
+import {entityApi, EntityReader} from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue', 'click'])
 const props = defineProps({
@@ -47,24 +47,23 @@ loadData()
 <template>
   <div class="gl-blocks">
     <a-card
-      v-for="item in items"
-      hoverable
-      style="display: inline-block; margin-left: 8px"
-      :style="{ width: '240px', marginBottom: '20px' }"
-      @click="onClick(item)"
-    >
+        v-for="{item,index} in items"
+        hoverable
+        style="display: inline-block; margin-left: 8px"
+        :key="index"
+        :style="{ width: '240px', marginBottom: '20px' }"
+        @click="onClick(item)">
       <div
-        :style="{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }"
-      >
-        <span :style="{ display: 'flex', alignItems: 'center', color: '#1D2129' }">
-          <a-avatar :style="{ backgroundColor: '#168CFF' }">
+          :style="{display: 'flex',alignItems: 'center',justifyContent: 'space-between'}">
+        <span
+            :style="{ display: 'flex', alignItems: 'center', color: '#1D2129' }">
+          <a-avatar
+              :style="{ backgroundColor: '#168CFF' }">
             <gl-iconfont :type="item.icon"></gl-iconfont>
           </a-avatar>
-          <a-typography-text style="margin-left: 12px">{{ item.name }}</a-typography-text>
+          <a-typography-text style="margin-left: 12px">
+            {{ item.name }}
+          </a-typography-text>
         </span>
         <!--        <a-link>More</a-link>-->
       </div>
