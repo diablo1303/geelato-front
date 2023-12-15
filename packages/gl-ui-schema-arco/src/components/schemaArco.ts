@@ -42,6 +42,7 @@ import DescriptionsMeta from "./setter-arco/descriptions/DescriptionsMeta";
 import EmptyMeta from "./setter-arco/empty/EmptyMeta";
 import ImageMeta from "./setter-arco/image/ImageMeta";
 import ListMeta from "./setter-arco/list/ListMeta";
+import TinymceMeta from "./setter-arco/tinymce/TinymceMeta";
 import PopoverMeta from "./setter-arco/popover/PopoverMeta";
 import StatisticMeta from "./setter-arco/statistic/StatisticMeta";
 import TableMeta from "./setter-arco/table/TableMeta";
@@ -91,7 +92,7 @@ const componentMetas: Array<ComponentMeta> = [ButtonMeta, GlButtonMeta, TextMeta
     CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
     StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TooltipMeta, EntityTreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta,LoopMeta,TemplateMeta, DividerMeta,
-    OpRecordMeta,BlocksMeta
+    OpRecordMeta,BlocksMeta,TinymceMeta
 ]
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance, CascaderInstance,LayoutPageInstance,TemplateInstance,LoopInstance]

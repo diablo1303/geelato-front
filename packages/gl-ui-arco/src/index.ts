@@ -1,4 +1,4 @@
-import type { App, Plugin } from 'vue'
+import type {App, Plugin} from 'vue'
 import GlPage from './components/gl-page/GlPage.vue'
 import GlEntityTablePlus from './components/gl-entity-table-plus/index.vue'
 import GlEntityTree from './components/gl-entity-tree/GlEntityTree.vue'
@@ -12,7 +12,7 @@ import GlUserSelect from './components/gl-user-select/GlUserSelect.vue'
 import GlDict from './components/gl-dict/GlDict.vue'
 import en from './locale/en-US'
 import cn from './locale/zh-CN'
-import { PluginUtil } from '@geelato/gl-ui'
+import {PluginUtil} from '@geelato/gl-ui'
 import './assets/style.css'
 import GlColor from './components/gl-color/GlColor.vue'
 import GlEncode from './components/gl-encode/GlEncode.vue'
@@ -29,17 +29,19 @@ import GlButton from './components/gl-button/GlButton.vue'
 import GlEntityCascader from './components/gl-entity-cascader/GlEntityCascader.vue'
 import GlTimeline from './components/gl-timeline/GlTimeline.vue'
 import GlOpRecord from './components/gl-op-record/GlOpRecord.vue'
-import { getFormParams } from './components/gl-entity-form/GlEntityForm'
-import { getLabel } from './components/MetaHelper'
+import {getFormParams} from './components/gl-entity-form/GlEntityForm'
+import {getLabel} from './components/MetaHelper'
 import GlEmpty from './components/gl-empty/GlEmpty.vue'
 import GlSelect from './components/gl-select/GlSelect.vue'
 import GlImport from './components/gl-import/GlImport.vue'
 import GlLayoutPage from "./components/gl-layout-page/GlLayoutPage.vue";
 import GlLayoutSite from './components/gl-layout-site/GlLayoutSite.vue'
-import { Drawer, Modal,RangePicker } from '@arco-design/web-vue'
+import {Drawer, Modal, RangePicker} from '@arco-design/web-vue'
 import GlBlocks from "./components/gl-blocks/GlBlocks.vue";
+import GlList from "./components/gl-list/GlList.vue";
+import GlTinymce from "./components/gl-tinymce/GlTinymce.vue";
 
-const i18nMessage = { en, cn }
+const i18nMessage = {en, cn}
 
 const component: Plugin = {
   install: function (Vue: App) {
@@ -57,10 +59,12 @@ const component: Plugin = {
     Vue.component(GlIconfontSelect.name, GlIconfontSelect)
     Vue.component(GlDict.name, GlDict)
     Vue.component(GlPage.name, GlPage)
-    Vue.component(GlLayoutSite.name,GlLayoutSite)
-    Vue.component(GlLayoutPage.name,GlLayoutPage)
+    Vue.component(GlLayoutSite.name, GlLayoutSite)
+    Vue.component(GlLayoutPage.name, GlLayoutPage)
     Vue.component('GlEntityTablePlus', GlEntityTablePlus)
-    Vue.component(GlBlocks.name,GlBlocks)
+    Vue.component(GlBlocks.name, GlBlocks)
+    Vue.component(GlList.name, GlList);
+    Vue.component(GlTinymce.name, GlTinymce);
     // 表格注册多一个，作为子表单，在配置时减少一些不必要的配置项
     Vue.component('GlEntityTableSub', GlEntityTablePlus)
     Vue.component(GlRefPage.name, GlRefPage)
@@ -98,6 +102,6 @@ const component: Plugin = {
   }
 }
 
-export { i18nMessage, getFormParams, getLabel }
+export {i18nMessage, getFormParams, getLabel}
 // 默认导出组件
 export default component
