@@ -2,11 +2,44 @@ export default {
   "componentName": "GlTinymce",
   "displayMode": "tile",
   "iconType": "gl-form",
-  "group": "dataDisplay",
+  "group": "dataEntry",
   "title": "富文本",
   "alias": "tinymce",
   "useBy": ["freePage"],
-  "properties": [
+  "properties": [{
+    "name": "label",
+    "group": "base",
+    "type": "props",
+    "show": true,
+    "expanded": true,
+    "setterComponentProps": {},
+    "setterComponentVModelName": "modelValue",
+    "title": "标题",
+    "setterComponentName": "AInput",
+    "enableValueExpress": true
+  }, {
+    "name": "hideLabel",
+    "group": "base",
+    "type": "props",
+    "enableValueExpress": true,
+    "show": true,
+    "expanded": true,
+    "setterComponentProps": {},
+    "setterComponentVModelName": "modelValue",
+    "title": "隐藏标题",
+    "setterComponentName": "ASwitch"
+  }, {
+    "name": "bindField",
+    "setterComponentProps": {},
+    "setterComponentVModelName": "modelValue",
+    "group": "base",
+    "type": "props",
+    "show": true,
+    "expanded": true,
+    "title": "绑定字段",
+    "setterComponentName": "GlEntityFieldSelect",
+    "enableValueExpress": false
+  },
     {
       "name": "height",
       "group": "base",
