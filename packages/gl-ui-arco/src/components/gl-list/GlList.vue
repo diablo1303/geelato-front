@@ -6,7 +6,7 @@ export default {
 <script lang="ts" setup>
 import {type PropType, type Ref, ref, watch, reactive} from 'vue'
 import {entityApi, EntityReader} from '@geelato/gl-ui'
-import useLoading from "@/hooks/loading";
+import useLoading from "../../hooks/loading";
 
 const {loading, setLoading} = useLoading(true);
 const emits = defineEmits(['update:modelValue', 'click', 'reachBottom'])
