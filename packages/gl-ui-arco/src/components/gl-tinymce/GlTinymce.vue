@@ -15,7 +15,6 @@ import {
   TINY_PLUGINS,
   TINY_TOOLBAR
 } from './type'
-import { RawEditorOptions } from 'tinymce'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
