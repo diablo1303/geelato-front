@@ -1,7 +1,7 @@
 export default {
   "componentName": "GlTinymce",
   "displayMode": "tile",
-  "iconType": "gl-form",
+  "iconType": "gl-richtext",
   "group": "dataEntry",
   "title": "富文本",
   "alias": "tinymce",

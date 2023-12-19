@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "14678990",
+      "name": "doc_richtext",
+      "font_class": "richtext",
+      "unicode": "e650",
+      "unicode_decimal": 58960
+    },
+    {
+      "icon_id": "23552443",
+      "name": "Open Link",
+      "font_class": "openlink",
+      "unicode": "e635",
+      "unicode_decimal": 58933
+    },
+    {
       "icon_id": "5203323",
       "name": "栅格",
       "font_class": "grid",

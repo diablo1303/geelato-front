@@ -73,6 +73,8 @@ export default class ComponentInstance {
     slotsExpressions?: ComponentInstanceProps = {}
     children: Array<ComponentInstance> = []
     actions: Array<Action> = []
+    // 额外，如用于GlCard
+    extra?: ComponentInstance
     style?: Object = {}
     propsWrapper?: string = ''
     // 多语言，表单配置中默认的为zh-CN，这里只需配置en-US，如果需要繁体，则可配置增加zh-TW或zh-HK

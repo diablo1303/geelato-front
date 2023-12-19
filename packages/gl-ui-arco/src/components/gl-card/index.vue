@@ -1,5 +1,5 @@
 <template>
-  <a-card class="gl-card" :class="{ 'gl-hidden': isHidden }">
+  <a-card class="gl-card" :class="{ 'gl-hidden': isHidden, 'gl-hide-header': !isShowLabel }">
     <template #extra>
       <a-space>
         <component
@@ -10,7 +10,7 @@
         />
       </a-space>
     </template>
-    <template #title v-if="showLabel !== false">
+    <template #title v-if="isShowLabel">
       <span @click="switchHide" style="cursor: pointer">
         <GlIconfont v-if="isHidden" type="gl-down-circle"></GlIconfont>
         <GlIconfont v-else type="gl-right-circle"></GlIconfont>
@@ -45,6 +45,7 @@ const props = defineProps({
 
 // 是否隐藏卡片的内容，即折叠
 const isHidden = ref(false)
+const isShowLabel = props.showLabel !== false
 
 const switchHide = () => {
   isHidden.value = !isHidden.value
@@ -53,6 +54,10 @@ const switchHide = () => {
 
 <style>
 .gl-card.gl-hidden .arco-card-body {
+  display: none;
+}
+
+.gl-card.gl-hide-header .arco-card-header {
   display: none;
 }
 </style>

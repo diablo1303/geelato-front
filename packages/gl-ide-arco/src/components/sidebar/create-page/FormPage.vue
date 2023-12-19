@@ -11,7 +11,6 @@ import { FormPageCreator } from './json-creator/FormPageCreator'
 import { PageCreatorOptions } from './json-creator/PageCreator'
 import { PageInfo } from './CreatePageNav'
 
-
 const entityName = ref('')
 const form: any = ref({
   fieldRange: 'ALL',
@@ -25,7 +24,7 @@ pageInfo.value.type = PageType.formPage
 pageInfo.value.iconType = 'gl-form'
 watch(
   form,
-   () => {
+  () => {
     pageCreatorOptions.value.entityMeta.entityName = form.value.bindEntity?.entityName
     pageCreatorOptions.value.pageInfo.label = form.value.pageLabel
     pageCreatorOptions.value.colSpan = form.value.colSpan
@@ -48,6 +47,7 @@ const loadFieldMetas = (entityMeta: EntityMeta) => {
       'updater',
       'updaterName',
       'updatorName',
+      'deleteAt',
       'delStatus',
       'seqNo',
       'deptId',
@@ -74,16 +74,25 @@ const validate = () => {
   return myForm.value.validate()
 }
 
-defineExpose({ getPage,validate })
+defineExpose({ getPage, validate })
 </script>
 
 <template>
   <div>
     <a-form ref="myForm" :model="form">
-      <a-form-item field="bindEntity" label="选择模型" help="基于模型创建页面" :rules="[{ required: true, message: '必填' }]">
+      <a-form-item
+        field="bindEntity"
+        label="选择模型"
+        help="基于模型创建页面"
+        :rules="[{ required: true, message: '必填' }]"
+      >
         <GlAppEntitySelect v-model="form.bindEntity" @loadFieldMetas="loadFieldMetas" />
       </a-form-item>
-      <a-form-item field="pageLabel" label="页面名称" :rules="[{ required: true, message: '必填' }]">
+      <a-form-item
+        field="pageLabel"
+        label="页面名称"
+        :rules="[{ required: true, message: '必填' }]"
+      >
         <a-input v-model="form.pageLabel" placeholder="请先选择模型" />
       </a-form-item>
       <a-form-item field="colSpan" label="表单布局" :rules="[{ required: true, message: '必填' }]">
@@ -94,7 +103,11 @@ defineExpose({ getPage,validate })
           <a-radio :value="4">一行四列</a-radio>
         </a-radio-group>
       </a-form-item>
-      <a-form-item field="fieldRange" label="选择字段" :rules="[{ required: true, message: '必填' }]">
+      <a-form-item
+        field="fieldRange"
+        label="选择字段"
+        :rules="[{ required: true, message: '必填' }]"
+      >
         <a-radio-group type="button" v-model="form.fieldRange">
           <a-radio value="ALL">生成所有字段</a-radio>
           <a-radio value="SOME" disabled title="暂不支持">生成指定字段</a-radio>

@@ -23,9 +23,9 @@ export default {
         "setterComponentProps": {
             "multiple": false,
             "options": [{
-                "label": "异常时保存已导入记录",
+                "label": "异常时保存已导入记录（无事务）",
                 "value": "part",
-            }, {"label": "异常时不保存已导入记录", "value": "all"}]
+            }, {"label": "异常时不保存已导入记录（带事务，容易数据库死锁）", "value": "all"}]
         },
         "setterComponentVModelName": "modelValue",
         "group": "base",

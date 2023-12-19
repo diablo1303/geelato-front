@@ -12,7 +12,7 @@ export const useFieldMetaToComponentInst = (entityName: string, fieldMetas: Fiel
    * @param fieldMeta
    */
   function convertOne(entityName: string, fieldMeta: FieldMeta) {
-    // console.log('convertOne', entityName, fieldMeta)
+    console.log('convertOne', entityName, fieldMeta)
     const inst = new ComponentInstance()
     inst.group = 'dataEntry'
     inst.props = {

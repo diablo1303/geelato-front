@@ -325,6 +325,9 @@ importers:
       '@geelato/gl-ui-schema-arco':
         specifier: workspace:^0.0.1
         version: link:../gl-ui-schema-arco
+      '@tinymce/tinymce-vue':
+        specifier: ^5.1.1
+        version: 5.1.1(vue@3.3.4)
       '@vueuse/core':
         specifier: ^9.3.0
         version: 9.13.0(vue@3.3.4)
@@ -340,6 +343,9 @@ importers:
       sortablejs:
         specifier: ^1.15.0
         version: 1.15.0
+      tinymce:
+        specifier: ^6.8.2
+        version: 6.8.2
       vue:
         specifier: ^3.3.4
         version: 3.3.4
@@ -854,6 +860,9 @@ importers:
       vue:
         specifier: 3.3.4
         version: 3.3.4
+      vue-cropper:
+        specifier: ^1.0.9
+        version: 1.0.9
       vue-echarts:
         specifier: ^6.2.3
         version: 6.5.4(echarts@5.4.1)(vue@3.3.4)
@@ -2537,6 +2546,15 @@ packages:
       '@swc/core-win32-ia32-msvc': 1.3.68
       '@swc/core-win32-x64-msvc': 1.3.68
     dev: true
+
+  /@tinymce/tinymce-vue@5.1.1(vue@3.3.4):
+    resolution: {integrity: sha512-iO57HOWesFOhsaqjA5Ea6sDvQBmJJH3/dq00Uvg7metlct2kLF+ctRgoDsetLt6gmeZ7COPftr814/XzqnJ/dg==}
+    peerDependencies:
+      vue: ^3.0.0
+    dependencies:
+      tinymce: 6.8.2
+      vue: 3.3.4
+    dev: false
 
   /@tootallnate/once@2.0.0:
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
@@ -10716,6 +10734,10 @@ packages:
   /tinybench@2.3.1:
     resolution: {integrity: sha512-hGYWYBMPr7p4g5IarQE7XhlyWveh1EKhy4wUBS1LrHXCKYgvz+4/jCqgmJqZxxldesn05vccrtME2RLLZNW7iA==}
     dev: true
+
+  /tinymce@6.8.2:
+    resolution: {integrity: sha512-Lho79o2Y1Yn+XdlTEkHTEkEmzwYWTXz7IUsvPwxJF3VTtgHUIAAuBab29kik+f2KED3rZvQavr9D7sHVMJ9x4A==}
+    dev: false
 
   /tinypool@0.3.1:
     resolution: {integrity: sha512-zLA1ZXlstbU2rlpA4CIeVaqvWq41MTWqLY3FfsAXgC8+f7Pk7zroaJQxDgxn1xNudKW6Kmj4808rPFShUlIRmQ==}
