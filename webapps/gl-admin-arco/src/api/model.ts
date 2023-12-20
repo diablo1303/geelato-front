@@ -178,6 +178,7 @@ export interface QueryTableColumnForm {
   uniqued: number | boolean; // 唯一约束
   dataType: string; // 数据类型
   selectType: string;// 数据类型
+  typeExtra: string | string[];// 类型额外信息
   extra: string; // 特别 auto_increment
   autoIncrement: number | boolean; // auto_increment
   charMaxLength: number; // 长度
