@@ -1,5 +1,5 @@
 export const TINY_PLUGINS =
-  'advlist anchor autolink ' +
+  'advlist anchor autolink preview ' +
   'charmap code codesample directionality emoticons ' +
   'fullscreen image importcss insertdatetime ' +
   'link lists media nonbreaking pagebreak preview ' +
@@ -7,12 +7,12 @@ export const TINY_PLUGINS =
   'visualblocks visualchars wordcount';
 
 export const TINY_TOOLBAR =
-  'code | undo redo | removeformat searchreplace | ' +
-  'alignleft aligncenter alignright alignjustify lineheight | ' +
-  'numlist bullist table image | link unlink | ' +
-  'fontfamily fontsize | forecolor backcolor | ' +
-  'bold italic underline strikethrough | ' +
-  'superscript subscript | hr charmap | ';
+  'code preview | undo redo ' +
+  'fontfamily fontsize bold italic underline strikethrough forecolor backcolor ' +
+  'alignleft aligncenter alignright alignjustify lineheight ' +
+  'numlist bullist table image link unlink ' +
+  'superscript subscript hr charmap ' +
+  'removeformat searchreplace';
 
 export const TINY_FONT_FAMILY_FORMATS =
   "微软雅黑='微软雅黑';宋体='宋体';黑体='黑体';仿宋='仿宋';楷体='楷体';隶书='隶书';幼圆='幼圆';" +
