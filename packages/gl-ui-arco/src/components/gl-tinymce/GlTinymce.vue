@@ -78,13 +78,16 @@ const example_image_upload_handler = (blobInfo: any, progress: any) => new Promi
 
 const tinyInit = ref({
   height: props.height,
-  resize: props.resize, // 不允许用户调整大小
+  statusbar: true, // 底部状态栏，是否显示
+  elementpath: true, // 底部状态栏，元素路径
+  resize: props.resize, // 底部状态栏，大小调整
+  branding: false, // 底部状态栏，隐藏tinymce右下角水印
   language: 'zh-Hans', // 汉化
-  branding: false, // 隐藏tinymce右下角水印
   convert_urls: false, // 不自动转换链接地址
   plugins: props.plugins, // 插件
   contextmenu: '', // 上下文菜单
-  menubar: props.menubar, // 菜单栏
+  menubar: props.menubar, // 顶部菜单栏
+  promotion: false, // 顶部菜单栏，upgrade
   toolbar_mode: props.toolbarMode, // 工具栏多行显示样式
   toolbar: props.toolbar, // 工具栏
   font_family_formats: props.fontFamilyFormats, // 字体选择
