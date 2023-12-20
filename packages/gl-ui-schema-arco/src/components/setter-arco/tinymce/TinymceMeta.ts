@@ -55,6 +55,22 @@ export default {
       "setterDefaultValue": "320px"
     },
     {
+      "name": "autoUpload",
+      "group": "base",
+      "type": "props",
+      "enableValueExpress": false,
+      "show": true,
+      "expanded": true,
+      "displayMode": "tile",
+      "setterComponentProps": {
+        "uncheckedText": "Base64",
+        "checkedText": "Attachment"
+      },
+      "setterComponentVModelName": "modelValue",
+      "title": "图片上传",
+      "setterComponentName": "ASwitch"
+    },
+    {
       "name": "menubar",
       "group": "base",
       "type": "props",

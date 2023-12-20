@@ -4,17 +4,11 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { type PropType, type Ref, ref, reactive, watch, onMounted, computed } from 'vue'
-import { entityApi, EntityReader, utils } from '@geelato/gl-ui'
+import {type PropType, type Ref, ref, reactive, watch, onMounted, computed} from 'vue'
+import {entityApi, EntityReader, fileApi, utils} from '@geelato/gl-ui'
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
 import Editor from '@tinymce/tinymce-vue'
-
-import {
-  TINY_FONT_FAMILY_FORMATS,
-  TINY_FONT_SIZE_FORMATS,
-  TINY_PLUGINS,
-  TINY_TOOLBAR
-} from './type'
+import {TINY_FONT_FAMILY_FORMATS, TINY_FONT_SIZE_FORMATS, TINY_PLUGINS, TINY_TOOLBAR} from './type'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -43,50 +37,121 @@ const props = defineProps({
     type: String,
     default: TINY_FONT_SIZE_FORMATS
   },
-  height: { type: String, default: '400px' },
-  resize: { type: Boolean, default: false },
-  menubar: { type: Boolean, default: false }
+  height: {type: String, default: '400px'},
+  resize: {type: Boolean, default: false},
+  autoUpload: {type: Boolean, default: false},
+  menubar: {type: Boolean, default: false}
 })
 const key = ref(utils.gid())
 
-const tinyInit = ref({})
+const example_image_upload_handler = (blobInfo: any, progress: any) => new Promise((resolve, reject) => {
+  const xhr = new XMLHttpRequest();
+  xhr.withCredentials = false;
+  xhr.open('POST', fileApi.getUploadUrl(), true);
+  xhr.setRequestHeader('Authorization', entityApi.getAuthorization() || '');
+  xhr.upload.onprogress = (e) => {
+    progress(e.loaded / e.total * 100);
+  };
+  xhr.onload = () => {
+    if (xhr.status === 403) {
+      reject({message: 'HTTP Error: ' + xhr.status, remove: true});
+      return;
+    }
+    if (xhr.status < 200 || xhr.status >= 300) {
+      reject('HTTP Error: ' + xhr.status);
+      return;
+    }
+    const json = JSON.parse(xhr.responseText);
+    if (!json || json.code != 20000) {
+      reject('Invalid JSON: ' + xhr.responseText);
+      return;
+    }
+    resolve(fileApi.getDownloadUrlById(json.data.id));
+  };
+  xhr.onerror = () => {
+    reject('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
+  };
+  const formData = new FormData();
+  formData.append('file', blobInfo.blob(), blobInfo.filename());
+  xhr.send(formData);
+});
+
+const tinyInit = ref({
+  height: props.height,
+  resize: props.resize, // 不允许用户调整大小
+  language: 'zh-Hans', // 汉化
+  branding: false, // 隐藏tinymce右下角水印
+  convert_urls: false, // 不自动转换链接地址
+  plugins: props.plugins, // 插件
+  contextmenu: '', // 上下文菜单
+  menubar: props.menubar, // 菜单栏
+  toolbar_mode: props.toolbarMode, // 工具栏多行显示样式
+  toolbar: props.toolbar, // 工具栏
+  font_family_formats: props.fontFamilyFormats, // 字体选择
+  font_size_formats: props.fontSizeFormats, // 字号选择
+  automatic_uploads: props.autoUpload,
+  images_upload_handler: example_image_upload_handler
+});
 
 watch(
   () => {
-    return props
+    return props.height
   },
   () => {
-    tinyInit.value = {
-      height: props.height,
-      resize: props.resize, // 不允许用户调整大小
-      language: 'zh-Hans', // 汉化
-      branding: false, // 隐藏tinymce右下角水印
-      convert_urls: false, // 不自动转换链接地址
-      plugins: props.plugins, // 插件
-      contextmenu: '', // 上下文菜单
-      menubar: props.menubar, // 菜单栏
-      toolbar_mode: props.toolbarMode, // 工具栏多行显示样式
-      toolbar: props.toolbar, // 工具栏
-      font_family_formats: props.fontFamilyFormats, // 字体选择
-      font_size_formats: props.fontSizeFormats // 字号选择
-    }
+    tinyInit.value.height = props.height
     key.value = utils.gid()
   },
-  { deep: true, immediate: true }
+  {deep: true, immediate: true}
+)
+watch(
+  () => {
+    return props.autoUpload
+  },
+  () => {
+    tinyInit.value.automatic_uploads = props.autoUpload
+    key.value = utils.gid()
+  },
+  {deep: true, immediate: true}
+)
+watch(
+  () => {
+    return props.resize
+  },
+  () => {
+    tinyInit.value.resize = props.resize
+    key.value = utils.gid()
+  },
+  {deep: true, immediate: true}
+)
+watch(
+  () => {
+    return props.menubar
+  },
+  () => {
+    tinyInit.value.menubar = props.menubar
+    key.value = utils.gid()
+  },
+  {deep: true, immediate: true}
 )
 
-onMounted(() => {
-  console.log(tinyInit.value)
-})
 const mv = ref(props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
+watch(
+  () => {
+    return props.modelValue
+  },
+  () => {
+    mv.value = props.modelValue
+  },
+  {deep: true, immediate: true}
+)
 </script>
 
 <template>
-   <div :key="key">
-     <Editor  v-model="mv" :init="tinyInit" />
-   </div>
+  <div :key="key">
+    <Editor v-model="mv" :init="tinyInit"/>
+  </div>
 </template>
 

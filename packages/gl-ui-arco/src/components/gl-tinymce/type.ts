@@ -9,7 +9,7 @@ export const TINY_PLUGINS =
 export const TINY_TOOLBAR =
   'code | undo redo | removeformat searchreplace | ' +
   'alignleft aligncenter alignright alignjustify lineheight | ' +
-  'numlist bullist table | link unlink | ' +
+  'numlist bullist table image | link unlink | ' +
   'fontfamily fontsize | forecolor backcolor | ' +
   'bold italic underline strikethrough | ' +
   'superscript subscript | hr charmap | ';
