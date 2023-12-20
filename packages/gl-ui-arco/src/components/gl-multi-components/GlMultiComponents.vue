@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {nextTick, type PropType, ref, watch} from "vue";
+import {nextTick, onMounted, type PropType, ref, watch} from "vue";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {mixins} from "@geelato/gl-ui";
 
@@ -55,15 +55,27 @@ const props = defineProps({
   ...mixins.props
 })
 
-const mv = ref<Array<ModelProps>>(props.modelValue || [])
+console.log('props',props,props.modelValue)
+const mv = ref<Array<ModelProps>>([])
 const isAdd = ref(false)
+watch(()=>{
+  return props.modelValue
+},()=>{
+  mv.value = props.modelValue || []
+})
 
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 }, {deep: true})
 
 const visible = ref(false)
-const getText = (modelProps: ModelProps, index: number) => {
+
+/**
+ * 基于一组配置项内容，生成用于界面展示的文本，即把多个配置值合并在一起
+ * @param modelProps
+ * @param index
+ */
+const genText = (modelProps: ModelProps, index: number) => {
   const text: Array<string> = []
   modelProps.forEach((modelProp) => {
     const foundItem = props.items.find((item) => {
@@ -131,6 +143,9 @@ const showAddTag = () => {
   visible.value = true
 }
 
+/**
+ *  弹出窗口点确认时，将窗口配置的数据加到mv中
+ */
 const addTag = () => {
   setCurrentModel()
   if (isAdd.value) {
@@ -145,7 +160,7 @@ const form = ref({})
   <a-space class="gl-multi-components" v-if="refreshFlag">
     <template v-for="(modelProps,index) in mv">
       <a-tag :size="tagSize" :color="tagColor" @click="clickTag(modelProps,index)" @close="closeTag(modelProps,index)" bordered closable>{{
-          getText(modelProps, index)
+          genText(modelProps, index)
         }}
       </a-tag>
     </template>
