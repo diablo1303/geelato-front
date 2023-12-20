@@ -159,21 +159,33 @@
           <a-textarea v-model="formData.defaultValue" :auto-size="{minRows:2,maxRows:4}" :max-length="formData.charMaxLength" show-word-limit/>
         </a-form-item>
       </a-col>
-      <!--   默认范围 defaultValue 字典项、流水号、实体   -->
+      <!--   默认范围 typeExtra 字典项、流水号、实体   -->
       <a-col v-if="['DICTIONARY','CODE','ENTITY'].includes(formData.selectType)" :span="24">
         <a-form-item
             :label="$t('model.column.index.form.defaultRange')"
             :label-col-props="{ span: (pageData.formCol===1?8:4) }"
             :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
-            field="defaultValue">
-          <a-select v-if="pageData.button&&['DICTIONARY'].includes(formData.selectType)" v-model="formData.defaultValue" allow-clear allow-search>
+            field="typeExtra">
+          <a-select v-if="pageData.button&&['DICTIONARY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search
+                    @change="dictionaryChange">
             <a-option v-for="item of selectDictionaryOptions" :key="item.id" :label="`${item.dictName}[${item.dictCode}]`" :value="item.dictCode"/>
           </a-select>
-          <a-select v-if="pageData.button&&['CODE'].includes(formData.selectType)" v-model="formData.defaultValue" allow-clear allow-search>
+          <a-select v-if="pageData.button&&['CODE'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search>
             <a-option v-for="item of selectCodeOptions" :key="item.id" :label="`${item.title}[${item.example}]`" :value="item.id"/>
           </a-select>
-          <a-select v-if="pageData.button&&['ENTITY'].includes(formData.selectType)" v-model="formData.defaultValue" allow-clear allow-search>
+          <a-select v-if="pageData.button&&['ENTITY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search>
             <a-option v-for="item of selectEntityOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.id"/>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col v-if="['DICTIONARY'].includes(formData.selectType)" :span="24">
+        <a-form-item
+            :label="$t('model.column.index.form.defaultValue')"
+            :label-col-props="{ span: (pageData.formCol===1?8:4) }"
+            :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
+            field="defaultValue">
+          <a-select v-if="pageData.button" v-model="formData.defaultValue" allow-clear allow-search>
+            <a-option v-for="item of selectDictItemOptions" :key="item.id" :label="`${item.itemName}`" :value="item.itemCode"/>
           </a-select>
         </a-form-item>
       </a-col>
@@ -224,7 +236,7 @@
       <!--  json类型，多组件   -->
       <a-divider v-if="['MULTICOMPONENT'].includes(formData.selectType)" style="margin: 5px 0;"/>
       <a-col v-if="['MULTICOMPONENT'].includes(formData.selectType)" :span="24">
-        <a-form-item :wrapper-col-props="{ span: 24 }" field="defaultValue">
+        <a-form-item :wrapper-col-props="{ span: 24 }" field="typeExtra">
           <a-space :style="{'width':'100%'}" direction="vertical" size="mini">
             <a-card v-for="(item,index) of multiComponentData" :key="index" :title="item.title" hoverable size="small">
               <template #extra>
@@ -402,7 +414,7 @@ import {
 import {formatSeparator, toCamelCase} from '@/utils/strings';
 import {isBlank, isNotBlank} from '@/utils/is';
 import {useRoute} from "vue-router";
-import {QueryDictForm, queryDicts} from "@/api/security";
+import {QueryDictForm, QueryDictItemForm, queryDicts, queryItemByDictCode} from "@/api/security";
 import {QueryEncodingForm, queryEncodings} from "@/api/encoding";
 
 // 国际化
@@ -437,6 +449,7 @@ const generateFormData = (): QueryForm => {
     nullable: 1, // 是否可空 YES_OR_NO
     dataType: 'VARCHAR', // 数据类型
     selectType: 'VARCHAR',
+    typeExtra: '',
     extra: '', // 特别 auto_increment
     autoIncrement: 0, // auto_increment
     uniqued: 0, // 唯一约束
@@ -587,6 +600,27 @@ const getSelectDictionaryOptions = async () => {
     console.log(err);
   }
 }
+const selectDictItemOptions = ref<QueryDictItemForm[]>([]);
+const getSelectDictItemOptions = async (value?: string) => {
+  try {
+    if (formData.value.typeExtra) {
+      const {data} = await queryItemByDictCode(formData.value.typeExtra as string);
+      selectDictItemOptions.value = data || [];
+      formData.value.defaultValue = value || '';
+    } else {
+      selectDictItemOptions.value = [];
+    }
+  } catch (err) {
+    selectDictionaryOptions.value = [];
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+const dictionaryChange = (value?: string) => {
+  formData.value.defaultValue = '';
+  selectDictItemOptions.value = [];
+  getSelectDictItemOptions(value);
+}
 const selectCodeOptions = ref<QueryEncodingForm[]>([]);
 const getSelectCodeOptions = async () => {
   try {
@@ -599,7 +633,10 @@ const getSelectCodeOptions = async () => {
   }
 }
 const selectEntityOptions = ref<QueryTableForm[]>([]);
-const getSelectEntityOptions = async (params: PageQueryRequest = {enableStatus: 1, tableType: 'table', ...routeParams.value} as unknown as PageQueryRequest) => {
+const getSelectEntityOptions = async (params: PageQueryRequest = {
+  enableStatus: 1,
+  tableType: 'table', ...routeParams.value
+} as unknown as PageQueryRequest) => {
   try {
     const {data} = await queryTables(params);
     selectEntityOptions.value = data;
@@ -615,8 +652,9 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
   if (!res) {
     params.autoAdd = Number(params.autoAdd.toString());
     params.defaultValue = params.defaultValue && params.defaultValue.toString();
+    params.typeExtra = params.typeExtra && params.typeExtra.toString();
     if (['MULTICOMPONENT'].includes(params.selectType)) {
-      params.defaultValue = getMultiData();
+      params.typeExtra = getMultiData();
     }
     try {
       const {data} = await createOrUpdateForm(params);
@@ -684,6 +722,7 @@ const selectTypeChange = (value: string) => {
   formData.value.autoName = '';
   formData.value.charMaxLength = 0;
   formData.value.defaultValue = '';
+  formData.value.typeExtra = '';
   formData.value.numericPrecision = 0;
   formData.value.numericScale = 0;
   formData.value.numericSigned = 0;
@@ -798,6 +837,7 @@ const validateCode = async (value: any, callback: any) => {
     const params = {...formData.value};
     params.autoAdd = Number(params.autoAdd.toString());
     params.defaultValue = params.defaultValue && params.defaultValue.toString();
+    params.typeExtra = params.typeExtra && params.typeExtra.toString();
     const {data} = await validateTableColumnName(params);
     if (!data) callback(t('security.form.rules.match.uniqueness'));
   } catch (err) {
@@ -843,11 +883,13 @@ const loadModel = (urlParams: ListUrlParams) => {
         data.defaultValue = (data.defaultValue == null || data.defaultValue === '') ? '' : data.defaultValue.toString();
       }
       if (['MULTICOMPONENT'].includes(data.selectType)) {
-        multiComponentData.value = (data.defaultValue == null || data.defaultValue === '' || data.defaultValue === '[]')
-          ? [generateMultiComponentData()] : loadMultiData(JSON.parse(data.defaultValue as string) as QueryMultiComponentForm[]);
+        multiComponentData.value = (data.typeExtra == null || data.typeExtra === '' || data.typeExtra === '[]')
+          ? [generateMultiComponentData()] : loadMultiData(JSON.parse(data.typeExtra as string) as QueryMultiComponentForm[]);
       }
-
       formData.value = data;
+      if (['DICTIONARY'].includes(data.selectType)) {
+        dictionaryChange(data.defaultValue as string);
+      }
       urlParams.loadSuccessBack(data);
     }, urlParams.loadFailBack);
   }
