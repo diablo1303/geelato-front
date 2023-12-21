@@ -94,9 +94,12 @@ export class EntityApi {
    * 将entityReader对象转换mql对象
    * 若无设置delStatus值，默认加上条件delStatus|eq:0
    * 若无设置排序，则默认加上排序updateAt|-
+   * 以上规则对platform_oprecord例外
    * @param entityReader
    */
   convertEntityReaderToMql(entityReader: EntityReader): MqlObject {
+    const ignoreDeleteStatusEntity = ['platform_oprecord']
+    const ignoreOrderByUpdateAtEntity = ['platform_oprecord']
     // console.log('queryByEntityReader > entityReader', entityReader.entity, entityReader)
     const mql: Record<string, any> = {}
     mql[entityReader.entity] = {}
@@ -122,7 +125,9 @@ export class EntityApi {
       mql[entityReader.entity]['@order'] = orderStrs.join(',')
     } else {
       // 无排序时，加默认排序，新增（即更新时间）的放前面
-      mql[entityReader.entity]['@order'] = 'updateAt|-'
+      if (ignoreOrderByUpdateAtEntity.indexOf(entityReader.entity) === -1){
+        mql[entityReader.entity]['@order'] = 'updateAt|-'
+      }
     }
     // 3-params
     const defaultGroupName = '__'
@@ -142,7 +147,6 @@ export class EntityApi {
       }
 
       // 检查是否有删除状态，默认为0
-      const ignoreDeleteStatusEntity = ['platform_oprecord']
       if (!hasDelStatus && ignoreDeleteStatusEntity.indexOf(entityReader.entity) === -1) {
         paramsGroups[defaultGroupName].push(
           new EntityReaderParam('delStatus', 'eq', '0', defaultGroupName)
