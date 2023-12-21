@@ -467,6 +467,7 @@ const generateFormData = (): QueryForm => {
     refColName: '', // 外表字段名称
     autoAdd: '',
     autoName: '',
+    synced: false,
     seqNo: 1,
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode,

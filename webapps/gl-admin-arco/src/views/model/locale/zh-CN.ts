@@ -230,6 +230,7 @@ export default {
   'model.column.index.form.createAt': '创建时间',
   'model.column.index.form.operations': '操作',
   'model.column.index.form.operations.disabled': '系统字段不可编辑',
+  'model.column.index.form.name.synced': '还未同步至数据库',
   'model.column.index.form.name.key': '主键',
   'searchTable.columns.operations.permission': '权限',
   'searchTable.columns.operations.alter': '变更',

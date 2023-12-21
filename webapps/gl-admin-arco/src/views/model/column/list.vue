@@ -147,12 +147,20 @@
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
       <a-table-column
-          :ellipsis="true" :title="$t('model.column.index.form.name')" :tooltip="true" :width="150" data-index="name" fixed="left">
+          :ellipsis="true" :title="$t('model.column.index.form.name')" :tooltip="true" :width="180" data-index="name" fixed="left">
         <template #cell="{record}">
-          {{ record.name }}
-          <a-button v-if="record.key===true" class="list-action-button-default" type="outline">
-            {{ $t('model.column.index.form.name.key') }}
-          </a-button>
+          <a-space>
+            <a-tooltip v-if="!record.synced" :content="$t('model.column.index.form.name.synced')" position="left">
+              <a-space>
+                <icon-exclamation-circle style="color: rgb(var(--warning-6));"/>
+                {{ record.name }}
+              </a-space>
+            </a-tooltip>
+            <span v-else>{{ record.name }}</span>
+            <a-button v-if="record.key===true" class="list-action-button-default" type="outline">
+              {{ $t('model.column.index.form.name.key') }}
+            </a-button>
+          </a-space>
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.title')" :tooltip="true" :width="150" data-index="title"/>

@@ -231,6 +231,7 @@ export default {
   'model.column.index.form.description': 'description',
   'model.column.index.form.createAt': 'createTime',
   'model.column.index.form.operations': 'operation',
+  'model.column.index.form.name.synced': 'Not synchronized to the database',
   'model.column.index.form.name.key': 'Primary Key',
   'model.column.index.form.operations.disabled': 'System fields cannot be edited',
   'searchTable.columns.operations.permission': 'Permission',
