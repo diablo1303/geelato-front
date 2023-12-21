@@ -225,6 +225,7 @@ const generateFormData = (): QueryForm => {
     description: '', // 补充描述
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode,
+    synced: false,
   };
 }
 const formData = ref(generateFormData());

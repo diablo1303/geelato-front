@@ -11,8 +11,9 @@
             {{ pageData.treeTitle !== '' ? pageData.treeTitle : $t('model.connect.index.menu.list.searchTable') }}
           </a-spin>
           <a-spin>
-            <a-button v-show="pageData.level===2" :disabled="!pageData.isSync" class="list-action-button-default" type="primary">
-              <a-spin v-if="pageData.isSync">{{ $t('model.table.index.form.tableName.yes') }}</a-spin>
+            <a-button v-show="pageData.level===2" :disabled="pageData.isSync===0" class="list-action-button-default" type="primary">
+              <a-spin v-if="pageData.isSync===2">{{ $t('model.table.index.form.tableName.yes') }}</a-spin>
+              <a-spin v-else-if="pageData.isSync===1">{{ $t('model.table.index.form.tableName.edit') }}</a-spin>
               <a-spin v-else>{{ $t('model.table.index.form.tableName.no') }}</a-spin>
             </a-button>
           </a-spin>
@@ -143,7 +144,7 @@ const pageData = ref({
   tabKey: '1',
   level: 0, treeKey: '0', treeTitle: '',
   treeEntity: '', treeConnect: '',
-  isSync: false
+  isSync: 0
 });
 
 interface TreeNode extends TreeNodeProps {
@@ -220,7 +221,8 @@ const swapTable = (item: QueryTableForm): string => {
   return pageData.value.swap ? `${item.title} | ${item.entityName || item.tableName}` : (item.entityName || item.tableName);
 }
 const swapTableTitle = (item: QueryTableForm): string => {
-  pageData.value.isSync = item.tableName != null && item.tableName.length > 0;
+  // eslint-disable-next-line no-nested-ternary
+  pageData.value.isSync = (item.tableName != null && item.tableName.length > 0) ? (item.synced ? 2 : 1) : 0;
   return `${item.title}（${item.entityName || item.tableName}）`;
 }
 /**
@@ -445,7 +447,7 @@ const loadColumnAndForeignList = (tableId: string, tableName: string, connectId:
     viewListRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
-      params: {pId: connectId, pName: tableName, isSync: pageData.value.isSync}
+      params: {pId: connectId, pName: tableName, isSync: pageData.value.isSync === 2}
     });
   }
   if (tablePermissionFormRef.value) {

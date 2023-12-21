@@ -75,6 +75,7 @@ export interface QueryTableForm {
   seqNo: number; // 排序
   tableComment: string; // 备注
   description: string; // 补充描述
+  synced: boolean;
   appId: string;
   tenantCode: string;
 }
