@@ -47,6 +47,31 @@ export function getDownloadUrlByPath(name: string, path: string) {
 }
 
 /**
+ * 获取文件内容
+ * @param fileName 文件名称
+ */
+export function formDataFromFile(fileName: string) {
+  return axios.get<string>(`/api/resources/json?fileName=${fileName}`);
+}
+
+/**
+ * 校验文件是否存在
+ * @param url
+ * @param success
+ * @param failed
+ */
+export const checkFileExists = async (url: string, success: any, failed: any) => {
+  try {
+    const response = await fetch(url);
+    if (response.status === 200) {
+      if (typeof success === 'function') success();
+    } else if (typeof failed === 'function') failed();
+  } catch (error) {
+    if (typeof failed === 'function') failed();
+  }
+};
+
+/**
  * 检验文件是否存在，下载文件
  * @param id 文件id
  */

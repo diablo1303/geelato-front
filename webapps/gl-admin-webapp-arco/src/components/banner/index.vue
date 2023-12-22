@@ -4,8 +4,8 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-
-import {ref, watch} from "vue";
+import {ref, watch, computed} from "vue";
+import {useTenantStore} from "@/store";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -20,26 +20,25 @@ const mv = ref(props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
+
+const tenantStore = useTenantStore();
+const tenantData = computed(() => {
+  return {slogan: tenantStore.getTenant.slogan, features: tenantStore.getTenant.features};
+});
 </script>
 
 <template>
   <div class="gl-banner">
     <div class="gl-banner-slogan">
       <div class="gl-banner-slogan-title">
-        海纳百川，桥通世界
+        {{ tenantData.slogan }}
       </div>
       <!--        <div class="banner-slogan-sub-title">-->
       <!--          自主可控数智化服务平台-->
       <!--        </div>-->
       <div class="gl-banner-slogan-keys">
-        <div>
-          客户、物流、跟踪等一站式服务
-        </div>
-        <div>
-          自主可控、符合企业数字化需求
-        </div>
-        <div>
-          敏捷响应、助力业务高效发展
+        <div v-for="(item,index) in tenantData.features" :key="index">
+          &nbsp;{{ item[0].value }}
         </div>
       </div>
     </div>

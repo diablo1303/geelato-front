@@ -1,0 +1,26 @@
+{
+  "copyright": "Geelato Admin Pro 1.0",
+  "features": [
+    [
+      {
+        "label": "特性",
+        "value": "客户、物流、跟踪等一站式服务"
+      }
+    ],
+    [
+      {
+        "label": "特性",
+        "value": "自主可控、符合企业数字化需求"
+      }
+    ],
+    [
+      {
+        "label": "特性",
+        "value": "敏捷响应、助力业务高效发展"
+      }
+    ]
+  ],
+  "icpFilingNo": "粤ICP备2023086045号",
+  "name": "Geelato Admin",
+  "slogan": "海纳百川，桥通世界"
+}

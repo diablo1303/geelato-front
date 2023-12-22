@@ -1,7 +1,7 @@
 <template>
   <div class="login-form-wrapper">
-    <div class="login-form-title">{{ $t('login.form.title') }}</div>
-    <div class="login-form-sub-title">{{ $t('login.form.title') }}</div>
+    <div class="login-form-title">登录</div>
+    <div class="login-form-sub-title">{{ tenantData.welcome }}</div>
     <div class="login-form-error-msg">{{ errorMessage }}</div>
     <a-form
         ref="loginForm"
@@ -65,12 +65,12 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, reactive, ref} from 'vue';
+import {computed, onMounted, reactive, ref} from 'vue';
 import {RouteParamsRaw, useRoute, useRouter} from 'vue-router';
 import {Message, ValidatedError} from '@arco-design/web-vue';
 import {useI18n} from 'vue-i18n';
 import {useStorage} from '@vueuse/core';
-import {useUserStore} from '@/store';
+import {useTenantStore, useUserStore} from '@/store';
 import useLoading from '@/hooks/loading';
 import type {LoginData} from '@/api/user';
 import {getSysConfig} from "@/api/user";
@@ -87,6 +87,10 @@ const errorMessage = ref('');
 const {loading, setLoading} = useLoading();
 const userStore = useUserStore();
 const global = useGlobal();
+const tenantStore = useTenantStore();
+const tenantData = computed(() => {
+  return {welcome: tenantStore.getTenant.welcome || t('login.form.title')};
+});
 
 const loginConfig = useStorage('login-config', {
   rememberPassword: false,
