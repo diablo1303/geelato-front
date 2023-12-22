@@ -1,7 +1,6 @@
 import {defineStore} from 'pinia';
 import {formDataFromFile} from "@/api/tenant";
-import {getDownloadUrlById} from "@/api/attachment";
-import favicon from '@/assets/favicon.ico';
+import {checkFileExists, getDownloadUrlById} from "@/api/attachment";
 import {TenantState} from "./types";
 import defaultTenant from "./defaultTenant.json";
 
@@ -43,16 +42,16 @@ const useTenantStore = defineStore('tenant', {
         data = (res && res.data) ? JSON.parse(res.data) : defaultTenant;
         if (data.logo) {
           const url = getDownloadUrlById(data.logo, false);
-          fetch(url).then((response) => {
-            data.logo = response.ok ? url : favicon;
-          })
+          await checkFileExists(url, () => {
+            data.logo = url;
+          }, () => {
+            data.logo = '';
+          });
         }
         // @ts-ignore
         data.features = data.features ? JSON.parse(data.features) : [];
-        console.log(data);
       } catch (e) {
         data = defaultTenant as unknown as TenantState;
-        data.logo = favicon;
       } finally {
         this.setTenant(data);
       }

@@ -103,6 +103,7 @@ const drawerCancel = (e: Event) => {
 provide('toggleDrawerMenu', () => {
   drawerVisible.value = !drawerVisible.value;
 });
+
 onMounted(() => {
   isInit.value = true;
   getSysConfig(global, {

@@ -1,7 +1,7 @@
 <template>
   <div class="login-form-wrapper">
-    <div class="login-form-title">{{ tenantData.welcome }}</div>
-    <div v-if="!tenantData.welcome" class="login-form-sub-title">{{ $t('login.form.title') }}</div>
+    <div class="login-form-title">登录</div>
+    <div class="login-form-sub-title">{{ tenantData.welcome }}</div>
     <div class="login-form-error-msg">{{ errorMessage }}</div>
     <a-form
         ref="loginForm"

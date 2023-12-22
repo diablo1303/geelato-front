@@ -112,6 +112,23 @@ export const uploadHeader = (): Record<string, string> => {
 }
 
 /**
+ * 校验文件是否存在
+ * @param url
+ * @param success
+ * @param failed
+ */
+export const checkFileExists = async (url: string, success: any, failed: any) => {
+  try {
+    const response = await fetch(url);
+    if (response.status === 200) {
+      if (typeof success === 'function') success();
+    } else if (typeof failed === 'function') failed();
+  } catch (error) {
+    if (typeof failed === 'function') failed();
+  }
+};
+
+/**
  * 检验文件是否存在，下载文件
  * @param id 文件id
  */

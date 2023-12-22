@@ -256,10 +256,10 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, inject, ref} from 'vue';
+import {computed, inject, onMounted, ref} from 'vue';
 import {Message} from '@arco-design/web-vue';
 import {useDark, useFullscreen, useToggle} from '@vueuse/core';
-import {useAppStore, useUserStore} from '@/store';
+import {useAppStore, useTenantStore, useUserStore} from '@/store';
 import {useRoute, useRouter} from 'vue-router';
 import {LOCALE_OPTIONS} from '@/locale';
 import useLocale from '@/hooks/locale';
@@ -276,6 +276,7 @@ import {isValidUser} from "@/utils/auth";
 
 const appStore = useAppStore();
 const userStore = useUserStore();
+const tenantStore = useTenantStore();
 const router = useRouter();
 const route = useRoute();
 const {logout} = useUser();
@@ -350,10 +351,10 @@ const switchRoles = async () => {
 };
 const toggleDrawerMenu = inject('toggleDrawerMenu') as (ev: MouseEvent) => void;
 
-const appInfo = ref({appLogo: favicon, appName: "Geelato Admin Pro"});
+const appInfo = ref({appLogo: '', appName: '', slogan: ''});
 const loadTag = () => {
   // 标题
-  document.title = appInfo.value.appName;
+  document.title = appInfo.value.slogan;
   // 图标
   let link = null;
   const links = document.getElementsByTagName('link');
@@ -372,21 +373,32 @@ const loadTag = () => {
     document.head.appendChild(link);
   }
 }
-const getAppInfo = async () => {
-  if (route.params && route.params.appId) {
-    try {
-      const {data} = await getApp(route.params.appId as string);
-      appInfo.value.appName = data.name;
-      if (data.logo) {
-        appInfo.value.appLogo = data.logo;
-      }
-      loadTag();
-    } catch (err) {
-      console.log(err);
+const getTenantSite = async () => {
+  try {
+    const fileName = [];
+    fileName.push(window.location.hostname);
+    // fileName.push(window.location.port);
+    fileName.push('cn');
+    await tenantStore.queryTenant(fileName.join('_'));
+    appInfo.value = {
+      appLogo: tenantStore.getTenant.logo || favicon,
+      appName: tenantStore.getTenant.name || '',
+      slogan: tenantStore.getTenant.slogan || ''
     }
+    loadTag();
+  } catch (err) {
+    console.log(err);
   }
 }
-getAppInfo();
+const getAppInfo = async () => {
+  try {
+    const {data} = await getApp(route.params.appId as string);
+    appInfo.value = {appLogo: data.logo || favicon, appName: data.name, slogan: data.name}
+    loadTag();
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 /**
  * 账户管理
@@ -418,6 +430,14 @@ const resetPasswordClick = (ev?: MouseEvent) => {
     visibleData.value.valid = true;
   }
 }
+
+onMounted(() => {
+  if (route.params && route.params.appId) {
+    getAppInfo();
+  } else {
+    getTenantSite();
+  }
+});
 </script>
 
 <style lang="less" scoped>

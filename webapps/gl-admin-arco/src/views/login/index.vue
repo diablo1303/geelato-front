@@ -1,11 +1,8 @@
 <template>
   <div class="container">
     <div class="logo">
-      <img
-          alt="logo"
-          :src="tenantData.logo"
-          style="width: 14%"
-      />
+      <img v-if="tenantData.logo" alt="logo" :src="tenantData.logo" style="width: 14%"/>
+      <img v-else alt="logo" :src="favicon" style="width: 14%"/>
       <div class="logo-text">{{ tenantData.name }}</div>
     </div>
     <LoginBanner/>
@@ -25,27 +22,21 @@ import {computed, onMounted} from "vue";
 import Footer from '@/components/footer/index.vue';
 import LoginBanner from '@/components/banner/index.vue';
 import {useTenantStore} from '@/store';
+import favicon from '@/assets/favicon.ico';
 import LoginForm from './components/login-form.vue';
 
 const tenantStore = useTenantStore();
 const tenantData = computed(() => {
-  return {logo: tenantStore.getTenant.logo || '', name: tenantStore.getTenant.name || ''};
+  return {
+    logo: tenantStore.getTenant.logo || '',
+    name: tenantStore.getTenant.name || '',
+    slogan: tenantStore.getTenant.slogan || '',
+  };
 });
 
-const getTenantSite = async () => {
-  try {
-    const fileName = [];
-    fileName.push(window.location.hostname);
-    // fileName.push(window.location.port);
-    fileName.push('cn');
-    await tenantStore.queryTenant(fileName.join('_'));
-  } catch (err) {
-    console.log(err);
-  }
-}
 const loadTag = () => {
   // 标题
-  document.title = tenantData.value.name;
+  document.title = tenantData.value.slogan;
   // 图标
   let link = null;
   const links = document.getElementsByTagName('link');
@@ -65,9 +56,21 @@ const loadTag = () => {
   }
 }
 
+const getTenantSite = async () => {
+  try {
+    const fileName = [];
+    fileName.push(window.location.hostname);
+    // fileName.push(window.location.port);
+    fileName.push('cn');
+    await tenantStore.queryTenant(fileName.join('_'));
+    loadTag();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 onMounted(() => {
   getTenantSite();
-  loadTag();
 });
 </script>
 
