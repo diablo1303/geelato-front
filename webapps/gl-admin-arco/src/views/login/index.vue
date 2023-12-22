@@ -3,10 +3,10 @@
     <div class="logo">
       <img
           alt="logo"
-          :src="favicon"
+          :src="tenantData.logo"
           style="width: 14%"
       />
-      <div class="logo-text">Geelato Admin</div>
+      <div class="logo-text">{{ tenantData.name }}</div>
     </div>
     <LoginBanner/>
     <div class="content">
@@ -21,10 +21,54 @@
 </template>
 
 <script lang="ts" setup>
+import {computed, onMounted} from "vue";
 import Footer from '@/components/footer/index.vue';
-import favicon from '@/assets/favicon.ico';
 import LoginBanner from '@/components/banner/index.vue';
+import {useTenantStore} from '@/store';
 import LoginForm from './components/login-form.vue';
+
+const tenantStore = useTenantStore();
+const tenantData = computed(() => {
+  return {logo: tenantStore.getTenant.logo || '', name: tenantStore.getTenant.name || ''};
+});
+
+const getTenantSite = async () => {
+  try {
+    const fileName = [];
+    fileName.push(window.location.hostname);
+    // fileName.push(window.location.port);
+    fileName.push('cn');
+    await tenantStore.queryTenant(fileName.join('_'));
+  } catch (err) {
+    console.log(err);
+  }
+}
+const loadTag = () => {
+  // 标题
+  document.title = tenantData.value.name;
+  // 图标
+  let link = null;
+  const links = document.getElementsByTagName('link');
+  for (let i = 0; i < links.length; i += 1) {
+    if (links[0].rel && links[0].rel.indexOf("shortcut icon") !== -1) {
+      // eslint-disable-next-line prefer-destructuring
+      link = links[0];
+      links[0].href = tenantData.value.logo;
+    }
+  }
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'shortcut icon';
+    link.type = 'image/x-icon';
+    link.href = tenantData.value.logo; // 这里填写您的图标路径
+    document.head.appendChild(link);
+  }
+}
+
+onMounted(() => {
+  getTenantSite();
+  loadTag();
+});
 </script>
 
 <style lang="less" scoped>

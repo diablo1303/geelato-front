@@ -1,31 +1,21 @@
 <template>
   <a-layout-footer class="footer">
-    {{ appInfo.powerInfo }} {{ appInfo.versionInfo }} &nbsp;&nbsp;
-    <a href="https://beian.miit.gov.cn/" style="text-decoration:none" target="_blank">粤ICP备2023086045号</a>
+    {{ tenantData.copyright }}&nbsp;&nbsp;
+    <a href="https://beian.miit.gov.cn/" style="text-decoration:none" target="_blank">{{ tenantData.icpFilingNo }}</a>
   </a-layout-footer>
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue";
+import {computed} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {getApp} from "@/api/application";
+import {useTenantStore} from "@/store";
 
 const router = useRouter();
 const route = useRoute();
-
-const appInfo = ref({powerInfo: "Geelato Admin Pro", versionInfo: "1.0"});
-const getAppInfo = async () => {
-  if (route.params && route.params.appId) {
-    try {
-      const {data} = await getApp(route.params.appId as string);
-      appInfo.value.powerInfo = data.powerInfo || data.name;
-      appInfo.value.versionInfo = data.versionInfo;
-    } catch (err) {
-      console.log(err);
-    }
-  }
-}
-// getAppInfo();
+const tenantStore = useTenantStore();
+const tenantData = computed(() => {
+  return {copyright: tenantStore.getTenant.copyright, icpFilingNo: tenantStore.getTenant.icpFilingNo};
+});
 </script>
 
 <style lang="less" scoped>
