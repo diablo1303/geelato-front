@@ -13,7 +13,8 @@ const getApiBaseUrl = () => {
     const protocol = import.meta.env.VITE_API_BASE_PROTOCOL || window.location.protocol
     const hostname = import.meta.env.VITE_API_BASE_HOSTNAME || window.location.hostname
     const port = import.meta.env.VITE_API_BASE_PORT || window.location.port
-    return `${protocol}://${hostname}:${port}`
+    // console.log('url:',`${protocol}://${hostname}:${port}`)
+    return `${protocol}//${hostname}:${port}`
   }
   return ''
 }
