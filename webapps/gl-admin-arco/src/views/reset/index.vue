@@ -1,12 +1,14 @@
 <template>
   <div class="container">
     <div class="logo">
-      <img v-if="tenantData.logo" alt="logo" :src="tenantData.logo" style="width: 14%"/>
-      <img v-else alt="logo" :src="favicon" style="width: 14%"/>
+      <img v-if="tenantData.logoIcon" alt="logo" :src="tenantData.logoIcon" style="width: 14%"/>
       <div class="logo-text">{{ tenantData.name }}</div>
     </div>
     <ResetPasswordBanner/>
     <div class="content">
+      <div class="top">
+        <LoginNavTop v-if="tenantData.lang" @change-language="changeLanguage"/>
+      </div>
       <div class="content-inner">
         <ResetPasswordForm/>
       </div>
@@ -19,18 +21,19 @@
 
 <script lang="ts" setup>
 import {computed, onMounted} from "vue";
-import favicon from '@/assets/favicon.ico';
 import {useTenantStore} from "@/store";
 import ResetPasswordBanner from '@/components/banner/index.vue';
 import ResetPasswordForm from "@/views/reset/password/reset-password.vue";
 import Footer from '@/components/footer/index.vue';
+import LoginNavTop from "@/components/navtop/index.vue";
 
 const tenantStore = useTenantStore();
 const tenantData = computed(() => {
   return {
-    logo: tenantStore.getTenant.logo || '',
+    logoIcon: tenantStore.getTenant.logoIcon || '',
     name: tenantStore.getTenant.name || '',
     slogan: tenantStore.getTenant.slogan || '',
+    lang: tenantStore.getTenant.enableMutilLang || false,
   };
 });
 
@@ -44,33 +47,25 @@ const loadTag = () => {
     if (links[0].rel && links[0].rel.indexOf("shortcut icon") !== -1) {
       // eslint-disable-next-line prefer-destructuring
       link = links[0];
-      links[0].href = tenantData.value.logo;
+      links[0].href = tenantData.value.logoIcon;
     }
   }
   if (!link) {
     link = document.createElement('link');
     link.rel = 'shortcut icon';
     link.type = 'image/x-icon';
-    link.href = tenantData.value.logo; // 这里填写您的图标路径
+    link.href = tenantData.value.logoIcon; // 这里填写您的图标路径
     document.head.appendChild(link);
   }
 }
 
-const getTenantSite = async () => {
-  try {
-    const fileName = [];
-    fileName.push(window.location.hostname);
-    // fileName.push(window.location.port);
-    fileName.push('cn');
-    await tenantStore.queryTenant(fileName.join('_'));
-    loadTag();
-  } catch (err) {
-    console.log(err);
-  }
+const changeLanguage = async (value: string) => {
+  await tenantStore.queryTenant();
+  loadTag();
 }
-
-onMounted(() => {
-  getTenantSite();
+onMounted(async () => {
+  await tenantStore.queryTenant();
+  loadTag();
 });
 </script>
 
@@ -82,6 +77,13 @@ onMounted(() => {
   .banner {
     width: 550px;
     background: linear-gradient(163.85deg, #1d2129 0%, #00308f 100%);
+  }
+
+  .top {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
   }
 
   .content {

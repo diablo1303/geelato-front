@@ -1,5 +1,6 @@
 <template>
-  <a-modal v-model:visible="visible" title="更改密码" title-align="start" width="360px" @cancel="cancelModalClick($event)">
+  <a-modal v-model:visible="visible" :title="$t('account.manage.password.validBox.title')"
+           title-align="start" width="360px" @cancel="cancelModalClick($event)">
     <a-form ref="validFormRef" :model="formData" :wrapper-col-props="{ span: 24 }" class="form" size="large">
       <a-form-item
           :hide-asterisk="true"

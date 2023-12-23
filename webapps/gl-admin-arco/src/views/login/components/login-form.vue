@@ -1,6 +1,6 @@
 <template>
   <div class="login-form-wrapper">
-    <div class="login-form-title">登录</div>
+    <div class="login-form-title">{{ $t('login.form.login') }}</div>
     <div class="login-form-sub-title">{{ tenantData.welcome }}</div>
     <div class="login-form-error-msg">{{ errorMessage }}</div>
     <a-form
@@ -88,7 +88,7 @@ const userStore = useUserStore();
 const global = useGlobal();
 const tenantStore = useTenantStore();
 const tenantData = computed(() => {
-  return {welcome: tenantStore.getTenant.welcome || t('login.form.title')};
+  return {welcome: tenantStore.getTenant.welcome};
 });
 
 const loginConfig = useStorage('login-config', {
