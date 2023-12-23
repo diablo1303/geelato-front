@@ -1,11 +1,11 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosStatic } from 'axios'
 import ResultMapping from '../datasource/ResultMapping'
-import UrlConfig from '../datasource/UrlConfig'
 import MixUtil from '../utils/MixUtil'
 import { type EntityReader, type EntitySaver, EntityReaderParam } from './EntityDataSource'
 import { getToken } from '../utils/auth'
 import jsScriptExecutor from '../actions/JsScriptExecutor'
 import utils from '../utils/Utils'
+import useApiUrl from "../hooks/useApiUrl";
 
 export type MqlObject = { [key: string]: { [key: string]: any } }
 export type ParsedMqlResult = { key: string; mqlObj: Record<string, any> }
@@ -41,7 +41,7 @@ const checkMqlObject = (mql: MqlObject | Array<MqlObject>): boolean => {
 }
 
 export class EntityApi {
-  url = new UrlConfig()
+  url = useApiUrl().getApiPathName()
 
   // @ts-ignore
   service: AxiosStatic | AxiosInstance

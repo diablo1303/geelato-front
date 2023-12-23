@@ -2,8 +2,9 @@ import axios from "axios";
 import qs from "query-string";
 import {PageQueryRequest, PageQueryResponse, QueryResult} from "@/api/base";
 import {getToken} from "@/utils/auth";
+import {useApiUrl} from "@geelato/gl-ui";
 
-const urlOrigin = import.meta.env.VITE_API_BASE_URL;
+const urlOrigin = useApiUrl().getApiBaseUrl()
 
 export interface QueryAppForm {
   id: string;

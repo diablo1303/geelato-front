@@ -16,7 +16,7 @@ export interface HttpResponse<T = unknown> {
   data: T;
 }
 
-axios.defaults.baseURL = useApiBaseUrl()
+axios.defaults.baseURL = useApiUrl().getApiBaseUrl()
 
 axios.interceptors.request.use(
   (config: AxiosRequestConfig) => {
