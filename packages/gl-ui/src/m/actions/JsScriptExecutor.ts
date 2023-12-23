@@ -734,7 +734,7 @@ export class JsScriptExecutor {
             // TODO
           } else {
             $gl.inst[instKey] = pageProxy.getInsts()[instKey]
-            console.log('instKey', instKey, $gl.inst[instKey])
+            // console.log('instKey', instKey, $gl.inst[instKey])
             // !!!注意组件的子组件未加载时，refs可能为空{}
             $gl.ref[instKey] = pageProxy.getRef(instKey)!.refs[instKey]
             // console.log('instKey', instKey, $gl.ref[instKey],Object.keys(pageProxy.getRef(instKey)?.refs!))

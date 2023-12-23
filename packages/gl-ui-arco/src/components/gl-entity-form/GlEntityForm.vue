@@ -479,7 +479,7 @@ const getEntitySavers = async () => {
  */
 const submitForm = async () => {
   const entitySavers = await getEntitySavers()
-  console.log('submitForm() > entitySavers', entitySavers)
+  // console.log('submitForm() > entitySavers', entitySavers)
   if (!entitySavers.error) {
     setLoading(true)
     // console.log('submitForm() > formData', formData)

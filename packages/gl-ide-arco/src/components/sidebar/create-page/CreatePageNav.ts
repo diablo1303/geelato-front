@@ -24,3 +24,19 @@ export class PageInfo {
     this.type = type || PageType.emptyPage
   }
 }
+
+export const FilteredFieldNames = [
+  'id',
+  'createAt',
+  'creator',
+  'creatorName',
+  'updateAt',
+  'updater',
+  'updaterName',
+  'delStatus',
+  'deleteAt',
+  'seqNo',
+  'deptId',
+  'buId',
+  'tenantCode'
+]

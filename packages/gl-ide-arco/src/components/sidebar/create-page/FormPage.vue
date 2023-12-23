@@ -9,7 +9,7 @@ import type { EntityMeta, FieldMeta } from '@geelato/gl-ui'
 import { PageType } from '@geelato/gl-ui'
 import { FormPageCreator } from './json-creator/FormPageCreator'
 import { PageCreatorOptions } from './json-creator/PageCreator'
-import { PageInfo } from './CreatePageNav'
+import {FilteredFieldNames, PageInfo} from './CreatePageNav'
 
 const entityName = ref('')
 const form: any = ref({
@@ -38,22 +38,7 @@ const loadFieldMetas = (entityMeta: EntityMeta) => {
   const em = JSON.parse(JSON.stringify(entityMeta))
   // 过滤掉系统内置的字段
   pageCreatorOptions.value.entityMeta.fieldMetas = em.fieldMetas.filter((fieldMeta: FieldMeta) => {
-    return ![
-      'id',
-      'createAt',
-      'creator',
-      'creatorName',
-      'updateAt',
-      'updater',
-      'updaterName',
-      'updatorName',
-      'deleteAt',
-      'delStatus',
-      'seqNo',
-      'deptId',
-      'buId',
-      'tenantCode'
-    ].includes(fieldMeta.name)
+    return !FilteredFieldNames.includes(fieldMeta.name)
   })
   pageCreatorOptions.value.entityMeta.entityName = em.entityName
   pageCreatorOptions.value.entityMeta.entityTitle = em.entityTitle

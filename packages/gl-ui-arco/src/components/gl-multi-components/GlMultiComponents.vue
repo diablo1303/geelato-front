@@ -5,9 +5,9 @@ export default {
 </script>
 <script lang="ts" setup>
 
-import {nextTick, onMounted, type PropType, ref, watch} from "vue";
+import {nextTick, type PropType, ref, watch,inject} from "vue";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
-import {mixins} from "@geelato/gl-ui";
+import {mixins, PageProvideKey, type PageProvideProxy} from "@geelato/gl-ui";
 
 type TagSize = "medium" | "large" | "small" | undefined
 type ItemType = { inst: ComponentInstance, showInTag: boolean }
@@ -55,7 +55,9 @@ const props = defineProps({
   ...mixins.props
 })
 
-console.log('props',props,props.modelValue)
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
+const isRead = !!pageProvideProxy?.isPageStatusRead()
+
 const mv = ref<Array<ModelProps>>([])
 const isAdd = ref(false)
 watch(()=>{
@@ -154,12 +156,14 @@ const addTag = () => {
 }
 
 const form = ref({})
+
+
 </script>
 
 <template>
   <a-space class="gl-multi-components" v-if="refreshFlag">
     <template v-for="(modelProps,index) in mv">
-      <a-tag :size="tagSize" :color="tagColor" @click="clickTag(modelProps,index)" @close="closeTag(modelProps,index)" bordered closable>{{
+      <a-tag :size="tagSize" :color="tagColor" @click="clickTag(modelProps,index)" @close="closeTag(modelProps,index)" bordered :closable="!isRead">{{
           genText(modelProps, index)
         }}
       </a-tag>
