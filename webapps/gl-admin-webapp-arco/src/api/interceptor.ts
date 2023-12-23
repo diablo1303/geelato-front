@@ -5,8 +5,9 @@ import {useUserStore} from '@/store';
 /* eslint-disable-next-line */
 import globalConfig from '@/config/globalConfig';
 import {getToken} from '@/utils/auth';
-import {entityApi} from "@geelato/gl-ui";
+import {entityApi, useApiUrl} from "@geelato/gl-ui";
 import {fetchFileById} from "@/api/attachment";
+import useApiBaseUrl from "@geelato/gl-ui/src/m/hooks/useApiUrl";
 
 export interface HttpResponse<T = unknown> {
   status: number;
@@ -15,9 +16,7 @@ export interface HttpResponse<T = unknown> {
   data: T;
 }
 
-if (import.meta.env.VITE_API_BASE_URL) {
-  axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-}
+axios.defaults.baseURL = useApiBaseUrl()
 
 axios.interceptors.request.use(
   (config: AxiosRequestConfig) => {
