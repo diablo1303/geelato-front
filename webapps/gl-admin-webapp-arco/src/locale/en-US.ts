@@ -1,7 +1,7 @@
 import localeMessageBox from '@/components/message-box/locale/en-US';
 import localeAccount from '@/views/account/locale/en-US';
 import localeLogin from '@/views/login/locale/en-US';
-import localReset from '@/views/reset/locale/zh-CN';
+import localReset from '@/views/reset/locale/en-US';
 
 import localeSettings from './en-US/settings';
 
@@ -21,6 +21,7 @@ export default {
   'menu.faq': 'FAQ',
   'navbar.docs': 'Docs',
   'navbar.action.locale': 'Switch to English',
+  'user.logout': 'Logout successfully',
   ...localeSettings,
   ...localeMessageBox,
   ...localeAccount,

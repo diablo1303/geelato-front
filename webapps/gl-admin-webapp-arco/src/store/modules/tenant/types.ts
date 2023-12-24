@@ -16,4 +16,5 @@ export interface TenantState {
   slogan?: string; // 口号标语
   welcome?: string; // 欢迎语
   features?: features[]; // 特性
+  enableMutilLang?: boolean; // 启动多语言
 }

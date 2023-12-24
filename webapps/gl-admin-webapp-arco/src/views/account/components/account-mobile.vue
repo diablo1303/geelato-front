@@ -1,5 +1,6 @@
 <template>
-  <a-modal v-model:visible="visible" title="更改电话号码" title-align="start" width="360px" @cancel="cancelModalClick($event)">
+  <a-modal v-model:visible="visible" :title="$t('account.manage.mobile.validBox.title')"
+           title-align="start" width="360px" @cancel="cancelModalClick($event)">
     <a-form ref="validFormRef" :model="formData" :wrapper-col-props="{ span: 24 }" class="form" size="large">
       <!--   新   -->
       <a-form-item

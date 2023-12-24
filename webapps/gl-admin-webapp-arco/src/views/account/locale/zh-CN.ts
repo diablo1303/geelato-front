@@ -20,6 +20,7 @@ export default {
   'account.user.cropper.button.scaleUp': '放大',
   'account.user.cropper.button.scaleDown': '缩小',
   /* 账户管理 */
+  'account.manage.index.title': '身份验证',
   'account.manage.index.first': '账户绑定',
   'account.manage.list.mobile.title': '手机号码',
   'account.manage.list.mobile.description': '绑定常用手机号码',
@@ -46,6 +47,7 @@ export default {
   'account.manage.valid.password.placeholder': '请输入密码',
   'account.manage.valid.error.msg.missingUser': '缺失用户信息，请重试！',
 
+  'account.manage.mobile.validBox.title': '更改电话号码',
   'account.manage.mobile.validBox.rules.required': '请输入手机号',
   'account.manage.mobile.validBox.placeholder': '账号绑定的手机号',
   'account.manage.mobile.authCode.rules.required': '请输入验证码',
@@ -56,6 +58,7 @@ export default {
   'account.manage.mobile.button.cancel': '取消',
   'account.manage.mobile.button.ok': '确认',
 
+  'account.manage.email.validBox.title': '更改电子邮箱',
   'account.manage.email.validBox.rules.required': '请输入电子邮箱',
   'account.manage.email.validBox.rules.match': '请输入正确的电子邮箱',
   'account.manage.email.validBox.placeholder': '账号绑定的电子邮箱',
@@ -67,6 +70,7 @@ export default {
   'account.manage.email.button.cancel': '取消',
   'account.manage.email.button.ok': '确认',
 
+  'account.manage.password.validBox.title': '更改密码',
   'account.manage.password.validBox.rules.required': '请输入新密码',
   'account.manage.password.validBox.placeholder': '请输入新密码',
   'account.manage.password.authCode.rules.required': '请再次输入新密码',

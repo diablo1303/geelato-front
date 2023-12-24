@@ -1,8 +1,7 @@
 import {defineStore} from 'pinia';
 import {checkFileExists, formDataFromFile, getDownloadUrlById} from "@/api/attachment";
-import favicon from '@/assets/favicon.ico';
+import {getCurrentLocale} from "@/utils/auth";
 import {TenantState} from "./types";
-import defaultTenant from "./defaultTenant.json";
 
 const useTenantStore = defineStore('tenant', {
   state: (): TenantState => ({
@@ -17,7 +16,8 @@ const useTenantStore = defineStore('tenant', {
     logoIcon: undefined, // 标志图标
     slogan: undefined, // 口号标语
     welcome: undefined, // 欢迎语
-    features: undefined // 特性
+    features: undefined, // 特性
+    enableMutilLang: undefined, // 启动多语言
   }),
 
   getters: {
@@ -35,25 +35,26 @@ const useTenantStore = defineStore('tenant', {
     },
 
     // Get user's information
-    async queryTenant(fileName: string) {
+    async queryTenant(fileName?: string) {
       let data: TenantState = {};
       try {
-        const res = await formDataFromFile(fileName);
-        data = (res && res.data) ? JSON.parse(res.data) : defaultTenant;
-        if (data.logo) {
-          const url = getDownloadUrlById(data.logo, false);
+        const fileNames = [];
+        fileNames.push(window.location.hostname);
+        fileNames.push(getCurrentLocale());
+        const res = await formDataFromFile(fileName || fileNames.join('_'));
+        data = (res && res.data) ? JSON.parse(res.data) : {};
+        if (data.logoIcon) {
+          const url = getDownloadUrlById(data.logoIcon, false);
           await checkFileExists(url, () => {
-            data.logo = url;
+            data.logoIcon = url;
           }, () => {
-            data.logo = '';
+            data.logoIcon = '';
           });
         }
         // @ts-ignore
         data.features = data.features ? JSON.parse(data.features) : [];
-        console.log(data);
-      } catch (e) {
-        data = defaultTenant as unknown as TenantState;
-        data.logo = favicon;
+      } catch (err) {
+        console.log(err);
       } finally {
         this.setTenant(data);
       }

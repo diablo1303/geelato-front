@@ -20,6 +20,7 @@ export default {
   'account.user.cropper.button.scaleUp': 'ScaleUp',
   'account.user.cropper.button.scaleDown': 'ScaleDown',
   /* 账户管理 */
+  'account.manage.index.title': 'Identity Authentication',
   'account.manage.index.first': 'Account Binding',
   'account.manage.list.mobile.title': 'Mobile Phone',
   'account.manage.list.mobile.description': 'Bind common mobile phone numbers',
@@ -46,6 +47,7 @@ export default {
   'account.manage.valid.password.placeholder': 'Please enter account password',
   'account.manage.valid.error.msg.missingUser': 'Missing user information, please try again！',
 
+  'account.manage.mobile.validBox.title': 'Change Mobile',
   'account.manage.mobile.validBox.rules.required': 'Please enter your Mobile',
   'account.manage.mobile.validBox.placeholder': 'Mobile bound to the account',
   'account.manage.mobile.authCode.rules.required': 'Please enter the verification code',
@@ -56,6 +58,7 @@ export default {
   'account.manage.mobile.button.cancel': 'Cancel',
   'account.manage.mobile.button.ok': 'Confirm',
 
+  'account.manage.email.validBox.title': 'Change Email Address',
   'account.manage.email.validBox.rules.required': 'Please enter your email address',
   'account.manage.email.validBox.rules.match': 'Please enter the correct email address',
   'account.manage.email.validBox.placeholder': 'Email bound to the account',
@@ -67,6 +70,7 @@ export default {
   'account.manage.email.button.cancel': 'Cancel',
   'account.manage.email.button.ok': 'Confirm',
 
+  'account.manage.password.validBox.title': 'Change Password',
   'account.manage.password.validBox.rules.required': 'Please enter your new password',
   'account.manage.password.validBox.placeholder': 'Please enter your new password',
   'account.manage.password.authCode.rules.required': 'Please enter your new password again',

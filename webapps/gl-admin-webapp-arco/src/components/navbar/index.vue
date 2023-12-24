@@ -1,9 +1,9 @@
 <template>
-  <div class="navbar" :class="{'gl-menu-collapse':appStore.appCurrentSetting.menuCollapse}">
+  <div :class="{'gl-menu-collapse':appStore.appCurrentSetting.menuCollapse}" class="navbar">
     <!--  头部菜单，左侧菜单，应用图标、应用名称  -->
-    <div class="left-side" :style="{'max-width':leftSideWidth+'px','min-width':leftSideWidth+'px'}">
+    <div :style="{'max-width':leftSideWidth+'px','min-width':leftSideWidth+'px'}" class="left-side">
       <a-space>
-        <span style="text-align: center;width: 32px;height: 32px;">
+        <span v-if="appInfo.appLogo" style="text-align: center;width: 32px;height: 32px;">
             <img :src="appInfo.appLogo" alt="logo" style="width: 100%;height: 100%"/>
         </span>
         <template v-if="!appStore.appCurrentSetting.menuCollapse">
@@ -35,7 +35,7 @@
         </a-tooltip>
       </li>
       <!--   语言切换   -->
-      <li v-show="false">
+      <li v-if="appInfo.lang">
         <a-tooltip :content="$t('settings.language')">
           <a-button
               :shape="'circle'"
@@ -48,7 +48,7 @@
             </template>
           </a-button>
         </a-tooltip>
-        <a-dropdown trigger="click" @select="changeLocale as any">
+        <a-dropdown trigger="click" @select="changeLanguageClick as any">
           <div ref="triggerBtn" class="trigger-btn"></div>
           <template #content>
             <a-doption
@@ -352,7 +352,7 @@ const switchRoles = async () => {
 };
 const toggleDrawerMenu = inject('toggleDrawerMenu') as (ev: MouseEvent) => void;
 
-const appInfo = ref({appLogo: '', appName: '', slogan: ''});
+const appInfo = ref({appLogo: '', appName: '', slogan: '', lang: false});
 const loadTag = () => {
   // 标题
   document.title = appInfo.value.slogan;
@@ -376,15 +376,12 @@ const loadTag = () => {
 }
 const getTenantSite = async () => {
   try {
-    const fileName = [];
-    fileName.push(window.location.hostname);
-    // fileName.push(window.location.port);
-    fileName.push('cn');
-    await tenantStore.queryTenant(fileName.join('_'));
+    await tenantStore.queryTenant();
     appInfo.value = {
-      appLogo: tenantStore.getTenant.logo || favicon,
+      appLogo: tenantStore.getTenant.logoIcon || '',
       appName: tenantStore.getTenant.name || '',
-      slogan: tenantStore.getTenant.slogan || ''
+      slogan: tenantStore.getTenant.slogan || '',
+      lang: tenantStore.getTenant.enableMutilLang || false
     }
     loadTag();
   } catch (err) {
@@ -394,7 +391,12 @@ const getTenantSite = async () => {
 const getAppInfo = async () => {
   try {
     const {data} = await getApp(route.params.appId as string);
-    appInfo.value = {appLogo: data.logo || favicon, appName: data.name, slogan: data.name}
+    appInfo.value = {
+      appLogo: data.logo || favicon,
+      appName: data.name,
+      slogan: data.name,
+      lang: tenantStore.getTenant.enableMutilLang || false
+    }
     loadTag();
   } catch (err) {
     console.log(err);
@@ -426,12 +428,19 @@ const resetPasswordClick = (ev?: MouseEvent) => {
   }
 }
 
-onMounted(() => {
+const loadPageStyle = async () => {
+  await getTenantSite();
   if (route.params && route.params.appId) {
-    getAppInfo();
-  } else {
-    getTenantSite();
+    await getAppInfo();
   }
+}
+
+const changeLanguageClick = (value: string) => {
+  changeLocale(value);
+  loadPageStyle();
+}
+onMounted(() => {
+  loadPageStyle();
 });
 </script>
 
