@@ -30,16 +30,6 @@ export default {
       setterComponentName: 'GlEntityFieldSelect'
     },
     {
-      name: 'autofocus',
-      setterComponentProps: {},
-      setterComponentVModelName: 'checked',
-      group: 'base',
-      type: 'props',
-      description: '组件自动获取焦点',
-      title: '自动焦点',
-      setterComponentName: 'ASwitch'
-    },
-    {
       name: 'checkedValue',
       setterComponentProps: {},
       setterComponentVModelName: 'modelValue',
@@ -50,7 +40,7 @@ export default {
       expanded: true,
       displayMode: 'tile',
       title: '选中时值',
-      setterComponentName: 'AInput',
+      setterComponentName: 'AInputNumber',
       setterDefaultValue: '1'
     },
     {
@@ -64,7 +54,7 @@ export default {
       setterComponentProps: {},
       setterComponentVModelName: 'modelValue',
       title: '未选时值',
-      setterComponentName: 'AInput',
+      setterComponentName: 'AInputNumber',
       setterDefaultValue: '0'
     },
     {
