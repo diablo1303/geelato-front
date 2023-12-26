@@ -257,9 +257,9 @@ const deleteRecordWithConfirm = (params: Record<string, any>) => {
     return
   }
   global.$modal.confirm({
-    width: '15em',
+    width: '18em',
     title: '危险操作',
-    content: '是否确定删除？',
+    content: `是否确定删除记录，ID为：${params.id}？`,
     onOk: () => {
       deleteRecord(params)
     },

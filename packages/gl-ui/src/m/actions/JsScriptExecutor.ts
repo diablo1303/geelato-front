@@ -681,7 +681,6 @@ export class JsScriptExecutor {
    * @private
    */
   private getGl(pageProxy: PageProvideProxy | undefined) {
-    console.log('$gl',this.app?.config.globalProperties)
     const $gl = {
       id: utils.gid(),
       jsEngine: this,

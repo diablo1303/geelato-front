@@ -240,7 +240,7 @@ const onSorterChange = (dataIndex: string, direction: string) => {
     const order: EntityReaderOrder[] = [new EntityReaderOrder(dataIndex, direction)]
     lastOrder = order
   }
-  fetchData({  order: lastOrder, params: lastEntityReaderParams })
+  fetchData({ order: lastOrder, params: lastEntityReaderParams })
 }
 
 /**
@@ -348,8 +348,8 @@ defineExpose({
     @page-size-change="onPageSizeChange"
     @sorter-change="onSorterChange"
   >
-    <template ##="{ record, rowIndex }">
-      <a-space v-if="record" :size="0" class="gl-entity-table-cols-opt">
+    <template ##="{ rowIndex }">
+      <a-space v-if="renderData[rowIndex]" :size="0" class="gl-entity-table-cols-opt">
         <template
           v-for="(columnAction, index) in copyColumnActions()"
           :key="rowIndex + '_' + index"
@@ -359,24 +359,24 @@ defineExpose({
               columnAction.props?._hidden !== true && columnAction.componentName !== 'GlHiddenArea'
             "
             :glComponentInst="columnAction"
-            :glCtx="{ record, rowIndex }"
+            :glCtx="{ record: renderData[rowIndex], rowIndex }"
           ></GlComponent>
         </template>
       </a-space>
     </template>
     <template
       v-for="slotColumn in genSlotColumnsWithNoOperation(renderColumns)"
-      v-slot:[slotColumn.slotName]="{ record, column, rowIndex }"
+      v-slot:[slotColumn.slotName]="{ column, rowIndex }"
     >
-      <template v-if="column._component && record">
+      <template v-if="column._component && renderData[rowIndex]">
         <GlComponent
           :glComponentInst="column._component"
-          v-model="record[column.dataIndex]"
-          :glCtx="{ record, rowIndex }"
+          v-model="renderData[rowIndex][column.dataIndex]"
+          :glCtx="{ record: renderData[rowIndex], rowIndex }"
         ></GlComponent>
       </template>
       <span v-else>
-        {{ evalExpression({ record, column, rowIndex }, pageProvideProxy) }}
+        {{ evalExpression({ record: renderData[rowIndex], column, rowIndex }, pageProvideProxy) }}
       </span>
     </template>
   </a-table>
