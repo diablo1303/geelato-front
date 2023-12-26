@@ -112,10 +112,11 @@ const setFormData = (key: string, value: any, src?: string) => {
   formData.value[key] = value
 }
 // id在此entityRecordId中记录
-let entityRecordId: Ref<string> = ref(isCopyCreate ? '' : formParams.id)
-let copyEntityRecordId: Ref<string> = ref(isCopyCreate ? formParams.id : '')
+let entityRecordId: Ref<string> = ref(isCopyCreate.value ? '' : formParams.id)
+let copyEntityRecordId: Ref<string> = ref(isCopyCreate.value ? formParams.id : '')
 formProvideProxy.setRecordId(entityRecordId.value)
 
+console.log('entityRecordId', entityRecordId.value)
 const formItems: Ref<Array<FormItem>> = ref([])
 const subFormInstIds: Ref<string[]> = ref([])
 const formRef = ref<FormInstance>()
@@ -322,7 +323,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
  */
 const loadForm = async () => {
   // 如果是复制创建，则基于复制的id进行数据加载
-  const recordId = isCopyCreate ? copyEntityRecordId.value : entityRecordId.value
+  const recordId = isCopyCreate.value ? copyEntityRecordId.value : entityRecordId.value
   if (!recordId) {
     // 1、不需要从服务端获取，没有id表示新增，不需要从服务端获取表单值
     if (isRead.value && props.glIsRuntime && props.alarmWhenReadInRuntime) {
