@@ -78,12 +78,13 @@ export default {
         "setterComponentProps": {
             "options": [{
                 "label": "新增",
-                "value": "create",
-                "__5VmEVhTkf6I6m8Pgo1": "create"
-            }, {"label": "只读", "value": "read", "__5VmEVhTkf6I6m8Pgo1": "read"}, {
+                "value": "create"
+            }, {
+                "label": "复制新增",
+                "value": "copyCreate"
+            },{"label": "只读", "value": "read"}, {
                 "label": "修改",
-                "value": "update",
-                "__5VmEVhTkf6I6m8Pgo1": "update"
+                "value": "update"
             }]
         },
         "setterComponentVModelName": "modelValue",

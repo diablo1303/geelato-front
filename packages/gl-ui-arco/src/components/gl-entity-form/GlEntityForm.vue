@@ -39,10 +39,9 @@ import {
   FormProvideKey,
   FormProvideProxy,
   EntitySaver,
-  utils
+  GetEntitySaversResult
 } from '@geelato/gl-ui'
 import { getFormParams, type ValidatedError } from './GlEntityForm'
-import { GetEntitySaversResult } from '@geelato/gl-ui'
 
 // onLoadedData：从服务端加载完数据并设置到表单中
 const emits = defineEmits(['onLoadedData'])
@@ -100,18 +99,21 @@ const props = defineProps({
   ...mixins.props
 })
 const isRead = ref(pageProvideProxy.isPageStatusRead())
+// 是否复制新增，如果是复制新增，则在打开页面加载数据时，用copyEntityRecordId加载
+const isCopyCreate = ref(pageProvideProxy.isPageStatusCopyCreate())
 // 通过默认通用关键字form获取的表单值，好处就是在配置打开页面传参时，不需要配置具体表单名，配置方便
 // ！！！注意，该方式在同一页面多表单嵌套时，很可能会污染子级表单的值，没法做到精确控制表单传值
 const formParams = getFormParams(pageProvideProxy, props.bindEntity)
 
-// formData中不包括记录id，记录id在entityRecordId中定义
+// formData中可能有id也有可能没有id，视传的参数而定，记录id在entityRecordId中定义
 const formData = ref<Record<string, any>>(JSON.parse(JSON.stringify(formParams)))
 const setFormData = (key: string, value: any, src?: string) => {
   // console.log(src, props.bindEntity.entityName, 'setFormData', key, value)
   formData.value[key] = value
 }
-// console.log(props.bindEntity?.entityName + '> formData:', formData.value)
-let entityRecordId: Ref<string> = ref(formParams.id)
+// id在此entityRecordId中记录
+let entityRecordId: Ref<string> = ref(isCopyCreate ? '' : formParams.id)
+let copyEntityRecordId: Ref<string> = ref(isCopyCreate ? formParams.id : '')
 formProvideProxy.setRecordId(entityRecordId.value)
 
 const formItems: Ref<Array<FormItem>> = ref([])
@@ -319,7 +321,9 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
  *  加载表单数据
  */
 const loadForm = async () => {
-  if (!entityRecordId.value) {
+  // 如果是复制创建，则基于复制的id进行数据加载
+  const recordId = isCopyCreate ? copyEntityRecordId.value : entityRecordId.value
+  if (!recordId) {
     // 1、不需要从服务端获取，没有id表示新增，不需要从服务端获取表单值
     if (isRead.value && props.glIsRuntime && props.alarmWhenReadInRuntime) {
       global.$notification.error({
@@ -354,7 +358,7 @@ const loadForm = async () => {
        */
       if (loadDataImmediate()) {
         entityApi
-          .query(props.bindEntity.entityName, fieldNames.join(','), { id: entityRecordId.value })
+          .query(props.bindEntity.entityName, fieldNames.join(','), { id: recordId })
           .then((resp) => {
             const items = resp?.data
             if (items && items.length > 0) {
@@ -402,8 +406,8 @@ const checkBindEntity = () => {
 const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
   if (checkBindEntity()) {
     const entitySaver = new EntitySaver(props.bindEntity.entityName)
-    // 先设置主表单部分
-    const record: Record<string, any> = { id: entityRecordId.value, ...formData.value }
+    // 先设置主表单部分，注意这里的formData有可能会有id值，在copyCreate的场景，页面加载之后entityRecordId.value会变为空
+    const record: Record<string, any> = { ...formData.value, id: entityRecordId.value }
     // 如果本表单作为另了个表单的子表单
     if (props.isSubForm) {
       entitySaver.pidName = props.subFormPidName
@@ -479,7 +483,6 @@ const getEntitySavers = async () => {
  */
 const submitForm = async () => {
   const entitySavers = await getEntitySavers()
-  // console.log('submitForm() > entitySavers', entitySavers)
   if (!entitySavers.error) {
     setLoading(true)
     // console.log('submitForm() > formData', formData)
@@ -496,7 +499,6 @@ const submitForm = async () => {
         }
       })
     }
-    // console.log('saveResult:', saveResult)
     setLoading(false)
     return true
   } else {

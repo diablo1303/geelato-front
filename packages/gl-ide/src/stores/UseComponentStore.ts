@@ -2,7 +2,7 @@ import {defineStore} from 'pinia'
 import type {ComponentMeta} from "@geelato/gl-ui-schema";
 import {emitter, utils} from "@geelato/gl-ui";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
-
+import ClipboardJS from 'clipboard'
 class ComponentMetaMap {
     [key: string]: any
 }
@@ -288,6 +288,40 @@ class ComponentStoreFactory {
                                         parentComponent.children.splice(Number.parseInt(index) + 1, 0, newInst)
                                         this.setCurrentSelectedComponentById(newInst.id, '')
                                         return newInst
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    /**
+                     *  复制当前选中的组件到粘贴板
+                     */
+                    copyCurrentSelectedComponentToClipboard() {
+                        if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
+                            // 复制组件，组件内的id需重新创建
+                            const newInst = copyComponentInst(this.currentSelectedComponentInstance)
+                            const newInstStr = JSON.stringify(newInst)
+                            ClipboardJS.copy(newInstStr)
+                            return newInstStr
+                        }
+                    },
+                    /**
+                     * 将组件插入当前的组件之后
+                     * @param insertInst
+                     */
+                    insertAfterCurrentSelectedComponent(insertInst:ComponentInstance){
+                        if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
+                            // 找到当前组件树所在的父节点
+                            const parentComponent = this.findParentComponentFromTreeById(this.currentSelectedComponentId)
+                            // 找到当前组件所在的位置
+                            if (parentComponent && parentComponent.children) {
+                                for (const index in parentComponent.children) {
+                                    const componentInst = parentComponent.children[index]
+                                    if (componentInst.id === this.currentSelectedComponentInstance.id) {
+                                        // 复制组件，组件内的id需重新创建
+                                        parentComponent.children.splice(Number.parseInt(index) + 1, 0, insertInst)
+                                        this.setCurrentSelectedComponentById(insertInst.id, '')
+                                        return insertInst
                                     }
                                 }
                             }
