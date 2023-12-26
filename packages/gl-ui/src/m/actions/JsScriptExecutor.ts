@@ -681,6 +681,7 @@ export class JsScriptExecutor {
    * @private
    */
   private getGl(pageProxy: PageProvideProxy | undefined) {
+    console.log('$gl',this.app?.config.globalProperties)
     const $gl = {
       id: utils.gid(),
       jsEngine: this,
@@ -690,6 +691,8 @@ export class JsScriptExecutor {
       // setComponentProps: this.setComponentProps,
       // triggerComponentAction: this.triggerComponentAction,
       ...this.app?.config.globalProperties,
+      // $gl的环境变量全提到一级属性，如$gl.user、$gl.sys
+      ...this.app?.config.globalProperties.$gl,
       page: {},
       inst: <{ [key: string]: any }>{},
       ref: <{ [key: string]: any }>{},

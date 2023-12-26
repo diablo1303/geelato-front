@@ -137,8 +137,10 @@ export default class PageProvideProxy {
             // console.log('setVueRef(),componentId:', componentId, ',vueRef:', vueRef, vueRef.props.glComponentInst)
             this.vueRefMap[componentId] = vueRef
             this.componentInstMap[componentId] = vueRef.props.glComponentInst as ComponentInstance
-
-            // 由于动态组件的的onMounted事件次序中，父组件不是最后一个触发，这个自行实现
+            if (!this.componentInstMap[componentId].componentName){
+                console.error('在setVueRef时，存在组件名为空的组件',this.componentInstMap[componentId],vueRef)
+            }
+            // 由于动态组件的的onMounted事件次序中，父组件不是最后一个触发，这里自行实现
             if (this.unMountedIds[componentId]) {
                 // vueRef.refs有实例时，才算有效设置，这时就可以标记已经onMounted
                 if (vueRef.refs && Object.keys(vueRef.refs).length > 0) {

@@ -281,7 +281,7 @@ export const useComponentInstTreeData = () => {
       // methods 方法
       const methods: any[] = []
       const meta = componentStore.getComponentMeta(inst.componentName)
-      meta.methods?.forEach((m: MethodMeta) => {
+      meta?.methods?.forEach((m: MethodMeta) => {
         methods.push({
           title: m.title,
           _code: m.name,
