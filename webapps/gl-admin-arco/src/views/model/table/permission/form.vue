@@ -82,59 +82,61 @@
           </a-popover>
         </template>
       </a-table-column>
-      <a-table-column v-for="item of cowColumns" :key="item.id" :data-index="item.id" :ellipsis="true" :tooltip="true" :width="120" align="center">
-        <template #title>
-          <a-popover :title="item.name" position="br" style="max-width: 300px">
-            <span style="cursor: pointer;">{{ item.name }} <icon-info-circle/></span>
-            <template #content>
+      <a-table-column v-for="(nape,index) of cowColumns" :key="index" :title="$t(`security.permission.index.form.classify.${nape.type}`)">
+        <a-table-column v-for="item of nape.data" :key="item.id" :data-index="item.id" :ellipsis="true" :tooltip="true" :width="120" align="center">
+          <template #title>
+            <a-popover :title="item.name" position="br" style="max-width: 300px">
+              <span style="cursor: pointer;">{{ item.name }} <icon-info-circle/></span>
+              <template #content>
                     <span>
                       <strong>{{ $t('security.permission.index.form.code') }}：</strong>
                       {{ item.code }}
                       <CopyToClipboard v-model="item.code" :title="$t('copy.to.clipboard.button.code.title')"/>
                     </span>
-              <br/>
-              <span>
+                <br/>
+                <span>
                       <strong>{{ $t('security.permission.index.form.type') }}：</strong>
                       {{ $t(`security.permission.index.form.type.${item.type}`) }}
                     </span>
-              <br/>
-              <span>
+                <br/>
+                <span>
                       <strong>{{ $t('security.permission.index.form.object') }}：</strong>
                       {{ item.object }}
                     </span>
-              <br/>
-              <span :title="item.rule" class="span-textarea">
+                <br/>
+                <span :title="item.rule" class="span-textarea">
                       <strong>{{ $t('security.permission.index.form.rule') }}：</strong>
                       {{ item.rule }}
                     </span>
-              <span :title="item.description" class="span-textarea">
+                <span :title="item.description" class="span-textarea">
                       <strong>{{ $t('security.permission.index.form.description') }}：</strong>
                       {{ item.description }}
                     </span>
-              <a-divider v-if="!item.default&&pageData.formState==='edit'" style="margin: 5px 0px"/>
-              <a-space v-if="!item.default&&pageData.formState==='edit'" style="display: flex;align-items: center;justify-content: end;">
-                <a-button size="mini" type="primary" @click="editTablePermission(item.id)">
-                  {{ $t('searchTable.columns.operations.edit') }}
-                </a-button>
-                <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTablePermission(item.id)">
-                  <a-button size="mini" status="danger" type="primary">
-                    {{ $t('searchTable.columns.operations.delete') }}
+                <a-divider v-if="!item.default&&pageData.formState==='edit'" style="margin: 5px 0px"/>
+                <a-space v-if="!item.default&&pageData.formState==='edit'" style="display: flex;align-items: center;justify-content: end;">
+                  <a-button size="mini" type="primary" @click="editTablePermission(item.id)">
+                    {{ $t('searchTable.columns.operations.edit') }}
                   </a-button>
-                </a-popconfirm>
-              </a-space>
-            </template>
-          </a-popover>
-        </template>
-        <template #cell="{record}">
-          <a-switch v-model="record[item.id]" :before-change="newValue => switchBeforeChange(item.id,record.id)">
-            <template #checked>
-              YES
-            </template>
-            <template #unchecked>
-              NO
-            </template>
-          </a-switch>
-        </template>
+                  <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTablePermission(item.id)">
+                    <a-button size="mini" status="danger" type="primary">
+                      {{ $t('searchTable.columns.operations.delete') }}
+                    </a-button>
+                  </a-popconfirm>
+                </a-space>
+              </template>
+            </a-popover>
+          </template>
+          <template #cell="{record}">
+            <a-switch v-model="record[item.id]" :before-change="newValue => switchBeforeChange(item.id,record.id)">
+              <template #checked>
+                YES
+              </template>
+              <template #unchecked>
+                NO
+              </template>
+            </a-switch>
+          </template>
+        </a-table-column>
       </a-table-column>
     </template>
   </a-table>
@@ -158,7 +160,7 @@ import {
   deletePermission,
   deleteRole,
   insertTableRolePermission,
-  QueryPermissionForm,
+  QueryPermissionClassifyForm,
   QueryRoleForm,
   QueryRolePermissionForm,
   queryTableRolePermissions,
@@ -198,10 +200,22 @@ const {loading, setLoading} = useLoading(true);
 // 分页列表参数
 const cloneColumns = ref<Column[]>([]);
 const rowColumns = ref<QueryRoleForm[]>([]);
-const cowColumns = ref<QueryPermissionForm[]>([]);
+const cowColumns = ref<QueryPermissionClassifyForm[]>([]);
 const basePagination: Pagination = {current: pageData.value.current, pageSize: pageData.value.pageSize};
 const pagination = reactive({...basePagination,});
 const renderData = ref<Record<string, boolean | string>[]>([]);
+
+const permissionFilter = (qpcf: QueryPermissionClassifyForm[]) => {
+  const data: QueryPermissionClassifyForm[] = [];
+  if (qpcf && qpcf.length > 0) {
+    for (let i = 0; i < qpcf.length; i += 1) {
+      if (qpcf[i].type && qpcf[i].data && qpcf[i].data.length > 0) {
+        data.push(qpcf[i]);
+      }
+    }
+  }
+  return data;
+}
 
 /**
  * 分页查询方法
@@ -211,7 +225,7 @@ const fetchData = async (params: PageQueryRequest = {current: pageData.value.cur
   setLoading(true);
   try {
     const {data} = await queryTableRolePermissions(pageData.value.params.type, pageData.value.params.object, {...params, ...routeParams.value});
-    cowColumns.value = data.permission;
+    cowColumns.value = permissionFilter(data.permission);
     rowColumns.value = data.role;
     renderData.value = data.table;
   } catch (err) {

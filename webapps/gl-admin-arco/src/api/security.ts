@@ -340,6 +340,11 @@ export interface QueryPermissionForm {
   default?: boolean;
 }
 
+export interface QueryPermissionClassifyForm {
+  type: string;
+  data: QueryPermissionForm[];
+}
+
 export interface FilterPermissionForm {
   id: string;
   name: string;
@@ -533,6 +538,12 @@ export interface QueryTableRolePermissionForm {
   table: Record<string, boolean | string>[];
 }
 
+export interface QueryTableRolePermissionClassifyForm {
+  role: QueryRoleForm[];
+  permission: QueryPermissionClassifyForm[];
+  table: Record<string, boolean | string>[];
+}
+
 export interface QueryColumnRolePermissionForm {
   role: QueryRoleForm[];
   column: QueryTableColumnForm[];
@@ -552,7 +563,7 @@ export function deleteRolePermission(id: string) {
 }
 
 export function queryTableRolePermissions(type: string, object: string, params: PageQueryRequest) {
-  return axios.get<QueryTableRolePermissionForm>(`/api/security/role/permission/queryTable/${type}/${object}`, {
+  return axios.get<QueryTableRolePermissionClassifyForm>(`/api/security/role/permission/queryTable/${type}/${object}`, {
     params, paramsSerializer: (obj) => {
       return qs.stringify(obj);
     },
