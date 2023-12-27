@@ -199,7 +199,8 @@ export interface QueryTableColumnForm {
   seqNo: number;
   appId: string;
   tenantCode: string;
-  synced: boolean | number
+  synced: boolean | number;
+  encrypted: boolean | number;
 }
 
 export interface FilterTableColumnForm {

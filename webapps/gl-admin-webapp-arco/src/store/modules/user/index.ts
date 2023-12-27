@@ -10,6 +10,7 @@ const useUserStore = defineStore('user', {
     id: undefined,
     name: undefined,
     loginName: undefined,
+    jobNumber: undefined,
     avatar: undefined,
     mobilePrefix: undefined,
     mobilePhone: undefined,

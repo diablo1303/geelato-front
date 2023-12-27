@@ -162,6 +162,7 @@ export function validateOrgCode(params: QueryOrgForm) {
 /* -----------------------------用户管理--------------------------- */
 export interface QueryUserForm {
   id: string;
+  jobNumber: string;
   name: string;
   enName: string;
   loginName: string;

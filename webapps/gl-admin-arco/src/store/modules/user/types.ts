@@ -4,6 +4,7 @@ export interface UserState {
   id?: string; // 主键
   name?: string; // 名称
   loginName?: string; // 登录名称
+  jobNumber?: string; // 工号
   avatar?: string; // 头像
   mobilePrefix?: string; // 手机区域编号
   mobilePhone?: string; // 手机号码

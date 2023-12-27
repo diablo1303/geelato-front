@@ -40,6 +40,15 @@
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
+            :label="$t('security.user.index.form.jobNumber')"
+            :rules="[{required: false,message: $t('security.form.rules.match.required')},{validator:validateJobNumberName}]"
+            field="jobNumber">
+          <a-input v-if="pageData.button" v-model="formData.jobNumber" :max-length="32"/>
+          <span v-else>{{ formData.jobNumber }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="24/pageData.formCol">
+        <a-form-item
             :label="$t('security.user.index.form.orgName')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="orgId">
@@ -187,6 +196,7 @@ const orgSelectOptions = ref<SelectOption[]>([]);
 const generateFormData = (): QueryForm => {
   return {
     id: '',
+    jobNumber: '',
     name: '',
     enName: '',
     loginName: '',
@@ -305,6 +315,14 @@ const validateEnName = async (value: any, callback: any) => {
 const validateLoginName = async (value: any, callback: any) => {
   try {
     const {data} = await validateUserParams('loginName', formData.value);
+    if (!data) callback(t('security.form.rules.match.uniqueness'));
+  } catch (err) {
+    console.log(err);
+  }
+}
+const validateJobNumberName = async (value: any, callback: any) => {
+  try {
+    const {data} = await validateUserParams('jobNumber', formData.value);
     if (!data) callback(t('security.form.rules.match.uniqueness'));
   } catch (err) {
     console.log(err);

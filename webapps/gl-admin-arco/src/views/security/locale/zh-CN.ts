@@ -162,6 +162,7 @@ export default {
   'security.user.index.form.name': '名称',
   'security.user.index.form.enName': '英文名',
   'security.user.index.form.loginName': '登录名',
+  'security.user.index.form.jobNumber': '工号',
   'security.user.index.form.sex': '性别',
   'security.user.index.form.sex.0': '女性',
   'security.user.index.form.sex.1': '男性',
