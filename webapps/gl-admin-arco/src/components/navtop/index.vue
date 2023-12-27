@@ -75,7 +75,7 @@ const setDropDownVisible = (ev: MouseEvent) => {
 .right-side {
   display: flex;
   padding-right: 80px;
-  padding-top: 22px;
+  padding-top: 5px;
   list-style: none;
 
   :deep(.locale-select) {

@@ -1,5 +1,6 @@
 export default {
   'login.form.title': 'Login to Geelato Admin',
+  'login.form.title1': 'Login',
   'login.form.userName.errMsg': 'Username cannot be empty',
   'login.form.password.errMsg': 'Password cannot be empty',
   'login.form.login.errMsg': 'Login error, refresh and try again',

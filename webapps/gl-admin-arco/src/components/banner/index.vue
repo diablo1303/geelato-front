@@ -55,6 +55,7 @@ const tenantData = computed(() => {
   &-slogan {
     margin-top: 80px;
     margin-left: 80px;
+    margin-right: 40px;
     color: var(--color-fill-1);
     font-size: 16px;
 
@@ -72,7 +73,7 @@ const tenantData = computed(() => {
       margin-top: 48px;
 
       div {
-        margin-top: 16px;
+        margin-top: 20px;
         color: rgba(231, 231, 231, 0.6);
       }
 
