@@ -137,6 +137,17 @@ const uniquedOptions = computed<RadioOption[]>(() => [
   },
 ]);
 
+const encryptedOptions = computed<RadioOption[]>(() => [
+  {
+    label: 'model.column.index.form.encrypted.1',
+    value: 1,
+  },
+  {
+    label: "model.column.index.form.encrypted.0",
+    value: 0,
+  },
+]);
+
 const nullableOptions = computed<RadioOption[]>(() => [
   {
     label: 'model.column.index.form.nullable.1',
@@ -205,6 +216,7 @@ export {
   keyOptions,
   nullableOptions,
   uniquedOptions,
+  encryptedOptions,
   autoIncrementOptions,
   dataTypeOptions,
   numericSignedOptions,

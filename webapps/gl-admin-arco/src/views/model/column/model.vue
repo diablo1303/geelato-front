@@ -382,6 +382,15 @@
           </a-radio-group>
         </a-form-item>
       </a-col>
+      <a-col :span="24/pageData.formCol">
+        <a-form-item :label="$t('model.column.index.form.encrypted')" field="key">
+          <a-radio-group v-model="formData.encrypted"
+                         :options="encryptedOptions"
+                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
+            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
+          </a-radio-group>
+        </a-form-item>
+      </a-col>
     </a-row>
   </a-form>
 </template>
@@ -395,6 +404,7 @@ import {
   autoIncrementOptions,
   columnSelectType,
   enableStatusOptions,
+  encryptedOptions,
   keyOptions,
   nullableOptions,
   numericSignedOptions,
@@ -468,6 +478,7 @@ const generateFormData = (): QueryForm => {
     autoAdd: '',
     autoName: '',
     synced: false,
+    encrypted: 0,
     seqNo: 1,
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode,
@@ -874,6 +885,7 @@ const loadModel = (urlParams: ListUrlParams) => {
       data.numericSigned = data.numericSigned === true ? 1 : 0;
       data.key = data.key === true ? 1 : 0;
       data.uniqued = data.uniqued === true ? 1 : 0;
+      data.encrypted = data.encrypted === true ? 1 : 0;
       data.autoIncrement = data.autoIncrement === true ? 1 : 0;
       data.isRefColumn = data.isRefColumn === true ? 1 : 0;
       data.autoAdd = [(data.autoAdd === true ? 1 : 0).toString()];

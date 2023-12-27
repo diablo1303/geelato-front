@@ -180,6 +180,11 @@
       <a-table-column :title="$t('model.column.index.form.charMaxLength')" :width="130" data-index="charMaxLength"/>
       <a-table-column :title="$t('model.column.index.form.numericPrecision')" :width="130" data-index="numericPrecision"/>
       <a-table-column :title="$t('model.column.index.form.numericScale')" :width="130" data-index="numericScale"/>
+      <a-table-column :title="$t('model.column.index.form.encrypted')" :width="110" data-index="encrypted">
+        <template #cell="{ record }">
+          {{ $t(`model.column.index.form.encrypted.${record.encrypted}`) }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('model.column.index.form.nullable')" :width="110" data-index="nullable">
         <template #cell="{ record }">
           {{ $t(`model.column.index.form.nullable.${record.nullable}`) }}
