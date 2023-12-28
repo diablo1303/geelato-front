@@ -268,6 +268,12 @@ export default {
   'security.dictItem.index.model.padding.letter': '[code] letter (a-z)',
   'security.dictItem.index.model.delete.text': 'Batch Deletes',
   'security.dictItem.index.model.copy.text': 'Copy(JSON)',
+  'security.dictItem.index.popover.warning1': 'Please fill in the required fields in the dictionary！',
+  'security.dictItem.index.popover.warning2': 'The encoding of a dictionary item cannot be repeated',
+  'security.dictItem.index.popover.title': 'Add Dictionary',
+  'security.dictItem.index.popover.dict.title': 'Dictionary',
+  'security.dictItem.index.popover.item.title': 'Dictionary Entry',
+  'security.dictItem.index.popover.ok': 'Save',
   // webapps/gl-admin-arco/src/views/security/permission
   'security.permission.index.menu.list': 'System',
   'security.permission.index.menu.list.searchTable': 'Permission',

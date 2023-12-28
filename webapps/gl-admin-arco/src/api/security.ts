@@ -229,52 +229,6 @@ export function validateUserParams(type: string, params: QueryUserForm) {
   return axios.post<QueryResult>(`/api/security/user/validate/${type}`, params);
 }
 
-/* -----------------------------字典管理 - 字典--------------------------- */
-export interface QueryDictForm {
-  id: string;
-  tenantCode: string;
-  appId: string;
-  dictName: string;
-  dictCode: string;
-  dictRemark: string;
-  enableStatus: number;
-  seqNo: number;
-}
-
-export interface FilterDictForm {
-  id: string;
-  tenantCode: string;
-  appId: string;
-  dictName: string;
-  dictCode: string;
-  enableStatus: string;
-  createAt: string[];
-}
-
-export function queryDicts(params: QueryDictForm) {
-  return axios.get<QueryDictForm[]>('/api/dict/query', {
-    params, paramsSerializer: (obj) => {
-      return qs.stringify(obj);
-    },
-  });
-}
-
-export function getDict(id: string) {
-  return axios.get<QueryDictForm>(`/api/dict/get/${id}`);
-}
-
-export function createOrUpdateDict(params: QueryDictForm) {
-  return axios.post<QueryResult>('/api/dict/createOrUpdate', params);
-}
-
-export function deleteDict(id: string) {
-  return axios.delete<QueryResult>(`/api/dict/isDelete/${id}`);
-}
-
-export function validateDictCode(params: QueryDictForm) {
-  return axios.post<QueryResult>('/api/dict/validate', params);
-}
-
 /* -----------------------------字典管理 - 字典项--------------------------- */
 export interface QueryDictItemForm {
   id: string;
@@ -324,6 +278,57 @@ export function queryItemByDictCode(dictCode: string) {
 
 export function validateDictItemCode(params: QueryDictItemForm) {
   return axios.post<QueryResult>('/api/dict/item/validate', params);
+}
+
+/* -----------------------------字典管理 - 字典--------------------------- */
+export interface QueryDictForm {
+  id: string;
+  tenantCode: string;
+  appId: string;
+  dictName: string;
+  dictCode: string;
+  dictRemark: string;
+  enableStatus: number;
+  seqNo: number;
+  dictItems?: QueryDictItemForm[]
+}
+
+export interface FilterDictForm {
+  id: string;
+  tenantCode: string;
+  appId: string;
+  dictName: string;
+  dictCode: string;
+  enableStatus: string;
+  createAt: string[];
+}
+
+export function queryDicts(params: QueryDictForm) {
+  return axios.get<QueryDictForm[]>('/api/dict/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function getDict(id: string) {
+  return axios.get<QueryDictForm>(`/api/dict/get/${id}`);
+}
+
+export function createOrUpdateDict(params: QueryDictForm) {
+  return axios.post<QueryResult>('/api/dict/createOrUpdate', params);
+}
+
+export function deleteDict(id: string) {
+  return axios.delete<QueryResult>(`/api/dict/isDelete/${id}`);
+}
+
+export function validateDictCode(params: QueryDictForm) {
+  return axios.post<QueryResult>('/api/dict/validate', params);
+}
+
+export function createDictAndItems(params: QueryDictForm) {
+  return axios.post<QueryResult>('/api/dict/item/createDictAndItems', params);
 }
 
 /* -----------------------------权限管理--------------------------- */

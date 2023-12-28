@@ -160,22 +160,38 @@
         </a-form-item>
       </a-col>
       <!--   默认范围 typeExtra 字典项、流水号、实体   -->
-      <a-col v-if="['DICTIONARY','CODE','ENTITY'].includes(formData.selectType)" :span="24">
+      <a-col v-if="['CODE','ENTITY'].includes(formData.selectType)" :span="24">
         <a-form-item
             :label="$t('model.column.index.form.defaultRange')"
             :label-col-props="{ span: (pageData.formCol===1?8:4) }"
             :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
             field="typeExtra">
-          <a-select v-if="pageData.button&&['DICTIONARY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search
-                    @change="dictionaryChange">
-            <a-option v-for="item of selectDictionaryOptions" :key="item.id" :label="`${item.dictName}[${item.dictCode}]`" :value="item.dictCode"/>
-          </a-select>
           <a-select v-if="pageData.button&&['CODE'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search>
             <a-option v-for="item of selectCodeOptions" :key="item.id" :label="`${item.title}[${item.example}]`" :value="item.id"/>
           </a-select>
           <a-select v-if="pageData.button&&['ENTITY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search>
             <a-option v-for="item of selectEntityOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.id"/>
           </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col v-if="['DICTIONARY'].includes(formData.selectType)" :span="24">
+        <a-form-item
+            :label="$t('model.column.index.form.defaultRange')"
+            :label-col-props="{ span: (pageData.formCol===1?8:4) }"
+            :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
+            field="typeExtra">
+          <a-select v-if="pageData.button&&['DICTIONARY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search
+                    @change="dictionaryChange1">
+            <a-option v-for="item of selectDictionaryOptions" :key="item.id" :label="`${item.dictName}[${item.dictCode}]`" :value="item.dictCode"/>
+          </a-select>
+          <a-popover v-model:popup-visible="dictPopover" position="left" trigger="click" style="width: 62%;">
+            <a-button type="outline" style="margin-left: 5px;" :title="$t('security.dictItem.index.popover.title')">
+              <icon-plus/>
+            </a-button>
+            <template #content>
+              <DictPopver @save="dictPopoverSave"/>
+            </template>
+          </a-popover>
         </a-form-item>
       </a-col>
       <a-col v-if="['DICTIONARY'].includes(formData.selectType)" :span="24">
@@ -426,6 +442,7 @@ import {isBlank, isNotBlank} from '@/utils/is';
 import {useRoute} from "vue-router";
 import {QueryDictForm, QueryDictItemForm, queryDicts, queryItemByDictCode} from "@/api/security";
 import {QueryEncodingForm, queryEncodings} from "@/api/encoding";
+import DictPopver from '@/views/security/dict/popover.vue';
 
 // 国际化
 const {t} = useI18n();
@@ -495,6 +512,7 @@ const generateMultiComponentData = (): QueryMultiComponentForm => {
     columnSelectType: formatSelectType('VARCHAR')
   };
 }
+
 const validateMulti = () => {
   let isValid = true;
   if (multiComponentData.value.length > 0) {
@@ -628,11 +646,16 @@ const getSelectDictItemOptions = async (value?: string) => {
     console.log(err);
   }
 }
+
 const dictionaryChange = (value?: string) => {
   formData.value.defaultValue = '';
   selectDictItemOptions.value = [];
   getSelectDictItemOptions(value);
 }
+const dictionaryChange1 = () => {
+  dictionaryChange();
+}
+
 const selectCodeOptions = ref<QueryEncodingForm[]>([]);
 const getSelectCodeOptions = async () => {
   try {
@@ -831,6 +854,15 @@ const getFormatSelectType = (value: string): string => {
     }
   }
   return '';
+}
+
+const dictPopover = ref(false);
+const dictPopoverSave = (params: QueryDictForm) => {
+  formData.value.defaultValue = '';
+  formData.value.typeExtra = params.dictCode;
+  dictPopover.value = false;
+  getSelectDictionaryOptions();
+  dictionaryChange1();
 }
 
 const openModal = (content: string) => {

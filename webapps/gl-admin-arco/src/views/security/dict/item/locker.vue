@@ -107,23 +107,35 @@
         :stripe="true"
         column-resizable
         row-key="id"
-        size="small" @change="handleChange">
+        size="mini" @change="handleChange">
       <template #columns>
-        <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemName')" :tooltip="true" :width="170" data-index="itemName">
+        <a-table-column :ellipsis="true" align="center" :tooltip="true" :width="170" data-index="itemName">
+          <template #title>
+            <strong style="color: rgb(var(--danger-6)); font-size: 12px;line-height: 1;">*</strong>
+            {{ $t('security.dictItem.index.form.itemName') }}
+          </template>
           <template #cell="{record}">
-            <a-input v-model.trim="record.itemName" :max-length="32" placeholder="必填项"/>
+            <a-input v-model.trim="record.itemName" :max-length="32"/>
           </template>
         </a-table-column>
-        <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemCode')" :tooltip="true" :width="170" data-index="itemCode">
+        <a-table-column :ellipsis="true" align="center" :tooltip="true" :width="170" data-index="itemCode">
+          <template #title>
+            <strong style="color: rgb(var(--danger-6)); font-size: 12px;line-height: 1;">*</strong>
+            {{ $t('security.dictItem.index.form.itemCode') }}
+          </template>
           <template #cell="{record}">
-            <a-textarea v-model.trim="record.itemCode" :auto-size="{minRows:1,maxRows:4}" :max-length="512" placeholder="必填项" show-word-limit
+            <a-textarea v-model.trim="record.itemCode" :auto-size="{minRows:1,maxRows:4}" :max-length="512" show-word-limit
                         @blur="itemCodeValidate($event)"/>
           </template>
         </a-table-column>
-        <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" :width="140" data-index="enableStatus">
+        <a-table-column align="center" :width="140" data-index="enableStatus">
+          <template #title>
+            <strong style="color: rgb(var(--danger-6)); font-size: 12px;line-height: 1;">*</strong>
+            {{ $t('security.dictItem.index.form.enableStatus') }}
+          </template>
           <template #cell="{ record }">
             <a-select v-model="record.enableStatus">
-              <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+              <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value as number"/>
             </a-select>
           </template>
         </a-table-column>
@@ -165,14 +177,7 @@ const pageData = ref({
   formState: 'add', button: true, pId: '', pName: '', parentId: '', okBack: (data: QueryModel) => {
   }
 });
-const columnTitle = reactive([
-  {title: '名称', dataIndex: 'itemName',},
-  {title: '编码', dataIndex: 'itemCode',},
-  {title: '状态', dataIndex: 'enableStatus',},
-  {title: '备注', dataIndex: 'itemRemark',},
-  {title: '创建时间', dataIndex: 'createAt',},
-  {title: '操作', dataIndex: 'operations'}
-]);
+const columnTitle = reactive([]);
 // 显示隐藏
 const visibleModel = ref(false);
 const selectedKeys = ref([]);
@@ -221,12 +226,12 @@ const validateForm = async (): Promise<boolean> => {
     for (const item of columnData.value) {
       if (!item.itemCode || !item.itemName) {
         isValid = false;
-        Notification.warning("请补充字典项的必填项！");
+        Notification.warning(t('security.dictItem.index.popover.warning1'));
         break;
       }
       if (itemCodes.includes(item.itemCode) || dictItemCodes.includes(item.itemCode)) {
         isValid = false;
-        Notification.warning(`字典项的编码不能重复【${item.itemCode}】！`);
+        Notification.warning(`${t('security.dictItem.index.popover.warning1')}【${item.itemCode}】！`);
         break;
       } else {
         itemCodes.push(item.itemCode);
@@ -399,6 +404,7 @@ const deleteItemColumn = (key: string) => {
 }
 
 const openForm = (urlParams: ListUrlParams) => {
+  columnData.value = [];
   // 全局
   pageData.value.formState = urlParams.action;
   pageData.value.pId = urlParams.params?.pId || "";

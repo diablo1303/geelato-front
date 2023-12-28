@@ -269,6 +269,12 @@ export default {
   'security.dictItem.index.model.padding.letter': '[编码]字母(a-z)',
   'security.dictItem.index.model.delete.text': '批量删除',
   'security.dictItem.index.model.copy.text': '复制(JSON)',
+  'security.dictItem.index.popover.warning1': '请补充字典项的必填项！',
+  'security.dictItem.index.popover.warning2': '字典项的编码不能重复',
+  'security.dictItem.index.popover.title': '新增数据字典',
+  'security.dictItem.index.popover.dict.title': '字典',
+  'security.dictItem.index.popover.item.title': '字典项',
+  'security.dictItem.index.popover.ok': '保存',
   // webapps/gl-admin-arco/src/views/security/permission
   'security.permission.index.menu.list': '应用管理',
   'security.permission.index.menu.list.searchTable': '权限管理',
