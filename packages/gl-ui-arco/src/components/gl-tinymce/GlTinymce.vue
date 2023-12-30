@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {type PropType, type Ref, ref, reactive, watch, onMounted, computed} from 'vue'
-import {entityApi, EntityReader, fileApi, utils} from '@geelato/gl-ui'
+import {entityApi, EntityReader, fileApi, useApiUrl, utils} from '@geelato/gl-ui'
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
 import Editor from '@tinymce/tinymce-vue'
 import {TINY_FONT_FAMILY_FORMATS, TINY_FONT_SIZE_FORMATS, TINY_PLUGINS, TINY_TOOLBAR} from './type'
@@ -42,7 +42,9 @@ const props = defineProps({
   autoUpload: {type: Boolean, default: false},
   menubar: {type: Boolean, default: false}
 })
-const key = ref(utils.gid())
+const key = ref(utils.gid());
+const baseUrl = useApiUrl().getApiBaseUrl();
+const replaceStr = "REPLACE_API_BASE_URL";
 
 const example_image_upload_handler = (blobInfo: any, progress: any) => new Promise((resolve, reject) => {
   const xhr = new XMLHttpRequest();
@@ -139,16 +141,15 @@ watch(
 
 const mv = ref(props.modelValue)
 watch(mv, () => {
-  emits('update:modelValue', mv.value)
+  emits('update:modelValue', mv.value.replace(new RegExp(baseUrl, "g"), "${" + replaceStr + "}"));
 })
 watch(
   () => {
     return props.modelValue
   },
   () => {
-    mv.value = props.modelValue
-  },
-  {deep: true, immediate: true}
+    mv.value = props.modelValue.replace(new RegExp("\\$\\{" + replaceStr + "\\}", "g"), baseUrl);
+  }, {deep: true, immediate: true}
 )
 </script>
 
