@@ -169,7 +169,8 @@
           <a-select v-if="pageData.button&&['CODE'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search>
             <a-option v-for="item of selectCodeOptions" :key="item.id" :label="`${item.title}[${item.example}]`" :value="item.id"/>
           </a-select>
-          <a-select v-if="pageData.button&&['ENTITY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search>
+          <a-select v-if="pageData.button&&['ENTITY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search
+                    @change="entityChange1">
             <a-option v-for="item of selectEntityOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.id"/>
           </a-select>
         </a-form-item>
@@ -201,7 +202,18 @@
             :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
             field="defaultValue">
           <a-select v-if="pageData.button" v-model="formData.defaultValue" allow-clear allow-search>
-            <a-option v-for="item of selectDictItemOptions" :key="item.id" :label="`${item.itemName}`" :value="item.itemCode"/>
+            <a-option v-for="item of selectDictItemOptions" :key="item.id" :label="`${item.itemName}[${item.itemCode}]`" :value="item.itemCode"/>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col v-if="['ENTITY'].includes(formData.selectType)" :span="24">
+        <a-form-item
+            :label="$t('model.column.index.form.defaultValue')"
+            :label-col-props="{ span: (pageData.formCol===1?8:4) }"
+            :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
+            field="defaultValue">
+          <a-select v-if="pageData.button" v-model="formData.defaultValue" allow-clear allow-search>
+            <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
           </a-select>
         </a-form-item>
       </a-col>
@@ -432,7 +444,9 @@ import {
   createOrUpdateTableColumn as createOrUpdateForm,
   getTableColumn as getForm,
   QueryMultiComponentForm,
+  QueryTableColumnForm,
   QueryTableColumnForm as QueryForm,
+  queryTableColumns,
   QueryTableForm,
   queryTables,
   validateTableColumnName
@@ -680,6 +694,33 @@ const getSelectEntityOptions = async (params: PageQueryRequest = {
     // eslint-disable-next-line no-console
     console.log(err);
   }
+}
+const selectEntityColumnOptions = ref<QueryTableColumnForm[]>([]);
+const getSelectEntityColumnOptions = async (value: string, params: PageQueryRequest = {
+  enableStatus: 1, tableId: formData.value.typeExtra, ...routeParams.value
+} as unknown as PageQueryRequest) => {
+  try {
+    if (formData.value.typeExtra) {
+      const {data} = await queryTableColumns(params);
+      selectEntityColumnOptions.value = data;
+      formData.value.defaultValue = value || "";
+    } else {
+      selectEntityColumnOptions.value = [];
+    }
+  } catch (err) {
+    selectEntityColumnOptions.value = [];
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+
+const entityChange = (value?: string) => {
+  formData.value.defaultValue = '';
+  selectEntityColumnOptions.value = [];
+  getSelectEntityColumnOptions(value || "");
+}
+const entityChange1 = () => {
+  entityChange();
 }
 
 const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
@@ -934,6 +975,9 @@ const loadModel = (urlParams: ListUrlParams) => {
       formData.value = data;
       if (['DICTIONARY'].includes(data.selectType)) {
         dictionaryChange(data.defaultValue as string);
+      }
+      if (['ENTITY'].includes(data.selectType)) {
+        entityChange(data.defaultValue as string);
       }
       urlParams.loadSuccessBack(data);
     }, urlParams.loadFailBack);
