@@ -31,13 +31,13 @@
       <a-form-item
           v-else-if="['BASE64'].includes(formData.configType)"
           :label="$t('security.sysConfig.index.form.configValue')"
-          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
           field="configValue">
         <UploadBase64 v-model="formData.configValue" :disabled="!pageData.button"/>
       </a-form-item>
       <a-form-item v-else
                    :label="$t('security.sysConfig.index.form.configValue')"
-                   :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+                   :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
                    field="configValue">
         <a-textarea v-if="pageData.button" v-model.trim="formData.configValue" :auto-size="{minRows:1}" :max-length="2000" show-word-limit/>
         <span v-else>{{ formData.configValue }}</span>
@@ -81,7 +81,7 @@ const generateFormData = (): QueryForm => {
   return {
     id: '',
     configKey: '',
-    configType: 'BASE64',
+    configType: 'VARCHAR',
     configValue: '',
     configAssist: '',
     remark: '',
