@@ -53,6 +53,10 @@ const switchHide = () => {
 </script>
 
 <style>
+.gl-card {
+  width: 100%;
+}
+
 .gl-card.gl-hidden .arco-card-body {
   display: none;
 }
