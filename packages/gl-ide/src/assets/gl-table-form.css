@@ -102,6 +102,11 @@
     padding: 2px;
 }
 
+.gl-table-cell-collapse {
+    display: block;
+}
+
+
 /*修改表格嵌套边框叠加*/
 .gl-table .gl-table {
     border-width: 0px;

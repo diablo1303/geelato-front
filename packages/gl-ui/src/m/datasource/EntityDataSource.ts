@@ -1,5 +1,5 @@
 import ResultMapping from './ResultMapping'
-import utils from "../utils/Utils";
+import utils from '../utils/Utils'
 
 const copDict = {
   eq: '等于',
@@ -80,6 +80,14 @@ export class EntityReaderParam {
     this.groupName = groupName || ''
   }
 
+  getGroupName() {
+    return this.groupName
+  }
+
+  isGroup() {
+    return false
+  }
+
   /**
    *  转换成Mql格式的参数名
    */
@@ -98,13 +106,13 @@ export class EntityReaderParam {
       case 'boolean':
         return param.value ? 1 : 0
       case 'object':
-        if (param.value&&param.cop==='in'&&utils.isArray(param.value)){
+        if (param.value && param.cop === 'in' && utils.isArray(param.value)) {
           // const valueItems: Array<string|number> = []
           // param.value.forEach((valueItem:string|number)=>{
           //
           // })
           // @ts-ignore
-          return  JSON.stringify(param.value)
+          return JSON.stringify(param.value)
         }
         return param.value
       default:
@@ -117,6 +125,89 @@ export class EntityReaderParam {
    */
   static getMqlParam(param: EntityReaderParam) {
     return { [EntityReaderParam.getMqlParamName(param)]: EntityReaderParam.getMqlParamValue(param) }
+  }
+}
+
+export class EntityReaderParamGroup {
+  static readonly DEFAULT_NAME = '__'
+  static readonly GROUP_SPLIT_FLAG = '>'
+  // 逻辑运算符 and、or
+  readonly logic: string = 'or'
+  // 分组名
+  readonly name: string = ''
+  // 子分组
+  readonly children: Array<EntityReaderParamGroup | EntityReaderParam> = []
+
+  /**
+   * @param simpleGroupName or:groupA，该groupName为只有一级的分组名称
+   */
+  constructor(simpleGroupName: string) {
+    const items = simpleGroupName.split(':')
+    if (items.length === 1) {
+      // 表示没有“:”,默认为and
+      this.logic = 'and'
+      this.name = items[0] || EntityReaderParamGroup.DEFAULT_NAME
+    } else if (items.length === 2) {
+      this.logic = items[0]
+      this.name = items[1] || EntityReaderParamGroup.DEFAULT_NAME
+    } else {
+      console.error('实体查询参数的分组格式不对，', simpleGroupName)
+      throw new Error('实体查询参数的分组格式不对')
+    }
+  }
+
+  /**
+   * 获取组合后的组名
+   */
+  getGroupName() {
+    return `${this.logic}:${this.name}`
+  }
+
+  isGroup() {
+    return true
+  }
+
+  isSameGroup(groupName: string) {
+    return this.getGroupName() === groupName
+  }
+
+  /**
+   * 在push时，会依据当前的groupNamePath和groupLevel来分析是否将param设置到该层（groupLevel），
+   * 可能需创建子级EntityReaderParamGroup，再调用push
+   * @param param 最终的参数
+   * @param groupNamePath 分组名可能是 or:groupA>and:groupB这样的嵌套格式（分组名称路径）
+   * @param groupLevel 参数设置到第几层分组，默认为0
+   */
+  push(param: EntityReaderParam, groupNamePath: string, groupLevel: number = 0) {
+    if (!param.groupName) {
+      throw new Error('实体查询参数的分组名称不能为空。')
+    }
+    const groups = groupNamePath.split(EntityReaderParamGroup.GROUP_SPLIT_FLAG)
+    // 多级分组，且是有效的分组层次时
+    if (groups.length > 1 && groups.length > groupLevel) {
+      const simpleGroupName = groups[groupLevel]
+      const foundItem = this.children.find((item) => {
+        return typeof item.getGroupName === 'function' && item.getGroupName() === simpleGroupName
+      })
+      if (foundItem) {
+        if (foundItem.isGroup()) {
+          const foundGroup = foundItem as EntityReaderParamGroup
+          foundGroup.push(param, groupNamePath, groupLevel + 1)
+        }
+      } else {
+        // 对于根级，已存在，不需要new，直接push子级即可
+        if(groupLevel===0){
+          this.push(param, groupNamePath, groupLevel + 1)
+        }else{
+          // 没有找取当前已存在的子分组，则创建一个子分组
+          const newGroup = new EntityReaderParamGroup( groups[groupLevel])
+          this.children.push(newGroup)
+          newGroup.push(param, groupNamePath, groupLevel + 1)
+        }
+      }
+    } else {
+      this.children.push(param)
+    }
   }
 }
 
@@ -148,7 +239,7 @@ export class EntityReaderOrder {
         return '+'
       case 'descend':
         return '-'
-      default :
+      default:
         return order
     }
   }

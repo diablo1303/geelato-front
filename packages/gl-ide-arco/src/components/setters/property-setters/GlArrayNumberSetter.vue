@@ -1,7 +1,7 @@
 <template>
   <GlArrayBaseSetter v-slot:default="slotProps" v-model="items" :defaultItemForAdd="0" @addItem="update"
                      @removeItem="update">
-    <a-input-number v-model="items![slotProps.index]"></a-input-number>
+    <a-input-number v-model="items![slotProps.index]" @change="update"></a-input-number>
   </GlArrayBaseSetter>
 </template>
 

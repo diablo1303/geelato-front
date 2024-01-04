@@ -45,7 +45,7 @@ const [, drag] = useDrag(() => ({
 </script>
 
 <template>
-  <div :ref="drag" class="gl-card"
+  <div :ref="drag" class="gl-component-dnd-item"
        :class="{'gl-dnd-item-template-handle':element.meta.properties?.length>0}"
        :style="{'cursor':element.meta.properties?.length>0?'move':''}">
     <div class="gl-image">

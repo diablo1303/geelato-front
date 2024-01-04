@@ -48,7 +48,7 @@ const showPanel = ref(true)
 .gl-ide-sidebar .gl-group-cards {
 }
 
-.gl-ide-sidebar .gl-card {
+.gl-ide-sidebar .gl-component-dnd-item {
   display: inline-block;
   min-width: 82px;
   text-align: center;
@@ -57,7 +57,7 @@ const showPanel = ref(true)
   user-select: none;
 }
 
-.gl-ide-sidebar .gl-card:hover {
+.gl-ide-sidebar .gl-component-dnd-item:hover {
   box-shadow: 0 0 2px 1px rgba(4, 103, 194, 0.76);
 }
 
@@ -77,13 +77,13 @@ const showPanel = ref(true)
   border-radius: 4px
 }
 
-.gl-ide-sidebar .gl-card > .gl-title {
+.gl-ide-sidebar .gl-component-dnd-item > .gl-title {
   font-weight: 400;
   font-size: 12px;
   opacity: .80;
 }
 
-.gl-ide-sidebar .gl-card:hover > .gl-title {
+.gl-ide-sidebar .gl-component-dnd-item:hover > .gl-title {
   opacity: 1;
   font-weight: 600;
   color: rgba(4, 103, 194, 0.76);

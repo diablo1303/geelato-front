@@ -86,10 +86,6 @@ const props = defineProps({
   triggerMode: {
     type: String as PropType<TriggerMode>
   },
-  labelFieldName: {
-    type: String,
-    required: true
-  },
   labelFieldNames: {
     type: Array as PropType<string[]>,
     required: true
@@ -170,15 +166,6 @@ const getDefaultValue = () => {
   return props.multiple ? [] : ''
 }
 let theLabelFieldNames: string[] = props.labelFieldNames
-// 处理历史数据原来的字段值labelFieldName
-// if (typeof props.labelFieldName === 'object') {
-//   theLabelFieldNames = props.labelFieldName
-// }else{
-//   theLabelFieldNames = [props.labelFieldName]
-// }
-// if (props.labelFieldNames&&props.labelFieldNames.length>0){
-//   theLabelFieldNames = props.labelFieldNames
-// }
 
 const isMultiLabelFieldName = computed(() => {
   return theLabelFieldNames.length > 1
@@ -209,8 +196,8 @@ watch(
 )
 const selectOptions: Ref<Record<string, any>[]> = ref([])
 const loadData = () => {
+  // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'extraFieldAndBindIds:', props.extraFieldAndBindIds,'props',props)
   if (props.entityName && props.valueFiledName && theLabelFieldNames) {
-    // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'params:', params, 'extraFieldAndBindIds:', props.extraFieldAndBindIds)
     const fieldSet = new Set<string>().add(props.valueFiledName)
 
     theLabelFieldNames.forEach((name) => {

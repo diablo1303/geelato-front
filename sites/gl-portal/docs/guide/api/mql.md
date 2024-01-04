@@ -94,7 +94,23 @@ select id,name,age from platform_user where sex=0 and age>20 and name like '%张
   ]
 }
 ```
-
+```json
+{
+  "@b": [{
+    "or": [{
+      "effectiveDate|bt": ["2023-12-01", "2023-12-18"]
+    }, {
+      "expirationDate|bt": ["2023-12-01", "2023-12-18"]
+    }, {
+      "and": [{
+        "effectiveDate|gte": "2023-12-01"
+      }, {
+        "expirationDate|lte": "2023-12-18"
+      }]
+    }]
+  }]
+}
+```
 @w    [可选]where的简写，更高级的查询语句片段，查询片段存在服务端，需在调用时进行组合
 ```json
 {

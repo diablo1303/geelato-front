@@ -85,9 +85,9 @@ import LoopMeta from "./setter-arco/loop/LoopMeta";
 import LoopInstance from "./setter-arco/loop/LoopInstance";
 import TemplateMeta from "./setter-arco/template/TemplateMeta";
 import TemplateInstance from "./setter-arco/template/TemplateInstance";
-
+import ChartMeta from "./setter-arco/chart/ChartMeta";
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [ButtonMeta, GlButtonMeta, TextMeta, AlertMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta,ASelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta,RangePickerMeta, SwitchMeta, TinymceMeta,UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta, TableMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,LayoutPageMeta,
+const componentMetas: Array<ComponentMeta> = [TextMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta,ASelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta,RangePickerMeta, SwitchMeta, TinymceMeta,UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta,ButtonMeta, GlButtonMeta, ChartMeta, TableMeta, AlertMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,LayoutPageMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
