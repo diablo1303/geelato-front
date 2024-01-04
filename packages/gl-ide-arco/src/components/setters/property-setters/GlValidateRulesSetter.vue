@@ -266,7 +266,7 @@ const removeRule = (args: any) => {
       <GlArrayBaseSetter v-slot:default="slotProps" v-model="items" :addAble="false" @addItem="update"
                          @removeItem="removeRule">
         <div style="margin-bottom: 4px">
-          <span>{{ items[slotProps.index].label }}</span>
+          <span style="line-height: 2em">{{ items[slotProps.index].label }}</span>
           <component v-if="items[slotProps.index].showSetter!==false" size="small"
                      :is="items[slotProps.index].setter"
                      v-model="items[slotProps.index].value"
@@ -285,9 +285,9 @@ const removeRule = (args: any) => {
           </div>
         </div>
       </GlArrayBaseSetter>
-      <a-divider>添加规则</a-divider>
+      <a-divider><span class="gl-tips" title="从下拉列表中选择添加规则">添加规则</span></a-divider>
       <a-select v-model="selectedRule">
-        <a-option v-for="ruleOption in ruleOptions" :value="ruleOption" :label="ruleOption.label"/>
+        <a-option v-for="ruleOption in ruleOptions" :value="ruleOption" :label="ruleOption.label" />
       </a-select>
     </div>
   </div>

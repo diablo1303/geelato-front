@@ -1,11 +1,16 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosStatic } from 'axios'
 import ResultMapping from '../datasource/ResultMapping'
 import MixUtil from '../utils/MixUtil'
-import { type EntityReader, type EntitySaver, EntityReaderParam } from './EntityDataSource'
+import {
+  type EntityReader,
+  type EntitySaver,
+  EntityReaderParam,
+  EntityReaderParamGroup
+} from './EntityDataSource'
 import { getToken } from '../utils/auth'
 import jsScriptExecutor from '../actions/JsScriptExecutor'
 import utils from '../utils/Utils'
-import useApiUrl from "../hooks/useApiUrl";
+import useApiUrl from '../hooks/useApiUrl'
 
 export type MqlObject = { [key: string]: { [key: string]: any } }
 export type ParsedMqlResult = { key: string; mqlObj: Record<string, any> }
@@ -124,22 +129,40 @@ export class EntityApi {
       mql[entityReader.entity]['@order'] = orderStrs.join(',')
     } else {
       // 无排序时，加默认排序，新增（即更新时间）的放前面
-      if (ignoreOrderByUpdateAtEntity.indexOf(entityReader.entity) === -1){
+      if (ignoreOrderByUpdateAtEntity.indexOf(entityReader.entity) === -1) {
         mql[entityReader.entity]['@order'] = 'updateAt|-'
       }
     }
     // 3-params
-    const defaultGroupName = '__'
+    // 支持多层嵌套分组，有多个分组时顶层分组之间会转换成and查询；支持分组即“（）”嵌套
+    // 分组示例配置格式：or:groupA>and:subGroupB
+    // 如上例，多个or:groupA开头的成为一个分组，多个and:subGroupB组成一组and条件，并与多个or:groupA组成or条件
+    const defaultGroupName = EntityReaderParamGroup.DEFAULT_NAME
+    const subGroupFlag = EntityReaderParamGroup.GROUP_SPLIT_FLAG
     let hasDelStatus = false
 
     if (entityReader.params && entityReader.params.length > 0) {
       // 1、先进行分组 2、再将eq条件放在前面 3、再放like条件
-      const paramsGroups: Record<string, EntityReaderParam[]> = {}
+      // const paramsGroups: Record<string, EntityReaderParam[]> = {}
+      // for (const i in entityReader.params) {
+      //   const param: EntityReaderParam = JSON.parse(JSON.stringify(entityReader.params[i]))
+      //   param.groupName = param.groupName || defaultGroupName
+      //   const groupName = param.groupName.split(subGroupFlag)[0]
+      //   paramsGroups[groupName] = paramsGroups[groupName] || []
+      //   paramsGroups[groupName].push(param)
+      //   if (param.name === 'delStatus') {
+      //     hasDelStatus = true
+      //   }
+      // }
+      const paramsGroups: Record<string, EntityReaderParamGroup> = {}
       for (const i in entityReader.params) {
-        const param: EntityReaderParam = entityReader.params[i]
-        const groupName = param.groupName || defaultGroupName
-        paramsGroups[groupName] = paramsGroups[groupName] || []
-        paramsGroups[groupName].push(param)
+        const param: EntityReaderParam = JSON.parse(JSON.stringify(entityReader.params[i]))
+        param.groupName = param.groupName || defaultGroupName
+        const simpleGroupName = param.groupName.split(subGroupFlag)[0]
+        // console.log('simpleGroupName',simpleGroupName,param.groupName)
+        paramsGroups[simpleGroupName] =
+          paramsGroups[simpleGroupName] || new EntityReaderParamGroup(simpleGroupName)
+        paramsGroups[simpleGroupName].push(param, param.groupName, 0)
         if (param.name === 'delStatus') {
           hasDelStatus = true
         }
@@ -148,30 +171,75 @@ export class EntityApi {
       // 检查是否有删除状态，默认为0
       if (!hasDelStatus && ignoreDeleteStatusEntity.indexOf(entityReader.entity) === -1) {
         paramsGroups[defaultGroupName].push(
-          new EntityReaderParam('delStatus', 'eq', '0', defaultGroupName)
+          new EntityReaderParam('delStatus', 'eq', '0', defaultGroupName),
+          defaultGroupName
         )
       }
 
+      // console.log('paramsGroups', paramsGroups)
+
+      /**
+       * 递归处理分组
+       * @param paramGroup
+       * @return 例如：[{"expirationDate|lte":"2024-01-01"},{"expirationDate|gte":"2024-01-02"}]
+       */
+      const handleGroup = (paramGroup: EntityReaderParamGroup) => {
+        const paramArray: Record<string, any>[] = []
+        paramGroup.children.forEach((item) => {
+          if (typeof item.isGroup === 'function' && item.isGroup()) {
+            const group = item as EntityReaderParamGroup
+            paramArray.push({ [group.logic]: handleGroup(group) })
+          } else {
+            const param = item as EntityReaderParam
+            paramArray.push({
+              [EntityReaderParam.getMqlParamName(param)]: EntityReaderParam.getMqlParamValue(param)
+            })
+          }
+        })
+        return paramArray
+      }
+
       const params: Record<string, any> = {}
-      // 默认参数部分
-      paramsGroups[defaultGroupName].forEach((param) => {
-        // console.log('param',param)
-        params[EntityReaderParam.getMqlParamName(param)] = EntityReaderParam.getMqlParamValue(param)
-      })
-      // 其它分组参数部分，其它分组,统一以or分组进行处理，因为and不需要分组
+      // 循环处理分组
       Object.keys(paramsGroups).forEach((key) => {
+        // console.log('key',key,paramsGroups[key])
         if (key !== defaultGroupName) {
-          const subParams: any[] = []
-          paramsGroups[key].forEach((param) => {
-            // const key = `${param.name}|${param.cop || 'eq'}`
-            // params[key] = param.value
-            subParams.push(EntityReaderParam.getMqlParam(param))
-          })
+          // 其它分组参数部分，其它分组,统一以or分组进行处理，因为and不需要分组
           // @b brackets的简写，用于通过括号来组合条件
           params['@b'] = params['@b'] || []
-          params['@b'].push({ or: subParams })
+          // 递归处理分组
+          params['@b'].push({ [paramsGroups[key].logic]: handleGroup(paramsGroups[key]) })
+        } else {
+          // 默认无分组参数部分归到了默认分组defaultGroupName
+          if (paramsGroups[defaultGroupName]) {
+            handleGroup(paramsGroups[defaultGroupName]).forEach((param) => {
+              Object.assign(params, param)
+            })
+          }
         }
       })
+
+      console.log('params', params)
+      // // 默认无分组参数部分归到了默认分组defaultGroupName
+      // paramsGroups[defaultGroupName].forEach((param) => {
+      //   // console.log('param',param)
+      //   params[EntityReaderParam.getMqlParamName(param)] = EntityReaderParam.getMqlParamValue(param)
+      // })
+      // // 其它分组参数部分，其它分组,统一以or分组进行处理，因为and不需要分组
+      // // 递归处理子分组
+      // Object.keys(paramsGroups).forEach((key) => {
+      //   if (key !== defaultGroupName) {
+      //     const subParams: any[] = []
+      //     paramsGroups[key].forEach((param) => {
+      //       // const key = `${param.name}|${param.cop || 'eq'}`
+      //       // params[key] = param.value
+      //       subParams.push(EntityReaderParam.getMqlParam(param))
+      //     })
+      //     // @b brackets的简写，用于通过括号来组合条件
+      //     params['@b'] = params['@b'] || []
+      //     params['@b'].push({ or: subParams })
+      //   }
+      // })
 
       // for (const i in entityReader.params) {
       //   const param: EntityReaderParam = entityReader.params[i]

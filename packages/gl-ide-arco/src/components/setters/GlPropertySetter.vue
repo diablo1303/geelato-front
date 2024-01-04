@@ -2,10 +2,9 @@
   组件的属性的通用配置器
 -->
 <template>
-  <div class="gl-property-setter gl-table-row"
+  <div class="gl-property-setter gl-flex" :class="{'gl-flex-columns':isCollapseDisplayMode}"
        v-if="propertySetterMeta.setterComponentName!=='GlEmptySetter'&&propertySetterMeta.show!==false">
-    <div :class="cellDisplayModeClass" class="gl-label" style="position: relative;"
-         :style="{width: isCollapseDisplayMode?'100%':'7em'}"
+    <div  class="gl-label"
          @dblclick.ctrl="tryClearProp(propertySetterMeta.name)" title="">
       <template v-if="isCollapseDisplayMode">
         <GlIconfont v-if="propertySetterMeta.expanded!==false" type="gl-arrow-right"
@@ -26,13 +25,13 @@
         <!--          <GlIconfont type="gl-info-circle" :title="propertySetterMeta.description"></GlIconfont>-->
         <!--        </span>-->
         <span :class="{'gl-tips':!!propertySetterMeta.description}"
-              :title="propertySetterMeta.description">&nbsp;{{ propertySetterMeta.title }}</span>
+              :title="propertySetterMeta.description">{{ propertySetterMeta.title }}</span>
       </template>
     </div>
     <!-- 这里需用 v-show，确保各属性都初始化，属性之间的数据依赖才能正常   -->
-    <div :class="cellDisplayModeClass" v-show="propertySetterMeta.expanded!==false">
-      <div style="display: flex">
-        <div style="flex: auto">
+    <div class="gl-content" v-show="propertySetterMeta.expanded!==false">
+      <div style="display: flex;align-items: center;">
+        <div style="flex: 1">
           <!-- 1 ========================type为props或默认为空========================-->
           <template v-if="propertySetterMeta.type==='props'||!propertySetterMeta.type">
             <!-- 1.1 ========================GlObjectArraySetter========================-->
@@ -60,28 +59,16 @@
                             v-if="typeof slotProps.item._propsExpressions==='object'?true:slotProps.item._propsExpressions={}"></template>
                         <GlExpressionSetter
                             v-model="slotProps.item._propsExpressions[property.name]"></GlExpressionSetter>
-                        <!--                        <GlExpressionSetter-->
-                        <!--                            v-model="slotProps.item[property.type + 'Expressions'][property.name]"></GlExpressionSetter>-->
                       </div>
                     </GlPropertySetter>
                   </template>
                 </div>
               </GlPropertySetterCard>
-
-              <!--          <template v-if="propertySetterMeta.properties&&propertySetterMeta.properties.length>0">-->
-              <!--            <div class="gl-table" :class="{'gl-table-as-tree':false}" style="margin: 1px;border: 1px solid #e4e4e4">-->
-              <!--              <template v-for="property in propertySetterMeta.properties">-->
-              <!--                <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"-->
-              <!--                                  :propertyValue="propertyModel[property.name]"-->
-              <!--                                  @update="onSubPropertyUpdate(property.name,$event)"></GlPropertySetter>-->
-              <!--              </template>-->
-              <!--            </div>-->
-              <!--          </template>-->
             </template>
             <!-- 1.2 ========================GlJsonObjectSetter========================-->
             <template v-else-if="propertySetterMeta.setterComponentName==='GlSimpleObjectSetter'">
               <template v-if="propertySetterMeta.properties&&propertySetterMeta.properties.length>0">
-                <div class="gl-table" :class="{'gl-table-as-tree':false}" style="margin: 1px;border: 1px solid #e4e4e4">
+                <div :class="{'gl-table-as-tree':false}" style="margin: 1px;border: 1px solid #e4e4e4">
                   <template v-for="subPropertySetterMeta in propertySetterMeta.properties">
                     <GlPropertySetter v-if="propertyModel" :propertySetterMeta="subPropertySetterMeta"
                                       :propertyValue="propertyModel[subPropertySetterMeta.name]"
@@ -148,7 +135,7 @@
             </GlPropertySetterCard>
           </template>
         </div>
-        <div v-if="propertySetterMeta.enableValueExpress" style="flex: 1;max-width: 2em;min-width: 2em">
+        <div v-if="propertySetterMeta.enableValueExpress" style="max-width: 2em;min-width: 2em">
           <slot></slot>
         </div>
       </div>
@@ -191,6 +178,9 @@ const propertyModel = ref<any>(props.propertyValue)
 const isCollapseDisplayMode = propertyDisplayMode === 'collapse'
 const displayModeClass = computed(() => {
   return {["gl-display-mode-" + propertyDisplayMode || 'default']: true}
+})
+const rowDisplayModeClass = computed(() => {
+  return isCollapseDisplayMode ? {"gl-table-row-collapse": true} : {"gl-table-row": true}
 })
 const cellDisplayModeClass = computed(() => {
   return isCollapseDisplayMode ? {"gl-table-cell-collapse": true} : {"gl-table-cell": true}
@@ -291,7 +281,7 @@ initialized = true
   height: 40px;
   line-height: 40px;
   font-weight: 500;
-  border-bottom: solid 1px #e7e7e7;
+  //border-bottom: solid 1px #e7e7e7;
 }
 
 .gl-property-setter .gl-icon-font {

@@ -53,6 +53,7 @@ import * as encodingApi from './m/datasource/EncodingApi'
 import GlInsts from './components/gl-component/GlInsts.vue'
 import GlLoop from './components/gl-loop/GlLoop.vue'
 import GlTemplate from './components/gl-template/GlTemplate.vue'
+import GlChart from './components/gl-chart/GlChart.vue'
 import './assets/style.css'
 
 const Utils = AllUtils
@@ -74,6 +75,7 @@ const component: Plugin = {
     app.component(GlPageViewer.name, GlPageViewer)
     app.component(GlLoop.name, GlLoop)
     app.component(GlTemplate.name, GlTemplate)
+    app.component(GlChart.name, GlChart)
 
     if (!app.config.globalProperties.$gl) {
       app.config.globalProperties.$gl = reactive({

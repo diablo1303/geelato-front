@@ -200,7 +200,7 @@ export default defineComponent({
         return
       }
       this.editElement(evt.newIndex)
-      console.log('onEnd', evt)
+      // console.log('onEnd', evt)
     }
   }
 })

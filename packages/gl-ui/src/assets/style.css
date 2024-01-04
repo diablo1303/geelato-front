@@ -12,10 +12,13 @@
     color: red;
 }
 
-.gl-tips:after {
-    content: '？'
+.gl-tips {
+    padding-bottom: 2px;
+    border-bottom: 2px dotted rgba(49, 49, 49, 0.6);
+    cursor: help;
 }
 
-.gl-thunderbolt-icon.gl-active{
+.gl-thunderbolt-icon.gl-active {
     color: royalblue;
 }
+
