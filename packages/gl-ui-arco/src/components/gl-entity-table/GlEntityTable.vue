@@ -132,7 +132,13 @@ const props = defineProps({
 })
 
 const showOptColumn = () => {
-  return props.columnActions?.length > 0
+  let showOpt = false
+  props.columnActions?.forEach((action:ComponentInstance)=>{
+    if(!action.props._hidden){
+      showOpt = true
+    }
+  })
+  return showOpt
 }
 
 const formProvideProxy: FormProvideProxy | undefined = props.isFormSubTable
@@ -158,7 +164,7 @@ const renderColumns: Ref<GlTableColumn[]> = ref(genRenderColumns(showColumns))
  */
 const resetColumns = () => {
   queryColumns.value = genQueryColumns(props, localShowDataIndexes, localHideDataIndexes)
-  showColumns.value = genShowColumns(queryColumns, false)
+  showColumns.value = genShowColumns(queryColumns, false, showOptColumn())
   renderColumns.value = genRenderColumns(showColumns)
 }
 const resetRenderColumns = () => {

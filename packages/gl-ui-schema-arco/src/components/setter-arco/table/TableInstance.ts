@@ -5,7 +5,7 @@ export default {
     "componentName": "GlEntityTablePlus",
     "props": {
         "base": {
-            "label": "表单",
+            "label": "表格",
             "entityName": "demo_entity",
             "isFormSubTable": false,
             "subTablePidName": "",

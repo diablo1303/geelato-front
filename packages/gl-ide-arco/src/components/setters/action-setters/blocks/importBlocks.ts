@@ -13,6 +13,7 @@ import IfComponentValueBlockHandler from './logic/IfComponentValueBlockHandler'
 import TriggerComponentActionBlockHandler from './logic/TriggerComponentActionBlockHandler'
 import LogBlockHandler from './other/LogBlockHandler'
 import SetValueBlockHandler from './page/SetValueBlockHandler'
+import SetRulesBlockHandler from './page/SetRulesBlockHandler'
 import ReturnBlockHandler from './other/ReturnBlockHandler'
 import SetVarBlockHandler from './var/SetVarBlockHandler'
 import GroupSumBlockHandler from './data/GroupSumBlockHandler'
@@ -54,5 +55,6 @@ export {
   ForListBlockHandler,
   ForTimesBlockHandler,
   HttpRequestBlockHandler,
-  DownloadBlockHandler
+  DownloadBlockHandler,
+  SetRulesBlockHandler
 }

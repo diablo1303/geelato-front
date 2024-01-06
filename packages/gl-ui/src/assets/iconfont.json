@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "4506835",
+      "name": "规则",
+      "font_class": "rules",
+      "unicode": "ebb7",
+      "unicode_decimal": 60343
+    },
+    {
+      "icon_id": "22633017",
+      "name": "海关",
+      "font_class": "customs",
+      "unicode": "e619",
+      "unicode_decimal": 58905
+    },
+    {
       "icon_id": "14678990",
       "name": "doc_richtext",
       "font_class": "richtext",

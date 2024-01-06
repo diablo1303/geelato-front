@@ -196,11 +196,11 @@ export class EntityReaderParamGroup {
         }
       } else {
         // 对于根级，已存在，不需要new，直接push子级即可
-        if(groupLevel===0){
+        if (groupLevel === 0) {
           this.push(param, groupNamePath, groupLevel + 1)
-        }else{
+        } else {
           // 没有找取当前已存在的子分组，则创建一个子分组
-          const newGroup = new EntityReaderParamGroup( groups[groupLevel])
+          const newGroup = new EntityReaderParamGroup(groups[groupLevel])
           this.children.push(newGroup)
           newGroup.push(param, groupNamePath, groupLevel + 1)
         }
@@ -333,4 +333,6 @@ export class GetEntitySaversResult {
   message: string = '数据验证不通过，未能成功构建并获取保存对象'
   // 组件名
   componentName: string = ''
+  // 验证结果
+  validateResult?: object
 }

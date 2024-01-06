@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'gl-table-as-tree':false}" class="gl-flex-columns">
+  <div :class="{'gl-table-as-tree':false}" class="gl-component-properties-setter gl-flex-columns">
     <!--需保障currentSelectedComponentMeta有且有正确的数据，否则该属性值会马上影响舞台上的组件展示-->
     <template v-if="componentMeta">
       <template v-for="(propertySetterMeta,index) in componentMeta.properties">

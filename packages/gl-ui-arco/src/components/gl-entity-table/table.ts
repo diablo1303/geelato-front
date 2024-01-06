@@ -281,7 +281,7 @@ export const genShowColumns = (
     queryColumn.width = queryColumn.width || 150
     queryColumn.align = queryColumn.align || 'center'
 
-    // console.log('genShowColumns() > queryColumn', queryColumn)
+    console.log('genShowColumns() > queryColumn', queryColumn, 'showOptColumn', showOptColumn)
     executeObjectPropsExpressions(queryColumn, {})
     // 设置隐藏的列
     if (isShowByComponent) {
@@ -401,7 +401,7 @@ export const createEntityReader = (
   // 逻辑删除模式下，增加逻辑删除的数据过滤条件
   entityReader.params.push(new EntityReaderParam(logicDeleteFieldName, 'eq', 0))
 
-  const defaultOrders:EntityReaderOrder[] = []
+  const defaultOrders: EntityReaderOrder[] = []
   const fieldMetas = new Array<FieldMeta>()
   queryColumns?.forEach((column) => {
     // 过滤掉操作列，操作列的slotName，在geelato中约定为“#”
@@ -414,13 +414,13 @@ export const createEntityReader = (
       fieldMetas.push(fm)
     }
     // 构建
-    if (column.sortable?.defaultSortOrder){
-      const order = new EntityReaderOrder(column.dataIndex,column.sortable?.defaultSortOrder)
+    if (column.sortable?.defaultSortOrder) {
+      const order = new EntityReaderOrder(column.dataIndex, column.sortable?.defaultSortOrder)
       defaultOrders.push(order)
     }
   })
   // 如未设置排序，采用默认排序
-  if (entityReader.order.length===0){
+  if (entityReader.order.length === 0) {
     entityReader.order.push(...defaultOrders)
   }
   entityReader.fields = fieldMetas

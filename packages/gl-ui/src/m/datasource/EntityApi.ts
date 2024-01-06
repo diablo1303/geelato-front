@@ -176,8 +176,6 @@ export class EntityApi {
         )
       }
 
-      // console.log('paramsGroups', paramsGroups)
-
       /**
        * 递归处理分组
        * @param paramGroup
@@ -219,41 +217,6 @@ export class EntityApi {
         }
       })
 
-      console.log('params', params)
-      // // 默认无分组参数部分归到了默认分组defaultGroupName
-      // paramsGroups[defaultGroupName].forEach((param) => {
-      //   // console.log('param',param)
-      //   params[EntityReaderParam.getMqlParamName(param)] = EntityReaderParam.getMqlParamValue(param)
-      // })
-      // // 其它分组参数部分，其它分组,统一以or分组进行处理，因为and不需要分组
-      // // 递归处理子分组
-      // Object.keys(paramsGroups).forEach((key) => {
-      //   if (key !== defaultGroupName) {
-      //     const subParams: any[] = []
-      //     paramsGroups[key].forEach((param) => {
-      //       // const key = `${param.name}|${param.cop || 'eq'}`
-      //       // params[key] = param.value
-      //       subParams.push(EntityReaderParam.getMqlParam(param))
-      //     })
-      //     // @b brackets的简写，用于通过括号来组合条件
-      //     params['@b'] = params['@b'] || []
-      //     params['@b'].push({ or: subParams })
-      //   }
-      // })
-
-      // for (const i in entityReader.params) {
-      //   const param: EntityReaderParam = entityReader.params[i]
-      //   if (param.name === 'delStatus') {
-      //     hasDelStatus = true
-      //   }
-      //   const key = `${param.name}|${param.cop || 'eq'}`
-      //   params[key] = param.value
-      // }
-      // // 检查是否有删除状态，默认为0
-      // const ignoreDeleteStatusEntity = ['platform_oprecord']
-      // if (!hasDelStatus && ignoreDeleteStatusEntity.indexOf(entityReader.entity) === -1) {
-      //   params[`delStatus|eq`] = '0'
-      // }
       Object.assign(mql[entityReader.entity], params)
     }
 

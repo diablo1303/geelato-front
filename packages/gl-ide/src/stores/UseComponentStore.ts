@@ -506,14 +506,14 @@ class ComponentStoreFactory {
                         // this.setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsSelected', this.currentSelectedComponentId)
                     },
                     setCurrentSelectedComponentByIdFromItems(id: string, insts: Array<ComponentInstance>, formPageId: string) {
-                        console.log('setCurrentSelectedComponentByIdFromItems() > storeId:', storeId, 'setCurrentSelectedComponentByIdFromItems > id:', id)
+                        // console.log('setCurrentSelectedComponentByIdFromItems() > storeId:', storeId, 'setCurrentSelectedComponentByIdFromItems > id:', id)
                         this.setCurrentSelectedComponentId(id, formPageId)
 
                         if (this.currentSelectedComponentId && insts && insts.length > 0) {
                             const foundComponent = insts.find((inst) => {
                                 return inst.id === id
                             })
-                            console.log('storeId:', storeId, 'setCurrentSelectedComponentByIdFromItems', this.currentSelectedComponentId, 'and get', foundComponent, ',insts:', insts)
+                            // console.log('storeId:', storeId, 'setCurrentSelectedComponentByIdFromItems', this.currentSelectedComponentId, 'and get', foundComponent, ',insts:', insts)
                             this.currentSelectedComponentInstance = foundComponent!
                             if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
                                 this.currentSelectedComponentName = this.currentSelectedComponentInstance.componentName

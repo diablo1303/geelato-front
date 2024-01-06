@@ -31,12 +31,12 @@
  * 属性配置面
  *************************************/
 
-.gl-component-setter .gl-flex {
+.gl-component-properties-setter .gl-flex {
     display: flex;
     background-color: #fafafa;
 }
 
-.gl-component-setter .gl-flex > .gl-label {
+.gl-component-properties-setter .gl-flex > .gl-label {
     text-align: right;
     padding-right: 8px;
     width: 7em;
@@ -45,17 +45,17 @@
 }
 
 /* 调整border */
-.gl-component-setter .gl-flex > .gl-label:last-child, .gl-component-setter .gl-flex.gl-flex-columns > .gl-label {
+.gl-component-properties-setter .gl-flex > .gl-label:last-child, .gl-component-properties-setter .gl-flex.gl-flex-columns > .gl-label {
     border-top: 0px
 }
 
 /* 调整border */
-.gl-component-setter .gl-property-setter.gl-flex.gl-flex-columns > .gl-content .gl-property-setter.gl-flex:first-child > .gl-label {
+.gl-component-properties-setter .gl-property-setter.gl-flex.gl-flex-columns > .gl-content .gl-property-setter.gl-flex:first-child > .gl-label {
     border-top: 0px
 }
 
 
-.gl-component-setter .gl-flex:not(.gl-flex-columns) > .gl-content {
+.gl-component-properties-setter .gl-flex:not(.gl-flex-columns) > .gl-content {
     flex: 1;
     padding: 3px 0px 3px 3px;
     background-color: white;
@@ -64,22 +64,22 @@
     border-right: 1px solid var(--gl-color-border);
 }
 
-.gl-component-setter .gl-flex-columns {
+.gl-component-properties-setter .gl-flex-columns {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--gl-color-border);
 }
 
-.gl-component-setter .gl-flex.gl-flex-columns > .gl-label {
+.gl-component-properties-setter .gl-flex.gl-flex-columns > .gl-label {
     text-align: left;
 }
 
-.gl-component-setter .gl-flex.gl-flex-columns {
+.gl-component-properties-setter .gl-flex.gl-flex-columns {
     background-color: white;
     border-bottom: 1px solid var(--gl-color-border);
 }
 
-.gl-component-setter .gl-flex-rows {
+.gl-component-properties-setter .gl-flex-rows {
     display: flex;
     flex-direction: row;
 }

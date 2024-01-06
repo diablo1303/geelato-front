@@ -122,11 +122,29 @@ const subFormInstIds: Ref<string[]> = ref([])
 const formRef = ref<FormInstance>()
 
 /**
- * 验证表单
- * 将异步改成同步
+ * 可以通过脚本编排实现组件的规则是否启用
+ * 暂不需启用该功能，默认返回[]
  */
-const validate = (): undefined | Promise<undefined | Record<string, ValidatedError>> => {
-  return formRef.value?.validate()
+const getIgnoreValidateFieldsIfHidden = () => {
+  return []
+}
+/**
+ * 验证表单
+ * 依据字段的配置，可以忽略部分字段的验证
+ */
+const validate = async (): Promise<undefined | Record<string, ValidatedError>> => {
+  const validateResult = await formRef.value?.validate()
+  if (validateResult) {
+    getIgnoreValidateFieldsIfHidden().forEach((ignoreField: string) => {
+      if (validateResult && validateResult[ignoreField]) {
+        formRef.value?.clearValidate(ignoreField)
+        delete validateResult[ignoreField]
+      }
+    })
+    return Object.keys(validateResult).length > 0 ? validateResult : undefined
+  } else {
+    return undefined
+  }
 }
 
 const checkValidDataEntry = (componentName: string) => {
@@ -459,6 +477,7 @@ const getEntitySavers = async () => {
   }
   const result = new GetEntitySaversResult()
   result.componentName = props.glComponentInst.componentName
+  result.validateResult = validateResult
   // 数据验证
   if (validateResult) {
     result.message = '验证表单' + props.bindEntity?.entityName + '不通过'
@@ -484,6 +503,7 @@ const getEntitySavers = async () => {
  */
 const submitForm = async () => {
   const entitySavers = await getEntitySavers()
+  console.log('entitySavers.error', entitySavers)
   if (!entitySavers.error) {
     setLoading(true)
     // console.log('submitForm() > formData', formData)
@@ -503,6 +523,16 @@ const submitForm = async () => {
     setLoading(false)
     return true
   } else {
+    const content: string[] = []
+    Object.keys(entitySavers.validateResult!).forEach((key: string) => {
+      // @ts-ignore
+      const err = entitySavers.validateResult[key]
+      content.push(err.label)
+    })
+    global.$notification.error({
+      title: '以下字段验证不通过',
+      content: `${content.join(',')}`
+    })
     return false
   }
 }
