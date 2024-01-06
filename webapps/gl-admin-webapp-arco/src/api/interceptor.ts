@@ -5,7 +5,7 @@ import {useUserStore} from '@/store';
 /* eslint-disable-next-line */
 import globalConfig from '@/config/globalConfig';
 import {getToken} from '@/utils/auth';
-import {entityApi, useApiUrl} from "@geelato/gl-ui";
+import {entityApi, useApiUrl, useMessages} from "@geelato/gl-ui";
 import {fetchFileById} from "@/api/attachment";
 import useApiBaseUrl from "@geelato/gl-ui/src/m/hooks/useApiUrl";
 
@@ -16,6 +16,7 @@ export interface HttpResponse<T = unknown> {
   data: T;
 }
 
+const messageManger = useMessages()
 axios.defaults.baseURL = useApiUrl().getApiBaseUrl()
 
 axios.interceptors.request.use(
@@ -81,7 +82,8 @@ axios.interceptors.response.use(
     return res;
   },
   (error) => {
-    Message.error({content: error.msg || 'Request Error', duration: 8 * 1000});
+    const msg = messageManger.getMessage(error.response.data)
+    Message.error({content: msg || error.msg || 'Request Error', duration: 8 * 1000});
     return Promise.reject(error);
   }
 );

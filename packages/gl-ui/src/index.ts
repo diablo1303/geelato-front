@@ -33,6 +33,7 @@ import CheckUtil from './m/utils/CheckUtil'
 import ConvertUtil from './m/utils/ConvertUtil'
 import useGlobal from './m/hooks/useGlobal'
 import useApiUrl from './m/hooks/useApiUrl'
+import useMessages from './m/hooks/useMessages'
 import jsScriptExecutor from './m/actions/JsScriptExecutor'
 import { PageProvideKey, PageParamsKey } from './components/PageProvideProxy'
 import AppProvideProxy from './components/AppProvideProxy'
@@ -134,6 +135,7 @@ export {
   PluginUtil,
   useGlobal,
   useApiUrl,
+  useMessages,
   jsScriptExecutor,
   dictApi,
   fileApi,
