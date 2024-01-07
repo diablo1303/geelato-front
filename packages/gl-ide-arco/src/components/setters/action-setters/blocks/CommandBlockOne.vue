@@ -8,21 +8,28 @@
         <div class="gl-title">
           <span>{{ glComponentInst._disabled ? '【已停用】' : '' }}</span>
           <span>{{ blockMeta.title }}</span>
-          <span v-if="blockMeta.blockContentLanguage" style="float: right;margin-right: 2em">
-              <span @click="expandBlockContentWhenIsLanguage=!expandBlockContentWhenIsLanguage">
-                {{expandBlockContentWhenIsLanguage?'折叠收起':'展示更多'}}
-              </span>
+          <span v-if="blockMeta.blockContentLanguage" style="float: right; margin-right: 2em">
+            <span @click="expandBlockContentWhenIsLanguage = !expandBlockContentWhenIsLanguage">
+              {{ expandBlockContentWhenIsLanguage ? '隐藏代码' : '显示代码' }}
+            </span>
           </span>
         </div>
         <div class="gl-description" :class="{ 'gl-annotation': blockMeta.title === '注释' }">
           <!-- 代码块进行特殊展示 -->
           <template v-if="blockMeta.blockContentLanguage">
-            <div>{{props.glComponentInst.props?.description || props.glComponentInst.propsExpressions?.description || '&nbsp;'}}</div>
-            <GlMonacoEditor v-if="expandBlockContentWhenIsLanguage"
+            <div>
+              {{
+                props.glComponentInst.props?.description ||
+                props.glComponentInst.propsExpressions?.description ||
+                '&nbsp;'
+              }}
+            </div>
+            <GlMonacoEditor
+              v-if="expandBlockContentWhenIsLanguage"
               ref="monacoEditor"
               :modelValue="highlightedStr"
               :language="blockMeta.blockContentLanguage"
-              :style="{height: '300px'}"
+              :style="{ height: '300px' }"
               :readOnly="true"
             ></GlMonacoEditor>
           </template>
@@ -77,7 +84,10 @@ const blockMeta =
   props.componentMeta || componentMaterialStore.findMetaByName(props.glComponentInst.componentName)
 const blockInfoVarStr = blockMeta.blockContent
 // 如果是代码块，则不需要变量高亮展示，在编辑器中渲染即可
-const highlightedVarStr = blockMeta.blockContentLanguage?blockInfoVarStr:BlockUtils.highlightVariables(blockInfoVarStr)
+const highlightedVarStr =
+  (blockMeta.blockContentLanguage
+    ? blockInfoVarStr
+    : BlockUtils.highlightVariables(blockInfoVarStr)) || ''
 // 在新的窗口打开页面地址<span style='color: blue'>${url}</span>
 const highlightedStr = ref('')
 

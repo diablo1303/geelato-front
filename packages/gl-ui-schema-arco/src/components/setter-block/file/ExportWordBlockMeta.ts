@@ -26,7 +26,7 @@ export default {
         "expanded": true,
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
-        "title": "Excel模板",
+        "title": "Word模板",
         "setterComponentName": "GlAppFileTemplateSelect",
         "enableValueExpress": false,
         "displayMode": "tile"
@@ -63,7 +63,7 @@ export default {
         "setterComponentVModelName": "modelValue",
         "placeholder": "",
         "description": "上下文中可获取的最终数据对象或GQL查询数据对象的变量名",
-        "title": "数据变量名",
+        "title": "数据源变量名",
         "setterComponentName": "AInput"
     }, {
         "name": "enableAwait",

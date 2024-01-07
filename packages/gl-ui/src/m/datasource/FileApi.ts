@@ -71,6 +71,22 @@ export function getDownloadUrlByPath(name: string, path: string) {
     : ''
 }
 
+
+
+/**
+ * 导出excel、word
+ * 后端依据模板类型导出相应格式的文件
+ * @param fileName 文件名称
+ * @param templateId 模型文档id
+ * @param dataType 数据类型，mql | data，数据类型有可能是前端的数据结果（data），也有可能是用于后端查询获取数据结果的（mql）
+ * @param data 数据
+ */
+export function exportFile(fileName: string, templateId: string, dataType: string, data: object) {
+  return entityApi
+      .getAxios()
+      .post(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}`, data)
+}
+
 /**
  * 导出excel
  * @param fileName 文件名称
@@ -79,9 +95,7 @@ export function getDownloadUrlByPath(name: string, path: string) {
  * @param data 数据
  */
 export function exportExcel(fileName: string, templateId: string, dataType: string, data: object) {
-  return entityApi
-    .getAxios()
-    .post(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}`, data)
+  return exportFile(fileName,templateId,dataType,data)
 }
 
 /**
