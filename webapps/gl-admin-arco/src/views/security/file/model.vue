@@ -259,7 +259,7 @@ const configValueBase64 = (base64String: string) => {
       const suffix = baseData.name.split(".").pop() || '';
       if (['xls', 'xlsx'].includes(suffix)) {
         formData.value.fileType = 'excel';
-      } else if (['doc', 'docs'].includes(suffix)) {
+      } else if (['doc', 'docx'].includes(suffix)) {
         formData.value.fileType = 'doc';
       }
     }
