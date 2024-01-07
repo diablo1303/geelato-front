@@ -76,7 +76,8 @@ const componentMaterialStore = useComponentMaterialStore()
 const blockMeta =
   props.componentMeta || componentMaterialStore.findMetaByName(props.glComponentInst.componentName)
 const blockInfoVarStr = blockMeta.blockContent
-const highlightedVarStr = BlockUtils.highlightVariables(blockInfoVarStr)
+// 如果是代码块，则不需要变量高亮展示，在编辑器中渲染即可
+const highlightedVarStr = blockMeta.blockContentLanguage?blockInfoVarStr:BlockUtils.highlightVariables(blockInfoVarStr)
 // 在新的窗口打开页面地址<span style='color: blue'>${url}</span>
 const highlightedStr = ref('')
 
