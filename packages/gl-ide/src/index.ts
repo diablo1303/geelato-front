@@ -25,6 +25,7 @@ import ComponentSetterProvideProxy from "./stores/ComponentSetterProvideProxy";
 import {ComponentSetterProvideKey} from "./stores/ComponentSetterProvideProxy";
 import './assets/gl-root.css'
 import './assets/gl-table-form.css'
+import useCodePrettier from './hooks/codePrettier';
 
 const ide = reactive(new Ide())
 const component: Plugin = {
@@ -54,6 +55,7 @@ export {
     useIdeStore,
     useAppStore,
     useEntityStore,
+    useCodePrettier,
     componentStoreFactory,
     usePageStore,
     useComponentStore,

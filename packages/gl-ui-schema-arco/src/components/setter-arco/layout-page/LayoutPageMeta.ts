@@ -36,13 +36,28 @@ export default {
       displayMode: 'tile'
     },
     {
+      name: 'showSiderExtend',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: true,
+      show: true,
+      expanded: true,
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      description: '',
+      title: '显示扩展侧边',
+      setterComponentName: 'ASwitch',
+      displayMode: 'tile',
+      placeholder: ''
+    },
+    {
       name: 'siderProps',
       group: 'base',
       type: 'props',
       enableValueExpress: false,
       show: true,
-      expanded: true,
-      displayMode: 'tile',
+      expanded: false,
+      displayMode: 'collapse',
       setterComponentProps: {},
       setterComponentVModelName: '',
       _showSub: false,
@@ -57,11 +72,11 @@ export default {
           displayMode: 'tile',
           setterComponentProps: {
             options: [
+              { label: '暗色', value: 'dark' },
               {
-                label: '暗色',
-                value: 'dark'
-              },
-              { label: '亮色', value: 'light' }
+                label: '亮色',
+                value: 'light'
+              }
             ],
             type: 'button'
           },
@@ -120,15 +135,12 @@ export default {
           displayMode: 'tile',
           setterComponentProps: {
             options: [
+              { label: '左', value: 'left' },
               {
-                label: '左',
-                value: 'left'
+                label: '右',
+                value: 'right'
               },
-              { label: '右',  value: 'right' },
-              {
-                label: '上',
-                value: 'top'
-              },
+              { label: '上', value: 'top' },
               { label: '下', value: 'bottom' }
             ],
             multiple: true,
@@ -208,28 +220,13 @@ export default {
       setterComponentName: 'GlSimpleObjectSetter'
     },
     {
-      name: 'showSiderExtend',
-      group: 'base',
-      type: 'props',
-      enableValueExpress: true,
-      show: true,
-      expanded: true,
-      setterComponentProps: {},
-      setterComponentVModelName: 'modelValue',
-      description: '',
-      title: '显示扩展侧边',
-      setterComponentName: 'ASwitch',
-      displayMode: 'tile',
-      placeholder: ''
-    },
-    {
       name: 'siderExtendProps',
       group: 'base',
       type: 'props',
       enableValueExpress: false,
       show: true,
-      expanded: true,
-      displayMode: 'tile',
+      expanded: false,
+      displayMode: 'collapse',
       setterComponentProps: {},
       setterComponentVModelName: '',
       _showSub: false,
@@ -394,9 +391,22 @@ export default {
           setterComponentName: 'ASelect'
         }
       ],
-      title: '扩展侧边配置',
+      title: '扩展侧边',
       setterComponentName: 'GlSimpleObjectSetter'
     }
   ],
-  actions: []
+  actions: [
+    {
+      eventName: 'onMounted',
+      name: 'onMounted',
+      description: '组件加载完时触发，和Vue的onMounted一致',
+      title: '加载完'
+    },
+    {
+      eventName: 'onUpdated',
+      name: 'onUpdated',
+      description: '组件更新时触发，和Vue的onUpdated一致',
+      title: '更新完'
+    }
+  ]
 }

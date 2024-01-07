@@ -5,9 +5,15 @@ export default {
 </script>
 
 <script setup lang="ts">
-
-import {computed, inject, ref, watch} from "vue";
-import {entityApi, EntityReader, EntityReaderParam, FieldMeta, PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
+import { computed, inject, ref, watch } from 'vue'
+import {
+  entityApi,
+  EntityReader,
+  EntityReaderParam,
+  FieldMeta,
+  PageProvideKey,
+  PageProvideProxy
+} from '@geelato/gl-ui'
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
@@ -18,7 +24,6 @@ class UserDataItem {
   id: string = ''
   name: string = ''
 }
-
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -55,22 +60,21 @@ const props = defineProps({
     default() {
       return ''
     }
-  },
+  }
 })
 
 const visible = ref(false)
 const searchName = ref('')
-const selectingItems = ref<Array<UserDataItem>>([])
 const selectedNames = ref('')
 /**
  *  正在选择的人，未更新选人组件上
  */
+const selectingItems = ref<Array<UserDataItem>>([])
 const selectingNames = ref('')
 const selectingIds = ref('')
 const selectedIds = ref('')
 // 所有的人员清单
 const userDataItems = ref<Array<UserDataItem>>([])
-
 
 const searchResult = computed(() => {
   if (!searchName.value) {
@@ -125,7 +129,6 @@ const loadUserDataItems = (ids?: Array<any>) => {
   return entityApi.queryByEntityReader(reader)
 }
 
-
 const init = () => {
   // 基于输入的参数，或当前控件已选中的信息，设置弹出面板中的选择人员信息
   selectedIds.value = props.modelValue
@@ -143,7 +146,6 @@ const init = () => {
     selectedNames.value = ''
   }
 }
-
 
 /**
  *  打开选人窗口前
@@ -166,7 +168,6 @@ const onBeforeOpen = () => {
   }
 }
 
-
 const setUserSelectingInfo = (userDataItem: UserDataItem, index?: number) => {
   // console.log('setUserSelectingInfo', userDataItem)
   selectingItems.value.length = 0
@@ -175,7 +176,6 @@ const setUserSelectingInfo = (userDataItem: UserDataItem, index?: number) => {
   selectingIds.value = userDataItem.id
 }
 
-
 const clearMultipleSelected = (userDataItems: Array<any>) => {
   selectingItems.value.length = 0
   selectedNames.value = ''
@@ -183,73 +183,96 @@ const clearMultipleSelected = (userDataItems: Array<any>) => {
   emits('update:modelValue', selectedIds.value)
 }
 const clearOneSelected = (userDataItem: any) => {
+  console.log('selectingItems', selectingItems, userDataItem)
   const foundIndex = selectingItems.value.findIndex((item) => {
     return item.id === userDataItem.id
   })
   if (foundIndex >= 0) {
     selectingItems.value.splice(foundIndex, 1)
   }
+  const ids: string[] = []
+  const names: string[] = []
+  selectingItems.value.forEach((item) => {
+    ids.push(item.id)
+    ids.push(item.name)
+  })
+  selectingNames.value = names.join(',')
+  selectingIds.value = names.join(',')
 }
 
 init()
-watch(() => {
-  return props.modelValue
-}, () => {
-  init()
-})
-
+watch(
+  () => {
+    return props.modelValue
+  },
+  () => {
+    init()
+  }
+)
 </script>
 
 <template>
   <div class="gl-user-select">
-    <a-input :style="{width:'100%'}" allow-clear v-model="selectedNames" @clear="clearMultipleSelected(selectingItems)"
-             readonly>
+    <a-input
+      :style="{ width: '100%' }"
+      allow-clear
+      v-model="selectedNames"
+      @clear="clearMultipleSelected(selectingItems)"
+      readonly
+    >
       <template #prefix>
         <a-button type="primary" @click="onOpenModal" style="margin-left: -12px" title="选择人员">
           <GlIconfont type="gl-user"></GlIconfont>
         </a-button>
       </template>
     </a-input>
-    <a-modal>
-      <a-modal width="800px" v-model:visible="visible" @ok="handleOk" @cancel="handleCancel" @beforeOpen="onBeforeOpen">
-        <template #title>
-          选择人员
-        </template>
-        <div style="display: flex;min-height:500px">
-          <div style="flex: 1;border-right: 1px solid silver;padding: 0 0.5em">
-            <a-input style="width: 100%;margin-bottom: 4px" v-model="searchName"/>
-            <template v-if="multipleSelect">
-
-            </template>
-            <a-radio-group v-else style="width: 100%" direction="vertical" v-model="selectingIds">
-              <a-radio v-for="(userDataItem,index) in searchResult"
-                       :key="index"
-                       :value="userDataItem.id"
-                       @click="setUserSelectingInfo(userDataItem,index)"
-              >
-                {{ userDataItem.name }}
-              </a-radio>
-            </a-radio-group>
+    <a-modal
+      width="800px"
+      v-model:visible="visible"
+      @ok="handleOk"
+      @cancel="handleCancel"
+      @beforeOpen="onBeforeOpen"
+    >
+      <template #title> 选择人员</template>
+      <div style="display: flex; min-height: 500px; overflow-y: hidden; margin: -14px">
+        <div
+          style="
+            flex: 1;
+            border-right: 1px solid silver;
+            padding: 0 0.5em;
+            height: 500px;
+            overflow-y: scroll;
+          "
+        >
+          <a-input style="width: 100%; margin-bottom: 4px" v-model="searchName" />
+          <template v-if="multipleSelect"></template>
+          <a-radio-group v-else style="width: 100%" direction="vertical" v-model="selectingIds">
+            <a-radio
+              v-for="(userDataItem, index) in searchResult"
+              :key="index"
+              :value="userDataItem.id"
+              @click="setUserSelectingInfo(userDataItem, index)"
+            >
+              {{ userDataItem.name }}
+            </a-radio>
+          </a-radio-group>
+        </div>
+        <div style="flex: 1; padding: 0 0.5em">
+          <div style="line-height: 2.4em">
+            <span>已选择({{ selectingItems.length }})</span>
+            <!--              <a-button type="text" style="float: right">清空</a-button>-->
           </div>
-          <div style="flex: 1;padding: 0 0.5em">
-            <div style="line-height: 2.4em">
-              <span>已选择({{ selectingItems.length }})</span>
-              <!--              <a-button type="text" style="float: right">清空</a-button>-->
-            </div>
-            <div style="margin-top: 4px">
-              <span v-for="item in selectingItems">
-                <a-tag closable @close="clearOneSelected(item)">
-                  {{ item.name }}
-                </a-tag>
-              </span>
-            </div>
+          <div style="margin-top: 4px">
+            <span v-for="item in selectingItems">
+              <a-tag closable @close="clearOneSelected(item)">
+                {{ item.name }}
+              </a-tag>
+            </span>
           </div>
         </div>
-      </a-modal>
+      </div>
     </a-modal>
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

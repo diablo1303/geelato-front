@@ -48,9 +48,11 @@ export default class ComponentMeta {
 
     // 为作命令块组件时，在设计器中，展示的描述该命令块的。
     // 如：打开第三方网页，地址为：{url}。其中url为属性properties中的其中一直属性，在展示时动态渲染
+    // 如果blockContent的默认以 @language开始，即格式为 @language:xxx 则需进行格式化显示
     blockContent?: string = ''
-
+    // 块内容的语言，如javascript，默认为空，表示普通的文本
+    blockContentLanguage?: string
     // 用于设计时，标识是否弃用true，默认为启用即false。弃用时，在sidebar中不可以选择，但在已应用的页面中还可以使用
-    deprecated?:Boolean = false
+    deprecated?: Boolean = false
 
 }

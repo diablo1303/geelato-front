@@ -281,7 +281,7 @@ export const genShowColumns = (
     queryColumn.width = queryColumn.width || 150
     queryColumn.align = queryColumn.align || 'center'
 
-    console.log('genShowColumns() > queryColumn', queryColumn, 'showOptColumn', showOptColumn)
+    // console.log('genShowColumns() > queryColumn', queryColumn, 'showOptColumn', showOptColumn)
     executeObjectPropsExpressions(queryColumn, {})
     // 设置隐藏的列
     if (isShowByComponent) {
