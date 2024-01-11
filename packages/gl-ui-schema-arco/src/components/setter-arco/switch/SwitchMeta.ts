@@ -41,7 +41,7 @@ export default {
       displayMode: 'tile',
       title: '选中时值',
       setterComponentName: 'AInputNumber',
-      setterDefaultValue: '1'
+      setterDefaultValue: 1
     },
     {
       name: 'uncheckedValue',
@@ -55,7 +55,7 @@ export default {
       setterComponentVModelName: 'modelValue',
       title: '未选时值',
       setterComponentName: 'AInputNumber',
-      setterDefaultValue: '0'
+      setterDefaultValue: 0
     },
     {
       name: 'checkedText',

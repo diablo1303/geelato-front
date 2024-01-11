@@ -12,6 +12,7 @@ import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import cloneDeep from 'lodash/cloneDeep'
 import { type Ref, toRaw } from 'vue'
 import useLoading from '../../hooks/loading'
+import { EntityDataSource } from '@geelato/gl-ui'
 
 const { setLoading } = useLoading(false)
 
@@ -57,6 +58,11 @@ export class BaseInfo {
   hideLabel?: boolean
   entityName: string = ''
   showQuery: boolean = true
+  // 是否在初始化之后触发查询
+  triggerByInit: boolean = true
+  // 是否在查询条件值改变之后自动触发查询
+  triggerByValueChange: boolean = true
+
   showToolbar: boolean = true
   showPagination: boolean = true
   // 表格外框间距
@@ -351,6 +357,8 @@ export type EntityFetchDataInfo = {
   // 排序字段
   order?: Array<EntityReaderOrder>
   params?: Array<EntityReaderParam>
+  // 额外的查询keys，需要作为params的or条件
+  pushedRecordKeys?: string[]
 }
 
 /**
@@ -382,8 +390,17 @@ export const createEntityReader = (
 ) => {
   const entityReader = new EntityReader()
   entityReader.entity = props.entityName
-  entityReader.order = simpleReaderInfo?.order || []
-  entityReader.params = simpleReaderInfo?.params || []
+  entityReader.order = []
+  simpleReaderInfo?.order?.forEach((order: EntityReaderOrder) => {
+    entityReader.order.push(new EntityReaderOrder(order.field, order.order))
+  })
+  entityReader.params = []
+  simpleReaderInfo?.params?.forEach((param: EntityReaderParam) => {
+    entityReader.params.push(
+      new EntityReaderParam(param.name, param.cop, param.value, param.groupName)
+    )
+  })
+
   entityReader.pageNo = simpleReaderInfo?.pageNo || 1
   entityReader.pageSize = simpleReaderInfo?.pageSize || 15
   // 如果是子查询
@@ -400,6 +417,33 @@ export const createEntityReader = (
   }
   // 逻辑删除模式下，增加逻辑删除的数据过滤条件
   entityReader.params.push(new EntityReaderParam(logicDeleteFieldName, 'eq', 0))
+
+  // 如果有额外添加了ids作为查询条件时，需要改变已有的查询条件分组，提升
+  if (simpleReaderInfo?.pushedRecordKeys && simpleReaderInfo?.pushedRecordKeys.length > 0) {
+    // 将原有的参数，没有分组的，设置默认分组名
+    entityReader.params.forEach((param: EntityReaderParam) => {
+      if (!param?.getGroupName()) {
+        param.setGroupName('or:keys>and:' + EntityDataSource.EntityReaderParamGroup.DEFAULT_NAME)
+      } else {
+        // 如果已有的分组已设置了@and 或 @or 则直接添加，则否需默认添加@and:
+        param.setGroupName(
+          'or:keys>' +
+            (param.getGroupName().startsWith('or') || param.getGroupName().startsWith('and')
+              ? param.getGroupName()
+              : 'and:' + param.getGroupName())
+        )
+      }
+    })
+    // 添加ids条件
+    entityReader.params.push(
+      new EntityReaderParam(
+        EntityDataSource.ConstObject.keyFiledName,
+        'in',
+        simpleReaderInfo?.pushedRecordKeys,
+        'or:keys'
+      )
+    )
+  }
 
   const defaultOrders: EntityReaderOrder[] = []
   const fieldMetas = new Array<FieldMeta>()

@@ -37,7 +37,7 @@ export default class Ide {
     stageHeight: number = 0
     stageWidth: number = 0
     setterHeight: number = 0
-    settingsWidth: number = 320
+    setterWidth: number = 320
     statusHeight: number = 0
     statusWidth: number = 0
 
@@ -50,11 +50,11 @@ export default class Ide {
     })
 
     stageWidthPercent: any = computed(() => {
-        return (this.ideWidth - this.sidebarWidth - this.settingsWidth) / this.ideWidth * 100
+        return (this.ideWidth - this.sidebarWidth - this.setterWidth) / this.ideWidth * 100
     })
 
     setterWidthPercent: any = computed(() => {
-        return this.settingsWidth / this.ideWidth * 100
+        return this.setterWidth / this.ideWidth * 100
     })
 
     panelPadding: number = 4

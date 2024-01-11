@@ -131,10 +131,12 @@ const props = defineProps({
   ...mixins.props
 })
 
+const isInit = ref(false)
+
 const showOptColumn = () => {
   let showOpt = false
-  props.columnActions?.forEach((action:ComponentInstance)=>{
-    if(!action.props._hidden){
+  props.columnActions?.forEach((action: ComponentInstance) => {
+    if (!action.props._hidden) {
       showOpt = true
     }
   })
@@ -223,18 +225,34 @@ const selectAll = (checked: boolean) => {
 
 let lastEntityReaderParams: Array<EntityReaderParam>
 let lastOrder: EntityReaderOrder[] = []
-const search = (entityReaderParams: Array<EntityReaderParam>) => {
-  // console.log('search entityReaderParams:', entityReaderParams)
+let lastPushedRecordKeys: string[]
+const search = (entityReaderParams: Array<EntityReaderParam>, pushedRecordKeys: string[]) => {
+  console.log('search entityReaderParams:', entityReaderParams)
   lastEntityReaderParams = entityReaderParams
-  fetchData({ order: lastOrder, params: entityReaderParams })
+  lastPushedRecordKeys = pushedRecordKeys
+  fetchData({
+    order: lastOrder,
+    params: entityReaderParams,
+    pushedRecordKeys: lastPushedRecordKeys
+  })
 }
 const onPageChange = (pageNo: number) => {
-  fetchData({ pageNo, order: lastOrder, params: lastEntityReaderParams })
+  fetchData({
+    pageNo,
+    order: lastOrder,
+    params: lastEntityReaderParams,
+    pushedRecordKeys: lastPushedRecordKeys
+  })
 }
 
 const onPageSizeChange = (pageSize: number) => {
   pagination.value.pageSize = pageSize
-  fetchData({ pageSize, order: lastOrder, params: lastEntityReaderParams })
+  fetchData({
+    pageSize,
+    order: lastOrder,
+    params: lastEntityReaderParams,
+    pushedRecordKeys: lastPushedRecordKeys
+  })
 }
 
 const onSorterChange = (dataIndex: string, direction: string) => {
@@ -246,7 +264,11 @@ const onSorterChange = (dataIndex: string, direction: string) => {
     const order: EntityReaderOrder[] = [new EntityReaderOrder(dataIndex, direction)]
     lastOrder = order
   }
-  fetchData({ order: lastOrder, params: lastEntityReaderParams })
+  fetchData({
+    order: lastOrder,
+    params: lastEntityReaderParams,
+    pushedRecordKeys: lastPushedRecordKeys
+  })
 }
 
 /**

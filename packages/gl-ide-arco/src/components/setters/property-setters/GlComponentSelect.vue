@@ -105,7 +105,7 @@ const changeComponent = (componentName: string) => {
   newInst.props.label = mv.value?.props.label
 
   componentMeta.value = findComponentMeta(componentName)!
-  const foundPropertyMeta = componentMeta.value.properties.find((property) => {
+  const foundPropertyMeta = componentMeta.value?.properties.find((property) => {
     return property.name === 'bindField'
   })
   if (foundPropertyMeta) {

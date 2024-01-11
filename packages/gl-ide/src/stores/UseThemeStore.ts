@@ -20,7 +20,7 @@ export const useThemeStore = defineStore({
         stageWidth: 0,
         stageBreadcrumbHeight: 32,
         // setterHeight: 0,
-        settingsWidth: 320,
+        setterWidth: 420,
         statusHeight: 0,
         statusWidth: 0,
         panelPadding: 4,
@@ -42,8 +42,8 @@ export const useThemeStore = defineStore({
         sidebarTabFontSize: (state) => state.sidebarTabWidth / sidebarTabWidthDefault >= 1.5 ? 1.5 : 1,
         // 4px 为调节宽度，将面板的内容小一些，以便能放入sidebar内
         sidebarRightPanelWidth: (state) => state.sidebarWidth - state.sidebarTabWidth - state.panelPadding * 2 - 4,
-        stageWidthPercent: (state) => (state.ideWidth - state.sidebarWidth - state.settingsWidth) / state.ideWidth * 100,
-        setterWidthPercent: (state) => state.settingsWidth / state.ideWidth * 100,
+        stageWidthPercent: (state) => (state.ideWidth - state.sidebarWidth - state.setterWidth) / state.ideWidth * 100,
+        setterWidthPercent: (state) => state.setterWidth / state.ideWidth * 100,
         modalBodyHeight: (state) => state.ideHeight - state.modalHeaderHeight - state.modalFooterHeight,
     },
     actions: {

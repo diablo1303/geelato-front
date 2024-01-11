@@ -12,7 +12,7 @@ import { LooseObject } from './m/mix/LooseObject'
 import { default as iconsJson } from './assets/iconfont.json'
 import { IconsJson } from './components/gl-iconfont/IconsJson'
 import { EntityApi, entityApi } from './m/datasource/EntityApi'
-import {
+import EntityDataSource, {
   EntityReader,
   EntityReaderParam,
   EntityReaderOrder,
@@ -121,6 +121,7 @@ export {
   EntitySaver,
   GetEntitySaversResult,
   FieldMeta,
+  EntityDataSource,
   compareMeta,
   utils,
   mixins,

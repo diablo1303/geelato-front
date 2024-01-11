@@ -195,18 +195,29 @@ const onUpdateRow = (data: { record: object; rowIndex: number; columns: GlTableC
 }
 
 let lastEntityReaderParams: Array<EntityReaderParam>
-// 在初始化（init）时，GlQuery组件的事件会触发：@search="onSearch"
+/**
+ *  从外部push进来的额外的recordsIds,用于从外部选择记录进来一起展示的场景
+ *  该ids不直接作为entityReaderParams中的一部分，而是用于在最终的查询时构建查询条件，不影响entityReaderParams的设置
+ */
+const pushedRecordKeys: Ref<string[]> = ref([])
+
+/**
+ *
+ * 在页面初始化（init）时，GlQuery组件的事件会触发：@search="onSearch"，从而调用该访求
+ * @param entityReaderParams  在查询区域设置的查询条件
+ */
 const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
   // console.log("onSearch() > entityReaderParams:", entityReaderParams);
   if (tableRef.value) {
     selectedKeys.value = []
-    tableRef.value.selectAll(false)
-    tableRef.value.search(entityReaderParams)
     lastEntityReaderParams = entityReaderParams
+    tableRef.value.selectAll(false)
+    return tableRef.value.search(entityReaderParams, pushedRecordKeys.value)
   }
+  return undefined
 }
 const refresh = (event?: MouseEvent) => {
-  onSearch(lastEntityReaderParams)
+  return onSearch(lastEntityReaderParams)
 }
 
 /**
@@ -242,9 +253,20 @@ const deleteRecord = (params: Record<string, any>) => {
     console.error('基于记录id进行删除失败，未配置参数id。')
     return
   }
-  return entityApi.deleteById(props.base.entityName, params.id).then(() => {
-    refresh()
+  // 如果是外部添加的记录，只去掉外部添加的记录，不删除数据
+  const foundIndex = pushedRecordKeys.value.findIndex((key: string) => {
+    return key === params.id
   })
+  if (foundIndex >= 0) {
+    pushedRecordKeys.value.splice(foundIndex, 1)
+    refresh()
+    return params.id
+  } else {
+    return entityApi.deleteById(props.base.entityName, params.id).then(() => {
+      refresh()
+      return params.id
+    })
+  }
 }
 
 /**
@@ -407,17 +429,82 @@ const rowSelection = computed(() => {
     : undefined
 })
 
+/**
+ *  @deprecated 待弃用
+ */
 const getRenderData = () => {
   return tableRef.value.getRenderData()
 }
+
+/**
+ *  @deprecated 待弃用，方法名称不对，应再加s
+ */
 const getRenderRecord = () => {
   return tableRef.value.getRenderData()
 }
 
+/**
+ * 获取当前列表页面展示的记录，返回记录数据组,没记录时返回空数组[]
+ */
+const getRenderRecords = () => {
+  return tableRef.value.getRenderData()
+}
+
+/**
+ * 获取已选的记录，返回记录数据组,没记录时返回空数组[]
+ */
 const getSelectedRecords = () => {
-  return getRenderData().filter((record: Record<string, any>) => {
+  return tableRef.value.getRenderData().filter((record: Record<string, any>) => {
     return selectedKeys.value.includes(record.id)
   })
+}
+
+const getSelectedKeys = () => {
+  return selectedKeys.value
+}
+
+/**
+ *  添加记录到列表中
+ *  通过添加记录的ids,触发列表的查询（将ids作为or条件查夜），加载对应的记录
+ */
+const pushRecordsByKeys = (params: { keys: string[] }) => {
+  console.log('pushRecordsByKeys params', params)
+  const pushedKeys: string[] = []
+  const unPushedKeys: string[] = []
+  params?.keys?.forEach((pushingId: string) => {
+    const found = pushedRecordKeys.value.find((pushedId: string) => {
+      return pushedId === pushingId
+    })
+    if (!found) {
+      pushedKeys.push(pushingId)
+      pushedRecordKeys.value.push(pushingId)
+    } else {
+      unPushedKeys.push(pushingId)
+    }
+  })
+  global.$notification.info({
+    content:
+      unPushedKeys.length > 0
+        ? `成功加入${pushedKeys.length}条，忽略重复的${unPushedKeys.length}条。`
+        : `成功加入${pushedKeys.length}条`
+  })
+  return { pushedKeys, unPushedKeys }
+}
+
+/**
+ *  获取通过外部添加进来的记录
+ */
+const getPushedRecords = () => {
+  return getRenderRecords()?.filter((record: Record<string, any>) => {
+    return pushedRecordKeys.value.includes(record.id)
+  })
+}
+
+/**
+ *  获取通过外部添加进来的记录keys
+ */
+const getPushedRecordKeys = () => {
+  return pushedRecordKeys.value
 }
 
 /**
@@ -451,6 +538,9 @@ const hasSelectedRecords = () => {
 const getRenderColumns = () => {
   return tableRef.value.getRenderColumns()
 }
+/**
+ *  @deprecated
+ */
 const getDeleteData = () => {
   return tableRef.value.getDeleteRecords()
 }
@@ -475,16 +565,38 @@ const entityTable = computed(() => {
   return props.base?.enableEdit ? GlEntityTableEditable : GlEntityTable
 })
 
+enum RecordsScope {
+  // 列表选中的部分
+  Selected = 'Selected',
+  // 从外部pushed进来的部分
+  Pushed = 'Pushed',
+  // 所有的
+  All = 'All'
+}
+
 /**
  * 创建表格的实体保存对象，可被父表单调用，集到父表单一起保存
  * @param subFormPidValue 作为子表单时，本表单中，指向父表单ID的字段值
- * @param isSelectedOnly 是否只生成选择部分的记录，否则为当前渲染的记录集
+ * @param recordsScope 数据记录范围，默认为RecordsScope.All
  */
-const createEntitySavers = (subFormPidValue?: string, isSelectedOnly?: boolean) => {
+const createEntitySavers = (subFormPidValue?: string, recordsScope?: RecordsScope) :EntitySaver[]=> {
   const entitySavers: EntitySaver[] = []
   // 处理需保存的子表单数据
   // const renderColumns = getRenderColumns()
-  const subFormTableData = isSelectedOnly ? getSelectedRecords() : getRenderData()
+  let subFormTableData
+  switch (recordsScope) {
+    case RecordsScope.Selected:
+      subFormTableData = getSelectedRecords()
+      break
+    case RecordsScope.Pushed:
+      subFormTableData = getPushedRecords()
+      break
+    // case RecordsScope.All:
+    //   subFormTableData = getRenderRecords()
+    //   break
+    default:
+      subFormTableData = getRenderRecords()
+  }
   // 子表中，对应主表单ID的字段名
   const subTablePidName = props.base.subTablePidName!
   // console.log(
@@ -512,7 +624,7 @@ const createEntitySavers = (subFormPidValue?: string, isSelectedOnly?: boolean) 
   // 处理需删除子表单数据
   // 当前为逻辑删除，可依据子表的isLogicDeleteMode来区分
   // console.log('GlEntityForm > saveForm() > getDeleteDataFn', getDeleteDataFn)
-  const deleteData = getDeleteData()
+  const deleteData = getDeleteRecords()
   console.log('GlEntityTablePlus > createEntitySavers() > deleteData:', deleteData)
   if (deleteData && deleteData.length > 0) {
     deleteData.forEach((record: Record<any, any>) => {
@@ -529,22 +641,23 @@ const createEntitySavers = (subFormPidValue?: string, isSelectedOnly?: boolean) 
   return entitySavers
 }
 
-const getEntitySavers = async (params: { subFormPidValue?: string }) => {
+/**
+ * 获取基于实体保存的对象，用于以下场景：
+ * 1、组合到主表单中，实现主表和子列表的一起保存
+ * 2、用于脚本编排灵活保存列表中的记录
+ * @param params {recordsScope?:string} recordsScope默认为All
+ */
+const getEntitySavers = async (params: {
+  subFormPidValue?: string
+  recordsScope?: RecordsScope
+}) => {
   const result = new GetEntitySaversResult()
   if (!(await validate())) {
     result.error = false
-    result.values = createEntitySavers(params.subFormPidValue)
-    result.message = ''
-  }
-  result.componentName = props.glComponentInst.componentName
-  return result
-}
-
-const getSelectedEntitySavers = async (params: { subFormPidValue?: string }) => {
-  const result = new GetEntitySaversResult()
-  if (!(await validate())) {
-    result.error = false
-    result.values = createEntitySavers(params.subFormPidValue, true)
+    result.values = createEntitySavers(
+      params.subFormPidValue,
+      params.recordsScope || RecordsScope.All
+    )
     result.message = ''
   }
   result.componentName = props.glComponentInst.componentName
@@ -552,7 +665,50 @@ const getSelectedEntitySavers = async (params: { subFormPidValue?: string }) => 
 }
 
 /**
- *  批量更新
+ * 同getEntitySavers，这里的范围只是已选择的部分
+ * @param params
+ */
+const getSelectedEntitySavers = async (params: { subFormPidValue?: string }) => {
+  return getEntitySavers({
+    subFormPidValue: params.subFormPidValue,
+    recordsScope: RecordsScope.Selected
+  })
+}
+
+/**
+ * 同getEntitySavers，这里的范围只是已选择的部分
+ * @param params
+ */
+const getPushedEntitySavers = async (params: { subFormPidValue?: string }) => {
+  return getEntitySavers({
+    subFormPidValue: params.subFormPidValue,
+    recordsScope: RecordsScope.Pushed
+  })
+}
+
+/**
+ *  前端改变当前页面的数据
+ */
+// const changeRenderRecords = (params: { record: Record<string, any> })=>{
+//   console.log('changeCurrentPageRecords params', params)
+//   const record = params.record
+//   const records = getRenderRecords()
+//   const recordKeys = Object.keys(record)
+//   if (records) {
+//     const copyRecords = JSON.parse(JSON.stringify(records))
+//     copyRecords.forEach((copyRecord: Record<string, any>) => {
+//       recordKeys.forEach((recordKey: string) => {
+//         if (Object.keys(copyRecord).includes(recordKey)) {
+//           // @ts-ignore
+//           copyRecord[recordKey] = record[recordKey]
+//         }
+//       })
+//     })
+//   }
+// }
+
+/**
+ *  批量更新到服务端
  *  批量更新已选中列的部分字段的内容
  *  @record key为字段名，即列名,value为更新后的列值
  */
@@ -609,7 +765,8 @@ const updateRecord = (params: { record: Record<string, any> }) => {
 }
 
 defineExpose({
-  resetColumns,
+  pushRecordsByKeys,
+  createEntitySavers,
   changeColumnsVisible,
   batchUpdate,
   updateRecord,
@@ -617,24 +774,26 @@ defineExpose({
   deleteRecordWithConfirm,
   deleteSelectedRecords,
   deleteSelectedRecordsWithConfirm,
-  refresh,
   getRenderRecord,
+  getRenderRecords,
   getDeleteRecords,
+  getDeleteData,
   getSelectedRecords,
+  getSelectedKeys,
+  getEntitySavers,
+  getSelectedEntitySavers,
+  getPushedEntitySavers,
+  getPushedRecords,
+  getPushedRecordKeys,
   getFirstSelectedRecord,
   getLastSelectedRecord,
   getRenderData,
   getRenderColumns,
-  /**
-   *  只适用于编辑表格，获取删除掉的数据
-   */
-  getDeleteData,
   hasSelectedRecords,
   validate,
   reRender,
-  getEntitySavers,
-  getSelectedEntitySavers,
-  createEntitySavers
+  refresh,
+  resetColumns
 })
 </script>
 
@@ -650,6 +809,8 @@ defineExpose({
       v-show="base.showQuery !== false"
       ref="queryRef"
       :items="query"
+      :triggerByInit="base.triggerByInit"
+      :triggerByValueChange="base.triggerByValueChange"
       @search="onSearch"
     ></GlQuery>
     <a-divider v-show="base.showQuery !== false" style="margin: 8px 0 12px" />
@@ -668,9 +829,18 @@ defineExpose({
       </template>
       <template #rightItems>
         <a-space v-if="!props.base?.enableEdit">
-          <span v-if="selectedKeys.length" class="action-icon">
-            已选<a-badge :count="selectedKeys.length" />
-          </span>
+          <a-tooltip
+            content="从外部的同类列表中，选择加入的记录数，多次加入相同的记录key(id)，会被去重忽略。"
+          >
+            <span v-if="pushedRecordKeys.length" class="action-icon">
+              已加入<a-badge :count="pushedRecordKeys.length" />
+            </span>
+          </a-tooltip>
+          <a-tooltip content="当前列表已选择的记录数">
+            <span v-if="selectedKeys.length" class="action-icon">
+              已选<a-badge :count="selectedKeys.length" />
+            </span>
+          </a-tooltip>
           <!-- TODO 待提供按列设置展示 -->
           <a-tooltip v-if="true" :content="t('searchTable.actions.columnSetting')">
             <a-popover trigger="click" position="br" @popup-visible-change="popupVisibleChange">

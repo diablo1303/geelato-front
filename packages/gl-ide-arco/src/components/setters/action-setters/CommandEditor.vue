@@ -81,7 +81,7 @@
             </span>
             <a-button-group style="float: right" type="primary" size="mini" shape="round">
               <a-button
-                @click="componentStore.switchCurrentSelectedComponentStatus()"
+                @click="componentStore.switchCurrentSelectedComponentStatus"
                 title="点击启用或停用该指令块"
               >
                 {{
@@ -90,8 +90,8 @@
                     : '点击停用'
                 }}
               </a-button>
-              <a-button @click="componentStore.copyCurrentSelectedComponent()"> 复制插入</a-button>
-              <a-button @click="componentStore.copyCurrentSelectedComponentToClipboard()">
+              <a-button @click="componentStore.copyCurrentSelectedComponent"> 复制插入</a-button>
+              <a-button @click="componentStore.copyCurrentSelectedComponentToClipboard">
                 复制
               </a-button>
               <a-button
@@ -100,7 +100,11 @@
               >
                 插入
               </a-button>
-              <a-button status="danger" @click="componentStore.deleteCurrentSelectedComponentInst('')">删除</a-button>
+              <a-button
+                status="danger"
+                @click="componentStore.deleteCurrentSelectedComponentInst('')"
+                >删除</a-button
+              >
             </a-button-group>
           </div>
           <GlComponentPropertiesSetter
@@ -206,48 +210,49 @@ const generateScript = () => {
 }
 
 /**
- * 检查是否为有效的组件
- * TODO 目前做了简单组件检查
- * @param inst
+ *  将粘贴板中的数据转成组件实例
  */
-const checkComponent = (inst:ComponentInstance) => {
-  return inst.componentName && inst.id
+const insertAfterCurrentSelectedComponent = async () => {
+  const result = await componentStore.insertAfterCurrentSelectedComponentFromClipboard()
+  if (!result.success) {
+    useGlobal().$notification.error(result.message)
+  }
 }
 
 /**
  *  将粘贴板中的数据转成组件实例
  */
-const insertAfterCurrentSelectedComponent = async () => {
-  const clipboardItems = await window.navigator.clipboard.read()
-  let textHtml, textPlain
-  for (const clipboardItem of clipboardItems) {
-    for (const type of clipboardItem.types) {
-      const item = await clipboardItem.getType(type)
-      if (item && item.type == 'text/html') {
-        textHtml = await item.text()
-      }
-      if (item && item.type == 'text/plain') {
-        textPlain = await item.text()
-      }
-    }
-  }
-  if (textPlain) {
-    try {
-      const inst = JSON.parse(textPlain.toString())
-      if (checkComponent(inst)) {
-        componentStore.insertAfterCurrentSelectedComponent(inst)
-      } else {
-        useGlobal().$notification.error(
-          '将粘贴版中的数据转换成组件实例失败，不是正确的组件实例格式'
-        )
-      }
-    } catch (e: any) {
-      useGlobal().$notification.error('将粘贴版中的数据转换成JSON失败，不是有效的组件实例')
-      console.error(e)
-    }
-  }
-  console.log('clipboardItems', clipboardItems, textHtml, textPlain)
-}
+// const insertAfterCurrentSelectedComponent = async () => {
+//   const clipboardItems = await window.navigator.clipboard.read()
+//   let textHtml, textPlain
+//   for (const clipboardItem of clipboardItems) {
+//     for (const type of clipboardItem.types) {
+//       const item = await clipboardItem.getType(type)
+//       if (item && item.type == 'text/html') {
+//         textHtml = await item.text()
+//       }
+//       if (item && item.type == 'text/plain') {
+//         textPlain = await item.text()
+//       }
+//     }
+//   }
+//   if (textPlain) {
+//     try {
+//       const inst = JSON.parse(textPlain.toString())
+//       if (componentStore.checkComponent(inst)) {
+//         componentStore.insertAfterCurrentSelectedComponent(inst)
+//       } else {
+//         useGlobal().$notification.error(
+//           '将粘贴版中的数据转换成组件实例失败，不是正确的组件实例格式'
+//         )
+//       }
+//     } catch (e: any) {
+//       useGlobal().$notification.error('将粘贴版中的数据转换成JSON失败，不是有效的组件实例')
+//       console.error(e)
+//     }
+//   }
+//   console.log('clipboardItems', clipboardItems, textHtml, textPlain)
+// }
 
 onMounted(() => {
   // setEditorValue()

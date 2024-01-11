@@ -15,7 +15,7 @@ export const messages = zhMessages
 export const getMessage = (data: string) => {
   for (let key in messages) {
     const message = messages[key]
-    console.log('message', message, data)
+    // console.log('message', message, data)
     const re = new RegExp(message.rule, 'g')
     const matchStr = re.source
     if (re.test(data)) {

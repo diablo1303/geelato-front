@@ -9,6 +9,8 @@
       :data="treeData"
       :draggable="draggable"
       :selectedKeys="selectedKeys"
+      :default-expand-all="false"
+      :default-expanded-keys="[treeId]"
       showLine
       @select="onSelect"
       @dragLeave="onDragLeave"

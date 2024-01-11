@@ -116,6 +116,7 @@ export class Utils {
     try {
       // console.log('gl-ui > utils > evalFn() > blocks: ', fnBody)
       // console.log('gl-ui > utils > evalFn() > ctx: ', ctx)
+      // console.log('gl-ui > utils > evalFn() > async: ', async)
       let bodyScript = this.trim(fnBody)
       // 去掉头尾分号
       bodyScript = bodyScript.replace(/^;+|;+$/g, '')
@@ -124,11 +125,11 @@ export class Utils {
         bodyScript = 'return ' + bodyScript
       }
       if (async) {
-        bodyScript = `(async () => {
+        bodyScript = `return (async () => {
               ${bodyScript}
           })()`
       }
-
+      // console.log('gl-ui > utils > evalFn() > bodyScript: ', bodyScript)
       return new Function(glName, bodyScript)($gl)
     } catch (e: any) {
       console.error('执行脚本出错', e.message, '方法体为：', fnBody, '详细异常e:', e)

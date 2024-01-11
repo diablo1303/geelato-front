@@ -223,7 +223,7 @@ export class JsScriptExecutor {
             const action = actions[actionsKey]
             // 按actionName进行触发
             if (action.name === actionName) {
-              jsScriptExecutor.doAction(action, (ctx = { pageProxy }), callback)
+              return jsScriptExecutor.doAction(action, (ctx = { pageProxy }), callback)
             }
           }
         }
@@ -388,15 +388,18 @@ export class JsScriptExecutor {
       hasPageParam: (paramName: string) => that.hasPageParam(paramName, $gl),
       isPageStatusRead: () => {
         return $gl.ctx.pageProxy.isPageStatusRead()
-        // return that.getPageParam('pageStatus', $gl) === 'read'
       },
       isPageStatusCreate: () => {
         return $gl.ctx.pageProxy.isPageStatusCreate()
-        // return that.getPageParam('pageStatus', $gl) === 'create'
+      },
+      isPageStatusCopyCreate:()=>{
+        return $gl.ctx.pageProxy.isPageStatusCopyCreate()
+      },
+      isPageStatusCreateOrCopyCreate:()=>{
+        return $gl.ctx.pageProxy.isPageStatusCreateOrCopyCreate()
       },
       isPageStatusUpdate: () => {
         return $gl.ctx.pageProxy.isPageStatusUpdate()
-        // return that.getPageParam('pageStatus', $gl) === 'update'
       },
       getComponentMethod: that.getComponentMethod,
       getComponentValue: that.getComponentValue,
@@ -434,7 +437,7 @@ export class JsScriptExecutor {
    * @param gl 如果多个表达式需要用同一下$gl时，可以传进来，不在本方法内创建
    */
   doAction(action: Action, ctx: Ctx, callback?: Function, gl?: any) {
-    // console.log('JsScriptExecutor > doAction(),action:', action, 'ctx:', ctx)
+    console.log('JsScriptExecutor > doAction(),action:', action, 'ctx:', ctx)
     return this.evalFn(action.body!, ctx, callback, gl, true)
   }
 
@@ -477,6 +480,7 @@ export class JsScriptExecutor {
     if (callback && typeof callback === 'function') {
       callback()
     }
+    console.log('result',result)
     return result
   }
 

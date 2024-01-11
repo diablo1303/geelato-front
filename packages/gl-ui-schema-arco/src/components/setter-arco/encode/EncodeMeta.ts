@@ -40,5 +40,5 @@ export default {
         "setterComponentName": "GlDynamicSelect",
         "enableValueExpress": false
     }],
-    "actions": []
+    "actions": [{"name": "onValueChange", "description": "值改变时触发", "title": "值改变"}]
 }

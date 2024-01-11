@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // @ts-nocheck
 import { computed, onMounted, type PropType, ref } from 'vue'
-import {EntityReaderParam, utils} from '@geelato/gl-ui'
+import { EntityReaderParam, utils } from '@geelato/gl-ui'
 import { ConvertUtil } from '@geelato/gl-ui'
 import QueryItem from './query'
 import { GlIconfont } from '@geelato/gl-ui'
@@ -13,6 +13,26 @@ const props = defineProps({
     type: Array as PropType<QueryItem[]>,
     default() {
       return []
+    }
+  },
+  /**
+   *  是否在初始化之后触发查询
+   *  默认为true
+   */
+  triggerByInit: {
+    type: Boolean,
+    default() {
+      return true
+    }
+  },
+  /**
+   *  触发查询，查询条件值改变之后触发查询
+   *  默认为true
+   */
+  triggerByValueChange: {
+    type: Boolean,
+    default() {
+      return true
     }
   }
 })
@@ -81,6 +101,11 @@ const reset = () => {
   onSearch()
 }
 
+const changeValue = () => {
+  if (props.triggerByValueChange) {
+    onSearch()
+  }
+}
 const showItems = computed(() => {
   return props.items.filter((item: QueryItem) => {
     return !item.component?.props._hidden
@@ -105,16 +130,17 @@ const t = (value: any) => {
   return value
 }
 onMounted(() => {
-  onSearch()
+  if (props.triggerByInit !== false) {
+    onSearch()
+  }
 })
 const form = ref({})
 const glQuery = ref()
 const gid = utils.gid()
-const showTitle = computed(()=>{
+const showTitle = computed(() => {
   // 宽度大于600时会显示按钮标题
-  return glQuery.value?.$el.offsetWidth>600
+  return glQuery.value?.$el.offsetWidth > 600
 })
-
 
 defineExpose({ createEntityReaderParams, reset })
 </script>
@@ -136,7 +162,7 @@ defineExpose({ createEntityReaderParams, reset })
               <GlComponent
                 v-if="item.component"
                 :glComponentInst="item.component"
-                @update="onSearch"
+                @update="changeValue"
               ></GlComponent>
             </a-form-item>
           </a-col>
@@ -148,7 +174,7 @@ defineExpose({ createEntityReaderParams, reset })
               <GlComponent
                 v-if="item.component"
                 :glComponentInst="item.component"
-                @update="onSearch"
+                @update="changevalue"
               ></GlComponent>
             </a-form-item>
           </a-col>

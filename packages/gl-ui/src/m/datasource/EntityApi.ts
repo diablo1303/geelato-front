@@ -243,12 +243,13 @@ export class EntityApi {
           const foundLocalComputeField = entityReader.fields.find((field) => {
             return field.isLocalComputeFiled
           })
-          if (foundLocalComputeField) {
+          if (foundLocalComputeField || !entityReader.resultMapping.isEmpty()) {
             const newRows: any[] = []
             res.data.forEach((row: any) => {
               let newRow: Record<string, any> = {}
               for (let index in entityReader.fields) {
                 const fieldMeta = entityReader.fields[index]
+                // A、基于本地计算字段实现
                 if (fieldMeta.isLocalComputeFiled) {
                   if (fieldMeta.valueExpression) {
                     newRow[fieldMeta.name] = jsScriptExecutor.evalExpression(
@@ -264,15 +265,29 @@ export class EntityApi {
                 } else {
                   newRow[fieldMeta.alias || fieldMeta.name] = row[fieldMeta.alias || fieldMeta.name]
                 }
+                // B、基于返回结果映射实现
+                const fieldMapping = entityReader.resultMapping.findFieldMapping(fieldMeta.name)
+                if (fieldMapping) {
+                  if (fieldMapping.value) {
+                    // 有静态值，优先取静态值
+                    newRow[fieldMeta.alias || fieldMeta.name] = fieldMapping.value
+                  } else if (fieldMapping.valueExpression) {
+                    // 没有静态值，再取表达式的值
+                    newRow[fieldMeta.alias || fieldMeta.name] = jsScriptExecutor.evalExpression(
+                      fieldMapping.valueExpression,
+                      {
+                        record: row,
+                        index: Number.parseInt(index)
+                      }
+                    )
+                  }
+                }
               }
               newRows.push(newRow)
             })
-            // console.log('foundLocalComputeField', res)
             res.data = newRows
-            resolve(res)
-          } else {
-            resolve(res)
           }
+          resolve(res)
         })
         .catch((reason) => {
           reject(reason)
@@ -649,74 +664,74 @@ export class EntityApi {
    * @param resultMapping res中的数据返回结果转换定义
    * @returns {{data: Array, resultMapping: {}}}
    */
-  static entityReaderResultHandler(res: Record<string, any>, resultMapping: ResultMapping) {
-    // console.log(
-    //     "gl-ui > Api.js > entityReaderResultHandler() > res: ",
-    //     res
-    // );
-    const resultSet: Record<string, any> = {
-      //  依据传入参数resultMapping的定义处理后的数据
-      data: [],
-      // 经转换之后的列映射，key为组件中用到的变量名，value为data中的列名。
-      resultMapping: new ResultMapping()
-    }
-
-    // 返回结果预处理
-    // 获取返回结果的列名
-    const resColumns: Record<string, any> = {}
-    if (res.data && res.data.length > 0) {
-      const item = res.data[0]
-      const resultFieldNameAry = Object.keys(item)
-      // eslint-disable-next-line guard-for-in,no-restricted-syntax
-      for (const i in resultFieldNameAry) {
-        resColumns[resultFieldNameAry[i]] = resultFieldNameAry[i]
-      }
-    }
-    // 先找出需处理的列：resultMapping的key和value不相同，mapping，e.g. [{avatar:'https://xxxxx/xx/xx.jpg'}]
-    const toStatMappingItems: Array<any> = []
-    // console.log('gl-ui > toStatMappingItems>', toStatMappingItems)
-    const mapping = resultMapping.getMapping()
-    // eslint-disable-next-line guard-for-in,no-restricted-syntax
-    for (const key in mapping) {
-      const field = mapping[key]
-      // let resultName = resColumns[field]
-      if (key !== field) {
-        const isRename = resColumns[field] !== undefined && !!resColumns[field]
-        toStatMappingItems.push({ key, value: field, isRename })
-        resultSet.resultMapping[key] = key
-      }
-    }
-    // console.log(
-    //   'gl-ui > Api.js > entityReaderResultHandler() > resColumns: ',
-    //   resColumns
-    // );
-    // console.log(
-    //   'gl-ui > Api.js > entityReaderResultHandler() > resultMapping: ',
-    //   resultMapping
-    // );
-    // console.log(
-    //   'gl-ui > Api.js > entityReaderResultHandler() > toStatMappingItems: ',
-    //   toStatMappingItems
-    // );
-
-    // 如增加静态的列，列值格式化、列值组合;重命名列(在原有列的基础上增加重命名的列)等
-    const dataItems = res.data as Array<any>
-    dataItems.forEach((dataItem) => {
-      toStatMappingItems.forEach((mappingItem) => {
-        if (mappingItem.isRename) {
-          dataItem[mappingItem.key] = dataItem[mappingItem.value]
-        } else {
-          dataItem[mappingItem.key] = MixUtil.evalPlus(mappingItem.value, dataItem)
-        }
-      })
-    })
-    resultSet.data = res.data
-    // console.log(
-    //     "gl-ui > Api.js > entityReaderResultHandler() > resultSet: ",
-    //     resultSet
-    // );
-    return resultSet
-  }
+  // static entityReaderResultHandler(res: Record<string, any>, resultMapping: ResultMapping) {
+  //   // console.log(
+  //   //     "gl-ui > Api.js > entityReaderResultHandler() > res: ",
+  //   //     res
+  //   // );
+  //   const resultSet: Record<string, any> = {
+  //     //  依据传入参数resultMapping的定义处理后的数据
+  //     data: [],
+  //     // 经转换之后的列映射，key为组件中用到的变量名，value为data中的列名。
+  //     resultMapping: new ResultMapping()
+  //   }
+  //
+  //   // 返回结果预处理
+  //   // 获取返回结果的列名
+  //   const resColumns: Record<string, any> = {}
+  //   if (res.data && res.data.length > 0) {
+  //     const item = res.data[0]
+  //     const resultFieldNameAry = Object.keys(item)
+  //     // eslint-disable-next-line guard-for-in,no-restricted-syntax
+  //     for (const i in resultFieldNameAry) {
+  //       resColumns[resultFieldNameAry[i]] = resultFieldNameAry[i]
+  //     }
+  //   }
+  //   // 先找出需处理的列：resultMapping的key和value不相同，mapping，e.g. [{avatar:'https://xxxxx/xx/xx.jpg'}]
+  //   const toStatMappingItems: Array<any> = []
+  //   // console.log('gl-ui > toStatMappingItems>', toStatMappingItems)
+  //   const mapping = resultMapping.getMapping()
+  //   // eslint-disable-next-line guard-for-in,no-restricted-syntax
+  //   for (const key in mapping) {
+  //     const field = mapping[key]
+  //     // let resultName = resColumns[field]
+  //     if (key !== field) {
+  //       const isRename = resColumns[field] !== undefined && !!resColumns[field]
+  //       toStatMappingItems.push({ key, value: field, isRename })
+  //       resultSet.resultMapping[key] = key
+  //     }
+  //   }
+  //   // console.log(
+  //   //   'gl-ui > Api.js > entityReaderResultHandler() > resColumns: ',
+  //   //   resColumns
+  //   // );
+  //   // console.log(
+  //   //   'gl-ui > Api.js > entityReaderResultHandler() > resultMapping: ',
+  //   //   resultMapping
+  //   // );
+  //   // console.log(
+  //   //   'gl-ui > Api.js > entityReaderResultHandler() > toStatMappingItems: ',
+  //   //   toStatMappingItems
+  //   // );
+  //
+  //   // 如增加静态的列，列值格式化、列值组合;重命名列(在原有列的基础上增加重命名的列)等
+  //   const dataItems = res.data as Array<any>
+  //   dataItems.forEach((dataItem) => {
+  //     toStatMappingItems.forEach((mappingItem) => {
+  //       if (mappingItem.isRename) {
+  //         dataItem[mappingItem.key] = dataItem[mappingItem.value]
+  //       } else {
+  //         dataItem[mappingItem.key] = MixUtil.evalPlus(mappingItem.value, dataItem)
+  //       }
+  //     })
+  //   })
+  //   resultSet.data = res.data
+  //   // console.log(
+  //   //     "gl-ui > Api.js > entityReaderResultHandler() > resultSet: ",
+  //   //     resultSet
+  //   // );
+  //   return resultSet
+  // }
 
   /**
    * 实体对像的数据转换

@@ -22,7 +22,6 @@ import GroupSumBlockMeta from "./setter-block/data/GroupSumBlockMeta";
 import ExportExcelBlockMeta from "./setter-block/file/ExportExcelBlockMeta";
 import GenerateEntityReaderBlockMeta from "./setter-block/data/GenerateEntityReaderBlockMeta";
 import EntityQueryBlockMeta from "./setter-block/data/EntityQueryBlockMeta";
-import AnnotaionBlockMeta from "./setter-block/other/AnnotaionBlockMeta";
 import ForListBlockMeta from "./setter-block/loop/ForListBlockMeta";
 import ForListBlockInstance from "./setter-block/loop/ForListBlockInstance";
 import ForTimesBlockMeta from "./setter-block/loop/ForTimesBlockMeta";
@@ -35,10 +34,13 @@ import ImportExcelBlockMeta from './setter-block/file/ImportExcelBlockMeta';
 import HttpRequestBlockMeta from "./setter-block/network/HttpRequestBlockMeta";
 import DownloadBlockMeta from "./setter-block/file/DownloadBlockMeta";
 import SetRulesMeta from "./setter-block/page/SetRulesMeta";
+import EntitySaverBlockMeta from './setter-block/data/EntitySaverBlockMeta'
+import AnnotationBlockMeta from "./setter-block/other/AnnotationBlockMeta";
+
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, JsCodeBlockMeta,GenerateEntityReaderBlockMeta, GroupSumBlockMeta, BlockNotificationMeta, BlockOpenComponentPageMeta,BlockComponentInvokeMeta, TriggerComponentActionMeta, BlockSetVisibleMeta, SetValueBlockMeta,SetRulesMeta, BlockOpenThirdPageMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,
     BlockConfirmMeta,  ReturnBlockMeta,
-    LogBlockMeta, ExportExcelBlockMeta,ExportWordBlockMeta,ExportPdfBlockMeta,ImportExcelBlockMeta,DownloadBlockMeta,AnnotaionBlockMeta,ForListBlockMeta,ForTimesBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta,HttpRequestBlockMeta]
+    LogBlockMeta, ExportExcelBlockMeta,ExportWordBlockMeta,ExportPdfBlockMeta,ImportExcelBlockMeta,DownloadBlockMeta,AnnotationBlockMeta,ForListBlockMeta,ForTimesBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta,HttpRequestBlockMeta,EntitySaverBlockMeta]
 
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance,ForListBlockInstance,ForTimesBlockInstance]

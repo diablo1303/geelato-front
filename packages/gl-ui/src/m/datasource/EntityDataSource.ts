@@ -31,11 +31,13 @@ const cops = [
 
 export const compareMeta = { cops, copDict }
 
+export const keyFiledName = 'id'
+
 export class FieldMeta {
   name: string = ''
   title: string = ''
   alias: string = ''
-  // 是否本地计算字段，即基于查询回来的结果在本进行计算，该字段不转到服务端
+  // 是否本地计算字段，即基于查询回来的结果在本进行计算，该字段不传到服务端
   isLocalComputeFiled: boolean = false
   valueExpression?: string = '';
 
@@ -77,11 +79,15 @@ export class EntityReaderParam {
     this.name = name || ''
     this.cop = cop || 'eq'
     this.value = value
-    this.groupName = groupName || ''
+    this.setGroupName(groupName)
   }
 
   getGroupName() {
     return this.groupName
+  }
+
+  setGroupName(groupName?: string) {
+    this.groupName = groupName || ''
   }
 
   isGroup() {
@@ -335,4 +341,23 @@ export class GetEntitySaversResult {
   componentName: string = ''
   // 验证结果
   validateResult?: object
+
+}
+
+export default {
+  EntityReader,
+  EntitySaver,
+  FieldMeta,
+  EntityMeta,
+  EntityLiteMeta,
+  EntityReaderOrderEnum,
+  EntityReaderParam,
+  EntityReaderOrder,
+  EntityReaderParamGroup,
+  GetEntitySaversResult,
+  ConstObject: {
+    keyFiledName,
+    copDict,
+    cops
+  }
 }

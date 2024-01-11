@@ -179,19 +179,6 @@ export default {
         'axios请求返回结果{config:object,data:object,header:object,request:XMLHttpRequest,status:number,statusText:string}'
     },
     {
-      name: 'enableReturn',
-      group: 'base',
-      type: 'props',
-      show: true,
-      expanded: true,
-      setterComponentProps: {},
-      setterComponentVModelName: 'modelValue',
-      title: '返回结果',
-      setterComponentName: 'ASwitch',
-      enableValueExpress: false,
-      description: '返回该方法的调用执行结果，如果是同步调用，则返回结果数据，若为异常调用，则返回promise对象。'
-    },
-    {
       name: 'enableAwait',
       group: 'base',
       type: 'props',
@@ -203,7 +190,20 @@ export default {
       setterComponentName: 'ASwitch',
       enableValueExpress: false,
       description:
-        '是否同步调用该方法，对于自身为异步的方法有效，如服务端请求，启用则在方法调用前加await'
+          '是否同步调用该方法，对于自身为异步的方法有效，如服务端请求，启用则在方法调用前加await'
+    },
+    {
+      name: 'enableReturn',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      title: '返回结果',
+      setterComponentName: 'ASwitch',
+      enableValueExpress: false,
+      description: '返回该方法的调用执行结果，如果是同步调用，则返回结果数据，若为异常调用，则返回promise对象。'
     }
   ]
 }

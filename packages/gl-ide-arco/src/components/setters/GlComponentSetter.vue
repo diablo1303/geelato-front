@@ -7,7 +7,15 @@
           <a-button-group type="primary" size="mini" shape="round">
 <!--            <a-button status="normal" v-if="showSelectParent" @click="componentStore.selectParentComponent">选父组件-->
 <!--            </a-button>-->
-            <a-button status="normal" v-if="showSelectParent" @click="componentStore.copyCurrentSelectedComponent">复制
+            <a-button status="normal" v-if="showSelectParent"  @click="componentStore.copyCurrentSelectedComponent()"> 复制插入</a-button>
+            <a-button status="normal" v-if="showSelectParent"  @click="componentStore.copyCurrentSelectedComponentToClipboard()">
+              复制
+            </a-button>
+            <a-button
+                @click="insertAfterCurrentSelectedComponent"
+                title="将粘贴板的组件插入到当前选中的组件之后"
+            >
+              插入
             </a-button>
             <a-button status="warning" :disabled="!showMove" @click="componentStore.moveFrontCurrentComponent"
                       title="移前呀移上">移前
@@ -19,10 +27,11 @@
                       title="移后或移下">
               移上一层
             </a-button>
+            <a-button style="float: right" type="primary" size="mini" shape="round" status="danger" v-if="showDelete"
+                      @click="deleteCurrentSelectedComponentInst">删除
+            </a-button>
           </a-button-group>
-          <a-button style="float: right" type="primary" size="mini" shape="round" status="danger" v-if="showDelete"
-                    @click="deleteCurrentSelectedComponentInst">删除
-          </a-button>
+
         </div>
         <div class="gl-table">
           <div class="gl-table-row">
@@ -84,7 +93,7 @@ import {ComponentInstance, type ComponentMeta} from "@geelato/gl-ui-schema";
 import ClipboardJS from "clipboard";
 import {ComponentSetterProvideKey, ComponentSetterProvideProxy} from "@geelato/gl-ide";
 import {componentStoreFactory, usePageStore} from "@geelato/gl-ide";
-import {jsScriptExecutor, PageProvideKey, utils} from "@geelato/gl-ui";
+import {jsScriptExecutor, PageProvideKey, utils,useGlobal} from "@geelato/gl-ui";
 import GlPermissionsSetter from "./GlPermissionsSetter.vue";
 const emits = defineEmits(['update']);
 const props = defineProps({
@@ -173,6 +182,16 @@ const onChangePropertyValue = (param: { type: string, name: string, value: any }
   pageStore.operationLog('改属性', pageStore.currentPage.sourceContent, componentStore.currentSelectedComponentInstance)
 }
 
+
+/**
+ *  将粘贴板中的数据转成组件实例
+ */
+const insertAfterCurrentSelectedComponent = async () => {
+  const result = await componentStore.insertAfterCurrentSelectedComponentFromClipboard()
+  if (!result.success) {
+    useGlobal().$notification.error(result.message)
+  }
+}
 
 </script>
 

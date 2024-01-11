@@ -102,7 +102,7 @@ const dataEntryNameMap: { [key: string]: boolean } = {}
 // @ts-ignore
 // const ignoreInstances: Array<ComponentMeta> = [DndPlaceholderMeta, VirtualMeta,ButtonMeta,ASelectMeta]
 // 不需要自动添加公共属性的组件
-const ignoreCommonPropertiesComponents = ['GlEntityTableSub', 'GlEntityTablePlus', 'GlHiddenArea']
+const ignoreCommonPropertiesComponents = ['GlEntityTableSub', 'GlHiddenArea']
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {
     const meta = componentMetas[index]

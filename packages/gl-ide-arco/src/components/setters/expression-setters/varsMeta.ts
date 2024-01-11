@@ -337,6 +337,20 @@ export const useComponentInstTreeData = () => {
         _description: '页面是否为新增状态'
       },
       {
+        title: '页面是否为复制新增状态',
+        _code: 'isPageStatusCopyCreate',
+        _type: 'boolean',
+        _brackets: '()',
+        _description: '页面是否为复制新增状态'
+      },
+      {
+        title: '页面是否为新增或复制新增状态',
+        _code: 'isPageStatusCreateOrCopyCreate',
+        _type: 'boolean',
+        _brackets: '()',
+        _description: '页面是否为新增或复制新增状态'
+      },
+      {
         title: '页面是否为更新状态',
         _code: 'isPageStatusUpdate',
         _type: 'boolean',

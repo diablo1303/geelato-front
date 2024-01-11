@@ -17,8 +17,15 @@
             @removeItem="update"
           >
             <div style="width: 100%; display: flex; margin-bottom: 1px">
-              <div style="flex: auto">
-                <a-input v-model="componentInstance.actions[slotProps.index].name"></a-input>
+              <div style="flex: 1">
+                <a-tooltip content="若该动作已被其它动作引用，修改此名称时，会导致对该动用的引用不正常">
+                  <a-input v-model="componentInstance.actions[slotProps.index].name"></a-input>
+                </a-tooltip>
+              </div>
+              <div style="flex: 1">
+                <a-tooltip content="可任意修改名称，不影响引用">
+                  <a-input v-model="componentInstance.actions[slotProps.index].title" title="可任意修改名称，不影响引用"></a-input>
+                </a-tooltip>
               </div>
               <div style="flex: 0 0 2em; text-align: center; line-height: 2em">
                 <GlIconfont
@@ -42,7 +49,7 @@
       v-if="actionCodeEditorVisible"
       draggable
       :visible="actionCodeEditorVisible"
-      title="动作（事件）编排"
+      :title="`【${currentAction.name} ${currentAction.title}】动作（事件）编排`"
       @cancel="closeActionCodeEditor"
       :hide-cancel="true"
       ok-text="关闭"

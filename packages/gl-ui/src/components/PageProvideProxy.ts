@@ -375,6 +375,9 @@ export default class PageProvideProxy {
         return this.pageStatus === 'copyCreate'
     }
 
+    isPageStatusCreateOrCopyCreate() {
+        return this.pageStatus === 'create' || this.pageStatus === 'copyCreate'
+    }
 
     isPageStatusUpdate() {
         return this.pageStatus === 'update'

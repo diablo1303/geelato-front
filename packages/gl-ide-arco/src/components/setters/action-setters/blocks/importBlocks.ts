@@ -10,7 +10,7 @@ import ComponentInvokeBlockHandler from './page/ComponentInvokeBlockHandler'
 import ConfirmBlockHandler from './feedback/ConfirmBlockHandler'
 import SetVisibleBlockHandler from './page/SetVisibleBlockHandler'
 import IfComponentValueBlockHandler from './logic/IfComponentValueBlockHandler'
-import TriggerComponentActionBlockHandler from './logic/TriggerComponentActionBlockHandler'
+import TriggerComponentActionBlockHandler from './page/TriggerComponentActionBlockHandler'
 import LogBlockHandler from './other/LogBlockHandler'
 import SetValueBlockHandler from './page/SetValueBlockHandler'
 import SetRulesBlockHandler from './page/SetRulesBlockHandler'
@@ -29,6 +29,7 @@ import AnnotationBlockHandler from './other/AnnotationBlockHandler'
 import ForListBlockHandler from './loop/ForListBlockHandler'
 import ForTimesBlockHandler from './loop/ForTimesBlockHandler'
 import HttpRequestBlockHandler from './network/HttpRequestBlockHandler'
+import EntitySaverBlockHandler from './data/EntitySaverBlockHandler'
 
 
 export {
@@ -59,5 +60,6 @@ export {
   ForTimesBlockHandler,
   HttpRequestBlockHandler,
   DownloadBlockHandler,
-  SetRulesBlockHandler
+  SetRulesBlockHandler,
+  EntitySaverBlockHandler
 }
