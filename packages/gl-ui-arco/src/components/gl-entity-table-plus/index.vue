@@ -195,6 +195,7 @@ const onUpdateRow = (data: { record: object; rowIndex: number; columns: GlTableC
 }
 
 let lastEntityReaderParams: Array<EntityReaderParam>
+
 /**
  *  从外部push进来的额外的recordsIds,用于从外部选择记录进来一起展示的场景
  *  该ids不直接作为entityReaderParams中的一部分，而是用于在最终的查询时构建查询条件，不影响entityReaderParams的设置
@@ -216,8 +217,16 @@ const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
   }
   return undefined
 }
+const queryRef = ref()
+
+/**
+ * 以当前的查询条件进行刷新
+ * @param event
+ */
 const refresh = (event?: MouseEvent) => {
-  return onSearch(lastEntityReaderParams)
+  // return onSearch(lastEntityReaderParams)
+  // search()会触发onSearch方法
+  queryRef.value.search()
 }
 
 /**
@@ -237,7 +246,6 @@ const changeColumnsVisible = (hideDataIndexes: string[], showDataIndexes: string
   tableRef.value.changeColumnsVisible(hideDataIndexes, showDataIndexes)
 }
 
-const queryRef = ref(null)
 const addRow = () => {
   tableRef.value.addRow()
 }
@@ -250,8 +258,9 @@ const selectedKeys: Ref<string[]> = ref([])
 const deleteRecord = (params: Record<string, any>) => {
   // console.log('deleteRecord() > params:', params)
   if (!params || !params.id) {
-    console.error('基于记录id进行删除失败，未配置参数id。')
-    return
+    global.$notification.error({ content: '删除失败，未配置参数id。' })
+    // console.error('基于记录id进行删除失败，未配置参数id。')
+    return false
   }
   // 如果是外部添加的记录，只去掉外部添加的记录，不删除数据
   const foundIndex = pushedRecordKeys.value.findIndex((key: string) => {
@@ -275,8 +284,8 @@ const deleteRecord = (params: Record<string, any>) => {
  */
 const deleteRecordWithConfirm = (params: Record<string, any>) => {
   if (!params || !params.id) {
-    console.error('基于记录id进行删除失败，未配置参数id。')
-    return
+    global.$notification.error({ content: '删除失败，未配置参数id。' })
+    return false
   }
   global.$modal.confirm({
     width: '18em',
@@ -579,7 +588,10 @@ enum RecordsScope {
  * @param subFormPidValue 作为子表单时，本表单中，指向父表单ID的字段值
  * @param recordsScope 数据记录范围，默认为RecordsScope.All
  */
-const createEntitySavers = (subFormPidValue?: string, recordsScope?: RecordsScope) :EntitySaver[]=> {
+const createEntitySavers = (
+  subFormPidValue?: string,
+  recordsScope?: RecordsScope
+): EntitySaver[] => {
   const entitySavers: EntitySaver[] = []
   // 处理需保存的子表单数据
   // const renderColumns = getRenderColumns()

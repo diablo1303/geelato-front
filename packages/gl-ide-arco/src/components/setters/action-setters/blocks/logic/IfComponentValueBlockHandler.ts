@@ -11,7 +11,7 @@ export default class IfComponentValueBlockHandler implements IBlockHandler {
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     if(props.relationship==='empty'||props.relationship==='notEmpty'){
       return new ParseResult(
-          `${props.mode === 'if' ? 'if' : 'else if'}($gl.utils.isEmpty($gl.fn.getComponentValue("${
+          `${props.mode === 'if' ? 'if' : 'else if'}($gl.fn.isEmpty($gl.fn.getComponentValue("${
               props.componentId
           }"))){
             `,

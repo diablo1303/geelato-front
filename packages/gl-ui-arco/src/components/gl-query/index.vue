@@ -34,6 +34,12 @@ const props = defineProps({
     default() {
       return true
     }
+  },
+  disabled: {
+    type: Boolean,
+    default() {
+      return false
+    }
   }
 })
 
@@ -142,7 +148,7 @@ const showTitle = computed(() => {
   return glQuery.value?.$el.offsetWidth > 600
 })
 
-defineExpose({ createEntityReaderParams, reset })
+defineExpose({ createEntityReaderParams, reset, search: onSearch })
 </script>
 
 <template>

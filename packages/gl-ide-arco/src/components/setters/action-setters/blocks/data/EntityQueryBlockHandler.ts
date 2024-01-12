@@ -14,12 +14,9 @@ export default class EntityQueryBlockHandler implements IBlockHandler {
     let respVarName = props.respVarName || utils.gid('respVarName')
     let dataVarName = props.dataVarName || utils.gid('dataVarName')
     return new ParseResult(
-      `
-          $gl.vars.${respVarName} = await $gl.entityApi.queryByEntityReader(${JSON.stringify(
-        props.entityReader
-      )})
+      `$gl.vars.${respVarName} = await $gl.entityApi.queryByEntityReader($gl.fn.convertEntityReader(${JSON.stringify(props.entityReader)}))
           $gl.vars.${dataVarName} = $gl.vars.${respVarName}.data
-            `
+          `
     )
   }
 }

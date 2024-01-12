@@ -1,8 +1,7 @@
-import {RecordsUtil} from './RecordsUtil'
+import { RecordsUtil } from './RecordsUtil'
 
 export class Utils {
-  constructor() {
-  }
+  constructor() {}
 
   trim(str: string) {
     return str.replace(/(^\s*)|(\s*$)/g, '')
@@ -122,7 +121,15 @@ export class Utils {
       bodyScript = bodyScript.replace(/^;+|;+$/g, '')
       // 无换行，无“;”的则按表达式处理
       if (!bodyScript.match(/[\r\n;]/g) && !bodyScript.toLowerCase().startsWith('return ')) {
-        bodyScript = 'return ' + bodyScript
+
+        if(bodyScript.toLowerCase().startsWith(';if(')||bodyScript.toLowerCase().startsWith('if(')){
+          // if开始头，直接在前面加'return '会报错，这里按函数处理
+          bodyScript = `return (() => {
+              ${bodyScript}
+          })()`
+        }else{
+          bodyScript = 'return ' + bodyScript
+        }
       }
       if (async) {
         bodyScript = `return (async () => {
@@ -136,19 +143,35 @@ export class Utils {
     }
   }
 
-  isEmpty(str: string) {
-    return str === undefined || str === null || str.replace(/\s/g, '') === ''
+  isEmpty(target: string | object) {
+    if (target === undefined || target === null) {
+      return true
+    }
+    switch (typeof target) {
+      case 'string':
+        return target.replace(/\s/g, '') === ''
+      case 'object':
+        // @ts-ignore
+        if (target.length !== undefined) {
+          // @ts-ignore
+          return target.length === 0
+        }
+        if (Object.keys(target).length === 0) {
+          return true
+        }
+    }
+    return false
   }
 
-  isNumber(str: any) {
-    if (str === null || str === undefined) {
+  isNumber(target: any) {
+    if (target === null || target === undefined) {
       return false
     }
-    const t = typeof str
+    const t = typeof target
     if (t === 'number') {
       return true
     } else if (t === 'string') {
-      return /^[0-9]*$/.test(str)
+      return /^[0-9]*$/.test(target)
     }
     return false
   }
@@ -443,18 +466,18 @@ export class Utils {
    * @param val
    */
   isJSON(val: string) {
-    let isJ = false;
+    let isJ = false
     try {
       if (typeof val === 'string' && val) {
-        const obj = JSON.parse(val);
+        const obj = JSON.parse(val)
         if (typeof obj === 'object' && obj) {
-          isJ = true;
+          isJ = true
         }
       }
     } catch (e) {
-      isJ = false;
+      isJ = false
     }
-    return isJ;
+    return isJ
   }
 }
 

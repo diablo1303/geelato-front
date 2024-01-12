@@ -3,6 +3,7 @@ import type { PropsExpressions } from '../BlockHandler'
 import ParseResult from '../ParseResult'
 import type { EntityReader } from '@geelato/gl-ui'
 import { blocksHandler, CommandBlocks } from '../BlockHandler'
+import {utils} from "@geelato/gl-ui";
 
 export default class GenerateEntityReaderBlockHandler implements IBlockHandler {
   getName(): string {
@@ -10,9 +11,12 @@ export default class GenerateEntityReaderBlockHandler implements IBlockHandler {
   }
 
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+
+    let varName = props.varName || utils.gid('varName')
+
     return new ParseResult(
       `
-            $gl.vars.${props.varName} = ${JSON.stringify(props.entityReader)}
+            $gl.vars.${varName} = ${JSON.stringify(props.entityReader)}
             `
     )
   }

@@ -74,12 +74,14 @@ export class EntityReaderParam {
     name?: string,
     cop?: string,
     value?: string | number | boolean | Array<string | number | boolean>,
-    groupName?: string
+    groupName?: string,
+    valueExpression?: string
   ) {
     this.name = name || ''
     this.cop = cop || 'eq'
     this.value = value
     this.setGroupName(groupName)
+    this.valueExpression = valueExpression
   }
 
   getGroupName() {

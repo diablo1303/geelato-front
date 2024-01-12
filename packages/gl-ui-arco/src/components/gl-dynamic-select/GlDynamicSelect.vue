@@ -218,9 +218,11 @@ const loadData = () => {
     let fields = fieldAry.join(',')
 
     // valueFilter
-    const entityReaderParams: EntityReaderParam[] = JSON.parse(JSON.stringify(props.valueFilter))
-    entityReaderParams.forEach((entityReaderParam) => {
-      executeObjectPropsExpressions(entityReaderParam, {})
+    const entityReaderParams: EntityReaderParam[]=[]
+    JSON.parse(JSON.stringify(props.valueFilter)).forEach((param:EntityReaderParam) => {
+      executeObjectPropsExpressions(param, {})
+      const newEntityReaderParam = new EntityReaderParam(param.name,param.cop,param.value,param.groupName,param.valueExpression)
+      entityReaderParams.push(newEntityReaderParam)
     })
     entityReaderParams.push(new EntityReaderParam('delStatus', 'eq', '0'))
 

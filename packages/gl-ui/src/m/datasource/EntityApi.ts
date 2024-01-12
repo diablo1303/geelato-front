@@ -156,7 +156,7 @@ export class EntityApi {
       // }
       const paramsGroups: Record<string, EntityReaderParamGroup> = {}
       for (const i in entityReader.params) {
-        const param: EntityReaderParam = JSON.parse(JSON.stringify(entityReader.params[i]))
+        const param: EntityReaderParam = new EntityReaderParam(entityReader.params[i].name,entityReader.params[i].cop,entityReader.params[i].value,entityReader.params[i].groupName)
         param.groupName = param.groupName || defaultGroupName
         const simpleGroupName = param.groupName.split(subGroupFlag)[0]
         // console.log('simpleGroupName',simpleGroupName,param.groupName)
@@ -167,6 +167,8 @@ export class EntityApi {
           hasDelStatus = true
         }
       }
+
+      // console.log('entityReader.params',entityReader.params,paramsGroups)
 
       // 检查是否有删除状态，默认为0
       if (!hasDelStatus && ignoreDeleteStatusEntity.indexOf(entityReader.entity) === -1) {
@@ -243,7 +245,7 @@ export class EntityApi {
           const foundLocalComputeField = entityReader.fields.find((field) => {
             return field.isLocalComputeFiled
           })
-          if (foundLocalComputeField || !entityReader.resultMapping.isEmpty()) {
+          if (foundLocalComputeField || (typeof entityReader.resultMapping.isEmpty === 'function'&&!entityReader.resultMapping.isEmpty())) {
             const newRows: any[] = []
             res.data.forEach((row: any) => {
               let newRow: Record<string, any> = {}
@@ -266,22 +268,24 @@ export class EntityApi {
                   newRow[fieldMeta.alias || fieldMeta.name] = row[fieldMeta.alias || fieldMeta.name]
                 }
                 // B、基于返回结果映射实现
-                const fieldMapping = entityReader.resultMapping.findFieldMapping(fieldMeta.name)
-                if (fieldMapping) {
-                  if (fieldMapping.value) {
-                    // 有静态值，优先取静态值
-                    newRow[fieldMeta.alias || fieldMeta.name] = fieldMapping.value
-                  } else if (fieldMapping.valueExpression) {
-                    // 没有静态值，再取表达式的值
-                    newRow[fieldMeta.alias || fieldMeta.name] = jsScriptExecutor.evalExpression(
-                      fieldMapping.valueExpression,
-                      {
-                        record: row,
-                        index: Number.parseInt(index)
-                      }
-                    )
-                  }
-                }
+                // if(typeof entityReader.resultMapping.findFieldMapping === 'function'){
+                //   const fieldMapping = entityReader.resultMapping.findFieldMapping(fieldMeta.name)
+                //   if (fieldMapping) {
+                //     if (fieldMapping.value) {
+                //       // 有静态值，优先取静态值
+                //       newRow[fieldMeta.alias || fieldMeta.name] = fieldMapping.value
+                //     } else if (fieldMapping.valueExpression) {
+                //       // 没有静态值，再取表达式的值
+                //       newRow[fieldMeta.alias || fieldMeta.name] = jsScriptExecutor.evalExpression(
+                //           fieldMapping.valueExpression,
+                //           {
+                //             record: row,
+                //             index: Number.parseInt(index)
+                //           }
+                //       )
+                //     }
+                //   }
+                // }
               }
               newRows.push(newRow)
             })

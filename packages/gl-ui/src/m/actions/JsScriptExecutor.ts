@@ -10,6 +10,7 @@ import * as fileApi from '../datasource/FileApi'
 import dayjs from 'dayjs'
 import { getDateTimeFns } from './fns/datetime'
 import axios, { type CreateAxiosDefaults } from 'axios'
+import type { EntityReader, EntityReaderParam } from '../datasource/EntityDataSource'
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 type OptionsType = { [key: string]: any }
@@ -190,13 +191,13 @@ export class JsScriptExecutor {
    * @param paramName
    * @param $gl
    */
-  hasPageParam(paramName: string, $gl: any){
+  hasPageParam(paramName: string, $gl: any) {
     const pageProxy: PageProvideProxy = $gl.ctx.pageProxy
     if (pageProxy) {
       return pageProxy.hasPageParam(paramName)
     }
     console.error(
-        '在获取页面参数（' +
+      '在获取页面参数（' +
         paramName +
         '）的值时，获取不到当前页面代理对象（pageProxy）,返回参数值false'
     )
@@ -248,6 +249,15 @@ export class JsScriptExecutor {
     return undefined
   }
 
+  private getVarsConvertFns($gl: any) {
+    const that = this
+    return {
+      convertEntityReader: (entityReader: EntityReader) => {
+        return that.convertEntityReader(entityReader, $gl)
+      }
+    }
+  }
+
   private getFeedbackFns($gl: any) {
     return {
       notification: $gl.$notification,
@@ -261,14 +271,17 @@ export class JsScriptExecutor {
         // console.log(that.evalOptions(options, $gl?.ctx, ['content']).content)
         console.log(options)
       },
-      createAxios:(config: CreateAxiosDefaults<any> | undefined,params:{widthDefaultHeader:boolean})=> {
+      createAxios: (
+        config: CreateAxiosDefaults<any> | undefined,
+        params: { widthDefaultHeader: boolean }
+      ) => {
         const headers = {}
-        params?.widthDefaultHeader?Object.assign(headers,entityApi.getHeader()):null
-        Object.assign(headers,config?.headers)
+        params?.widthDefaultHeader ? Object.assign(headers, entityApi.getHeader()) : null
+        Object.assign(headers, config?.headers)
         let cfg = config || {}
         cfg.headers = headers
         return axios.create(cfg)
-      },
+      }
     }
   }
 
@@ -392,10 +405,10 @@ export class JsScriptExecutor {
       isPageStatusCreate: () => {
         return $gl.ctx.pageProxy.isPageStatusCreate()
       },
-      isPageStatusCopyCreate:()=>{
+      isPageStatusCopyCreate: () => {
         return $gl.ctx.pageProxy.isPageStatusCopyCreate()
       },
-      isPageStatusCreateOrCopyCreate:()=>{
+      isPageStatusCreateOrCopyCreate: () => {
         return $gl.ctx.pageProxy.isPageStatusCreateOrCopyCreate()
       },
       isPageStatusUpdate: () => {
@@ -437,7 +450,7 @@ export class JsScriptExecutor {
    * @param gl 如果多个表达式需要用同一下$gl时，可以传进来，不在本方法内创建
    */
   doAction(action: Action, ctx: Ctx, callback?: Function, gl?: any) {
-    console.log('JsScriptExecutor > doAction(),action:', action, 'ctx:', ctx)
+    // console.log('JsScriptExecutor > doAction(),action:', action, 'ctx:', ctx)
     return this.evalFn(action.body!, ctx, callback, gl, true)
   }
 
@@ -480,7 +493,7 @@ export class JsScriptExecutor {
     if (callback && typeof callback === 'function') {
       callback()
     }
-    console.log('result',result)
+    console.log('result', result)
     return result
   }
 
@@ -573,6 +586,20 @@ export class JsScriptExecutor {
   }
 
   /**
+   * entityReader 的参数存在变量的情况，需要先进行转换
+   * @param entityReader
+   */
+  convertEntityReader(entityReader: EntityReader, $gl: any): EntityReader {
+    const that = this
+    entityReader.params.forEach((param: EntityReaderParam) => {
+      if (param.valueExpression) {
+        param.value = that.evalExpression(param.valueExpression, {}, undefined, $gl)
+      }
+    })
+    return entityReader
+  }
+
+  /**
    * 从多个pageProxy中获取ref
    * @param componentId
    */
@@ -588,12 +615,10 @@ export class JsScriptExecutor {
         }
       }
       console.warn(
-          `通过组件Id(${componentId})获取不到组件vue实例，很可能是因为此时该组件vue实例还未创建完成。`
+        `通过组件Id(${componentId})获取不到组件vue实例，很可能是因为此时该组件vue实例还未创建完成。`
       )
-    }else{
-      console.warn(
-          `组件Id为空(${componentId})，获取不到组件vue实例。`
-      )
+    } else {
+      console.warn(`组件Id为空(${componentId})，获取不到组件vue实例。`)
     }
     return null
   }
@@ -717,6 +742,8 @@ export class JsScriptExecutor {
     Object.assign($gl.fn, this.getLogicFns($gl))
     // set components fns
     Object.assign($gl.fn, this.getComponentFns($gl))
+    // set vars convert fns
+    Object.assign($gl.fn, this.getVarsConvertFns($gl))
     // set feedback fns
     Object.assign($gl.fn, this.getFeedbackFns($gl))
     // set other fns

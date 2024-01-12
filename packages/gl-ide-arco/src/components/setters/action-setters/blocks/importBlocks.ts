@@ -30,7 +30,7 @@ import ForListBlockHandler from './loop/ForListBlockHandler'
 import ForTimesBlockHandler from './loop/ForTimesBlockHandler'
 import HttpRequestBlockHandler from './network/HttpRequestBlockHandler'
 import EntitySaverBlockHandler from './data/EntitySaverBlockHandler'
-
+import IfEmptyBlockHandler from './logic/IfEmptyBlockHandler'
 
 export {
   OpenThirdPageBlockHandler,
@@ -61,5 +61,6 @@ export {
   HttpRequestBlockHandler,
   DownloadBlockHandler,
   SetRulesBlockHandler,
-  EntitySaverBlockHandler
+  EntitySaverBlockHandler,
+  IfEmptyBlockHandler
 }
