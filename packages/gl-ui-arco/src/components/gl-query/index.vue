@@ -174,7 +174,7 @@ defineExpose({ createEntityReaderParams, reset })
               <GlComponent
                 v-if="item.component"
                 :glComponentInst="item.component"
-                @update="changevalue"
+                @update="changeValue"
               ></GlComponent>
             </a-form-item>
           </a-col>
