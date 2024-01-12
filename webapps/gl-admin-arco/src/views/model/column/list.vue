@@ -461,7 +461,7 @@ const addPermission = (record: QueryTableColumnForm) => {
     permissionDrawerRef.value?.openForm({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
-      params: {pId: record.id, pName: record.name, pType: 'ep'}
+      params: {pId: record.id, pName: record.name, pType: 'cp'}
     });
   }
 }

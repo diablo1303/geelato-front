@@ -5,8 +5,9 @@ import {PageQueryRequest, PageQueryResponse, QueryResult} from "@/api/base";
 
 export interface QuerySysConfigForm {
   id: string;
+  keyType: string | string[];
   configKey: string;
-  configType: string;
+  valueType: string;
   configValue: string;
   configAssist?: string;
   remark: string;
@@ -17,8 +18,9 @@ export interface QuerySysConfigForm {
 
 export interface FilterSysConfigForm {
   id: string;
+  keyType: string;
   configKey: string;
-  configType: string;
+  valueType: string;
   configValue: string;
   remark: string;
   enableStatus: string;

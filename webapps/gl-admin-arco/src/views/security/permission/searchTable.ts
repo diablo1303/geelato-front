@@ -53,6 +53,14 @@ const typeOptions = computed<SelectOptionData[]>(() => [
     label: 'security.permission.index.form.type.ep',
     value: 'ep',
   },
+  {
+    label: 'security.permission.index.form.type.mp',
+    value: 'mp',
+  },
+  {
+    label: 'security.permission.index.form.type.cp',
+    value: 'cp',
+  },
 ]);
 
 export {columns, typeOptions}

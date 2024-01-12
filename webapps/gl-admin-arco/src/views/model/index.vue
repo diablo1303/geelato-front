@@ -455,7 +455,7 @@ const loadColumnAndForeignList = (tableId: string, tableName: string, connectId:
     tablePermissionFormRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
-      params: {pId: connectId, pName: tableName, pType: 'dp'}
+      params: {pId: connectId, pName: tableName, pType: 'mp'}
     });
   }
   if (columnPermissionFormRef.value) {
@@ -463,7 +463,7 @@ const loadColumnAndForeignList = (tableId: string, tableName: string, connectId:
     columnPermissionFormRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
-      params: {pId: tableId, pName: tableName, pType: 'ep'}
+      params: {pId: tableId, pName: tableName, pType: 'cp'}
     });
   }
 }

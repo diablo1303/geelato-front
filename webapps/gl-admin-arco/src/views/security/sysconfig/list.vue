@@ -16,8 +16,13 @@
           <a-col :span="8">
             <a-form-item :label="$t('security.sysConfig.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+                <a-option v-for="(item,index) of enableStatusOptions" :key="index" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="8">
+            <a-form-item :label="$t('security.sysConfig.index.form.keyType')" field="keyType">
+              <a-input v-model="filterData.keyType" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="8">
@@ -110,9 +115,10 @@
           {{ record.configKey }}
         </template>
       </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.keyType')" :tooltip="true" :width="150" data-index="keyType"/>
       <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.configValue')" :tooltip="true" :width="200" data-index="configValue">
         <template #cell="{ record }">
-          <span v-if="['UPLOAD'].includes(record.configType)&&record.configValue">
+          <span v-if="['UPLOAD'].includes(record.valueType)&&record.configValue">
             <a-button type="text" @click="fetchFileById(record.configValue)">
             <template #icon>
               <IconDownload/>
@@ -120,7 +126,7 @@
           </a-button>
             {{ record.configAssist }}
           </span>
-          <span v-else-if="['BASE64'].includes(record.configType)&&record.configValue">
+          <span v-else-if="['BASE64'].includes(record.valueType)&&record.configValue">
             <a-button type="text" @click="downloadFileByBase64Data(JSON.parse(record.configValue) as Base64FileParams)">
             <template #icon>
               <IconDownload/>
@@ -182,6 +188,10 @@ import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 
 /* 列表 */
 const route = useRoute();
+const routeParams = ref({
+  appId: (route && route.params && route.params.appId as string) || '',
+  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+});
 type Column = TableColumnData & { checked?: true };
 const pageData = ref({current: 1, pageSize: 10, formState: 'edit'});
 const formRef = ref(null);
@@ -199,13 +209,14 @@ const renderData = ref<PageQueryFilter[]>([]);
 const generateFilterData = (): FilterForm => {
   return {
     id: '',
+    keyType: '',
     configKey: '',
-    configType: '',
+    valueType: '',
     configValue: '',
     remark: '',
     enableStatus: '',
-    appId: (route.params && route.params.appId as string) || '',
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: routeParams.value.appId,
+    tenantCode: routeParams.value.tenantCode,
     createAt: []
   };
 };

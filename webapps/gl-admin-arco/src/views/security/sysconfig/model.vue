@@ -2,6 +2,16 @@
   <a-form ref="validateForm" :label-col-props="{ span: 6 }" :model="formData" :wrapper-col-props="{ span: 18 }" class="form">
     <a-row :gutter="16">
       <a-form-item
+          :label="$t('security.sysConfig.index.form.keyType')"
+          field="keyType">
+        <a-input-tag v-if="pageData.button" v-model="formData.keyType"
+                     :placeholder="$t('security.file.index.form.fileCode.placeholder')"
+                     :unique-value="true" allow-clear/>
+        <a-space v-else :style="{'flex-wrap':'wrap'}">
+          <a-tag v-for="(item, index) of formData.keyType" :key="index" :style="{'margin-bottom':'4px'}">{{ item }}</a-tag>
+        </a-space>
+      </a-form-item>
+      <a-form-item
           :label="$t('security.sysConfig.index.form.configKey')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateCode}]"
           field="configKey">
@@ -9,14 +19,14 @@
         <span v-else>{{ formData.configKey }}</span>
       </a-form-item>
       <a-form-item
-          :label="$t('security.sysConfig.index.form.configType')"
+          :label="$t('security.sysConfig.index.form.valueType')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-          field="configType">
-        <a-select v-model="formData.configType" :disabled="!pageData.button" :options="selectTypeOptions" allow-search
-                  @change="selectTypeChange(formData.configType)"/>
+          field="valueType">
+        <a-select v-model="formData.valueType" :disabled="!pageData.button" :options="selectTypeOptions" allow-search
+                  @change="selectTypeChange(formData.valueType)"/>
       </a-form-item>
       <a-form-item
-          v-if="['UPLOAD'].includes(formData.configType)"
+          v-if="['UPLOAD'].includes(formData.valueType)"
           :label="$t('security.sysConfig.index.form.configValue')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="configValue">
@@ -29,7 +39,7 @@
                   @error="uploadError" @success="uploadTSuccess" @before-remove="beforeRemoveT"/>
       </a-form-item>
       <a-form-item
-          v-else-if="['BASE64'].includes(formData.configType)"
+          v-else-if="['BASE64'].includes(formData.valueType)"
           :label="$t('security.sysConfig.index.form.configValue')"
           :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
           field="configValue">
@@ -80,8 +90,9 @@ const validateForm = ref<FormInstance>();
 const generateFormData = (): QueryForm => {
   return {
     id: '',
+    keyType: [],
     configKey: '',
-    configType: 'VARCHAR',
+    valueType: 'VARCHAR',
     configValue: '',
     configAssist: '',
     remark: '',
@@ -97,6 +108,7 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
+      params.keyType = params.keyType ? (params.keyType as string[]).join(",") : '';
       delete params.configAssist;
       const {data} = await createOrUpdateForm(params);
       templateFile.value = [];
@@ -132,7 +144,9 @@ const resetValidate = async () => {
  */
 const validateCode = async (value: any, callback: any) => {
   try {
-    const {data} = await validateSysConfigKey(formData.value);
+    const params = {...formData.value};
+    params.keyType = params.keyType ? (params.keyType as string[]).join(",") : '';
+    const {data} = await validateSysConfigKey(params);
     if (!data) callback(t('security.form.rules.match.uniqueness'));
   } catch (err) {
     console.log(err);
@@ -210,10 +224,13 @@ const loadModel = (urlParams: ListUrlParams) => {
   // 特色
   if (urlParams.id) {
     getData(urlParams.id, (data: QueryForm) => {
+      if (data.keyType) {
+        data.keyType = (data.keyType as string).split(",") || [];
+      }
       formData.value = data;
-      if (['UPLOAD'].includes(formData.value.configType)) {
+      if (['UPLOAD'].includes(formData.value.valueType)) {
         loadFiles(formData.value.configValue);
-      } else if (['BASE64'].includes(formData.value.configType) && isJSON(formData.value.configValue)) {
+      } else if (['BASE64'].includes(formData.value.valueType) && isJSON(formData.value.configValue)) {
         const baseData: Base64FileParams = JSON.parse(formData.value.configValue);
         formData.value.configAssist = baseData && baseData.name || '';
       }
