@@ -127,7 +127,8 @@
             </a-popover>
           </template>
           <template #cell="{record}">
-            <a-switch v-model="record[item.id]" :before-change="newValue => switchBeforeChange(item.id,record.id)">
+            <a-switch v-model="record[item.id]" :checked-color="nape.type==='custom'?'rgb(0,180,42)':nape.type==='view'?'rgb(20,201,201)':''"
+                      :before-change="newValue => switchBeforeChange(item.id,record.id)">
               <template #checked>
                 YES
               </template>
@@ -160,7 +161,9 @@ import {
   deletePermission,
   deleteRole,
   insertTableRolePermission,
+  insertTableRoleViewPermission,
   QueryPermissionClassifyForm,
+  QueryPermissionForm,
   QueryRoleForm,
   QueryRolePermissionForm,
   queryTableRolePermissions,
@@ -186,8 +189,11 @@ const pageData = ref({
   current: 1, pageSize: 10000, formState: 'edit', isModal: false,
   params: {connectId: '', object: '', type: ''},
   modalAddBack: (data: QueryForm) => {
+    console.log(data);
   }, modalEditBack: (data: QueryForm) => {
+    console.log(data);
   }, modalDeleteBack: (id: string) => {
+    console.log(id);
   }
 });
 const roleDrawerRef = ref(null);
@@ -204,6 +210,30 @@ const cowColumns = ref<QueryPermissionClassifyForm[]>([]);
 const basePagination: Pagination = {current: pageData.value.current, pageSize: pageData.value.pageSize};
 const pagination = reactive({...basePagination,});
 const renderData = ref<Record<string, boolean | string>[]>([]);
+const viewTypes = ["&all", "&myBusiness", "&myDept", "&myself"];
+const viewPers = ref<QueryPermissionForm[]>([]);
+const viewPerIds = ref<string[]>([]);
+
+const setViewPermissions = () => {
+  viewPers.value = [];
+  viewPerIds.value = [];
+  if (cowColumns.value && cowColumns.value.length > 0) {
+    for (let i = 0; i < cowColumns.value.length; i += 1) {
+      if (cowColumns.value[i].type === "view" && cowColumns.value[i].data && cowColumns.value[i].data.length > 0) {
+        for (let v = 0; v < viewTypes.length; v += 1) {
+          for (let p = 0; p < cowColumns.value[i].data.length; p += 1) {
+            if (`${pageData.value.params.object}${viewTypes[v]}` === cowColumns.value[i].data[p].code) {
+              viewPers.value.push(cowColumns.value[i].data[p]);
+              viewPerIds.value.push(cowColumns.value[i].data[p].id);
+              break;
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+}
 
 const permissionFilter = (qpcf: QueryPermissionClassifyForm[]) => {
   const data: QueryPermissionClassifyForm[] = [];
@@ -217,6 +247,102 @@ const permissionFilter = (qpcf: QueryPermissionClassifyForm[]) => {
   return data;
 }
 
+const setRolePermissions = (item: Record<string, boolean | string>, currentPer: string) => {
+  let isCurrent = false;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const id of viewPerIds.value) {
+    if (!isCurrent && id === currentPer) {
+      isCurrent = true;
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+    (item[id] as unknown as boolean) = isCurrent;
+  }
+}
+
+const validateTableData = async (tableData: Record<string, boolean | string>[]) => {
+  if (tableData && tableData.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of tableData) {
+      let isTrue = 0;// 几个选中
+      let currentPer = "";// 最大的权限id
+      // eslint-disable-next-line no-restricted-syntax
+      for (const id of viewPerIds.value) {
+        if ((item[id] as unknown as boolean) === true) {
+          if (isTrue === 0) currentPer = id;
+          isTrue += 1;
+        }
+      }
+      // 检查
+      if (isTrue > 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await insertTableRoleViewPermission({
+          permissionId: currentPer, roleId: item.id, tenantCode: routeParams.value.tenantCode,
+          permissionIds: viewPerIds.value.join(",")
+        } as QueryRolePermissionForm);
+        setRolePermissions(item, currentPer);
+      } else if (isTrue === 1) {
+        setRolePermissions(item, currentPer);
+      }
+    }
+  }
+}
+
+const resetTableData = (permissionId: string, roleId: string) => {
+  if (renderData.value && renderData.value.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of renderData.value) {
+      // @ts-ignore
+      if (item.id === roleId && viewPerIds.value.includes(permissionId)) {
+        let getTrue = false;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const id of viewPerIds.value) {
+          if (!getTrue && id === permissionId) {
+            getTrue = true;
+            // eslint-disable-next-line no-continue
+            continue;
+          }
+          if (item[permissionId] === false) {
+            (item[id] as unknown as boolean) = getTrue;
+          } else if (!getTrue) {
+            (item[id] as unknown as boolean) = false;
+          }
+        }
+        break;
+      }
+    }
+  }
+}
+
+const needAddPermissionId = (permissionId: string, roleId: string): string => {
+  if (renderData.value && renderData.value.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of renderData.value) {
+      // @ts-ignore
+      if (item.id === roleId && viewPerIds.value.includes(permissionId)) {
+        if (item[permissionId] === false) {
+          return permissionId;
+        }
+        let getTrue = false;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const id of viewPerIds.value) {
+          if (!getTrue && id === permissionId) {
+            getTrue = true;
+            // eslint-disable-next-line no-continue
+            continue;
+          }
+          if (getTrue && item[id] === true) {
+            return id;
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  return "";
+}
+
 /**
  * 分页查询方法
  * @param params
@@ -226,7 +352,9 @@ const fetchData = async (params: PageQueryRequest = {current: pageData.value.cur
   try {
     const {data} = await queryTableRolePermissions(pageData.value.params.type, pageData.value.params.object, {...params, ...routeParams.value});
     cowColumns.value = permissionFilter(data.permission);
+    setViewPermissions();
     rowColumns.value = data.role;
+    await validateTableData(data.table);
     renderData.value = data.table;
   } catch (err) {
     console.log(err);
@@ -312,12 +440,20 @@ const resetTableDefaultPermission = async (ev: MouseEvent) => {
 const switchBeforeChange = async (permission: string, role: string) => {
   let isSuccess = false;
   try {
-    await insertTableRolePermission({
-      permissionId: permission,
-      roleId: role,
-      tenantCode: routeParams.value.tenantCode
-    } as QueryRolePermissionForm);
-    isSuccess = true;
+    if (viewPerIds.value.includes(permission)) {
+      await insertTableRoleViewPermission({
+        permissionId: needAddPermissionId(permission, role) || "",
+        roleId: role, tenantCode: routeParams.value.tenantCode,
+        permissionIds: viewPerIds.value.join(",")
+      } as QueryRolePermissionForm);
+      isSuccess = true;
+      resetTableData(permission, role);
+    } else {
+      await insertTableRolePermission({
+        permissionId: permission, roleId: role, tenantCode: routeParams.value.tenantCode
+      } as QueryRolePermissionForm);
+      isSuccess = true;
+    }
   } catch (err) {
     console.log(err);
   }

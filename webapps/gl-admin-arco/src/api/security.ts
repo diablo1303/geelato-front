@@ -521,6 +521,7 @@ export interface QueryRolePermissionForm {
   roleId: string;
   roleName: string;
   permissionId: string;
+  permissionIds?: string;
   permissionName: string;
   appId: string;
   tenantCode: string;
@@ -577,6 +578,10 @@ export function queryTableRolePermissions(type: string, object: string, params: 
 
 export function insertTableRolePermission(params: QueryRolePermissionForm) {
   return axios.post<QueryResult>('/api/security/role/permission/insertTable', params);
+}
+
+export function insertTableRoleViewPermission(params: QueryRolePermissionForm) {
+  return axios.post<QueryResult>('/api/security/role/permission/insertTable/view', params);
 }
 
 export function resetDefaultPermission(type: string, object: string) {
