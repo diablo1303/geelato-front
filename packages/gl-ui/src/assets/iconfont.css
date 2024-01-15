@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 2457479 */
-  src: url('iconfont.woff2?t=1704526933271') format('woff2'),
-       url('iconfont.woff?t=1704526933271') format('woff'),
-       url('iconfont.ttf?t=1704526933271') format('truetype');
+  src: url('iconfont.woff2?t=1705222607991') format('woff2'),
+       url('iconfont.woff?t=1705222607991') format('woff'),
+       url('iconfont.ttf?t=1705222607991') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,78 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.gl-gateway-xor:before {
+  content: "\e61a";
+}
+
+.gl-start-event-none:before {
+  content: "\e620";
+}
+
+.gl-gateway-parallel:before {
+  content: "\e625";
+}
+
+.gl-user-task:before {
+  content: "\e63a";
+}
+
+.gl-subprocess-expanded:before {
+  content: "\e640";
+}
+
+.gl-intermediate-event-catch-timer:before {
+  content: "\e642";
+}
+
+.gl-start-event-timer:before {
+  content: "\e647";
+}
+
+.gl-start-event-message:before {
+  content: "\e648";
+}
+
+.gl-gateway-eventbased:before {
+  content: "\e64b";
+}
+
+.gl-gateway-none:before {
+  content: "\e64c";
+}
+
+.gl-gateway-or:before {
+  content: "\e64e";
+}
+
+.gl-end-event-none:before {
+  content: "\e654";
+}
+
+.gl-manual-task:before {
+  content: "\e656";
+}
+
+.gl-service:before {
+  content: "\e659";
+}
+
+.gl-script-task:before {
+  content: "\e65d";
+}
+
+.gl-service-task:before {
+  content: "\e665";
+}
+
+.gl-group:before {
+  content: "\e66c";
+}
+
+.gl-flow:before {
+  content: "\e616";
 }
 
 .gl-rules:before {

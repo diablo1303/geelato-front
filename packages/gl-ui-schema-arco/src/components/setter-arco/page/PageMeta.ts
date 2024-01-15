@@ -18,7 +18,7 @@ export default {
         "setterComponentName": "AInput"
     }, {
         "name": "pageType",
-        "setterComponentProps": {"readonly": true},
+        "setterComponentProps": {"readonly": false},
         "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",

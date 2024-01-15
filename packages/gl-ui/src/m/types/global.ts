@@ -6,7 +6,9 @@ export enum PageType {
     formPage = 'formPage',
     listPage = 'listPage',
     blockPage = 'blockPage',
-    emptyPage = 'emptyPage'
+    emptyPage = 'emptyPage',
+    // 流程页面
+    flowPage = 'flowPage'
 }
 
 // 页面参数、方法调用参数

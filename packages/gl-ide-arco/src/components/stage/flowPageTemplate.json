@@ -1,0 +1,22 @@
+{
+  "id": "",
+  "componentName": "GlPage",
+  "disabledDnd": true,
+  "props": {
+    "label": "流程设计",
+    "pageMargin":"0",
+    "pageType":"flowPage"
+  },
+  "slots": {},
+  "children": [
+    {
+      "id": "",
+      "componentName": "GlBpmnEditor",
+      "disabledDnd": true,
+      "props": {"label": "流程设计"},
+      "slots": {},
+      "children": []
+    }
+  ],
+  "actions": []
+}

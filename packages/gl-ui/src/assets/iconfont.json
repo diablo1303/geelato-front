@@ -6,6 +6,132 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "9513558",
+      "name": "gateway-xor",
+      "font_class": "gateway-xor",
+      "unicode": "e61a",
+      "unicode_decimal": 58906
+    },
+    {
+      "icon_id": "9515220",
+      "name": "start-event-none",
+      "font_class": "start-event-none",
+      "unicode": "e620",
+      "unicode_decimal": 58912
+    },
+    {
+      "icon_id": "9513004",
+      "name": "gateway-parallel",
+      "font_class": "gateway-parallel",
+      "unicode": "e625",
+      "unicode_decimal": 58917
+    },
+    {
+      "icon_id": "9513796",
+      "name": "user-task",
+      "font_class": "user-task",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "9514176",
+      "name": "subprocess-expanded",
+      "font_class": "subprocess-expanded",
+      "unicode": "e640",
+      "unicode_decimal": 58944
+    },
+    {
+      "icon_id": "9514246",
+      "name": "intermediate-event-catch-timer",
+      "font_class": "intermediate-event-catch-timer",
+      "unicode": "e642",
+      "unicode_decimal": 58946
+    },
+    {
+      "icon_id": "9514389",
+      "name": "start-event-timer",
+      "font_class": "start-event-timer",
+      "unicode": "e647",
+      "unicode_decimal": 58951
+    },
+    {
+      "icon_id": "9514405",
+      "name": "start-event-message",
+      "font_class": "start-event-message",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "9514656",
+      "name": "gateway-eventbased",
+      "font_class": "gateway-eventbased",
+      "unicode": "e64b",
+      "unicode_decimal": 58955
+    },
+    {
+      "icon_id": "9514674",
+      "name": "gateway-none",
+      "font_class": "gateway-none",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
+      "icon_id": "9514676",
+      "name": "gateway-or",
+      "font_class": "gateway-or",
+      "unicode": "e64e",
+      "unicode_decimal": 58958
+    },
+    {
+      "icon_id": "9514727",
+      "name": "end-event-none",
+      "font_class": "end-event-none",
+      "unicode": "e654",
+      "unicode_decimal": 58964
+    },
+    {
+      "icon_id": "9515102",
+      "name": "manual-task",
+      "font_class": "manual-task",
+      "unicode": "e656",
+      "unicode_decimal": 58966
+    },
+    {
+      "icon_id": "9515176",
+      "name": "service",
+      "font_class": "service",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    },
+    {
+      "icon_id": "9515362",
+      "name": "script-task",
+      "font_class": "script-task",
+      "unicode": "e65d",
+      "unicode_decimal": 58973
+    },
+    {
+      "icon_id": "9515583",
+      "name": "service-task",
+      "font_class": "service-task",
+      "unicode": "e665",
+      "unicode_decimal": 58981
+    },
+    {
+      "icon_id": "9515765",
+      "name": "lasso-tool",
+      "font_class": "group",
+      "unicode": "e66c",
+      "unicode_decimal": 58988
+    },
+    {
+      "icon_id": "12719947",
+      "name": "流程",
+      "font_class": "flow",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
       "icon_id": "4506835",
       "name": "规则",
       "font_class": "rules",

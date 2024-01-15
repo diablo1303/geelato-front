@@ -5,24 +5,27 @@ export default {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import {computed, inject, onMounted, type PropType, ref, unref} from 'vue'
-import {useDrag, useDrop} from 'vue3-dnd'
-import {ItemTypes} from './DndItemTypes'
-import type {Identifier} from 'dnd-core'
-import {toRefs} from '@vueuse/core'
-import {mixins, utils} from "@geelato/gl-ui"
-import {componentStoreFactory} from "@geelato/gl-ide";
-import {PageProvideProxy, PageProvideKey} from "@geelato/gl-ui";
+import { computed, inject, onMounted, type PropType, ref, unref } from 'vue'
+import { useDrag, useDrop } from 'vue3-dnd'
+import { ItemTypes } from './DndItemTypes'
+import type { Identifier } from 'dnd-core'
+import { toRefs } from '@vueuse/core'
+import { mixins, utils } from '@geelato/gl-ui'
+import { componentStoreFactory } from '@geelato/gl-ide'
+import { PageProvideProxy, PageProvideKey } from '@geelato/gl-ui'
 
 const props = defineProps({
   id: [String],
   index: Number,
-  moveItem: Function as PropType<(dragIndex: number, hoverIndex: number, dragItemId: string, dropItemId: string) => void>,
+  moveItem: Function as PropType<
+    (dragIndex: number, hoverIndex: number, dragItemId: string, dropItemId: string) => void
+  >,
   addItem: Function,
   ...mixins.props
 })
 
-const pageProvideProxy: PageProvideProxy | null = props.glComponentInst.componentName === 'GlPage' ? null : inject(PageProvideKey)!
+const pageProvideProxy: PageProvideProxy | null =
+  props.glComponentInst.componentName === 'GlPage' ? null : inject(PageProvideKey)!
 // console.log('GlInst > pageProvideProxy:', props.glComponentInst.componentName, PageProvideKey, pageProvideProxy)
 
 const componentStoreId = props.componentStoreId || inject('componentStoreId')
@@ -41,14 +44,16 @@ interface DragItem {
 }
 
 const card = ref<HTMLDivElement>()
-const [dropCollect, drop] = useDrop<DragItem,
-    void,
-    { handlerId: Identifier | null, isShallowOver: boolean }>({
+const [dropCollect, drop] = useDrop<
+  DragItem,
+  void,
+  { handlerId: Identifier | null; isShallowOver: boolean }
+>({
   accept: ItemTypes.Item,
   collect(monitor) {
     return {
       handlerId: monitor.getHandlerId(),
-      isShallowOver: monitor.isOver({shallow: true})
+      isShallowOver: monitor.isOver({ shallow: true })
     }
   },
   /**
@@ -57,7 +62,6 @@ const [dropCollect, drop] = useDrop<DragItem,
    * @param dropTargetMonitor
    */
   drop(dragItem: DragItem, dropTargetMonitor) {
-
     // 解决嵌套拖放的问题
     const didDrop = dropTargetMonitor.didDrop()
     if (didDrop) {
@@ -99,20 +103,23 @@ const [dropCollect, drop] = useDrop<DragItem,
 const [collect, drag] = useDrag({
   type: ItemTypes.Item,
   item: () => {
-    return {id: props.id, index: props.index}
+    return { id: props.id, index: props.index }
   },
   collect: (monitor: any) => ({
-    isDragging: monitor.isDragging(),
-  }),
+    isDragging: monitor.isDragging()
+  })
 })
 
-const {handlerId, isShallowOver} = toRefs(dropCollect)
-const {isDragging} = toRefs(collect)
+const { handlerId, isShallowOver } = toRefs(dropCollect)
+const { isDragging } = toRefs(collect)
 const opacity = computed(() => (unref(isDragging) ? 0 : 1))
 
 // TODO  error TS2322: Type '(el: HTMLDivElement) => void' is not assignable to type 'VNodeRef | undefined'.
 const setRef = (el: HTMLDivElement) => {
-  card.value = drag(drop(el)) as HTMLDivElement
+  if (props.glComponentInst.disabledDnd) {
+  } else {
+    card.value = drag(drop(el)) as HTMLDivElement
+  }
 }
 
 /**
@@ -124,19 +131,23 @@ const showFormItem = computed(() => {
   if (ignoreComponentNames.indexOf(props.glComponentInst.componentName) >= 0) {
     return false
   }
-  if (props.glComponentInst.componentName === 'GlRowColLayout' && props.glComponentInst.props.showLabel === true) {
+  if (
+    props.glComponentInst.componentName === 'GlRowColLayout' &&
+    props.glComponentInst.props.showLabel === true
+  ) {
     return true
   }
   return componentStore.isDataEntryComponent(props.glComponentInst.componentName)
 })
 
-const styleDisplay = ref(function () {
-  if (componentStore.isDataEntryComponent(props.glComponentInst.componentName)) {
-    return 'inline-block'
-  }
-  return false
-}())
-
+const styleDisplay = ref(
+  (function () {
+    if (componentStore.isDataEntryComponent(props.glComponentInst.componentName)) {
+      return 'inline-block'
+    }
+    return false
+  })()
+)
 
 // 示例
 // "i18n":
@@ -186,27 +197,32 @@ const onClick = (...args: any[]) => {
 </script>
 
 <template>
-  <div class="gl-dnd-wrapper" :style="{display:styleDisplay}" v-if="glComponentInst?.id">
-    <div :ref="setRef"
-         class="gl-component-wrapper"
-         :style="{ opacity }"
-         :data-handler-id="handlerId"
+  <div class="gl-dnd-wrapper" :style="{ display: styleDisplay }" v-if="glComponentInst?.id">
+    <div
+      :ref="setRef"
+      class="gl-component-wrapper"
+      :style="{ opacity }"
+      :data-handler-id="handlerId"
     >
       <template v-if="showFormItem">
-        <a-form-item class="gl-form-item" :field="glComponentInst?.props?.bindField?.fieldName"
-                     :class="{'gl-hidden':glComponentInst?.props?.hideLabel===true}"
-                     :label-col-flex="glComponentInst?.props._labelColFlex"
-                     :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"
-                     :label="i18nConvert(glComponentInst?.props?.label)"
-                     :rules="glComponentInst?.props?.rules"
-                     :validate-trigger="[]"
-                     @click="onClick"
+        <a-form-item
+          class="gl-form-item"
+          :field="glComponentInst?.props?.bindField?.fieldName"
+          :class="{ 'gl-hidden': glComponentInst?.props?.hideLabel === true }"
+          :label-col-flex="glComponentInst?.props._labelColFlex"
+          :tooltip="i18nConvert(glComponentInst?.props?.tooltip)"
+          :label="i18nConvert(glComponentInst?.props?.label)"
+          :rules="glComponentInst?.props?.rules"
+          :validate-trigger="[]"
+          @click="onClick"
         >
-          <GlComponentDnd class="gl-dnd-item gl-x-item"
-                          :glComponentInst="glComponentInst"
-                          :glIsRuntime="false"
-                          glRuntimeFlag=""
-                          :componentStoreId="componentStoreId">
+          <GlComponentDnd
+            class="gl-dnd-item gl-x-item"
+            :glComponentInst="glComponentInst"
+            :glIsRuntime="false"
+            glRuntimeFlag=""
+            :componentStoreId="componentStoreId"
+          >
           </GlComponentDnd>
           <template v-if="glComponentInst?.props?.extra" #extra>
             <div>{{ i18nConvert(glComponentInst?.props?.extra) }}</div>
@@ -216,16 +232,24 @@ const onClick = (...args: any[]) => {
           </template>
         </a-form-item>
       </template>
-      <template v-else>
-        <GlComponentDnd :modelValue="utils.gid()" class="gl-dnd-item gl-x-item" style="flex: auto"
-                        :glIsRuntime="false"
-                        glRuntimeFlag=""
-                        :glComponentInst="glComponentInst"
-                        :componentStoreId="componentStoreId">
+      <template v-else
+        >
+        <GlComponentDnd
+          :modelValue="utils.gid()"
+          class="gl-dnd-item gl-x-item"
+          style="flex: auto"
+          :glIsRuntime="false"
+          glRuntimeFlag=""
+          :glComponentInst="glComponentInst"
+          :componentStoreId="componentStoreId"
+        >
         </GlComponentDnd>
       </template>
     </div>
-    <div v-if="isShallowOver && !isDragging" :class="['indicator', { first: props.index === 0 }]"></div>
+    <div
+      v-if="isShallowOver && !isDragging"
+      :class="['indicator', { first: props.index === 0 }]"
+    ></div>
   </div>
 </template>
 

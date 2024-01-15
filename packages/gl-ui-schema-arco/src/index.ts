@@ -16,6 +16,7 @@ export {default as BlockOpenThirdPageMeta} from "./components/setter-block/page/
 import {useComponentMaterialStore} from "./store/UseComponentMaterialStore";
 import {schemaBlock} from "./components/schemaBlock";
 import {schemaArco, isDataEntry} from "./components/schemaArco";
+import {schemaBpmn} from "./components/schemaBpmn";
 
 const component: Plugin = {
     // @ts-ignore
@@ -24,6 +25,6 @@ const component: Plugin = {
     }
 }
 
-export {useComponentMaterialStore, schemaBlock, schemaArco, isDataEntry}
+export {useComponentMaterialStore, schemaBlock, schemaArco, schemaBpmn, isDataEntry}
 // 默认导出组件
 export default component

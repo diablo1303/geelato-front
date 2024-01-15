@@ -8,6 +8,7 @@ import GlBasePage from './components/stage/BasePage.vue'
 import GlFormPage from './components/stage/FormPage.vue'
 import GlFreePage from './components/stage/FreePage.vue'
 import GlListPage from './components/stage/ListPage.vue'
+import GlFlowPage from './components/stage/FlowPage.vue'
 import GlEntityReaderBuilder from './components/builder/props-builder/GlEntityReaderBuilder.vue'
 import GlComponentBuilder from './components/builder/GlComponentBuilder.vue'
 import GlSimpleArrayBuilder from './components/builder/props-builder/GlSimpleArrayBuilder.vue'
@@ -66,8 +67,8 @@ const plugin = new GlPlugin('gl-plugin-arco')
 
 plugin.sidebar.push(
   new Panel({
-    title: '应用结构',
-    name: '应用结构',
+    title: '模块',
+    name: '模块',
     iconType: 'gl-tree',
     componentName: GlIdePluginCoreAppTree.name
   })
@@ -84,8 +85,8 @@ plugin.sidebar.push(
 
 plugin.sidebar.push(
   new Panel({
-    title: '页面结构',
-    name: '页面结构',
+    title: '结构',
+    name: '结构',
     iconType: 'gl-tree-structure',
     componentName: GlComponentTree.name
   })
@@ -93,17 +94,26 @@ plugin.sidebar.push(
 
 plugin.sidebar.push(
   new Panel({
-    title: '页面动作',
-    name: '页面动作',
+    title: '动作',
+    name: '动作',
     iconType: 'gl-thunderbolt',
     componentName: GlActionList.name
   })
 )
 
+// plugin.sidebar.push(
+//   new Panel({
+//     title: '流程',
+//     name: '流程',
+//     iconType: 'gl-flow',
+//     componentName: GlComponentTree.name
+//   })
+// )
+
 plugin.sidebar.push(
   new Panel({
-    title: '页面权限',
-    name: '页面权限',
+    title: '权限',
+    name: '权限',
     iconType: 'gl-security',
     componentName: GlPermissionList.name
   })
@@ -111,8 +121,8 @@ plugin.sidebar.push(
 
 plugin.sidebar.push(
   new Panel({
-    title: '操作记录',
-    name: '操作记录',
+    title: '操作',
+    name: '操作',
     iconType: 'gl-history',
     componentName: GlPageOpHistory.name
   })
@@ -120,8 +130,8 @@ plugin.sidebar.push(
 
 plugin.sidebar.push(
   new Panel({
-    title: '保存记录',
-    name: '保存记录',
+    title: '记录',
+    name: '记录',
     iconType: 'gl-history',
     componentName: GlPageSaveLog.name
   })
@@ -129,7 +139,7 @@ plugin.sidebar.push(
 
 plugin.stage.push(
   new Panel({
-    title: '页面',
+    title: '自定页面',
     name: 'freePage',
     iconType: 'LayoutOutlined',
     componentName: GlFreePage.name
@@ -138,7 +148,7 @@ plugin.stage.push(
 
 plugin.stage.push(
   new Panel({
-    title: '页面',
+    title: '表单页面',
     name: 'formPage',
     iconType: 'LayoutOutlined',
     componentName: GlFormPage.name
@@ -147,12 +157,27 @@ plugin.stage.push(
 
 plugin.stage.push(
   new Panel({
-    title: '页面',
+    title: '列表页面',
     name: 'listPage',
     iconType: 'LayoutOutlined',
     componentName: GlListPage.name
   })
 )
+
+plugin.stage.push(
+  new Panel({
+    title: '流程页面',
+    name: 'flowPage',
+    iconType: 'LayoutOutlined',
+    componentName: GlFlowPage.name
+  })
+)
+
+// 显示的设置面板，默认显示所有：props 属性、actions 动作、permission 权限、lang 多语言
+plugin.pushPageTypeAndSetterPanelNames('freePage', ['props', 'actions', 'permission', 'lang'])
+plugin.pushPageTypeAndSetterPanelNames('formPage', ['props', 'actions', 'permission', 'lang'])
+plugin.pushPageTypeAndSetterPanelNames('listPage', ['props', 'actions', 'permission', 'lang'])
+plugin.pushPageTypeAndSetterPanelNames('flowPage', ['props'])
 
 // plugin.stage.push(new Panel({
 //     title: '页面',
@@ -189,6 +214,7 @@ const component: Plugin = {
     app.component(GlFormPage.name, GlFormPage)
     app.component(GlFreePage.name, GlFreePage)
     app.component(GlListPage.name, GlListPage)
+    app.component(GlFlowPage.name, GlFlowPage)
     app.component(GlToolbarBreadcrumbs.name, GlToolbarBreadcrumbs)
     app.component(GlInsts.name, GlInsts)
     app.component(GlInst.name, GlInst)

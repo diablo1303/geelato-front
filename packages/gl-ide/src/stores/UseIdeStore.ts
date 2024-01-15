@@ -212,6 +212,16 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
     stageRefreshFlag.value = flag
   }
 
+  function findSetterPanelNamesByPageType(pageType: string) {
+    for (let i in plugins.value) {
+      const plugin: GlPlugin = plugins.value[i]
+      let foundPanelNames = plugin.getSetterPanelNamesByPageType(pageType)
+      if (foundPanelNames && foundPanelNames.length > 0) {
+        return foundPanelNames
+      }
+    }
+  }
+
   return {
     name,
     stageRefreshFlag,
@@ -228,6 +238,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
     addComponentMetas,
     findPlugin,
     findPanelsByType,
+    findSetterPanelNamesByPageType,
     openPage,
     closePage,
     savePage

@@ -86,13 +86,14 @@ import LoopInstance from "./setter-arco/loop/LoopInstance";
 import TemplateMeta from "./setter-arco/template/TemplateMeta";
 import TemplateInstance from "./setter-arco/template/TemplateInstance";
 import ChartMeta from "./setter-arco/chart/ChartMeta";
+import FlowEditorMeta from "./setter-arco/flow-editor/FlowEditorMeta";
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [TextMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta,ASelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta,RangePickerMeta, SwitchMeta, TinymceMeta,UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta,ButtonMeta, GlButtonMeta, ChartMeta, TableMeta, AlertMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,LayoutPageMeta,
     AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
     CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
     CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
     StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TooltipMeta, EntityTreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta,LoopMeta,TemplateMeta, DividerMeta,
-    OpRecordMeta,BlocksMeta
+    OpRecordMeta,BlocksMeta,FlowEditorMeta
 ]
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [ButtonInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance, CascaderInstance,LayoutPageInstance,TemplateInstance,LoopInstance]

@@ -30,7 +30,12 @@ const convertId = (id: string) => {
  * @param inst
  * @param idMap
  */
-const genIdMap = (inst: ComponentInstance, idMap: { [key: string]: string }) => {
+const genIdMap = (
+  inst: ComponentInstance,
+  idMap: {
+    [key: string]: string
+  }
+) => {
   if (inst.id) {
     idMap[inst.id] = convertId(inst.id)
     if (inst.__dragFlag) {
@@ -98,7 +103,9 @@ export const copyComponentInst = (inst: ComponentInstance) => {
 
 export const copyComponentInsts = (insts: Array<ComponentInstance>) => {
   // 先找出所有的id，并算出应转换的id
-  const idMap: { [key: string]: string } = {}
+  const idMap: {
+    [key: string]: string
+  } = {}
   insts.forEach((inst) => {
     genIdMap(inst, idMap)
   })
@@ -121,7 +128,9 @@ export const copyComponentInsts = (insts: Array<ComponentInstance>) => {
 }
 
 class ComponentStoreFactory {
-  componentStoreMap: { [key: string]: any } = {}
+  componentStoreMap: {
+    [key: string]: any
+  } = {}
   // 组件元数据，在多个store中共享
   componentMetaMap = new ComponentMetaMap()
 
@@ -517,6 +526,25 @@ class ComponentStoreFactory {
             }
 
             return findNodeFromTree(componentId, this.currentComponentTree) || {}
+          },
+          /**
+           * TODO 引用的页面组件id找到的是空的对象{}
+           * @param componentId
+           */
+          findComponentFromTreeByRefId(refId: string) {
+            function findNodeFromTree(nodeRefId: string, nodes: Array<any>): any {
+              for (let index in nodes) {
+                let node = nodes[index]
+                if (node.refId === nodeRefId) {
+                  return node
+                } else if (node.children && node.children.length > 0) {
+                  const foundNode = findNodeFromTree(nodeRefId, node.children)
+                  if (foundNode) return foundNode
+                }
+              }
+            }
+
+            return findNodeFromTree(refId, this.currentComponentTree) || {}
           },
           setCurrentSelectedComponentId(componentId: string, fromPageId: string) {
             const payload = {

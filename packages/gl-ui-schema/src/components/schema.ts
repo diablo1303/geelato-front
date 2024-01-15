@@ -1,10 +1,6 @@
 import type ComponentMeta from "../entity/ComponentMeta";
 import ComponentInstance from "../entity/ComponentInstance";
-// import IfElseMeta from "./script/ifelse/meta";
-// import IfElseInstance from "./script/ifelse/instance"
 
-// export {default as IfElseMeta} from "./components/script/ifelse/meta";
-// const componentMetas:Array<ComponentMeta> = [IfElseMeta]
 const componentMetas: Array<ComponentMeta> = []
 const customInstances: Array<ComponentInstance> = []
 const componentInstances: Array<ComponentInstance> = []

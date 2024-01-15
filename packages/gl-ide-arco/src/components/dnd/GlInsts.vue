@@ -85,6 +85,11 @@ const moveItem = (dragIndex: number, hoverIndex: number, dragItemId: string, dro
   pageStore.operationLog('移组件', pageStore.currentPage.sourceContent, dragItem)
 }
 
+/**
+ * 从组件库中拖动添加
+ * @param hoverIndex
+ * @param item
+ */
 const addItem = (hoverIndex: number, item: ComponentInstance) => {
   // console.log('GlInsts > addItem() > hoverIndex:', hoverIndex, 'item:', item)
   item.id = utils.gid(componentStore.getAlias(item.componentName) || 'id')

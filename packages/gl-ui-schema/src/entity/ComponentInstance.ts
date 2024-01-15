@@ -81,6 +81,11 @@ export default class ComponentInstance {
     i18n?: Array<I18nItem> = []
     // 运行时的值，如对于input等表单组件，可用于v-model绑定值
     value?: undefined | string | number | boolean | object | Array<any>
+    // 禁用拖放 默认为false，不禁止
+    // 如在渲染工作流画布的场景中，禁止工作流画布可拖动，可设置为true
+    disabledDnd?:Boolean
+    // 映射引用的组件id，这个属性用于图元映射到组件实例的场景，如设计页面是一个工作流程图，图元的id映射到组件refId
+    refId?:string
     // 值表达式，用于结合上下文的信息、相关逻辑计算得出value
     // valueExpression?: string = ''
     // 是否禁用，默认为启用，用于设计时

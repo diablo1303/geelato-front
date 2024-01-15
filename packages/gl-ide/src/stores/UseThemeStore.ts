@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 import {CheckUtil} from "@geelato/gl-ui";
 
-const sidebarTabWidthDefault = 22
+const sidebarTabWidthDefault = 24
 
 
 export const useThemeStore = defineStore({
@@ -15,7 +15,7 @@ export const useThemeStore = defineStore({
         toolbarWidth: 0,
         // sidebarHeight: 0,
         sidebarWidth: 280,
-        sidebarTabWidth: sidebarTabWidthDefault * 1,
+        sidebarTabWidth: sidebarTabWidthDefault * 2,
         // stageHeight: 0,
         stageWidth: 0,
         stageBreadcrumbHeight: 32,
@@ -33,10 +33,10 @@ export const useThemeStore = defineStore({
         modalFooterHeight: 70
     }),
     getters: {
-        ideMainHeight: (state) => state.ideHeight - state.toolbarHeight - state.statusHeight,
-        sidebarHeight: (state) => state.ideHeight - state.toolbarHeight - state.statusHeight,
-        stageHeight: (state) => state.ideHeight - state.toolbarHeight - state.statusHeight,
-        setterHeight: (state) => state.ideHeight - state.toolbarHeight - state.statusHeight,
+        ideMainHeight: (state) => state.ideHeight - state.toolbarHeight - state.statusHeight -8,
+        sidebarHeight: (state) => state.ideHeight - state.toolbarHeight - state.statusHeight -8,
+        stageHeight: (state) => state.ideHeight - state.toolbarHeight - state.statusHeight -8,
+        setterHeight: (state) => state.ideHeight - state.toolbarHeight - state.statusHeight -8,
         sidebarsWidthPercent: (state) => state.sidebarWidth / state.ideWidth * 100,
         sidebarTabWidthPercent: (state) => state.sidebarTabWidth / state.ideWidth * 100,
         sidebarTabFontSize: (state) => state.sidebarTabWidth / sidebarTabWidthDefault >= 1.5 ? 1.5 : 1,

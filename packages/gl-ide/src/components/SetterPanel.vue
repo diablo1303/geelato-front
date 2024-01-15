@@ -1,14 +1,24 @@
 <template>
   <div class="gl-designer-setter">
-    <GlComponentSetter v-if="componentStore.currentSelectedComponentMeta"
-                       :componentMeta="componentStore.currentSelectedComponentMeta"
-                       :componentInstance="componentStore.currentSelectedComponentInstance"
-                       @update="(instance:any)=>{updateInstance(instance)}"
-                       :key="componentStore.currentSelectedComponentId"
-                       :defaultActiveKey="defaultActiveKey"
+    <GlComponentSetter
+      v-if="componentStore.currentSelectedComponentMeta"
+      :componentMeta="componentStore.currentSelectedComponentMeta"
+      :componentInstance="componentStore.currentSelectedComponentInstance"
+      @update="(instance:any)=>{updateInstance(instance)}"
+      :key="componentStore.currentSelectedComponentId"
+      :defaultActiveKey="defaultActiveKey"
+      :panelNames="panelNames"
     ></GlComponentSetter>
     <template v-else>
-      <div style="text-align: center;line-height: 3;height: 3em;background-color: #e7e7e7;margin: 12px 12px 0px">
+      <div
+        style="
+          text-align: center;
+          line-height: 3;
+          height: 3em;
+          background-color: #e7e7e7;
+          margin: 12px 12px 0px;
+        "
+      >
         请先选择组件
       </div>
     </template>
@@ -17,33 +27,33 @@
 
 <script lang="ts">
 export default {
-  name: "GlIdeSetter"
+  name: 'GlIdeSetter'
 }
 </script>
 <script setup lang="ts">
-import {useThemeStore} from "../stores/UseThemeStore";
-import {useComponentStore} from "../stores/UseComponentStore";
-import {useIdeStore} from "../stores/UseIdeStore";
-import {emitter} from "@geelato/gl-ui";
-import EventNames from "../entity/EventNames";
-import {onUnmounted, ref, watch} from "vue";
+import { type Ref, onUnmounted, ref, watch } from 'vue'
+import { useThemeStore } from '../stores/UseThemeStore'
+import { useComponentStore } from '../stores/UseComponentStore'
+import { useIdeStore } from '../stores/UseIdeStore'
+import { usePageStore } from '../stores/UsePageStore'
+import { emitter } from '@geelato/gl-ui'
+import EventNames from '../entity/EventNames'
 
 const emits = defineEmits(['update'])
 const ideStore = useIdeStore()
+const pageStore = usePageStore()
 const componentStore = useComponentStore()
 const themeStore = useThemeStore()
-const btnStyle = {background: themeStore.theme.background}
+const btnStyle = { background: themeStore.theme.background }
 const componentMeta = {}
 const componentInstance = {}
-
-
+const panelNames: Ref<string[]> = ref([])
 const updateInstance = (instance: any) => {
   // console.log('updateInstance:', instance)
   emitter.emit(EventNames.GlIdeSetterUpdateComponentInstance, instance)
   // ideStore.updateInstanceKey = false
   emits('update', instance)
 }
-
 
 const defaultActiveKey = ref(undefined)
 const switchPanel = (args: any) => {
@@ -56,12 +66,23 @@ onUnmounted(() => {
   emitter.off(EventNames.GlIdeSetterPanelSwitch, switchPanel)
 })
 
-watch(() => {
-  return componentStore.currentSelectedComponentId
-}, () => {
-  defaultActiveKey.value = undefined
-})
-
+watch(
+  () => {
+    return componentStore.currentSelectedComponentId
+  },
+  () => {
+    defaultActiveKey.value = undefined
+    panelNames.value = ideStore.findSetterPanelNamesByPageType(
+      pageStore.currentPage?.sourceContent?.props?.pageType
+    )!
+    if (!panelNames.value) {
+      console.error(
+        '通过props?.pageType获取不到需要展示的面板',
+        pageStore.currentPage?.sourceContent
+      )
+    }
+  }
+)
 </script>
 
 <style>

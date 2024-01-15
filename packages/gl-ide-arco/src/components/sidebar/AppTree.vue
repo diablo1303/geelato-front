@@ -37,8 +37,7 @@ import {
   EntityReader,
   EntityReaderParam,
   EntitySaver,
-  FieldMeta,
-  PageType
+  FieldMeta
 } from '@geelato/gl-ui'
 import CreatePageNav from './create-page/CreatePageNav.vue'
 import type { PageInfo } from './create-page/CreatePageNav'
@@ -50,6 +49,7 @@ const pageStore = usePageStore()
 pageStore.addPageTemplate('formPage', import('../stage/formPageTemplate.json'))
 pageStore.addPageTemplate('freePage', import('../stage/freePageTemplate.json'))
 pageStore.addPageTemplate('listPage', import('../stage/listPageTemplate.json'))
+pageStore.addPageTemplate('flowPage', import('../stage/flowPageTemplate.json'))
 
 type ClickContextMenuItemType = {
   clickedNodeData: Record<string, any>
@@ -152,20 +152,13 @@ const contextMenuData = [
     useFor: ['folder'],
     action: 'addNode'
   },
-  // {
-  //   title: '新建表单页面',
-  //   iconType: 'gl-form',
-  //   _nodeType: 'formPage',
-  //   useFor: ['folder'],
-  //   action: 'addNode'
-  // },
-  // {
-  //   title: '新建列表页面',
-  //   iconType: 'gl-list',
-  //   _nodeType: 'listPage',
-  //   useFor: ['folder'],
-  //   action: 'addNode'
-  // },
+  {
+    title: '新建工作流程',
+    iconType: 'gl-flow',
+    _nodeType: 'flowPage',
+    useFor: ['folder'],
+    action: 'addNode'
+  },
   {
     title: '设置为菜单',
     iconType: 'gl-menu',
@@ -195,7 +188,7 @@ const contextMenuData = [
     title: '重命名',
     iconType: 'gl-edit-square',
     _nodeType: 'freePage',
-    useFor: ['folder', 'freePage', 'formPage', 'listPage'],
+    useFor: ['folder', 'freePage', 'formPage', 'listPage', 'flowPage'],
     action: 'updateNodeName'
   },
   {
@@ -203,7 +196,7 @@ const contextMenuData = [
     iconType: 'gl-delete',
     iconColor: '#cc3636',
     _nodeType: 'freePage',
-    useFor: ['folder', 'freePage', 'formPage', 'listPage', 'templatePage'],
+    useFor: ['folder', 'freePage', 'formPage', 'listPage', 'templatePage', 'flowPage'],
     action: 'deleteNode'
   }
 ]

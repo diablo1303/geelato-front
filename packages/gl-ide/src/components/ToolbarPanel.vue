@@ -13,7 +13,7 @@
       <!--        {{ appStore.currentApp.name }}-->
       <!--      </span>-->
       <!--<a size="small" :style="btnStyle" @click="comingSoon('设置管理')">设置</a>-->
-      <span class="gl-item">
+      <span class="gl-item" style="font-weight: 600">
         {{ appStore.currentApp.name }}
       </span>
       <span class="gl-item" v-if="pageStore.currentPage.sourceContent?.componentName">
@@ -336,7 +336,7 @@ const copyCodeAndChangeId = () => {
 
 <style>
 .gl-designer-toolbar {
-  /*padding: 4px 4px*/
+  padding: 4px 0px 4px 8px
 }
 
 .gl-designer-toolbar .gutter {

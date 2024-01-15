@@ -18,16 +18,17 @@ export class PageCreatorOptions {
   showFields: FieldMeta[] = []
   // 该属性列表页面适用 每行默认三列
   queryFields: FieldMeta[] = []
+
 }
 
-export const usePageConfig = (label?: string) => {
+export const usePageConfig = ( pageType: PageType,label?: string) => {
   return {
     id: utils.gid('page'),
     componentName: 'GlPage',
     props: {
       label: label || '页面',
       pageMargin: '0',
-      pageType: 'formPage'
+      pageType: pageType || PageType.emptyPage
     },
     slots: {},
     children: [],
@@ -37,7 +38,7 @@ export const usePageConfig = (label?: string) => {
 
 export abstract class PageCreator {
   create(options: PageCreatorOptions) {
-    const page = usePageConfig(options.pageInfo.label)
+    const page = usePageConfig(options.pageInfo.type,options.pageInfo.label)
     return this.buildChildren(page, options)
   }
 
