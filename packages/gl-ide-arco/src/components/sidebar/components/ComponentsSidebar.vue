@@ -1,28 +1,58 @@
 <template>
   <div class="gl-ide-sidebar-components gl-scrollbar-small">
-    <div v-for="componentMaterialGroup in componentMaterialGroups">
-      <div
-        class="gl-group-title"
-        @click="componentMaterialGroup.opened = !componentMaterialGroup.opened"
-        style="border-bottom: 1px solid #04559f; width: 90%"
-      >
-        <span :title="componentMaterialGroup.name" style="font-weight: 600; color: #7d7d7f">{{
-          componentMaterialGroup.text
-        }}</span>
-        <span class="gl-tag">{{ componentMaterialGroup.items?.length }}</span>
-      </div>
-      <div class="gl-group-cards" v-if="componentMaterialGroup.opened">
-        <template v-for="element in componentMaterialGroup.items">
-          <ComponentsDndItem
-            v-if="!element.meta.deprecated"
-            :element="element"
-            :templateInst="createTemplateInst(element)"
-            :size="size"
+    <a-tabs size="small" default-active-key="1">
+      <a-tab-pane key="1" title="组件">
+        <div v-for="componentMaterialGroup in componentMaterialGroups">
+          <div
+            class="gl-group-title"
+            @click="componentMaterialGroup.opened = !componentMaterialGroup.opened"
+            style="border-bottom: 1px solid #04559f; width: 90%"
           >
-          </ComponentsDndItem>
-        </template>
-      </div>
-    </div>
+            <span :title="componentMaterialGroup.name" style="font-weight: 600; color: #7d7d7f">{{
+              componentMaterialGroup.text
+            }}</span>
+            <span class="gl-tag">{{ componentMaterialGroup.items?.length }}</span>
+          </div>
+          <div class="gl-group-cards" v-if="componentMaterialGroup.opened">
+            <template v-for="element in componentMaterialGroup.items">
+              <ComponentsDndItem
+                v-if="!element.meta.deprecated"
+                :element="element"
+                :templateInst="createTemplateInst(element)"
+                :size="size"
+              >
+              </ComponentsDndItem>
+            </template>
+          </div>
+        </div>
+      </a-tab-pane>
+      <a-tab-pane key="2" title="页面模板">
+        <div v-for="templateMaterialGroup in templateMaterialGroups">
+          <div
+              class="gl-group-title"
+              @click="templateMaterialGroup.opened = !templateMaterialGroup.opened"
+              style="border-bottom: 1px solid #04559f; width: 90%"
+          >
+            <span :title="templateMaterialGroup.name" style="font-weight: 600; color: #7d7d7f">{{
+                templateMaterialGroup.text
+              }}</span>
+            <span class="gl-tag">{{ templateMaterialGroup.items?.length }}</span>
+          </div>
+          <div class="gl-group-cards" v-if="templateMaterialGroup.opened">
+            <template v-for="element in templateMaterialGroup.items">
+              <ComponentsDndItem
+                  v-if="!element.meta.deprecated"
+                  :element="element"
+                  :templateInst="createTemplateInst(element)"
+                  :size="size"
+              >
+              </ComponentsDndItem>
+            </template>
+          </div>
+        </div>
+      </a-tab-pane>
+      <a-tab-pane key="3" title="自定义区块"> Coming Soon ...</a-tab-pane>
+    </a-tabs>
   </div>
 </template>
 <script lang="ts">
@@ -35,14 +65,11 @@ export default {
 import { computed, type PropType, ref } from 'vue'
 import { useIdeStore } from '@geelato/gl-ide'
 import { utils } from '@geelato/gl-ui'
-import {
-  type ComponentMaterial,
-  ComponentMaterialGroup,
-  type ComponentInstance
-} from '@geelato/gl-ui-schema'
+import type {ComponentMaterial, ComponentInstance,ComponentMaterialGroup} from '@geelato/gl-ui-schema'
 import { useComponentMaterialStore } from '@geelato/gl-ui-schema-arco'
 import ComponentsDndItem from '../../dnd/ComponentDndItem.vue'
 import { SizeType } from '../../setters/Types'
+import useComponentGroups from './componentGroups'
 
 const props = defineProps({
   size: {
@@ -59,10 +86,16 @@ const props = defineProps({
         { name: 'layout', text: '布局', opened: true },
         { name: 'dataEntry', text: '表单', opened: true },
         { name: 'dataDisplay', text: '展示', opened: true },
+        { name: 'chart', text: '图表', opened: true },
         { name: 'feedback', text: '反馈', opened: true },
-        { name: 'navigation', text: '导航', opened: false },
-        { name: 'chart', text: '图表', opened: true }
+        { name: 'navigation', text: '导航', opened: false }
       ]
+    }
+  },
+  templateGroups: {
+    type: Array as PropType<Array<ComponentMaterialGroup>>,
+    default() {
+      return [{ name: 'pageTemplate', text: '页面模板', opened: true }]
     }
   }
 })
@@ -81,10 +114,10 @@ const fontSize = computed(() => {
 })
 
 const ideStore = useIdeStore()
+// 所有的物料信息
 const componentMaterialStore = useComponentMaterialStore()
 componentMaterialStore.initRegisterComponentMetas()
 const drag = ref(false)
-// const chooseIndex = ref(-1)
 
 const toUpperCase = (str: String) => {
   if (str.indexOf('_') !== -1) return str
@@ -92,27 +125,11 @@ const toUpperCase = (str: String) => {
 }
 
 const componentMaterialGroups = ref<Array<ComponentMaterialGroup>>([])
+componentMaterialGroups.value = useComponentGroups(props.componentGroups, componentMaterialStore)
 
-const resetComponentMaterialGroups = () => {
-  componentMaterialGroups.value = []
-  for (let index in props.componentGroups) {
-    const componentMaterialItems = componentMaterialStore.componentMaterials.filter(
-      (componentMaterial: ComponentMaterial) => {
-        return componentMaterial.group === props.componentGroups[index].name
-      }
-    )
-    const componentMaterialGroup = new ComponentMaterialGroup()
-    componentMaterialGroup.name = props.componentGroups[index].name
-    componentMaterialGroup.text = props.componentGroups[index].text
-    componentMaterialGroup.opened = props.componentGroups[index].opened
-    componentMaterialGroup.items = componentMaterialItems
-    componentMaterialGroups.value.push(componentMaterialGroup)
-  }
-}
-resetComponentMaterialGroups()
-// const onStartNodeDrag = (e: MouseEvent, element: Object) => {
-//   // this.$gl.bus.$emit('GlPluginCore_onStartNodeDrag', {e: e, element: element})
-// }
+const templateMaterialGroups = ref<Array<ComponentMaterialGroup>>([])
+templateMaterialGroups.value = useComponentGroups(props.templateGroups, componentMaterialStore)
+
 
 /**
  * 基于物料创建实例
@@ -146,5 +163,5 @@ const createTemplateInst = (element: ComponentMaterial) => {
   return result
 }
 
-resetComponentMaterialGroups()
+// resetComponentMaterialGroups()
 </script>

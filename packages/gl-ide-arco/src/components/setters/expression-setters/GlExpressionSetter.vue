@@ -15,7 +15,7 @@ import {
   useComponentInstTreeData, useSrvTreeData
 } from "./varsMeta";
 import {useGlobal, utils} from "@geelato/gl-ui";
-import {useConstTreeData, useDictTreeData} from "./enumMeta";
+import {useConstTreeData, useDictTreeData, useWorkflowTreeData} from "./enumMeta";
 
 const global = useGlobal()
 const emits = defineEmits(['update:modelValue'])
@@ -51,6 +51,7 @@ const _functionalFormulaTreeData: Ref<any[]> = ref([])
 const _componentInstTreeData: Ref<any[]> = ref([])
 const _constTreeData: Ref<any[]> = ref([])
 const _dictTreeData: Ref<any[]> = ref([])
+const _workflowTreeData: Ref<any[]> = ref([])
 const _srvTreeData: Ref<any[]> = ref([])
 const visibleValueExpressModal = ref(false)
 /**
@@ -63,6 +64,7 @@ const openValueExpressModal = async () => {
   _componentInstTreeData.value = setKeys(useComponentInstTreeData())
   _constTreeData.value = setKeys(await useConstTreeData())
   _dictTreeData.value = setKeys(await useDictTreeData())
+  _workflowTreeData.value = setKeys(await useWorkflowTreeData())
   _srvTreeData.value = setKeys(useSrvTreeData())
 }
 const clearValueExpress = () => {
@@ -292,6 +294,37 @@ const selectDictItem = (key: any) => {
                   </a-tooltip>
                 </template>
                 <template #extra="{_type}">
+                  <span class="gl-extra">{{ _type }}</span>
+                </template>
+              </a-tree>
+            </a-collapse-item>
+            <a-collapse-item header="流程定义" key="4">
+              <a-tree ref="enumVarsTree" :default-expanded-keys="[]" size="small" blockNode
+                      :data="_workflowTreeData"
+                      @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_workflowTreeData)"
+              >
+                <template #title="{_code,title,_value,_description}">
+                  <a-tooltip v-if="_description" background-color="#165DFF">
+                    <template #content>
+                      {{ _description }}
+                    </template>
+                    <span>
+                    <span class="gl-title" style="color:#1d2129;margin-left: 0!important;"
+                    >{{
+                        title
+                      }}</span>
+                  </span>
+                  </a-tooltip>
+                  <span v-else class="gl-title" style="color:#1d2129;margin-left: 0!important;">
+                    <span>{{
+                        title
+                      }}</span>
+                  </span>
+                </template>
+                <template #extra="{_code,title,_type}">
+                  <a-button v-if="['系统常量'].indexOf(title)===-1" size="mini" type="text" shape="round"
+                            @click="expendDict(_code)">选择字典值
+                  </a-button>
                   <span class="gl-extra">{{ _type }}</span>
                 </template>
               </a-tree>

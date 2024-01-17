@@ -1,10 +1,26 @@
 <template>
   <div class="gl-page" v-if="visiblePage" :style="style" :key="key">
     <template v-if="glIsRuntime">
-      <slot></slot>
+      <template v-if="pageTemplateName">
+        <!-- render gl-page-template -->
+        <component :is="pageTemplateName">
+          <slot></slot>
+        </component>
+      </template>
+      <template v-else>
+        <slot></slot>
+      </template>
     </template>
     <template v-else>
-      <component :is="'GlInsts'" :glComponentInst="glComponentInst"></component>
+      <template v-if="pageTemplateName">
+        <!-- render gl-page-template -->
+        <component :is="pageTemplateName">
+          <component :is="'GlInsts'" :glComponentInst="glComponentInst"></component>
+        </component>
+      </template>
+      <template v-else>
+        <component :is="'GlInsts'" :glComponentInst="glComponentInst"></component>
+      </template>
     </template>
   </div>
 </template>
@@ -15,16 +31,18 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {type PropType, getCurrentInstance, onUnmounted, provide, ref, nextTick} from "vue";
+import { type PropType, getCurrentInstance, onUnmounted, provide, ref, nextTick } from 'vue'
 import {
   type PageType,
   PageProvideProxy,
   jsScriptExecutor,
   mixins,
-  PageProvideKey, type Param, utils
-} from "@geelato/gl-ui";
-import type {Action} from "@geelato/gl-ui-schema";
-import {PageParamsKey} from "@geelato/gl-ui";
+  PageProvideKey,
+  type Param,
+  utils
+} from '@geelato/gl-ui'
+import type { Action } from '@geelato/gl-ui-schema'
+import { PageParamsKey } from '@geelato/gl-ui'
 
 const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
@@ -56,12 +74,23 @@ const props = defineProps({
       return ''
     }
   },
+  /**
+   *  页面状态默认为read
+   *  注意在给页面添加类似pageStatus的属性时，为了确保打开页面时有传该值进来，需处理如下：
+   *  1、需在JsScriptExecutor中增加相应信息，如loadPage时需传参数
+   *  2、在脚本生成的blockHandler中传入相应的信息
+   */
   pageStatus: {
     type: String,
     default() {
       return 'read'
     }
   },
+  /**
+   *  页面模板组件名称
+   *  默认为空
+   */
+  pageTemplateName: String,
   pageMargin: {
     type: String,
     default() {
@@ -103,7 +132,7 @@ const style = {
   padding: props.pagePadding || '0'
 }
 
-// console.log('GlPage > props.params:', props.params, 'id:', props.glComponentInst.id)
+console.log('GlPage > props:', props)
 const pageProvideProxy = new PageProvideProxy(props.glComponentInst, getCurrentInstance()!)
 pageProvideProxy.pageId = props.pageId
 pageProvideProxy.setVueRef(props.glComponentInst.id, getCurrentInstance())
@@ -132,7 +161,9 @@ if (props.params && props.params.length > 0) {
     const param: Param = props.params[index]
     if (param.valueExpression) {
       if (typeof param.valueExpression === 'string') {
-        param.value = jsScriptExecutor.evalExpression(param.valueExpression, {pageProxy: pageProvideProxy})
+        param.value = jsScriptExecutor.evalExpression(param.valueExpression, {
+          pageProxy: pageProvideProxy
+        })
       } else {
         // 不需要解析
         param.value = param.valueExpression
@@ -154,7 +185,6 @@ onUnmounted(() => {
   // console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
 })
 
-
 /**
  *  以当前页面参数数据重新加载
  */
@@ -167,8 +197,7 @@ const refresh = () => {
   })
 }
 
-defineExpose({refresh})
-
+defineExpose({ refresh })
 </script>
 <style lang="less">
 .gl-page {

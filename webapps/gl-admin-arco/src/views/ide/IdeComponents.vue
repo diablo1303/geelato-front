@@ -10,6 +10,7 @@
     schemaArco,
     schemaBlock,
     schemaBpmn,
+    schemaChart
   } from '@geelato/gl-ui-schema-arco';
   import { DndProvider } from 'vue3-dnd';
   import ComponentBuilderExample from './ComponentBuilderExample.vue';
@@ -30,6 +31,9 @@
         break;
       case 'schemaBpmn':
         componentMetas.value = schemaBpmn.componentMetas;
+        break;
+      case 'schemaChart':
+        componentMetas.value = schemaChart.componentMetas;
         break;
       default:
         console.error('不支持的schema类型：', schema.value);
@@ -59,7 +63,8 @@
         size="large"
         @change="change"
       >
-        <a-radio value="schemaArco">UI组件库</a-radio>
+        <a-radio value="schemaArco">UI组件、页面模板库</a-radio>
+        <a-radio value="schemaChart">图形板库</a-radio>
         <a-radio value="schemaBlock">脚本组件库</a-radio>
         <a-radio value="schemaBpmn">BPMN组件库</a-radio>
       </a-radio-group>

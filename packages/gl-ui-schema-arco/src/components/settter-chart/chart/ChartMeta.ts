@@ -2,7 +2,7 @@ export default {
   componentName: 'GlChart',
   displayMode: 'tile',
   iconType: 'gl-piechart',
-  group: 'dataDisplay',
+  group: 'chart',
   title: '图形',
   alias: 'chart',
   useBy: ['freePage'],

@@ -6,6 +6,48 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "6157047",
+      "name": "加签",
+      "font_class": "add-approval",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "9145588",
+      "name": "转交",
+      "font_class": "deliver",
+      "unicode": "e69a",
+      "unicode_decimal": 59034
+    },
+    {
+      "icon_id": "9922611",
+      "name": "撤回",
+      "font_class": "revocation",
+      "unicode": "e621",
+      "unicode_decimal": 58913
+    },
+    {
+      "icon_id": "26543212",
+      "name": "传阅",
+      "font_class": "pass-for-read",
+      "unicode": "e64a",
+      "unicode_decimal": 58954
+    },
+    {
+      "icon_id": "29564543",
+      "name": "催办",
+      "font_class": "press-to-do",
+      "unicode": "e721",
+      "unicode_decimal": 59169
+    },
+    {
+      "icon_id": "1302559",
+      "name": "send",
+      "font_class": "send",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
       "icon_id": "9513558",
       "name": "gateway-xor",
       "font_class": "gateway-xor",

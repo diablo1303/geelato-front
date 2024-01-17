@@ -331,7 +331,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
       appId: page.appId,
       extendId: page.extendId,
       code: page.code,
-      type: 'GlPageLayout',
+      type: page.type,
       sourceContent: JSON.stringify(convertedPageContent.source),
       releaseContent: JSON.stringify(convertedPageContent.release),
       previewContent: JSON.stringify(convertedPageContent.preview),
@@ -361,6 +361,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
     //   savingPage.id = res.data
     //   emitter.emit(EventNames.GlIdeToolbarSaveFile, { page: savingPage })
     // })
+    console.log('savePage',page)
     const entitySaver = getPageEntitySaver(page)
     return entityApi.saveEntity(entitySaver).then((res) => {
       page.id = res.data

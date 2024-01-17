@@ -1,19 +1,19 @@
-import type IBlockHandler from "../BlockHandler";
-import type {PropsExpressions} from "../BlockHandler";
-import ParseResult from "../ParseResult";
-import type {Param} from "@geelato/gl-ui";
-import {blocksHandler, CommandBlocks} from "../BlockHandler";
-import {utils} from "@geelato/gl-ui";
+import type IBlockHandler from '../BlockHandler'
+import type { PropsExpressions } from '../BlockHandler'
+import ParseResult from '../ParseResult'
+import type { Param } from '@geelato/gl-ui'
+import { blocksHandler, CommandBlocks } from '../BlockHandler'
+import { utils } from '@geelato/gl-ui'
 
 const toStr = (str: string) => {
-    return `"${str}"`
+  return `"${str}"`
 }
 export default class OpenComponentPageBlockHandler implements IBlockHandler {
   getName(): string {
     return 'OpenComponentPageBlockHandler'
   }
+
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-    // console.log("OpenComponentPageBlockHandler > parseToScript > props:", props)
     const mode = props.mode || 'Drawer'
     const title = propsExpressions?.title || toStr(props.title)
     const width = propsExpressions?.width || toStr(props.width || '1024px')
@@ -26,7 +26,7 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
       `
             const ${contentName} = $gl.fn.loadPage("${props.pageId || ''}","${
         props.extendId
-      }",${JSON.stringify(props.params || [])},"${props.pageStatus}");
+      }",${JSON.stringify(props.params || [])},"${props.pageStatus}","${props.pageTemplateName}");
             $gl.fn.open${mode}({
                 title:${title},
                 content: ${contentName},
@@ -65,35 +65,35 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
 }
 
 interface Props {
+  title: string
+  appId: string
+  // pageId 或 extendId 二选一，填写其中一个，优先采用pageId
+  pageId: string
+  extendId: string
+  // 页面状态
+  pageStatus: string
+  // 页面模板名称
+  pageTemplateName: string
+  // Drawer | Modal
+  mode?: string
 
-    title: string
-    appId: string
-    // pageId 或 extendId 二选一，填写其中一个，优先采用pageId
-    pageId: string
-    extendId: string
-    // 页面状态
-    pageStatus: string
-    // Drawer | Modal
-    mode?: string
-
-    width: string
-    // 页面参数
-    params?: Array<Param>
-    // 确认按钮的内容
-    okText?: string
-    // 取消按钮的内容
-    cancelText?: string
-    // 是否隐藏取消按钮
-    hideCancel?: boolean
-    // 点确认之前调用的组件
-    beforeOkInvokeComponentId?: string
-    // 点确认之前调用的组件方法，该方法需返回true或false，true，则执行确认关闭窗口
-    beforeOkInvokeMethodName?: string
-    // 关闭之前调用的组件
-    closeInvokeComponentId?: string
-    // 关闭之前调用的组件方法，如调用列表的刷新方法
-    closeInvokeMethodName?: string
-
+  width: string
+  // 页面参数
+  params?: Array<Param>
+  // 确认按钮的内容
+  okText?: string
+  // 取消按钮的内容
+  cancelText?: string
+  // 是否隐藏取消按钮
+  hideCancel?: boolean
+  // 点确认之前调用的组件
+  beforeOkInvokeComponentId?: string
+  // 点确认之前调用的组件方法，该方法需返回true或false，true，则执行确认关闭窗口
+  beforeOkInvokeMethodName?: string
+  // 关闭之前调用的组件
+  closeInvokeComponentId?: string
+  // 关闭之前调用的组件方法，如调用列表的刷新方法
+  closeInvokeMethodName?: string
 }
 
 blocksHandler.register(new OpenComponentPageBlockHandler(), CommandBlocks.CommandBlockOne)

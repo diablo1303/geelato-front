@@ -17,6 +17,7 @@ import {useComponentMaterialStore} from "./store/UseComponentMaterialStore";
 import {schemaBlock} from "./components/schemaBlock";
 import {schemaArco, isDataEntry} from "./components/schemaArco";
 import {schemaBpmn} from "./components/schemaBpmn";
+import {schemaChart} from "./components/schemaChart";
 
 const component: Plugin = {
     // @ts-ignore
@@ -25,6 +26,6 @@ const component: Plugin = {
     }
 }
 
-export {useComponentMaterialStore, schemaBlock, schemaArco, schemaBpmn, isDataEntry}
+export {useComponentMaterialStore, schemaBlock, schemaArco, schemaBpmn,schemaChart, isDataEntry}
 // 默认导出组件
 export default component

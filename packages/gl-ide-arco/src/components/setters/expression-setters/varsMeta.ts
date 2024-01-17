@@ -1,4 +1,4 @@
-import { jsScriptExecutor, useGlobal } from '@geelato/gl-ui'
+import {entityApi, jsScriptExecutor, useGlobal} from '@geelato/gl-ui'
 import { useComponentStore } from '@geelato/gl-ide'
 import { getLabel } from '@geelato/gl-ui-arco'
 import type { MethodMeta } from '@geelato/gl-ui-schema'
@@ -541,3 +541,4 @@ const logic = {
 }
 
 export const functionalFormulaTreeData = [date, text, logic]
+

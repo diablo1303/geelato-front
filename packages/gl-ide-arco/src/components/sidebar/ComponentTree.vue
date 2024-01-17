@@ -6,8 +6,8 @@ export default {
 <script setup lang="ts">
 // @ts-nocheck
 // TODO error TS2339: Property 'index' does not exist on type
-import {useIdeStore} from "@geelato/gl-ide";
 import {computed, ref, watch} from "vue";
+import {useIdeStore} from "@geelato/gl-ide";
 
 const componentStore = useIdeStore().componentStore
 const componentTree = ref()

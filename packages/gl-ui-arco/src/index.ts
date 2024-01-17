@@ -1,5 +1,6 @@
 import type {App, Plugin} from 'vue'
 import GlPage from './components/gl-page/GlPage.vue'
+import GlPageTemplateFlow from './components/gl-page-template/GlPageTemplateFlow.vue'
 import GlEntityTablePlus from './components/gl-entity-table-plus/index.vue'
 import GlEntityTree from './components/gl-entity-tree/GlEntityTree.vue'
 import GlEntityForm from './components/gl-entity-form/GlEntityForm.vue'
@@ -59,6 +60,7 @@ const component: Plugin = {
     Vue.component(GlIconfontSelect.name, GlIconfontSelect)
     Vue.component(GlDict.name, GlDict)
     Vue.component(GlPage.name, GlPage)
+    Vue.component(GlPageTemplateFlow.name,GlPageTemplateFlow)
     Vue.component(GlLayoutSite.name, GlLayoutSite)
     Vue.component(GlLayoutPage.name, GlLayoutPage)
     Vue.component('GlEntityTablePlus', GlEntityTablePlus)

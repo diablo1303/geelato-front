@@ -68,6 +68,7 @@ export default class PageProvideProxy {
     // 数据库中的字段，页面id
     pageId: string = ''
     pageStatus: string = 'read'
+    pageTemplateName: string = ''
     pageInst: ComponentInstance
     pageVueInst: ComponentInternalInstance | null
     pageParams: Array<Param> = []
@@ -137,8 +138,8 @@ export default class PageProvideProxy {
             // console.log('setVueRef(),componentId:', componentId, ',vueRef:', vueRef, vueRef.props.glComponentInst)
             this.vueRefMap[componentId] = vueRef
             this.componentInstMap[componentId] = vueRef.props.glComponentInst as ComponentInstance
-            if (!this.componentInstMap[componentId].componentName){
-                console.error('在setVueRef时，存在组件名为空的组件',this.componentInstMap[componentId],vueRef)
+            if (!this.componentInstMap[componentId].componentName) {
+                console.error('在setVueRef时，存在组件名为空的组件', this.componentInstMap[componentId], vueRef)
             }
             // 由于动态组件的的onMounted事件次序中，父组件不是最后一个触发，这里自行实现
             if (this.unMountedIds[componentId]) {
@@ -269,7 +270,7 @@ export default class PageProvideProxy {
      * 是否存在参数
      * @param paramName
      */
-    hasPageParam(paramName: string){
+    hasPageParam(paramName: string) {
         const foundParam = this.pageParams?.find((param: Param) => {
             return param.name === paramName
         })

@@ -81,7 +81,7 @@ export default class Page {
         // 页面名称 不需要名称字段，从树节点中获取
         // this.name = params.name || ''
         // 类型，唯一，如 Page、Canvas、Api、Dbm
-        this.type = params.type || 'Page'
+        this.type = params.type
         // 页面编码，唯一
         this.code = params.code || ''
         // 描述

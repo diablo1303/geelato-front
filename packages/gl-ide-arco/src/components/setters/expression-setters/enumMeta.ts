@@ -63,3 +63,38 @@ const getDictItems = async (dictId: string) => {
     })
     return result
 }
+
+
+let workflows: any[] = []
+let loadingWorkflow = true
+const workflowConst = {
+    title: '流程定义',
+    children: [],
+    _description: ''
+}
+export const useWorkflowTreeData = async () => {
+    if (workflows.length === 0) {
+        loadingWorkflow = true
+        try {
+            // dict = await entityApi.query('platform_dict', 'id,dictCode,dictName', {}).then((res) => {
+            //     return res.data
+            // })
+            // dictConst.children.length = 0
+            // dict.forEach((dictOne) => {
+            //     dictConst.children.push({
+            //         title: dictOne.dictName,
+            //         _description: '',
+            //         _type: 'object',
+            //         _code: async () => {
+            //             return JSON.stringify(await getDictItems(dictOne.id))
+            //         },
+            //     })
+            // })
+        } catch (e) {
+            throw e
+        } finally {
+            loadingWorkflow = false
+        }
+    }
+    return workflowConst.children
+}

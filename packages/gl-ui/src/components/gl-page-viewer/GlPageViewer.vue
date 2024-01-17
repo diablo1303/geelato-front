@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import {ref, watch} from "vue";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
-import {mixins, useGlobal} from "../../index";
-import {entityApi} from "../../m/datasource/EntityApi";
+import { ref, watch } from 'vue'
+import { ComponentInstance } from '@geelato/gl-ui-schema'
+import { mixins, useGlobal } from '../../index'
+import { entityApi } from '../../m/datasource/EntityApi'
 
 defineOptions({
-  name: "GlPageViewer"
+  name: 'GlPageViewer'
 })
 
 const global = useGlobal()
@@ -26,6 +26,11 @@ const props = defineProps({
    *  页面状态
    */
   pageStatus: String,
+  /**
+   *  页面模板组件名称
+   *  默认为空
+   */
+  pageTemplateName: String,
   pageProps: {
     type: Object,
     default() {
@@ -35,6 +40,7 @@ const props = defineProps({
   ...mixins.props
 })
 // console.log('GlPageViewer > props.pageProps:', props.pageProps)
+console.log('GlPageViewer > props:', props)
 const glComponentInst = ref(new ComponentInstance())
 
 const load = () => {
@@ -45,7 +51,9 @@ const load = () => {
     loadedPage = entityApi.queryPageByExtendId(props.extendId)
   } else {
     global.$notification.error({
-      title: '配置缺失', content: '未配置pageId或extendId。', duration: 6000,
+      title: '配置缺失',
+      content: '未配置pageId或extendId。',
+      duration: 6000,
       closable: true
     })
   }
@@ -66,23 +74,34 @@ const load = () => {
   }
 }
 
-watch(() => {
-  return props.extendId + '' + props.pageId
-}, () => {
-  load()
-}, {immediate: true})
-
+watch(
+  () => {
+    return props.extendId + '' + props.pageId
+  },
+  () => {
+    load()
+  },
+  { immediate: true }
+)
 </script>
 <template>
   <div class="gl-page-viewer">
-    <GlComponent v-if="glComponentInst&&glComponentInst.componentName" :key="glComponentInst.id"
-                 :glComponentInst="glComponentInst"
-                 :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag" :pageStatus="pageStatus" v-bind="pageProps"
-                 :glIgnoreInjectPageProxy="true"/>
+    <!-- render gl-page -->
+    <GlComponent
+      v-if="glComponentInst && glComponentInst.componentName"
+      :key="glComponentInst.id"
+      :glComponentInst="glComponentInst"
+      :glIsRuntime="glIsRuntime"
+      :glRuntimeFlag="glRuntimeFlag"
+      :pageStatus="pageStatus"
+      :pageTemplateName="pageTemplateName"
+      v-bind="pageProps"
+      :glIgnoreInjectPageProxy="true"
+    />
   </div>
 </template>
 <style scoped>
-.gl-page-viewer{
+.gl-page-viewer {
   height: 100%;
 }
 </style>

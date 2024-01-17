@@ -1,4 +1,4 @@
-:root{
+:root {
     --gl_nav_main: #157cc4;
     --gl_nav_dark-main: #9f9c9c;
     --gl_nav_light-main: #00C5FF;
@@ -15,15 +15,21 @@
     --gl_nav_light-layer: linear-gradient(to right, rgba(38, 38, 38, 0.5), rgba(38, 38, 38, 0.5));
     --gl_nav_bar-width: 80px;
 }
+
 /* 重置卡片标题样式 */
 .arco-card-header-title {
     font-weight: 600;
 }
 
+/* 在折叠面板下、Tabs页面下 字段调为14*/
+.arco-collapse-item-content-box .arco-card-header-title,.arco-tabs .arco-card-header-title{
+    font-size: 14px;
+    font-weight: 500;
+}
 
-.arco-input-wrapper .arco-input[disabled],.arco-select-view-single.arco-select-view-disabled
-,.arco-radio-disabled .arco-radio-label,.arco-picker input[disabled],
-.arco-checkbox-disabled .arco-checkbox-label{
+
+.arco-input-wrapper .arco-input[disabled], .arco-select-view-single.arco-select-view-disabled, .arco-radio-disabled .arco-radio-label, .arco-picker input[disabled],
+.arco-checkbox-disabled .arco-checkbox-label {
     -webkit-text-fill-color: #696969;
 }
 
@@ -37,11 +43,11 @@
     bottom: -1.1em !important;
 }
 
-.arco-list-item:hover{
+.arco-list-item:hover {
     background-color: rgb(239, 239, 239);
 }
 
-.arco-list-item.gl-active{
+.arco-list-item.gl-active {
     background-color: rgb(239, 239, 239);
 }
 

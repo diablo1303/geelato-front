@@ -57,6 +57,10 @@ const switchHide = () => {
   width: 100%;
 }
 
+.gl-card .arco-card-header .gl-icon-font{
+  margin-right: 4px;
+}
+
 .gl-card.gl-hidden .arco-card-body {
   display: none;
 }

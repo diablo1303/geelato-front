@@ -88,7 +88,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
    * @param { type, extendId, title, iconType }  extendId 页面所处的节点id
    */
   function openPage({ type, extendId, title, iconType }: Page) {
-    // console.log('try to open page:', {type, extendId, title, iconType}, openingPageExtendId.value)
+    console.log('try to open page:', {type, extendId, title, iconType}, openingPageExtendId.value)
     if (openingPageExtendId.value) {
       if (openingPageExtendId.value === extendId) {
         global.$notification.error({
@@ -128,6 +128,7 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
               page.id = pageItem.id
               page.appId = pageItem.appId
               page.extendId = pageItem.extendId
+              page.type = pageItem.type
               page.title = title
               page.iconType = iconType
               page.code = pageItem.code

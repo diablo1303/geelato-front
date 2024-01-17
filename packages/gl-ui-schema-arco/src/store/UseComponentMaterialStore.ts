@@ -10,6 +10,7 @@ import {
 import {schemaArco} from "../components/schemaArco";
 import {schemaBlock} from "../components/schemaBlock";
 import {schemaBpmn} from "../components/schemaBpmn";
+import {schemaChart} from "../components/schemaChart";
 
 /**
  *  实现对组件的设置器元数据信息管理
@@ -114,6 +115,8 @@ export const useComponentMaterialStore = defineStore('GlComponentMaterialStore',
         registerComponentMaterials(schemaBlock.componentInstances)
         registerComponentMetas(schemaBpmn.componentMetas)
         registerComponentMaterials(schemaBpmn.componentInstances)
+        registerComponentMetas(schemaChart.componentMetas)
+        registerComponentMaterials(schemaChart.componentInstances)
         inited = true
     }
 

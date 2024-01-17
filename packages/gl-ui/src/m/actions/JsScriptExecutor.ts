@@ -324,12 +324,19 @@ export class JsScriptExecutor {
         // })
         window.open(`${url}?${paramsAry.join('&')}`, '_blank')
       },
-      loadPage: (pageId: string, extendId: string, params: Array<Param>, pageStatus: string) => {
+      loadPage: (
+        pageId: string,
+        extendId: string,
+        params: Array<Param>,
+        pageStatus: string,
+        pageTemplateName?: string
+      ) => {
         return that.loadPage(
           pageId,
           extendId,
           that.evalParams(params, $gl.ctx, $gl) || [],
-          pageStatus
+          pageStatus,
+          pageTemplateName
         )
       },
       loadComponent: (componentName: string, props: Record<string, any>) => {
@@ -753,6 +760,7 @@ export class JsScriptExecutor {
       id: pageProxy?.pageInst.id,
       label: pageProxy?.pageInst.title,
       status: pageProxy?.pageStatus,
+      templateName: pageProxy?.pageTemplateName,
       params: pageProxy?.pageInst.props.params
     }
 
@@ -792,7 +800,13 @@ export class JsScriptExecutor {
    * @param params
    * @param pageStatus 页面状态
    */
-  loadPage(pageId: string, extendId: string, params: Array<Param>, pageStatus?: string) {
+  loadPage(
+    pageId: string,
+    extendId: string,
+    params: Array<Param>,
+    pageStatus?: string,
+    pageTemplateName?: string
+  ) {
     const pageProps = { params: params }
     console.log(
       'JsScriptExecutor > loadPage > pageId:',
@@ -801,10 +815,12 @@ export class JsScriptExecutor {
       extendId,
       ',pageStatus:',
       pageStatus,
+      'pageTemplateName',
+      pageTemplateName,
       ',pageProps:',
       pageProps
     )
-    return h(GlPageViewer, { pageId, extendId, pageStatus, pageProps })
+    return h(GlPageViewer, { pageId, extendId, pageStatus, pageTemplateName, pageProps })
   }
 
   /**
