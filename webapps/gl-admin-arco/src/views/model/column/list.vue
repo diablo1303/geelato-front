@@ -211,7 +211,7 @@
       <a-table-column :title="$t('model.column.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.comment')" :tooltip="true" :width="200" data-index="comment"/>
       <a-table-column
-          v-show="pageData.formState==='edit'" :title="$t('model.column.index.form.operations')"
+          v-if="pageData.formState==='edit'" :title="$t('model.column.index.form.operations')"
           :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record,isDefault = defaultColumnMetas.includes(record.name)}">
           <!--          <a-button size="small" type="text" @click="addPermission(record)">

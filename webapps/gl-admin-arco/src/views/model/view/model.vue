@@ -144,28 +144,89 @@
       </a-col>
     </a-row>
   </a-form>
-  <a-divider style="margin:0 0 10px 0;"/>
+  <a-divider style="margin: 0 0 10px 0"/>
+  <a-space v-if="pageData.button" style="margin-bottom: 10px">
+    <a-button size="medium" type="primary" @click="customAddEntityClick($event)">
+      <icon-plus/>
+      {{ $t('model.view.index.form.entity.custom') }}
+    </a-button>
+    <a-popover v-model:popup-visible="entityPopover" position="left" trigger="click" style="max-width: 400px">
+      <a-button size="medium" type="primary" @click="entityPopoverClick($event)">
+        <icon-plus/>
+        {{ $t('model.view.index.form.entity.model') }}
+      </a-button>
+      <template #content>
+        <a-form ref="validateEntityForm" :label-col-props="{ span: 6 }" :model="entityData" :wrapper-col-props="{ span: 18 }" class="form2">
+          <a-row :gutter="16">
+            <a-col :span="24">
+              <a-form-item :label="$t('model.view.index.form.entity.tableId')"
+                           :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                           field="tableId">
+                <a-select v-model="entityData.tableId" allow-search @change="entityChange">
+                  <a-option v-for="item of selectEntityOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.id"/>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item :label="$t('model.view.index.form.entity.columnIds')"
+                           :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                           field="columnIds">
+                <a-select v-if="pageData.button" v-model="entityData.columnIds" allow-search multiple>
+                  <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
+                </a-select>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </a-form>
+        <a-divider style="margin: 5px 0px"/>
+        <a-space style="display: flex;align-items: center;justify-content: end;">
+          <a-button size="medium" type="primary" @click="entitySubmitClick($event)">
+            确定
+          </a-button>
+        </a-space>
+      </template>
+    </a-popover>
+  </a-space>
   <a-table
       :bordered="{cell:true}"
       :columns="columnTitle"
       :data="(columnData as TableData[])"
-      :draggable="{ type: 'handle', width: 40 }"
+      :draggable="pageData.button?{type:'handle',width:40}:{}"
       :pagination="false"
       :stripe="true"
       column-resizable
       row-key="id" @change="handleChange">
     <template #columns>
-      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.title')" :tooltip="true" :width="120" data-index="title" fixed="left"/>
-      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.fieldName')" :tooltip="true" :width="120" data-index="fieldName"/>
-      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.type')" :tooltip="true" :width="120" data-index="type"/>
-      <a-table-column :title="$t('model.column.index.form.key')" :width="100" data-index="key"/>
-      <a-table-column :title="$t('model.column.index.form.nullable')" :width="100" data-index="nullable"/>
-      <a-table-column :title="$t('model.column.index.form.charMaxLength')" :width="100" data-index="charMaxLength"/>
-      <a-table-column :title="$t('model.column.index.form.precision')" :width="100" data-index="precision"/>
-      <a-table-column :title="$t('model.column.index.form.scale')" :width="100" data-index="scale"/>
-      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.name')" :tooltip="true" :width="120" data-index="name"/>
-      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.tableName')" :tooltip="true" :width="150" data-index="tableName"/>
-      <a-table-column v-show="pageData.formState!=='view'" :title="$t('model.column.index.form.operations')" :width="80" align="center"
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.title')" :tooltip="true" :width="150" data-index="title" fixed="left">
+        <template #cell="{record}">
+          <a-input v-if="pageData.button" v-model.trim="record.title" :max-length="32"/>
+          <span v-else>{{ record.title }}</span>
+        </template>
+      </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.name')" :tooltip="true" :width="120" data-index="name">
+        <template #cell="{record}">
+          <a-input v-if="pageData.button&&!record.tableName" v-model.trim="record.name" :max-length="32"/>
+          <span v-else>{{ record.name }}</span>
+        </template>
+      </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.fieldName')" :tooltip="true" :width="150" data-index="fieldName">
+        <template #cell="{record}">
+          <a-input v-if="pageData.button" v-model.trim="record.fieldName" :max-length="32"/>
+          <span v-else>{{ record.fieldName }}</span>
+        </template>
+      </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.dataType')" :tooltip="true" :width="120" data-index="selectType">
+        <template #cell="{record}">
+          <a-select v-if="pageData.button" v-model="record.selectType" :options="selectTypeOptions" allow-search/>
+          <span v-else>{{ formatSelectType(record.selectType) }}</span>
+        </template>
+      </a-table-column>
+      <!--     <a-table-column :title="$t('model.column.index.form.key')" :width="100" data-index="key"/>-->
+      <!--      <a-table-column :title="$t('model.column.index.form.nullable')" :width="100" data-index="nullable"/>-->
+      <!--      <a-table-column :title="$t('model.column.index.form.charMaxLength')" :width="100" data-index="charMaxLength"/>-->
+      <!--      <a-table-column :title="$t('model.column.index.form.precision')" :width="100" data-index="precision"/>-->
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.tableName')" :tooltip="true" :width="120" data-index="tableName"/>
+      <a-table-column v-if="pageData.button" :title="$t('model.column.index.form.operations')" :width="80" align="center"
                       data-index="operations" fixed="right">
         <template #cell="{record}">
           <a-button status="danger" type="text" @click="deleteViewColumn(record.tableName,record.fieldName)">
@@ -186,10 +247,14 @@
 import {reactive, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {FormInstance, Modal, Notification, TableData} from "@arco-design/web-vue";
-import {ListUrlParams} from '@/api/base';
+import {ListUrlParams, PageQueryRequest} from '@/api/base';
 import {
   createOrUpdateView as createOrUpdateForm,
   getView as getForm,
+  QueryTableColumnForm,
+  queryTableColumns,
+  QueryTableForm,
+  queryTables,
   QueryViewColumnForm,
   QueryViewForm as QueryForm,
   validateMetaView,
@@ -198,9 +263,11 @@ import {
 import {enableStatusOptions, linkedOptions} from "@/views/model/view/searchTable";
 import MonacoEditor from '@/components/monaco/index.vue';
 import {useRoute} from "vue-router";
+import {columnSelectType, selectTypeOptions} from "@/views/model/column/searchTable";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
+const validateEntityForm = ref<FormInstance>();
 // 国际化
 const {t} = useI18n();
 const route = useRoute();
@@ -250,15 +317,6 @@ const columnData = ref<QueryViewColumnForm[]>([]);
 const handleChange = (_data: any[]) => {
   columnData.value = _data;
 }
-/* const fetchData = async (params: PageQueryRequest) => {
-  try {
-    const {data} = await queryTableColumns(params);
-    columnData.value = data;
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
-}; */
 
 const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
@@ -351,8 +409,108 @@ const deleteViewColumn = (tableName: string, columnName: string) => {
   columnData.value.splice(index, 1);
 }
 
+const formatSelectType = (value: string): string => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of columnSelectType) {
+    if (item.value === value) {
+      return item.label;
+    }
+  }
+  return '';
+}
+
+/**
+ * 添加，自定义字段
+ */
+const customAddEntityClick = (ev?: MouseEvent) => {
+  columnData.value.push({
+    tableName: "",
+    title: "",
+    name: "",
+    fieldName: "",
+    selectType: "VARCHAR"
+  } as QueryViewColumnForm);
+}
+/**
+ * 添加，模型字段
+ */
+const entityPopover = ref(false);
+const entityData = ref({tableId: '', columnIds: []});
+const selectEntityOptions = ref<QueryTableForm[]>([]);
+const getSelectEntityOptions = async (params: PageQueryRequest = {
+  enableStatus: 1,
+  tableType: 'table', ...routeParams.value
+} as unknown as PageQueryRequest) => {
+  try {
+    const {data} = await queryTables(params);
+    selectEntityOptions.value = data;
+  } catch (err) {
+    selectEntityOptions.value = [];
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+const selectEntityColumnOptions = ref<QueryTableColumnForm[]>([]);
+const getSelectEntityColumnOptions = async (params: PageQueryRequest = {
+  enableStatus: 1, tableId: entityData.value.tableId, ...routeParams.value
+} as unknown as PageQueryRequest) => {
+  try {
+    if (entityData.value.tableId) {
+      const {data} = await queryTableColumns(params);
+      selectEntityColumnOptions.value = data;
+    } else {
+      selectEntityColumnOptions.value = [];
+    }
+  } catch (err) {
+    selectEntityColumnOptions.value = [];
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+
+const entityChange = (value?: string) => {
+  entityData.value.columnIds = [];
+  selectEntityColumnOptions.value = [];
+  getSelectEntityColumnOptions();
+}
+const entityPopoverClick = async (ev?: MouseEvent) => {
+  entityData.value = {tableId: "", columnIds: []};
+  await validateEntityForm.value?.resetFields();
+  entityPopover.value = true;
+}
+const entitySubmitClick = async (ev?: MouseEvent) => {
+  const res = await validateEntityForm.value?.validate();
+  if (!res) {
+    entityPopover.value = false;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const entity of entityData.value.columnIds) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of selectEntityColumnOptions.value) {
+        if (item.id === entity) {
+          columnData.value.push({
+            tableName: item.tableName,
+            title: item.title,
+            name: item.name,
+            fieldName: item.fieldName,
+            selectType: item.selectType,
+            comment: item.comment,
+            key: item.key,
+            nullable: item.nullable,
+            charMaxLength: item.charMaxLength,
+            precision: item.numericPrecision,
+            scale: item.numericScale
+          });
+        }
+      }
+    }
+    console.log(entityData.value);
+  }
+}
+
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {
+  getSelectEntityOptions();
+  columnData.value = [];
   // 全局
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
@@ -414,5 +572,12 @@ div.arco-form-item-content > span.textarea-span {
   background-color: var(--color-bg-popup);
   border-radius: 4px;
   box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
+}
+
+.tree-extra-icon {
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 10px;
+  color: #3370ff;
 }
 </style>

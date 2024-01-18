@@ -226,6 +226,7 @@ const generateFormData = (): QueryForm => {
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode,
     synced: false,
+    sourceType: 'creation'
   };
 }
 const formData = ref(generateFormData());

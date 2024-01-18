@@ -5,7 +5,7 @@
       :footer="pageData.button"
       :ok-text="$t('model.view.index.model.ok.text')"
       :title="$t(`model.view.index.model.title.${pageData.formState}`)"
-      width="32%"
+      width="50%"
       @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <ViewModel ref="viewModelRef"></ViewModel>

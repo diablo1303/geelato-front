@@ -10,6 +10,11 @@
           <a-spin>
             {{ pageData.treeTitle !== '' ? pageData.treeTitle : $t('model.connect.index.menu.list.searchTable') }}
           </a-spin>
+          <a-spin v-if="pageData.isSystem" style="padding-right: 5px;">
+            <a-button v-show="pageData.level===2" class="list-action-button-default" type="primary" status="warning">
+              <a-spin>{{ $t('model.table.index.form.sourceType.system') }}</a-spin>
+            </a-button>
+          </a-spin>
           <a-spin>
             <a-button v-show="pageData.level===2" :disabled="pageData.isSync===0" class="list-action-button-default" type="primary">
               <a-spin v-if="pageData.isSync===2">{{ $t('model.table.index.form.tableName.yes') }}</a-spin>
@@ -93,7 +98,7 @@
               </a-card>
             </a-tab-pane>
             <template #extra>
-              <a-space>
+              <a-space v-if="!pageData.isSystem">
                 <a-button v-if="pageData.level===2" type="outline" @click="syncFromModelToTable($event)">
                   <template #icon>
                     <icon-sync/>
@@ -144,7 +149,7 @@ const pageData = ref({
   tabKey: '1',
   level: 0, treeKey: '0', treeTitle: '',
   treeEntity: '', treeConnect: '',
-  isSync: 0
+  isSync: 0, isSystem: false
 });
 
 interface TreeNode extends TreeNodeProps {
@@ -223,6 +228,7 @@ const swapTable = (item: QueryTableForm): string => {
 const swapTableTitle = (item: QueryTableForm): string => {
   // eslint-disable-next-line no-nested-ternary
   pageData.value.isSync = (item.tableName != null && item.tableName.length > 0) ? (item.synced ? 2 : 1) : 0;
+  pageData.value.isSystem = item.sourceType === 'system';
   return `${item.title}（${item.entityName || item.tableName}）`;
 }
 /**
@@ -429,7 +435,8 @@ const loadColumnAndForeignList = (tableId: string, tableName: string, connectId:
   if (columnListRef.value) {
     // @ts-ignore
     columnListRef.value?.loadList({
-      action: pageData.value.formState, pageSize: 10000,
+      action: pageData.value.isSystem ? "view" : pageData.value.formState,
+      pageSize: 10000,
       isModal: pageData.value.isModal,
       params: {pId: tableId, pName: tableName}
     });
@@ -463,7 +470,7 @@ const loadColumnAndForeignList = (tableId: string, tableName: string, connectId:
     columnPermissionFormRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
-      params: {pId: tableId, pName: tableName, pType: 'cp'}
+      params: {pId: tableId, pName: tableName, pType: 'cp', isSystem: pageData.value.isSystem}
     });
   }
 }

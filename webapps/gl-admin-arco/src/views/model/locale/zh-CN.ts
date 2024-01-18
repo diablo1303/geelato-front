@@ -48,6 +48,9 @@ export default {
   'model.table.index.form.linked': '连接状态',
   'model.table.index.form.linked.1': '已连接',
   'model.table.index.form.linked.0': '未连接',
+  'model.table.index.form.sourceType': '来源',
+  'model.table.index.form.sourceType.system': '系统内置',
+  'model.table.index.form.sourceType.creation': '创建',
   'model.table.index.form.tableType': '表格类型',
   'model.table.index.form.tableType.table': '数据库表',
   'model.table.index.form.tableType.entity': '实体',
@@ -74,6 +77,7 @@ export default {
   'model.table.index.model.cancel.text': '取消',
   'model.table.index.model.ok.text': '确认',
   'searchTable.tables.operations.alter': '变更',
+  'searchTable.tables.operations.sourceType.warning': '系统内置表不可编辑',
   'searchTable.tables.operations.alter.warning': '变更“实体名称”并同步至数据库',
   // eslint-disable-next-line no-template-curly-in-string
   'model.table.index.modal.table.content': '是否将数据库表同步至模型中？',
@@ -121,7 +125,10 @@ export default {
   'model.view.index.model.info.reset': '重置成功！',
   'model.view.index.model.info.release': '发布成功！',
   'model.view.index.form.operations.noRel': '表格未同步至数据库，不能发布！',
-
+  'model.view.index.form.entity.custom': '自定义字段',
+  'model.view.index.form.entity.model': '模型字段',
+  'model.view.index.form.entity.tableId': '模型',
+  'model.view.index.form.entity.columnIds': '字段',
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
   'model.foreign.index.menu.list': '模型管理',
   'model.foreign.index.menu.list.searchTable': '模型外键',

@@ -165,12 +165,7 @@
             </a-button>
           </a-popconfirm>
           <!--    删除      -->
-          <a-tooltip v-if="isDefault" :content="$t('model.column.index.form.operations.disabled')">
-            <a-button class="button-disabled" size="small" type="text">
-              {{ $t('searchTable.columns.operations.delete') }}
-            </a-button>
-          </a-tooltip>
-          <a-popconfirm v-else :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
+          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
                         @ok="deleteTable(record.id)">
             <a-button size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}

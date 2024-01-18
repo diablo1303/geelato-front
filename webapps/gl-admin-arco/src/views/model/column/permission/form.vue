@@ -117,8 +117,10 @@
                       <strong>{{ $t('model.column.permission.index.form.comment') }}：</strong>
                       {{ item.comment || item.description }}
                     </span>
-              <a-divider v-if="!isDefault&&pageData.formState==='edit'" style="margin: 5px 0px"/>
-              <a-space v-if="!isDefault&&pageData.formState==='edit'" style="display: flex;align-items: center;justify-content: end;">
+              <a-divider v-if="!isDefault&&pageData.formState==='edit'&&!pageData.params.isSystem"
+                         style="margin: 5px 0px"/>
+              <a-space v-if="!isDefault&&pageData.formState==='edit'&&!pageData.params.isSystem"
+                       style="display: flex;align-items: center;justify-content: end;">
                 <a-button size="mini" type="primary" @click="editColumn(item.id)">
                   {{ $t('searchTable.columns.operations.edit') }}
                 </a-button>
@@ -181,7 +183,7 @@ const scrollbar = ref(true);
 const scroll = {y: "100%"};
 const pageData = ref({
   current: 1, pageSize: 10000, formState: 'edit', isModal: false,
-  params: {pId: '', pName: '', type: ''},
+  params: {pId: '', pName: '', type: '', isSystem: false},
   modalAddBack: (data: QueryForm) => {
   }, modalEditBack: (data: QueryForm) => {
   }, modalDeleteBack: (id: string) => {
@@ -350,6 +352,7 @@ const loadList = (urlParams: ListUrlParams) => {
   pageData.value.params.pId = urlParams.params?.pId || '';
   pageData.value.params.pName = urlParams.params?.pName || '';
   pageData.value.params.type = urlParams.params?.pType || '';
+  pageData.value.params.isSystem = urlParams.params?.isSystem || '';
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
   // 方法反馈 新增、编辑、删除
   pageData.value.modalAddBack = urlParams.modalAddBack ? urlParams.modalAddBack : pageData.value.modalAddBack;

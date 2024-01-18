@@ -76,6 +76,7 @@ export interface QueryTableForm {
   tableComment: string; // 备注
   description: string; // 补充描述
   synced: boolean;
+  sourceType: string;
   appId: string;
   tenantCode: string;
 }
@@ -343,7 +344,7 @@ export interface QueryViewColumnForm {
   title: string;
   name: string;
   fieldName: string;
-  type: string;
+  selectType: string;
   comment: string;
   key: number | boolean;
   nullable: number | boolean;

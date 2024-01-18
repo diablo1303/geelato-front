@@ -48,6 +48,9 @@ export default {
   'model.table.index.form.linked': 'linked',
   'model.table.index.form.linked.1': 'YES',
   'model.table.index.form.linked.0': 'NO',
+  'model.table.index.form.sourceType': 'sourceType',
+  'model.table.index.form.sourceType.system': 'System Entity',
+  'model.table.index.form.sourceType.creation': 'Creation Model',
   'model.table.index.form.tableType': 'tableType',
   'model.table.index.form.tableType.table': 'TABLE',
   'model.table.index.form.tableType.entity': 'ENTITY',
@@ -74,6 +77,7 @@ export default {
   'model.table.index.model.cancel.text': 'Cancel',
   'model.table.index.model.ok.text': 'Confirm',
   'searchTable.tables.operations.alter': 'Alter',
+  'searchTable.tables.operations.sourceType.warning': 'The system table cannot be modified',
   'searchTable.tables.operations.alter.warning': 'Alter “entityName” and synchronize it to the database',
   // eslint-disable-next-line no-template-curly-in-string
   'model.table.index.modal.table.content': 'Whether the database table synchronization to the model？',
@@ -121,7 +125,10 @@ export default {
   'model.view.index.model.info.reset': 'Reset Successfully！',
   'model.view.index.model.info.release': 'Release Successfully！',
   'model.view.index.form.operations.noRel': 'The table is not synchronized to the database and cannot be released！',
-
+  'model.view.index.form.entity.custom': 'Custom Column',
+  'model.view.index.form.entity.model': 'Model Column',
+  'model.view.index.form.entity.tableId': 'Model',
+  'model.view.index.form.entity.columnIds': 'Columns',
   // webapps/gl-admin-arco/src/views/model/foreign - list|form
   'model.foreign.index.menu.list': 'Model',
   'model.foreign.index.menu.list.searchTable': 'Table Foreign',

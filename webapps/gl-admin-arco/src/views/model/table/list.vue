@@ -186,15 +186,30 @@
           v-show="pageData.formState==='edit'" :title="$t('model.table.index.form.operations')"
           :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-tooltip :content="$t('searchTable.tables.operations.alter.warning')">
+          <a-tooltip v-if="record.sourceType==='system'" :content="$t('searchTable.tables.operations.sourceType.warning')">
+            <a-button size="small" type="text" class="button-disabled">
+              {{ $t('searchTable.tables.operations.alter') }}
+            </a-button>
+          </a-tooltip>
+          <a-tooltip v-else :content="$t('searchTable.tables.operations.alter.warning')">
             <a-button size="small" type="text" @click="alterTable(record.id)">
               {{ $t('searchTable.tables.operations.alter') }}
             </a-button>
           </a-tooltip>
-          <a-button size="small" type="text" @click="editTable(record.id)">
+          <a-tooltip v-if="record.sourceType==='system'" :content="$t('searchTable.tables.operations.sourceType.warning')">
+            <a-button size="small" type="text" class="button-disabled">
+              {{ $t('searchTable.columns.operations.edit') }}
+            </a-button>
+          </a-tooltip>
+          <a-button v-else size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
-          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
+          <a-tooltip v-if="record.sourceType==='system'" :content="$t('searchTable.tables.operations.sourceType.warning')">
+            <a-button size="small" type="text" class="button-disabled">
+              {{ $t('searchTable.columns.operations.delete') }}
+            </a-button>
+          </a-tooltip>
+          <a-popconfirm v-else :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
                         @ok="deleteTable(record.id)">
             <a-button size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
@@ -504,5 +519,12 @@ export default {
 
 .wrapper {
   position: relative;
+}
+
+.button-disabled {
+  cursor: not-allowed;
+  color: var(--color-text-3) !important;
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
 }
 </style>
