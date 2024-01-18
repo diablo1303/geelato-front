@@ -117,7 +117,7 @@ export function getSystemConfig(params: Record<string, any>) {
  * 系统参数配置
  * @param params
  */
-export const getSysConfig = async (global: ComponentCustomProperties & Record<string, any>, params?: Record<string, string>) => {
+export const getSysConfig = async (global: ComponentCustomProperties & Record<string, any>, userInfo?: Record<any, any>, params?: Record<string, string>) => {
   try {
     const {data} = await getSystemConfig(params || {});
     const config = data.code === globalConfig.interceptorCode ? data.data : data;
@@ -126,6 +126,7 @@ export const getSysConfig = async (global: ComponentCustomProperties & Record<st
       global.$gl.sys = config.sys || {};
       global.$gl.tenant = config.tenant || {};
       global.$gl.app = config.app || {};
+      global.$gl.user = userInfo || {};
     }
     console.log(global);
   } catch (err) {

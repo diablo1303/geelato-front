@@ -10,9 +10,10 @@ import {getSysConfig} from "@/api/user";
 import {EventNames} from "@geelato/gl-ide";
 import {emitter, useGlobal} from "@geelato/gl-ui";
 import useUser from '@/hooks/user';
-import pinia from '../../store';
+import pinia, {useUserStore} from '../../store';
 
 provide('pinia', pinia)
+const userStore = useUserStore();
 const global = useGlobal();
 const {ideRedirect, ideLogout} = useUser();
 
@@ -27,7 +28,10 @@ onMounted(() => {
   emitter.on(EventNames.GlIdeLogout, handleLogout);
   // 加载配置变量
   const urlParams = new URL(window.location.href).searchParams;
-  getSysConfig(global, {tenantCode: urlParams.get("tenantCode") || '', appId: urlParams.get("appId") || ''});
+  userStore.info(() => {
+    getSysConfig(global, userStore && userStore.userInfo,
+      {tenantCode: urlParams.get("tenantCode") || '', appId: urlParams.get("appId") || ''});
+  });
 });
 
 onUnmounted(() => {

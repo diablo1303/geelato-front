@@ -160,7 +160,7 @@ const enterApp = async () => {
   }
 }
 onMounted(() => {
-  getSysConfig(global, {
+  getSysConfig(global, userStore && userStore.userInfo, {
     tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore.userInfo && userStore.userInfo.tenantCode) || '',
     appId: (route && route.params && route.params.appId) as string || ''
   });
