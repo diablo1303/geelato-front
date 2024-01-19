@@ -1,10 +1,10 @@
 export default {
-  componentName: 'GlBpmnStartEvent',
+  componentName: 'GlBpmnSubProcess',
   displayMode: 'tile',
-  iconType: 'gl-start-event-none',
+  iconType: 'gl-subprocess-expanded',
   group: 'bpmn',
-  title: '开始',
-  alias: 'bpmn_s_e',
+  title: '子流程',
+  alias: 'bpmn_s_p',
   useBy: ['bpmnPage'],
   properties: [
     {

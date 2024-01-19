@@ -1,10 +1,10 @@
 export default {
-  componentName: 'GlBpmnStartEvent',
+  componentName: 'GlBpmnStartMessageEvent',
   displayMode: 'tile',
-  iconType: 'gl-start-event-none',
+  iconType: 'gl-start-event-message',
   group: 'bpmn',
-  title: '开始',
-  alias: 'bpmn_s_e',
+  title: '消息开始',
+  alias: 'bpmn_m_s',
   useBy: ['bpmnPage'],
   properties: [
     {

@@ -4,13 +4,13 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { type Ref, ref, watch } from 'vue'
-import { ComponentInstance } from '@geelato/gl-ui-schema'
-import { useComponentStore } from '../../stores/UseComponentStore'
-import { useIdeStore } from '../../stores/UseIdeStore'
-import { usePageStore } from '../../stores/UsePageStore'
+import {type Ref, ref, watch} from 'vue'
+import {ComponentInstance} from '@geelato/gl-ui-schema'
+import {useComponentStore} from '../../stores/UseComponentStore'
+import {useIdeStore} from '../../stores/UseIdeStore'
+import {usePageStore} from '../../stores/UsePageStore'
 import BpmnCore from './BpmnCore.vue'
-import { utils } from '@geelato/gl-ui'
+import {utils} from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue', 'click'])
 const props = defineProps({
@@ -51,16 +51,24 @@ const bpmnInst = pageInst.children[0]
  * @param input
  * @return
  */
-const convertToComponentName = (input: string): string => {
+const convertToComponentName = (input: string, type: string): string => {
   // 将字符串拆分为两部分，直到 ":" 字符
   const firstPart = input.split(':')[0]
   const secondPart = input.split(':')[1]
   // 将第一部分和第二部分的第一个字符转换为大写
   const firstPartUpper = firstPart.charAt(0).toUpperCase() + firstPart.slice(1)
-  const secondPartUpper = secondPart.charAt(0).toUpperCase() + secondPart.slice(1)
-  console.log('Gl' + firstPartUpper + secondPartUpper)
+  let secondPartUpper = secondPart.charAt(0).toUpperCase() + secondPart.slice(1)
+  // 存在类型时，加入类型
+  let typePart = "";
+  if (type) {
+    const secondTypePart = type.split(':')[1];
+    typePart = secondTypePart.charAt(0).toUpperCase() + secondTypePart.slice(1);
+    typePart = typePart.replace(/Definition$/i, '');
+    secondPartUpper = secondPartUpper.replace(/Event$/i, '');
+  }
+  console.log('Gl' + firstPartUpper + secondPartUpper + typePart)
   // 重新组合字符串
-  return 'Gl' + firstPartUpper + secondPartUpper
+  return 'Gl' + firstPartUpper + secondPartUpper + typePart
 }
 const currentElement = ref({})
 const bpmnRef: any = ref()
@@ -102,7 +110,7 @@ watch(
       // console.log('currentComponent', componentStore.currentSelectedComponentInstance)
     }
   },
-  { deep: true }
+  {deep: true}
 )
 
 const onClick = (param: any) => {
@@ -126,7 +134,7 @@ const onAdd = (param: any) => {
   if (param.data.type) {
     const inst = new ComponentInstance()
     inst.id = utils.gid('bpmnEle')
-    inst.componentName = convertToComponentName(param.data.type)
+    inst.componentName = convertToComponentName(param.data.type, param.data.properties.definitionType);
     inst.refId = param.data.id
     inst.props = {
       id: inst.refId,
@@ -154,12 +162,12 @@ const onDelete = (param: any) => {
 
 <template>
   <BpmnCore
-    ref="bpmnRef"
-    @click="onClick"
-    @dbclick="onClick"
-    @add="onAdd"
-    @delete="onDelete"
-    @textUpdate="onTextUpdate"
+      ref="bpmnRef"
+      @click="onClick"
+      @dbclick="onClick"
+      @add="onAdd"
+      @delete="onDelete"
+      @textUpdate="onTextUpdate"
   />
 </template>
 

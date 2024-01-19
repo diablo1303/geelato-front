@@ -1,10 +1,10 @@
 export default {
-  componentName: 'GlBpmnStartEvent',
+  componentName: 'GlBpmnParallelGateway',
   displayMode: 'tile',
-  iconType: 'gl-start-event-none',
+  iconType: 'gl-gateway-parallel',
   group: 'bpmn',
-  title: '开始',
-  alias: 'bpmn_s_e',
+  title: '并行网关',
+  alias: 'bpmn_p_g',
   useBy: ['bpmnPage'],
   properties: [
     {

@@ -1,17 +1,17 @@
 <template>
   <div className="gl-bpmn-pattern">
     <div>
-      <GlIconfont type="gl-group" @mousedown.native="openSelection" />
+      <GlIconfont type="gl-group" @mousedown.native="openSelection"/>
       <div>选区</div>
     </div>
     <div>
-      <GlIconfont type="gl-start-event-none" @mousedown.native="addStartNode" />
+      <GlIconfont type="gl-start-event-none" @mousedown.native="addStartNode"/>
       <div>开始</div>
     </div>
     <div>
       <GlIconfont
-        type="gl-user-task"
-        @mousedown.native="
+          type="gl-user-task"
+          @mousedown.native="
           addNode('bpmn:userTask', {
             text: '人工任务',
             properties: {
@@ -24,8 +24,8 @@
     </div>
     <div>
       <GlIconfont
-        type="gl-service-task"
-        @mousedown.native="
+          type="gl-service-task"
+          @mousedown.native="
           addNode('bpmn:serviceTask', {
             text: '服务任务',
             properties: {
@@ -37,58 +37,43 @@
       <div>服务任务</div>
     </div>
     <div>
-      <GlIconfont type="gl-start-event-timer" @mousedown.native="addTimerStartNode" />
+      <GlIconfont type="gl-start-event-timer" @mousedown.native="addTimerStartNode"/>
       <div>时间开始</div>
     </div>
     <div>
-      <GlIconfont
-        type="gl-intermediate-event-catch-timer"
-        @mousedown.native="addTimerCatchNode"
-      ></GlIconfont>
+      <GlIconfont type="gl-intermediate-event-catch-timer" @mousedown.native="addTimerCatchNode"/>
       <div>时间捕获</div>
     </div>
     <div>
-      <GlIconfont
-        type="gl-intermediate-event-catch-timer"
-        @mousedown.native="
-          addNode('bpmn:boundaryEvent', {
-            text: '时间边界',
-            properties: {
-              definitionType: 'bpmn:timerEventDefinition',
-              panels: ['timerDefinition']
-            }
-          })
-        "
-      ></GlIconfont>
+      <GlIconfont type="gl-intermediate-event-catch-timer" @mousedown.native="addTimerBoundaryNode"/>
       <div>时间边界</div>
     </div>
     <div>
-      <GlIconfont type="gl-start-event-message" @mousedown.native="addMessageNode" />
+      <GlIconfont type="gl-start-event-message" @mousedown.native="addMessageNode"/>
       <div>消息开始</div>
     </div>
     <div>
-      <GlIconfont type="gl-end-event-none" @mousedown.native="addEndNode" />
-
+      <GlIconfont type="gl-end-event-none" @mousedown.native="addEndNode"/>
       <div>结束</div>
     </div>
     <div>
       <GlIconfont
-        type="gl-gateway-or"
-        @mousedown.native="addNode('bpmn:inclusiveGateway', { text: '包容网关' })"
+          type="gl-gateway-or"
+          @mousedown.native="addNode('bpmn:inclusiveGateway', { text: '包容网关' })"
       />
       <div>包容网关</div>
     </div>
     <div>
       <GlIconfont
-        type="gl-gateway-parallel"
-        @mousedown.native="addNode('bpmn:parallelGateway', { text: '并行网关' })"
+          type="gl-gateway-parallel"
+          @mousedown.native="addNode('bpmn:parallelGateway', { text: '并行网关' })"
       />
       <div>并行网关</div>
     </div>
     <div>
       <GlIconfont
-        type="gl-gateway-xor"
-        @mousedown.native="addNode('bpmn:exclusiveGateway', { text: '排他网关' })"
+          type="gl-gateway-xor"
+          @mousedown.native="addNode('bpmn:exclusiveGateway', { text: '排他网关' })"
       />
       <div>排他网关</div>
     </div>
@@ -100,8 +85,8 @@
     <div>泳道</div> -->
     <div>
       <GlIconfont
-        type="gl-subprocess-expanded"
-        @mousedown.native="addNode('bpmn:subProcess', '')"
+          type="gl-subprocess-expanded"
+          @mousedown.native="addNode('bpmn:subProcess', '')"
       />
       <div>子流程</div>
     </div>
@@ -468,7 +453,7 @@ const { lf } = props
 //   console.log(lf!.adapterOut(lf!.getGraphRawData()));
 // }
 
-function addNode(type: string, { text, properties }: any) {
+function addNode(type: string, {text, properties}: any) {
   lf!.dnd.startDrag({
     type,
     text: text,
@@ -505,6 +490,17 @@ function addTimerCatchNode() {
   })
 }
 
+function addTimerBoundaryNode() {
+  lf!.dnd.startDrag({
+    type: 'bpmn:boundaryEvent',
+    text: '时间边界',
+    properties: {
+      definitionType: 'bpmn:timerEventDefinition',
+      panels: ['timerDefinition']
+    }
+  });
+}
+
 function addMessageNode() {
   lf!.dnd.startDrag({
     type: 'bpmn:startEvent',
@@ -530,43 +526,43 @@ function openSelection() {
 }
 
 lf &&
-  lf!.on('selection:selected', () => {
-    lf!.updateEditConfig({
-      stopMoveGraph: false
-    })
+lf!.on('selection:selected', () => {
+  lf!.updateEditConfig({
+    stopMoveGraph: false
   })
+})
 </script>
 
 <style lang="css">
 .gl-bpmn-pattern {
-  position: absolute;
-  left: 10px;
-  top: 33px;
-  width: 80px;
-  display: flex;
-  flex-direction: column;
-  z-index: 111;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-  padding: 10px 0;
-  font-size: 12px;
-  color: #676768;
-  user-select: none;
-  text-align: center;
+    position: absolute;
+    left: 10px;
+    top: 33px;
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    z-index: 111;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    padding: 10px 0;
+    font-size: 12px;
+    color: #676768;
+    user-select: none;
+    text-align: center;
 }
 
 .gl-bpmn-pattern .gl-icon-font {
-  font-size: 40px;
-  margin-top: 10px;
+    font-size: 40px;
+    margin-top: 10px;
 }
 
 .gl-bpmn-pattern .gl-icon-font:hover {
-  font-weight: bold;
-  color: #165dff;
+    font-weight: bold;
+    color: #165dff;
 }
 
 .gl-bpmn-pattern .gl-icon-font:hover svg {
-  text-shadow: 0 0 10px #ff00de, 0 0 20px #ff00de, 0 0 30px #ff00de, 0 0 40px #ff00de;
+    text-shadow: 0 0 10px #ff00de, 0 0 20px #ff00de, 0 0 30px #ff00de, 0 0 40px #ff00de;
 }
 </style>

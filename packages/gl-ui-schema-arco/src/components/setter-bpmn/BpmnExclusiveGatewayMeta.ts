@@ -1,10 +1,10 @@
 export default {
-  componentName: 'GlBpmnStartEvent',
+  componentName: 'GlBpmnExclusiveGateway',
   displayMode: 'tile',
-  iconType: 'gl-start-event-none',
+  iconType: 'gl-gateway-xor',
   group: 'bpmn',
-  title: '开始',
-  alias: 'bpmn_s_e',
+  title: '排他网关',
+  alias: 'bpmn_e_g',
   useBy: ['bpmnPage'],
   properties: [
     {

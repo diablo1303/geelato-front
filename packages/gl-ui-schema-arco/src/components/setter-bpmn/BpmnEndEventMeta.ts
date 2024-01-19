@@ -1,10 +1,10 @@
 export default {
-  componentName: 'GlBpmnStartEvent',
+  componentName: 'GlBpmnEndEvent',
   displayMode: 'tile',
-  iconType: 'gl-start-event-none',
+  iconType: 'gl-end-event-none',
   group: 'bpmn',
-  title: '开始',
-  alias: 'bpmn_s_e',
+  title: '结束',
+  alias: 'bpmn_e_e',
   useBy: ['bpmnPage'],
   properties: [
     {

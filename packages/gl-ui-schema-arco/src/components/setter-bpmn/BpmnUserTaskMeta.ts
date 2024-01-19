@@ -13,7 +13,7 @@ export default {
       type: 'props',
       show: true,
       expanded: true,
-      setterComponentProps: { readonly: true },
+      setterComponentProps: {readonly: true},
       setterComponentVModelName: 'modelValue',
       title: 'ID',
       setterComponentName: 'AInput',
@@ -39,9 +39,9 @@ export default {
       expanded: true,
       setterComponentProps: {
         options: [
-          { label: 'none', __Gf4RZdpu3LuS6LiNCv: 'none', value: 'none' },
-          { label: 'parallel', __Gf4RZdpu3LuS6LiNCv: 'parallel', value: 'parallel' },
-          { label: 'sequential', __Gf4RZdpu3LuS6LiNCv: 'sequential', value: 'sequential' }
+          {label: 'none', __Gf4RZdpu3LuS6LiNCv: 'none', value: 'none'},
+          {label: 'parallel', __Gf4RZdpu3LuS6LiNCv: 'parallel', value: 'parallel'},
+          {label: 'sequential', __Gf4RZdpu3LuS6LiNCv: 'sequential', value: 'sequential'}
         ],
         multiple: false
       },
