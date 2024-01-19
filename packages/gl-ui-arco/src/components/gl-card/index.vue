@@ -33,8 +33,8 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+import {computed, ref, watch} from 'vue'
 import { mixins } from '@geelato/gl-ui'
-import { ref } from 'vue'
 
 const props = defineProps({
   label: String,
@@ -45,11 +45,14 @@ const props = defineProps({
 
 // 是否隐藏卡片的内容，即折叠
 const isHidden = ref(false)
-const isShowLabel = props.showLabel !== false
+const isShowLabel = computed(()=>{
+  return props.showLabel !== false
+})
 
 const switchHide = () => {
   isHidden.value = !isHidden.value
 }
+
 </script>
 
 <style>
@@ -57,7 +60,7 @@ const switchHide = () => {
   width: 100%;
 }
 
-.gl-card .arco-card-header .gl-icon-font{
+.gl-card .arco-card-header .gl-icon-font {
   margin-right: 4px;
 }
 

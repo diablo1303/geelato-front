@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "13074974",
+      "name": "filter",
+      "font_class": "filter",
+      "unicode": "e627",
+      "unicode_decimal": 58919
+    },
+    {
       "icon_id": "6157047",
       "name": "加签",
       "font_class": "add-approval",

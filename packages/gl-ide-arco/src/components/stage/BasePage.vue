@@ -123,7 +123,6 @@ onUnmounted(() => {
             :componentStoreId="componentStoreId"
     >
     </GlInst>
-    {{componentStore.currentComponentTree[0].length}}
   </div>
 </template>
 <style>

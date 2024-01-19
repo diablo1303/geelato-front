@@ -20,6 +20,7 @@
       :glLoopItem="glLoopItem"
       :glLoopIndex="glLoopIndex"
       :glComponentInst="glComponentInst"
+      :pageCustom = "pageCustom"
       v-on="onActionsHandler"
   >
     <template v-for="(slotItem,slotName) in glComponentInst.slots" v-slot:[slotName]>
@@ -35,7 +36,7 @@
     </template>
     <GlComponent v-for="(childComponentInst,childIndex) in glComponentInst.children"
                  :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"
-                 :glIndex="childIndex"></GlComponent>
+                 :glIndex="childIndex" :pageCustom = "pageCustom"></GlComponent>
   </component>
 </template>
 
@@ -59,6 +60,9 @@ const props = defineProps({
 })
 
 const pageProvideProxy: PageProvideProxy | undefined = props.glIgnoreInjectPageProxy ? undefined : inject(PageProvideKey)!
+// 获取页面的个性化配置信息，一个页面可能有多个组件，每个组件有可能有个性化信息
+// const pageCustom = pageProvideProxy?.getPageCustom()
+
 
 // console.log('GlComponent > setVueRef >', props.glComponentInst.componentName, props.glComponentInst.id, getCurrentInstance(), pageProvideProxy)
 // 在setup阶段先setVueRef，对于有些组件如GlTable

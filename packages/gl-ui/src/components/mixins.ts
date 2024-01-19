@@ -1,5 +1,6 @@
-import type {PropType} from "vue";
-import {ComponentInstance} from "@geelato/gl-ui-schema";
+import type {PropType} from 'vue'
+import {ComponentInstance} from '@geelato/gl-ui-schema'
+import type {PageCustomType} from './PageProvideProxy'
 
 const props = {
     parentId: {
@@ -67,7 +68,11 @@ const props = {
         default() {
             return ''
         }
-    }
+    },
+    /**
+     *  页面自定义配置
+     */
+    pageCustom: Object as PropType<PageCustomType>,
 }
 const subFormProps = {
     /**
@@ -78,11 +83,11 @@ const subFormProps = {
     /**
      *  如果作为子表单，那本表单中哪个字段指向父表单的id
      */
-    subFormPidName: String,
+    subFormPidName: String
 }
 export default {
     props: props,
-    subFormProps:subFormProps
+    subFormProps: subFormProps
 }
 
 

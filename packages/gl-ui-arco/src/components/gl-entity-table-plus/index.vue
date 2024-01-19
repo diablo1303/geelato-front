@@ -14,7 +14,7 @@ import GlEntityTable from '../gl-entity-table/GlEntityTable.vue'
 import GlEntityTableEditable from '../gl-entity-table/GlEntityTableEdit.vue'
 import { computed, inject, onMounted, type PropType, ref, type Ref } from 'vue'
 import type { EntityReaderParam } from '@geelato/gl-ui'
-import QueryItem from '../gl-query/query'
+import QueryItem, { QueryItemKv } from '../gl-query/query'
 import cloneDeep from 'lodash/cloneDeep'
 import {
   type SizeProps,
@@ -35,10 +35,13 @@ import {
   CheckUtil,
   useGlobal,
   EntitySaver,
-  GetEntitySaversResult
+  GetEntitySaversResult,
+  PageCustomType
 } from '@geelato/gl-ui'
 import type { Action } from '../../types/global'
 import type { TableData, TableColumnData } from '@arco-design/web-vue'
+import type { FilterType, MyEntityTableConfig } from './types'
+import FilterManager from '../gl-query/FilterManager.vue'
 
 const global = useGlobal()
 
@@ -776,6 +779,61 @@ const updateRecord = (params: { record: Record<string, any> }) => {
   return null
 }
 
+console.log('props', props)
+// 获取组件所在页面的自定义配置
+const myPageCustom: PageCustomType = props.pageCustom!
+// 通过组件id，获取组件在该页面中的自定义配置
+if (myPageCustom && !myPageCustom.cfg[props.glComponentInst.id]) {
+  myPageCustom.cfg[props.glComponentInst.id] = { filters: [] }
+}
+const myComponentCustom: Ref<MyEntityTableConfig> = ref(myPageCustom?.cfg[props.glComponentInst.id])
+// 刷选出下拉展示的过滤器
+const dropdownFilters = computed(() => {
+  return myComponentCustom.value.filters?.filter((filter: FilterType) => {
+    return !filter.showOnToolbar
+  })
+})
+
+const visibleFilterManager = ref(false)
+const queryItemsKvs: Ref<QueryItemKv[]> = ref([])
+
+const openEditFilterModal = (filter: FilterType) => {
+  queryItemsKvs.value = queryRef.value.getQueryItemKvs()
+  visibleFilterManager.value = true
+}
+
+/**
+ *  保存过滤器配置到服务端
+ */
+const saveFilters = () => {
+  // if (!queryItemsKvs.value?.id) {
+  //   queryItemsKvs.value!.id = utils.gid('filter')
+  //   myComponentCustom.value.filters.push(queryItemsKvs.value!)
+  // }
+  // visibleFilterManager.value = false
+
+  console.log('myPageCustom', myPageCustom)
+
+  const saver = new EntitySaver()
+  saver.entity = 'platform_my_page_custom'
+  saver.record = myPageCustom
+  entityApi.saveEntity(saver)
+  visibleFilterManager.value = false
+}
+
+const addFilter = () => {
+  myComponentCustom.value.filters.splice(0, 0, {
+    id: utils.gid('filter'),
+    name: utils.gid('过滤器', 6),
+    showOnToolbar: true,
+    queryItemKvs: queryItemsKvs.value
+  })
+}
+
+const queryByFilter = (filter: FilterType) => {
+  queryRef.value.resetByQueryItemKvs(JSON.parse(JSON.stringify(filter.queryItemKvs)))
+}
+
 defineExpose({
   pushRecordsByKeys,
   createEntitySavers,
@@ -840,18 +898,54 @@ defineExpose({
         </div>
       </template>
       <template #rightItems>
+        <a-modal v-model:visible="visibleFilterManager" v-if="myComponentCustom">
+          <template #title> 管理当前页面的查询过滤器</template>
+          <div>
+            <FilterManager v-model="myComponentCustom.filters"></FilterManager>
+          </div>
+          <template #footer>
+            <a-button type="primary" style="float: left" @click="addFilter">
+              <GlIconfont type="gl-plus-circle" text="将当前查询条件添加过滤器"></GlIconfont>
+            </a-button>
+            <a-space>
+              <a-button type="primary" @click="saveFilters">保存</a-button>
+            </a-space>
+          </template>
+        </a-modal>
         <a-space v-if="!props.base?.enableEdit">
+          <!-- 过滤器 -->
+
+          <a-button-group size="mini" class="action-icon" shape="round" v-if="myComponentCustom">
+            <a-tooltip content="我的常用过滤，可以保存多组常用过滤">
+              <a-button type="primary" shape="circle" @click="openEditFilterModal(null)">
+                <GlIconfont type="gl-filter"></GlIconfont>
+              </a-button>
+            </a-tooltip>
+            <template v-for="filter in myComponentCustom.filters">
+              <a-button v-if="filter.showOnToolbar" @click="queryByFilter(filter)">
+                {{ filter.name }}
+              </a-button>
+            </template>
+            <a-dropdown v-if="dropdownFilters.length > 0">
+              <a-button type="primary" shape="circle">
+                <GlIconfont type="gl-arrow-down"></GlIconfont>
+              </a-button>
+              <template #content>
+                <a-doption v-for="filter in dropdownFilters" @click="queryByFilter(filter)"
+                  >{{ filter.name }}
+                </a-doption>
+              </template>
+            </a-dropdown>
+          </a-button-group>
+
           <a-tooltip
+            v-if="pushedRecordKeys.length"
             content="从外部的同类列表中，选择加入的记录数，多次加入相同的记录key(id)，会被去重忽略。"
           >
-            <span v-if="pushedRecordKeys.length" class="action-icon">
-              已加入<a-badge :count="pushedRecordKeys.length" />
-            </span>
+            <span class="action-icon"> 已加入<a-badge :count="pushedRecordKeys.length" /> </span>
           </a-tooltip>
-          <a-tooltip content="当前列表已选择的记录数">
-            <span v-if="selectedKeys.length" class="action-icon">
-              已选<a-badge :count="selectedKeys.length" />
-            </span>
+          <a-tooltip v-if="selectedKeys.length" content="当前列表已选择的记录数">
+            <span class="action-icon"> 已选<a-badge :count="selectedKeys.length" /> </span>
           </a-tooltip>
           <!-- TODO 待提供按列设置展示 -->
           <a-tooltip v-if="true" :content="t('searchTable.actions.columnSetting')">

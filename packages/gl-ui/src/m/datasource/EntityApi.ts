@@ -156,7 +156,12 @@ export class EntityApi {
       // }
       const paramsGroups: Record<string, EntityReaderParamGroup> = {}
       for (const i in entityReader.params) {
-        const param: EntityReaderParam = new EntityReaderParam(entityReader.params[i].name,entityReader.params[i].cop,entityReader.params[i].value,entityReader.params[i].groupName)
+        const param: EntityReaderParam = new EntityReaderParam(
+          entityReader.params[i].name,
+          entityReader.params[i].cop,
+          entityReader.params[i].value,
+          entityReader.params[i].groupName
+        )
         param.groupName = param.groupName || defaultGroupName
         const simpleGroupName = param.groupName.split(subGroupFlag)[0]
         // console.log('simpleGroupName',simpleGroupName,param.groupName)
@@ -245,7 +250,11 @@ export class EntityApi {
           const foundLocalComputeField = entityReader.fields.find((field) => {
             return field.isLocalComputeFiled
           })
-          if (foundLocalComputeField || (typeof entityReader.resultMapping.isEmpty === 'function'&&!entityReader.resultMapping.isEmpty())) {
+          if (
+            foundLocalComputeField ||
+            (typeof entityReader.resultMapping.isEmpty === 'function' &&
+              !entityReader.resultMapping.isEmpty())
+          ) {
             const newRows: any[] = []
             res.data.forEach((row: any) => {
               let newRow: Record<string, any> = {}
@@ -590,6 +599,20 @@ export class EntityApi {
   }
 
   /**
+   * 基于菜单树节点id或页面id或配置id
+   * 获取页面的自定义配置
+   * @param idType "extendId" | "pageId" | "id"
+   * @param id 具体的id值
+   */
+  queryPageAndCustomById(idType: string, id: string) {
+    return this.service({
+      url: `${this.url.getPageAndCustom}/${idType}/${id}`,
+      method: 'GET',
+      data: ''
+    })
+  }
+
+  /**
    * 通过页面ID获取页面配置信息
    * @param pageId
    * @param contentType 查询为source内容还是release内容
@@ -626,6 +649,52 @@ export class EntityApi {
         '@fs': `id,code,${contentType === 'source' ? 'sourceContent' : 'releaseContent'}`,
         delStatus: 0,
         extendId: extendId
+      }
+    }
+    return this.service({
+      url: this.url.metaList,
+      method: 'POST',
+      data: mql
+    })
+  }
+
+  /**
+   * 通过应用页面D获取页面配置信息
+   * @param pageId
+   * @param myUserId 我的用户id
+   * @returns
+   */
+  queryMyPageCustomByPageId(pageId: string, myUserId: string): Promise<AxiosResponse> {
+    const mql = {
+      platform_my_page_custom: {
+        '@p': '1,1',
+        '@fs': `id,extendId,cfg,creator`,
+        delStatus: 0,
+        pageId: pageId,
+        creator: myUserId
+      }
+    }
+    return this.service({
+      url: this.url.metaList,
+      method: 'POST',
+      data: mql
+    })
+  }
+
+  /**
+   * 通过应用页面树节点ID获取页面配置信息
+   * @param extendId
+   * @param myUserId 我的用户id
+   * @returns
+   */
+  queryMyPageCustomByExtendId(extendId: string, myUserId: string): Promise<AxiosResponse> {
+    const mql = {
+      platform_my_page_custom: {
+        '@p': '1,1',
+        '@fs': `id,extendId,cfg,creator`,
+        delStatus: 0,
+        extendId: extendId,
+        creator: myUserId
       }
     }
     return this.service({

@@ -53,7 +53,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {computed, inject, type PropType, type Ref, ref, toRaw, watch} from 'vue'
+import { computed, inject, type PropType, type Ref, ref, toRaw, watch } from 'vue'
 import {
   entityApi,
   EntityReader,
@@ -61,7 +61,8 @@ import {
   EntityReaderParam,
   executeObjectPropsExpressions,
   PageProvideKey,
-  PageProvideProxy
+  PageProvideProxy,
+  utils
 } from '@geelato/gl-ui'
 import { EntityReaderOrderEnum } from '@geelato/gl-ui'
 
@@ -151,6 +152,9 @@ const props = defineProps({
   size: String as PropType<'medium' | 'small' | 'mini' | 'large' | undefined>,
   placeholder: String,
   disabled: Boolean,
+  /**
+   *  是否可多选
+   */
   multiple: {
     type: Boolean,
     default() {
@@ -158,6 +162,27 @@ const props = defineProps({
     }
   }
 })
+
+const selectOptions: Ref<Record<string, any>[]> = ref([])
+
+/**
+ * 基于初始化的值，获取列表的选项
+ * @param keys
+ */
+const findCheckedOptions = (keys: string[]) => {
+  const result: Record<string, any> = []
+  keys.forEach((key: String) => {
+    // 注意selectOptions是从后端加载完成，再经加工的数据 {__record:xx,__label,[props.valueFiledName]}
+    const foundOption = selectOptions.value.find((option: Record<string, any>) => {
+      return option[props.valueFiledName] === key
+    })
+    if (foundOption) {
+      console.log('foundOption', foundOption)
+      result.push(foundOption.__record)
+    }
+  })
+  return result
+}
 
 const getPropValue = (val?: string | Array<any>) => {
   return props.multiple ? (typeof val === 'string' ? [] : val) : val
@@ -175,15 +200,28 @@ const autoEnableVirtualListWhenRecordCount = 1500
 // console.log('props:', props)
 const initValue = getPropValue(props.modelValue) || getDefaultValue()
 const emits = defineEmits(['update:modelValue'])
-const mv:Ref<string|Array<string>> = ref(initValue)
+const mv: Ref<string | Array<string>> = ref(initValue)
 const inputMv = ref(undefined)
-const mvItem = ref(props.multiple?[]:{ [props.valueFiledName]: initValue })
+/**
+ * multiple为多选时，mvItem为数组，示例格式为：
+ * [ { "enName": "BALTIMORE,MD", "name": "巴尔的摩" }, { "enName": "BANGKOK,THAILAND", "name": "泰国曼谷" } ]
+ * multiple为单选时，mvItem为keyValue对象，示例格式为：
+ * { "enName": "TANJUNG PELEPAS,JOHOR,MALAYSIA" }
+ */
+const getMvItem = (value: any) => {
+  if (props.multiple) {
+    return utils.isEmpty(value) ? [] : findCheckedOptions(value)
+  } else {
+    return { [props.valueFiledName]: utils.isEmpty(value) ? '' : value }
+  }
+}
+const mvItem = ref(getMvItem(initValue))
 watch(
   () => {
     return props.modelValue
   },
   () => {
-    mvItem.value = { [props.valueFiledName]: getPropValue(props.modelValue) || getDefaultValue() }
+    mvItem.value = getMvItem(props.modelValue) || getDefaultValue()
   }
 )
 watch(
@@ -194,7 +232,7 @@ watch(
   },
   { deep: true }
 )
-const selectOptions: Ref<Record<string, any>[]> = ref([])
+
 const loadData = () => {
   // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'extraFieldAndBindIds:', props.extraFieldAndBindIds,'props',props)
   if (props.entityName && props.valueFiledName && theLabelFieldNames) {
@@ -218,10 +256,16 @@ const loadData = () => {
     let fields = fieldAry.join(',')
 
     // valueFilter
-    const entityReaderParams: EntityReaderParam[]=[]
-    JSON.parse(JSON.stringify(props.valueFilter)).forEach((param:EntityReaderParam) => {
+    const entityReaderParams: EntityReaderParam[] = []
+    JSON.parse(JSON.stringify(props.valueFilter)).forEach((param: EntityReaderParam) => {
       executeObjectPropsExpressions(param, {})
-      const newEntityReaderParam = new EntityReaderParam(param.name,param.cop,param.value,param.groupName,param.valueExpression)
+      const newEntityReaderParam = new EntityReaderParam(
+        param.name,
+        param.cop,
+        param.value,
+        param.groupName,
+        param.valueExpression
+      )
       entityReaderParams.push(newEntityReaderParam)
     })
     entityReaderParams.push(new EntityReaderParam('delStatus', 'eq', '0'))
@@ -239,9 +283,9 @@ const loadData = () => {
       // console.log('selectOptions.value', selectOptions.value, selectOptions.value.length)
       if (items.length === 0) {
         inputMv.value = undefined
-        if (props.multiple){
+        if (props.multiple) {
           mv.value.slice(0)
-        }else{
+        } else {
           mv.value = ''
         }
         selectOptions.value = []
@@ -292,14 +336,14 @@ const selectOne = (value: any) => {
     })
   }
   // 如果值为数组对象
-  if (props.multiple){
+  if (props.multiple) {
     // @ts-ignore
     mv.value.splice(0)
-    value.forEach((vItem:any)=>{
+    value.forEach((vItem: any) => {
       // @ts-ignore
       mv.value.push(vItem[props.valueFiledName])
     })
-  }else{
+  } else {
     mv.value = value ? value[props.valueFiledName] : ''
   }
 }

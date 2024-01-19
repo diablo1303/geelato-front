@@ -48,6 +48,8 @@ export class ApiPathName {
   apiUpload = "/api/upload/file";
 
   api = "/api";
+
+  getPageAndCustom = "/api/page/getPageAndCustom"
 }
 
 const getApiPathName = ()=>{

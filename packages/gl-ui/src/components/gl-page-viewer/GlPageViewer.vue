@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { type Ref, ref, watch } from 'vue'
 import { ComponentInstance } from '@geelato/gl-ui-schema'
-import { mixins, useGlobal } from '../../index'
+import { mixins, type PageCustomType, useGlobal } from '../../index'
 import { entityApi } from '../../m/datasource/EntityApi'
 
 defineOptions({
@@ -39,16 +39,24 @@ const props = defineProps({
   },
   ...mixins.props
 })
-// console.log('GlPageViewer > props.pageProps:', props.pageProps)
-console.log('GlPageViewer > props:', props)
-const glComponentInst = ref(new ComponentInstance())
 
+// console.log('useGlobal', useGlobal())
+// console.log('GlPageViewer > props.pageProps:', props.pageProps)
+// console.log('GlPageViewer > props:', props)
+const glComponentInst = ref(new ComponentInstance())
+// 用户对于某页面的个性化配置
+// @ts-ignore
+let myPageCustom: Ref<PageCustomType> = ref({
+  id: '',
+  pageId: props.pageId,
+  cfg: {}
+})
 const load = () => {
   let loadedPage = undefined
   if (props.pageId) {
-    loadedPage = entityApi.queryPageById(props.pageId)
+    loadedPage = entityApi.queryPageAndCustomById('pageId', props.pageId)
   } else if (props.extendId) {
-    loadedPage = entityApi.queryPageByExtendId(props.extendId)
+    loadedPage = entityApi.queryPageAndCustomById('extendId', props.extendId)
   } else {
     global.$notification.error({
       title: '配置缺失',
@@ -59,8 +67,11 @@ const load = () => {
   }
   if (loadedPage) {
     loadedPage.then((resp: any) => {
-      if (resp && resp.data && resp.data && resp.data[0]) {
-        glComponentInst.value = JSON.parse(resp.data[0].releaseContent)
+      if (resp && resp.data) {
+        glComponentInst.value = JSON.parse(resp.data.releaseContent)
+        if (resp.data.pageCustom) {
+          myPageCustom.value = resp.data.pageCustom
+        }
       } else {
         // console.error('GlPageViewer > loadedPage > resp?.data:', resp?.data)
         global.$notification.error({
@@ -94,6 +105,7 @@ watch(
       :glIsRuntime="glIsRuntime"
       :glRuntimeFlag="glRuntimeFlag"
       :pageStatus="pageStatus"
+      :pageCustom="myPageCustom"
       :pageTemplateName="pageTemplateName"
       v-bind="pageProps"
       :glIgnoreInjectPageProxy="true"
