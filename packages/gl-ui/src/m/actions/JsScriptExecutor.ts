@@ -805,7 +805,7 @@ export class JsScriptExecutor {
     extendId: string,
     params: Array<Param>,
     pageStatus?: string,
-    pageTemplateName?: string
+    pageTemplateName?: string,
   ) {
     const pageProps = { params: params }
     console.log(

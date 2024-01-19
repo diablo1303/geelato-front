@@ -1,7 +1,7 @@
 import type IBlockHandler from '../BlockHandler'
 import type { PropsExpressions } from '../BlockHandler'
 import ParseResult from '../ParseResult'
-import type { Param } from '@geelato/gl-ui'
+import type {PageCustomType, Param} from '@geelato/gl-ui'
 import { blocksHandler, CommandBlocks } from '../BlockHandler'
 import { utils } from '@geelato/gl-ui'
 
@@ -72,6 +72,8 @@ interface Props {
   extendId: string
   // 页面状态
   pageStatus: string
+  // 页面用户自定义
+  pageCustom: PageCustomType
   // 页面模板名称
   pageTemplateName: string
   // Drawer | Modal

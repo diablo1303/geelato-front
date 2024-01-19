@@ -1,6 +1,6 @@
 import { reactive, type App, type Plugin } from 'vue'
 import emitter from './m/mix/emitter'
-import PageProvideProxy from './components/PageProvideProxy'
+import PageProvideProxy, { type PageCustomType } from './components/PageProvideProxy'
 import type { PageParamConfigType } from './components/PageProvideProxy'
 import GlHtml from './components/gl-html/Index.vue'
 import GlIconfont from './components/gl-iconfont/Index.vue'
@@ -98,6 +98,7 @@ export {
   AppProvideProxy,
   PageParamsKey,
   PageProvideKey,
+  PageCustomType,
   PageProvideProxy,
   paramStringify,
   FormProvideKey,

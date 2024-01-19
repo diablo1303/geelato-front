@@ -38,11 +38,12 @@ import {
   jsScriptExecutor,
   mixins,
   PageProvideKey,
+  PageParamsKey,
   type Param,
-  utils
+  utils,
+  type PageCustomType
 } from '@geelato/gl-ui'
 import type { Action } from '@geelato/gl-ui-schema'
-import { PageParamsKey } from '@geelato/gl-ui'
 
 const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
@@ -137,6 +138,7 @@ const pageProvideProxy = new PageProvideProxy(props.glComponentInst, getCurrentI
 pageProvideProxy.pageId = props.pageId
 pageProvideProxy.setVueRef(props.glComponentInst.id, getCurrentInstance())
 pageProvideProxy.setPageStatus(props.pageStatus)
+pageProvideProxy.setPageCustom(props.pageCustom)
 pageProvideProxy.setParams(props.params)
 const onPageMounted = () => {
   //  触发页面配置的事件，只限运行时
