@@ -462,7 +462,7 @@ const loadColumnAndForeignList = (tableId: string, tableName: string, connectId:
     tablePermissionFormRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
-      params: {pId: connectId, pName: tableName, pType: 'mp'}
+      params: {pId: connectId, pName: tableName, pType: 'dp,mp'}
     });
   }
   if (columnPermissionFormRef.value) {

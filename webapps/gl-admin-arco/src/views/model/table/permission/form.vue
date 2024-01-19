@@ -401,7 +401,7 @@ const addTablePermission = (ev: MouseEvent) => {
     // @ts-ignore
     permissionFormRef.value?.openForm({
       action: 'add',
-      params: {type: pageData.value.params.type, object: pageData.value.params.object},
+      params: {type: 'dp', object: pageData.value.params.object},
       closeBack: tableRefresh
     });
   }
