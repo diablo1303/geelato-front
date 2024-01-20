@@ -10,9 +10,8 @@ export default {
  *
  *  TODO 放大、缩小、上一步、下一步，可参考：https://site.logic-flow.cn/demo/dist/organizer
  *  TODO 流程图可以放大全屏、可以有历史记录操作
- *  TODO 双击节点进入文字编辑时，会触发画布的点击，此时属性页面板变成了画布，当前的组件也变成了画布，会导致修改的文本可能不对，就看修改之后点了节点还是画布。
- *  TODO 选中流程图节点，在右边属性栏点删除时，可以删除对应用节点和连线
- *  TODO 选中流程图连线，在右边属性栏点删除时，可以删除对应连线
+ *  选中流程图节点，在右边属性栏点删除时，可以删除对应用节点和连线
+ *  选中流程图连线，在右边属性栏点删除时，可以删除对应连线
  */
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { utils } from '@geelato/gl-ui'
