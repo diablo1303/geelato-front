@@ -4,13 +4,25 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {type Ref, ref, watch} from 'vue'
-import {ComponentInstance} from '@geelato/gl-ui-schema'
-import {useComponentStore} from '../../stores/UseComponentStore'
-import {useIdeStore} from '../../stores/UseIdeStore'
-import {usePageStore} from '../../stores/UsePageStore'
+/**
+ *  在调用IDE工具栏的保存操作时，会保存当前打开的页面，而当前打开的页面pageInst存在refObject对象，存储了流程图原始json数据（rawData），故在保存页面时会将流程图也一起保存。
+ *
+ *
+ *  TODO 放大、缩小、上一步、下一步，可参考：https://site.logic-flow.cn/demo/dist/organizer
+ *  TODO 流程图可以放大全屏、可以有历史记录操作
+ *  TODO 双击节点进入文字编辑时，会触发画布的点击，此时属性页面板变成了画布，当前的组件也变成了画布，会导致修改的文本可能不对，就看修改之后点了节点还是画布。
+ *  TODO 选中流程图节点，在右边属性栏点删除时，可以删除对应用节点和连线
+ *  TODO 选中流程图连线，在右边属性栏点删除时，可以删除对应连线
+ */
+import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { utils } from '@geelato/gl-ui'
+import { ComponentInstance } from '@geelato/gl-ui-schema'
+import { useComponentStore } from '../../stores/UseComponentStore'
+import { useIdeStore } from '../../stores/UseIdeStore'
+import { usePageStore } from '../../stores/UsePageStore'
 import BpmnCore from './BpmnCore.vue'
-import {utils} from '@geelato/gl-ui'
+import { emitter } from '@geelato/gl-ui'
+import EventNames from '../../entity/EventNames'
 
 const emits = defineEmits(['update:modelValue', 'click'])
 const props = defineProps({
@@ -21,28 +33,18 @@ const props = defineProps({
     }
   }
 })
-const mv = ref(props.modelValue)
-watch(mv, () => {
-  emits('update:modelValue', mv.value)
-})
-
-// const addItem = (hoverIndex: number, item: ComponentInstance) => {
-//   // console.log('GlInsts > addItem() > hoverIndex:', hoverIndex, 'item:', item)
-//   item.id = utils.gid(componentStore.getAlias(item.componentName) || 'id')
-//   item.group = componentStore.getComponentGroupName(item.componentName)
-//   props.glComponentInst.children!.splice(hoverIndex, 0, item)
-//   tryRemoveDndPlaceholder(props.glComponentInst.children)
-//   componentStore.currentDragComponentId = ''
-//   componentStore.setCurrentSelectedComponentByIdFromItems(item.id, props.glComponentInst.children, pageProvideProxy.pageInst.id)
-//   // 记录操作
-//   pageStore.operationLog('加组件', pageStore.currentPage.sourceContent, item)
-//   refresh()
-// }
-
+// const mv = ref(props.modelValue)
+// watch(mv, () => {
+//   emits('update:modelValue', mv.value)
+// })
 const ideStore = useIdeStore()
 const pageStore = usePageStore()
 const componentStore = useComponentStore()
+// 当前页面树
 const pageInst = componentStore.currentComponentTree[0]
+// 初始流程图对象，设置到pageInst的refObject中；graphRawData对应流程图中的graphRawData
+pageInst.refObject = pageInst.refObject || { graphRawData: { nodes: [], edges: [] }, editor: {} }
+// 当前页面的BPMN组件树
 const bpmnInst = pageInst.children[0]
 
 /**
@@ -59,23 +61,23 @@ const convertToComponentName = (input: string, type: string): string => {
   const firstPartUpper = firstPart.charAt(0).toUpperCase() + firstPart.slice(1)
   let secondPartUpper = secondPart.charAt(0).toUpperCase() + secondPart.slice(1)
   // 存在类型时，加入类型
-  let typePart = "";
+  let typePart = ''
   if (type) {
-    const secondTypePart = type.split(':')[1];
-    typePart = secondTypePart.charAt(0).toUpperCase() + secondTypePart.slice(1);
-    typePart = typePart.replace(/Definition$/i, '');
-    secondPartUpper = secondPartUpper.replace(/Event$/i, '');
+    const secondTypePart = type.split(':')[1]
+    typePart = secondTypePart.charAt(0).toUpperCase() + secondTypePart.slice(1)
+    typePart = typePart.replace(/Definition$/i, '')
+    secondPartUpper = secondPartUpper.replace(/Event$/i, '')
   }
   console.log('Gl' + firstPartUpper + secondPartUpper + typePart)
   // 重新组合字符串
   return 'Gl' + firstPartUpper + secondPartUpper + typePart
 }
 const currentElement = ref({})
-const bpmnRef: any = ref()
+const bpmnCoreRef: any = ref()
 
 /**
  *  监听当前实例currentSelectedComponentInstance
- *  将IDE属性面板配置的值更新到图中
+ *  将IDE属性面板配置的值更新到流程图中
  */
 watch(
   () => {
@@ -83,11 +85,11 @@ watch(
   },
   () => {
     const inst = componentStore.currentSelectedComponentInstance
-    if (inst.refId) {
-      let elementModel = bpmnRef.value.getLogicFlow().getNodeModelById(inst.refId)
+    if (inst.refId && bpmnCoreRef.value) {
+      let elementModel = bpmnCoreRef.value.getLogicFlow().getNodeModelById(inst.refId)
       // console.log('elementModel1', elementModel)
       if (!elementModel) {
-        elementModel = bpmnRef.value.getLogicFlow().getEdgeModelById(inst.refId)
+        elementModel = bpmnCoreRef.value.getLogicFlow().getEdgeModelById(inst.refId)
         // console.log('elementModel2', elementModel)
       }
       if (elementModel) {
@@ -110,9 +112,26 @@ watch(
       // console.log('currentComponent', componentStore.currentSelectedComponentInstance)
     }
   },
-  {deep: true}
+  { deep: true }
 )
 
+/**
+ * 打开线动画，范围：从节点流出的线
+ * @param param
+ */
+const openEdgeAnimation = (param: any) => {
+  if (isEdge(param.data.type)) {
+    bpmnCoreRef.value.openEdgeAnimationByEdgeId(param.data.id)
+  } else {
+    bpmnCoreRef.value.openEdgeAnimationByNodeId(param.data.id)
+  }
+}
+
+/**
+ * 点击流程图节点或连线时触发
+ * 同步修改组件的名称
+ * @param param
+ */
 const onClick = (param: any) => {
   currentElement.value = param
   const inst = componentStore.findComponentFromTreeByRefId(param.data.id)
@@ -120,54 +139,120 @@ const onClick = (param: any) => {
     componentStore.currentDragComponentId = ''
     componentStore.setCurrentSelectedComponentById(inst.id, pageStore.currentPage.id)
   }
-  param.e.stopPropagation()
+  console.log('onClick,find Inst', inst)
+
+  // 去掉连线点击移动事件，解决点击就出现拖动的问题
+  if (isEdge(param.data.type)) {
+    console.log('lf-edge', document.querySelector('.lf-edge'))
+    document.querySelector('.lf-edge')?.removeEventListener('mousemove', () => {
+      // 停止冒泡，避免选中上级组件，如GlPage
+      // 注意！！ 这里需放在回调事件中，否则会影响removeEventListener的执行，因为removeEventListener还没有执行完，就被停了
+      param.e.stopPropagation()
+    })
+  } else {
+    // 停止冒泡，避免选中上级组件，如GlPage
+    param.e.stopPropagation()
+  }
+  openEdgeAnimation(param)
 }
 
-const onTextUpdate = (params: any) => {
-  componentStore.currentSelectedComponentInstance.props.text = params.text
+/**
+ * 修改流程图节点或连线的文字时触发
+ * 同步修改组件的名称
+ * @param param
+ */
+const onTextUpdate = (param: any) => {
+  componentStore.currentSelectedComponentInstance.props.text = param.text
 }
 
+const isEdge = (elementType: string) => {
+  return elementType === 'bpmn:sequenceFlow'
+}
+
+/**
+ * 在流程图上添加节点或连线时触发
+ * 基于加入的流程图节点，构建一个对应的组件，加入组件树中
+ * @param param
+ */
 const onAdd = (param: any) => {
-  console.log('add', param)
+  console.log('bpmnEditor > onAdd', param)
 
   currentElement.value = param
   if (param.data.type) {
     const inst = new ComponentInstance()
+    // 注意！！字符“bpmnEle”用于控制右边操作按钮，不可修改
     inst.id = utils.gid('bpmnEle')
-    inst.componentName = convertToComponentName(param.data.type, param.data.properties.definitionType);
+    // 基于流程图节点的类型名称创建对应的组件名称
+    inst.componentName = convertToComponentName(
+      param.data.type,
+      param.data.properties.definitionType
+    )
+    // 通过组件的refId和流程图元素的id做关联
     inst.refId = param.data.id
     inst.props = {
       id: inst.refId,
-      text: param.data.text.value
+      text: param.data.text?.value || ''
     }
-    // inst.refId =
     bpmnInst.children.push(inst)
 
     componentStore.currentDragComponentId = ''
     componentStore.setCurrentSelectedComponentById(inst.id, pageStore.currentPage.id)
-    // 记录操作，这里不做记录，改由BPMN自行记录
+
+    // 记录操作，这里不在IDE中记录，改由BPMN自行记录
     // pageStore.operationLog('加组件', pageStore.currentPage.sourceContent, inst)
   }
 }
 
+/**
+ * 删除流程图上的节点时触发
+ * 同步删除图外的bpmnInst组件树中相应的组件
+ * @param param
+ */
 const onDelete = (param: any) => {
-  console.log('onDelete', param)
+  // console.log('bpmnEditor > onDelete', param)
   currentElement.value = {}
-  const inst = componentStore.findComponentFromTreeByRefId(param.data.id)
-  if (inst) {
-    componentStore.deleteComponentInstById(inst.id)
+  componentStore.deleteComponentByRefId(param.data.id)
+}
+
+/**
+ * 组件属性面板删除之后触发
+ * @param param {componentId:string}
+ */
+const onComponentDeleting = (param: any) => {
+  // console.log('delete componentId', param.componentId)
+  const inst = componentStore.findComponentFromTreeById(param.componentId)
+  const lf = bpmnCoreRef.value.getLogicFlow()
+  if (inst.componentName === 'GlBpmnSequenceFlow') {
+    // 是线
+    bpmnCoreRef.value.getLogicFlow().deleteEdge(inst.refId)
+  } else {
+    // 是节点
+    // 获取节点的所有连线
+    const edges: any[] = lf.getNodeEdges(inst.refId)
+    edges?.forEach((edge: any) => {
+      // 删除组件
+      componentStore.deleteComponentByRefId(edge.id)
+    })
+    bpmnCoreRef.value.getLogicFlow().deleteNode(inst.refId)
   }
 }
+emitter.on(EventNames.GlIdeSetterComponentInstDeleting, onComponentDeleting)
+
+onMounted(() => {})
+onUnmounted(() => {
+  emitter.off(EventNames.GlIdeSetterComponentInstDeleting, onComponentDeleting)
+})
 </script>
 
 <template>
   <BpmnCore
-      ref="bpmnRef"
-      @click="onClick"
-      @dbclick="onClick"
-      @add="onAdd"
-      @delete="onDelete"
-      @textUpdate="onTextUpdate"
+    ref="bpmnCoreRef"
+    v-model="pageInst.refObject.graphRawData"
+    @click="onClick"
+    @dbclick="onClick"
+    @add="onAdd"
+    @delete="onDelete"
+    @textUpdate="onTextUpdate"
   />
 </template>
 

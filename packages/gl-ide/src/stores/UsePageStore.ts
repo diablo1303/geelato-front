@@ -344,29 +344,12 @@ export const usePageStore = defineStore('GlPageStore', () => {
    * 保存页面
    */
   function savePage(page: any) {
-    // const convertedPageContent = convertPageContent(page)
-    // const savingPage = {
-    //   id: page.id,
-    //   appId: page.appId,
-    //   extendId: page.extendId,
-    //   code: page.code,
-    //   type: 'GlPageLayout',
-    //   sourceContent: JSON.stringify(convertedPageContent.source),
-    //   releaseContent: JSON.stringify(convertedPageContent.release),
-    //   previewContent: JSON.stringify(convertedPageContent.preview),
-    //   description: page.description
-    // }
-    // return entityApi.save('platform_app_page', savingPage).then((res) => {
-    //   page.id = res.data
-    //   savingPage.id = res.data
-    //   emitter.emit(EventNames.GlIdeToolbarSaveFile, { page: savingPage })
-    // })
-    console.log('savePage',page)
+    emitter.emit(EventNames.GlIdeToolbarPageSaving, { page: page })
     const entitySaver = getPageEntitySaver(page)
     return entityApi.saveEntity(entitySaver).then((res) => {
       page.id = res.data
       entitySaver.record.id = res.data
-      emitter.emit(EventNames.GlIdeToolbarSaveFile, { page: entitySaver.record })
+      emitter.emit(EventNames.GlIdeToolbarPageSaved, { page: entitySaver.record })
     })
   }
 

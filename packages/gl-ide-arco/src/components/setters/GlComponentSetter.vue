@@ -7,7 +7,19 @@
           v-if="!hideToolbar && (showMove || showMove || showSelectParent || showDelete)"
           style="padding: 0 0.5em 0.5em"
         >
-          <a-button-group type="primary" size="mini" shape="round">
+          <a-button-group v-if="isGraphElement">
+            <a-button
+                style="float: right"
+                type="primary"
+                size="mini"
+                shape="round"
+                status="danger"
+                v-if="showDelete"
+                @click="deleteCurrentSelectedComponentInst"
+            >删除
+            </a-button>
+          </a-button-group>
+          <a-button-group type="primary" size="mini" shape="round" v-if="!isGraphElement">
             <!--            <a-button status="normal" v-if="showSelectParent" @click="componentStore.selectParentComponent">选父组件-->
             <!--            </a-button>-->
             <a-button
@@ -131,7 +143,7 @@
       <a-tab-pane v-if="includePanel('permission')" key="permission" tab="权限" title="权限">
         <GlPermissionsSetter></GlPermissionsSetter>
       </a-tab-pane>
-      <a-tab-pane  v-if="includePanel('lang')" key="lang" tab="多语言" title="多语言">
+      <a-tab-pane v-if="includePanel('lang')" key="lang" tab="多语言" title="多语言">
         <div style="margin: 0 0 0.5em 0.5em">
           <GlIconfont type="gl-earth"></GlIconfont>
           <span style="margin-left: 0.5em"> 设置该组件的中文-英文对照 </span>
@@ -267,6 +279,14 @@ const insertAfterCurrentSelectedComponent = async () => {
     useGlobal().$notification.error(result.message)
   }
 }
+
+/**
+ *  是否为图组件元素
+ *  用于控制工具体是否展示
+ */
+const isGraphElement = computed(() => {
+  return componentModel.value?.id.startsWith('bpmnEle')
+})
 </script>
 
 <style scoped></style>

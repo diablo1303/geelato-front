@@ -2,6 +2,7 @@
   "id": "",
   "componentName": "GlPage",
   "disabledDnd": true,
+  "disabledSelect": true,
   "props": {
     "label": "流程设计",
     "pageMargin":"0",
@@ -13,6 +14,7 @@
       "id": "",
       "componentName": "GlBpmnEditor",
       "disabledDnd": true,
+      "disabledSelect": true,
       "props": {"label": "流程设计"},
       "slots": {},
       "children": []

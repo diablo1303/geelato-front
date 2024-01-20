@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import type { ComponentMeta } from '@geelato/gl-ui-schema'
-import { emitter, useGlobal, utils } from '@geelato/gl-ui'
+import { emitter, utils } from '@geelato/gl-ui'
 import { ComponentInstance } from '@geelato/gl-ui-schema'
 import ClipboardJS from 'clipboard'
+import EventNames from '../entity/EventNames'
 
 class ComponentMetaMap {
   [key: string]: any
@@ -143,6 +144,8 @@ class ComponentStoreFactory {
       this.componentStoreMap[storeId] = defineStore(storeId, {
         state: () => {
           return {
+            // 不可选择的组件名数组，如对于流程图页面，GlPage不可选
+            nonSelectableComponentIds: new Array<string>(),
             storeId: storeId,
             currentSelectedComponentId: '',
             currentSelectedComponentName: '',
@@ -217,7 +220,7 @@ class ComponentStoreFactory {
             return undefined
           },
           /**
-           * 从组件实体树中删除组件
+           * 通过组件id从组件实体树中删除组件
            * @param componentId
            * @param fromPageId
            */
@@ -225,6 +228,7 @@ class ComponentStoreFactory {
             if (!componentId) {
               return false
             }
+            emitter.emit(EventNames.GlIdeSetterComponentInstDeleting, { componentId })
             // console.log("try to deleteComponentById", componentId)
             const thisProxy = this
 
@@ -253,8 +257,23 @@ class ComponentStoreFactory {
             }
 
             deleteNodeFromTree(componentId, this.currentComponentTree)
+
+            emitter.emit(EventNames.GlIdeSetterComponentInstDeleted, { componentId })
             return true
           },
+          /**
+           * 通过组件的引用id从组件实体树中删除组件
+           * @param refId
+           * @param fromPageId
+           */
+          deleteComponentByRefId(refId: string, fromPageId: string) {
+            const inst = this.findComponentFromTreeByRefId(refId)
+            if (inst) {
+              return this.deleteComponentInstById(inst.id, fromPageId)
+            }
+            return false
+          },
+
           /**
            *  删除当前已选中的组件
            *  @return 返回当前删除的组件
@@ -547,6 +566,9 @@ class ComponentStoreFactory {
             return findNodeFromTree(refId, this.currentComponentTree) || {}
           },
           setCurrentSelectedComponentId(componentId: string, fromPageId: string) {
+            if (this.isNonSelectableComponentId(componentId)) {
+              return false
+            }
             const payload = {
               old: this.currentSelectedComponentId,
               new: componentId,
@@ -556,6 +578,9 @@ class ComponentStoreFactory {
             emitter.emit('setCurrentSelectedComponentId', payload)
           },
           setCurrentHoverComponentId(componentId: string) {
+            if (this.isNonSelectableComponentId(componentId)) {
+              return false
+            }
             const payload = { old: this.currentHoverComponentId, new: componentId }
             this.currentHoverComponentId = componentId
             emitter.emit('setCurrentHoverComponentId', payload)
@@ -570,9 +595,12 @@ class ComponentStoreFactory {
            * @param value
            * @param fromPageId
            */
-          setCurrentSelectedComponentById(value: string, fromPageId: string) {
+          setCurrentSelectedComponentById(id: string, fromPageId: string) {
+            if (this.isNonSelectableComponentId(id)) {
+              return false
+            }
             // console.log('storeId:', storeId, 'setCurrentSelectedComponentById > value:', value)
-            this.setCurrentSelectedComponentId(value, fromPageId)
+            this.setCurrentSelectedComponentId(id, fromPageId)
             if (this.currentSelectedComponentId) {
               const foundComponent = this.findComponentFromTreeById(this.currentSelectedComponentId)
               // console.log('setCurrentSelectedComponentById () > storeId:', storeId, 'findComponentFromTreeById', this.currentSelectedComponentId, 'and get', foundComponent, ',currentComponentTree:', this.currentComponentTree)
@@ -583,12 +611,29 @@ class ComponentStoreFactory {
               this.currentSelectedComponentInstance = new ComponentInstance()
             }
           },
+          isNonSelectableComponentId(id: string) {
+            return this.nonSelectableComponentIds.includes(id)
+          },
+          addNonSelectableComponentId(id: string) {
+            if (!this.nonSelectableComponentIds.includes(id)) {
+              this.nonSelectableComponentIds.push(id)
+            }
+          },
+          removeNonSelectableComponentId(id: string) {
+            const index = this.nonSelectableComponentIds.findIndex((item) => {
+              return id === item
+            })
+            this.nonSelectableComponentIds.splice(index, 1)
+          },
           /**
            * 并设置当前选中组件的信息，包括id、name、componentMeta
            * @param inst
            */
           setCurrentSelectedComponent(inst: ComponentInstance) {
             if (!inst) return
+            if (this.isNonSelectableComponentId(inst.id)||inst.disabledSelect) {
+              return
+            }
             this.currentSelectedComponentId = inst.id
             this.currentSelectedComponentInstance = inst
             if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
@@ -599,17 +644,32 @@ class ComponentStoreFactory {
                 componentStoreFactory.componentMetaMap[this.currentSelectedComponentName]
               // this.currentSelectedComponentMeta.props = foundComponent.props
             }
-            // console.log('setCurrentSelectedComponentById > currentComponentTree', this.currentComponentTree)
+            // console.log(
+            //   'setCurrentSelectedComponentById > currentComponentTree',
+            //   this.currentComponentTree
+            // )
             // console.log('setCurrentSelectedComponentById > currentSelectedComponentInstance', this.currentSelectedComponentInstance, foundComponent)
-            // console.log('setCurrentSelectedComponentById > currentSelectedComponentMeta', this.currentSelectedComponentMeta)
+            // console.log(
+            //   'setCurrentSelectedComponentById > currentSelectedComponentMeta',
+            //   this.currentSelectedComponentMeta
+            // )
             // this.setToolbarBreadcrumbsPosition('glToolbarBreadcrumbsSelected', this.currentSelectedComponentId)
           },
+          /**
+           * 从指定范围的组件集合中查找并选定组件
+           * @param id
+           * @param insts 查询的组件范围
+           * @param formPageId
+           */
           setCurrentSelectedComponentByIdFromItems(
             id: string,
             insts: Array<ComponentInstance>,
             formPageId: string
           ) {
             // console.log('setCurrentSelectedComponentByIdFromItems() > storeId:', storeId, 'setCurrentSelectedComponentByIdFromItems > id:', id)
+            if (this.isNonSelectableComponentId(id)) {
+              return
+            }
             this.setCurrentSelectedComponentId(id, formPageId)
 
             if (this.currentSelectedComponentId && insts && insts.length > 0) {
@@ -638,6 +698,8 @@ class ComponentStoreFactory {
           },
           /**
            *  获取当前页面的组件动作列表
+           *  对于一些特定的组件需要特殊处理，如：'GlEntityTablePlus', 'GlEntityTable', 'GlEntityTableSub'
+           *  TODO 可以将这些特定的信息在组件的元数据中进行标识定义，这里依据约定的标识定义进行解析获取actions
            */
           getActionList() {
             const actionList: ComponentInstance[] = []
@@ -722,3 +784,5 @@ export const componentStoreFactory = new ComponentStoreFactory()
 export const useComponentStore = componentStoreFactory.getComponentStore('useComponentStore')
 export const useComponentBlockStore =
   componentStoreFactory.getComponentStore('useComponentBlockStore')
+export const useComponentBpmnStore =
+  componentStoreFactory.getComponentStore('useComponentBpmnStore')

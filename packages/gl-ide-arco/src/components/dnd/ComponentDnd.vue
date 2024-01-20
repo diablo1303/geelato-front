@@ -74,7 +74,7 @@ const emits = defineEmits(['onComponentClick'])
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
 
 const onClick = (...args: any[]) => {
-  // console.log('gl-component-dnd > onClick() > arguments:', args, props.glComponentInst)
+  // console.log('gl-component-dnd > onClick() > arguments:', args, props.glComponentInst.componentName)
   // 特殊处理，点击组件GlDndPlaceholder，不做响应
   // if (props.glComponentInst.componentName === 'GlDndPlaceholder') {
   //   return
@@ -86,9 +86,11 @@ const onClick = (...args: any[]) => {
       event.stopPropagation()
     }
   }
-  const fromPageId = pageProvideProxy?.pageInst.id || props.glComponentInst.id
-  componentStore.setCurrentSelectedComponentById(props.glComponentInst.id || '', fromPageId)
-  emitter.emit('onComponentClick', {arguments: args, glComponentInst: props.glComponentInst})
+  if(!props.glComponentInst.disabledSelect){
+    const fromPageId = pageProvideProxy?.pageInst.id || props.glComponentInst.id
+    const selected =  componentStore.setCurrentSelectedComponentById(props.glComponentInst.id || '', fromPageId)
+    emitter.emit('onComponentClick', {arguments: args, glComponentInst: props.glComponentInst,selected})
+  }
   // 组件配置的动态绑定事件，运行时Runtime
   // if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
   //   console.log('click action')

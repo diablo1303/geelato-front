@@ -88,23 +88,17 @@ const onSetCurrentHoverComponentId = (data: any) => {
     })
   }
 }
-// console.log('props:', props)
+
 if (props.enableToolbar) {
   emitter.on('setCurrentSelectedComponentId', onSetCurrentSelectedComponentId)
   emitter.on('setCurrentHoverComponentId', onSetCurrentHoverComponentId)
 }
 
-// console.log('BasePage > create()')
-//
-// onMounted(() => {
-//   console.log('BasePage > onMounted()')
-// })
 onUnmounted(() => {
   if (props.enableToolbar) {
     emitter.off('setCurrentSelectedComponentId', onSetCurrentSelectedComponentId)
     emitter.off('setCurrentSelectedComponentId', onSetCurrentHoverComponentId)
   }
-  // console.log('BasePage > onUnmounted()')
 })
 
 </script>

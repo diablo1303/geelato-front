@@ -45,11 +45,11 @@ const handleOk = () => {
 const handleCancel = () => {
   modalVisible.value = false
 }
-emitter.on(EventNames.GlIdeToolbarSaveFile, savedPage)
+emitter.on(EventNames.GlIdeToolbarPageSaved, savedPage)
 emitter.on(EventNames.GlIdeToolbarShowPagesReplaceEditor, showPageReplaceModal)
 
 onUnmounted(() => {
-  emitter.off(EventNames.GlIdeToolbarSaveFile, savedPage)
+  emitter.off(EventNames.GlIdeToolbarPageSaved, savedPage)
   emitter.off(EventNames.GlIdeToolbarShowPagesReplaceEditor, showPageReplaceModal)
 })
 </script>

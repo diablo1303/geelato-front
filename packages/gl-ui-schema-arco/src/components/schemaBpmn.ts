@@ -1,32 +1,34 @@
-import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
-import BpmnStartEventMeta from "./setter-bpmn/BpmnStartEventMeta";
-import BpmnUserTaskMeta from "./setter-bpmn/BpmnUserTaskMeta";
-import BpmnServiceTaskMeta from "./setter-bpmn/BpmnServiceTaskMeta";
-import BpmnStartTimerEventMeta from "./setter-bpmn/BpmnStartTimerEventMeta";
-import BpmnIntermediateCatchTimerEventMeta from "./setter-bpmn/BpmnIntermediateCatchTimerEventMeta";
-import BpmnBoundaryTimerEventMeta from "./setter-bpmn/BpmnBoundaryTimerEventMeta";
-import BpmnStartMessageEventMeta from "./setter-bpmn/BpmnStartMessageEventMeta";
-import BpmnEndEventMeta from "./setter-bpmn/BpmnEndEventMeta";
-import BpmnInclusiveGatewayMeta from "./setter-bpmn/BpmnInclusiveGatewayMeta";
-import BpmnParallelGatewayMeta from "./setter-bpmn/BpmnParallelGatewayMeta";
-import BpmnExclusiveGatewayMeta from "./setter-bpmn/BpmnExclusiveGatewayMeta";
-import BpmnSubProcessMeta from "./setter-bpmn/BpmnSubProcessMeta";
+import { ComponentInstance, ComponentMeta } from '@geelato/gl-ui-schema'
+import BpmnSequenceFlowMeta from './setter-bpmn/BpmnSequenceFlowMeta'
+import BpmnStartEventMeta from './setter-bpmn/BpmnStartEventMeta'
+import BpmnUserTaskMeta from './setter-bpmn/BpmnUserTaskMeta'
+import BpmnServiceTaskMeta from './setter-bpmn/BpmnServiceTaskMeta'
+import BpmnStartTimerEventMeta from './setter-bpmn/BpmnStartTimerEventMeta'
+import BpmnIntermediateCatchTimerEventMeta from './setter-bpmn/BpmnIntermediateCatchTimerEventMeta'
+import BpmnBoundaryTimerEventMeta from './setter-bpmn/BpmnBoundaryTimerEventMeta'
+import BpmnStartMessageEventMeta from './setter-bpmn/BpmnStartMessageEventMeta'
+import BpmnEndEventMeta from './setter-bpmn/BpmnEndEventMeta'
+import BpmnInclusiveGatewayMeta from './setter-bpmn/BpmnInclusiveGatewayMeta'
+import BpmnParallelGatewayMeta from './setter-bpmn/BpmnParallelGatewayMeta'
+import BpmnExclusiveGatewayMeta from './setter-bpmn/BpmnExclusiveGatewayMeta'
+import BpmnSubProcessMeta from './setter-bpmn/BpmnSubProcessMeta'
 
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [
-  BpmnStartEventMeta
-  , BpmnUserTaskMeta
-  , BpmnServiceTaskMeta
-  , BpmnStartTimerEventMeta
-  , BpmnIntermediateCatchTimerEventMeta
-  , BpmnBoundaryTimerEventMeta
-  , BpmnStartMessageEventMeta
-  , BpmnEndEventMeta
-  , BpmnInclusiveGatewayMeta
-  , BpmnParallelGatewayMeta
-  , BpmnExclusiveGatewayMeta
-  , BpmnSubProcessMeta
-];
+  BpmnStartEventMeta,
+  BpmnUserTaskMeta,
+  BpmnServiceTaskMeta,
+  BpmnStartTimerEventMeta,
+  BpmnIntermediateCatchTimerEventMeta,
+  BpmnBoundaryTimerEventMeta,
+  BpmnStartMessageEventMeta,
+  BpmnEndEventMeta,
+  BpmnInclusiveGatewayMeta,
+  BpmnParallelGatewayMeta,
+  BpmnExclusiveGatewayMeta,
+  BpmnSubProcessMeta,
+  BpmnSequenceFlowMeta
+]
 
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = []
@@ -47,5 +49,5 @@ for (const index in componentMetas) {
     componentInstances.push(componentInstance)
   }
 }
-const schemaBpmn = {componentMetas, componentInstances}
+const schemaBpmn = { componentMetas, componentInstances }
 export {schemaBpmn}

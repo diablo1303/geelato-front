@@ -15,7 +15,12 @@ import Page from './entity/Page'
 import { useIdeStore } from './stores/UseIdeStore'
 import { useEntityStore } from './stores/UseEntityStore'
 import { usePageStore } from './stores/UsePageStore'
-import { useComponentStore, componentStoreFactory } from './stores/UseComponentStore'
+import {
+  useComponentStore,
+  componentStoreFactory,
+  useComponentBpmnStore,
+  useComponentBlockStore
+} from './stores/UseComponentStore'
 import { useThemeStore } from './stores/UseThemeStore'
 import { useAppStore } from './stores/UseAppStore'
 import uiLibAdapter from './utils/UiLibAdapter'
@@ -60,6 +65,8 @@ export {
   componentStoreFactory,
   usePageStore,
   useComponentStore,
+  useComponentBlockStore,
+  useComponentBpmnStore,
   useThemeStore,
   uiLibAdapter,
   ComponentSetterProvideProxy,

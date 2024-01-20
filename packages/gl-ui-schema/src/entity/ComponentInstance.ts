@@ -56,6 +56,9 @@ export class I18nItem {
     'en-US': string
 }
 
+/**
+ *  "__"开头的属性动态产生用于内部计算使用，不需要保存到服务端
+ */
 export default class ComponentInstance {
     id: string = ''
     title?: string = ''
@@ -84,8 +87,12 @@ export default class ComponentInstance {
     // 禁用拖放 默认为false，不禁止
     // 如在渲染工作流画布的场景中，禁止工作流画布可拖动，可设置为true
     disabledDnd?:Boolean
+    // 如在渲染工作流画布的场景中，禁止设选择该组件，如点击选择无效，避免子组件冒泡触发
+    disabledSelect?:Boolean
     // 映射引用的组件id，这个属性用于图元映射到组件实例的场景，如设计页面是一个工作流程图，图元的id映射到组件refId
     refId?:string
+    // 用于组件映射到外部的组件或外部的图元素等。如组件实例为GlPage时，可以在此存储当前页面对应的graph对象
+    refObject?:Object
     // 值表达式，用于结合上下文的信息、相关逻辑计算得出value
     // valueExpression?: string = ''
     // 是否禁用，默认为启用，用于设计时

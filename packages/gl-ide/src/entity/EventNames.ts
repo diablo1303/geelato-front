@@ -11,8 +11,10 @@ enum EventNames {
   GlIdeToolbarShowNewAppFormByTemplate = 'GlIdeToolbarShowNewAppFormByTemplate',
   // 打开项目列表页面
   GlIdeToolbarShowAppList = 'GlIdeToolbarShowAppList',
-  // 保存文件
-  GlIdeToolbarSaveFile = 'GlIdeToolbarSaveFile',
+  // 保存页面前，可以对页面进行处理
+  GlIdeToolbarPageSaving = 'GlIdeToolbarPageSaving',
+  // 保存页面文件之后
+  GlIdeToolbarPageSaved = 'GlIdeToolbarPageSaved',
   // 切换中间的图标
   GlIdeToolbarIconSelected = 'GlIdeToolbarIconSelected',
   // 显示代码
@@ -24,6 +26,10 @@ enum EventNames {
 
   // 在设置面板中更新了组件实例信息
   GlIdeSetterUpdateComponentInstance = 'GlIdeSetterUpdateComponentInstance',
+  // 删除当前选中的组件实例之前
+  GlIdeSetterComponentInstDeleting = 'GlIdeSetterComponentInstDeleting',
+  // 删除当前选中的组件实例之后
+  GlIdeSetterComponentInstDeleted = 'GlIdeSetterComponentInstDeleted',
   // 打开ide的设置面板
   GlIdeSetterOpen = 'GlIdeSetterOpen',
   // 更新ide的设置面板
