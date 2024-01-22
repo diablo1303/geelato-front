@@ -40,7 +40,9 @@ const props = defineProps({
   height: {type: String, default: '400px'},
   resize: {type: Boolean, default: false},
   autoUpload: {type: Boolean, default: false},
-  menubar: {type: Boolean, default: false}
+  menubar: {type: Boolean, default: false},
+  disabled: {type: Boolean, default: false},
+  readonly: {type: Boolean, default: false},
 })
 const key = ref(utils.gid());
 const baseUrl = useApiUrl().getApiBaseUrl();
@@ -91,7 +93,7 @@ const tinyInit = ref({
   menubar: props.menubar, // 顶部菜单栏
   promotion: false, // 顶部菜单栏，upgrade
   toolbar_mode: props.toolbarMode, // 工具栏多行显示样式
-  toolbar: props.toolbar, // 工具栏
+  toolbar: props.readonly === false ? props.toolbar : true, // 工具栏
   font_family_formats: props.fontFamilyFormats, // 字体选择
   font_size_formats: props.fontSizeFormats, // 字号选择
   automatic_uploads: props.autoUpload,
@@ -138,6 +140,16 @@ watch(
   },
   {deep: true, immediate: true}
 )
+watch(
+  () => {
+    return props.readonly
+  },
+  () => {
+    tinyInit.value.toolbar = props.readonly === false ? props.toolbar : false;
+    key.value = utils.gid()
+  },
+  {deep: true, immediate: true}
+)
 
 const mv = ref(props.modelValue)
 watch(mv, () => {
@@ -154,8 +166,9 @@ watch(
 </script>
 
 <template>
-  <div :key="key">
-    <Editor v-model="mv" :init="tinyInit"/>
+  <div :key="key" :style="{'width':'100%'}">
+    <div v-if="props.readonly" v-html="mv" :style="{'min-height':props.height}">
+    </div>
+    <Editor v-else v-model="mv" :init="tinyInit" :disabled="props.readonly"/>
   </div>
 </template>
-
