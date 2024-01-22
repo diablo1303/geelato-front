@@ -720,6 +720,11 @@ export default {
       description: '点击表头数据时触发'
     },
     {
+      name: 'filterClick',
+      title: '点击过滤器',
+      description: '点击过滤器时触发'
+    },
+    {
       name: 'columnResize',
       title: '调整列宽',
       description: '调整列宽时触发'
