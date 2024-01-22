@@ -23,23 +23,28 @@
             <table style="width: 100%">
               <tr>
                 <td v-for="(column,columnIndex) in convertedColumns" :key="index+'_'+columnIndex">
-                  <a-input size="small" v-model="element[column.dataIndex]"
-                           :placeholder="column.title"
-                           @change="onChangeElement(element,index,$event)"
-                           @click="onSelectElement(element,index)" style="width: 99%"
-                           :key="index+'_'+columnIndex+'_'+column.dataIndex"
-                  >
-                    <template v-if="columnIndex===0" #prepend>
-                      <GlIconfont title="拖动" type="gl-drag" class="gl-dnd-item" style="cursor: move"></GlIconfont>
-                      <GlIconfont v-if="allowAddSub" :type="element._showSub?'gl-minus-square':'gl-plus-square'"
-                                  class="gl-dnd-item" style="margin-left: 4px;cursor: pointer"
-                                  @click="element._showSub=!element._showSub" title="添加子项"></GlIconfont>
-                    </template>
-                    <template v-if="columnIndex===convertedColumns.length-1" #append>
-                      <GlIconfont type="gl-delete" @click="removeElement(index)"
-                                  style="cursor: pointer;color: red"></GlIconfont>
-                    </template>
-                  </a-input>
+                  <div style="display: flex">
+                    <div style="flex: 1">
+                      <component  :is="column.type||'AInput'" size="small" v-model="element[column.dataIndex]"
+                                  :placeholder="column.title"
+                                  @change="onChangeElement(element,index,$event)"
+                                  @click="onSelectElement(element,index)" style="width: 99%"
+                                  :key="index+'_'+columnIndex+'_'+column.dataIndex"
+                                  :title="column.title"
+                      >
+                        <template v-if="columnIndex===0" #prepend>
+                          <GlIconfont title="拖动" type="gl-drag" class="gl-dnd-item" style="cursor: move"></GlIconfont>
+                          <GlIconfont v-if="allowAddSub" :type="element._showSub?'gl-minus-square':'gl-plus-square'"
+                                      class="gl-dnd-item" style="margin-left: 4px;cursor: pointer"
+                                      @click="element._showSub=!element._showSub" title="添加子项"></GlIconfont>
+                        </template>
+                      </component>
+                    </div>
+                    <div style="width: 18px;line-height: 24px" v-if="columnIndex===convertedColumns.length-1">
+                        <GlIconfont type="gl-delete" @click="removeElement(index)"
+                                    style="cursor: pointer;color: red"></GlIconfont>
+                    </div>
+                  </div>
                 </td>
               </tr>
               <!--子级-->
@@ -60,6 +65,9 @@
       <td colspan="3" style="padding-left: 4px">
         <a @click="addElement" style="line-height: 2em;cursor: pointer">
           <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加</a>
+        <span style="float: right">
+          <slot name="actions"></slot>
+        </span>
       </td>
     </tr>
   </table>

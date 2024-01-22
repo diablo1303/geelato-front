@@ -9,14 +9,14 @@
         >
           <a-button-group v-if="isGraphElement">
             <a-button
-                style="float: right"
-                type="primary"
-                size="mini"
-                shape="round"
-                status="danger"
-                v-if="showDelete"
-                @click="deleteCurrentSelectedComponentInst"
-            >删除
+              style="float: right"
+              type="primary"
+              size="mini"
+              shape="round"
+              status="danger"
+              v-if="showDelete"
+              @click="deleteCurrentSelectedComponentInst"
+              >删除
             </a-button>
           </a-button-group>
           <a-button-group type="primary" size="mini" shape="round" v-if="!isGraphElement">
@@ -83,11 +83,7 @@
               <span
                 style="font-size: 12px; line-height: 3em"
                 :title="componentStore.currentSelectedComponentMeta?.componentName"
-                >{{
-                  componentStore.currentSelectedComponentMeta?.title +
-                  ' ' +
-                  componentStore.currentSelectedComponentMeta?.componentName
-                }}</span
+                >{{ getTitle }}</span
               >
               <a-button
                 size="mini"
@@ -286,6 +282,29 @@ const insertAfterCurrentSelectedComponent = async () => {
  */
 const isGraphElement = computed(() => {
   return componentModel.value?.id.startsWith('bpmnEle')
+})
+
+const getTitle = computed(() => {
+  if (
+    props.componentInstance.componentName !==
+    componentStore.currentSelectedComponentMeta?.componentName
+  ) {
+    // 如表格的内置组件
+    return (
+      componentStore.currentSelectedComponentMeta?.title +
+      ' ' +
+      componentStore.currentSelectedComponentMeta?.componentName +
+      '>' +
+      props.componentInstance.componentName
+    )
+  } else {
+    // 常规的组件
+    return (
+      componentStore.currentSelectedComponentMeta?.title +
+      ' ' +
+      componentStore.currentSelectedComponentMeta?.componentName
+    )
+  }
 })
 </script>
 

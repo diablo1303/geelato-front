@@ -60,7 +60,8 @@ const emits = defineEmits([
   'rowDblclick',
   'cellDblclick',
   'rowContextmenu',
-  'cellContextmenu'
+  'cellContextmenu',
+  'filterClick'
 ])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const isRead = !!pageProvideProxy?.isPageStatusRead()
@@ -779,7 +780,6 @@ const updateRecord = (params: { record: Record<string, any> }) => {
   return null
 }
 
-console.log('props', props)
 // 获取组件所在页面的自定义配置
 const myPageCustom: PageCustomType = props.pageCustom!
 // 通过组件id，获取组件在该页面中的自定义配置
@@ -832,6 +832,7 @@ const addFilter = () => {
 
 const queryByFilter = (filter: FilterType) => {
   queryRef.value.resetByQueryItemKvs(JSON.parse(JSON.stringify(filter.queryItemKvs)))
+  emits('filterClick', filter)
 }
 
 defineExpose({

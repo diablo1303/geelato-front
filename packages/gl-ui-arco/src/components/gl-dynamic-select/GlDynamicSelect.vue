@@ -13,6 +13,7 @@
     :placeholder="placeholder"
     @change="selectOne"
     @search="handleSearch"
+    @clear="onClear"
     :valueKey="valueFiledName"
     :field-names="{ label: '__label', value: '__record' }"
     :virtual-list-props="{ height: 200 }"
@@ -33,6 +34,7 @@
     :placeholder="placeholder"
     @change="selectOne"
     @search="handleSearch"
+    @clear="onClear"
     :valueKey="valueFiledName"
   >
     <a-option
@@ -65,6 +67,8 @@ import {
   utils
 } from '@geelato/gl-ui'
 import { EntityReaderOrderEnum } from '@geelato/gl-ui'
+
+const emits = defineEmits(['update:modelValue'])
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
@@ -199,7 +203,6 @@ const enableVirtualList = ref(false)
 const autoEnableVirtualListWhenRecordCount = 1500
 // console.log('props:', props)
 const initValue = getPropValue(props.modelValue) || getDefaultValue()
-const emits = defineEmits(['update:modelValue'])
 const mv: Ref<string | Array<string>> = ref(initValue)
 const inputMv = ref(undefined)
 /**
@@ -221,8 +224,11 @@ watch(
     return props.modelValue
   },
   () => {
+    // @ts-ignore
+    mv.value = getPropValue(props.modelValue)
     mvItem.value = getMvItem(props.modelValue) || getDefaultValue()
-  }
+  },
+  { deep: true }
 )
 watch(
   mv,
@@ -347,6 +353,8 @@ const selectOne = (value: any) => {
     mv.value = value ? value[props.valueFiledName] : ''
   }
 }
+
+const onClear = () => {}
 
 if (props.triggerMode !== TriggerMode.onInvoked) {
   // console.log('props.triggerMode !== TriggerMode.onInvoked', props.triggerMode)

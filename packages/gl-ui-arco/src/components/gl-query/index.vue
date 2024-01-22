@@ -111,13 +111,13 @@ const getQueryItemKvs = () => {
 const resetByQueryItemKvs = (queryItemKvs: Array<QueryItemKv>) => {
   if (!queryItemKvs) return
   console.table(queryItemKvs)
-  const defaultValueCopy = JSON.parse(JSON.stringify(defaultValue))
+  // const defaultValueCopy = JSON.parse(JSON.stringify(defaultValue))
   const queryItemKvsCopy = JSON.parse(JSON.stringify(queryItemKvs))
   props.items?.forEach((item: QueryItem) => {
-    // 先设置为默认值
-    item.component!.value = defaultValueCopy[item.id]
+    // 注！！不重置默认值，因为隐藏的字段有可能会被外部用脚本控制了值变成A，在保存过滤器之后存为A；原有的默认值有可能为B，这时设置为默认值时，会切换为B
+    // item.component!.value = defaultValueCopy[item.id]
     // 再基于传入的值设置
-    queryItemKvs.forEach((kv: QueryItemKv) => {
+    queryItemKvsCopy.forEach((kv: QueryItemKv) => {
       if (item.id === kv.key) {
         // 隐藏的查询字段不进行重置
         if (item.component && item.component.props._hidden !== true) {
