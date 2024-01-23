@@ -30,7 +30,7 @@ const columns = [
     slotName: 'name'
   },
   {
-    title: '展示到工作栏',
+    title: '展示到工具栏',
     dataIndex: 'showOnToolbar',
     slotName: 'showOnToolbar'
   },

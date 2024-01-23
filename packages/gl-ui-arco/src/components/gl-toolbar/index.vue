@@ -56,9 +56,8 @@ const props = defineProps({
     <a-col :span="leftColSpan || 12">
       <a-space style="margin-left: -8px">
         <slot name="leftItems"></slot>
-        <span></span>
         <template v-for="(inst, index) in leftItems" :key="index">
-          <GlComponent v-if="inst" :glComponentInst="inst"></GlComponent>
+          <GlComponent v-if="inst&&inst.props?._hidden!==true" :glComponentInst="inst"></GlComponent>
         </template>
       </a-space>
     </a-col>

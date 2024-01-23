@@ -1,7 +1,11 @@
 <script lang="ts" setup>
-import { type Ref, ref, watch } from 'vue'
+import { computed, type Ref, ref, watch } from 'vue'
 import { ComponentInstance } from '@geelato/gl-ui-schema'
-import { mixins, type PageCustomType, useGlobal } from '../../index'
+import {
+  mixins,
+  type PageCustomType,
+  useGlobal
+} from '../../index'
 import { entityApi } from '../../m/datasource/EntityApi'
 
 defineOptions({
@@ -42,7 +46,7 @@ const props = defineProps({
 
 // console.log('useGlobal', useGlobal())
 // console.log('GlPageViewer > props.pageProps:', props.pageProps)
-// console.log('GlPageViewer > props:', props)
+console.log('GlPageViewer > props:', props)
 const glComponentInst = ref(new ComponentInstance())
 // 用户对于某页面的个性化配置
 // @ts-ignore
@@ -110,10 +114,24 @@ watch(
       v-bind="pageProps"
       :glIgnoreInjectPageProxy="true"
     />
+    <GlPageHelp :pageHelpId="glComponentInst?.props?.pageHelp" />
   </div>
 </template>
 <style scoped>
 .gl-page-viewer {
   height: 100%;
+  position: relative;
+}
+
+.gl-page-viewer .gl-page-help {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  padding: 8px;
+}
+
+.gl-page-viewer .gl-page-help:hover {
+  color: #165dff;
+  cursor: pointer;
 }
 </style>

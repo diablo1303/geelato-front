@@ -41,7 +41,7 @@ import {Drawer, Modal, RangePicker} from '@arco-design/web-vue'
 import GlBlocks from "./components/gl-blocks/GlBlocks.vue";
 import GlList from "./components/gl-list/GlList.vue";
 import GlTinymce from "./components/gl-tinymce/GlTinymce.vue";
-
+import GlPageHelp from "./components/gl-page-help/GlPageHelp.vue";
 const i18nMessage = {en, cn}
 
 const component: Plugin = {
@@ -87,6 +87,7 @@ const component: Plugin = {
     Vue.component(GlUpload.name, GlUpload)
     Vue.component(GlImage.name, GlImage)
     Vue.component(GlImport.name, GlImport)
+    Vue.component(GlPageHelp.name,GlPageHelp)
 
     Vue.component('GlRangePicker', RangePicker)
     Vue.component('GlModal', Modal)
