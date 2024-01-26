@@ -44,7 +44,8 @@ import {
 import { getFormParams, type ValidatedError } from './GlEntityForm'
 
 // onLoadedData：从服务端加载完数据并设置到表单中
-const emits = defineEmits(['onLoadedData'])
+// creatingEntitySavers 完成实体保存对象创建之后，关闭创建方法前调用，例于对实体保存对象进行处理
+const emits = defineEmits(['onLoadedData', 'creatingEntitySavers'])
 const formProvideProxy = new FormProvideProxy()
 provide(FormProvideKey, formProvideProxy)
 
@@ -116,7 +117,7 @@ let entityRecordId: Ref<string> = ref(isCopyCreate.value ? '' : formParams.id)
 let copyEntityRecordId: Ref<string> = ref(isCopyCreate.value ? formParams.id : '')
 formProvideProxy.setRecordId(entityRecordId.value)
 
-console.log('entityRecordId', entityRecordId.value)
+// console.log('entityRecordId', entityRecordId.value)
 const formItems: Ref<Array<FormItem>> = ref([])
 const subFormInstIds: Ref<string[]> = ref([])
 const formRef = ref<FormInstance>()
@@ -425,6 +426,7 @@ const checkBindEntity = () => {
 const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
   if (checkBindEntity()) {
     const entitySaver = new EntitySaver(props.bindEntity.entityName)
+    entitySaver.id = props.glComponentInst.id
     // 先设置主表单部分，注意这里的formData有可能会有id值，在copyCreate的场景，页面加载之后entityRecordId.value会变为空
     const record: Record<string, any> = { ...formData.value, id: entityRecordId.value }
     // 如果本表单作为另了个表单的子表单
@@ -444,6 +446,7 @@ const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
       }
     })
     entitySaver.record = record
+    emits('creatingEntitySavers', { entitySavers: [entitySaver] })
     return [entitySaver]
   }
   return null

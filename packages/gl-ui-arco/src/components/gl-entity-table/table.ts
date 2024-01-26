@@ -58,6 +58,8 @@ export class BaseInfo {
   hideLabel?: boolean
   entityName: string = ''
   showQuery: boolean = true
+  // 隐藏重置按钮
+  hideReset?:boolean
   // 是否在初始化之后触发查询
   triggerByInit: boolean = true
   // 是否在查询条件值改变之后自动触发查询

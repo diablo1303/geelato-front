@@ -35,6 +35,12 @@ const props = defineProps({
       return true
     }
   },
+  /**
+   *  隐藏重置按钮
+   *  场景如：查询条件的值是动态添加的，不是初始值，且查询条件不可修改，若重置，查询条件值会被清空
+   *  默认为false
+   */
+  hideReset:Boolean,
   disabled: {
     type: Boolean,
     default() {
@@ -250,7 +256,7 @@ defineExpose({
           </template>
           <span v-if="showTitle">查询</span>
         </a-button>
-        <a-button @click="reset">
+        <a-button v-if="!hideReset" @click="reset">
           <template #icon>
             <GlIconfont type="gl-reset"></GlIconfont>
           </template>

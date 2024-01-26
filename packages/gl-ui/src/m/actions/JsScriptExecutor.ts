@@ -500,7 +500,7 @@ export class JsScriptExecutor {
     if (callback && typeof callback === 'function') {
       callback()
     }
-    console.log('result', result)
+    // console.log('result', result)
     return result
   }
 

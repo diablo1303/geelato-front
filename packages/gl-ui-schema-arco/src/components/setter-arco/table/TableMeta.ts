@@ -66,6 +66,18 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '显示查询',
           setterComponentName: 'ASwitch'
+        },{
+          name: 'hideReset',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          title: '隐藏重置',
+          description: '隐藏查询条件的重置按钮',
+          setterComponentName: 'ASwitch'
         },
         {
           name: 'triggerByValueChange',
@@ -104,18 +116,6 @@ export default {
           setterDefaultValue: true
         },
         {
-          name: 'showPagination',
-          group: 'base',
-          type: 'props',
-          enableValueExpress: false,
-          show: true,
-          expanded: true,
-          setterComponentProps: {},
-          setterComponentVModelName: 'modelValue',
-          title: '显示分页',
-          setterComponentName: 'ASwitch'
-        },
-        {
           name: 'showToolbar',
           group: 'base',
           type: 'props',
@@ -126,6 +126,20 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '显示工具条',
           setterComponentName: 'ASwitch'
+        },
+        {
+          name: 'showPagination',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          title: '显示分页',
+          setterComponentName: 'ASwitch',
+          setterDefaultValue: true,
+          description: '如果为显示时，可以在分页专项配置中进行详细配置；如果为否，则不显示',
         },
         {
           name: 'tablePadding',
@@ -168,17 +182,9 @@ export default {
           name: 'leftFixedCount',
           setterComponentProps: {
             options: [
-              {
-                label: '0',
-                value: '0',
-                __G12mDt0WMK0DpquHK1: '0'
-              },
+              { label: '0', value: '0', __G12mDt0WMK0DpquHK1: '0' },
               { label: '1', value: '1', __G12mDt0WMK0DpquHK1: '1' },
-              {
-                label: '2',
-                value: '2',
-                __G12mDt0WMK0DpquHK1: '2'
-              },
+              { label: '2', value: '2', __G12mDt0WMK0DpquHK1: '2' },
               { label: '3', value: '3', __G12mDt0WMK0DpquHK1: '3' }
             ],
             type: 'button'
@@ -198,11 +204,7 @@ export default {
             type: 'button',
             options: [
               { label: '无', value: 'null', __xJvT8pskAbMdRLoi7C: 'null' },
-              {
-                label: '单选',
-                value: 'radio',
-                __xJvT8pskAbMdRLoi7C: 'radio'
-              },
+              { label: '单选', value: 'radio', __xJvT8pskAbMdRLoi7C: 'radio' },
               { label: '复选', value: 'checkbox', __xJvT8pskAbMdRLoi7C: 'checkbox' }
             ]
           },
@@ -273,29 +275,13 @@ export default {
             mode: 'SECRET_COMBOBOX_MODE_DO_NOT_USE',
             options: [
               { label: '等于', value: 'eq', __sIGch6bIhRKB7cNZod: 'eq' },
-              {
-                label: '不等于',
-                value: 'neq',
-                __sIGch6bIhRKB7cNZod: 'neq'
-              },
+              { label: '不等于', value: 'neq', __sIGch6bIhRKB7cNZod: 'neq' },
               { label: '小于', value: 'lt', __sIGch6bIhRKB7cNZod: 'lt' },
-              {
-                label: '小于等于',
-                value: 'lte',
-                __sIGch6bIhRKB7cNZod: 'lte'
-              },
+              { label: '小于等于', value: 'lte', __sIGch6bIhRKB7cNZod: 'lte' },
               { label: '大于', value: 'gt', __sIGch6bIhRKB7cNZod: 'gt' },
-              {
-                label: '大于等于',
-                value: 'gte',
-                __sIGch6bIhRKB7cNZod: 'gte'
-              },
+              { label: '大于等于', value: 'gte', __sIGch6bIhRKB7cNZod: 'gte' },
               { label: '开头包括', value: 'sw', __sIGch6bIhRKB7cNZod: 'sw' },
-              {
-                label: '结尾包括',
-                value: 'ew',
-                __sIGch6bIhRKB7cNZod: 'ew'
-              },
+              { label: '结尾包括', value: 'ew', __sIGch6bIhRKB7cNZod: 'ew' },
               { label: '包括', value: 'contains', __sIGch6bIhRKB7cNZod: 'contains' },
               { label: '在范围(in)', value: 'in' },
               { label: '在...之间(between)', value: 'bt' },
@@ -525,11 +511,7 @@ export default {
               expanded: true,
               setterComponentProps: {
                 options: [
-                  {
-                    label: '升序',
-                    value: 'ascend',
-                    __tIT53h6CwaIY5gI5Tg: 'ascend'
-                  },
+                  { label: '升序', value: 'ascend', __tIT53h6CwaIY5gI5Tg: 'ascend' },
                   { label: '降序', value: 'descend', __tIT53h6CwaIY5gI5Tg: 'descend' }
                 ],
                 multiple: true
@@ -548,18 +530,9 @@ export default {
               displayMode: 'tile',
               setterComponentProps: {
                 options: [
-                  {
-                    label: '升序',
-                    value: 'ascend'
-                  },
-                  {
-                    label: '降序',
-                    value: 'descend'
-                  },
-                  {
-                    label: '无',
-                    value: ''
-                  }
+                  { label: '升序', value: 'ascend' },
+                  { label: '降序', value: 'descend' },
+                  { label: '无', value: '' }
                 ]
               },
               setterComponentVModelName: 'modelValue',
@@ -666,6 +639,205 @@ export default {
       setterComponentName: 'GlArrayComponentSetter',
       title: '操作列',
       enableValueExpress: false
+    },
+    {
+      name: 'pagination',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      displayMode: 'collapse',
+      setterComponentProps: {},
+      setterComponentVModelName: '',
+      _showSub: true,
+      properties: [
+        {
+          name: 'current',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          description: '当前显示第几页',
+          title: '当前的页数',
+          setterComponentName: 'AInputNumber',
+          setterDefaultValue: 1
+        },
+        {
+          name: 'defaultPageSize',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          description: '默认每页展示的数据条数',
+          title: '每页记录数',
+          setterComponentName: 'AInputNumber',
+          setterDefaultValue: 15,
+        },
+        {
+          name: 'hideOnSinglePage',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          description: '单页时是否隐藏分页',
+          title: '单页时隐藏',
+          setterComponentName: 'ASwitch'
+        },
+        {
+          name: 'simple',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          description: '是否为简单模式',
+          title: '简单模式',
+          setterComponentName: 'ASwitch'
+        },
+        {
+          name: 'showTotal',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          description: '是否显示数据总数',
+          title: '显示总数',
+          setterComponentName: 'ASwitch',
+          setterDefaultValue: true
+        },
+        {
+          name: 'showMore',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          description: '是否显示更多按钮',
+          title: '显示更多',
+          setterComponentName: 'ASwitch'
+        },
+        {
+          name: 'showJumper',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          description: '是否显示跳转',
+          title: '显示跳转',
+          setterComponentName: 'ASwitch',
+          setterDefaultValue: true
+        },
+        {
+          name: 'showPageSize',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {
+            checkedText: '显示数据条数选择器',
+            uncheckedText: '不显示数据条数选择器'
+          },
+          setterComponentVModelName: 'modelValue',
+          description: '是否显示数据条数选择器',
+          title: '记录选择器',
+          setterComponentName: 'ASwitch'
+        },
+        {
+          name: 'pageSizeOptions',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: { options: [] },
+          setterComponentVModelName: 'modelValue',
+          description: '数据条数选择器的选项列表',
+          setterComponentName: 'GlArrayNumberSetter',
+          setterDefaultValue: [5, 10, 15, 20, 30, 40, 50, 100],
+          title: '可选分页数'
+        },
+        {
+          name: 'size',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {
+            options: [
+              { label: 'mini', value: 'mini', __vOdVHUjHXCUl38OBhY: 'mini' },
+              { label: 'small', value: 'small', __vOdVHUjHXCUl38OBhY: 'small' },
+              { label: 'medium', value: 'medium', __vOdVHUjHXCUl38OBhY: 'medium' },
+              { label: 'large', value: 'large', __vOdVHUjHXCUl38OBhY: 'large' }
+            ]
+          },
+          setterComponentVModelName: 'modelValue',
+          description: '分页选择器的大小',
+          title: '大小',
+          setterComponentName: 'ASelect'
+        },
+        {
+          name: 'bufferSize',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          description: '显示省略号时，当前页码左右显示的页码个数',
+          title: '页码左右个数',
+          setterComponentName: 'AInputNumber'
+        },
+        {
+          name: 'baseSize',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          description: '计算显示省略的基础参数，显示省略的个数为 baseSize + 2 * bufferSize',
+          title: '省略基础参数',
+          setterComponentName: 'AInputNumber'
+        }
+      ],
+      setterComponentName: 'GlSimpleObjectSetter',
+      title: '分页'
     }
   ],
   actions: [
@@ -679,56 +851,16 @@ export default {
       title: '行记录(内容)更改',
       description: '在数据表的行内编辑模式下，当数据表的行记录信息更换时触发'
     },
-    {
-      name: 'select',
-      title: '点击行选择器',
-      description: '点击行选择器时触发'
-    },
-    {
-      name: 'cellClick',
-      title: '点击单元格',
-      description: '点击单元格时触发'
-    },
-    {
-      name: 'rowClick',
-      title: '点击行数据',
-      description: '点击行数据时触发'
-    },
-    {
-      name: 'cellDblclick',
-      title: '双击单元格',
-      description: '双击单元格时触发'
-    },
-    {
-      name: 'rowDblclick',
-      title: '双击行数据',
-      description: '双击行数据时触发'
-    },
-    {
-      name: 'cellContextmenu',
-      title: '右击单元格',
-      description: '右击单元格时触发'
-    },
-    {
-      name: 'rowContextmenu',
-      title: '右击行数据',
-      description: '右击行数据时触发'
-    },
-    {
-      name: 'headerClick',
-      title: '点击表头数据',
-      description: '点击表头数据时触发'
-    },
-    {
-      name: 'filterClick',
-      title: '点击过滤器',
-      description: '点击过滤器时触发'
-    },
-    {
-      name: 'columnResize',
-      title: '调整列宽',
-      description: '调整列宽时触发'
-    }
+    { name: 'select', title: '点击行选择器', description: '点击行选择器时触发' },
+    { name: 'cellClick', title: '点击单元格', description: '点击单元格时触发' },
+    { name: 'rowClick', title: '点击行数据', description: '点击行数据时触发' },
+    { name: 'cellDblclick', title: '双击单元格', description: '双击单元格时触发' },
+    { name: 'rowDblclick', title: '双击行数据', description: '双击行数据时触发' },
+    { name: 'cellContextmenu', title: '右击单元格', description: '右击单元格时触发' },
+    { name: 'rowContextmenu', title: '右击行数据', description: '右击行数据时触发' },
+    { name: 'headerClick', title: '点击表头数据', description: '点击表头数据时触发' },
+    { name: 'filterClick', title: '点击过滤器', description: '点击过滤器时触发' },
+    { name: 'columnResize', title: '调整列宽', description: '调整列宽时触发' }
   ],
   methods: [
     { name: 'refresh', title: '刷新', description: '刷新表格', params: [] },
@@ -848,15 +980,7 @@ export default {
     {
       name: 'deleteSelectedRecords',
       title: '删除选择的记录（基于ID）',
-      params: [
-        {
-          name: 'id',
-          type: 'String',
-          description: '',
-          title: '记录ID',
-          defaultValue: ''
-        }
-      ]
+      params: [{ name: 'id', type: 'String', description: '', title: '记录ID', defaultValue: '' }]
     },
     {
       name: 'deleteSelectedRecordsWithConfirm',

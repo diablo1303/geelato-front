@@ -182,11 +182,14 @@
         配置器默认值
       </td>
       <td class="gl-table-cell">
-        <template v-if="mv.setterComponentProps">
+        <template v-if="mv.setterComponentProps">{{defaultValueType}}
           <a-switch size="small" v-if="defaultValueType==='Boolean'"
                     v-model="mv.setterDefaultValue"></a-switch>
           <a-input-number v-else-if="defaultValueType==='Number'"
                           v-model="mv.setterDefaultValue"></a-input-number>
+          <template v-else-if="defaultValueType === 'NumberArray'">
+            <GlArrayNumberSetter v-model="mv.setterDefaultValue"></GlArrayNumberSetter>
+          </template>
           <a-input v-else v-model="mv.setterDefaultValue" placeholder="默认值"/>
         </template>
       </td>

@@ -114,7 +114,7 @@ const props = defineProps({
         showTotal: true,
         showPageSize: true,
         showJumper: true,
-        pageSizeOptions: [5, 10, 15, 20, 30, 40, 50]
+        pageSizeOptions: [5, 10, 15, 20, 30, 40, 50, 100]
       }
     }
   },
@@ -227,7 +227,7 @@ let lastEntityReaderParams: Array<EntityReaderParam>
 let lastOrder: EntityReaderOrder[] = []
 let lastPushedRecordKeys: string[]
 const search = (entityReaderParams: Array<EntityReaderParam>, pushedRecordKeys: string[]) => {
-  console.log('search entityReaderParams:', entityReaderParams)
+  // console.log('search entityReaderParams:', entityReaderParams)
   lastEntityReaderParams = entityReaderParams
   lastPushedRecordKeys = pushedRecordKeys
   fetchData({
@@ -363,7 +363,7 @@ defineExpose({
     v-if="refreshFlag"
     row-key="id"
     :loading="loading"
-    :pagination="pagination"
+    :pagination="showPagination === false ? false : pagination"
     :rowSelection="rowSelection"
     :columns="renderColumns"
     :data="renderData"

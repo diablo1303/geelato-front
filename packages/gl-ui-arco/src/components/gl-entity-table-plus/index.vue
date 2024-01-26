@@ -39,7 +39,7 @@ import {
   PageCustomType
 } from '@geelato/gl-ui'
 import type { Action } from '../../types/global'
-import type { TableData, TableColumnData } from '@arco-design/web-vue'
+import type { TableData, TableColumnData,PaginationProps } from '@arco-design/web-vue'
 import type { FilterType, MyEntityTableConfig } from './types'
 import FilterManager from '../gl-query/FilterManager.vue'
 
@@ -61,7 +61,8 @@ const emits = defineEmits([
   'cellDblclick',
   'rowContextmenu',
   'cellContextmenu',
-  'filterClick'
+  'filterClick',
+  'creatingEntitySavers'
 ])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const isRead = !!pageProvideProxy?.isPageStatusRead()
@@ -116,6 +117,19 @@ const props = defineProps({
   },
   size: {
     type: String as PropType<SizeProps>
+  },
+  pagination: {
+    type: Object as PropType<PaginationProps>,
+    default() {
+      return {
+        current: 1,
+        pageSize: 15,
+        showTotal: true,
+        showPageSize: true,
+        showJumper: true,
+        pageSizeOptions: [5, 10, 15, 20, 30, 40, 50]
+      }
+    }
   },
   ...mixins.props
 })
@@ -632,6 +646,7 @@ const createEntitySavers = (
         record[subTablePidName] = subFormPidValue
       }
       const entitySaver = new EntitySaver(props.base.entityName)
+      entitySaver.id = props.glComponentInst.id
       entitySaver.pidName = props.base.subTablePidName
       entitySaver.record = record
       entitySavers.push(entitySaver)
@@ -641,19 +656,21 @@ const createEntitySavers = (
   // 当前为逻辑删除，可依据子表的isLogicDeleteMode来区分
   // console.log('GlEntityForm > saveForm() > getDeleteDataFn', getDeleteDataFn)
   const deleteData = getDeleteRecords()
-  console.log('GlEntityTablePlus > createEntitySavers() > deleteData:', deleteData)
+  // console.log('GlEntityTablePlus > createEntitySavers() > deleteData:', deleteData)
   if (deleteData && deleteData.length > 0) {
     deleteData.forEach((record: Record<any, any>) => {
       if (subTablePidName) {
         record[subTablePidName] = subFormPidValue
       }
       const entitySaver = new EntitySaver(props.base.entityName)
+      entitySaver.id = props.glComponentInst.id
       entitySaver.pidName = props.base.subTablePidName
       entitySaver.record = record
       entitySavers.push(entitySaver)
     })
   }
-  console.log('GlEntityTablePlus > createEntitySavers() > entitySavers:', entitySavers)
+  // console.log('GlEntityTablePlus > createEntitySavers() > entitySavers:', entitySavers)
+  emits('creatingEntitySavers', {entitySavers})
   return entitySavers
 }
 
@@ -815,6 +832,7 @@ const saveFilters = () => {
   console.log('myPageCustom', myPageCustom)
 
   const saver = new EntitySaver()
+  saver.id = props.glComponentInst.id
   saver.entity = 'platform_my_page_custom'
   saver.record = myPageCustom
   entityApi.saveEntity(saver)
@@ -882,6 +900,7 @@ defineExpose({
       :items="query"
       :triggerByInit="base.triggerByInit"
       :triggerByValueChange="base.triggerByValueChange"
+      :hideReset="base.hideReset"
       @search="onSearch"
     ></GlQuery>
     <a-divider v-show="base.showQuery !== false" style="margin: 8px 0 12px" />
@@ -1007,6 +1026,7 @@ defineExpose({
       :columnActions="columnActions"
       :size="size"
       :showPagination="base.showPagination"
+      :pagination="pagination"
       :enableEdit="base.enableEdit"
       :isFormSubTable="base.isFormSubTable"
       :subTablePidName="base.subTablePidName"

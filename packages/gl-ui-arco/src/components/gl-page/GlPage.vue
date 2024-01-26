@@ -133,7 +133,7 @@ const style = {
   padding: props.pagePadding || '0'
 }
 
-console.log('GlPage > props:', props)
+// console.log('GlPage > props:', props)
 const pageProvideProxy = new PageProvideProxy(props.glComponentInst, getCurrentInstance()!)
 pageProvideProxy.pageId = props.pageId
 pageProvideProxy.setVueRef(props.glComponentInst.id, getCurrentInstance())

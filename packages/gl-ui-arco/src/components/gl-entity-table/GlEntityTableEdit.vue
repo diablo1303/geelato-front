@@ -291,7 +291,7 @@ const fetchData = async (readerInfo?: {
     entityReader.params = readerInfo?.params || []
 
     // 如果是子查询
-    // 增加父表单主键，作为查询字段，若父表单无该主健id，则返回，不知查询
+    // 增加父表单主键，作为查询字段，若父表单无该主健id，则返回，不查询
     if (props.isFormSubTable) {
       const pid = formProvideProxy?.getRecordId()
       if (!pid) {
@@ -469,6 +469,7 @@ const validateRecord = (record: object, rowIndex: number) => {
 const tableErrors = ref<Array<object | null>>([])
 tableErrors.value.length = cloneColumns.value.length
 const setError = (record: object, rowIndex: number, err: { [key: string]: any }) => {
+  // console.log('setError',record,rowIndex,err)
   if (!err) {
     tableErrors.value[rowIndex] = null
     return
@@ -566,7 +567,7 @@ const getRenderColumns = () => {
   return cloneColumns.value
 }
 
-const isRead = !!pageProvideProxy?.isPageStatusRead()
+const isPageRead = !!pageProvideProxy?.isPageStatusRead()
 
 const tableRef = ref()
 const selectAll = (checked: boolean) => {
@@ -617,7 +618,7 @@ defineExpose({
     </template>
     <template ##="{ record, rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
-        <a-button type="text" size="small" @click="copyRecord(record, rowIndex)" :disabled="isRead"
+        <a-button type="text" size="small" @click="copyRecord(record, rowIndex)" :disabled="isPageRead"
           >复制
         </a-button>
         <a-button
@@ -625,7 +626,7 @@ defineExpose({
           status="danger"
           size="small"
           @click="deleteRecord(record, rowIndex)"
-          :disabled="isRead"
+          :disabled="isPageRead"
         >
           删除
         </a-button>
@@ -654,13 +655,12 @@ defineExpose({
             dataIndex: column.dataIndex,
             cellLastValue: renderData[rowIndex][column.dataIndex]
           }"
-          :disabled="isRead"
+          :disabled="isPageRead||column._component?.props?.readonly||column._component?.props?.disabled"
         ></GlComponent>
-        <!--        <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>-->
+                <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>
       </div>
     </template>
   </a-table>
-  <!--  {{renderData}}-->
 </template>
 
 <style>
@@ -673,8 +673,8 @@ defineExpose({
   display: none;
 }
 
-.gl-entity-table-edit .gl-validate-error .gl-component {
-  background-color: #fde5e5;
+.gl-entity-table-edit .gl-validate-error {
+  background-color: rgba(203, 55, 55, 0.15);
 }
 
 .gl-entity-table-edit .gl-validate-error .gl-validate-message {

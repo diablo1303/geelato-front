@@ -93,7 +93,7 @@ const doAction = (actionName: string, args: any) => {
   if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
     props.glComponentInst.actions.forEach((action: Action) => {
       if (action.eventName === actionName) {
-        console.log('GlComponent > doAction > action', action)
+        // console.log('GlComponent > doAction > action', action)
         // let ctx = inject('$ctx') as object || {}
         let ctx = {}
         Object.assign(ctx, props.glCtx, {args}, {

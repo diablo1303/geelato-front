@@ -307,6 +307,11 @@ export class EntityReader {
  */
 export class EntitySaver {
   /**
+   *  一般同组件id，即该entitySaver是基于哪个组件创建的，则采用该id，如GlEntityForm的id、GlEntityTablePlus的id
+   *  在基于脚本编码时可能不会设置该值，此时为空
+   */
+  id?:string = ''
+  /**
    *  实体名称
    */
   entity: string = ''

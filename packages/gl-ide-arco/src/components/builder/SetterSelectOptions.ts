@@ -82,7 +82,7 @@ export const setterSelectOptions = [
         name: 'GlArrayNumberSetter',
         label: '数组-数值类 [1,2,3...]',
         vModelName: 'modelValue',
-        type: 'String',
+        type: 'NumberArray',
         propsSetter: 'GlArrayNumberBuilder'
     },
     {name: 'GlArrayStringSetter', label: '数组-字符串类 ["a","b"...]', vModelName: 'modelValue', type: 'String'},

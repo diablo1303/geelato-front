@@ -12,10 +12,12 @@
     </template>
     <template #title v-if="isShowLabel">
       <span @click="switchHide" style="cursor: pointer">
-        <GlIconfont v-if="isHidden" type="gl-down-circle"></GlIconfont>
-        <GlIconfont v-else type="gl-right-circle"></GlIconfont>
+        <span>
+          <GlIconfont v-if="isHidden" type="gl-down-circle"></GlIconfont>
+          <GlIconfont v-else type="gl-right-circle"></GlIconfont>
+        </span>
+        <span>{{ label }}</span>
       </span>
-      <span>{{ label }}</span>
     </template>
     <component
       :is="'GlInsts' + glRuntimeFlag"
@@ -33,7 +35,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {computed, ref, watch} from 'vue'
+import { computed, ref, watch } from 'vue'
 import { mixins } from '@geelato/gl-ui'
 
 const props = defineProps({
@@ -45,14 +47,13 @@ const props = defineProps({
 
 // 是否隐藏卡片的内容，即折叠
 const isHidden = ref(false)
-const isShowLabel = computed(()=>{
+const isShowLabel = computed(() => {
   return props.showLabel !== false
 })
 
 const switchHide = () => {
   isHidden.value = !isHidden.value
 }
-
 </script>
 
 <style>

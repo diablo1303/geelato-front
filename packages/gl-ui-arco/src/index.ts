@@ -42,6 +42,7 @@ import GlBlocks from "./components/gl-blocks/GlBlocks.vue";
 import GlList from "./components/gl-list/GlList.vue";
 import GlTinymce from "./components/gl-tinymce/GlTinymce.vue";
 import GlPageHelp from "./components/gl-page-help/GlPageHelp.vue";
+import GlPagination from "./components/gl-pagination/GlPagination.vue";
 const i18nMessage = {en, cn}
 
 const component: Plugin = {
@@ -88,6 +89,7 @@ const component: Plugin = {
     Vue.component(GlImage.name, GlImage)
     Vue.component(GlImport.name, GlImport)
     Vue.component(GlPageHelp.name,GlPageHelp)
+    Vue.component(GlPagination.name,GlPagination)
 
     Vue.component('GlRangePicker', RangePicker)
     Vue.component('GlModal', Modal)
