@@ -27,6 +27,7 @@ import SwitchPropsBuilder from './components/builder/props-builder/SwitchPropsBu
 import GlRadioGroupSetter from './components/setters/property-setters/GlRadioGroupSetter.vue'
 import GlFieldSelect from './components/setters/property-setters/GlFieldSelect.vue'
 import GlEntitySelect from './components/setters/property-setters/GlEntitySelect.vue'
+import GlAppSelect from './components/setters/property-setters/GlAppSelect.vue'
 import GlPageSelect from './components/setters/property-setters/GlPageSelect.vue'
 import GlComponentSelect from './components/setters/property-setters/GlComponentSelect.vue'
 import GlEntityReaderSetter from './components/setters/property-setters/entity-reader-setter/GlEntityReaderSetter.vue'
@@ -256,6 +257,7 @@ const component: Plugin = {
     // app.component(GlIconfontSetterForSlot.name, GlIconfontSetterForSlot)
     app.component(GlSelectSetter.name, GlSelectSetter)
     app.component(GlOptionsSetter.name, GlOptionsSetter)
+    app.component(GlAppSelect.name, GlAppSelect)
     app.component(GlPageSelect.name, GlPageSelect)
     app.component(GlPageComponentSelect.name, GlPageComponentSelect)
     app.component(GlEntitySelect.name, GlEntitySelect)

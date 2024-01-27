@@ -100,9 +100,10 @@ export class EntityApi {
       platform_user: minutes * 5
     }
     if (cachePromise) {
-      console.log(`查询实体：${Object.keys(mql)[0]}，从缓存中获取promise对象`)
+      console.log(`查询实体：${Object.keys(mql)[0]}，从缓存中获取数据`)
       return cachePromise
     } else {
+      console.log(`查询实体：${Object.keys(mql)[0]}，从服务端获取数据`)
       const entityName = Object.keys(mql)[0]
       const promiseResult = this.service({
         url: `${path}?withMeta=${!!withMeta}&e=${isArray ? '_multiEntity' : entityName}`,

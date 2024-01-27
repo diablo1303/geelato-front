@@ -58,7 +58,7 @@ export default {
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "title": "应用Id",
-        "setterComponentName": "AInput",
+        "setterComponentName": "GlAppSelect",
         "placeholder": ""
     }, {
         "name": "extendId",

@@ -4,8 +4,9 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { type Ref, ref, watch } from 'vue'
+import {inject, onMounted, type Ref, ref, watch} from 'vue'
 import { entityApi, EntityReader } from '@geelato/gl-ui'
+import {ComponentSetterProvideKey, ComponentSetterProvideProxy} from "@geelato/gl-ide";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -14,12 +15,19 @@ const props = defineProps({
     default() {
       return ''
     }
+  },
+  /**
+   *  将选择加载的完整应用源数据信息设置到ComponentSetterProvideProxy的上下文环境变量中
+   */
+  exposeVarAppId: {
+    type: String,
+    default() {
+      return 'appId'
+    }
   }
 })
-const mv = ref(props.modelValue)
-watch(mv, () => {
-  emits('update:modelValue', mv.value)
-})
+
+const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 
 const apps: Ref<Array<Record<string, any>>> = ref([])
 
@@ -30,10 +38,25 @@ const fetchData = () => {
     apps.value = res.data
   })
 }
+
+const mv = ref(props.modelValue)
+watch(
+  mv,
+  () => {
+    emits('update:modelValue', mv.value)
+  }
+)
+fetchData()
+
+const onChange = (appId:string)=>{
+  console.log('appId',appId)
+  componentSetterProvideProxy.setVarValue(props.exposeVarAppId, appId)
+}
+
 </script>
 
 <template>
-  <a-select v-model="mv" allow-search>
+  <a-select v-model="mv" allow-search @change="onChange">
     <a-option v-for="item in apps" :value="item.id" :class="{ 'gl-selected': mv === item.id }">
       {{ item.name }}
     </a-option>
