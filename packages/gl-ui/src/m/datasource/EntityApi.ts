@@ -1,5 +1,4 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosStatic } from 'axios'
-import ResultMapping from '../datasource/ResultMapping'
 import MixUtil from '../utils/MixUtil'
 import {
   type EntityReader,
@@ -11,9 +10,11 @@ import { getToken } from '../utils/auth'
 import jsScriptExecutor from '../actions/JsScriptExecutor'
 import utils from '../utils/Utils'
 import useApiUrl from '../hooks/useApiUrl'
+import EntityQueryCache from '../datasource/EntityQueryCache'
 
 export type MqlObject = { [key: string]: { [key: string]: any } }
 export type ParsedMqlResult = { key: string; mqlObj: Record<string, any> }
+const entityQueryCache = new EntityQueryCache()
 
 /**
  * 检查mql对象的格式
@@ -87,11 +88,31 @@ export class EntityApi {
     // 检查查询对象格式
     checkMqlObject(mql)
 
-    return this.service({
-      url: `${path}?withMeta=${!!withMeta}&e=${isArray ? '_multiEntity' : Object.keys(mql)[0]}`,
-      method: 'POST',
-      data: mql
-    })
+    // 增加请求缓存
+    const key = JSON.stringify(mql)
+    const cachePromise = entityQueryCache.get(key)
+    // 缓存时长，默认5秒，需要特殊指定的可在些配置，如字典，两分钟缓存时间
+    const defaultTime = 5000
+    const minutes = 60000
+    const entityTime: Record<string, number> = {
+      platform_dict_item: minutes * 5,
+      platform_province: minutes * 60,
+      platform_user: minutes * 5
+    }
+    if (cachePromise) {
+      console.log(`查询实体：${Object.keys(mql)[0]}，从缓存中获取promise对象`)
+      return cachePromise
+    } else {
+      const entityName = Object.keys(mql)[0]
+      const promiseResult = this.service({
+        url: `${path}?withMeta=${!!withMeta}&e=${isArray ? '_multiEntity' : entityName}`,
+        method: 'POST',
+        data: mql
+      })
+      // 2秒缓存，解决短时间内大量相同的数据查询问题，如列表的字典、实体查询
+      entityQueryCache.set(key, promiseResult, entityTime[entityName] || defaultTime)
+      return promiseResult
+    }
   }
 
   /**
