@@ -6,17 +6,18 @@ export default {
     "title": "触发组件动作",
     "useBy": ["freePage"],
     "blockContent": "触发组件${componentId}的动作事件${actionName}",
-    "properties": [{
+    "properties": [ {
         "name": "appId",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
+        "enableValueExpress": false,
         "show": true,
         "expanded": true,
-        "title": "应用ID",
-        "setterComponentName": "AInput",
-        "placeholder": "不填写表示当前应用"
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "应用",
+        "setterComponentName": "GlAppSelect",
+        "placeholder": ""
     }, {
         "name": "extendId",
         "setterComponentProps": {},

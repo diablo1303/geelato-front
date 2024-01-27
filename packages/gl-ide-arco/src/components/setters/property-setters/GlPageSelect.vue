@@ -21,7 +21,8 @@ import { entityApi, EntityReader, EntityReaderParam, Utils } from '@geelato/gl-u
 import {
   useAppStore,
   ComponentSetterProvideKey,
-  ComponentSetterProvideProxy
+  ComponentSetterProvideProxy,
+  usePageStore
 } from '@geelato/gl-ide'
 
 const emits = defineEmits(['update:modelValue'])
@@ -56,13 +57,14 @@ const props = defineProps({
 })
 
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
-
-const selected = ref(typeof props.modelValue === 'string' ? props.modelValue : '')
+const pageStore = usePageStore()
+const extendId = pageStore?.currentPage?.extendId
+// 默认当前页面的extend id
+const selected = ref((typeof props.modelValue === 'string' ? props.modelValue : '') || extendId)
 
 watch(
   selected,
   () => {
-    // console.log('update:modelValue:', selected.value)
     emits('update:modelValue', selected.value)
   },
   { immediate: true }
@@ -120,7 +122,8 @@ const onClick = () => {
 
 const setData = () => {
   appId.value = componentSetterProvideProxy.getVarValue(props.dependVarAppId)
-  fetchData(appId.value)
+  // 默认为当前的应用id
+  fetchData(appId.value || props.appId)
 }
 onMounted(() => {
   setData()

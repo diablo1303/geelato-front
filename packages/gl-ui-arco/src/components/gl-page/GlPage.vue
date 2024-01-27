@@ -40,11 +40,11 @@ import {
   PageProvideKey,
   PageParamsKey,
   type Param,
-  utils,
-  type PageCustomType
+  utils
 } from '@geelato/gl-ui'
 import type { Action } from '@geelato/gl-ui-schema'
 
+const emits = defineEmits(['interval'])
 const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
   breadcrumb: {
@@ -102,6 +102,16 @@ const props = defineProps({
     type: String,
     default() {
       return ''
+    }
+  },
+  /**
+   *  页面定时器调用间隔
+   *  默认为0，即不开启，最小值为100，即100毫秒
+   */
+  pageTimeout: {
+    type: Number,
+    default() {
+      return 0
     }
   },
   /**
@@ -198,6 +208,26 @@ const refresh = () => {
     visiblePage.value = true
   })
 }
+
+// 页面定时器
+const pageIntervalHandler = () => {
+  emits('interval')
+}
+let pageIntervalId: any = undefined
+// 定时器间隔大于0才表示生效
+if (props.pageTimeout > 0) {
+  const timeout = props.pageTimeout < 100 ? 100 : props.pageTimeout
+  console.log('setInterval', pageIntervalId, timeout)
+  pageIntervalId = setInterval(pageIntervalHandler, timeout)
+}
+
+onUnmounted(() => {
+  // 清除页面定时器
+  if (pageIntervalId) {
+    console.log('clearInterval', pageIntervalId)
+    clearInterval(pageIntervalId)
+  }
+})
 
 defineExpose({ refresh })
 </script>

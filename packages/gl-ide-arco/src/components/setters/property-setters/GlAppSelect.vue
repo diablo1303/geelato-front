@@ -4,9 +4,13 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {inject, onMounted, type Ref, ref, watch} from 'vue'
+import { inject, onMounted, type Ref, ref, watch } from 'vue'
 import { entityApi, EntityReader } from '@geelato/gl-ui'
-import {ComponentSetterProvideKey, ComponentSetterProvideProxy} from "@geelato/gl-ide";
+import {
+  ComponentSetterProvideKey,
+  ComponentSetterProvideProxy,
+  useAppStore
+} from '@geelato/gl-ide'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -39,24 +43,25 @@ const fetchData = () => {
   })
 }
 
-const mv = ref(props.modelValue)
+// 默认为当前应用
+const mv = ref(props.modelValue || useAppStore().currentApp.id)
 watch(
   mv,
   () => {
+    componentSetterProvideProxy.setVarValue(props.exposeVarAppId, mv)
     emits('update:modelValue', mv.value)
-  }
+  },
+  { immediate: true }
 )
 fetchData()
 
-const onChange = (appId:string)=>{
-  console.log('appId',appId)
-  componentSetterProvideProxy.setVarValue(props.exposeVarAppId, appId)
-}
-
+// const onChange = (appId:string)=>{
+//   componentSetterProvideProxy.setVarValue(props.exposeVarAppId, appId)
+// }
 </script>
 
 <template>
-  <a-select v-model="mv" allow-search @change="onChange">
+  <a-select v-model="mv" allow-search>
     <a-option v-for="item in apps" :value="item.id" :class="{ 'gl-selected': mv === item.id }">
       {{ item.name }}
     </a-option>

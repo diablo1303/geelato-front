@@ -114,6 +114,19 @@ export default {
       placeholder: '',
       description: '该页面相关的帮助文章',
       setterComponentName: 'GlDynamicSelect'
+    },{
+      name: 'pageTimeout',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      enableValueExpress: true,
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      title: '定时器间隔',
+      description: '页面的定时器触发间隔，默认为0，表示不触发，大于0才触发，单位为毫秒；触发间隔至少为100，即至少100毫秒。',
+      placeholder: '如：6000，即6秒',
+      setterComponentName: 'AInputNumber'
     }
   ],
   actions: [
@@ -121,6 +134,11 @@ export default {
       name: 'common',
       title: '页面公共动作',
       description: '页面公共动作，不会自动触发（即不受组件自身的事件影响），可由其它动作引用触发。'
+    },
+    {
+      name: 'interval',
+      title: '页面定时器',
+      description: '页面的定时器。'
     }
   ],
   methods: [

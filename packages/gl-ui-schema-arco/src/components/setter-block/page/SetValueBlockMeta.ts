@@ -6,17 +6,18 @@ export default {
     "title": "设置组件值",
     "useBy": ["freePage"],
     "blockContent": "设置组件${componentId}的值为${value}",
-    "properties": [{
+    "properties": [ {
         "name": "appId",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
+        "enableValueExpress": false,
         "show": true,
         "expanded": true,
-        "title": "应用ID",
-        "setterComponentName": "AInput",
-        "placeholder": "不填写表示当前应用"
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "应用",
+        "setterComponentName": "GlAppSelect",
+        "placeholder": ""
     }, {
         "name": "extendId",
         "setterComponentProps": {},

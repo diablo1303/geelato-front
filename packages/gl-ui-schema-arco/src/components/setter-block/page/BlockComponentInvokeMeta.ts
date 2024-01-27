@@ -6,17 +6,18 @@ export default {
     "title": "调用组件方法",
     "useBy": ["freePage"],
     "blockContent": "调用组件：${componentId}，方法：${methodName}，结果存到变量:${resultVar}",
-    "properties": [{
+    "properties": [ {
         "name": "appId",
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
         "group": "base",
         "type": "props",
+        "enableValueExpress": false,
         "show": true,
         "expanded": true,
-        "title": "应用ID",
-        "setterComponentName": "AInput",
-        "placeholder": "不填写表示当前应用"
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "应用",
+        "setterComponentName": "GlAppSelect",
+        "placeholder": ""
     }, {
         "name": "extendId",
         "setterComponentProps": {},

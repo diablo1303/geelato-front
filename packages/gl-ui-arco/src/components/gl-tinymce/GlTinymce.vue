@@ -153,14 +153,14 @@ watch(
 
 const mv = ref(props.modelValue)
 watch(mv, () => {
-  emits('update:modelValue', mv.value.replace(new RegExp(baseUrl, "g"), "${" + replaceStr + "}"));
+  emits('update:modelValue', mv.value?.replace(new RegExp(baseUrl, "g"), "${" + replaceStr + "}"));
 })
 watch(
   () => {
     return props.modelValue
   },
   () => {
-    mv.value = props.modelValue.replace(new RegExp("\\$\\{" + replaceStr + "\\}", "g"), baseUrl);
+    mv.value = props.modelValue?.replace(new RegExp("\\$\\{" + replaceStr + "\\}", "g"), baseUrl);
   }, {deep: true, immediate: true}
 )
 </script>
