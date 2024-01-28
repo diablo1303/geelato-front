@@ -167,6 +167,7 @@ as 别名，格式name as alias，例如agesum:age|sum表示将求和的列名�
 * 大于、小于、分组、in、
 * eq("eq"), neq("neq"), lt("lt"), lte("lte"), gt("gt"), gte("gte"), startWith("sw"), endWith("ew"), contains("contains");
 * in("in") between("bt")已支持
+* not in("nin")
   **/
 *
 
@@ -178,7 +179,8 @@ as 别名，格式name as alias，例如agesum:age|sum表示将求和的列名�
       "sex":"0",                       //等值条件
 	  "age|gt":"20",                   //c即compare，表示大于、小于、等于...
 	  "name|sw":"zh",                  //like 查询
-	  "id|in":"1,2,3",                 //in   查询
+	  "id|in":"['1','2','3']",         //in   查询
+	  "id|nin":"['4','5','6']",      //not in   查询
 	  "myJsonAField|aco":"[1,2,3]",      //aco Array Contains One  查询数据库Json字段myJsonField，是否包含[1,2,3]中的任一个值
 	  "myJsonField2|aca":"[1,2,3]",     //aca Array Contains All  查询数据库Json字段myJsonField2，是否包含[1,2,3]中的所有值
       "@fs":"id,name,age,agesum",      //agesum是虚拟列，在服务端元数据管理中定义age|sum agesum

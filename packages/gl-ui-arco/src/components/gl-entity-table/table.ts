@@ -18,6 +18,9 @@ const { setLoading } = useLoading(false)
 
 export type SizeProps = 'mini' | 'small' | 'medium' | 'large'
 
+export const SlotNameSeq: string = '__slot__seq'
+export const SlotNameRecordStatus: string = '__slot__record_status'
+
 export interface GlTableColumn extends TableColumnData {
   // 对于展示表格，非编辑表格，为了便于操作，不使用_component的字段绑定功能，即显示隐藏的控制在此
   // 是否显示，用于控制数据查询加载，但不展示，可用于前端列计算或record传值，恒等于false时才不显示
@@ -59,7 +62,7 @@ export class BaseInfo {
   entityName: string = ''
   showQuery: boolean = true
   // 隐藏重置按钮
-  hideReset?:boolean
+  hideReset?: boolean
   // 是否在初始化之后触发查询
   triggerByInit: boolean = true
   // 是否在查询条件值改变之后自动触发查询
@@ -272,18 +275,50 @@ export const genQueryColumns = (
   return qColumns
 }
 
+type GenShowColumnOptions = {
+  // 是否通过组件来控制列是否展示，场景1，应用于编辑表，值为true;场景2，应用于查询表，值为false
+  isShowByComponent: boolean
+  // 是否需要展示操作列，默认需要，可按需设置是否展示，如在没有Actions时可以设置为无
+  showOptColumn?: boolean
+  // 是否显示序号列
+  showSeqNoColumn?: boolean
+  // 显示记录状态列
+  showRecordStatus?: boolean
+}
+
 /**
  * 构建新可供展示的列（用于选择是否展示），但不是最终展示例
  * @param queryColumns
- * @param isShowByComponent 是否通过组件来控制列是否展示，场景1，应用于编辑表，值为true;场景2，应用于查询表，值为false
- * @param showOptColumn 是否需要展示操作列，默认需要，可按需设置是否展示，如在没有Actions时可以设置为无
+ * @param options
  */
 export const genShowColumns = (
   queryColumns: Ref<GlTableColumn[]>,
-  isShowByComponent: boolean,
-  showOptColumn?: boolean
+  options?: GenShowColumnOptions
 ) => {
+  console.log('genShowColumns options:', options)
   const cols: Array<GlTableColumn> = []
+  // 默认需要展示序号列，但不默认展示
+  // if (options?.showSeqColumn !== false) {
+  const seqColumn = {
+    title: '序号',
+    slotName: SlotNameSeq,
+    width: 51,
+    align: 'center',
+    _checked: !!options?.showSeqNoColumn
+  }
+  cols.push(seqColumn as Column)
+  // }
+  // 默认需要展示状态列，但不默认展示
+  if (options?.showRecordStatus !== false) {
+    const statusColumn = {
+      title: '记录状态',
+      slotName: SlotNameRecordStatus,
+      width: 90,
+      align: 'center',
+      _checked: true
+    }
+    cols.push(statusColumn as Column)
+  }
   queryColumns?.value.forEach((queryColumn) => {
     queryColumn._checked = true
     queryColumn.width = queryColumn.width || 150
@@ -292,7 +327,7 @@ export const genShowColumns = (
     // console.log('genShowColumns() > queryColumn', queryColumn, 'showOptColumn', showOptColumn)
     executeObjectPropsExpressions(queryColumn, {})
     // 设置隐藏的列
-    if (isShowByComponent) {
+    if (options?.isShowByComponent) {
       // 场景1，应用于编辑表，按组件_component的属性来控制，
       if (queryColumn._component) {
         if (
@@ -312,7 +347,7 @@ export const genShowColumns = (
     }
   })
   // 默认需要展示操作列
-  if (showOptColumn !== false) {
+  if (options?.showOptColumn !== false) {
     const optColumn = {
       title: '操作',
       slotName: '#',
@@ -361,6 +396,8 @@ export type EntityFetchDataInfo = {
   params?: Array<EntityReaderParam>
   // 额外的查询keys，需要作为params的or条件
   pushedRecordKeys?: string[]
+  // 排除的查询keys，需要作为params的and条件
+  unPushedRecordKeys?: string[]
 }
 
 /**
@@ -419,7 +456,17 @@ export const createEntityReader = (
   }
   // 逻辑删除模式下，增加逻辑删除的数据过滤条件
   entityReader.params.push(new EntityReaderParam(logicDeleteFieldName, 'eq', 0))
-
+  // 注意!!! pushedRecordKeys与unPushedRecordKeys的值不应存在重复的值，需要在传进来之前做好去重，以确保查询结构为预期所需
+  // 如果有额外添加了排除ids作为查询条件时
+  if (simpleReaderInfo?.unPushedRecordKeys && simpleReaderInfo?.unPushedRecordKeys.length > 0) {
+    entityReader.params.push(
+      new EntityReaderParam(
+        EntityDataSource.ConstObject.keyFiledName,
+        'nin',
+        simpleReaderInfo?.unPushedRecordKeys
+      )
+    )
+  }
   // 如果有额外添加了ids作为查询条件时，需要改变已有的查询条件分组，提升
   if (simpleReaderInfo?.pushedRecordKeys && simpleReaderInfo?.pushedRecordKeys.length > 0) {
     // 将原有的参数，没有分组的，设置默认分组名

@@ -22,7 +22,8 @@ import EntityDataSource, {
   FieldMeta,
   compareMeta,
   EntitySaver,
-  GetEntitySaversResult
+  GetEntitySaversResult,
+  EntityRecordStatus
 } from './m/datasource/EntityDataSource'
 import utils from './m/utils/Utils'
 import mixins from './components/mixins'
@@ -120,6 +121,7 @@ export {
   EntityMeta,
   EntityLiteMeta,
   EntitySaver,
+  EntityRecordStatus,
   GetEntitySaversResult,
   FieldMeta,
   EntityDataSource,

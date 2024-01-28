@@ -230,10 +230,7 @@ const buildFieldItems = () => {
           setFormData(subInst.props.bindField.fieldName, subInst.value, 'buildFieldItem')
         }
         formItems.value.push(formItem)
-      } else if (
-        subInst.componentName === 'GlEntityTableSub' &&
-        subInst.props?.base?.isFormSubTable
-      ) {
+      } else if (subInst.props?.base?.isFormSubTable) {
         // 处理从表信息，只有明确是子表的才算
         // 先记录，后续在其它方法中处理
         subFormInstIds.value.push(subInst.id)

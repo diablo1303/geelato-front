@@ -227,7 +227,7 @@ export default {
           setterComponentName: 'ARadioGroup'
         }
       ],
-      title: '基本设置',
+      title: '总体设置',
       setterComponentName: 'GlSimpleObjectSetter'
     },
     {

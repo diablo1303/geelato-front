@@ -298,7 +298,7 @@ const selectDictItem = (key: any) => {
                 </template>
               </a-tree>
             </a-collapse-item>
-            <a-collapse-item header="流程定义" key="4">
+            <a-collapse-item header="流程定义" key="8">
               <a-tree ref="enumVarsTree" :default-expanded-keys="[]" size="small" blockNode
                       :data="_workflowTreeData"
                       @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_workflowTreeData)"

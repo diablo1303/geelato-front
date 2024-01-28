@@ -13,7 +13,8 @@ import {
   FormProvideKey,
   PageProvideProxy,
   PageProvideKey,
-  EntityReaderOrder
+  EntityReaderOrder,
+  EntityDataSource
 } from '@geelato/gl-ui'
 import type { Column, EntityFetchDataProps, GlTableColumn } from './table'
 import {
@@ -23,7 +24,8 @@ import {
   useFetchData,
   genSlotColumnsWithNoOperation,
   genQueryColumns,
-  showAction
+  SlotNameSeq,
+  SlotNameRecordStatus
 } from './table'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
@@ -77,13 +79,18 @@ const props = defineProps({
       return false
     }
   },
-  ...mixins.subFormProps,
+  /**
+   *  是否作为子表，若是则展示列；显示行记录状态
+   */
   isFormSubTable: {
     type: Boolean,
     default() {
       return false
     }
   },
+  pushedRecordKeys: Array,
+  unPushedRecordKeys: Array,
+  ...mixins.subFormProps,
   // isLogicDeleteMode: {
   //   type: Boolean,
   //   default() {
@@ -124,6 +131,10 @@ const props = defineProps({
       return true
     }
   },
+  /**
+   *  是否显示序列号
+   */
+  showSeqNo: Boolean,
   tableSettingId: {
     type: String,
     required: true
@@ -143,6 +154,13 @@ const showOptColumn = () => {
   return showOpt
 }
 
+const showSeqNoColumn = () => {
+  return props.showSeqNo
+}
+
+const showRecordStatus = () => {
+  return props.isFormSubTable
+}
 const formProvideProxy: FormProvideProxy | undefined = props.isFormSubTable
   ? inject(FormProvideKey)
   : undefined
@@ -157,7 +175,14 @@ const queryColumns: Ref<GlTableColumn[]> = ref(
   genQueryColumns(props, localShowDataIndexes, localHideDataIndexes)
 )
 // 可供展示的列，从这些列中选出最终展示的列存在renderColumns
-const showColumns: Ref<GlTableColumn[]> = ref(genShowColumns(queryColumns, false, showOptColumn()))
+const showColumns: Ref<GlTableColumn[]> = ref(
+  genShowColumns(queryColumns, {
+    isShowByComponent: false,
+    showOptColumn: showOptColumn(),
+    showSeqNoColumn: showSeqNoColumn(),
+    showRecordStatus: showRecordStatus()
+  })
+)
 // 最终展示的列
 const renderColumns: Ref<GlTableColumn[]> = ref(genRenderColumns(showColumns))
 
@@ -166,7 +191,12 @@ const renderColumns: Ref<GlTableColumn[]> = ref(genRenderColumns(showColumns))
  */
 const resetColumns = () => {
   queryColumns.value = genQueryColumns(props, localShowDataIndexes, localHideDataIndexes)
-  showColumns.value = genShowColumns(queryColumns, false, showOptColumn())
+  showColumns.value = genShowColumns(queryColumns, {
+    isShowByComponent: false,
+    showOptColumn: showOptColumn(),
+    showSeqNoColumn: showSeqNoColumn(),
+    showRecordStatus: showRecordStatus()
+  })
   renderColumns.value = genRenderColumns(showColumns)
 }
 const resetRenderColumns = () => {
@@ -226,14 +256,21 @@ const selectAll = (checked: boolean) => {
 let lastEntityReaderParams: Array<EntityReaderParam>
 let lastOrder: EntityReaderOrder[] = []
 let lastPushedRecordKeys: string[]
-const search = (entityReaderParams: Array<EntityReaderParam>, pushedRecordKeys: string[]) => {
+let lastUnPushedRecordKeys: string[]
+const search = (
+  entityReaderParams: Array<EntityReaderParam>,
+  pushedRecordKeys: string[],
+  unPushedRecordKeys: string[]
+) => {
   // console.log('search entityReaderParams:', entityReaderParams)
   lastEntityReaderParams = entityReaderParams
   lastPushedRecordKeys = pushedRecordKeys
+  lastUnPushedRecordKeys = unPushedRecordKeys
   fetchData({
     order: lastOrder,
     params: entityReaderParams,
-    pushedRecordKeys: lastPushedRecordKeys
+    pushedRecordKeys: lastPushedRecordKeys,
+    unPushedRecordKeys: lastUnPushedRecordKeys
   })
 }
 const onPageChange = (pageNo: number) => {
@@ -241,7 +278,8 @@ const onPageChange = (pageNo: number) => {
     pageNo,
     order: lastOrder,
     params: lastEntityReaderParams,
-    pushedRecordKeys: lastPushedRecordKeys
+    pushedRecordKeys: lastPushedRecordKeys,
+    unPushedRecordKeys: lastUnPushedRecordKeys
   })
 }
 
@@ -251,7 +289,8 @@ const onPageSizeChange = (pageSize: number) => {
     pageSize,
     order: lastOrder,
     params: lastEntityReaderParams,
-    pushedRecordKeys: lastPushedRecordKeys
+    pushedRecordKeys: lastPushedRecordKeys,
+    unPushedRecordKeys: lastUnPushedRecordKeys
   })
 }
 
@@ -267,7 +306,8 @@ const onSorterChange = (dataIndex: string, direction: string) => {
   fetchData({
     order: lastOrder,
     params: lastEntityReaderParams,
-    pushedRecordKeys: lastPushedRecordKeys
+    pushedRecordKeys: lastPushedRecordKeys,
+    unPushedRecordKeys: lastUnPushedRecordKeys
   })
 }
 
@@ -340,6 +380,19 @@ const getRef = () => {
   return tableRef.value
 }
 
+/**
+ * 获取记录状态
+ * @param key
+ */
+const getRecordStatus = (key: string) => {
+  if (props.unPushedRecordKeys?.includes(key)) {
+    return '待删除'
+  } else if (props.pushedRecordKeys?.includes(key)) {
+    return '待新增'
+  }
+  return '-'
+}
+
 defineExpose({
   resetColumns,
   search,
@@ -361,7 +414,7 @@ defineExpose({
     ref="tableRef"
     class="gl-entity-table"
     v-if="refreshFlag"
-    row-key="id"
+    :row-key="EntityDataSource.ConstObject.keyFiledName"
     :loading="loading"
     :pagination="showPagination === false ? false : pagination"
     :rowSelection="rowSelection"
@@ -396,7 +449,13 @@ defineExpose({
       v-for="slotColumn in genSlotColumnsWithNoOperation(renderColumns)"
       v-slot:[slotColumn.slotName]="{ column, rowIndex }"
     >
-      <template v-if="column._component && renderData[rowIndex]">
+      <template v-if="slotColumn.slotName === SlotNameSeq">
+        {{ rowIndex + 1 }}
+      </template>
+      <template v-else-if="slotColumn.slotName === SlotNameRecordStatus">
+        {{ getRecordStatus(renderData[rowIndex][EntityDataSource.ConstObject.keyFiledName]) }}
+      </template>
+      <template v-else-if="column._component && renderData[rowIndex]">
         <GlComponent
           :glComponentInst="column._component"
           v-model="renderData[rowIndex][column.dataIndex]"

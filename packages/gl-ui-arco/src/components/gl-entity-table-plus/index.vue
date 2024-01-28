@@ -36,10 +36,12 @@ import {
   useGlobal,
   EntitySaver,
   GetEntitySaversResult,
-  PageCustomType
+  PageCustomType,
+  EntityRecordStatus,
+  EntityDataSource
 } from '@geelato/gl-ui'
 import type { Action } from '../../types/global'
-import type { TableData, TableColumnData,PaginationProps } from '@arco-design/web-vue'
+import type { TableData, TableColumnData, PaginationProps } from '@arco-design/web-vue'
 import type { FilterType, MyEntityTableConfig } from './types'
 import FilterManager from '../gl-query/FilterManager.vue'
 
@@ -219,6 +221,10 @@ let lastEntityReaderParams: Array<EntityReaderParam>
  *  该ids不直接作为entityReaderParams中的一部分，而是用于在最终的查询时构建查询条件，不影响entityReaderParams的设置
  */
 const pushedRecordKeys: Ref<string[]> = ref([])
+/**
+ *  移除的记录ids
+ */
+const unPushedRecordKeys: Ref<string[]> = ref([])
 
 /**
  *
@@ -231,7 +237,11 @@ const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
     selectedKeys.value = []
     lastEntityReaderParams = entityReaderParams
     tableRef.value.selectAll(false)
-    return tableRef.value.search(entityReaderParams, pushedRecordKeys.value)
+    return tableRef.value.search(
+      entityReaderParams,
+      pushedRecordKeys.value,
+      unPushedRecordKeys.value
+    )
   }
   return undefined
 }
@@ -242,9 +252,8 @@ const queryRef = ref()
  * @param event
  */
 const refresh = (event?: MouseEvent) => {
-  // return onSearch(lastEntityReaderParams)
   // search()会触发onSearch方法
-  queryRef.value.search()
+  queryRef.value?.search()
 }
 
 /**
@@ -497,7 +506,7 @@ const getSelectedKeys = () => {
 const pushRecordsByKeys = (params: { keys: string[] }) => {
   console.log('pushRecordsByKeys params', params)
   const pushedKeys: string[] = []
-  const unPushedKeys: string[] = []
+  const failPushedKeys: string[] = []
   params?.keys?.forEach((pushingId: string) => {
     const found = pushedRecordKeys.value.find((pushedId: string) => {
       return pushedId === pushingId
@@ -506,16 +515,23 @@ const pushRecordsByKeys = (params: { keys: string[] }) => {
       pushedKeys.push(pushingId)
       pushedRecordKeys.value.push(pushingId)
     } else {
-      unPushedKeys.push(pushingId)
+      failPushedKeys.push(pushingId)
+    }
+    // 从unPushedRecordKeys中去掉相应的keys
+    const foundIndex = unPushedRecordKeys.value.findIndex((unPushedId: string) => {
+      return unPushedId === pushingId
+    })
+    if (foundIndex >= 0) {
+      unPushedRecordKeys.value.splice(foundIndex, 1)
     }
   })
   global.$notification.info({
     content:
-      unPushedKeys.length > 0
-        ? `成功加入${pushedKeys.length}条，忽略重复的${unPushedKeys.length}条。`
+      failPushedKeys.length > 0
+        ? `成功加入${pushedKeys.length}条，忽略重复的${failPushedKeys.length}条。`
         : `成功加入${pushedKeys.length}条`
   })
-  return { pushedKeys, unPushedKeys }
+  return { pushedKeys, failPushedKeys }
 }
 
 /**
@@ -532,6 +548,58 @@ const getPushedRecords = () => {
  */
 const getPushedRecordKeys = () => {
   return pushedRecordKeys.value
+}
+
+const isPushRecordsKeys = (key: string) => {
+  return pushedRecordKeys.value?.includes(key)
+}
+
+/**
+ * 移除已push进来的记录
+ * 包括刚push进来未保存的，之前已push进来已保存的
+ * @param params
+ */
+const unPushRecordsByKeys = (params: { keys: string[] }) => {
+  console.log('unPushRecordsByKeys params', params)
+  const unPushedKeys: string[] = []
+  const needToUnPushFormServerKeys: string[] = []
+  params?.keys?.forEach((unPushingId: string) => {
+    const foundIndex = pushedRecordKeys.value.findIndex((pushedId: string) => {
+      return pushedId === unPushingId
+    })
+    if (foundIndex >= 0) {
+      unPushedKeys.push(unPushingId)
+      pushedRecordKeys.value.splice(foundIndex, 1)
+    } else {
+      needToUnPushFormServerKeys.push(unPushingId)
+      // 更多的移除记录起来
+      unPushedRecordKeys.value.push(unPushingId)
+    }
+  })
+  global.$notification.info({
+    content:`新标记${needToUnPushFormServerKeys.length}条记录待删除。`
+  })
+  return { unPushedKeys, needToUnPushFormServerKeys }
+}
+
+/**
+ *  移除当前已选择的记录
+ *  此时只是更新前端的数据，不更新服务端
+ */
+const unPushSelectedRecords = () => {
+  unPushRecordsByKeys({ keys: selectedKeys.value })
+}
+/**
+ *  获取需要unPush的记录
+ */
+const getUnPushedRecords = () => {
+  return getRenderRecords()?.filter((record: Record<string, any>) => {
+    return unPushedRecordKeys.value.includes(record.id)
+  })
+}
+
+const isUnPushRecordsKeys = (key: string) => {
+  return unPushedRecordKeys.value?.includes(key)
 }
 
 /**
@@ -625,18 +693,32 @@ const createEntitySavers = (
     //   subFormTableData = getRenderRecords()
     //   break
     default:
-      subFormTableData = getRenderRecords()
+      console.log(
+        'pushedRecordKeys.value',
+        pushedRecordKeys.value,getPushedRecords(),
+        'unPushedRecordKeys.value',getUnPushedRecords(),
+        unPushedRecordKeys.value
+      )
+      // 如果未指定，依据当前的表格信息进行自动分析
+      if (pushedRecordKeys.value?.length > 0 || unPushedRecordKeys.value?.length > 0) {
+        //
+        subFormTableData = getPushedRecords()
+        const unPushedRecords = getUnPushedRecords() || []
+        subFormTableData.push(...(unPushedRecords || []))
+      } else {
+        subFormTableData = getRenderRecords()
+      }
   }
-  // 子表中，对应主表单ID的字段名
+  // 作为子表，对应主表单ID的字段名
   const subTablePidName = props.base.subTablePidName!
-  // console.log(
-  //   'GlEntityTablePlus > createEntitySavers() > subTablePidName:',
-  //   subTablePidName,
-  //   'subFormPidValue:',
-  //   subFormPidValue,
-  //   'subFormTableData:',
-  //   subFormTableData ? JSON.parse(JSON.stringify(subFormTableData)) : subFormTableData
-  // )
+  console.log(
+    'GlEntityTablePlus > createEntitySavers() > subTablePidName:',
+    subTablePidName,
+    'subFormPidValue:',
+    subFormPidValue,
+    'subFormTableData:',
+    subFormTableData ? JSON.parse(JSON.stringify(subFormTableData)) : subFormTableData
+  )
   if (subFormTableData && subFormTableData.length > 0) {
     subFormTableData.forEach((record: Record<any, any>) => {
       // 设置主表父ID
@@ -649,6 +731,10 @@ const createEntitySavers = (
       entitySaver.id = props.glComponentInst.id
       entitySaver.pidName = props.base.subTablePidName
       entitySaver.record = record
+      const key = record[EntityDataSource.ConstObject.keyFiledName]
+      // 更新记录的状态，是否为需要push的，还是需要unPush的
+      isPushRecordsKeys(key) && (entitySaver.recordStatus = EntityRecordStatus.Pushed)
+      isUnPushRecordsKeys(key) && (entitySaver.recordStatus = EntityRecordStatus.UnPushed)
       entitySavers.push(entitySaver)
     })
   }
@@ -669,8 +755,8 @@ const createEntitySavers = (
       entitySavers.push(entitySaver)
     })
   }
-  // console.log('GlEntityTablePlus > createEntitySavers() > entitySavers:', entitySavers)
-  emits('creatingEntitySavers', {entitySavers})
+  emits('creatingEntitySavers', { entitySavers })
+  console.log('GlEntityTablePlus > createEntitySavers() > entitySavers:', entitySavers)
   return entitySavers
 }
 
@@ -855,6 +941,8 @@ const queryByFilter = (filter: FilterType) => {
 
 defineExpose({
   pushRecordsByKeys,
+  unPushRecordsByKeys,
+  unPushSelectedRecords,
   createEntitySavers,
   changeColumnsVisible,
   batchUpdate,
@@ -967,7 +1055,6 @@ defineExpose({
           <a-tooltip v-if="selectedKeys.length" content="当前列表已选择的记录数">
             <span class="action-icon"> 已选<a-badge :count="selectedKeys.length" /> </span>
           </a-tooltip>
-          <!-- TODO 待提供按列设置展示 -->
           <a-tooltip v-if="true" :content="t('searchTable.actions.columnSetting')">
             <a-popover trigger="click" position="br" @popup-visible-change="popupVisibleChange">
               <div class="action-icon">
@@ -1026,6 +1113,7 @@ defineExpose({
       :columnActions="columnActions"
       :size="size"
       :showPagination="base.showPagination"
+      :showSeqNo="base.showSeqNo"
       :pagination="pagination"
       :enableEdit="base.enableEdit"
       :isFormSubTable="base.isFormSubTable"
@@ -1036,6 +1124,8 @@ defineExpose({
       :glIsRuntime="glIsRuntime"
       :glRuntimeFlag="glRuntimeFlag"
       :tableSettingId="tableSettingId"
+      :pushedRecordKeys="pushedRecordKeys"
+      :unPushedRecordKeys="unPushedRecordKeys"
       @select="select"
       @selectionChange="selectionChange"
       @headerClick="headerClick"

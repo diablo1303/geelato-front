@@ -12,7 +12,9 @@ const copDict = {
   ew: '结尾包括',
   contains: '包括',
   nil: '是否空',
-  bt: '在...之间'
+  bt: '在...两值之间',
+  in: '在数组范围',
+  nin: '不在数组范围'
 }
 const cops = [
   { text: '等于', value: 'eq' },
@@ -24,9 +26,10 @@ const cops = [
   { text: '开头包括', value: 'sw' },
   { text: '结尾包括', value: 'ew' },
   { text: '包括', value: 'contains' },
-  { text: '在范围', value: 'in' },
+  { text: '在数组范围', value: 'in' },
+  { text: '不在数组范围', value: 'nin' },
   { text: '是否空', value: 'nil' },
-  { text: '在...之间', value: 'bt' }
+  { text: '在...两值之间', value: 'bt' }
 ]
 
 export const compareMeta = { cops, copDict }
@@ -302,6 +305,19 @@ export class EntityReader {
   }
 }
 
+export enum EntityRecordStatus {
+  // 外部基于id关联push进来的，但还未保存到服务端
+  Pushed = 'Pushed',
+  // 外部基于id关联，将已push进来的记录unPush，但还未保存到服务端
+  UnPushed = 'UnPushed',
+  // 从数据库查出来的数据默认状态为Normal或空
+  Normal = 'Normal',
+  // 新创建，还未保存到服务端
+  New = 'New',
+  // 有更新，还未保存到服务端
+  Update = 'Update'
+}
+
 /**
  *  实体保存对象，一条记录对应一个EntitySaver
  */
@@ -310,7 +326,7 @@ export class EntitySaver {
    *  一般同组件id，即该entitySaver是基于哪个组件创建的，则采用该id，如GlEntityForm的id、GlEntityTablePlus的id
    *  在基于脚本编码时可能不会设置该值，此时为空
    */
-  id?:string = ''
+  id?: string = ''
   /**
    *  实体名称
    */
@@ -323,6 +339,11 @@ export class EntitySaver {
    *  保存的记录
    */
   record: Record<string, any> = {}
+
+  /**
+   *  数据记录的状态
+   */
+  recordStatus?: EntityRecordStatus
   /**
    *  子表单
    */
@@ -348,7 +369,6 @@ export class GetEntitySaversResult {
   componentName: string = ''
   // 验证结果
   validateResult?: object
-
 }
 
 export default {

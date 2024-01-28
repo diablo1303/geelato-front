@@ -56,6 +56,23 @@ export default {
           setterComponentName: 'GlEntitySelect'
         },
         {
+          name: 'isFormSubTable',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          setterComponentProps: {
+            type: 'button',
+            options: [{ label: '关联的子表', value: 'subTable' }, { label: '独立的查询列表' }]
+          },
+          setterComponentVModelName: 'modelValue',
+          title: '是否为子表',
+          setterComponentName: 'ASwitch',
+          description: '表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容，常用于主表关联已存在的子表记录',
+          setterDefaultValue: false
+        },
+        {
           name: 'showQuery',
           group: 'base',
           type: 'props',
@@ -171,7 +188,7 @@ export default {
           group: 'base',
           type: 'props',
           enableValueExpress: false,
-          show: false,
+          show: true,
           expanded: true,
           setterComponentProps: {},
           setterComponentVModelName: 'modelValue',
@@ -244,7 +261,7 @@ export default {
           description: '点击行数据时，选中该行，相当于点击了行的选择器'
         }
       ],
-      title: '基本设置',
+      title: '总体设置',
       setterComponentName: 'GlSimpleObjectSetter'
     },
     {
@@ -283,8 +300,9 @@ export default {
               { label: '开头包括', value: 'sw', __sIGch6bIhRKB7cNZod: 'sw' },
               { label: '结尾包括', value: 'ew', __sIGch6bIhRKB7cNZod: 'ew' },
               { label: '包括', value: 'contains', __sIGch6bIhRKB7cNZod: 'contains' },
-              { label: '在范围(in)', value: 'in' },
-              { label: '在...之间(between)', value: 'bt' },
+              { label: '在数组范围(in)', value: 'in' },
+              { label: '不在数组范围(not in)', value: 'nin' },
+              { label: '在...两值之间(between)', value: 'bt' },
               { label: '是否空', value: 'nil' }
             ],
             buttonStyle: 'solid'
@@ -860,7 +878,12 @@ export default {
     { name: 'rowContextmenu', title: '右击行数据', description: '右击行数据时触发' },
     { name: 'headerClick', title: '点击表头数据', description: '点击表头数据时触发' },
     { name: 'filterClick', title: '点击过滤器', description: '点击过滤器时触发' },
-    { name: 'columnResize', title: '调整列宽', description: '调整列宽时触发' }
+    { name: 'columnResize', title: '调整列宽', description: '调整列宽时触发' },
+    {
+      name: 'creatingEntitySavers',
+      description: '完成实体保存对象创建之后，关闭创建方法前调用，例于对实体保存对象进行处理。',
+      title: '保存对象完成前'
+    }
   ],
   methods: [
     { name: 'refresh', title: '刷新', description: '刷新表格', params: [] },
@@ -924,6 +947,20 @@ export default {
       title: '基于ids给列表前端页面添加记录',
       description:
         '给列表添加ids作为or查询条件，以查询出相应的记录在前端进行展示，可用于后续的保存记录当前新添加的记录和主表单的关系。',
+      params: []
+    },
+    {
+      name: 'unPushRecordsByKeys',
+      title: '基于ids移除列表前端页面的记录',
+      description:
+          '基于ids移除列表前端页面的记录，这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录。',
+      params: []
+    },
+    {
+      name: 'unPushSelectedRecords',
+      title: '移除已选的记录',
+      description:
+          '移除已选的记录，这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录。',
       params: []
     },
     {

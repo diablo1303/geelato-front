@@ -403,9 +403,17 @@ export class EntityApi {
   }
 
   convertEntitySaverToMql(entitySaver: EntitySaver, biz?: string): MqlObject {
+
     const defaultPidValue = '$parent.id'
     // subFormPidValue
     const toMql = (es: EntitySaver, isChildren: boolean, pidValue?: string): ParsedMqlResult => {
+      // 数据预处理：按约定，将记录值中的空字符串转成null值，
+      Object.keys(es.record).forEach((key: string) => {
+        if (es.record[key] === '') {
+          es.record[key] = null
+        }
+      })
+
       const mqlObj: Record<string, any> = {}
       const entityName = isChildren ? '#' + es.entity : es.entity
       if (isChildren) {
