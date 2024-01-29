@@ -18,9 +18,12 @@
           :label="$t('security.roleUser.index.form.userName')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="userId">
-        <a-select
-            v-if="pageData.button" v-model="formData.userId" :field-names="{value: 'id', label: 'name'}" :options="selectOptions"
-            allow-clear allow-search/>
+        <!--        <a-select
+                    v-if="pageData.button" v-model="formData.userId" :field-names="{value: 'id', label: 'name'}" :options="selectOptions"
+                    allow-clear allow-search/>-->
+        <UserChooseBox v-if="pageData.button"
+                       v-model="formData.userId"
+                       v-model:user-names="formData.userName"/>
         <span v-else>{{ formData.userName }}</span>
       </a-form-item>
     </a-form>
@@ -31,7 +34,7 @@
 import {ref} from 'vue';
 import {
   getRoleUser as getForm,
-  insertRoleUser as createOrUpdateForm,
+  insertRoleUsers as createOrUpdateForm,
   QueryRoleUserForm as QueryForm,
   QueryUserForm,
   QueryUserForm as QuerySelectForm,
@@ -40,6 +43,7 @@ import {
 import {ListUrlParams} from '@/api/base';
 import {FormInstance} from "@arco-design/web-vue";
 import {useRoute} from "vue-router";
+import UserChooseBox from "@/components/user-choose-box/index.vue";
 
 const route = useRoute();
 const pageData = ref({formState: 'add', button: true});

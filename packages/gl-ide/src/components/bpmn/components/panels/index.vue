@@ -1,12 +1,11 @@
 <template>
-  <div class="panel-wrap" v-if="visible">
-    <panels v-if="visible" :key="selectedOne" />
+  <div class="panel-wrap" v-if="visible" style="display: none;">
+    <panels v-if="visible" :key="selectedOne"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import panels from './components/panels.vue';
-import { ref, onUnmounted, provide } from 'vue';
+import {onUnmounted, provide, ref} from 'vue';
 
 const props = defineProps({
   lf: {
@@ -15,7 +14,7 @@ const props = defineProps({
   },
 });
 
-const { lf } = props;
+const {lf} = props;
 const selectedType = ref('');
 const selectedOne = ref('');
 
@@ -60,6 +59,7 @@ onUnmounted(() => {
   right: 0px;
   height: 100%;
 }
+
 .panel-wrap {
   width: 300px;
   height: 100%;
@@ -71,6 +71,7 @@ onUnmounted(() => {
   border-bottom-left-radius: 12px;
   overflow: scroll;
 }
+
 .panel-wrap::-webkit-scrollbar {
   display: none;
 }

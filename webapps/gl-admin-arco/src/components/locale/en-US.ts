@@ -17,4 +17,24 @@ export default {
   'messageBox.resetPassword': 'Reset Password',
   'messageBox.accountSettings': 'Account Settings',
   'messageBox.logout': 'Logout',
+  /* 组织选择 */
+  'orgChooseBox.index.empty': 'Please select organization',
+  'orgChooseBox.index.select': 'Select',
+  'orgChooseBox.index.delete': 'Delete',
+  'orgChooseBox.index.modal.title': 'Organization Selection',
+  'orgChooseBox.index.modal.cancel': 'Cancel',
+  'orgChooseBox.index.modal.confirm': 'Confirm',
+  'orgChooseBox.choose.delete': 'Delete',
+  'orgChooseBox.tree.search': 'Search Organization',
+  'orgChooseBox.tree.root': 'Organization Management',
+  'orgChooseBox.tree.max.warn': 'The maximum selection is exceeded',
+  /* 用户选择 */
+  'userChooseBox.index.empty': 'Please select User',
+  'userChooseBox.index.select': 'Select',
+  'userChooseBox.index.delete': 'Delete',
+  'userChooseBox.index.modal.title': 'User Selection',
+  'userChooseBox.index.modal.cancel': 'Cancel',
+  'userChooseBox.index.modal.confirm': 'Confirm',
+  'userChooseBox.choose.delete': 'Delete',
+  'userChooseBox.list.max.warn': 'The maximum selection is exceeded'
 };

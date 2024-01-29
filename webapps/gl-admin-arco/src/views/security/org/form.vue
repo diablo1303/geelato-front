@@ -29,8 +29,9 @@
           :label="$t('security.org.index.form.pid')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="pid">
-        <a-cascader v-if="pageData.button" v-model="formData.pid" :options="orgSelectOptions" allow-clear allow-search check-strictly/>
-        <span v-else>{{ pageData.orgName }}</span>
+        <OrgChooseBox v-model="formData.pid" :max-count="1" :has-root="false" :disabled="!pageData.button"/>
+        <!--        <a-cascader v-if="pageData.button" v-model="formData.pid" :options="orgSelectOptions" allow-clear allow-search check-strictly/>
+                <span v-else>{{ pageData.orgName }}</span>-->
       </a-form-item>
       <a-form-item
           :label="$t('security.org.index.form.type')"
@@ -88,6 +89,7 @@ import {FormInstance, Modal} from "@arco-design/web-vue";
 import {categoryOptions, statusOptions, typeOptions} from "@/views/security/org/searchTable";
 import {createOrUpdateOrg as createOrUpdateForm, getOrg as getForm, QueryOrgForm, QueryOrgForm as QueryForm, queryOrgs, validateOrgCode} from '@/api/security'
 import {ListUrlParams, SelectOption} from '@/api/base';
+import OrgChooseBox from "@/components/org-choose-box/index.vue";
 
 const route = useRoute();
 const pageData = ref({formState: 'add', button: true, orgName: ''});

@@ -17,4 +17,24 @@ export default {
   'messageBox.resetPassword': '修改密码',
   'messageBox.accountSettings': '账号设置',
   'messageBox.logout': '登出登录',
+  /* 组织选择 */
+  'orgChooseBox.index.empty': '请选择组织',
+  'orgChooseBox.index.select': '选择',
+  'orgChooseBox.index.delete': '删除',
+  'orgChooseBox.index.modal.title': '组织选择',
+  'orgChooseBox.index.modal.cancel': '取消',
+  'orgChooseBox.index.modal.confirm': '确定',
+  'orgChooseBox.choose.delete': '删除',
+  'orgChooseBox.tree.search': '搜索',
+  'orgChooseBox.tree.root': '组织管理',
+  'orgChooseBox.tree.max.warn': '超过最大选择量',
+  /* 用户选择 */
+  'userChooseBox.index.empty': '请选择组织',
+  'userChooseBox.index.select': '选择',
+  'userChooseBox.index.delete': '删除',
+  'userChooseBox.index.modal.title': '用户选择',
+  'userChooseBox.index.modal.cancel': '取消',
+  'userChooseBox.index.modal.confirm': '确定',
+  'userChooseBox.choose.delete': '删除',
+  'userChooseBox.list.max.warn': '超过最大选择量'
 };

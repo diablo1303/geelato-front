@@ -52,11 +52,15 @@
             :label="$t('security.user.index.form.orgName')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="orgId">
-          <a-tree-select
-              v-if="pageData.button"
-              v-model="formData.orgId"
-              :data="orgSelectOptions"
-              :field-names="{key:'value',title:'label'}" allow-clear allow-search/>
+          <OrgChooseBox v-if="pageData.button"
+                        v-model:model-value="formData.orgId"
+                        v-model:org-names="formData.orgName"
+                        :max-count="1" :has-root="false" :disabled="!pageData.button"/>
+          <!--          <a-tree-select
+                        v-if="pageData.button"
+                        v-model="formData.orgId"
+                        :data="orgSelectOptions"
+                        :field-names="{key:'value',title:'label'}" allow-clear allow-search/>-->
           <!-- <a-cascader v-if="pageData.button" v-model="formData.orgId" :options="orgSelectOptions" allow-clear allow-search check-strictly/>-->
           <span v-else>{{ formData.orgName }}</span>
         </a-form-item>
@@ -187,6 +191,7 @@ import mobilePrefix from '@/config/mobilePrefix.json';
 import {useI18n} from "vue-i18n";
 import {copyToClipboard} from "@/utils/strings";
 import {useRoute} from "vue-router";
+import OrgChooseBox from "@/components/org-choose-box/index.vue";
 
 const route = useRoute();
 const {t} = useI18n();

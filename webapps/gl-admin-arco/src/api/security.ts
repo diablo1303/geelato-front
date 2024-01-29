@@ -135,6 +135,10 @@ export function queryOrgs(params: QueryOrgForm) {
   });
 }
 
+export function queryOrgsByParams(params: Record<string, any>) {
+  return axios.post<QueryOrgForm[]>('/api/security/org/queryByParams', params);
+}
+
 export function queryTrees(params: QueryOrgForm) {
   return axios.get<QueryOrgForm[]>('/api/security/org/queryTree', {
     params, paramsSerializer: (obj) => {
@@ -192,6 +196,7 @@ export interface FilterUserForm {
   name: string;
   loginName: string;
   enName: string;
+  jobNumber: string;
   sex: string;
   orgId: string;
   orgName: string;
@@ -207,6 +212,10 @@ export function queryUsers(params: QueryUserForm) {
       return qs.stringify(obj);
     },
   });
+}
+
+export function queryUsersByParams(params: Record<string, any>) {
+  return axios.post<QueryUserForm[]>('/api/security/user/queryByParams', params);
 }
 
 export function getUser(id: string) {
@@ -691,6 +700,10 @@ export function queryRoleByUser(userId: string, appId: string, tenantCode: strin
 
 export function insertRoleUser(params: QueryRoleUserForm) {
   return axios.post<QueryResult>('/api/security/role/user/insert', params);
+}
+
+export function insertRoleUsers(params: QueryRoleUserForm) {
+  return axios.post<QueryResult>('/api/security/role/user/inserts', params);
 }
 
 export function deleteRoleUser(id: string) {

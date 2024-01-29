@@ -11,7 +11,7 @@
           width="80%"
           @cancel="handleModelCancel($event)"
           @before-ok="handleModelOk">
-        <a-row>
+        <a-row style="height: 525px;">
           <a-col :span="24">
             <a-tabs v-model:active-key="pageData.tabKey" :default-active-tab="1" :position="'top'" type="line" @tab-click="tabsChange">
               <a-tab-pane key="1" :title="$t('security.role.form.tab.title.one')">
