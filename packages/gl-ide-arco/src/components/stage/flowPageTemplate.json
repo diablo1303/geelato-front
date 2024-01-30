@@ -12,9 +12,10 @@
   "children": [
     {
       "id": "",
+      "__idPrefix": "bpmnEle",
       "componentName": "GlBpmnEditor",
       "disabledDnd": true,
-      "disabledSelect": true,
+      "disabledSelect": false,
       "props": {"label": "流程设计"},
       "slots": {},
       "children": []

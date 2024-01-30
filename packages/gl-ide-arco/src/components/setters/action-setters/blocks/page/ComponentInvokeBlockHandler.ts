@@ -1,7 +1,6 @@
 import type {Param} from "@geelato/gl-ui";
 import type IBlockHandler from "../BlockHandler";
 import ParseResult from "../ParseResult";
-import BlockUtils from "../BlockUtils";
 import {blocksHandler, CommandBlocks} from "../BlockHandler";
 
 export default class ComponentInvokeBlockHandler implements IBlockHandler {
@@ -11,8 +10,8 @@ export default class ComponentInvokeBlockHandler implements IBlockHandler {
 
   parseToScript(props: Props): ParseResult {
     // console.log("ComponentInvokeBlockHandler > parseToScript > props:", props)
-    const params = props.params || []
-
+    // const params = props.params || []
+    // ${BlockUtils.paramStringify(params)} 改成 ${JSON.stringify(props.params || [])}
     if (props.resultVar) {
       return new ParseResult(
         `
@@ -20,7 +19,7 @@ export default class ComponentInvokeBlockHandler implements IBlockHandler {
           props.enableAwait ? 'await ' : ''
         } $gl.fn.invokeComponentMethod("${props.componentId}","${
           props.methodName
-        }",${BlockUtils.paramStringify(params)});
+        }",${JSON.stringify(props.params || [])});
                 ${props.enableReturn ? 'return $gl.vars.' + props.resultVar : ''}
                 `
       )
@@ -31,7 +30,7 @@ export default class ComponentInvokeBlockHandler implements IBlockHandler {
           props.enableAwait ? 'await ' : ''
         } $gl.fn.invokeComponentMethod("${props.componentId}","${
           props.methodName
-        }",${BlockUtils.paramStringify(params)});
+        }",${JSON.stringify(props.params || [])});
                 `
       )
     }

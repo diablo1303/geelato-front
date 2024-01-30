@@ -145,7 +145,8 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
               const pageTemplate = pageStore.getPageTemplate(type)
 
               function genComponentId(inst: ComponentInstance) {
-                inst.id = utils.gid(componentStore.getAlias(inst.componentName), 20)
+                // 如果存在__idPrefix属性，则不用alias作为命名的前缀
+                inst.id = utils.gid(inst.__idPrefix||componentStore.getAlias(inst.componentName), 20)
                 if (inst.children) {
                   inst.children.forEach((subInst: ComponentInstance) => {
                     genComponentId(subInst)

@@ -879,6 +879,9 @@ export default {
     { name: 'headerClick', title: '点击表头数据', description: '点击表头数据时触发' },
     { name: 'filterClick', title: '点击过滤器', description: '点击过滤器时触发' },
     { name: 'columnResize', title: '调整列宽', description: '调整列宽时触发' },
+    { name: 'pushRecords', title: '给列表引用增加记录', description: '给列表引用增加记录时触发' },
+    { name: 'unPushRecords', title: '移除列表引用记录', description: '移除列表引用记录时触发' },
+    { name: 'pushOrUnPushRecords', title: '添加或移除列表引用记录', description: '添加或移除列表引用记录时触发' },
     {
       name: 'creatingEntitySavers',
       description: '完成实体保存对象创建之后，关闭创建方法前调用，例于对实体保存对象进行处理。',
@@ -943,10 +946,29 @@ export default {
       params: []
     },
     {
+      name: 'getColumnSum',
+      title: '获取单个列的求和',
+      description: '获取多个列的求和,输入参数“列名”，返回数值',
+      params: []
+    },
+    {
+      name: 'getColumnsSum',
+      title: '获取多个列的求和',
+      description: '获取多个列的求和,输入参数[列名1,列名2]，返回{列名1:值1,列名2:值2}',
+      params: []
+    },
+    {
       name: 'pushRecordsByKeys',
       title: '基于ids给列表前端页面添加记录',
       description:
         '给列表添加ids作为or查询条件，以查询出相应的记录在前端进行展示，可用于后续的保存记录当前新添加的记录和主表单的关系。',
+      params: []
+    },
+    {
+      name: 'pushSelectedRecords',
+      title: '添加已选的记录',
+      description:
+          '添加已选的记录，这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录。',
       params: []
     },
     {
@@ -967,6 +989,18 @@ export default {
       name: 'hasSelectedRecords',
       title: '是否选择了记录',
       description: '是否选择了记录，返回true | false',
+      params: []
+    },
+    {
+      name: 'hasUnSaveRecords',
+      title: '是否有未保存的记录',
+      description: '如果对表做了push或unPush操作，未保存时，返回true，否则返回false',
+      params: []
+    },
+    {
+      name: 'hasRenderRecords',
+      title: '是否有展示的记录',
+      description: '是否有展示的记录',
       params: []
     },
     {

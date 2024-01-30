@@ -22,10 +22,9 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "setterComponentProps": {},
-        "setterComponentVModelName": "modelValue",
         "title": "变量值",
-        "setterComponentName": "AInput",
-        "enableValueExpress": true
+        "setterComponentProps": {"showInput": true},
+        "setterComponentVModelName": "modelValue",
+        "setterComponentName": "GlExpressionSetter"
     }]
 }

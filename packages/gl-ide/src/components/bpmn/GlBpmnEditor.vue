@@ -23,6 +23,7 @@ import BpmnCore from './BpmnCore.vue'
 import { emitter } from '@geelato/gl-ui'
 import EventNames from '../../entity/EventNames'
 
+const BPMN_ELE_ID = 'bpmnEle'
 const emits = defineEmits(['update:modelValue', 'click'])
 const props = defineProps({
   modelValue: {
@@ -32,17 +33,19 @@ const props = defineProps({
     }
   }
 })
-// const mv = ref(props.modelValue)
-// watch(mv, () => {
-//   emits('update:modelValue', mv.value)
-// })
+
 const ideStore = useIdeStore()
 const pageStore = usePageStore()
 const componentStore = useComponentStore()
 // 当前页面树
 const pageInst = componentStore.currentComponentTree[0]
 // 初始流程图对象，设置到pageInst的refObject中；graphRawData对应流程图中的graphRawData
-pageInst.refObject = pageInst.refObject || { graphRawData: { nodes: [], edges: [] }, editor: {} }
+pageInst.refObject = pageInst.refObject || {
+  graphRawData: { nodes: [], edges: [] },
+  editor: {},
+  history: [{ v: 'xx', graphRawData: {} }]
+}
+
 // 当前页面的BPMN组件树
 const bpmnInst = pageInst.children[0]
 
@@ -164,6 +167,16 @@ const onTextUpdate = (param: any) => {
   componentStore.currentSelectedComponentInstance.props.text = param.text
 }
 
+/**
+ * 点击空白地时，选中流程图组件GlBpmnEditor（注意这个组件没有ui，只有元数据定义）
+ * @param param
+ */
+const onBlankClick = (param: any) => {
+  componentStore.currentDragComponentId = ''
+  componentStore.setCurrentSelectedComponentById(bpmnInst.id, pageStore.currentPage.id)
+  param.e.stopPropagation()
+}
+
 const isEdge = (elementType: string) => {
   return elementType === 'bpmn:sequenceFlow'
 }
@@ -180,7 +193,7 @@ const onAdd = (param: any) => {
   if (param.data.type) {
     const inst = new ComponentInstance()
     // 注意！！字符“bpmnEle”用于控制右边操作按钮，不可修改
-    inst.id = utils.gid('bpmnEle')
+    inst.id = utils.gid(BPMN_ELE_ID)
     // 基于流程图节点的类型名称创建对应的组件名称
     inst.componentName = convertToComponentName(
       param.data.type,
@@ -252,6 +265,7 @@ onUnmounted(() => {
     @add="onAdd"
     @delete="onDelete"
     @textUpdate="onTextUpdate"
+    @blankClick="onBlankClick"
   />
 </template>
 

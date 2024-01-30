@@ -61,6 +61,8 @@ export class I18nItem {
  */
 export default class ComponentInstance {
     id: string = ''
+    // 创建id时的id前缀
+    __idPrefix?:string = ''
     title?: string = ''
     componentName: string = ''
     // 如dataEntry，可以来用区分是否为表单输入项，在渲染时展示label
@@ -113,4 +115,5 @@ export default class ComponentInstance {
 
     // 脚本块
     __commandBlock?: BlockInstance
+
 }

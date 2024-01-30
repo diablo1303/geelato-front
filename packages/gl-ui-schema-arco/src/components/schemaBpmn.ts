@@ -12,7 +12,7 @@ import BpmnInclusiveGatewayMeta from './setter-bpmn/BpmnInclusiveGatewayMeta'
 import BpmnParallelGatewayMeta from './setter-bpmn/BpmnParallelGatewayMeta'
 import BpmnExclusiveGatewayMeta from './setter-bpmn/BpmnExclusiveGatewayMeta'
 import BpmnSubProcessMeta from './setter-bpmn/BpmnSubProcessMeta'
-import BpmnEditorMeta from './setter-arco/logicFlow/BpmnEditorMeta'
+import BpmnEditorMeta from './setter-bpmn/logicFlow/BpmnEditorMeta'
 
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [

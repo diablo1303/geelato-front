@@ -64,7 +64,10 @@ const emits = defineEmits([
   'rowContextmenu',
   'cellContextmenu',
   'filterClick',
-  'creatingEntitySavers'
+  'creatingEntitySavers',
+  'pushRecords',
+  'unPushRecords',
+  'pushOrUnPushRecords'
 ])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const isRead = !!pageProvideProxy?.isPageStatusRead()
@@ -216,6 +219,10 @@ const onUpdateRow = (data: { record: object; rowIndex: number; columns: GlTableC
 
 let lastEntityReaderParams: Array<EntityReaderParam>
 
+/**
+ *  查询之后
+ */
+const renderRecordKeys: Ref<string[]> = ref([])
 /**
  *  从外部push进来的额外的recordsIds,用于从外部选择记录进来一起展示的场景
  *  该ids不直接作为entityReaderParams中的一部分，而是用于在最终的查询时构建查询条件，不影响entityReaderParams的设置
@@ -483,6 +490,7 @@ const getRenderRecord = () => {
  * 获取当前列表页面展示的记录，返回记录数据组,没记录时返回空数组[]
  */
 const getRenderRecords = () => {
+  // console.log('tableRef.value.getRenderData()', tableRef.value.getRenderData())
   return tableRef.value.getRenderData()
 }
 
@@ -504,7 +512,7 @@ const getSelectedKeys = () => {
  *  通过添加记录的ids,触发列表的查询（将ids作为or条件查夜），加载对应的记录
  */
 const pushRecordsByKeys = (params: { keys: string[] }) => {
-  console.log('pushRecordsByKeys params', params)
+  // console.log('pushRecordsByKeys params', params)
   const pushedKeys: string[] = []
   const failPushedKeys: string[] = []
   params?.keys?.forEach((pushingId: string) => {
@@ -531,7 +539,16 @@ const pushRecordsByKeys = (params: { keys: string[] }) => {
         ? `成功加入${pushedKeys.length}条，忽略重复的${failPushedKeys.length}条。`
         : `成功加入${pushedKeys.length}条`
   })
+  if (pushedKeys.length > 0) {
+    // 有效添加之后触发
+    emits('pushRecords', { pushedKeys, failPushedKeys })
+    emits('pushOrUnPushRecords', { pushedKeys, failPushedKeys })
+  }
   return { pushedKeys, failPushedKeys }
+}
+
+const pushSelectedRecords = () => {
+  pushRecordsByKeys({ keys: selectedKeys.value })
 }
 
 /**
@@ -560,25 +577,30 @@ const isPushRecordsKeys = (key: string) => {
  * @param params
  */
 const unPushRecordsByKeys = (params: { keys: string[] }) => {
-  console.log('unPushRecordsByKeys params', params)
+  // console.log('unPushRecordsByKeys params', params)
   const unPushedKeys: string[] = []
   const needToUnPushFormServerKeys: string[] = []
   params?.keys?.forEach((unPushingId: string) => {
     const foundIndex = pushedRecordKeys.value.findIndex((pushedId: string) => {
       return pushedId === unPushingId
     })
+    // 更多的移除记录起来
+    unPushedRecordKeys.value.push(unPushingId)
     if (foundIndex >= 0) {
       unPushedKeys.push(unPushingId)
       pushedRecordKeys.value.splice(foundIndex, 1)
     } else {
       needToUnPushFormServerKeys.push(unPushingId)
-      // 更多的移除记录起来
-      unPushedRecordKeys.value.push(unPushingId)
     }
   })
   global.$notification.info({
-    content:`新标记${needToUnPushFormServerKeys.length}条记录待删除。`
+    content: `新标记${needToUnPushFormServerKeys.length}条记录待删除。`
   })
+  if (unPushedKeys.length > 0) {
+    // 有效添加之后触发
+    emits('unPushRecords', { unPushedKeys, needToUnPushFormServerKeys })
+    emits('pushOrUnPushRecords', { unPushedKeys, needToUnPushFormServerKeys })
+  }
   return { unPushedKeys, needToUnPushFormServerKeys }
 }
 
@@ -600,6 +622,14 @@ const getUnPushedRecords = () => {
 
 const isUnPushRecordsKeys = (key: string) => {
   return unPushedRecordKeys.value?.includes(key)
+}
+
+/**
+ * 是否有未保存的记录
+ * TODO 还GlEntityTableEdit的未保存场景再加上
+ */
+const hasUnSaveRecords = () => {
+  return unPushedRecordKeys.value.length > 0 || pushedRecordKeys.value.length > 0
 }
 
 /**
@@ -628,6 +658,10 @@ const getLastSelectedRecord = () => {
 
 const hasSelectedRecords = () => {
   return getSelectedRecords().length > 0
+}
+
+const hasRenderRecords = () => {
+  return getRenderRecords().length > 0
 }
 
 const getRenderColumns = () => {
@@ -693,12 +727,14 @@ const createEntitySavers = (
     //   subFormTableData = getRenderRecords()
     //   break
     default:
-      console.log(
-        'pushedRecordKeys.value',
-        pushedRecordKeys.value,getPushedRecords(),
-        'unPushedRecordKeys.value',getUnPushedRecords(),
-        unPushedRecordKeys.value
-      )
+      // console.log(
+      //   'pushedRecordKeys.value',
+      //   pushedRecordKeys.value,
+      //   getPushedRecords(),
+      //   'unPushedRecordKeys.value',
+      //   getUnPushedRecords(),
+      //   unPushedRecordKeys.value
+      // )
       // 如果未指定，依据当前的表格信息进行自动分析
       if (pushedRecordKeys.value?.length > 0 || unPushedRecordKeys.value?.length > 0) {
         //
@@ -711,14 +747,14 @@ const createEntitySavers = (
   }
   // 作为子表，对应主表单ID的字段名
   const subTablePidName = props.base.subTablePidName!
-  console.log(
-    'GlEntityTablePlus > createEntitySavers() > subTablePidName:',
-    subTablePidName,
-    'subFormPidValue:',
-    subFormPidValue,
-    'subFormTableData:',
-    subFormTableData ? JSON.parse(JSON.stringify(subFormTableData)) : subFormTableData
-  )
+  // console.log(
+  //   'GlEntityTablePlus > createEntitySavers() > subTablePidName:',
+  //   subTablePidName,
+  //   'subFormPidValue:',
+  //   subFormPidValue,
+  //   'subFormTableData:',
+  //   subFormTableData ? JSON.parse(JSON.stringify(subFormTableData)) : subFormTableData
+  // )
   if (subFormTableData && subFormTableData.length > 0) {
     subFormTableData.forEach((record: Record<any, any>) => {
       // 设置主表父ID
@@ -756,7 +792,7 @@ const createEntitySavers = (
     })
   }
   emits('creatingEntitySavers', { entitySavers })
-  console.log('GlEntityTablePlus > createEntitySavers() > entitySavers:', entitySavers)
+  // ('GlEntityTablePlus > createEntitySavers() > entitySavers:', entitySavers)
   return entitySavers
 }
 
@@ -832,8 +868,7 @@ const getPushedEntitySavers = async (params: { subFormPidValue?: string }) => {
  *  @record key为字段名，即列名,value为更新后的列值
  */
 const batchUpdate = (params: { record: Record<string, any> }) => {
-  console.log('batchUpdate params', params)
-  //
+  // console.log('batchUpdate params', params)
   const record = params.record
   if (selectedKeys.value.length === 0) {
     global.$notification.error({
@@ -866,7 +901,7 @@ const batchUpdate = (params: { record: Record<string, any> }) => {
  * @param params
  */
 const updateRecord = (params: { record: Record<string, any> }) => {
-  console.log('updateRecord params', params)
+  // console.log('updateRecord params', params)
   const record = params.record
   if (!record.id) {
     global.$notification.error({
@@ -914,9 +949,6 @@ const saveFilters = () => {
   //   myComponentCustom.value.filters.push(queryItemsKvs.value!)
   // }
   // visibleFilterManager.value = false
-
-  console.log('myPageCustom', myPageCustom)
-
   const saver = new EntitySaver()
   saver.id = props.glComponentInst.id
   saver.entity = 'platform_my_page_custom'
@@ -939,8 +971,63 @@ const queryByFilter = (filter: FilterType) => {
   emits('filterClick', filter)
 }
 
+/**
+ *  获取单列的汇总值
+ *  依据push和unPush的状态进行计算，unpush的需要减掉push的需要增加
+ */
+const getColumnSum = (params: { dataIndex: string }) => {
+  if (!params || !params.dataIndex) {
+    console.error('getColumnSum的参数不正确,格式应为：{ dataIndex: string}，实为：', params)
+    throw new Error('getColumnSum的参数不正确,格式应为：{ dataIndex: string}')
+  }
+  let sum = 0
+  // 正值部分
+  getRenderRecords()?.forEach((record: Record<string, any>) => {
+    // 排除push部分，避免重复计算
+    // if (!pushedRecordKeys.value.includes(record[EntityDataSource.ConstObject.keyFiledName])) {
+      sum += record[params.dataIndex] || 0
+    // }
+  })
+  // 负值部分
+  getUnPushedRecords()?.forEach((record: Record<string, any>) => {
+    sum -= record[params.dataIndex] || 0
+  })
+  // console.log('getPushedRecords:',getPushedRecords(),'getUnPushedRecords:',getUnPushedRecords())
+  return sum
+}
+
+/**
+ *  获取列的汇总值，支持传多个列
+ *  依据push和unPush的状态进行计算，unpush的需要减掉push的需要增加
+ */
+const getColumnsSum = (params: { dataIndexes: string[] }) => {
+  if (!params || !params.dataIndexes || !utils.isArray(params.dataIndexes)) {
+    console.error('getColumnsSum的参数不正确,格式应为：{ dataIndexes: string[] }，实为：', params)
+    throw new Error('getColumnsSum的参数不正确,格式应为：{ dataIndexes: string[] }')
+  }
+
+  const sum: Record<string, number> = {}
+  // 正值部分
+  getRenderRecords()?.forEach((record: Record<string, any>) => {
+    // 排除push部分，避免重复计算
+    // if (!pushedRecordKeys.value.includes(record[EntityDataSource.ConstObject.keyFiledName])) {
+      params.dataIndexes.forEach((key: string) => {
+        sum[key] += record[key] || 0
+      })
+    // }
+  })
+  // 负值部分
+  getUnPushedRecords()?.forEach((record: Record<string, any>) => {
+    params.dataIndexes.forEach((key: string) => {
+      sum[key] -= record[key] || 0
+    })
+  })
+  return sum
+}
+
 defineExpose({
   pushRecordsByKeys,
+  pushSelectedRecords,
   unPushRecordsByKeys,
   unPushSelectedRecords,
   createEntitySavers,
@@ -966,7 +1053,11 @@ defineExpose({
   getLastSelectedRecord,
   getRenderData,
   getRenderColumns,
+  getColumnSum,
+  getColumnsSum,
+  hasRenderRecords,
   hasSelectedRecords,
+  hasUnSaveRecords,
   validate,
   reRender,
   refresh,

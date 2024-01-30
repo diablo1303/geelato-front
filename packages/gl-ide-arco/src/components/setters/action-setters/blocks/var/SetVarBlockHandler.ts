@@ -9,9 +9,10 @@ export default class SetVarBlockHandler implements IBlockHandler {
   }
 
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
+    // 这里优先用props.varValue的值，是为了解决历史数据问题，之前是基于propsExpressions配置的，现在直接用varValue值配置
     return new ParseResult(
       `
-            $gl.vars.${props.varName} = ${propsExpressions?.varValue || props.varValue || 'undefined'} ;
+            $gl.vars.${props.varName} = ${props.varValue || propsExpressions?.varValue || 'undefined'} ;
             `
     )
   }

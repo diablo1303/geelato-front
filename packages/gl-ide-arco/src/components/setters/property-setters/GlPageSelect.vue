@@ -121,7 +121,8 @@ const onClick = () => {
 }
 
 const setData = () => {
-  appId.value = componentSetterProvideProxy.getVarValue(props.dependVarAppId)
+  // 该组件用于非属性配置面板的环境时，无inject，componentSetterProvideProxy为空。
+  appId.value = componentSetterProvideProxy?.getVarValue(props.dependVarAppId)
   // 默认为当前的应用id
   fetchData(appId.value || props.appId)
 }
