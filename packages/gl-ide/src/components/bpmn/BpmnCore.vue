@@ -2,7 +2,7 @@
   <div class="gl-bpmn-core">
     <div class="header">
       <div>
-        <BpmnToolbar :lf="LF" />
+        <BpmnToolbar :lf="LF"/>
       </div>
       <div>
         <button type="button" class="btn btn-primary" @click="onPreviewClick">数据预览</button>
@@ -16,7 +16,7 @@
     <div className="bpmn-example-container">
       <div :id="graphId" className="viewport"></div>
       <template v-if="LF">
-        <BpmnPattern :lf="LF" />
+        <BpmnPattern :lf="LF"/>
       </template>
     </div>
   </div>
@@ -39,14 +39,14 @@ import {
   Group
   // BPMNElements, BPMNAdapter
 } from '@logicflow/extension'
-import { onMounted, ref, createApp, h, watch } from 'vue'
+import {onMounted, ref, createApp, h, watch} from 'vue'
 import BpmnPattern from './components/BpmnPattern.vue'
 import BpmnToolbar from './components/BpmnToolbar.vue'
 import Panels from './components/panels/index.vue'
-import { BPMNElements } from './plugin/bpmn-elements/index'
-import { BPMNAdapter } from './plugin/bpmn-elements-adapter'
-import { messageIcon } from './plugin/bpmn-elements/presets/icons'
-import { utils } from '@geelato/gl-ui'
+import {BPMNElements} from './plugin/bpmn-elements/index'
+import {BPMNAdapter} from './plugin/bpmn-elements-adapter'
+import {messageIcon} from './plugin/bpmn-elements/presets/icons'
+import {utils} from '@geelato/gl-ui'
 
 const emits = defineEmits([
   'update:modelValue',
@@ -100,7 +100,7 @@ LogicFlow.use(BPMNAdapter, {
     'bpmn:serviceTask': {
       out(data: any) {
         const {
-          properties: { multiInstanceType }
+          properties: {multiInstanceType}
         } = data
         if (multiInstanceType === 'sequential') {
           return {
@@ -116,7 +116,7 @@ LogicFlow.use(BPMNAdapter, {
     'bpmn:userTask': {
       out(data: any) {
         const {
-          properties: { multiInstanceType }
+          properties: {multiInstanceType}
         } = data
         if (multiInstanceType === 'sequential') {
           return {
@@ -197,8 +197,8 @@ const elementAdd = (param: any) => {
     console.log('禁用双击事件')
   });
   // document.querySelector('.lf-edge')?.removeEventListener('mousemove', () => {
-    // 停止冒泡，避免选中上级组件，如GlPage
-    // 注意！！ 这里需放在回调事件中，否则会影响removeEventListener的执行，因为removeEventListener还没有执行完，就被停了
+  // 停止冒泡，避免选中上级组件，如GlPage
+  // 注意！！ 这里需放在回调事件中，否则会影响removeEventListener的执行，因为removeEventListener还没有执行完，就被停了
   //   param.e.stopPropagation()
   // })
   emits('add', param)

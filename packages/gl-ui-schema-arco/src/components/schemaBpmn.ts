@@ -1,4 +1,4 @@
-import { ComponentInstance, ComponentMeta } from '@geelato/gl-ui-schema'
+import {ComponentInstance, ComponentMeta} from '@geelato/gl-ui-schema'
 import BpmnSequenceFlowMeta from './setter-bpmn/BpmnSequenceFlowMeta'
 import BpmnStartEventMeta from './setter-bpmn/BpmnStartEventMeta'
 import BpmnUserTaskMeta from './setter-bpmn/BpmnUserTaskMeta'
@@ -12,6 +12,7 @@ import BpmnInclusiveGatewayMeta from './setter-bpmn/BpmnInclusiveGatewayMeta'
 import BpmnParallelGatewayMeta from './setter-bpmn/BpmnParallelGatewayMeta'
 import BpmnExclusiveGatewayMeta from './setter-bpmn/BpmnExclusiveGatewayMeta'
 import BpmnSubProcessMeta from './setter-bpmn/BpmnSubProcessMeta'
+import BpmnEditorMeta from './setter-arco/logicFlow/BpmnEditorMeta'
 
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [
@@ -27,7 +28,8 @@ const componentMetas: Array<ComponentMeta> = [
   BpmnParallelGatewayMeta,
   BpmnExclusiveGatewayMeta,
   BpmnSubProcessMeta,
-  BpmnSequenceFlowMeta
+  BpmnSequenceFlowMeta,
+  BpmnEditorMeta
 ]
 
 // @ts-ignore
@@ -49,5 +51,5 @@ for (const index in componentMetas) {
     componentInstances.push(componentInstance)
   }
 }
-const schemaBpmn = { componentMetas, componentInstances }
+const schemaBpmn = {componentMetas, componentInstances}
 export {schemaBpmn}
