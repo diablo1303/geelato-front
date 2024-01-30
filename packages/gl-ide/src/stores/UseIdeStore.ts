@@ -147,6 +147,9 @@ export const useIdeStore = defineStore('GlIdeStore', () => {
               function genComponentId(inst: ComponentInstance) {
                 // 如果存在__idPrefix属性，则不用alias作为命名的前缀
                 inst.id = utils.gid(inst.__idPrefix||componentStore.getAlias(inst.componentName), 20)
+                if(inst.__idPrefix){
+                  delete inst.__idPrefix
+                }
                 if (inst.children) {
                   inst.children.forEach((subInst: ComponentInstance) => {
                     genComponentId(subInst)
