@@ -177,6 +177,3 @@ const tryAddDndPlaceholder = (items?: Array<any>, info?: string) => {
   </template>
 
 </template>
-
-<style lang="less" scoped>
-</style>

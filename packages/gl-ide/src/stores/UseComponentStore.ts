@@ -229,7 +229,7 @@ class ComponentStoreFactory {
               return false
             }
             emitter.emit(EventNames.GlIdeSetterComponentInstDeleting, { componentId })
-            // console.log("try to deleteComponentById", componentId)
+            console.log('try to deleteComponentById', componentId)
             const thisProxy = this
 
             function deleteNodeFromTree(nodeId: String, nodes: Array<any>): any {
@@ -252,6 +252,16 @@ class ComponentStoreFactory {
                   return
                 } else if (node.children && node.children.length > 0) {
                   deleteNodeFromTree(nodeId, node.children)
+                }
+                // 删除插槽中的组件
+                if (node.slots) {
+                  const keys = Object.keys(node.slots)
+                  for (let i = 0; i < keys?.length; i++) {
+                    const slotInst = node.slots[keys[i]]
+                    if (slotInst.props?.children.length > 0) {
+                      deleteNodeFromTree(nodeId, slotInst.props?.children)
+                    }
+                  }
                 }
               }
             }
@@ -508,6 +518,7 @@ class ComponentStoreFactory {
               if (node.id === nodeId) {
                 return null
               }
+              //  从子节点中找
               if (node.children && node.children.length > 0) {
                 for (let index in node.children) {
                   const subNode = node.children[index]
@@ -517,6 +528,15 @@ class ComponentStoreFactory {
                     const foundNode = findParentNodeFromTree(nodeId, subNode)
                     if (foundNode) return foundNode
                   }
+                }
+              }
+              //  从插槽中找
+              if (node.slots) {
+                const keys = Object.keys(node.slots)
+                for (let i = 0; i < keys?.length; i++) {
+                  const slotInst = node.slots[keys[i]].props
+                  const foundNode = slotInst && findParentNodeFromTree(nodeId, slotInst)
+                  if (foundNode) return foundNode
                 }
               }
               return null
@@ -533,13 +553,30 @@ class ComponentStoreFactory {
           findComponentFromTreeById(componentId: string) {
             function findNodeFromTree(nodeId: string, nodes: Array<any>): any {
               for (let index in nodes) {
-                let node = nodes[index]
+                let node: ComponentInstance = nodes[index]
                 // console.log('compare node.id,componentId', node.id, componentId, node.id === componentId)
                 if (node.id === nodeId) {
                   return node
                 } else if (node.children && node.children.length > 0) {
+                  // 从子节点查找
                   const foundNode = findNodeFromTree(nodeId, node.children)
                   if (foundNode) return foundNode
+                }
+                if (node.slots) {
+                  // 从插槽查找
+                  // {
+                  //   slots:{
+                  //     key1:{
+                  //       props:new ComponentInstance()
+                  //     }
+                  //   }
+                  // }
+                  const keys = Object.keys(node.slots)
+                  for (let i = 0; i < keys?.length; i++) {
+                    const slotInst = node.slots[keys[i]].props
+                    const foundNode = slotInst && findNodeFromTree(nodeId, [slotInst])
+                    if (foundNode) return foundNode
+                  }
                 }
               }
             }
@@ -559,6 +596,15 @@ class ComponentStoreFactory {
                 } else if (node.children && node.children.length > 0) {
                   const foundNode = findNodeFromTree(nodeRefId, node.children)
                   if (foundNode) return foundNode
+                }
+                if (node.slots) {
+                  // 从插槽查找
+                  const keys = Object.keys(node.slots)
+                  for (let i = 0; i < keys?.length; i++) {
+                    const slotInst = node.slots[keys[i]].props
+                    const foundNode = slotInst && findNodeFromTree(nodeRefId, [slotInst])
+                    if (foundNode) return foundNode
+                  }
                 }
               }
             }
@@ -603,7 +649,16 @@ class ComponentStoreFactory {
             this.setCurrentSelectedComponentId(id, fromPageId)
             if (this.currentSelectedComponentId) {
               const foundComponent = this.findComponentFromTreeById(this.currentSelectedComponentId)
-              // console.log('setCurrentSelectedComponentById () > storeId:', storeId, 'findComponentFromTreeById', this.currentSelectedComponentId, 'and get', foundComponent, ',currentComponentTree:', this.currentComponentTree)
+              // console.log(
+              //   'setCurrentSelectedComponentById () > storeId:',
+              //   storeId,
+              //   'findComponentFromTreeById',
+              //   this.currentSelectedComponentId,
+              //   'and get',
+              //   foundComponent,
+              //   ',currentComponentTree:',
+              //   this.currentComponentTree
+              // )
               this.setCurrentSelectedComponent(foundComponent)
             } else {
               this.currentSelectedComponentName = ''
@@ -631,7 +686,7 @@ class ComponentStoreFactory {
            */
           setCurrentSelectedComponent(inst: ComponentInstance) {
             if (!inst) return
-            if (this.isNonSelectableComponentId(inst.id)||inst.disabledSelect) {
+            if (this.isNonSelectableComponentId(inst.id) || inst.disabledSelect) {
               return
             }
             this.currentSelectedComponentId = inst.id
@@ -748,6 +803,7 @@ class ComponentStoreFactory {
 
           /**
            *  获取当前组件的导航
+           *  TODO 插槽的场景，需要能进一步向上查找
            */
           getBreadcrumb() {
             const crumb: ComponentInstance[] = []
@@ -755,6 +811,7 @@ class ComponentStoreFactory {
               if (!id) return
               const parent = this.findParentComponentFromTreeById(id)
               if (parent) {
+                // console.log('parent',parent)
                 if (parent.componentName) {
                   if (parent.componentName !== 'GlVirtual') {
                     crumb.push(parent)

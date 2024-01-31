@@ -158,7 +158,4 @@ const i18nConvert = (value?: string) => {
   //cursor: move;
 }
 
-.gl-dnd-placeholder {
-  //width: 100%;
-}
 </style>

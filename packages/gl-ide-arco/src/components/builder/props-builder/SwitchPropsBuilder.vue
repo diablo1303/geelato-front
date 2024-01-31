@@ -32,10 +32,4 @@ const update = () =>{
   emits('update:modelValue', mv.value)
 }
 
-const  x = ref('xx')
-
 </script>
-
-<style scoped>
-
-</style>

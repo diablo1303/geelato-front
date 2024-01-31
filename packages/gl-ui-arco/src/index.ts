@@ -43,6 +43,8 @@ import GlList from "./components/gl-list/GlList.vue";
 import GlTinymce from "./components/gl-tinymce/GlTinymce.vue";
 import GlPageHelp from "./components/gl-page-help/GlPageHelp.vue";
 import GlPagination from "./components/gl-pagination/GlPagination.vue";
+import GlSpace from "./components/gl-space/GlSpace.vue";
+import GlSlot from "./components/gl-slot/GlSlot.vue";
 const i18nMessage = {en, cn}
 
 const component: Plugin = {
@@ -90,6 +92,8 @@ const component: Plugin = {
     Vue.component(GlImport.name, GlImport)
     Vue.component(GlPageHelp.name,GlPageHelp)
     Vue.component(GlPagination.name,GlPagination)
+    Vue.component(GlSpace.name,GlSpace)
+    Vue.component(GlSlot.name,GlSlot)
 
     Vue.component('GlRangePicker', RangePicker)
     Vue.component('GlModal', Modal)

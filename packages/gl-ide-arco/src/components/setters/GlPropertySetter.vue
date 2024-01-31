@@ -120,7 +120,7 @@
             >
               <!-- 通过属性元数据，定义每张卡片的内容  -->
               <div class="gl-table" :class="{'gl-table-as-tree':false}">
-                <template v-for="property in propertySetterMeta.properties">aaaa
+                <template v-for="property in propertySetterMeta.properties">
                   <GlPropertySetter v-if="propertyModel" :propertySetterMeta="property"
                                     :propertyValue="slotProps.item.props[property.name]"
                                     @set:propertyValue="newValue=>slotProps.item.props[property.name]=newValue"
