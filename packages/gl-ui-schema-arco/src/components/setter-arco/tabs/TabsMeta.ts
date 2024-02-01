@@ -101,8 +101,8 @@ export default {
         "expanded": true,
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
-        "title": "额外",
-        "setterComponentName": "GlComponentSelect",
+        "title": "右上操作",
+        "setterComponentName": "GlSlotSetter",
         "slotComponentName": "GlComponent",
         "slotComponentBindTarget": "v-model",
         "slotComponentBindName": "glComponentInst"

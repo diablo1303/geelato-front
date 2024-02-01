@@ -79,6 +79,51 @@ export default {
       title: '大小',
       setterComponentName: 'ARadioGroup',
       setterDefaultValue: 'small'
+    },
+    {
+      name: 'extra',
+      group: 'base',
+      type: 'slots',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      title: '右上操作',
+      setterComponentName: 'GlSlotSetter',
+      slotComponentName: 'GlComponent',
+      slotComponentBindTarget: 'v-model',
+      slotComponentBindName: 'glComponentInst'
+    },
+    {
+      name: 'actions',
+      group: 'base',
+      type: 'slots',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      title: '底部操作',
+      setterComponentName: 'GlSlotSetter',
+      slotComponentName: 'GlComponent',
+      slotComponentBindTarget: 'v-model',
+      slotComponentBindName: 'glComponentInst'
+    },
+    {
+      name: 'cover',
+      group: 'base',
+      type: 'slots',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      title: '封面插槽',
+      setterComponentName: 'GlSlotSetter',
+      slotComponentName: 'GlComponent',
+      slotComponentBindTarget: 'v-model',
+      slotComponentBindName: 'glComponentInst'
     }
   ],
   actions: []

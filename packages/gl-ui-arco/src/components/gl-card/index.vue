@@ -1,14 +1,13 @@
 <template>
   <a-card class="gl-card" :class="{ 'gl-hidden': isHidden, 'gl-hide-header': !isShowLabel }">
     <template #extra>
-      <a-space>
-        <component
-          :is="'GlInsts' + glRuntimeFlag"
-          :glComponentInst="glComponentInst?.extra"
-          :glIsRuntime="glIsRuntime"
-          :glRuntimeFlag="glRuntimeFlag"
-        />
-      </a-space>
+      <slot name="extra"></slot>
+    </template>
+    <template #actions>
+      <slot name="actions"></slot>
+    </template>
+    <template #cover>
+      <slot name="cover"></slot>
     </template>
     <template #title v-if="isShowLabel">
       <span @click="switchHide" style="cursor: pointer">

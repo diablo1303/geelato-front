@@ -289,8 +289,4 @@ const onClick = (...args: any[]) => {
   //border: 1px dashed gray;
   //cursor: move;
 }
-
-.gl-dnd-placeholder {
-  //width: 100%;
-}
 </style>
