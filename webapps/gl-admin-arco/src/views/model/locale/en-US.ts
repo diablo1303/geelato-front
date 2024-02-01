@@ -77,6 +77,7 @@ export default {
   'model.table.index.model.cancel.text': 'Cancel',
   'model.table.index.model.ok.text': 'Confirm',
   'searchTable.tables.operations.alter': 'Alter',
+  'searchTable.tables.operations.copy': 'Copy',
   'searchTable.tables.operations.sourceType.warning': 'The system table cannot be modified',
   'searchTable.tables.operations.alter.warning': 'Alter “entityName” and synchronize it to the database',
   // eslint-disable-next-line no-template-curly-in-string
@@ -248,6 +249,9 @@ export default {
   'model.column.index.form.name.key': 'Primary Key',
   'model.column.index.form.operations.disabled': 'System fields cannot be edited',
   'searchTable.columns.operations.permission': 'Permission',
+  'searchTable.columns.operations.add': 'Add',
+  'searchTable.columns.operations.add.warning': 'Please select at least one item! ',
+  'searchTable.columns.operations.addCom': 'Add Common Column',
   'searchTable.columns.operations.alter': 'Alter',
   'searchTable.columns.operations.alter.warning': 'Alter “name” and synchronize it to the database',
   'searchTable.columns.operations.switch.tip': 'Hide basic fields such as ‘id’、‘creator’...',

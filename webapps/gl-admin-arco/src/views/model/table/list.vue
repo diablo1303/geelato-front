@@ -184,7 +184,7 @@
                       :width="200" data-index="description"/>
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('model.table.index.form.operations')"
-          :width="230" align="center" data-index="operations" fixed="right">
+          :width="280" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-tooltip v-if="record.sourceType==='system'" :content="$t('searchTable.tables.operations.sourceType.warning')">
             <a-button size="small" type="text" class="button-disabled">
@@ -215,6 +215,9 @@
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
+          <a-button size="small" type="text" @click="copyTable(record.id)">
+            {{ $t('searchTable.tables.operations.copy') }}
+          </a-button>
         </template>
       </a-table-column>
     </template>
@@ -224,6 +227,7 @@
   </a-table>
   <TableForm ref="tableFormRef"></TableForm>
   <TableDrawer ref="tableDrawerRef"></TableDrawer>
+  <TableCopyForm ref="tableCopyFormRef"></TableCopyForm>
 </template>
 
 <script lang="ts" setup>
@@ -244,6 +248,7 @@ import {columns, enableStatusOptions, tableTypeOptions} from '@/views/model/tabl
 // 引用其他页面
 import TableForm from '@/views/model/table/form.vue';
 import TableDrawer from '@/views/model/table/drawer.vue';
+import TableCopyForm from '@/views/model/table/copy.vue';
 import {useRoute} from "vue-router";
 
 /* 列表 */
@@ -257,7 +262,7 @@ const pageData = ref({
 });
 const tableFormRef = ref(null);
 const tableDrawerRef = ref(null);
-
+const tableCopyFormRef = ref(null);
 // 国际化
 const {t} = useI18n();
 const route = useRoute();
@@ -357,6 +362,19 @@ const addTable = (ev: MouseEvent) => {
     });
   }
 };
+const copyTable = (id: string) => {
+  if (tableCopyFormRef.value) {
+    const formParams: Record<string, any> = pageData.value.params || {};
+    formParams.editName = false;
+    // @ts-ignore
+    tableCopyFormRef.value?.openForm({
+      action: 'add', 'id': id, params: pageData.value.params, closeBack: (data: QueryForm) => {
+        reset();
+        pageData.value.modalAddBack(data);
+      }
+    });
+  }
+}
 const tableInit = async () => {
   try {
     const {data} = await initTables(routeParams.value.appId);

@@ -119,6 +119,10 @@ export function createOrUpdateTable(params: QueryTableForm) {
   return axios.post<QueryResult>('/api/model/table/createOrUpdate', params);
 }
 
+export function copyTable(params: Record<string, any>) {
+  return axios.post<QueryResult>('/api/model/table/copy', params);
+}
+
 export function deleteTable(id: string) {
   return axios.delete<QueryResult>(`/api/model/table/isDelete/${id}`);
 }
@@ -250,6 +254,10 @@ export function createOrUpdateTableColumn(params: QueryTableColumnForm) {
   return axios.post<QueryResult>('/api/model/table/column/createOrUpdate', params);
 }
 
+export function insertCommonColumns(params: Record<string, any>) {
+  return axios.post<QueryResult>('/api/model/table/column/insertCommon', params);
+}
+
 export function deleteTableColumn(id: string) {
   return axios.delete<QueryResult>(`/api/model/table/column/isDelete/${id}`);
 }
@@ -351,6 +359,20 @@ export interface QueryViewColumnForm {
   charMaxLength: number | string;
   precision: number;
   scale: number;
+}
+
+export interface QueryViewColumnsForm {
+  table_name: string;
+  title: string;
+  column_name: string;
+  field_name: string;
+  select_type: string;
+  column_comment: string;
+  column_key: number | boolean;
+  is_nullable: number | boolean;
+  character_maxinum_length: number | string;
+  numeric_precision: number;
+  numeric_scale: number;
 }
 
 export interface QueryViewForm {

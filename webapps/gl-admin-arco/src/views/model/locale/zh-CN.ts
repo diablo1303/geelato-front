@@ -77,6 +77,7 @@ export default {
   'model.table.index.model.cancel.text': '取消',
   'model.table.index.model.ok.text': '确认',
   'searchTable.tables.operations.alter': '变更',
+  'searchTable.tables.operations.copy': '复制',
   'searchTable.tables.operations.sourceType.warning': '系统内置表不可编辑',
   'searchTable.tables.operations.alter.warning': '变更“实体名称”并同步至数据库',
   // eslint-disable-next-line no-template-curly-in-string
@@ -246,6 +247,9 @@ export default {
   'model.column.index.form.name.synced': '还未同步至数据库',
   'model.column.index.form.name.key': '主键',
   'searchTable.columns.operations.permission': '权限',
+  'searchTable.columns.operations.add': '添加',
+  'searchTable.columns.operations.add.warning': '请至少选择一项！',
+  'searchTable.columns.operations.addCom': '添加常用字段',
   'searchTable.columns.operations.alter': '变更',
   'searchTable.columns.operations.alter.warning': '变更“字段标识”并同步至数据库',
   'searchTable.columns.operations.switch.tip': '隐藏基础字段如’id‘、’creator‘...',

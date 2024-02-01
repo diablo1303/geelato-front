@@ -87,6 +87,32 @@
           </template>
           {{ $t('searchTable.operation.create') }}
         </a-button>
+        <a-select v-model:popup-visible="selectVisible"
+                  v-model="commonSelectData"
+                  multiple scrollbar allow-search
+                  :placeholder="$t('searchTable.form.selectDefault')">
+          <a-option v-for="item of selectCommonOptions"
+                    :key="item.id" :value="item.id"
+                    :title="`${item.title}[${item.fieldName}]`"
+                    :label="`${item.title}[${item.fieldName}]`"/>
+          <template #footer>
+            <div style="padding: 6px 6px; text-align: right;">
+              <a-button size="mini" type="primary" @click="addCommonColumn($event)">
+                {{ $t('searchTable.columns.operations.add') }}
+              </a-button>
+            </div>
+          </template>
+          <template #trigger>
+            <div style="width: 320px">
+              <a-button type="primary" @click="openCommonColumn($event)">
+                <template #icon>
+                  <icon-plus/>
+                </template>
+                {{ $t('searchTable.columns.operations.addCom') }}
+              </a-button>
+            </div>
+          </template>
+        </a-select>
       </a-space>
     </a-col>
     <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
@@ -269,12 +295,19 @@ import useLoading from '@/hooks/loading';
 // 分页列表
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue';
-import {Notification} from "@arco-design/web-vue";
+import {Message, Notification} from "@arco-design/web-vue";
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
-import {deleteTableColumn as deleteList, FilterTableColumnForm, pageQueryTableColumns as pageQueryList, QueryTableColumnForm} from '@/api/model';
+import {
+  deleteTableColumn as deleteList,
+  FilterTableColumnForm,
+  insertCommonColumns,
+  pageQueryTableColumns as pageQueryList,
+  QueryTableColumnForm,
+  queryTableColumns
+} from '@/api/model';
 import {
   columns,
   columnSelectType,
@@ -316,6 +349,10 @@ const basePagination: Pagination = {current: pageData.value.current, pageSize: p
 const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
 const isDefault = ref(false);
+// 常用字段选择
+const selectVisible = ref(false);
+const commonSelectData = ref<string[]>([]);
+const selectCommonOptions = ref<QueryTableColumnForm[]>([]);
 /* 列表 */
 const generateFilterData = (): FilterTableColumnForm => {
   return {
@@ -418,6 +455,42 @@ const onPageChange = (page: number) => {
   search();
 };
 
+const getSelectDictionaryOptions = async () => {
+  try {
+    const {data} = await queryTableColumns({
+      tableName: 'platform_common_fields',
+      enableStatus: 1,
+    } as unknown as PageQueryRequest);
+    selectCommonOptions.value = data || [];
+  } catch (err) {
+    selectCommonOptions.value = [];
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+
+const openCommonColumn = (ev?: MouseEvent) => {
+  commonSelectData.value = [];
+  selectVisible.value = true;
+}
+const addCommonColumn = async (ev?: MouseEvent) => {
+  if (commonSelectData.value.length > 0) {
+    try {
+      await insertCommonColumns({
+        tableId: pageData.value.params.pId || '',
+        tableName: pageData.value.params.pName || '',
+        columnIds: commonSelectData.value.join(",") || ''
+      });
+      selectVisible.value = false;
+      reset();
+    } catch (err) {
+      console.log(err);
+    }
+  } else {
+    Message.warning(t('searchTable.columns.operations.add.warning'));
+  }
+}
+
 /* 列表，按钮、操作列 */
 const addTable = (ev: MouseEvent) => {
   if (pageData.value.isModal && !pageData.value.params.pId) {
@@ -514,6 +587,8 @@ watch(() => columns.value, (val) => {
 
 /* 对外调用方法 */
 const loadList = (urlParams: ListUrlParams) => {
+  getSelectDictionaryOptions();
+
   pageData.value.formState = urlParams.action || 'edit';
   pageData.value.isModal = urlParams.isModal || false;
   pageData.value.params.pId = urlParams.params?.pId || '';

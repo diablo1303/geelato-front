@@ -318,11 +318,60 @@ const handleChange = (_data: any[]) => {
   columnData.value = _data;
 }
 
+const viewColumnListToMysql = (): string => {
+  const data = [];
+  if (columnData.value && columnData.value.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of columnData.value) {
+      data.push({
+        table_name: item.tableName,
+        title: item.title,
+        column_name: item.name,
+        field_name: item.fieldName,
+        select_type: item.selectType,
+        column_comment: item.comment,
+        column_key: item.key,
+        is_nullable: item.nullable,
+        character_maxinum_length: item.charMaxLength,
+        numeric_precision: item.precision,
+        numeric_scale: item.scale
+      });
+    }
+  }
+
+  return JSON.stringify(data);
+}
+
+const viewColumnMysqlToList = (viewColumn: string) => {
+  const columns = viewColumn ? JSON.parse(viewColumn) : [];
+  const data = [];
+  if (columns && columns.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of columns) {
+      data.push({
+        tableName: item.table_name,
+        title: item.title,
+        name: item.column_name,
+        fieldName: item.field_name,
+        selectType: item.select_type,
+        comment: item.column_comment,
+        key: item.column_key,
+        nullable: item.is_nullable,
+        charMaxLength: item.character_maxinum_length,
+        precision: item.numeric_precision,
+        scale: item.numeric_scale
+      });
+    }
+  }
+
+  return data;
+}
+
 const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
   if (!res) {
     params.viewName = pageData.value.formState === 'add' ? `v_${params.viewName}` : params.viewName;
-    params.viewColumn = JSON.stringify(columnData.value) || "";
+    params.viewColumn = viewColumnListToMysql();
     try {
       const {data} = await createOrUpdateForm(params);
       successBack(data);
@@ -358,10 +407,12 @@ const validateTableView = async (params: QueryForm, successBack?: any, failBack?
 };
 
 const viewNameBlur = (ev?: FocusEvent) => {
-  if (formData.value.viewType === "custom" && formData.value.viewName === formData.value.entityName) {
-    formData.value.viewName = '';
-    Notification.warning(`[v_${formData.value.entityName}]${t('model.view.index.form.entityName.valid')}`);
+  const entity = formData.value.entityName.toLowerCase();
+  const view = formData.value.viewName ? formData.value.viewName.toLowerCase() : "";
+  if (formData.value.viewType === "custom" && entity === view) {
+    Notification.warning(`[v_${entity}]${t('model.view.index.form.entityName.valid')}`);
   }
+  formData.value.viewName = view;
 }
 const editorMounted = (editor: any) => {
   console.log('editor实例加载完成', editor)
@@ -525,9 +576,10 @@ const loadModel = (urlParams: ListUrlParams) => {
   if (urlParams.id) {
     getData(urlParams.id, (data: QueryForm) => {
       data.seqNo = Number(data.seqNo);
-      columnData.value = data.viewColumn ? JSON.parse(data.viewColumn as string) : [];
+      columnData.value = viewColumnMysqlToList(data.viewColumn);
       // data.viewName = data.viewName == null ? '' : data.viewName.replace(/^(v_|V_)*/, "");
       formData.value = data;
+      console.log(columnData.value)
       urlParams.loadSuccessBack(data);
     }, urlParams.loadFailBack);
   }
