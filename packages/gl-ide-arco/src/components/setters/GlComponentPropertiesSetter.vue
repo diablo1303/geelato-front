@@ -16,32 +16,6 @@
                 v-if="componentModel[propertySetterMeta.type + 'Expressions']?true:componentModel[propertySetterMeta.type + 'Expressions']={}"></template>
             <GlExpressionSetter
                 v-model="componentModel[propertySetterMeta.type + 'Expressions'][propertySetterMeta.name]"></GlExpressionSetter>
-            <!--            <a-button size="mini" @click="openValueExpressModal(propertySetterMeta)"-->
-            <!--                      :type="componentModel[propertySetterMeta.type+'Expression'][propertySetterMeta.name]?'primary':''"-->
-            <!--                      style="padding: 0 0.1em;height: 2.6em;font-weight: 700">{ / }-->
-            <!--            </a-button>-->
-            <!--            <a-modal title="变量绑定" v-model:visible="valueExpressModalVisible"-->
-            <!--                     :mask-style="{background:'rgba(0, 0, 0, 0.25)'}"-->
-            <!--                     @ok="handleOk"-->
-            <!--                     @cancel="handleCancel">-->
-            <!--              <a-textarea v-model="valueExpression" placeholder="在此输入..."></a-textarea>-->
-            <!--              <a-button style="float: right" type="outline" size="mini" status="danger"-->
-            <!--                        @click="clearValueExpress">清除绑定-->
-            <!--              </a-button>-->
-            <!--              <div>-->
-            <!--                <h4 style="font-weight: 600">该属性的值</h4>-->
-            <!--                如果设置了该变量绑定，则以该变量绑定计算的结果为优先。-->
-            <!--                <h4 style="font-weight: 600">用法</h4>-->
-            <!--                输入框内默认支持变量，写法和 JS 写法完全一致。-->
-            <!--                <li>变量: $gl.xxx</li>-->
-            <!--                <li>字符串: "我是字符串，我有引号"</li>-->
-            <!--                <li>数字: 123</li>-->
-            <!--                <li>布尔值: true / false</li>-->
-            <!--                <li>对象: { name: "王一" }</li>-->
-            <!--                <li>数组: ["1", "2"]或[1, 2]</li>-->
-            <!--                <li>空值: null</li>-->
-            <!--              </div>-->
-            <!--            </a-modal>-->
           </div>
         </GlPropertySetter>
 

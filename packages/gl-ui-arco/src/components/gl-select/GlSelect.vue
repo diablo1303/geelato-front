@@ -5,8 +5,8 @@ export default {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import {inject, ref, watch} from "vue";
-import {PageProvideKey, type PageProvideProxy} from "@geelato/gl-ui";
+import { inject, PropType, ref, watch } from 'vue'
+import { PageProvideKey, type PageProvideProxy } from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -16,7 +16,11 @@ const props = defineProps({
       return ''
     }
   },
-  options:Array,
+  options: Array,
+  readonly: Boolean,
+  size: String as PropType<'medium' | 'small' | 'mini' | 'large' | undefined>,
+  placeholder: String,
+  disabled: Boolean,
   /**
    *  选择的名称绑定的组件id
    *  在选择时，同时将名称值绑定到另一个组件中，如果不设置，则不需绑定
@@ -33,7 +37,7 @@ const props = defineProps({
     default() {
       return ''
     }
-  },
+  }
 })
 // eslint-disable-next-line vue/no-setup-props-destructure
 let options = props.options || []
@@ -45,38 +49,50 @@ watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
 
-watch(() => {
-  return props.modelValue
-}, () => {
-  mv.value = props.modelValue
-}, {deep: true})
+watch(
+  () => {
+    return props.modelValue
+  },
+  () => {
+    mv.value = props.modelValue
+  },
+  { deep: true }
+)
 
-
-watch(mv, () => {
-  // 回写名称
-  const foundOption:any = options.find((option: any) => {
-    return option.value === mv.value
-  })
-  const label = foundOption?.label || ''
-  if (props.nameFieldBindComponentId) {
-    const ids = props.nameFieldBindComponentId.split(',')
-    ids.forEach((id: string) => {
-      pageProvideProxy.setComponentValue(id, label)
+watch(
+  mv,
+  () => {
+    // 回写名称
+    const foundOption: any = options.find((option: any) => {
+      return option.value === mv.value
     })
-  }
-  // 回写值
-  if (props.valueFieldBindComponentId) {
-    const ids = props.valueFieldBindComponentId.split(',')
-    ids.forEach((id: string) => {
-      pageProvideProxy.setComponentValue(id, mv.value)
-    })
-  }
+    const label = foundOption?.label || ''
+    if (props.nameFieldBindComponentId) {
+      const ids = props.nameFieldBindComponentId.split(',')
+      ids.forEach((id: string) => {
+        pageProvideProxy.setComponentValue(id, label)
+      })
+    }
+    // 回写值
+    if (props.valueFieldBindComponentId) {
+      const ids = props.valueFieldBindComponentId.split(',')
+      ids.forEach((id: string) => {
+        pageProvideProxy.setComponentValue(id, mv.value)
+      })
+    }
 
-  emits('update:modelValue', mv.value)
-}, {deep: true})
-
+    emits('update:modelValue', mv.value)
+  },
+  { deep: true }
+)
 </script>
 
 <template>
-  <ASelect :options="options" v-model="mv"></ASelect>
+  <ASelect
+    :options="options"
+    v-model="mv"
+    :readonly="readonly"
+    :size="size"
+    :disabled="disabled"
+  ></ASelect>
 </template>

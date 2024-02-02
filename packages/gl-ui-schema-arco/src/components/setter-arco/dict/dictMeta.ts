@@ -119,7 +119,7 @@ export default {
         "setterComponentVModelName": "modelValue",
         "title": "显示类型",
         "setterComponentName": "ARadioGroup",
-        "setterDefaultValue": ""
+        "setterDefaultValue": "select"
     }, {
         "name": "showValueInLabel",
         "group": "base",

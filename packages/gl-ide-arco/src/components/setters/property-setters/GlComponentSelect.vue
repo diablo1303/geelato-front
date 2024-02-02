@@ -79,7 +79,7 @@ export default {
 import { getCurrentInstance, type PropType, ref, watch } from 'vue'
 import { ComponentInstance, ComponentMeta } from '@geelato/gl-ui-schema'
 import { useComponentMaterialStore } from '@geelato/gl-ui-schema-arco'
-import GlComponentSelectOptions from './GlComponentSelectOptions'
+import useComponentSelectOption from './GlComponentSelectOptions'
 import GlComponentSetter from '../GlComponentSetter.vue'
 import { BindField } from '@geelato/gl-ui-schema'
 
@@ -96,7 +96,7 @@ const props = defineProps({
   options: {
     type: Array as PropType<Array<{ componentName: string; title: string; children?: [] }>>,
     default() {
-      return GlComponentSelectOptions
+      return useComponentSelectOption()
     }
   }
 })
