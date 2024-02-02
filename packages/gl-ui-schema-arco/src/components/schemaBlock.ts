@@ -15,6 +15,8 @@ import IfComponentValueBlockMeta from "./setter-block/if-else/IfComponentValueBl
 import IfComponentValueBlockInstance from "./setter-block/if-else/IfComponentValueBlockInstance";
 import IfEmptyBlockMeta from "./setter-block/if-else/IfEmptyBlockMeta";
 import IfEmptyBlockInstance from "./setter-block/if-else/IfEmptyBlockInstance";
+import IfExpressionBlockMeta from "./setter-block/if-else/IfExpressionBlockMeta";
+import IfExpressionBlockInstance from "./setter-block/if-else/IfExpressionBlockInstance";
 import TriggerComponentActionMeta from "./setter-block/page/TriggerComponentActionBlockMeta";
 import LogBlockMeta from "./setter-block/other/LogBlockMeta";
 import SetValueBlockMeta from "./setter-block/page/SetValueBlockMeta";
@@ -40,12 +42,12 @@ import EntitySaverBlockMeta from './setter-block/data/EntitySaverBlockMeta'
 import AnnotationBlockMeta from "./setter-block/other/AnnotationBlockMeta";
 
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, JsCodeBlockMeta,GenerateEntityReaderBlockMeta, GroupSumBlockMeta, BlockNotificationMeta, BlockOpenComponentPageMeta,BlockComponentInvokeMeta, TriggerComponentActionMeta, BlockSetVisibleMeta, SetValueBlockMeta,SetRulesMeta, BlockOpenThirdPageMeta, IfComponentValueBlockMeta, BlockIfMeta, BlockElseMeta,IfEmptyBlockMeta,
+const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, JsCodeBlockMeta,GenerateEntityReaderBlockMeta, GroupSumBlockMeta, BlockNotificationMeta, BlockOpenComponentPageMeta,BlockComponentInvokeMeta, TriggerComponentActionMeta, BlockSetVisibleMeta, SetValueBlockMeta,SetRulesMeta, BlockOpenThirdPageMeta, IfComponentValueBlockMeta, IfExpressionBlockMeta,BlockIfMeta, BlockElseMeta,IfEmptyBlockMeta,
     BlockConfirmMeta,  ReturnBlockMeta,
     LogBlockMeta, ExportExcelBlockMeta,ExportWordBlockMeta,ExportPdfBlockMeta,ImportExcelBlockMeta,DownloadBlockMeta,AnnotationBlockMeta,ForListBlockMeta,ForTimesBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta,HttpRequestBlockMeta,EntitySaverBlockMeta]
 
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance,IfEmptyBlockInstance,ForListBlockInstance,ForTimesBlockInstance]
+const customInstances: Array<ComponentInstance> = [IfExpressionBlockInstance,BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance,IfEmptyBlockInstance,ForListBlockInstance,ForTimesBlockInstance]
 const componentInstances: Array<ComponentInstance> = []
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {

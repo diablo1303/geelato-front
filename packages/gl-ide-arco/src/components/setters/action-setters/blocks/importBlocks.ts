@@ -20,8 +20,8 @@ import GroupSumBlockHandler from './data/GroupSumBlockHandler'
 import JsCodeBlockHandler from './other/JsCodeBlockHandler'
 import ExportExcelBlockHandler from './file/ExportExcelBlockHandler'
 import ImportExcelBlockHandler from './file/ImportExcelBlockHandler'
-import DownloadBlockHandler from "./file/DownloadBlockHandler";
-import ExportWordBlockHandler from "./file/ExportWordBlockHandler";
+import DownloadBlockHandler from './file/DownloadBlockHandler'
+import ExportWordBlockHandler from './file/ExportWordBlockHandler'
 import GenerateEntityReaderBlockHandler from './data/GenerateEntityReaderBlockHandler'
 import EntityQueryBlockHandler from './data/EntityQueryBlockHandler'
 import DictQueryBlockHandler from './data/DictQueryBlockHandler'
@@ -31,10 +31,12 @@ import ForTimesBlockHandler from './loop/ForTimesBlockHandler'
 import HttpRequestBlockHandler from './network/HttpRequestBlockHandler'
 import EntitySaverBlockHandler from './data/EntitySaverBlockHandler'
 import IfEmptyBlockHandler from './logic/IfEmptyBlockHandler'
+import IfExpressionBlockHandler from './logic/IfExpressionBlockHandler'
 
 export {
   OpenThirdPageBlockHandler,
   NotificationBlockHandler,
+  IfExpressionBlockHandler,
   IfBlockHandler,
   ElseBlockHandler,
   OpenComponentPageBlockHandler,

@@ -69,7 +69,7 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '是否为子表',
           setterComponentName: 'ASwitch',
-          description: '表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容，常用于主表关联已存在的子表记录',
+          description: '表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容，常用于主表关联已存在的子表记录；选是时，会出一列：记录状态，用于标记数据行的状态。',
           setterDefaultValue: false
         },
         {
@@ -256,9 +256,9 @@ export default {
           expanded: true,
           setterComponentProps: {},
           setterComponentVModelName: 'modelValue',
-          title: '点击选中',
+          title: '点击选中行',
           setterComponentName: 'ASwitch',
-          description: '点击行数据时，选中该行，相当于点击了行的选择器'
+          description: '点击单元格时，选中该行，方便选中一行数据。'
         }
       ],
       title: '总体设置',
@@ -865,6 +865,11 @@ export default {
       description: '从服务端成功加数据（0到多条）后触发。'
     },
     {
+      name: 'creatingEntitySavers',
+      description: '完成实体保存对象创建之后，关闭创建方法前调用，例于对实体保存对象进行处理。',
+      title: '保存对象完成前'
+    },
+    {
       name: 'changeRecord',
       title: '行记录(内容)更改',
       description: '在数据表的行内编辑模式下，当数据表的行记录信息更换时触发'
@@ -881,12 +886,7 @@ export default {
     { name: 'columnResize', title: '调整列宽', description: '调整列宽时触发' },
     { name: 'pushRecords', title: '给列表引用增加记录', description: '给列表引用增加记录时触发' },
     { name: 'unPushRecords', title: '移除列表引用记录', description: '移除列表引用记录时触发' },
-    { name: 'pushOrUnPushRecords', title: '添加或移除列表引用记录', description: '添加或移除列表引用记录时触发' },
-    {
-      name: 'creatingEntitySavers',
-      description: '完成实体保存对象创建之后，关闭创建方法前调用，例于对实体保存对象进行处理。',
-      title: '保存对象完成前'
-    }
+    { name: 'pushOrUnPushRecords', title: '添加或移除列表引用记录', description: '添加或移除列表引用记录时触发' }
   ],
   methods: [
     { name: 'refresh', title: '刷新', description: '刷新表格', params: [] },

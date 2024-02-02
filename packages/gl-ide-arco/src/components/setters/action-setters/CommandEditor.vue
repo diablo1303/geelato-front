@@ -90,7 +90,7 @@
                     : '点击停用'
                 }}
               </a-button>
-              <a-button @click="componentStore.copyCurrentSelectedComponent"> 复制插入</a-button>
+<!--              <a-button @click="componentStore.copyCurrentSelectedComponent"> 复制插入</a-button>-->
               <a-button @click="componentStore.copyCurrentSelectedComponentToClipboard">
                 复制
               </a-button>

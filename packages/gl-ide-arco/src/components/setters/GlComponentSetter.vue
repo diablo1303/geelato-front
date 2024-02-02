@@ -22,13 +22,13 @@
           <a-button-group type="primary" size="mini" shape="round" v-if="!isGraphElement">
             <!--            <a-button status="normal" v-if="showSelectParent" @click="componentStore.selectParentComponent">选父组件-->
             <!--            </a-button>-->
-            <a-button
-              status="normal"
-              v-if="showSelectParent"
-              @click="componentStore.copyCurrentSelectedComponent()"
-            >
-              复制插入
-            </a-button>
+<!--            <a-button-->
+<!--              status="normal"-->
+<!--              v-if="showSelectParent"-->
+<!--              @click="componentStore.copyCurrentSelectedComponent()"-->
+<!--            >-->
+<!--              复制插入-->
+<!--            </a-button>-->
             <a-button
               status="normal"
               v-if="showSelectParent"

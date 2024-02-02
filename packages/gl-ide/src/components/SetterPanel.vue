@@ -77,7 +77,7 @@ watch(
     )!
     if (!panelNames.value) {
       console.error(
-        '通过props?.pageType获取不到需要展示的面板',
+        '通过props?.pageType获取不到需要展示的面板，请检查gl-ide-arco/src/plugin',
         pageStore.currentPage?.sourceContent
       )
     }

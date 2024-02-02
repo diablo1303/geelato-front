@@ -179,6 +179,7 @@ plugin.stage.push(
 plugin.pushPageTypeAndSetterPanelNames('freePage', ['props', 'actions', 'permission', 'lang'])
 plugin.pushPageTypeAndSetterPanelNames('formPage', ['props', 'actions', 'permission', 'lang'])
 plugin.pushPageTypeAndSetterPanelNames('listPage', ['props', 'actions', 'permission', 'lang'])
+plugin.pushPageTypeAndSetterPanelNames('emptyPage', ['props', 'actions', 'permission', 'lang'])
 plugin.pushPageTypeAndSetterPanelNames('flowPage', ['props'])
 
 // plugin.stage.push(new Panel({

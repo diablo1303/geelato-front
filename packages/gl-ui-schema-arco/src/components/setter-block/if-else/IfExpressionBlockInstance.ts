@@ -1,7 +1,7 @@
 export default {
-    "componentName": "GlHiddenArea",
-    "title": "**隐藏区域**",
-    "props": {"label": "*隐藏区域*", "bordered": false},
+    "componentName": "GlIfExpressionBlock",
+    "title": "IF 表达式",
+    "props": {},
     "slots": {},
     "children": [
         {
@@ -13,4 +13,3 @@ export default {
         }
     ]
 }
-

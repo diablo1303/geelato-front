@@ -656,8 +656,21 @@ const getLastSelectedRecord = () => {
   }
 }
 
-const hasSelectedRecords = () => {
-  return getSelectedRecords().length > 0
+/**
+ *
+ * @param params 返回false进的提示信息，有配置则提示，没有配置则不提示
+ */
+const hasSelectedRecords = (params: { enableAlert: boolean; content: string }) => {
+  if (getSelectedRecords().length > 0) {
+    return true
+  } else {
+    if (params?.enableAlert) {
+      global.$notification.warning({
+        content: params.content || '请先选择记录'
+      })
+    }
+    return false
+  }
 }
 
 const hasRenderRecords = () => {
@@ -985,7 +998,7 @@ const getColumnSum = (params: { dataIndex: string }) => {
   getRenderRecords()?.forEach((record: Record<string, any>) => {
     // 排除push部分，避免重复计算
     // if (!pushedRecordKeys.value.includes(record[EntityDataSource.ConstObject.keyFiledName])) {
-      sum += record[params.dataIndex] || 0
+    sum += record[params.dataIndex] || 0
     // }
   })
   // 负值部分
@@ -1011,9 +1024,9 @@ const getColumnsSum = (params: { dataIndexes: string[] }) => {
   getRenderRecords()?.forEach((record: Record<string, any>) => {
     // 排除push部分，避免重复计算
     // if (!pushedRecordKeys.value.includes(record[EntityDataSource.ConstObject.keyFiledName])) {
-      params.dataIndexes.forEach((key: string) => {
-        sum[key] += record[key] || 0
-      })
+    params.dataIndexes.forEach((key: string) => {
+      sum[key] += record[key] || 0
+    })
     // }
   })
   // 负值部分
