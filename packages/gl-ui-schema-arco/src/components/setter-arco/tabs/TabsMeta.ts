@@ -101,7 +101,7 @@ export default {
         "expanded": true,
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
-        "title": "右上操作",
+        "title": "右上插槽",
         "setterComponentName": "GlSlotSetter",
         "slotComponentName": "GlComponent",
         "slotComponentBindTarget": "v-model",

@@ -258,7 +258,7 @@ class ComponentStoreFactory {
                   const keys = Object.keys(node.slots)
                   for (let i = 0; i < keys?.length; i++) {
                     const slotInst = node.slots[keys[i]]
-                    if (slotInst.props?.children.length > 0) {
+                    if (slotInst.props?.children?.length > 0) {
                       deleteNodeFromTree(nodeId, slotInst.props?.children)
                     }
                   }

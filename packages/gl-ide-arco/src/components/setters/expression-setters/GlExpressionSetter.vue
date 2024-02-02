@@ -235,14 +235,13 @@ const selectDictItem = (key: any) => {
             <h4 style="font-weight: 600">该属性的值</h4>
             如果设置了该变量绑定，则以该变量绑定计算的结果为优先。
             <h4 style="font-weight: 600">用法</h4>
-            输入框内默认支持变量，写法和 JS 写法完全一致。
-            <div>变量: $gl.xxx</div>
+            输入框内默认支持变量，写法和 JavaScript 写法完全一致，注意不是TypeScript，如const a:any = 1，这种写法会报告。
+            <div>变量: $gl.vars.xxx，xxx为变量名，属性面板中，变量名定义时，或一些返回值变量中，可以简写为xxx，同$gl.vars.xxx，但在使用时需要用完整的写法：$gl.vars.xxx。</div>
             <div>字符串: "我是字符串，我有引号"</div>
             <div>数字: 123</div>
             <div>布尔值: true / false</div>
             <div>对象: { name: "王一" }</div>
-            <div>数组: ["1", "2"]或[1, 2]</div>
-            <div>空值: null</div>
+            <div>数组: ["1", "2"]或[1, 2]，空值: null</div>
           </div>
         </div>
         <div style="flex: 1;min-width: 500px;max-height: 700px;overflow-y: auto">

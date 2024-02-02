@@ -79,6 +79,7 @@ export default {
       expanded: true,
       title: '页面宽度',
       setterComponentName: 'AInput',
+      setterDefaultValue:'80%',
       enableValueExpress: true,
       displayMode: 'tile'
     },

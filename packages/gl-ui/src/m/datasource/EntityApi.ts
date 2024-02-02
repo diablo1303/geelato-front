@@ -41,6 +41,9 @@ const checkMqlObject = (mql: MqlObject | Array<MqlObject>): boolean => {
       // eslint-disable-next-line no-throw-literal
       throw `查询${entityName}失败，列（fieldNames）格式不对,存在连续的",,"：${fieldNames}`
     }
+    if (fieldNames.indexOf(',undefined') > 0 || fieldNames.indexOf('undefined,') > 0) {
+      throw `查询${entityName}失败，列（fieldNames）格式不对,在存undefined值",,"：${fieldNames}`
+    }
     // TODO 子对象验证
     return true
   }
@@ -218,9 +221,11 @@ export class EntityApi {
             paramArray.push({ [group.logic]: handleGroup(group) })
           } else {
             const param = item as EntityReaderParam
-            paramArray.push({
-              [EntityReaderParam.getMqlParamName(param)]: EntityReaderParam.getMqlParamValue(param)
-            })
+            // 去掉参数值为null或undefined的无效条件
+            const paramValue = EntityReaderParam.getMqlParamValue(param)
+            if (paramValue !== null && paramValue !== undefined) {
+              paramArray.push({ [EntityReaderParam.getMqlParamName(param)]: paramValue })
+            }
           }
         })
         return paramArray
@@ -403,7 +408,6 @@ export class EntityApi {
   }
 
   convertEntitySaverToMql(entitySaver: EntitySaver, biz?: string): MqlObject {
-
     const defaultPidValue = '$parent.id'
     // subFormPidValue
     const toMql = (es: EntitySaver, isChildren: boolean, pidValue?: string): ParsedMqlResult => {
