@@ -347,34 +347,6 @@ export function deleteTableForeign(id: string) {
 }
 
 /* *************************** 实体视图信息 ****************************** */
-export interface QueryViewColumnForm {
-  tableName: string;
-  title: string;
-  name: string;
-  fieldName: string;
-  selectType: string;
-  comment: string;
-  key: number | boolean;
-  nullable: number | boolean;
-  charMaxLength: number | string;
-  precision: number;
-  scale: number;
-}
-
-export interface QueryViewColumnsForm {
-  table_name: string;
-  title: string;
-  column_name: string;
-  field_name: string;
-  select_type: string;
-  column_comment: string;
-  column_key: number | boolean;
-  is_nullable: number | boolean;
-  character_maxinum_length: number | string;
-  numeric_precision: number;
-  numeric_scale: number;
-}
-
 export interface QueryViewForm {
   id: string;
   connectId: string; // 数据库连接 id

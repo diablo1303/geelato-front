@@ -255,7 +255,6 @@ import {
   queryTableColumns,
   QueryTableForm,
   queryTables,
-  QueryViewColumnForm,
   QueryViewForm as QueryForm,
   validateMetaView,
   validateViewName
@@ -264,6 +263,7 @@ import {enableStatusOptions, linkedOptions} from "@/views/model/view/searchTable
 import MonacoEditor from '@/components/monaco/index.vue';
 import {useRoute} from "vue-router";
 import {columnSelectType, selectTypeOptions} from "@/views/model/column/searchTable";
+import {isJSON} from "@/utils/is";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
@@ -313,65 +313,17 @@ const generateFormData = (): QueryForm => {
 }
 const formData = ref(generateFormData());
 // 表单
-const columnData = ref<QueryViewColumnForm[]>([]);
+const columnData = ref<QueryTableColumnForm[]>([]);
 const handleChange = (_data: any[]) => {
   columnData.value = _data;
 }
 
-const viewColumnListToMysql = (): string => {
-  const data = [];
-  if (columnData.value && columnData.value.length > 0) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of columnData.value) {
-      data.push({
-        table_name: item.tableName,
-        title: item.title,
-        column_name: item.name,
-        field_name: item.fieldName,
-        select_type: item.selectType,
-        column_comment: item.comment,
-        column_key: item.key,
-        is_nullable: item.nullable,
-        character_maxinum_length: item.charMaxLength,
-        numeric_precision: item.precision,
-        numeric_scale: item.scale
-      });
-    }
-  }
-
-  return JSON.stringify(data);
-}
-
-const viewColumnMysqlToList = (viewColumn: string) => {
-  const columns = viewColumn ? JSON.parse(viewColumn) : [];
-  const data = [];
-  if (columns && columns.length > 0) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of columns) {
-      data.push({
-        tableName: item.table_name,
-        title: item.title,
-        name: item.column_name,
-        fieldName: item.field_name,
-        selectType: item.select_type,
-        comment: item.column_comment,
-        key: item.column_key,
-        nullable: item.is_nullable,
-        charMaxLength: item.character_maxinum_length,
-        precision: item.numeric_precision,
-        scale: item.numeric_scale
-      });
-    }
-  }
-
-  return data;
-}
-
 const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
+  console.log(params);
   const res = await validateForm.value?.validate();
   if (!res) {
     params.viewName = pageData.value.formState === 'add' ? `v_${params.viewName}` : params.viewName;
-    params.viewColumn = viewColumnListToMysql();
+    params.viewColumn = JSON.stringify(columnData.value);
     try {
       const {data} = await createOrUpdateForm(params);
       successBack(data);
@@ -475,12 +427,47 @@ const formatSelectType = (value: string): string => {
  */
 const customAddEntityClick = (ev?: MouseEvent) => {
   columnData.value.push({
-    tableName: "",
-    title: "",
-    name: "",
-    fieldName: "",
-    selectType: "VARCHAR"
-  } as QueryViewColumnForm);
+    id: '', // *
+    tableId: '', // 表id *
+    title: '', // 实体属性中文,中文名
+    abstractColumnExpressions: '', //
+    fieldName: '',// 列名
+    tableSchema: '', // 数据库名
+    tableName: '', // 表名
+    tableCatalog: '', // 表目录 *
+    name: '', // 列名
+    comment: '', // 备注
+    ordinalPosition: 1, // 次序
+    defaultValue: '', // 默认值
+    type: '', // 类型
+    key: 0, // 列键
+    nullable: 1, // 是否可空 YES_OR_NO
+    dataType: 'VARCHAR', // 数据类型
+    selectType: 'VARCHAR',
+    typeExtra: '',
+    extra: '', // 特别 auto_increment
+    autoIncrement: 0, // auto_increment
+    uniqued: 0, // 唯一约束
+    charMaxLength: 64, // 长度
+    numericPrecision: 0, // 整数位
+    numericScale: 0, // 小数位
+    numericSigned: 0, // 是否有符号，默认有，若无符号，则需在type中增加：unsigned
+    datetimePrecision: '', // datetime 时间类型
+    enableStatus: 1, // 状态
+    linked: 0, // 链接
+    description: '', // 描述
+    isRefColumn: false,  // 1-外表字段，默认0
+    refLocalCol: '', // isRefColumn为true时，需要通过本表引用字段
+    refTables: '', // 外表表名
+    refColName: '', // 外表字段名称
+    autoAdd: '',
+    autoName: '',
+    synced: false,
+    encrypted: 0,
+    seqNo: 1,
+    appId: routeParams.value.appId,
+    tenantCode: routeParams.value.tenantCode,
+  } as QueryTableColumnForm);
 }
 /**
  * 添加，模型字段
@@ -538,19 +525,7 @@ const entitySubmitClick = async (ev?: MouseEvent) => {
       // eslint-disable-next-line no-restricted-syntax
       for (const item of selectEntityColumnOptions.value) {
         if (item.id === entity) {
-          columnData.value.push({
-            tableName: item.tableName,
-            title: item.title,
-            name: item.name,
-            fieldName: item.fieldName,
-            selectType: item.selectType,
-            comment: item.comment,
-            key: item.key,
-            nullable: item.nullable,
-            charMaxLength: item.charMaxLength,
-            precision: item.numericPrecision,
-            scale: item.numericScale
-          });
+          columnData.value.push(item);
         }
       }
     }
@@ -576,10 +551,9 @@ const loadModel = (urlParams: ListUrlParams) => {
   if (urlParams.id) {
     getData(urlParams.id, (data: QueryForm) => {
       data.seqNo = Number(data.seqNo);
-      columnData.value = viewColumnMysqlToList(data.viewColumn);
+      columnData.value = isJSON(data.viewColumn) ? JSON.parse(data.viewColumn) : [];
       // data.viewName = data.viewName == null ? '' : data.viewName.replace(/^(v_|V_)*/, "");
       formData.value = data;
-      console.log(columnData.value)
       urlParams.loadSuccessBack(data);
     }, urlParams.loadFailBack);
   }
