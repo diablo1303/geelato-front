@@ -696,6 +696,17 @@ const getSelectEntityOptions = async (params: PageQueryRequest = {
     console.log(err);
   }
 }
+const getKeyId = (data: QueryTableColumnForm[]): string => {
+  if (data && data.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      if (item.key === true || item.fieldName === 'id') {
+        return item.id;
+      }
+    }
+  }
+  return '';
+}
 const selectEntityColumnOptions = ref<QueryTableColumnForm[]>([]);
 const getSelectEntityColumnOptions = async (value: string, params: PageQueryRequest = {
   enableStatus: 1, tableId: formData.value.typeExtra, ...routeParams.value
@@ -704,7 +715,7 @@ const getSelectEntityColumnOptions = async (value: string, params: PageQueryRequ
     if (formData.value.typeExtra) {
       const {data} = await queryTableColumns(params);
       selectEntityColumnOptions.value = data;
-      formData.value.defaultValue = value || "";
+      formData.value.defaultValue = value || getKeyId(data);
     } else {
       selectEntityColumnOptions.value = [];
     }
