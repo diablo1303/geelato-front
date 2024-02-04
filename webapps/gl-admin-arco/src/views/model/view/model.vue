@@ -171,7 +171,7 @@
               <a-form-item :label="$t('model.view.index.form.entity.columnIds')"
                            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
                            field="columnIds">
-                <a-select v-if="pageData.button" v-model="entityData.columnIds" allow-search multiple>
+                <a-select v-model="entityData.columnIds" allow-search multiple>
                   <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
                 </a-select>
               </a-form-item>

@@ -250,6 +250,7 @@ export default {
   'searchTable.columns.operations.add': '添加',
   'searchTable.columns.operations.add.warning': '请至少选择一项！',
   'searchTable.columns.operations.addCom': '添加常用字段',
+  'searchTable.columns.operations.addModel': '添加模型字段',
   'searchTable.columns.operations.alter': '变更',
   'searchTable.columns.operations.alter.warning': '变更“字段标识”并同步至数据库',
   'searchTable.columns.operations.switch.tip': '隐藏基础字段如’id‘、’creator‘...',
