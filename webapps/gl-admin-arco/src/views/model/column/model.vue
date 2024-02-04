@@ -500,6 +500,7 @@ const generateFormData = (): QueryForm => {
     numericSigned: 0, // 是否有符号，默认有，若无符号，则需在type中增加：unsigned
     datetimePrecision: '', // datetime 时间类型
     enableStatus: 1, // 状态
+    delStatus: 0,
     linked: 0, // 链接
     description: '', // 描述
     isRefColumn: false,  // 1-外表字段，默认0

@@ -467,6 +467,16 @@ const customAddEntityClick = (ev?: MouseEvent) => {
     seqNo: 1,
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode,
+    deptId: '',
+    buId: '',
+    delStatus: 0,
+    updateAt: '',
+    updater: '',
+    updaterName: '',
+    createAt: '',
+    creator: '',
+    creatorName: '',
+    deleteAt: '',
   } as QueryTableColumnForm);
 }
 /**
