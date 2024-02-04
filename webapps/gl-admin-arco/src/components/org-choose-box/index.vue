@@ -6,8 +6,8 @@ export default {
 <script lang="ts" setup>
 import {ref, watch} from 'vue';
 import {QueryOrgForm, queryOrgsByParams} from '@/api/security';
-import OrgSelect from "@/components/org-choose-box/choose.vue";
 import {generateRandom} from "@/utils/strings";
+import OrgSelect from "./choose.vue";
 
 type QueryForm = QueryOrgForm;
 
@@ -102,7 +102,9 @@ const dataFormat = async () => {
             if (data && data.length > 0) {
               // eslint-disable-next-line no-restricted-syntax
               for (const item of data) {
-                tagData.value.push(item);
+                if (item.id === ids[i]) {
+                  tagData.value.push(item);
+                }
               }
             } else {
               tagData.value.push({id: ids[i], name: ids[i]} as QueryForm);
@@ -279,7 +281,7 @@ watch(() => modalVisible, () => {
   box-sizing: border-box;
   width: 100%;
   padding-right: 0px;
-  padding-left: 12px;
+  padding-left: 6px;
   color: var(--color-text-1);
   font-size: 14px;
   background-color: var(--color-fill-2);

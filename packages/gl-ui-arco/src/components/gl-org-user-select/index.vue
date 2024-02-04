@@ -1,12 +1,11 @@
 <script lang="ts">
 export default {
-  name: 'UserChooseBox'
+  name: 'GlOrgUserSelect'
 }
 </script>
 <script lang="ts" setup>
 import {ref, watch} from 'vue';
-import {QueryUserForm, queryUsersByParams} from '@/api/security';
-import {generateRandom} from "@/utils/strings";
+import {QueryUserForm, securityApi, utils} from "@geelato/gl-ui";
 import UserSelect from "./choose.vue";
 
 type QueryForm = QueryUserForm;
@@ -34,7 +33,7 @@ const props = defineProps({
   onlySelect: {type: Boolean, default: true},// 仅选择，不可输入
 });
 
-const key = ref(generateRandom());
+const key = ref(utils.gid());
 const modalVisible = ref(props.visible);
 // 输入框数据
 const tagData = ref<QueryForm[]>([]);
@@ -96,7 +95,7 @@ const dataFormat = async () => {
         }
       } else {
         try {
-          const {data} = await queryUsersByParams({ids: props.modelValue});
+          const {data} = await securityApi.queryUsersByParams({ids: props.modelValue});
           for (let i = 0; i < ids.length; i += 1) {
             if (data && data.length > 0) {
               // eslint-disable-next-line no-restricted-syntax
@@ -139,7 +138,7 @@ const tagDataFormat = () => {
  * @param ev
  */
 const editClick = (ev?: MouseEvent) => {
-  key.value = generateRandom();
+  key.value = utils.gid();
   modalData.value = [];
   arrayDataToData(tagData.value, modalData.value);
   modalVisible.value = true;
@@ -211,7 +210,7 @@ watch(() => props, async () => {
   await dataFormat();
   // 仅显示弹窗
   if (props.onlyModal) {
-    key.value = generateRandom();
+    key.value = utils.gid();
     arrayDataToData(tagData.value, modalData.value);
     modalVisible.value = props.visible;
   }
@@ -229,7 +228,7 @@ watch(() => modalVisible, () => {
     <span class="box-inner">
       <span v-for="(item,index) of tagData" :key="index" :title="item.name" class="box-data">
         {{ item.name }}
-        <icon-close v-if="!props.disabled" :title="$t('userChooseBox.index.delete')"
+        <GlIconfont type="gl-wrong" v-if="!props.disabled" title="删除"
                     class="data-close"
                     @click="deleteClick(item)"/>
       </span>
@@ -241,23 +240,21 @@ watch(() => modalVisible, () => {
     </span>
     <span class="box-mirror">{{ tagInput }}</span>
     <span v-if="!props.disabled" class="box-button">
-      <a-button :title="$t('userChooseBox.index.select')"
+      <a-button title="选择"
                 class="button-primary" type="dashed"
                 @click="editClick($event)">
-        <IconEdit/>
+        <GlIconfont type="gl-edit-square"/>
       </a-button>
-      <a-button :title="$t('userChooseBox.index.delete')"
+      <a-button title="删除"
                 class="button-delete" type="dashed"
                 @click="deleteAllClick($event)">
-        <IconDelete/>
+        <GlIconfont type="gl-delete"/>
       </a-button>
     </span>
   </span>
   <a-modal
       v-model:visible="modalVisible"
-      :cancel-text="$t('userChooseBox.index.modal.cancel')"
-      :ok-text="$t('userChooseBox.index.modal.confirm')"
-      :title="$t('userChooseBox.index.modal.title')"
+      cancel-text="关闭" ok-text="确定" title="用户选择"
       :width="`${layoutWidth}px`"
       title-align="start"
       @cancel="modalCancelClick($event)"
@@ -337,15 +334,6 @@ watch(() => modalVisible, () => {
         display: inline-block;
         cursor: pointer;
         line-height: 12px;
-      }
-
-      .data-close::after {
-        content: "";
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        background-color: gray;
-        border-radius: 50%;
       }
     }
 

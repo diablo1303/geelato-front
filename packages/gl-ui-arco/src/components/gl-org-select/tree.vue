@@ -6,11 +6,10 @@ export default {
 <script lang="ts" setup>
 import {computed, watch, ref, VNode} from 'vue';
 import {Message, TreeNodeData} from "@arco-design/web-vue";
-import {useI18n} from 'vue-i18n';
 import {useRoute} from "vue-router";
-import {QueryOrgForm, queryTrees} from '@/api/security';
+import {QueryOrgForm, securityApi} from "@geelato/gl-ui";
 
-interface OrgTreeNode extends TreeNodeData {
+class OrgTreeNode implements TreeNodeData {
   key?: string | number;
   title?: string;
   selectable?: boolean;
@@ -19,16 +18,15 @@ interface OrgTreeNode extends TreeNodeData {
   checkable?: boolean;
   draggable?: boolean;
   isLeaf?: boolean;
-  icon?: () => VNode;
-  switcherIcon?: () => VNode;
-  loadingIcon?: () => VNode;
-  dragIcon?: () => VNode;
+  icon?: () => VNode[];
+  switcherIcon?: () => VNode[];
+  loadingIcon?: () => VNode[];
+  dragIcon?: () => VNode[];
   children?: OrgTreeNode[];
   redundant?: QueryOrgForm
 }
 
 const route = useRoute();
-const {t} = useI18n();
 
 const emits = defineEmits(['update:modelValue', 'change']);
 const props = defineProps({
@@ -80,11 +78,11 @@ const originTreeData = computed(() => {
 /**
  * 接口，从数据库获取字典信息
  */
-const fetchOrgTree = async (params: QueryOrgForm = {pid: '0'} as unknown as QueryOrgForm): Promise<OrgTreeNode[]> => {
+const fetchOrgTree = async (pid: string): Promise<OrgTreeNode[]> => {
   let treeOptions: OrgTreeNode[] = [];
   try {
-    params.tenantCode = (route.params && route.params.tenantCode as string) || '';
-    const {data} = await queryTrees(params);
+    // params.tenantCode = (route.params && route.params.tenantCode as string) || '';
+    const {data} = await securityApi.queryTrees(pid);
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {
       treeOptions.push({
@@ -105,7 +103,7 @@ const fetchOrgTree = async (params: QueryOrgForm = {pid: '0'} as unknown as Quer
  */
 const loadMore = (nodeData: OrgTreeNode) => {
   return new Promise<void>((resolve) => {
-    fetchOrgTree({pid: `${nodeData.key}`} as unknown as QueryOrgForm).then((data) => {
+    fetchOrgTree(`${nodeData.key}`).then((data) => {
       nodeData.children = data;
     });
     resolve();
@@ -117,7 +115,7 @@ const loadMore = (nodeData: OrgTreeNode) => {
  */
 const refreshTreeOne = (data: OrgTreeNode[]) => {
   const rootParent = {
-    title: t('orgChooseBox.tree.root'),
+    title: '组织管理',
     key: '',
     selectable: props.rootSelected,
     checkable: false,
@@ -143,7 +141,7 @@ const refreshTreeOne = (data: OrgTreeNode[]) => {
  */
 const loadedPage = () => {
   searchKey.value = '';
-  fetchOrgTree().then((data) => {
+  fetchOrgTree('0').then((data) => {
     refreshTreeOne(data);
   });
 }
@@ -176,7 +174,7 @@ const treeClickSelected = (selectedKes: Array<string | number>, data: {
 }) => {
   if (props.maxCount > 1 && selectedKes.length > props.maxCount) {
     selectedKeys.value = selectedKeys.value.splice(0, props.maxCount);
-    Message.warning({content: t('orgChooseBox.tree.max.warn'), duration: 3 * 1000});
+    Message.warning({content: '超过最大选择量', duration: 3 * 1000});
     return;
   }
   emits("update:modelValue", selectedKeys.value);
@@ -198,7 +196,7 @@ const treeClickChecked = (checkedKeys: Array<string | number>, data: {
 }) => {
   if (props.maxCount > 1 && checkedKeys.length > props.maxCount) {
     selectedKeys.value = selectedKeys.value.splice(0, props.maxCount);
-    Message.warning({content: t('orgChooseBox.tree.max.warn'), duration: 3 * 1000});
+    Message.warning({content: '超过最大选择量', duration: 3 * 1000});
     return;
   }
   emits("update:modelValue", selectedKeys.value);
@@ -215,7 +213,7 @@ watch(() => props.modelValue, () => {
 </script>
 <template>
   <span class="tree-layout">
-    <a-input-search v-model="searchKey" :placeholder="$t('orgChooseBox.tree.search')" allow-clear
+    <a-input-search v-model="searchKey" placeholder="搜索" allow-clear
                     class="tree-search"/>
     <a-scrollbar :style="{overflow:'auto',height:`${props.height}px`}">
       <a-tree

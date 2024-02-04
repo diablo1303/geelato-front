@@ -4,13 +4,11 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {nextTick, reactive, ref, watch} from 'vue';
+import {nextTick, computed, reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
-import {TableColumnData, TableRowSelection, TableData, Message} from "@arco-design/web-vue";
-import {FilterUserForm as FilterForm, pageQueryUser as pageQueryList, QueryUserForm} from "@/api/security";
-import {columns, sexOptions, sourceOptions, typeOptions} from "@/views/security/user/searchTable";
-import {PageQueryFilter, PageQueryRequest} from "@/api/base";
+import {TableColumnData, TableRowSelection, TableData, Message, SelectOptionData} from "@arco-design/web-vue";
+import {QueryUserForm, securityApi} from "@geelato/gl-ui";
 import useLoading from "@/hooks/loading";
 import {Pagination} from "@/types/global";
 import cloneDeep from 'lodash/cloneDeep';
@@ -33,7 +31,7 @@ const cloneColumns = ref<Column[]>([]);
 const showColumns = ref<Column[]>([]);
 const basePagination: Pagination = {current: 1, pageSize: 50};
 const pagination = reactive({...basePagination,});
-const renderData = ref<PageQueryFilter[]>([]);
+const renderData = ref<QueryUserForm[]>([]);
 const scrollbar = ref(true);
 const scroll = {x: 2000, y: 285};
 const rowSelection = ref<TableRowSelection>({
@@ -46,23 +44,25 @@ const rowSelection = ref<TableRowSelection>({
   selectedRowKeys: []
 });
 // 搜索条件
-const generateFilterData = (): FilterForm => {
+const generateFilterData = () => {
   return {
-    id: '',
-    jobNumber: '',
-    name: '',
-    loginName: '',
-    enName: '',
-    orgId: '',
-    orgName: '',
-    sex: '',
-    source: '',
-    type: '',
-    createAt: [],
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    id: '', jobNumber: '', name: '', loginName: '', enName: '', orgId: '', orgName: '', sex: '', source: '', type: ''
   };
 };
 const filterData = ref(generateFilterData());
+const columns = computed<TableColumnData[]>(() => []);
+/* 0:female 女;1:male 男 */
+const sexOptions = computed<SelectOptionData[]>(() => [
+  {label: "女性", value: 0,}, {label: '男性', value: 1,}
+]);
+/* 0:员工账号|1:系统账号|2:企业外人员 */
+const typeOptions = computed<SelectOptionData[]>(() => [
+  {label: '员工账号', value: 0,}, {label: '系统账号', value: 1,}, {label: '企业外人员', value: 2,}
+]);
+/* 0:本地用户|1:系统同步 */
+const sourceOptions = computed<SelectOptionData[]>(() => [
+  {label: '本地用户', value: 0,}, {label: '系统同步', value: 1,}
+]);
 // 查询到的数据
 const depositData = ref<QueryUserForm[]>([]);
 
@@ -113,10 +113,10 @@ const setDepositData = (data: QueryUserForm[]) => {
  * 分页查询方法
  * @param params
  */
-const fetchData = async (params: PageQueryRequest = basePagination) => {
+const fetchData = async (params: Record<string, any>) => {
   setLoading(true);
   try {
-    const {data} = await pageQueryList(params);
+    const {data} = await securityApi.pageQueryUser(params);
     renderData.value = data.items;
     pagination.current = params.current;
     pagination.pageSize = basePagination.pageSize;
@@ -132,7 +132,7 @@ const fetchData = async (params: PageQueryRequest = basePagination) => {
  * 条件查询 - 搜索
  */
 const search = (ev?: Event) => {
-  fetchData({...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
+  fetchData({...basePagination, ...filterData.value,});
 };
 /**
  * 条件查询 - 重置
@@ -151,6 +151,15 @@ const onPageChange = (current: number) => {
   basePagination.current = current;
   search();
 };
+
+const getSelectOptionLabel = (value: string, options: SelectOptionData[]) => {
+  for (let i = 0; i < options.length; i += 1) {
+    if (value == options[i].value) {
+      return options[i].label;
+    }
+  }
+  return '';
+}
 
 /* 分页功能区 - 固定方法 */
 const handleChange = (checked: boolean | (string | boolean | number)[], column: Column, index: number) => {
@@ -245,41 +254,27 @@ watch(() => props.orgId, () => {
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label="$t('security.user.index.form.name')" field="name">
+            <a-form-item label="名称" field="name">
               <a-input v-model="filterData.name" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label="$t('security.user.index.form.loginName')" field="loginName">
+            <a-form-item label="登录名" field="loginName">
               <a-input v-model="filterData.loginName" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label="$t('security.user.index.form.jobNumber')" field="jobNumber">
+            <a-form-item label="工号" field="jobNumber">
               <a-input v-model="filterData.jobNumber" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label="$t('security.user.index.form.sex')" field="sex">
-              <a-select v-model="filterData.sex" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of sexOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value as string"/>
+            <a-form-item label="性别" field="sex">
+              <a-select v-model="filterData.sex" placeholder="全部">
+                <a-option v-for="item of sexOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
-          <!--          <a-col :span="12">
-                      <a-form-item :label="$t('security.user.index.form.type')" field="type">
-                        <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
-                          <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value as string"/>
-                        </a-select>
-                      </a-form-item>
-                    </a-col>-->
-          <!--          <a-col :span="12">
-                      <a-form-item :label="$t('security.user.index.form.source')" field="source">
-                        <a-select v-model="filterData.source" :placeholder="$t('searchTable.form.selectDefault')">
-                          <a-option v-for="item of sourceOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value as string"/>
-                        </a-select>
-                      </a-form-item>
-                    </a-col>-->
         </a-row>
       </a-form>
     </a-col>
@@ -288,15 +283,15 @@ watch(() => props.orgId, () => {
       <a-space :size="18" direction="vertical">
         <a-button type="primary" @click="search($event)">
           <template #icon>
-            <icon-search/>
+            <GlIconfont type='gl-search'/>
           </template>
-          {{ $t('searchTable.form.search') }}
+          查询
         </a-button>
         <a-button @click="reset($event)">
           <template #icon>
-            <icon-refresh/>
+            <GlIconfont type='gl-reset'/>
           </template>
-          {{ $t('searchTable.form.reset') }}
+          重置
         </a-button>
       </a-space>
     </a-col>
@@ -318,35 +313,35 @@ watch(() => props.orgId, () => {
       @selectAll="listSelectAll"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column :title="$t('security.user.index.form.index')" :width="60" align="center" data-index="index">
+      <a-table-column title="序号" :width="60" align="center" data-index="index">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.name')" :tooltip="true" :width="120" data-index="name"/>
-      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.loginName')" :tooltip="true" :width="120" data-index="loginName"/>
-      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.jobNumber')" :tooltip="true" :width="120" data-index="jobNumber"/>
-      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.orgName')" :tooltip="true" :width="200" data-index="orgName"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.mobilePhone')" :width="150" data-index="mobilePhone"></a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.email')" :tooltip="true" :width="200" data-index="email"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.post')" :width="120" data-index="post"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.sex')" :width="100" data-index="sex">
+      <a-table-column :ellipsis="true" title="名称" :tooltip="true" :width="120" data-index="name"/>
+      <a-table-column :ellipsis="true" title="登录名" :tooltip="true" :width="120" data-index="loginName"/>
+      <a-table-column :ellipsis="true" title="工号" :tooltip="true" :width="120" data-index="jobNumber"/>
+      <a-table-column :ellipsis="true" title="组织" :tooltip="true" :width="200" data-index="orgName"/>
+      <a-table-column :ellipsis="true" title="电话" :tooltip="true" :width="150" data-index="mobilePhone"/>
+      <a-table-column :ellipsis="true" title="邮箱" :tooltip="true" :width="200" data-index="email"/>
+      <a-table-column :ellipsis="true" title="邮箱" :tooltip="true" :width="120" data-index="post"/>
+      <a-table-column title="性别" :width="100" data-index="sex">
         <template #cell="{ record }">
-          {{ $t(`security.user.index.form.sex.${record.sex}`) }}
+          {{ getSelectOptionLabel(record.sex, sexOptions) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.type')" :width="120" data-index="status">
+      <a-table-column title="类型" :width="120" data-index="type">
         <template #cell="{ record }">
-          {{ $t(`security.user.index.form.type.${record.type}`) }}
+          {{ getSelectOptionLabel(record.sex, typeOptions) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.source')" :width="120" data-index="status">
+      <a-table-column title="来源" :width="120" data-index="source">
         <template #cell="{ record }">
-          {{ $t(`security.user.index.form.source.${record.source}`) }}
+          {{ getSelectOptionLabel(record.sex, sourceOptions) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.seqNo')" :width="100" data-index="seqNo"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.createAt')" :width="180" data-index="createAt"></a-table-column>
+      <a-table-column title="排序" :width="100" data-index="seqNo"/>
+      <a-table-column title="创建时间" :width="180" data-index="createAt"/>
     </template>
   </a-table>
 </template>
