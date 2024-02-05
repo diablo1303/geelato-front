@@ -500,6 +500,7 @@ const generateFormData = (): QueryForm => {
     numericSigned: 0, // 是否有符号，默认有，若无符号，则需在type中增加：unsigned
     datetimePrecision: '', // datetime 时间类型
     enableStatus: 1, // 状态
+    delStatus: 0,
     linked: 0, // 链接
     description: '', // 描述
     isRefColumn: false,  // 1-外表字段，默认0
@@ -695,6 +696,17 @@ const getSelectEntityOptions = async (params: PageQueryRequest = {
     console.log(err);
   }
 }
+const getKeyId = (data: QueryTableColumnForm[]): string => {
+  if (data && data.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      if (item.key === true || item.fieldName === 'id') {
+        return item.id;
+      }
+    }
+  }
+  return '';
+}
 const selectEntityColumnOptions = ref<QueryTableColumnForm[]>([]);
 const getSelectEntityColumnOptions = async (value: string, params: PageQueryRequest = {
   enableStatus: 1, tableId: formData.value.typeExtra, ...routeParams.value
@@ -703,7 +715,7 @@ const getSelectEntityColumnOptions = async (value: string, params: PageQueryRequ
     if (formData.value.typeExtra) {
       const {data} = await queryTableColumns(params);
       selectEntityColumnOptions.value = data;
-      formData.value.defaultValue = value || "";
+      formData.value.defaultValue = value || getKeyId(data);
     } else {
       selectEntityColumnOptions.value = [];
     }

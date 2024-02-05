@@ -206,6 +206,16 @@ export interface QueryTableColumnForm {
   tenantCode: string;
   synced: boolean | number;
   encrypted: boolean | number;
+  delStatus: number;
+  deptId?: string;
+  buId?: string;
+  updateAt?: string | string[];
+  updater?: string;
+  updaterName?: string;
+  createAt?: string | string[];
+  creator?: string;
+  creatorName?: string;
+  deleteAt?: string | string[];
 }
 
 export interface FilterTableColumnForm {

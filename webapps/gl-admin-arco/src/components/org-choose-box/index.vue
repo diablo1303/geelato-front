@@ -6,8 +6,8 @@ export default {
 <script lang="ts" setup>
 import {ref, watch} from 'vue';
 import {QueryOrgForm, queryOrgsByParams} from '@/api/security';
-import OrgSelect from "@/components/org-choose-box/choose.vue";
 import {generateRandom} from "@/utils/strings";
+import OrgSelect from "./choose.vue";
 
 type QueryForm = QueryOrgForm;
 
@@ -35,6 +35,7 @@ const props = defineProps({
   onlySelect: {type: Boolean, default: true},// 仅选择，不可输入
 });
 
+const selectKey = ref(generateRandom());
 const key = ref(generateRandom());
 const modalVisible = ref(props.visible);
 // 输入框数据
@@ -99,12 +100,18 @@ const dataFormat = async () => {
         try {
           const {data} = await queryOrgsByParams({ids: props.modelValue});
           for (let i = 0; i < ids.length; i += 1) {
+            let isQuery = false;
             if (data && data.length > 0) {
               // eslint-disable-next-line no-restricted-syntax
               for (const item of data) {
-                tagData.value.push(item);
+                if (item.id === ids[i]) {
+                  tagData.value.push(item);
+                  isQuery = true;
+                  break;
+                }
               }
-            } else {
+            }
+            if (!isQuery) {
               tagData.value.push({id: ids[i], name: ids[i]} as QueryForm);
             }
           }
@@ -202,7 +209,7 @@ const modalCancelClick = (ev?: MouseEvent) => {
 watch(() => tagInput, () => {
   setTimeout(() => {
     // @ts-ignore
-    const width = document.querySelector('span.box-mirror').offsetWidth;
+    const width = document.querySelector(`#tag-${selectKey.value}>.box-mirror`).offsetWidth;
     tagInputWidth.value = width > 12 ? width : 12;
   }, 10);
 }, {deep: true, immediate: true});
@@ -229,7 +236,7 @@ watch(() => modalVisible, () => {
 }, {deep: true, immediate: true});
 </script>
 <template>
-  <span v-if="!onlyModal" class="tag-box">
+  <span v-if="!onlyModal" :id="`tag-${selectKey}`" class="tag-box">
     <span class="box-inner">
       <span v-for="(item,index) of tagData" :key="index" :title="item.name" class="box-data">
         {{ item.name }}
@@ -279,7 +286,7 @@ watch(() => modalVisible, () => {
   box-sizing: border-box;
   width: 100%;
   padding-right: 0px;
-  padding-left: 12px;
+  padding-left: 6px;
   color: var(--color-text-1);
   font-size: 14px;
   background-color: var(--color-fill-2);
@@ -374,6 +381,7 @@ watch(() => modalVisible, () => {
       margin: 0;
       font-size: 100%;
       font-family: inherit;
+      background-color: #FFFFFF;
     }
   }
 

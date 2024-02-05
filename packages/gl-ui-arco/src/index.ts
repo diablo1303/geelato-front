@@ -45,6 +45,9 @@ import GlPageHelp from "./components/gl-page-help/GlPageHelp.vue";
 import GlPagination from "./components/gl-pagination/GlPagination.vue";
 import GlSpace from "./components/gl-space/GlSpace.vue";
 import GlSlot from "./components/gl-slot/GlSlot.vue";
+import GlOrgSelect from "./components/gl-org-select/index.vue";
+import GlOrgUserSelect from "./components/gl-org-user-select/index.vue";
+
 const i18nMessage = {en, cn}
 
 const component: Plugin = {
@@ -63,7 +66,7 @@ const component: Plugin = {
     Vue.component(GlIconfontSelect.name, GlIconfontSelect)
     Vue.component(GlDict.name, GlDict)
     Vue.component(GlPage.name, GlPage)
-    Vue.component(GlPageTemplateFlow.name,GlPageTemplateFlow)
+    Vue.component(GlPageTemplateFlow.name, GlPageTemplateFlow)
     Vue.component(GlLayoutSite.name, GlLayoutSite)
     Vue.component(GlLayoutPage.name, GlLayoutPage)
     Vue.component('GlEntityTablePlus', GlEntityTablePlus)
@@ -90,10 +93,12 @@ const component: Plugin = {
     Vue.component(GlUpload.name, GlUpload)
     Vue.component(GlImage.name, GlImage)
     Vue.component(GlImport.name, GlImport)
-    Vue.component(GlPageHelp.name,GlPageHelp)
-    Vue.component(GlPagination.name,GlPagination)
-    Vue.component(GlSpace.name,GlSpace)
-    Vue.component(GlSlot.name,GlSlot)
+    Vue.component(GlPageHelp.name, GlPageHelp)
+    Vue.component(GlPagination.name, GlPagination)
+    Vue.component(GlSpace.name, GlSpace)
+    Vue.component(GlSlot.name, GlSlot)
+    Vue.component(GlOrgSelect.name, GlOrgSelect);
+    Vue.component(GlOrgUserSelect.name, GlOrgUserSelect);
 
     Vue.component('GlRangePicker', RangePicker)
     Vue.component('GlModal', Modal)

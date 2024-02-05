@@ -1,4 +1,4 @@
-import {ComponentMeta, ComponentInstance} from "@geelato/gl-ui-schema";
+import {ComponentInstance, ComponentMeta} from "@geelato/gl-ui-schema";
 import ButtonMeta from "./setter-arco/button/ButtonMeta";
 import ButtonInstance from "./setter-arco/button/ButtonInstance";
 import RateMeta from "./setter-arco/rate/RateMeta";
@@ -71,7 +71,7 @@ import DictMeta from "./setter-arco/dict/dictMeta";
 import DynamicSelectMeta from "./setter-arco/select/DynamicSelectMeta";
 import EncodeMeta from "./setter-arco/encode/EncodeMeta";
 import RefPageMeta from "./setter-arco/page/RefPageMeta";
-import {commonPropsDataEntry, commonPropsOther, commonActions} from "./setter-arco/CommonProperties";
+import {commonActions, commonPropsDataEntry, commonPropsOther} from "./setter-arco/CommonProperties";
 import TextMeta from "./setter-arco/text/TextMeta";
 import AlertMeta from "./setter-arco/alert/AlertMeta";
 import MultiComponentsMeta from "./setter-arco/multiComponents/multiComponentsMeta";
@@ -90,17 +90,20 @@ import PageTemplateFlowMeta from "./setter-arco/page-template/PageTemplateFlowMe
 import PageTemplateFlowInstance from "./setter-arco/page-template/PageTemplateFlowInstance";
 import SpaceMeta from "./setter-arco/space/SpaceMeta";
 import SpaceInstance from "./setter-arco/space/SpaceInstance";
+import OrgSelectMeta from "./setter-arco/orgSelect/orgSelectMeta";
+import OrgUserSelectMeta from "./setter-arco/orgUserSelect/orgUserSelectMeta";
 
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [TextMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta,ASelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta,RangePickerMeta, SwitchMeta, TinymceMeta,UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta,ButtonMeta, GlButtonMeta, TableMeta, AlertMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta,LayoutPageMeta,
-    SpaceMeta,AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
-    CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
-    CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
-    StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TooltipMeta, EntityTreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta,LoopMeta,TemplateMeta, DividerMeta,
-    OpRecordMeta,BlocksMeta,FlowEditorMeta,PageTemplateFlowMeta
+const componentMetas: Array<ComponentMeta> = [TextMeta, FormMeta, InputMeta, InputNumberMeta, EncodeMeta, DictMeta, DynamicSelectMeta, SelectMeta, ASelectMeta, RadioGroupMeta, CheckboxGroupMeta, DatePickerMeta, TimePickerMeta, RangePickerMeta, SwitchMeta, TinymceMeta, UserSelectMeta, UploadMeta, TableSubMeta, TextAreaMeta, RateMeta, ColorMeta, MultiComponentsMeta, ButtonMeta, GlButtonMeta, TableMeta, AlertMeta, CalendarMeta, IconMeta, TypographyMeta, RowColLayoutMeta, LayoutPageMeta,
+  SpaceMeta, AffixMeta, BreadcrumbMeta, DropdownMeta, MenuMeta, PageHeaderMeta, PaginationMeta, StepsMeta, AutoCompleteMeta,
+  CascaderMeta, MentionsMeta, SliderMeta, TransferMeta, TreeSelectMeta, AvatarMeta, BadgeMeta, RefPageMeta,
+  CardMeta, CarouselMeta, CollapseMeta, CommentMeta, DescriptionsMeta, EmptyMeta, ImageMeta, ListMeta, PopoverMeta,
+  StatisticMeta, TabsMeta, TagMeta, TimelineMeta, TooltipMeta, EntityTreeMeta, PageMeta, DndPlaceholderMeta, VirtualMeta, HiddenAreaMeta, LoopMeta, TemplateMeta, DividerMeta,
+  OpRecordMeta, BlocksMeta, FlowEditorMeta, PageTemplateFlowMeta,
+  OrgSelectMeta, OrgUserSelectMeta
 ]
 // @ts-ignore
-const customInstances: Array<ComponentInstance> = [ButtonInstance,SpaceInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance, CascaderInstance,LayoutPageInstance,TemplateInstance,LoopInstance,PageTemplateFlowInstance]
+const customInstances: Array<ComponentInstance> = [ButtonInstance, SpaceInstance, TableInstance, TableSubInstance, CardInstance, HiddenAreaInstance, FormInstance, RowColLayoutInstance, RadioGroupInstance, CheckboxGroupGroupInstance, CascaderInstance, LayoutPageInstance, TemplateInstance, LoopInstance, PageTemplateFlowInstance]
 const componentInstances: Array<ComponentInstance> = []
 const dataEntryNameMap: { [key: string]: boolean } = {}
 // 不在sidebar中出现的组件
@@ -110,69 +113,69 @@ const dataEntryNameMap: { [key: string]: boolean } = {}
 const ignoreCommonPropertiesComponents = ['GlEntityTableSub', 'GlHiddenArea']
 // 对于没有个性化的实例，即没有个性编码配置的实例，采用以下程序构建的默认实例信息
 for (const index in componentMetas) {
-    const meta = componentMetas[index]
+  const meta = componentMetas[index]
 
-    //  设置僵入组件公共属性
-    if (meta.group === 'dataEntry') {
-        if (ignoreCommonPropertiesComponents.indexOf(meta.componentName) === -1) {
-            commonPropsDataEntry.forEach((commonProperty) => {
-                const foundProperty = meta.properties.find((property) => {
-                    return property.name === commonProperty.name
-                })
-                if (!foundProperty) {
-                    meta.properties.push(commonProperty)
-                }
-            })
+  //  设置僵入组件公共属性
+  if (meta.group === 'dataEntry') {
+    if (ignoreCommonPropertiesComponents.indexOf(meta.componentName) === -1) {
+      commonPropsDataEntry.forEach((commonProperty) => {
+        const foundProperty = meta.properties.find((property) => {
+          return property.name === commonProperty.name
+        })
+        if (!foundProperty) {
+          meta.properties.push(commonProperty)
         }
-    } else {
-        if (ignoreCommonPropertiesComponents.indexOf(meta.componentName) === -1) {
-            commonPropsOther.forEach((commonProperty) => {
-                const foundProperty = meta.properties.find((property) => {
-                    return property.name === commonProperty.name
-                })
-                if (!foundProperty) {
-                    meta.properties.push(commonProperty)
-                }
-            })
+      })
+    }
+  } else {
+    if (ignoreCommonPropertiesComponents.indexOf(meta.componentName) === -1) {
+      commonPropsOther.forEach((commonProperty) => {
+        const foundProperty = meta.properties.find((property) => {
+          return property.name === commonProperty.name
+        })
+        if (!foundProperty) {
+          meta.properties.push(commonProperty)
         }
-
+      })
     }
 
-    // 设置组件的加载完成事件
-    meta.actions = meta.actions || []
-    meta.actions.push(...commonActions)
+  }
+
+  // 设置组件的加载完成事件
+  meta.actions = meta.actions || []
+  meta.actions.push(...commonActions)
 
 
-    let inst = customInstances.find((item: ComponentInstance) => {
-        return item.componentName === meta.componentName
-    })
-    if (!inst) {
-        inst = new ComponentInstance()
-        inst.componentName = meta.componentName
-        inst.props = {
-            "label": meta.title,
-        }
-        inst.slots = {}
-        inst.children = []
+  let inst = customInstances.find((item: ComponentInstance) => {
+    return item.componentName === meta.componentName
+  })
+  if (!inst) {
+    inst = new ComponentInstance()
+    inst.componentName = meta.componentName
+    inst.props = {
+      "label": meta.title,
     }
+    inst.slots = {}
+    inst.children = []
+  }
 
-    // if (ignoreInstances.findIndex((componentMeta: ComponentMeta) => {
-    //     return meta.componentName === componentMeta.componentName
-    // }) !== -1) {
-    // }
+  // if (ignoreInstances.findIndex((componentMeta: ComponentMeta) => {
+  //     return meta.componentName === componentMeta.componentName
+  // }) !== -1) {
+  // }
 
-    componentInstances.push(inst)
-    // 设置input表单项
-    if (meta.group === 'dataEntry') {
-        dataEntryNameMap[meta.componentName] = true
-    }
+  componentInstances.push(inst)
+  // 设置input表单项
+  if (meta.group === 'dataEntry') {
+    dataEntryNameMap[meta.componentName] = true
+  }
 }
 /**
  * 检查组件是否为表单输入项
  * @param componentName
  */
 const isDataEntry = (componentName: string) => {
-    return !!dataEntryNameMap[componentName]
+  return !!dataEntryNameMap[componentName]
 }
 const schemaArco = {componentMetas, componentInstances}
 export {schemaArco, isDataEntry}

@@ -87,7 +87,43 @@
           </template>
           {{ $t('searchTable.operation.create') }}
         </a-button>
-        <a-select v-model:popup-visible="selectVisible"
+        <a-popover v-if="pageData.formState==='edit'" v-model:popup-visible="entityPopover" position="bottom" trigger="click" style="max-width: 400px">
+          <a-button size="medium" type="primary" @click="entityPopoverClick($event)">
+            <icon-plus/>
+            {{ $t('searchTable.columns.operations.addModel') }}
+          </a-button>
+          <template #content>
+            <a-form ref="validateEntityForm" :label-col-props="{ span: 6 }" :model="entityData" :wrapper-col-props="{ span: 18 }" class="form2">
+              <a-row :gutter="16">
+                <a-col :span="24">
+                  <a-form-item :label="$t('model.view.index.form.entity.tableId')"
+                               :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                               field="tableId">
+                    <a-select v-model="entityData.tableId" allow-search @change="entityChange">
+                      <a-option v-for="item of selectEntityOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.id"/>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :span="24">
+                  <a-form-item :label="$t('model.view.index.form.entity.columnIds')"
+                               :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                               field="columnIds">
+                    <a-select v-model="entityData.columnIds" allow-search multiple>
+                      <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+              </a-row>
+            </a-form>
+            <a-divider style="margin: 5px 0px"/>
+            <a-space style="display: flex;align-items: center;justify-content: end;">
+              <a-button size="medium" type="primary" @click="entitySubmitClick($event)">
+                {{ $t('searchTable.columns.operations.add') }}
+              </a-button>
+            </a-space>
+          </template>
+        </a-popover>
+        <a-select v-if="pageData.formState==='edit'" v-model:popup-visible="selectVisible"
                   v-model="commonSelectData"
                   multiple scrollbar allow-search
                   :placeholder="$t('searchTable.form.selectDefault')">
@@ -295,7 +331,7 @@ import useLoading from '@/hooks/loading';
 // 分页列表
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue';
-import {Message, Notification} from "@arco-design/web-vue";
+import {FormInstance, Message, Notification} from "@arco-design/web-vue";
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
@@ -306,7 +342,9 @@ import {
   insertCommonColumns,
   pageQueryTableColumns as pageQueryList,
   QueryTableColumnForm,
-  queryTableColumns
+  queryTableColumns,
+  QueryTableForm,
+  queryTables
 } from '@/api/model';
 import {
   columns,
@@ -585,9 +623,75 @@ watch(() => columns.value, (val) => {
   {deep: true, immediate: true}
 );
 
+/**
+ * 添加，模型字段
+ */
+const validateEntityForm = ref<FormInstance>();
+const entityPopover = ref(false);
+const entityData = ref({tableId: '', columnIds: []});
+const selectEntityOptions = ref<QueryTableForm[]>([]);
+const getSelectEntityOptions = async (params: PageQueryRequest = {
+  enableStatus: 1,
+  tableType: 'table', ...routeParams.value
+} as unknown as PageQueryRequest) => {
+  try {
+    const {data} = await queryTables(params);
+    selectEntityOptions.value = data;
+  } catch (err) {
+    selectEntityOptions.value = [];
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+const selectEntityColumnOptions = ref<QueryTableColumnForm[]>([]);
+const getSelectEntityColumnOptions = async (params: PageQueryRequest = {
+  enableStatus: 1, tableId: entityData.value.tableId, ...routeParams.value
+} as unknown as PageQueryRequest) => {
+  try {
+    if (entityData.value.tableId) {
+      const {data} = await queryTableColumns(params);
+      selectEntityColumnOptions.value = data;
+    } else {
+      selectEntityColumnOptions.value = [];
+    }
+  } catch (err) {
+    selectEntityColumnOptions.value = [];
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+
+const entityChange = (value?: string) => {
+  entityData.value.columnIds = [];
+  selectEntityColumnOptions.value = [];
+  getSelectEntityColumnOptions();
+}
+const entityPopoverClick = async (ev?: MouseEvent) => {
+  entityData.value = {tableId: "", columnIds: []};
+  await validateEntityForm.value?.resetFields();
+  entityPopover.value = true;
+}
+const entitySubmitClick = async (ev?: MouseEvent) => {
+  const res = await validateEntityForm.value?.validate();
+  if (!res) {
+    try {
+      await insertCommonColumns({
+        tableId: pageData.value.params.pId || '',
+        tableName: pageData.value.params.pName || '',
+        columnIds: entityData.value.columnIds.join(",") || ''
+      });
+      entityPopover.value = false;
+      reset();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+}
+
 /* 对外调用方法 */
 const loadList = (urlParams: ListUrlParams) => {
   getSelectDictionaryOptions();
+  getSelectEntityOptions();
 
   pageData.value.formState = urlParams.action || 'edit';
   pageData.value.isModal = urlParams.isModal || false;

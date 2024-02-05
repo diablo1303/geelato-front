@@ -5,8 +5,8 @@ export default {
 </script>
 <script lang="ts" setup>
 import {ref, watch} from 'vue';
-import {QueryOrgForm, QueryUserForm} from "@/api/security";
-import OrgTree from "@/components/org-choose-box/tree.vue";
+import {QueryOrgForm} from "@/api/security";
+import OrgTree from "./tree.vue";
 
 type QueryForm = QueryOrgForm;
 

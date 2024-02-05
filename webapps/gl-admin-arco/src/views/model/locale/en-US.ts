@@ -252,6 +252,7 @@ export default {
   'searchTable.columns.operations.add': 'Add',
   'searchTable.columns.operations.add.warning': 'Please select at least one item! ',
   'searchTable.columns.operations.addCom': 'Add Common Column',
+  'searchTable.columns.operations.addModel': 'Add Model Column',
   'searchTable.columns.operations.alter': 'Alter',
   'searchTable.columns.operations.alter.warning': 'Alter “name” and synchronize it to the database',
   'searchTable.columns.operations.switch.tip': 'Hide basic fields such as ‘id’、‘creator’...',
