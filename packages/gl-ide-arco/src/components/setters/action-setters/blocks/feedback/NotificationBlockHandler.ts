@@ -13,7 +13,7 @@ export default class NotificationBlockHandler implements IBlockHandler {
       `
             $gl.fn.notification.${method}({
                 title:${propsExpressions?.title || "'" + (props.title || '') + "'"},
-                content:${propsExpressions?.content || "'" + props.content + "'"}
+                content:${propsExpressions?.content || "'" + (props.content||'') + "'"}
                 })
             `
     )

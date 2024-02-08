@@ -948,13 +948,25 @@ export default {
     {
       name: 'getColumnSum',
       title: '获取单个列的求和',
-      description: '获取多个列的求和,输入参数“列名”，返回数值',
+      description: '获取多个列的求和,输入参数“{dataIndex:列名1}”，返回数值',
       params: []
     },
     {
       name: 'getColumnsSum',
       title: '获取多个列的求和',
-      description: '获取多个列的求和,输入参数[列名1,列名2]，返回{列名1:值1,列名2:值2}',
+      description: '获取多个列的求和,输入参数[{dataIndex:列名1},{dataIndex:列名2}]，返回{列名1:值1,列名2:值2}',
+      params: []
+    },
+    {
+      name: 'getColumnJoin',
+      title: '获取列值拼接字符串',
+      description: '获取列值拼接字符串，空值被排除,输入参数"{dataIndex:列名1}"，返回“值1,值2”',
+      params: []
+    },
+    {
+      name: 'getColumnGroupSum',
+      title: '分组求和',
+      description: '分组求和，输入参数[{groupDataIndex:列名1},{sumDataIndex:列名2}],返回{groupName1:value1,groupName2:value2}',
       params: []
     },
     {

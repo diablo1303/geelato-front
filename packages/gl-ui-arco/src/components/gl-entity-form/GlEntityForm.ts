@@ -47,6 +47,8 @@ export interface ValidatedError {
   type: string
   isRequiredError: boolean
   message: string
+  // 列表时，附上列表记录
+  records?:any
 }
 
 /**

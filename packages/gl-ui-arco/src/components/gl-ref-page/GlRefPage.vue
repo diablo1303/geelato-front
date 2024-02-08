@@ -27,7 +27,16 @@ const props = defineProps({
   },
   // 引用的页面地址
   pageSrc: String,
-  //
+  /**
+   *  页面状态默认为read
+   *  注意在给页面添加类似pageStatus的属性时，为了确保打开页面时有传该值进来，需处理如下：
+   */
+  pageStatus: {
+    type: String,
+    default() {
+      return 'read'
+    }
+  },
   // 引用平台的页面所属的应用Id
   appId: String,
   // 引用平台的页面，页面的extendId
@@ -98,7 +107,7 @@ defineExpose({ refresh })
       <div v-if="!extendId">
         <a-alert type="error"> 未配置页面 </a-alert>
       </div>
-      <GlPageViewer v-if="extendId" :pageProps="{ params }" v-bind="props"></GlPageViewer>
+      <GlPageViewer v-if="extendId" :pageProps="{ params }" v-bind="props" :pageStatus="pageStatus"></GlPageViewer>
     </template>
   </div>
 </template>

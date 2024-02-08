@@ -39,7 +39,8 @@ import {
   FormProvideKey,
   FormProvideProxy,
   EntitySaver,
-  GetEntitySaversResult
+  GetEntitySaversResult,
+  utils
 } from '@geelato/gl-ui'
 import { getFormParams, type ValidatedError } from './GlEntityForm'
 
@@ -461,17 +462,18 @@ const getEntitySavers = async () => {
   // 再进一步进行表单数据项值校验
   const validateResult = await validate()
   // 验证子表单（Form表单、可编辑列表表单等），若存在则验证
-  let subFormValidError = false
+  let subFormValidateMessage = ''
+  let subValidateResults = {}
   for (const instId of subFormInstIds.value) {
     const validateFn = pageProvideProxy.getMethod(instId, 'validate')
     if (typeof validateFn === 'function') {
-      const validateData = await validateFn()
+      const subValidateResult = await validateFn()
       console.log(
         'GlEntityForm > getEntitySavers() > subForm(' + instId + ') validate',
-        validateData
+        subValidateResult
       )
-      if (validateData) {
-        subFormValidError = true
+      if (subValidateResult) {
+        Object.assign(subValidateResults, subValidateResult)
       }
     }
   }
@@ -481,8 +483,9 @@ const getEntitySavers = async () => {
   // 数据验证
   if (validateResult) {
     result.message = '验证表单' + props.bindEntity?.entityName + '不通过'
-  } else if (subFormValidError) {
-    result.message = '验证表单' + props.bindEntity?.entityName + '的子表单不通过'
+  } else if (Object.keys(subValidateResults).length > 0) {
+    result.message = '验证表单' + props.glComponentInst.props.label + '的子表单不通过'
+    result.validateResult = subValidateResults
   } else {
     // 获取savers对象
     const savers = createEntitySavers(entityRecordId.value)
@@ -530,7 +533,7 @@ const submitForm = async () => {
       content.push(err.label)
     })
     global.$notification.error({
-      title: '以下字段验证不通过',
+      title: '以下内容验证不通过',
       content: `${content.join(',')}`
     })
     return false

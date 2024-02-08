@@ -1,8 +1,6 @@
 /**
- *  在GlEntityForm组件的所有子组件中注入的对象
+ *  在GlEntityForm组件的所有子组件中注入的对象，每个组件new一个FormProvideProxy对象
  */
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
-import type {ComponentInternalInstance} from "vue";
 import {ref} from "vue";
 
 export type FormParamType = { pName: string, pValue: any, pType: string }
@@ -25,7 +23,7 @@ export default class FormProvideProxy {
 
     /**
      * 设置整个表单的值
-     * @param state
+     * @param formValues
      */
     setValues(formValues: any) {
         this.state = formValues

@@ -295,7 +295,7 @@ export const genShowColumns = (
   queryColumns: Ref<GlTableColumn[]>,
   options?: GenShowColumnOptions
 ) => {
-  console.log('genShowColumns options:', options)
+  // console.log('genShowColumns options:', options)
   const cols: Array<GlTableColumn> = []
   // 默认需要展示序号列，但不默认展示
   // if (options?.showSeqColumn !== false) {
@@ -573,4 +573,33 @@ export const useFetchData = (
       }
     )
   }
+}
+
+export enum RecordPushStatus {
+  ToDelete = 'ToDelete',
+  ToAdd = 'ToAdd',
+  None = 'None'
+}
+
+export const RecordPushStatusNames  = {
+  ToDelete : '待删除',
+  ToAdd : '待新增',
+  None : '-'
+}
+
+/**
+ * 获取记录状态
+ * @param key
+ */
+export const getRecordPushStatus = (
+  key: string,
+  pushedRecordKeys?: string[],
+  unPushedRecordKeys?: string[]
+) => {
+  if (unPushedRecordKeys?.includes(key)) {
+    return RecordPushStatus.ToDelete
+  } else if (pushedRecordKeys?.includes(key)) {
+    return RecordPushStatus.ToAdd
+  }
+  return RecordPushStatus.None
 }

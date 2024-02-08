@@ -25,7 +25,9 @@ import {
   genSlotColumnsWithNoOperation,
   genQueryColumns,
   SlotNameSeq,
-  SlotNameRecordStatus
+  SlotNameRecordStatus,
+  getRecordPushStatus,
+  RecordPushStatusNames
 } from './table'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
@@ -88,8 +90,8 @@ const props = defineProps({
       return false
     }
   },
-  pushedRecordKeys: Array,
-  unPushedRecordKeys: Array,
+  pushedRecordKeys: Array as PropType<string[]>,
+  unPushedRecordKeys: Array as PropType<string[]>,
   ...mixins.subFormProps,
   // isLogicDeleteMode: {
   //   type: Boolean,
@@ -385,12 +387,9 @@ const getRef = () => {
  * @param key
  */
 const getRecordStatus = (key: string) => {
-  if (props.unPushedRecordKeys?.includes(key)) {
-    return '待删除'
-  } else if (props.pushedRecordKeys?.includes(key)) {
-    return '待新增'
-  }
-  return '-'
+  return RecordPushStatusNames[
+    getRecordPushStatus(key, props.pushedRecordKeys, props.unPushedRecordKeys)
+  ]
 }
 
 defineExpose({

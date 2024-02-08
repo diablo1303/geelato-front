@@ -32,6 +32,7 @@ import { Schema } from 'b-validate'
 import { evalColorExpression, evalExpression, exchangeArray, logicDeleteFieldName } from './table'
 import { mixins } from '@geelato/gl-ui'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
+import type { ValidatedError } from '@/components/gl-entity-form/GlEntityForm'
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal
 // fetch 加载完成数据之后
@@ -519,7 +520,21 @@ const validate = async () => {
       // 无异常
     }
   }
-  if(error)return resultList
+  if (error) {
+    let validatedError: ValidatedError = {
+      label: props.glComponentInst.props.base.label || '列表',
+      field: props.glComponentInst.props.id,
+      value: '',
+      type: '',
+      isRequiredError: false,
+      message: '验证列表“' + props.glComponentInst.props.base.label + '”不通过',
+      // 列表时，附上列表记录
+      records: resultList
+    }
+    return {
+      [validatedError.label]: validatedError
+    }
+  }
   return null
 }
 
@@ -618,7 +633,11 @@ defineExpose({
     </template>
     <template ##="{ record, rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
-        <a-button type="text" size="small" @click="copyRecord(record, rowIndex)" :disabled="isPageRead"
+        <a-button
+          type="text"
+          size="small"
+          @click="copyRecord(record, rowIndex)"
+          :disabled="isPageRead"
           >复制
         </a-button>
         <a-button
@@ -655,9 +674,13 @@ defineExpose({
             dataIndex: column.dataIndex,
             cellLastValue: renderData[rowIndex][column.dataIndex]
           }"
-          :disabled="isPageRead||column._component?.props?.readonly||column._component?.props?.disabled"
+          :disabled="
+            isPageRead || column._component?.props?.readonly || column._component?.props?.disabled
+          "
         ></GlComponent>
-                <span class="gl-validate-message">{{ tableErrors[rowIndex]?.[column.dataIndex]?.message }}</span>
+        <span class="gl-validate-message">{{
+          tableErrors[rowIndex]?.[column.dataIndex]?.message
+        }}</span>
       </div>
     </template>
   </a-table>

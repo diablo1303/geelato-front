@@ -313,7 +313,7 @@ const deleteRecord = (params: Record<string, any>) => {
 }
 
 /**
- * 删除行，并刷新
+ * 删除行，并刷新，删除前进行确认
  * @param params
  */
 const deleteRecordWithConfirm = (params: Record<string, any>) => {
@@ -997,9 +997,7 @@ const getColumnSum = (params: { dataIndex: string }) => {
   // 正值部分
   getRenderRecords()?.forEach((record: Record<string, any>) => {
     // 排除push部分，避免重复计算
-    // if (!pushedRecordKeys.value.includes(record[EntityDataSource.ConstObject.keyFiledName])) {
     sum += record[params.dataIndex] || 0
-    // }
   })
   // 负值部分
   getUnPushedRecords()?.forEach((record: Record<string, any>) => {
@@ -1023,11 +1021,9 @@ const getColumnsSum = (params: { dataIndexes: string[] }) => {
   // 正值部分
   getRenderRecords()?.forEach((record: Record<string, any>) => {
     // 排除push部分，避免重复计算
-    // if (!pushedRecordKeys.value.includes(record[EntityDataSource.ConstObject.keyFiledName])) {
     params.dataIndexes.forEach((key: string) => {
       sum[key] += record[key] || 0
     })
-    // }
   })
   // 负值部分
   getUnPushedRecords()?.forEach((record: Record<string, any>) => {
@@ -1036,6 +1032,74 @@ const getColumnsSum = (params: { dataIndexes: string[] }) => {
     })
   })
   return sum
+}
+
+/**
+ *  获取渲染的记录中排除掉unPush的部分
+ */
+const getRenderRecordsWithOutUnPushed = () => {
+  const result: Record<string, any>[] = []
+  getRenderRecords()?.forEach((record: Record<string, any>) => {
+    const foundIndex = getUnPushedRecords()?.findIndex((unPushedRecord: Record<string, any>) => {
+      return (
+        unPushedRecord[EntityDataSource.ConstObject.keyFiledName] ===
+        record[EntityDataSource.ConstObject.keyFiledName]
+      )
+    })
+    if (foundIndex < 0) {
+      result.push(record)
+    }
+  })
+  return result
+}
+
+/**
+ *  获取单列内容数据组，并且去掉空值
+ *  依据push和unPush的状态进行构建
+ */
+const getColumnAry = (params: { dataIndex: string }) => {
+  if (!params || !params.dataIndex) {
+    console.error('getColumnJoin的参数不正确,格式应为：{ dataIndex: string}，实为：', params)
+    throw new Error('getColumnJoin的参数不正确,格式应为：{ dataIndex: string}')
+  }
+  let ary = new Set()
+  // 正值部分
+  getRenderRecordsWithOutUnPushed()?.forEach((record: Record<string, any>) => {
+    if (!utils.isEmpty(record[params.dataIndex])) {
+      ary.add(record[params.dataIndex])
+    }
+  })
+  return ary
+}
+const getColumnJoin = (params: { dataIndex: string; separator?: string }) => {
+  let ary = Array.from(getColumnAry(params))
+  return ary.join(params?.separator || ',')
+}
+
+/**
+ *  分组求和
+ *  依据push和unPush的状态进行计算，unpush的需要减掉push的需要增加
+ */
+const getColumnGroupSum = (params: { groupDataIndex: string; sumDataIndex: string }) => {
+  if (!params || !params.groupDataIndex || !params.sumDataIndex) {
+    console.error(
+      'getColumnSum的参数不正确,格式应为：{ groupDataIndex: string,sumDataIndex:string }，实为：',
+      params
+    )
+    throw new Error(
+      'getColumnSum的参数不正确,格式应为：{ groupDataIndex: string,sumDataIndex:string }'
+    )
+  }
+  // {groupName1:value1,groupName2:value2}
+  let groupSum: { [key: string]: number } = {}
+  getRenderRecordsWithOutUnPushed()?.forEach((record: Record<string, any>) => {
+    const groupName = record[params.groupDataIndex]
+    if (groupSum[groupName] == undefined) {
+      groupSum[groupName] = 0
+    }
+    groupSum[groupName] += record[params.sumDataIndex] || 0
+  })
+  return groupSum
 }
 
 defineExpose({
@@ -1068,6 +1132,8 @@ defineExpose({
   getRenderColumns,
   getColumnSum,
   getColumnsSum,
+  getColumnJoin,
+  getColumnGroupSum,
   hasRenderRecords,
   hasSelectedRecords,
   hasUnSaveRecords,
@@ -1150,15 +1216,17 @@ defineExpose({
             </a-dropdown>
           </a-button-group>
 
+          <a-tooltip v-if="selectedKeys.length" content="当前列表已选择的记录数">
+            <span class="action-icon"> 已选<a-badge :count="selectedKeys.length" /> </span>
+          </a-tooltip>
+
           <a-tooltip
             v-if="pushedRecordKeys.length"
             content="从外部的同类列表中，选择加入的记录数，多次加入相同的记录key(id)，会被去重忽略。"
           >
             <span class="action-icon"> 已加入<a-badge :count="pushedRecordKeys.length" /> </span>
           </a-tooltip>
-          <a-tooltip v-if="selectedKeys.length" content="当前列表已选择的记录数">
-            <span class="action-icon"> 已选<a-badge :count="selectedKeys.length" /> </span>
-          </a-tooltip>
+
           <a-tooltip v-if="true" :content="t('searchTable.actions.columnSetting')">
             <a-popover trigger="click" position="br" @popup-visible-change="popupVisibleChange">
               <div class="action-icon">
