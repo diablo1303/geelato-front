@@ -1,5 +1,5 @@
 <template>
-  <a-tooltip :content="currentMethodMeta?.description"  background-color="#3491FA">
+  <a-tooltip :content="currentMethodMeta?.description||'该方法无描述信息'"  background-color="#3491FA">
     <a-select size="small" v-model="mv" allow-search allow-clear>
       <a-option v-for="methodMeta in componentMeta?.methods" :value="methodMeta.name"
         >{{ methodMeta.title + ' ' + methodMeta.name }}
