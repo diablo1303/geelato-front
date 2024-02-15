@@ -113,7 +113,7 @@ export default class PageProvideProxy {
   }
 
   addPageMountedEvent(fn: Function) {
-    const id = utils.gid()
+    const id = utils.gid('id')
     this.onPageMountedEvents.push({ id, fn })
     return id
   }

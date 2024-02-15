@@ -23,14 +23,14 @@ const props = defineProps({
 })
 
 const mv = ref(props.content)
-const refreshKey = ref(utils.gid())
+const refreshKey = ref(utils.gid('id'))
 watch(
   () => {
     return props.content
   },
   () => {
     mv.value = props.content
-    refreshKey.value = utils.gid()
+    refreshKey.value = utils.gid('id')
   }
 )
 

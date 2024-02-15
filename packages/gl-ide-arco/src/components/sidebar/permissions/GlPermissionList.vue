@@ -67,7 +67,7 @@ const onRoleMenuItemsCancel = () => {
     <a-modal fullscreen v-model:visible="visibleRoleMenuItems"
              @ok="onRoleMenuItemsOk" @cancel="onRoleMenuItemsCancel"
              ok-text="保存"
-             :key="utils.gid()"
+             :key="utils.gid('id')"
              draggable>
       <template #title>
         角色可访问页面权限配置

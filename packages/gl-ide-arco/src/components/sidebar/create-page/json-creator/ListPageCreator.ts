@@ -225,8 +225,8 @@ const useColumnActionsInst = (
 ) => {
   const tablePageId = '${createPage.tablePageExtendId}'
   const formPageId = options.pageInfo.pageExtendId
-  const paramFormId = utils.gid()
-  const paramPageStatusId = utils.gid()
+  const paramFormId = utils.gid('id')
+  const paramPageStatusId = utils.gid('id')
   const actions: any[] = []
   actions.push({
     id: utils.gid('btn'),

@@ -35,7 +35,7 @@
                   "fieldName": "{{item.id}}"
                 }
               },
-              "id": "{{utils.gid()}}"
+              "id": "{{utils.gid('id')}}"
             }
           }
         ],
@@ -45,7 +45,7 @@
           "rightColSpan": 12,
           "leftItems": [
             {
-              "id": "{{utils.gid()}}",
+              "id": "{{utils.gid('id')}}",
               "title": "",
               "componentName": "AButton",
               "group": "",

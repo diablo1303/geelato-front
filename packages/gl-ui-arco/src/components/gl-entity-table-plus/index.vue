@@ -286,10 +286,10 @@ const addRow = () => {
 const selectedKeys: Ref<string[]> = ref([])
 
 /**
- * 删除行，并刷新
+ * 基于记录id，删除行，并刷新
  * @param params
  */
-const deleteRecord = (params: Record<string, any>) => {
+const deleteRecord = (params: { id: string }) => {
   // console.log('deleteRecord() > params:', params)
   if (!params || !params.id) {
     global.$notification.error({ content: '删除失败，未配置参数id。' })
@@ -316,7 +316,7 @@ const deleteRecord = (params: Record<string, any>) => {
  * 删除行，并刷新，删除前进行确认
  * @param params
  */
-const deleteRecordWithConfirm = (params: Record<string, any>) => {
+const deleteRecordWithConfirm = (params: { id: string }) => {
   if (!params || !params.id) {
     global.$notification.error({ content: '删除失败，未配置参数id。' })
     return false
@@ -334,11 +334,11 @@ const deleteRecordWithConfirm = (params: Record<string, any>) => {
 
 /**
  * 删除已选择的行，并刷新
- * @param withConfirm 是否带确认提醒，默认为否
+ * @param params 是否带确认提醒，默认为否
  */
-const deleteSelectedRecords = (withConfirm?: boolean) => {
+const deleteSelectedRecords = (params: { withConfirm?: boolean }) => {
   if (selectedKeys.value && selectedKeys.value.length > 0) {
-    if (withConfirm === true) {
+    if (params?.withConfirm === true) {
       global.$modal.confirm({
         width: '15em',
         title: '危险操作',
@@ -363,7 +363,7 @@ const deleteSelectedRecords = (withConfirm?: boolean) => {
  * 删除已选择的行，并刷新，带删除确认提醒
  */
 const deleteSelectedRecordsWithConfirm = () => {
-  return deleteSelectedRecords(true)
+  return deleteSelectedRecords({ withConfirm: true })
 }
 
 /**
@@ -660,7 +660,7 @@ const getLastSelectedRecord = () => {
  *
  * @param params 返回false进的提示信息，有配置则提示，没有配置则不提示
  */
-const hasSelectedRecords = (params: { enableAlert: boolean; content: string }) => {
+const hasSelectedRecords = (params: { enableAlert?: boolean; content?: string }) => {
   if (getSelectedRecords().length > 0) {
     return true
   } else {

@@ -1,5 +1,6 @@
 import type IPropertySetterMeta from "./IPropertySetterMeta";
 import type {ActionMeta} from "./actions/Action";
+import type {MethodMeta} from "./actions/Action";
 
 /**
  *  记录组件中哪些信息需要进行多语言配置
@@ -37,7 +38,7 @@ export default class ComponentMeta {
     actions?: Array<ActionMeta> = []
 
     // 组件方法，对应组件defineExpose的内容
-    methods?: Array<ActionMeta> = []
+    methods?: Array<MethodMeta> = []
 
     // 引用的组件名称，如AButton
     // componentRefName: String

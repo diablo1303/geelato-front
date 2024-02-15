@@ -69,7 +69,8 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '是否为子表',
           setterComponentName: 'ASwitch',
-          description: '表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容，常用于主表关联已存在的子表记录；选是时，会出一列：记录状态，用于标记数据行的状态。',
+          description:
+            '表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容，常用于主表关联已存在的子表记录；选是时，会出一列：记录状态，用于标记数据行的状态。',
           setterDefaultValue: false
         },
         {
@@ -83,7 +84,8 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '显示查询',
           setterComponentName: 'ASwitch'
-        },{
+        },
+        {
           name: 'hideReset',
           group: 'base',
           type: 'props',
@@ -156,7 +158,7 @@ export default {
           title: '显示分页',
           setterComponentName: 'ASwitch',
           setterDefaultValue: true,
-          description: '如果为显示时，可以在分页专项配置中进行详细配置；如果为否，则不显示',
+          description: '如果为显示时，可以在分页专项配置中进行详细配置；如果为否，则不显示'
         },
         {
           name: 'tablePadding',
@@ -698,7 +700,7 @@ export default {
           description: '默认每页展示的数据条数',
           title: '每页记录数',
           setterComponentName: 'AInputNumber',
-          setterDefaultValue: 15,
+          setterDefaultValue: 15
         },
         {
           name: 'hideOnSinglePage',
@@ -886,7 +888,11 @@ export default {
     { name: 'columnResize', title: '调整列宽', description: '调整列宽时触发' },
     { name: 'pushRecords', title: '给列表引用增加记录', description: '给列表引用增加记录时触发' },
     { name: 'unPushRecords', title: '移除列表引用记录', description: '移除列表引用记录时触发' },
-    { name: 'pushOrUnPushRecords', title: '添加或移除列表引用记录', description: '添加或移除列表引用记录时触发' }
+    {
+      name: 'pushOrUnPushRecords',
+      title: '添加或移除列表引用记录',
+      description: '添加或移除列表引用记录时触发'
+    }
   ],
   methods: [
     { name: 'refresh', title: '刷新', description: '刷新表格', params: [] },
@@ -949,59 +955,138 @@ export default {
       name: 'getColumnSum',
       title: '获取单个列的求和',
       description: '获取多个列的求和,输入参数“{dataIndex:列名1}”，返回数值',
-      params: []
+      params: [
+        {
+          name: 'dataIndex',
+          title: '字段名',
+          required: true,
+          type: 'string',
+          description: '需要求和的字段名称'
+        }
+      ]
     },
     {
       name: 'getColumnsSum',
       title: '获取多个列的求和',
-      description: '获取多个列的求和,输入参数[{dataIndex:列名1},{dataIndex:列名2}]，返回{列名1:值1,列名2:值2}',
-      params: []
+      description:
+        '获取多个列的求和,输入参数[{dataIndex:列名1},{dataIndex:列名2}]，返回{列名1:值1,列名2:值2}',
+      params: [
+        {
+          name: 'dataIndexes',
+          title: '字段名数组',
+          required: true,
+          type: 'string[]',
+          description: '需要求和的字段名数组'
+        }
+      ]
     },
     {
       name: 'getColumnJoin',
       title: '获取列值拼接字符串',
       description: '获取列值拼接字符串，空值被排除,输入参数"{dataIndex:列名1}"，返回“值1,值2”',
-      params: []
+      params: [
+        {
+          name: 'dataIndex',
+          title: '字段名',
+          required: true,
+          type: 'string',
+          description: '需要拼接的字段名称'
+        },
+        {
+          name: 'separator',
+          title: '字段值分隔符',
+          required: false,
+          type: 'string',
+          description: '字段值分隔符，默认为“,”'
+        }
+      ]
     },
     {
       name: 'getColumnGroupSum',
       title: '分组求和',
-      description: '分组求和，输入参数[{groupDataIndex:列名1},{sumDataIndex:列名2}],返回{groupName1:value1,groupName2:value2}',
-      params: []
+      description:
+        '分组求和，输入参数[{groupDataIndex:列名1},{sumDataIndex:列名2}],返回{groupName1:value1,groupName2:value2}',
+      params: [
+        {
+          name: 'groupDataIndex',
+          title: '分组字段名',
+          required: true,
+          type: 'string',
+          description: ''
+        },
+        {
+          name: 'sumDataIndex',
+          title: '求和字段名',
+          required: true,
+          type: 'string',
+          description: ''
+        }
+      ]
     },
     {
       name: 'pushRecordsByKeys',
       title: '基于ids给列表前端页面添加记录',
       description:
         '给列表添加ids作为or查询条件，以查询出相应的记录在前端进行展示，可用于后续的保存记录当前新添加的记录和主表单的关系。',
-      params: []
+      params: [
+        {
+          name: 'keys',
+          title: '记录ids',
+          required: true,
+          type: 'string[]',
+          description: 'id数组'
+        }
+      ]
     },
     {
       name: 'pushSelectedRecords',
       title: '添加已选的记录',
       description:
-          '添加已选的记录，这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录。',
+        '添加已选的记录，这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录。',
       params: []
     },
     {
       name: 'unPushRecordsByKeys',
       title: '基于ids移除列表前端页面的记录',
       description:
-          '基于ids移除列表前端页面的记录，这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录。',
-      params: []
+        '基于ids移除列表前端页面的记录，这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录。',
+      params: [
+        {
+          name: 'keys',
+          title: '记录ids',
+          required: true,
+          type: 'string[]',
+          description: 'id数组'
+        }
+      ]
     },
     {
       name: 'unPushSelectedRecords',
       title: '移除已选的记录',
       description:
-          '移除已选的记录，这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录。',
+        '移除已选的记录，这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录。',
       params: []
     },
     {
       name: 'hasSelectedRecords',
       title: '是否选择了记录',
       description: '是否选择了记录，返回true | false',
-      params: []
+      params: [
+        {
+          name: 'enableAlert',
+          title: '启用告警提醒',
+          required: false,
+          type: 'boolean',
+          description: '若启用的话，返回值为false时，会弹出告警信息'
+        },
+        {
+          name: 'content',
+          title: '告警提醒的内容',
+          required: false,
+          type: 'string',
+          description: '启用告警提醒时才生效，默认为“请先选择记录”'
+        }
+      ]
     },
     {
       name: 'hasUnSaveRecords',
@@ -1018,21 +1103,54 @@ export default {
     {
       name: 'changeColumnsVisible',
       title: '展示/隐藏列',
-      description: '更改列的展示/隐藏属性，并更新列信息。',
-      params: []
+      description: '更改列的展示/隐藏属性，不指定的列保持原状。',
+      params: [
+        {
+          name: 'hideDataIndexes',
+          title: '需隐藏的字段',
+          required: true,
+          type: 'string[]',
+          description: '需隐藏的字段名数组'
+        },
+        {
+          name: 'showDataIndexes',
+          title: '需显示的字段',
+          required: true,
+          type: 'string[]',
+          description: '若字段为隐藏，则会被设置为可见；若为其它状态则不保持现状'
+        }
+      ]
     },
     {
       name: 'batchUpdate',
       title: '批量更新所选',
-      description: "批量更新表格的记录值，需要输入对象参数，更新的列键值对，如{orderNo:'912881'}",
-      params: []
+      description: '批量更新表格的记录值，需要输入对象参数，更新的列键值对',
+      params: [
+        {
+          name: 'record',
+          title: '需更新的字段值',
+          required: true,
+          type: 'Record<string, any>',
+          description:
+            '需更新的记录字段及值信息，key为字段名，即列名,value为更新后的列值，如{orderNo:“912881”}'
+        }
+      ]
     },
     {
       name: 'updateRecord',
       title: '更新单条记录',
       description:
         '更新表格的指定一条记录，需要输传递需更新的记录record，该记录需要有id值。在表格行操作中，值示例：$gl.ctx.record',
-      params: []
+      params: [
+        {
+          name: 'record',
+          title: '需更新的记录值',
+          required: true,
+          type: 'Record<string, any>',
+          description:
+            '需更新的记录字段及值信息，key为字段名，即列名,value为更新后的列值，如{id:"xxx",orderNo:“912881”},【注意】该记录需有id字段，为作更新的依据。'
+        }
+      ]
     },
     {
       name: 'deleteRecord',
@@ -1040,7 +1158,7 @@ export default {
       params: [
         {
           name: 'id',
-          type: 'String',
+          type: 'string',
           description: '在表格行操作中，值示例：$gl.ctx.record.id',
           title: '记录ID',
           defaultValue: ''
@@ -1053,7 +1171,7 @@ export default {
       params: [
         {
           name: 'id',
-          type: 'String',
+          type: 'string',
           description: '带删除确认提醒，在表格行操作中，值示例：$gl.ctx.record.id',
           title: '记录ID',
           defaultValue: ''
@@ -1063,20 +1181,12 @@ export default {
     {
       name: 'deleteSelectedRecords',
       title: '删除选择的记录（基于ID）',
-      params: [{ name: 'id', type: 'String', description: '', title: '记录ID', defaultValue: '' }]
+      params: []
     },
     {
       name: 'deleteSelectedRecordsWithConfirm',
       title: '删除选择的记录（基于ID）,带删除确认提醒',
-      params: [
-        {
-          name: 'id',
-          type: 'String',
-          description: '带删除确认提醒',
-          title: '记录IDs',
-          defaultValue: ''
-        }
-      ]
+      params: []
     }
   ]
 }

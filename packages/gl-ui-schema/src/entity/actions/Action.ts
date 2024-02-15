@@ -1,16 +1,35 @@
 import ComponentInstance from "../ComponentInstance";
 
+// 动作、方法调用参数元数据定义
+export class ParamMeta {
+    // 字段名
+    title: string = ''
+    // dataIndex
+    name: string = ''
+    // 是否必需
+    required: boolean = true
+    // String
+    type: string = 'string'
+    // 需要求和的字段名称
+    description?: 'string'
+}
+
 export class ActionMeta {
     name: string = '' //  "fetchSuccess"
     title: string = '' //  "成功加载完数据"
     description? = '' //  从服务端成功加数据（0到多条）后触发。
+    params?: ParamMeta[] = []
 }
 
 export class MethodMeta {
+    async: boolean = false
     name: string = '' //  "fetchSuccess"
     title: string = ' ' // "成功加载完数据"
-    description = '' // 从服务端成功加数据（0到多条）后触发。
+    description? = '' // 从服务端成功加数据（0到多条）后触发。
+    params?: ParamMeta[] = []
+    defaultValue? = undefined
 }
+
 
 export default class Action {
 

@@ -186,8 +186,8 @@ export default {
   actions: [
     {
       name: 'onLoadedData',
-      description: '表单加载完成数据并设置到各表单项之后触发。',
-      title: '加载完数据'
+      description: '表单加载完成数据并设置到各表单项之后触发,可以在此事件之后进一步设置组件的值。',
+      title: '加载完数据并更新到页面'
     },
     {
       name: 'creatingEntitySavers',

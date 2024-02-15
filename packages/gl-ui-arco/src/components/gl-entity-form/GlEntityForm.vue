@@ -468,10 +468,10 @@ const getEntitySavers = async () => {
     const validateFn = pageProvideProxy.getMethod(instId, 'validate')
     if (typeof validateFn === 'function') {
       const subValidateResult = await validateFn()
-      console.log(
-        'GlEntityForm > getEntitySavers() > subForm(' + instId + ') validate',
-        subValidateResult
-      )
+      // console.log(
+      //   'GlEntityForm > getEntitySavers() > subForm(' + instId + ') validate',
+      //   subValidateResult
+      // )
       if (subValidateResult) {
         Object.assign(subValidateResults, subValidateResult)
       }
@@ -506,7 +506,7 @@ const getEntitySavers = async () => {
  */
 const submitForm = async () => {
   const entitySavers = await getEntitySavers()
-  console.log('entitySavers.error', entitySavers)
+  // console.log('entitySavers.error', entitySavers)
   if (!entitySavers.error) {
     setLoading(true)
     // console.log('submitForm() > formData', formData)

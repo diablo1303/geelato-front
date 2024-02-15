@@ -196,7 +196,7 @@ onMounted(() => {
 })
 const form = ref({})
 const glQuery = ref()
-const gid = utils.gid()
+const gid = utils.gid('id')
 const showTitle = computed(() => {
   // 宽度大于600时会显示按钮标题
   return glQuery.value?.$el.offsetWidth > 600

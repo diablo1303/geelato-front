@@ -110,7 +110,7 @@ onUnmounted(() => {
     <!--       :key="componentStore.currentComponentTree[0].id"   :index="0" -->
     <GlToolbarBreadcrumbs eventType="Hover"></GlToolbarBreadcrumbs>
     <GlToolbarBreadcrumbs eventType="Selected"></GlToolbarBreadcrumbs>
-    <GlInst :modelValue="utils.gid()"
+    <GlInst :modelValue="utils.gid('id')"
             :id="componentStore.currentComponentTree[0].id"
             :index="0"
             :glComponentInst="componentStore.currentComponentTree[0]"

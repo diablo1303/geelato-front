@@ -60,7 +60,7 @@ if (mv.value.length > 0) {
   isValueNumberType.value = typeof vItem[valueFiledName] === 'number'
 }
 // 用于刷新GlOptions组件，在值类型变化时变化
-const key = ref(utils.gid())
+const key = ref(utils.gid('id'))
 /**
  *  值类型变化时
  *  更改每列的类型定义，并更换mv中的值类型
@@ -68,7 +68,7 @@ const key = ref(utils.gid())
 watch(
   isValueNumberType,
   () => {
-    key.value = utils.gid()
+    key.value = utils.gid('id')
     if (isValueNumberType.value) {
       cols.value = [
         { dataIndex: 'label', title: '名' },

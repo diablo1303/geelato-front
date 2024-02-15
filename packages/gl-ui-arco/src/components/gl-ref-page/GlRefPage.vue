@@ -74,7 +74,7 @@ const getParams = () => {
 let params: Array<Param> = getParams()
 
 const visiblePage = ref(true)
-const key = ref(utils.gid())
+const key = ref(utils.gid('id'))
 
 /**
  *  以最新的页面参数数据重新加载
@@ -83,7 +83,7 @@ const refresh = () => {
   params = getParams()
   console.log('ref-page refresh() > params:',params)
 
-  key.value = utils.gid()
+  key.value = utils.gid('id')
   visiblePage.value = false
   nextTick(() => {
     visiblePage.value = true

@@ -157,7 +157,7 @@ export default defineComponent({
       }
       // 为新增的子元素设置id
       if (!element.id) {
-        element.id = utils.gid()
+        element.id = utils.gid('id')
       }
       this.items.push(element)
       this.selectedIndex = this.items.length - 1

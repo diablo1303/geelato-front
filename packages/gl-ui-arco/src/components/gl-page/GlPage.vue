@@ -144,7 +144,7 @@ const props = defineProps({
 })
 
 const visiblePage = ref(true)
-const key = ref(utils.gid())
+const key = ref(utils.gid('id'))
 
 const style = {
   margin: props.pageMargin || '12px',
@@ -210,7 +210,7 @@ onUnmounted(() => {
  */
 const refresh = () => {
   // console.log('page[' + props.glComponentInst.id + '] refresh.')
-  key.value = utils.gid()
+  key.value = utils.gid('id')
   visiblePage.value = false
   nextTick(() => {
     visiblePage.value = true

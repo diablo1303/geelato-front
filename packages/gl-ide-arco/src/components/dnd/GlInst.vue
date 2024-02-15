@@ -235,7 +235,7 @@ const onClick = (...args: any[]) => {
       <template v-else
         >
         <GlComponentDnd
-          :modelValue="utils.gid()"
+          :modelValue="utils.gid('id')"
           class="gl-dnd-item gl-x-item"
           style="flex: auto"
           :glIsRuntime="false"

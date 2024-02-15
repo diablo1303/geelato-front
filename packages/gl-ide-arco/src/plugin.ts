@@ -57,6 +57,7 @@ import GlOptionsDynamicBuilder from './components/builder/props-builder/GlOption
 import GlValueTypes from './components/setters/property-setters/GlValueTypes.vue'
 import GlCompareValueSetter from './components/setters/property-setters/GlCompareValueSetter.vue'
 import GlComponentMethodSelect from './components/setters/property-setters/GlComponentMethodSelect.vue'
+import GlComponentParamSetter from './components/setters/property-setters/GlComponentParamSetter.vue'
 import GlComponentActionSelect from './components/setters/property-setters/GlComponentActionSelect.vue'
 import GlAppFileTemplateSelect from './components/setters/property-setters/GlAppFileTemplateSelect.vue'
 import GlExpressionBuilder from './components/builder/props-builder/GlExpressionBuilder.vue'
@@ -247,6 +248,7 @@ const component: Plugin = {
     app.component(GlValueTypes.name, GlValueTypes)
     app.component(GlCompareValueSetter.name, GlCompareValueSetter)
     app.component(GlComponentMethodSelect.name, GlComponentMethodSelect)
+    app.component(GlComponentParamSetter.name, GlComponentParamSetter)
     app.component(GlComponentActionSelect.name, GlComponentActionSelect)
     app.component(GlAppFileTemplateSelect.name, GlAppFileTemplateSelect)
     app.component(GlDictSetter.name, GlDictSetter)

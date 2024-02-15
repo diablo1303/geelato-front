@@ -718,7 +718,7 @@ export class JsScriptExecutor {
    */
   private getGl(pageProxy: PageProvideProxy | undefined) {
     const $gl = {
-      id: utils.gid(),
+      id: utils.gid('id'),
       jsEngine: this,
       // getComponentValue: this.getComponentValue,
       // setComponentValue: this.setComponentValue,
