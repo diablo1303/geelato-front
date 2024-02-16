@@ -12,18 +12,29 @@ export default class EntitySaverBlockHandler implements IBlockHandler {
 
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     const entitySaverVarStr = vars.getVarStr(props.entitySaverVar)
-    const awaitStr = `${props.enableAwait ? 'await ' : ''}`
+    // const awaitStr = `${props.enableAwait ? 'await ' : ''}`
     const varStr = vars.getVarStr(props.resultVar)
-    const returnStr = props.enableReturn? `return ${varStr};` : ''
-    if(props.resultVar){
-      return new ParseResult(
-          `${varStr} = ${awaitStr}$gl.entityApi.saveEntity(${entitySaverVarStr});${returnStr}`
+    // const returnStr = props.enableReturn? `return ${varStr};` : ''
+    // if(props.resultVar){
+    //   return new ParseResult(
+    //       `${varStr} = ${awaitStr}$gl.entityApi.saveEntity(${entitySaverVarStr});${returnStr}`
+    //   )
+    // }else{
+    //   return new ParseResult(
+    //       ` ${awaitStr}$gl.entityApi.saveEntity(${entitySaverVarStr});${returnStr}`
+    //   )
+    // }
+    return new ParseResult(
+          `${varStr} = $gl.entityApi.saveEntity(${entitySaverVarStr}).then((res)=>{
+              #{fulfilled}
+            },(res)=>{
+              #{rejected}
+            });
+           if(${props.enableReturn}){
+              return ${varStr}
+           }
+          `
       )
-    }else{
-      return new ParseResult(
-          ` ${awaitStr}$gl.entityApi.saveEntity(${entitySaverVarStr});${returnStr}`
-      )
-    }
   }
 }
 
@@ -33,7 +44,7 @@ class Props {
   // 执行该方法后，返回执行结果
   enableReturn: Boolean = true
   // 是否启用同步执行
-  enableAwait: Boolean = false
+  // enableAwait: Boolean = false
   // 返回结果，存储到变量
   resultVar?: string
 }

@@ -56,7 +56,8 @@ export class BlocksHandler {
         commandLines.push(line)
       }
     }
-    return commandLines.join(';').replace(/};/g, '}').replace(/;}/g, '}').replace(/{;/g, '{')
+    // .replace(/};/g, '}')
+    return commandLines.join(';').replace(/;}/g, '}').replace(/{;/g, '{')
   }
 
   parseOne(

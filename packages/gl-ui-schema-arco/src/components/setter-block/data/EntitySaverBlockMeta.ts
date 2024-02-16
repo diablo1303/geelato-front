@@ -34,20 +34,6 @@ export default {
       placeholder: '方法调用返回存储的变量'
     },
     {
-      name: 'enableAwait',
-      group: 'base',
-      type: 'props',
-      show: true,
-      expanded: true,
-      setterComponentProps: {},
-      setterComponentVModelName: 'modelValue',
-      title: '同步调用',
-      setterComponentName: 'ASwitch',
-      enableValueExpress: false,
-      description:
-        '是否同步调用该方法，对于自身为异步的方法有效，如服务端请求，启用则在方法调用前加await'
-    },
-    {
       name: 'enableReturn',
       group: 'base',
       type: 'props',
@@ -59,6 +45,32 @@ export default {
       setterComponentName: 'ASwitch',
       enableValueExpress: false,
       description: '返回该方法的调用执行结果，启用则在方法调用前添加return'
+    },
+    {
+      name: 'invokeBlocks',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      setterComponentProps: {
+        options: [
+          {
+            label: '保存成功时调用',
+            value: 'fulfilled'
+          },
+          {
+            label: '保存失败时调用',
+            value: 'rejected'
+          }
+        ],
+        multiple: true,
+        allowClear: false
+      },
+      setterComponentVModelName: 'modelValue',
+      title: '调用指令',
+      setterComponentName: 'ASelect',
+      displayMode: 'tile'
     }
   ]
 }

@@ -465,7 +465,7 @@ export class EntityApi {
   saveEntity(entitySaver: EntitySaver, biz?: string) {
     const bizCode = biz || '0'
     const mqlObj = this.convertEntitySaverToMql(entitySaver, bizCode)
-    console.log('saveEntity > entitySaver:', entitySaver, 'mql:', mqlObj)
+    // console.log('saveEntity > entitySaver:', entitySaver, 'mql:', mqlObj)
     return this.service({
       url: `${this.url.apiMetaSave}/${bizCode}`,
       method: 'POST',
