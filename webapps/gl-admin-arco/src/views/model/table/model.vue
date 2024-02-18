@@ -28,7 +28,7 @@
             {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')},
             {validator:validateCode}]"
             field="entityName">
-          <a-input v-if="pageData.editName" v-model.trim="formData.entityName" :max-length="32"/>
+          <a-input v-if="pageData.editName" v-model.trim="formData.entityName" :max-length="30"/>
           <span v-else>{{ formData.entityName }}</span>
         </a-form-item>
       </a-col>

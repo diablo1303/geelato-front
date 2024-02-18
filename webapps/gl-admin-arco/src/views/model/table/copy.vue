@@ -20,7 +20,7 @@
             {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')},
             {validator:validateCode}]"
           field="entityName">
-        <a-input v-model.trim="formData.entityName" :max-length="32"/>
+        <a-input v-model.trim="formData.entityName" :max-length="30"/>
       </a-form-item>
     </a-form>
   </a-modal>

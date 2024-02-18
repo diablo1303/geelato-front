@@ -31,7 +31,7 @@
             {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')},
             {validator:validateCode}]"
             field="name">
-          <a-input v-if="pageData.editName" v-model.trim="formData.name" :max-length="32" @blur="columnNameBlur($event)"/>
+          <a-input v-if="pageData.editName" v-model.trim="formData.name" :max-length="30" @blur="columnNameBlur($event)"/>
           <span v-else>{{ formData.name }}</span>
         </a-form-item>
       </a-col>
@@ -370,7 +370,7 @@
             {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')}]"
             :tooltip="$t('model.column.index.form.autoName.tip')"
             field="autoName">
-          <a-input v-model="formData.autoName" :max-length="32" @blur="autoNameBlur($event)"/>
+          <a-input v-model="formData.autoName" :max-length="30" @blur="autoNameBlur($event)"/>
         </a-form-item>
       </a-col>
 
