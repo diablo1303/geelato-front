@@ -1,6 +1,6 @@
 <template>
   <div class="gl-component-param-setter">
-    <div v-if="methodMeta?.params.length === 0">
+    <div v-if="methodMeta?.params?.length === 0">
       <span style="margin-left: 1em">无参数</span>
     </div>
     <div v-else-if="methodMeta">

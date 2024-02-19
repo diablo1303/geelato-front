@@ -7,12 +7,20 @@ export default {
 import {nextTick, computed, reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
-import {TableColumnData, TableRowSelection, TableData, Message, SelectOptionData} from "@arco-design/web-vue";
-import {QueryUserForm, securityApi} from "@geelato/gl-ui";
-import useLoading from "@/hooks/loading";
-import {Pagination} from "@/types/global";
+import {Message} from "@arco-design/web-vue";
+import type {TableColumnData, TableRowSelection, SelectOptionData, TableData} from "@arco-design/web-vue";
+import type {QueryUserForm} from "@geelato/gl-ui";
+import {securityApi} from "@geelato/gl-ui";
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
+
+interface Pagination {
+  current: number;
+  pageSize: number;
+  total?: number;
+  showPageSize?: boolean;
+  pageSizeOptions?: Array<number>
+}
 
 const emits = defineEmits(['update:modelValue', 'change']);
 const props = defineProps({
@@ -24,7 +32,7 @@ const props = defineProps({
 
 const {t} = useI18n();
 const route = useRoute();
-const {loading, setLoading} = useLoading(true);
+const loading = ref<boolean>(false);
 // 分页列表参数
 type Column = TableColumnData & { checked?: true };
 const cloneColumns = ref<Column[]>([]);
@@ -43,6 +51,7 @@ const rowSelection = ref<TableRowSelection>({
   onlyCurrent: false,
   selectedRowKeys: []
 });
+
 // 搜索条件
 const generateFilterData = () => {
   return {
@@ -114,10 +123,10 @@ const setDepositData = (data: QueryUserForm[]) => {
  * @param params
  */
 const fetchData = async (params: Record<string, any>) => {
-  setLoading(true);
+  loading.value = true;
   try {
     const {data} = await securityApi.pageQueryUser(params);
-    renderData.value = data.items;
+    renderData.value = data.items as unknown as QueryUserForm[];
     pagination.current = params.current;
     pagination.pageSize = basePagination.pageSize;
     pagination.total = data.total;
@@ -125,7 +134,7 @@ const fetchData = async (params: Record<string, any>) => {
   } catch (err) {
     console.log(err);
   } finally {
-    setLoading(false);
+    loading.value = false;
   }
 };
 /**
@@ -209,7 +218,7 @@ const selectedKeys = ref<(string | number)[]>([]);
  * @param rowKey
  * @param record
  */
-const listSelect = (rowKeys: (string | number)[], rowKey: string | number, record: QueryUserForm) => {
+const listSelect = (rowKeys: (string | number)[], rowKey: string | number, record: TableData) => {
   if (props.maxCount > 1 && rowKeys.length > props.maxCount) {
     return;
   }
@@ -254,22 +263,22 @@ watch(() => props.orgId, () => {
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="名称" field="name">
+            <a-form-item field="name" label="名称">
               <a-input v-model="filterData.name" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="登录名" field="loginName">
+            <a-form-item field="loginName" label="登录名">
               <a-input v-model="filterData.loginName" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="工号" field="jobNumber">
+            <a-form-item field="jobNumber" label="工号">
               <a-input v-model="filterData.jobNumber" allow-clear @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="性别" field="sex">
+            <a-form-item field="sex" label="性别">
               <a-select v-model="filterData.sex" placeholder="全部">
                 <a-option v-for="item of sexOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
               </a-select>
@@ -313,35 +322,35 @@ watch(() => props.orgId, () => {
       @selectAll="listSelectAll"
       @page-change="onPageChange">
     <template #columns>
-      <a-table-column title="序号" :width="60" align="center" data-index="index">
+      <a-table-column :width="60" align="center" data-index="index" title="序号">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" title="名称" :tooltip="true" :width="120" data-index="name"/>
-      <a-table-column :ellipsis="true" title="登录名" :tooltip="true" :width="120" data-index="loginName"/>
-      <a-table-column :ellipsis="true" title="工号" :tooltip="true" :width="120" data-index="jobNumber"/>
-      <a-table-column :ellipsis="true" title="组织" :tooltip="true" :width="200" data-index="orgName"/>
-      <a-table-column :ellipsis="true" title="电话" :tooltip="true" :width="150" data-index="mobilePhone"/>
-      <a-table-column :ellipsis="true" title="邮箱" :tooltip="true" :width="200" data-index="email"/>
-      <a-table-column :ellipsis="true" title="邮箱" :tooltip="true" :width="120" data-index="post"/>
-      <a-table-column title="性别" :width="100" data-index="sex">
+      <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="name" title="名称"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="loginName" title="登录名"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="jobNumber" title="工号"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :width="200" data-index="orgName" title="组织"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="mobilePhone" title="电话"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :width="200" data-index="email" title="邮箱"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="post" title="邮箱"/>
+      <a-table-column :width="100" data-index="sex" title="性别">
         <template #cell="{ record }">
           {{ getSelectOptionLabel(record.sex, sexOptions) }}
         </template>
       </a-table-column>
-      <a-table-column title="类型" :width="120" data-index="type">
+      <a-table-column :width="120" data-index="type" title="类型">
         <template #cell="{ record }">
           {{ getSelectOptionLabel(record.sex, typeOptions) }}
         </template>
       </a-table-column>
-      <a-table-column title="来源" :width="120" data-index="source">
+      <a-table-column :width="120" data-index="source" title="来源">
         <template #cell="{ record }">
           {{ getSelectOptionLabel(record.sex, sourceOptions) }}
         </template>
       </a-table-column>
-      <a-table-column title="排序" :width="100" data-index="seqNo"/>
-      <a-table-column title="创建时间" :width="180" data-index="createAt"/>
+      <a-table-column :width="100" data-index="seqNo" title="排序"/>
+      <a-table-column :width="180" data-index="createAt" title="创建时间"/>
     </template>
   </a-table>
 </template>

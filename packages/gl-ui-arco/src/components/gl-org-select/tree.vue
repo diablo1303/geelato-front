@@ -4,10 +4,12 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {computed, watch, ref, VNode} from 'vue';
-import {Message, TreeNodeData} from "@arco-design/web-vue";
+import {computed, watch, ref} from 'vue';
+import {Message} from "@arco-design/web-vue";
+import type {TreeNodeData} from "@arco-design/web-vue";
 import {useRoute} from "vue-router";
-import {QueryOrgForm, securityApi} from "@geelato/gl-ui";
+import type {QueryOrgForm} from "@geelato/gl-ui";
+import {securityApi} from "@geelato/gl-ui";
 
 class OrgTreeNode implements TreeNodeData {
   key?: string | number;
@@ -18,10 +20,6 @@ class OrgTreeNode implements TreeNodeData {
   checkable?: boolean;
   draggable?: boolean;
   isLeaf?: boolean;
-  icon?: () => VNode[];
-  switcherIcon?: () => VNode[];
-  loadingIcon?: () => VNode[];
-  dragIcon?: () => VNode[];
   children?: OrgTreeNode[];
   redundant?: QueryOrgForm
 }
@@ -213,8 +211,8 @@ watch(() => props.modelValue, () => {
 </script>
 <template>
   <span class="tree-layout">
-    <a-input-search v-model="searchKey" placeholder="搜索" allow-clear
-                    class="tree-search"/>
+    <a-input-search v-model="searchKey" allow-clear class="tree-search"
+                    placeholder="搜索"/>
     <a-scrollbar :style="{overflow:'auto',height:`${props.height}px`}">
       <a-tree
           v-model:checked-keys="selectedKeys"

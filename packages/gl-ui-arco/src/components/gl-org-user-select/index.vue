@@ -5,7 +5,8 @@ export default {
 </script>
 <script lang="ts" setup>
 import {ref, watch} from 'vue';
-import {QueryUserForm, securityApi, utils} from "@geelato/gl-ui";
+import type {QueryUserForm} from "@geelato/gl-ui";
+import {securityApi, utils} from "@geelato/gl-ui";
 import UserSelect from "./choose.vue";
 
 type QueryForm = QueryUserForm;
@@ -176,7 +177,7 @@ const deleteClick = (data: QueryForm) => {
  * 选定数据
  * @param ev
  */
-const modalOkClick = (ev?: MouseEvent) => {
+const modalOkClick = (ev?: Event) => {
   modalVisible.value = false;
   tagData.value = [];
   arrayDataToData(modalData.value, tagData.value);
@@ -189,7 +190,7 @@ const modalOkClick = (ev?: MouseEvent) => {
  * 取消
  * @param ev
  */
-const modalCancelClick = (ev?: MouseEvent) => {
+const modalCancelClick = (ev?: Event) => {
   modalVisible.value = false;
 
   emits('cancelModal', tagData.value);
@@ -233,8 +234,8 @@ watch(() => modalVisible, () => {
     <span class="box-inner">
       <span v-for="(item,index) of tagData" :key="index" :title="item.name" class="box-data">
         {{ item.name }}
-        <GlIconfont type="gl-wrong" v-if="!props.disabled" title="删除"
-                    class="data-close"
+        <GlIconfont v-if="!props.disabled" class="data-close" title="删除"
+                    type="gl-wrong"
                     @click="deleteClick(item)"/>
       </span>
       <a-input v-if="!props.onlySelect" v-model="tagInput"
@@ -245,25 +246,25 @@ watch(() => modalVisible, () => {
     </span>
     <span class="box-mirror">{{ tagInput }}</span>
     <span v-if="!props.disabled" class="box-button">
-      <a-button title="选择"
-                class="button-primary" type="dashed"
-                @click="editClick($event)">
+      <a-button class="button-primary"
+                title="选择" type="dashed"
+                @click="editClick">
         <GlIconfont type="gl-edit-square"/>
       </a-button>
-      <a-button title="删除"
-                class="button-delete" type="dashed"
-                @click="deleteAllClick($event)">
+      <a-button class="button-delete"
+                title="删除" type="dashed"
+                @click="deleteAllClick">
         <GlIconfont type="gl-delete"/>
       </a-button>
     </span>
   </span>
   <a-modal
       v-model:visible="modalVisible"
-      cancel-text="关闭" ok-text="确定" title="用户选择"
-      :width="`${layoutWidth}px`"
+      :width="`${layoutWidth}px`" cancel-text="关闭" ok-text="确定"
+      title="用户选择"
       title-align="start"
-      @cancel="modalCancelClick($event)"
-      @ok="modalOkClick($event)">
+      @cancel="modalCancelClick"
+      @ok="modalOkClick">
     <UserSelect :key="key"
                 v-model="modalData"
                 :height="layoutHeight"

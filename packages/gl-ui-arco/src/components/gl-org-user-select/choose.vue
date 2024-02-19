@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {ref, watch} from 'vue';
-import {QueryOrgForm, QueryUserForm} from "@geelato/gl-ui";
+import type {QueryOrgForm, QueryUserForm} from "@geelato/gl-ui";
 import OrgTree from "../gl-org-select/tree.vue";
 import UserList from "./list.vue";
 
@@ -143,7 +143,7 @@ watch(() => rightData, () => {
           <span class="box-inner">
             <span v-for="(item,index) of rightData" :key="index" :title="item.name" class="box-data">
               {{ item.name }}
-              <GlIconfont type="gl-wrong" title="删除" class="data-close" @click="deleteClick(item)"/>
+              <GlIconfont class="data-close" title="删除" type="gl-wrong" @click="deleteClick(item)"/>
             </span>
           </span>
         </a-scrollbar>
