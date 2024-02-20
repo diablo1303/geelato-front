@@ -7,12 +7,18 @@ export const TINY_PLUGINS =
   'visualblocks visualchars wordcount';
 
 export const TINY_TOOLBAR =
-  'code preview | undo redo ' +
+  'code fullscreen preview | undo redo ' +
   'fontfamily fontsize bold italic underline strikethrough forecolor backcolor ' +
-  'alignleft aligncenter alignright alignjustify lineheight ' +
-  'numlist bullist table image link unlink ' +
+  'alignleft aligncenter alignright outdent indent alignjustify lineheight ' +
+  'numlist bullist table image media link unlink ' +
   'superscript subscript hr charmap ' +
   'removeformat searchreplace';
+
+// 完整的TINY_TOOLBAR配置
+// "undo redo | accordion accordionremove | blocks fontfamily fontsize | bold italic underline strikethrough " +
+// "| align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat " +
+// "| charmap emoticons | code fullscreen preview | save print | pagebreak anchor codesample | ltr rtl",
+
 
 export const TINY_FONT_FAMILY_FORMATS =
   "微软雅黑='微软雅黑';宋体='宋体';黑体='黑体';仿宋='仿宋';楷体='楷体';隶书='隶书';幼圆='幼圆';" +
