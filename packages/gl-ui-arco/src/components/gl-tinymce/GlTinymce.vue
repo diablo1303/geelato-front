@@ -5,10 +5,11 @@ export default {
 </script>
 <script lang="ts" setup>
 import {type PropType, type Ref, ref, reactive, watch, onMounted, computed} from 'vue'
-import {entityApi, EntityReader, fileApi, useApiUrl, utils} from '@geelato/gl-ui'
+import {entityApi, EntityReader, fileApi, PageProvideKey, PageProvideProxy, useApiUrl, utils} from '@geelato/gl-ui'
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
 import Editor from '@tinymce/tinymce-vue'
 import {TINY_FONT_FAMILY_FORMATS, TINY_FONT_SIZE_FORMATS, TINY_PLUGINS, TINY_TOOLBAR} from './type'
+import {inject} from "vue";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -140,6 +141,8 @@ watch(
   },
   {deep: true, immediate: true}
 )
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
+
 watch(
   () => {
     return props.readonly
@@ -150,6 +153,7 @@ watch(
   },
   {deep: true, immediate: true}
 )
+const isRead = ref(pageProvideProxy.isPageStatusRead())
 
 const mv = ref(props.modelValue)
 watch(mv, () => {
@@ -167,8 +171,8 @@ watch(
 
 <template>
   <div :key="key" :style="{'width':'100%'}">
-    <div v-if="props.readonly" v-html="mv" :style="{'min-height':props.height}">
+    <div v-if="isRead||readonly" v-html="mv" :style="{'min-height':height}">
     </div>
-    <Editor v-else v-model="mv" :init="tinyInit" :disabled="props.readonly"/>
+    <Editor v-else v-model="mv" :init="tinyInit"/>
   </div>
 </template>

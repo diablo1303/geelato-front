@@ -17,6 +17,17 @@ export default {
         "expanded": true,
         "title": "标题",
         "setterComponentName": "AInput"
+    },{
+        "name": "hideLabel",
+        "group": "base",
+        "type": "props",
+        "enableValueExpress": true,
+        "show": true,
+        "expanded": true,
+        "setterComponentProps": {},
+        "setterComponentVModelName": "modelValue",
+        "title": "隐藏标题",
+        "setterComponentName": "ASwitch"
     }, {
         "name": "bindField",
         "group": "base",

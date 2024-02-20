@@ -181,6 +181,17 @@ const useToolbarInst = (
   }
 }
 
+const useEmptyToolbarInst = () => {
+  return {
+    leftColSpan: 12,
+    centerColSpan: 0,
+    rightColSpan: 12,
+    leftItems: [],
+    centerItems: [],
+    rightItems: []
+  }
+}
+
 const useQueryInst = (options: PageCreatorOptions) => {
   const insts = useFieldMetaToComponentInst(options.entityMeta.entityName, options.queryFields)
 
@@ -570,6 +581,10 @@ const useColumnActionsInst = (
   return actions
 }
 
+const useEmptyColumnActionsInst = () => {
+  return []
+}
+
 const useTableInst = (options: PageCreatorOptions): ComponentInstance => {
   const componentStore = useComponentStore()
 
@@ -624,6 +639,13 @@ export class ListPageCreator extends PageCreator {
     if (formInst) {
       tableInst.props.toolbar = useToolbarInst(options, tableInst, formInst!)
       tableInst.props.columnActions = useColumnActionsInst(options, tableInst, formInst!)
+    } else {
+      console.log(
+        '从引用页面pageInst中找不到表单页面，默认不创建增删除改查操作，pageInst：',
+        pageInst
+      )
+      tableInst.props.toolbar = useEmptyToolbarInst()
+      tableInst.props.columnActions = useEmptyColumnActionsInst()
     }
     tableInst.props.columns = useColumnsInst(options)
     tableInst.props.query = useQueryInst(options)

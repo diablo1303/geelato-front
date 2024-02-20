@@ -4,8 +4,8 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-
-import {ref, watch} from "vue";
+import { ref, watch } from 'vue'
+import { utils } from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -15,7 +15,7 @@ const props = defineProps({
       return ''
     }
   },
-  _text: String,
+  _content: String,
   bold: Boolean,
   mark: Boolean,
   underline: Boolean,
@@ -26,20 +26,43 @@ const props = defineProps({
   copyable: Boolean
 })
 const mv = ref(props.modelValue)
+
+const key = ref(utils.gid('key', 6))
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
-if (props._text) {
-  mv.value = props._text
-}
+
+watch(
+  props,
+  () => {
+    if (props._content) {
+      mv.value = props._content
+    } else {
+      mv.value = props.modelValue
+    }
+    key.value = utils.gid('key', 6)
+  },
+  { deep: true }
+)
+
+// watch(
+//   () => {
+//     return props._content
+//   },
+//   () => {
+//     if (props._content) {
+//       mv.value = props._content
+//     } else {
+//       mv.value = props.modelValue
+//     }
+//   }
+// )
 </script>
 
 <template>
-  <a-typography-text v-bind="props">
+  <a-typography-text v-bind="props" :key="key">
     {{ mv }}
   </a-typography-text>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -9,7 +9,7 @@ import type { EntityMeta, FieldMeta } from '@geelato/gl-ui'
 import { entityApi, PageType } from '@geelato/gl-ui'
 import { ListPageCreator } from './json-creator/ListPageCreator'
 import { PageCreatorOptions } from './json-creator/PageCreator'
-import {FilteredFieldNames, PageInfo} from './CreatePageNav'
+import { FilteredFieldNames, PageInfo } from './CreatePageNav'
 
 const fieldMetas: Ref<FieldMeta[]> = ref([])
 const entityName = ref('')
@@ -54,6 +54,17 @@ const changePageExtendId = async (pageExtendId: string) => {
     pageInfo.value.pageExtendContent = JSON.parse(res.data[0].sourceContent)
   })
 }
+
+watch(
+  () => {
+    return form.value.pageExtendId
+  },
+  (val, oval) => {
+    if (val && !oval) {
+      changePageExtendId(val)
+    }
+  }
+)
 const myForm = ref()
 /**
  *  获取页面配置
