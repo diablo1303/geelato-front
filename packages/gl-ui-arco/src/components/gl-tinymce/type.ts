@@ -7,12 +7,12 @@ export const TINY_PLUGINS =
   'visualblocks visualchars wordcount';
 
 export const TINY_TOOLBAR =
-  'code fullscreen preview | undo redo ' +
+  'undo redo ' +
   'fontfamily fontsize bold italic underline strikethrough forecolor backcolor ' +
   'alignleft aligncenter alignright outdent indent alignjustify lineheight ' +
-  'numlist bullist table image media link unlink ' +
+  'numlist bullist table emoticons image media link unlink ' +
   'superscript subscript hr charmap ' +
-  'removeformat searchreplace';
+  'removeformat searchreplace codesample code fullscreen preview';
 
 // 完整的TINY_TOOLBAR配置
 // "undo redo | accordion accordionremove | blocks fontfamily fontsize | bold italic underline strikethrough " +
