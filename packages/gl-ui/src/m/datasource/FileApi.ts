@@ -72,7 +72,6 @@ export function getDownloadUrlByPath(name: string, path: string) {
 }
 
 
-
 /**
  * 导出excel、word
  * 后端依据模板类型导出相应格式的文件
@@ -83,8 +82,8 @@ export function getDownloadUrlByPath(name: string, path: string) {
  */
 export function exportFile(fileName: string, templateId: string, dataType: string, data: object) {
   return entityApi
-      .getAxios()
-      .post(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}`, data)
+    .getAxios()
+    .post(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}`, data)
 }
 
 /**
@@ -95,7 +94,7 @@ export function exportFile(fileName: string, templateId: string, dataType: strin
  * @param data 数据
  */
 export function exportExcel(fileName: string, templateId: string, dataType: string, data: object) {
-  return exportFile(fileName,templateId,dataType,data)
+  return exportFile(fileName, templateId, dataType, data)
 }
 
 /**
@@ -203,4 +202,12 @@ export const downloadFileByBase64String = (base64String: string) => {
     // 下载文件
     downloadFileByBase64Data(data);
   }
+}
+
+/**
+ * 获取系统配置
+ * @param configKey
+ */
+export function getValueByKeys(configKey: string) {
+  return entityApi.getAxios().get(`/api/sys/config/getValue/${configKey}`);
 }

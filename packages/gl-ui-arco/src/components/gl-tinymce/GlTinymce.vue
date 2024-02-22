@@ -46,7 +46,10 @@ const props = defineProps({
   readonly: {type: Boolean, default: false},
 })
 const key = ref(utils.gid());
-const baseUrl = useApiUrl().getApiBaseUrl();
+const isGetKey = ref<boolean>(false);
+const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+const baseUrl = ref<string>(useApiUrl().getApiBaseUrl() || apiBaseUrl);
+console.log(baseUrl.value);
 const replaceStr = "REPLACE_API_BASE_URL";
 
 const example_image_upload_handler = (blobInfo: any, progress: any) => new Promise((resolve, reject) => {
@@ -155,16 +158,49 @@ watch(
 )
 const isRead = ref(pageProvideProxy.isPageStatusRead())
 
+const updateEmits = (type: number) => {
+  if (baseUrl.value) {
+    if (type === 1) {
+      emits('update:modelValue', mv.value?.replace(new RegExp(baseUrl.value, "g"), "${" + replaceStr + "}"));
+    } else {
+      mv.value = props.modelValue?.replace(new RegExp("\\$\\{" + replaceStr + "\\}", "g"), baseUrl.value);
+    }
+  } else {
+    if (type === 1) {
+      emits('update:modelValue', mv.value);
+    } else {
+      mv.value = props.modelValue;
+    }
+  }
+}
+
+const updateM = (type: number) => {
+  if (!isGetKey.value) {
+    fileApi.getValueByKeys(replaceStr).then((value) => {
+      console.log(value);
+      isGetKey.value = true;
+      if (value && value.data) baseUrl.value = value.data as unknown as string;
+      updateEmits(type);
+    }).catch(() => {
+      isGetKey.value = true;
+      updateEmits(type);
+    });
+  } else {
+    updateEmits(type);
+  }
+}
+
+
 const mv = ref(props.modelValue)
 watch(mv, () => {
-  emits('update:modelValue', mv.value?.replace(new RegExp(baseUrl, "g"), "${" + replaceStr + "}"));
+  updateM(1);
 })
 watch(
   () => {
     return props.modelValue
   },
   () => {
-    mv.value = props.modelValue?.replace(new RegExp("\\$\\{" + replaceStr + "\\}", "g"), baseUrl);
+    updateM(2);
   }, {deep: true, immediate: true}
 )
 </script>
