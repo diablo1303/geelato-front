@@ -45,6 +45,13 @@
               </a-select>
             </a-form-item>
           </a-col>
+          <a-col :span="pageData.isModal?12:8">
+            <a-form-item :label="$t('model.table.index.form.appId')" field="appId">
+              <a-select v-model="filterData.appId" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="item of appSelectOptions" :key="item.id" :label="item.name" :value="item.id"/>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <!-- <a-col :span="pageData.isModal?12:8">
                       <a-form-item :label="$t('model.table.index.form.linked')" field="linked">
                         <a-select v-model="filterData.linked" :placeholder="$t('searchTable.form.selectDefault')">
@@ -170,6 +177,12 @@
           {{ $t(`model.table.index.form.tableType.${record.tableType}`) }}
         </template>
       </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.appId')" :tooltip="true"
+                      :width="150" data-index="appId">
+        <template #cell="{ record }">
+          {{ getAppId(record.appId) }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('model.table.index.form.linked')" :width="100" data-index="linked">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.linked.${record.linked}`) }}
@@ -250,6 +263,7 @@ import TableForm from '@/views/model/table/form.vue';
 import TableDrawer from '@/views/model/table/drawer.vue';
 import TableCopyForm from '@/views/model/table/copy.vue';
 import {useRoute} from "vue-router";
+import {QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions} from "@/api/security";
 
 /* 列表 */
 type Column = TableColumnData & { checked?: true };
@@ -435,6 +449,31 @@ const deleteData = async (id: string, successBack: any) => {
   }
 };
 
+const appSelectOptions = ref<QuerySelectForm[]>([]);
+const getAppSelectOptions = async () => {
+  try {
+    const {data} = await querySelectOptions({
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+    } as unknown as QueryAppForm);
+    appSelectOptions.value = data || [];
+  } catch (err) {
+    appSelectOptions.value = [];
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+const getAppId = (id: string) => {
+  if (appSelectOptions.value && appSelectOptions.value.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of appSelectOptions.value) {
+      if (item.id === id) {
+        return item.name;
+      }
+    }
+  }
+  return '';
+}
+
 /* 分页功能区 - 固定方法 */
 const handleChange = (checked: boolean | (string | boolean | number)[], column: Column, index: number) => {
   if (!checked) {
@@ -477,6 +516,7 @@ watch(() => columns.value, (val) => {
 
 /* 对外调用方法 */
 const loadList = (urlParams: ListUrlParams) => {
+  getAppSelectOptions();
   // 参数设置
   pageData.value.formState = urlParams.action || 'edit';
   pageData.value.isModal = urlParams.isModal || false;

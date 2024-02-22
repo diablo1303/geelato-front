@@ -91,6 +91,16 @@
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
+            :label="$t('model.view.index.form.appId')"
+            :rules="[{required: false,message: $t('model.form.rules.match.required')}]"
+            field="appId">
+          <a-select v-model="formData.appId" :disabled="!pageData.button">
+            <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col :span="24/pageData.formCol">
+        <a-form-item
             :label="$t('model.view.index.form.enableStatus')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="enableStatus">
@@ -264,6 +274,7 @@ import MonacoEditor from '@/components/monaco/index.vue';
 import {useRoute} from "vue-router";
 import {columnSelectType, selectTypeOptions} from "@/views/model/column/searchTable";
 import {isJSON} from "@/utils/is";
+import {QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions} from "@/api/security";
 
 const pageData = ref({formState: 'add', button: true, formCol: 1});
 const validateForm = ref<FormInstance>();
@@ -543,10 +554,25 @@ const entitySubmitClick = async (ev?: MouseEvent) => {
   }
 }
 
+const appSelectOptions = ref<QuerySelectForm[]>([]);
+const getAppSelectOptions = async () => {
+  try {
+    const {data} = await querySelectOptions({
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+    } as unknown as QueryAppForm);
+    appSelectOptions.value = data || [];
+  } catch (err) {
+    appSelectOptions.value = [];
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {
   getSelectEntityOptions();
   columnData.value = [];
+  getAppSelectOptions();
   // 全局
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
