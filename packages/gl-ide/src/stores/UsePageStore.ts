@@ -337,6 +337,21 @@ export const usePageStore = defineStore('GlPageStore', () => {
       previewContent: JSON.stringify(convertedPageContent.preview),
       description: page.description
     }
+
+    const esSub: EntitySaver = new EntitySaver()
+    esSub.entity = 'platform_app_page_log'
+    esSub.record = {
+      pageId: page.id,
+      appId: page.appId,
+      extendId: page.extendId,
+      code: page.code,
+      type: page.type,
+      sourceContent: es.record.sourceContent,
+      releaseContent: es.record.releaseContent,
+      previewContent: es.record.previewContent,
+      description: page.description
+    }
+    es.children = [esSub]
     return es
   }
 
