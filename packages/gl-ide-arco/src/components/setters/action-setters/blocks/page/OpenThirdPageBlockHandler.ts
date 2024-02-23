@@ -8,7 +8,7 @@ export default class OpenThirdPageBlockHandler implements IBlockHandler {
     return 'OpenThirdPageBlockHandler'
   }
   parseToScript(props: Props): ParseResult {
-    return new ParseResult(`$gl.fn.openWin("${props.url}",${JSON.stringify(props.params || [])})`)
+    return new ParseResult(`$gl.fn.openWin("${props.url}",${JSON.stringify(props.params || [])},$gl)`)
   }
 }
 

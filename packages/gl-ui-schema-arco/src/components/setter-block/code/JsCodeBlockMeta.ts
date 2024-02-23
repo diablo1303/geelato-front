@@ -30,7 +30,7 @@ export default {
       show: true,
       expanded: true,
       title: '代码描述',
-      setterComponentName: 'AInput',
+      setterComponentName: 'ATextarea',
       enableValueExpress: false,
       placeholder: '代码描述'
     }

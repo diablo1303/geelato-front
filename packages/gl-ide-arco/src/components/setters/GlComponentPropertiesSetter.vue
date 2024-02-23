@@ -6,6 +6,7 @@
         <GlPropertySetter
             v-if="propertySetterMeta.type&&propertySetterMeta.name&&componentModel[propertySetterMeta.type]"
             :displayMode="componentMeta.displayMode"
+            :displayValueExpress="componentModel[propertySetterMeta.type + 'Expressions']?componentModel[propertySetterMeta.type + 'Expressions'][propertySetterMeta.name]:undefined"
             :propertySetterMeta="propertySetterMeta"
             :propertyValue="componentModel[propertySetterMeta.type][propertySetterMeta.name]"
             @set:propertyValue="newValue=>componentModel[propertySetterMeta.type][propertySetterMeta.name]=newValue"

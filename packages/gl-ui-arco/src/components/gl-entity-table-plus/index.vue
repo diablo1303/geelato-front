@@ -498,7 +498,9 @@ const getRenderRecords = () => {
  * 获取已选的记录，返回记录数据组,没记录时返回空数组[]
  */
 const getSelectedRecords = () => {
+  console.log('getSelectedRecords',selectedKeys.value)
   return tableRef.value.getRenderData().filter((record: Record<string, any>) => {
+    console.log('getSelectedRecords',selectedKeys.value.includes(record.id),record.id)
     return selectedKeys.value.includes(record.id)
   })
 }
@@ -931,6 +933,17 @@ const updateRecord = (params: { record: Record<string, any> }) => {
   return null
 }
 
+/**
+ * 只用于编辑表格
+ * @param params
+ */
+const insertRecords = (params: {
+  records: Record<string, any>[]
+  ignoreDataIndexes?: string[]
+}) => {
+  return tableRef.value.insertRecords(params)
+}
+
 // 获取组件所在页面的自定义配置
 const myPageCustom: PageCustomType = props.pageCustom!
 // 通过组件id，获取组件在该页面中的自定义配置
@@ -1111,6 +1124,7 @@ defineExpose({
   changeColumnsVisible,
   batchUpdate,
   updateRecord,
+  insertRecords,
   deleteRecord,
   deleteRecordWithConfirm,
   deleteSelectedRecords,
@@ -1169,7 +1183,7 @@ defineExpose({
       :disabled="isRead"
     >
       <template #leftItems>
-        <div v-if="base.enableEdit" class="action-icon">
+        <div v-if="base.enableEdit && base.showAddRowBtn !== false" class="action-icon">
           <a-button @click="addRow" shape="round" type="text" size="small" :disabled="isRead">
             <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加一行
           </a-button>

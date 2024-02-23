@@ -19,7 +19,7 @@ export default class ComponentInvokeBlockHandler implements IBlockHandler {
           props.enableAwait ? 'await ' : ''
         } $gl.fn.invokeComponentMethod("${props.componentId}","${
           props.methodName
-        }",${JSON.stringify(props.params || [])});
+        }",${JSON.stringify(props.params || [])},$gl);
                 ${props.enableReturn ? 'return $gl.vars.' + props.resultVar : ''}
                 `
       )
@@ -30,7 +30,7 @@ export default class ComponentInvokeBlockHandler implements IBlockHandler {
           props.enableAwait ? 'await ' : ''
         } $gl.fn.invokeComponentMethod("${props.componentId}","${
           props.methodName
-        }",${JSON.stringify(props.params || [])});
+        }",${JSON.stringify(props.params || [])},$gl);
                 `
       )
     }

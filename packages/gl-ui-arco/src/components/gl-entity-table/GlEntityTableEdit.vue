@@ -503,6 +503,28 @@ const addRow = () => {
 }
 
 /**
+ * 表格在编辑模式下，基于外部的数据记录，插入新记录到当前组件
+ * @param params ignoreDataIndexes 忽列掉的字段
+ */
+const insertRecords = (params: {
+  records: Record<string, any>[]
+  ignoreDataIndexes?: string[]
+}) => {
+  params?.records?.forEach((record: Record<string, any>) => {
+    const newRow: Record<string, any> = {}
+    props.columns.forEach((col: Column) => {
+      let dataIndex: string = col.dataIndex!
+      // TODO 序号 CHECK 等专用字段是否需要处理？
+      if (!params.ignoreDataIndexes?.includes(dataIndex)) {
+        newRow[dataIndex] = record[dataIndex]
+      }
+    })
+    renderData.value.push(newRow)
+  })
+  props.glComponentInst.value = renderData.value
+}
+
+/**
  *  表格在编辑模式下，验证表格数据
  *  正确时返回null，错误时返回具体的错误
  */
@@ -601,6 +623,7 @@ defineExpose({
   validate,
   validateRecord,
   addRow,
+  insertRecords,
   reRender,
   getRenderData,
   getRenderColumns,

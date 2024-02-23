@@ -116,12 +116,23 @@ export default {
           name: 'showToolbar',
           group: 'base',
           type: 'props',
-          enableValueExpress: false,
+          enableValueExpress: true,
           show: true,
           expanded: true,
           setterComponentProps: { defaultChecked: true },
           setterComponentVModelName: 'modelValue',
           title: '显示工具条',
+          setterComponentName: 'ASwitch'
+        },{
+          name: 'showAddRowBtn',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: true,
+          show: true,
+          expanded: true,
+          setterComponentProps: { defaultChecked: true },
+          setterComponentVModelName: 'modelValue',
+          title: '显示添加一行',
           setterComponentName: 'ASwitch'
         },
         {
@@ -538,6 +549,24 @@ export default {
       params: []
     },
     { name: 'reRender', title: '重新渲染', description: '基于当前的表格数据重新渲染', params: [] },
+    { name: 'insertRecords', title: '插入记录', description: '向表格插入记录，纯客户端操作，未保存到服务器',
+      params: [
+        {
+          name: 'records',
+          type: 'Record<string, any>',
+          description: '需要插入的记录集',
+          title: '记录数组',
+          defaultValue: []
+        },
+        {
+          name: 'ignoreDataIndexes',
+          type: 'string[]',
+          description: '需要插入的记录集中，忽略掉的字段，如：["id"]',
+          title: '忽略的字段',
+          defaultValue: []
+        }
+      ]
+    },
     {
       name: 'updateRecord',
       title: '单条更新',
