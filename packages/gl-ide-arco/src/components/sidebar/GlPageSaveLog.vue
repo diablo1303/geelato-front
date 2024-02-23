@@ -28,7 +28,7 @@ type Item = {
   id: string
   creator: string
   createAt: string
-  creatorName: String
+  creatorName: string
   pageId: string
 }
 const items: Ref<Item[]> = ref([])
