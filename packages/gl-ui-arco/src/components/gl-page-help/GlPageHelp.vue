@@ -9,7 +9,8 @@ import { entityApi, EntityReader, EntityReaderParam } from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
-  pageHelpId: String
+  pageHelpId: String,
+  text:String
 })
 
 const pageHelp = ref({
@@ -52,7 +53,7 @@ const handleCancel = () => {
 <template>
   <div class="gl-page-help">
     <div v-if="pageHelpId" title="帮助指引" @click="showPageHelp(pageHelpId)">
-      <gl-iconfont type="gl-help"></gl-iconfont>
+      <gl-iconfont type="gl-help" :text="text" style="cursor: pointer"></gl-iconfont>
     </div>
     <a-modal
       :visible="pageHelpVisible"

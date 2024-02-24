@@ -110,7 +110,7 @@ onUnmounted(() => {
         style="float: right; cursor: pointer; padding-right: 4px"
       ></gl-iconfont>
     </a-alert>
-    <a-list>
+    <a-list size="small">
       <a-list-item v-for="item in items">
         <a-list-item-meta :title="item.createAt" :description="item.creatorName"></a-list-item-meta>
         <template #actions>

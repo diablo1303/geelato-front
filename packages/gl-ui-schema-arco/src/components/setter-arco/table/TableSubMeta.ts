@@ -123,7 +123,8 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '显示工具条',
           setterComponentName: 'ASwitch'
-        },{
+        },
+        {
           name: 'showAddRowBtn',
           group: 'base',
           type: 'props',
@@ -521,8 +522,13 @@ export default {
     {
       name: 'getEntitySavers',
       title: '获取实体保存对象',
-      description: '获取实体保存对象，返回{error:boolean,values:EntitySaver[]}',
-      params: []
+      description: '获取实体保存对象',
+      params: [],
+      returnInfo: {
+        returnType: 'GetEntitySaversResult',
+        description: 'GetEntitySaversResult的格式：{error:boolean,values:EntitySaver[]}',
+        docId: '4919301630853255168'
+      }
     },
     {
       name: 'getSelectedRecords',
@@ -548,8 +554,83 @@ export default {
       description: '是否选择了记录，返回true | false',
       params: []
     },
+    {
+      name: 'getColumnSum',
+      title: '获取单个列的求和',
+      description: '获取多个列的求和,输入参数“{dataIndex:列名1}”，返回数值',
+      params: [
+        {
+          name: 'dataIndex',
+          title: '字段名',
+          required: true,
+          type: 'string',
+          description: '需要求和的字段名称'
+        }
+      ]
+    },
+    {
+      name: 'getColumnsSum',
+      title: '获取多个列的求和',
+      description:
+        '获取多个列的求和,输入参数[{dataIndex:列名1},{dataIndex:列名2}]，返回{列名1:值1,列名2:值2}',
+      params: [
+        {
+          name: 'dataIndexes',
+          title: '字段名数组',
+          required: true,
+          type: 'string[]',
+          description: '需要求和的字段名数组'
+        }
+      ]
+    },
+    {
+      name: 'getColumnJoin',
+      title: '获取列值拼接字符串',
+      description: '获取列值拼接字符串，空值被排除,输入参数"{dataIndex:列名1}"，返回“值1,值2”',
+      params: [
+        {
+          name: 'dataIndex',
+          title: '字段名',
+          required: true,
+          type: 'string',
+          description: '需要拼接的字段名称'
+        },
+        {
+          name: 'separator',
+          title: '字段值分隔符',
+          required: false,
+          type: 'string',
+          description: '字段值分隔符，默认为“,”'
+        }
+      ]
+    },
+    {
+      name: 'getColumnGroupSum',
+      title: '分组求和',
+      description:
+        '分组求和，输入参数[{groupDataIndex:列名1},{sumDataIndex:列名2}],返回{groupName1:value1,groupName2:value2}',
+      params: [
+        {
+          name: 'groupDataIndex',
+          title: '分组字段名',
+          required: true,
+          type: 'string',
+          description: ''
+        },
+        {
+          name: 'sumDataIndex',
+          title: '求和字段名',
+          required: true,
+          type: 'string',
+          description: ''
+        }
+      ]
+    },
     { name: 'reRender', title: '重新渲染', description: '基于当前的表格数据重新渲染', params: [] },
-    { name: 'insertRecords', title: '插入记录', description: '向表格插入记录，纯客户端操作，未保存到服务器',
+    {
+      name: 'insertRecords',
+      title: '插入记录',
+      description: '向表格插入记录，纯客户端操作，未保存到服务器',
       params: [
         {
           name: 'records',

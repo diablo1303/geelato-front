@@ -9,17 +9,16 @@ export default {
   properties: [
     {
       name: 'appId',
-      setterComponentProps: {},
-      setterComponentVModelName: 'modelValue',
       group: 'base',
       type: 'props',
+      enableValueExpress: false,
       show: true,
       expanded: true,
-      title: '应用ID',
-      setterComponentName: 'AInput',
-      placeholder: '不填写表示当前应用',
-      enableValueExpress: false,
-      displayMode: 'tile'
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      title: '应用',
+      setterComponentName: 'GlAppSelect',
+      placeholder: ''
     },
     {
       name: 'extendId',

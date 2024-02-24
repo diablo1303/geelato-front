@@ -711,9 +711,8 @@ export class JsScriptExecutor {
   /**
    * 获取当前环境下，可执行的方法、全局变量
    *
-   * @private
    */
-  private getGl(pageProxy: PageProvideProxy | undefined) {
+  public getGl(pageProxy?: PageProvideProxy) {
     const $gl = {
       id: utils.gid('id'),
       jsEngine: this,

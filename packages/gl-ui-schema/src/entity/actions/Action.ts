@@ -28,6 +28,7 @@ export class MethodMeta {
     description? = '' // 从服务端成功加数据（0到多条）后触发。
     params?: ParamMeta[] = []
     defaultValue? = undefined
+    returnInfo? = undefined
 }
 
 
