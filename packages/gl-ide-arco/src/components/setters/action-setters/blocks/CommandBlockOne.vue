@@ -18,13 +18,16 @@
           <!-- 代码块进行特殊展示 -->
           <template v-if="blockMeta.blockContentLanguage">
             <div>
-              <span class="gl-annotation">
+              <span v-if="!props.glComponentInst.props?.description&&!props.glComponentInst.propsExpressions?.description&&props.glComponentInst.props?.code" class="gl-text-singe-line gl-var">
+                {{props.glComponentInst.props?.code}}
+              </span>
+              <div v-else class="gl-annotation">
                 {{
                   props.glComponentInst.props?.description ||
                   props.glComponentInst.propsExpressions?.description ||
-                  '&nbsp;'
+                  ''
                 }}
-              </span>
+              </div>
             </div>
             <GlMonacoEditor
               v-if="expandBlockContentWhenIsLanguage"
@@ -159,4 +162,3 @@ onUnmounted(() => {
   // 在退出时，才最终设置invokeBlocks的children，配置过程不删减，避免误操作
 })
 </script>
-<style></style>

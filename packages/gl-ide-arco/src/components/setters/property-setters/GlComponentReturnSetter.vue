@@ -54,6 +54,8 @@ const setData = () => {
     const methodMeta: MethodMeta = componentSetterProvideProxy.getVarValue(
       props.dependVarMethodMeta
     )
+    // @ts-ignore
+    returnInfo.value = methodMeta?.returnInfo
     pageHelpId.value = methodMeta?.returnInfo?.docId
   } catch (e) {
     console.error(e)

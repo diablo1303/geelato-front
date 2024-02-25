@@ -374,7 +374,7 @@ export default {
       group: 'base',
       type: 'props',
       show: true,
-      expanded: false,
+      expanded: true,
       _showSub: false,
       properties: [
         {

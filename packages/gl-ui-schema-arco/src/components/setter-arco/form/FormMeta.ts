@@ -206,8 +206,13 @@ export default {
     {
       name: 'getEntitySavers',
       title: '获取实体保存对象',
-      description: '获取实体保存对象，返回{error:boolean,values:EntitySaver[]}',
-      params: []
+      description: '获取实体保存对象',
+      params: [],
+      returnInfo: {
+        returnType: 'GetEntitySaversResult',
+        description: 'GetEntitySaversResult的格式：{error:boolean,values:EntitySaver[]}',
+        docId: '4919301630853255168'
+      }
     }
   ]
 }
