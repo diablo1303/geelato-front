@@ -413,6 +413,7 @@ const cellClick = (record: TableData, column: TableColumnData, ev: Event) => {
  * @param ev
  */
 const headerClick = (column: TableColumnData, ev: Event) => {
+  console.log('headerClick column:', column)
   emits('headerClick', column, ev)
 }
 

@@ -329,8 +329,9 @@ watch(
   },
   () => {
     // console.log('update value:', props.glComponentInst.value)
-    renderData.value = []
-    renderData.value = [...props.glComponentInst.value]
+    // renderData.value = []
+    // renderData.value = [...props.glComponentInst.value]
+    reRender()
   },
   { deep: true }
 )
@@ -560,13 +561,19 @@ const validate = async () => {
   return null
 }
 
-const updateRow = async (record: object, rowIndex: number, columns: GlTableColumn[]) => {
+const updateRow = async (
+  record: object,
+  rowIndex: number,
+  columns: GlTableColumn[],
+  newValue: any,
+  objRef: any
+) => {
   const result = await validateRecord(record, rowIndex)
   if (result && Object.keys(result).length > 0) {
     // 有异常
   } else {
     // 无异常
-    emits('updateRow', { record, rowIndex, columns })
+    emits('updateRow', { record, rowIndex, columns, newValue, objRef })
   }
 }
 
@@ -689,7 +696,7 @@ defineExpose({
       >
         <GlComponent
           v-model="renderData[rowIndex][column.dataIndex]"
-          @update="updateRow(record, rowIndex, cloneColumns)"
+          @update="updateRow(record, rowIndex, cloneColumns, $event, this)"
           :glComponentInst="cloneDeep(column._component)"
           :glCtx="{
             record,
