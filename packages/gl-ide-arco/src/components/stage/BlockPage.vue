@@ -32,7 +32,7 @@ if (!rootItem || !rootItem.id) {
     id: utils.gid('blockPage',),
     props: {
       pageType: 'blockPage',
-      pageTitle: "指令",
+      label: "指令",
       pageMargin: "0",
       pagePadding: "0"
     },

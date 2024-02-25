@@ -657,7 +657,7 @@ export class EntityApi {
     const mql = {
       platform_app_page: {
         '@p': '1,1',
-        '@fs': `id,code,${contentType === 'source' ? 'sourceContent' : 'releaseContent'}`,
+        '@fs': `id,code,appId,,${contentType === 'source' ? 'sourceContent' : 'releaseContent'}`,
         delStatus: 0,
         id: pageId
       }
@@ -680,7 +680,7 @@ export class EntityApi {
     const mql = {
       platform_app_page: {
         '@p': '1,1',
-        '@fs': `id,code,${contentType === 'source' ? 'sourceContent' : 'releaseContent'}`,
+        '@fs': `id,code,appId,${contentType === 'source' ? 'sourceContent' : 'releaseContent'}`,
         delStatus: 0,
         extendId: extendId
       }

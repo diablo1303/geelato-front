@@ -498,9 +498,7 @@ const getRenderRecords = () => {
  * 获取已选的记录，返回记录数据组,没记录时返回空数组[]
  */
 const getSelectedRecords = () => {
-  console.log('getSelectedRecords',selectedKeys.value)
   return tableRef.value.getRenderData().filter((record: Record<string, any>) => {
-    console.log('getSelectedRecords',selectedKeys.value.includes(record.id),record.id)
     return selectedKeys.value.includes(record.id)
   })
 }
