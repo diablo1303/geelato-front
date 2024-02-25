@@ -50,10 +50,7 @@ export default {
         "title": "规则模式",
         "setterComponentName": "ASelect",
         "setterComponentProps": {
-            "options": [{
-                "label": "采用组件已配置的验证规则",
-                "value": "default"
-            }, {"label": "清空组件已配置的验证规则", "value": "clear"}, {"label": "自定义组件验证规则", "value": "custom"}]
+            "options": [{"label": "清空组件已配置的验证规则", "value": "clear"}, {"label": "自定义组件验证规则", "value": "custom"}]
         },
         "enableValueExpress": false,
         "placeholder": ""
@@ -66,9 +63,7 @@ export default {
         "setterComponentProps": {},
         "setterComponentVModelName": "modelValue",
         "title": "自定义规则",
-        "setterComponentName": "GlExpressionSetter",
-        "enableValueExpress": false,
-        "placeholder": ""
+        "setterComponentName": "GlValidateRulesSetter"
     }],
     "actions": []
 }

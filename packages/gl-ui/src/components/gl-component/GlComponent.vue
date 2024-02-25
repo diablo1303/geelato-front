@@ -205,6 +205,14 @@ watch(() => {
     refreshFlag.value = true
   })
 })
+
+const _reRender = () => {
+  console.log('props.glComponentInst.props',props.glComponentInst.props)
+  refreshFlag.value = false
+  nextTick(() => {
+    refreshFlag.value = true
+  })
+}
 // console.log('props.glCtx', props.glCtx, props.glComponentInst.props?.label, '_hidden', props.glComponentInst.props?._hidden)
 const isShow = computed(() => {
   return props.glComponentInst.props?._hidden
@@ -227,7 +235,7 @@ onMounted(() => {
     ...props.glCtx
   })
 })
-defineExpose({onMouseLeave, onMouseOver})
+defineExpose({onMouseLeave, onMouseOver,_reRender})
 
 </script>
 
