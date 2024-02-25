@@ -1,4 +1,5 @@
 import ComponentInstance from "../ComponentInstance";
+import {ReturnInfoMeta} from "../methods/MethodSetterMeta";
 
 // 动作、方法调用参数元数据定义
 export class ParamMeta {
@@ -28,7 +29,7 @@ export class MethodMeta {
     description? = '' // 从服务端成功加数据（0到多条）后触发。
     params?: ParamMeta[] = []
     defaultValue? = undefined
-    returnInfo? = undefined
+    returnInfo?:ReturnInfoMeta = undefined
 }
 
 

@@ -219,7 +219,7 @@ if (props.componentMeta.vModelName) {
 }
 const componentModel = ref(props.componentInstance)
 // 确保都有id
-componentModel.value.id = componentModel.value.id ? componentModel.value.id : utils.gid('', 20)
+componentModel.value.id = componentModel.value.id ? componentModel.value.id : utils.gid('id', 20)
 
 const setInstance = (instance: ComponentInstance, form: String) => {
   // console.log('GlComponentSetter > set instance:', instance, 'form', form)

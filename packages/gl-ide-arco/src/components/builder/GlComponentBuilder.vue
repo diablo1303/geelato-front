@@ -428,7 +428,7 @@ export default defineComponent({
     },
     'cMeta.alias': {
       handler: function (val) {
-        this.cInstance.id = this.modelValue.runtimeMeta.id || utils.gid(val)
+        this.cInstance.id = this.modelValue.runtimeMeta.id || utils.gid(val||'id')
         // this.cInstance.templateId = this.modelValue.runtimeMeta.templateId || utils.gid(val)
         this.emitUpdate()
       },

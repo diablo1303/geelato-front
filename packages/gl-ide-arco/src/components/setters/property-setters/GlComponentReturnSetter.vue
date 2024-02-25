@@ -2,14 +2,16 @@
   <div class="gl-component-return-setter" style="margin-left: 1em">
     <div v-if="returnInfo">
       <div>
-        <div style="font-weight: 600;padding: 8px 0">返回类型：</div>
+        <div style="font-weight: 600; padding: 8px 0">返回类型：</div>
         {{ returnInfo.returnType || '无' }}
       </div>
       <div>
-        <div style="font-weight: 600;padding: 8px 0">返回描述</div>
+        <div style="font-weight: 600; padding: 8px 0">返回描述</div>
         {{ returnInfo.description || '无' }}
       </div>
-      <div v-if="returnInfo.docId" style="padding: 8px 0;color: #165dff"><GlPageHelp :pageHelpId="pageHelpId" text="查看更多"></GlPageHelp></div>
+      <div v-if="returnInfo.docId" style="padding: 8px 0; color: #165dff">
+        <GlPageHelp :pageHelpId="pageHelpId" text="查看更多"></GlPageHelp>
+      </div>
     </div>
     <div v-else>无</div>
   </div>
@@ -46,28 +48,16 @@ const props = defineProps({
 
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 const returnInfo: Ref<ReturnInfoMeta> = ref(new ReturnInfoMeta())
-const pageHelpId: Ref<string> = ref('')
+const pageHelpId: Ref<string | undefined> = ref('')
 const setData = () => {
   try {
     const methodMeta: MethodMeta = componentSetterProvideProxy.getVarValue(
       props.dependVarMethodMeta
     )
-    console.log('methodMeta',methodMeta)
-    // @ts-ignore
-    returnInfo.value = methodMeta?.returnInfo
-    if (returnInfo.value) {
-      pageHelpId.value = returnInfo.value.docId
-    }
+    pageHelpId.value = methodMeta?.returnInfo?.docId
   } catch (e) {
     console.error(e)
   }
-}
-
-const visible = ref(false)
-
-const showDoc = () => {
-  visible.value = true
-  // if (params.value.length > 0) visible.value = true
 }
 
 const token = componentSetterProvideProxy.addVarValueChangeCallback(

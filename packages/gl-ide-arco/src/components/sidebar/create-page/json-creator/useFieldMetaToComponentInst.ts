@@ -70,7 +70,7 @@ export const useFieldMetaToComponentInst = (entityName: string, fieldMetas: Fiel
         break
     }
 
-    inst.id = utils.gid(componentStore.getAlias(inst.componentName))
+    inst.id = utils.gid(componentStore.getAlias(inst.componentName)||'id')
     return inst
   }
 
