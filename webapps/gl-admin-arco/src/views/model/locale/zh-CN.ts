@@ -124,6 +124,7 @@ export default {
   'model.view.index.model.cancel.text': '取消',
   'model.view.index.model.ok.text': '确认',
   'searchTable.columns.operations.release': '发布',
+  'searchTable.columns.operations.permission': '权限',
   'searchTable.columns.operations.releaseMsg': '是否发布该条视图？',
   'model.view.index.model.info.reset': '重置成功！',
   'model.view.index.model.info.release': '发布成功！',

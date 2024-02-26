@@ -144,7 +144,7 @@
       <a-table-column :title="$t('model.view.index.form.seqNo')" :width="100" data-index="seqNo"/>
       <a-table-column :title="$t('model.view.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('model.view.index.form.description')" :tooltip="true" :width="200" data-index="description"/>
-      <a-table-column v-show="pageData.formState==='edit'" :title="$t('model.view.index.form.operations')" :width="255" align="center"
+      <a-table-column v-show="pageData.formState==='edit'" :title="$t('model.view.index.form.operations')" :width="275" align="center"
                       data-index="operations" fixed="right">
         <template #cell="{ record,isDefault=record.viewType==='default'}">
           <a-button v-if="isDefault" size="small" type="text" @click="viewTable(record.id)">
@@ -164,6 +164,10 @@
               {{ $t('searchTable.columns.operations.release') }}
             </a-button>
           </a-popconfirm>
+          <!--    权限      -->
+          <a-button size="small" type="text" @click="openViewPermission(record)">
+            {{ $t('searchTable.columns.operations.permission') }}
+          </a-button>
           <!--    删除      -->
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
                         @ok="deleteTable(record.id)">
@@ -180,6 +184,7 @@
   </a-table>
   <ViewForm ref="viewFormRef"></ViewForm>
   <ViewDrawer ref="viewDrawerRef"></ViewDrawer>
+  <TablePermissionDrawer ref="tablePermissionDrawerRef"></TablePermissionDrawer>
 </template>
 
 <script lang="ts" setup>
@@ -200,6 +205,7 @@ import {
   FilterViewForm as FilterForm,
   pageQueryViews as pageQueryList,
   QueryTableForm,
+  QueryViewForm,
   QueryViewForm as QueryForm,
   releaseMetaView,
   resetDefaultView
@@ -208,6 +214,7 @@ import {columns, enableStatusOptions, viewTypeOptions} from '@/views/model/view/
 // 引用其他页面
 import ViewForm from '@/views/model/view/form.vue';
 import ViewDrawer from '@/views/model/view/drawer.vue';
+import TablePermissionDrawer from "@/views/model/table/permission/drawer.vue";
 import {useRoute} from "vue-router";
 
 /* 列表 */
@@ -222,6 +229,7 @@ const pageData = ref({
 });
 const viewFormRef = ref(null);
 const viewDrawerRef = ref(null);
+const tablePermissionDrawerRef = ref(null);
 const isDefault = ref(false);
 // 国际化
 const {t} = useI18n();
@@ -365,6 +373,16 @@ const editTable = (id: string) => {
         reset();
         pageData.value.modalEditBack(data);
       }
+    });
+  }
+}
+const openViewPermission = (data: QueryViewForm) => {
+  if (tablePermissionDrawerRef.value) {
+    // @ts-ignore
+    tablePermissionDrawerRef.value?.openForm({
+      action: pageData.value.formState, pageSize: 10000,
+      isModal: pageData.value.isModal,
+      params: {pId: data.connectId, pName: data.viewName, pType: 'dp,mp'}
     });
   }
 }

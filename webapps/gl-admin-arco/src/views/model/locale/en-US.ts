@@ -124,6 +124,7 @@ export default {
   'model.view.index.model.cancel.text': 'Cancel',
   'model.view.index.model.ok.text': 'Confirm',
   'searchTable.columns.operations.release': 'Release',
+  'searchTable.columns.operations.permission': 'Permission',
   'searchTable.columns.operations.releaseMsg': 'Whether to release the view？',
   'model.view.index.model.info.reset': 'Reset Successfully！',
   'model.view.index.model.info.release': 'Release Successfully！',
