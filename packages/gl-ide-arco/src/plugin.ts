@@ -58,6 +58,7 @@ import GlValueTypes from './components/setters/property-setters/GlValueTypes.vue
 import GlCompareValueSetter from './components/setters/property-setters/GlCompareValueSetter.vue'
 import GlComponentMethodSelect from './components/setters/property-setters/GlComponentMethodSelect.vue'
 import GlComponentParamSetter from './components/setters/property-setters/GlComponentParamSetter.vue'
+import GlComponentReturnSetter from './components/setters/property-setters/GlComponentReturnSetter.vue'
 import GlComponentActionSelect from './components/setters/property-setters/GlComponentActionSelect.vue'
 import GlAppFileTemplateSelect from './components/setters/property-setters/GlAppFileTemplateSelect.vue'
 import GlExpressionBuilder from './components/builder/props-builder/GlExpressionBuilder.vue'
@@ -133,8 +134,8 @@ plugin.sidebar.push(
 
 plugin.sidebar.push(
   new Panel({
-    title: '记录',
-    name: '记录',
+    title: '保存',
+    name: '保存',
     iconType: 'gl-history',
     componentName: GlPageSaveLog.name
   })
@@ -249,6 +250,7 @@ const component: Plugin = {
     app.component(GlCompareValueSetter.name, GlCompareValueSetter)
     app.component(GlComponentMethodSelect.name, GlComponentMethodSelect)
     app.component(GlComponentParamSetter.name, GlComponentParamSetter)
+    app.component(GlComponentReturnSetter.name, GlComponentReturnSetter)
     app.component(GlComponentActionSelect.name, GlComponentActionSelect)
     app.component(GlAppFileTemplateSelect.name, GlAppFileTemplateSelect)
     app.component(GlDictSetter.name, GlDictSetter)

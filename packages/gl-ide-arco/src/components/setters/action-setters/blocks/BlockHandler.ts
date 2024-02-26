@@ -57,7 +57,8 @@ export class BlocksHandler {
       }
     }
     // .replace(/};/g, '}')
-    return commandLines.join(';').replace(/;}/g, '}').replace(/{;/g, '{')
+    // };else{ IF后面加else的场景
+    return commandLines.join(';').replace(/;}/g, '}').replace(/};else{/g, '}else{').replace(/{;/g, '{')
   }
 
   parseOne(

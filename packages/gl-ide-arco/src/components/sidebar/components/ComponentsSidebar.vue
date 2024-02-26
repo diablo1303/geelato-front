@@ -146,7 +146,7 @@ const createTemplateInst = (element: ComponentMaterial) => {
     if (!alias) {
       console.warn('组件[', item.componentName, ']未设置别名，将直接生成无组件别名前缀的组件id。')
     }
-    item.id = utils.gid(alias || '')
+    item.id = utils.gid(alias || 'id')
     // console.log('gl-runtime > gl-x > clone > generateId > new id:', item.id, 'for', item.componentName)
     if (item.children && item.children.length > 0) {
       for (let i in item.children) {

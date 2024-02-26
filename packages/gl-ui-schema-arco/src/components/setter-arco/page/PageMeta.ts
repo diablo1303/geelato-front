@@ -8,7 +8,7 @@ export default {
   useBy: ['freePage'],
   properties: [
     {
-      name: 'pageTitle',
+      name: 'label',
       setterComponentProps: {},
       setterComponentVModelName: 'modelValue',
       group: 'base',

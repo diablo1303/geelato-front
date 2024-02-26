@@ -150,10 +150,10 @@ export const usePageStore = defineStore('GlPageStore', () => {
    * @return promise
    */
   function loadPage(params: object): Promise<any> {
-    // console.log('loadPage from server by params:', params)
+    console.log('loadPage from server by params:', params)
     return entityApi.query(
       'platform_app_page',
-      'id,extendId,code,sourceContent,description',
+      'id,extendId,appId,code,sourceContent,description',
       params,
       false
     )
@@ -337,6 +337,22 @@ export const usePageStore = defineStore('GlPageStore', () => {
       previewContent: JSON.stringify(convertedPageContent.preview),
       description: page.description
     }
+
+    const esSub: EntitySaver = new EntitySaver()
+    esSub.entity = 'platform_app_page_log'
+    esSub.record = {
+      pageId: page.id,
+      label:convertedPageContent.source.props?.label,
+      appId: page.appId,
+      extendId: page.extendId,
+      code: page.code,
+      type: page.type,
+      sourceContent: es.record.sourceContent,
+      releaseContent: es.record.releaseContent,
+      previewContent: es.record.previewContent,
+      description: page.description
+    }
+    es.children = [esSub]
     return es
   }
 
@@ -344,6 +360,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
    * 保存页面
    */
   function savePage(page: any) {
+    // console.log('before savePage',page)
     emitter.emit(EventNames.GlIdeToolbarPageSaving, { page: page })
     const entitySaver = getPageEntitySaver(page)
     return entityApi.saveEntity(entitySaver).then((res) => {

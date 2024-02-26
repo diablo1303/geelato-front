@@ -336,6 +336,7 @@ export default class PageProvideProxy {
     const vueProps = vueRef?.props?.glComponentInst?.props
     if (vueProps) {
       Object.assign(vueProps, props)
+      // vueRef?.exposed?._reRender()
       return vueProps
     }
     return null

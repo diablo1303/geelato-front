@@ -9,7 +9,7 @@
         <div class="gl-title" title="点击折叠/展开">
           <span @click="show=!show" style="cursor: pointer" >{{ glComponentInst._disabled ? '【已停用】' : '' }}</span>
           <span @click="show=!show" style="cursor: pointer" >{{ convertTitle(blockMeta.title) }}</span>
-          <span v-if="!show" style="color: #8f19ff;float: right">【点击展开】</span>
+          <span @click="show=!show" v-if="!show" style="color: #8f19ff;float: right">【点击展开】</span>
         </div>
         <div class="gl-description">
           <span v-html="highlightedStr"></span>

@@ -10,7 +10,7 @@ import type IPropertySetterMeta from "./entity/IPropertySetterMeta";
 import {ComponentSetterMetaImpl} from "./entity/ComponentSetterMeta";
 import {PropertySetterBuilderMeta, PropertySetterSelectOption} from "./entity/PropertySetterBuilderMeta";
 import {ActionSetterMeta} from "./entity/actions/ActionSetterMeta";
-import {MethodSetterMeta} from "./entity/methods/MethodSetterMeta";
+import {MethodSetterMeta, ReturnInfoMeta} from "./entity/methods/MethodSetterMeta";
 import {schema} from "./components/schema";
 import Action, {ActionMeta, MethodMeta, ParamMeta} from './entity/actions/Action';
 import BlockMetaGroup from './entity/actions/BlockMetaGroup';
@@ -35,6 +35,7 @@ export {
     IPropertySetterMeta,
     PropertySetterMetaImpl,
     ActionSetterMeta,
+    ReturnInfoMeta,
     MethodSetterMeta,
     ValueTypes,
     useValueTypeOptions,

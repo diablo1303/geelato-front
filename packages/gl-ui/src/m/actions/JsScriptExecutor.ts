@@ -308,20 +308,12 @@ export class JsScriptExecutor {
         // return $gl.$drawer.open(that.evalOptions(options, $gl.ctx, ['title', 'width', 'okText', 'cancelText']))
         return $gl.$drawer.open(options)
       },
-      openWin: (url: string, urlParams: Array<Param>) => {
-        const parsedParams = that.evalParams(urlParams, $gl.ctx, $gl) || []
+      openWin: (url: string, urlParams: Array<Param>,gl?:any) => {
+        const parsedParams = that.evalParams(urlParams, (gl||$gl).ctx, gl||$gl) || []
         const paramsAry: Array<string> = []
         parsedParams.forEach((param) => {
           paramsAry.push(`${param.name}=${param.value}`)
         })
-        // urlParams.forEach((param) => {
-        //     if (param.valueExpression) {
-        //         // @ts-ignore
-        //         paramsAry.push(`${param.name}=${that.evalExpression(param.valueExpression, $gl?.ctx, undefined, $gl)}`)
-        //     } else {
-        //         paramsAry.push(`${param.name}=${param.value}`)
-        //     }
-        // })
         window.open(`${url}?${paramsAry.join('&')}`, '_blank')
       },
       loadPage: (
@@ -329,12 +321,13 @@ export class JsScriptExecutor {
         extendId: string,
         params: Array<Param>,
         pageStatus: string,
-        pageTemplateName?: string
+        pageTemplateName?: string,
+        gl?:any
       ) => {
         return that.loadPage(
           pageId,
           extendId,
-          that.evalParams(params, $gl.ctx, $gl) || [],
+          that.evalParams(params, gl||$gl.ctx, gl||$gl) || [],
           pageStatus,
           pageTemplateName
         )
@@ -346,12 +339,14 @@ export class JsScriptExecutor {
        * 调用组件方法
        * @param componentId
        * @param methodName
+       * @param gl 方法在open窗口中执行时，需要传入gl，否则方法体内的$gl会指向新窗口中的$gl对象，和$gl.fn.invokeComponentMethod中的$gl不一致
        * @param params
        */
-      invokeComponentMethod: (componentId: string, methodName: string, params: Array<Param>) => {
+      invokeComponentMethod: (componentId: string, methodName: string, params: Array<Param>,gl?:any) => {
         const method = this.getComponentMethod(componentId, methodName)
         if (method) {
-          return method(that.convertParamsToObject(that.evalParams(params, $gl.ctx, $gl)))
+          // console.log('invokeComponentMethod['+methodName+'] > gl',gl)
+          return method(that.convertParamsToObject(that.evalParams(params, (gl||$gl).ctx, gl||$gl)))
         }
         // else {
         //     console.error('调用组件方法失败，找到不方法。componentId:', componentId, 'methodName:', methodName)
@@ -403,9 +398,9 @@ export class JsScriptExecutor {
         }
         return valueAry.join(',') || keys
       },
-      getPageParams: () => that.getPageParams($gl),
-      getPageParam: (paramName: string) => that.getPageParam(paramName, $gl),
-      hasPageParam: (paramName: string) => that.hasPageParam(paramName, $gl),
+      getPageParams: (gl?:any) => that.getPageParams(gl||$gl),
+      getPageParam: (paramName: string,gl?:any) => that.getPageParam(paramName, gl||$gl),
+      hasPageParam: (paramName: string,gl?:any) => that.hasPageParam(paramName, gl||$gl),
       isPageStatusRead: () => {
         return $gl.ctx.pageProxy.isPageStatusRead()
       },
@@ -473,6 +468,7 @@ export class JsScriptExecutor {
    * @param gl 如果多个表达式需要用同一下$gl时，可以传进来，不在本方法内创建
    */
   evalExpression(expression: string, ctx: Ctx, callback?: Function, gl?: any) {
+    // console.log('evalExpression',expression,'gl',gl)
     const $gl = gl || this.getGl(ctx?.pageProxy)
     // if (!gl) {
     //     console.log('evalExpression', expression)
@@ -494,6 +490,7 @@ export class JsScriptExecutor {
    * @param async 对于fnBody里有wait的场景，可以设置async为true
    */
   evalFn(fnBodyScript: string, ctx: Ctx, callback?: Function, gl?: any, async?: boolean) {
+    // console.log('evalFn',fnBodyScript,'gl',gl)
     const $gl = gl || this.getGl(ctx?.pageProxy)
     Object.assign($gl.ctx, ctx)
     const result = utils.evalFn(fnBodyScript, $gl, '$gl', async)
@@ -714,9 +711,8 @@ export class JsScriptExecutor {
   /**
    * 获取当前环境下，可执行的方法、全局变量
    *
-   * @private
    */
-  private getGl(pageProxy: PageProvideProxy | undefined) {
+  public getGl(pageProxy?: PageProvideProxy) {
     const $gl = {
       id: utils.gid('id'),
       jsEngine: this,
@@ -790,6 +786,7 @@ export class JsScriptExecutor {
         }
       }
     }
+    // console.log('getGl',$gl.id)
     return $gl
   }
 

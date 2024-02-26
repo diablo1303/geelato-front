@@ -5,7 +5,7 @@ export default {
   group: 'block_loop',
   title: '列表循环',
   useBy: ['freePage'],
-  blockContent: '循环列表的每一项，并将当前循环项保存到${loopItem}',
+  blockContent: `循环列表$\{items}的每一项，并将当前循环项保存到$\{loopItem}`,
   properties: [
     {
       name: 'items',

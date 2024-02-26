@@ -73,6 +73,24 @@
         </GlArrayBaseSetter>
       </td>
     </tr>
+    <tr>
+      <td class="gl-table-cell gl-label" title="">返回类型</td>
+      <td class="gl-table-cell">
+        <a-input v-model="mv.returnInfo.returnType" placeholder="returnType"></a-input>
+      </td>
+    </tr>
+    <tr>
+      <td class="gl-table-cell gl-label" title="">返回描述</td>
+      <td class="gl-table-cell">
+        <a-input v-model="mv.returnInfo.description" placeholder="description"></a-input>
+      </td>
+    </tr>
+    <tr>
+      <td class="gl-table-cell gl-label" title="">返回结果文档说明</td>
+      <td class="gl-table-cell">
+        <a-input v-model="mv.returnInfo.docId" placeholder="docId"></a-input>
+      </td>
+    </tr>
   </table>
 </template>
 
@@ -84,7 +102,7 @@ export default {
 <script lang="ts" setup>
 // @ts-nocheck
 import { type PropType, ref, watch } from 'vue'
-import { MethodSetterMeta, useValueTypeOptions } from '@geelato/gl-ui-schema'
+import {ReturnInfoMeta, MethodSetterMeta, useValueTypeOptions } from '@geelato/gl-ui-schema'
 
 const props = defineProps({
   modelValue: {
@@ -97,7 +115,6 @@ const props = defineProps({
 const emits = defineEmits(['updateSetter'])
 
 const mv = ref(props.modelValue)
-
 watch(
   mv,
   (val, oval) => {
@@ -105,6 +122,7 @@ watch(
   },
   { immediate: true, deep: true }
 )
+mv.value.returnInfo = mv.value.returnInfo|| new ReturnInfoMeta()
 const options = useValueTypeOptions()
 const defaultItemForAdd = () => {
   return {

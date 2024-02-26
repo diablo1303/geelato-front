@@ -71,7 +71,10 @@ const props = defineProps({
   pageType: {
     type: String as PropType<PageType>
   },
-  pageTitle: {
+  /**
+   *  页面标题
+   */
+  label: {
     type: String,
     default() {
       return ''

@@ -44,9 +44,9 @@ const props = defineProps({
   ...mixins.props
 })
 
-// console.log('useGlobal', useGlobal())
-// console.log('GlPageViewer > props.pageProps:', props.pageProps)
-// console.log('GlPageViewer > props:', props)
+console.log('useGlobal', useGlobal())
+console.log('GlPageViewer > props.pageProps:', props.pageProps)
+console.log('GlPageViewer > props:', props)
 const glComponentInst = ref(new ComponentInstance())
 // 用户对于某页面的个性化配置
 // @ts-ignore

@@ -19,7 +19,7 @@ export default class SetRulesBlockHandler implements IBlockHandler {
         if (!props.customRules) {
           needChangeRules = false
         } else {
-          newRulesStr = props.customRules
+          newRulesStr = props.customRules ? JSON.stringify(props.customRules) : '[]'
         }
         break
       case 'clear':

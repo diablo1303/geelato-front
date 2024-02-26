@@ -1,5 +1,5 @@
 <template>
-  <div class="gl-command-block" :class="{ 'gl-disabled': glComponentInst._disabled }">
+  <div class="gl-command-block" :class="{ 'gl-disabled': glComponentInst?._disabled }">
     <div class="gl-command-block-start">
       <div class="gl-left">
         <GlIconfont :type="blockMeta.iconType"></GlIconfont>
@@ -18,11 +18,16 @@
           <!-- 代码块进行特殊展示 -->
           <template v-if="blockMeta.blockContentLanguage">
             <div>
-              {{
-                props.glComponentInst.props?.description ||
-                props.glComponentInst.propsExpressions?.description ||
-                '&nbsp;'
-              }}
+              <span v-if="!props.glComponentInst.props?.description&&!props.glComponentInst.propsExpressions?.description&&props.glComponentInst.props?.code" class="gl-text-singe-line gl-var">
+                {{props.glComponentInst.props?.code}}
+              </span>
+              <div v-else class="gl-annotation">
+                {{
+                  props.glComponentInst.props?.description ||
+                  props.glComponentInst.propsExpressions?.description ||
+                  ''
+                }}
+              </div>
             </div>
             <GlMonacoEditor
               v-if="expandBlockContentWhenIsLanguage"
@@ -44,7 +49,7 @@
       <div class="gl-items">
         <div class="gl-item" v-for="(invokeBlock, invokeBlockIndex) in invokeBlocks">
           <div class="gl-description">
-            <span v-html="invokeBlock.label"></span>
+            <span v-html="invokeBlock.label" class="gl-annotation"></span>
           </div>
           <GlInsts
             :glComponentInst="glComponentInst?.children[invokeBlockIndex]"
@@ -157,4 +162,3 @@ onUnmounted(() => {
   // 在退出时，才最终设置invokeBlocks的children，配置过程不删减，避免误操作
 })
 </script>
-<style></style>

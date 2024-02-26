@@ -70,6 +70,19 @@ export default {
       displayMode: 'tile'
     },
     {
+      name: 'returnInfo',
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      title: '方法返回说明',
+      setterComponentName: 'GlComponentReturnSetter',
+      enableValueExpress: false,
+      displayMode: 'tile'
+    },
+    {
       name: 'resultVar',
       setterComponentProps: {},
       setterComponentVModelName: 'modelValue',

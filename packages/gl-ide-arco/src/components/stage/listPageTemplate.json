@@ -89,7 +89,7 @@
                     "id": "blockPage_K6c9NaPgOS",
                     "props": {
                       "pageType": "blockPage",
-                      "pageTitle": "指令",
+                      "label": "指令",
                       "pageMargin": "0",
                       "pagePadding": "0"
                     },
@@ -300,7 +300,7 @@
                   "id": "blockPage_G1qXJtgRrG",
                   "props": {
                     "pageType": "blockPage",
-                    "pageTitle": "指令",
+                    "label": "指令",
                     "pageMargin": "0",
                     "pagePadding": "0"
                   },
@@ -378,7 +378,7 @@
                   "id": "blockPage_WCQJn1aJTP",
                   "props": {
                     "pageType": "blockPage",
-                    "pageTitle": "指令",
+                    "label": "指令",
                     "pageMargin": "0",
                     "pagePadding": "0"
                   },
@@ -531,7 +531,7 @@
                   "componentName": "GlPage",
                   "id": "br_5s4ck5lGkzFtoSGvV",
                   "props": {
-                    "pageTitle": "指令",
+                    "label": "指令",
                     "pageMargin": "0",
                     "pagePadding": "0"
                   },

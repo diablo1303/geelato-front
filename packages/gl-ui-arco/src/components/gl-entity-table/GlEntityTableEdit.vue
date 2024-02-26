@@ -329,8 +329,9 @@ watch(
   },
   () => {
     // console.log('update value:', props.glComponentInst.value)
-    renderData.value = []
-    renderData.value = [...props.glComponentInst.value]
+    // renderData.value = []
+    // renderData.value = [...props.glComponentInst.value]
+    reRender()
   },
   { deep: true }
 )
@@ -503,6 +504,28 @@ const addRow = () => {
 }
 
 /**
+ * 表格在编辑模式下，基于外部的数据记录，插入新记录到当前组件
+ * @param params ignoreDataIndexes 忽列掉的字段
+ */
+const insertRecords = (params: {
+  records: Record<string, any>[]
+  ignoreDataIndexes?: string[]
+}) => {
+  params?.records?.forEach((record: Record<string, any>) => {
+    const newRow: Record<string, any> = {}
+    props.columns.forEach((col: Column) => {
+      let dataIndex: string = col.dataIndex!
+      // TODO 序号 CHECK 等专用字段是否需要处理？
+      if (!params.ignoreDataIndexes?.includes(dataIndex)) {
+        newRow[dataIndex] = record[dataIndex]
+      }
+    })
+    renderData.value.push(newRow)
+  })
+  props.glComponentInst.value = renderData.value
+}
+
+/**
  *  表格在编辑模式下，验证表格数据
  *  正确时返回null，错误时返回具体的错误
  */
@@ -538,13 +561,19 @@ const validate = async () => {
   return null
 }
 
-const updateRow = async (record: object, rowIndex: number, columns: GlTableColumn[]) => {
+const updateRow = async (
+  record: object,
+  rowIndex: number,
+  columns: GlTableColumn[],
+  newValue: any,
+  objRef: any
+) => {
   const result = await validateRecord(record, rowIndex)
   if (result && Object.keys(result).length > 0) {
     // 有异常
   } else {
     // 无异常
-    emits('updateRow', { record, rowIndex, columns })
+    emits('updateRow', { record, rowIndex, columns, newValue, objRef })
   }
 }
 
@@ -601,6 +630,7 @@ defineExpose({
   validate,
   validateRecord,
   addRow,
+  insertRecords,
   reRender,
   getRenderData,
   getRenderColumns,
@@ -666,7 +696,7 @@ defineExpose({
       >
         <GlComponent
           v-model="renderData[rowIndex][column.dataIndex]"
-          @update="updateRow(record, rowIndex, cloneColumns)"
+          @update="updateRow(record, rowIndex, cloneColumns, $event, this)"
           :glComponentInst="cloneDeep(column._component)"
           :glCtx="{
             record,

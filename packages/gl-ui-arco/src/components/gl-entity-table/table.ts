@@ -68,7 +68,11 @@ export class BaseInfo {
   // 是否在查询条件值改变之后自动触发查询
   triggerByValueChange: boolean = true
 
+  // 显示工具条
   showToolbar: boolean = true
+  // 显示添加一行操作
+  showAddRowBtn: boolean = true
+  // 显示分页
   showPagination: boolean = true
   // 表格外框间距
   tablePadding?: string | number

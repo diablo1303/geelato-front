@@ -759,6 +759,7 @@ class ComponentStoreFactory {
           getActionList() {
             const actionList: ComponentInstance[] = []
             const findAction = (inst: ComponentInstance) => {
+              if(!inst)return
               if (inst.actions && inst.actions.length > 0) {
                 actionList.push(inst)
               }
