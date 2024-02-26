@@ -326,11 +326,13 @@ const validateLoginName = async (value: any, callback: any) => {
   }
 }
 const validateJobNumberName = async (value: any, callback: any) => {
-  try {
-    const {data} = await validateUserParams('jobNumber', formData.value);
-    if (!data) callback(t('security.form.rules.match.uniqueness'));
-  } catch (err) {
-    console.log(err);
+  if (formData.value.jobNumber) {
+    try {
+      const {data} = await validateUserParams('jobNumber', formData.value);
+      if (!data) callback(t('security.form.rules.match.uniqueness'));
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 const validateMobilePhone = async (value: any, callback: any) => {
