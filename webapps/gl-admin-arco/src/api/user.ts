@@ -5,6 +5,7 @@ import {RouteRecordNormalized} from "vue-router";
 import {QueryResult} from "@/api/base";
 import {getToken} from "@/utils/auth";
 import globalConfig from "@/config/globalConfig";
+import {getApp} from "@/api/application";
 
 
 export interface LoginData {
@@ -127,6 +128,10 @@ export const getSysConfig = async (global: ComponentCustomProperties & Record<st
       global.$gl.tenant = config.tenant || {};
       global.$gl.app = config.app || {};
       global.$gl.user = userInfo || {};
+      if (!config.app && params?.appId) {
+        const appData = await getApp(params?.appId);
+        global.$gl.app = appData?.data || {};
+      }
     }
     console.log(global);
   } catch (err) {
