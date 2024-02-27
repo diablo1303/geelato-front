@@ -1,10 +1,14 @@
 <template>
   <a-card class="gl-card" :class="{ 'gl-hidden': isHidden, 'gl-hide-header': !isShowLabel }">
     <template #extra>
-      <slot name="extra"></slot>
+      <div class="gl-card-extra-items">
+        <slot name="extra"></slot>
+      </div>
     </template>
     <template #actions>
-      <slot name="actions"></slot>
+      <div class="gl-card-extra-items">
+        <slot name="actions"></slot>
+      </div>
     </template>
     <template #cover>
       <slot name="cover"></slot>
@@ -70,5 +74,12 @@ const switchHide = () => {
 
 .gl-card.gl-hide-header .arco-card-header {
   display: none;
+}
+
+.gl-card-extra-items{
+  display: flex;
+}
+.gl-card-extra-items > * {
+  margin-left: 8px;
 }
 </style>
