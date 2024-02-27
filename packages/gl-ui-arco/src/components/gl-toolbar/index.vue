@@ -54,32 +54,40 @@ const props = defineProps({
 <template>
   <a-row class="gl-toolbar">
     <a-col :span="leftColSpan || 12">
-      <a-space style="margin-left: -8px">
+      <div class="gl-toolbar-items">
         <slot name="leftItems"></slot>
         <template v-for="(inst, index) in leftItems" :key="index">
-          <GlComponent v-if="inst&&inst.props?._hidden!==true" :glComponentInst="inst"></GlComponent>
+          <GlComponent v-if="inst" v-show="inst?.props?._hidden!==true" :glComponentInst="inst"></GlComponent>
         </template>
-      </a-space>
+      </div>
     </a-col>
     <a-col :span="centerColSpan || 0">
-      <a-space>
+      <div class="gl-toolbar-items">
         <span></span>
         <template v-for="(inst, index) in centerItems" :key="index">
-          <GlComponent v-if="inst" :glComponentInst="inst"></GlComponent>
+          <GlComponent v-if="inst" v-show="inst?.props?._hidden!==true" :glComponentInst="inst"></GlComponent>
         </template>
-      </a-space>
+      </div>
     </a-col>
     <a-col
       :span="rightColSpan || 12"
       style="display: flex; align-items: center; justify-content: end"
     >
-      <a-space>
+      <div class="gl-toolbar-items">
         <template v-for="(inst, index) in rightItems" :key="index">
-          <GlComponent v-if="inst" :glComponentInst="inst"></GlComponent>
+          <GlComponent v-if="inst" v-show="inst?.props?._hidden!==true" :glComponentInst="inst"></GlComponent>
         </template>
         <slot name="rightItems"></slot>
         <span></span>
-      </a-space>
+      </div>
     </a-col>
   </a-row>
 </template>
+<style>
+  .gl-toolbar-items{
+    display: flex
+  }
+  .gl-toolbar-items > *{
+    margin-right: 8px
+  }
+</style>

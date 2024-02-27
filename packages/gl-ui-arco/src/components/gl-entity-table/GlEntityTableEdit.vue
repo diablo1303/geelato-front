@@ -329,9 +329,10 @@ watch(
   },
   () => {
     // console.log('update value:', props.glComponentInst.value)
-    // renderData.value = []
-    // renderData.value = [...props.glComponentInst.value]
-    reRender()
+    // 这里不能使用 reRender()，reRender会导致用户每录入一个字符都会重绘整个列表
+    renderData.value = []
+    // @ts-ignore
+    renderData.value = [...props.glComponentInst.value]
   },
   { deep: true }
 )
