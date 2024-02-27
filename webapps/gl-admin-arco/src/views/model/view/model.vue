@@ -272,7 +272,7 @@ import {
 import {enableStatusOptions, linkedOptions} from "@/views/model/view/searchTable";
 import MonacoEditor from '@/components/monaco/index.vue';
 import {useRoute} from "vue-router";
-import {columnSelectType, selectTypeOptions} from "@/views/model/column/searchTable";
+import {columnSelectType, defaultColumnMetas, selectTypeOptions} from "@/views/model/column/searchTable";
 import {isJSON} from "@/utils/is";
 import {QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions} from "@/api/security";
 
@@ -516,7 +516,12 @@ const getSelectEntityColumnOptions = async (params: PageQueryRequest = {
   try {
     if (entityData.value.tableId) {
       const {data} = await queryTableColumns(params);
-      selectEntityColumnOptions.value = data;
+      selectEntityColumnOptions.value = [];
+      data.forEach((item, index) => {
+        if (!defaultColumnMetas.value.includes((item as unknown as QueryTableColumnForm).name)) {
+          selectEntityColumnOptions.value.push(item);
+        }
+      });
     } else {
       selectEntityColumnOptions.value = [];
     }

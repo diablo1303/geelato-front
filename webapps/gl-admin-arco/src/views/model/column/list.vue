@@ -650,7 +650,12 @@ const getSelectEntityColumnOptions = async (params: PageQueryRequest = {
   try {
     if (entityData.value.tableId) {
       const {data} = await queryTableColumns(params);
-      selectEntityColumnOptions.value = data;
+      selectEntityColumnOptions.value = [];
+      data.forEach((item, index) => {
+        if (!defaultColumnMetas.value.includes((item as unknown as QueryTableColumnForm).name)) {
+          selectEntityColumnOptions.value.push(item);
+        }
+      });
     } else {
       selectEntityColumnOptions.value = [];
     }
