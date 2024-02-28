@@ -47,6 +47,10 @@ export function queryApps(params: QueryAppForm) {
   return axios.get<QueryAppForm[]>('/api/app/query');
 }
 
+export function queryAppsByUser(tenantCode: string, userId?: string) {
+  return axios.get<QueryAppForm[]>(`/api/app/queryByUser?tenantCode=${tenantCode}&userId=${userId}`);
+}
+
 export function getApp(id: string) {
   return axios.get<QueryAppForm>(`/api/app/get/${id}`);
 }

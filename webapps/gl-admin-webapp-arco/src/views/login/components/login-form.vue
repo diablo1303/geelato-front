@@ -77,7 +77,7 @@ import {getSysConfig} from "@/api/user";
 import {DEFAULT_ROUTE} from "@/router/constants";
 import {appDataBaseRoutes, formatAppModules, IS_ACCOUNT, pageBaseRoute, pageParamsIsFull} from "@/router/routes";
 import {getToken} from "@/utils/auth";
-import {QueryAppForm, queryApps} from "@/api/application";
+import {queryAppsByUser} from "@/api/application";
 import {useGlobal} from "@geelato/gl-ui";
 
 const router = useRouter();
@@ -146,13 +146,13 @@ const enterApp = async () => {
     // http://localhost:5173/login => http://localhost:5173/:tenantCode/:appId/page
     const {tenantCode} = userStore.userInfo;
     if (tenantCode) {
-      const {data} = await queryApps({"tenantCode": tenantCode} as QueryAppForm);
+      const {data} = await queryAppsByUser(userStore.userInfo.tenantCode || '', userStore.userInfo.id);
       if (data && data.length > 0) {
         const appIds = [...new Set(data.map((item) => item.id).filter((id) => !!id))];
         console.log(appIds);
         pageBaseRoute(router, {'tenantCode': tenantCode, 'appId': appIds[0]});
       } else {
-        Message.warning('租户下没有应用，请先添加！');
+        Message.warning('租户下当前用户没有应用权限，请先添加！');
       }
     } else {
       Message.warning('当前用户缺失租户编码，请联系管理员！');
