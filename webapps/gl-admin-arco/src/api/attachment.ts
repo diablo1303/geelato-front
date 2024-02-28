@@ -7,6 +7,7 @@ import {isJSON} from "@/utils/is";
 
 export interface AttachmentForm {
   id: string;
+  objectId: string;
   name: string;
   path: string;
   size: string;
