@@ -92,5 +92,19 @@ const linkedOptions = computed<SelectOptionData[]>(() => [
     value: 0,
   },
 ]);
+const sourceTypeOptions = computed<SelectOptionData[]>(() => [
+  {
+    label: 'model.table.index.form.sourceType.platform',
+    value: 'platform',
+  },
+  {
+    label: 'model.table.index.form.sourceType.system',
+    value: 'system',
+  },
+  {
+    label: 'model.table.index.form.sourceType.creation',
+    value: 'creation',
+  },
+]);
 
-export {columns, tableTypeOptions, enableStatusOptions, linkedOptions};
+export {columns, tableTypeOptions, enableStatusOptions, linkedOptions, sourceTypeOptions};

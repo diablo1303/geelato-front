@@ -228,7 +228,7 @@ const swapTable = (item: QueryTableForm): string => {
 const swapTableTitle = (item: QueryTableForm): string => {
   // eslint-disable-next-line no-nested-ternary
   pageData.value.isSync = (item.tableName != null && item.tableName.length > 0) ? (item.synced ? 2 : 1) : 0;
-  pageData.value.isSystem = item.sourceType === 'system';
+  pageData.value.isSystem = ['system', 'platform'].includes(item.sourceType);
   return `${item.title}（${item.entityName || item.tableName}）`;
 }
 /**

@@ -52,6 +52,14 @@
               </a-select>
             </a-form-item>
           </a-col>
+          <a-col :span="pageData.isModal?12:8">
+            <a-form-item :label="$t('model.table.index.form.sourceType')" field="sourceType">
+              <a-select v-model="filterData.sourceType" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="item of sourceTypeOptions" :key="item.value as string"
+                          :label="$t(`${item.label}`)" :value="item.value"/>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <!-- <a-col :span="pageData.isModal?12:8">
                       <a-form-item :label="$t('model.table.index.form.linked')" field="linked">
                         <a-select v-model="filterData.linked" :placeholder="$t('searchTable.form.selectDefault')">
@@ -183,6 +191,11 @@
           {{ getAppId(record.appId) }}
         </template>
       </a-table-column>
+      <a-table-column :title="$t('model.table.index.form.sourceType')" :width="100" data-index="sourceType">
+        <template #cell="{ record }">
+          {{ $t(`model.table.index.form.sourceType.${record.sourceType}`) }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('model.table.index.form.linked')" :width="100" data-index="linked">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.linked.${record.linked}`) }}
@@ -198,8 +211,8 @@
       <a-table-column
           v-show="pageData.formState==='edit'" :title="$t('model.table.index.form.operations')"
           :width="280" align="center" data-index="operations" fixed="right">
-        <template #cell="{ record }">
-          <a-tooltip v-if="record.sourceType==='system'" :content="$t('searchTable.tables.operations.sourceType.warning')">
+        <template #cell="{ record,isST = ['system','platform'].includes(record.sourceType)}">
+          <a-tooltip v-if="isST" :content="$t('searchTable.tables.operations.sourceType.warning')">
             <a-button size="small" type="text" class="button-disabled">
               {{ $t('searchTable.tables.operations.alter') }}
             </a-button>
@@ -209,7 +222,7 @@
               {{ $t('searchTable.tables.operations.alter') }}
             </a-button>
           </a-tooltip>
-          <a-tooltip v-if="record.sourceType==='system'" :content="$t('searchTable.tables.operations.sourceType.warning')">
+          <a-tooltip v-if="isST" :content="$t('searchTable.tables.operations.sourceType.warning')">
             <a-button size="small" type="text" class="button-disabled">
               {{ $t('searchTable.columns.operations.edit') }}
             </a-button>
@@ -217,7 +230,7 @@
           <a-button v-else size="small" type="text" @click="editTable(record.id)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
-          <a-tooltip v-if="record.sourceType==='system'" :content="$t('searchTable.tables.operations.sourceType.warning')">
+          <a-tooltip v-if="isST" :content="$t('searchTable.tables.operations.sourceType.warning')">
             <a-button size="small" type="text" class="button-disabled">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
@@ -257,7 +270,7 @@ import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 import {deleteTable as deleteList, initTables, pageQueryTables as pageQueryList, QueryTableForm as QueryForm} from '@/api/model';
-import {columns, enableStatusOptions, tableTypeOptions} from '@/views/model/table/searchTable';
+import {columns, enableStatusOptions, sourceTypeOptions, tableTypeOptions} from '@/views/model/table/searchTable';
 // 引用其他页面
 import TableForm from '@/views/model/table/form.vue';
 import TableDrawer from '@/views/model/table/drawer.vue';
@@ -305,6 +318,7 @@ const generateFilterData = () => {
     enableStatus: '',
     linked: '',
     createAt: [],
+    sourceType: '',
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode,
   };

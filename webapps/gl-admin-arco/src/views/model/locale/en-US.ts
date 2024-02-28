@@ -49,6 +49,7 @@ export default {
   'model.table.index.form.linked.1': 'YES',
   'model.table.index.form.linked.0': 'NO',
   'model.table.index.form.sourceType': 'sourceType',
+  'model.table.index.form.sourceType.platform': 'Platform Entity',
   'model.table.index.form.sourceType.system': 'System Entity',
   'model.table.index.form.sourceType.creation': 'Creation Model',
   'model.table.index.form.tableType': 'tableType',
