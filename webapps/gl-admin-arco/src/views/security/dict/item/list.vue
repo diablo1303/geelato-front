@@ -61,6 +61,12 @@
           </template>
           {{ $t('searchTable.operation.create') }}
         </a-button>
+        <a-button v-if="pageData.params.pId" type="primary" @click="exportDictItems($event)">
+          <template #icon>
+            <icon-export/>
+          </template>
+          {{ $t('searchTable.operation.export') }}
+        </a-button>
       </a-space>
     </a-col>
     <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
@@ -159,12 +165,20 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {columns, enableStatusOptions} from "@/views/security/dict/item/searchTable";
-import {deleteDictItem as deleteList, FilterDictItemForm as FilterForm, pageQueryDictItem as pageQueryList, QueryDictItemForm} from '@/api/security';
+import {
+  deleteDictItem as deleteList,
+  FilterDictItemForm as FilterForm,
+  getDict,
+  pageQueryDictItem as pageQueryList,
+  QueryDictItemForm,
+  queryDictItems
+} from '@/api/security';
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 引用其他页面
 import {useRoute} from "vue-router";
 import DictItemDrawer from "@/views/security/dict/item/drawer.vue";
 import DictItemLocker from "@/views/security/dict/item/locker.vue";
+import {exportWps, fetchFileById} from "@/api/attachment";
 
 /* 列表 */
 const route = useRoute();
@@ -289,8 +303,37 @@ const addTable = (ev: MouseEvent) => {
     // @ts-ignore
     dictItemDrawerRef.value?.openForm({action: 'add', params: pageData.value.params, closeBack: reset});
   }
-
 };
+const exportDictItems = async (ev?: MouseEvent) => {
+  if (!pageData.value.params.pId) {
+    Notification.warning(t('security.dict.index.notice.warning2'));
+    return;
+  }
+  // {"valueMap": {}, "valueMapList": [{"dictItem": []}]}
+  const exportData = {"valueMap": {}, "valueMapList": []}
+  try {
+    const dictData = await getDict(pageData.value.params.pId);
+    // @ts-ignore
+    dictData.data.enableStatus = dictData.data.enableStatus === 1 ? '启用' : '禁用';
+    exportData.valueMap = dictData.data || {};
+    const itemData = await queryDictItems({dictId: pageData.value.params.pId} as QueryDictItemForm);
+    const dictItem: any[] = [];
+    itemData.data.forEach((item: QueryDictItemForm) => {
+      // @ts-ignore
+      item.enableStatus = item.enableStatus === 1 ? '启用' : '禁用';
+      dictItem.push(item);
+    });
+    // @ts-ignore
+    exportData.valueMapList.push({"dictItem": dictItem});
+    console.log(exportData);
+    const {data} = await exportWps('data', '4942276091403440128', exportData, pageData.value.params.pName || '字典管理数据导出');
+    if (data && data.id) fetchFileById(data.id);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+
 const addChildTable = (id: string) => {
   if (dictItemDrawerRef.value) {
     // @ts-ignore

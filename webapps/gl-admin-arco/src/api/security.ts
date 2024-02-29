@@ -267,6 +267,14 @@ export interface FilterDictItemForm {
   tenantCode: string;
 }
 
+export function queryDictItems(params: QueryDictItemForm) {
+  return axios.get<QueryDictItemForm[]>('/api/dict/item/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 export function getDictItem(id: string) {
   return axios.get<QueryDictItemForm>(`/api/dict/item/get/${id}`);
 }

@@ -20,6 +20,7 @@ export default {
   'searchTable.form.selectDefault': 'All',
   'searchTable.operation.create': 'Create',
   'searchTable.operation.import': 'Import',
+  'searchTable.operation.export': 'Export',
   'searchTable.operation.download': 'Download',
   // columns
   'searchTable.columns.index': '#',

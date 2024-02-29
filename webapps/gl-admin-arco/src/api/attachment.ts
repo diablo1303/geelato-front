@@ -238,3 +238,21 @@ export const fetchFileToBase64 = async (id: string, callBack?: any) => {
     Message.error({content: (err && err.message) || "文件转Base64失败", duration: 5 * 1000});
   }
 }
+
+/**
+ * 导出文件
+ * @param dataType
+ * @param templateId
+ * @param fileName
+ * @param markText
+ * @param markKey
+ * @param readonly
+ * @param data
+ */
+export function exportWps(dataType: string, templateId: string, data: Record<string, any>, fileName: string,
+                          markText?: string, markKey?: string, readonly?: boolean) {
+  markText = markText || '';
+  markKey = markKey || '';
+  readonly = readonly === true;
+  return axios.post<AttachmentForm>(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}&markText=${markText}&markKey=${markKey}&readonly=${readonly}`, data);
+}
