@@ -12,9 +12,12 @@ export default class EntityQueryBlockHandler implements IBlockHandler {
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     console.log('props', props)
     let respVarName = props.respVarName || utils.gid('respVarName')
+    let entityReaderId = utils.gid('entityReader')
     let dataVarName = props.dataVarName || utils.gid('dataVarName')
     return new ParseResult(
-      `$gl.vars.${respVarName} = await $gl.entityApi.queryByEntityReader($gl.fn.convertEntityReader(${JSON.stringify(props.entityReader)}))
+      `
+      $gl.vars.${entityReaderId} = $gl.fn.convertEntityReader(${JSON.stringify(props.entityReader)})
+      $gl.vars.${respVarName} = await $gl.entityApi.queryByEntityReader($gl.vars.${entityReaderId})
           $gl.vars.${dataVarName} = $gl.vars.${respVarName}.data
           `
     )
