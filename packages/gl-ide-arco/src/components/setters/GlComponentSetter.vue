@@ -1,7 +1,7 @@
 <template>
   <div class="gl-component-setter" v-if="componentModel">
     <!-- 这里需加上 :destroy-on-hide="true"，默认值为false，否则在页面切换时，各个页面重复更新渲染，性能很差-->
-    <a-tabs size="small" :active-key="mv" @tabClick="onTabClick" :destroy-on-hide="true">
+    <a-tabs size="small" :active-key="mv" @tabClick="onTabClick" :destroy-on-hide="true" :lazy-load="true">
       <a-tab-pane v-if="includePanel('props')" key="props" tab="属性" title="属性">
         <div
           v-if="!hideToolbar && (showMove || showMove || showSelectParent || showDelete)"
@@ -22,13 +22,13 @@
           <a-button-group type="primary" size="mini" shape="round" v-if="!isGraphElement">
             <!--            <a-button status="normal" v-if="showSelectParent" @click="componentStore.selectParentComponent">选父组件-->
             <!--            </a-button>-->
-<!--            <a-button-->
-<!--              status="normal"-->
-<!--              v-if="showSelectParent"-->
-<!--              @click="componentStore.copyCurrentSelectedComponent()"-->
-<!--            >-->
-<!--              复制插入-->
-<!--            </a-button>-->
+            <!--            <a-button-->
+            <!--              status="normal"-->
+            <!--              v-if="showSelectParent"-->
+            <!--              @click="componentStore.copyCurrentSelectedComponent()"-->
+            <!--            >-->
+            <!--              复制插入-->
+            <!--            </a-button>-->
             <a-button
               status="normal"
               v-if="showSelectParent"
@@ -137,7 +137,11 @@
       <!--                                @update="(val:any)=>{setInstance(val,'style')}"/>-->
       <!--      </a-tab-pane>-->
       <a-tab-pane v-if="includePanel('permission')" key="permission" tab="权限" title="权限">
-        <GlPermissionsSetter></GlPermissionsSetter>
+        <GlPermissionsSetter
+          :componentMeta="componentMeta"
+          :componentInstance="componentModel"
+          @change:permissionValue="onChangePermissionValue"
+        ></GlPermissionsSetter>
       </a-tab-pane>
       <a-tab-pane v-if="includePanel('lang')" key="lang" tab="多语言" title="多语言">
         <div style="margin: 0 0 0.5em 0.5em">
@@ -261,6 +265,18 @@ const deleteCurrentSelectedComponentInst = () => {
 const onChangePropertyValue = (param: { type: string; name: string; value: any }) => {
   pageStore.operationLog(
     '改属性',
+    pageStore.currentPage.sourceContent,
+    componentStore.currentSelectedComponentInstance
+  )
+}
+
+/**
+ * 修改权限时触发
+ * @param param
+ */
+const onChangePermissionValue = (param: { type: string; name: string; value: any }) => {
+  pageStore.operationLog(
+    '改权限',
     pageStore.currentPage.sourceContent,
     componentStore.currentSelectedComponentInstance
   )

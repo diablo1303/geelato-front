@@ -1,6 +1,6 @@
 import type {PropType} from 'vue'
 import {ComponentInstance} from '@geelato/gl-ui-schema'
-import type {PageCustomType} from './PageProvideProxy'
+import type {PageCustomType, PagePermission} from './PageProvideProxy'
 
 const props = {
     parentId: {
@@ -73,6 +73,10 @@ const props = {
      *  页面自定义配置
      */
     pageCustom: Object as PropType<PageCustomType>,
+    /**
+     *  页面权限配置
+     */
+    pagePermission: Object as PropType<PagePermission>,
 }
 const subFormProps = {
     /**

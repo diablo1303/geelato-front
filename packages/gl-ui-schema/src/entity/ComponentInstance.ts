@@ -57,12 +57,16 @@ export class I18nItem {
 }
 
 /**
- *  "__"开头的属性动态产生用于内部计算使用，不需要保存到服务端
+ *  "__"开头的属性有多外来源
+ *  1、动态产生用于内部计算使用
+ *  2、作为源代码属性且不需要在发布运行版本中出现
+ *  在保存为release版本时，"__"开头的属性会被删除掉，以减小文件的大小
+ *  source版本，仍保存该属性信息
  */
 export default class ComponentInstance {
     id: string = ''
     // 创建id时的id前缀
-    __idPrefix?:string = ''
+    __idPrefix?: string = ''
     title?: string = ''
     componentName: string = ''
     // 如dataEntry，可以来用区分是否为表单输入项，在渲染时展示label
@@ -88,13 +92,13 @@ export default class ComponentInstance {
     value?: undefined | string | number | boolean | object | Array<any>
     // 禁用拖放 默认为false，不禁止
     // 如在渲染工作流画布的场景中，禁止工作流画布可拖动，可设置为true
-    disabledDnd?:Boolean
+    disabledDnd?: Boolean
     // 如在渲染工作流画布的场景中，禁止设选择该组件，如点击选择无效，避免子组件冒泡触发
-    disabledSelect?:Boolean
+    disabledSelect?: Boolean
     // 映射引用的组件id，这个属性用于图元映射到组件实例的场景，如设计页面是一个工作流程图，图元的id映射到组件refId
-    refId?:string
+    refId?: string
     // 用于组件映射到外部的组件或外部的图元素等。如组件实例为GlPage时，可以在此存储当前页面对应的graph对象
-    refObject?:Object
+    refObject?: Object
     // 值表达式，用于结合上下文的信息、相关逻辑计算得出value
     // valueExpression?: string = ''
     // 是否禁用，默认为启用，用于设计时
@@ -115,5 +119,10 @@ export default class ComponentInstance {
 
     // 脚本块
     __commandBlock?: BlockInstance
+
+    // 组件是否启用权限控制，用于在渲染时，确定是否需要检查权限，perms为空、为r为0或空、w为0或空都表示不需要检查
+    perms?: { r?: number, w?: number }
+    // 组件的权限管制配置，用于设计时配置
+    __perms?: { r: {id:string,name:string}, w: {id:string,name:string} }
 
 }

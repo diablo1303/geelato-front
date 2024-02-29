@@ -303,6 +303,24 @@ export class EntityReader {
     this.fields.push(...fields)
     return this.fields
   }
+
+  /**
+   * 添加参数
+   * @param name
+   * @param cop
+   * @param value
+   * @param groupName
+   * @param valueExpression
+   */
+  public addParam(
+    name: string,
+    cop: string,
+    value: string | number | boolean | Array<string | number | boolean>,
+    groupName?: string,
+    valueExpression?: string
+  ) {
+    this.params.push(new EntityReaderParam(name, cop, value, groupName, valueExpression))
+  }
 }
 
 export enum EntityRecordStatus {

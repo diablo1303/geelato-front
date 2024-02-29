@@ -666,7 +666,7 @@ export default {
       type: 'props',
       enableValueExpress: false,
       show: true,
-      expanded: true,
+      expanded: false,
       displayMode: 'collapse',
       setterComponentProps: {},
       setterComponentVModelName: '',

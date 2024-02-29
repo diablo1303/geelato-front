@@ -3,7 +3,7 @@
  */
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import type { ComponentInternalInstance } from 'vue'
-import type { Param } from '../m/types/global'
+import type { InstPermission, Param } from '../m/types/global'
 import utils from '../m/utils/Utils'
 
 export type PageParamConfigType = { pName: string; pValue: any; pType: string }
@@ -13,6 +13,40 @@ export type PageCustomType = {
   // key为页面中的组件的id,值为该组件的个性化配置
   cfg: Record<string, any>
 }
+
+/**
+ * 页面权限管理
+ */
+export class PagePermission {
+  perms: InstPermission[] = []
+
+  setPermissions(perms: InstPermission[]) {
+    this.perms = perms || []
+  }
+
+  /**
+   * 是否有查看权限
+   * @param instId 组件实例id
+   */
+  hasReadPermission(instId: string) {
+    const found = this.perms?.find((permission: InstPermission) => {
+      return permission.instId === instId && permission.rule === 'r'
+    })
+    return !!found
+  }
+
+  /**
+   * 是否有编辑权限
+   * @param instId 组件实例id
+   */
+  hasWritePermission(instId: string) {
+    const found = this.perms?.find((permission: InstPermission) => {
+      return permission.instId === instId && permission.rule === 'w'
+    })
+    return !!found
+  }
+}
+
 export const PageProvideKey = 'PageProvideKey'
 export const PageParamsKey = 'PageParamsKey'
 export const PageProvideKeyNotBlockPage = 'PageProvideKeyNotBlockPage'
@@ -74,6 +108,7 @@ export default class PageProvideProxy {
   pageId: string = ''
   pageStatus: string = 'read'
   pageCustom?: PageCustomType
+  pagePermission?: PagePermission
   pageTemplateName: string = ''
   pageInst: ComponentInstance
   pageVueInst: ComponentInternalInstance | null
@@ -379,6 +414,14 @@ export default class PageProvideProxy {
 
   getPageCustom() {
     return this.pageCustom
+  }
+
+  setPagePermission(pagePermission?: PagePermission) {
+    this.pagePermission = pagePermission
+  }
+
+  getPagePermission() {
+    return this.pagePermission
   }
 
   isPageStatusRead() {

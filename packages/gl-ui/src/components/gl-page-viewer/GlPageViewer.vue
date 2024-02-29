@@ -1,12 +1,9 @@
 <script lang="ts" setup>
-import { computed, type Ref, ref, watch } from 'vue'
+import { type Ref, ref, watch } from 'vue'
 import { ComponentInstance } from '@geelato/gl-ui-schema'
-import {
-  mixins,
-  type PageCustomType,
-  useGlobal
-} from '../../index'
+import { mixins, type PageCustomType, useGlobal } from '../../index'
 import { entityApi } from '../../m/datasource/EntityApi'
+import { PagePermission } from '../PageProvideProxy'
 
 defineOptions({
   name: 'GlPageViewer'
@@ -55,6 +52,7 @@ let myPageCustom: Ref<PageCustomType> = ref({
   pageId: props.pageId,
   cfg: {}
 })
+let pagePermission: Ref<PagePermission> = ref(new PagePermission())
 const load = () => {
   let loadedPage = undefined
   if (props.pageId) {
@@ -73,8 +71,13 @@ const load = () => {
     loadedPage.then((resp: any) => {
       if (resp && resp.data) {
         glComponentInst.value = JSON.parse(resp.data.releaseContent)
+        // 页面自定义配置
         if (resp.data.pageCustom) {
           myPageCustom.value = resp.data.pageCustom
+        }
+        // 页面的权限控制
+        if (resp.data.perms) {
+          pagePermission.value.setPermissions(resp.data.perms)
         }
       } else {
         // console.error('GlPageViewer > loadedPage > resp?.data:', resp?.data)
@@ -101,7 +104,7 @@ watch(
 </script>
 <template>
   <div class="gl-page-viewer">
-    <!-- render gl-page -->
+    <!-- 正常情况该组件为： gl-page -->
     <GlComponent
       v-if="glComponentInst && glComponentInst.componentName"
       :key="glComponentInst.id"
@@ -110,6 +113,7 @@ watch(
       :glRuntimeFlag="glRuntimeFlag"
       :pageStatus="pageStatus"
       :pageCustom="myPageCustom"
+      :pagePermission="pagePermission"
       :pageTemplateName="pageTemplateName"
       v-bind="pageProps"
       :glIgnoreInjectPageProxy="true"

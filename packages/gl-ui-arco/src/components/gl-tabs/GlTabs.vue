@@ -4,10 +4,9 @@ export default {
 }
 </script>
 <script setup lang="ts">
-
-import {mixins, utils} from "@geelato/gl-ui";
-import {nextTick, onMounted, onUpdated, type PropType, type Ref, ref, watch} from "vue";
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import { mixins, utils } from '@geelato/gl-ui'
+import { nextTick, onMounted, onUpdated, type PropType, type Ref, ref, watch } from 'vue'
+import type { ComponentInstance } from '@geelato/gl-ui-schema'
 
 const emits = defineEmits(['update:modelValue', 'update:items'])
 
@@ -16,6 +15,10 @@ class TabItem {
   iconType: string = ''
   value: string = ''
   disabled?: boolean = false
+  // 懒加载，为true时，让面板在首次激活时渲染，注意这个的懒加载是针对单个面板
+  lazyLoad?: boolean
+  // 默认为false，面板选激活之后为true
+  hasBeenLoad?: boolean
 }
 
 const props = defineProps({
@@ -32,16 +35,26 @@ const props = defineProps({
 // console.log('props.items:', props.items)
 const tabItems: Ref<TabItem[]> = ref(props.items || [])
 if (tabItems.value.length === 0) {
-  tabItems.value.push(...[{
-    title: '标题1', iconType: '', value: '0'
-  }, {
-    title: '标题2', iconType: '', value: '1'
-  }])
+  tabItems.value.push(
+    ...[
+      {
+        title: '标题1',
+        iconType: '',
+        value: '0'
+      },
+      {
+        title: '标题2',
+        iconType: '',
+        value: '1'
+      }
+    ]
+  )
 }
 
 const mv = ref(props.modelValue)
 // 初始化选中第一个
 if (!mv.value && tabItems.value.length > 0) {
+  tabItems.value[0].hasBeenLoad = true
   mv.value = tabItems.value[0].value
 }
 // 移动tabItem之后，当前mv对应的tabPane是否有变化，有的话，需要刷新页面
@@ -85,55 +98,59 @@ const checkItemTabPositionAndSyncTabPane = () => {
 // 先snapshot
 snapshot()
 
-watch(() => {
-  return props.items
-}, (val, oldValue) => {
-  console.log('props.items', val, oldValue)
-  tabItems.value = props.items || []
-  tabItems.value.forEach((item: TabItem, index: number) => {
-    item.value = item.value || (index + '')
-  })
-  if (!mv.value && tabItems.value.length > 0) {
-    mv.value = tabItems.value[0].value
-  }
-  // 检查items数组的变化
-  if (tabItems.value.length !== Object.keys(lastTabIndexMap).length) {
-    // 长度变化
-    // 不做处理
-  } else {
-    // 位置比较
-    checkItemTabPositionAndSyncTabPane()
-  }
-  snapshot()
-}, {deep: true})
+watch(
+  () => {
+    return props.items
+  },
+  (val, oldValue) => {
+    // console.log('props.items', val, oldValue)
+    tabItems.value = props.items || []
+    tabItems.value.forEach((item: TabItem, index: number) => {
+      item.value = item.value || index + ''
+    })
+    if (!mv.value && tabItems.value.length > 0) {
+      mv.value = tabItems.value[0].value
+    }
+    // 检查items数组的变化
+    if (tabItems.value.length !== Object.keys(lastTabIndexMap).length) {
+      // 长度变化
+      // 不做处理
+    } else {
+      // 位置比较
+      checkItemTabPositionAndSyncTabPane()
+    }
+    snapshot()
+  },
+  { deep: true }
+)
 
 // console.log('mv.value', mv.value)
 
-const placeholderTemplate = () => {
-  return {
-    "id": utils.gid('ph'),
-    "componentName": "GlDndPlaceholder",
-    "title": "占位符",
-    "props": {},
-    "slots": {},
-    "children": []
-  }
-}
+// const placeholderTemplate = () => {
+//   return {
+//     id: utils.gid('ph'),
+//     componentName: 'GlDndPlaceholder',
+//     title: '占位符',
+//     props: {},
+//     slots: {},
+//     children: []
+//   }
+// }
 const itemTemplate = () => {
   return {
-    "id": utils.gid('virtual'),
-    "componentName": "GlVirtual",
-    "title": "项",
-    "props": {},
-    "slots": {},
-    "children": [
+    id: utils.gid('virtual'),
+    componentName: 'GlVirtual',
+    title: '项',
+    props: {},
+    slots: {},
+    children: [
       {
-        "id": utils.gid('ph'),
-        "componentName": "GlDndPlaceholder",
-        "title": "占位符",
-        "props": {},
-        "slots": {},
-        "children": []
+        id: utils.gid('ph'),
+        componentName: 'GlDndPlaceholder',
+        title: '占位符',
+        props: {},
+        slots: {},
+        children: []
       }
     ]
   }
@@ -143,36 +160,40 @@ onUpdated(() => {
   updateInst()
 })
 
-
 const updateInst = () => {
-  if (props.glComponentInst.children && props.glComponentInst.children.length != tabItems.value.length) {
+  if (
+    props.glComponentInst.children &&
+    props.glComponentInst.children.length != tabItems.value.length
+  ) {
     while (props.glComponentInst.children.length < tabItems.value.length) {
       props.glComponentInst.children.push(JSON.parse(JSON.stringify(itemTemplate())))
     }
     props.glComponentInst.children.length = tabItems.value.length
-    nextTick(() => {
-    })
+    nextTick(() => {})
   }
 }
 
 updateInst()
-
 
 const onTabClick = (key: string | number) => {
   const foundItem = tabItems.value.find((item: TabItem) => {
     return item.value == key
   })
   if (foundItem && !foundItem.disabled) {
+    foundItem.hasBeenLoad = true
     mv.value = key
   }
 }
 
-watch(()=>{
-  return props.glComponentInst.value
-}, (value) => {
-  // @ts-ignore
-  mv.value = value
-})
+watch(
+  () => {
+    return props.glComponentInst.value
+  },
+  (value) => {
+    // @ts-ignore
+    mv.value = value
+  }
+)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
@@ -183,28 +204,34 @@ onMounted(() => {
     mv.value = tabItems.value[0].value
   }
 })
-
 </script>
 <template>
-  <a-tabs class="gl-tabs" v-if="!currentTabPaneChanged" :active-key="mv" @tabClick="onTabClick"
-          style="background-color:white">
+  <a-tabs
+    class="gl-tabs"
+    v-if="!currentTabPaneChanged"
+    :active-key="mv"
+    @tabClick="onTabClick"
+    style="background-color: white"
+  >
     <template #extra>
       <div>
         <slot name="extra"></slot>
       </div>
     </template>
-    <a-tab-pane v-for="(item,index) in tabItems" :key="item.value" :disabled="item.disabled">
+    <a-tab-pane v-for="(item, index) in tabItems" :key="item.value" :disabled="item.disabled">
       <template #title>
-        <GlIconfont v-if="item.iconType" :type="item.iconType"/>
+        <GlIconfont v-if="item.iconType" :type="item.iconType" />
         {{ item.title }}
       </template>
-      <component v-if="glComponentInst.children[index]" :is="'GlInsts'+glRuntimeFlag"
-                 :glComponentInst="glComponentInst.children[index]"
-                 :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"></component>
+      <div v-if="!item.lazyLoad || (item.lazyLoad === true && item.hasBeenLoad)">
+        <component
+          v-if="glComponentInst?.children[index]"
+          :is="'GlInsts' + glRuntimeFlag"
+          :glComponentInst="glComponentInst?.children[index]"
+          :glIsRuntime="glIsRuntime"
+          :glRuntimeFlag="glRuntimeFlag"
+        ></component>
+      </div>
     </a-tab-pane>
   </a-tabs>
 </template>
-
-<style scoped>
-
-</style>

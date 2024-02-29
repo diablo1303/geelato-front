@@ -22,7 +22,7 @@
         <component :is="'GlInsts'" :glComponentInst="glComponentInst"></component>
       </template>
     </template>
-    <div class="gl-page-timer" v-if="lastUpdateTime">{{timerInfo}}</div>
+    <div class="gl-page-timer" v-if="lastUpdateTime">{{ timerInfo }}</div>
   </div>
 </template>
 
@@ -32,7 +32,15 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {type PropType, getCurrentInstance, onUnmounted, provide, ref, nextTick, computed} from 'vue'
+import {
+  type PropType,
+  getCurrentInstance,
+  onUnmounted,
+  provide,
+  ref,
+  nextTick,
+  computed
+} from 'vue'
 import {
   type PageType,
   PageProvideProxy,
@@ -122,7 +130,7 @@ const props = defineProps({
   pageTimerText: {
     type: String,
     default() {
-      return "自动保存@${lastUpdateTime}"
+      return '自动保存@${lastUpdateTime}'
     }
   },
   /**
@@ -160,6 +168,7 @@ pageProvideProxy.pageId = props.pageId
 pageProvideProxy.setVueRef(props.glComponentInst.id, getCurrentInstance())
 pageProvideProxy.setPageStatus(props.pageStatus)
 pageProvideProxy.setPageCustom(props.pageCustom)
+pageProvideProxy.setPagePermission(props.pagePermission)
 pageProvideProxy.setParams(props.params)
 const onPageMounted = () => {
   //  触发页面配置的事件，只限运行时
@@ -222,8 +231,8 @@ const refresh = () => {
 
 const lastUpdateTime = ref('')
 
-const timerInfo = computed(()=>{
-  return props.pageTimerText?.replace('${lastUpdateTime}',lastUpdateTime.value)
+const timerInfo = computed(() => {
+  return props.pageTimerText?.replace('${lastUpdateTime}', lastUpdateTime.value)
 })
 // 页面定时器
 const pageIntervalHandler = () => {

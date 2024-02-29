@@ -61,7 +61,7 @@ const currentRoleAppMenuItems: Ref<AppMenuItem[]> = ref([])
 // 当前应用的角色
 const loadAppRoles = (appId: string) => {
   // TODO 待增加应用id条件
-  entityApi.query('platform_role', 'id,name,code', {'@p': '1,1000'}).then((res) => {
+  entityApi.query('platform_role', 'id,name,code', {'@p': '1,1000','@order':'name|+'}).then((res) => {
     appRoles.value = res.data
   })
 }

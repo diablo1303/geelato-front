@@ -1,56 +1,96 @@
 <!--glComponentInst.componentName!=='GlHiddenArea'提高安全性，降低通过修改组件的_hidden属性来显示内容的风险-->
 <template>
   <component
-      v-if="glComponentInst&&glComponentInst.componentName&&glComponentInst.props.unRender!==true"
-      v-show="glComponentInst.props?._hidden !== true&&glComponentInst.componentName!=='GlHiddenArea'"
-      :id="glComponentInst.id"
-      :ref="glComponentInst.id"
-      class="gl-component"
-      :is="glComponentInst.componentName"
-      :modelValue="mv"
-      @update:modelValue="onUpdateModelValue"
-      :userId="glComponentInst.componentName"
-      v-bind="glComponentInst.propsWrapper?{[glComponentInst.propsWrapper]:glComponentInst.props}:glComponentInst.props"
-      :style="glComponentInst.style"
-      :parentId="glComponentInst.id"
-      :glChildren="glComponentInst.children"
+    v-if="
+      glComponentInst &&
+      hasPermission() &&
+      glComponentInst.componentName &&
+      glComponentInst.props.unRender !== true
+    "
+    v-show="
+      glComponentInst.props?._hidden !== true && glComponentInst.componentName !== 'GlHiddenArea'
+    "
+    :id="glComponentInst.id"
+    :ref="glComponentInst.id"
+    class="gl-component"
+    :is="glComponentInst.componentName"
+    :modelValue="mv"
+    @update:modelValue="onUpdateModelValue"
+    :userId="glComponentInst.componentName"
+    v-bind="
+      glComponentInst.propsWrapper
+        ? { [glComponentInst.propsWrapper]: glComponentInst.props }
+        : glComponentInst.props
+    "
+    :style="glComponentInst.style"
+    :parentId="glComponentInst.id"
+    :glChildren="glComponentInst.children"
+    :glIsRuntime="glIsRuntime"
+    :glRuntimeFlag="glRuntimeFlag"
+    :glIndex="glIndex"
+    :glLoopItem="glLoopItem"
+    :glLoopIndex="glLoopIndex"
+    :glComponentInst="glComponentInst"
+    :pageCustom="pageCustom"
+    v-on="onActionsHandler"
+  >
+    <template v-for="(slotItem, slotName) in glComponentInst.slots" v-slot:[slotName]>
+      <component
+        v-if="slotItem.propsTarget === 'v-bind'"
+        :is="slotItem.componentName"
+        v-bind="slotItem.props"
+        :style="slotItem.style"
+        :glRuntimeFlag="glRuntimeFlag"
+        :glIsRuntime="glIsRuntime"
+      ></component>
+      <component
+        v-else-if="slotItem.propsTarget === 'v-model' && slotItem.propsName"
+        :is="slotItem.componentName"
+        v-model:[slotItem.propsName]="slotItem.props"
+        :style="slotItem.style"
+        :glRuntimeFlag="glRuntimeFlag"
+        :glIsRuntime="glIsRuntime"
+      ></component>
+      <component
+        v-else-if="slotItem.propsTarget === 'v-model' && !slotItem.propsName"
+        :is="slotItem.componentName"
+        v-model="slotItem.props"
+        :style="slotItem.style"
+        :glRuntimeFlag="glRuntimeFlag"
+        :glIsRuntime="glIsRuntime"
+      ></component>
+      <template v-else
+        >不支持的slot props target：{{ slotItem.propsTarget }}，请检查组件定义配置。
+      </template>
+    </template>
+    <GlComponent
+      v-for="(childComponentInst, childIndex) in glComponentInst.children"
+      :glComponentInst="childComponentInst"
       :glIsRuntime="glIsRuntime"
       :glRuntimeFlag="glRuntimeFlag"
-      :glIndex="glIndex"
-      :glLoopItem="glLoopItem"
-      :glLoopIndex="glLoopIndex"
-      :glComponentInst="glComponentInst"
-      :pageCustom = "pageCustom"
-      v-on="onActionsHandler"
-  >
-    <template v-for="(slotItem,slotName) in glComponentInst.slots" v-slot:[slotName]>
-      <component v-if="slotItem.propsTarget==='v-bind'" :is="slotItem.componentName" v-bind="slotItem.props"
-                 :style="slotItem.style" :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>
-      <component v-else-if="slotItem.propsTarget==='v-model'&&slotItem.propsName" :is="slotItem.componentName"
-                 v-model:[slotItem.propsName]="slotItem.props"
-                 :style="slotItem.style" :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>
-      <component v-else-if="slotItem.propsTarget==='v-model'&&!slotItem.propsName" :is="slotItem.componentName"
-                 v-model="slotItem.props"
-                 :style="slotItem.style" :glRuntimeFlag="glRuntimeFlag" :glIsRuntime="glIsRuntime"></component>
-      <template v-else>不支持的slot props target：{{ slotItem.propsTarget }}，请检查组件定义配置。</template>
-    </template>
-    <GlComponent v-for="(childComponentInst,childIndex) in glComponentInst.children"
-                 :glComponentInst="childComponentInst" :glIsRuntime="glIsRuntime" :glRuntimeFlag="glRuntimeFlag"
-                 :glIndex="childIndex" :pageCustom = "pageCustom"></GlComponent>
+      :glIndex="childIndex"
+      :pageCustom="pageCustom"
+    ></GlComponent>
   </component>
 </template>
 
 <script lang="ts" setup>
-import {computed, getCurrentInstance, inject, nextTick, onMounted, ref, watch} from 'vue'
-import mixins from "../mixins";
-import jsScriptExecutor from "../../m/actions/JsScriptExecutor";
-import type {Action} from "@geelato/gl-ui-schema";
-import PageProvideProxy, {PageProvideKey} from "../PageProvideProxy";
-import {executePropsExpressions} from "./GlComponentSupport";
+import { computed, getCurrentInstance, inject, nextTick, onMounted, ref, watch } from 'vue'
+import mixins from '../mixins'
+import jsScriptExecutor from '../../m/actions/JsScriptExecutor'
+import type { Action } from '@geelato/gl-ui-schema'
+import PageProvideProxy, { PageProvideKey } from '../PageProvideProxy'
+import { executePropsExpressions } from './GlComponentSupport'
 
-defineOptions({name: "GlComponent"})
+defineOptions({ name: 'GlComponent' })
 
-const emits = defineEmits(['update:modelValue', 'update', 'onAction', 'onComponentClick', 'onValueChange'])
+const emits = defineEmits([
+  'update:modelValue',
+  'update',
+  'onAction',
+  'onComponentClick',
+  'onValueChange'
+])
 
 const props = defineProps({
   modelValue: {
@@ -59,10 +99,11 @@ const props = defineProps({
   ...mixins.props
 })
 
-const pageProvideProxy: PageProvideProxy | undefined = props.glIgnoreInjectPageProxy ? undefined : inject(PageProvideKey)!
-// 获取页面的个性化配置信息，一个页面可能有多个组件，每个组件有可能有个性化信息
-// const pageCustom = pageProvideProxy?.getPageCustom()
-
+const pageProvideProxy: PageProvideProxy | undefined = props.glIgnoreInjectPageProxy
+  ? undefined
+  : inject(PageProvideKey)!
+// 获取页面的权限配置信息
+const pagePermission = pageProvideProxy?.getPagePermission()
 
 // console.log('GlComponent > setVueRef >', props.glComponentInst.componentName, props.glComponentInst.id, getCurrentInstance(), pageProvideProxy)
 // 在setup阶段先setVueRef，对于有些组件如GlTable
@@ -96,9 +137,14 @@ const doAction = (actionName: string, args: any) => {
         // console.log('GlComponent > doAction > action', action)
         // let ctx = inject('$ctx') as object || {}
         let ctx = {}
-        Object.assign(ctx, props.glCtx, {args}, {
-          pageProxy: pageProvideProxy
-        })
+        Object.assign(
+          ctx,
+          props.glCtx,
+          { args },
+          {
+            pageProxy: pageProvideProxy
+          }
+        )
         // console.log('GlComponent > doAction() > ctx:', actionName, ctx)
         jsScriptExecutor.doAction(action, ctx)
       }
@@ -109,7 +155,11 @@ const doAction = (actionName: string, args: any) => {
 const createActionHandler = (actionName: string) => {
   return (...args: any) => {
     stopPropagation(args)
-    emits('onAction', {arguments: args, glComponentInst: props.glComponentInst, glCtx: props.glCtx})
+    emits('onAction', {
+      arguments: args,
+      glComponentInst: props.glComponentInst,
+      glCtx: props.glCtx
+    })
     doAction(actionName, args)
   }
 }
@@ -124,7 +174,11 @@ const onValueChange = (...args: any) => {
   // console.log('gl-component > onValueChange() > arguments:', args, props.glComponentInst)
   // 对于一些组件，事件可能是优先触发了组件内的事件，第一个参数不一定是event，这里对所有参数做统一处理
   stopPropagation(args)
-  emits('onValueChange', {arguments: args, glComponentInst: props.glComponentInst, glCtx: props.glCtx})
+  emits('onValueChange', {
+    arguments: args,
+    glComponentInst: props.glComponentInst,
+    glCtx: props.glCtx
+  })
   doAction('onValueChange', args)
 }
 
@@ -135,7 +189,6 @@ const onMouseOver = (...args: any[]) => {
       event.stopPropagation()
     }
   }
-
 }
 const onMouseLeave = (...args: any[]) => {
   for (let i in args) {
@@ -148,27 +201,32 @@ const onMouseLeave = (...args: any[]) => {
 
 const mv = <any>ref(props.modelValue || props.glComponentInst.value)
 
-
-watch(() => {
-  return props.glComponentInst.value
-}, () => {
-  mv.value = props.glComponentInst.value
-})
+watch(
+  () => {
+    return props.glComponentInst.value
+  },
+  () => {
+    mv.value = props.glComponentInst.value
+  }
+)
 
 // 开启监控，待观察是否有副作用 8.8
-watch(() => {
-  return props.modelValue
-}, () => {
-  mv.value = props.modelValue
-})
+watch(
+  () => {
+    return props.modelValue
+  },
+  () => {
+    mv.value = props.modelValue
+  }
+)
 
 /**
  * 值为object格式时，值改变没有被watch(mv)检测到，这里改用，事件来处理值改变
  * @param value
  */
-const onUpdateModelValue = (value:any) => {
+const onUpdateModelValue = (value: any) => {
   mv.value = value
-  if (typeof mv.value === 'object'){
+  if (typeof mv.value === 'object') {
     // 如果组件值为对象时，触发值改变操作
     props.glComponentInst.value = value
     // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
@@ -180,34 +238,49 @@ const onUpdateModelValue = (value:any) => {
 }
 
 props.glComponentInst.value = mv.value
-watch(mv, (value, oldValue) => {
-  // 过滤掉一些无效的值改变undefined null
-  if ((value===undefined||value===null)&&(oldValue=== undefined)){
-    return
+watch(
+  mv,
+  (value, oldValue) => {
+    // 过滤掉一些无效的值改变undefined null
+    if ((value === undefined || value === null) && oldValue === undefined) {
+      return
+    }
+    props.glComponentInst.value = value
+    // console.log('watch mv update > ',props.glComponentInst.componentName,value,oldValue)
+    // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
+    emits('update:modelValue', value)
+    emits('update', value)
+    // 这个需放在 'update:modelValue' 事件之后，确保组件的值已更新
+    onValueChange(value)
+    // 由于考虑到多层组件嵌套，watch的mv可能是个组合的组件，不是最原子级的组件，这里没有用deep属性
+  },
+  { immediate: true }
+)
+
+watch(
+  () => {
+    return props.glComponentInst.props._hidden + '_' + props.glComponentInst.props.unRender
+  },
+  (value, oldValue) => {
+    // console.log('_hidden_unRender', props.glComponentInst.props.label, value, oldValue)
+    refreshFlag.value = false
+    nextTick(() => {
+      refreshFlag.value = true
+    })
   }
-  props.glComponentInst.value = value
-  // console.log('watch mv update > ',props.glComponentInst.componentName,value,oldValue)
-  // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
-  emits('update:modelValue', value)
-  emits('update', value)
-  // 这个需放在 'update:modelValue' 事件之后，确保组件的值已更新
-  onValueChange(value)
-  // 由于考虑到多层组件嵌套，watch的mv可能是个组合的组件，不是最原子级的组件，这里没有用deep属性
-}, {immediate: true})
+)
 
-
-watch(() => {
-  return props.glComponentInst.props._hidden + '_' + props.glComponentInst.props.unRender
-}, (value, oldValue) => {
-  // console.log('_hidden_unRender', props.glComponentInst.props.label, value, oldValue)
-  refreshFlag.value = false
-  nextTick(() => {
-    refreshFlag.value = true
-  })
-})
+const hasPermission = () => {
+  // 是否需要检查查看权限
+  if (props.glComponentInst?.perms?.r) {
+    // 检查是否分配了权限
+    return pagePermission?.hasReadPermission(props.glComponentInst.id)
+  }
+  return true
+}
 
 const _reRender = () => {
-  console.log('props.glComponentInst.props',props.glComponentInst.props)
+  console.log('props.glComponentInst.props', props.glComponentInst.props)
   refreshFlag.value = false
   nextTick(() => {
     refreshFlag.value = true
@@ -235,8 +308,7 @@ onMounted(() => {
     ...props.glCtx
   })
 })
-defineExpose({onMouseLeave, onMouseOver,_reRender})
-
+defineExpose({ onMouseLeave, onMouseOver, _reRender })
 </script>
 
 <style>
