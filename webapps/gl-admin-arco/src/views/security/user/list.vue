@@ -232,6 +232,7 @@ const generateFilterData = (): FilterForm => {
   return {
     id: '', jobNumber: '', name: '', loginName: '', enName: '', orgId: '', orgName: '', sex: '', source: '', type: '', createAt: [],
     tenantCode: (route.params && route.params.tenantCode as string) || '',
+    cooperatingOrgId:''
   };
 };
 const filterData = ref(generateFilterData());

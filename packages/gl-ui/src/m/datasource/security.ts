@@ -43,6 +43,7 @@ export interface QueryOrgForm {
 export interface QueryUserForm {
   id: string;
   jobNumber: string;
+  cooperatingOrgId: string;
   name: string;
   enName: string;
   loginName: string;

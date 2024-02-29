@@ -124,6 +124,12 @@
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
+        <a-form-item :label="$t('security.user.index.form.cooperatingOrgId')" field="cooperatingOrgId">
+          <a-input v-if="pageData.button" v-model="formData.cooperatingOrgId" :max-length="32"/>
+          <span v-else>{{ formData.cooperatingOrgId }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('security.user.index.form.type')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
@@ -223,7 +229,8 @@ const generateFormData = (): QueryForm => {
     type: 0,
     source: 0,
     description: '',
-    tenantCode: (route.params && route.params.tenantCode as string) || ''
+    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    cooperatingOrgId: ''
   };
 }
 const formData = ref(generateFormData());

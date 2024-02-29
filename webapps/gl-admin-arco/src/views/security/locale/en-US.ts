@@ -164,6 +164,7 @@ export default {
   'security.user.index.form.enName': 'englishName',
   'security.user.index.form.loginName': 'loginName',
   'security.user.index.form.jobNumber': 'jobNumber',
+  'security.user.index.form.cooperatingOrgId': 'cooperatingOrg',
   'security.user.index.form.sex': 'sex',
   'security.user.index.form.sex.0': 'female',
   'security.user.index.form.sex.1': 'male',

@@ -189,6 +189,7 @@ export interface QueryUserForm {
   source: number;
   description: string;
   tenantCode: string;
+  cooperatingOrgId: string;
 }
 
 export interface FilterUserForm {
@@ -203,6 +204,7 @@ export interface FilterUserForm {
   type: string;
   source: string;
   tenantCode: string;
+  cooperatingOrgId: string;
   createAt: string[];
 }
 

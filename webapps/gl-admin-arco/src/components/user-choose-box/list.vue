@@ -60,6 +60,7 @@ const generateFilterData = (): FilterForm => {
     type: '',
     createAt: [],
     tenantCode: (route.params && route.params.tenantCode as string) || '',
+    cooperatingOrgId: ''
   };
 };
 const filterData = ref(generateFilterData());

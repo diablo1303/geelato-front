@@ -5,6 +5,7 @@ export interface UserState {
   name?: string; // 名称
   loginName?: string; // 登录名称
   jobNumber?: string; // 工号
+  cooperatingOrgId?: string; // 合作单位
   avatar?: string; // 头像
   mobilePrefix?: string; // 手机区域编号
   mobilePhone?: string; // 手机号码
