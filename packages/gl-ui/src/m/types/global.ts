@@ -49,7 +49,7 @@ export interface ApiPagedResult extends ApiResult {
  */
 export interface InstPermission {
   // instId
-  instId: string
+  code: string
   // r | w
   rule: string
 }

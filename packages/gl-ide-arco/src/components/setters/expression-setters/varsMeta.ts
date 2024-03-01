@@ -31,7 +31,35 @@ const user = {
       title: '用户名称',
       _code: 'name',
       _type: 'string'
+    },
+    {
+      title: '员工工号',
+      _code: 'jobNumber',
+      _type: 'string'
+    },
+    {
+      title: '手机号码',
+      _code: 'mobilePhone',
+      _type: 'string'
+    },
+    {
+      title: '邮箱',
+      _code: 'email',
+      _type: 'string'
+    },
+    {
+      title: '部门名称',
+      _code: 'orgName',
+      _type: 'string'
+    },
+    {
+      title: '外部组织ID',
+      _code: 'cooperatingOrgId',
+      _type: 'string',
+      _description:'如果是外部单位用户时才有该值'
     }
+
+
   ]
 }
 
@@ -41,7 +69,7 @@ const user = {
 const useSys = (global: ComponentCustomProperties & Record<string, any>) => {
   console.log('useSys > global:', global)
   const sys = {
-    title: '平台',
+    title: '平台配置',
     _code: 'sys',
     _type: 'object',
     _description: '平台的配置信息',
@@ -63,10 +91,10 @@ const useSys = (global: ComponentCustomProperties & Record<string, any>) => {
 }
 
 const tenant = {
-  title: '租户（企业）',
+  title: '租户',
   _code: 'tenant',
   _type: 'object',
-  _description: '当前租户（企业）的信息',
+  _description: '当前租户的信息',
   children: [
     {
       title: '租户ID',
@@ -162,7 +190,7 @@ export const useComponentInstTreeData = () => {
       title: '当前记录',
       _code: 'record',
       _type: 'object',
-      _description: '表格的行数据记录',
+      _description: '表格的行数据记录，只有表格操作栏上的组件配置动作时，才能拿到该值。',
       children: <any>[]
     }
 

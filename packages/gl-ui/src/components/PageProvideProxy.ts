@@ -30,8 +30,9 @@ export class PagePermission {
    */
   hasReadPermission(instId: string) {
     const found = this.perms?.find((permission: InstPermission) => {
-      return permission.instId === instId && permission.rule === 'r'
+      return permission.code === instId && permission.rule === 'r'
     })
+    console.log('found',found)
     return !!found
   }
 
@@ -41,7 +42,7 @@ export class PagePermission {
    */
   hasWritePermission(instId: string) {
     const found = this.perms?.find((permission: InstPermission) => {
-      return permission.instId === instId && permission.rule === 'w'
+      return permission.code === instId && permission.rule === 'w'
     })
     return !!found
   }

@@ -3,9 +3,9 @@
   <component
     v-if="
       glComponentInst &&
-      hasPermission() &&
       glComponentInst.componentName &&
-      glComponentInst.props.unRender !== true
+      glComponentInst.props.unRender !== true &&
+      hasPermission()
     "
     v-show="
       glComponentInst.props?._hidden !== true && glComponentInst.componentName !== 'GlHiddenArea'
@@ -32,6 +32,7 @@
     :glLoopIndex="glLoopIndex"
     :glComponentInst="glComponentInst"
     :pageCustom="pageCustom"
+    :pagePermission="pagePermission"
     v-on="onActionsHandler"
   >
     <template v-for="(slotItem, slotName) in glComponentInst.slots" v-slot:[slotName]>
@@ -42,6 +43,8 @@
         :style="slotItem.style"
         :glRuntimeFlag="glRuntimeFlag"
         :glIsRuntime="glIsRuntime"
+        :pageCustom="pageCustom"
+        :pagePermission="pagePermission"
       ></component>
       <component
         v-else-if="slotItem.propsTarget === 'v-model' && slotItem.propsName"
@@ -50,6 +53,8 @@
         :style="slotItem.style"
         :glRuntimeFlag="glRuntimeFlag"
         :glIsRuntime="glIsRuntime"
+        :pageCustom="pageCustom"
+        :pagePermission="pagePermission"
       ></component>
       <component
         v-else-if="slotItem.propsTarget === 'v-model' && !slotItem.propsName"
@@ -58,6 +63,8 @@
         :style="slotItem.style"
         :glRuntimeFlag="glRuntimeFlag"
         :glIsRuntime="glIsRuntime"
+        :pageCustom="pageCustom"
+        :pagePermission="pagePermission"
       ></component>
       <template v-else
         >不支持的slot props target：{{ slotItem.propsTarget }}，请检查组件定义配置。
@@ -70,6 +77,7 @@
       :glRuntimeFlag="glRuntimeFlag"
       :glIndex="childIndex"
       :pageCustom="pageCustom"
+      :pagePermission="pagePermission"
     ></GlComponent>
   </component>
 </template>
@@ -102,8 +110,6 @@ const props = defineProps({
 const pageProvideProxy: PageProvideProxy | undefined = props.glIgnoreInjectPageProxy
   ? undefined
   : inject(PageProvideKey)!
-// 获取页面的权限配置信息
-const pagePermission = pageProvideProxy?.getPagePermission()
 
 // console.log('GlComponent > setVueRef >', props.glComponentInst.componentName, props.glComponentInst.id, getCurrentInstance(), pageProvideProxy)
 // 在setup阶段先setVueRef，对于有些组件如GlTable
@@ -274,13 +280,13 @@ const hasPermission = () => {
   // 是否需要检查查看权限
   if (props.glComponentInst?.perms?.r) {
     // 检查是否分配了权限
-    return pagePermission?.hasReadPermission(props.glComponentInst.id)
+    return props.pagePermission?.hasReadPermission(props.glComponentInst.id)
   }
   return true
 }
 
 const _reRender = () => {
-  console.log('props.glComponentInst.props', props.glComponentInst.props)
+  // console.log('props.glComponentInst.props', props.glComponentInst.props)
   refreshFlag.value = false
   nextTick(() => {
     refreshFlag.value = true

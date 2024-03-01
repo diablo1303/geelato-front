@@ -6,7 +6,7 @@ export default {
 <script lang="ts" setup>
 import { inject, onUnmounted, type PropType, ref, watch } from 'vue'
 import type { ComponentInstance, ComponentMeta } from '@geelato/gl-ui-schema'
-import { EventNames, usePageStore } from '@geelato/gl-ide'
+import { EventNames, useAppStore, usePageStore } from '@geelato/gl-ide'
 import { emitter, entityApi, EntityReader, EntitySaver } from '@geelato/gl-ui'
 
 const emits = defineEmits(['change:permissionValue'])
@@ -20,7 +20,7 @@ const props = defineProps({
     required: true
   }
 })
-
+const appStore = useAppStore()
 const pageStore = usePageStore()
 // 获取页面的权限配置信息
 const pageId = pageStore.currentPage?.id
@@ -65,6 +65,7 @@ const savePermission = () => {
   entitySaver.record = {
     id: read.value.id || undefined,
     name: read.value.name,
+    appId: appStore.currentApp.id,
     object: pageId,
     type: 'ep',
     code: props.componentInstance.id,

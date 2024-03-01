@@ -275,7 +275,51 @@ const selectDictItem = (key: any) => {
         </div>
         <div style="flex: 1; min-width: 500px; max-height: 700px; overflow-y: auto">
           <a-collapse size="small" :default-active-key="['5']" :bordered="false">
-            <a-collapse-item header="系统变量" key="1">
+            <a-collapse-item header="系统常量" key="1">
+              <div style="display: flex; line-height: 2.4em">
+                <div style="width: 5em; text-align: right; margin-right: 1em">颜色值</div>
+                <div style="flex: auto">
+                  <GlColor @update:modelValue="replaceSelectOrInsert"></GlColor>
+                </div>
+              </div>
+              <div style="display: flex; line-height: 2.4em">
+                <div style="width: 5em; text-align: right; margin-right: 1em">图标类型</div>
+                <div style="flex: auto">
+                  <GlIconfontSelect @update:modelValue="replaceSelectOrInsert"></GlIconfontSelect>
+                </div>
+              </div>
+              <a-tree
+                  ref="enumVarsTree"
+                  :default-expanded-keys="[]"
+                  size="small"
+                  blockNode
+                  :data="_constTreeData"
+                  @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_constTreeData)"
+              >
+                <template #title="{ _code, title, _value, _description }">
+                  <a-tooltip v-if="_description" background-color="#165DFF">
+                    <template #content>
+                      {{ _description }}
+                    </template>
+                    <span>
+                      <span
+                          class="gl-title"
+                          style="color: #1d2129; margin-left: 0 !important"
+                          @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_constTreeData)"
+                      >{{ title }}</span
+                      >
+                    </span>
+                  </a-tooltip>
+                  <span v-else class="gl-title" style="color: #1d2129; margin-left: 0 !important"
+                  >{{ title }}
+                  </span>
+                </template>
+                <template #extra="{ _type }">
+                  <span class="gl-extra">{{ _type }}</span>
+                </template>
+              </a-tree>
+            </a-collapse-item>
+            <a-collapse-item header="系统变量" key="2">
               <a-tree
                 ref="systemVarsTree"
                 :default-expanded-keys="[]"
@@ -294,7 +338,7 @@ const selectDictItem = (key: any) => {
                 </template>
               </a-tree>
             </a-collapse-item>
-            <a-collapse-item header="组件实例" key="5">
+            <a-collapse-item header="组件实例" key="3">
               <a-tree
                 ref="systemVarsTree"
                 :default-expanded-keys="[]"
@@ -322,7 +366,7 @@ const selectDictItem = (key: any) => {
                 </template>
               </a-tree>
             </a-collapse-item>
-            <a-collapse-item header="服务接口" key="7">
+            <a-collapse-item header="服务接口" key="4">
               <a-tree
                 ref="systemVarsTree"
                 :default-expanded-keys="[]"
@@ -349,7 +393,7 @@ const selectDictItem = (key: any) => {
                 </template>
               </a-tree>
             </a-collapse-item>
-            <a-collapse-item header="流程定义" key="8">
+            <a-collapse-item header="流程定义" key="5">
               <a-tree
                 ref="enumVarsTree"
                 :default-expanded-keys="[]"
@@ -389,51 +433,7 @@ const selectDictItem = (key: any) => {
             <!--            <a-collapse-item header="自定义变量" key="2">-->
             <!--              Coming Soon...-->
             <!--            </a-collapse-item>-->
-            <a-collapse-item header="系统常量" key="3">
-              <div style="display: flex; line-height: 2.4em">
-                <div style="width: 5em; text-align: right; margin-right: 1em">颜色值</div>
-                <div style="flex: auto">
-                  <GlColor @update:modelValue="replaceSelectOrInsert"></GlColor>
-                </div>
-              </div>
-              <div style="display: flex; line-height: 2.4em">
-                <div style="width: 5em; text-align: right; margin-right: 1em">图标类型</div>
-                <div style="flex: auto">
-                  <GlIconfontSelect @update:modelValue="replaceSelectOrInsert"></GlIconfontSelect>
-                </div>
-              </div>
-              <a-tree
-                ref="enumVarsTree"
-                :default-expanded-keys="[]"
-                size="small"
-                blockNode
-                :data="_constTreeData"
-                @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_constTreeData)"
-              >
-                <template #title="{ _code, title, _value, _description }">
-                  <a-tooltip v-if="_description" background-color="#165DFF">
-                    <template #content>
-                      {{ _description }}
-                    </template>
-                    <span>
-                      <span
-                        class="gl-title"
-                        style="color: #1d2129; margin-left: 0 !important"
-                        @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_constTreeData)"
-                        >{{ title }}</span
-                      >
-                    </span>
-                  </a-tooltip>
-                  <span v-else class="gl-title" style="color: #1d2129; margin-left: 0 !important"
-                    >{{ title }}
-                  </span>
-                </template>
-                <template #extra="{ _type }">
-                  <span class="gl-extra">{{ _type }}</span>
-                </template>
-              </a-tree>
-            </a-collapse-item>
-            <a-collapse-item header="数据字典" key="4">
+            <a-collapse-item header="数据字典" key="6">
               <a-tree
                 ref="enumVarsTree"
                 :default-expanded-keys="[]"
@@ -471,7 +471,7 @@ const selectDictItem = (key: any) => {
               </a-tree>
             </a-collapse-item>
 
-            <a-collapse-item header="函数公式" key="6">
+            <a-collapse-item header="函数公式" key="7">
               <a-tree
                 ref="systemVarsTree"
                 :default-expanded-keys="[]"

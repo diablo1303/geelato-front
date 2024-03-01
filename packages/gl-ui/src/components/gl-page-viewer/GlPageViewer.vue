@@ -76,8 +76,8 @@ const load = () => {
           myPageCustom.value = resp.data.pageCustom
         }
         // 页面的权限控制
-        if (resp.data.perms) {
-          pagePermission.value.setPermissions(resp.data.perms)
+        if (resp.data.pagePerms) {
+          pagePermission.value.setPermissions(resp.data.pagePerms)
         }
       } else {
         // console.error('GlPageViewer > loadedPage > resp?.data:', resp?.data)
