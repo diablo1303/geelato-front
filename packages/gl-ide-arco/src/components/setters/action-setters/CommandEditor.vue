@@ -32,8 +32,8 @@
           </a-tab-pane>
           <a-tab-pane key="2">
             <template #title>
-              <GlIconfont type="gl-file" />
-              生成配置JSON
+              <GlIconfont type="gl-eye" />
+              查看生成的配置JSON
             </template>
             <div style="padding: 2px 4px">
               <GlMonacoEditor
@@ -48,8 +48,8 @@
           </a-tab-pane>
           <a-tab-pane key="3">
             <template #title>
-              <GlIconfont type="gl-file" />
-              生成脚本JS
+              <GlIconfont type="gl-eye" />
+              查看生成的脚本JS
             </template>
             <div style="padding: 2px 4px">
               <GlMonacoEditor

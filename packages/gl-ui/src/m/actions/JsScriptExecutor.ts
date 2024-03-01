@@ -252,8 +252,8 @@ export class JsScriptExecutor {
   private getVarsConvertFns($gl: any) {
     const that = this
     return {
-      convertEntityReader: (entityReader: EntityReader) => {
-        return that.convertEntityReader(entityReader, $gl)
+      convertEntityReader: (entityReader: EntityReader, gl?: any) => {
+        return that.convertEntityReader(entityReader, gl || $gl)
       }
     }
   }
@@ -308,8 +308,8 @@ export class JsScriptExecutor {
         // return $gl.$drawer.open(that.evalOptions(options, $gl.ctx, ['title', 'width', 'okText', 'cancelText']))
         return $gl.$drawer.open(options)
       },
-      openWin: (url: string, urlParams: Array<Param>,gl?:any) => {
-        const parsedParams = that.evalParams(urlParams, (gl||$gl).ctx, gl||$gl) || []
+      openWin: (url: string, urlParams: Array<Param>, gl?: any) => {
+        const parsedParams = that.evalParams(urlParams, (gl || $gl).ctx, gl || $gl) || []
         const paramsAry: Array<string> = []
         parsedParams.forEach((param) => {
           paramsAry.push(`${param.name}=${param.value}`)
@@ -322,12 +322,12 @@ export class JsScriptExecutor {
         params: Array<Param>,
         pageStatus: string,
         pageTemplateName?: string,
-        gl?:any
+        gl?: any
       ) => {
         return that.loadPage(
           pageId,
           extendId,
-          that.evalParams(params, gl||$gl.ctx, gl||$gl) || [],
+          that.evalParams(params, gl || $gl.ctx, gl || $gl) || [],
           pageStatus,
           pageTemplateName
         )
@@ -342,11 +342,18 @@ export class JsScriptExecutor {
        * @param gl 方法在open窗口中执行时，需要传入gl，否则方法体内的$gl会指向新窗口中的$gl对象，和$gl.fn.invokeComponentMethod中的$gl不一致
        * @param params
        */
-      invokeComponentMethod: (componentId: string, methodName: string, params: Array<Param>,gl?:any) => {
+      invokeComponentMethod: (
+        componentId: string,
+        methodName: string,
+        params: Array<Param>,
+        gl?: any
+      ) => {
         const method = this.getComponentMethod(componentId, methodName)
         if (method) {
           // console.log('invokeComponentMethod['+methodName+'] > gl',gl)
-          return method(that.convertParamsToObject(that.evalParams(params, (gl||$gl).ctx, gl||$gl)))
+          return method(
+            that.convertParamsToObject(that.evalParams(params, (gl || $gl).ctx, gl || $gl))
+          )
         }
         // else {
         //     console.error('调用组件方法失败，找到不方法。componentId:', componentId, 'methodName:', methodName)
@@ -398,9 +405,9 @@ export class JsScriptExecutor {
         }
         return valueAry.join(',') || keys
       },
-      getPageParams: (gl?:any) => that.getPageParams(gl||$gl),
-      getPageParam: (paramName: string,gl?:any) => that.getPageParam(paramName, gl||$gl),
-      hasPageParam: (paramName: string,gl?:any) => that.hasPageParam(paramName, gl||$gl),
+      getPageParams: (gl?: any) => that.getPageParams(gl || $gl),
+      getPageParam: (paramName: string, gl?: any) => that.getPageParam(paramName, gl || $gl),
+      hasPageParam: (paramName: string, gl?: any) => that.hasPageParam(paramName, gl || $gl),
       isPageStatusRead: () => {
         return $gl.ctx.pageProxy.isPageStatusRead()
       },
@@ -802,7 +809,7 @@ export class JsScriptExecutor {
     extendId: string,
     params: Array<Param>,
     pageStatus?: string,
-    pageTemplateName?: string,
+    pageTemplateName?: string
   ) {
     const pageProps = { params: params }
     console.log(
