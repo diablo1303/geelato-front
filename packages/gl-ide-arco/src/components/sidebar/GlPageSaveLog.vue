@@ -7,14 +7,14 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { type Ref, computed, ref, watch, onUnmounted } from 'vue'
+import { type Ref, ref, watch, onUnmounted } from 'vue'
 import {
   emitter,
   entityApi,
   EntityReader,
+  EntitySaver,
   EntityReaderParam,
-  useGlobal,
-  utils
+  useGlobal
 } from '@geelato/gl-ui'
 import { useComponentStore, usePageStore, EventNames } from '@geelato/gl-ide'
 
@@ -30,6 +30,8 @@ type Item = {
   createAt: string
   creatorName: string
   pageId: string
+  description?: string
+  showDescription?: boolean
 }
 const items: Ref<Item[]> = ref([])
 /**
@@ -42,15 +44,21 @@ const fetchData = (pageId: string) => {
   }
   const entityReader = new EntityReader()
   entityReader.entity = 'platform_app_page_log'
-  entityReader.setFields('id,creator,creatorName,createAt,pageId')
+  entityReader.setFields('id,creator,creatorName,createAt,pageId,description')
   entityReader.params = []
   entityReader.params.push(new EntityReaderParam('pageId', 'eq', pageId))
-  entityApi.queryByEntityReader(entityReader).then((res: any) => {
-    items.value = res.data
-  })
+  entityApi.queryByEntityReader(entityReader).then(
+    (res: any) => {
+      items.value = res.data
+      // if (res.data?.length > 0) {
+      //   global.$message.success({ content: '获取' + (res.data.length || 0) + '条页面保存记录' })
+      // }
+    },
+    () => {
+      global.$message.error({ content: '获取页面保存记录失败' })
+    }
+  )
 }
-
-const fetchSource = (id: string) => {}
 
 const fetch = () => {
   if (props.recordId) {
@@ -75,6 +83,26 @@ watch(
 
 const global = useGlobal()
 const componentStore = useComponentStore()
+
+/**
+ *  更新备注
+ */
+const updateDescription = (item: Item) => {
+  const entitySaver = new EntitySaver('platform_app_page_log')
+  entitySaver.record = {
+    id: item.id,
+    description: item.description
+  }
+  entityApi.saveEntity(entitySaver).then(
+    () => {
+      global.$message.success({ content: '保存备注成功' })
+    },
+    () => {
+      global.$message.error({ content: '保存备注失败' })
+    }
+  )
+}
+
 // 回滚版本
 const rollback = (id: string) => {
   try {
@@ -85,7 +113,7 @@ const rollback = (id: string) => {
     entityReader.params.push(new EntityReaderParam('id', 'eq', id))
     entityApi.queryByEntityReader(entityReader).then((res: any) => {
       pageStore.rollbackPage(JSON.parse(res.data[0]?.sourceContent))
-      global.$message.info({ content: '回滚成功' })
+      global.$message.success({ content: '回滚成功' })
     })
   } catch (e) {
     console.error(e)
@@ -101,7 +129,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="gl-page-save-log">
     <a-alert
       >当前页面保存记录
       <gl-iconfont
@@ -111,14 +139,40 @@ onUnmounted(() => {
       ></gl-iconfont>
     </a-alert>
     <a-list size="small">
-      <a-list-item v-for="item in items">
-        <a-list-item-meta :title="item.createAt" :description="item.creatorName"></a-list-item-meta>
-        <template #actions>
-          <a-popconfirm content="确认回滚到此版本?" @ok="rollback(item.id)">
-            <GlIconfont title="回滚到此版本" type="gl-reset" />
-          </a-popconfirm>
-        </template>
-      </a-list-item>
+      <template v-for="item in items">
+        <a-list-item>
+          <div>
+            <a-list-item-meta
+              :title="item.createAt"
+              :description="item.creatorName"
+            ></a-list-item-meta>
+          </div>
+          <template #actions>
+            <GlIconfont
+              title="备注"
+              type="gl-info-circle"
+              :class="{ 'gl-has': !!item.description }"
+              @click="item.showDescription = !item.showDescription"
+            />
+            <a-popconfirm content="确认回滚到此版本?" @ok="rollback(item.id)">
+              <GlIconfont title="回滚到此版本" type="gl-reset" />
+            </a-popconfirm>
+          </template>
+        </a-list-item>
+        <div style="padding: 0 3px 0 2px">
+          <a-textarea
+            v-model="item.description"
+            v-if="item.showDescription"
+            placeholder="备注信息"
+            @change="updateDescription(item)"
+          ></a-textarea>
+        </div>
+      </template>
     </a-list>
   </div>
 </template>
+<style>
+.gl-page-save-log .gl-has {
+  color: #165dff;
+}
+</style>
