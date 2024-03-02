@@ -2,6 +2,7 @@ import type IBlockHandler from '../BlockHandler'
 import type { PropsExpressions } from '../BlockHandler'
 import ParseResult from '../ParseResult'
 import { blocksHandler, CommandBlocks } from '../BlockHandler'
+import {utils} from "@geelato/gl-ui";
 
 export default class ImportExcelBlockHandler implements IBlockHandler {
   getName(): string {
@@ -12,16 +13,15 @@ export default class ImportExcelBlockHandler implements IBlockHandler {
       templateId: props.fileTemplate?.templateId,
       importType: props.importType
     }
-    return new ParseResult(
-      `
-        const content = $gl.fn.loadComponent('GlImport',${JSON.stringify(params)})
-        console.log('content',content)
-        $gl.fn.openModal({
-            title:'导入文件',
-            content: content,
-            width:'800px',
-            okText:'导入',
-            onBeforeOk: async ()=>{
+
+    const content = utils.gid('content')
+    // 回调方法生成方面
+    let onBeforeOk = ''
+    let onOpen = ''
+    let onClose = ''
+    const invokeBlocks = props.invokeBlocks
+    if (invokeBlocks?.includes('onBeforeOk')) {
+      onBeforeOk = `onBeforeOk: async ()=>{
                 try{
                     const importResult = await content.component.exposed.importFile()
                     console.log('importResult',importResult)
@@ -32,23 +32,40 @@ export default class ImportExcelBlockHandler implements IBlockHandler {
                     console.error(e)
                     return false
                 }
-            },
-            onOpen:async ()=>{
-                try{
-                    #{onOpen}
-                }catch(e){
-                    console.error(e)
-                    return false
-                }
-            },
-            onClose:async ()=>{
-                try{
-                    #{onClose}
-                }catch(e){
-                    console.error(e)
-                    return false
-                }
-            },
+            },`
+    }
+    if (invokeBlocks?.includes('onOpen')) {
+      onOpen = `onOpen:async ()=>{
+                    try{
+                        #{onOpen}
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
+                },`
+    }
+    if (invokeBlocks?.includes('onClose')) {
+      onClose = `onClose:async ()=>{
+                    try{
+                        #{onClose}
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
+                },`
+    }
+
+    return new ParseResult(
+      `
+        const ${content} = $gl.fn.loadComponent('GlImport',${JSON.stringify(params)})
+        $gl.fn.openModal({
+            title:'导入文件',
+            content: ${content},
+            width:'800px',
+            okText:'导入',
+            ${onBeforeOk}
+            ${onOpen}
+            ${onClose}
             cancelText:'取消'
         })
     `
@@ -67,6 +84,8 @@ interface Props {
   // varName?: object
   // 是否同步执行
   // enableAwait?:boolean
+  // 回调
+  invokeBlocks: Array<String>
 }
 
 blocksHandler.register(new ImportExcelBlockHandler(), CommandBlocks.CommandBlockOne)

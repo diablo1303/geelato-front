@@ -15,30 +15,35 @@ export default class HttpRequestBlockHandler implements IBlockHandler {
 
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     console.log('OpenComponentPageBlockHandler > parseToScript > props:', props)
-    const axiosName = utils.gid('axios',15)
+    const axiosName = utils.gid('axios', 15)
     const url = propsExpressions?.url || toStr(props.url)
     const method = propsExpressions?.method || toStr(props.method)
     const data = propsExpressions?.data || props.data || undefined
     const respVarName = props.respVarName || utils.gid('respVar')
     // 回写到配置属性中
     props.respVarName = respVarName
-
-    const { onFulfilled, onRejected } = usePromise(props.invokeBlocks)
+    const fulfilledVarName = props.fulfilledVarName || utils.gid('res', 8)
+    props.fulfilledVarName = fulfilledVarName
+    const rejectedVarName = props.rejectedVarName || utils.gid('e', 8)
+    props.rejectedVarName = rejectedVarName
+    const { fulfilled, rejected } = usePromise(
+      props.invokeBlocks || [],
+      fulfilledVarName,
+      rejectedVarName
+    )
 
     return new ParseResult(
       // 注意这里的参数转换采用JSON.stringify，不采用BlockUtils.paramStringify，因为这两种不同的方式，到导致获取的$gl的对象不是同一个，相应的参数值也会不同。
       `
         const ${axiosName} = $gl.fn.createAxios({header:${convertParams(
-          props.header
-        )}},{widthDefaultHeader:${
-        propsExpressions?.widthDefaultHeader || props.widthDefaultHeader
-      }})
+        props.header
+      )}},{widthDefaultHeader:${propsExpressions?.widthDefaultHeader || props.widthDefaultHeader}})
         $gl.vars.${respVarName} = ${props.enableAwait ? 'await ' : ' '}${axiosName}({
           method:${method},
           url:${url},
           params:${convertParams(props.params)},
           data:${data}
-        }).then(${onFulfilled},${onRejected})
+        }).then(${fulfilled},${rejected})
       ` + (props.enableReturn ? `\r\n return $gl.vars.${respVarName}` : '')
     )
   }
@@ -78,6 +83,10 @@ interface Props {
   respVarName: string
   // 回调
   invokeBlocks: Array<String>
+  // 回调成功参数名
+  fulfilledVarName: string
+  // 回调失败参数名
+  rejectedVarName: string
 }
 
 blocksHandler.register(new HttpRequestBlockHandler(), CommandBlocks.CommandBlockOne)

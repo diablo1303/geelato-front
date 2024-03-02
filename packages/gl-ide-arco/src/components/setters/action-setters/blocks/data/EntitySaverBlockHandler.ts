@@ -1,8 +1,9 @@
 import type IBlockHandler from '../BlockHandler'
-import type { PropsExpressions } from '../BlockHandler'
+import { type PropsExpressions, blocksHandler, CommandBlocks } from '../BlockHandler'
 import ParseResult from '../ParseResult'
-import { blocksHandler, CommandBlocks } from '../BlockHandler'
-import useVars from "../../hooks/vars";
+import useVars from '../../hooks/vars'
+import usePromise from '../../hooks/usePromise'
+import { utils } from '@geelato/gl-ui'
 
 const vars = useVars()
 export default class EntitySaverBlockHandler implements IBlockHandler {
@@ -13,28 +14,28 @@ export default class EntitySaverBlockHandler implements IBlockHandler {
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     const entitySaverVarStr = vars.getVarStr(props.entitySaverVar)
     // const awaitStr = `${props.enableAwait ? 'await ' : ''}`
-    const varStr = vars.getVarStr(props.resultVar)
-    // const returnStr = props.enableReturn? `return ${varStr};` : ''
-    // if(props.resultVar){
-    //   return new ParseResult(
-    //       `${varStr} = ${awaitStr}$gl.entityApi.saveEntity(${entitySaverVarStr});${returnStr}`
-    //   )
-    // }else{
-    //   return new ParseResult(
-    //       ` ${awaitStr}$gl.entityApi.saveEntity(${entitySaverVarStr});${returnStr}`
-    //   )
-    // }
+    const varStr = vars.getVarStr(props.resultVar,'entity')
+    props.resultVar = varStr.substring(9)
+    let returnStr = ''
+    if (props.enableReturn) {
+      returnStr = `return ${varStr}`
+    }
+
+    const fulfilledVarName = props.fulfilledVarName || utils.gid('res', 8)
+    props.fulfilledVarName = fulfilledVarName
+    const rejectedVarName = props.rejectedVarName || utils.gid('e', 8)
+    props.rejectedVarName = rejectedVarName
+    const { fulfilled, rejected } = usePromise(
+      props.invokeBlocks || [],
+      fulfilledVarName,
+      rejectedVarName
+    )
+
     return new ParseResult(
-          `${varStr} = $gl.entityApi.saveEntity(${entitySaverVarStr}).then((res)=>{
-              #{fulfilled}
-            },(res)=>{
-              #{rejected}
-            });
-           if(${props.enableReturn}){
-              return ${varStr}
-           }
+      `${varStr} = $gl.entityApi.saveEntity(${entitySaverVarStr}).then(${fulfilled},${rejected});
+       ${returnStr}
           `
-      )
+    )
   }
 }
 
@@ -47,6 +48,13 @@ class Props {
   // enableAwait: Boolean = false
   // 返回结果，存储到变量
   resultVar?: string
+
+  // 回调
+  invokeBlocks: Array<String> = []
+  // 回调成功参数名
+  fulfilledVarName: string = ''
+  // 回调失败参数名
+  rejectedVarName: string = ''
 }
 
 blocksHandler.register(new EntitySaverBlockHandler(), CommandBlocks.CommandBlockOne)

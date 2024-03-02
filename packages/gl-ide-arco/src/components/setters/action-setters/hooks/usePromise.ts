@@ -1,21 +1,25 @@
-const usePromise = (invokeBlocks?: Array<String>) => {
-  let onFulfilled = `undefined`
-  let onRejected = 'undefined'
+const usePromise = (
+  invokeBlocks: Array<String>,
+  fulfilledVarName: string,
+  rejectedVarName: string
+) => {
+  let fulfilled = `undefined`
+  let rejected = 'undefined'
   // 启用
-  if (invokeBlocks?.includes('onFulfilled')) {
-    onFulfilled = `(res)=>{
-          $gl.vars.res = res;
-          #{onFulfilled}
+  if (invokeBlocks?.includes('fulfilled')) {
+    fulfilled = `(res)=>{
+          $gl.vars.${fulfilledVarName} = res;
+          #{fulfilled}
         }`
   }
   // 启用
-  if (invokeBlocks?.includes('onRejected')) {
-    onRejected = `(e)=>{
-          $gl.vars.e = e;
-          #{onRejected}
+  if (invokeBlocks?.includes('rejected')) {
+    rejected = `(e)=>{
+          $gl.vars.${rejectedVarName} = e;
+          #{rejected}
         }`
   }
-  return { onFulfilled, onRejected }
+  return { fulfilled, rejected }
 }
 
 export default usePromise

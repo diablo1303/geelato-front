@@ -5,9 +5,9 @@ import { utils } from '@geelato/gl-ui'
  * 返回$gl.vars.xxx的格式
  * @param varName
  */
-const getVarStr = (varName?: string) => {
+const getVarStr = (varName?: string,prefix?:string) => {
   if (!varName) {
-    return varName || utils.gid('$gl.vars.var')
+    return varName || utils.gid('$gl.vars.'+(prefix||'var'))
   }
   if (varName.trim().startsWith('$gl.vars')) {
     return varName

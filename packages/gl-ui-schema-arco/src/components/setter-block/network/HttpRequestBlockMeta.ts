@@ -217,11 +217,11 @@ export default {
         options: [
           {
             label: '请求成功时回调',
-            value: 'onFulfilled'
+            value: 'fulfilled'
           },
           {
             label: '请求失败时回调',
-            value: 'onRejected'
+            value: 'rejected'
           }
         ],
         multiple: true,
@@ -232,7 +232,33 @@ export default {
       setterComponentName: 'ASelect',
       displayMode: 'tile',
       description:
-        '请求成功时回调方法内，默认创建$gl.vars.res，存储http请求的返回。请求失败时回调方法内，默认创建$gl.vars.e，存储请求异常对象Exception。请求成功时回调方法内的返回值，将作为Promise 对象的兑现值。'
-    }
+        '请求成功时回调方法内，默认创建$gl.vars.res_xxx，存储http请求的返回。请求失败时回调方法内，默认创建$gl.vars.e_xxx，存储请求异常对象Exception。请求成功时回调方法内的返回值，将作为Promise 对象的兑现值。'
+    }, {
+      name: 'fulfilledVarName',
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      title: '回调成功参数名',
+      setterComponentName: 'AInput',
+      enableValueExpress: false,
+      displayMode: 'tile',
+      description: '请求成功时回调方法内，默认创建$gl.vars.res_xxx,可以改成其它名称，这里不需编写$gl.vars部分，只需写变量名即可，如res。'
+    },{
+      name: 'rejectedVarName',
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      title: '回调失败参数名',
+      setterComponentName: 'AInput',
+      enableValueExpress: false,
+      displayMode: 'tile',
+      description: '请求失败时回调方法内，默认创建$gl.vars.e_xxx,可以改成其它名称，这里不需编写$gl.vars部分，只需写变量名即可，如e。'
+    },
   ]
 }

@@ -1,7 +1,7 @@
 import type IBlockHandler from '../BlockHandler'
 import type { PropsExpressions } from '../BlockHandler'
 import ParseResult from '../ParseResult'
-import type {PageCustomType, Param} from '@geelato/gl-ui'
+import type { PageCustomType, Param } from '@geelato/gl-ui'
 import { blocksHandler, CommandBlocks } from '../BlockHandler'
 import { utils } from '@geelato/gl-ui'
 
@@ -21,6 +21,42 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
     const cancelText = propsExpressions?.cancelText || toStr(props.cancelText || '取消')
     const hideCancel = props.hideCancel === true
     const contentName = utils.gid('content')
+    // 回调方法生成方面
+    let onBeforeOk = ''
+    let onOpen = ''
+    let onClose = ''
+    const invokeBlocks = props.invokeBlocks
+    if (invokeBlocks?.includes('onBeforeOk')) {
+      onBeforeOk = `onBeforeOk: async () => {
+                    try {
+                      #{onBeforeOk}
+                    } catch (e) {
+                      console.error(e);
+                      return false;
+                    }
+                  },`
+    }
+    if (invokeBlocks?.includes('onOpen')) {
+      onOpen = `onOpen:async ()=>{
+                    try{
+                        #{onOpen}
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
+                },`
+    }
+    if (invokeBlocks?.includes('onClose')) {
+      onClose = `onClose:async ()=>{
+                    try{
+                        #{onClose}
+                    }catch(e){
+                        console.error(e)
+                        return false
+                    }
+                },`
+    }
+
     return new ParseResult(
       // 注意这里的参数转换采用JSON.stringify，不采用BlockUtils.paramStringify，因为这两种不同的方式，到导致获取的$gl的对象不是同一个，相应的参数值也会不同。
       `
@@ -32,30 +68,9 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
                 content: ${contentName},
                 width:${width},
                 okText:${okText},
-                onBeforeOk: async ()=>{
-                    try{
-                        #{onBeforeOk}
-                    }catch(e){
-                        console.error(e)
-                        return false
-                    }
-                },
-                onOpen:async ()=>{
-                    try{
-                        #{onOpen}
-                    }catch(e){
-                        console.error(e)
-                        return false
-                    }
-                },
-                onClose:async ()=>{
-                    try{
-                        #{onClose}
-                    }catch(e){
-                        console.error(e)
-                        return false
-                    }
-                },
+                ${onBeforeOk}
+                ${onOpen}
+                ${onClose}
                 cancelText:${cancelText},
                 hideCancel:${hideCancel}
             })
@@ -96,6 +111,8 @@ interface Props {
   closeInvokeComponentId?: string
   // 关闭之前调用的组件方法，如调用列表的刷新方法
   closeInvokeMethodName?: string
+  // 回调
+  invokeBlocks: Array<String>
 }
 
 blocksHandler.register(new OpenComponentPageBlockHandler(), CommandBlocks.CommandBlockOne)
