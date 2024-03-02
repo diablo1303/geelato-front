@@ -10,6 +10,7 @@ import type { ComponentInstance } from '@geelato/gl-ui-schema'
 export function executeInstPropsExpressions(inst: ComponentInstance, ctx: object) {
   if (inst) {
     let hasValueExpression = false
+    let hasPropsExpression = false
     if (inst.propsExpressions) {
       Object.keys(inst.propsExpressions).forEach((key: string) => {
         // @ts-ignore
@@ -22,6 +23,7 @@ export function executeInstPropsExpressions(inst: ComponentInstance, ctx: object
           } else {
             // 属性值
             inst.props[key] = jsScriptExecutor.evalExpression(propsExpression, ctx)
+            hasPropsExpression = true
             // console.log(inst.props.label, key, inst.props[key], propsExpression)
           }
         }
@@ -31,10 +33,10 @@ export function executeInstPropsExpressions(inst: ComponentInstance, ctx: object
       // 属性配置了默认值(props._valueExpression指默认值，不是表达式)
       // 若前面属性的值表达式中(inst.propsExpressions._valueExpression)没有设置时，则以此值为准，若有，以表达式的值为准
       if (inst.props && inst.props._valueExpression) {
-        // TODO 需依据组件类型，进行值转换，如数值，boolean
         inst.value = inst.props._valueExpression
       }
     }
+    return { hasValueExpression, hasPropsExpression }
   }
 }
 
@@ -46,9 +48,10 @@ export function executeInstPropsExpressions(inst: ComponentInstance, ctx: object
  * @param ctx
  */
 export function executeObjectPropsExpressions(obj: any, ctx: object) {
-  // console.log('executeObjectPropsExpressions() > obj:', obj, 'ctx:', ctx)
   // @ts-ignore
   if (obj && typeof obj === 'object') {
+    // console.log('executeObjectPropsExpressions() > obj:', obj, 'ctx:', ctx)
+
     if (obj.length !== undefined) {
       // array
       for (const objKey in obj) {
@@ -92,9 +95,10 @@ export function executeArrayExpressions(ary: object[], ctx: object) {
  */
 export const executePropsExpressions = (glComponentInst: any, ctx: Ctx) => {
   // console.log('executePropsExpressions() > ctx:', glComponentInst.componentName, glComponentInst.props.label, ctx, glComponentInst)
-  executeInstPropsExpressions(glComponentInst, ctx)
+  const result = executeInstPropsExpressions(glComponentInst, ctx)
   executeObjectPropsExpressions(glComponentInst.props, ctx)
   // console.log('_hidden',glComponentInst.props._hidden)
+  return result
 }
 
 /**

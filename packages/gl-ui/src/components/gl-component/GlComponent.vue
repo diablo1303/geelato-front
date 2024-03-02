@@ -2,14 +2,13 @@
 <template>
   <component
     v-if="
+      refreshFlag &&
       glComponentInst &&
       glComponentInst.componentName &&
-      glComponentInst.props.unRender !== true &&
+      unRender !== true &&
       hasPermission()
     "
-    v-show="
-      glComponentInst.props?._hidden !== true && glComponentInst.componentName !== 'GlHiddenArea'
-    "
+    v-show="refreshFlag && hidden !== true && glComponentInst.componentName !== 'GlHiddenArea'"
     :id="glComponentInst.id"
     :ref="glComponentInst.id"
     class="gl-component"
@@ -35,7 +34,7 @@
     :pagePermission="pagePermission"
     v-on="onActionsHandler"
   >
-    <template v-for="(slotItem, slotName) in glComponentInst.slots" v-slot:[slotName]>
+    <template v-for="slotItem in glComponentInst.slots" v-slot:[slotName]>
       <component
         v-if="slotItem.propsTarget === 'v-bind'"
         :is="slotItem.componentName"
@@ -107,6 +106,9 @@ const props = defineProps({
   ...mixins.props
 })
 
+// 由于在一些场景下更新props.glComponentInst.props._hidden的值，不能响应式更新UI,这里增加一个值来控制
+const hidden = ref(false)
+const unRender = ref(false)
 const pageProvideProxy: PageProvideProxy | undefined = props.glIgnoreInjectPageProxy
   ? undefined
   : inject(PageProvideKey)!
@@ -205,7 +207,7 @@ const onMouseLeave = (...args: any[]) => {
   }
 }
 
-const mv = <any>ref(props.modelValue || props.glComponentInst.value)
+const mv = ref(props.modelValue || props.glComponentInst.value)
 
 watch(
   () => {
@@ -262,19 +264,13 @@ watch(
   },
   { immediate: true }
 )
-
-watch(
-  () => {
-    return props.glComponentInst.props._hidden + '_' + props.glComponentInst.props.unRender
-  },
-  (value, oldValue) => {
-    // console.log('_hidden_unRender', props.glComponentInst.props.label, value, oldValue)
-    refreshFlag.value = false
-    nextTick(() => {
-      refreshFlag.value = true
-    })
-  }
-)
+const _reRender = () => {
+  // console.log('_reRender props.glComponentInst.props', props.glComponentInst.props)
+  refreshFlag.value = false
+  nextTick(() => {
+    refreshFlag.value = true
+  })
+}
 
 const hasPermission = () => {
   // 是否需要检查查看权限
@@ -285,34 +281,50 @@ const hasPermission = () => {
   return true
 }
 
-const _reRender = () => {
-  // console.log('props.glComponentInst.props', props.glComponentInst.props)
-  refreshFlag.value = false
-  nextTick(() => {
-    refreshFlag.value = true
-  })
-}
-// console.log('props.glCtx', props.glCtx, props.glComponentInst.props?.label, '_hidden', props.glComponentInst.props?._hidden)
 const isShow = computed(() => {
   return props.glComponentInst.props?._hidden
 })
 
-// const onSubMounted = (args: any) => {
-//   console.log('......onSubMounted', args)
-// }
+watch(
+  () => {
+    return props.glComponentInst.props._hidden
+  },
+  (value, oldValue) => {
+    hidden.value = value || false
+  }
+)
+
+watch(
+  () => {
+    return props.glComponentInst.props.unRender
+  },
+  (value, oldValue) => {
+    unRender.value = value || false
+  }
+)
+
 onMounted(() => {
   // 在此再调用setVueRef，确保pageProvideProxy的onMounted事件在各组件的加载完成之后触发
   pageProvideProxy?.setVueRef(props.glComponentInst.id, getCurrentInstance())
-
-  // console.log('executePropsExpressions ctx', props.glComponentInst.componentName, {
-  //   pageProxy: pageProvideProxy,
-  //   ...props.glCtx
-  // })
-  // 2023-9-13 将脚本执行移到onMounted事件中，确保此时vueRef已存在
+  // 由于在executePropsExpressions中计算更新_hidden属性时，UI没更新，这里记录一下初始值，用于后续比较有变化时，强行更新
+  const lastHiddenValue = props.glComponentInst.props._hidden
+  const lastUnRenderValue = props.glComponentInst.props.unRender
+  // 将脚本执行移到onMounted事件中，确保此时vueRef已存在
+  // 此时会带来一个问题，更新的属性可能不会及时更新到UI中，需要用$nextTick()强行刷新，会有一定的性能问题
   executePropsExpressions(props.glComponentInst, {
     pageProxy: pageProvideProxy,
     ...props.glCtx
   })
+
+  // 解决列表组件，操作列中的按钮等组件的_hidden属性没有生效的问题
+  // 调用_reRender也无效，未来更新UI,需要在component动态组件页面之后增加其它元素，如<template></template>一起使用才能刷新
+  if (lastHiddenValue != props.glComponentInst.props._hidden) {
+    hidden.value = props.glComponentInst.props._hidden || false
+  }
+  if (lastUnRenderValue != props.glComponentInst.props.unRender) {
+    hidden.value = props.glComponentInst.props.unRender || false
+  }
+  // console.log('onMounted', props.glComponentInst.props.label, props.glComponentInst.props._hidden)
 })
 defineExpose({ onMouseLeave, onMouseOver, _reRender })
 </script>
