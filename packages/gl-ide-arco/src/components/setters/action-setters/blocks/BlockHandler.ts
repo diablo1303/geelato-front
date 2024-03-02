@@ -4,7 +4,6 @@ import GlCommandBlockTwo from './CommandBlockTwo.vue'
 import ParseResult from './ParseResult'
 
 export default interface IBlockHandler {
-
   getName(): string
 
   /**
@@ -58,7 +57,11 @@ export class BlocksHandler {
     }
     // .replace(/};/g, '}')
     // };else{ IF后面加else的场景
-    return commandLines.join(';').replace(/;}/g, '}').replace(/};else{/g, '}else{').replace(/{;/g, '{')
+    return commandLines
+      .join(';')
+      .replace(/;}/g, '}')
+      .replace(/};else{/g, '}else{')
+      .replace(/{;/g, '{')
   }
 
   parseOne(
@@ -81,12 +84,17 @@ export class BlocksHandler {
         handler
           ?.parseToScript(block.props, block.propsExpressions, block)
           .setBlockName(block.componentName) || new ParseResult().setBlockName(block.componentName)
-      parseResult!.invokeBlockNames = block?.props.invokeBlocks || []
-      for (const index in block.children) {
-        const subBlock = block.children[index]
-        // 禁用的指令块不处理
-        if (!subBlock._disabled) {
-          parseResult.children.push(this.parseOne(subBlock, block, parseResult))
+      // 如有有invokeBlocks属性，且长度为0时，忽列children
+      if (block?.props.invokeBlocks?.length === 0) {
+        parseResult!.invokeBlockNames = []
+      } else {
+        parseResult!.invokeBlockNames = block?.props.invokeBlocks || []
+        for (const index in block.children) {
+          const subBlock = block.children[index]
+          // 禁用的指令块不处理
+          if (!subBlock._disabled) {
+            parseResult.children.push(this.parseOne(subBlock, block, parseResult))
+          }
         }
       }
       return parseResult

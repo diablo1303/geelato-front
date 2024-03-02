@@ -148,8 +148,8 @@ export default {
     {
       name: 'widthDefaultHeader',
       setterComponentProps: {
-        uncheckedText: '不带上平台默认header',
-        checkedText: '带上平台默认header'
+        uncheckedText: '请求第三方，不带上平台默认header',
+        checkedText: '请求本平台，带上平台默认header'
       },
       setterComponentVModelName: 'modelValue',
       group: 'base',
@@ -160,7 +160,7 @@ export default {
       displayMode: 'tile',
       title: '默认header',
       description:
-        '请求时是否携带平台默认的header，请如请求平台的自有的应用时需要带上，请求第三方应用不需带上。',
+        '请求时是否携带平台默认的header（内有登录的token），请如请求平台的自有的应用时需要带上，请求第三方应用不需带上。',
       setterComponentName: 'ASwitch'
     },
     {
@@ -190,7 +190,7 @@ export default {
       setterComponentName: 'ASwitch',
       enableValueExpress: false,
       description:
-          '是否同步调用该方法，对于自身为异步的方法有效，如服务端请求，启用则在方法调用前加await'
+        '是否同步调用该方法，对于自身为异步的方法有效，如服务端请求，启用则在方法调用前加await'
     },
     {
       name: 'enableReturn',
@@ -203,7 +203,36 @@ export default {
       title: '返回结果',
       setterComponentName: 'ASwitch',
       enableValueExpress: false,
-      description: '返回该方法的调用执行结果，如果是同步调用，则返回结果数据，若为异常调用，则返回promise对象。'
+      description:
+        '返回该方法的调用执行结果，如果是同步调用，则返回结果数据，若为异常调用，则返回promise对象。'
+    },
+    {
+      name: 'invokeBlocks',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      setterComponentProps: {
+        options: [
+          {
+            label: '请求成功时回调',
+            value: 'onFulfilled'
+          },
+          {
+            label: '请求失败时回调',
+            value: 'onRejected'
+          }
+        ],
+        multiple: true,
+        allowClear: false
+      },
+      setterComponentVModelName: 'modelValue',
+      title: '调用指令',
+      setterComponentName: 'ASelect',
+      displayMode: 'tile',
+      description:
+        '请求成功时回调方法内，默认创建$gl.vars.res，存储http请求的返回。请求失败时回调方法内，默认创建$gl.vars.e，存储请求异常对象Exception。请求成功时回调方法内的返回值，将作为Promise 对象的兑现值。'
     }
   ]
 }
