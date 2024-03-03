@@ -32,6 +32,7 @@ import HttpRequestBlockHandler from './network/HttpRequestBlockHandler'
 import EntitySaverBlockHandler from './data/EntitySaverBlockHandler'
 import IfEmptyBlockHandler from './logic/IfEmptyBlockHandler'
 import IfExpressionBlockHandler from './logic/IfExpressionBlockHandler'
+import MessageBlockHandler from './feedback/MessageBlockHandler'
 
 export {
   OpenThirdPageBlockHandler,
@@ -64,5 +65,6 @@ export {
   DownloadBlockHandler,
   SetRulesBlockHandler,
   EntitySaverBlockHandler,
-  IfEmptyBlockHandler
+  IfEmptyBlockHandler,
+  MessageBlockHandler
 }

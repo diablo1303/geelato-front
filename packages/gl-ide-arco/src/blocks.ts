@@ -1,7 +1,7 @@
 import type { App, Plugin } from 'vue'
 import { blocksHandler } from './components/setters/action-setters/blocks/BlockHandler'
 // 这里需引入importBlocks
-import * as blocks from './components/setters/action-setters/blocks/importBlocks'
+import * as blocks from './components/setters/action-setters/blocks/importBlockHandler'
 
 const component: Plugin = {
   install: function (app: App) {

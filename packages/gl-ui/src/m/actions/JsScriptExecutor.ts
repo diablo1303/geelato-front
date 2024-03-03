@@ -261,6 +261,7 @@ export class JsScriptExecutor {
   private getFeedbackFns($gl: any) {
     return {
       notification: $gl.$notification,
+      message:$gl.$message,
       confirm: $gl.$modal.confirm
     }
   }

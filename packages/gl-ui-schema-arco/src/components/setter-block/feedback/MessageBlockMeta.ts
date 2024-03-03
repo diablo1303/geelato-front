@@ -1,9 +1,9 @@
 export default {
-  componentName: 'GlNotificationBlock',
+  componentName: 'GlMessageBlock',
   displayMode: 'tile',
-  iconType: 'gl-notification',
+  iconType: 'gl-message',
   group: 'block_feedback',
-  title: '通知提醒',
+  title: '全局提示',
   useBy: ['freePage'],
   blockContent: '全局展示通知提醒，内容为：${content}',
   properties: [
@@ -21,18 +21,6 @@ export default {
       description: '该标识会作为调用指令“关闭时回调”的唯一参数传入，在回调的方法体中可以通过$gl.vars.消息标识值，获取变量名与标识值相同。'
     },
     {
-      name: 'title',
-      group: 'base',
-      type: 'props',
-      show: true,
-      expanded: true,
-      setterComponentProps: {},
-      setterComponentVModelName: 'modelValue',
-      title: '标题',
-      setterComponentName: 'AInput',
-      enableValueExpress: true
-    },
-    {
       name: 'content',
       setterComponentProps: {},
       setterComponentVModelName: 'modelValue',
@@ -40,7 +28,7 @@ export default {
       type: 'props',
       show: true,
       expanded: true,
-      title: '内容',
+      title: '消息内容',
       setterComponentName: 'AInput',
       enableValueExpress: true
     },
@@ -52,15 +40,17 @@ export default {
       expanded: true,
       setterComponentProps: {
         options: [
-          { label: '信息提醒', value: 'info' },
-          { label: '成功提醒', value: 'success' },
-          { label: '警告提醒', value: 'warning' },
-          { label: '错误提醒', value: 'error' },
-          { label: '清除全部提醒框', value: 'clear' }
+          { label: '信息提示', value: 'info' },
+          { label: '成功提示', value: 'success' },
+          { label: '警告提示', value: 'warning' },
+          { label: '错误提示', value: 'error' },
+          { label: '加载中提示', value: 'loading' },
+          { label: '显示提示', value: 'normal' },
+          { label: '清空全部提示', value: 'clear' }
         ]
       },
       setterComponentVModelName: 'modelValue',
-      title: '提醒类型',
+      title: '提示访求',
       setterComponentName: 'ASelect'
     },
     {
@@ -72,10 +62,8 @@ export default {
       setterComponentProps: {
         allowClear:true,
         options: [
-          { label: '右上', value: 'topRight' },
-          { label: '左上', value: 'topLeft' },
-          { label: '右下', value: 'bottomRight' },
-          { label: '左下', value: 'bottomLeft' }
+          { label: '上方', value: 'top' },
+          { label: '下方', value: 'bottom' }
         ]
       },
       setterComponentVModelName: 'modelValue',
@@ -118,7 +106,18 @@ export default {
       title: '可关闭',
       setterComponentName: 'ASwitch'
     },
-
+    {
+      name: 'resetOnHover',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      title: '不会自动关闭',
+      setterComponentName: 'ASwitch',
+      description: '设置鼠标移入后不会自动关闭'
+    },
     {
       name: 'invokeBlocks',
       group: 'base',
