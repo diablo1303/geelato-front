@@ -66,9 +66,9 @@ export default {
       show: true,
       expanded: true,
       displayMode: 'tile',
-      setterComponentProps: {},
+      setterComponentProps: {placeholder:'如：$gl.vars.xxx'},
       setterComponentVModelName: 'modelValue',
-      placeholder: '',
+      placeholder: '如：$gl.vars.xxx',
       description: '上下文中可获取的最终数据对象或GQL查询数据对象的变量名',
       title: '数据源变量名',
       setterComponentName: 'AInput'
@@ -86,6 +86,21 @@ export default {
       description: '是否同步调用该方法，对于自身为异步的方法有效，如服务端请求',
       title: '同步调用',
       setterComponentName: 'ASwitch'
+    },
+    {
+      name: 'respVarName',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      displayMode: 'tile',
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      placeholder: '',
+      description: '导出操作执行之后返回结果存储的变量名',
+      title: '返回结果变量',
+      setterComponentName: 'AInput'
     },
     {
       name: 'invokeBlocks',

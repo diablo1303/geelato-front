@@ -34,7 +34,8 @@ import { mixins } from '@geelato/gl-ui'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import type { ValidatedError } from '@/components/gl-entity-form/GlEntityForm'
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
-const $modal = useGlobal().$modal
+const global = useGlobal()
+const $modal = global.$modal
 // fetch 加载完成数据之后
 const emits = defineEmits(['updateColumns', 'updateRow', 'fetchSuccess'])
 const props = defineProps({
@@ -129,12 +130,13 @@ const props = defineProps({
 
 const formProvideProxy: FormProvideProxy | undefined = inject(FormProvideKey)
 const pageProvideProxy: PageProvideProxy | undefined = inject(PageProvideKey)
-let recordSchema = new Schema({})
+let recordValidateSchema = new Schema({})
 
 const slotNameFlag = '__slot'
 
 const setSlotNames = () => {
-  // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确认列有slotName
+  console.log('setSlotNames')
+  // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确保列有slotName
   props.columns.forEach((col: Column) => {
     if (col._renderScript) {
       col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
@@ -143,22 +145,57 @@ const setSlotNames = () => {
     }
   })
 
-  // 对于编辑状态
-  // 如果启用编辑，需将column中没有设置插槽的，生成插槽
+  // 对于编辑状态，需将column中没有设置插槽的，生成插槽
   props.columns.forEach((col: Column) => {
     if (col._component) {
       col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
-      col.dataIndex = col.dataIndex || col._component.props.bindField?.fieldName
+      col.dataIndex = col._component.props.bindField?.fieldName
       // 验证信息
       if (col._component.props.rules) {
-        recordSchema.schema[col.dataIndex!] = toRaw(col._component.props.rules)
+        // @ts-ignore
+        recordValidateSchema.schema[col.dataIndex!] = toRaw(col._component.props.rules)
       }
     } else {
       col.slotName = undefined
     }
   })
 
-  // console.log('GlEntityTable > columns after convert:', recordSchema)
+  // console.log('GlEntityTable > columns after convert:', recordValidateSchema)
+}
+
+const setDataIndexes = () => {
+  // console.log('setDataIndexes')
+  // dataIndex需与bindField的fieldName一致
+  const dataIndexes: string[] = []
+  props.columns.forEach((col: Column) => {
+    if (col._component) {
+      col.dataIndex = col._component.props.bindField?.fieldName
+      // 验证信息
+      if (col._component.props.rules) {
+        // @ts-ignore
+        recordValidateSchema.schema[col.dataIndex!] = toRaw(col._component.props.rules)
+      }
+    }
+    if (col.dataIndex) {
+      if (dataIndexes.includes(col.dataIndex)) {
+        // 存在同名的dataIndex
+        global.$notification.error({
+          title: '绑定字段重复',
+          content: `绑定同名的字段：${col.dataIndex}`
+        })
+      } else {
+        dataIndexes.push(col.dataIndex)
+      }
+    }
+  })
+  // 去掉recordValidateSchema.schema中不存在的dataIndex
+  if (recordValidateSchema.schema) {
+    Object.keys(recordValidateSchema.schema).forEach((dataIndex: string) => {
+      if (!dataIndexes.includes(dataIndex)) {
+        delete recordValidateSchema.schema[dataIndex]
+      }
+    })
+  }
 }
 
 const refreshFlag = ref(true)
@@ -172,6 +209,7 @@ const reRender = () => {
   })
 }
 setSlotNames()
+setDataIndexes()
 // 这个watch 用于设计时，监控列变化时，及时刷新（主要是用于让表达式生效）
 if (!props.glIsRuntime) {
   watch(
@@ -179,6 +217,7 @@ if (!props.glIsRuntime) {
       return props.columns
     },
     () => {
+      setDataIndexes()
       reRender()
     },
     { deep: true }
@@ -433,26 +472,9 @@ const slotColumns = computed(() => {
  *  在表格修改状态下，验证表格的一行数据
  */
 const validateRecord = (record: object, rowIndex: number) => {
-  // let validateStatus = 'start'
-  // let result: { [key: string]: any } = {}
-  // recordSchema.validate(record, (err: any) => {
-  //   result = err
-  //   validateStatus = 'end'
-  // })
-  // let times = 1000
-  // while (validateStatus === 'start') {
-  //   // console.log('sleep 5ms and validate status:', validateStatus)
-  //   utils.sleep(5)
-  //   times--
-  //   if (times <= 0) {
-  //     break
-  //   }
-  // }
-  // // console.log('validate record:', toRaw(record), 'rowIndex:', rowIndex, 'and get result:', result, 'cloneColumns:', cloneColumns.value)
-  // setError(record, rowIndex, result)
-  // return result
+  console.log('recordValidateSchema', recordValidateSchema)
   return new Promise<{ [key: string]: any }>((resolve: Function) => {
-    recordSchema.validate(record, (err: any) => {
+    recordValidateSchema.validate(record, (err: any) => {
       // err的示例值如下，cargoName为字段名
       // const err = {
       //   cargoName: {

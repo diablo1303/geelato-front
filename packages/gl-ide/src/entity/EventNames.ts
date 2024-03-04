@@ -15,6 +15,8 @@ enum EventNames {
   GlIdeToolbarPageSaving = 'GlIdeToolbarPageSaving',
   // 保存页面文件之后
   GlIdeToolbarPageSaved = 'GlIdeToolbarPageSaved',
+  // 点保存页面文件之后，经检查不符合一些条件，忽列此次保存
+  GlIdeToolbarPageSaveIgnore = 'GlIdeToolbarPageSaveIgnore',
   // 切换中间的图标
   GlIdeToolbarIconSelected = 'GlIdeToolbarIconSelected',
   // 显示代码

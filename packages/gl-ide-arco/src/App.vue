@@ -28,9 +28,13 @@ ideStore.setUiLibName('arco')
 
 const global = useGlobal()
 const savedPage = (data: any) => {
-  // console.log('global', global,data)
   global.$message.success({
     content: '页面保存成功'
+  })
+}
+const savedPageIgnore = (data: any) => {
+  global.$message.info({
+    content: data.message
   })
 }
 
@@ -46,19 +50,21 @@ const handleCancel = () => {
   modalVisible.value = false
 }
 emitter.on(EventNames.GlIdeToolbarPageSaved, savedPage)
+emitter.on(EventNames.GlIdeToolbarPageSaveIgnore, savedPageIgnore)
 emitter.on(EventNames.GlIdeToolbarShowPagesReplaceEditor, showPageReplaceModal)
 
 onUnmounted(() => {
   emitter.off(EventNames.GlIdeToolbarPageSaved, savedPage)
+  emitter.off(EventNames.GlIdeToolbarPageSaveIgnore, savedPageIgnore)
   emitter.off(EventNames.GlIdeToolbarShowPagesReplaceEditor, showPageReplaceModal)
 })
 </script>
 <template>
   <DndProvider :backend="HTML5Backend">
     <GlIde />
-    <a-modal v-if="modalVisible"> </a-modal>
+    <a-modal v-if="modalVisible"></a-modal>
     <a-modal v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel" fullscreen>
-      <template #title> 页面重构（危险操作） </template>
+      <template #title> 页面重构（危险操作）</template>
       <PageReplaceEditor></PageReplaceEditor>
     </a-modal>
   </DndProvider>

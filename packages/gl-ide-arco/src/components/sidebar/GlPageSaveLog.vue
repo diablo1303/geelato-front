@@ -14,7 +14,7 @@ import {
   EntityReader,
   EntitySaver,
   EntityReaderParam,
-  useGlobal
+  useGlobal, utils
 } from '@geelato/gl-ui'
 import { useComponentStore, usePageStore, EventNames } from '@geelato/gl-ide'
 
@@ -123,6 +123,7 @@ const rollback = (id: string) => {
 
 emitter.on(EventNames.GlIdeToolbarPageSaved, fetch)
 
+
 onUnmounted(() => {
   emitter.off(EventNames.GlIdeToolbarPageSaved, fetch)
 })
@@ -141,9 +142,9 @@ onUnmounted(() => {
     <a-list size="small">
       <template v-for="item in items">
         <a-list-item>
-          <div>
+          <div :title="item.createAt">
             <a-list-item-meta
-              :title="item.createAt"
+              :title="utils.timeAgo(item.createAt)"
               :description="item.creatorName"
             ></a-list-item-meta>
           </div>
