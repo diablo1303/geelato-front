@@ -34,7 +34,7 @@
     :pagePermission="pagePermission"
     v-on="onActionsHandler"
   >
-    <template v-for="slotItem in glComponentInst.slots" v-slot:[slotName]>
+    <template v-for="(slotItem, slotName) in glComponentInst.slots" v-slot:[slotName]>
       <component
         v-if="slotItem.propsTarget === 'v-bind'"
         :is="slotItem.componentName"
@@ -322,7 +322,7 @@ onMounted(() => {
     hidden.value = props.glComponentInst.props._hidden || false
   }
   if (lastUnRenderValue != props.glComponentInst.props.unRender) {
-    hidden.value = props.glComponentInst.props.unRender || false
+    unRender.value = props.glComponentInst.props.unRender || false
   }
   // console.log('onMounted', props.glComponentInst.props.label, props.glComponentInst.props._hidden)
 })
