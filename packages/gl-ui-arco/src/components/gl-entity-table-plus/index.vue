@@ -260,6 +260,7 @@ const queryRef = ref()
  */
 const refresh = (event?: MouseEvent) => {
   // search()会触发onSearch方法
+  console.log('refresh')
   queryRef.value?.search()
 }
 
@@ -285,6 +286,12 @@ const addRow = () => {
 }
 const selectedKeys: Ref<string[]> = ref([])
 
+const useFailFn = (message: string) => {
+  return (e: any) => {
+    console.error(message, e)
+    global.$notification.error({ content: message })
+  }
+}
 /**
  * 基于记录id，删除行，并刷新
  * @param params
@@ -308,7 +315,7 @@ const deleteRecord = (params: { id: string }) => {
     return entityApi.deleteById(props.base.entityName, params.id).then(() => {
       refresh()
       return params.id
-    })
+    }, useFailFn('删除失败'))
   }
 }
 
@@ -346,14 +353,14 @@ const deleteSelectedRecords = (params: { withConfirm?: boolean }) => {
         onOk: () => {
           entityApi.deleteByIds(props.base.entityName, selectedKeys.value).then(() => {
             refresh()
-          })
+          }, useFailFn('删除失败'))
         },
         onCancel: () => {}
       })
     } else {
       return entityApi.deleteByIds(props.base.entityName, selectedKeys.value).then(() => {
         refresh()
-      })
+      }, useFailFn('删除失败'))
     }
   } else {
     global.$notification.warning({ content: '请先选择记录' })

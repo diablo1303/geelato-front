@@ -1,7 +1,13 @@
 <template>
   <div class="gl-component-setter" v-if="componentModel">
     <!-- 这里需加上 :destroy-on-hide="true"，默认值为false，否则在页面切换时，各个页面重复更新渲染，性能很差-->
-    <a-tabs size="small" :active-key="mv" @tabClick="onTabClick" :destroy-on-hide="true" :lazy-load="true">
+    <a-tabs
+      size="small"
+      :active-key="mv"
+      @tabClick="onTabClick"
+      :destroy-on-hide="true"
+      :lazy-load="true"
+    >
       <a-tab-pane v-if="includePanel('props')" key="props" tab="属性" title="属性">
         <div
           v-if="!hideToolbar && (showMove || showMove || showSelectParent || showDelete)"
@@ -157,7 +163,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, type PropType, provide, ref } from 'vue'
+import { computed, type PropType, provide, ref, watch } from 'vue'
 import { ComponentInstance, type ComponentMeta } from '@geelato/gl-ui-schema'
 import ClipboardJS from 'clipboard'
 import { ComponentSetterProvideKey, ComponentSetterProvideProxy } from '@geelato/gl-ide'
@@ -207,6 +213,14 @@ const props = defineProps({
 
 const mv = ref(props.defaultActiveKey)
 
+watch(
+  () => {
+    return props.defaultActiveKey
+  },
+  () => {
+    mv.value = props.defaultActiveKey
+  }
+)
 const pageStore = usePageStore()
 const componentStore = componentStoreFactory.useComponentStore('useComponentStore')
 const pageProvideProxy = jsScriptExecutor.getPageProxy(pageStore.getCurrentPageInstId() || '')

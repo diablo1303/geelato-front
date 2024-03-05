@@ -377,7 +377,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
     // console.log('before savePage', page)
     // 获取当前服务端的页面数据
     if (page.id) {
-      loadPage({ id: page.id }).then((pageRes: any) => {
+      return loadPage({ id: page.id }).then((pageRes: any) => {
         const sourceToSave = JSON.stringify(page.sourceContent)
         const lastSourceFromServer = pageRes.data?.length > 0 ? pageRes.data[0].sourceContent : ''
         if (
@@ -389,11 +389,11 @@ export const usePageStore = defineStore('GlPageStore', () => {
           console.log('savePage', message)
           emitter.emit(EventNames.GlIdeToolbarPageSaveIgnore, { message, page })
         } else {
-          savePageToServer()
+          return savePageToServer()
         }
       })
     } else {
-      savePageToServer()
+      return savePageToServer()
     }
   }
 

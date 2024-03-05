@@ -57,10 +57,12 @@ export class BlocksHandler {
     }
     // .replace(/};/g, '}')
     // };else{ IF后面加else的场景
+    // };else if
     return commandLines
       .join(';')
       .replace(/;}/g, '}')
       .replace(/};else{/g, '}else{')
+      .replace(/};else if/g, '}else if')
       .replace(/{;/g, '{')
   }
 

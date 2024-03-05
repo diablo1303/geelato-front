@@ -10,7 +10,7 @@ export default class DictQueryBlockHandler implements IBlockHandler {
   }
   
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-    console.log('props', props)
+    // console.log('props', props)
     let respVarName = props.respVarName || utils.gid('respVarName')
     let dataVarName = props.dataVarName || utils.gid('dataVarName')
     return new ParseResult(

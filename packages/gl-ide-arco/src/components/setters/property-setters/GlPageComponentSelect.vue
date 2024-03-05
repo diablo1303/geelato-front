@@ -1,16 +1,19 @@
 <template>
-  <a-tree-select title="该组件树为当前后台服务中已保存的组件树" :data="treeData"
-                 v-model="selected"
-                 placeholder="请选择"
-                 :allow-search="true"
-                 :allow-clear="true"
-                 :filter-tree-node="filterTreeNode"
-                 :fieldNames="{
-                  key: 'id',
-                  title: 'title',
-                  children: 'children'}"
-                 @click="loadPage"
-                 @change="onChange"
+  <a-tree-select
+    title="该组件树为当前后台服务中已保存的组件树"
+    :data="treeData"
+    v-model="selected"
+    placeholder="请选择"
+    :allow-search="true"
+    :allow-clear="true"
+    :filter-tree-node="filterTreeNode"
+    :fieldNames="{
+      key: 'id',
+      title: 'title',
+      children: 'children'
+    }"
+    @click="loadPage"
+    @change="onChange"
   ></a-tree-select>
 </template>
 <script lang="ts">
@@ -23,11 +26,15 @@ export default {
  *  页面内的组件选择器
  *  获取页面结构，列出页面内的组件，便于选择组件
  */
-import {inject, ref, watch} from "vue";
-import {ComponentSetterProvideKey, ComponentSetterProvideProxy} from "@geelato/gl-ide";
-import {entityApi} from "@geelato/gl-ui";
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
-import {useComponentStore} from "@geelato/gl-ide";
+import { inject, ref, watch } from 'vue'
+import {
+  ComponentSetterProvideKey,
+  ComponentSetterProvideProxy,
+  useComponentStore
+} from '@geelato/gl-ide'
+import { entityApi } from '@geelato/gl-ui'
+import type { ComponentInstance } from '@geelato/gl-ui-schema'
+import { useParseInnerComponent } from '../../../m/hooks/useAddInnerComponentToInstTree'
 
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 
@@ -73,22 +80,27 @@ const props = defineProps({
   }
 })
 
-
 const selected = ref(typeof props.modelValue === 'string' ? props.modelValue : '')
 
-watch(selected, () => {
-  // console.log('update:modelValue:', selected.value)
-  emits('update:modelValue', selected.value)
-}, {immediate: true})
+watch(
+  selected,
+  () => {
+    // console.log('update:modelValue:', selected.value)
+    emits('update:modelValue', selected.value)
+  },
+  { immediate: true }
+)
 
 const filterTreeNode = (searchValue: string, nodeData: any) => {
   if (nodeData.title) {
-    return nodeData.title.toLowerCase().indexOf(searchValue.toLowerCase()) > -1;
+    return nodeData.title.toLowerCase().indexOf(searchValue.toLowerCase()) > -1
   }
   return false
 }
 
 const treeData = ref<any>([])
+
+const currentComponentMeta = ref()
 
 const componentStore = useComponentStore()
 /**
@@ -124,38 +136,49 @@ const onChange = (instId: any) => {
     // 设置实例
     componentSetterProvideProxy.setVarValue(props.exposeVarComponentInst, foundInst)
     // 设置元数据
-    const componentMeta = componentStore.getComponentMeta(foundInst.componentName)
+    currentComponentMeta.value = componentStore.getComponentMeta(foundInst.componentName)
 
-    componentSetterProvideProxy.setVarValue(props.exposeVarComponentMeta, componentMeta)
+    componentSetterProvideProxy.setVarValue(
+      props.exposeVarComponentMeta,
+      currentComponentMeta.value
+    )
   }
 }
 
 const loadPage = () => {
-  entityApi.queryPageByExtendId(componentSetterProvideProxy.getPropValue(props.dependPropPageIdFieldName)).then((resp: any) => {
-    const pages = resp.data
-    if (pages && pages.length > 0) {
-      const page = pages[0]
-      // console.log('pageConfig', page)
-      const pageConfig = page.releaseContent ? JSON.parse(page.releaseContent) : undefined
-      treeData.value.length = 0
-      convertTitle(pageConfig)
-      pageConfig ? treeData.value.push(pageConfig) : null
-      // console.log('pageConfig', pageConfig)
-      // 初始化时，触发change将实例数据、元数据设置到变量中
-      onChange(props.modelValue)
-    }
-  })
+  entityApi
+    .queryPageByExtendId(componentSetterProvideProxy.getPropValue(props.dependPropPageIdFieldName))
+    .then((resp: any) => {
+      const pages = resp.data
+      if (pages && pages.length > 0) {
+        const page = pages[0]
+        // console.log('pageConfig', page)
+        const pageConfig = page.releaseContent ? JSON.parse(page.releaseContent) : undefined
+        treeData.value.length = 0
+        if (pageConfig) {
+          console.log('pageConfig', pageConfig)
+          // 处理组件的内置组件，解析出来加到组件树中
+          useParseInnerComponent(pageConfig)
+          convertTitle(pageConfig)
+          treeData.value.push(pageConfig)
+        }
+
+        // console.log('pageConfig', pageConfig)
+        // 初始化时，触发change将实例数据、元数据设置到变量中
+        onChange(props.modelValue)
+      }
+    })
 }
 
 const convertTitle = (componentInst: ComponentInstance, title?: string) => {
-  componentInst.title = title || componentInst.props.label || componentInst.componentName
+  componentInst.title = title || componentInst.props?.label || componentInst.title || componentInst.componentName
 
   if (componentInst.group === 'dataEntry') {
     // componentInst.title = componentInst.props.label || componentInst.title || componentInst.componentName
     if (componentInst.componentName === 'GlEntityForm') {
-      componentInst.title += "【表单】"
+      componentInst.title += '【表单】'
     } else {
-      componentInst.title += "【表单字段】"
+      componentInst.title += '【表单字段】'
     }
   }
   if (componentInst.children) {
@@ -177,6 +200,4 @@ loadPage()
 // })
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -135,7 +135,7 @@ let recordValidateSchema = new Schema({})
 const slotNameFlag = '__slot'
 
 const setSlotNames = () => {
-  console.log('setSlotNames')
+  // console.log('setSlotNames')
   // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确保列有slotName
   props.columns.forEach((col: Column) => {
     if (col._renderScript) {
@@ -472,7 +472,7 @@ const slotColumns = computed(() => {
  *  在表格修改状态下，验证表格的一行数据
  */
 const validateRecord = (record: object, rowIndex: number) => {
-  console.log('recordValidateSchema', recordValidateSchema)
+  // console.log('recordValidateSchema', recordValidateSchema)
   return new Promise<{ [key: string]: any }>((resolve: Function) => {
     recordValidateSchema.validate(record, (err: any) => {
       // err的示例值如下，cargoName为字段名

@@ -414,6 +414,27 @@ export class Utils {
     }
   }
 
+
+  /**
+   * 获取对象的属性值
+   * @param obj
+   * @param propPath 支持链式，如x.y.z
+   */
+  getProperty(obj: object, propPath: string) {
+    let propPaths: string[] = []
+    // 如果属性路径是字符串，按点分割
+    if (typeof propPath === 'string') {
+      propPaths = propPath.split('.')
+    }
+    // 递归访问属性
+    return propPaths.reduce((acc: Record<string, any>, part: string) => {
+      if (acc && acc.hasOwnProperty(part)) {
+        return acc[part]
+      }
+      return undefined
+    }, obj)
+  }
+
   /**
    * 查找当前组件所在的页面组件
    * @param component 组件实例

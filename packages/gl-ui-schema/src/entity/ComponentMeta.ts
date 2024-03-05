@@ -10,6 +10,17 @@ export class ComponentI18nMeta {
     props?: Object = {}
 }
 
+/**
+ *  组件的内置组件在整个组件实例配置文件中的位置定义
+ */
+export class InnerComponentPosition {
+    title: string = ''
+    // 访问的属性路径如 x?.y?.z
+    propPath: string = ''
+    // 通过一个函数来获取，输入为基于path获取的节点数据，用于处理复杂的内置组件场景，如果配置了该pathFn，则以此为准
+    // (data)=>{return []}
+    // propPathFn?: Function = undefined
+}
 
 export default class ComponentMeta {
     // 组件英文名称，注册到全局环境的名称GlButton
@@ -55,5 +66,11 @@ export default class ComponentMeta {
     blockContentLanguage?: string
     // 用于设计时，标识是否弃用true，默认为启用即false。弃用时，在sidebar中不可以选择，但在已应用的页面中还可以使用
     deprecated?: Boolean = false
+
+    /**
+     *  该组件内置的组件说明
+     *
+     */
+    innerComponents?: InnerComponentPosition[] = []
 
 }
