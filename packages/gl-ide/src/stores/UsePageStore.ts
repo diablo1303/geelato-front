@@ -150,7 +150,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
    * @return promise
    */
   function loadPage(params: object): Promise<any> {
-    console.log('loadPage from server by params:', params)
+    // console.log('loadPage from server by params:', params)
     return entityApi.query(
       'platform_app_page',
       'id,extendId,appId,code,sourceContent,description',
@@ -230,8 +230,12 @@ export const usePageStore = defineStore('GlPageStore', () => {
       return copyContent
     }
 
+    /**
+     * 暂时不保存preview信息直接返回
+     * @param sourceContent
+     */
     function convertToPreview(sourceContent?: ComponentInstance) {
-      return sourceContent
+      return {}
     }
 
     function convertToSource(sourceContent?: object) {
@@ -342,7 +346,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
     esSub.entity = 'platform_app_page_log'
     esSub.record = {
       pageId: page.id,
-      label:convertedPageContent.source.props?.label,
+      label: convertedPageContent.source.props?.label,
       appId: page.appId,
       extendId: page.extendId,
       code: page.code,
@@ -360,14 +364,37 @@ export const usePageStore = defineStore('GlPageStore', () => {
    * 保存页面
    */
   function savePage(page: any) {
-    // console.log('before savePage',page)
-    emitter.emit(EventNames.GlIdeToolbarPageSaving, { page: page })
-    const entitySaver = getPageEntitySaver(page)
-    return entityApi.saveEntity(entitySaver).then((res) => {
-      page.id = res.data
-      entitySaver.record.id = res.data
-      emitter.emit(EventNames.GlIdeToolbarPageSaved, { page: entitySaver.record })
-    })
+    function savePageToServer() {
+      emitter.emit(EventNames.GlIdeToolbarPageSaving, { page: page })
+      const entitySaver = getPageEntitySaver(page)
+      return entityApi.saveEntity(entitySaver).then((res) => {
+        page.id = res.data
+        entitySaver.record.id = res.data
+        emitter.emit(EventNames.GlIdeToolbarPageSaved, { page: entitySaver.record })
+      })
+    }
+
+    // console.log('before savePage', page)
+    // 获取当前服务端的页面数据
+    if (page.id) {
+      return loadPage({ id: page.id }).then((pageRes: any) => {
+        const sourceToSave = JSON.stringify(page.sourceContent)
+        const lastSourceFromServer = pageRes.data?.length > 0 ? pageRes.data[0].sourceContent : ''
+        if (
+          sourceToSave.length === lastSourceFromServer.length &&
+          sourceToSave == lastSourceFromServer
+        ) {
+          // 和服务端一样，不需保存
+          const message = '当前页面和服务端的一致，不需要保存。'
+          console.log('savePage', message)
+          emitter.emit(EventNames.GlIdeToolbarPageSaveIgnore, { message, page })
+        } else {
+          return savePageToServer()
+        }
+      })
+    } else {
+      return savePageToServer()
+    }
   }
 
   /**

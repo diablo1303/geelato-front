@@ -463,6 +463,9 @@ export class EntityApi {
    * @param biz
    */
   saveEntity(entitySaver: EntitySaver, biz?: string) {
+    if (!entitySaver) {
+      throw new Error('实体保存对象不可以为空，请检查保存对象的变量名是否有误，或保存对象是否已赋值。')
+    }
     const bizCode = biz || '0'
     const mqlObj = this.convertEntitySaverToMql(entitySaver, bizCode)
     // console.log('saveEntity > entitySaver:', entitySaver, 'mql:', mqlObj)

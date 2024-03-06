@@ -11,7 +11,9 @@ export default class ExportWordBlockHandler implements IBlockHandler {
 
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
     const fileName = propsExpressions?.fileName ? propsExpressions.fileName : `"${props.fileName}"`
-
+    const respVarName = props.respVarName || utils.gid('resp')
+    props.respVarName = respVarName
+    const awaitStr = props.enableAwait ?'await':''
     const fulfilledVarName = props.fulfilledVarName || utils.gid('res', 8)
     props.fulfilledVarName = fulfilledVarName
     const rejectedVarName = props.rejectedVarName || utils.gid('e', 8)
@@ -23,8 +25,7 @@ export default class ExportWordBlockHandler implements IBlockHandler {
     )
 
     return new ParseResult(
-      `
-            ${props.enableAwait ? 'await ' : ''} $gl.fileApi.exportFile(${fileName},"${
+      `$gl.vars.${respVarName} = ${awaitStr}  $gl.fileApi.exportFile(${fileName},"${
         props.fileTemplate?.templateId
       }","${props.dataType}",$gl.vars.${props.varName}).then(${fulfilled},${rejected})
             `
@@ -41,6 +42,8 @@ interface Props {
   varName?: object
   // 是否同步执行
   enableAwait?: boolean
+  // 请返回的结果
+  respVarName: string
   // 回调
   invokeBlocks: Array<String>
   // 回调成功参数名

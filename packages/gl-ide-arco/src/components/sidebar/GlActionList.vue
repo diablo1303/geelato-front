@@ -36,30 +36,37 @@ const selectComponent = (inst: ComponentInstance) => {
 
 const openActionSetter = (inst: ComponentInstance, action: Action, actionIndex: number) => {
   selectComponent(inst)
-  emitter.emit(EventNames.GlIdeSetterPanelSwitch, {key: 'actions'})
-  utils.sleep(100).then(() => {
+  // 等组件属性面板打开，200ms后，切换到动作面板
+  utils.sleep(200).then(() => {
+    emitter.emit(EventNames.GlIdeSetterPanelSwitch, {key: 'actions'})
+  })
+  // 等100ms,再弹出动作页面
+  utils.sleep(200).then(() => {
     emitter.emit(EventNames.GlIdeOpenActionEditor, {action, actionIndex})
   })
 }
-
 </script>
 
 <template>
   <div class="gl-action-list">
     <a-alert :show-icon="false" banner center>当前页面已配置的事件</a-alert>
     <a-collapse :default-active-key="['1']" :bordered="false">
-      <a-collapse-item v-for="(inst,index) in componentStore.getActionList()"
-                       :header="inst.props.label||inst.componentName" :key="index">
+      <a-collapse-item
+        v-for="(inst, index) in componentStore.getActionList()"
+        :header="inst.props.label || inst.componentName"
+        :key="index"
+      >
         <template #extra>
           <a-tag size="small" color="blue" @click.stop="selectComponent(inst)">选择组件</a-tag>
         </template>
-        <div v-for="(action,actionIndex) in inst.actions" class="gl-action-item"
-             @click="openActionSetter(inst,action,actionIndex)">
-          <div class="gl-title">
-            {{ action.title }}：{{ action.name }}
-          </div>
-          <div style="flex: 0 0 2em;text-align: center;line-height: 2em">
-            <GlIconfont type="gl-thunderbolt" class="gl-active" style="cursor: pointer"/>
+        <div
+          v-for="(action, actionIndex) in inst.actions"
+          class="gl-action-item"
+          @click="openActionSetter(inst, action, actionIndex)"
+        >
+          <div class="gl-title">{{ action.title }}：{{ action.name }}</div>
+          <div style="flex: 0 0 2em; text-align: center; line-height: 2em">
+            <GlIconfont type="gl-thunderbolt" class="gl-active" style="cursor: pointer" />
           </div>
         </div>
       </a-collapse-item>
@@ -75,15 +82,15 @@ const openActionSetter = (inst: ComponentInstance, action: Action, actionIndex: 
 .gl-action-item {
   width: 100%;
   display: flex;
-  margin-bottom: 1px
+  margin-bottom: 1px;
 }
 
 .gl-action-item:hover {
-  background-color: #E8F7FF;
+  background-color: #e8f7ff;
 }
 
 .gl-action-item .gl-title {
   flex: auto;
-  cursor: pointer
+  cursor: pointer;
 }
 </style>

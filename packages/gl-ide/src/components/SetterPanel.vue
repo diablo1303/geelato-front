@@ -58,7 +58,7 @@ const updateInstance = (instance: any) => {
 const defaultActiveKey = ref(undefined)
 const switchPanel = (args: any) => {
   defaultActiveKey.value = args.key
-  // console.log('openActionSetter:', args)
+  // console.log('switchPanel:', args)
 }
 emitter.on(EventNames.GlIdeSetterPanelSwitch, switchPanel)
 onUnmounted(() => {

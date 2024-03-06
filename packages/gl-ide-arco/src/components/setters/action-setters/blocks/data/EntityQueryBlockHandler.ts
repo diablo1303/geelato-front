@@ -10,7 +10,7 @@ export default class EntityQueryBlockHandler implements IBlockHandler {
   }
 
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-    console.log('props', props)
+    // console.log('props', props)
     let respVarName = props.respVarName || utils.gid('respVarName')
     let entityReaderId = utils.gid('entityReader')
     let dataVarName = props.dataVarName || utils.gid('dataVarName')

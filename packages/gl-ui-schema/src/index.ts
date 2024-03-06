@@ -1,5 +1,5 @@
 // import type {App, Plugin} from 'vue'
-import ComponentMeta from "./entity/ComponentMeta";
+import ComponentMeta, { InnerComponentPosition } from "./entity/ComponentMeta";
 import ComponentInstance from "./entity/ComponentInstance";
 import {I18nItem} from "./entity/ComponentInstance";
 import BlockInstance from "./entity/actions/BlockInstance";
@@ -28,6 +28,7 @@ export {
     BlockMetaGroup,
     ComponentMaterial,
     ComponentMaterialGroup,
+    InnerComponentPosition,
     ComponentMeta,
     ComponentInstance,
     I18nItem,

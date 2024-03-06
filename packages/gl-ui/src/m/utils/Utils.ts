@@ -121,13 +121,15 @@ export class Utils {
       bodyScript = bodyScript.replace(/^;+|;+$/g, '')
       // 无换行，无“;”的则按表达式处理
       if (!bodyScript.match(/[\r\n;]/g) && !bodyScript.toLowerCase().startsWith('return ')) {
-
-        if(bodyScript.toLowerCase().startsWith(';if(')||bodyScript.toLowerCase().startsWith('if(')){
+        if (
+          bodyScript.toLowerCase().startsWith(';if(') ||
+          bodyScript.toLowerCase().startsWith('if(')
+        ) {
           // if开始头，直接在前面加'return '会报错，这里按函数处理
           bodyScript = `return (() => {
               ${bodyScript}
           })()`
-        }else{
+        } else {
           bodyScript = 'return ' + bodyScript
         }
       }
@@ -364,6 +366,73 @@ export class Utils {
       }
     }
     return fmt
+  }
+
+  /**
+   * 将时间转为XX时间之前
+   * const time = "2024-03-04 16:18:40";
+   * const result = timeAgo(time);
+   * @param time 格式如："2024-03-04 16:18:40"
+   */
+  timeAgo(time: string) {
+    const now = new Date()
+    const givenTime = new Date(time)
+    // @ts-ignore
+    const seconds = Math.floor((now - givenTime) / 1000)
+    const minutes = Math.floor(seconds / 60)
+    const hours = Math.floor(minutes / 60)
+    const days = Math.floor(hours / 24)
+    const weeks = Math.floor(days / 7)
+    if (seconds < 60) {
+      return '刚刚'
+    } else if (minutes < 60) {
+      return `${minutes}分钟前`
+    } else if (hours < 24) {
+      return `${hours}小时前`
+    } else if (days < 7) {
+      return `${days}天前`
+    } else if (weeks < 4) {
+      return '一周前'
+    } else {
+      // 计算月份差异，需要考虑不同月份的天数差异
+      const nowMonth = now.getMonth()
+      const nowYear = now.getFullYear()
+      const givenMonth = givenTime.getMonth()
+      const givenYear = givenTime.getFullYear()
+      let monthDifference = (nowYear - givenYear) * 12 + nowMonth - givenMonth
+      if (now.getDate() < givenTime.getDate()) {
+        // 如果当前日期小于给定日期，那么月份差异需要减1
+        monthDifference -= 1
+      }
+      if (monthDifference === 1) {
+        return '一个月前'
+      } else if (monthDifference < 12) {
+        return `${monthDifference}个月前`
+      } else {
+        return `${Math.floor(monthDifference / 12)}年前`
+      }
+    }
+  }
+
+
+  /**
+   * 获取对象的属性值
+   * @param obj
+   * @param propPath 支持链式，如x.y.z
+   */
+  getProperty(obj: object, propPath: string) {
+    let propPaths: string[] = []
+    // 如果属性路径是字符串，按点分割
+    if (typeof propPath === 'string') {
+      propPaths = propPath.split('.')
+    }
+    // 递归访问属性
+    return propPaths.reduce((acc: Record<string, any>, part: string) => {
+      if (acc && acc.hasOwnProperty(part)) {
+        return acc[part]
+      }
+      return undefined
+    }, obj)
   }
 
   /**

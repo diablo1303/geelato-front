@@ -1193,5 +1193,11 @@ export default {
       title: '删除选择的记录（基于ID）,带删除确认提醒',
       params: []
     }
+  ],
+  innerComponents: [
+    { title: '查询条件', propPath: 'props.query' },
+    { title: '工具栏左侧', propPath: 'props.toolbar.leftItems' },
+    { title: '工具栏右侧', propPath: 'props.toolbar.rightItems' },
+    { title: '列操作栏', propPath: 'props.columnActions' }
   ]
 }
