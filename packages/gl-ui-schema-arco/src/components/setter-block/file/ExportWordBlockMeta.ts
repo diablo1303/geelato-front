@@ -62,7 +62,7 @@ export default {
       name: 'varName',
       group: 'base',
       type: 'props',
-      enableValueExpress: false,
+      enableValueExpress: true,
       show: true,
       expanded: true,
       displayMode: 'tile',

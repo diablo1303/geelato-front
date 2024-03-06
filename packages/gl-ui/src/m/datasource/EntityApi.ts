@@ -2,7 +2,7 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosStatic } fr
 import MixUtil from '../utils/MixUtil'
 import {
   type EntityReader,
-  type EntitySaver,
+  EntitySaver,
   EntityReaderParam,
   EntityReaderParamGroup
 } from './EntityDataSource'
@@ -15,6 +15,40 @@ import EntityQueryCache from '../datasource/EntityQueryCache'
 export type MqlObject = { [key: string]: { [key: string]: any } }
 export type ParsedMqlResult = { key: string; mqlObj: Record<string, any> }
 const entityQueryCache = new EntityQueryCache()
+
+// 保存对象示例
+const entitySaverInstTemplate = new EntitySaver('必填，如entityABC')
+delete entitySaverInstTemplate.id
+delete entitySaverInstTemplate.pidName
+delete entitySaverInstTemplate.recordStatus
+
+/**
+ * 检查是否为有效的EntitySaver格式
+ * @param es
+ */
+const checkEntitySaver = (es: EntitySaver) => {
+  const getMessage = (detail?: string) => {
+    return `数据格式有误，${detail ? detail + '，' : ''}有效的EntitySaver格式示例：`
+  }
+
+  if (typeof es !== 'object' || utils.isArray(es)) {
+    console.error(getMessage(), entitySaverInstTemplate, '当前对象如下：', es)
+    throw new Error(getMessage())
+  }
+  if (!es.entity) {
+    console.error(getMessage('entity属性不能为空'), entitySaverInstTemplate, '当前对象如下：', es)
+    throw new Error(getMessage())
+  }
+  if (!es.record || typeof es.record !== 'object' || utils.isArray(es.record)) {
+    console.error(
+      getMessage('record属性不能为空，且为格式为Record<string, any>'),
+      '当前对象如下：',
+      es
+    )
+    throw new Error(getMessage())
+  }
+  return true
+}
 
 /**
  * 检查mql对象的格式
@@ -409,8 +443,10 @@ export class EntityApi {
 
   convertEntitySaverToMql(entitySaver: EntitySaver, biz?: string): MqlObject {
     const defaultPidValue = '$parent.id'
+
     // subFormPidValue
     const toMql = (es: EntitySaver, isChildren: boolean, pidValue?: string): ParsedMqlResult => {
+      checkEntitySaver(es)
       // 数据预处理：按约定，将记录值中的空字符串转成null值，
       Object.keys(es.record).forEach((key: string) => {
         if (es.record[key] === '') {
@@ -464,7 +500,9 @@ export class EntityApi {
    */
   saveEntity(entitySaver: EntitySaver, biz?: string) {
     if (!entitySaver) {
-      throw new Error('实体保存对象不可以为空，请检查保存对象的变量名是否有误，或保存对象是否已赋值。')
+      throw new Error(
+        '实体保存对象不可以为空，请检查保存对象的变量名是否有误，或保存对象是否已赋值。'
+      )
     }
     const bizCode = biz || '0'
     const mqlObj = this.convertEntitySaverToMql(entitySaver, bizCode)

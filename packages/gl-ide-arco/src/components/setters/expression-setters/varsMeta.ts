@@ -1,5 +1,5 @@
-import {entityApi, jsScriptExecutor, useGlobal} from '@geelato/gl-ui'
-import { useComponentStore } from '@geelato/gl-ide'
+import { entityApi, jsScriptExecutor, useGlobal } from '@geelato/gl-ui'
+import { useComponentStore, useActionStore, type VarMeta } from '@geelato/gl-ide'
 import { getLabel } from '@geelato/gl-ui-arco'
 import type { MethodMeta } from '@geelato/gl-ui-schema'
 import type { ComponentCustomProperties } from 'vue'
@@ -56,10 +56,8 @@ const user = {
       title: '外部组织ID',
       _code: 'cooperatingOrgId',
       _type: 'string',
-      _description:'如果是外部单位用户时才有该值'
+      _description: '如果是外部单位用户时才有该值'
     }
-
-
   ]
 }
 
@@ -179,6 +177,45 @@ export const useSystemVarsTreeData = (
 //     ],
 //     _description: 'ComponentInstance'
 // }
+
+/**
+ *  获取当前动作定义的变量
+ */
+export const useActionVarsTreeData = () => {
+  const actionStore = useActionStore()
+  const useActionVars = () => {
+    const vars = {
+      title: '当前动作变量',
+      _code: 'vars',
+      _type: 'object',
+      _description: '当前动作定义的所有变量集对象',
+      children: <any>[]
+    }
+
+    actionStore.vars.forEach((varMeta: VarMeta) => {
+      vars.children.push({
+        title: varMeta.label,
+        _code: varMeta.name,
+        _description: varMeta.remark
+      })
+    })
+    // if (componentBlockStore.currentSelectedComponentInstance) {
+    //   const columns = componentStore.currentSelectedComponentInstance.props.columns
+    //   if (columns && columns.length > 0) {
+    //     columns.forEach((col: any) => {
+    //       record.children.push({
+    //         title: col.title,
+    //         _code: col.dataIndex,
+    //         _description: ''
+    //       })
+    //     })
+    //   }
+    // }
+    return vars
+  }
+  const vars = useActionVars()
+  return [vars]
+}
 
 /**
  *  组件实例
@@ -569,4 +606,3 @@ const logic = {
 }
 
 export const functionalFormulaTreeData = [date, text, logic]
-

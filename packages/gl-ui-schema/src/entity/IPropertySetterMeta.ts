@@ -77,6 +77,9 @@ export default interface IPropertySetterMeta {
     // 是否启用值表达式，用于结合上下文的信息、相关逻辑计算得出value
     enableValueExpress?: Boolean
 
+    // 是否为变量属性，脚本编排中使用
+    isBlockVarProp?:boolean
+
 }
 
 export class PropertySetterMetaImpl implements IPropertySetterMeta {

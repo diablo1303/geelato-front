@@ -15,6 +15,7 @@ export default class ForListBlockHandler implements IBlockHandler {
       `for(let ${props.loopItemIndex} in ${items}){
           let ${props.loopItem} = ${items}[${props.loopItemIndex}];
           $gl.vars.${props.loopItem} = ${props.loopItem};
+          $gl.vars.${props.loopItemIndex} = ${props.loopItemIndex};
       `,
       `}`
     )

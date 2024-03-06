@@ -64,6 +64,8 @@ export default class ComponentMeta {
     blockContent?: string = ''
     // 块内容的语言，如javascript，默认为空，表示普通的文本
     blockContentLanguage?: string
+    // 块中表示变量名的属性，如：varsName，以便于配置时，可以依据该属性名，获取在真实的变量名
+    blockVarNameProps?:string[]
     // 用于设计时，标识是否弃用true，默认为启用即false。弃用时，在sidebar中不可以选择，但在已应用的页面中还可以使用
     deprecated?: Boolean = false
 

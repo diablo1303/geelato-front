@@ -1,5 +1,5 @@
 <template>
-  <div class="gl-ide-plugin-form-designer" style="width: 100%; min-height: 500px">
+  <div class="gl-command-editor" style="width: 100%; min-height: 500px">
     <a-row>
       <a-col
         :span="5"
@@ -90,7 +90,7 @@
                     : '点击停用'
                 }}
               </a-button>
-<!--              <a-button @click="componentStore.copyCurrentSelectedComponent"> 复制插入</a-button>-->
+              <!--              <a-button @click="componentStore.copyCurrentSelectedComponent"> 复制插入</a-button>-->
               <a-button @click="componentStore.copyCurrentSelectedComponentToClipboard">
                 复制
               </a-button>
@@ -103,8 +103,8 @@
               <a-button
                 status="danger"
                 @click="componentStore.deleteCurrentSelectedComponentInst('')"
-                >删除</a-button
-              >
+                >删除
+              </a-button>
             </a-button-group>
           </div>
           <GlComponentPropertiesSetter
@@ -119,13 +119,13 @@
 </template>
 <script lang="ts">
 export default {
-  name: 'CommandEditor'
+  name: 'GlCommandEditor'
 }
 </script>
 <script lang="ts" setup>
 import { onMounted, type PropType, ref, watch } from 'vue'
 import { Action, ComponentInstance } from '@geelato/gl-ui-schema'
-import { componentStoreFactory, useThemeStore } from '@geelato/gl-ide'
+import { componentStoreFactory, useThemeStore, useActionStore } from '@geelato/gl-ide'
 import GlCommandEditorSidebar from './GlCommandEditorSidebar.vue'
 import { blocksHandler } from './blocks/BlockHandler'
 import BlockPage from '../../../components/stage/BlockPage.vue'
@@ -148,7 +148,7 @@ const props = defineProps({
 })
 
 const themeStore = useThemeStore()
-
+const actionStore = useActionStore()
 const mainHeight = themeStore.modalBodyHeight + 'px'
 const editorHeight = themeStore.modalBodyHeight - 76
 const sidebarStyle = ref({
@@ -172,33 +172,34 @@ const componentStore = componentStoreFactory.useComponentStore('useComponentBloc
 const emits = defineEmits(['update:action', 'updateAction'])
 
 const mv = ref(props.action)
+actionStore.setAction(props.action)
 
 const mvStr = ref(JSON.stringify(mv.value))
 const mvBodyStr = ref('')
 watch(mv, () => {
   mvStr.value = mv.value ? JSON.stringify(mv.value) : ''
 })
-onMounted(() => {
-  reset()
-})
+const refreshFlag = ref(true)
 
 const reset = () => {
   mv.value = props.action
+  actionStore.setAction(props.action)
 }
 
-// const findBlockMeta = (componentName: string) => {
-//   return componentMaterialStore.findMetaByName(componentName)
-// }
-const refreshFlag = ref(true)
-
+/**
+ * 脚本块有调整时，会触发更新实例
+ * 进一步的会生成json、生成js
+ * @param instance
+ */
 const updateInstance = (instance: ComponentInstance) => {
   // console.log('updateInstance() > block:', instance)
   mv.value.__commandBlock = JSON.parse(JSON.stringify(instance))
   generateScript()
-  // refreshFlag.value = false
-  // nextTick(() => {
-  //   refreshFlag.value = true
-  // })
+  // 基于当前动作创建变量，以便于在面板中可以选择变量插入
+  actionStore.generateVars()
+  // 检查是否存在同名的变量
+  // TODO
+  // console.log('actionStore.vars', actionStore.vars)
   emits('update:action', mv.value)
   emits('updateAction', mv.value)
 }
@@ -219,46 +220,11 @@ const insertAfterCurrentSelectedComponent = async () => {
   }
 }
 
-/**
- *  将粘贴板中的数据转成组件实例
- */
-// const insertAfterCurrentSelectedComponent = async () => {
-//   const clipboardItems = await window.navigator.clipboard.read()
-//   let textHtml, textPlain
-//   for (const clipboardItem of clipboardItems) {
-//     for (const type of clipboardItem.types) {
-//       const item = await clipboardItem.getType(type)
-//       if (item && item.type == 'text/html') {
-//         textHtml = await item.text()
-//       }
-//       if (item && item.type == 'text/plain') {
-//         textPlain = await item.text()
-//       }
-//     }
-//   }
-//   if (textPlain) {
-//     try {
-//       const inst = JSON.parse(textPlain.toString())
-//       if (componentStore.checkComponent(inst)) {
-//         componentStore.insertAfterCurrentSelectedComponent(inst)
-//       } else {
-//         useGlobal().$notification.error(
-//           '将粘贴版中的数据转换成组件实例失败，不是正确的组件实例格式'
-//         )
-//       }
-//     } catch (e: any) {
-//       useGlobal().$notification.error('将粘贴版中的数据转换成JSON失败，不是有效的组件实例')
-//       console.error(e)
-//     }
-//   }
-//   console.log('clipboardItems', clipboardItems, textHtml, textPlain)
-// }
+reset()
 
 onMounted(() => {
-  // setEditorValue()
+  reset()
 })
-
-reset()
 </script>
 
 <style></style>

@@ -371,6 +371,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
         page.id = res.data
         entitySaver.record.id = res.data
         emitter.emit(EventNames.GlIdeToolbarPageSaved, { page: entitySaver.record })
+        return res.data
       })
     }
 

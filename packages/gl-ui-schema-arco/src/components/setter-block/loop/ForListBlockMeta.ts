@@ -25,12 +25,13 @@ export default {
       type: 'props',
       show: true,
       expanded: true,
+      isBlockVarProp:true,
       setterComponentProps: { placeholder: '默认为loopItem' },
       setterComponentVModelName: 'modelValue',
       title: '循环项名',
       setterComponentName: 'AInput',
       setterDefaultValue: 'loopItem',
-      enableValueExpress: true
+      enableValueExpress: false
     },
     {
       name: 'loopItemIndex',
@@ -38,6 +39,7 @@ export default {
       type: 'props',
       show: true,
       expanded: true,
+      isBlockVarProp:true,
       setterComponentProps: { placeholder: '默认为loopItemIndex' },
       setterComponentVModelName: 'modelValue',
       setterDefaultValue: 'loopItemIndex',

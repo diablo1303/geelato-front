@@ -3,8 +3,9 @@ const usePromise = (
   fulfilledVarName: string,
   rejectedVarName: string
 ) => {
-  let fulfilled = `undefined`
-  let rejected = 'undefined'
+  let fulfilled = `(res)=>{return res}`
+  let rejected = '(e)=>{return e}'
+  let then = ''
   // 启用
   if (invokeBlocks?.includes('fulfilled')) {
     fulfilled = `(res)=>{
@@ -19,6 +20,7 @@ const usePromise = (
           #{rejected}
         }`
   }
+
   return { fulfilled, rejected }
 }
 

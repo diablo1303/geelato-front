@@ -31,7 +31,8 @@ export default {
       title: '结果变量',
       setterComponentName: 'AInput',
       enableValueExpress: false,
-      placeholder: '方法调用返回存储的变量'
+      placeholder: '方法调用返回存储的变量',
+      isBlockVarProp:true
     },
     {
       name: 'enableReturn',
@@ -44,7 +45,7 @@ export default {
       title: '返回结果',
       setterComponentName: 'ASwitch',
       enableValueExpress: false,
-      description: '返回该方法的调用执行结果，启用则在方法调用前添加return'
+      description: '返回该方法的调用执行结果，启用则在方法调用前添加return',
     },
     {
       name: 'invokeBlocks',
@@ -85,6 +86,7 @@ export default {
       title: '回调成功参数名',
       setterComponentName: 'AInput',
       enableValueExpress: false,
+      isBlockVarProp:true,
       displayMode: 'tile',
       description:
         '请求成功时回调方法内，默认创建$gl.vars.res_xxx,可以改成其它名称，这里不需编写$gl.vars部分，只需写变量名即可，如res。'
@@ -100,6 +102,7 @@ export default {
       title: '回调失败参数名',
       setterComponentName: 'AInput',
       enableValueExpress: false,
+      isBlockVarProp:true,
       displayMode: 'tile',
       description:
         '请求失败时回调方法内，默认创建$gl.vars.e_xxx,可以改成其它名称，这里不需编写$gl.vars部分，只需写变量名即可，如e。'

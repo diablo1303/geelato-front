@@ -15,6 +15,7 @@ import Page from './entity/Page'
 import { useIdeStore } from './stores/UseIdeStore'
 import { useEntityStore } from './stores/UseEntityStore'
 import { usePageStore } from './stores/UsePageStore'
+import { useActionStore,type VarMeta } from './stores/UseActionStore'
 import {
   useComponentStore,
   componentStoreFactory,
@@ -68,6 +69,8 @@ export {
   useComponentBlockStore,
   useComponentBpmnStore,
   useThemeStore,
+  useActionStore,
+  VarMeta,
   uiLibAdapter,
   ComponentSetterProvideProxy,
   ComponentSetterProvideKey

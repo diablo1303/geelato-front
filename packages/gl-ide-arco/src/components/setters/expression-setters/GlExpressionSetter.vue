@@ -13,11 +13,11 @@ import {
   useSystemVarsTreeData,
   functionalFormulaTreeData,
   useComponentInstTreeData,
-  useSrvTreeData
+  useSrvTreeData, useActionVarsTreeData
 } from './varsMeta'
 import { useGlobal, utils } from '@geelato/gl-ui'
 import { useConstTreeData, useDictTreeData, useWorkflowTreeData } from './enumMeta'
-
+import GlExpressionVarsTree from './GlExpressionVarsTree.vue'
 const global = useGlobal()
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -49,6 +49,7 @@ const inputMv = ref(props.modelValue)
 // })
 
 const _systemVarsTreeData: Ref<any[]> = ref([])
+const _actionVarsTreeData: Ref<any[]> = ref([])
 const _functionalFormulaTreeData: Ref<any[]> = ref([])
 const _componentInstTreeData: Ref<any[]> = ref([])
 const _constTreeData: Ref<any[]> = ref([])
@@ -56,12 +57,14 @@ const _dictTreeData: Ref<any[]> = ref([])
 const _workflowTreeData: Ref<any[]> = ref([])
 const _srvTreeData: Ref<any[]> = ref([])
 const visibleValueExpressModal = ref(false)
+
 /**
  * 打开值表达式设置窗口
  */
 const openValueExpressModal = async () => {
   visibleValueExpressModal.value = true
   _systemVarsTreeData.value = setKeys(useSystemVarsTreeData(global))
+  _actionVarsTreeData.value = setKeys(useActionVarsTreeData())
   _functionalFormulaTreeData.value = setKeys(functionalFormulaTreeData)
   _componentInstTreeData.value = setKeys(useComponentInstTreeData())
   _constTreeData.value = setKeys(await useConstTreeData())
@@ -275,7 +278,74 @@ const selectDictItem = (key: any) => {
         </div>
         <div style="flex: 1; min-width: 500px; max-height: 700px; overflow-y: auto">
           <a-collapse size="small" :default-active-key="['5']" :bordered="false">
-            <a-collapse-item header="系统常量" key="1">
+            <a-collapse-item header="系统变量" key="1">
+              <GlExpressionVarsTree :data="_systemVarsTreeData" @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_systemVarsTreeData)"></GlExpressionVarsTree>
+            </a-collapse-item>
+            <a-collapse-item header="动作变量" key="2">
+              <GlExpressionVarsTree :data="_actionVarsTreeData" @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_actionVarsTreeData)"></GlExpressionVarsTree>
+            </a-collapse-item>
+            <a-collapse-item header="组件实例" key="3">
+              <GlExpressionVarsTree :data="_componentInstTreeData" @select="(selectedKeys:any,data:any)=>selectInstNode(selectedKeys,data,_componentInstTreeData)"></GlExpressionVarsTree>
+            </a-collapse-item>
+            <a-collapse-item header="服务接口" key="4">
+              <GlExpressionVarsTree :data="_srvTreeData" @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_srvTreeData)"></GlExpressionVarsTree>
+            </a-collapse-item>
+            <a-collapse-item header="流程定义" key="5">
+              <GlExpressionVarsTree :data="_workflowTreeData" @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_workflowTreeData)"></GlExpressionVarsTree>
+            </a-collapse-item>
+            <a-collapse-item header="数据字典" key="6">
+<!--              <GlExpressionVarsTree :data="_dictTreeData" @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_dictTreeData)">-->
+<!--                <template #extra>-->
+<!--                  <a-button-->
+<!--                      v-if="['系统常量'].indexOf(title) === -1"-->
+<!--                      size="mini"-->
+<!--                      type="text"-->
+<!--                      shape="round"-->
+<!--                      @click="expendDict(_code)"-->
+<!--                  >选择字典值-->
+<!--                  </a-button>-->
+<!--                </template>-->
+<!--              </GlExpressionVarsTree>-->
+              <a-tree
+                ref="enumVarsTree"
+                :default-expanded-keys="[]"
+                size="small"
+                blockNode
+                :data="_dictTreeData"
+                @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_dictTreeData)"
+              >
+                <template #title="{ _code, title, _value, _description }">
+                  <a-tooltip v-if="_description" background-color="#165DFF">
+                    <template #content>
+                      {{ _description }}
+                    </template>
+                    <span>
+                      <span class="gl-title" style="color: #1d2129; margin-left: 0 !important">{{
+                        title
+                      }}</span>
+                    </span>
+                  </a-tooltip>
+                  <span v-else class="gl-title" style="color: #1d2129; margin-left: 0 !important">
+                    <span>{{ title }}</span>
+                  </span>
+                </template>
+                <template #extra="{ _code, title, _type }">
+                  <a-button
+                    v-if="['系统常量'].indexOf(title) === -1"
+                    size="mini"
+                    type="text"
+                    shape="round"
+                    @click="expendDict(_code)"
+                    >选择字典值
+                  </a-button>
+                  <span class="gl-extra">{{ _type }}</span>
+                </template>
+              </a-tree>
+            </a-collapse-item>
+            <a-collapse-item header="函数公式" key="7">
+              <GlExpressionVarsTree :data="_functionalFormulaTreeData" @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_functionalFormulaTreeData)"></GlExpressionVarsTree>
+            </a-collapse-item>
+            <a-collapse-item header="系统常量" key="8">
               <div style="display: flex; line-height: 2.4em">
                 <div style="width: 5em; text-align: right; margin-right: 1em">颜色值</div>
                 <div style="flex: auto">
@@ -313,177 +383,6 @@ const selectDictItem = (key: any) => {
                   <span v-else class="gl-title" style="color: #1d2129; margin-left: 0 !important"
                   >{{ title }}
                   </span>
-                </template>
-                <template #extra="{ _type }">
-                  <span class="gl-extra">{{ _type }}</span>
-                </template>
-              </a-tree>
-            </a-collapse-item>
-            <a-collapse-item header="系统变量" key="2">
-              <a-tree
-                ref="systemVarsTree"
-                :default-expanded-keys="[]"
-                size="small"
-                blockNode
-                :data="_systemVarsTreeData"
-                @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_systemVarsTreeData)"
-              >
-                <template #title="{ _code, title }">
-                  <span
-                    >{{ _code }}<span class="gl-title">{{ title }}</span></span
-                  >
-                </template>
-                <template #extra="{ _type }">
-                  <span class="gl-extra">{{ _type }}</span>
-                </template>
-              </a-tree>
-            </a-collapse-item>
-            <a-collapse-item header="组件实例" key="3">
-              <a-tree
-                ref="systemVarsTree"
-                :default-expanded-keys="[]"
-                size="small"
-                blockNode
-                :data="_componentInstTreeData"
-                @select="(selectedKeys:any,data:any)=>selectInstNode(selectedKeys,data,_componentInstTreeData)"
-              >
-                <template #title="{ _code, title, _value, _description }">
-                  <a-tooltip background-color="#165DFF">
-                    <template #content>
-                      {{ _description }}
-                    </template>
-                    <span
-                      >{{ _code }}
-                      <!--  title和_code相同，则只显示_code -->
-                      <span class="gl-title" style="margin-left: 0 !important">{{
-                        title === _code ? '' : title
-                      }}</span>
-                    </span>
-                  </a-tooltip>
-                </template>
-                <template #extra="{ _type }">
-                  <span class="gl-extra">{{ _type }}</span>
-                </template>
-              </a-tree>
-            </a-collapse-item>
-            <a-collapse-item header="服务接口" key="4">
-              <a-tree
-                ref="systemVarsTree"
-                :default-expanded-keys="[]"
-                size="small"
-                blockNode
-                :data="_srvTreeData"
-                @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_srvTreeData)"
-              >
-                <template #title="{ _code, title, _value, _description }">
-                  <a-tooltip background-color="#165DFF">
-                    <template #content>
-                      {{ _description }}
-                    </template>
-                    <span
-                      >{{ _code }}
-                      <span class="gl-title" style="margin-left: 0 !important">{{
-                        title === _code ? '' : title
-                      }}</span>
-                    </span>
-                  </a-tooltip>
-                </template>
-                <template #extra="{ _type }">
-                  <span class="gl-extra">{{ _type }}</span>
-                </template>
-              </a-tree>
-            </a-collapse-item>
-            <a-collapse-item header="流程定义" key="5">
-              <a-tree
-                ref="enumVarsTree"
-                :default-expanded-keys="[]"
-                size="small"
-                blockNode
-                :data="_workflowTreeData"
-                @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_workflowTreeData)"
-              >
-                <template #title="{ _code, title, _value, _description }">
-                  <a-tooltip v-if="_description" background-color="#165DFF">
-                    <template #content>
-                      {{ _description }}
-                    </template>
-                    <span>
-                      <span class="gl-title" style="color: #1d2129; margin-left: 0 !important">{{
-                        title
-                      }}</span>
-                    </span>
-                  </a-tooltip>
-                  <span v-else class="gl-title" style="color: #1d2129; margin-left: 0 !important">
-                    <span>{{ title }}</span>
-                  </span>
-                </template>
-                <template #extra="{ _code, title, _type }">
-                  <a-button
-                    v-if="['系统常量'].indexOf(title) === -1"
-                    size="mini"
-                    type="text"
-                    shape="round"
-                    @click="expendDict(_code)"
-                    >选择字典值
-                  </a-button>
-                  <span class="gl-extra">{{ _type }}</span>
-                </template>
-              </a-tree>
-            </a-collapse-item>
-            <!--            <a-collapse-item header="自定义变量" key="2">-->
-            <!--              Coming Soon...-->
-            <!--            </a-collapse-item>-->
-            <a-collapse-item header="数据字典" key="6">
-              <a-tree
-                ref="enumVarsTree"
-                :default-expanded-keys="[]"
-                size="small"
-                blockNode
-                :data="_dictTreeData"
-                @select="(selectedKeys:any,data:any)=>selectConstNode(selectedKeys,data,_dictTreeData)"
-              >
-                <template #title="{ _code, title, _value, _description }">
-                  <a-tooltip v-if="_description" background-color="#165DFF">
-                    <template #content>
-                      {{ _description }}
-                    </template>
-                    <span>
-                      <span class="gl-title" style="color: #1d2129; margin-left: 0 !important">{{
-                        title
-                      }}</span>
-                    </span>
-                  </a-tooltip>
-                  <span v-else class="gl-title" style="color: #1d2129; margin-left: 0 !important">
-                    <span>{{ title }}</span>
-                  </span>
-                </template>
-                <template #extra="{ _code, title, _type }">
-                  <a-button
-                    v-if="['系统常量'].indexOf(title) === -1"
-                    size="mini"
-                    type="text"
-                    shape="round"
-                    @click="expendDict(_code)"
-                    >选择字典值
-                  </a-button>
-                  <span class="gl-extra">{{ _type }}</span>
-                </template>
-              </a-tree>
-            </a-collapse-item>
-
-            <a-collapse-item header="函数公式" key="7">
-              <a-tree
-                ref="systemVarsTree"
-                :default-expanded-keys="[]"
-                size="small"
-                blockNode
-                :data="_functionalFormulaTreeData"
-                @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_functionalFormulaTreeData)"
-              >
-                <template #title="{ _code, title }">
-                  <span
-                    >{{ _code }}<span class="gl-title">{{ title }}</span></span
-                  >
                 </template>
                 <template #extra="{ _type }">
                   <span class="gl-extra">{{ _type }}</span>

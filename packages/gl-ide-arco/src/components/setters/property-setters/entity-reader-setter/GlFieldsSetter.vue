@@ -183,7 +183,7 @@ export default defineComponent({
       this.$emit('selectedElement', {element: this.selectedElement, index: this.selectedIndex})
     },
 
-    onFieldChange(fieldName: string | number | Record<string, any> | (string | number | Record<string, any>)[], element: any, index: number) {
+    onFieldChange(fieldName: any, element: any, index: number) {
       // console.log('onFieldChange', fieldName, element, index)
       const fieldMeta = this.entityFieldMetas.find((fieldMeta) => {
         return fieldMeta.name === fieldName
@@ -192,7 +192,7 @@ export default defineComponent({
       this.onChangeElement(fieldName, element, index)
     },
 
-    onAliasChange(fieldName: string | number | Record<string, any> | (string | number | Record<string, any>)[], element: any, index: number) {
+    onAliasChange(fieldName: any, element: any, index: number) {
 
     }
   }

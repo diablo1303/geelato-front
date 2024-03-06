@@ -54,6 +54,7 @@ export default {
       type: 'props',
       show: true,
       expanded: true,
+      isBlockVarProp:true,
       title: '结果resp变量',
       setterComponentName: 'AInput',
       enableValueExpress: false,

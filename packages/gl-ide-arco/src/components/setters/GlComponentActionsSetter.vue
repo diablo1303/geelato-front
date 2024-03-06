@@ -18,13 +18,18 @@
           >
             <div style="width: 100%; display: flex; margin-bottom: 1px">
               <div style="flex: 1">
-                <a-tooltip content="若该动作已被其它动作引用，修改此名称时，会导致对该动用的引用不正常">
+                <a-tooltip
+                  content="若该动作已被其它动作引用，修改此名称时，会导致对该动用的引用不正常"
+                >
                   <a-input v-model="componentInstance.actions[slotProps.index].name"></a-input>
                 </a-tooltip>
               </div>
               <div style="flex: 1">
                 <a-tooltip content="可任意修改名称，不影响引用">
-                  <a-input v-model="componentInstance.actions[slotProps.index].title" title="可任意修改名称，不影响引用"></a-input>
+                  <a-input
+                    v-model="componentInstance.actions[slotProps.index].title"
+                    title="可任意修改名称，不影响引用"
+                  ></a-input>
                 </a-tooltip>
               </div>
               <div style="flex: 0 0 2em; text-align: center; line-height: 2em">
@@ -56,17 +61,25 @@
       body-style="padding:0"
       fullscreen
     >
-      <CommandEditor
+      <GlCommandEditor
         v-if="refreshFlag && currentAction"
         :key="currentAction.id"
         v-model:action="currentAction"
-      ></CommandEditor>
+      ></GlCommandEditor>
       <template #footer>
         <a-button-group>
           <a-space>
-<!--            <a-button @click="closeActionCodeEditor" title="取消即不保存更改"> 取消</a-button>-->
-            <a-button type="primary" @click="saveCurrentPage" title="保存页面到服务端"> 保存</a-button>
-            <a-button type="primary" @click="saveAndCloseCurrentPage" title="保存页面到服务端，并关闭本窗口"> 保存并关闭</a-button>
+            <!--            <a-button @click="closeActionCodeEditor" title="取消即不保存更改"> 取消</a-button>-->
+            <a-button type="primary" @click="saveCurrentPage" title="保存页面到服务端">
+              保存</a-button
+            >
+            <a-button
+              type="primary"
+              @click="saveAndCloseCurrentPage"
+              title="保存页面到服务端，并关闭本窗口"
+            >
+              保存并关闭
+            </a-button>
           </a-space>
         </a-button-group>
       </template>
@@ -83,7 +96,7 @@ export default {
 import { nextTick, onUnmounted, type PropType, ref } from 'vue'
 import { Action, ComponentInstance, ComponentMeta } from '@geelato/gl-ui-schema'
 import GlArrayBaseSetter from './property-setters/GlArrayBaseSetter.vue'
-import CommandEditor from './action-setters/CommandEditor.vue'
+import GlCommandEditor from './action-setters/GlCommandEditor.vue'
 import { emitter, useGlobal, utils } from '@geelato/gl-ui'
 import { blocksHandler } from './action-setters/blocks/BlockHandler'
 import type { ActionMeta } from '@geelato/gl-ui-schema'
@@ -146,7 +159,7 @@ const openActionSetter = (action: Action, actionIndex: number, actionMeta?: Acti
   actionCodeEditorVisible.value = true
   // global.$modal.open({
   //   title: "动作（事件）编排",
-  //   content: h(CommandEditor, {key: currentAction.value.id, action: currentAction.value}),
+  //   content: h(GlCommandEditor, {key: currentAction.value.id, action: currentAction.value}),
   //   width: 1360,
   //   bodyStyle: "padding:0",
   //   onOk: openActionSetter,
@@ -169,7 +182,8 @@ const saveCurrentPage = () => {
   return ideStore.savePage()
 }
 const saveAndCloseCurrentPage = () => {
-  saveCurrentPage().then(() => {
+  saveCurrentPage().then((res) => {
+    console.log('saveCurrentPage res', res)
     closeActionCodeEditor()
   })
 }

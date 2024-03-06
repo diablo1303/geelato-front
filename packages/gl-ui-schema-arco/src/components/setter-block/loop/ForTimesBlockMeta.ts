@@ -55,6 +55,7 @@ export default {
       type: 'props',
       show: true,
       expanded: true,
+      isBlockVarProp:true,
       setterComponentProps: { placeholder: '默认为loopIndex' },
       setterComponentVModelName: 'modelValue',
       title: '循环索引名',

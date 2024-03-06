@@ -16,6 +16,7 @@ export default class ForTimesBlockHandler implements IBlockHandler {
     return new ParseResult(
       `
       for(let ${loopIndex}=1;${startNumber}+(${loopIndex}-1)*${stepNumber}<${endNumber};${loopIndex}+=1){ 
+         $gl.vars.${props.loopIndex} = ${props.loopIndex};
       `,
 
       `}`

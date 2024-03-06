@@ -6,6 +6,7 @@ export default {
   title: 'IF 条件',
   useBy: ['freePage'],
   blockContent: '如果满足条件：${target1} ${relationship} ${target2}',
+  deprecated:true,
   properties: [
     {
       name: 'mode',
