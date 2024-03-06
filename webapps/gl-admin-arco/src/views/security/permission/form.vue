@@ -48,6 +48,10 @@
         <a-textarea v-if="pageData.button" v-model="formData.rule" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
         <span v-else :title="formData.rule" class="textarea-span" @click="openModal(`${formData.rule}`)">{{ formData.rule }}</span>
       </a-form-item>
+      <a-form-item :label="$t('security.permission.index.form.appId')" field="appId">
+        <a-select :disabled="!pageData.button" v-model="formData.appId" :field-names="{value: 'id', label: 'name'}"
+                  :options="selectAppOptions" allow-search/>
+      </a-form-item>
       <a-form-item :label="$t('security.permission.index.form.description')" field="description">
         <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
         <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
@@ -62,7 +66,7 @@ import {useI18n} from 'vue-i18n';
 import {FormInstance, Modal} from "@arco-design/web-vue";
 import {
   createOrUpdatePermission as createOrUpdateForm,
-  getPermission as getForm,
+  getPermission as getForm, QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions,
   QueryPermissionForm as QueryForm,
   validatePermissionCode
 } from '@/api/security';
@@ -163,8 +167,22 @@ const validateCode = async (value: any, callback: any) => {
   }
 }
 
+const selectAppOptions = ref<QuerySelectForm[]>([]);
+const getSelectAppOptions = async () => {
+  try {
+    const {data} = await querySelectOptions({
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+    } as unknown as QueryAppForm);
+    selectAppOptions.value = data || [];
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+
 /* 对外调用方法 */
 const openForm = (urlParams: ListUrlParams) => {
+  getSelectAppOptions();
   // 全局
   pageData.value.formState = urlParams.action;
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');

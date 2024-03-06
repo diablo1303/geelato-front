@@ -1,6 +1,7 @@
 import axios from "axios";
 import qs from "query-string";
 import {PageQueryRequest, PageQueryResponse, QueryResult} from "@/api/base";
+import {BusinessMetaData, BusinessRuleData, BusinessTypeData} from "@/views/security/file/import/template";
 
 export interface QueryFileTemplateForm {
   id: string;
@@ -15,6 +16,9 @@ export interface QueryFileTemplateForm {
   appId: string;
   tenantCode: string;
   fileCodeFormat?: string[];
+  businessTypeData?: BusinessTypeData[];
+  businessMetaData?: BusinessMetaData[];
+  businessRuleData?: BusinessRuleData[];
 }
 
 export interface FilterFileTemplateForm {

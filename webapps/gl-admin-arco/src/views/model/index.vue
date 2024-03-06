@@ -63,7 +63,7 @@
             <TableList ref="tableListRef"></TableList>
           </a-card>
           <a-tabs v-show="pageData.level===2" v-model:active-key="pageData.tabKey" :default-active-tab="1"
-                  :position="'top'" type="line">
+                  :position="'top'" type="line" :lazy-load="true">
             <a-tab-pane key="1" :title="$t('model.column.index.menu.list.searchTable')" class="a-tabs-one">
               <a-card class="general-card">
                 <ColumnList ref="columnListRef"></ColumnList>
@@ -431,14 +431,14 @@ const loadTableList = (connectId: string, connectName: string) => {
  * @param tableId string
  * @param tableName string
  */
-const loadColumnAndForeignList = (tableId: string, tableName: string, connectId: string) => {
+const loadColumnAndForeignList = (tableId: string, tableName: string, connectId: string, appId?: string) => {
   if (columnListRef.value) {
     // @ts-ignore
     columnListRef.value?.loadList({
       action: pageData.value.isSystem ? "view" : pageData.value.formState,
       pageSize: 10000,
       isModal: pageData.value.isModal,
-      params: {pId: tableId, pName: tableName}
+      params: {pId: tableId, pName: tableName, 'appId': appId || ''}
     });
   }
   if (foreignListRef.value) {
@@ -446,7 +446,7 @@ const loadColumnAndForeignList = (tableId: string, tableName: string, connectId:
     foreignListRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
-      params: {pId: tableName, pName: tableName}
+      params: {pId: tableName, pName: tableName, 'appId': appId || ''}
     });
   }
   if (viewListRef.value) {
@@ -454,7 +454,7 @@ const loadColumnAndForeignList = (tableId: string, tableName: string, connectId:
     viewListRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
-      params: {pId: connectId, pName: tableName, isSync: pageData.value.isSync === 2}
+      params: {pId: connectId, pName: tableName, isSync: pageData.value.isSync === 2, 'appId': appId || ''}
     });
   }
   if (tablePermissionFormRef.value) {
@@ -462,7 +462,7 @@ const loadColumnAndForeignList = (tableId: string, tableName: string, connectId:
     tablePermissionFormRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
-      params: {pId: connectId, pName: tableName, pType: 'dp,mp'}
+      params: {pId: connectId, pName: tableName, pType: 'dp,mp', 'appId': appId || ''}
     });
   }
   if (columnPermissionFormRef.value) {
@@ -470,7 +470,7 @@ const loadColumnAndForeignList = (tableId: string, tableName: string, connectId:
     columnPermissionFormRef.value?.loadList({
       action: pageData.value.formState, pageSize: 10000,
       isModal: pageData.value.isModal,
-      params: {pId: tableId, pName: tableName, pType: 'cp', isSystem: pageData.value.isSystem}
+      params: {pId: tableId, pName: tableName, pType: 'cp', isSystem: pageData.value.isSystem, 'appId': appId || ''}
     });
   }
 }
@@ -518,6 +518,7 @@ const treeSelected = (selectedKey: string, nodeData: TreeNode) => {
   pageData.value.tabKey = pageData.value.level === 2 ? '1' : pageData.value.tabKey;
   pageData.value.treeEntity = '';
   let tableName = nodeData.title || '';
+  let tableAppId = '';
   if (pageData.value.level === 1) {
     nodeData.formData = (nodeData.formData as unknown as QueryConnectForm);
     pageData.value.treeTitle = swapConnectTitle(nodeData.formData);
@@ -526,6 +527,7 @@ const treeSelected = (selectedKey: string, nodeData: TreeNode) => {
     nodeData.formData = (nodeData.formData as unknown as QueryTableForm);
     pageData.value.treeTitle = swapTableTitle(nodeData.formData);
     tableName = nodeData.formData.entityName || nodeData.formData.tableName;
+    tableAppId = nodeData.formData.appId;
     pageData.value.treeConnect = nodeData.formData.connectId;
     pageData.value.treeEntity = tableName;
   } else {
@@ -538,7 +540,7 @@ const treeSelected = (selectedKey: string, nodeData: TreeNode) => {
     } else if (pageData.value.level === 1) {
       loadTableList(pageData.value.treeKey, '');
     } else if (pageData.value.level === 2) {
-      loadColumnAndForeignList(pageData.value.treeKey, tableName, pageData.value.treeConnect);
+      loadColumnAndForeignList(pageData.value.treeKey, tableName, pageData.value.treeConnect, tableAppId);
     }
   }, 200);
 }
@@ -603,7 +605,7 @@ const syncFromTableToModel = (ev: MouseEvent) => {
           } as unknown as PageQueryRequest).then((data) => {
             tableEditFeedBack(pageData.value.treeConnect, data[0].formData as QueryTableForm);
             setTimeout(() => {
-              loadColumnAndForeignList(pageData.value.treeKey, pageData.value.treeEntity, pageData.value.treeConnect);
+              loadColumnAndForeignList(pageData.value.treeKey, pageData.value.treeEntity, pageData.value.treeConnect, data[0]?.formData?.appId);
             }, 200);
           });
         }, () => {
@@ -630,7 +632,7 @@ const syncFromModelToTable = (ev: MouseEvent) => {
           } as unknown as PageQueryRequest).then((data) => {
             tableEditFeedBack(pageData.value.treeConnect, data[0].formData as QueryTableForm);
             setTimeout(() => {
-              loadColumnAndForeignList(pageData.value.treeKey, pageData.value.treeEntity, pageData.value.treeConnect);
+              loadColumnAndForeignList(pageData.value.treeKey, pageData.value.treeEntity, pageData.value.treeConnect, data[0]?.formData?.appId);
             }, 200);
           });
         }, () => {

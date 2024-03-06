@@ -5,7 +5,7 @@
       :footer="pageData.button"
       :ok-text="$t('security.file.index.model.ok.text')"
       :title="$t(`security.file.index.model.title.${pageData.formState}`)"
-      width="36%"
+      width="86%"
       @cancel="handleModelCancel($event)"
       @before-ok="handleModelOk">
     <FileTemplateModel ref="modelRef"/>
@@ -55,7 +55,7 @@ const openForm = (urlParams: ListUrlParams) => {
   }
   // 加载页面
   if (modelRef.value) {
-    urlParams.formCol = 1;
+    urlParams.formCol = 2;
     // @ts-ignore
     modelRef.value?.loadModel(urlParams);
   }

@@ -52,6 +52,10 @@
         <a-textarea v-if="pageData.button" v-model.trim="formData.configValue" :auto-size="{minRows:1}" :max-length="2000" show-word-limit/>
         <span v-else>{{ formData.configValue }}</span>
       </a-form-item>
+      <a-form-item :label="$t('security.sysConfig.index.form.appId')" field="appId">
+        <a-select :disabled="!pageData.button" v-model="formData.appId" :field-names="{value: 'id', label: 'name'}"
+                  :options="selectAppOptions" allow-search/>
+      </a-form-item>
       <a-form-item
           :label="$t('security.sysConfig.index.form.enableStatus')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
@@ -81,6 +85,7 @@ import {selectTypeOptions} from "@/views/model/column/searchTable";
 import {AttachmentForm, Base64FileParams, getAttachmentByIds, getDownloadUrlById, getUploadUrl, uploadHeader} from "@/api/attachment";
 import UploadBase64 from "@/components/upload-base64/index.vue";
 import {isJSON} from "@/utils/is";
+import {QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions} from "@/api/security";
 
 const route = useRoute();
 const {t} = useI18n();
@@ -211,8 +216,22 @@ const loadFiles = (attachmentIds: string) => {
   }
 }
 
+const selectAppOptions = ref<QuerySelectForm[]>([]);
+const getSelectAppOptions = async () => {
+  try {
+    const {data} = await querySelectOptions({
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+    } as unknown as QueryAppForm);
+    selectAppOptions.value = data || [];
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {
+  getSelectAppOptions();
   // 全局
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');

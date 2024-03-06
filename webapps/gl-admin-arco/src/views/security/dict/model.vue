@@ -25,6 +25,10 @@
           <a-input v-if="pageData.button" v-model.trim="formData.tenantCode" :max-length="32"/>
           <span v-else>{{ formData.tenantCode }}</span>
         </a-form-item>-->
+    <a-form-item :label="$t('security.dict.index.form.appId')" field="appId">
+      <a-select :disabled="!pageData.button" v-model="formData.appId" :field-names="{value: 'id', label: 'name'}"
+                :options="selectAppOptions" allow-search/>
+    </a-form-item>
     <a-form-item
         :label="$t('security.dict.index.form.enableStatus')"
         :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
@@ -56,7 +60,15 @@ import {ref} from "vue";
 import {useI18n} from 'vue-i18n';
 import {FormInstance, Modal} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
-import {createOrUpdateDict as createOrUpdateForm, getDict as getForm, QueryDictForm as QueryForm, validateDictCode} from '@/api/security'
+import {
+  createOrUpdateDict as createOrUpdateForm,
+  getDict as getForm,
+  QueryAppForm,
+  QueryAppForm as QuerySelectForm,
+  queryApps as querySelectOptions,
+  QueryDictForm as QueryForm,
+  validateDictCode
+} from '@/api/security'
 import {enableStatusOptions} from "@/views/security/dict/item/searchTable";
 import {useRoute} from "vue-router";
 
@@ -120,8 +132,22 @@ const validateCode = async (value: any, callback: any) => {
   }
 }
 
+const selectAppOptions = ref<QuerySelectForm[]>([]);
+const getSelectAppOptions = async () => {
+  try {
+    const {data} = await querySelectOptions({
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+    } as unknown as QueryAppForm);
+    selectAppOptions.value = data || [];
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {
+  getSelectAppOptions();
   // 全局
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');

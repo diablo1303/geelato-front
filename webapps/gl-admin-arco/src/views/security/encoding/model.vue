@@ -127,6 +127,10 @@
           field="example">
         <span>{{ formData.example }}</span>
       </a-form-item>
+      <a-form-item :label="$t('security.encoding.index.form.appId')" field="appId">
+        <a-select :disabled="!pageData.button" v-model="formData.appId" :field-names="{value: 'id', label: 'name'}"
+                  :options="selectAppOptions" allow-search/>
+      </a-form-item>
       <a-form-item
           :label="$t('security.encoding.index.form.enableStatus')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
@@ -155,6 +159,7 @@ import {formatTime, generateRandom} from '@/utils/strings';
 import {dateTypeOptions, enableStatusOptions, separatorsOptions, serialTypeOptions} from "@/views/security/encoding/searchTable";
 import {TableData} from "@arco-design/web-vue/es/table/interface";
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
+import {QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions} from "@/api/security";
 
 const route = useRoute();
 const {t} = useI18n();
@@ -375,8 +380,22 @@ const validateTemplate = () => {
   return isValid;
 }
 
+const selectAppOptions = ref<QuerySelectForm[]>([]);
+const getSelectAppOptions = async () => {
+  try {
+    const {data} = await querySelectOptions({
+      tenantCode: (route.params && route.params.tenantCode as string) || '',
+    } as unknown as QueryAppForm);
+    selectAppOptions.value = data || [];
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+
 /* 对外调用方法 */
 const loadModel = (urlParams: ListUrlParams) => {
+  getSelectAppOptions();
   // 全局
   pageData.value.formState = urlParams.action || "view";
   pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');

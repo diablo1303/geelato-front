@@ -187,7 +187,7 @@ const scrollbar = ref(true);
 const scroll = {y: "100%"};
 const pageData = ref({
   current: 1, pageSize: 10000, formState: 'edit', isModal: false,
-  params: {connectId: '', object: '', type: ''},
+  params: {connectId: '', object: '', type: '', appId: ''},
   modalAddBack: (data: QueryForm) => {
     console.log(data);
   }, modalEditBack: (data: QueryForm) => {
@@ -429,7 +429,7 @@ const deleteTablePermission = async (id: string) => {
 
 const resetTableDefaultPermission = async (ev: MouseEvent) => {
   try {
-    await resetDefaultPermission(pageData.value.params.type, pageData.value.params.object);
+    await resetDefaultPermission(pageData.value.params.type, pageData.value.params.object, pageData.value.params.appId);
     tableRefresh();
   } catch (err) {
     // eslint-disable-next-line no-console
@@ -469,6 +469,7 @@ const loadList = (urlParams: ListUrlParams) => {
   pageData.value.params.connectId = urlParams.params?.pId || '';
   pageData.value.params.object = urlParams.params?.pName || '';
   pageData.value.params.type = urlParams.params?.pType || '';
+  pageData.value.params.appId = urlParams.params?.appId || '';
   basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
   // 方法反馈 新增、编辑、删除
   pageData.value.modalAddBack = urlParams.modalAddBack ? urlParams.modalAddBack : pageData.value.modalAddBack;

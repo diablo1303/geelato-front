@@ -603,8 +603,8 @@ export function insertTableRoleViewPermission(params: QueryRolePermissionForm) {
   return axios.post<QueryResult>('/api/security/role/permission/insertTable/view', params);
 }
 
-export function resetDefaultPermission(type: string, object: string) {
-  return axios.post<QueryResult>(`/api/security/permission/default/${type}/${object}`, {});
+export function resetDefaultPermission(type: string, object: string, appId: string) {
+  return axios.post<QueryResult>(`/api/security/permission/default/${type}/${object}?appId=${appId}`, {});
 }
 
 export function queryColumnRolePermissions(type: string, object: string, params: PageQueryRequest) {
