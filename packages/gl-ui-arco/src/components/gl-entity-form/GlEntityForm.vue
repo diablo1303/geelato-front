@@ -44,7 +44,7 @@ import {
 import { getFormParams, type ValidatedError } from './GlEntityForm'
 
 // onLoadedData：从服务端加载完数据并设置到表单中
-// creatingEntitySavers 完成实体保存对象创建之后，关闭创建方法前调用，例于对实体保存对象进行处理
+// creatingEntitySavers 完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理
 const emits = defineEmits(['onLoadedData', 'creatingEntitySavers'])
 const formProvideProxy = new FormProvideProxy()
 provide(FormProvideKey, formProvideProxy)
@@ -461,7 +461,6 @@ const getEntitySavers = async () => {
   // 再进一步进行表单数据项值校验
   const validateResult = await validate()
   // 验证子表单（Form表单、可编辑列表表单等），若存在则验证
-  let subFormValidateMessage = ''
   let subValidateResults = {}
   for (const instId of subFormInstIds.value) {
     const validateFn = pageProvideProxy.getMethod(instId, 'validate')

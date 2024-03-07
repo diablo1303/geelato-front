@@ -191,7 +191,7 @@ export default {
     },
     {
       name: 'creatingEntitySavers',
-      description: '完成实体保存对象创建之后，关闭创建方法前调用，例于对实体保存对象进行处理。',
+      description: '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
       title: '保存对象完成前'
     }
   ],

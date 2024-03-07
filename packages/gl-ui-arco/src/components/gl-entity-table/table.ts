@@ -138,7 +138,6 @@ export const evalExpression = (
     column: toRaw(data.column),
     rowIndex: toRaw(data.rowIndex)
   }
-  // console.log('evalExpression', data)
   return jsScriptExecutor.evalExpression(data.column._renderScript, ctx)
 }
 
@@ -375,6 +374,10 @@ export const genRenderColumns = (showColumns: Ref<GlTableColumn[]>) => {
     if (column._checked !== false) {
       cols.push(column)
     }
+    if (column.sortable) {
+      // 关闭表格组件内置的前端排序，采用服务端排序
+      column.sortable.sorter = true
+    }
   })
   return cols
 }
@@ -585,10 +588,10 @@ export enum RecordPushStatus {
   None = 'None'
 }
 
-export const RecordPushStatusNames  = {
-  ToDelete : '待删除',
-  ToAdd : '待新增',
-  None : '-'
+export const RecordPushStatusNames = {
+  ToDelete: '待删除',
+  ToAdd: '待新增',
+  None: '-'
 }
 
 /**

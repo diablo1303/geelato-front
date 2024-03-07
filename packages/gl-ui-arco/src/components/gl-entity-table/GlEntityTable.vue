@@ -146,6 +146,14 @@ const props = defineProps({
 
 const isInit = ref(false)
 
+const refreshFlag = ref(true)
+const reRender = () => {
+  refreshFlag.value = false
+  nextTick(() => {
+    refreshFlag.value = true
+  })
+}
+
 const showOptColumn = () => {
   let showOpt = false
   props.columnActions?.forEach((action: ComponentInstance) => {
@@ -343,7 +351,6 @@ watch(
   { deep: true, immediate: true }
 )
 
-const refreshFlag = ref(true)
 // 这个watch 用于设计时，监控列变化时，及时刷新（主要是用于让表达式生效）
 if (!props.glIsRuntime) {
   watch(
@@ -351,11 +358,9 @@ if (!props.glIsRuntime) {
       return props.columns
     },
     () => {
+      console.log('props.columns changed')
       resetColumns()
-      refreshFlag.value = false
-      nextTick(() => {
-        refreshFlag.value = true
-      })
+      reRender()
     },
     { deep: true }
   )
