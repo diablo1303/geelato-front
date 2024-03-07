@@ -137,8 +137,9 @@ const slotNameFlag = '__slot'
 const setSlotNames = () => {
   // console.log('setSlotNames')
   // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确保列有slotName
+  // 对于编辑状态，需将column中没有设置插槽的，生成插槽
   props.columns.forEach((col: Column) => {
-    if (col._renderScript) {
+    if (col._renderScript||col._component) {
       col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
     } else {
       delete col.slotName
@@ -146,20 +147,39 @@ const setSlotNames = () => {
   })
 
   // 对于编辑状态，需将column中没有设置插槽的，生成插槽
-  props.columns.forEach((col: Column) => {
-    if (col._component) {
-      col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
-      col.dataIndex = col._component.props.bindField?.fieldName
-      // 验证信息
-      if (col._component.props.rules) {
-        // @ts-ignore
-        recordValidateSchema.schema[col.dataIndex!] = toRaw(col._component.props.rules)
-      }
-    } else {
-      col.slotName = undefined
-    }
-  })
+  // props.columns.forEach((col: Column) => {
+  //   if (col._component) {
+  //     col.dataIndex = col._component.props.bindField?.fieldName
+  //     // 验证信息
+  //     if (col._component.props.rules) {
+  //       // @ts-ignore
+  //       recordValidateSchema.schema[col.dataIndex!] = toRaw(col._component.props.rules)
+  //     }
+  //   }
+  // })
 
+  // props.columns.forEach((col: Column) => {
+  //   if (col._renderScript) {
+  //     col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
+  //   } else {
+  //     delete col.slotName
+  //   }
+  // })
+  //
+  // // 对于编辑状态，需将column中没有设置插槽的，生成插槽
+  // props.columns.forEach((col: Column) => {
+  //   if (col._component) {
+  //     col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
+  //     col.dataIndex = col._component.props.bindField?.fieldName
+  //     // 验证信息
+  //     if (col._component.props.rules) {
+  //       // @ts-ignore
+  //       recordValidateSchema.schema[col.dataIndex!] = toRaw(col._component.props.rules)
+  //     }
+  //   } else {
+  //     col.slotName = undefined
+  //   }
+  // })
   // console.log('GlEntityTable > columns after convert:', recordValidateSchema)
 }
 
