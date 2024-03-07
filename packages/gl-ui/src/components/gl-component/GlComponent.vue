@@ -106,8 +106,8 @@ const props = defineProps({
 })
 
 // 由于在一些场景下更新props.glComponentInst.props._hidden的值，不能响应式更新UI,这里增加一个值来控制
-const hidden = ref(false)
-const unRender = ref(false)
+const hidden = ref(!!props.glComponentInst.props?._hidden)
+const unRender = ref(!!props.glComponentInst.props?.unRender)
 const pageProvideProxy: PageProvideProxy | undefined = props.glIgnoreInjectPageProxy
   ? undefined
   : inject(PageProvideKey)!
@@ -280,9 +280,9 @@ const hasPermission = () => {
   return true
 }
 
-const isShow = computed(() => {
-  return props.glComponentInst.props?._hidden
-})
+// const isShow = computed(() => {
+//   return props.glComponentInst.props?._hidden
+// })
 
 watch(
   () => {

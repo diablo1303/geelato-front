@@ -43,7 +43,10 @@ export const useParseInnerComponent = (pageInst: ComponentInstance) => {
             }
           })
           //
-          inst.children.push({
+          if(!inst.children){
+            inst.children = []
+          }
+          inst.children?.push({
             id: utils.gid('virtual'),
             // @ts-ignore 用于树组件，标识不可选择
             selectable: false,

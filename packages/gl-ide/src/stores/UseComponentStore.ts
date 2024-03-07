@@ -364,8 +364,13 @@ class ComponentStoreFactory {
                 for (const index in parentComponent.children) {
                   const componentInst = parentComponent.children[index]
                   if (componentInst.id === this.currentSelectedComponentInstance.id) {
-                    // 复制组件，组件内的id需重新创建
-                    parentComponent.children.splice(Number.parseInt(index) + 1, 0, insertInst)
+                    if('GlDndPlaceholder'===this.currentSelectedComponentInstance.componentName){
+                      // 如果当前组件为placeholder，则直接替换deleteCount为1，否则为0
+                      parentComponent.children.splice(Number.parseInt(index), 1, insertInst)
+                    }else{
+                      // 复制组件，组件内的id需重新创建
+                      parentComponent.children.splice(Number.parseInt(index) + 1, 0, insertInst)
+                    }
                     this.setCurrentSelectedComponentById(insertInst.id, '')
                     return insertInst
                   }
