@@ -18,6 +18,7 @@ const entityQueryCache = new EntityQueryCache()
 
 // 保存对象示例
 const entitySaverInstTemplate = new EntitySaver('必填，如entityABC')
+entitySaverInstTemplate.record = { id: 'ID示例，为空表示新增', otherProp: '其它属性示例' }
 delete entitySaverInstTemplate.id
 delete entitySaverInstTemplate.pidName
 delete entitySaverInstTemplate.recordStatus
@@ -39,9 +40,15 @@ const checkEntitySaver = (es: EntitySaver) => {
     console.error(getMessage('entity属性不能为空'), entitySaverInstTemplate, '当前对象如下：', es)
     throw new Error(getMessage())
   }
-  if (!es.record || typeof es.record !== 'object' || utils.isArray(es.record)) {
+  if (
+    !es.record ||
+    typeof es.record !== 'object' ||
+    utils.isArray(es.record) ||
+    Object.keys(es.record).length == 0
+  ) {
     console.error(
       getMessage('record属性不能为空，且为格式为Record<string, any>'),
+      entitySaverInstTemplate,
       '当前对象如下：',
       es
     )

@@ -179,7 +179,7 @@ export class Utils {
   }
 
   isArray(ary: any) {
-    return typeof ary === 'object' && ary.length !== undefined
+    return Array.isArray(ary)
   }
 
   isNullOrEmpty(obj: Object | undefined | null) {
