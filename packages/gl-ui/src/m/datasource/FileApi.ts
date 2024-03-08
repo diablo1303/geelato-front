@@ -54,8 +54,8 @@ export function getUploadUrl(isRename?: boolean) {
  * 下载附件
  * @param id 附件id
  */
-export function getDownloadUrlById(id: string) {
-  return id ? `${entityApi.getAxios().defaults.baseURL}/api/resources/file?rstk=download&id=${id}` : ''
+export function getDownloadUrlById(id: string, isPdf?: boolean) {
+  return id ? `${entityApi.getAxios().defaults.baseURL}/api/resources/file?rstk=download&id=${id}&isPdf=${isPdf === true}` : ''
 }
 
 /**
@@ -79,11 +79,14 @@ export function getDownloadUrlByPath(name: string, path: string) {
  * @param templateId 模型文档id
  * @param dataType 数据类型，mql | data，数据类型有可能是前端的数据结果（data），也有可能是用于后端查询获取数据结果的（mql）
  * @param data 数据
+ * @param readonly 是否只读
+ * @param markKey 水印，水印样式选定
+ * @param markText 水印，水印文本，默认样式
  */
-export function exportFile(fileName: string, templateId: string, dataType: string, data: object) {
+export function exportFile(fileName: string, templateId: string, dataType: string, data: object, readonly?: boolean, markKey?: string, markText?: string) {
   return entityApi
     .getAxios()
-    .post(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}`, data)
+    .post(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}&readonly=${readonly === true}&markKey=${markKey || ''}&markText=${markText || ''}`, data)
 }
 
 /**
@@ -92,9 +95,10 @@ export function exportFile(fileName: string, templateId: string, dataType: strin
  * @param templateId 模型文档id
  * @param dataType 数据类型，mql | data，数据类型有可能是前端的数据结果（data），也有可能是用于后端查询获取数据结果的（mql）
  * @param data 数据
+ * @param params 其他参数
  */
-export function exportExcel(fileName: string, templateId: string, dataType: string, data: object) {
-  return exportFile(fileName, templateId, dataType, data)
+export function exportExcel(fileName: string, templateId: string, dataType: string, data: object, params?: Record<string, any>) {
+  return exportFile(fileName, templateId, dataType, data, params?.readonly, params?.markKey, params?.markText);
 }
 
 /**
