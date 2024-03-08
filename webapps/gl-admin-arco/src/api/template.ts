@@ -16,9 +16,9 @@ export interface QueryFileTemplateForm {
   appId: string;
   tenantCode: string;
   fileCodeFormat?: string[];
-  businessTypeData?: BusinessTypeData[];
-  businessMetaData?: BusinessMetaData[];
-  businessRuleData?: BusinessRuleData[];
+  businessTypeData?: BusinessTypeData[] | string;
+  businessRuleData?: BusinessRuleData[] | string;
+  businessMetaData?: BusinessMetaData[] | string;
 }
 
 export interface FilterFileTemplateForm {

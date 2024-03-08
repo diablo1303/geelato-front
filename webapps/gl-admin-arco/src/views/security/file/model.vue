@@ -52,7 +52,7 @@
       <a-col :span="24/pageData.formCol">
         <a-form-item
             :label="$t('security.file.index.form.templateRule')"
-            :rules="[{required: !['import'].includes(formData.useType),message: $t('security.form.rules.match.required')}]"
+            :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
             field="templateRule">
           <!--        <a-upload :action="getUploadUrl()"
                             :file-list="templateRuleFile"
@@ -80,7 +80,7 @@
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item :label="$t('security.file.index.form.appId')" field="appId">
-          <a-select :disabled="!pageData.button" v-model="formData.appId" :field-names="{value: 'id', label: 'name'}"
+          <a-select v-model="formData.appId" :disabled="!pageData.button" :field-names="{value: 'id', label: 'name'}"
                     :options="selectAppOptions" allow-search/>
         </a-form-item>
       </a-col>
@@ -110,8 +110,15 @@
       <icon-double-right v-else/>
     </template>
     <ImportBusinessType v-model="formData.businessTypeData" :disabled="!pageData.button"/>
-    <ImportBusinessRule v-model="formData.businessRuleData" v-model:business-type-data="formData.businessTypeData" :disabled="!pageData.button"/>
-    <ImportBusinessMeta v-model="formData.businessMetaData" :business-type-data="formData.businessTypeData" :disabled="!pageData.button"/>
+    <ImportBusinessRule v-model="formData.businessRuleData" :business-type-data="formData.businessTypeData as any[]" :disabled="!pageData.button"/>
+    <ImportBusinessMeta v-model="formData.businessMetaData" :business-type-data="formData.businessTypeData as any[]" :disabled="!pageData.button"/>
+  </a-collapse>
+  <a-collapse v-if="['export'].includes(formData.useType)" :key="pageData.key" :default-active-key="[1]">
+    <template #expand-icon="{ active }">
+      <icon-double-down v-if="active"/>
+      <icon-double-right v-else/>
+    </template>
+    <ExportBusinessMeta v-model="formData.businessMetaData" :disabled="!pageData.button"/>
   </a-collapse>
 </template>
 
@@ -129,8 +136,10 @@ import {isJSON} from "@/utils/is";
 import ImportBusinessType from "@/views/security/file/import/type.vue";
 import ImportBusinessRule from "@/views/security/file/import/rule.vue";
 import ImportBusinessMeta from "@/views/security/file/import/meta.vue";
+import ExportBusinessMeta from "@/views/security/file/export/meta.vue";
 import {generateRandom} from "@/utils/strings";
 import {QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions} from "@/api/security";
+import {cloneDeep} from "lodash";
 
 const route = useRoute();
 const {t} = useI18n();
@@ -166,7 +175,10 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
   if (!res) {
     try {
       params.fileCode = params.fileCodeFormat ? params.fileCodeFormat.join(",") : '';
-      params.fileType = params.useType === 'import' ? 'excel' : params.useType;
+      params.fileType = params.useType === 'import' ? 'excel' : params.fileType;
+      params.businessTypeData = params.businessTypeData && params.businessTypeData.length > 0 ? JSON.stringify(params.businessTypeData) : '';
+      params.businessRuleData = params.businessRuleData && params.businessRuleData.length > 0 ? JSON.stringify(params.businessRuleData) : '';
+      params.businessMetaData = params.businessMetaData && params.businessMetaData.length > 0 ? JSON.stringify(params.businessMetaData) : '';
       delete params.fileCodeFormat;
       const {data} = await createOrUpdateForm(params);
       templateFile.value = [];
@@ -341,12 +353,15 @@ const loadModel = (urlParams: ListUrlParams) => {
       formData.value.fileCodeFormat = data.fileCode ? data.fileCode.split(",") : [];
       loadFiles(data.template, 't');
       loadFiles(data.templateRule, 'tr');
+      formData.value.businessTypeData = data.businessTypeData && typeof data.businessTypeData === 'string' ? JSON.parse(data.businessTypeData) : [];
+      formData.value.businessRuleData = data.businessRuleData && typeof data.businessRuleData === 'string' ? JSON.parse(data.businessRuleData) : [];
+      formData.value.businessMetaData = data.businessMetaData && typeof data.businessMetaData === 'string' ? JSON.parse(data.businessMetaData) : [];
       urlParams.loadSuccessBack(data);
     }, urlParams.loadFailBack);
   }
 }
 const submitModel = (done: any, successBack?: any, failBack?: any) => {
-  createOrUpdateData(formData.value, successBack, failBack);
+  createOrUpdateData(cloneDeep(formData.value), successBack, failBack);
 };
 
 // 将方法暴露出去

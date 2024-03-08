@@ -6,7 +6,7 @@ export default {
 
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import {FormInstance, TableColumnData} from "@arco-design/web-vue";
+import {FormInstance, SelectOptionData, TableColumnData} from "@arco-design/web-vue";
 import {generateRandom} from "@/utils/strings";
 import {cloneDeep} from "lodash";
 import {BusinessTypeData, businessTypeDataTypeOptions} from "./template";
@@ -58,18 +58,37 @@ const listEdit = (data: BusinessTypeData) => {
  */
 const listDelete = (data: BusinessTypeData) => {
   // 匹配
-  const index: number[] = [];
+  const indexs: number[] = [];
   for (let i = 0; i < renderData.value.length; i += 1) {
     if (renderData.value[i].sign === data.sign) {
-      index.push(i);
+      indexs.push(i);
     }
   }
-  // 排序，需要从最高的索引开始删除
-  index.sort((a, b) => b - a);
-  // 删除
-  index.forEach(i => {
-    renderData.value.splice(i, 1);
-  });
+  if (indexs.length > 0) {
+    // 排序，需要从最高的索引开始删除
+    indexs.sort((a, b) => b - a);
+    // 删除
+    indexs.forEach(i => {
+      renderData.value.splice(i, 1);
+    });
+  }
+}
+
+/**
+ * 下拉选项匹配
+ * @param value
+ * @param data
+ */
+const getLabel = (value: string, data: SelectOptionData[]) => {
+  if (data && data.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      if (item.value === value) {
+        return item.label;
+      }
+    }
+  }
+  return '';
 }
 
 /**
@@ -133,9 +152,10 @@ const validateRule = async (value: any, callback: any) => {
 watch(() => props.modelValue, () => {
   const data = cloneDeep(props.modelValue);
   if (data && data.length > 0) {
-    data.forEach((item) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
       item.sign = generateRandom(6);
-    });
+    }
   }
   renderData.value = data || [];
 }, {deep: true, immediate: true});
@@ -143,7 +163,12 @@ watch(() => props.modelValue, () => {
  * 输出
  */
 watch(() => renderData.value, () => {
-  emits("update:modelValue", renderData.value);
+  const data = cloneDeep(renderData.value);
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of data) {
+    delete item.sign;
+  }
+  emits("update:modelValue", data);
 }, {deep: true, immediate: true});
 </script>
 
@@ -168,17 +193,17 @@ watch(() => renderData.value, () => {
              column-resizable
              row-key="name" @change="handleChange">
       <template #columns>
-        <a-table-column :width="150" data-index="name" title="列名">
+        <a-table-column :width="150" data-index="name" title="模板表头">
           <template #cell="{ record }">
             {{ record.name }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="type" title="类型">
+        <a-table-column :width="150" data-index="type" title="数据类型">
           <template #cell="{ record }">
-            {{ record.type }}
+            {{ getLabel(record.type, businessTypeDataTypeOptions) }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="format" title="格式化">
+        <a-table-column :width="150" data-index="format" title="格式">
           <template #cell="{ record }">
             {{ record.format }}
           </template>
@@ -188,7 +213,7 @@ watch(() => renderData.value, () => {
             {{ record.remark }}
           </template>
         </a-table-column>
-        <a-table-column v-if="!disabled" :width="100" align="center" data-index="operations" fixed="right" title="操作">
+        <a-table-column v-if="!disabled" :width="150" align="center" data-index="operations" fixed="right" title="操作">
           <template #cell="{ record }">
             <a-button size="small" title="编辑" type="text" @click="listEdit(record)">
               <icon-edit/>
@@ -206,16 +231,23 @@ watch(() => renderData.value, () => {
         @cancel="handleModelCancel($event)"
         @before-ok="handleModelOk">
       <a-form ref="validateForm" :model="formData">
-        <a-form-item :rules="[{required: true,message: '这是必填项'}, {validator: validateRule}]" field="name" label="列名">
+        <a-form-item :rules="[{required: true,message: '这是必填项'}, {validator: validateRule}]" field="name" label="模板表头">
           <a-input v-model.trim="formData.name"/>
         </a-form-item>
-        <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="type" label="类型">
+        <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="type" label="数据类型">
           <a-select v-model="formData.type" allow-search>
             <a-option v-for="(item,index) in businessTypeDataTypeOptions" :key="index" :label="item.label" :value="item.value as string"/>
           </a-select>
+          <template #extra>
+            <div>Excel模板的单元格格式，用于正确读取数据。</div>
+          </template>
         </a-form-item>
-        <a-form-item :rules="[{required: false,message: '这是必填项'}]" field="format" label="格式化">
+        <a-form-item v-if="['BOOLEAN','DATETIME'].includes(formData.type)" field="format" label="格式">
           <a-input v-model="formData.format"/>
+          <template #extra>
+            <div v-if="['BOOLEAN'].includes(formData.type)">输入用于TRUE/FALSE匹配的值。如：“是”，模板单元格值等于“是”为TRUE，否则为FALSE。</div>
+            <div v-if="['DATETIME'].includes(formData.type)">输入匹配的时间格式，如：YYYY-MM-dd。非特殊格式，可不填。</div>
+          </template>
         </a-form-item>
         <a-form-item :rules="[{required: false,message: '这是必填项'}]" field="remark" label="备注">
           <a-textarea v-model="formData.remark" :auto-size="{minRows:2,maxRows:4}" show-word-limit/>

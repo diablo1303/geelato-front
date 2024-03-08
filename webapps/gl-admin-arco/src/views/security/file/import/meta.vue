@@ -5,15 +5,15 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import {ref, watch} from "vue";
-import {FormInstance, TableColumnData} from "@arco-design/web-vue";
+import {ref, toRefs, watch} from "vue";
+import {FormInstance, SelectOptionData, TableColumnData} from "@arco-design/web-vue";
 import {useRoute} from "vue-router";
 import {generateRandom} from "@/utils/strings";
-import {QueryDictForm, QueryDictItemForm, queryDicts, queryItemByDictCode} from "@/api/security";
+import {QueryDictForm, queryDicts} from "@/api/security";
 import {QueryTableColumnForm, queryTableColumns, QueryTableForm, queryTables} from "@/api/model";
 import {PageQueryRequest} from "@/api/base";
 import {cloneDeep} from "lodash";
-import {BusinessMetaData, businessMetaEvaluationOptions, businessRuleDataTypeOptions, BusinessTypeData} from "./template";
+import {BusinessMetaData, businessMetaEvaluationOptions, BusinessTypeData} from "./template";
 
 const route = useRoute();
 const routeParams = ref({
@@ -27,6 +27,7 @@ const props = defineProps({
   businessTypeData: {type: Array<BusinessTypeData>, default: []},
   disabled: {type: Boolean, default: false},
 });
+const {businessTypeData} = toRefs(props);
 // 列表参数
 type Column = TableColumnData & { checked?: true };
 const cloneColumns = ref<Column[]>([]);
@@ -53,11 +54,11 @@ const generateFormData = (): BusinessMetaData => {
     sign: '',
   };
 };
+
 // 表单参数
 const visibleModel = ref(false);
 const formData = ref(generateFormData());
 const validateForm = ref<FormInstance>();
-const businessTypeData = ref<BusinessTypeData[]>([]);
 const businessTypeNameData = ref<string[]>([]);
 const selectDictionaryOptions = ref<QueryDictForm[]>([]);
 const selectEntityOptions = ref<QueryTableForm[]>([]);
@@ -136,7 +137,7 @@ const listEdit = (data: BusinessMetaData) => {
       formData.value.primaryValueOptions = [];
     });
   }
-
+  // 打开表单
   visibleModel.value = true;
 }
 /**
@@ -145,18 +146,37 @@ const listEdit = (data: BusinessMetaData) => {
  */
 const listDelete = (data: BusinessMetaData) => {
   // 匹配
-  const index: number[] = [];
+  const indexs: number[] = [];
   for (let i = 0; i < renderData.value.length; i += 1) {
     if (renderData.value[i].sign === data.sign) {
-      index.push(i);
+      indexs.push(i);
     }
   }
-  // 排序，需要从最高的索引开始删除
-  index.sort((a, b) => b - a);
-  // 删除
-  index.forEach(i => {
-    renderData.value.splice(i, 1);
-  });
+  if (indexs.length > 0) {
+    // 排序，需要从最高的索引开始删除
+    indexs.sort((a, b) => b - a);
+    // 删除
+    indexs.forEach(i => {
+      renderData.value.splice(i, 1);
+    });
+  }
+}
+
+/**
+ * 下拉选项匹配
+ * @param value
+ * @param data
+ */
+const getLabel = (value: string, data: SelectOptionData[]) => {
+  if (data && data.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      if (item.value === value) {
+        return item.label;
+      }
+    }
+  }
+  return '';
 }
 
 /**
@@ -197,7 +217,29 @@ const handleModelCancel = async (e: Event) => {
   visibleModel.value = false;
   await validateForm.value?.resetFields();
 }
-
+/**
+ * 字段值变更
+ */
+const evaluationChange = () => {
+  const data = generateFormData();
+  data.tableName = formData.value.tableName;
+  data.columnName = formData.value.columnName;
+  data.columnNameOptions = formData.value.columnNameOptions;
+  data.evaluation = formData.value.evaluation;
+  data.sign = formData.value.sign;
+  formData.value = data;
+}
+/**
+ * 业务数据，列名 与 清洗规则，列名 联动
+ */
+const formatVariableValue = () => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of renderData.value) {
+    if (item.variableValue && !businessTypeNameData.value.includes(item.variableValue)) {
+      item.variableValue = '';
+    }
+  }
+}
 /**
  * 模型变更，加载模型字段
  */
@@ -263,17 +305,27 @@ watch(() => props.modelValue, () => {
 }, {deep: true, immediate: true});
 watch(() => props.businessTypeData, () => {
   businessTypeNameData.value = [];
-  businessTypeData.value = props.businessTypeData;
   // eslint-disable-next-line no-restricted-syntax
   for (const item of businessTypeData.value) {
     businessTypeNameData.value.push(item.name);
   }
+  formatVariableValue();
 }, {deep: true, immediate: true});
 /**
  * 输出
  */
 watch(() => renderData.value, () => {
-  emits("update:modelValue", renderData.value);
+  const data = cloneDeep(renderData.value);
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of data) {
+    delete item.columnNameOptions;
+    delete item.primaryTableName;
+    delete item.primaryColumnNameGoal;
+    delete item.primaryColumnNameMatch;
+    delete item.primaryValueOptions;
+    delete item.sign;
+  }
+  emits("update:modelValue", data);
 }, {deep: true, immediate: true});
 </script>
 
@@ -308,32 +360,32 @@ watch(() => renderData.value, () => {
             {{ record.columnName }}
           </template>
         </a-table-column>
-        <a-table-column :width="200" data-index="evaluation" title="取值方式">
+        <a-table-column :width="200" data-index="evaluation" title="字段值">
           <template #cell="{ record }">
-            {{ record.evaluation }}
+            {{ getLabel(record.evaluation, businessMetaEvaluationOptions) }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="constValue" title="常量取值">
+        <a-table-column :width="150" data-index="constValue" title="常量">
           <template #cell="{ record }">
             {{ record.constValue }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="variableValue" title="变量取值">
+        <a-table-column :width="150" data-index="variableValue" title="变量">
           <template #cell="{ record }">
             {{ record.variableValue }}
           </template>
         </a-table-column>
-        <a-table-column :width="250" data-index="expression" title="表达式取值">
+        <a-table-column :width="250" data-index="expression" title="表达式">
           <template #cell="{ record }">
             {{ record.expression }}
           </template>
         </a-table-column>
-        <a-table-column :width="200" data-index="dictCode" title="数据字典取值">
+        <a-table-column :width="200" data-index="dictCode" title="数据字典">
           <template #cell="{ record }">
             {{ record.dictCode }}
           </template>
         </a-table-column>
-        <a-table-column :width="250" data-index="primaryValue" title="模型取值">
+        <a-table-column :width="250" data-index="primaryValue" title="模型">
           <template #cell="{ record }">
             {{ record.primaryValue }}
           </template>
@@ -365,47 +417,83 @@ watch(() => renderData.value, () => {
           <a-select v-model="formData.tableName" allow-search @change="tableNameChange">
             <a-option v-for="(item,index) of selectEntityOptions" :key="index" :label="`${item.title}[${item.entityName}]`" :value="item.entityName"/>
           </a-select>
+          <template #extra>
+            <div>选择需要保存数据的模型。</div>
+          </template>
         </a-form-item>
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="columnName" label="字段名称">
           <a-select v-model="formData.columnName" allow-search>
             <a-option v-for="(item,index) of formData.columnNameOptions" :key="index" :label="`${item.title}[${item.fieldName}]`" :value="item.fieldName"/>
           </a-select>
+          <template #extra>
+            <div>选择需要保存数据的模型字段。</div>
+          </template>
         </a-form-item>
-        <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="evaluation" label="取值方式">
-          <a-select v-model="formData.evaluation" allow-search>
+        <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="evaluation" label="字段值">
+          <a-select v-model="formData.evaluation" allow-search @change="evaluationChange">
             <a-option v-for="(item,index) in businessMetaEvaluationOptions" :key="index" :label="item.label" :value="item.value as string"/>
           </a-select>
+          <template #extra>
+            <div>选择模型字段值的处理方式。</div>
+            <div v-if="['SERIAL_NUMBER'].includes(formData.evaluation)">导入当前批次生成的流水号，便于批量删除。</div>
+            <div v-if="['PRIMITIVE'].includes(formData.evaluation)">取对应业务数据列未被清洗的值。</div>
+          </template>
         </a-form-item>
-        <a-form-item v-if="['CONST'].includes(formData.evaluation)" field="constValue" label="常量取值">
+        <a-form-item v-if="['CONST'].includes(formData.evaluation)"
+                     :rules="[{required: ['CONST'].includes(formData.evaluation),message: '这是必填项'}]"
+                     field="constValue" label="常量">
           <a-input v-model="formData.constValue"/>
         </a-form-item>
         <a-form-item v-if="['VARIABLE','JS_EXPRESSION','CHECKBOX','DICTIONARY','PRIMARY_KEY','PRIMITIVE'].includes(formData.evaluation)"
-                     field="variableValue" label="变量取值">
+                     :rules="[{required: ['VARIABLE','CHECKBOX','DICTIONARY','PRIMARY_KEY','PRIMITIVE'].includes(formData.evaluation),message: '这是必填项'}]"
+                     field="variableValue" label="变量">
           <a-select v-model="formData.variableValue" allow-clear allow-search>
             <a-option v-for="(item,index) in businessTypeData" :key="index" :label="item.name" :value="item.name"/>
           </a-select>
+          <template #extra>
+            <div>选择对应的模板表头。</div>
+          </template>
         </a-form-item>
-        <a-form-item v-if="['JS_EXPRESSION'].includes(formData.evaluation)" field="expression" label="表达式取值">
-          <a-input v-model="formData.expression"/>
+        <a-form-item v-if="['JS_EXPRESSION'].includes(formData.evaluation)"
+                     :rules="[{required: ['JS_EXPRESSION'].includes(formData.evaluation),message: '这是必填项'}]"
+                     field="expression" label="表达式">
+          <a-textarea v-model="formData.expression" :auto-size="{minRows:2,maxRows:4}" show-word-limit/>
+          <template #extra>
+            <div>JavaScript计算公式。如：$.20GP+$.40GP | $.是否启用==true?1:0。</div>
+          </template>
         </a-form-item>
-        <a-form-item v-if="['CHECKBOX','DICTIONARY'].includes(formData.evaluation)" field="dictCode" label="数据字典取值">
+        <a-form-item v-if="['CHECKBOX','DICTIONARY'].includes(formData.evaluation)"
+                     :rules="[{required: ['CHECKBOX','DICTIONARY'].includes(formData.evaluation),message: '这是必填项'}]"
+                     field="dictCode" label="数据字典">
           <a-select v-model="formData.dictCode" allow-clear allow-search>
             <a-option v-for="(item,index) of selectDictionaryOptions" :key="index" :label="`${item.dictName}[${item.dictCode}]`" :value="item.dictCode"/>
           </a-select>
+          <template #extra>
+            <div>选择数据字典，“变量”等于字典项名称，写入字典项编码。</div>
+          </template>
         </a-form-item>
-        <a-form-item v-if="['PRIMARY_KEY'].includes(formData.evaluation)" field="columnNameArr" label="模型取值">
+        <a-form-item v-if="['PRIMARY_KEY'].includes(formData.evaluation)"
+                     :rules="[{required: ['PRIMARY_KEY'].includes(formData.evaluation),message: '这是必填项'}]"
+                     field="primaryValue" label="模型">
           <a-space direction="vertical" style="width:100%">
-            <div>{{ formData.primaryValue }}</div>
-            <a-select v-model="formData.primaryTableName" allow-clear allow-search @change="primaryValueEntityChange">
+            <div style="word-wrap: break-word;">{{ formData.primaryValue }}</div>
+            <a-select v-model="formData.primaryTableName" allow-clear allow-search placeholder="选择模型"
+                      @change="primaryValueEntityChange">
               <a-option v-for="(item,index) of selectEntityOptions" :key="index" :label="`${item.title}[${item.entityName}]`" :value="item.entityName"/>
             </a-select>
-            <a-select v-model="formData.primaryColumnNameGoal" allow-clear allow-search @change="primaryValueColumnChange">
+            <a-select v-model="formData.primaryColumnNameGoal" allow-clear allow-search placeholder="选择目标字段"
+                      @change="primaryValueColumnChange">
               <a-option v-for="(item,index) of formData.primaryValueOptions" :key="index" :label="`${item.title}[${item.fieldName}]`" :value="item.fieldName"/>
             </a-select>
-            <a-select v-model="formData.primaryColumnNameMatch" allow-clear allow-search multiple @change="primaryValueColumnChange">
+            <a-select v-model="formData.primaryColumnNameMatch" allow-clear allow-search multiple placeholder="选择查询字段"
+                      @change="primaryValueColumnChange">
               <a-option v-for="(item,index) of formData.primaryValueOptions" :key="index" :label="`${item.title}[${item.fieldName}]`" :value="item.fieldName"/>
             </a-select>
           </a-space>
+          <template #extra>
+            <div>查询模型，查询字段与单元格值匹配[或]，回写目标字段值。</div>
+            <div>格式为：模型:目标字段|查询字段,查询字段...</div>
+          </template>
         </a-form-item>
         <a-form-item field="remark" label="备注">
           <a-textarea v-model="formData.remark" :auto-size="{minRows:2,maxRows:4}" show-word-limit/>
