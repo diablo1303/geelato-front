@@ -14,7 +14,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@arco-design/web-vue": "^2.47.0",
+    "@arco-design/web-vue": "^2.54.6",
     "@ckpack/vue-color": "^1.4.1",
     "@ctrl/tinycolor": "^3.6.0",
     "@geelato/gl-ui": "workspace:^0.0.1",
@@ -27,7 +27,7 @@
     "pinia": "^2.1.4",
     "sortablejs": "^1.15.0",
     "tinymce": "^6.8.2",
-    "vue": "^3.3.4",
+    "vue": "^3.3.11",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.1.6"
   },

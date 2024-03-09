@@ -16,7 +16,7 @@
   "dependencies": {
     "@geelato/gl-ui-schema": "workspace:^0.0.1",
     "pinia": "^2.1.4",
-    "vue": "^3.3.4"
+    "vue": "^3.3.11"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",

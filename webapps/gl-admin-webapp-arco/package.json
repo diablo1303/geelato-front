@@ -32,9 +32,7 @@
     ]
   },
   "dependencies": {
-    "@arco-design/web-vue": "^2.53.3",
-
-
+    "@arco-design/web-vue": "^2.54.6",
     "@geelato/gl-ui": "workspace:^0.0.1",
     "@geelato/gl-ui-arco": "workspace:^0.0.1",
     "@geelato/gl-ui-schema": "workspace:^0.0.1",
@@ -43,28 +41,18 @@
     "arco-design-pro-vue": "^2.7.2",
     "axios": "0.24.0",
     "b-validate": "^1.4.6",
-
     "dayjs": "^1.11.5",
-
     "echarts": "^5.4.0",
-
     "lodash": "^4.17.21",
     "mitt": "^3.0.0",
-
     "nprogress": "^0.2.0",
-
-
     "query-string": "^8.0.3",
-
-
-
     "vue": "3.3.4",
     "vue-cropper": "^1.0.9",
     "vue-echarts": "^6.2.3",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.0.14",
     "pinia": "^2.1.4"
-
   },
   "devDependencies": {
     "monaco-editor": "0.43.0",

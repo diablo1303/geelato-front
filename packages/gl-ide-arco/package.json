@@ -15,7 +15,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@arco-design/web-vue": "^2.50.0",
+    "@arco-design/web-vue": "^2.54.6",
     "@ckpack/vue-color": "^1.4.1",
     "@geelato/gl-ide": "workspace:^0.0.1",
     "@geelato/gl-ui": "workspace:^0.0.1",
@@ -32,7 +32,7 @@
     "splitpanes": "^3.1.5",
     "prettier": "^2.8.4",
     "monaco-editor": "0.43.0",
-    "vue": "^3.3.4",
+    "vue": "^3.3.11",
     "vue3-dnd": "^2.0.4"
   },
   "devDependencies": {

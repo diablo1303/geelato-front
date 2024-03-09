@@ -21,7 +21,7 @@
     "echarts": "^5.4.0",
     "mitt": "^3.0.0",
     "pinia": "^2.1.4",
-    "vue": "^3.3.4"
+    "vue": "^3.3.11"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",
