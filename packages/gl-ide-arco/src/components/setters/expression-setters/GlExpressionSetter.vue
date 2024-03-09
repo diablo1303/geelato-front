@@ -205,6 +205,8 @@ const selectDictItem = (key: any) => {
   monacoEditor.value.replaceSelectOrInsert(`"${key}"`)
   visibleDictItemModal.value = false
 }
+
+const iconMv = ref('')
 </script>
 
 <template>
@@ -355,7 +357,7 @@ const selectDictItem = (key: any) => {
               <div style="display: flex; line-height: 2.4em">
                 <div style="width: 5em; text-align: right; margin-right: 1em">图标类型</div>
                 <div style="flex: auto">
-                  <GlIconfontSelect @update:modelValue="replaceSelectOrInsert"></GlIconfontSelect>
+                  <GlIconfontSelect :alwaysEditable = "true" @update:modelValue="replaceSelectOrInsert"></GlIconfontSelect>
                 </div>
               </div>
               <a-tree

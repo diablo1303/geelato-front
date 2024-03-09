@@ -65,6 +65,8 @@ import GlExpressionBuilder from './components/builder/props-builder/GlExpression
 import GlPageSaveLog from './components/sidebar/GlPageSaveLog.vue'
 import GlVueEditor from './components/setters/property-setters/GlVueEditor.vue'
 import GlSlotSetter from './components/setters/property-setters/GlSlotSetter.vue'
+import GlModelList from './components/sidebar/model/GlModelList.vue'
+import GlDictList from './components/sidebar/dict/GlDictList.vue'
 import './assets/style.css'
 
 const plugin = new GlPlugin('gl-plugin-arco')
@@ -105,6 +107,23 @@ plugin.sidebar.push(
   })
 )
 
+plugin.sidebar.push(
+  new Panel({
+    title: '模型',
+    name: '模型',
+    iconType: 'gl-entity-query',
+    componentName: GlModelList.name
+  })
+)
+
+plugin.sidebar.push(
+  new Panel({
+    title: '字典',
+    name: '字典',
+    iconType: 'gl-dict',
+    componentName: GlDictList.name
+  })
+)
 // plugin.sidebar.push(
 //   new Panel({
 //     title: '流程',
@@ -211,6 +230,8 @@ const component: Plugin = {
     app.component(GlComponentsSidebar.name, GlComponentsSidebar)
     app.component(GlComponentTree.name, GlComponentTree)
     app.component(GlActionList.name, GlActionList)
+    app.component(GlModelList.name, GlModelList)
+    app.component(GlDictList.name, GlDictList)
     app.component(GlPermissionList.name, GlPermissionList)
     app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
     app.component(GlPageOpHistory.name, GlPageOpHistory)

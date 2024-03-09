@@ -1,19 +1,21 @@
 <template>
-  <span class="gl-icon-font" :class="[type+'-icon']">
+  <span class="gl-icon-font" :class="[type + '-icon']">
     <svg v-if="type" aria-hidden="true" :style="iconStyle">
-      <use :xlink:href="'#'+type"></use>
+      <use :xlink:href="'#' + type"></use>
     </svg>
     <span v-if="text">&nbsp;{{ text }}</span>
   </span>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: "GlIconfont",
+  name: 'GlIconfont',
   // components: {GlIconfontBase},
   props: {
+    // 作为图标展示时，或有modelValue,即相当于有type
+    modelValue: String,
     type: String,
     text: String,
     // 是否有旋转动画
@@ -25,13 +27,10 @@ export default defineComponent({
     // 样式
     iconStyle: Object
   },
-  created() {
-
-  },
   mounted() {
     // 动态import，解决build时，window is not defined的问题
     // @ts-ignore
-    import('../../assets/iconfont.js').then(module => {
+    import('../../assets/iconfont.js').then((module) => {
       // use code
     })
   }
@@ -53,6 +52,5 @@ export default defineComponent({
 }
 
 .gl-icon-font > span {
-
 }
 </style>

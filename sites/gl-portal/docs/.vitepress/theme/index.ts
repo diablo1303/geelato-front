@@ -44,7 +44,7 @@ export default {
         // router is VitePress' custom router. `siteData` is
         // a `ref` of current site-level metadata.
 
-        entityApi.reCreate({baseURL: "https://localhost:8080"})
+        // entityApi.reCreate({baseURL: "https://localhost:8080"})
         app.use(ArcoVue)
         Drawer._context = app._context
         Modal._context = app._context;

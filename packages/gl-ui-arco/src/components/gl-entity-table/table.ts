@@ -557,7 +557,9 @@ export const useFetchData = (
 
     const entityReader = createEntityReader(props, queryColumns.value, simpleReaderInfo, getPid)!
 
-    entityApi.queryByEntityReader(entityReader).then(
+    // 由于查询默认有设置缓存，在列表的删除刷新查询、表单添加修改之后修改列表的场景中，不应缓存，否则查询的列表数据有可能还是老的
+    // 这里需要强行指定该查询不缓存
+    entityApi.queryByEntityReader(entityReader,true).then(
       (res: any) => {
         pagination.value.pageSize = simpleReaderInfo?.pageSize || pagination.value.pageSize
         pagination.value.current = simpleReaderInfo?.pageNo || 1

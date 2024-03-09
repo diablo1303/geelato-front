@@ -11,6 +11,9 @@ import { entityApi, fileApi, PageProvideKey, PageProvideProxy } from '@geelato/g
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
+  /**
+   *  文件ids，如：id1,id2,id3,id4...
+   */
   modelValue: {
     type: String,
     default() {
@@ -103,7 +106,7 @@ const resetMv = () => {
  *  依据文件ids，从服务端加载文件
  */
 const loadFiles = () => {
-  // mv.value like 1,2,3,4...
+  // mv.value like id1,id2,id3,id4...
   if (!mv.value) return
   // console.log('loadFiles() > mv.value:', mv.value)
   fileApi.getAttachmentByIds(mv.value).then((value) => {

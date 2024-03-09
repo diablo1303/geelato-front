@@ -51,7 +51,7 @@ export default {
           type: 'props',
           show: true,
           expanded: true,
-          setterComponentProps: {},
+          setterComponentProps: {alwaysEditable:true},
           setterComponentVModelName: 'modelValue',
           title: '图标',
           setterComponentName: 'GlIconfontSelect',
@@ -169,5 +169,32 @@ export default {
       displayMode: 'tile'
     }
   ],
-  actions: [{ name: 'onValueChange', description: '切换选项卡', title: '切换选项卡' }]
+  actions: [{ name: 'onValueChange', description: '切换选项卡', title: '切换选项卡' }],
+  methods: [
+    { name: 'getValue', title: '获取当前选中的标签页值', description: '', params: [] },
+    {
+      name: 'selectByValue',
+      title: '通过值选择标签页',
+      description: '找到值与参数值一致的标签页，并选中',
+      params: [{
+        name: 'value',
+        type: 'string|number',
+        description: '',
+        title: '标签值',
+        defaultValue: ''
+      }]
+    },
+    {
+      name: 'selectByIndex',
+      title: '通过索引位置选择标签页',
+      description: '索引位置，从0开始，即第一个为0',
+      params: [{
+        name: 'index',
+        type: 'number',
+        description: '',
+        title: '标签索引',
+        defaultValue: '索引从0开始计，即第一个为0。'
+      }]
+    }
+    ]
 }

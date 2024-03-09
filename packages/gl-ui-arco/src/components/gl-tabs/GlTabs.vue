@@ -4,7 +4,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { mixins, utils } from '@geelato/gl-ui'
+import { mixins, useGlobal, utils } from '@geelato/gl-ui'
 import { nextTick, onMounted, onUpdated, type PropType, type Ref, ref, watch } from 'vue'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 
@@ -26,6 +26,10 @@ const props = defineProps({
   items: {
     type: Array as PropType<Array<TabItem>>
   },
+  // /**
+  //  *  默认值，用于在初始时，选中对应面板
+  //  */
+  // defaultValue:[String, Number],
   // position: String,
   // type: String,
   // direction: String,
@@ -40,23 +44,39 @@ if (tabItems.value.length === 0) {
       {
         title: '标题1',
         iconType: '',
-        value: '0'
+        value: '1'
       },
       {
         title: '标题2',
         iconType: '',
-        value: '1'
+        value: '2'
       }
     ]
   )
 }
 
-const mv = ref(props.modelValue)
-// 初始化选中第一个
-if (!mv.value && tabItems.value.length > 0) {
-  tabItems.value[0].hasBeenLoad = true
-  mv.value = tabItems.value[0].value
+const mv = ref()
+
+const setDefaultValue = () => {
+  mv.value = props.modelValue
+  const foundTabItem = tabItems.value.find((tabItem: TabItem) => {
+    return tabItem.value === mv.value
+  })
+  console.log('props.modelValue', props.modelValue, 'foundTabItem', foundTabItem)
+
+  if (foundTabItem) {
+    foundTabItem.hasBeenLoad = true
+  } else {
+    // 若无选中值，初始化选中第一个
+    if ((mv.value == undefined || mv.value == '') && tabItems.value.length > 0) {
+      tabItems.value[0].hasBeenLoad = true
+      mv.value = tabItems.value[0].value
+      console.log('tabs:无选中值，初始化选中第一个')
+    }
+  }
 }
+setDefaultValue()
+
 // 移动tabItem之后，当前mv对应的tabPane是否有变化，有的话，需要刷新页面
 const currentTabPaneChanged = ref(false)
 
@@ -108,9 +128,7 @@ watch(
     tabItems.value.forEach((item: TabItem, index: number) => {
       item.value = item.value || index + ''
     })
-    if (!mv.value && tabItems.value.length > 0) {
-      mv.value = tabItems.value[0].value
-    }
+    setDefaultValue()
     // 检查items数组的变化
     if (tabItems.value.length !== Object.keys(lastTabIndexMap).length) {
       // 长度变化
@@ -124,18 +142,6 @@ watch(
   { deep: true }
 )
 
-// console.log('mv.value', mv.value)
-
-// const placeholderTemplate = () => {
-//   return {
-//     id: utils.gid('ph'),
-//     componentName: 'GlDndPlaceholder',
-//     title: '占位符',
-//     props: {},
-//     slots: {},
-//     children: []
-//   }
-// }
 const itemTemplate = () => {
   return {
     id: utils.gid('virtual'),
@@ -155,10 +161,6 @@ const itemTemplate = () => {
     ]
   }
 }
-
-onUpdated(() => {
-  updateInst()
-})
 
 const updateInst = () => {
   if (
@@ -198,12 +200,43 @@ watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
 
-// 默认选中第一项
-onMounted(() => {
-  if (tabItems.value.length > 0) {
-    mv.value = tabItems.value[0].value
+const getValue = () => {
+  return mv.value
+}
+const selectByValue = (params: { value?: string | number }) => {
+  const found = tabItems.value.find((tabItem: TabItem) => {
+    return tabItem.value === params.value
+  })
+  if (found) {
+    mv.value = params?.value
+  } else {
+    useGlobal().$notification.error({
+      content: `标签页中无该值(${params?.value})，选择切换标签页无效。`
+    })
   }
+  return true
+}
+const selectByIndex = (params: { index: number }) => {
+  if (tabItems.value.length > 0) {
+    if (params?.index > tabItems.value.length - 1) {
+      useGlobal().$notification.error({
+        content: `选择的标签页索引(${params?.index})超出了范围，选择切换标签页无效。`
+      })
+    }
+    mv.value = tabItems.value[params?.index].value
+  }
+  return true
+}
+
+onUpdated(() => {
+  updateInst()
 })
+
+onMounted(() => {
+  setDefaultValue()
+})
+
+defineExpose({ getValue, selectByValue, selectByIndex })
 </script>
 <template>
   <a-tabs

@@ -478,9 +478,6 @@ export class JsScriptExecutor {
   evalExpression(expression: string, ctx: Ctx, callback?: Function, gl?: any) {
     // console.log('evalExpression',expression,'gl',gl)
     const $gl = gl || this.getGl(ctx?.pageProxy)
-    // if (!gl) {
-    //     console.log('evalExpression', expression)
-    // }
     Object.assign($gl.ctx, ctx)
     const result = utils.evalExpression(expression, $gl)
     if (callback && typeof callback === 'function') {

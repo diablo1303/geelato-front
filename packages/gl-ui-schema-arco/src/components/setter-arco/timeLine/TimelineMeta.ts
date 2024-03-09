@@ -232,7 +232,7 @@ export default {
             "title": "内容"
         }, {
             "name": "iconType",
-            "setterComponentProps": {},
+            "setterComponentProps": {alwaysEditable:true},
             "setterComponentVModelName": "modelValue",
             "group": "base",
             "type": "props",

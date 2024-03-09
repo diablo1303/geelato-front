@@ -260,7 +260,6 @@ const queryRef = ref()
  */
 const refresh = (event?: MouseEvent) => {
   // search()会触发onSearch方法
-  console.log('refresh')
   queryRef.value?.search()
 }
 

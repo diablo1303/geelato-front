@@ -263,12 +263,15 @@ watch(
   },
   { immediate: true }
 )
-const _reRender = () => {
-  // console.log('_reRender props.glComponentInst.props', props.glComponentInst.props)
+const _reRender = (updatedProps?:object) => {
+  console.log('_reRender updatedProps',updatedProps)
+  console.log('_reRender props.glComponentInst', props.glComponentInst)
   refreshFlag.value = false
   nextTick(() => {
     refreshFlag.value = true
+    console.log('nextTick call back ...')
   })
+  console.log('nextTick end')
 }
 
 const hasPermission = () => {

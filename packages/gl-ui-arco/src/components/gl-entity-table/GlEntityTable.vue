@@ -30,6 +30,7 @@ import {
   RecordPushStatusNames
 } from './table'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
+import cloneDeep from "lodash/cloneDeep";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal
 // fetch 加载完成数据之后
@@ -145,7 +146,6 @@ const props = defineProps({
 })
 
 const isInit = ref(false)
-
 const refreshFlag = ref(true)
 const reRender = () => {
   refreshFlag.value = false
@@ -175,6 +175,7 @@ const formProvideProxy: FormProvideProxy | undefined = props.isFormSubTable
   ? inject(FormProvideKey)
   : undefined
 const pageProvideProxy: PageProvideProxy | undefined = inject(PageProvideKey)
+const isPageRead = !!pageProvideProxy?.isPageStatusRead()
 
 // 展示的列，create之后，通过方法调用设置
 let localShowDataIndexes: string[] = []
@@ -461,9 +462,17 @@ defineExpose({
       </template>
       <template v-else-if="column._component && renderData[rowIndex]">
         <GlComponent
-          :glComponentInst="column._component"
-          v-model="renderData[rowIndex][column.dataIndex]"
-          :glCtx="{ record: renderData[rowIndex], rowIndex }"
+            v-model="renderData[rowIndex][column.dataIndex]"
+            :glComponentInst="cloneDeep(column._component)"
+            :glCtx="{
+            record:renderData[rowIndex],
+            rowIndex,
+            dataIndex: column.dataIndex,
+            cellLastValue: renderData[rowIndex][column.dataIndex]
+          }"
+            :disabled="
+            isPageRead || column._component?.props?.readonly || column._component?.props?.disabled
+          "
         ></GlComponent>
       </template>
       <span v-else>

@@ -123,9 +123,14 @@ export class EntityApi {
    * 基于mql对象进行查询
    * @param mql Object or mqlArray
    * @param withMeta 是否需同时查询出各列表字段的元数据信息
+   * @param disabledClientQueryCache 禁止客户端本次从缓存中查询，且禁止客户端缓存本次查询结果，默认为否
    * @returns {*}
    */
-  queryByMql(mql: MqlObject | Array<MqlObject>, withMeta?: boolean): Promise<any> {
+  queryByMql(
+    mql: MqlObject | Array<MqlObject>,
+    withMeta?: boolean,
+    disabledClientQueryCache?: boolean
+  ): Promise<any> {
     const isArray = Array.isArray(mql)
     const path = isArray ? this.url.metaMultiList : this.url.metaList
 
@@ -143,7 +148,7 @@ export class EntityApi {
       platform_province: minutes * 60,
       platform_user: minutes * 5
     }
-    if (cachePromise) {
+    if (!disabledClientQueryCache&&cachePromise) {
       console.log(`查询实体：${Object.keys(mql)[0]}，从缓存中获取数据`)
       return cachePromise
     } else {
@@ -155,7 +160,9 @@ export class EntityApi {
         data: mql
       })
       // 2秒缓存，解决短时间内大量相同的数据查询问题，如列表的字典、实体查询
-      entityQueryCache.set(key, promiseResult, entityTime[entityName] || defaultTime)
+      if(!disabledClientQueryCache){
+        entityQueryCache.set(key, promiseResult, entityTime[entityName] || defaultTime)
+      }
       return promiseResult
     }
   }
@@ -307,12 +314,16 @@ export class EntityApi {
    * 分页默认为1页15条记录
    * 如果没有传删除状态，默认会带上删除訚为0，即delStatus='0'
    * @param entityReader
+   * @param disabledClientQueryCache 禁止客户端本次从缓存中查询，且禁止客户端缓存本次查询结果，默认为否
    * @returns {*}
    */
-  queryByEntityReader(entityReader: EntityReader): Promise<any> {
+  queryByEntityReader(
+    entityReader: EntityReader,
+    disabledClientQueryCache?: boolean
+  ): Promise<any> {
     const mql = this.convertEntityReaderToMql(entityReader)
     return new Promise((resolve, reject) => {
-      this.queryByMql(mql, entityReader.withMeta)
+      this.queryByMql(mql, entityReader.withMeta, disabledClientQueryCache)
         .then((res) => {
           // 是否需要处理返回结果
           const foundLocalComputeField = entityReader.fields.find((field) => {

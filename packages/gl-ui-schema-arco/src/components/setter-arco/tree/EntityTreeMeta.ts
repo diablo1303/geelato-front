@@ -77,7 +77,7 @@ export default {
             "enableValueExpress": false,
             "show": true,
             "expanded": true,
-            "setterComponentProps": {},
+            "setterComponentProps": {alwaysEditable:true},
             "setterComponentVModelName": "modelValue",
             "title": "图标",
             "setterComponentName": "GlIconfontSelect",
