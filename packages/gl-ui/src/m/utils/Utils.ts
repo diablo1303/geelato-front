@@ -36,10 +36,11 @@ export class Utils {
     const uuid = []
     let i
     radix = radix || chars.length
-
+    // 首字母不为数字
+    uuid[0] = chars[11+(0 | (Math.random() * radix))]
     if (len) {
       // Compact form
-      for (i = 0; i < len; i++) uuid[i] = chars[0 | (Math.random() * radix)]
+      for (i = 1; i < len; i++) uuid[i] = chars[0 | (Math.random() * radix)]
     } else {
       // rfc4122, version 4 form
       let r
@@ -49,7 +50,7 @@ export class Utils {
 
       // Fill in random data.  At i==19 set the high bits of clock sequence as
       // per rfc4122, sec. 4.1.5
-      for (i = 0; i < 36; i++) {
+      for (i = 1; i < 36; i++) {
         if (!uuid[i]) {
           r = 0 | (Math.random() * 16)
           uuid[i] = chars[i === 19 ? (r & 0x3) | 0x8 : r]

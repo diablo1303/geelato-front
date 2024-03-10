@@ -237,7 +237,33 @@ export default {
           expanded: true,
           title: '左侧冻结列数',
           setterComponentName: 'ARadioGroup'
-        }
+        },
+        {
+          name: 'tableDraggable',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          title: '启用行拖动',
+          setterComponentName: 'ASwitch',
+          description: ''
+        },
+        {
+          name: 'autoResetSeqNoAfterDrag',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          title: '拖动自动排序',
+          setterComponentName: 'ASwitch',
+          description: '启用行拖动为true才生效，当行拖动行之后，自动重新设置排序号字段SeqNo的值，从1开始排序。'
+        },
       ],
       title: '总体设置',
       setterComponentName: 'GlSimpleObjectSetter'
@@ -504,6 +530,11 @@ export default {
       name: 'changeRecord',
       title: '行记录更改',
       description: '在数据表的行内编辑模式下，当数据表的行记录信息更换时触发'
+    },
+    {
+      name: 'change',
+      title: '表格数据变更（行调整顺序）',
+      description: '表格数据发生变化时触发，如在可编辑表格下，行数据数据拖动时出发（表格内置表单字段输入控件值改变时，不会触发）'
     },
     {
       name: 'creatingEntitySavers',

@@ -67,7 +67,8 @@ const emits = defineEmits([
   'creatingEntitySavers',
   'pushRecords',
   'unPushRecords',
-  'pushOrUnPushRecords'
+  'pushOrUnPushRecords',
+  'change'
 ])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const isRead = !!pageProvideProxy?.isPageStatusRead()
@@ -467,6 +468,15 @@ const rowContextmenu = (record: TableData, ev: Event) => {
  */
 const cellContextmenu = (record: TableData, column: TableColumnData, ev: Event) => {
   emits('cellContextmenu', record, column, ev)
+}
+
+/**
+ * 表格数据发生变化时触发
+ * 如在可编辑表格下，行数据数据拖动时出发（表格内置表单字段输入控件值改变时，不会触发）
+ * @param data
+ */
+const change = (data: any) => {
+  emits('change', data)
 }
 
 const rowSelection = computed(() => {
@@ -1316,6 +1326,8 @@ defineExpose({
       :tableSettingId="tableSettingId"
       :pushedRecordKeys="pushedRecordKeys"
       :unPushedRecordKeys="unPushedRecordKeys"
+      :tableDraggable="base.tableDraggable"
+      :autoResetSeqNoAfterDrag="base.autoResetSeqNoAfterDrag"
       @select="select"
       @selectionChange="selectionChange"
       @headerClick="headerClick"
@@ -1329,6 +1341,7 @@ defineExpose({
       @cellClick="cellClick"
       @cellContextmenu="cellContextmenu"
       @cellDblclick="cellDblclick"
+      @change="change"
     ></component>
   </a-card>
 </template>

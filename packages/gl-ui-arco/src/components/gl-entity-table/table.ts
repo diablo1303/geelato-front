@@ -87,6 +87,11 @@ export class BaseInfo {
   // 左边固定数
   leftFixedCount: number = 0
 
+  // 启用行拖动
+  tableDraggable?: boolean
+  // 当行拖动之后，自动重新设置排序号
+  autoResetSeqNoAfterDrag?: boolean
+
   checkType: 'checkbox' | 'radio' | undefined = undefined
   // checkType 为checkbox时，showCheckAll才有效
   showCheckAll?: boolean = false
@@ -559,7 +564,7 @@ export const useFetchData = (
 
     // 由于查询默认有设置缓存，在列表的删除刷新查询、表单添加修改之后修改列表的场景中，不应缓存，否则查询的列表数据有可能还是老的
     // 这里需要强行指定该查询不缓存
-    entityApi.queryByEntityReader(entityReader,true).then(
+    entityApi.queryByEntityReader(entityReader, true).then(
       (res: any) => {
         pagination.value.pageSize = simpleReaderInfo?.pageSize || pagination.value.pageSize
         pagination.value.current = simpleReaderInfo?.pageNo || 1
@@ -611,4 +616,15 @@ export const getRecordPushStatus = (
     return RecordPushStatus.ToAdd
   }
   return RecordPushStatus.None
+}
+
+/**
+ * 直接修改修改排序号，从1开始
+ * @param records
+ */
+export const resetRecordsSeqNo = (records: Record<string, any>[], startWidth?: number) => {
+  let startNum = startWidth === undefined || startWidth <= 0 ? 1 : startWidth
+  records?.forEach((record: Record<string, any>) => {
+    record.seqNo = startNum++
+  })
 }

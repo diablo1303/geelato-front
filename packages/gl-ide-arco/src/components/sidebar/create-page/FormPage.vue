@@ -9,7 +9,7 @@ import type { EntityMeta, FieldMeta } from '@geelato/gl-ui'
 import { PageType } from '@geelato/gl-ui'
 import { FormPageCreator } from './json-creator/FormPageCreator'
 import { PageCreatorOptions } from './json-creator/PageCreator'
-import {FilteredFieldNames, PageInfo} from './CreatePageNav'
+import { FilteredFieldNames, PageInfo } from './CreatePageNav'
 
 const entityName = ref('')
 const form: any = ref({
@@ -42,7 +42,9 @@ const loadFieldMetas = (entityMeta: EntityMeta) => {
   })
   pageCreatorOptions.value.entityMeta.entityName = em.entityName
   pageCreatorOptions.value.entityMeta.entityTitle = em.entityTitle
-  form.value.pageLabel = entityMeta.entityTitle + '信息页面'
+  form.value.pageLabel = entityMeta.entityTitle?.endsWith('信息')
+    ? entityMeta.entityTitle
+    : entityMeta.entityTitle + '信息'
   // pageInfo.value.content = formPageCreator.create(pageCreatorOptions.value)
   // console.log('loadFieldMetas', em)
 }

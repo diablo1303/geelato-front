@@ -105,6 +105,8 @@ const props = defineProps({
   ...mixins.props
 })
 
+// console.log(props.glComponentInst.componentName,props.glComponentInst.id,props.glComponentInst.value,'modelValue:',props.modelValue)
+
 // 由于在一些场景下更新props.glComponentInst.props._hidden的值，不能响应式更新UI,这里增加一个值来控制
 const hidden = ref(!!props.glComponentInst.props?._hidden)
 const unRender = ref(!!props.glComponentInst.props?.unRender)
@@ -206,6 +208,7 @@ const onMouseLeave = (...args: any[]) => {
   }
 }
 
+// console.log('set mv as props.modelValue || props.glComponentInst.value:',props.modelValue || props.glComponentInst.value)
 const mv = ref(props.modelValue || props.glComponentInst.value)
 
 watch(
@@ -213,6 +216,7 @@ watch(
     return props.glComponentInst.value
   },
   () => {
+    // console.log('watch props.glComponentInst.value,and set mv.value:',props.glComponentInst.value)
     mv.value = props.glComponentInst.value
   }
 )
@@ -223,6 +227,7 @@ watch(
     return props.modelValue
   },
   () => {
+    // console.log('watch props.modelValue,and set mv.value:',props.modelValue)
     mv.value = props.modelValue
   }
 )
@@ -232,6 +237,7 @@ watch(
  * @param value
  */
 const onUpdateModelValue = (value: any) => {
+  // console.log('onUpdateModelValue and set mv.value:',props.modelValue)
   mv.value = value
   if (typeof mv.value === 'object') {
     // 如果组件值为对象时，触发值改变操作
@@ -264,14 +270,14 @@ watch(
   { immediate: true }
 )
 const _reRender = (updatedProps?:object) => {
-  console.log('_reRender updatedProps',updatedProps)
-  console.log('_reRender props.glComponentInst', props.glComponentInst)
+  // console.log('_reRender updatedProps',updatedProps)
+  // console.log('_reRender props.glComponentInst', props.glComponentInst)
   refreshFlag.value = false
   nextTick(() => {
     refreshFlag.value = true
-    console.log('nextTick call back ...')
+    // console.log('nextTick call back ...')
   })
-  console.log('nextTick end')
+  // console.log('nextTick end')
 }
 
 const hasPermission = () => {
@@ -282,10 +288,6 @@ const hasPermission = () => {
   }
   return true
 }
-
-// const isShow = computed(() => {
-//   return props.glComponentInst.props?._hidden
-// })
 
 watch(
   () => {

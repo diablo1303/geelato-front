@@ -1,7 +1,7 @@
 export const setterSelectOptions = [
     {name: 'GlEmpty', label: '空（不需配置）', vModelName: 'modelValue', type: 'String'},
-    {name: 'AInput', label: '单行输入', vModelName: 'modelValue', type: 'String'},
-    {name: 'GlInputSetter', label: '单行输入（支持表达式）', vModelName: 'modelValue', type: 'Object | String'},
+    {name: 'AInput', label: '单行字符输入', vModelName: 'modelValue', type: 'String'},
+    {name: 'GlInputSetter', label: '单行字符输入（支持表达式）', vModelName: 'modelValue', type: 'Object | String'},
     {name: 'AInputNumber', label: '数值', vModelName: 'modelValue', type: 'Number'},
     {
         name: 'ASwitch',

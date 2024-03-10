@@ -29,7 +29,12 @@ import {
 } from '@geelato/gl-ui'
 import type { Column, GlTableColumn } from './table'
 import { Schema } from 'b-validate'
-import { evalColorExpression, evalExpression, exchangeArray, logicDeleteFieldName } from './table'
+import {
+  evalColorExpression,
+  exchangeArray,
+  logicDeleteFieldName,
+  resetRecordsSeqNo
+} from './table'
 import { mixins } from '@geelato/gl-ui'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import type { ValidatedError } from '@/components/gl-entity-form/GlEntityForm'
@@ -37,7 +42,7 @@ import type { ValidatedError } from '@/components/gl-entity-form/GlEntityForm'
 const global = useGlobal()
 const $modal = global.$modal
 // fetch 加载完成数据之后
-const emits = defineEmits(['updateColumns', 'updateRow', 'fetchSuccess'])
+const emits = defineEmits(['updateColumns', 'updateRow', 'fetchSuccess', 'change'])
 const props = defineProps({
   modelValue: {
     type: Array,
@@ -125,6 +130,8 @@ const props = defineProps({
     type: String,
     required: true
   },
+  tableDraggable: Boolean,
+  autoResetSeqNoAfterDrag: Boolean,
   ...mixins.props
 })
 
@@ -139,7 +146,7 @@ const setSlotNames = () => {
   // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确保列有slotName
   // 对于编辑状态，需将column中没有设置插槽的，生成插槽
   props.columns.forEach((col: Column) => {
-    if (col._renderScript||col._component) {
+    if (col._renderScript || col._component) {
       col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
     } else {
       delete col.slotName
@@ -365,7 +372,7 @@ const fetchData = async (readerInfo?: {
       entityReader.params.push(new EntityReaderParam(logicDeleteFieldName, 'eq', 0))
     }
     entityReader.pageSize = readerInfo?.pageSize || pagination.pageSize!
-    const response: any = await entityApi.queryByEntityReader(entityReader)
+    const response: any = await entityApi.queryByEntityReader(entityReader, true)
     // console.log('GlEntityTable > fetchData() > response:', response)
     renderData.value = response.data
     pagination.pageSize = readerInfo?.pageSize || pagination.pageSize
@@ -386,15 +393,34 @@ watch(
   () => {
     return props.glComponentInst.value
   },
-  () => {
-    // console.log('update value:', props.glComponentInst.value)
+  (value, oldValue) => {
+    console.log('update value:', props.glComponentInst.value)
     // 这里不能使用 reRender()，reRender会导致用户每录入一个字符都会重绘整个列表
     renderData.value = []
     // @ts-ignore
     renderData.value = [...props.glComponentInst.value]
+    emits('change', renderData.value)
   },
   { deep: true }
 )
+
+/**
+ * 表格数据发生变化时触发
+ * 如表格数据拖动时（表格内置表单字段输入控件值改变时，不会触发）
+ * @param _data
+ */
+const change = (data: []) => {
+  // console.log('table change renderData:', data)
+  if (props.autoResetSeqNoAfterDrag) {
+    resetRecordsSeqNo(data)
+  }
+  // @ts-ignore
+  props.glComponentInst.value.length = 0
+  // @ts-ignore
+  props.glComponentInst.value.push(...data)
+  // 在props.glComponentInst.value的watch事件中统一emits和更新renderData的值，避免重复执行
+  // emits('change', renderData.value)
+}
 
 const search = (entityReaderParams: Array<EntityReaderParam>) => {
   // console.log('search entityReaderParams:', entityReaderParams)
@@ -463,20 +489,6 @@ watch(
   },
   { deep: true, immediate: true }
 )
-
-// const evalExpression = (data: {
-//   record: TableData;
-//   column: GlTableColumn;
-//   rowIndex: number;
-// }) => {
-//   const ctx = {
-//     pageProxy: pageProvideProxy,
-//     record: toRaw(data.record),
-//     column: toRaw(data.column),
-//     rowIndex: toRaw(data.rowIndex),
-//   };
-//   return jsScriptExecutor.evalExpression(ctx.column._renderScript, ctx);
-// };
 
 /**
  *  计算出带有插槽的列
@@ -665,6 +677,18 @@ const getRef = () => {
   return tableRef.value
 }
 
+/**
+ * 克隆组件信息，并将组件的运行时值信息清空为初始状态
+ * 如果值为undefined时，若配置了默认值表达式才会正常执行
+ * 如果值不为undefined，则不执行默认值表达式
+ * @param component
+ */
+const cloneDeepColumnComponent = (component: ComponentInstance) => {
+  const inst = cloneDeep(component)
+  inst.value = undefined
+  return inst
+}
+
 defineExpose({
   selectAll,
   search,
@@ -698,8 +722,10 @@ defineExpose({
     :stripe="true"
     :column-resizable="columnResizable"
     :scroll="scroll"
-    @page-change="onPageChange"
-    @page-size-change="onPageSizeChange"
+    :draggable="tableDraggable ? { type: 'handle', width: 40 } : {}"
+    @pageChange="onPageChange"
+    @pageSizeChange="onPageSizeChange"
+    @change="change"
   >
     <template #titleSlotRequired="{ column }">
       <span class="gl-required">*</span>{{ column.title }}
@@ -740,7 +766,7 @@ defineExpose({
         <GlComponent
           v-model="renderData[rowIndex][column.dataIndex]"
           @update="updateRow(record, rowIndex, cloneColumns, $event, this)"
-          :glComponentInst="cloneDeep(column._component)"
+          :glComponentInst="cloneDeepColumnComponent(column._component)"
           :glCtx="{
             record,
             rowIndex,

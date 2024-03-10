@@ -45,7 +45,7 @@ const loadFieldMetas = (entityMeta: EntityMeta) => {
   pageCreatorOptions.value.entityMeta.entityName = em.entityName
   pageCreatorOptions.value.entityMeta.entityTitle = em.entityTitle
   fieldMetas.value = pageCreatorOptions.value.entityMeta.fieldMetas
-  form.value.pageLabel = entityMeta.entityTitle + '列表页面'
+  form.value.pageLabel = entityMeta.entityTitle + '列表'
   pageCreatorOptions.value.showFields = fieldMetas.value
 }
 const changePageExtendId = async (pageExtendId: string) => {

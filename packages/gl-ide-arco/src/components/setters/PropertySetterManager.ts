@@ -7,12 +7,12 @@ export default class PropertySetterManager {
 
     constructor() {
         this.defaultSetters = [
-            {label: '单行输入', value: 'AInput'},
+            {label: '单行字符输入', value: 'AInput'},
             {label: '数值', value: 'ANumber'},
             {label: '开关', value: 'AInput'},
             {label: '单选项', value: 'ARadioGroup'},
             {label: '下拉选项', value: 'ASelect'},
-            {label: '多行输入', value: 'ATextarea'},
+            {label: '多行字符输入', value: 'ATextarea'},
             {label: 'Html编辑器', value: 'GlSetterHtml'},
             {label: 'Json编辑器', value: 'GlSetterJson'},
             {label: '图标选择器', value: 'GlSetterColor'},

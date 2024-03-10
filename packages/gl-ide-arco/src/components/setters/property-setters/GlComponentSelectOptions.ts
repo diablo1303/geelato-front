@@ -1,8 +1,8 @@
 const useComponentSelectOption = () => {
   return [
     { componentName: 'GlButton', title: '按钮' },
-    { componentName: 'AInput', title: '单行输入' },
-    { componentName: 'ATextarea', title: '多行输入' },
+    { componentName: 'AInput', title: '单行字符输入' },
+    { componentName: 'ATextarea', title: '多行字符输入' },
     { componentName: 'AInputNumber', title: '数字输入' },
     { componentName: 'ASwitch', title: '开关' },
     { componentName: 'ASelect', title: '下拉选择' },

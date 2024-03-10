@@ -3,7 +3,7 @@ export default {
   displayMode: 'tile',
   iconType: 'gl-dict',
   group: 'dataEntry',
-  title: '数据字典',
+  title: '数据字典选择',
   alias: 'dict',
   useBy: ['freePage'],
   properties: [

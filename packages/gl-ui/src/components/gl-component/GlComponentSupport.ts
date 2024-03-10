@@ -19,6 +19,10 @@ export function executeInstPropsExpressions(inst: ComponentInstance, ctx: object
           if (key === '_valueExpression') {
             hasValueExpression = true
             // 组件值
+            // console.log(inst.componentName,inst.id,'inst.value:',inst.value,'inst.value === undefined:',inst.value === undefined,inst)
+            // if(inst.value === undefined){
+            // 如果组件值已存在，则不设置默认值；不存在时（为undefined）才设置
+            // }
             inst.value = jsScriptExecutor.evalExpression(propsExpression, ctx)
           } else {
             // 属性值
@@ -30,8 +34,8 @@ export function executeInstPropsExpressions(inst: ComponentInstance, ctx: object
       })
     }
     if (!hasValueExpression) {
-      // 属性配置了默认值(props._valueExpression指默认值，不是表达式)
-      // 若前面属性的值表达式中(inst.propsExpressions._valueExpression)没有设置时，则以此值为准，若有，以表达式的值为准
+      // 若前面属性的值表达式中(inst.propsExpressions._valueExpression)没有设置时，则取组件的默认值（props._valueExpression）
+      // 注意：props._valueExpression是组件的默认值，不是表达式
       if (inst.props && inst.props._valueExpression) {
         inst.value = inst.props._valueExpression
       }
