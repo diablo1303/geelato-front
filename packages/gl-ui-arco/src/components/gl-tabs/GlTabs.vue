@@ -36,6 +36,28 @@ const props = defineProps({
   ...mixins.props
 })
 
+const itemTemplate = () => {
+  return {
+    id: utils.gid('virtual'),
+    componentName: 'GlVirtual',
+    title: '项',
+    props: {},
+    slots: {},
+    children: [
+      {
+        id: utils.gid('ph'),
+        componentName: 'GlDndPlaceholder',
+        title: '占位符',
+        props: {},
+        slots: {},
+        children: [],
+        actions: []
+      }
+    ],
+    actions: []
+  }
+}
+
 // console.log('props.items:', props.items)
 const tabItems: Ref<TabItem[]> = ref(props.items || [])
 if (tabItems.value.length === 0) {
@@ -56,6 +78,18 @@ if (tabItems.value.length === 0) {
 }
 
 const mv = ref()
+// 处理空值（历史数据问题）
+const clearNullChild = () => {
+  let subInstIndex = 0
+  props.glComponentInst.children?.forEach((subInst) => {
+    if (!subInst) {
+      props.glComponentInst.children.splice(subInstIndex, 1, itemTemplate())
+      console.error('Tabs面板出现空的组件值，已自动处理，替换为Placeholder组件。')
+    }
+    subInstIndex++
+  })
+}
+clearNullChild()
 
 /**
  *  设置当前tabs的默认值，是选中哪一个
@@ -123,28 +157,6 @@ const checkItemTabPositionAndSyncTabPane = () => {
 // 先snapshot
 snapshot()
 
-const itemTemplate = () => {
-  return {
-    id: utils.gid('virtual'),
-    componentName: 'GlVirtual',
-    title: '项',
-    props: {},
-    slots: {},
-    children: [
-      {
-        id: utils.gid('ph'),
-        componentName: 'GlDndPlaceholder',
-        title: '占位符',
-        props: {},
-        slots: {},
-        children: [],
-        actions: []
-      }
-    ],
-    actions: []
-  }
-}
-
 watch(
   () => {
     return props.items
@@ -176,7 +188,6 @@ watch(
             // console.log('删除tab', deleteIndex,props.glComponentInst.children,lastTabIndexMap)
           }
         })
-
       }
     } else {
       // 位置比较

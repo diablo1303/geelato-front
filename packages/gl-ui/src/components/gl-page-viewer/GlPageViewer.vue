@@ -44,6 +44,7 @@ const props = defineProps({
 console.log('useGlobal', useGlobal())
 console.log('GlPageViewer > props.pageProps:', props.pageProps)
 console.log('GlPageViewer > props:', props)
+const loading = ref(true)
 const glComponentInst = ref(new ComponentInstance())
 // 用户对于某页面的个性化配置
 // @ts-ignore
@@ -88,6 +89,7 @@ const load = () => {
           closable: true
         })
       }
+      loading.value = false
     })
   }
 }
@@ -104,9 +106,12 @@ watch(
 </script>
 <template>
   <div class="gl-page-viewer">
+    <div v-if="loading" style="display: flex; justify-content: center; align-items: center;padding-top: 2em">
+      <GlLoader></GlLoader>
+    </div>
     <!-- 正常情况该组件为： gl-page -->
     <GlComponent
-      v-if="glComponentInst && glComponentInst.componentName"
+      v-if="!loading && glComponentInst && glComponentInst.componentName"
       :key="glComponentInst.id"
       :glComponentInst="glComponentInst"
       :glIsRuntime="glIsRuntime"

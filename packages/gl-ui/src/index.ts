@@ -51,6 +51,7 @@ import GlInsts from './components/gl-component/GlInsts.vue'
 import GlLoop from './components/gl-loop/GlLoop.vue'
 import GlTemplate from './components/gl-template/GlTemplate.vue'
 import GlChart from './components/gl-chart/GlChart.vue'
+import GlLoader from "./components/gl-loader/GlLoader.vue";
 import './assets/style.css'
 
 const Utils = AllUtils
@@ -73,6 +74,7 @@ const component: Plugin = {
     app.component(GlLoop.name, GlLoop)
     app.component(GlTemplate.name, GlTemplate)
     app.component(GlChart.name, GlChart)
+    app.component(GlLoader.name, GlLoader)
 
     if (!app.config.globalProperties.$gl) {
       app.config.globalProperties.$gl = reactive({

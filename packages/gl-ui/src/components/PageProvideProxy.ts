@@ -128,13 +128,15 @@ export default class PageProvideProxy {
     const statAllComponentIds = () => {
       const ids: { [key: string]: boolean } = {}
       const statId = (inst: ComponentInstance) => {
-        // 过滤无效的组件
-        if (ignoreComponents.indexOf(inst.componentName) === -1) {
-          ids[inst.id] = true
-        }
-        if (inst.children?.length > 0) {
-          for (const index in inst.children) {
-            statId(inst.children[index])
+        if(inst&&inst.id&&inst.componentName){
+          // 过滤无效的组件
+          if (ignoreComponents.indexOf(inst.componentName) === -1) {
+            ids[inst.id] = true
+          }
+          if (inst.children?.length > 0) {
+            for (const index in inst.children) {
+              statId(inst.children[index])
+            }
           }
         }
       }
