@@ -57,7 +57,11 @@ if (tabItems.value.length === 0) {
 
 const mv = ref()
 
-const setDefaultValue = () => {
+/**
+ *  设置当前tabs的默认值，是选中哪一个
+ *  若无选中值，初始化选中第一个
+ */
+const setSelectTab = () => {
   mv.value = props.modelValue
   const foundTabItem = tabItems.value.find((tabItem: TabItem) => {
     return tabItem.value === mv.value
@@ -75,13 +79,14 @@ const setDefaultValue = () => {
     }
   }
 }
-setDefaultValue()
+setSelectTab()
 
 // 移动tabItem之后，当前mv对应的tabPane是否有变化，有的话，需要刷新页面
 const currentTabPaneChanged = ref(false)
 
-const lastTabIndexMap: Record<string, number> = {}
+let lastTabIndexMap: Record<string, number> = {}
 const snapshot = () => {
+  lastTabIndexMap = {}
   tabItems.value.forEach((tabItem: TabItem, index: number) => {
     lastTabIndexMap[tabItem.title + '_' + tabItem.value] = index
   })
@@ -118,30 +123,6 @@ const checkItemTabPositionAndSyncTabPane = () => {
 // 先snapshot
 snapshot()
 
-watch(
-  () => {
-    return props.items
-  },
-  (val, oldValue) => {
-    // console.log('props.items', val, oldValue)
-    tabItems.value = props.items || []
-    tabItems.value.forEach((item: TabItem, index: number) => {
-      item.value = item.value || index + ''
-    })
-    setDefaultValue()
-    // 检查items数组的变化
-    if (tabItems.value.length !== Object.keys(lastTabIndexMap).length) {
-      // 长度变化
-      // 不做处理
-    } else {
-      // 位置比较
-      checkItemTabPositionAndSyncTabPane()
-    }
-    snapshot()
-  },
-  { deep: true }
-)
-
 const itemTemplate = () => {
   return {
     id: utils.gid('virtual'),
@@ -156,26 +137,55 @@ const itemTemplate = () => {
         title: '占位符',
         props: {},
         slots: {},
-        children: []
+        children: [],
+        actions: []
       }
-    ]
+    ],
+    actions: []
   }
 }
 
-const updateInst = () => {
-  if (
-    props.glComponentInst.children &&
-    props.glComponentInst.children.length != tabItems.value.length
-  ) {
-    while (props.glComponentInst.children.length < tabItems.value.length) {
-      props.glComponentInst.children.push(JSON.parse(JSON.stringify(itemTemplate())))
+watch(
+  () => {
+    return props.items
+  },
+  (val, oldValue) => {
+    // console.log('props.items', val, oldValue)
+    tabItems.value = props.items || []
+    tabItems.value.forEach((item: TabItem, index: number) => {
+      item.value = item.value || index + 1 + ''
+    })
+    setSelectTab()
+    // 检查items数组的变化
+    if (tabItems.value.length !== Object.keys(lastTabIndexMap).length) {
+      // 长度变化
+      if (Object.keys(lastTabIndexMap).length < tabItems.value.length) {
+        // 变长了，添加tabPane
+        props.glComponentInst.children.push(itemTemplate())
+      } else {
+        // 变短了，是第几个删除了，同步删除对应的tabPane
+        Object.keys(lastTabIndexMap)?.forEach((key: string) => {
+          const existItem = tabItems.value.find((tabItem) => {
+            return key === tabItem.title + '_' + tabItem.value
+          })
+          // 找出哪个不存在的，删除了
+          if (!existItem) {
+            const deleteIndex = lastTabIndexMap[key]
+            props.glComponentInst.children.splice(deleteIndex, 1)
+            delete lastTabIndexMap[key]
+            // console.log('删除tab', deleteIndex,props.glComponentInst.children,lastTabIndexMap)
+          }
+        })
+
+      }
+    } else {
+      // 位置比较
+      checkItemTabPositionAndSyncTabPane()
     }
-    props.glComponentInst.children.length = tabItems.value.length
-    nextTick(() => {})
-  }
-}
-
-updateInst()
+    snapshot()
+  },
+  { deep: true }
+)
 
 const onTabClick = (key: string | number) => {
   const foundItem = tabItems.value.find((item: TabItem) => {
@@ -228,12 +238,8 @@ const selectByIndex = (params: { index: number }) => {
   return true
 }
 
-onUpdated(() => {
-  updateInst()
-})
-
 onMounted(() => {
-  setDefaultValue()
+  setSelectTab()
 })
 
 defineExpose({ getValue, selectByValue, selectByIndex })

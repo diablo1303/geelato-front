@@ -280,14 +280,14 @@ const iconMv = ref('')
         </div>
         <div style="flex: 1; min-width: 500px; max-height: 700px; overflow-y: auto">
           <a-collapse size="small" :default-active-key="['5']" :bordered="false">
-            <a-collapse-item header="系统变量" key="1">
-              <GlExpressionVarsTree :data="_systemVarsTreeData" @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_systemVarsTreeData)"></GlExpressionVarsTree>
+            <a-collapse-item header="组件实例" key="1">
+              <GlExpressionVarsTree :data="_componentInstTreeData" @select="(selectedKeys:any,data:any)=>selectInstNode(selectedKeys,data,_componentInstTreeData)"></GlExpressionVarsTree>
             </a-collapse-item>
             <a-collapse-item header="动作变量" key="2">
               <GlExpressionVarsTree :data="_actionVarsTreeData" @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_actionVarsTreeData)"></GlExpressionVarsTree>
             </a-collapse-item>
-            <a-collapse-item header="组件实例" key="3">
-              <GlExpressionVarsTree :data="_componentInstTreeData" @select="(selectedKeys:any,data:any)=>selectInstNode(selectedKeys,data,_componentInstTreeData)"></GlExpressionVarsTree>
+            <a-collapse-item header="系统变量" key="3">
+              <GlExpressionVarsTree :data="_systemVarsTreeData" @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_systemVarsTreeData)"></GlExpressionVarsTree>
             </a-collapse-item>
             <a-collapse-item header="服务接口" key="4">
               <GlExpressionVarsTree :data="_srvTreeData" @select="(selectedKeys:any,data:any)=>selectNode(selectedKeys,data,_srvTreeData)"></GlExpressionVarsTree>
