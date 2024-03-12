@@ -80,13 +80,13 @@ export function getDownloadUrlByPath(name: string, path: string) {
  * @param dataType 数据类型，mql | data，数据类型有可能是前端的数据结果（data），也有可能是用于后端查询获取数据结果的（mql）
  * @param data 数据
  * @param readonly 是否只读
- * @param markKey 水印，水印样式选定
- * @param markText 水印，水印文本，默认样式
+ * @param waterMark {markKey:水印样式选定,markText:水印文本，默认样式} 水印
  */
-export function exportFile(fileName: string, templateId: string, dataType: string, data: object, readonly?: boolean, markKey?: string, markText?: string) {
+export function exportFile(fileName: string, templateId: string, dataType: string, data: object, readonly?: boolean, waterMark?: Record<string, any>) {
+  const responseParams = `readonly=${readonly === true}&markKey=${waterMark?.markKey || ''}&markText=${waterMark?.markText || ''}`;
   return entityApi
     .getAxios()
-    .post(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}&readonly=${readonly === true}&markKey=${markKey || ''}&markText=${markText || ''}`, data)
+    .post(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}&${responseParams}`, data)
 }
 
 /**
@@ -98,7 +98,7 @@ export function exportFile(fileName: string, templateId: string, dataType: strin
  * @param params 其他参数
  */
 export function exportExcel(fileName: string, templateId: string, dataType: string, data: object, params?: Record<string, any>) {
-  return exportFile(fileName, templateId, dataType, data, params?.readonly, params?.markKey, params?.markText);
+  return exportFile(fileName, templateId, dataType, data, params?.readonly, params?.waterMark);
 }
 
 /**
