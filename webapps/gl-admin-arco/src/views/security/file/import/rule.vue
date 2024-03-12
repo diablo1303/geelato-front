@@ -275,7 +275,25 @@ const formatColumnName = () => {
   }
   return data;
 }
-
+/**
+ * 输入
+ */
+watch(() => props.modelValue, () => {
+  const data = cloneDeep(props.modelValue);
+  if (data && data.length > 0) {
+    for (let i = 0; i < data.length; i += 1) {
+      const item = data[i];
+      if (item.columnName) {
+        item.columnNameArr = item.columnName.split(',') || [];
+      } else {
+        item.columnNameArr = [];
+      }
+      item.sign = generateRandom(6);
+      item.order = i + 1;
+    }
+  }
+  renderData.value = data || [];
+}, {deep: true, immediate: true});
 /**
  * 输入
  */
@@ -303,25 +321,6 @@ watch(() => renderData.value, () => {
     }
   }
   emits("update:modelValue", data);
-}, {deep: true, immediate: true});
-/**
- * 输入
- */
-watch(() => props.modelValue, () => {
-  const data = cloneDeep(props.modelValue);
-  if (data && data.length > 0) {
-    for (let i = 0; i < data.length; i += 1) {
-      const item = data[i];
-      if (item.columnName) {
-        item.columnNameArr = item.columnName.split(',') || [];
-      } else {
-        item.columnNameArr = [];
-      }
-      item.sign = generateRandom(6);
-      item.order = i + 1;
-    }
-  }
-  renderData.value = data || [];
 }, {deep: true, immediate: true});
 </script>
 
