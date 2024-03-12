@@ -722,7 +722,7 @@ defineExpose({
     :stripe="true"
     :column-resizable="columnResizable"
     :scroll="scroll"
-    :draggable="tableDraggable ? { type: 'handle', width: 40 } : {}"
+    :draggable="tableDraggable ? { type: 'handle', width: 40 } : undefined"
     @pageChange="onPageChange"
     @pageSizeChange="onPageSizeChange"
     @change="change"
