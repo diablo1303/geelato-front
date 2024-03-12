@@ -67,9 +67,9 @@
         <a-input-number
             v-if="pageData.button"
             v-model="formData.seqNo"
-            :max="999999"
+            :max="999999999"
             :min="1"
-            :placeholder="$t('security.form.rules.match.length.title')+'[0,999999]'"
+            :placeholder="$t('security.form.rules.match.length.title')+'[0,999999999]'"
             :precision="0"/>
         <span v-else>{{ formData.seqNo }}</span>
       </a-form-item>
