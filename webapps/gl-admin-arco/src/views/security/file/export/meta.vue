@@ -168,7 +168,7 @@ watch(() => renderData.value, () => {
 </script>
 
 <template>
-  <a-collapse-item :key="1" header="数据保存配置">
+  <a-collapse-item :key="1" header="导出的数据配置">
     <template #extra>
       <a-button v-if="!disabled" type="primary" @click.stop="handleModelOpen($event)">
         <template #icon>
@@ -267,61 +267,21 @@ watch(() => renderData.value, () => {
     </a-table>
     <a-modal
         v-model:visible="visibleModel"
-        title="数据保存配置"
+        title="导出的数据配置"
         @cancel="handleModelCancel($event)"
         @before-ok="handleModelOk">
       <a-form ref="validateForm" :model="formData">
+        <a-divider orientation="left">导出模板中占位符格式定义</a-divider>
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="placeholder" label="占位符">
-          <a-input v-model.trim="formData.placeholder"/>
+          <a-input v-model.trim="formData.placeholder" placeholder="如：${名称}"/>
           <template #extra>
-            <div>输入与模板占位符相同格式的字符串。</div>
+            <div>输入与模板占位符相同格式的字符串，如${名称}。</div>
           </template>
         </a-form-item>
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="valueType" label="值类型">
           <a-select v-model="formData.valueType" allow-search>
             <a-option v-for="(item,index) in businessMetaDataValueTypeOptions" :key="index" :label="item.label" :value="item.value as string"/>
           </a-select>
-        </a-form-item>
-        <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="valueComputeMode" label="计算方式">
-          <a-select v-model="formData.valueComputeMode" allow-search>
-            <a-option v-for="(item,index) in businessMetaDataValueComputeModeOptions" :key="index" :label="item.label" :value="item.value as string"/>
-          </a-select>
-        </a-form-item>
-        <a-form-item v-if="['CONST'].includes(formData.valueComputeMode)"
-                     :rules="[{required: ['CONST'].includes(formData.valueComputeMode),message: '这是必填项'}]"
-                     field="constValue" label="常量">
-          <a-input v-model="formData.constValue"/>
-        </a-form-item>
-        <a-form-item v-if="['EXPRESSION'].includes(formData.valueComputeMode)"
-                     :rules="[{required: ['EXPRESSION'].includes(formData.valueComputeMode),message: '这是必填项'}]"
-                     field="expression" label="表达式">
-          <a-textarea v-model="formData.expression" :auto-size="{minRows:2,maxRows:4}" show-word-limit/>
-        </a-form-item>
-        <a-form-item v-if="['VAR','EXPRESSION'].includes(formData.valueComputeMode)" :rules="[{required: true,message: '这是必填项'}]" field="var" label="变量">
-          <a-input v-model.trim="formData.var"/>
-        </a-form-item>
-        <a-form-item field="isList" label="是否列表">
-          <a-switch v-model="formData.isList">
-            <template #checked>
-              是
-            </template>
-            <template #unchecked>
-              否
-            </template>
-          </a-switch>
-        </a-form-item>
-        <a-form-item v-if="formData.isList" :rules="[{required: formData.isList,message: '这是必填项'}]" field="listVar" label="列表变量">
-          <a-input v-model.trim="formData.listVar"/>
-        </a-form-item>
-        <a-form-item v-if="formData.isList" field="isMerge" label="是否合并">
-          <a-switch v-model="formData.isMerge">
-            <template #checked>
-              是
-            </template>
-            <template #unchecked>
-              否
-            </template>
-          </a-switch>
         </a-form-item>
         <a-form-item v-if="['VAR'].includes(formData.valueComputeMode)" field="isImage" label="是否图片">
           <a-switch v-model="formData.isImage">
@@ -342,6 +302,52 @@ watch(() => renderData.value, () => {
           <a-input-number v-model="formData.imageHeight" :min="0" :precision="2" :step="1">
             <template #suffix>cm</template>
           </a-input-number>
+        </a-form-item>
+        <a-divider orientation="left">导出模板中占位符值来源及计算规则</a-divider>
+        <a-form-item field="isList" label="来源于列表">
+          <a-switch v-model="formData.isList">
+            <template #checked>
+              是
+            </template>
+            <template #unchecked>
+              否
+            </template>
+          </a-switch>
+        </a-form-item>
+        <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="valueComputeMode" label="取值规则">
+          <a-select v-model="formData.valueComputeMode" allow-search>
+            <a-option v-for="(item,index) in businessMetaDataValueComputeModeOptions" :key="index" :label="item.label" :value="item.value as string"/>
+          </a-select>
+        </a-form-item>
+        <a-form-item v-if="['CONST'].includes(formData.valueComputeMode)"
+                     :rules="[{required: ['CONST'].includes(formData.valueComputeMode),message: '这是必填项'}]"
+                     field="constValue" label="常量">
+          <a-input v-model="formData.constValue"/>
+        </a-form-item>
+        <a-form-item v-if="['EXPRESSION'].includes(formData.valueComputeMode)"
+                     :rules="[{required: ['EXPRESSION'].includes(formData.valueComputeMode),message: '这是必填项'}]"
+                     field="expression" label="表达式">
+          <a-textarea v-model="formData.expression" :auto-size="{minRows:2,maxRows:4}" show-word-limit/>
+        </a-form-item>
+        <a-form-item v-if="formData.isList" :rules="[{required: formData.isList,message: '这是必填项'}]" field="listVar" label="列表变量名">
+          <a-input v-model.trim="formData.listVar"/>
+        </a-form-item>
+        <a-form-item v-if="['VAR','EXPRESSION'].includes(formData.valueComputeMode)" :rules="[{required: true,message: '这是必填项'}]" field="var" label="变量名">
+          <a-input v-model.trim="formData.var"/>
+        </a-form-item>
+        <a-divider orientation="left">数据导到模板之后，对模型的处理</a-divider>
+        <a-form-item v-if="formData.isList" field="isMerge" label="合并单元格">
+          <a-switch v-model="formData.isMerge">
+            <template #checked>
+              是
+            </template>
+            <template #unchecked>
+              否
+            </template>
+          </a-switch>
+          <template #extra>
+            <div>如果合并，则将上下左右相同值的单元格进行合并处理；否则不处理。</div>
+          </template>
         </a-form-item>
         <a-form-item field="description" label="备注">
           <a-textarea v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" show-word-limit/>
