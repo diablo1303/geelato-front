@@ -19,6 +19,20 @@ export default {
       setterComponentName: 'AInput',
       enableValueExpress: true,
       displayMode: 'tile'
+    },
+    {
+      name: 'toPdf',
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      title: '是否转成PDF',
+      setterComponentName: 'ASwitch',
+      enableValueExpress: false,
+      displayMode: 'tile',
+      description: '在下载时是否自动转成PDF，对于Word、Excel等文件类型适用。'
     }
   ]
 }
