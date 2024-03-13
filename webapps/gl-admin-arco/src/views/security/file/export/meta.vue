@@ -335,7 +335,7 @@ watch(() => renderData.value, () => {
         <a-form-item v-if="['VAR','EXPRESSION'].includes(formData.valueComputeMode)" :rules="[{required: true,message: '这是必填项'}]" field="var" label="变量名">
           <a-input v-model.trim="formData.var"/>
         </a-form-item>
-        <a-divider orientation="left">数据导到模板之后，对模型的处理</a-divider>
+        <a-divider orientation="left">数据导到模板之后，对导出文件的处理</a-divider>
         <a-form-item v-if="formData.isList" field="isMerge" label="合并单元格">
           <a-switch v-model="formData.isMerge">
             <template #checked>
@@ -346,7 +346,7 @@ watch(() => renderData.value, () => {
             </template>
           </a-switch>
           <template #extra>
-            <div>如果合并，则将上下左右相同值的单元格进行合并处理；否则不处理。</div>
+            <div>如果合并，则将上下左右相同值的单元格进行合并处理；否则不处理；只适用于导出Excel。</div>
           </template>
         </a-form-item>
         <a-form-item field="description" label="备注">
