@@ -506,6 +506,9 @@ export default {
   'security.file.index.example.file.failed': '文件查询失败',
   'security.file.index.example.failed.okText': '复制 键',
   'security.file.index.example.failed.content': '请在【系统配置】中配置示例的键值对。',
+  'security.file.list.operations.generate': '生成',
+  'security.file.list.operations.generate.template': '模板文件',
+  'security.file.list.operations.generate.meta': '元数据文件',
 
   'security.sysConfig.index.menu.list': '应用管理',
   'security.sysConfig.index.menu.list.searchTable': '系统配置',

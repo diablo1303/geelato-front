@@ -153,9 +153,26 @@
       </a-table-column>
       <a-table-column :title="$t('security.file.index.form.createAt')" :width="180" data-index="createAt"></a-table-column>
       <a-table-column
-          :title="$t('security.file.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center" data-index="operations"
+          :title="$t('security.file.index.form.operations')" :width="pageData.formState==='edit'?270:100" align="center" data-index="operations"
           fixed="right">
         <template #cell="{ record }">
+          <a-dropdown position="br" trigger="hover">
+            <a-button size="small" type="text">
+              {{ $t('security.file.list.operations.generate') }}
+            </a-button>
+            <template #content>
+              <a-doption v-if="['import'].includes(record.useType)">
+                <a-button size="small" type="text" @click="generateFile(record.id,'template')">
+                  {{ $t('security.file.list.operations.generate.template') }}
+                </a-button>
+              </a-doption>
+              <a-doption v-if="['import','export'].includes(record.useType)">
+                <a-button size="small" type="text" @click="generateFile(record.id,'meta')">
+                  {{ $t('security.file.list.operations.generate.meta') }}
+                </a-button>
+              </a-doption>
+            </template>
+          </a-dropdown>
           <a-button size="small" type="text" @click="viewTable(record.id)">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
@@ -188,7 +205,12 @@ import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
-import {deleteFileTemplate as deleteList, FilterFileTemplateForm as FilterForm, pageQueryFileTemplate as pageQueryList} from '@/api/template';
+import {
+  deleteFileTemplate as deleteList,
+  FilterFileTemplateForm as FilterForm,
+  generateTemplateOrMetaFile,
+  pageQueryFileTemplate as pageQueryList
+} from '@/api/template';
 import {columns, enableStatusOptions, fileTypeOptions, useTypeOptions} from "@/views/security/file/searchTable";
 // 引用其他页面
 import FileTemplateDrawer from "@/views/security/file/drawer.vue";
@@ -304,6 +326,15 @@ const downloadImportOrExportExample = async (configKey: string) => {
     } else {
       downloadFileFailed(configKey, t('security.file.index.example.get.failed'));
     }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+const generateFile = async (id: string, type: string) => {
+  try {
+    const {data} = await generateTemplateOrMetaFile(id, type);
+    reset();
   } catch (err) {
     console.log(err);
   }

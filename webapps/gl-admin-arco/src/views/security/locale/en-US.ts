@@ -504,6 +504,9 @@ export default {
   'security.file.index.example.file.failed': 'File Query Failure',
   'security.file.index.example.failed.okText': 'Copy Key',
   'security.file.index.example.failed.content': 'Configure the key-value pairs for the example in System Configuration.',
+  'security.file.list.operations.generate': 'Generate',
+  'security.file.list.operations.generate.template': 'Template File',
+  'security.file.list.operations.generate.meta': 'Meta File',
 
   'security.sysConfig.index.menu.list': 'System',
   'security.sysConfig.index.menu.list.searchTable': 'Config',

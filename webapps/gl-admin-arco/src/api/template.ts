@@ -60,3 +60,7 @@ export function createOrUpdateFileTemplate(params: QueryFileTemplateForm) {
 export function deleteFileTemplate(id: string) {
   return axios.delete<QueryResult>(`/api/export/template/isDelete/${id}`);
 }
+
+export function generateTemplateOrMetaFile(id: string, type: string) {
+  return axios.post<QueryResult>(`/api/export/template/generateFile/${id}`, {fileType: type});
+}
