@@ -10,17 +10,27 @@ export default class DictQueryBlockHandler implements IBlockHandler {
   }
   
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-    // console.log('props', props)
     let respVarName = props.respVarName || utils.gid('respVarName')
     let dataVarName = props.dataVarName || utils.gid('dataVarName')
-    return new ParseResult(
-      `
+
+    if(propsExpressions?.dictItemValue || props.dictItemValue){
+      return new ParseResult(
+          `
           $gl.vars.${respVarName} = await $gl.entityApi.queryDictItem('${props.dictId}',${
-        propsExpressions?.dictItemValue || props.dictItemValue
-      })
+              propsExpressions?.dictItemValue || props.dictItemValue
+          })
           $gl.vars.${dataVarName} = $gl.vars.${respVarName}.data
             `
-    )
+      )
+    }else{
+      return new ParseResult(
+          `
+          $gl.vars.${respVarName} = await $gl.entityApi.queryDictItems('${props.dictId}')
+          $gl.vars.${dataVarName} = $gl.vars.${respVarName}.data
+            `
+      )
+    }
+
   }
 }
 

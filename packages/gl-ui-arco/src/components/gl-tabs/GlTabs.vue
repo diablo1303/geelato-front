@@ -19,6 +19,8 @@ class TabItem {
   lazyLoad?: boolean
   // 默认为false，面板选激活之后为true
   hasBeenLoad?: boolean
+  // 选中该标签时，是否隐藏右上插槽，应用场景如：在页面详细查看时，哪有一个Tab可以通过右上的编辑按钮（插槽内的组件）启用编辑
+  hideRightTopSlot?:boolean
 }
 
 const props = defineProps({
@@ -59,6 +61,8 @@ const itemTemplate = () => {
 }
 
 // console.log('props.items:', props.items)
+// 当前选中的标签项
+const itemMv:Ref<TabItem|{hideRightTopSlot:false,[Key:string]:any}> = ref({hideRightTopSlot:false})
 const tabItems: Ref<TabItem[]> = ref(props.items || [])
 if (tabItems.value.length === 0) {
   tabItems.value.push(
@@ -75,9 +79,12 @@ if (tabItems.value.length === 0) {
       }
     ]
   )
+  props.glComponentInst.children = props.glComponentInst.children || []
+  props.glComponentInst.children.push(itemTemplate())
+  props.glComponentInst.children.push(itemTemplate())
 }
 
-const mv = ref()
+const mv = ref(props.modelValue)
 // 处理空值（历史数据问题）
 const clearNullChild = () => {
   let subInstIndex = 0
@@ -96,24 +103,27 @@ clearNullChild()
  *  若无选中值，初始化选中第一个
  */
 const setSelectTab = () => {
-  mv.value = props.modelValue
   const foundTabItem = tabItems.value.find((tabItem: TabItem) => {
     return tabItem.value === mv.value
   })
-  console.log('props.modelValue', props.modelValue, 'foundTabItem', foundTabItem)
+  // console.log('setSelectTab() > val:', mv.value, 'foundTabItem:', foundTabItem)
 
   if (foundTabItem) {
     foundTabItem.hasBeenLoad = true
+    itemMv.value = foundTabItem
   } else {
     // 若无选中值，初始化选中第一个
-    if ((mv.value == undefined || mv.value == '') && tabItems.value.length > 0) {
+    if (tabItems.value.length > 0) {
+      // (mv.value == undefined || mv.value == '') &&
       tabItems.value[0].hasBeenLoad = true
       mv.value = tabItems.value[0].value
-      console.log('tabs:无选中值，初始化选中第一个')
+      itemMv.value = tabItems.value[0]
+      console.log('setSelectTab() :无选中值，或值无效，初始化选中第一个，第一个值为：', mv.value)
+    }else{
+      itemMv.value = {hideRightTopSlot:false}
     }
   }
 }
-setSelectTab()
 
 // 移动tabItem之后，当前mv对应的tabPane是否有变化，有的话，需要刷新页面
 const currentTabPaneChanged = ref(false)
@@ -154,8 +164,7 @@ const checkItemTabPositionAndSyncTabPane = () => {
   }
 }
 
-// 先snapshot
-snapshot()
+
 
 watch(
   () => {
@@ -205,6 +214,7 @@ const onTabClick = (key: string | number) => {
   if (foundItem && !foundItem.disabled) {
     foundItem.hasBeenLoad = true
     mv.value = key
+    setSelectTab()
   }
 }
 
@@ -249,6 +259,8 @@ const selectByIndex = (params: { index: number }) => {
   return true
 }
 
+// 先snapshot
+snapshot()
 onMounted(() => {
   setSelectTab()
 })
@@ -264,7 +276,7 @@ defineExpose({ getValue, selectByValue, selectByIndex })
     style="background-color: white"
   >
     <template #extra>
-      <div>
+      <div v-show="!(itemMv.hideRightTopSlot === true)">
         <slot name="extra"></slot>
       </div>
     </template>

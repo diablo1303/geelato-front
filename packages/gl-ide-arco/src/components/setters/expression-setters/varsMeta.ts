@@ -491,7 +491,15 @@ export const useSrvTreeData = () => {
               '批量保存实体(同一实体名称)，entitySaver为实体保存对象，格式如：{entity:"实体名称",pidName:"作为子表时需填写该值，即子表单中指向父表单id的字段名",record:"{},实体的记录数据对象",children:"[],有子表单时，可设置子表单entitySaver在此"}'
           },
           {
-            title: '查询字典项',
+            title: '查询一组字典项',
+            _code: 'queryDictItems',
+            _type: 'Promise',
+            _brackets: '("字典id")',
+            _description:
+                '通过字典id，查询字典项：[{id: string, value: string, label: string}]'
+          },
+          {
+            title: '查询一个字典项',
             _code: 'queryDictItem',
             _type: 'Promise',
             _brackets: '("字典id","字典项值")',

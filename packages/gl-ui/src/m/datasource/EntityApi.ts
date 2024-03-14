@@ -810,7 +810,21 @@ export class EntityApi {
   }
 
   /**
-   *  查询字典项名称
+   *  查询某dictId下的字典项
+   * @param dictId 字典ID
+   */
+  queryDictItems(dictId: string) {
+    return this.query('platform_dict_item', 'id,itemCode value,itemName label', {
+      dictId: `${dictId}`,
+      enableStatus: 1,
+      delStatus: 0,
+      '@p': '1,1000',
+      '@order': 'seqNo|+'
+    })
+  }
+
+  /**
+   *  查询字典项
    * @param dictId 字典ID
    * @param dictItemCode 字典项编码
    */

@@ -892,7 +892,7 @@ const getPushedEntitySavers = async (params: { subFormPidValue?: string }) => {
 // }
 
 /**
- *  批量更新到服务端
+ *  批量更新所选的记录到服务端
  *  批量更新已选中列的部分字段的内容
  *  @record key为字段名，即列名,value为更新后的列值
  */
