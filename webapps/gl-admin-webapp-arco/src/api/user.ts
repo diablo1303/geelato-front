@@ -119,6 +119,7 @@ export function getSystemConfig(params: Record<string, any>) {
  */
 export const getSysConfig = async (global: ComponentCustomProperties & Record<string, any>, userInfo?: Record<any, any>, params?: Record<string, string>) => {
   try {
+    const token = getToken();
     const {data} = await getSystemConfig(params || {});
     const config = data.code === globalConfig.interceptorCode ? data.data : data;
     if (config && global) {
@@ -127,7 +128,7 @@ export const getSysConfig = async (global: ComponentCustomProperties & Record<st
       global.$gl.tenant = config.tenant || {};
       global.$gl.app = config.app || {};
       global.$gl.user = userInfo || {};
-      if (!config.app && params?.appId) {
+      if (!config.app && params?.appId && token) {
         const appData = await getApp(params?.appId);
         global.$gl.app = appData?.data || {};
       }
