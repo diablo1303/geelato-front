@@ -151,6 +151,18 @@ export default {
       setterComponentName: 'ASwitch'
     },
     {
+      name: 'showRemarkInLabel',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      title: '显示描述字段',
+      setterComponentName: 'ASwitch'
+    },
+    {
       name: 'size',
       setterComponentProps: {
         mode: 'SECRET_COMBOBOX_MODE_DO_NOT_USE',

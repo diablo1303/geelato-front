@@ -67,12 +67,14 @@ const props = defineProps({
       return 1000
     }
   },
-  showValueInLabel: {
-    type: Boolean,
-    default() {
-      return false
-    }
-  },
+  /**
+   *  在label中，同时展示值
+   */
+  showValueInLabel: Boolean,
+  /**
+   * 在label中，同时展示描述信息
+   */
+  showRemarkInLabel: Boolean,
   disabled: Boolean,
   readonly: Boolean,
   ...mixins.props
@@ -144,17 +146,23 @@ const onClear = () => {
   mv.value = undefined
 }
 
+/**
+ *  最多加载2000条字典项
+ */
 const loadData = () => {
-  // TODO 增加多租户支持
   if (props.dictId) {
     entityApi
-      .query('platform_dict_item', 'id,itemCode value,itemName label', {
-        dictId: props.dictId,
-        enableStatus: 1,
-        delStatus: 0,
-        '@p': '1,2000',
-        '@order': 'seqNo|' + props.dictAscOrDesc
-      })
+      .query(
+        'platform_dict_item',
+        'id,itemCode value,itemName label' + (props.showRemarkInLabel ? ',itemRemark remark' : ''),
+        {
+          dictId: props.dictId,
+          enableStatus: 1,
+          delStatus: 0,
+          '@p': '1,2000',
+          '@order': 'seqNo|' + props.dictAscOrDesc
+        }
+      )
       .then((resp: any) => {
         options.value = resp.data
         callBackToSetValue()
@@ -178,6 +186,14 @@ const getSelectedOption = () => {
   return selectedOption.value
 }
 
+const getLabel = (option: Record<string, any>) => {
+  return (
+    option.label +
+    (props.showValueInLabel ? '(' + option.value + ')' : '') +
+    (props.showRemarkInLabel && option.remark ? '(' + (option.remark.length>8?option.remark.substring(0,8)+'...':option.remark) + ')' : '')
+  )
+}
+
 defineExpose({ getSelectedOption })
 </script>
 
@@ -194,7 +210,7 @@ defineExpose({ getSelectedOption })
         :readonly="readonly"
       >
         <a-option v-for="opt in options" :value="opt.value">
-          {{ opt.label + (showValueInLabel ? '(' + opt.value + ')' : '') }}
+          {{ getLabel(opt) }}
         </a-option>
       </a-select>
     </template>
@@ -204,7 +220,7 @@ defineExpose({ getSelectedOption })
       </template>
       <a-checkbox-group v-model="mv" :max="maxCount" :disabled="disabled" :readonly="readonly">
         <a-checkbox v-for="opt in options" :value="opt.value">
-          {{ opt.label + (showValueInLabel ? '(' + opt.value + ')' : '') }}
+          {{ getLabel(opt) }}
         </a-checkbox>
       </a-checkbox-group>
     </template>
@@ -214,11 +230,9 @@ defineExpose({ getSelectedOption })
       </template>
       <a-radio-group v-model="mv" :disabled="disabled" :readonly="readonly">
         <a-radio v-for="opt in options" :value="opt.value">
-          {{ opt.label + (showValueInLabel ? '(' + opt.value + ')' : '') }}
+          {{ getLabel(opt) }}
         </a-radio>
       </a-radio-group>
     </template>
   </div>
 </template>
-
-<style scoped></style>
