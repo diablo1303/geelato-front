@@ -11,6 +11,7 @@ export interface QuerySysConfigForm {
   configValue: string;
   configAssist?: string;
   remark: string;
+  purpose: string;
   enableStatus: number;
   appId: string;
   tenantCode: string;
@@ -23,6 +24,7 @@ export interface FilterSysConfigForm {
   valueType: string;
   configValue: string;
   remark: string;
+  purpose: string;
   enableStatus: string;
   appId: string;
   tenantCode: string;

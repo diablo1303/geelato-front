@@ -46,5 +46,24 @@ const enableStatusOptions = computed<SelectOptionData[]>(() => [
   },
 ]);
 
+const purposeOptions = computed<SelectOptionData[]>(() => [
+  {
+    label: 'security.sysConfig.index.form.purpose.webapp',
+    value: 'webapp',
+  },
+  {
+    label: "security.sysConfig.index.form.purpose.endpoint",
+    value: 'endpoint',
+  },
+  {
+    label: 'security.sysConfig.index.form.purpose.workflow',
+    value: 'workflow',
+  },
+  {
+    label: "security.sysConfig.index.form.purpose.schedule",
+    value: 'schedule',
+  },
+]);
 
-export {columns, enableStatusOptions};
+
+export {columns, enableStatusOptions, purposeOptions};

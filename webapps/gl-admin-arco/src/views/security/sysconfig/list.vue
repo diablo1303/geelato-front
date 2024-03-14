@@ -14,6 +14,13 @@
             </a-form-item>
           </a-col>
           <a-col :span="8">
+            <a-form-item :label="$t('security.sysConfig.index.form.purpose')" field="purpose">
+              <a-select v-model="filterData.purpose" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="(item,index) of purposeOptions" :key="index" :label="$t(`${item.label}`)" :value="item.value"/>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="8">
             <a-form-item :label="$t('security.sysConfig.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="(item,index) of enableStatusOptions" :key="index" :label="$t(`${item.label}`)" :value="item.value"/>
@@ -137,6 +144,11 @@
           <span v-else>{{ record.configValue }}</span>
         </template>
       </a-table-column>
+      <a-table-column :title="$t('security.sysConfig.index.form.purpose')" :width="100" data-index="purpose">
+        <template #cell="{ record }">
+          {{ record.purpose ? $t(`security.sysConfig.index.form.purpose.${record.purpose}`) : '' }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('security.sysConfig.index.form.enableStatus')" :width="100" data-index="enableStatus">
         <template #cell="{ record }">
           {{ record.enableStatus ? $t(`security.sysConfig.index.form.enableStatus.${record.enableStatus}`) : '' }}
@@ -179,7 +191,7 @@ import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 import {deleteSysConfig as deleteList, FilterSysConfigForm as FilterForm, pageQuerySysConfig as pageQueryList} from '@/api/sysconfig';
-import {columns, enableStatusOptions} from "@/views/security/sysconfig/searchTable";
+import {columns, enableStatusOptions, purposeOptions} from "@/views/security/sysconfig/searchTable";
 // 引用其他页面
 import SystemConfigDrawer from "@/views/security/sysconfig/drawer.vue";
 import {Base64FileParams, downloadFileByBase64Data, fetchFileById} from "@/api/attachment";
@@ -214,6 +226,7 @@ const generateFilterData = (): FilterForm => {
     valueType: '',
     configValue: '',
     remark: '',
+    purpose: '',
     enableStatus: '',
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode,

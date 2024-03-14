@@ -57,6 +57,15 @@
                   :options="selectAppOptions" allow-search/>
       </a-form-item>
       <a-form-item
+          :label="$t('security.sysConfig.index.form.purpose')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          field="purpose">
+        <a-select v-if="pageData.button" v-model="formData.purpose">
+          <a-option v-for="item of purposeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+        </a-select>
+        <span v-else>{{ formData.purpose ? $t(`security.sysConfig.index.form.purpose.${formData.purpose}`) : '' }}</span>
+      </a-form-item>
+      <a-form-item
           :label="$t('security.sysConfig.index.form.enableStatus')"
           :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
           field="enableStatus">
@@ -80,7 +89,7 @@ import {useRoute} from "vue-router";
 import {FileItem, FormInstance, Modal, Notification} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
 import {createOrUpdateSysConfig as createOrUpdateForm, getSysConfig as getForm, QuerySysConfigForm as QueryForm, validateSysConfigKey} from '@/api/sysconfig'
-import {enableStatusOptions} from "@/views/security/sysconfig/searchTable";
+import {enableStatusOptions, purposeOptions} from "@/views/security/sysconfig/searchTable";
 import {selectTypeOptions} from "@/views/model/column/searchTable";
 import {AttachmentForm, Base64FileParams, getAttachmentByIds, getDownloadUrlById, getUploadUrl, uploadHeader} from "@/api/attachment";
 import UploadBase64 from "@/components/upload-base64/index.vue";
@@ -101,6 +110,7 @@ const generateFormData = (): QueryForm => {
     configValue: '',
     configAssist: '',
     remark: '',
+    purpose: '',
     enableStatus: 1,
     appId: (route.params && route.params.appId as string) || '',
     tenantCode: (route.params && route.params.tenantCode as string) || '',
