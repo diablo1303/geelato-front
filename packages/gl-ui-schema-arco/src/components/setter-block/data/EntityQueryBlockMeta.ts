@@ -17,7 +17,7 @@ export default {
       setterComponentVModelName: 'modelValue',
       title: '实体查询',
       setterComponentName: 'GlEntityReaderSetter',
-      enableValueExpress: true,
+      enableValueExpress: false,
       displayMode: 'tile',
       _showSub: false
     },

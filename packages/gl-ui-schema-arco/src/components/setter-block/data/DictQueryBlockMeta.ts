@@ -31,6 +31,7 @@ export default {
       setterComponentName: 'AInput',
       enableValueExpress: true,
       displayMode: 'tile',
+      placeholder: '为空时表示查一组字典项'
     },
     {
       name: 'dataVarName',
@@ -44,7 +45,8 @@ export default {
       setterComponentName: 'AInput',
       enableValueExpress: false,
       displayMode: 'tile',
-      description: '查询的数据data[]。'
+      description: '查询的数据data[]。',
+      isBlockVarProp: true
     },
     {
       name: 'respVarName',
@@ -59,7 +61,7 @@ export default {
       setterComponentName: 'AInput',
       enableValueExpress: false,
       displayMode: 'tile',
-      description: '查询的结果ApiResult:{code:string,message:string,data:[]}'
+      description: '查询的结果ApiResult:{code:string,message:string,data:[]}',
     }
   ]
 }

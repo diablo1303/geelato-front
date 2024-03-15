@@ -81,6 +81,19 @@ export default {
           title: '懒加载',
           setterComponentName: 'ASwitch',
           description: '选中该面板时才加载，以提高页面性能。如果在动作脚本中引用了该面板的组件，需要注意在引用前确保页面已加载。'
+        },
+        {
+          name: 'hideRightTopSlot',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: true,
+          show: true,
+          expanded: true,
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          title: '隐藏右上插槽',
+          setterComponentName: 'ASwitch',
+          description: '选中该面板时，隐藏右上插槽，默认不隐藏，该属性在开启了右上插槽时才有效。'
         }
       ],
       titleField: 'title',
