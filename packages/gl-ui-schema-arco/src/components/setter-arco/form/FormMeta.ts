@@ -187,12 +187,27 @@ export default {
     {
       name: 'onLoadedData',
       description: '表单加载完成数据并设置到各表单项之后触发,可以在此事件之后进一步设置组件的值。',
-      title: '加载完数据并更新到页面'
+      title: '加载完数据并更新到页面之后'
+    },
+    {
+      name: 'onLoadingData',
+      description: '加载完数据并更新到页面之前，在些事件中可以对返回的数据进行加工处理。',
+      title: '加载完数据并更新到页面之前',
+      returnInfo: {
+        returnType: '{data:Record<string,any>}',
+        description: '在脚本编辑器中通过$gl.ctx.args[0].data获取到该条记录值',
+        docId: ''
+      }
     },
     {
       name: 'creatingEntitySavers',
       description: '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
-      title: '保存对象完成前'
+      title: '保存对象完成前',
+      returnInfo: {
+        returnType: '{data:Record<string,any>}',
+        description: '在脚本编辑器中通过$gl.ctx.args[0].data获取到该条记录值',
+        docId: ''
+      }
     }
   ],
   methods: [

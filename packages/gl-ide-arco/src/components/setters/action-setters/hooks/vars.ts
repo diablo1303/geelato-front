@@ -3,7 +3,7 @@ import { utils } from '@geelato/gl-ui'
 /**
  * 获取变量名
  * 返回$gl.vars.xxx的格式
- * @param varName
+ * @param varName 可为$gl.vars.xxx或xxx格式
  */
 const getVarStr = (varName?: string,prefix?:string) => {
   if (!varName) {
