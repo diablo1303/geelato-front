@@ -2,8 +2,10 @@ import type IBlockHandler from '../BlockHandler'
 import { type PropsExpressions, blocksHandler, CommandBlocks } from '../BlockHandler'
 import ParseResult from '../ParseResult'
 import usePromise from '../../hooks/usePromise'
+import useVars from '../../hooks/vars'
 import { utils } from '@geelato/gl-ui'
 
+const { getVarStr } = useVars()
 export default class ExportExcelBlockHandler implements IBlockHandler {
   getName(): string {
     return 'ExportExcelBlockHandler'
@@ -13,7 +15,7 @@ export default class ExportExcelBlockHandler implements IBlockHandler {
     const fileName = propsExpressions?.fileName ? propsExpressions.fileName : `"${props.fileName}"`
     const respVarName = props.respVarName || utils.gid('resp')
     props.respVarName = respVarName
-    const awaitStr = props.enableAwait ?'await':''
+    const awaitStr = props.enableAwait ? 'await' : ''
     const fulfilledVarName = props.fulfilledVarName || utils.gid('res', 8)
     props.fulfilledVarName = fulfilledVarName
     const rejectedVarName = props.rejectedVarName || utils.gid('e', 8)
@@ -23,11 +25,10 @@ export default class ExportExcelBlockHandler implements IBlockHandler {
       fulfilledVarName,
       rejectedVarName
     )
+    const varName = propsExpressions?.varName ? getVarStr(propsExpressions.varName ): `"${getVarStr(props.varName)}"`
 
     return new ParseResult(
-      `$gl.vars.${respVarName} = ${awaitStr} $gl.fileApi.exportExcel(${fileName},"${
-        props.fileTemplate?.templateId
-      }","${props.dataType}",$gl.vars.${props.varName}).then(${fulfilled},${rejected})
+      `$gl.vars.${respVarName} = ${awaitStr} $gl.fileApi.exportExcel(${fileName},"${props.fileTemplate?.templateId}","${props.dataType}",${varName}).then(${fulfilled},${rejected})
             `
     )
   }
@@ -39,7 +40,7 @@ interface Props {
   // mql | data，数据类型有可能是最新的数据结果（data），也有可能是用于后端查询获取数据结果的（gql）
   dataType: string
   // 从上下文中的数据变量名
-  varName?: object
+  varName?: string
   // 是否同步执行
   enableAwait?: boolean
   // 请返回的结果

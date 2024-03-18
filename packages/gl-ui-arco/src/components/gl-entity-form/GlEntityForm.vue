@@ -43,9 +43,10 @@ import {
 } from '@geelato/gl-ui'
 import { getFormParams, type ValidatedError } from './GlEntityForm'
 
+// onLoadingData：从服务端加载数据，但未设置到表单中
 // onLoadedData：从服务端加载完数据并设置到表单中
 // creatingEntitySavers 完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理
-const emits = defineEmits(['onLoadedData', 'creatingEntitySavers'])
+const emits = defineEmits(['onLoadingData', 'onLoadedData', 'creatingEntitySavers'])
 const formProvideProxy = new FormProvideProxy()
 provide(FormProvideKey, formProvideProxy)
 
@@ -378,13 +379,17 @@ const loadForm = async () => {
           .query(props.bindEntity.entityName, fieldNames.join(','), { id: recordId })
           .then((resp) => {
             const items = resp?.data
+
             if (items && items.length > 0) {
               // console.log(
               //   props.bindEntity.entityName,
               //   '从服务端加载数据并设置到当前页面中',
               //   items[0]
               // )
+              emits('onLoadingData', { data: items[0] })
               setFormItemValues(items[0])
+            }else{
+              emits('onLoadingData', { data: {} })
             }
           })
       } else {
