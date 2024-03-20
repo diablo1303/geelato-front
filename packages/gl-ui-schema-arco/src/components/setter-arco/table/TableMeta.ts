@@ -1106,6 +1106,21 @@ export default {
       params: []
     },
     {
+      name: 'isSelectedRecordsSameColumn',
+      title: '检查某一列的值是否相同',
+      description:
+          '如果存在多个值，或没有选择记录，则返回false，输入参数"{dataIndex:列名1}"，返回true或false',
+      params: [
+        {
+          name: 'dataIndex',
+          title: '字段名',
+          required: true,
+          type: 'string',
+          description: ''
+        }
+      ]
+    },
+    {
       name: 'changeColumnsVisible',
       title: '展示/隐藏列',
       description: '更改列的展示/隐藏属性，不指定的列保持原状。',

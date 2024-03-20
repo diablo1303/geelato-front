@@ -16,13 +16,7 @@ import { computed, inject, onMounted, type PropType, ref, type Ref } from 'vue'
 import type { EntityReaderParam } from '@geelato/gl-ui'
 import QueryItem, { QueryItemKv } from '../gl-query/query'
 import cloneDeep from 'lodash/cloneDeep'
-import {
-  type SizeProps,
-  type Column,
-  defaultTable,
-  type GlTableColumn,
-  BaseInfo
-} from './table'
+import { type SizeProps, type Column, defaultTable, type GlTableColumn, BaseInfo } from './table'
 import Toolbar, { defaultToolbar } from '../gl-toolbar/toolbar'
 import { useI18n } from 'vue-i18n'
 import {
@@ -1062,6 +1056,23 @@ const getColumnsSum = (params: { dataIndexes: string[] }) => {
 }
 
 /**
+ *  检查某一列的值是否相同
+ *  如果存在多个值，或没有选择记录，则返回false
+ */
+const isSelectedRecordsSameColumn = (params: { dataIndex: string }) => {
+  if (!params || !params.dataIndex) {
+    console.error('isColumnSameValue的参数不正确,格式应为：{ dataIndex: string}，实为：', params)
+    throw new Error('isColumnSameValue的参数不正确,格式应为：{ dataIndex: string}')
+  }
+  let colSet = new Set()
+  // 正值部分
+  getSelectedRecords()?.forEach((record: Record<string, any>) => {
+    colSet.add(record[params.dataIndex])
+  })
+  return colSet.size === 1
+}
+
+/**
  *  获取渲染的记录中排除掉unPush的部分
  */
 const getRenderRecordsWithOutUnPushed = () => {
@@ -1165,6 +1176,7 @@ defineExpose({
   hasRenderRecords,
   hasSelectedRecords,
   hasUnSaveRecords,
+  isSelectedRecordsSameColumn,
   validate,
   reRender,
   refresh,
