@@ -275,7 +275,7 @@ const selectWord = (word: string) => {
   </div>
 </template>
 
-<style>
+<style lang="less">
 .gl-page-template-flow-approve {
   .gl-title {
     height: 2.4em;

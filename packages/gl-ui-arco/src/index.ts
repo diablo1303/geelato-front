@@ -11,10 +11,6 @@ import GlTabs from './components/gl-tabs/GlTabs.vue'
 import GlDynamicSelect from './components/gl-dynamic-select/GlDynamicSelect.vue'
 import GlUserSelect from './components/gl-user-select/GlUserSelect.vue'
 import GlDict from './components/gl-dict/GlDict.vue'
-import en from './locale/en-US'
-import cn from './locale/zh-CN'
-import {PluginUtil} from '@geelato/gl-ui'
-import './assets/style.css'
 import GlColor from './components/gl-color/GlColor.vue'
 import GlEncode from './components/gl-encode/GlEncode.vue'
 import GlInstRuntime from './components/gl-inst-runtime/GlInstRuntime.vue'
@@ -37,7 +33,6 @@ import GlSelect from './components/gl-select/GlSelect.vue'
 import GlImport from './components/gl-import/GlImport.vue'
 import GlLayoutPage from "./components/gl-layout-page/GlLayoutPage.vue";
 import GlLayoutSite from './components/gl-layout-site/GlLayoutSite.vue'
-import {Drawer, Modal, RangePicker} from '@arco-design/web-vue'
 import GlBlocks from "./components/gl-blocks/GlBlocks.vue";
 import GlList from "./components/gl-list/GlList.vue";
 import GlTinymce from "./components/gl-tinymce/GlTinymce.vue";
@@ -47,7 +42,11 @@ import GlSpace from "./components/gl-space/GlSpace.vue";
 import GlSlot from "./components/gl-slot/GlSlot.vue";
 import GlOrgSelect from "./components/gl-org-select/index.vue";
 import GlOrgUserSelect from "./components/gl-org-user-select/index.vue";
-
+import en from './locale/en-US'
+import cn from './locale/zh-CN'
+import {Drawer, Modal, RangePicker} from '@arco-design/web-vue'
+import {PluginUtil} from '@geelato/gl-ui'
+import './assets/style.css'
 const i18nMessage = {en, cn}
 
 const component: Plugin = {
@@ -79,7 +78,7 @@ const component: Plugin = {
     Vue.component(GlEntityTree.name, GlEntityTree)
     Vue.component(GlEntityForm.name, GlEntityForm)
     Vue.component(GlEntityCascader.name, GlEntityCascader)
-    Vue.component("GlCard", GlCard)
+    Vue.component(GlCard.name, GlCard)
     Vue.component(GlHiddenArea.name, GlHiddenArea)
     Vue.component(GlRowColLayout.name, GlRowColLayout)
     Vue.component(GlTabs.name, GlTabs)

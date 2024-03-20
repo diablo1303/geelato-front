@@ -212,7 +212,7 @@ const openChangeThemeModal = () => {
 }
 
 .gl-sidebar-left .gl-title {
-  //font-size: 0.9em;
+  /* font-size: 0.9em; */
 }
 
 .gl-sidebar-left .gl-item .gl-title {

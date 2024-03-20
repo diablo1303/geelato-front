@@ -564,14 +564,14 @@ defineExpose({refreshTree,selectNode})
 }
 
 .gl-base-tree .arco-tree-node-title-block:hover {
-  //background-color: rgba(239, 239, 239, 0.99); background-color: #ffffff;
+  /* background-color: rgba(239, 239, 239, 0.99); background-color: #ffffff; */
   cursor: default;
 }
 
 .gl-base-tree .arco-tree-node-title-text:hover {
-  //color: #073f6e;
+  /* color: #073f6e; */
   font-weight: 600;
-  //background-color: #f2f6ff;
+  /* background-color: #f2f6ff; */
   cursor: pointer;
   text-shadow: 0 0 5px #7caef6;
 }

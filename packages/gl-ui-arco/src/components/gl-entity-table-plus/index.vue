@@ -10,8 +10,8 @@ export default {
 // @ts-nocheck
 import GlQuery from '../gl-query/index.vue'
 import GlToolbar from '../gl-toolbar/index.vue'
-import GlEntityTable from '../gl-entity-table/GlEntityTable.vue'
-import GlEntityTableEditable from '../gl-entity-table/GlEntityTableEdit.vue'
+import GlEntityTable from './GlEntityTable.vue'
+import GlEntityTableEditable from './GlEntityTableEdit.vue'
 import { computed, inject, onMounted, type PropType, ref, type Ref } from 'vue'
 import type { EntityReaderParam } from '@geelato/gl-ui'
 import QueryItem, { QueryItemKv } from '../gl-query/query'
@@ -22,7 +22,7 @@ import {
   defaultTable,
   type GlTableColumn,
   BaseInfo
-} from '../gl-entity-table/table'
+} from './table'
 import Toolbar, { defaultToolbar } from '../gl-toolbar/toolbar'
 import { useI18n } from 'vue-i18n'
 import {
