@@ -118,7 +118,7 @@ const loadUserDataItems = (ids?: Array<any>) => {
   reader.fields.push(new FieldMeta('id', '', 'ID'))
   reader.fields.push(new FieldMeta('name', '', '名称'))
   reader.params = []
-  reader.params.push(new EntityReaderParam('delStatus', 'eq', 0))
+  reader.params.push(new EntityReaderParam('enableStatus', 'eq', 1))
   if (ids && ids.length > 0) {
     if (ids.length === 1) {
       reader.params.push(new EntityReaderParam('id', 'eq', ids[0]))

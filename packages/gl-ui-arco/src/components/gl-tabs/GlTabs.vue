@@ -20,7 +20,7 @@ class TabItem {
   // 默认为false，面板选激活之后为true
   hasBeenLoad?: boolean
   // 选中该标签时，是否隐藏右上插槽，应用场景如：在页面详细查看时，哪有一个Tab可以通过右上的编辑按钮（插槽内的组件）启用编辑
-  hideRightTopSlot?:boolean
+  hideRightTopSlot?: boolean
 }
 
 const props = defineProps({
@@ -62,7 +62,9 @@ const itemTemplate = () => {
 
 // console.log('props.items:', props.items)
 // 当前选中的标签项
-const itemMv:Ref<TabItem|{hideRightTopSlot:false,[Key:string]:any}> = ref({hideRightTopSlot:false})
+const itemMv: Ref<TabItem | { hideRightTopSlot: false; [Key: string]: any }> = ref({
+  hideRightTopSlot: false
+})
 const tabItems: Ref<TabItem[]> = ref(props.items || [])
 if (tabItems.value.length === 0) {
   tabItems.value.push(
@@ -119,8 +121,8 @@ const setSelectTab = () => {
       mv.value = tabItems.value[0].value
       itemMv.value = tabItems.value[0]
       console.log('setSelectTab() :无选中值，或值无效，初始化选中第一个，第一个值为：', mv.value)
-    }else{
-      itemMv.value = {hideRightTopSlot:false}
+    } else {
+      itemMv.value = { hideRightTopSlot: false }
     }
   }
 }
@@ -163,8 +165,6 @@ const checkItemTabPositionAndSyncTabPane = () => {
     })
   }
 }
-
-
 
 watch(
   () => {
@@ -268,13 +268,7 @@ onMounted(() => {
 defineExpose({ getValue, selectByValue, selectByIndex })
 </script>
 <template>
-  <a-tabs
-    class="gl-tabs"
-    v-if="!currentTabPaneChanged"
-    :active-key="mv"
-    @tabClick="onTabClick"
-    style="background-color: white"
-  >
+  <a-tabs class="gl-tabs" v-if="!currentTabPaneChanged" :active-key="mv" @tabClick="onTabClick">
     <template #extra>
       <div v-show="!(itemMv.hideRightTopSlot === true)">
         <slot name="extra"></slot>
@@ -297,3 +291,11 @@ defineExpose({ getValue, selectByValue, selectByIndex })
     </a-tab-pane>
   </a-tabs>
 </template>
+<style>
+.gl-tabs {
+  background-color: white;
+}
+body[arco-theme='dark'] .gl-tabs {
+  background-color:var(--color-bg-3);
+}
+</style>

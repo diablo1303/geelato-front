@@ -40,6 +40,13 @@ const useAppStore = defineStore('app', {
     toggleNavStyle(navStyle: string) {
       this.navStyle = navStyle;
       document.body.setAttribute('gl-nav-style', navStyle);
+      // 强行设置为亮色
+      this.toggleTheme(false)
+      // if(navStyle?.toLowerCase().indexOf('light')>=0){
+      //   this.toggleTheme(false)
+      // }else{
+      //   this.toggleTheme(true)
+      // }
     },
     toggleDevice(device: string) {
       this.device = device;
