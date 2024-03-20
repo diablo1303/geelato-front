@@ -58,6 +58,7 @@ const generateFilterData = (): FilterForm => {
     sex: '',
     source: '',
     type: '',
+    enableStatus: '',
     createAt: [],
     tenantCode: (route.params && route.params.tenantCode as string) || '',
     cooperatingOrgId: ''
@@ -327,6 +328,11 @@ watch(() => props.orgId, () => {
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.name')" :tooltip="true" :width="120" data-index="name"/>
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.loginName')" :tooltip="true" :width="120" data-index="loginName"/>
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.jobNumber')" :tooltip="true" :width="120" data-index="jobNumber"/>
+      <a-table-column :title="$t('security.user.index.form.enableStatus')" :width="80" data-index="enableStatus">
+        <template #cell="{ record }">
+          {{ $t(`security.user.index.form.enableStatus.${record.enableStatus}`) }}
+        </template>
+      </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.orgName')" :tooltip="true" :width="200" data-index="orgName"></a-table-column>
       <a-table-column :title="$t('security.user.index.form.mobilePhone')" :width="150" data-index="mobilePhone"></a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.email')" :tooltip="true" :width="200" data-index="email"></a-table-column>

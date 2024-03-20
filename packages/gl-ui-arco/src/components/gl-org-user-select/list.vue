@@ -55,7 +55,17 @@ const rowSelection = ref<TableRowSelection>({
 // 搜索条件
 const generateFilterData = () => {
   return {
-    id: '', jobNumber: '', name: '', loginName: '', enName: '', orgId: '', orgName: '', sex: '', source: '', type: ''
+    id: '',
+    jobNumber: '',
+    name: '',
+    loginName: '',
+    enName: '',
+    orgId: '',
+    orgName: '',
+    sex: '',
+    source: '',
+    type: '',
+    enableStatus: ''
   };
 };
 const filterData = ref(generateFilterData());
@@ -71,6 +81,9 @@ const typeOptions = computed<SelectOptionData[]>(() => [
 /* 0:本地用户|1:系统同步 */
 const sourceOptions = computed<SelectOptionData[]>(() => [
   {label: '本地用户', value: 0,}, {label: '系统同步', value: 1,}
+]);
+const enableStatusOptions = computed<SelectOptionData[]>(() => [
+  {label: '禁用', value: 0,}, {label: '启用', value: 1,}
 ]);
 // 查询到的数据
 const depositData = ref<QueryUserForm[]>([]);
@@ -330,6 +343,11 @@ watch(() => props.orgId, () => {
       <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="name" title="名称"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="loginName" title="登录名"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="jobNumber" title="工号"/>
+      <a-table-column :width="80" data-index="enableStatus" title="状态">
+        <template #cell="{ record }">
+          {{ getSelectOptionLabel(record.enableStatus, enableStatusOptions) }}
+        </template>
+      </a-table-column>
       <a-table-column :ellipsis="true" :tooltip="true" :width="200" data-index="orgName" title="组织"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="mobilePhone" title="电话"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="200" data-index="email" title="邮箱"/>

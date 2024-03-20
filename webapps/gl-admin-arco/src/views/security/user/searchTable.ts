@@ -92,4 +92,15 @@ const sourceOptions = computed<SelectOptionData[]>(() => [
   },
 ]);
 
-export {columns, sexOptions, typeOptions, sourceOptions};
+const enableStatusOptions = computed<SelectOptionData[]>(() => [
+  {
+    label: 'security.sysConfig.index.form.enableStatus.1',
+    value: 1,
+  },
+  {
+    label: "security.sysConfig.index.form.enableStatus.0",
+    value: 0,
+  },
+]);
+
+export {columns, sexOptions, typeOptions, sourceOptions, enableStatusOptions};

@@ -64,6 +64,7 @@ export interface QueryUserForm {
   cityCode: string;
   type: number;
   source: number;
+  enableStatus: number;
   description: string;
   tenantCode: string;
 }

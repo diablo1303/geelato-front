@@ -155,6 +155,11 @@
           {{ $t(`security.user.index.form.source.${record.source}`) }}
         </template>
       </a-table-column>
+      <a-table-column :title="$t('security.user.index.form.enableStatus')" :width="100" data-index="enableStatus">
+        <template #cell="{ record }">
+          {{ $t(`security.user.index.form.enableStatus.${record.enableStatus}`) }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('security.user.index.form.seqNo')" :width="100" data-index="seqNo"></a-table-column>
       <a-table-column :title="$t('security.user.index.form.createAt')" :width="180" data-index="createAt"></a-table-column>
       <a-table-column
@@ -230,9 +235,20 @@ const scroll = {x: 2000};
 // 搜索条件
 const generateFilterData = (): FilterForm => {
   return {
-    id: '', jobNumber: '', name: '', loginName: '', enName: '', orgId: '', orgName: '', sex: '', source: '', type: '', createAt: [],
+    id: '',
+    jobNumber: '',
+    name: '',
+    loginName: '',
+    enName: '',
+    orgId: '',
+    orgName: '',
+    sex: '',
+    source: '',
+    type: '',
+    enableStatus: '',
+    createAt: [],
     tenantCode: (route.params && route.params.tenantCode as string) || '',
-    cooperatingOrgId:''
+    cooperatingOrgId: ''
   };
 };
 const filterData = ref(generateFilterData());

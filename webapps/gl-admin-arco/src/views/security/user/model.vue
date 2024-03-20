@@ -153,6 +153,17 @@
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
+            :label="$t('security.user.index.form.enableStatus')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            field="enableStatus">
+          <a-select v-if="pageData.button" v-model="formData.enableStatus">
+            <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+          </a-select>
+          <span v-else>{{ $t(`security.user.index.form.enableStatus.${formData.enableStatus}`) }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="24/pageData.formCol">
+        <a-form-item
             :label="$t('security.user.index.form.seqNo')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="seqNo">
@@ -198,6 +209,7 @@ import {useI18n} from "vue-i18n";
 import {copyToClipboard} from "@/utils/strings";
 import {useRoute} from "vue-router";
 import OrgChooseBox from "@/components/org-choose-box/index.vue";
+import {enableStatusOptions} from "@/views/security/sysconfig/searchTable";
 
 const route = useRoute();
 const {t} = useI18n();
@@ -228,6 +240,7 @@ const generateFormData = (): QueryForm => {
     cityCode: '',
     type: 0,
     source: 0,
+    enableStatus: 1,
     description: '',
     tenantCode: (route.params && route.params.tenantCode as string) || '',
     cooperatingOrgId: ''

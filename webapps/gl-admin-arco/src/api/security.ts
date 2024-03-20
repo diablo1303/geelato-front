@@ -187,6 +187,7 @@ export interface QueryUserForm {
   cityCode: string;
   type: number;
   source: number;
+  enableStatus: number;
   description: string;
   tenantCode: string;
   cooperatingOrgId: string;
@@ -203,6 +204,7 @@ export interface FilterUserForm {
   orgName: string;
   type: string;
   source: string;
+  enableStatus: string;
   tenantCode: string;
   cooperatingOrgId: string;
   createAt: string[];
