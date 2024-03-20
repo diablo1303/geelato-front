@@ -154,6 +154,11 @@
           {{ record.enableStatus ? $t(`security.sysConfig.index.form.enableStatus.${record.enableStatus}`) : '' }}
         </template>
       </a-table-column>
+      <a-table-column :title="$t('security.sysConfig.index.form.encrypted')" :width="80" data-index="encrypted">
+        <template #cell="{ record }">
+          {{ $t(`security.sysConfig.index.form.encrypted.${record.encrypted}`) }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('security.sysConfig.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.remark')" :tooltip="true" :width="150" data-index="remark"/>
       <a-table-column :title="$t('security.sysConfig.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center"
@@ -228,6 +233,7 @@ const generateFilterData = (): FilterForm => {
     remark: '',
     purpose: '',
     enableStatus: '',
+    encrypted: '',
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode,
     createAt: []

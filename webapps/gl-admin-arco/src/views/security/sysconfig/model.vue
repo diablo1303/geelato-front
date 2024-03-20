@@ -74,6 +74,14 @@
         </a-select>
         <span v-else>{{ $t(`security.sysConfig.index.form.enableStatus.${formData.enableStatus}`) }}</span>
       </a-form-item>
+      <a-form-item
+          :label="$t('security.sysConfig.index.form.encrypted')"
+          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+          field="encrypted">
+        <a-radio-group v-model="formData.encrypted" :options="encryptedOptions">
+          <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
+        </a-radio-group>
+      </a-form-item>
       <a-form-item :label="$t('security.sysConfig.index.form.remark')" field="remark">
         <a-textarea v-if="pageData.button" v-model="formData.remark" :auto-size="{minRows:3,maxRows:6}" :max-length="512" show-word-limit/>
         <span v-else :title="formData.remark" class="textarea-span" @click="openModal(`${formData.remark}`)">{{ formData.remark }}</span>
@@ -89,8 +97,7 @@ import {useRoute} from "vue-router";
 import {FileItem, FormInstance, Modal, Notification} from "@arco-design/web-vue";
 import {ListUrlParams} from '@/api/base';
 import {createOrUpdateSysConfig as createOrUpdateForm, getSysConfig as getForm, QuerySysConfigForm as QueryForm, validateSysConfigKey} from '@/api/sysconfig'
-import {enableStatusOptions, purposeOptions} from "@/views/security/sysconfig/searchTable";
-import {selectTypeOptions} from "@/views/model/column/searchTable";
+import {enableStatusOptions, encryptedOptions, purposeOptions} from "@/views/security/sysconfig/searchTable";
 import {AttachmentForm, Base64FileParams, getAttachmentByIds, getDownloadUrlById, getUploadUrl, uploadHeader} from "@/api/attachment";
 import UploadBase64 from "@/components/upload-base64/index.vue";
 import {isJSON} from "@/utils/is";
@@ -112,6 +119,7 @@ const generateFormData = (): QueryForm => {
     remark: '',
     purpose: '',
     enableStatus: 1,
+    encrypted: 0,
     appId: (route.params && route.params.appId as string) || '',
     tenantCode: (route.params && route.params.tenantCode as string) || '',
   };
@@ -253,6 +261,7 @@ const loadModel = (urlParams: ListUrlParams) => {
   // 特色
   if (urlParams.id) {
     getData(urlParams.id, (data: QueryForm) => {
+      data.encrypted = data.encrypted === true ? 1 : 0;
       if (data.keyType) {
         data.keyType = (data.keyType as string).split(",") || [];
       }

@@ -1,5 +1,6 @@
 import {computed} from 'vue';
 import type {SelectOptionData, TableColumnData} from '@arco-design/web-vue';
+import {RadioOption} from "@arco-design/web-vue/es/radio/interface";
 
 const columns = computed<TableColumnData[]>(() => [
   {
@@ -46,6 +47,17 @@ const enableStatusOptions = computed<SelectOptionData[]>(() => [
   },
 ]);
 
+const encryptedOptions = computed<RadioOption[]>(() => [
+  {
+    label: 'security.sysConfig.index.form.encrypted.1',
+    value: 1,
+  },
+  {
+    label: "security.sysConfig.index.form.encrypted.0",
+    value: 0,
+  },
+]);
+
 const purposeOptions = computed<SelectOptionData[]>(() => [
   {
     label: 'security.sysConfig.index.form.purpose.webapp',
@@ -66,4 +78,4 @@ const purposeOptions = computed<SelectOptionData[]>(() => [
 ]);
 
 
-export {columns, enableStatusOptions, purposeOptions};
+export {columns, enableStatusOptions, encryptedOptions, purposeOptions};

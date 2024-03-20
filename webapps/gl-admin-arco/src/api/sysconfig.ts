@@ -13,6 +13,7 @@ export interface QuerySysConfigForm {
   remark: string;
   purpose: string;
   enableStatus: number;
+  encrypted: boolean | number;
   appId: string;
   tenantCode: string;
 }
@@ -25,6 +26,7 @@ export interface FilterSysConfigForm {
   configValue: string;
   remark: string;
   purpose: string;
+  encrypted: string;
   enableStatus: string;
   appId: string;
   tenantCode: string;
