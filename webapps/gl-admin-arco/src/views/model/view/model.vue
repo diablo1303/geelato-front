@@ -160,7 +160,7 @@
       <icon-plus/>
       {{ $t('model.view.index.form.entity.custom') }}
     </a-button>
-    <a-popover v-model:popup-visible="entityPopover" position="left" trigger="click" style="max-width: 400px">
+    <a-popover v-model:popup-visible="entityPopover" position="right" trigger="click" style="max-width: 400px">
       <a-button size="medium" type="primary" @click="entityPopoverClick($event)">
         <icon-plus/>
         {{ $t('model.view.index.form.entity.model') }}
@@ -181,8 +181,17 @@
               <a-form-item :label="$t('model.view.index.form.entity.columnIds')"
                            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
                            field="columnIds">
-                <a-select v-model="entityData.columnIds" allow-search multiple>
+                <a-select v-model="entityData.columnIds" allow-search multiple @change="entityColumnChange">
                   <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
+                  <template #header>
+                    <div class="check-all">
+                      <a-checkbox v-model="entityColumnSelectAll" class="check-all-radio" @change="entityColumnSelectAllChange">
+                            <span class="check-all-span">
+                              {{ $t('searchTable.columns.operations.all') }}
+                            </span>
+                      </a-checkbox>
+                    </div>
+                  </template>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -494,7 +503,8 @@ const customAddEntityClick = (ev?: MouseEvent) => {
  * 添加，模型字段
  */
 const entityPopover = ref(false);
-const entityData = ref({tableId: '', columnIds: []});
+const entityData = ref<{ tableId: string, columnIds: string[] }>({tableId: '', columnIds: []});
+const entityColumnSelectAll = ref<boolean>(false);
 const selectEntityOptions = ref<QueryTableForm[]>([]);
 const getSelectEntityOptions = async (params: PageQueryRequest = {
   enableStatus: 1,
@@ -538,9 +548,33 @@ const entityChange = (value?: string) => {
   getSelectEntityColumnOptions();
 }
 const entityPopoverClick = async (ev?: MouseEvent) => {
+  entityColumnSelectAll.value = false;
   entityData.value = {tableId: "", columnIds: []};
+  selectEntityColumnOptions.value = [];
   await validateEntityForm.value?.resetFields();
   entityPopover.value = true;
+}
+const entityColumnChange = () => {
+  let isSelectedAll = true;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of selectEntityColumnOptions.value) {
+    if (!entityData.value.columnIds.includes(item.id)) {
+      isSelectedAll = false;
+    }
+  }
+  entityColumnSelectAll.value = isSelectedAll;
+}
+const entityColumnSelectAllChange = () => {
+  if (entityColumnSelectAll.value === true) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of selectEntityColumnOptions.value) {
+      if (!entityData.value.columnIds.includes(item.id)) {
+        entityData.value.columnIds.push(item.id);
+      }
+    }
+  } else {
+    entityData.value.columnIds = [];
+  }
 }
 const entitySubmitClick = async (ev?: MouseEvent) => {
   const res = await validateEntityForm.value?.validate();
@@ -646,5 +680,18 @@ div.arco-form-item-content > span.textarea-span {
   font-size: 16px;
   margin-left: 10px;
   color: #3370ff;
+}
+
+.check-all {
+  padding: 6px 12px;
+
+  &-radio {
+    width: 100%
+  }
+
+  &-span {
+    font-weight: 600;
+    color: rgb(var(--primary-6));
+  }
 }
 </style>

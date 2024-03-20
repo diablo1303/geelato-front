@@ -108,8 +108,17 @@
                   <a-form-item :label="$t('model.view.index.form.entity.columnIds')"
                                :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
                                field="columnIds">
-                    <a-select v-model="entityData.columnIds" allow-search multiple>
+                    <a-select v-model="entityData.columnIds" allow-search multiple @change="entityColumnChange">
                       <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
+                      <template #header>
+                        <div class="check-all">
+                          <a-checkbox v-model="entityColumnSelectAll" class="check-all-radio" @change="entityColumnSelectAllChange">
+                            <span class="check-all-span">
+                              {{ $t('searchTable.columns.operations.all') }}
+                            </span>
+                          </a-checkbox>
+                        </div>
+                      </template>
                     </a-select>
                   </a-form-item>
                 </a-col>
@@ -126,11 +135,20 @@
         <a-select v-if="pageData.formState==='edit'" v-model:popup-visible="selectVisible"
                   v-model="commonSelectData"
                   multiple scrollbar allow-search
-                  :placeholder="$t('searchTable.form.selectDefault')">
+                  :placeholder="$t('searchTable.form.selectDefault')" @change="commonSelectDataChange">
           <a-option v-for="item of selectCommonOptions"
                     :key="item.id" :value="item.id"
                     :title="`${item.title}[${item.fieldName}]`"
                     :label="`${item.title}[${item.fieldName}]`"/>
+          <template #header>
+            <div class="check-all">
+              <a-checkbox v-model="commonSelectAll" class="check-all-radio" @change="commonSelectAllChange">
+                <span class="check-all-span">
+                  {{ $t('searchTable.columns.operations.all') }}
+                </span>
+              </a-checkbox>
+            </div>
+          </template>
           <template #footer>
             <div style="padding: 6px 6px; text-align: right;">
               <a-button size="mini" type="primary" @click="addCommonColumn($event)">
@@ -390,6 +408,7 @@ const isDefault = ref(false);
 // 常用字段选择
 const selectVisible = ref(false);
 const commonSelectData = ref<string[]>([]);
+const commonSelectAll = ref<boolean>(false);
 const selectCommonOptions = ref<QueryTableColumnForm[]>([]);
 /* 列表 */
 const generateFilterData = (): FilterTableColumnForm => {
@@ -509,7 +528,30 @@ const getSelectDictionaryOptions = async () => {
 
 const openCommonColumn = (ev?: MouseEvent) => {
   commonSelectData.value = [];
+  commonSelectAll.value = false;
   selectVisible.value = true;
+}
+const commonSelectDataChange = () => {
+  let isSelectedAll = true;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of selectCommonOptions.value) {
+    if (!commonSelectData.value.includes(item.id)) {
+      isSelectedAll = false;
+    }
+  }
+  commonSelectAll.value = isSelectedAll;
+}
+const commonSelectAllChange = () => {
+  if (commonSelectAll.value === true) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of selectCommonOptions.value) {
+      if (!commonSelectData.value.includes(item.id)) {
+        commonSelectData.value.push(item.id);
+      }
+    }
+  } else {
+    commonSelectData.value = [];
+  }
 }
 const addCommonColumn = async (ev?: MouseEvent) => {
   if (commonSelectData.value.length > 0) {
@@ -628,7 +670,8 @@ watch(() => columns.value, (val) => {
  */
 const validateEntityForm = ref<FormInstance>();
 const entityPopover = ref(false);
-const entityData = ref({tableId: '', columnIds: []});
+const entityData = ref<{ tableId: string, columnIds: string[] }>({tableId: '', columnIds: []});
+const entityColumnSelectAll = ref<boolean>(false);
 const selectEntityOptions = ref<QueryTableForm[]>([]);
 const getSelectEntityOptions = async (params: PageQueryRequest = {
   enableStatus: 1,
@@ -672,9 +715,33 @@ const entityChange = (value?: string) => {
   getSelectEntityColumnOptions();
 }
 const entityPopoverClick = async (ev?: MouseEvent) => {
+  entityColumnSelectAll.value = false;
   entityData.value = {tableId: "", columnIds: []};
+  selectEntityColumnOptions.value = [];
   await validateEntityForm.value?.resetFields();
   entityPopover.value = true;
+}
+const entityColumnChange = () => {
+  let isSelectedAll = true;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of selectEntityColumnOptions.value) {
+    if (!entityData.value.columnIds.includes(item.id)) {
+      isSelectedAll = false;
+    }
+  }
+  entityColumnSelectAll.value = isSelectedAll;
+}
+const entityColumnSelectAllChange = () => {
+  if (entityColumnSelectAll.value === true) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of selectEntityColumnOptions.value) {
+      if (!entityData.value.columnIds.includes(item.id)) {
+        entityData.value.columnIds.push(item.id);
+      }
+    }
+  } else {
+    entityData.value.columnIds = [];
+  }
 }
 const entitySubmitClick = async (ev?: MouseEvent) => {
   const res = await validateEntityForm.value?.validate();
@@ -768,5 +835,18 @@ export default {
   border-radius: 5px;
   line-height: 20px;
   padding: 0 5px;
+}
+
+.check-all {
+  padding: 6px 12px;
+
+  &-radio {
+    width: 100%
+  }
+
+  &-span {
+    font-weight: 600;
+    color: rgb(var(--primary-6));
+  }
 }
 </style>

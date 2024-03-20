@@ -252,6 +252,7 @@ export default {
   'model.column.index.form.name.synced': 'Not synchronized to the database',
   'model.column.index.form.name.key': 'Primary Key',
   'model.column.index.form.operations.disabled': 'System fields cannot be edited',
+  'searchTable.columns.operations.all': 'Select All',
   'searchTable.columns.operations.add': 'Add',
   'searchTable.columns.operations.add.warning': 'Please select at least one item! ',
   'searchTable.columns.operations.addCom': 'Add Common Column',

@@ -250,6 +250,7 @@ export default {
   'model.column.index.form.operations.disabled': '系统字段不可编辑',
   'model.column.index.form.name.synced': '还未同步至数据库',
   'model.column.index.form.name.key': '主键',
+  'searchTable.columns.operations.all': '全选',
   'searchTable.columns.operations.add': '添加',
   'searchTable.columns.operations.add.warning': '请至少选择一项！',
   'searchTable.columns.operations.addCom': '添加常用字段',
