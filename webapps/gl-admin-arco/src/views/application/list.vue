@@ -157,33 +157,15 @@
                       data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.description')" :tooltip="true" :width="200"
                       data-index="description"/>
-      <a-table-column :title="$t('application.app.list.operations')" :width="230" align="center" data-index="operations"
+      <a-table-column :title="$t('application.app.list.operations')" :width="330" align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">
-          <a-dropdown position="br" trigger="hover">
-            <a-button size="small" type="text">
-              {{ $t('application.app.list.operations.enter') }}
-            </a-button>
-            <template #content>
-              <a-doption>
-                <a-button :disabled="![1].includes(record.applyStatus)" size="small" type="text" @click="enterTable(record,'index')">
-                  {{ $t('application.app.list.operations.enter.index') }}
-                  {{ [1].includes(record.applyStatus) ? "" : '(' + $t('application.app.list.status.0') + ')' }}
-                </a-button>
-              </a-doption>
-              <!--              <a-doption>
-                              <a-button size="small" type="text" @click="enterTable(record,'manage')">
-                                {{ $t('application.app.list.operations.enter.manage') }}
-                              </a-button>
-                            </a-doption>-->
-              <a-doption>
-                <a-button :disabled="![1].includes(record.designStatus)" size="small" type="text" @click="enterTable(record,'design')">
-                  {{ $t('application.app.list.operations.enter.design') }}
-                  {{ [1].includes(record.designStatus) ? "" : '(' + $t('application.app.list.status.0') + ')' }}
-                </a-button>
-              </a-doption>
-            </template>
-          </a-dropdown>
+          <a-button v-if="[1].includes(record.applyStatus)" size="small" type="text" @click="enterTable(record,'index')">
+            {{ $t('application.app.list.operations.enter.index') }}
+          </a-button>
+          <a-button v-if="[1].includes(record.designStatus)" size="small" type="text" @click="enterTable(record,'design')">
+            {{ $t('application.app.list.operations.enter.design') }}
+          </a-button>
           <!-- <a-button  size="small" type="text" @click="viewTable(record.id)">
                       {{ $t('application.app.list.operations.view') }}
                     </a-button>-->
@@ -211,13 +193,13 @@ import useLoading from '@/hooks/loading';
 // 分页列表
 import {Pagination} from '@/types/global';
 import type {TableColumnData} from '@arco-design/web-vue';
+import {Notification} from "@arco-design/web-vue";
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
 import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
 import {deleteApp as deleteList, FilterAppForm as FilterForm, pageQueryApps as pageQueryList, QueryAppForm as QueryForm} from '@/api/application'
 import {columns, watermarkOptions} from "@/views/application/searchTable";
-import {Notification} from "@arco-design/web-vue";
 // 引用其他页面
 import AppForm from '@/views/application/form.vue';
 import AppDrawer from '@/views/application/drawer.vue';
