@@ -47,7 +47,20 @@ export default {
         "show": true,
         "expanded": true,
         "displayMode": "tile",
-        "setterComponentProps": {},
+        "setterComponentProps": {
+            "options": [
+                { "label": "ID",  "value": "id" },
+                { "label": "父ID", "value": "pid" },
+                {
+                    "label": "标题",
+                    "value": "label"
+                },
+                {
+                    "label": "值",
+                    "value": "value"
+                }
+            ]
+        },
         "setterComponentVModelName": "modelValue",
         "title": "数据实体",
         "setterComponentName": "GlEntityReaderSetter"

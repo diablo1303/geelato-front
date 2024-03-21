@@ -280,6 +280,7 @@ export class Utils {
     }
     let temp
     for (let i = 0; i < data.length; i++) {
+      console.log('pidValue',pidField,data[i][pidField],pidValue,data[i])
       if (data[i][pidField] == pidValue) {
         const obj = data[i]
         temp = this.listToTree(data, data[i][idField])
@@ -291,6 +292,36 @@ export class Utils {
       }
     }
     return tree
+  }
+
+   listToTree2<
+       T extends {
+         [key: string]: any
+       }
+   >(list:Array<T>) {
+    const tree:Record<string, any>[] = [];
+    const lookup:Record<string, Record<string, any>> = {};
+
+    // 将列表转换为对象，以便快速查找
+    list.forEach((item) => {
+      lookup[item.id] = item;
+    });
+
+    // 将对象转换为树结构
+    list.forEach((item) => {
+      if (item.pid === '') { // 如果pid为空字符串，表示这是一个根节点
+        tree.push(lookup[item.id]);
+      } else {
+        if (lookup[item.pid]) {
+          if(lookup[item.pid].children===undefined){
+            lookup[item.pid].children = []
+          }
+          lookup[item.pid].children.push(lookup[item.id]);
+        }
+      }
+    });
+
+    return tree;
   }
 
   /**
