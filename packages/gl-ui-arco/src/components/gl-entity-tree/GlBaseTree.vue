@@ -10,12 +10,13 @@
       :draggable="draggable"
       :selectedKeys="selectedKeys"
       :default-expand-all="false"
-      :default-expanded-keys="[treeId]"
+      :default-expanded-keys="defaultExpandedKeysMv"
       showLine
       @select="onSelect"
       @dragLeave="onDragLeave"
       @dragEnd="onDragEnd"
       @drop="onDrop"
+      @expand="onExpand"
     >
       <template #switcher-icon="node, { isLeaf }">
         <GlIconfont
@@ -107,7 +108,7 @@ export default {
 <script setup lang="ts">
 // @ts-nocheck
 import { useGlobal, utils, Utils } from '@geelato/gl-ui'
-import { type PropType, ref } from 'vue'
+import { type PropType, ref, watch } from 'vue'
 import type { TreeNodeData } from '@arco-design/web-vue'
 import type { ContextMenuDataType } from './types'
 
@@ -118,6 +119,12 @@ enum DragModeType {
 
 const global = useGlobal()
 const props = defineProps({
+  // 展开的节点
+  defaultExpandedKeys: {
+    type: Array<String | Number>
+  },
+  // 设置该值之后，展开的keys将会缓存到本地浏览器
+  expandedKeysCacheKey: String,
   treeId: {
     type: [String, Number],
     required: true
@@ -177,6 +184,7 @@ const emits = defineEmits([
   'clickContextMenuItem'
 ])
 const selectedKeys = ref([])
+const defaultExpandedKeysMv = ref(props.defaultExpandedKeys || [props.treeId])
 const treeData = ref(new Array<any>())
 const contextMenu = ref()
 const currentClickedNodeData = ref({ title: '' })
@@ -185,6 +193,15 @@ const currentEditNodeData = ref({ title: '', iconType: '', _nodeType: '' })
 const currentAction = ref({ action: '', title: '' })
 const titleInput = ref()
 const iconfontSelect = ref()
+
+// 创建时，若无传入属性，则尝试从浏览器缓存加载defaultExpandedKeys
+if (!props.defaultExpandedKeys || defaultExpandedKeysMv.value?.length === 0) {
+  const cacheExpandedKeys = localStorage.getItem(props.expandedKeysCacheKey!)
+  defaultExpandedKeysMv.value = cacheExpandedKeys ? JSON.parse(cacheExpandedKeys) : [props.treeId]
+  if (defaultExpandedKeysMv.value.length === 0) {
+    defaultExpandedKeysMv.value = [props.treeId]
+  }
+}
 
 enum NodeType {
   folder = 'folder',
@@ -225,7 +242,7 @@ const onShowContextMenu = (clickedNodeData: any) => {
  * @param contextMenuItemData 菜单项
  */
 const onMenuItemClick = (clickedNodeData: any, contextMenuItemData: ContextMenuDataType) => {
-  console.log('onMenuItemClick:', clickedNodeData)
+  // console.log('onMenuItemClick:', clickedNodeData)
   currentClickedNodeData.value = clickedNodeData
   if (contextMenuItemData.action === 'addNode') {
     currentEditNodeData.value = {
@@ -379,7 +396,7 @@ const addNode = (clickedNodeData: any, addNodeData: any) => {
   const children = clickedNodeData.children || []
   const node = JSON.parse(JSON.stringify(addNodeData))
   node.treeId = props.treeId
-  console.log('addNode:', node)
+  // console.log('addNode:', node)
   const params = { clickedNodeData, addNodeData: node }
   if (props.addNode) {
     props.addNode(params).then((res: any) => {
@@ -432,6 +449,22 @@ const onDragEnd = (ev: DragEvent, node: TreeNodeData) => {
 }
 const onDragLeave = (ev: DragEvent, node: TreeNodeData) => {
   // console.log('onDragLeave', ev, node)
+}
+
+const onExpand = (
+  expandKeys: Array<string | number>,
+  data: {
+    expanded?: boolean
+    expandNodes: TreeNodeData[]
+    node?: TreeNodeData
+    e?: Event
+  }
+) => {
+  console.log('expandKeys', expandKeys)
+  // 展开的keys有变化时记录到浏览器缓存
+  if (props.expandedKeysCacheKey && expandKeys && expandKeys.length > 0) {
+    localStorage.setItem(props.expandedKeysCacheKey, JSON.stringify(expandKeys || []))
+  }
 }
 /**
  * 树节点拖动
@@ -548,7 +581,7 @@ const reloadTreeData = () => {
 // 初始化加载
 reloadTreeData()
 // 对外提供方法
-defineExpose({refreshTree,selectNode})
+defineExpose({ refreshTree, selectNode })
 </script>
 <style>
 .gl-base-tree .arco-tree-node-drag-icon {

@@ -3,6 +3,7 @@
     <GlBaseTree
       ref="glBaseTree"
       :treeId="treeId"
+      :expandedKeysCacheKey="expandedKeysCacheKey"
       :treeName="treeName"
       :draggable="draggable"
       :loadTreeData="loadTreeDataFn"
@@ -40,6 +41,8 @@ const emits = defineEmits([
   'clickContextMenuItem'
 ])
 const props = defineProps({
+  // 设置该值之后，展开的keys将会缓存到本地浏览器
+  expandedKeysCacheKey: String,
   treeId: {
     type: [String, Number],
     required: true

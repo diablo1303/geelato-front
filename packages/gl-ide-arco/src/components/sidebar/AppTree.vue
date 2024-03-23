@@ -8,6 +8,7 @@
       :entityReader="entityReader"
       :contextMenuData="contextMenuData"
       :extendEntityField="{ entityName: 'platform_app_page', fieldName: 'extendId' }"
+      :expandedKeysCacheKey="'expandedKeys_' + appStore.currentApp.id"
       @selectNode="onSelectNode"
       @deleteNode="onDeleteNode"
       @clickContextMenuItem="clickContextMenuItem"
