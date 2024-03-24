@@ -205,6 +205,9 @@ const selectDictItem = (key: any) => {
   monacoEditor.value.replaceSelectOrInsert(`"${key}"`)
   visibleDictItemModal.value = false
 }
+const selectDictId = (key:any) => {
+  monacoEditor.value.replaceSelectOrInsert(`"${key}"`)
+}
 
 const iconMv = ref('')
 </script>
@@ -331,14 +334,22 @@ const iconMv = ref('')
                     <span>{{ title }}</span>
                   </span>
                 </template>
-                <template #extra="{ _code, title, _type }">
+                <template #extra="{ _id,_code, title, _type }">
+                  <a-button
+                      v-if="['系统常量'].indexOf(title) === -1"
+                      size="mini"
+                      type="text"
+                      shape="round"
+                      @click="selectDictId(_id)"
+                  >字典ID
+                  </a-button>
                   <a-button
                     v-if="['系统常量'].indexOf(title) === -1"
                     size="mini"
                     type="text"
                     shape="round"
                     @click="expendDict(_code)"
-                    >选择字典值
+                    >字典项值
                   </a-button>
                   <span class="gl-extra">{{ _type }}</span>
                 </template>
@@ -402,7 +413,7 @@ const iconMv = ref('')
       </template>
     </a-modal>
     <a-modal
-      title="选择字典值"
+      title="选择字典项值"
       v-model:visible="visibleDictItemModal"
       :footer="false"
       @ok="handleOk"

@@ -33,6 +33,7 @@ export const useDictTreeData = async () => {
             dictConst.children.length = 0
             dict.forEach((dictOne) => {
                 dictConst.children.push({
+                    _id:dictOne.id,
                     title: dictOne.dictName,
                     _description: '',
                     _type: 'object',
