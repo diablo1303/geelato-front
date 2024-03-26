@@ -1,8 +1,8 @@
 /*
  *  打包引用的入口
  */
-import { type App, type Plugin, ref } from 'vue'
-import { PluginUtil } from '@geelato/gl-ui'
+import {type App, type Plugin, ref} from 'vue'
+import {PluginUtil} from '@geelato/gl-ui'
 import GlPlugin from './entity/GlPlugin'
 import Panel from './entity/Panel'
 import EventNames from './entity/EventNames'
@@ -12,23 +12,18 @@ import BaseDesignMeta from './entity/meta/BaseDesignMeta'
 import PropertyMeta from './entity/meta/PropertyMeta'
 import TypeEnums from './entity/meta/TypeEnums'
 import Page from './entity/Page'
-import { useIdeStore } from './stores/UseIdeStore'
-import { useEntityStore } from './stores/UseEntityStore'
-import { usePageStore } from './stores/UsePageStore'
-import { useActionStore,type VarMeta } from './stores/UseActionStore'
-import {
-  useComponentStore,
-  componentStoreFactory,
-  useComponentBpmnStore,
-  useComponentBlockStore
-} from './stores/UseComponentStore'
-import { useThemeStore } from './stores/UseThemeStore'
-import { useAppStore } from './stores/UseAppStore'
+import {useIdeStore} from './stores/UseIdeStore'
+import {useEntityStore} from './stores/UseEntityStore'
+import {usePageStore} from './stores/UsePageStore'
+import {useActionStore, type VarMeta} from './stores/UseActionStore'
+import {componentStoreFactory, useComponentBlockStore, useComponentBpmnStore, useComponentStore} from './stores/UseComponentStore'
+import {useThemeStore} from './stores/UseThemeStore'
+import {useAppStore} from './stores/UseAppStore'
 import uiLibAdapter from './utils/UiLibAdapter'
 import GlMonacoEditor from './components/monaco/Index.vue'
+import GlCopyToClipboard from './components/copyToClipboard/Index.vue'
 import GlBpmnEditor from './components/bpmn/GlBpmnEditor.vue'
-import ComponentSetterProvideProxy from './stores/ComponentSetterProvideProxy'
-import { ComponentSetterProvideKey } from './stores/ComponentSetterProvideProxy'
+import ComponentSetterProvideProxy, {ComponentSetterProvideKey} from './stores/ComponentSetterProvideProxy'
 import './assets/gl-root.css'
 import './assets/gl-table-form.css'
 import useCodePrettier from './hooks/codePrettier'
@@ -46,6 +41,7 @@ const component: Plugin = {
     // 注册组件
     app.component(GlIde.name, GlIde)
     app.component(GlMonacoEditor.name, GlMonacoEditor)
+    app.component(GlCopyToClipboard.name, GlCopyToClipboard)
     app.component(GlBpmnEditor.name, GlBpmnEditor)
   }
 }

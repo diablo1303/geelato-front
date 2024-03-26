@@ -1,7 +1,8 @@
-import { RecordsUtil } from './RecordsUtil'
+import {RecordsUtil} from './RecordsUtil'
 
 export class Utils {
-  constructor() {}
+  constructor() {
+  }
 
   trim(str: string) {
     return str.replace(/(^\s*)|(\s*$)/g, '')
@@ -37,7 +38,7 @@ export class Utils {
     let i
     radix = radix || chars.length
     // 首字母不为数字
-    uuid[0] = chars[11+(0 | (Math.random() * radix))]
+    uuid[0] = chars[11 + (0 | (Math.random() * radix))]
     if (len) {
       // Compact form
       for (i = 1; i < len; i++) uuid[i] = chars[0 | (Math.random() * radix)]
@@ -280,7 +281,7 @@ export class Utils {
     }
     let temp
     for (let i = 0; i < data.length; i++) {
-      console.log('pidValue',pidField,data[i][pidField],pidValue,data[i])
+      console.log('pidValue', pidField, data[i][pidField], pidValue, data[i])
       if (data[i][pidField] == pidValue) {
         const obj = data[i]
         temp = this.listToTree(data, data[i][idField])
@@ -294,13 +295,13 @@ export class Utils {
     return tree
   }
 
-   listToTree2<
-       T extends {
-         [key: string]: any
-       }
-   >(list:Array<T>) {
-    const tree:Record<string, any>[] = [];
-    const lookup:Record<string, Record<string, any>> = {};
+  listToTree2<
+    T extends {
+      [key: string]: any
+    }
+  >(list: Array<T>) {
+    const tree: Record<string, any>[] = [];
+    const lookup: Record<string, Record<string, any>> = {};
 
     // 将列表转换为对象，以便快速查找
     list.forEach((item) => {
@@ -313,7 +314,7 @@ export class Utils {
         tree.push(lookup[item.id]);
       } else {
         if (lookup[item.pid]) {
-          if(lookup[item.pid].children===undefined){
+          if (lookup[item.pid].children === undefined) {
             lookup[item.pid].children = []
           }
           lookup[item.pid].children.push(lookup[item.id]);
@@ -580,6 +581,67 @@ export class Utils {
     }
     return isJ
   }
+
+  /**
+   * 查询选项值对应标题
+   * @param optionValue 选项值
+   * @param data 选项集合
+   */
+  getOptionLabel(optionValue: string | number | boolean, data: any[]) {
+    if (data && data.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of data) {
+        if (item.value === optionValue) {
+          return item.label;
+        }
+      }
+    }
+    return '';
+  }
+
+  /**
+   * 将map构建成url参数
+   * @param params
+   */
+  getUrlParams(params: Record<string, any>) {
+    const parameters = [];
+    for (const key in params) {
+      parameters.push(`${key}=${params[key]}`);
+    }
+    return parameters;
+  }
+
+  /**
+   * Clipboard Api
+   * @param value
+   * @param successMsg
+   * @param failMsg
+   */
+  copyToClipboard = async (value: string, successCallBack: any, failCallBack?: any) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      if (successCallBack && typeof successCallBack === 'function') successCallBack(value);
+    } catch (err) {
+      if (failCallBack && typeof failCallBack === 'function') failCallBack(value);
+    }
+  }
+
+  /**
+   * 生成随机数
+   * @param extent
+   * @constructor
+   */
+  generateRandom(extent?: number) {
+    extent = extent && extent > 0 ? extent : 32;
+    const chars = '0123456789';
+    let result = '';
+    for (let i = 0; i < extent; i += 1) {
+      const randomIndex = Math.floor(Math.random() * chars.length);
+      result += chars[randomIndex];
+    }
+    return result;
+  }
+
 }
 
 const utils = new Utils()

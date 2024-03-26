@@ -7,9 +7,11 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { type Ref, ref, watch, onUnmounted } from 'vue'
-import { entityApi, EntityReader, EntityReaderParam, useGlobal, utils } from '@geelato/gl-ui'
-import { useComponentStore, EventNames, useAppStore } from '@geelato/gl-ide'
+import {type Ref, ref, watch, onUnmounted} from 'vue'
+import {entityApi, EntityReader, EntityReaderParam, QueryTableForm, useGlobal, utils} from '@geelato/gl-ui'
+import {useComponentStore, EventNames, useAppStore} from '@geelato/gl-ide'
+import GlModelTableForm from "./table/form.vue";
+import GlModelTableTabs from "./table/tableTabs.vue";
 
 const props = defineProps({
   recordId: String
@@ -38,7 +40,7 @@ const generateRenderItems = () => {
   }
   renderItems.value = allItems.value.filter((item) => {
     return (
-      item.entityName.indexOf(searchText.value) != -1 || item.title?.indexOf(searchText.value) != -1
+        item.entityName.indexOf(searchText.value) != -1 || item.title?.indexOf(searchText.value) != -1
     )
   })
 }
@@ -68,21 +70,21 @@ const fetchData = () => {
   const entityReader = new EntityReader()
   entityReader.entity = 'platform_dev_table'
   entityReader.setFields(
-    'id,creator,creatorName,updateAt,updaterName,entityName,title,tableComment'
+      'id,creator,creatorName,updateAt,updaterName,entityName,title,tableComment'
   )
   entityReader.params = []
   entityReader.params.push(new EntityReaderParam('appId', 'eq', appStore.currentApp.id))
   entityApi.queryByEntityReader(entityReader).then(
-    (res: any) => {
-      allItems.value = res.data
-      generateRenderItems()
-      // if (res.data?.length > 0) {
-      //   global.$message.success({ content: '获取' + (res.data.length || 0) + '条页面保存记录' })
-      // }
-    },
-    () => {
-      global.$message.error({ content: '获取应用的模型数据失败' })
-    }
+      (res: any) => {
+        allItems.value = res.data
+        generateRenderItems()
+        // if (res.data?.length > 0) {
+        //   global.$message.success({ content: '获取' + (res.data.length || 0) + '条页面保存记录' })
+        // }
+      },
+      () => {
+        global.$message.error({content: '获取应用的模型数据失败'})
+      }
   )
 }
 
@@ -91,47 +93,76 @@ const changeTab = (value: any) => {
 }
 
 fetchData()
+
+const formParams = ref({
+  id: '', visible: false, formState: 'add', formCol: 2, width: '56%',
+  parameter: {connectId: '', appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
+});
+const addTableForm = (ev?: MouseEvent) => {
+  if (!appStore.currentApp.id) {
+    return
+  }
+  formParams.value.visible = true;
+}
+const tableFormSaveSuccess = () => {
+  fetchData();
+}
+const formTabsParams = ref({
+  id: '', visible: false, formState: 'edit', formCol: 2, width: '72%',
+  parameter: {appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
+});
+const tableOpen = (id: string) => {
+  if (!appStore.currentApp.id) {
+    return
+  }
+  formTabsParams.value.id = id;
+  formTabsParams.value.visible = true;
+}
 </script>
 
 <template>
   <div class="gl-model-list">
     <a-tabs :default-active-key="orderBy" size="mini" @change="changeTab">
-      <a-tab-pane key="updateAt" title="按时间排序"></a-tab-pane>
-      <a-tab-pane key="entityName" title="按名称排序"></a-tab-pane>
+      <a-tab-pane key="updateAt" title="按时间排序"/>
+      <a-tab-pane key="entityName" title="按名称排序"/>
       <template #extra>
-        <a-tag style="margin-right: 8px" color="arcoblue" size="small" title="当前应用的模型总数量"
-          >{{ allItems.length }}
+        <a-tag color="arcoblue" size="small" style="margin-right: 8px" title="当前应用的模型总数量">
+          {{ allItems.length }}
         </a-tag>
       </template>
     </a-tabs>
 
     <a-space size="mini" style="padding: 4px 0">
-      <a-button size="small" type="primary">
-        <gl-iconfont type="gl-plus-circle"></gl-iconfont>
+      <a-button size="small" type="primary" @click="addTableForm($event)">
+        <gl-iconfont type="gl-plus-circle"/>
       </a-button>
-      <a-input-search
-        v-model="searchText"
-        size="small"
-        placeholder="录入中、英文名查询"
-        style="width: 100%"
-      ></a-input-search>
+      <a-input-search v-model="searchText" placeholder="录入中、英文名查询" size="small" style="width: 100%"/>
     </a-space>
+
     <a-list size="small">
       <!--      utils.timeAgo(item.updateAt)-->
-      <template v-for="item in renderItems">
-        <a-list-item>
-          <a-list-item-meta :title="item.entityName" :description="item.title"></a-list-item-meta>
+      <template v-for="item in renderItems" :key="item.id">
+        <a-list-item style="cursor: pointer;" @click="tableOpen(item.id)">
+          <a-list-item-meta :description="item.title as string" :title="item.entityName"/>
           <template #actions>
-            <span
-              class="gl-actions-description"
-              :title="`${item.updaterName || ''}更新@${item.updateAt}`"
-              >{{ utils.timeAgo(item.updateAt) }}</span
-            >
+            <span :title="`${item.updaterName || ''}更新@${item.updateAt}`" class="gl-actions-description">
+              {{ utils.timeAgo(item.updateAt) }}
+            </span>
           </template>
         </a-list-item>
       </template>
     </a-list>
   </div>
+
+  <GlModelTableForm v-model:visible="formParams.visible" :formCol="formParams.formCol"
+                    :formState="formParams.formState" :modelValue="formParams.id"
+                    :parameter="formParams.parameter" :width="formParams.width"
+                    @saveSuccess="tableFormSaveSuccess"/>
+
+  <GlModelTableTabs v-model:visible="formTabsParams.visible" :formState="formTabsParams.formState"
+                    :modelValue="formTabsParams.id" :parameter="formTabsParams.parameter"
+                    :width="formTabsParams.width"
+                    @saveSuccess="tableFormSaveSuccess"/>
 </template>
 <style>
 .gl-model-list .gl-has {

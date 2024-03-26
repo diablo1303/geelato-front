@@ -26,6 +26,7 @@ import EntityDataSource, {
   GetEntitySaversResult
 } from './m/datasource/EntityDataSource'
 import utils from './m/utils/Utils'
+import stringUtil from './m/utils/StringUtil'
 import mixins from './components/mixins'
 import MixUtil from './m/utils/MixUtil'
 import PluginUtil from './m/utils/PluginUtil'
@@ -44,8 +45,33 @@ import {PageType} from './m/types/global'
 import {executeArrayExpressions, executeObjectPropsExpressions} from './components/gl-component/GlComponentSupport'
 import * as dictApi from './m/datasource/FileApi'
 import * as fileApi from './m/datasource/FileApi'
-import type {QueryOrgForm, QueryUserForm} from "./m/datasource/security";
-import * as securityApi from './m/datasource/security'
+import type {PageQueryRequest, PageQueryResponse, Pagination, QueryResult, SelectOption} from './m/datasource/Base';
+import type {QueryAppForm} from "./m/datasource/Application";
+import * as applicationApi from './m/datasource/Application'
+import type {
+  QueryColumnRolePermissionForm,
+  QueryDictForm,
+  QueryDictItemForm,
+  QueryEncodingForm,
+  QueryOrgForm,
+  QueryPermissionClassifyForm,
+  QueryPermissionForm,
+  QueryRoleForm,
+  QueryRolePermissionForm,
+  QueryTableRolePermissionClassifyForm,
+  QueryUserForm
+} from "./m/datasource/Security";
+import * as securityApi from './m/datasource/Security'
+import type {
+  ColumnSelectType,
+  QueryConnectForm,
+  QueryMultiComponentForm,
+  QueryTableColumnForm,
+  QueryTableForeignForm,
+  QueryTableForm,
+  QueryViewForm
+} from './m/datasource/Model'
+import * as modelApi from './m/datasource/Model'
 import * as encodingApi from './m/datasource/EncodingApi'
 import GlInsts from './components/gl-component/GlInsts.vue'
 import GlLoop from './components/gl-loop/GlLoop.vue'
@@ -124,6 +150,7 @@ export {
   EntityDataSource,
   compareMeta,
   utils,
+  stringUtil,
   mixins,
   emitter,
   LooseObject,
@@ -140,9 +167,33 @@ export {
   jsScriptExecutor,
   dictApi,
   fileApi,
+  PageQueryRequest,
+  PageQueryResponse,
+  QueryResult,
+  SelectOption,
+  Pagination,
+  applicationApi,
+  QueryAppForm,
   securityApi,
   QueryOrgForm,
   QueryUserForm,
+  QueryDictItemForm,
+  QueryDictForm,
+  QueryPermissionForm,
+  QueryPermissionClassifyForm,
+  QueryRoleForm,
+  QueryRolePermissionForm,
+  QueryTableRolePermissionClassifyForm,
+  QueryColumnRolePermissionForm,
+  QueryEncodingForm,
+  modelApi,
+  QueryConnectForm,
+  QueryTableForm,
+  QueryMultiComponentForm,
+  QueryTableColumnForm,
+  QueryTableForeignForm,
+  QueryViewForm,
+  ColumnSelectType,
   encodingApi,
   executeObjectPropsExpressions,
   executeArrayExpressions
