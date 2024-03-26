@@ -11,7 +11,7 @@
           </a-col>
           <a-col :span="pageData.isModal?12:8">
             <a-form-item :label="$t('security.roleUser.index.form.roleName')" field="roleName">
-              <a-input v-model="filterData.roleName" :allow-clear="pageData.params.roleName==''" :readonly="pageData.params.roleName!=''"
+              <a-input v-model="pageData.params.roleName" :allow-clear="pageData.params.roleName==''" :readonly="pageData.params.roleName!=''"
                        @clear="search($event)" @press-enter="search($event)"/>
             </a-form-item>
           </a-col>
@@ -205,7 +205,7 @@ const reset = (ev?: Event) => {
   basePagination.current = pageData.value.current;
   filterData.value = generateFilterData();
   filterData.value.roleId = pageData.value.params.roleId || '';
-  filterData.value.roleName = pageData.value.params.roleName || '';
+  // filterData.value.roleName = pageData.value.params.roleName || '';
   search();
 };
 /**

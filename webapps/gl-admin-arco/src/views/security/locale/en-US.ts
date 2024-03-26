@@ -350,6 +350,7 @@ export default {
   'security.role.index.form.type': 'type',
   'security.role.index.form.type.app': 'app',
   'security.role.index.form.type.platform': 'platform',
+  'security.role.index.form.weight': 'weight',
   'security.role.index.form.enableStatus': 'status',
   'security.role.index.form.enableStatus.0': 'disabled',
   'security.role.index.form.enableStatus.1': 'enabled',

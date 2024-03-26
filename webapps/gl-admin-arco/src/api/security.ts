@@ -456,6 +456,7 @@ export interface QueryRoleForm {
   name: string;
   code: string;
   type: string;
+  weight: number;
   enableStatus: number;
   seqNo: number;
   description: string;

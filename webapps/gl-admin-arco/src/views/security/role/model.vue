@@ -49,6 +49,18 @@
       </a-col>
       <a-col :span="24/pageData.formCol">
         <a-form-item
+            :label="$t('security.role.index.form.weight')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            field="weight">
+          <a-input-number
+              v-if="pageData.button" v-model="formData.weight" :max="999" :min="0" :step="1"
+              :placeholder="$t('security.form.rules.match.length.title')+'[0,999]'"
+              :precision="0"/>
+          <span v-else>{{ formData.weight }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="24/pageData.formCol">
+        <a-form-item
             :label="$t('security.role.index.form.enableStatus')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="enableStatus">
@@ -116,6 +128,7 @@ const generateFormData = (): QueryForm => {
     name: '',
     code: '',
     type: '',
+    weight: 0,
     enableStatus: 1,
     seqNo: 999,
     description: '',
