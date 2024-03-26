@@ -218,7 +218,7 @@ watch(() => visibleForm, () => {
 </script>
 
 <template>
-  <a-modal v-model:visible="visibleForm" :footer="false" :width="width || ''" title-align="start">
+  <a-modal v-model:visible="visibleForm" :footer="false" :width="width || ''" title-align="start" :key="utils.gid(20)">
     <template #title>
       <a-space>
         {{ tabsTitle }}
