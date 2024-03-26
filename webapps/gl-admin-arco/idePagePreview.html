@@ -1,15 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8"/>
+    <link href="./public/loader/style.css" rel="stylesheet" type="text/css"/>
     <link rel="shortcut icon" type="image/x-icon" href="./src/assets/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Geelato页面预览</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="text/javascript" src="/tinymce/tinymce.min.js"></script>
-    <script type="text/javascript" src="/tinymce/langs/zh-Hans.js"></script>
-    <script type="module" src="./src/views/ide/idePagePreview.ts"></script>
-  </body>
+</head>
+<body>
+<div id="app">
+    <div class="gl-loader-x-wrapper">
+        <div class="gl-loader-x">
+            <div class="gl-loader-x-dot"></div>
+            <div class="gl-loader-x-dot"></div>
+            <div class="gl-loader-x-dot"></div>
+            <div class="gl-loader-x-dot"></div>
+            <div class="gl-loader-x-dot"></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/tinymce/tinymce.min.js"></script>
+<script type="text/javascript" src="/tinymce/langs/zh-Hans.js"></script>
+<script type="module" src="./src/views/ide/idePagePreview.ts"></script>
+</body>
 </html>
