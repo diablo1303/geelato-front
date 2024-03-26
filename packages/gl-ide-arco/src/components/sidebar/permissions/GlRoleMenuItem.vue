@@ -95,13 +95,14 @@ const setTreeItemChecked = (menuItems: AppMenuItem[], treeNodeId: string) => {
 const loadRoleGrantedMenuItem = (appId: string, roleId: string) => {
   if (roleId) {
     entityApi
-      .query('platform_role_r_tree_node', 'id,treeNodeId key,roleId', {
+      .query('platform_role_r_tree_node', 'id,treeNodeId,roleId', {
         treeId: appId,
         roleId: roleId
       })
       .then((res) => {
         // 从服务端获取已有权限
         currentRoleGrantedMenuItems.value = res.data
+        console.log('从服务端获取已有权限',res.data)
         // 重置当前的角色菜单
         const appMenuItemsCopy: AppMenuItem[] = JSON.parse(JSON.stringify(appMenuItems.value))
         currentRoleGrantedMenuItems.value?.forEach((item: RoleGrantedMenuItem) => {
