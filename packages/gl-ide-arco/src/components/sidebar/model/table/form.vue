@@ -6,7 +6,7 @@ export default {
 
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import {FormInstance} from "@arco-design/web-vue";
+import type {FormInstance} from "@arco-design/web-vue";
 import {modelApi, applicationApi} from "@geelato/gl-ui";
 import type {QueryConnectForm, QueryTableForm, QueryAppForm} from '@geelato/gl-ui';
 import {enableStatusOptions, linkedOptions, tableTypeOptions} from "./searchTable";
@@ -127,7 +127,7 @@ const handleModelOk = (done: any) => {
  * 取消修改按钮
  * @param ev
  */
-const handleModelCancel = (ev: MouseEvent) => {
+const handleModelCancel = (ev?: Event) => {
   visibleForm.value = false;
 }
 
@@ -173,7 +173,7 @@ watch(() => visibleForm, () => {
 <template>
   <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title"
            :width="width || ''" cancel-text="取消" ok-text="确定"
-           @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
+           @cancel="handleModelCancel" @before-ok="handleModelOk">
     <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
       <a-row :gutter="wrapperCol">
         <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -194,9 +194,7 @@ watch(() => visibleForm, () => {
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
           <a-form-item :rules="[{required: formState==='add',message: '这是必填项'}]" field="tableType" label="表格类型">
-            <a-select v-model="formData.tableType" :disabled="formState!=='add'">
-              <a-option v-for="item of tableTypeOptions" :key="item.value as string" :disabled="item.disabled" :label="item.label" :value="item.value"/>
-            </a-select>
+            <a-select v-model="formData.tableType" :disabled="formState!=='add'" :options="tableTypeOptions"/>
           </a-form-item>
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -215,26 +213,24 @@ watch(() => visibleForm, () => {
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
           <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="enableStatus" label="状态">
-            <a-select v-model="formData.enableStatus" :disabled="formState==='view'">
-              <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
-            </a-select>
+            <a-select v-model="formData.enableStatus" :disabled="formState==='view'" :options="enableStatusOptions"/>
           </a-form-item>
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
           <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="linked" label="连接状态">
-            <a-select v-model="formData.linked" :disabled="formState==='view'">
-              <a-option v-for="item of linkedOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
-            </a-select>
+            <a-select v-model="formData.linked" :disabled="formState==='view'" :options="linkedOptions"/>
           </a-form-item>
         </a-col>
-        <a-col :span="textareaTotal = (labelCol+wrapperCol)/((formCol%2===0)?formCol/2:1)">
-          <a-form-item :label-col-props="{ span: (formCol===1?6:3) }" :wrapper-col-props="{ span: (formCol===1?18:21) }"
+        <a-col :span="labelCol+wrapperCol">
+          <a-form-item :label-col-props="{ span: labelCol/formCol }"
+                       :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                        field="tableComment" label="数据库注释">
             <a-textarea v-model="formData.tableComment" :auto-size="{minRows:2,maxRows:4}" :disabled="formState==='view'" :max-length="512" show-word-limit/>
           </a-form-item>
         </a-col>
-        <a-col :span="textareaTotal = (labelCol+wrapperCol)/((formCol%2===0)?formCol/2:1)">
-          <a-form-item :label-col-props="{ span: labelCol/formCol }" :wrapper-col-props="{ span: textareaTotal-(labelCol/formCol) }"
+        <a-col :span="labelCol+wrapperCol">
+          <a-form-item :label-col-props="{ span: labelCol/formCol }"
+                       :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                        field="description" label="补充描述">
             <a-textarea v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :disabled="formState==='view'" :max-length="512" show-word-limit/>
           </a-form-item>

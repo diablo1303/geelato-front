@@ -220,7 +220,7 @@ const rolePage = ref({
   title: '',
   width: ''
 });
-const addTableRole = (ev: MouseEvent) => {
+const addTableRole = (ev?: MouseEvent) => {
   rolePage.value.formState = 'add';
   rolePage.value.title = '新增应用角色';
   rolePage.value.id = '';
@@ -251,7 +251,7 @@ const permissionPage = ref({
   title: '',
   width: ''
 });
-const addTablePermission = (ev: MouseEvent) => {
+const addTablePermission = (ev?: MouseEvent) => {
   permissionPage.value.formState = 'add';
   permissionPage.value.parameter.type = 'mp';
   permissionPage.value.title = '新增自定义模型权限';
@@ -279,7 +279,7 @@ const saveSuccess = () => {
   tableRefresh();
 }
 
-const resetTableDefaultPermission = async (ev: MouseEvent) => {
+const resetTableDefaultPermission = async (ev?: MouseEvent) => {
   try {
     await securityApi.resetDefaultPermission(props.parameter.type, props.parameter.object, props.parameter.appId);
     tableRefresh();
@@ -353,19 +353,19 @@ watch(() => props.height, (val) => {
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button type="primary" @click="addTableRole($event)">
+        <a-button type="primary" @click="addTableRole">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
           新增角色
         </a-button>
-        <a-button type="primary" @click="addTablePermission($event)">
+        <a-button type="primary" @click="addTablePermission">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
           自定义权限
         </a-button>
-        <a-button type="primary" @click="resetTableDefaultPermission($event)">
+        <a-button type="primary" @click="resetTableDefaultPermission">
           <template #icon>
             <gl-iconfont type="gl-reset"/>
           </template>
@@ -375,7 +375,7 @@ watch(() => props.height, (val) => {
     </a-col>
     <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
       <a-space>
-        <a-button type="primary" @click="tableRefresh($event)">
+        <a-button type="primary" @click="tableRefresh">
           <template #icon>
             <gl-iconfont type="gl-refresh"/>
           </template>

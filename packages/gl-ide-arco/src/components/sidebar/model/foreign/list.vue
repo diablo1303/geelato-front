@@ -35,7 +35,7 @@ const columns = computed<TableColumnData[]>(() => []);
 const cloneColumns = ref<Column[]>([]);
 const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
 const pagination = reactive({...basePagination,});
-const renderData = ref<QueryTableColumnForm[]>([]);
+const renderData = ref<Record<string, any>[]>([]);
 const loading = ref<boolean>(false);
 const scrollbar = ref(true);
 const scroll = ref({x: 2000, y: props.height});
@@ -131,7 +131,7 @@ const viewTable = (id: string) => {
   formPage.value.id = id;
   formPage.value.visible = true;
 }
-const addTable = (ev: MouseEvent) => {
+const addTable = (ev?: MouseEvent) => {
   formPage.value.formState = 'add';
   formPage.value.title = '新增模型外键';
   formPage.value.id = '';
@@ -182,24 +182,22 @@ watch(() => props.height, (val) => {
         <a-row :gutter="16">
           <a-col :span="isModal?12:8">
             <a-form-item field="mainTableCol" label="主表字段">
-              <a-input v-model="filterData.mainTableCol" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.mainTableCol" allow-clear @clear="search" @press-enter="search"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="foreignTable" label="外表表名">
-              <a-input v-model="filterData.foreignTable" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.foreignTable" allow-clear @clear="search" @press-enter="search"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="foreignTableCol" label="外表字段">
-              <a-input v-model="filterData.foreignTableCol" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.foreignTableCol" allow-clear @clear="search" @press-enter="search"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="enableStatus" label="状态">
-              <a-select v-model="filterData.enableStatus" placeholder="全部">
-                <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
-              </a-select>
+              <a-select v-model="filterData.enableStatus" :options="enableStatusOptions" placeholder="全部"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -208,13 +206,13 @@ watch(() => props.height, (val) => {
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
       <a-space :size="18" direction="vertical">
-        <a-button type="primary" @click="search($event)">
+        <a-button type="primary" @click="search">
           <template #icon>
             <gl-iconfont type="gl-search"/>
           </template>
           查询
         </a-button>
-        <a-button @click="reset($event)">
+        <a-button @click="reset">
           <template #icon>
             <gl-iconfont type="gl-reset"/>
           </template>
@@ -227,7 +225,7 @@ watch(() => props.height, (val) => {
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button v-show="formState==='edit'" type="primary" @click="addTable($event)">
+        <a-button v-show="formState==='edit'" type="primary" @click="addTable">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>

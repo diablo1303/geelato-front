@@ -123,7 +123,7 @@ export interface QueryDictForm {
 
 export function queryDicts(params: Record<string, any>) {
   const records = utils.getUrlParams(params);
-  return entityApi.getAxios().get<QueryDictItemForm[]>(`/api/dict/query?${records.join('&')}`);
+  return entityApi.getAxios().get<QueryDictForm[]>(`/api/dict/query?${records.join('&')}`);
 }
 
 export function getDict(id: string) {

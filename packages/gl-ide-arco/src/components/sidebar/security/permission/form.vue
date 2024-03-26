@@ -6,7 +6,8 @@ export default {
 
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import {FormInstance, Modal} from "@arco-design/web-vue";
+import type {FormInstance} from "@arco-design/web-vue";
+import {Modal} from "@arco-design/web-vue";
 import type {QueryAppForm, QueryPermissionForm} from '@geelato/gl-ui';
 import {applicationApi, securityApi, useGlobal, utils} from "@geelato/gl-ui";
 import {typeOptions} from "./searchTable";
@@ -129,7 +130,7 @@ const handleModelOk = (done: any) => {
  * 取消修改按钮
  * @param ev
  */
-const handleModelCancel = (ev: MouseEvent) => {
+const handleModelCancel = (ev?: Event) => {
   visibleForm.value = false;
 }
 
@@ -165,7 +166,7 @@ watch(() => visibleForm, () => {
 <template>
   <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title" :width="width"
            cancel-text="取消" ok-text="确认" title-align="start"
-           @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
+           @cancel="handleModelCancel" @before-ok="handleModelOk">
     <a-form ref="validateForm" :model="formData">
       <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="name" label="名称">
         <a-input v-if="formState!=='view'" v-model="formData.name" :max-length="32"/>

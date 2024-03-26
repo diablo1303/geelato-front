@@ -6,8 +6,7 @@ export default {
 
 <script lang="ts" setup>
 import {reactive, ref, watch, computed} from 'vue';
-import type {TableColumnData} from '@arco-design/web-vue';
-import {FormInstance} from "@arco-design/web-vue";
+import type {FormInstance, TableColumnData} from '@arco-design/web-vue';
 import {modelApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryTableColumnForm, QueryTableForm, Pagination} from "@geelato/gl-ui";
 import {
@@ -47,7 +46,7 @@ const columns = computed<TableColumnData[]>(() => []);
 const cloneColumns = ref<Column[]>([]);
 const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
 const pagination = reactive({...basePagination,});
-const renderData = ref<QueryTableColumnForm[]>([]);
+const renderData = ref<Record<string, any>[]>([]);
 const loading = ref<boolean>(false);
 const scrollbar = ref(true);
 const scroll = ref({x: 2000, y: props.height});
@@ -170,7 +169,7 @@ const viewTable = (id: string) => {
   formPage.value.editName = false;
   formPage.value.visible = false;
 }
-const addTable = (ev: MouseEvent) => {
+const addTable = (ev?: MouseEvent) => {
   formPage.value.formState = 'add';
   formPage.value.title = '新增模型字段';
   formPage.value.id = '';
@@ -252,7 +251,7 @@ const getSelectEntityColumnOptions = async (params?: Record<string, any>) => {
  * 模型选择变更
  * @param value
  */
-const entityChange = (value?: string) => {
+const entityChange = () => {
   // 清理模型字段，
   entityData.value.columnIds = [];
   // 取消全选
@@ -393,6 +392,11 @@ const addCommonColumn = async (ev?: MouseEvent) => {
     global.$message.warning({content: '请至少选择一项！'});
   }
 }
+
+const isDefaultColumn = (value: string) => {
+  return defaultColumnMetas.value.includes(value);
+}
+
 /**
  * 显示时加载常用字段列表
  */
@@ -439,39 +443,36 @@ watch(() => props.height, (val) => {
         <a-row :gutter="16">
           <a-col :span="isModal?12:8">
             <a-form-item field="name" label="字段标识">
-              <a-input v-model="filterData.name" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.name" allow-clear @clear="search" @press-enter="search"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="title" label="名称（中文）">
-              <a-input v-model="filterData.title" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.title" allow-clear @clear="search" @press-enter="search"/>
             </a-form-item>
           </a-col>
           <!--          <a-col :span="isModal?12:8">
                       <a-form-item label="数据类型" field="selectType">
-                        <a-select v-model="filterData.selectType" :options="selectTypeOptions" placeholder="全部">
-                        </a-select>
+                        <a-select v-model="filterData.selectType" :options="selectTypeOptions" placeholder="全部"/>
                       </a-form-item>
                     </a-col>-->
           <a-col :span="isModal?12:8">
             <a-form-item field="nullable" label="是否可空">
               <a-select v-model="filterData.nullable" placeholder="全部">
-                <a-option v-for="item of nullableOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
+                <a-option v-for="item of nullableOptions" :key="item.value as string" :label="item.label as string" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="uniqued" label="唯一约束">
               <a-select v-model="filterData.uniqued" placeholder="全部">
-                <a-option v-for="item of uniquedOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
+                <a-option v-for="item of uniquedOptions" :key="item.value as string" :label="item.label as string" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <!--          <a-col :span="isModal?12:8">
                       <a-form-item label="状态" field="enableStatus">
-                        <a-select v-model="filterData.enableStatus" placeholder="全部">
-                          <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
-                        </a-select>
+                        <a-select v-model="filterData.enableStatus" placeholder="全部" :options="enableStatusOptions"/>
                       </a-form-item>
                     </a-col>-->
         </a-row>
@@ -480,13 +481,13 @@ watch(() => props.height, (val) => {
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
       <a-space :size="18" direction="vertical">
-        <a-button type="primary" @click="search($event)">
+        <a-button type="primary" @click="search">
           <template #icon>
             <gl-iconfont type="gl-search"/>
           </template>
           查询
         </a-button>
-        <a-button @click="reset($event)">
+        <a-button @click="reset">
           <template #icon>
             <gl-iconfont type="gl-reset"/>
           </template>
@@ -499,14 +500,14 @@ watch(() => props.height, (val) => {
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button v-show="formState==='edit'" type="primary" @click="addTable($event)">
+        <a-button v-show="formState==='edit'" type="primary" @click="addTable">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
           新建
         </a-button>
         <a-popover v-if="formState==='edit'" v-model:popup-visible="entityPopover" position="right" style="max-width: 400px" trigger="click">
-          <a-button size="medium" type="primary" @click="entityPopoverClick($event)">
+          <a-button size="medium" type="primary" @click="entityPopoverClick">
             <template #icon>
               <gl-iconfont type="gl-plus-circle"/>
             </template>
@@ -542,7 +543,7 @@ watch(() => props.height, (val) => {
             </a-form>
             <a-divider style="margin: 5px 0px"/>
             <a-space style="display: flex;align-items: center;justify-content: end;">
-              <a-button size="medium" type="primary" @click="entitySubmitClick($event)">
+              <a-button size="medium" type="primary" @click="entitySubmitClick">
                 添加
               </a-button>
             </a-space>
@@ -566,14 +567,14 @@ watch(() => props.height, (val) => {
           </template>
           <template #footer>
             <div style="padding: 6px 6px; text-align: right;">
-              <a-button size="medium" type="primary" @click="addCommonColumn($event)">
+              <a-button size="medium" type="primary" @click="addCommonColumn">
                 添加
               </a-button>
             </div>
           </template>
           <template #trigger>
             <div style="width: 320px">
-              <a-button type="primary" @click="openCommonColumn($event)">
+              <a-button type="primary" @click="openCommonColumn">
                 <template #icon>
                   <gl-iconfont type="gl-plus-circle"/>
                 </template>
@@ -673,7 +674,7 @@ watch(() => props.height, (val) => {
       <a-table-column :width="180" data-index="createAt" title="创建时间"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="200" data-index="comment" title="注释（中文）"/>
       <a-table-column v-if="formState==='edit'" :width="32+60*3" align="center" data-index="operations" fixed="right" title="操作">
-        <template #cell="{ record,isDefault = defaultColumnMetas.includes(record.name)}">
+        <template #cell="{ record,isDefault = isDefaultColumn(record.name)}">
           <a-tooltip v-if="isDefault" content="系统字段不可编辑">
             <a-button class="button-disabled" size="small" type="text">
               变更

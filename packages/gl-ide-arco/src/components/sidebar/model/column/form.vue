@@ -6,7 +6,8 @@ export default {
 
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import {FormInstance, Modal} from "@arco-design/web-vue";
+import type {FormInstance} from "@arco-design/web-vue";
+import {Modal} from "@arco-design/web-vue";
 import type {
   ColumnSelectType,
   QueryMultiComponentForm,
@@ -373,7 +374,7 @@ const formatFieldString = (value: string) => {
 /**
  * 字段名称 生成 字段名称
  */
-const columnNameBlur = (ev: FocusEvent) => {
+const columnNameBlur = (ev?: FocusEvent) => {
   formData.value.name = formatFieldString(formData.value.name);
   validateForm.value?.validateField("name");
   formData.value.fieldName = stringUtil.toCamelCase(formData.value.name);
@@ -569,7 +570,7 @@ const handleModelOk = (done: any) => {
  * 取消修改按钮
  * @param ev
  */
-const handleModelCancel = (ev: MouseEvent) => {
+const handleModelCancel = (ev?: Event) => {
   visibleForm.value = false;
 }
 
@@ -642,7 +643,7 @@ watch(() => visibleForm, () => {
 
   <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title"
            :width="width || ''" cancel-text="取消" ok-text="确定" title-align="start"
-           @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
+           @cancel="handleModelCancel" @before-ok="handleModelOk">
     <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
       <a-row :gutter="wrapperCol">
         <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -655,7 +656,7 @@ watch(() => visibleForm, () => {
               :rules="[{required: editName,message: '这是必填项'},{match: /^[a-z][a-z0-9_]+$/,message:'匹配：‘a-z’、‘0-9’、‘_’'},{validator:validateCode}]"
               field="name" label="字段标识">
             <a-input v-if="editName" v-model.trim="formData.name" :max-length="30" placeholder="存入数据库表的字段，如：‘create_time’用‘_’分割的字符串。"
-                     @blur="columnNameBlur($event)"/>
+                     @blur="columnNameBlur"/>
             <span v-else>{{ formData.name }}</span>
           </a-form-item>
         </a-col>
@@ -672,9 +673,7 @@ watch(() => visibleForm, () => {
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
           <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="enableStatus" label="状态">
-            <a-select v-model="formData.enableStatus">
-              <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
-            </a-select>
+            <a-select v-model="formData.enableStatus" :options="enableStatusOptions"/>
           </a-form-item>
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -709,7 +708,7 @@ watch(() => visibleForm, () => {
           <a-form-item :rules="[{required: ['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.selectType),message: '这是必填项'}]"
                        field="numericSigned" label="是否有符号">
             <a-radio-group v-model="formData.numericSigned" :disabled="['SCORE'].includes(formData.selectType)" :options="numericSignedOptions"
-                           @change="numericSignedChange(formData.numericSigned as boolean,$event)">
+                           @change="numericSignedChange(formData.numericSigned as boolean)">
               <template #label="{ data }">{{ data.label }}</template>
             </a-radio-group>
           </a-form-item>
@@ -720,7 +719,7 @@ watch(() => visibleForm, () => {
               :rules="[{required: ['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(formData.selectType),message: '这是必填项'}]"
               field="numericPrecision" label="整数位">
             <a-input-number v-model="formData.numericPrecision" :max="selectData.digit" :min="1" :placeholder="`长度 [1,${selectData.digit}]`" :precision="0"
-                            @blur="numericPrecisionBlur($event)"/>
+                            @blur="numericPrecisionBlur"/>
           </a-form-item>
         </a-col>
         <!-- 数值类型，小数位 -->
@@ -728,15 +727,15 @@ watch(() => visibleForm, () => {
           <a-form-item :rules="[{required: ['DECIMAL'].includes(formData.dataType),message: '这是必填项'}]"
                        field="numericScale" label="小数位">
             <a-input-number v-model="formData.numericScale" :max="selectData.precision" :min="1" :placeholder="`长度 [1,${selectData.precision}]`"
-                            :precision="0" @blur="numericScaleBlur($event)"/>
+                            :precision="0" @blur="numericScaleBlur"/>
           </a-form-item>
         </a-col>
         <!-- 默认值 defaultValue -->
-        <a-col v-if="['CHAR','VARCHAR','REMARK','TEXT','RICHTEXT','SCRIPT'].includes(formData.selectType)"
-               :span="textareaTotal = (labelCol+wrapperCol)/((formCol%2===0)?formCol/2:1)">
-          <a-form-item :label-col-props="{ span: labelCol/formCol }" :wrapper-col-props="{ span: textareaTotal-(labelCol/formCol) }"
+        <a-col v-if="['CHAR','VARCHAR','REMARK','TEXT','RICHTEXT','SCRIPT'].includes(formData.selectType)" :span="labelCol+wrapperCol">
+          <a-form-item :label-col-props="{ span: labelCol/formCol }"
+                       :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                        field="defaultValue" label="默认值">
-            <a-textarea v-model="formData.defaultValue" :auto-size="{minRows:2,maxRows:4}" :max-length="formData.charMaxLength" show-word-limit/>
+            <a-textarea v-model="formData.defaultValue as string" :auto-size="{minRows:2,maxRows:4}" :max-length="formData.charMaxLength" show-word-limit/>
           </a-form-item>
         </a-col>
         <!--   默认范围 typeExtra 字典项、流水号、实体   -->
@@ -781,7 +780,7 @@ watch(() => visibleForm, () => {
         <!--  布尔值 defaultValue -->
         <a-col v-if="['BIT','SWITCH'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
           <a-form-item field="defaultValue" label="默认值">
-            <a-radio-group v-model="formData.defaultValue">
+            <a-radio-group v-model="formData.defaultValue as string">
               <a-radio value="1">TRUE</a-radio>
               <a-radio value="0">FALSE</a-radio>
               <a-radio v-if="['BIT'].includes(formData.selectType)" value="">NULL</a-radio>
@@ -792,7 +791,7 @@ watch(() => visibleForm, () => {
         <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
           <a-form-item field="defaultValue" label="默认值">
             <a-input-number
-                v-model="formData.defaultValue"
+                v-model="formData.defaultValue as number"
                 :max="selectData.max"
                 :min="selectData.min"
                 :placeholder="`长度 [${selectData.min},${selectData.max}]`"
@@ -803,7 +802,7 @@ watch(() => visibleForm, () => {
         <a-col v-if="['SCORE'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
           <a-form-item :rules="[{required: ['SCORE'].includes(formData.selectType),message: '这是必填项'}]" field="defaultValue" label="最大值">
             <a-input-number
-                v-model="formData.defaultValue"
+                v-model="formData.defaultValue as number"
                 :max="selectData.max"
                 :min="selectData.min"
                 :placeholder="`长度 [${selectData.min},${selectData.max}]`"
@@ -820,7 +819,7 @@ watch(() => visibleForm, () => {
                 <template #extra>
                   <a-space>
                     <a-tooltip v-if="(index+1)===multiComponentData.length" content="新增">
-                      <a-link @click="clickAddMulti($event)">
+                      <a-link @click="clickAddMulti">
                         <gl-iconfont type="gl-plus-circle"/>
                       </a-link>
                     </a-tooltip>
@@ -858,20 +857,20 @@ watch(() => visibleForm, () => {
                 </a-col>
                 <a-col v-if="item.isEdit&&['CHAR','VARCHAR','TEXT','MEDIUMTEXT','LONGTEXT'].includes(item.dataType)">
                   <a-form-item :required="true" :style="{'margin-bottom': '5px'}" label="长度">
-                    <a-input-number v-model="item.charMaxLength" :disabled="item.columnSelectType.fixed" :max="item.columnSelectType.radius.max" :min="1"
-                                    :placeholder="`长度 [1,${item.columnSelectType.radius.max}]`" :precision="0"/>
+                    <a-input-number v-model="item.charMaxLength" :disabled="item.columnSelectType?.fixed" :max="item.columnSelectType?.radius.max" :min="1"
+                                    :placeholder="`长度 [1,${item.columnSelectType?.radius.max}]`" :precision="0"/>
                   </a-form-item>
                 </a-col>
                 <a-col v-if="item.isEdit&&['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(item.selectType)">
                   <a-form-item :required="true" :style="{'margin-bottom': '5px'}" label="整数位">
-                    <a-input-number v-model="item.numericPrecision" :max="item.columnSelectType.radius.unDigit" :min="1"
-                                    :placeholder="`长度 [1,${item.columnSelectType.radius.unDigit}]`" :precision="0"/>
+                    <a-input-number v-model="item.numericPrecision" :max="item.columnSelectType?.radius.unDigit" :min="1"
+                                    :placeholder="`长度 [1,${item.columnSelectType?.radius.unDigit}]`" :precision="0"/>
                   </a-form-item>
                 </a-col>
                 <a-col v-if="item.isEdit&&['DECIMAL'].includes(item.dataType)">
                   <a-form-item :required="true" :style="{'margin-bottom': '5px'}" label="小数位">
-                    <a-input-number v-model="item.numericScale" :max="item.columnSelectType.radius.precision" :min="1"
-                                    :placeholder="`长度 [1,${item.columnSelectType.radius.precision}]`" :precision="0"/>
+                    <a-input-number v-model="item.numericScale" :max="item.columnSelectType?.radius.precision" :min="1"
+                                    :placeholder="`长度 [1,${item.columnSelectType?.radius.precision}]`" :precision="0"/>
                   </a-form-item>
                 </a-col>
                 <div v-if="!item.isEdit">
@@ -900,7 +899,7 @@ watch(() => visibleForm, () => {
         <a-divider v-if="['ORG','USER'].includes(formData.selectType)" style="margin: 5px 0;"/>
         <a-col v-if="['ORG','USER'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
           <a-form-item field="autoAdd" label="自动添加" tooltip="组织、用户需要一对字段用于存放主键和名称">
-            <a-checkbox-group v-model="formData.autoAdd" :max="1" @change="autoAddChange(formData.autoAdd.toString())">
+            <a-checkbox-group v-model="formData.autoAdd as string[]" :max="1" @change="autoAddChange(formData.autoAdd.toString())">
               <a-checkbox value="1">是</a-checkbox>
               <a-checkbox value="0">否</a-checkbox>
             </a-checkbox-group>
@@ -910,7 +909,7 @@ watch(() => visibleForm, () => {
           <a-form-item
               :rules="[{required: formData.autoAdd.toString()==='1',message: '这是必填项'},{match: /^[a-z][a-z0-9_]+$/,message:'匹配：‘a-z’、‘0-9’、‘_’'}]"
               field="autoName" label="添加标识" tooltip="字段标识，用于存放对应的主键或名称；配置一致。">
-            <a-input v-model="formData.autoName" :max-length="30" @blur="autoNameBlur($event)"/>
+            <a-input v-model="formData.autoName" :max-length="30" @blur="autoNameBlur"/>
           </a-form-item>
         </a-col>
 

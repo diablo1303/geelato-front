@@ -6,8 +6,8 @@ export default {
 
 <script lang="ts" setup>
 import {computed, ref, watch} from "vue";
-import {FormInstance, Modal, TableData} from "@arco-design/web-vue";
-import type {TableColumnData} from "@arco-design/web-vue";
+import {Modal} from "@arco-design/web-vue";
+import type {TableColumnData, FormInstance, TableData} from "@arco-design/web-vue";
 import {modelApi, applicationApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryViewForm, QueryTableColumnForm, QueryTableForm, QueryAppForm} from '@geelato/gl-ui';
 import {enableStatusOptions, linkedOptions, viewTypeOptions} from "./searchTable";
@@ -64,7 +64,7 @@ const generateFormData = (): QueryViewForm => {
 const formData = ref(generateFormData());
 
 // 表单
-const columnData = ref<QueryTableColumnForm[]>([]);
+const columnData = ref<Record<string, any>[]>([]);
 const handleChange = (_data: any[]) => {
   columnData.value = _data;
 }
@@ -312,7 +312,7 @@ const getSelectEntityColumnOptions = async (params?: Record<string, any>) => {
  * 模型选择变更
  * @param value
  */
-const entityChange = (value?: string) => {
+const entityChange = () => {
   // 清理模型字段，
   entityData.value.columnIds = [];
   // 取消全选
@@ -405,7 +405,7 @@ const handleModelOk = (done: any) => {
  * 取消修改按钮
  * @param ev
  */
-const handleModelCancel = (ev: MouseEvent) => {
+const handleModelCancel = (ev?: Event) => {
   visibleForm.value = false;
 }
 
@@ -472,7 +472,7 @@ const cloneColumns = ref<Column[]>([]);
 <template>
   <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title" :width="width"
            cancel-text="取消" ok-text="确认" title-align="start"
-           @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
+           @cancel="handleModelCancel" @before-ok="handleModelOk">
     <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="left" type="line">
       <a-tab-pane :key="1" class="a-tabs-one" title="基础信息">
         <a-card class="general-card">
@@ -489,7 +489,7 @@ const cloneColumns = ref<Column[]>([]);
                 {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message: '不以‘v_’、‘V_’开头'},
                 {match:formState==='add'?/^(?!v_|V_)/:/^[vV][a-zA-Z0-9_]*$/,message: '不以‘v_’、‘V_’开头'},
                 {validator:validateCode}]" field="viewName" label="名称(英文)">
-                  <a-input v-if="formState==='add'" v-model.trim="formData.viewName" :max-length="32" @blur="viewNameBlur($event)">
+                  <a-input v-if="formState==='add'" v-model.trim="formData.viewName" :max-length="32" @blur="viewNameBlur">
                     <template #prepend>
                       v_
                     </template>
@@ -534,24 +534,20 @@ const cloneColumns = ref<Column[]>([]);
               </a-col>
               <a-col :span="(labelCol+wrapperCol)/formCol">
                 <a-form-item :rules="[{required: false,message: '这是必填项'}]" field="appId" label="所属应用">
-                  <a-select v-model="formData.appId" :disabled="!formState!=='view'">
+                  <a-select v-model="formData.appId" :disabled="formState==='view'">
                     <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
                   </a-select>
                 </a-form-item>
               </a-col>
               <a-col :span="(labelCol+wrapperCol)/formCol">
                 <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="enableStatus" label="状态">
-                  <a-select v-if="formState!=='view'" v-model="formData.enableStatus">
-                    <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
-                  </a-select>
+                  <a-select v-if="formState!=='view'" v-model="formData.enableStatus" :options="enableStatusOptions"/>
                   <span v-else>{{ utils.getOptionLabel(formData.enableStatus, enableStatusOptions) }}</span>
                 </a-form-item>
               </a-col>
               <a-col :span="(labelCol+wrapperCol)/formCol">
                 <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="linked" label="连接状态">
-                  <a-select v-if="formState!=='view'" v-model="formData.linked">
-                    <a-option v-for="item of linkedOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
-                  </a-select>
+                  <a-select v-if="formState!=='view'" v-model="formData.linked" :options="linkedOptions"/>
                   <span v-else>{{ utils.getOptionLabel(formData.linked, linkedOptions) }}</span>
                 </a-form-item>
               </a-col>
@@ -561,8 +557,9 @@ const cloneColumns = ref<Column[]>([]);
                   <span v-else>{{ formData.seqNo }}</span>
                 </a-form-item>
               </a-col>
-              <a-col :span="textareaTotal = (labelCol+wrapperCol)/((formCol%2===0)?formCol/2:1)">
-                <a-form-item :label-col-props="{ span: labelCol/formCol }" :wrapper-col-props="{ span: textareaTotal-(labelCol/formCol) }"
+              <a-col :span="labelCol+wrapperCol">
+                <a-form-item :label-col-props="{ span: labelCol/formCol }"
+                             :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                              field="description" label="补充描述">
                   <a-textarea v-if="formState!=='view'" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
                   <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{
@@ -584,14 +581,14 @@ const cloneColumns = ref<Column[]>([]);
       <a-tab-pane :key="3" class="a-tabs-two" title="视图字段">
         <a-card class="general-card">
           <a-space v-if="formState!=='view'" style="margin-bottom: 10px">
-            <a-button size="medium" type="primary" @click="customAddEntityClick($event)">
+            <a-button size="medium" type="primary" @click="customAddEntityClick">
               <template #icon>
                 <gl-iconfont type="gl-plus-circle"/>
               </template>
               自定义字段
             </a-button>
             <a-popover v-model:popup-visible="entityPopover" position="right" style="max-width: 400px" trigger="click">
-              <a-button size="medium" type="primary" @click="entityPopoverClick($event)">
+              <a-button size="medium" type="primary" @click="entityPopoverClick">
                 <template #icon>
                   <gl-iconfont type="gl-plus-circle"/>
                 </template>
@@ -628,7 +625,7 @@ const cloneColumns = ref<Column[]>([]);
                 </a-form>
                 <a-divider style="margin: 5px 0px"/>
                 <a-space style="display: flex;align-items: center;justify-content: end;">
-                  <a-button size="medium" type="primary" @click="entitySubmitClick($event)">
+                  <a-button size="medium" type="primary" @click="entitySubmitClick">
                     确定
                   </a-button>
                 </a-space>
@@ -639,7 +636,7 @@ const cloneColumns = ref<Column[]>([]);
               :key="tableTabHeight"
               :bordered="{cell:true}"
               :columns="(cloneColumns as TableColumnData[])"
-              :data="(columnData as TableData[])"
+              :data="columnData"
               :draggable="formState!=='view'?{type:'handle',width:40}:{}"
               :pagination="false"
               :scroll="scroll"

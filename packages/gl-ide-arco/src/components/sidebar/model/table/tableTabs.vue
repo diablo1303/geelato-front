@@ -283,7 +283,7 @@ watch(() => visibleForm, () => {
       </a-tab-pane>
       <template #extra>
         <a-space v-if="!isSystem">
-          <a-button type="outline" @click="syncFromModelToTable($event)">
+          <a-button type="outline" @click="syncFromModelToTable">
             <template #icon>
               <gl-iconfont type="gl-sync"/>
             </template>
@@ -295,7 +295,7 @@ watch(() => visibleForm, () => {
               <gl-iconfont type="gl-arrow-down"/>
             </a-button>
             <template #content>
-              <a-doption @click="syncFromTableToModel($event)">
+              <a-doption @click="syncFromTableToModel">
                 <template #icon>
                   <gl-iconfont type="gl-sync"/>
                 </template>

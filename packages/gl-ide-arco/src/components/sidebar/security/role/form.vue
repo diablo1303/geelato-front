@@ -6,7 +6,8 @@ export default {
 
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import {FormInstance, Modal} from "@arco-design/web-vue";
+import type {FormInstance} from "@arco-design/web-vue";
+import {Modal} from "@arco-design/web-vue";
 import type {QueryRoleForm, QueryAppForm} from '@geelato/gl-ui';
 import {securityApi, applicationApi, useGlobal, utils} from "@geelato/gl-ui";
 import {typeOptions, enableStatusOptions} from "./searchTable";
@@ -133,7 +134,7 @@ const handleModelOk = (done: any) => {
  * 取消修改按钮
  * @param ev
  */
-const handleModelCancel = (ev: MouseEvent) => {
+const handleModelCancel = (ev?: Event) => {
   visibleForm.value = false;
 }
 
@@ -170,7 +171,7 @@ watch(() => visibleForm, () => {
 <template>
   <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title" :width="width"
            cancel-text="取消" ok-text="确认" title-align="start"
-           @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
+           @cancel="handleModelCancel" @before-ok="handleModelOk">
     <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }">
       <a-row :gutter="wrapperCol">
         <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -205,9 +206,7 @@ watch(() => visibleForm, () => {
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
           <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="enableStatus" label="状态">
-            <a-select v-if="formState!=='view'" v-model="formData.enableStatus">
-              <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-            </a-select>
+            <a-select v-if="formState!=='view'" v-model="formData.enableStatus" :options="enableStatusOptions"/>
             <span v-else>{{ utils.getOptionLabel(formData.enableStatus, enableStatusOptions) }}</span>
           </a-form-item>
         </a-col>
@@ -217,8 +216,9 @@ watch(() => visibleForm, () => {
             <span v-else>{{ formData.seqNo }}</span>
           </a-form-item>
         </a-col>
-        <a-col :span="textareaTotal = (labelCol+wrapperCol)/((formCol%2===0)?formCol/2:1)">
-          <a-form-item :label-col-props="{ span: labelCol/formCol }" :wrapper-col-props="{ span: textareaTotal-(labelCol/formCol) }"
+        <a-col :span="labelCol+wrapperCol">
+          <a-form-item :label-col-props="{ span: labelCol/formCol }"
+                       :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                        field="description" label="描述">
             <a-textarea v-if="formState!=='view'" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
             <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>

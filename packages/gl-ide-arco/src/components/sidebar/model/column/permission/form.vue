@@ -86,7 +86,7 @@ const rolePage = ref({
   title: '',
   width: ''
 });
-const addColumnRole = (ev: MouseEvent) => {
+const addColumnRole = (ev?: MouseEvent) => {
   rolePage.value.formState = 'add';
   rolePage.value.title = '新增应用角色';
   rolePage.value.id = '';
@@ -118,7 +118,7 @@ const columnPage = ref({
   width: '67%',
   editName: true,// 是否可编辑模型名称
 });
-const addColumn = (ev: MouseEvent) => {
+const addColumn = (ev?: MouseEvent) => {
   columnPage.value.formState = 'add';
   columnPage.value.title = '新增模型字段';
   columnPage.value.id = '';
@@ -142,7 +142,7 @@ const deleteTablePermission = async (id: string) => {
   }
 }
 
-const resetColumnDefaultPermission = async (ev: MouseEvent) => {
+const resetColumnDefaultPermission = async (ev?: MouseEvent) => {
   try {
     await securityApi.resetDefaultPermission(props.parameter.type, props.parameter.object, props.parameter.appId);
     tableRefresh();
@@ -190,6 +190,11 @@ const columnRolePermissionChange = async (roleId: string, columnId: string, rule
     }
   }
 }
+
+const isDefaultColumn = (value: string) => {
+  return defaultColumnMetas.value.includes(value);
+}
+
 watch(() => props.parameter, () => {
   fetchData();
   columnPage.value.parameter = {
@@ -231,19 +236,19 @@ watch(() => props.height, (val) => {
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button type="primary" @click="addColumnRole($event)">
+        <a-button type="primary" @click="addColumnRole">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
           新增角色
         </a-button>
-        <a-button type="primary" @click="addColumn($event)">
+        <a-button type="primary" @click="addColumn">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
           新增模型字段
         </a-button>
-        <a-button type="primary" @click="resetColumnDefaultPermission($event)">
+        <a-button type="primary" @click="resetColumnDefaultPermission">
           <template #icon>
             <gl-iconfont type="gl-reset"/>
           </template>
@@ -253,7 +258,7 @@ watch(() => props.height, (val) => {
     </a-col>
     <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
       <a-space>
-        <a-button type="primary" @click="tableRefresh($event)">
+        <a-button type="primary" @click="tableRefresh">
           <template #icon>
             <gl-iconfont type="gl-refresh"/>
           </template>
@@ -314,7 +319,7 @@ watch(() => props.height, (val) => {
         <template #title>
           <a-popover :title="item.title" position="br" style="max-width: 400px">
             <span style="cursor: pointer;">{{ item.title }} <gl-iconfont type="gl-warning-circle"/></span>
-            <template #content="{isDefault = defaultColumnMetas.includes(item.name)}">
+            <template #content="{isDefault = isDefaultColumn(item.name)}">
               <span>
                 <a-space>
                   <a-tag v-if="item.key" color="#165dff">主键</a-tag>
@@ -360,9 +365,8 @@ watch(() => props.height, (val) => {
           <a-select v-model="record[item.id]"
                     :bordered="false"
                     :style="{color:`${record[item.id]==='1'?'#00b42a':(record[item.id]==='2'?'#165dff':'#86909c')}`}"
-                    @change="columnRolePermissionChange(record.id,item.id,record[item.id])">
-            <a-option v-for="(item,index) in columnPermissionOptions" :key="index" :label="item.label" :value="item.value"/>
-          </a-select>
+                    :options="columnPermissionOptions"
+                    @change="columnRolePermissionChange(record.id,item.id,record[item.id])"/>
         </template>
       </a-table-column>
     </template>

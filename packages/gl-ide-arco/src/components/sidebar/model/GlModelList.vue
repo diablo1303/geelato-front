@@ -8,7 +8,8 @@ export default {
 </script>
 <script lang="ts" setup>
 import {type Ref, ref, watch, onUnmounted} from 'vue'
-import {entityApi, EntityReader, EntityReaderParam, QueryTableForm, useGlobal, utils} from '@geelato/gl-ui'
+import type {QueryTableForm} from '@geelato/gl-ui'
+import {entityApi, EntityReader, EntityReaderParam, useGlobal, utils} from '@geelato/gl-ui'
 import {useComponentStore, EventNames, useAppStore} from '@geelato/gl-ide'
 import GlModelTableForm from "./table/form.vue";
 import GlModelTableTabs from "./table/tableTabs.vue";
@@ -133,7 +134,7 @@ const tableOpen = (id: string) => {
     </a-tabs>
 
     <a-space size="mini" style="padding: 4px 0">
-      <a-button size="small" type="primary" @click="addTableForm($event)">
+      <a-button size="small" type="primary" @click="addTableForm">
         <gl-iconfont type="gl-plus-circle"/>
       </a-button>
       <a-input-search v-model="searchText" placeholder="录入中、英文名查询" size="small" style="width: 100%"/>

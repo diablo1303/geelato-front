@@ -6,7 +6,7 @@ export default {
 
 <script lang="ts" setup>
 import {reactive, ref, watch, computed} from 'vue';
-import type {TableColumnData} from '@arco-design/web-vue';
+import type {TableColumnData,TableData} from '@arco-design/web-vue';
 import {modelApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryViewForm, QueryTableForm, QueryTableColumnForm, Pagination} from "@geelato/gl-ui";
 import {enableStatusOptions, viewTypeOptions, linkedOptions} from './searchTable';
@@ -39,7 +39,7 @@ const columns = computed<TableColumnData[]>(() => []);
 const cloneColumns = ref<Column[]>([]);
 const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
 const pagination = reactive({...basePagination,});
-const renderData = ref<QueryTableColumnForm[]>([]);
+const renderData = ref<Record<string, any>[]>([]);
 const loading = ref<boolean>(false);
 const scrollbar = ref(true);
 const scroll = ref({x: 2000, y: props.height});
@@ -143,7 +143,7 @@ const releaseTable = (record: QueryViewForm) => {
     reset();
   })
 }
-const resetTable = (ev: MouseEvent) => {
+const resetTable = (ev?: MouseEvent) => {
   resetDefault({
     id: props.parameter.tableId, connectId: props.parameter.connectId, entityName: props.parameter.tableName
   } as unknown as QueryTableForm, function () {
@@ -168,7 +168,7 @@ const viewTable = (id: string) => {
   formPage.value.id = id;
   formPage.value.visible = true;
 }
-const addTable = (ev: MouseEvent) => {
+const addTable = (ev?: MouseEvent) => {
   formPage.value.formState = 'add';
   formPage.value.title = '新建模型视图';
   formPage.value.id = '';
@@ -243,26 +243,22 @@ watch(() => props.height, (val) => {
         <a-row :gutter="16">
           <a-col :span="isModal?12:8">
             <a-form-item field="viewName" label="名称(英文)">
-              <a-input v-model="filterData.viewName" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.viewName" allow-clear @clear="search" @press-enter="search"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="title" label="名称(中文)">
-              <a-input v-model="filterData.title" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.title" allow-clear @clear="search" @press-enter="search"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="viewType" label="视图类型">
-              <a-select v-model="filterData.viewType" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of viewTypeOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
-              </a-select>
+              <a-select v-model="filterData.viewType" placeholder="全部" :options="viewTypeOptions"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="enableStatus" label="状态">
-              <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
-              </a-select>
+              <a-select v-model="filterData.enableStatus" placeholder="全部" :options="enableStatusOptions"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -271,13 +267,13 @@ watch(() => props.height, (val) => {
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
       <a-space :size="18" direction="vertical">
-        <a-button type="primary" @click="search($event)">
+        <a-button type="primary" @click="search">
           <template #icon>
             <gl-iconfont type="gl-search"/>
           </template>
           查询
         </a-button>
-        <a-button @click="reset($event)">
+        <a-button @click="reset">
           <template #icon>
             <gl-iconfont type="gl-reset"/>
           </template>
@@ -290,13 +286,13 @@ watch(() => props.height, (val) => {
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button v-show="formState==='edit'" type="primary" @click="addTable($event)">
+        <a-button v-show="formState==='edit'" type="primary" @click="addTable">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
           新建 自定义视图
         </a-button>
-        <a-button v-show="formState==='edit'" type="primary" @click="resetTable($event)">
+        <a-button v-show="formState==='edit'" type="primary" @click="resetTable">
           <template #icon>
             <gl-iconfont type="gl-reset"/>
           </template>

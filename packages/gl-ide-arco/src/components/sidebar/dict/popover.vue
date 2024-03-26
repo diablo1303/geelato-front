@@ -5,9 +5,9 @@ export default {
 </script>
 <script lang="ts" setup>
 import {reactive, ref, watch} from 'vue';
-import {FormInstance, TableData} from "@arco-design/web-vue";
-import {modelApi, type QueryMultiComponentForm, type QueryTableColumnForm, securityApi, useGlobal, utils} from "@geelato/gl-ui";
-import type {QueryDictForm, QueryDictItemForm} from "@geelato/gl-ui";
+import type {FormInstance, TableData} from "@arco-design/web-vue";
+import type {QueryMultiComponentForm, QueryTableColumnForm, QueryDictForm, QueryDictItemForm} from "@geelato/gl-ui";
+import {modelApi, securityApi, useGlobal, utils} from "@geelato/gl-ui";
 
 type PageParams = {
   appId?: string; // 应用主键
@@ -141,7 +141,7 @@ const handleModelOk = (done: any) => {
  * 取消修改按钮
  * @param ev
  */
-const handleModelCancel = (ev: MouseEvent) => {
+const handleModelCancel = (ev?: Event) => {
   visibleForm.value = false;
 }
 
@@ -167,7 +167,7 @@ watch(() => visibleForm, () => {
 <template>
   <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title"
            :width="width || ''" cancel-text="取消" ok-text="确定" title-align="start"
-           @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
+           @cancel="handleModelCancel" @before-ok="handleModelOk">
     <a-layout style="height: 300px;">
       <a-layout style="flex-direction: row;">
         <a-layout-content style="width: 30%;">
@@ -191,8 +191,8 @@ watch(() => visibleForm, () => {
         <a-layout-content style="width: 68%;">
           <a-divider orientation="left">
             字典项
-            <a-tooltip :content="$t('searchTable.operation.create')">
-              <a-button type="text" @click="addTable($event)">
+            <a-tooltip content="新建">
+              <a-button type="text" @click="addTable">
                 <template #icon>
                   <gl-iconfont type="gl-plus-circle"/>
                 </template>
