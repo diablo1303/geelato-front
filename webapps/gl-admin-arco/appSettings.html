@@ -1,15 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8"/>
     <link rel="shortcut icon" type="image/x-icon" href="./src/assets/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Geelato页面预览</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="text/javascript" src="/tinymce/tinymce.min.js"></script>
-    <script type="text/javascript" src="/tinymce/langs/zh-Hans.js"></script>
-    <script type="module" src="./src/views/ide/appSettings.ts"></script>
-  </body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>应用设置</title>
+</head>
+<style>
+    /**
+*  加载动画
+*/
+    .gl-loader-x {
+        display: flex;
+        justify-content: space-between;
+        height: 50px;
+        padding-top: 10px;
+    }
+
+    .gl-loader-x-dot {
+        margin-left: 3px;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: var(--color);
+        animation: gl-loader-x-bounce 1.6s infinite alternate;
+    }
+
+    @keyframes gl-loader-x-bounce {
+        0% {
+            transform: scale(0);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.5);
+            opacity: 0.5;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .gl-loader-x-dot:nth-child(1) {
+        animation-delay: -0.8s;
+        --color: #0e72cc;
+    }
+
+    .gl-loader-x-dot:nth-child(2) {
+        animation-delay: -0.6s;
+        --color: #6ca30f;
+    }
+
+    .gl-loader-x-dot:nth-child(3) {
+        animation-delay: -0.4s;
+        --color: #f59311;
+    }
+
+    .gl-loader-x-dot:nth-child(4) {
+        animation-delay: -0.2s;
+        --color: #fa4343;
+    }
+
+    .gl-loader-x-dot:nth-child(5) {
+        animation-delay: 0s;
+        --color: #16afcc;
+    }
+</style>
+<body>
+<div id="app">
+    <div style="display: flex; justify-content: center; align-items: center;padding-top: 2em">
+        <div class="gl-loader-x">
+            <div class="gl-loader-x-dot"></div>
+            <div class="gl-loader-x-dot"></div>
+            <div class="gl-loader-x-dot"></div>
+            <div class="gl-loader-x-dot"></div>
+            <div class="gl-loader-x-dot"></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/tinymce/tinymce.min.js"></script>
+<script type="text/javascript" src="/tinymce/langs/zh-Hans.js"></script>
+<script type="module" src="./src/views/ide/appSettings.ts"></script>
+</body>
 </html>

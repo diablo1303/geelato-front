@@ -30,7 +30,7 @@
         <GlIconfont type="gl-preview" text="预览页面" @click="preview"></GlIconfont>
       </span>
       <span class="gl-item" v-if="isLogin()">
-        <GlIconfont type="gl-openlink" text="应用配置" @click="openAppSettings"></GlIconfont>
+        <GlIconfont type="gl-setting" text="应用设置" @click="openAppSettings"></GlIconfont>
       </span>
     </span>
 

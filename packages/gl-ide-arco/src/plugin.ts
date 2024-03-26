@@ -118,14 +118,14 @@ plugin.sidebar.push(
   })
 )
 
-plugin.sidebar.push(
-  new Panel({
-    title: '字典',
-    name: '字典',
-    iconType: 'gl-dict',
-    componentName: GlDictList.name
-  })
-)
+// plugin.sidebar.push(
+//   new Panel({
+//     title: '字典',
+//     name: '字典',
+//     iconType: 'gl-dict',
+//     componentName: GlDictList.name
+//   })
+// )
 
 plugin.sidebar.push(
   new Panel({
