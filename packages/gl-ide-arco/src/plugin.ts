@@ -40,6 +40,7 @@ import GlArrayNumberSetter from './components/setters/property-setters/GlArrayNu
 import GlArrayNumberBuilder from './components/builder/props-builder/GlArrayNumberBuilder.vue'
 import GlArrayStringSetter from './components/setters/property-setters/GlArrayStringSetter.vue'
 import GlArrayBooleanSetter from './components/setters/property-setters/GlArrayBooleanSetter.vue'
+import GlArrayColorSetter from './components/setters/property-setters/GlArrayColorSetter.vue'
 import GlArrayComponentSetter from './components/setters/property-setters/GlArrayComponentSetter.vue'
 import GlDictSetter from './components/setters/property-setters/GlDictSetter.vue'
 import GlInst from './components/dnd/GlInst.vue'
@@ -67,6 +68,7 @@ import GlVueEditor from './components/setters/property-setters/GlVueEditor.vue'
 import GlSlotSetter from './components/setters/property-setters/GlSlotSetter.vue'
 import GlModelList from './components/sidebar/model/GlModelList.vue'
 import GlDictList from './components/sidebar/dict/GlDictList.vue'
+import GlServiceList from './components/sidebar/services/GlServiceList.vue'
 import './assets/style.css'
 
 const plugin = new GlPlugin('gl-plugin-arco')
@@ -124,6 +126,16 @@ plugin.sidebar.push(
     componentName: GlDictList.name
   })
 )
+
+plugin.sidebar.push(
+  new Panel({
+    title: '服务',
+    name: '服务',
+    iconType: 'gl-api',
+    componentName: GlServiceList.name
+  })
+)
+
 // plugin.sidebar.push(
 //   new Panel({
 //     title: '流程',
@@ -232,6 +244,7 @@ const component: Plugin = {
     app.component(GlActionList.name, GlActionList)
     app.component(GlModelList.name, GlModelList)
     app.component(GlDictList.name, GlDictList)
+    app.component(GlServiceList.name, GlServiceList)
     app.component(GlPermissionList.name, GlPermissionList)
     app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
     app.component(GlPageOpHistory.name, GlPageOpHistory)
@@ -266,6 +279,7 @@ const component: Plugin = {
     app.component(GlArrayStringSetter.name, GlArrayStringSetter)
     app.component(GlArrayComponentSetter.name, GlArrayComponentSetter)
     app.component(GlArrayBooleanSetter.name, GlArrayBooleanSetter)
+    app.component(GlArrayColorSetter.name, GlArrayColorSetter)
     app.component(GlSimpleObjectSetter.name, GlSimpleObjectSetter)
     app.component(GlValueTypes.name, GlValueTypes)
     app.component(GlCompareValueSetter.name, GlCompareValueSetter)

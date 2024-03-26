@@ -9,13 +9,13 @@
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "vite build",
+    "build-standalone": "node ./build-standalone.ts",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@arco-design/web-vue": "^2.54.6",
-    "@ckpack/vue-color": "^1.4.1",
+    "@arco-design/web-vue": "2.55.0",
     "@ctrl/tinycolor": "^3.6.0",
     "@geelato/gl-ui": "workspace:^0.0.1",
     "@geelato/gl-ui-schema": "workspace:^0.0.1",

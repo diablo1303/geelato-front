@@ -17,36 +17,44 @@ If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has a
     2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
 2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
 
-## Customize configuration
+## 组件打包
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+### 组件一起打包
+```sh
+pnpm build
+```
 
+### 组件一个分别打包
+对于在src/components-standalone内的组件，以每个组件目录下的index.ts作为入口进行单独打包
+```sh
+pnpm build-standalone
+```
 ## Project Setup
 
 ```sh
-yarn
+pnpm
 ```
 
 ### Compile and Hot-Reload for Development
 
 ```sh
-yarn dev
+pnpm dev
 ```
 
 ### Type-Check, Compile and Minify for Production
 
 ```sh
-yarn build
+pnpm build
 ```
 
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
 
 ```sh
-yarn test:unit
+pnpm test:unit
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
 
 ```sh
-yarn lint
+pnpm lint
 ```

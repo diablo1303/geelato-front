@@ -26,25 +26,25 @@
           </div>
         </div>
       </a-tab-pane>
-      <a-tab-pane key="2" title="页面模板">
+      <a-tab-pane key="2" title="模板">
         <div v-for="templateMaterialGroup in templateMaterialGroups">
           <div
-              class="gl-group-title"
-              @click="templateMaterialGroup.opened = !templateMaterialGroup.opened"
-              style="border-bottom: 1px solid #04559f; width: 90%"
+            class="gl-group-title"
+            @click="templateMaterialGroup.opened = !templateMaterialGroup.opened"
+            style="border-bottom: 1px solid #04559f; width: 90%"
           >
             <span :title="templateMaterialGroup.name" style="font-weight: 600; color: #7d7d7f">{{
-                templateMaterialGroup.text
-              }}</span>
+              templateMaterialGroup.text
+            }}</span>
             <span class="gl-tag">{{ templateMaterialGroup.items?.length }}</span>
           </div>
           <div class="gl-group-cards" v-if="templateMaterialGroup.opened">
             <template v-for="element in templateMaterialGroup.items">
               <ComponentsDndItem
-                  v-if="!element.meta.deprecated"
-                  :element="element"
-                  :templateInst="createTemplateInst(element)"
-                  :size="size"
+                v-if="!element.meta.deprecated"
+                :element="element"
+                :templateInst="createTemplateInst(element)"
+                :size="size"
               >
               </ComponentsDndItem>
             </template>
@@ -62,10 +62,14 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed, type PropType, ref } from 'vue'
+import { computed, type PropType, ref, defineComponent, watch, getCurrentInstance,VueElement } from 'vue'
 import { useIdeStore } from '@geelato/gl-ide'
-import { utils } from '@geelato/gl-ui'
-import type {ComponentMaterial, ComponentInstance,ComponentMaterialGroup} from '@geelato/gl-ui-schema'
+import { entityApi, EntityReader, fileApi, utils } from '@geelato/gl-ui'
+import type {
+  ComponentMaterial,
+  ComponentInstance,
+  ComponentMaterialGroup
+} from '@geelato/gl-ui-schema'
 import { useComponentMaterialStore } from '@geelato/gl-ui-schema-arco'
 import ComponentsDndItem from '../../dnd/ComponentDndItem.vue'
 import { SizeType } from '../../setters/Types'
@@ -113,6 +117,61 @@ const fontSize = computed(() => {
   }
 })
 
+const loadedLibs = ref(false)
+const fileUrls: string[] = []
+
+// 创建 script 标签并添加到 DOM
+const createScript = (src: string) => {
+  const script = document.createElement('script')
+  script.src = src
+  script.type = 'module' // 设置为模块类型，因为我们是加载 ES 模块
+  document.head.appendChild(script)
+}
+
+/**
+ *  加载服务端的组件数据，并注册到useComponentMaterialStore中
+ */
+const loadLibs = () => {
+  const entityReader = new EntityReader()
+  entityReader.entity = 'platform_ui_lib'
+  entityReader.setFields('id,scriptFile,cssFile')
+  entityApi.queryByEntityReader(entityReader).then((res: any) => {
+    res.data?.forEach(async (record: any) => {
+      const fileUrl = fileApi.getDownloadUrlById(record.scriptFile)
+      console.log(fileUrl)
+      const module = await import(fileUrl)
+      console.log(module)
+      // createScript(fileUrl)
+      // fileUrls.push(fileUrl)
+    })
+    loadedLibs.value = true
+  })
+}
+// loadLibs()
+// watch(loadedLibs, (val, oldVal) => {
+//   if (val === true) {
+//     const app = getCurrentInstance()?.appContext.app;
+//     const promises: Promise<any>[] = []
+//     for (let i in fileUrls) {
+//       // 使用 dynamic import 导入模块
+//       import(fileUrls[i]).then((module) => {
+//         console.log('module',module)
+//         // 使用导入的模块
+//         // 例如，如果第三方库导出了一个函数叫做 `useLibrary`，您可以这样调用它
+//         // module.install(app)
+//       }).catch((error) => {
+//         // 处理导入错误
+//         console.error('Failed to load the module:', error);
+//       });
+//     }
+//
+//     Promise.all(promises).then((downRes: any) => {
+//       console.log('downRes', downRes)
+//     })
+//     loadedLibs.value = false
+//   }
+// })
+
 const ideStore = useIdeStore()
 // 所有的物料信息
 const componentMaterialStore = useComponentMaterialStore()
@@ -129,7 +188,6 @@ componentMaterialGroups.value = useComponentGroups(props.componentGroups, compon
 
 const templateMaterialGroups = ref<Array<ComponentMaterialGroup>>([])
 templateMaterialGroups.value = useComponentGroups(props.templateGroups, componentMaterialStore)
-
 
 /**
  * 基于物料创建实例

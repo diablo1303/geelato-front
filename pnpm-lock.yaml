@@ -114,11 +114,8 @@ importers:
   packages/gl-ide-arco:
     dependencies:
       '@arco-design/web-vue':
-        specifier: ^2.54.6
-        version: 2.54.6(vue@3.3.11)
-      '@ckpack/vue-color':
-        specifier: ^1.4.1
-        version: 1.4.1(vue@3.3.11)
+        specifier: 2.55.0
+        version: 2.55.0(vue@3.3.11)
       '@geelato/gl-ide':
         specifier: workspace:^0.0.1
         version: link:../gl-ide
@@ -320,11 +317,8 @@ importers:
   packages/gl-ui-arco:
     dependencies:
       '@arco-design/web-vue':
-        specifier: ^2.54.6
-        version: 2.54.6(vue@3.3.11)
-      '@ckpack/vue-color':
-        specifier: ^1.4.1
-        version: 1.4.1(vue@3.3.11)
+        specifier: 2.55.0
+        version: 2.55.0(vue@3.3.11)
       '@ctrl/tinycolor':
         specifier: ^3.6.0
         version: 3.6.0
@@ -590,8 +584,8 @@ importers:
   webapps/gl-admin-arco:
     dependencies:
       '@arco-design/web-vue':
-        specifier: ^2.54.6
-        version: 2.54.6(vue@3.3.11)
+        specifier: 2.55.0
+        version: 2.55.0(vue@3.3.11)
       '@geelato/gl-ide':
         specifier: workspace:^0.0.1
         version: link:../../packages/gl-ide
@@ -834,8 +828,8 @@ importers:
   webapps/gl-admin-webapp-arco:
     dependencies:
       '@arco-design/web-vue':
-        specifier: ^2.54.6
-        version: 2.54.6(vue@3.3.4)
+        specifier: 2.55.0
+        version: 2.55.0(vue@3.3.4)
       '@geelato/gl-ui':
         specifier: workspace:^0.0.1
         version: link:../../packages/gl-ui
@@ -1218,8 +1212,8 @@ packages:
       vue: 3.3.11(typescript@4.7.4)
     dev: false
 
-  /@arco-design/web-vue@2.54.6(vue@3.3.11):
-    resolution: {integrity: sha512-Qx+HHL5G5gIvrbxGC6ZF/L8ACD1L/RkPJd9e4SR+vI6lEg+nGlUBplkR4pY7e7mqYXY2H6uzh+radT+QxXKVRg==}
+  /@arco-design/web-vue@2.55.0(vue@3.3.11):
+    resolution: {integrity: sha512-aMfg9dHiDsiJsxU2Mpa0V4WKjtdAdETBBrrVEHj1E7rJYF+PmrfZcSgIvAJSbdJZC/euqSCHyYOQezi3esSzxA==}
     peerDependencies:
       vue: ^3.1.0
     dependencies:
@@ -1234,8 +1228,8 @@ packages:
       vue: 3.3.11(typescript@4.7.4)
     dev: false
 
-  /@arco-design/web-vue@2.54.6(vue@3.3.4):
-    resolution: {integrity: sha512-Qx+HHL5G5gIvrbxGC6ZF/L8ACD1L/RkPJd9e4SR+vI6lEg+nGlUBplkR4pY7e7mqYXY2H6uzh+radT+QxXKVRg==}
+  /@arco-design/web-vue@2.55.0(vue@3.3.4):
+    resolution: {integrity: sha512-aMfg9dHiDsiJsxU2Mpa0V4WKjtdAdETBBrrVEHj1E7rJYF+PmrfZcSgIvAJSbdJZC/euqSCHyYOQezi3esSzxA==}
     peerDependencies:
       vue: ^3.1.0
     dependencies:
@@ -1664,17 +1658,6 @@ packages:
 
   /@bcoe/v8-coverage@0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
-    dev: false
-
-  /@ckpack/vue-color@1.4.1(vue@3.3.11):
-    resolution: {integrity: sha512-PPon4lIyKWgwexN4Gf8iRzqWVPWTa1nMoW37cKQbMakY/iBPiPzOtgGinNhD44STbv6GUnPLBCg6yfkXsPuFpw==}
-    engines: {node: '>=12'}
-    peerDependencies:
-      vue: ^3.2.0
-    dependencies:
-      '@ctrl/tinycolor': 3.6.0
-      material-colors: 1.2.6
-      vue: 3.3.11(typescript@4.7.4)
     dev: false
 
   /@commitlint/cli@17.4.4:
@@ -9488,10 +9471,6 @@ packages:
   /markdown-table@1.1.3:
     resolution: {integrity: sha512-1RUZVgQlpJSPWYbFSpmudq5nHY1doEIv89gBtF0s4gW1GF2XorxcA/70M5vq7rLv0a6mhOUccRsqkwhwLCIQ2Q==}
     dev: true
-
-  /material-colors@1.2.6:
-    resolution: {integrity: sha512-6qE4B9deFBIa9YSpOc9O0Sgc43zTeVYbgDT5veRKSlB2+ZuHNoVVxA1L/ckMUayV9Ay9y7Z/SZCLcGteW9i7bg==}
-    dev: false
 
   /mathml-tag-names@2.1.3:
     resolution: {integrity: sha512-APMBEanjybaPzUrfqU0IMU5I0AswKMH7k8OTLs0vvV4KZpExkTkY87nR/zpbuTPj+gARop7aGUbl11pnDfW6xg==}

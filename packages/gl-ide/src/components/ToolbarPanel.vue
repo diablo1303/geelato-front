@@ -29,6 +29,9 @@
       >
         <GlIconfont type="gl-preview" text="预览页面" @click="preview"></GlIconfont>
       </span>
+      <span class="gl-item" v-if="isLogin()">
+        <GlIconfont type="gl-openlink" text="应用配置" @click="openAppSettings"></GlIconfont>
+      </span>
     </span>
 
     <span>
@@ -259,6 +262,13 @@ const openAppSite = () => {
     `${window.location.origin}/${appStore.currentApp.tenantCode}/${appStore.currentApp.id}/page`,
     '_blank'
   )
+}
+
+/**
+ *  打开应用配置页面
+ */
+const openAppSettings = () => {
+  window.open(`${window.location.origin}/appSettings.html?appId=${appStore.currentApp.id}&appName=${appStore.currentApp.name}`, '_blank')
 }
 
 const showPageReplaceEditor = () => {
