@@ -10,6 +10,8 @@ import {Modal} from "@arco-design/web-vue";
 import {modelApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryTableForm} from '@geelato/gl-ui';
 import {sourceTypeOptions, tableSyncOptions} from "./searchTable";
+import GlModelTableForm from "./form.vue";
+import GlModelTableCopy from "./copy.vue";
 import GlModelTableColumnList from '../column/list.vue';
 import GlModelTableForeignList from '../foreign/list.vue';
 import GlModelTableViewList from '../view/list.vue';
@@ -21,7 +23,7 @@ type PageParams = {
   tenantCode?: string; // 租户编码
 }
 
-const emits = defineEmits(['update:modelValue', 'update:visible']);
+const emits = defineEmits(['update:modelValue', 'update:visible', 'updateSuccess', 'deleteSuccess']);
 const props = defineProps({
   modelValue: {type: String, default: ''},// id
   parameter: {type: Object, default: () => ({} as PageParams)},// 页面需要的参数
@@ -39,6 +41,10 @@ const tabsTitle = ref<string>('');
 const isSync = ref<number>(0);
 const isSystem = ref<boolean>(false);
 const tabsKey = ref<number>(1);// 定位tabs页面
+const tableFormRef = ref(null);
+const tableFormParams = ref({
+  id: '', formState: 'edit', formCol: 2, parameter: {connectId: '', appId: '', tenantCode: ''}
+});
 const columnListParams = ref({
   formState: 'edit', isModal: true, height: 0, parameter: {
     connectId: '', tableId: '', tableName: '', appId: '', tenantCode: ''
@@ -63,6 +69,10 @@ const columnPermissionFormParams = ref({
   formState: 'edit', isModal: true, height: 0, isSystem: false, parameter: {
     connectId: '', tableId: '', object: '', type: '', appId: '', tenantCode: ''
   }
+});
+const tableCopyParams = ref({
+  id: '', visible: false, formState: 'add', formCol: 1, title: '', width: '',
+  parameter: {appId: '', tenantCode: ''}
 });
 /**
  * 获取单条数据接口
@@ -119,6 +129,12 @@ const tableFormat = (id: string) => {
     isSystem.value = ['system', 'platform'].includes(data.sourceType);
     tabsTitle.value = `${data.title}（${data.entityName || data.tableName}）`;
     tableData.value = data;
+    // 加载模型信息
+    tableFormParams.value.id = tableData.value.id;
+    tableFormParams.value.formState = props.formState;
+    tableFormParams.value.parameter = {
+      connectId: data.connectId, appId: data.appId, tenantCode: data.tenantCode
+    };
     // 加载模型字段
     columnListParams.value.formState = isSystem.value ? 'view' : props.formState;
     columnListParams.value.height = tableTabHeight.value - 310;
@@ -153,6 +169,55 @@ const tableFormat = (id: string) => {
       appId: data.appId, tenantCode: data.tenantCode
     };
   });
+}
+
+/**
+ * 更新模型信息
+ */
+const updateTable = () => {
+  // @ts-ignore
+  if (tableFormRef.value && typeof tableFormRef.value?.saveOrUpdate === 'function') {
+    // @ts-ignore
+    tableFormRef.value?.saveOrUpdate((data: QueryTableForm) => {
+      global.$message.success({content: '更新成功！'})
+      tableFormat(tableData.value.id);
+      emits('updateSuccess', data, props.formState);
+    }, () => {
+      global.$message.error({content: '更新失败！'})
+    });
+  }
+}
+/**
+ * 删除模型信息
+ */
+const deleteTable = async () => {
+  try {
+    await modelApi.deleteTable(tableData.value.id);
+    global.$message.success({content: '删除成功！'});
+    emits('deleteSuccess', tableData.value, props.formState);
+    visibleForm.value = false;
+  } catch (err) {
+    global.$message.error({content: '删除失败！'})
+  }
+}
+
+const copyTable = () => {
+  tableCopyParams.value.id = props.modelValue;
+  tableCopyParams.value.title = '复制模型';
+  tableCopyParams.value.parameter = {
+    appId: props.parameter.appId, tenantCode: props.parameter.tenantCode
+  }
+  tableCopyParams.value.visible = true;
+}
+/**
+ * 复制成功
+ * @param data
+ * @param action
+ */
+const tableCopySuccess = (data: QueryTableForm, action: string) => {
+  tableCopyParams.value.visible = false;
+  visibleForm.value = false;
+  emits('updateSuccess', data, action);
 }
 
 /**
@@ -213,12 +278,12 @@ watch(() => props, () => {
 }, {deep: true, immediate: true});
 
 watch(() => visibleForm, () => {
+  tableFormParams.value.id = '';
   emits('update:visible', visibleForm.value);
 }, {deep: true, immediate: true});
 </script>
-
 <template>
-  <a-modal v-model:visible="visibleForm" :footer="false" :width="width || ''" title-align="start" :key="utils.gid(20)">
+  <a-modal :key="utils.gid()" v-model:visible="visibleForm" :footer="false" :width="width || ''" title-align="start">
     <template #title>
       <a-space>
         {{ tabsTitle }}
@@ -230,17 +295,37 @@ watch(() => visibleForm, () => {
         </a-button>
       </a-space>
     </template>
+
+    <GlModelTableCopy v-model:visible="tableCopyParams.visible"
+                      :formCol="tableCopyParams.formCol"
+                      :formState="tableCopyParams.formState"
+                      :modelValue="tableCopyParams.id"
+                      :parameter="tableCopyParams.parameter"
+                      :title="tableCopyParams.title"
+                      :width="tableCopyParams.width"
+                      @saveSuccess="tableCopySuccess"/>
+
     <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="top" type="line">
-      <a-tab-pane :key="1" class="a-tabs-one" title="模型字段">
+      <a-tab-pane :key="1" class="a-tabs-one" title="模型信息">
         <a-card class="general-card">
-          <GlModelTableColumnList :formState="columnListParams.formState"
+          <GlModelTableForm v-if="tableFormParams.id" ref="tableFormRef"
+                            :formCol="tableFormParams.formCol"
+                            :formState="tableFormParams.formState"
+                            :modelValue="tableFormParams.id"
+                            :parameter="tableFormParams.parameter"
+                            :visible="visibleForm"/>
+        </a-card>
+      </a-tab-pane>
+      <a-tab-pane :key="2" class="a-tabs-one" title="模型字段">
+        <a-card class="general-card">
+          <GlModelTableColumnList v-if="visibleForm" :formState="columnListParams.formState"
                                   :height="columnListParams.height"
                                   :isModal="columnListParams.isModal"
                                   :parameter="columnListParams.parameter"/>
         </a-card>
       </a-tab-pane>
       <a-tooltip content="仅展示表格之间的关联，不同步至数据表中。" position="top">
-        <a-tab-pane :key="2" class="a-tabs-two" title="模型外键">
+        <a-tab-pane :key="3" class="a-tabs-two" title="模型外键">
           <template #title>
             <a-tooltip content="仅展示表格之间的关联，不同步至数据表中。" position="right">
               模型外键
@@ -248,33 +333,33 @@ watch(() => visibleForm, () => {
             </a-tooltip>
           </template>
           <a-card class="general-card">
-            <GlModelTableForeignList :formState="foreignListParams.formState"
+            <GlModelTableForeignList v-if="visibleForm" :formState="foreignListParams.formState"
                                      :height="foreignListParams.height"
                                      :isModal="foreignListParams.isModal"
                                      :parameter="foreignListParams.parameter"/>
           </a-card>
         </a-tab-pane>
       </a-tooltip>
-      <a-tab-pane :key="3" class="a-tabs-three" title="模型视图">
+      <a-tab-pane :key="4" class="a-tabs-three" title="模型视图">
         <a-card class="general-card">
-          <GlModelTableViewList :formState="viewListParams.formState"
+          <GlModelTableViewList v-if="visibleForm" :formState="viewListParams.formState"
                                 :height="viewListParams.height"
                                 :isModal="viewListParams.isModal"
                                 :parameter="viewListParams.parameter"
                                 :tableSync="viewListParams.tableSync"/>
         </a-card>
       </a-tab-pane>
-      <a-tab-pane :key="4" class="a-tabs-four" title="模型权限">
+      <a-tab-pane :key="5" class="a-tabs-four" title="模型权限">
         <a-card class="general-card">
-          <GlModelTablePermissionForm :formState="tablePermissionFormParams.formState"
+          <GlModelTablePermissionForm v-if="visibleForm" :formState="tablePermissionFormParams.formState"
                                       :height="tablePermissionFormParams.height"
                                       :isModal="tablePermissionFormParams.isModal"
                                       :parameter="tablePermissionFormParams.parameter"/>
         </a-card>
       </a-tab-pane>
-      <a-tab-pane :key="5" class="a-tabs-five" title="字段权限">
+      <a-tab-pane :key="6" class="a-tabs-five" title="字段权限">
         <a-card class="general-card">
-          <GlModelTableColumnPermissionForm :formState="columnPermissionFormParams.formState"
+          <GlModelTableColumnPermissionForm v-if="visibleForm" :formState="columnPermissionFormParams.formState"
                                             :height="columnPermissionFormParams.height"
                                             :isModal="columnPermissionFormParams.isModal"
                                             :isSystem="columnPermissionFormParams.isSystem"
@@ -283,23 +368,46 @@ watch(() => visibleForm, () => {
       </a-tab-pane>
       <template #extra>
         <a-space v-if="!isSystem">
-          <a-button type="outline" @click="syncFromModelToTable">
+          <a-popconfirm v-if="tabsKey===1" content="是否更新该条模型数据？" position="bottom" type="info" @ok="updateTable">
+            <a-button v-if="tabsKey===1" size="small" type="outline">
+              <template #icon>
+                <gl-iconfont type="gl-save"/>
+              </template>
+              更新
+            </a-button>
+          </a-popconfirm>
+          <a-popconfirm v-if="tabsKey===1" content="是否删除该条模型数据？" position="bottom" type="warning" @ok="deleteTable">
+            <a-button size="small" status="danger" type="outline">
+              <template #icon>
+                <gl-iconfont type="gl-delete"/>
+              </template>
+              删除
+            </a-button>
+          </a-popconfirm>
+          <a-button size="small" type="outline" @click="syncFromModelToTable">
             <template #icon>
               <gl-iconfont type="gl-sync"/>
             </template>
             模型同步至数据库
           </a-button>
           <a-dropdown position="br">
-            <a-button type="outline">
+            <a-button size="small" type="outline">
               更多&nbsp;
               <gl-iconfont type="gl-arrow-down"/>
             </a-button>
             <template #content>
-              <a-doption @click="syncFromTableToModel">
+              <a-doption v-if="tabsKey===1" style="color: rgb(var(--primary-6));" @click="copyTable">
+                <template #icon>
+                  <gl-iconfont type="gl-copy"/>
+                </template>
+                复制模型
+              </a-doption>
+              <a-divider style="margin: 0px 0px;"/>
+              <a-doption style="color: rgb(var(--primary-6));" @click="syncFromTableToModel">
                 <template #icon>
                   <gl-iconfont type="gl-sync"/>
                 </template>
-                从数据库同步至模型
+                数据库同步至模型
               </a-doption>
             </template>
           </a-dropdown>

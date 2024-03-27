@@ -6,7 +6,7 @@ export default {
 
 <script lang="ts" setup>
 import {reactive, ref, watch, computed} from 'vue';
-import type {TableColumnData,TableData} from '@arco-design/web-vue';
+import type {TableColumnData, TableData} from '@arco-design/web-vue';
 import {modelApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryViewForm, QueryTableForm, QueryTableColumnForm, Pagination} from "@geelato/gl-ui";
 import {enableStatusOptions, viewTypeOptions, linkedOptions} from './searchTable';
@@ -253,12 +253,12 @@ watch(() => props.height, (val) => {
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="viewType" label="视图类型">
-              <a-select v-model="filterData.viewType" placeholder="全部" :options="viewTypeOptions"/>
+              <a-select v-model="filterData.viewType" :options="viewTypeOptions" placeholder="全部"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="enableStatus" label="状态">
-              <a-select v-model="filterData.enableStatus" placeholder="全部" :options="enableStatusOptions"/>
+              <a-select v-model="filterData.enableStatus" :options="enableStatusOptions" placeholder="全部"/>
             </a-form-item>
           </a-col>
         </a-row>

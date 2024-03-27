@@ -56,6 +56,14 @@ export function createOrUpdateTable(params: QueryTableForm) {
   return entityApi.getAxios().post<QueryResult>('/api/model/table/createOrUpdate', params);
 }
 
+export function deleteTable(id: string) {
+  return entityApi.getAxios().delete<QueryResult>(`/api/model/table/isDelete/${id}`);
+}
+
+export function copyTable(params: Record<string, any>) {
+  return entityApi.getAxios().post<QueryResult>('/api/model/table/copy', params);
+}
+
 /**
  * 重置实体模型（从数据库同步至模型）
  * @param tableId

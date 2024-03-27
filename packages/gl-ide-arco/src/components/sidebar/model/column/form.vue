@@ -635,8 +635,8 @@ watch(() => visibleForm, () => {
 
 <template>
   <GlDictPopver v-model:visible="dictPage.visible"
-                :parameter="dictPage.parameter"
                 :formState="dictPage.formState"
+                :parameter="dictPage.parameter"
                 :title="dictPage.title"
                 :width="dictPage.width"
                 @saveSuccess="dictSaveSuccess"/>
@@ -757,7 +757,7 @@ watch(() => visibleForm, () => {
               <a-option v-for="item of selectDictionaryOptions" :key="item.id" :label="`${item.dictName}[${item.dictCode}]`" :value="item.dictCode"/>
             </a-select>
             <a-tooltip content="新增数据字典">
-              <a-button style="margin-left: 5px;" type="outline" size="small" @click="openAddDict">
+              <a-button size="small" style="margin-left: 5px;" type="outline" @click="openAddDict">
                 <gl-iconfont type="gl-plus-circle"/>
               </a-button>
             </a-tooltip>

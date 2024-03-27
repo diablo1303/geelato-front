@@ -158,7 +158,7 @@ const formPage = ref({
   formState: 'add',//
   formCol: 2,//
   title: '模型字段',
-  width: '67%',
+  width: '850px',
   editName: true,// 是否可编辑模型名称
 });
 /* 列表，按钮、操作列 */

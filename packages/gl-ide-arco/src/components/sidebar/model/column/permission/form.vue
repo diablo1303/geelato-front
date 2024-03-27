@@ -364,8 +364,8 @@ watch(() => props.height, (val) => {
         <template #cell="{record}">
           <a-select v-model="record[item.id]"
                     :bordered="false"
-                    :style="{color:`${record[item.id]==='1'?'#00b42a':(record[item.id]==='2'?'#165dff':'#86909c')}`}"
                     :options="columnPermissionOptions"
+                    :style="{color:`${record[item.id]==='1'?'#00b42a':(record[item.id]==='2'?'#165dff':'#86909c')}`}"
                     @change="columnRolePermissionChange(record.id,item.id,record[item.id])"/>
         </template>
       </a-table-column>

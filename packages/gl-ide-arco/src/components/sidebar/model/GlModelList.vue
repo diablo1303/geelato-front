@@ -7,11 +7,11 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {type Ref, ref, watch, onUnmounted} from 'vue'
+import {type Ref, ref, watch} from 'vue'
 import type {QueryTableForm} from '@geelato/gl-ui'
 import {entityApi, EntityReader, EntityReaderParam, useGlobal, utils} from '@geelato/gl-ui'
-import {useComponentStore, EventNames, useAppStore} from '@geelato/gl-ide'
-import GlModelTableForm from "./table/form.vue";
+import {useAppStore} from '@geelato/gl-ide'
+import GlModelTableModal from "./table/modal.vue";
 import GlModelTableTabs from "./table/tableTabs.vue";
 
 const props = defineProps({
@@ -95,29 +95,48 @@ const changeTab = (value: any) => {
 
 fetchData()
 
-const formParams = ref({
-  id: '', visible: false, formState: 'add', formCol: 2, width: '56%',
-  parameter: {connectId: '', appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
-});
-const addTableForm = (ev?: MouseEvent) => {
-  if (!appStore.currentApp.id) {
-    return
-  }
-  formParams.value.visible = true;
-}
-const tableFormSaveSuccess = () => {
-  fetchData();
-}
+/* 模型tab页所需参数 */
 const formTabsParams = ref({
   id: '', visible: false, formState: 'edit', formCol: 2, width: '72%',
   parameter: {appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
 });
+/**
+ * 点击打开tab页面
+ * @param id
+ */
 const tableOpen = (id: string) => {
   if (!appStore.currentApp.id) {
     return
   }
   formTabsParams.value.id = id;
   formTabsParams.value.visible = true;
+}
+
+/* 模型表单所需参数 */
+const formParams = ref({
+  id: '', visible: false, formState: 'add', formCol: 2, width: '850px',
+  parameter: {connectId: '', appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
+});
+/**
+ * 新增模型，打开模型表单
+ * @param ev
+ */
+const addTableForm = (ev?: MouseEvent) => {
+  if (!appStore.currentApp.id) {
+    return
+  }
+  formParams.value.visible = true;
+}
+/**
+ * 表单保存成功后
+ * @param data
+ * @param action
+ */
+const tableFormSaveSuccess = (data: QueryTableForm, action: string) => {
+  // 打开模型tab页面
+  if (data.id && action === 'add') tableOpen(data.id);
+  // 刷新模型列表
+  fetchData();
 }
 </script>
 
@@ -155,15 +174,15 @@ const tableOpen = (id: string) => {
     </a-list>
   </div>
 
-  <GlModelTableForm v-model:visible="formParams.visible" :formCol="formParams.formCol"
-                    :formState="formParams.formState" :modelValue="formParams.id"
-                    :parameter="formParams.parameter" :width="formParams.width"
-                    @saveSuccess="tableFormSaveSuccess"/>
+  <GlModelTableModal v-model:visible="formParams.visible" :formCol="formParams.formCol"
+                     :formState="formParams.formState" :modelValue="formParams.id"
+                     :parameter="formParams.parameter" :width="formParams.width"
+                     @saveSuccess="tableFormSaveSuccess"/>
 
   <GlModelTableTabs v-model:visible="formTabsParams.visible" :formState="formTabsParams.formState"
                     :modelValue="formTabsParams.id" :parameter="formTabsParams.parameter"
                     :width="formTabsParams.width"
-                    @saveSuccess="tableFormSaveSuccess"/>
+                    @deleteSuccess="tableFormSaveSuccess" @updateSuccess="tableFormSaveSuccess"/>
 </template>
 <style>
 .gl-model-list .gl-has {
