@@ -264,6 +264,13 @@ const dictionaryChange = (value?: string) => {
 }
 const dictionaryChange1 = () => {
   dictionaryChange();
+  // 优化字段标识自动填写
+  if (!formData.value.name) {
+    if (formData.value.typeExtra && formData.value.typeExtra.indexOf('_') !== -1) {
+      formData.value.name = formData.value.typeExtra as string;
+      columnNameBlur();
+    }
+  }
 }
 
 const selectCodeOptions = ref<QueryEncodingForm[]>([]);
@@ -328,6 +335,18 @@ const entityChange = (value?: string) => {
 }
 const entityChange1 = () => {
   entityChange();
+  // 优化字段标识自动填写
+  if (!formData.value.name) {
+    if (formData.value.typeExtra) {
+      for (const item of selectEntityOptions.value) {
+        if (formData.value.typeExtra === item.id) {
+          formData.value.name = `${item.entityName}_id`;
+          columnNameBlur();
+          break;
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -453,7 +472,21 @@ const selectTypeChange = (value: string) => {
   if (['SWITCH'].includes(formData.value.selectType)) {
     formData.value.defaultValue = '0';
   }
+  // 数据字典预选
+  if (['DICTIONARY'].includes(formData.value.selectType)) {
+    if (formData.value.name && formData.value.fieldName) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of selectDictionaryOptions.value) {
+        if ([formData.value.name, formData.value.fieldName].includes(item.dictCode)) {
+          formData.value.typeExtra = item.dictCode;
+          dictionaryChange1();
+          break;
+        }
+      }
+    }
+  }
 }
+
 const numericPrecisionBlur = (ev?: FocusEvent) => {
   const cst: ColumnSelectType = formatSelectType(formData.value.selectType);
   // 最大、最小 限制
