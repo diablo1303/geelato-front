@@ -367,7 +367,7 @@ export class JsScriptExecutor {
        * @param keyValues
        */
       keyValue(
-        keys: string | Array<any>,
+        keys: string | Array<string>,
         keyValues: {
           [key: string]:
             | {
@@ -381,7 +381,7 @@ export class JsScriptExecutor {
         // keys
         let keyAry = []
         // console.log('typeof keys:', typeof keys, keys)
-        if (typeof keys === 'object' && keys.length >= 0) {
+        if (Array.isArray(keys)) {
           keyAry = keys
         } else {
           // 表达式
@@ -397,6 +397,7 @@ export class JsScriptExecutor {
         for (const index in keyAry) {
           const key = keyAry[index]
           const value: any = keyValues[key]
+          // console.log('key',key,'value',value,'keyValues',keyValues)
           if (typeof value === 'object' && (value.cn || value.en)) {
             // TODO 待结合环境获取当前语言
             valueAry.push(value.cn || value.en)

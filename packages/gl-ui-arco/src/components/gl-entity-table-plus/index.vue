@@ -131,6 +131,7 @@ const props = defineProps({
       }
     }
   },
+  readonly:Boolean,
   ...mixins.props
 })
 
@@ -1206,18 +1207,18 @@ defineExpose({
       v-show="base.showToolbar !== false"
       v-bind="toolbar"
       style="margin-bottom: 8px"
-      :disabled="isRead"
+      :disabled="isRead || readonly"
     >
       <template #leftItems>
         <div v-if="base.enableEdit && base.showAddRowBtn !== false" class="action-icon">
-          <a-button @click="addRow" shape="round" type="text" size="small" :disabled="isRead">
+          <a-button @click="addRow" shape="round" type="text" size="small" :disabled="isRead || readonly">
             <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加一行
           </a-button>
         </div>
       </template>
       <template #rightItems>
         <a-modal v-model:visible="visibleFilterManager" v-if="myComponentCustom">
-          <template #title> 管理当前页面的查询过滤器</template>
+          <template #title> 管理当前页面的查询过滤器（常用查询条件组合）</template>
           <div>
             <FilterManager v-model="myComponentCustom.filters"></FilterManager>
           </div>
@@ -1340,6 +1341,7 @@ defineExpose({
       :unPushedRecordKeys="unPushedRecordKeys"
       :tableDraggable="base.tableDraggable"
       :autoResetSeqNoAfterDrag="base.autoResetSeqNoAfterDrag"
+      :readonly="readonly"
       @select="select"
       @selectionChange="selectionChange"
       @headerClick="headerClick"

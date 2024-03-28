@@ -132,6 +132,7 @@ const props = defineProps({
   },
   tableDraggable: Boolean,
   autoResetSeqNoAfterDrag: Boolean,
+  readonly:Boolean,
   ...mixins.props
 })
 
@@ -736,7 +737,7 @@ defineExpose({
           type="text"
           size="small"
           @click="copyRecord(record, rowIndex)"
-          :disabled="isPageRead"
+          :disabled="isPageRead || readonly"
           >复制
         </a-button>
         <a-button
@@ -744,7 +745,7 @@ defineExpose({
           status="danger"
           size="small"
           @click="deleteRecord(record, rowIndex)"
-          :disabled="isPageRead"
+          :disabled="isPageRead || readonly"
         >
           删除
         </a-button>
@@ -774,7 +775,7 @@ defineExpose({
             cellLastValue: renderData[rowIndex][column.dataIndex]
           }"
           :disabled="
-            isPageRead || column._component?.props?.readonly || column._component?.props?.disabled
+            isPageRead|| readonly || column._component?.props?.readonly || column._component?.props?.disabled
           "
         ></GlComponent>
         <span class="gl-validate-message">{{

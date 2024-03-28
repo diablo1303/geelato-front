@@ -11,12 +11,7 @@ import type {CascaderOption} from "@arco-design/web-vue";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
-  modelValue: {
-    type: String,
-    default() {
-      return ''
-    }
-  },
+  modelValue: [String,Array],
   /**
    * 数据实体
    */
@@ -26,6 +21,9 @@ const props = defineProps({
   },
 })
 const mv = ref(props.modelValue)
+watch(()=>{return props.modelValue},()=>{
+  mv.value = props.modelValue
+})
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
@@ -43,7 +41,7 @@ if (props.entityReader?.immediate) {
 </script>
 
 <template>
-  <a-cascader class="gl-entity-cascader" v-model="mv" :options="options" expand-trigger="hover"/>
+  <a-cascader class="gl-entity-cascader" v-model="mv" :pathMode="true" :options="options" expand-trigger="hover"/>
 </template>
 
 <style>

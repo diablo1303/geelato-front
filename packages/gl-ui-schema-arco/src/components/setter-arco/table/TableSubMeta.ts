@@ -518,6 +518,44 @@ export default {
       subTitleField: '_component.props.bindField.fieldName',
       enableValueExpress: false,
       alarmIfNoSubTitle: '无字段'
+    },
+    {
+      name: 'readonly',
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      title: '只读',
+      setterComponentName: 'ASwitch',
+      enableValueExpress: true
+    },
+    {
+      name: '_hidden',
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      title: '隐藏',
+      description: '页面中存在该组件，只是不可见',
+      setterComponentName: 'ASwitch',
+      enableValueExpress: true
+    },
+    {
+      name: 'unRender',
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      title: '不渲染',
+      description: '页面中不存在该组件，不渲染，不可见，一般是为了提高性能在一些场景下不渲染。',
+      setterComponentName: 'ASwitch',
+      enableValueExpress: true
     }
   ],
   actions: [
