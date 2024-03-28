@@ -48,6 +48,7 @@ const sourceData = ref<Record<string, boolean | string>[]>([]);
 const loading = ref<boolean>(false);
 const scrollbar = ref(true);
 const scroll = ref({y: props.height});
+const plusTooltip = ref<boolean>(false);
 
 /**
  * 分页查询方法
@@ -62,10 +63,22 @@ const fetchData = async (params?: Record<string, any>) => {
     const {data} = await securityApi.queryColumnRolePermissions(props.parameter.type, props.parameter.object, {
       ...params, appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || '',
     });
-    cowColumns.value = data.column;
+    cowColumns.value = [];
+    for (const item of data.column) {
+      if (!isDefaultColumn(item.name)) {
+        cowColumns.value.push(item);
+      }
+    }
     rowColumns.value = data.role;
     renderData.value = data.table;
     sourceData.value = {...data.table};
+
+    if (cowColumns.value.length === 0) {
+      plusTooltip.value = true;
+      setTimeout(() => {
+        plusTooltip.value = false;
+      }, 1000 * 3);
+    }
   } catch (err) {
     console.log(err);
   } finally {
@@ -242,12 +255,14 @@ watch(() => props.height, (val) => {
           </template>
           新增角色
         </a-button>
-        <a-button type="primary" @click="addColumn">
-          <template #icon>
-            <gl-iconfont type="gl-plus-circle"/>
-          </template>
-          新增模型字段
-        </a-button>
+        <a-tooltip :popup-visible="plusTooltip" position="bottom" content="默认字段不参与字段权限控制，请新增其他字段。">
+          <a-button type="primary" @click="addColumn">
+            <template #icon>
+              <gl-iconfont type="gl-plus-circle"/>
+            </template>
+            新增模型字段
+          </a-button>
+        </a-tooltip>
         <a-button type="primary" @click="resetColumnDefaultPermission">
           <template #icon>
             <gl-iconfont type="gl-reset"/>
