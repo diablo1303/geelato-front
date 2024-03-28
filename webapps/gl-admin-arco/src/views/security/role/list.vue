@@ -105,27 +105,30 @@
            :pagination="pagination"
            :stripe="true"
            column-resizable
-           row-key="id" @page-change="onPageChange">
+           row-key="id"
+           @page-change="onPageChange"
+           @sorter-change="onSorterChange">
     <template #columns>
       <a-table-column :title="$t('security.role.index.form.index')" :width="80" align="center" data-index="index">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.role.index.form.name')" :tooltip="true" :width="150" data-index="name"></a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.role.index.form.code')" :tooltip="true" :width="150" data-index="code"></a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.role.index.form.name')" :tooltip="true" :width="150" data-index="name"/>
+      <a-table-column :ellipsis="true" :title="$t('security.role.index.form.code')" :tooltip="true" :width="150" data-index="code"/>
       <a-table-column :title="$t('security.role.index.form.type')" :width="100" data-index="status">
         <template #cell="{ record }">
           {{ $t(`security.role.index.form.type.${record.type}`) }}
         </template>
       </a-table-column>
+      <a-table-column :title="$t('security.role.index.form.weight')" :width="100" data-index="weight" :sortable="weightSortable"/>
       <a-table-column :title="$t('security.role.index.form.enableStatus')" :width="100" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`security.role.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.role.index.form.seqNo')" :width="80" data-index="seqNo"></a-table-column>
-      <a-table-column :title="$t('security.role.index.form.createAt')" :width="150" data-index="createAt"></a-table-column>
+      <a-table-column :title="$t('security.role.index.form.seqNo')" :width="80" data-index="seqNo"/>
+      <a-table-column :title="$t('security.role.index.form.createAt')" :width="150" data-index="createAt"/>
       <a-table-column :title="$t('security.role.index.form.operations')" :width="pageData.formState==='edit'?200:100" align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">
@@ -157,7 +160,7 @@ import {useI18n} from 'vue-i18n';
 import useLoading from '@/hooks/loading';
 // 分页列表
 import {Pagination} from '@/types/global';
-import type {TableColumnData} from '@arco-design/web-vue';
+import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
 import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
 // 引用其他对象、方法
@@ -187,6 +190,8 @@ const showColumns = ref<Column[]>([]);
 const basePagination: Pagination = {current: pageData.value.current, pageSize: pageData.value.pageSize};
 const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
+const weightSortable = ref<TableSortable>({sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''});
+const lastSort = ref<string>('');
 // 搜索条件
 const generateFilterData = (): FilterForm => {
   return {
@@ -220,7 +225,7 @@ const fetchData = async (params: PageQueryRequest = {current: pageData.value.cur
  * 条件查询 - 搜索
  */
 const search = (ev?: Event) => {
-  fetchData({...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
+  fetchData({order: lastSort.value, ...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
 };
 /**
  * 条件查询
@@ -235,6 +240,8 @@ const conditions = (ev?: Event) => {
  */
 const reset = (ev?: Event) => {
   basePagination.current = pageData.value.current;
+  weightSortable.value.sortOrder = '';
+  lastSort.value = '';
   filterData.value = generateFilterData();
   search();
 };
@@ -246,6 +253,14 @@ const onPageChange = (current: number) => {
   basePagination.current = current;
   search();
 };
+
+const onSorterChange = (dataIndex: string, direction: string) => {
+  lastSort.value = direction ? `${dataIndex}|${direction}`.replace(/end/g, '') : '';
+  basePagination.current = pageData.value.current;
+  search();
+  // @ts-ignore
+  weightSortable.value.sortOrder = direction;
+}
 
 /* 列表，按钮、操作列 */
 const addTable = (ev: MouseEvent) => {
@@ -311,13 +326,13 @@ const popupVisibleChange = (val: boolean) => {
   }
 };
 watch(() => columns.value, (val) => {
-    cloneColumns.value = cloneDeep(val);
-    cloneColumns.value.forEach((item, index) => {
-      item.checked = true;
-    });
-    showColumns.value = cloneDeep(cloneColumns.value);
-  },
-  {deep: true, immediate: true}
+      cloneColumns.value = cloneDeep(val);
+      cloneColumns.value.forEach((item, index) => {
+        item.checked = true;
+      });
+      showColumns.value = cloneDeep(cloneColumns.value);
+    },
+    {deep: true, immediate: true}
 );
 
 /* 对外调用方法 */
