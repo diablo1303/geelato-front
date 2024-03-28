@@ -545,7 +545,7 @@ const cloneColumns = ref<Column[]>([]);
                   <span v-else>{{ utils.getOptionLabel(formData.enableStatus, enableStatusOptions) }}</span>
                 </a-form-item>
               </a-col>
-              <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-col v-if="false" :span="(labelCol+wrapperCol)/formCol">
                 <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="linked" label="连接状态">
                   <a-select v-if="formState!=='view'" v-model="formData.linked" :options="linkedOptions"/>
                   <span v-else>{{ utils.getOptionLabel(formData.linked, linkedOptions) }}</span>

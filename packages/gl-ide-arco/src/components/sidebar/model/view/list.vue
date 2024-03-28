@@ -332,7 +332,7 @@ watch(() => props.height, (val) => {
           {{ utils.getOptionLabel(record.viewType, viewTypeOptions) }}
         </template>
       </a-table-column>
-      <a-table-column :width="100" data-index="linked" title="连接状态">
+      <a-table-column v-if="false" :width="100" data-index="linked" title="连接状态">
         <template #cell="{ record }">
           {{ utils.getOptionLabel(record.linked, linkedOptions) }}
         </template>

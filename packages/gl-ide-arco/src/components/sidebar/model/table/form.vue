@@ -210,7 +210,7 @@ defineExpose({saveOrUpdate, loadPage});
           <a-select v-model="formData.enableStatus" :disabled="formState==='view'" :options="enableStatusOptions"/>
         </a-form-item>
       </a-col>
-      <a-col v-if="formState!=='add'" :span="(labelCol+wrapperCol)/formCol">
+      <a-col v-if="false" :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="linked" label="连接状态">
           <a-select v-model="formData.linked" :disabled="formState==='view'" :options="linkedOptions"/>
         </a-form-item>

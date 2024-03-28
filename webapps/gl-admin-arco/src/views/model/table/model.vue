@@ -118,7 +118,7 @@
           <span v-else>{{ $t(`model.table.index.form.enableStatus.${formData.enableStatus}`) }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="24/pageData.formCol">
+      <a-col v-if="false" :span="24/pageData.formCol">
         <a-form-item
             :label="$t('model.table.index.form.linked')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"

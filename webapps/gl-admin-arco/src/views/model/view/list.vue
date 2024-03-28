@@ -136,7 +136,7 @@
           {{ $t(`model.view.index.form.viewType.${record.viewType}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.view.index.form.linked')" :width="100" data-index="linked">
+      <a-table-column v-if="false" :title="$t('model.view.index.form.linked')" :width="100" data-index="linked">
         <template #cell="{ record }">
           {{ $t(`model.view.index.form.linked.${record.linked}`) }}
         </template>
