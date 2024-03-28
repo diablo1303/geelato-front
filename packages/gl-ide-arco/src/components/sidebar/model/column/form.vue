@@ -8,6 +8,7 @@ export default {
 import {ref, watch} from "vue";
 import type {FormInstance} from "@arco-design/web-vue";
 import {Modal} from "@arco-design/web-vue";
+import {applicationApi, modelApi, useGlobal, securityApi, utils, stringUtil} from "@geelato/gl-ui";
 import type {
   ColumnSelectType,
   QueryMultiComponentForm,
@@ -15,9 +16,9 @@ import type {
   QueryTableForm,
   QueryDictForm,
   QueryDictItemForm,
-  QueryEncodingForm
+  QueryEncodingForm,
+  QueryAppForm
 } from '@geelato/gl-ui';
-import {modelApi, useGlobal, securityApi, utils, stringUtil} from "@geelato/gl-ui";
 import {
   autoIncrementOptions,
   columnSelectType,
@@ -56,6 +57,7 @@ const labelCol = ref<number>(6);
 const wrapperCol = ref<number>(18);
 const validateForm = ref<FormInstance>();
 const visibleForm = ref<boolean>(false);
+const appSelectOptions = ref<QueryAppForm[]>([]);
 /* 表单 */
 const generateFormData = (): QueryTableColumnForm => {
   return {
@@ -579,6 +581,14 @@ watch(() => props, () => {
     getSelectDictionaryOptions();
     getSelectCodeOptions();
     getSelectEntityOptions();
+    // 应用信息
+    applicationApi.getAppSelectOptions({
+      id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }, (data: QueryAppForm[]) => {
+      appSelectOptions.value = data || [];
+    }, () => {
+      appSelectOptions.value = [];
+    });
     // 表单数据重置
     formData.value = generateFormData();
     multiComponentData.value = [generateMultiComponentData()];
@@ -667,16 +677,11 @@ watch(() => visibleForm, () => {
           </a-form-item>
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
-          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="ordinalPosition" label="次序">
-            <a-input-number v-model="formData.ordinalPosition" :max="999999" :min="1" :precision="0" placeholder="长度 [0,999999]"/>
+          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="appId" label="所属应用">
+            <a-select v-model="formData.appId" :disabled="formState==='view'">
+              <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
+            </a-select>
           </a-form-item>
-        </a-col>
-        <a-col :span="(labelCol+wrapperCol)/formCol">
-          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="enableStatus" label="状态">
-            <a-select v-model="formData.enableStatus" :options="enableStatusOptions"/>
-          </a-form-item>
-        </a-col>
-        <a-col :span="(labelCol+wrapperCol)/formCol">
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
           <a-form-item field="comment" label="注释(中文)">
@@ -686,6 +691,16 @@ watch(() => visibleForm, () => {
         <a-col :span="(labelCol+wrapperCol)/formCol">
           <a-form-item field="description" label="注释(英文)">
             <a-textarea v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="(labelCol+wrapperCol)/formCol">
+          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="ordinalPosition" label="次序">
+            <a-input-number v-model="formData.ordinalPosition" :max="999999" :min="1" :precision="0" placeholder="长度 [0,999999]"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="(labelCol+wrapperCol)/formCol">
+          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="enableStatus" label="状态">
+            <a-select v-model="formData.enableStatus" :options="enableStatusOptions"/>
           </a-form-item>
         </a-col>
 

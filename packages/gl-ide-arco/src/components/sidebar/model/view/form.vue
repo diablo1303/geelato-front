@@ -533,7 +533,7 @@ const cloneColumns = ref<Column[]>([]);
                 </a-form-item>
               </a-col>
               <a-col :span="(labelCol+wrapperCol)/formCol">
-                <a-form-item :rules="[{required: false,message: '这是必填项'}]" field="appId" label="所属应用">
+                <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="appId" label="所属应用">
                   <a-select v-model="formData.appId" :disabled="formState==='view'">
                     <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
                   </a-select>

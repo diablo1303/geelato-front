@@ -8,8 +8,8 @@ export default {
 import {ref, watch} from "vue";
 import type {FormInstance} from "@arco-design/web-vue";
 import {Modal} from "@arco-design/web-vue";
-import {modelApi, utils} from "@geelato/gl-ui";
-import type {QueryTableColumnForm, QueryTableForeignForm, QueryTableForm} from '@geelato/gl-ui';
+import {applicationApi, modelApi, utils} from "@geelato/gl-ui";
+import type {QueryTableColumnForm, QueryAppForm, QueryTableForeignForm, QueryTableForm} from '@geelato/gl-ui';
 import {enableStatusOptions} from "./searchTable";
 
 type PageParams = {
@@ -34,6 +34,7 @@ const labelCol = ref<number>(6);
 const wrapperCol = ref<number>(18);
 const validateForm = ref<FormInstance>();
 const visibleForm = ref<boolean>(false);
+const appSelectOptions = ref<QueryAppForm[]>([]);
 const tableOptions = ref<QueryTableForm[]>([]);
 const mainTableColOptions = ref<QueryTableColumnForm[]>([]);
 const foreignTableColOptions = ref<QueryTableColumnForm[]>([]);
@@ -95,7 +96,8 @@ const fetchTables = async (params?: Record<string, any>) => {
   try {
     const {data} = await modelApi.queryTables({
       ...params,
-      enableStatus: 1, tableType: 'table', connectId: props.parameter.connectId
+      enableStatus: 1, tableType: 'table',
+      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || '',
     });
     tableOptions.value = data;
   } catch (err) {
@@ -176,6 +178,14 @@ const foreignTableChange = (value: any) => {
 
 watch(() => props, () => {
   if (props.visible === true) {
+    // 应用信息
+    applicationApi.getAppSelectOptions({
+      id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }, (data: QueryAppForm[]) => {
+      appSelectOptions.value = data || [];
+    }, () => {
+      appSelectOptions.value = [];
+    });
     // 表单
     fetchTables();
     // 表单数据重置
@@ -241,6 +251,13 @@ watch(() => visibleForm, () => {
               <a-option v-for="item of foreignTableColOptions" :key="item.id" :label="`${item.title}[${item.name}]`" :value="item.name"/>
             </a-select>
             <span v-else>{{ formData.foreignTableCol }}</span>
+          </a-form-item>
+        </a-col>
+        <a-col :span="(labelCol+wrapperCol)/formCol">
+          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="appId" label="所属应用">
+            <a-select v-model="formData.appId" :disabled="formState==='view'">
+              <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
+            </a-select>
           </a-form-item>
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
