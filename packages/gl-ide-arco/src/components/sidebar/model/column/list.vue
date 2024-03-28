@@ -80,20 +80,20 @@ const filterData = ref(generateFilterData());
 const fetchData = async (params: Record<string, any>) => {
   loading.value = true;
   try {
-    const {data} = await modelApi.queryTableColumns(params);
+    const {data} = await modelApi.pageQueryTableColumns(params);
     renderData.value = [];
     if (checked.value) {
-      data.forEach((item, index) => {
+      data.items.forEach((item, index) => {
         if (!defaultColumnMetas.value.includes((item as unknown as QueryTableColumnForm).name)) {
           renderData.value.push(item);
         }
       });
     } else {
-      renderData.value = data;
+      renderData.value = data.items;
     }
     pagination.current = params.current;
     pagination.pageSize = basePagination.pageSize;
-    pagination.total = renderData.value.length;
+    pagination.total = data.total;
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log(err);
@@ -673,7 +673,7 @@ watch(() => props.height, (val) => {
       <a-table-column :width="100" data-index="ordinalPosition" title="次序"/>
       <a-table-column :width="180" data-index="createAt" title="创建时间"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="200" data-index="comment" title="注释（中文）"/>
-      <a-table-column v-if="formState==='edit'" :width="32+60*3" align="center" data-index="operations" fixed="right" title="操作">
+      <a-table-column v-if="formState==='edit'" :width="32+66*3" align="center" data-index="operations" fixed="right" title="操作">
         <template #cell="{ record,isDefault = isDefaultColumn(record.name)}">
           <a-tooltip v-if="isDefault" content="系统字段不可编辑">
             <a-button class="button-disabled" size="small" type="text">

@@ -1,4 +1,4 @@
-import type {QueryResult} from "./Base";
+import type {PageQueryResponse, QueryResult} from "./Base";
 import {entityApi} from "./EntityApi";
 import utils from "../utils/Utils";
 
@@ -141,6 +141,11 @@ export interface QueryTableColumnForm {
   creator?: string;
   creatorName?: string;
   deleteAt?: string | string[];
+}
+
+export function pageQueryTableColumns(params: Record<string, any>) {
+  const records = utils.getUrlParams(params);
+  return entityApi.getAxios().get<PageQueryResponse>(`/api/model/table/column/pageQuery?${records.join('&')}`);
 }
 
 export function queryTableColumns(params: Record<string, any>) {
