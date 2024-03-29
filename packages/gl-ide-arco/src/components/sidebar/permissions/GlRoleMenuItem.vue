@@ -254,7 +254,7 @@ defineExpose({save})
               :pagination="false"
           >
             <template #columns>
-              <a-table-column title="菜单项" data-index="name">
+              <a-table-column title="菜单项" data-index="name" width="400">
                 <template #cell="{ record }">
                   <GlIconfont :type="record.iconType"></GlIconfont>
                   {{ record.name }}

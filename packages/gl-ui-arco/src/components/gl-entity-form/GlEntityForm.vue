@@ -25,7 +25,16 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { inject, onMounted, type PropType, provide, type Ref, ref } from 'vue'
+/**
+ *  表单组件
+ *  有关表单id，如果在表单组件中，有字段组件显性地绑定了id字段，则id值以该组件值为准
+ *  一般地，不需要有组件绑定id字段，在表单组件中默认会有id字段
+ *
+ *  表单复制
+ *  如果页面传的参数为复制创建，即isPageStatusCopyCreate为true
+ *  则基于复制的id（formParams.id的值）进行数据加载
+ */
+import { inject, onMounted, type PropType, provide, type Ref, ref, watch } from 'vue'
 import type { FormInstance } from '@arco-design/web-vue/es/form'
 import useLoading from '../../hooks/loading'
 import { isDataEntry } from '@geelato/gl-ui-schema-arco'
@@ -109,6 +118,7 @@ const formParams = getFormParams(pageProvideProxy, props.bindEntity)
 
 // formData中可能有id也有可能没有id，视传的参数而定，记录id在entityRecordId中定义
 const formData = ref<Record<string, any>>(JSON.parse(JSON.stringify(formParams)))
+
 const setFormData = (key: string, value: any, src?: string) => {
   // console.log(src, props.bindEntity.entityName, 'setFormData', key, value)
   formData.value[key] = value
@@ -117,6 +127,20 @@ const setFormData = (key: string, value: any, src?: string) => {
 let entityRecordId: Ref<string> = ref(isCopyCreate.value ? '' : formParams.id)
 let copyEntityRecordId: Ref<string> = ref(isCopyCreate.value ? formParams.id : '')
 formProvideProxy.setRecordId(entityRecordId.value)
+
+// 在表单组件中，显性的使用字段组件绑定id属性的场景，需要将组件中的id设置到entityRecordId中
+watch(
+  () => {
+    return formData.value.id
+  },
+  () => {
+    // 不是copy的场景，且设置了id值，则将id值设置到entityRecordId中
+    if (!isCopyCreate.value && formData.value.id) {
+      entityRecordId.value = formData.value.id
+      formProvideProxy.setRecordId(entityRecordId.value)
+    }
+  }
+)
 
 // console.log('entityRecordId', entityRecordId.value)
 const formItems: Ref<Array<FormItem>> = ref([])
@@ -258,7 +282,7 @@ const buildFieldItems = () => {
 
   buildFieldItem(props.glComponentInst)
   formProvideProxy.setValues(formData.value)
-  // console.log('buildFieldItems formItems:', formItems.value, 'formData:', formData.value)
+  console.log('buildFieldItems formItems:', formItems.value, 'formData:', formData.value)
 }
 
 /**
@@ -388,7 +412,7 @@ const loadForm = async () => {
               // )
               emits('onLoadingData', { data: items[0] })
               setFormItemValues(items[0])
-            }else{
+            } else {
               emits('onLoadingData', { data: {} })
             }
           })
@@ -429,7 +453,8 @@ const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
   if (checkBindEntity()) {
     const entitySaver = new EntitySaver(props.bindEntity.entityName)
     entitySaver.id = props.glComponentInst.id
-    // 先设置主表单部分，注意这里的formData有可能会有id值，在copyCreate的场景，页面加载之后entityRecordId.value会变为空
+    // 先设置主表单部分，注意这里的formData有可能会有id值
+    // 在copyCreate的场景，页面加载之后entityRecordId.value会变为空
     const record: Record<string, any> = { ...formData.value, id: entityRecordId.value }
     // 如果本表单作为另了个表单的子表单
     if (props.isSubForm) {
