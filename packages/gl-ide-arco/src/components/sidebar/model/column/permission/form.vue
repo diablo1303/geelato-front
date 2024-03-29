@@ -6,7 +6,7 @@ export default {
 
 <script lang="ts" setup>
 import {reactive, ref, watch, computed} from 'vue';
-import type {TableColumnData} from '@arco-design/web-vue';
+import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
 import {modelApi, securityApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {Pagination, QueryRoleForm, QueryTableColumnForm} from "@geelato/gl-ui";
 import {columnPermissionOptions, defaultColumnMetas, selectTypeOptions} from "../searchTable";
@@ -49,6 +49,7 @@ const loading = ref<boolean>(false);
 const scrollbar = ref(true);
 const scroll = ref({y: props.height});
 const plusTooltip = ref<boolean>(false);
+const weightSortable = ref<TableSortable>({sortDirections: ['ascend', 'descend']});
 
 /**
  * 分页查询方法
@@ -296,6 +297,16 @@ watch(() => props.height, (val) => {
       row-key="id">
     <template #columns>
       <a-table-column :ellipsis="true" :tooltip="false" :width="150" data-index="name" fixed="left" title="角色">
+        <template #title>
+          <a-popover position="tl">
+            角色&nbsp;<gl-iconfont type="gl-warning-circle" style="color: #ff696d"/>
+            <template #content>
+              <p>角色A ，权重 5，自定义</p>
+              <p>角色B ，权重 10 ，看自己</p>
+              <p>这里取的是角色B的看自己</p>
+            </template>
+          </a-popover>
+        </template>
         <template #cell="{record}">
           <a-popover :title="record.name" position="right" style="max-width: 300px">
             <span style="cursor: pointer;">{{ record.name }} <gl-iconfont type="gl-warning-circle"/></span>
@@ -303,6 +314,10 @@ watch(() => props.height, (val) => {
               <span>
                 <strong>编码：</strong>{{ record.code }}
                 <GlCopyToClipboard v-model="record.code" title="点击复制编码"/>
+              </span>
+              <br/>
+              <span>
+                <strong>权重：</strong>{{ record.weight }}
               </span>
               <br/>
               <span>
@@ -330,6 +345,7 @@ watch(() => props.height, (val) => {
           </a-popover>
         </template>
       </a-table-column>
+      <a-table-column :width="90" data-index="weight" align="center" title="权重" :sortable="weightSortable"/>
       <a-table-column v-for="item of cowColumns" :key="item.id" :data-index="item.id" :ellipsis="true" :tooltip="true" :width="150" align="center">
         <template #title>
           <a-popover :title="item.title" position="br" style="max-width: 400px">

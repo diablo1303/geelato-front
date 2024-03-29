@@ -28,6 +28,7 @@ const props = defineProps({
   formCol: {type: Number, default: 1},// 表单列数
   title: {type: String, default: '权限'},// 表达标题
   width: {type: String, default: ''},// 表单宽度
+  autoCode: {type: Boolean, default: false}
 });
 
 const global = useGlobal();
@@ -41,7 +42,7 @@ const generateFormData = (): QueryPermissionForm => {
   return {
     id: props.modelValue || '',
     name: '',
-    code: '',
+    code: props.autoCode ? utils.uuid(19) : '',
     type: props.parameter.type || '',
     object: props.parameter.object || '',
     rule: '',
@@ -173,7 +174,7 @@ watch(() => visibleForm, () => {
         <span v-else>{{ formData.name }}</span>
       </a-form-item>
       <a-form-item :rules="[{required: true,message: '这是必填项'},{validator:validateCode}]" field="code" label="编码">
-        <a-input v-if="formState!=='view'&&!formData.default" v-model="formData.code" :max-length="32"/>
+        <a-input v-if="formState!=='view'&&!formData.default&&!autoCode" v-model="formData.code" :max-length="32"/>
         <span v-else>{{ formData.code }}</span>
       </a-form-item>
       <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="type" label="类型">

@@ -42,7 +42,7 @@ const generateFormData = (): QueryRoleForm => {
     name: '',
     code: '',
     type: props.parameter.type || '',
-    weight: 0,
+    weight: 5,
     enableStatus: 1,
     seqNo: 999,
     description: '',
@@ -202,6 +202,13 @@ watch(() => visibleForm, () => {
           <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="weight" label="权重">
             <a-input-number v-if="formState!=='view'" v-model="formData.weight" :max="999" :min="0" :precision="0" :step="1" placeholder="长度 [0,999]"/>
             <span v-else>{{ formData.weight }}</span>
+            <a-tooltip v-if="formState!=='view'&&formData.weight!==5" content="重置为默认权重">
+              <a-button size="medium" type="text" @click="ev => {formData.weight=5;}">
+                <template #icon>
+                  <gl-iconfont type="gl-reset"/>
+                </template>
+              </a-button>
+            </a-tooltip>
           </a-form-item>
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">

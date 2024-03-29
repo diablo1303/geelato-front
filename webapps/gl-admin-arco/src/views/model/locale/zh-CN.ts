@@ -273,7 +273,7 @@ export default {
 
   'model.table.permission.index.menu.list.searchTable': '模型权限',
   'model.table.permission.index.model.role.add': '新增角色',
-  'model.table.permission.index.model.permission.add': '自定义权限',
+  'model.table.permission.index.model.permission.add': '查看权限（自定义）',
   'model.table.permission.index.model.permission.reset': '重置默认权限',
   'model.table.permission.index.model.refresh': '刷新',
   'model.table.permission.index.list.role': '角色',

@@ -57,6 +57,11 @@
               :placeholder="$t('security.form.rules.match.length.title')+'[0,999]'"
               :precision="0"/>
           <span v-else>{{ formData.weight }}</span>
+          <a-button v-if="formData.weight!==5&&pageData.button" size="medium" type="outline" @click="ev => {formData.weight=5;}">
+            <template #icon>
+              <icon-undo/>
+            </template>
+          </a-button>
         </a-form-item>
       </a-col>
       <a-col :span="24/pageData.formCol">
@@ -128,7 +133,7 @@ const generateFormData = (): QueryForm => {
     name: '',
     code: '',
     type: '',
-    weight: 0,
+    weight: 5,
     enableStatus: 1,
     seqNo: 999,
     description: '',

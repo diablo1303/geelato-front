@@ -1,7 +1,6 @@
 import {computed} from 'vue';
 import type {SelectOptionData} from "@arco-design/web-vue";
 
-
 const typeOptions = computed<SelectOptionData[]>(() => [
   {label: '数据权限', value: 'dp',},
   {label: '页面元素权限', value: 'ep',},
@@ -12,7 +11,7 @@ const typeOptions = computed<SelectOptionData[]>(() => [
 const classifyOptions = computed<SelectOptionData[]>(() => [
   {label: '查看权限（默认）', value: 'view',},
   {label: '编辑权限（默认）', value: 'edit',},
-  {label: '自定义权限', value: 'custom',},
+  {label: '查看权限（自定义）', value: 'custom',},
 ]);
 
 export {typeOptions, classifyOptions}

@@ -294,7 +294,7 @@ export default {
   'security.permission.index.form.type.cp': '实体字段权限',
   'security.permission.index.form.classify.view': '查看权限（默认）',
   'security.permission.index.form.classify.edit': '编辑权限（默认）',
-  'security.permission.index.form.classify.custom': '自定义权限',
+  'security.permission.index.form.classify.custom': '查看权限（自定义）',
   'security.permission.index.form.object': '对象',
   'security.permission.index.form.rule': '规则',
   'security.permission.index.form.appId': '所属应用',

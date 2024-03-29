@@ -6,7 +6,7 @@ export default {
 
 <script lang="ts" setup>
 import {reactive, ref, watch, computed} from 'vue';
-import type {TableColumnData} from '@arco-design/web-vue';
+import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
 import {securityApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {Pagination, QueryRoleForm, QueryPermissionClassifyForm, QueryPermissionForm, QueryRolePermissionForm} from "@geelato/gl-ui";
 import {typeOptions as roleTypeOptions} from "../../../security/role/searchTable";
@@ -45,6 +45,7 @@ const renderData = ref<Record<string, boolean | string>[]>([]);
 const loading = ref<boolean>(false);
 const scrollbar = ref(true);
 const scroll = ref({x: 1000, y: props.height});
+const weightSortable = ref<TableSortable>({sortDirections: ['ascend', 'descend']});
 
 const viewTypes = ["&all", "&myBusiness", "&myDept", "&myself"];
 const viewPers = ref<QueryPermissionForm[]>([]);
@@ -249,12 +250,13 @@ const permissionPage = ref({
   formState: 'add',
   formCol: 1,
   title: '',
-  width: ''
+  width: '',
+  autoCode: true
 });
 const addTablePermission = (ev?: MouseEvent) => {
   permissionPage.value.formState = 'add';
   permissionPage.value.parameter.type = 'mp';
-  permissionPage.value.title = '新增自定义模型权限';
+  permissionPage.value.title = '新增查看权限（自定义）';
   permissionPage.value.id = '';
   permissionPage.value.visible = true;
 }
@@ -340,6 +342,7 @@ watch(() => props.height, (val) => {
                             :parameter="permissionPage.parameter"
                             :title="permissionPage.title"
                             :width="permissionPage.width"
+                            :autoCode="permissionPage.autoCode"
                             @saveSuccess="tableRefresh"/>
 
   <GlSecurityRoleForm v-model:visible="rolePage.visible"
@@ -363,7 +366,7 @@ watch(() => props.height, (val) => {
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
-          自定义权限
+          查看权限（自定义）
         </a-button>
         <a-button type="primary" @click="resetTableDefaultPermission">
           <template #icon>
@@ -398,6 +401,16 @@ watch(() => props.height, (val) => {
       row-key="id">
     <template #columns>
       <a-table-column :ellipsis="true" :tooltip="false" :width="150" data-index="name" fixed="left" title="角色">
+        <template #title>
+          <a-popover position="tl">
+            角色&nbsp;<gl-iconfont type="gl-warning-circle" style="color: #ff696d"/>
+            <template #content>
+              <p>角色A ，权重 5，自定义</p>
+              <p>角色B ，权重 10 ，看自己</p>
+              <p>这里取的是角色B的看自己</p>
+            </template>
+          </a-popover>
+        </template>
         <template #cell="{record}">
           <a-popover :title="record.name" position="right" style="max-width: 300px">
             <span style="cursor: pointer;">{{ record.name }} <gl-iconfont type="gl-warning-circle"/></span>
@@ -405,6 +418,10 @@ watch(() => props.height, (val) => {
               <span>
                 <strong>编码：</strong>{{ record.code }}
                 <GlCopyToClipboard v-model="record.code" title="点击复制编码"/>
+              </span>
+              <br/>
+              <span>
+                <strong>权重：</strong>{{ record.weight }}
               </span>
               <br/>
               <span>
@@ -432,7 +449,9 @@ watch(() => props.height, (val) => {
           </a-popover>
         </template>
       </a-table-column>
-      <a-table-column v-for="(nape,index) of cowColumns" :key="index" :title="`${utils.getOptionLabel(nape.type,classifyOptions)}`">
+      <a-table-column :width="90" data-index="weight" align="center" title="权重" :sortable="weightSortable"/>
+      <a-table-column v-for="(nape,index) of cowColumns" :key="index" :ellipsis="true" :tooltip="true"
+                      :title="`${utils.getOptionLabel(nape.type,classifyOptions)}`">
         <a-table-column v-for="item of nape.data" :key="item.id" :data-index="item.id" :ellipsis="true" :tooltip="true" :width="120" align="center">
           <template #title>
             <a-popover :title="item.name" position="br" style="max-width: 300px">
