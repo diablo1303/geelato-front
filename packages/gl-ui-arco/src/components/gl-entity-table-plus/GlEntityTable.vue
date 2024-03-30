@@ -164,6 +164,16 @@ const showOptColumn = () => {
   return showOpt
 }
 
+const optColumnKey = ref(utils.gid())
+/**
+ *  更新操作列
+ *  由于操作列有可能依赖数据记录值做了展示控制
+ *  在查询之后，需要刷新操作列
+ */
+const refreshOptColumn = () => {
+  optColumnKey.value = utils.gid()
+}
+
 const showSeqNoColumn = () => {
   return props.showSeqNo
 }
@@ -255,6 +265,8 @@ const fetchData = useFetchData(
   formProvideProxy?.getRecordId,
   (result: any) => {
     renderData.value = result.data
+    // 刷新操作列
+    refreshOptColumn()
     emits('fetchSuccess', result)
   }
 )
@@ -398,6 +410,7 @@ const getRecordStatus = (key: string) => {
   ]
 }
 
+
 defineExpose({
   resetColumns,
   search,
@@ -435,7 +448,7 @@ defineExpose({
     @sorter-change="onSorterChange"
   >
     <template ##="{ rowIndex }">
-      <a-space v-if="renderData[rowIndex]" :size="0" class="gl-entity-table-cols-opt">
+      <a-space :key="optColumnKey" v-if="renderData[rowIndex]" :size="0" class="gl-entity-table-cols-opt">
         <template
           v-for="(columnAction, index) in copyColumnActions()"
           :key="rowIndex + '_' + index"
