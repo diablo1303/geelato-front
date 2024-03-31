@@ -14,6 +14,7 @@ const useComponentSelectOption = () => {
     { componentName: 'GlUserSelect', title: '人员选择器' },
     { componentName: 'GlUpload', title: '文件上传' },
     { componentName: 'GlText', title: '文本展示' },
+    { componentName: 'GlAlert', title: '告警提示' },
     { componentName: 'GlIconfontSelect', title: '图标展示/选择' },
     { componentName: 'GlImage', title: '单个图片展示/上传' }
   ]

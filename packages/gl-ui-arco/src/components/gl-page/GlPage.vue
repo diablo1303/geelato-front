@@ -53,6 +53,7 @@ import {
   ConvertUtil
 } from '@geelato/gl-ui'
 import type { Action } from '@geelato/gl-ui-schema'
+import type {ParamMeta} from "@geelato/gl-ui/src/m/types/global";
 
 const emits = defineEmits(['interval'])
 const proxy = getCurrentInstance()?.proxy
@@ -134,6 +135,15 @@ const props = defineProps({
     }
   },
   /**
+   *  页面参数的定义
+   */
+  paramsMeta: {
+    type: Array as PropType<Array<ParamMeta>>,
+    default() {
+      return []
+    }
+  },
+  /**
    *  支持转换前PageParamConfigType和转换后的参数类型PageParam
    */
   params: {
@@ -170,6 +180,7 @@ pageProvideProxy.setPageStatus(props.pageStatus)
 pageProvideProxy.setPageCustom(props.pageCustom)
 pageProvideProxy.setPagePermission(props.pagePermission)
 pageProvideProxy.setParams(props.params)
+pageProvideProxy.setParamsMeta(props.paramsMeta)
 const onPageMounted = () => {
   //  触发页面配置的事件，只限运行时
   if (props.glIsRuntime) {

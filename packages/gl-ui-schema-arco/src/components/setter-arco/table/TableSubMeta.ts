@@ -510,6 +510,18 @@ export default {
           title: '宽度',
           setterComponentName: 'AInputNumber',
           placeholder: '单位象素(px)'
+        },
+        {
+          name: '_show',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: true,
+          show: true,
+          expanded: true,
+          setterComponentProps: { defaultChecked: true },
+          setterComponentVModelName: 'modelValue',
+          title: '是否显示',
+          setterComponentName: 'ASwitch'
         }
       ],
       setterComponentName: 'GlObjectArraySetter',

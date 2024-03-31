@@ -56,6 +56,19 @@ export default {
       setterComponentName: 'AInput'
     },
     {
+      name: 'paramsMeta',
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      title: '页面参数定义',
+      description: '定义该页面需要依赖哪些参数，用于其它页面在调用时，可以选择填入',
+      setterComponentName: 'GlPageParamsSetter'
+    },
+    {
       name: 'params',
       setterComponentProps: {},
       setterComponentVModelName: '',
@@ -64,7 +77,7 @@ export default {
       enableValueExpress: false,
       show: true,
       expanded: true,
-      title: '页面参数',
+      title: '页面参数初始',
       setterComponentName: 'GlObjectArraySetter',
       _showSub: true,
       properties: [
@@ -92,7 +105,8 @@ export default {
           title: '参数值'
         }
       ],
-      titleField: 'name'
+      titleField: 'name',
+      description: '该页面在初始时，传入的参数值，可用于该页面被嵌入其它页面的场景，可以将上个页面的相关值，通过此参数传入',
     },
     {
       name: 'pageHelp',
@@ -138,7 +152,7 @@ export default {
     {
       name: 'interval',
       title: '页面定时器',
-      description: '页面的定时器。'
+      description: '页面的定时器，可在页面组件的属性“定时器间隔”中设置定时间隔。'
     }
   ],
   methods: [
