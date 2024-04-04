@@ -51,3 +51,6 @@
     background-color: rgb(239, 239, 239);
 }
 
+/*.gl-entity-table .arco-table-tr:hover td:first-child {*/
+/*   border-left:solid 2px dodgerblue !important;*/
+/*}*/

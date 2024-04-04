@@ -192,8 +192,8 @@ const useEmptyToolbarInst = () => {
   }
 }
 
-const useQueryInst = (options: PageCreatorOptions) => {
-  const insts = useFieldMetaToComponentInst(options.entityMeta.entityName, options.queryFields)
+const useQueryInst = async (options: PageCreatorOptions) => {
+  const insts = await useFieldMetaToComponentInst(options.entityMeta.entityName, options.queryFields)
 
   const items: any[] = []
   insts.forEach((inst: ComponentInstance, index: number) => {
@@ -615,7 +615,7 @@ const useTableInst = (options: PageCreatorOptions): ComponentInstance => {
 }
 
 export class ListPageCreator extends PageCreator {
-  buildChildren(page: ComponentInstance, options: PageCreatorOptions): ComponentInstance {
+  async buildChildren(page: ComponentInstance, options: PageCreatorOptions): Promise<ComponentInstance> {
     // 获取字段信息
     const tableInst = useTableInst(options)
     const pageInst: ComponentInstance = options.pageInfo.pageExtendContent
@@ -641,14 +641,14 @@ export class ListPageCreator extends PageCreator {
       tableInst.props.columnActions = useColumnActionsInst(options, tableInst, formInst!)
     } else {
       console.log(
-        '从引用页面pageInst中找不到表单页面，默认不创建增删除改查操作，pageInst：',
-        pageInst
+          '从引用页面pageInst中找不到表单页面，默认不创建增删除改查操作，pageInst：',
+          pageInst
       )
       tableInst.props.toolbar = useEmptyToolbarInst()
       tableInst.props.columnActions = useEmptyColumnActionsInst()
     }
     tableInst.props.columns = useColumnsInst(options)
-    tableInst.props.query = useQueryInst(options)
+    tableInst.props.query = await useQueryInst(options)
     page.children.push(tableInst)
     return page
   }

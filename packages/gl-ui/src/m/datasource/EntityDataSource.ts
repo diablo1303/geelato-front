@@ -36,6 +36,21 @@ export const compareMeta = { cops, copDict }
 
 export const keyFiledName = 'id'
 
+/**
+ *   字段元数据示例：{
+ *   charMaxLength: '19',
+ *   comment: '所属流程定义',
+ *   defaultValue: '5043740024504455168',
+ *   name: 'proceDefId',
+ *   nullable: false,
+ *   precision: 0,
+ *   scale: 0,
+ *   selectType: 'ENTITY',
+ *   title: '所属流程定义',
+ *   type: 'String',
+ *   typeExtra: '5043739996989820928'
+ *   }
+ */
 export class FieldMeta {
   name: string = ''
   title: string = ''
@@ -45,6 +60,28 @@ export class FieldMeta {
   valueExpression?: string = '';
 
   [key: string]: any
+  // charMaxLength: '19'
+  // charMaxLength: string
+  // // comment: '所属流程定义'
+  // comment: string
+  // // defaultValue: '5043740024504455168'
+  // efaultValue: any
+  // // name: 'proceDefId'
+  // name: string
+  // // nullable: false
+  // nullable: boolean
+  // // recision: 0
+  // precision: number
+  // // cale: 0
+  // scale: number
+  // // selectType: 'ENTITY'
+  // selectType: string
+  // // title: '所属流程定义'
+  // title: string
+  // // type: 'String'
+  // type: string
+  // // typeExtra: '5043739996989820928'
+  // typeExtra: string
 
   constructor(name?: string, alias?: string, title?: string) {
     this.title = title || ''
@@ -320,6 +357,15 @@ export class EntityReader {
     valueExpression?: string
   ) {
     this.params.push(new EntityReaderParam(name, cop, value, groupName, valueExpression))
+  }
+
+  /**
+   * 添加排序字段，可以多次调用，添加多个排序
+   * @param field 排序字段名
+   * @param order 上降序 默认为升序 'ascend' | 'descend' | '+' | ‘-’
+   */
+  public addOrder(field: string, order?: string){
+    this.order.push(new EntityReaderOrder(field,order))
   }
 }
 

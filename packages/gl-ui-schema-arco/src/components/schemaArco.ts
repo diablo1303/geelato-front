@@ -94,6 +94,8 @@ import TemplateInstance from './setter-arco/template/TemplateInstance'
 import FlowEditorMeta from './setter-arco/flow-editor/FlowEditorMeta'
 import PageTemplateFlowMeta from './setter-arco/page-template/PageTemplateFlowMeta'
 import PageTemplateFlowInstance from './setter-arco/page-template/PageTemplateFlowInstance'
+import PageTemplateSimpleApproveMeta from './setter-arco/page-template/PageTemplateSimpleApproveMeta'
+import PageTemplateSimpleApproveInstance from './setter-arco/page-template/PageTemplateSimpleApproveInstance'
 import SpaceMeta from './setter-arco/space/SpaceMeta'
 import SpaceInstance from './setter-arco/space/SpaceInstance'
 import OrgSelectMeta from './setter-arco/orgSelect/orgSelectMeta'
@@ -178,7 +180,8 @@ const componentMetas: Array<ComponentMeta> = [
   OpRecordMeta,
   BlocksMeta,
   FlowEditorMeta,
-  PageTemplateFlowMeta
+  PageTemplateFlowMeta,
+  PageTemplateSimpleApproveMeta
 ]
 
 const customInstances: Array<ComponentInstance> = [
@@ -196,7 +199,8 @@ const customInstances: Array<ComponentInstance> = [
   LayoutPageInstance,
   TemplateInstance,
   LoopInstance,
-  PageTemplateFlowInstance
+  PageTemplateFlowInstance,
+  PageTemplateSimpleApproveInstance
 ]
 const componentInstances: Array<ComponentInstance> = []
 const dataEntryNameMap: { [key: string]: boolean } = {}

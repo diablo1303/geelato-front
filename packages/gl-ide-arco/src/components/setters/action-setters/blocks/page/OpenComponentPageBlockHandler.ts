@@ -62,7 +62,7 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
       `
             const ${contentName} = $gl.fn.loadPage("${props.pageId || ''}","${
         props.extendId
-      }",${JSON.stringify(props.params || [])},"${props.pageStatus}","${props.pageTemplateName}");
+      }",${JSON.stringify(props.params || [])},"${props.pageStatus}","${props.pageTemplateName}",${JSON.stringify(props.pageTemplateProps || {})});
             $gl.fn.open${mode}({
                 title:${title},
                 content: ${contentName},
@@ -90,7 +90,9 @@ interface Props {
   // 页面用户自定义
   pageCustom: PageCustomType
   // 页面模板名称
-  pageTemplateName: string
+  pageTemplateName?: string
+  // 页面模板属性
+  pageTemplateProps?: object
   // Drawer | Modal
   mode?: string
 

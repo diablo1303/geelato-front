@@ -2,8 +2,12 @@ import { ComponentInstance } from '@geelato/gl-ui-schema'
 import type { FieldMeta } from '@geelato/gl-ui'
 import { utils } from '@geelato/gl-ui'
 import { useComponentStore } from '@geelato/gl-ide'
+import useEntityConvert from './field-converts/EntityConverter'
+import useDictionaryConvert from './field-converts/DictionaryConverter'
 
-export const useFieldMetaToComponentInst = (entityName: string, fieldMetas: FieldMeta[]) => {
+
+const converters = [useEntityConvert,useDictionaryConvert]
+export const useFieldMetaToComponentInst = async (entityName: string, fieldMetas: FieldMeta[]) => {
   const componentStore = useComponentStore()
 
   /**
@@ -11,7 +15,7 @@ export const useFieldMetaToComponentInst = (entityName: string, fieldMetas: Fiel
    * @param entityName
    * @param fieldMeta
    */
-  function convertOne(entityName: string, fieldMeta: FieldMeta) {
+  async function convertOne(entityName: string, fieldMeta: FieldMeta) {
     console.log('convertOne', entityName, fieldMeta)
     const inst = new ComponentInstance()
     inst.group = 'dataEntry'
@@ -40,12 +44,23 @@ export const useFieldMetaToComponentInst = (entityName: string, fieldMetas: Fiel
 
     switch (fieldMeta.type) {
       case 'String':
-        // TODO 可按醋类型细化，发编码组件、颜色组件、字典组件...
-        if (parseInt(fieldMeta.charMaxLength) > 200) {
-          inst.componentName = 'ATextarea'
-        } else {
-          inst.componentName = 'AInput'
+        let byConverter = false
+        // TODO 可按醋类型细化，发编码组件、颜色组件、字典组件...注册到converters中。
+        for (const converter of converters) {
+          if(await converter(fieldMeta, inst)){
+            byConverter = true
+            break
+          }
         }
+
+        if (!byConverter) {
+          if (parseInt(fieldMeta.charMaxLength) > 200) {
+            inst.componentName = 'ATextarea'
+          } else {
+            inst.componentName = 'AInput'
+          }
+        }
+
         break
       case 'Date':
         // TODO 可按模型类型细化
@@ -70,7 +85,7 @@ export const useFieldMetaToComponentInst = (entityName: string, fieldMetas: Fiel
         break
     }
 
-    inst.id = utils.gid(componentStore.getAlias(inst.componentName)||'id')
+    inst.id = utils.gid(componentStore.getAlias(inst.componentName) || 'id')
     return inst
   }
 
@@ -79,14 +94,14 @@ export const useFieldMetaToComponentInst = (entityName: string, fieldMetas: Fiel
    * @param entityName
    * @param fieldMetas
    */
-  function convertAll(entityName: string, fieldMetas: FieldMeta[]) {
+  async function convertAll(entityName: string, fieldMetas: FieldMeta[]) {
     const result: ComponentInstance[] = []
-    fieldMetas?.forEach((fieldMeta: FieldMeta) => {
-      const inst: ComponentInstance = convertOne(entityName, fieldMeta)
+    for (const fieldMeta of fieldMetas) {
+      const inst: ComponentInstance = await convertOne(entityName, fieldMeta)
       result.push(inst)
-    })
+    }
     return result
   }
 
-  return convertAll(entityName, fieldMetas)
+  return await convertAll(entityName, fieldMetas)
 }

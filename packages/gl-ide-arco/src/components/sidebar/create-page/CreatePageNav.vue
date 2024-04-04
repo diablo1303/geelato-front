@@ -48,7 +48,7 @@ const getPages = async (): Promise<PageInfo[]> => {
         return []
       }
 
-      return [toRaw(formPage.value.getPage())]
+      return [toRaw(await formPage.value.getPage())]
     }
   }
   if (currentPageType.value === PageType.listPage) {
@@ -57,7 +57,7 @@ const getPages = async (): Promise<PageInfo[]> => {
       if (errors) {
         return []
       }
-      return [toRaw(listPage.value.getPage())]
+      return [toRaw(await listPage.value.getPage())]
     }
   }
   return [toRaw(new PageInfo())]
