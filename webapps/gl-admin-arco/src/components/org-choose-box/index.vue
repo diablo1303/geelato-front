@@ -5,11 +5,13 @@ export default {
 </script>
 <script lang="ts" setup>
 import {ref, watch} from 'vue';
+import cloneDeep from 'lodash/cloneDeep';
 import {QueryOrgForm, queryOrgsByParams} from '@/api/security';
 import {generateRandom} from "@/utils/strings";
 import OrgSelect from "./choose.vue";
 
 type QueryForm = QueryOrgForm;
+type PageParams = { appId?: string; tenantCode?: string; }
 
 const layoutHeight = ref<number>(420);
 const layoutWidth = ref<number>(514);
@@ -27,9 +29,11 @@ const props = defineProps({
   modelValue: {type: String, default: ''},// 组织id
   orgNames: {type: String, default: ''},// 组织name
   data: {type: Array<QueryForm>, default: []},// {id:,name:}
+  parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
   disabled: {type: Boolean, default: false},// 是否禁用
   maxCount: {type: Number, default: 0},// 取值数量
   hasRoot: {type: Boolean, default: true},// 是否存在根节点
+  checkStrictly: {type: Boolean, default: true},// 是否取消父子节点关联
   onlyModal: {type: Boolean, default: false},// 仅使用弹窗
   visible: {type: Boolean, default: false},// 控制弹窗隐显
   onlySelect: {type: Boolean, default: true},// 仅选择，不可输入
@@ -45,20 +49,6 @@ const modalData = ref<QueryForm[]>([]);
 // 手动输入
 const tagInput = ref<string>('');
 const tagInputWidth = ref<number>(12);
-
-/**
- * 数组对象值传递，防止引用相同地址
- * @param source
- * @param target
- */
-const arrayDataToData = (source: QueryForm[], target: QueryForm[]) => {
-  if (source && source.length > 0) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of source) {
-      target.push(item);
-    }
-  }
-}
 
 /**
  * 将输入数据转为tag便签，失去焦点或enter
@@ -80,8 +70,13 @@ const tagInputChange = (value: string, ev?: Event) => {
  */
 const dataFormat = async () => {
   tagData.value = [];
+  modalData.value = [];
   if (props.data && props.data.length) {
-    tagData.value = props.data;
+    if (props.onlyModal) {
+      modalData.value = props.data;
+    } else {
+      tagData.value = props.data;
+    }
   } else {
     const ids = props.modelValue ? props.modelValue.split(",") : [];
     const names = props.orgNames ? props.orgNames.split(",") : [];
@@ -90,7 +85,13 @@ const dataFormat = async () => {
         for (let i = 0; i < ids.length; i += 1) {
           if (ids[i]) {
             if (i < names.length && names[i]) {
-              tagData.value.push({id: ids[i], name: names[i]} as QueryForm);
+              if (props.onlyModal) {
+                modalData.value.push({id: ids[i], name: names[i]} as QueryForm);
+              } else {
+                tagData.value.push({id: ids[i], name: names[i]} as QueryForm);
+              }
+            } else if (props.onlyModal) {
+              modalData.value.push({id: ids[i], name: ids[i]} as QueryForm);
             } else {
               tagData.value.push({id: ids[i], name: ids[i]} as QueryForm);
             }
@@ -105,14 +106,22 @@ const dataFormat = async () => {
               // eslint-disable-next-line no-restricted-syntax
               for (const item of data) {
                 if (item.id === ids[i]) {
-                  tagData.value.push(item);
+                  if (props.onlyModal) {
+                    modalData.value.push(item);
+                  } else {
+                    tagData.value.push(item);
+                  }
                   isQuery = true;
                   break;
                 }
               }
             }
             if (!isQuery) {
-              tagData.value.push({id: ids[i], name: ids[i]} as QueryForm);
+              if (props.onlyModal) {
+                modalData.value.push({id: ids[i], name: ids[i]} as QueryForm);
+              } else {
+                tagData.value.push({id: ids[i], name: ids[i]} as QueryForm);
+              }
             }
           }
         } catch (err) {
@@ -150,7 +159,7 @@ const tagDataFormat = () => {
 const editClick = (ev?: MouseEvent) => {
   key.value = generateRandom();
   modalData.value = [];
-  arrayDataToData(tagData.value, modalData.value);
+  modalData.value = cloneDeep(tagData.value);
   modalVisible.value = true;
 
   emits('openModal', tagData.value);
@@ -186,11 +195,16 @@ const deleteClick = (data: QueryForm) => {
 const modalOkClick = (ev?: MouseEvent) => {
   modalVisible.value = false;
   tagData.value = [];
-  arrayDataToData(modalData.value, tagData.value);
-  tagDataFormat();
+  if (!props.onlyModal) {
+    tagData.value = cloneDeep(modalData.value);
+    tagDataFormat();
 
-  emits('confirmModal', tagData.value);
-  emits('change', tagData.value);
+    emits('confirmModal', tagData.value);
+    emits('change', tagData.value);
+  } else {
+    emits('confirmModal', modalData.value);
+    emits('change', modalData.value);
+  }
 }
 /**
  * 取消
@@ -198,6 +212,7 @@ const modalOkClick = (ev?: MouseEvent) => {
  */
 const modalCancelClick = (ev?: MouseEvent) => {
   modalVisible.value = false;
+  modalData.value = [];
 
   emits('cancelModal', tagData.value);
 }
@@ -208,8 +223,9 @@ const modalCancelClick = (ev?: MouseEvent) => {
  */
 watch(() => tagInput, () => {
   setTimeout(() => {
+    const element = document.querySelector(`#tag-${selectKey.value}>.box-mirror`);
     // @ts-ignore
-    const width = document.querySelector(`#tag-${selectKey.value}>.box-mirror`).offsetWidth;
+    const width = element ? element.offsetWidth : 12;
     tagInputWidth.value = width > 12 ? width : 12;
   }, 10);
 }, {deep: true, immediate: true});
@@ -218,13 +234,15 @@ watch(() => tagInput, () => {
  * 数据输入
  */
 watch(() => props, async () => {
-  // 解析数据
-  await dataFormat();
   // 仅显示弹窗
-  if (props.onlyModal) {
+  if (props.onlyModal && props.visible === true) {
+    // 解析数据
+    await dataFormat();
     key.value = generateRandom();
-    arrayDataToData(tagData.value, modalData.value);
     modalVisible.value = props.visible;
+  } else {
+    // 解析数据
+    await dataFormat();
   }
 }, {deep: true, immediate: true});
 
@@ -275,9 +293,12 @@ watch(() => modalVisible, () => {
       @ok="modalOkClick($event)">
     <OrgSelect :key="key"
                v-model="modalData"
+               :check-strictly="props.checkStrictly"
                :has-root="props.hasRoot"
                :height="layoutHeight"
-               :max-count="props.maxCount"/>
+               :max-count="props.maxCount"
+               :parameter="props.parameter"
+               :visible="modalVisible"/>
   </a-modal>
 </template>
 <style lang="less" scoped>

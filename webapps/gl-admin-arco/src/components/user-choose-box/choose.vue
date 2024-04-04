@@ -10,17 +10,20 @@ import OrgTree from "../org-choose-box/tree.vue";
 import UserList from "./list.vue";
 
 type QueryForm = QueryUserForm;
+type PageParams = { appId?: string; tenantCode?: string; }
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
   modelValue: {type: Array<QueryForm>, default: []},
+  parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
+  visible: {type: Boolean, default: false},// 控制弹窗隐显
   disabled: {type: Boolean, default: false},// 是否禁用
   maxCount: {type: Number, default: 0},// 取值数量
   height: {type: Number, default: 420}
 });
 
 // 标签的滚动条
-const scrollbar = ref({height: '444px', overflow: 'auto'});
+const scrollbar = ref({height: '406px', overflow: 'auto'});
 // 标签数据
 const rightData = ref<QueryForm[]>([]);
 // 选中数据
@@ -97,7 +100,7 @@ watch(() => props.modelValue, () => {
  * 高度调整
  */
 watch(() => props.height, () => {
-  scrollbar.value.height = `${props.height + 24}px`;
+  scrollbar.value.height = `${props.height - 14}px`;
 }, {immediate: true});
 /**
  * 标签变更
@@ -126,7 +129,9 @@ watch(() => rightData, () => {
         <OrgTree :has-root="true"
                  :height="props.height"
                  :max-count="1"
+                 :parameter="props.parameter"
                  :root-selected="true"
+                 :visible="visible"
                  @change="selectChange"/>
       </a-layout-content>
       <a-divider :style="{height:`${props.height+48}px`}" class="content-divider" direction="vertical"/>
@@ -135,11 +140,22 @@ watch(() => rightData, () => {
                   :height="props.height"
                   :max-count="props.maxCount"
                   :org-id="selectedOrgIds"
+                  :visible="visible"
+                  :parameter="props.parameter"
                   @change="userChooseChange"/>
       </a-layout-content>
       <a-divider :style="{height:`${props.height+48}px`}" class="content-divider" direction="vertical"/>
       <a-layout-content :style="{height:`${props.height+24}px`}" class="content-right">
-        <a-scrollbar :style="scrollbar">
+        <div style="width:100%;display: inline-flex;flex-direction: column;">
+          <div style="width:100%;display: inline-flex;align-items: center;justify-content: space-between;">
+            <span>已选择 {{ rightData.length }}</span>
+            <a-button style="padding-right: 0px;" type="text" @click="ev => {rightData = []}">
+              <icon-delete/>
+              &nbsp;清空
+            </a-button>
+          </div>
+          <a-divider style="margin: 1px 0;border-bottom: 1px solid var(--color-neutral-5);"/>
+          <a-scrollbar :style="scrollbar">
           <span class="box-inner">
             <span v-for="(item,index) of rightData" :key="index" :title="item.name" class="box-data">
               {{ item.name }}
@@ -147,7 +163,8 @@ watch(() => rightData, () => {
                           class="data-close" @click="deleteClick(item)"/>
             </span>
           </span>
-        </a-scrollbar>
+          </a-scrollbar>
+        </div>
       </a-layout-content>
     </a-layout>
   </a-layout>

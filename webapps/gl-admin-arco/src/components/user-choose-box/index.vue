@@ -5,11 +5,13 @@ export default {
 </script>
 <script lang="ts" setup>
 import {ref, watch} from 'vue';
-import {QueryUserForm, queryUsersByParams} from '@/api/security';
+import cloneDeep from 'lodash/cloneDeep';
 import {generateRandom} from "@/utils/strings";
+import {QueryUserForm, queryUsersByParams} from '@/api/security';
 import UserSelect from "./choose.vue";
 
 type QueryForm = QueryUserForm;
+type PageParams = { appId?: string; tenantCode?: string; }
 
 const layoutHeight = ref<number>(445);
 const layoutWidth = ref<number>(1285);
@@ -27,6 +29,7 @@ const props = defineProps({
   modelValue: {type: String, default: ''},// 组织id
   userNames: {type: String, default: ''},// 组织name
   data: {type: Array<QueryForm>, default: []},
+  parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
   disabled: {type: Boolean, default: false},// 是否禁用
   maxCount: {type: Number, default: 0},// 取值数量
   onlyModal: {type: Boolean, default: false},// 仅使用弹窗
@@ -44,20 +47,6 @@ const modalData = ref<QueryForm[]>([]);
 // 手动输入
 const tagInput = ref<string>('');
 const tagInputWidth = ref<number>(12);
-
-/**
- * 数组对象值传递，防止引用相同地址
- * @param source
- * @param target
- */
-const arrayDataToData = (source: QueryForm[], target: QueryForm[]) => {
-  if (source && source.length > 0) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of source) {
-      target.push(item);
-    }
-  }
-}
 
 /**
  * 将输入数据转为tag便签，失去焦点或enter
@@ -79,8 +68,13 @@ const tagInputChange = (value: string, ev?: Event) => {
  */
 const dataFormat = async () => {
   tagData.value = [];
+  modalData.value = [];
   if (props.data && props.data.length) {
-    tagData.value = props.data;
+    if (props.onlyModal) {
+      modalData.value = props.data;
+    } else {
+      tagData.value = props.data;
+    }
   } else {
     const ids = props.modelValue ? props.modelValue.split(",") : [];
     const names = props.userNames ? props.userNames.split(",") : [];
@@ -89,7 +83,13 @@ const dataFormat = async () => {
         for (let i = 0; i < ids.length; i += 1) {
           if (ids[i]) {
             if (i < names.length && names[i]) {
-              tagData.value.push({id: ids[i], name: names[i]} as QueryForm);
+              if (props.onlyModal) {
+                modalData.value.push({id: ids[i], name: names[i]} as QueryForm);
+              } else {
+                tagData.value.push({id: ids[i], name: names[i]} as QueryForm);
+              }
+            } else if (props.onlyModal) {
+              modalData.value.push({id: ids[i], name: ids[i]} as QueryForm);
             } else {
               tagData.value.push({id: ids[i], name: ids[i]} as QueryForm);
             }
@@ -104,14 +104,22 @@ const dataFormat = async () => {
               // eslint-disable-next-line no-restricted-syntax
               for (const item of data) {
                 if (item.id === ids[i]) {
-                  tagData.value.push(item);
+                  if (props.onlyModal) {
+                    modalData.value.push(item);
+                  } else {
+                    tagData.value.push(item);
+                  }
                   isQuery = true;
                   break;
                 }
               }
             }
             if (!isQuery) {
-              tagData.value.push({id: ids[i], name: ids[i]} as QueryForm);
+              if (props.onlyModal) {
+                modalData.value.push({id: ids[i], name: ids[i]} as QueryForm);
+              } else {
+                tagData.value.push({id: ids[i], name: ids[i]} as QueryForm);
+              }
             }
           }
         } catch (err) {
@@ -146,7 +154,7 @@ const tagDataFormat = () => {
 const editClick = (ev?: MouseEvent) => {
   key.value = generateRandom();
   modalData.value = [];
-  arrayDataToData(tagData.value, modalData.value);
+  modalData.value = cloneDeep(tagData.value);
   modalVisible.value = true;
 
   emits('openModal', tagData.value);
@@ -180,11 +188,16 @@ const deleteClick = (data: QueryForm) => {
 const modalOkClick = (ev?: MouseEvent) => {
   modalVisible.value = false;
   tagData.value = [];
-  arrayDataToData(modalData.value, tagData.value);
-  tagDataFormat();
+  if (!props.onlyModal) {
+    tagData.value = cloneDeep(modalData.value);
+    tagDataFormat();
 
-  emits('confirmModal', tagData.value);
-  emits('change', tagData.value);
+    emits('confirmModal', tagData.value);
+    emits('change', tagData.value);
+  } else {
+    emits('confirmModal', modalData.value);
+    emits('change', modalData.value);
+  }
 }
 /**
  * 取消
@@ -192,6 +205,7 @@ const modalOkClick = (ev?: MouseEvent) => {
  */
 const modalCancelClick = (ev?: MouseEvent) => {
   modalVisible.value = false;
+  modalData.value = [];
 
   emits('cancelModal', tagData.value);
 }
@@ -202,8 +216,9 @@ const modalCancelClick = (ev?: MouseEvent) => {
  */
 watch(() => tagInput, () => {
   setTimeout(() => {
+    const element = document.querySelector(`#tag-${selectKey.value}>.box-mirror`);
     // @ts-ignore
-    const width = document.querySelector(`#tag-${selectKey.value}>.box-mirror`).offsetWidth;
+    const width = element ? element.offsetWidth : 12;
     tagInputWidth.value = width > 12 ? width : 12;
   }, 10);
 }, {deep: true, immediate: true});
@@ -212,13 +227,15 @@ watch(() => tagInput, () => {
  * 数据输入
  */
 watch(() => props, async () => {
-  // 解析数据
-  await dataFormat();
   // 仅显示弹窗
-  if (props.onlyModal) {
+  if (props.onlyModal && props.visible === true) {
+    // 解析数据
+    await dataFormat();
     key.value = generateRandom();
-    arrayDataToData(tagData.value, modalData.value);
     modalVisible.value = props.visible;
+  } else {
+    // 解析数据
+    await dataFormat();
   }
 }, {deep: true, immediate: true});
 
@@ -270,7 +287,9 @@ watch(() => modalVisible, () => {
     <UserSelect :key="key"
                 v-model="modalData"
                 :height="layoutHeight"
-                :max-count="props.maxCount"/>
+                :max-count="props.maxCount"
+                :visible="modalVisible"
+                :parameter="props.parameter"/>
   </a-modal>
 </template>
 <style lang="less" scoped>

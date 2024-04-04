@@ -4,38 +4,40 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {nextTick, reactive, ref, watch} from 'vue';
+import {reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
-import {useRoute} from "vue-router";
-import {TableColumnData, TableRowSelection, TableData, Message} from "@arco-design/web-vue";
-import {FilterUserForm as FilterForm, pageQueryUser as pageQueryList, QueryUserForm} from "@/api/security";
-import {columns, sexOptions, sourceOptions, typeOptions} from "@/views/security/user/searchTable";
-import {PageQueryFilter, PageQueryRequest} from "@/api/base";
+import {TableColumnData, TableRowSelection, Message, TableSortable} from "@arco-design/web-vue";
 import useLoading from "@/hooks/loading";
 import {Pagination} from "@/types/global";
-import cloneDeep from 'lodash/cloneDeep';
-import Sortable from 'sortablejs';
+import {PageSizeOptions} from '@/api/base';
+import {PageQueryFilter, PageQueryRequest} from "@/api/base";
+import {FilterUserForm as FilterForm, pageQueryUser as pageQueryList, QueryUserForm} from "@/api/security";
+import {sexOptions} from "@/views/security/user/searchTable";
+
+type PageParams = { appId?: string; tenantCode?: string; }
 
 const emits = defineEmits(['update:modelValue', 'change']);
 const props = defineProps({
   modelValue: {type: Array<string | number>, default: []},
   orgId: {type: String, default: ''},// 组织name
+  parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
+  visible: {type: Boolean, default: false},// 控制弹窗隐显
   maxCount: {type: Number, default: 0},// 取值数量
+  pageSize: {type: Number, default: 20}, // 分页数
   height: {type: Number, default: 420}
 });
 
 const {t} = useI18n();
-const route = useRoute();
 const {loading, setLoading} = useLoading(true);
 // 分页列表参数
 type Column = TableColumnData & { checked?: true };
 const cloneColumns = ref<Column[]>([]);
 const showColumns = ref<Column[]>([]);
-const basePagination: Pagination = {current: 1, pageSize: 50};
-const pagination = reactive({...basePagination,});
 const renderData = ref<PageQueryFilter[]>([]);
+const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
+const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
 const scrollbar = ref(true);
-const scroll = {x: 2000, y: 285};
+const scroll = {x: 1900, y: 285};
 const rowSelection = ref<TableRowSelection>({
   type: 'radio',
   showCheckedAll: false,
@@ -45,6 +47,12 @@ const rowSelection = ref<TableRowSelection>({
   onlyCurrent: false,
   selectedRowKeys: []
 });
+const sortable = ref<Record<string, TableSortable>>({
+  seqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
+  updateAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
+  createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
+});
+const lastSort = ref<string>('updateAt|desc');
 // 搜索条件
 const generateFilterData = (): FilterForm => {
   return {
@@ -58,9 +66,9 @@ const generateFilterData = (): FilterForm => {
     sex: '',
     source: '',
     type: '',
-    enableStatus: '',
+    enableStatus: '1',
     createAt: [],
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    tenantCode: props.parameter?.tenantCode || '',
     cooperatingOrgId: ''
   };
 };
@@ -134,7 +142,7 @@ const fetchData = async (params: PageQueryRequest = basePagination) => {
  * 条件查询 - 搜索
  */
 const search = (ev?: Event) => {
-  fetchData({...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
+  fetchData({order: lastSort.value, ...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
 };
 /**
  * 条件查询 - 重置
@@ -153,49 +161,33 @@ const onPageChange = (current: number) => {
   basePagination.current = current;
   search();
 };
-
-/* 分页功能区 - 固定方法 */
-const handleChange = (checked: boolean | (string | boolean | number)[], column: Column, index: number) => {
-  if (!checked) {
-    cloneColumns.value = showColumns.value.filter((item) => item.dataIndex !== column.dataIndex);
-  } else {
-    cloneColumns.value.splice(index, 0, column);
+/**
+ * 分页 - 数据条变更
+ * @param pageSize
+ */
+const onPageSizeChange = (pageSize: number) => {
+  basePagination.current = 1;
+  basePagination.pageSize = pageSize;
+  search();
+}
+/**
+ * 分页 - 排序变更
+ * @param dataIndex 排序字段
+ * @param direction 排序方向
+ */
+const onSorterChange = (dataIndex: string, direction: string) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key of Object.keys(sortable.value)) {
+    // @ts-ignore
+    sortable.value[key].sortOrder = dataIndex === key ? direction : '';
   }
-};
-const exchangeArray = <T extends Array<any>>(array: T, beforeIdx: number, newIdx: number, isDeep = false): T => {
-  const newArray = isDeep ? cloneDeep(array) : array;
-  if (beforeIdx > -1 && newIdx > -1) {
-    // 先替换后面的，然后拿到替换的结果替换前面的
-    newArray.splice(beforeIdx, 1, newArray.splice(newIdx, 1, newArray[beforeIdx]).pop());
-  }
-  return newArray;
-};
-const popupVisibleChange = (val: boolean) => {
-  if (val) {
-    nextTick(() => {
-      const el = document.getElementById('tableSetting') as HTMLElement;
-      const sortable = new Sortable(el, {
-        onEnd(e: any) {
-          const {oldIndex, newIndex} = e;
-          exchangeArray(cloneColumns.value, oldIndex, newIndex);
-          exchangeArray(showColumns.value, oldIndex, newIndex);
-        }
-      });
-    });
-  }
-};
-watch(() => columns.value, (val) => {
-    cloneColumns.value = cloneDeep(val);
-    cloneColumns.value.forEach((item, index) => {
-      item.checked = true;
-    });
-    showColumns.value = cloneDeep(cloneColumns.value);
-  },
-  {deep: true, immediate: true}
-);
+  lastSort.value = direction ? `${dataIndex}|${direction}`.replace(/end/g, '') : '';
+  basePagination.current = 1;
+  search();
+}
 
 /* 页面操作 */
-const selectedKeys = ref<(string | number)[]>([]);
+const selectedKeys = ref<(string | number)[]>(props.modelValue);
 /**
  * 点击行选择器时触发
  * @param rowKeys
@@ -207,6 +199,14 @@ const listSelect = (rowKeys: (string | number)[], rowKey: string | number, recor
     return;
   }
   emits('change', rowKeys.includes(rowKey), [record]);
+}
+const listRowClick = (record: QueryUserForm) => {
+  if (selectedKeys.value.includes(record.id)) {
+    selectedKeys.value = selectedKeys.value.filter(item => item !== record.id);
+  } else {
+    selectedKeys.value.push(record.id);
+  }
+  emits('change', selectedKeys.value.includes(record.id), [record]);
 }
 /**
  * 点击全选选择器时触发
@@ -231,9 +231,9 @@ watch(() => props, () => {
   rowSelection.value.type = props.maxCount === 1 ? 'radio' : 'checkbox';
   rowSelection.value.showCheckedAll = props.maxCount === 0;
 }, {deep: true, immediate: true});
+
 watch(() => props.orgId, () => {
-  // 组织变更
-  reset();
+  if (props.visible === true) reset();
 }, {deep: true, immediate: true});
 </script>
 <template>
@@ -316,11 +316,14 @@ watch(() => props.orgId, () => {
       :stripe="true"
       column-resizable
       row-key="id"
+      @pageSizeChange="onPageSizeChange"
+      @rowClick="listRowClick"
       @select="listSelect"
       @selectAll="listSelectAll"
-      @page-change="onPageChange">
+      @page-change="onPageChange"
+      @sorter-change="onSorterChange">
     <template #columns>
-      <a-table-column :title="$t('security.user.index.form.index')" :width="60" align="center" data-index="index">
+      <a-table-column :title="$t('security.user.index.form.index')" :width="70" align="center" data-index="index">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
@@ -328,32 +331,33 @@ watch(() => props.orgId, () => {
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.name')" :tooltip="true" :width="120" data-index="name"/>
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.loginName')" :tooltip="true" :width="120" data-index="loginName"/>
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.jobNumber')" :tooltip="true" :width="120" data-index="jobNumber"/>
-      <a-table-column :title="$t('security.user.index.form.enableStatus')" :width="80" data-index="enableStatus">
+      <a-table-column :title="$t('security.user.index.form.enableStatus')" :width="70" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`security.user.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.orgName')" :tooltip="true" :width="200" data-index="orgName"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.mobilePhone')" :width="150" data-index="mobilePhone"></a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.email')" :tooltip="true" :width="200" data-index="email"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.post')" :width="120" data-index="post"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.sex')" :width="100" data-index="sex">
+      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.orgName')" :tooltip="true" :width="180" data-index="orgName"/>
+      <a-table-column :title="$t('security.user.index.form.mobilePhone')" :width="150" data-index="mobilePhone"/>
+      <a-table-column :ellipsis="true" :title="$t('security.user.index.form.email')" :tooltip="true" :width="180" data-index="email"/>
+      <a-table-column :title="$t('security.user.index.form.post')" :width="120" data-index="post"/>
+      <a-table-column :title="$t('security.user.index.form.sex')" :width="70" data-index="sex">
         <template #cell="{ record }">
           {{ $t(`security.user.index.form.sex.${record.sex}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.type')" :width="120" data-index="status">
+      <a-table-column :title="$t('security.user.index.form.type')" :width="120" data-index="type">
         <template #cell="{ record }">
           {{ $t(`security.user.index.form.type.${record.type}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.source')" :width="120" data-index="status">
+      <a-table-column :title="$t('security.user.index.form.source')" :width="120" data-index="source">
         <template #cell="{ record }">
           {{ $t(`security.user.index.form.source.${record.source}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.seqNo')" :width="100" data-index="seqNo"></a-table-column>
-      <a-table-column :title="$t('security.user.index.form.createAt')" :width="180" data-index="createAt"></a-table-column>
+      <a-table-column :sortable="sortable.seqNo" :title="$t('security.user.index.form.seqNo')" :width="100" data-index="seqNo"/>
+      <a-table-column :sortable="sortable.updateAt" :title="$t('security.user.index.form.updateAt')" :width="180" data-index="updateAt"/>
+      <a-table-column :sortable="sortable.createAt" :title="$t('security.user.index.form.createAt')" :width="180" data-index="createAt"/>
     </template>
   </a-table>
 </template>

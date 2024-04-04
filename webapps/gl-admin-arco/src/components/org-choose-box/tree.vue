@@ -27,20 +27,24 @@ interface OrgTreeNode extends TreeNodeData {
   redundant?: QueryOrgForm
 }
 
-const route = useRoute();
-const {t} = useI18n();
+type PageParams = { appId?: string; tenantCode?: string; }
 
 const emits = defineEmits(['update:modelValue', 'change']);
 const props = defineProps({
   modelValue: {type: Array<string | number>, default: []},
-  hasRoot: {type: Boolean, default: true},
-  rootSelected: {type: Boolean, default: false},
-  maxCount: {type: Number, default: 0},
-  height: {type: Number, default: 420}
+  parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
+  visible: {type: Boolean, default: false},// 控制弹窗隐显
+  hasRoot: {type: Boolean, default: true},// 显示根目录
+  rootSelected: {type: Boolean, default: false},// 根目录是否可选
+  checkStrictly: {type: Boolean, default: true},// 是否取消父子节点关联
+  maxCount: {type: Number, default: 0},// 可选数量
+  height: {type: Number, default: 420},// 高度
 });
 
+const {t} = useI18n();
+const rootPid = 'root';
 const expandedKeys = ref<(string | number)[]>([]);
-const selectedKeys = ref<(string | number)[]>([]);
+const selectedKeys = ref<(string | number)[]>(props.modelValue);
 
 /**
  * 树tree，搜索
@@ -80,10 +84,11 @@ const originTreeData = computed(() => {
 /**
  * 接口，从数据库获取字典信息
  */
-const fetchOrgTree = async (params: QueryOrgForm = {pid: '0'} as unknown as QueryOrgForm): Promise<OrgTreeNode[]> => {
+const fetchOrgTree = async (params: QueryOrgForm = {pid: rootPid} as unknown as QueryOrgForm): Promise<OrgTreeNode[]> => {
   let treeOptions: OrgTreeNode[] = [];
   try {
-    params.tenantCode = (route.params && route.params.tenantCode as string) || '';
+    params.tenantCode = props.parameter?.tenantCode || '';
+    params.status = 1;
     const {data} = await queryTrees(params);
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {
@@ -118,7 +123,7 @@ const loadMore = (nodeData: OrgTreeNode) => {
 const refreshTreeOne = (data: OrgTreeNode[]) => {
   const rootParent = {
     title: t('orgChooseBox.tree.root'),
-    key: '',
+    key: rootPid,
     selectable: props.rootSelected,
     checkable: false,
     disableCheckbox: false,
@@ -147,7 +152,6 @@ const loadedPage = () => {
     refreshTreeOne(data);
   });
 }
-loadedPage();
 
 const orgFormTreating = (data: OrgTreeNode[]) => {
   const formData: QueryOrgForm[] = [];
@@ -181,7 +185,7 @@ const treeClickSelected = (selectedKes: Array<string | number>, data: {
   }
   emits("update:modelValue", selectedKeys.value);
   // emits("change", selectedKeys.value, orgFormTreating(data.selectedNodes));
-  emits('change', data.selected, data.node?.redundant);
+  emits('change', data.selected, data.node?.redundant, data.node);
 }
 /**
  * 点击树节点复选框时触发
@@ -203,7 +207,7 @@ const treeClickChecked = (checkedKeys: Array<string | number>, data: {
   }
   emits("update:modelValue", selectedKeys.value);
   // emits("change", selectedKeys.value, orgFormTreating(data.checkedNodes));
-  emits('change', data.checked, data.node?.redundant);
+  emits('change', data.checked, data.node?.redundant, data.node);
 }
 
 /**
@@ -212,18 +216,21 @@ const treeClickChecked = (checkedKeys: Array<string | number>, data: {
 watch(() => props.modelValue, () => {
   selectedKeys.value = props.modelValue;
 }, {immediate: true});
+
+watch(() => props.visible, () => {
+  if (props.visible === true) loadedPage();
+}, {immediate: true});
 </script>
 <template>
   <span class="tree-layout">
-    <a-input-search v-model="searchKey" :placeholder="$t('orgChooseBox.tree.search')" allow-clear
-                    class="tree-search"/>
+    <a-input-search v-model="searchKey" :placeholder="$t('orgChooseBox.tree.search')" allow-clear class="tree-search"/>
     <a-scrollbar :style="{overflow:'auto',height:`${props.height}px`}">
       <a-tree
           v-model:checked-keys="selectedKeys"
           v-model:expanded-keys="expandedKeys"
           v-model:selected-keys="selectedKeys"
-          :block-node="true"
-          :check-strictly="true"
+          :block-node="false"
+          :check-strictly="checkStrictly"
           :checkable="props.maxCount===1?false:true"
           :data="originTreeData"
           :load-more="loadMore"
@@ -242,9 +249,19 @@ watch(() => props.modelValue, () => {
             {{ nodeData?.title?.substr(getMatchIndex(nodeData?.title) + searchKey.length) }}
           </span>
         </template>
+        <template #extra="nodeData">
+          <a-tooltip :content="$t('searchTable.actions.refresh')">
+            <IconRefresh v-if="nodeData.key===rootPid" class="tree-extra-icon" @click="loadedPage"/>
+          </a-tooltip>
+        </template>
       </a-tree>
     </a-scrollbar>
   </span>
 </template>
 <style lang="less" scoped>
+.tree-extra-icon {
+  font-size: 16px;
+  margin-left: 10px;
+  color: #3370ff;
+}
 </style>
