@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'PermissionForm'
+  name: 'DictionaryEntryForm'
 };
 </script>
 
@@ -8,12 +8,12 @@ export default {
 import {ref, shallowRef, watch} from "vue";
 import {FormState, ModelParams} from "@/api/base";
 // 引入组件
-import PermissionFormModel from './model.vue';
+import DictionaryEntryModel from './model.vue';
 
 // 页面所需 参数
 type PageParams = {
-  object: string; // 对象
-  type: string; // 类型
+  pid: string; // 父级主键
+  dictId: string; // 字典主键
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -32,7 +32,7 @@ const props = defineProps({
 });
 
 const visibleForm = ref<boolean>(false);
-const tableFormRef = shallowRef(PermissionFormModel);
+const tableFormRef = shallowRef(DictionaryEntryModel);
 const modelParams = ref<ModelParams>({
   visible: false,
   parameter: props.parameter,
@@ -89,33 +89,33 @@ watch(() => visibleForm, () => {
 <template>
   <a-modal v-if="isModal"
            v-model:visible="visibleForm"
-           :cancel-text="$t('application.app.model.cancel.text')"
+           :cancel-text="$t('security.dictItem.index.model.cancel.text')"
            :footer="formState!=='view'"
-           :ok-text="$t('application.app.model.ok.text')"
-           :title="title || $t(`application.app.model.title.${formState}`)"
+           :ok-text="$t('security.dictItem.index.model.ok.text')"
+           :title="title || $t(`security.dictItem.index.model.title.${formState}`)"
            :width="width || ''" title-align="start"
            @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
-    <PermissionFormModel ref="tableFormRef"
-                         :formCol="modelParams.formCol"
-                         :formState="modelParams.formState"
-                         :modelValue="modelParams.id"
-                         :parameter="modelParams.parameter"
-                         :visible="modelParams.visible"/>
+    <DictionaryEntryModel ref="tableFormRef"
+                          :formCol="modelParams.formCol"
+                          :formState="modelParams.formState"
+                          :modelValue="modelParams.id"
+                          :parameter="modelParams.parameter"
+                          :visible="modelParams.visible"/>
   </a-modal>
   <a-drawer v-if="!isModal"
             v-model:visible="visibleForm"
-            :cancel-text="$t('application.app.model.cancel.text')"
+            :cancel-text="$t('security.dictItem.index.model.cancel.text')"
             :footer="formState!=='view'"
-            :ok-text="$t('application.app.model.ok.text')"
-            :title="title || $t(`application.app.model.title.${formState}`)"
+            :ok-text="$t('security.dictItem.index.model.ok.text')"
+            :title="title || $t(`security.dictItem.index.model.title.${formState}`)"
             :width="width || ''" title-align="start"
             @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
-    <PermissionFormModel ref="tableFormRef"
-                         :formCol="modelParams.formCol"
-                         :formState="modelParams.formState"
-                         :modelValue="modelParams.id"
-                         :parameter="modelParams.parameter"
-                         :visible="modelParams.visible"/>
+    <DictionaryEntryModel ref="tableFormRef"
+                          :formCol="modelParams.formCol"
+                          :formState="modelParams.formState"
+                          :modelValue="modelParams.id"
+                          :parameter="modelParams.parameter"
+                          :visible="modelParams.visible"/>
   </a-drawer>
 </template>
 

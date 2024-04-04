@@ -132,9 +132,10 @@ const generateFilterData = (): FilterAttachmentForm => {
     name: '',
     size: '',
     type: '',
+    creator: pageData.value.creator,
     createAt: [],
     genre: 'exportFile',
-    creator: pageData.value.creator,
+    appId: '',
     tenantCode: pageData.value.tenantCode,
   };
 };
@@ -232,13 +233,13 @@ const popupVisibleChange = (val: boolean) => {
   }
 };
 watch(() => columns.value, (val) => {
-    cloneColumns.value = cloneDeep(val);
-    cloneColumns.value.forEach((item, index) => {
-      item.checked = true;
-    });
-    showColumns.value = cloneDeep(cloneColumns.value);
-  },
-  {deep: true, immediate: true}
+      cloneColumns.value = cloneDeep(val);
+      cloneColumns.value.forEach((item, index) => {
+        item.checked = true;
+      });
+      showColumns.value = cloneDeep(cloneColumns.value);
+    },
+    {deep: true, immediate: true}
 );
 
 reset();

@@ -1,132 +1,201 @@
-<template v-model="pageData">
-  <a-row>
-    <a-col :flex="1">
-      <a-form :label-col-props="{ span: 6 }" :model="filterData" :wrapper-col-props="{ span: 18 }" label-align="left">
-        <a-row :gutter="16">
-          <a-col v-show="false" :span="24">
-            <a-form-item v-show="false">
-              <a-input v-show="false" v-model="filterData.treeNodeId"/>
-              <a-input v-show="false" v-model="filterData.roleId"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('security.roleTreeNode.index.form.roleName')" field="roleName">
-              <a-input v-model="pageData.params.roleName" :allow-clear="pageData.params.roleName==''" :readonly="pageData.params.roleName!=''"
-                       @clear="search($event)" @press-enter="search($event)"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('security.roleTreeNode.index.form.treeNodeText')" field="treeNodeText">
-              <a-input v-model="filterData.treeNodeText" allow-clear @clear="search($event)" @press-enter="search($event)"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('security.roleTreeNode.index.form.title')" field="title">
-              <a-input v-model="filterData.title" allow-clear @clear="search($event)" @press-enter="search($event)"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="pageData.isModal?12:8">
-            <a-form-item :label="$t('security.roleTreeNode.index.form.createAt')" field="createAt">
-              <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
-            </a-form-item>
-          </a-col>
-        </a-row>
-      </a-form>
-    </a-col>
-    <a-divider direction="vertical" style="height: 84px"/>
-    <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
-        <a-button type="primary" @click="search($event)">
-          <template #icon>
-            <icon-search/>
-          </template>
-          {{ $t('searchTable.form.search') }}
-        </a-button>
-        <a-button @click="reset($event)">
-          <template #icon>
-            <icon-refresh/>
-          </template>
-          {{ $t('searchTable.form.reset') }}
-        </a-button>
-        <a-button v-if="pageData.isModal && pageData.formState==='edit'" type="primary" @click="addTable($event)">
-          <template #icon>
-            <icon-plus/>
-          </template>
-          {{ $t('searchTable.operation.create') }}
-        </a-button>
-      </a-space>
-    </a-col>
-  </a-row>
-  <a-divider style="margin-top: 0"/>
-  <a-row v-if="!pageData.isModal" style="margin-bottom: 16px">
-    <a-col :span="12">
-      <a-space>
-        <a-button v-show="pageData.formState==='edit'" type="primary" @click="addTable($event)">
-          <template #icon>
-            <icon-plus/>
-          </template>
-          {{ $t('searchTable.operation.create') }}
-        </a-button>
-      </a-space>
-    </a-col>
-    <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
-      <a-tooltip :content="$t('searchTable.actions.refresh')">
-        <div class="action-icon" @click="search($event)">
-          <icon-refresh size="18"/>
-        </div>
-      </a-tooltip>
-      <a-tooltip :content="$t('searchTable.actions.columnSetting')">
-        <a-popover position="bl" trigger="click" @popup-visible-change="popupVisibleChange">
-          <div class="action-icon">
-            <icon-settings size="18"/>
-          </div>
-          <template #content>
-            <div id="tableSetting">
-              <div v-for="(item, index) in showColumns" :key="item.dataIndex" class="setting">
-                <div style="margin-right: 4px; cursor: move">
-                  <icon-drag-arrow/>
-                </div>
-                <div>
-                  <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
-                </div>
-                <div class="title">
-                  {{ item.title === '#' ? $t('security.roleTreeNode.index.form.index') : $t(`${item.title}`) }}
-                </div>
-              </div>
-            </div>
-          </template>
-        </a-popover>
-      </a-tooltip>
-    </a-col>
-  </a-row>
-  <a-table :bordered="{cell:true}" :columns="(cloneColumns as TableColumnData[])"
-           :data="renderData"
-           :loading="loading"
-           :pagination="pagination"
-           :stripe="true"
-           column-resizable
-           row-key="id"
-           @page-change="onPageChange">
+<script lang="ts">
+export default {
+  name: 'RoleUserList'
+};
+</script>
+
+<script lang="ts" setup>
+import {computed, reactive, ref, watch} from 'vue';
+import {useI18n} from "vue-i18n";
+import useLoading from '@/hooks/loading';
+import {Pagination} from '@/types/global';
+import {type SelectOptionData, TableColumnData, TableData, TableSortable} from '@arco-design/web-vue';
+import {getOptionLabel, PageSizeOptions} from "@/api/base";
+// 页面所需 对象、方法
+import {PageQueryFilter, PageQueryRequest} from '@/api/base';
+import {deleteRoleTreeNodeById as deleteList, pageQueryRoleTreeNodeOf as pageQueryList} from '@/api/security';
+import {getAppSelectOptions, QueryAppForm} from "@/api/application";
+
+
+// 页面所需 参数
+type PageParams = {
+  roleId: string;
+  treeNodeId: string;
+  appId?: string; // 应用主键
+  tenantCode?: string; // 租户编码
+}
+
+const emits = defineEmits(['update:modelValue']);
+const props = defineProps({
+  modelValue: {type: String, default: ''},
+  visible: {type: Boolean, default: false},// 页面是否显示
+  parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
+  formState: {type: String, default: 'edit'}, // 页面状态
+  filterCol: {type: Number, default: 3}, // 列表 - 搜索条件 - 一行显示个数
+  pageSize: {type: Number, default: 10}, // 列表 - 条数
+  height: {type: Number, default: 245}, // 列表 - 数据列表高度，滑动条高度
+});
+
+// 国际化
+const {t} = useI18n();
+// 加载功能
+const {loading, setLoading} = useLoading(false);
+// 列表
+const renderData = ref<PageQueryFilter[]>([]);
+// 列表 - 分页
+const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
+const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
+// 列表 - 滑动条
+const scrollbar = ref(true);
+const scroll = ref({x: 720, y: props.height});
+// 列表 - 排序
+const lastSort = ref<string>('seqNo|asc');
+
+const typeOptions = computed<SelectOptionData[]>(() => [
+  {value: 'folder', label: '目录'},
+  {value: 'listPage', label: '列表页面'},
+  {value: 'freePage', label: '自定义页面'},
+  {value: 'formPage', label: '表单页面'},
+  {value: 'flowPage', label: '工作流页面'},
+  {value: 'templatePage', label: '模型页面'},
+]);
+
+/**
+ * 分页查询方法
+ * @param params
+ */
+const fetchData = async (params: PageQueryRequest, successBack?: any, failBack?: any) => {
+  setLoading(true);
+  try {
+    const {data} = await pageQueryList(params);
+    data.items.forEach((item, index) => {
+      // @ts-ignore
+      item.isLeaf = (item.isLeaf !== '0');
+      // @ts-ignore
+      item.isRoled = (item.isRoled !== '0');
+    });
+    if (successBack && typeof successBack === 'function') successBack(data.items);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  } finally {
+    setLoading(false);
+    if (failBack && typeof failBack === 'function') failBack();
+  }
+};
+
+/**
+ * 单个数据删除接口
+ * @param id
+ * @param successBack
+ * @param failBack
+ */
+const deleteData = async (roleId: string, treeNodeId: string, successBack?: any, failBack?: any) => {
+  try {
+    await deleteList(roleId, treeNodeId);
+    if (successBack && typeof successBack === 'function') successBack();
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+};
+
+/**
+ * 数据懒加载函数，传入时开启懒加载功能
+ * @param record
+ * @param done
+ */
+const loadMore = (record: TableData, done: any) => {
+  fetchData({
+    ...basePagination, order: lastSort.value,
+    pid: record.id || '', roleId: props.parameter.roleId || '',
+    appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || '',
+  } as unknown as PageQueryRequest, (data: PageQueryFilter[]) => {
+    done(data);
+  });
+}
+/**
+ * 初始化
+ */
+const loadInit = () => {
+  if (props.parameter?.appId) {
+    fetchData({
+      ...basePagination, order: lastSort.value,
+      pid: props.parameter?.appId || '', roleId: props.parameter.roleId || '',
+      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || '',
+    } as unknown as PageQueryRequest, (data: PageQueryFilter[]) => {
+      renderData.value = data;
+    });
+  } else {
+    getAppSelectOptions({tenantCode: props.parameter?.tenantCode || ''}, (data: QueryAppForm[]) => {
+      const items: PageQueryFilter[] = [];
+      data.forEach((item, index) => {
+        items.push({
+          id: item.id, text: item.name, flag: 'app', iconType: item.icon, isRoled: false, isLeaf: false
+        } as unknown as PageQueryFilter);
+      });
+      renderData.value = items;
+    });
+  }
+}
+
+/**
+ * 列表按钮 - 删除
+ * @param record
+ */
+const deleteTable = (record: Record<string, any>) => {
+  deleteData(props.parameter.roleId, record.id, (id: string) => {
+    record.isRoled = false;
+  });
+}
+
+watch(() => props, (val) => {
+  if (props.visible === true) {
+    // 页面设置
+    scroll.value.y = props.height;
+    basePagination.pageSize = props.pageSize;
+    // 加载数据
+    loadInit();
+  }
+}, {deep: true, immediate: true});
+</script>
+
+<template>
+  <a-table
+      :bordered="{cell:true}"
+      :columns="([] as TableColumnData[])"
+      :data="renderData"
+      :load-more="loadMore"
+      :loading="loading"
+      :pagination="false"
+      :scroll="scroll"
+      :scrollbar="scrollbar"
+      :stripe="true"
+      column-resizable
+      row-key="id">
     <template #columns>
-      <a-table-column :title="$t('security.roleTreeNode.index.form.index')" :width="80" align="center" data-index="index">
-        <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
-      </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.roleTreeNode.index.form.title')" :tooltip="true" :width="150" data-index="title"/>
-      <a-table-column :ellipsis="true" :title="$t('security.roleTreeNode.index.form.treeNodeText')" :tooltip="true" :width="150" data-index="treeNodeText"/>
-      <a-table-column v-if="pageData.params.roleName===''" :ellipsis="true" :title="$t('security.roleTreeNode.index.form.roleName')" :tooltip="true"
-                      :width="150" data-index="roleName"/>
-      <a-table-column :title="$t('security.roleTreeNode.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column v-if="!(pageData.isModal && pageData.formState!='edit')" :title="$t('security.roleTreeNode.index.form.operations')"
-                      :width="(pageData.formState==='edit'&&!pageData.isModal)?230:100" align="center" data-index="operations" fixed="right">
+      <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="text" title="标题">
         <template #cell="{ record }">
-          <a-button v-show="!pageData.isModal" size="small" type="text" @click="viewTable(record.id)">
-            {{ $t('searchTable.columns.operations.view') }}
-          </a-button>
-          <a-button v-show="pageData.formState==='edit'&&!pageData.isModal" size="small" type="text" @click="editTable(record.id)">
-            {{ $t('searchTable.columns.operations.edit') }}
-          </a-button>
-          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'" size="small" status="danger" type="text">
+          &nbsp;
+          <span :style="{color: record.flag==='app'?'rgb(var(--primary-6))':''}">
+            <gl-iconfont :type="record.iconType"/> {{ record.text }}
+          </span>
+        </template>
+      </a-table-column>
+      <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="flag" title="菜单">
+        <template #cell="{ record }">
+          {{ record.flag === 'app' ? '应用' : (record.flag === 'menuItem' ? '菜单' : '') }}
+        </template>
+      </a-table-column>
+      <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="type" title="类型">
+        <template #cell="{ record }">
+          {{ getOptionLabel(record.type, typeOptions) }}
+        </template>
+      </a-table-column>
+      <a-table-column :width="180" data-index="updateAt" title="更新时间"/>
+      <a-table-column :title="$t('security.permission.index.form.operations')" :width="90" align="center" data-index="operations" fixed="right">
+        <template #cell="{ record }">
+          <a-popconfirm v-if="record.isRoled" :content="$t('searchTable.columns.operations.relevance.deleteMsg')"
+                        position="tr" type="warning" @ok="deleteTable(record)">
+            <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -134,196 +203,7 @@
       </a-table-column>
     </template>
   </a-table>
-  <RoleTreeNodeForm ref="roleTreeNodeFormRef"></RoleTreeNodeForm>
 </template>
-
-<script lang="ts" setup>
-/* 导入 */
-import {nextTick, reactive, ref, watch} from 'vue';
-import {useI18n} from 'vue-i18n';
-import useLoading from '@/hooks/loading';
-// 分页列表
-import {Pagination} from '@/types/global';
-import type {TableColumnData} from '@arco-design/web-vue';
-import cloneDeep from 'lodash/cloneDeep';
-import Sortable from 'sortablejs';
-// 引用其他对象、方法
-import {columns} from '@/views/security/role/treenode/searchTable'
-import {deleteRoleTreeNode as deleteList, FilterRoleTreeNodeForm as FilterForm, pageQueryRoleTreeNode as pageQueryList} from '@/api/security';
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
-// 引用其他页面
-import RoleTreeNodeForm from '@/views/security/role/treenode/form.vue';
-import {useRoute} from "vue-router";
-
-/* 列表 */
-type Column = TableColumnData & { checked?: true };
-const pageData = ref({current: 1, pageSize: 10, formState: 'edit', isModal: false, params: {roleId: '', roleName: ''}});
-const roleTreeNodeFormRef = ref(null);
-// 国际化
-const {t} = useI18n();
-const route = useRoute();
-// 加载
-const {loading, setLoading} = useLoading(true);
-// 分页列表参数
-const cloneColumns = ref<Column[]>([]);
-const showColumns = ref<Column[]>([]);
-const basePagination: Pagination = {current: pageData.value.current, pageSize: pageData.value.pageSize};
-const pagination = reactive({...basePagination,});
-const renderData = ref<PageQueryFilter[]>([]);
-
-// 搜索条件
-const generateFilterData = (): FilterForm => {
-  return {
-    id: '',
-    title: '',
-    roleId: '',
-    roleName: '',
-    treeNodeId: '',
-    treeNodeText: '',
-    createAt: [],
-    appId: (route.params && route.params.appId as string) || '',
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
-  };
-};
-const filterData = ref(generateFilterData());
-
-/**
- * 分页查询方法
- * @param params
- */
-const fetchData = async (params: PageQueryRequest = {current: pageData.value.current, pageSize: pageData.value.pageSize}) => {
-  setLoading(true);
-  try {
-    const {data} = await pageQueryList(params);
-    renderData.value = data.items;
-    pagination.current = params.current;
-    pagination.pageSize = basePagination.pageSize;
-    pagination.total = data.total;
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  } finally {
-    setLoading(false);
-  }
-};
-/**
- * 条件查询 - 搜索
- */
-const search = (ev?: Event) => {
-  fetchData({...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
-};
-/**
- * 条件查询 - 重置
- */
-const reset = (ev?: Event) => {
-  basePagination.current = pageData.value.current;
-  filterData.value = generateFilterData();
-  filterData.value.roleId = pageData.value.params.roleId || '';
-  // filterData.value.roleName = pageData.value.params.roleName || '';
-  search();
-};
-/**
- * 分页 - 页面跳转
- * @param current
- */
-const onPageChange = (current: number) => {
-  basePagination.current = current;
-  search();
-};
-
-/* 列表，按钮、操作列 */
-const addTable = (ev: MouseEvent) => {
-  if (roleTreeNodeFormRef.value) {
-    // @ts-ignore
-    roleTreeNodeFormRef.value?.openForm({action: 'add', params: pageData.value.params, closeBack: reset});
-  }
-};
-const viewTable = (id: string) => {
-  if (roleTreeNodeFormRef.value) {
-    // @ts-ignore
-    roleTreeNodeFormRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
-  }
-}
-const editTable = (id: string) => {
-  if (roleTreeNodeFormRef.value) {
-    // @ts-ignore
-    roleTreeNodeFormRef.value?.openForm({action: 'edit', 'id': id, params: pageData.value.params, closeBack: reset});
-  }
-}
-const deleteTable = (id: string) => {
-  deleteData(id, () => {
-    reset();
-  });
-}
-const deleteData = async (id: string, successBack: any) => {
-  try {
-    await deleteList(id);
-    successBack();
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
-};
-
-/* 分页功能区 - 固定方法 */
-const handleChange = (checked: boolean | (string | boolean | number)[], column: Column, index: number) => {
-  if (!checked) {
-    cloneColumns.value = showColumns.value.filter((item) => item.dataIndex !== column.dataIndex);
-  } else {
-    cloneColumns.value.splice(index, 0, column);
-  }
-};
-const exchangeArray = <T extends Array<any>>(array: T, beforeIdx: number, newIdx: number, isDeep = false): T => {
-  const newArray = isDeep ? cloneDeep(array) : array;
-  if (beforeIdx > -1 && newIdx > -1) {
-    // 先替换后面的，然后拿到替换的结果替换前面的
-    newArray.splice(beforeIdx, 1, newArray.splice(newIdx, 1, newArray[beforeIdx]).pop());
-  }
-  return newArray;
-};
-const popupVisibleChange = (val: boolean) => {
-  if (val) {
-    nextTick(() => {
-      const el = document.getElementById('tableSetting') as HTMLElement;
-      const sortable = new Sortable(el, {
-        onEnd(e: any) {
-          const {oldIndex, newIndex} = e;
-          exchangeArray(cloneColumns.value, oldIndex, newIndex);
-          exchangeArray(showColumns.value, oldIndex, newIndex);
-        }
-      });
-    });
-  }
-};
-watch(() => columns.value, (val) => {
-    cloneColumns.value = cloneDeep(val);
-    cloneColumns.value.forEach((item, index) => {
-      item.checked = true;
-    });
-    showColumns.value = cloneDeep(cloneColumns.value);
-  },
-  {deep: true, immediate: true}
-);
-
-/* 对外调用方法 */
-const loadList = (urlParams: ListUrlParams) => {
-  pageData.value.formState = urlParams.action || 'edit';
-  pageData.value.isModal = urlParams.isModal || false;
-  pageData.value.params.roleId = urlParams.params?.roleId || '';
-  pageData.value.params.roleName = urlParams.params?.roleName || '';
-  basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
-
-  reset();
-}
-// 将方法暴露出去
-defineExpose({loadList});
-</script>
-
-<script lang="ts">
-export default {
-  name: 'SearchTable'
-};
-</script>
 
 <style lang="less" scoped>
 :deep(.arco-table-th) {

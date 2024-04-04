@@ -147,6 +147,7 @@ export default {
   'searchTable.columns.operations.edit': 'Edit',
   'searchTable.columns.operations.delete': 'Delete',
   'searchTable.columns.operations.deleteMsg': 'Whether to delete the data？',
+  'searchTable.columns.operations.relevance.deleteMsg': 'Whether to delete the data association item？',
   // webapps/gl-admin-arco/src/views/security/org - form.operation
   'security.org.index.model.title.add': 'Add Organization',
   'security.org.index.model.title.edit': 'Edit Organization',
@@ -193,9 +194,12 @@ export default {
   'security.user.index.form.enableStatus': 'status',
   'security.user.index.form.enableStatus.0': 'disabled',
   'security.user.index.form.enableStatus.1': 'enabled',
+  'security.user.index.form.enableStatus.false': 'disabled',
+  'security.user.index.form.enableStatus.true': 'enabled',
   'security.user.index.form.seqNo': 'sequence',
   'security.user.index.form.description': 'description',
   'security.user.index.form.createAt': 'createTime',
+  'security.user.index.form.updateAt': 'updateTime',
   'security.user.index.form.operations': 'operations',
   // webapps/gl-admin-arco/src/views/security/user - list.operation
   // 同上 org
@@ -299,6 +303,7 @@ export default {
   'security.permission.index.form.appId': 'application',
   'security.permission.index.form.description': 'description',
   'security.permission.index.form.createAt': 'createTime',
+  'security.permission.index.form.updateAt': 'updateTime',
   'security.permission.index.form.operations': 'operation',
   'searchTable.columns.operations.subset': 'Subset',
   // webapps/gl-admin-arco/src/views/security/permission - list.operation
@@ -442,6 +447,7 @@ export default {
   'security.encoding.index.form.template': 'template',
   'security.encoding.index.form.separators': 'interval',
   'security.encoding.index.form.example': 'example',
+  'security.encoding.index.form.rule': 'rule',
   'security.encoding.index.form.latestSerialNumber': 'latestSerial',
   'security.encoding.index.form.appId': 'application',
   'security.encoding.index.form.enableStatus': 'status',

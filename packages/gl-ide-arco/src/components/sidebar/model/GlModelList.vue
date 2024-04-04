@@ -97,7 +97,7 @@ fetchData()
 
 /* 模型tab页所需参数 */
 const formTabsParams = ref({
-  id: '', visible: false, formState: 'edit', formCol: 2, width: '72%',
+  id: '', visible: false, formState: 'edit', formCol: 2, width: '76%',
   parameter: {appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
 });
 /**

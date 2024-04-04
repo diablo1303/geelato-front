@@ -1,133 +1,12 @@
-<template v-model="pageData">
-  <a-form ref="validateForm" :label-col-props="{ span: 6 }" :model="formData" :wrapper-col-props="{ span: 18 }" class="form">
-    <a-row :gutter="16">
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('security.file.index.form.title')"
-            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-            field="title">
-          <a-input v-if="pageData.button" v-model.trim="formData.title" :max-length="32"/>
-          <span v-else>{{ formData.title }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('security.file.index.form.useType')"
-            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-            field="useType">
-          <a-select v-if="pageData.button" v-model="formData.useType">
-            <a-option v-for="item of useTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-          </a-select>
-          <span v-else>{{ $t(`security.file.index.form.useType.${formData.useType}`) }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('security.file.index.form.template')"
-            :rules="[{required: !['import'].includes(formData.useType),message: $t('security.form.rules.match.required')}]"
-            field="template">
-          <!--        <a-upload :action="getUploadUrl()"
-                            :file-list="templateFile"
-                            :headers="uploadHeader()"
-                            :limit="1"
-                            :show-remove-button="pageData.button"
-                            :accept="formData.useType==='import'?'.xls,.xlsx':'.doc,.docx,.xls,.xlsx'"
-                            list-type="text"
-                            @error="uploadError" @success="uploadTSuccess" @before-remove="beforeRemoveT"/>-->
-          <UploadBase64 v-model="formData.template"
-                        :accept="formData.useType==='import'?'.xls,.xlsx':'.doc,.docx,.xls,.xlsx'"
-                        :disabled="!pageData.button" @change="configValueBase64"/>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('security.file.index.form.fileType')"
-            :rules="[{required: !['import'].includes(formData.useType),message: $t('security.form.rules.match.required')}]"
-            field="fileType">
-        <span>{{
-            formData.fileType ? $t(`security.file.index.form.fileType.${formData.fileType}`) : $t('security.file.index.form.fileType.placeholder')
-          }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('security.file.index.form.templateRule')"
-            :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
-            field="templateRule">
-          <!--        <a-upload :action="getUploadUrl()"
-                            :file-list="templateRuleFile"
-                            :headers="uploadHeader()"
-                            :limit="1"
-                            :show-remove-button="pageData.button"
-                            accept=".xls,.xlsx"
-                            list-type="text"
-                            @error="uploadError" @success="uploadTRSuccess" @before-remove="beforeRemoveTR"/>-->
-          <UploadBase64 v-model="formData.templateRule" :disabled="!pageData.button" accept=".xls,.xlsx"/>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('security.file.index.form.fileCode')"
-            :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
-            field="fileCodeFormat">
-          <a-input-tag v-if="pageData.button" v-model="formData.fileCodeFormat" :placeholder="$t('security.file.index.form.fileCode.placeholder')"
-                       :unique-value="true"
-                       allow-clear/>
-          <a-space v-else :style="{'flex-wrap':'wrap'}">
-            <a-tag v-for="(item, index) of formData.fileCodeFormat" :key="index" :style="{'margin-bottom':'4px'}">{{ item }}</a-tag>
-          </a-space>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('security.file.index.form.appId')" field="appId">
-          <a-select v-model="formData.appId" :disabled="!pageData.button" :field-names="{value: 'id', label: 'name'}"
-                    :options="selectAppOptions" allow-search/>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('security.file.index.form.enableStatus')"
-            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-            field="enableStatus">
-          <a-select v-if="pageData.button" v-model="formData.enableStatus">
-            <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-          </a-select>
-          <span v-else>{{ $t(`security.file.index.form.enableStatus.${formData.enableStatus}`) }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('security.file.index.form.description')" field="description">
-          <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:3,maxRows:6}" :max-length="512" show-word-limit/>
-          <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
-        </a-form-item>
-      </a-col>
-    </a-row>
-  </a-form>
-
-  <a-collapse v-if="['import'].includes(formData.useType)" :key="pageData.key" :default-active-key="[1,2,3]">
-    <template #expand-icon="{ active }">
-      <icon-double-down v-if="active"/>
-      <icon-double-right v-else/>
-    </template>
-    <ImportBusinessType v-model="formData.businessTypeData" :disabled="!pageData.button"/>
-    <ImportBusinessRule v-model="formData.businessRuleData" :business-type-data="formData.businessTypeData as any[]" :disabled="!pageData.button"/>
-    <ImportBusinessMeta v-model="formData.businessMetaData" :business-type-data="formData.businessTypeData as any[]" :disabled="!pageData.button"/>
-  </a-collapse>
-  <a-collapse v-if="['export'].includes(formData.useType)" :key="pageData.key" :default-active-key="[1]">
-    <template #expand-icon="{ active }">
-      <icon-double-down v-if="active"/>
-      <icon-double-right v-else/>
-    </template>
-    <ExportBusinessMeta v-model="formData.businessMetaData" :disabled="!pageData.button"/>
-  </a-collapse>
-</template>
-
+<script lang="ts">
+export default {
+  name: 'FileTemplateModel'
+};
+</script>
 <script lang="ts" setup>
-import {ref} from "vue";
-import {useI18n} from "vue-i18n";
-import {useRoute} from "vue-router";
-import {FileItem, FormInstance, Modal, Notification} from "@arco-design/web-vue";
-import {ListUrlParams} from '@/api/base';
+import {ref, watch} from "vue";
+import {useI18n} from 'vue-i18n';
+import {FileItem, FormInstance, Message, Modal} from "@arco-design/web-vue";
 import {createOrUpdateFileTemplate as createOrUpdateForm, getFileTemplate as getForm, QueryFileTemplateForm as QueryForm} from '@/api/template'
 import {enableStatusOptions, useTypeOptions,} from "@/views/security/file/searchTable";
 import {AttachmentForm, Base64FileParams, fetchFileToBase64, getAttachmentByIds} from "@/api/attachment";
@@ -137,18 +16,33 @@ import ImportBusinessType from "@/views/security/file/import/type.vue";
 import ImportBusinessRule from "@/views/security/file/import/rule.vue";
 import ImportBusinessMeta from "@/views/security/file/import/meta.vue";
 import ExportBusinessMeta from "@/views/security/file/export/meta.vue";
-import {generateRandom} from "@/utils/strings";
-import {QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions} from "@/api/security";
-import {cloneDeep} from "lodash";
+import {QueryAppForm} from "@/api/security";
+import {getAppSelectOptions} from "@/api/application";
 
-const route = useRoute();
-const {t} = useI18n();
-const pageData = ref({formState: 'add', button: true, formCol: 1, key: generateRandom()});
-const validateForm = ref<FormInstance>();
+// 页面所需 参数
+type PageParams = {
+  appId?: string; // 应用主键
+  tenantCode?: string; // 租户编码
+}
+
+const emits = defineEmits(['update:modelValue']);
+const props = defineProps({
+  modelValue: {type: String, default: ''},// id
+  parameter: {type: Object, default: () => ({} as PageParams)},// 页面需要的参数
+  visible: {type: Boolean, default: false},// 显示
+  formState: {type: String, default: 'add'},// 表单状态
+  formCol: {type: Number, default: 1},// 表单列数
+});
+
+
+const {t} = useI18n();// 国际化
+const labelCol = ref<number>(6);// 表单-标题宽度
+const wrapperCol = ref<number>(18); // 表单-内容宽度
+const validateForm = ref<FormInstance>();// 表单-校验
 /* 表单 */
 const generateFormData = (): QueryForm => {
   return {
-    id: '',
+    id: props.modelValue || '',
     title: '',
     useType: '',
     fileType: '',
@@ -158,19 +52,30 @@ const generateFormData = (): QueryForm => {
     templateRule: '',
     enableStatus: 1,
     description: '',
-    appId: (route.params && route.params.appId as string) || '',
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
     businessTypeData: [],
     businessMetaData: [],
     businessRuleData: [],
+    appId: props.parameter?.appId || '',
+    tenantCode: props.parameter?.tenantCode || '',
   };
 }
 const formData = ref(generateFormData());
+
 const templateFile = ref<FileItem[]>([]);
 const templateRuleFile = ref<FileItem[]>([]);
+const appSelectOptions = ref<QueryAppForm[]>([]);
 
+const tabsKey = ref<number>(1);// 定位tabs页面
+const tableTabHeight = ref<number>(480);
+const tableTabStyle = ref({height: `${tableTabHeight.value}px`});
+
+/**
+ * 新增或更新接口
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
 const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
-  console.log(params);
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
@@ -181,25 +86,39 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
       params.businessMetaData = params.businessMetaData && params.businessMetaData.length > 0 ? JSON.stringify(params.businessMetaData) : '';
       delete params.fileCodeFormat;
       const {data} = await createOrUpdateForm(params);
-      templateFile.value = [];
-      templateRuleFile.value = [];
-      successBack(data);
+      if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
-      failBack(err);
+      if (failBack && typeof failBack === 'function') failBack(err);
     }
-  } else {
-    failBack();
-  }
+  } else if (failBack && typeof failBack === 'function') failBack();
 };
+/**
+ * 获取单条数据接口
+ * @param id
+ * @param successBack
+ * @param failBack
+ */
 const getData = async (id: string, successBack?: any, failBack?: any) => {
   try {
     const {data} = await getForm(id);
-    successBack(data);
+    if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-    failBack(err);
+    if (failBack && typeof failBack === 'function') failBack(err);
   }
+};
+
+/**
+ * 文本域查看
+ * @param content
+ */
+const openModal = (content: string) => {
+  Modal.open({'content': content, 'footer': false, 'simple': true});
+}
+/**
+ * 重置验证信息
+ */
+const resetValidate = async () => {
+  await validateForm.value?.resetFields();
 };
 
 /* 文件上传 */
@@ -217,7 +136,7 @@ const deleteFileItem = (fileList: FileItem[], delUid: string) => {
   }
 }
 const uploadError = (fileItem: FileItem) => {
-  Notification.error("上传失败，请重试！");
+  Message.error("上传失败，请重试！");
 }
 const setTemplate = (fileName?: string) => {
   formData.value.template = templateFile.value.map((item) => {
@@ -235,7 +154,7 @@ const setTemplate = (fileName?: string) => {
 const beforeRemoveT = async (fileItem: FileItem): Promise<boolean> => {
   try {
     // await deleteAttachment(fileItem.uid);
-    Notification.success("删除成功");
+    Message.success("删除成功");
     deleteFileItem(templateFile.value, fileItem.uid);
     setTemplate('');
     return true;
@@ -244,7 +163,7 @@ const beforeRemoveT = async (fileItem: FileItem): Promise<boolean> => {
   }
 }
 const uploadTSuccess = (fileItem: FileItem) => {
-  Notification.success("上传成功");
+  Message.success("上传成功");
   fileItem.uid = fileItem.response.data.id;
   templateFile.value.push(fileItem);
   setTemplate(fileItem.name);
@@ -257,7 +176,7 @@ const setTemplateRule = () => {
 const beforeRemoveTR = async (fileItem: FileItem): Promise<boolean> => {
   try {
     // await deleteAttachment(fileItem.uid);
-    Notification.success("删除成功");
+    Message.success("删除成功");
     deleteFileItem(templateRuleFile.value, fileItem.uid);
     setTemplateRule();
     return true;
@@ -266,7 +185,7 @@ const beforeRemoveTR = async (fileItem: FileItem): Promise<boolean> => {
   }
 }
 const uploadTRSuccess = (fileItem: FileItem) => {
-  Notification.success("上传成功");
+  Message.success("上传成功");
   fileItem.uid = fileItem.response.data.id;
   templateRuleFile.value.push(fileItem);
   setTemplateRule();
@@ -297,14 +216,6 @@ const loadFiles = (attachmentIds: string, type: string) => {
     });
   }
 }
-
-const openModal = (content: string) => {
-  Modal.open({'content': content, 'footer': false, 'simple': true});
-}
-const resetValidate = async () => {
-  await validateForm.value?.resetFields();
-};
-
 const configValueBase64 = (base64String: string) => {
   formData.value.fileType = '';
   if (base64String && isJSON(base64String)) {
@@ -320,35 +231,44 @@ const configValueBase64 = (base64String: string) => {
   }
 }
 
-const selectAppOptions = ref<QuerySelectForm[]>([]);
-const getSelectAppOptions = async () => {
-  try {
-    const {data} = await querySelectOptions({
-      tenantCode: (route.params && route.params.tenantCode as string) || '',
-    } as unknown as QueryAppForm);
-    selectAppOptions.value = data || [];
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
+/**
+ * 页面数据创建或更新方法，对外提供
+ * @param successBack
+ * @param failBack
+ */
+const saveOrUpdate = (successBack?: any, failBack?: any) => {
+  createOrUpdateData(formData.value, (data: QueryForm) => {
+    // 设计当前页面的操作
+    if (successBack && typeof successBack === 'function') successBack(data);
+  }, () => {
+    if (failBack && typeof failBack === 'function') failBack();
+  });
 }
 
-/* 对外调用方法 */
-const loadModel = (urlParams: ListUrlParams) => {
-  getSelectAppOptions();
-  pageData.value.key = generateRandom();
-  // 全局
-  pageData.value.formState = urlParams.action || "view";
-  pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
-  pageData.value.formCol = urlParams.formCol || 1;
+/**
+ * 页面加载方法，对外提供
+ */
+const loadPage = () => {
+  // 应用信息
+  getAppSelectOptions({
+    id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+  }, (data: QueryAppForm[]) => {
+    appSelectOptions.value = data || [];
+  }, () => {
+    appSelectOptions.value = [];
+  });
+  // 表单数据重置
   formData.value = generateFormData();
-  templateFile.value = [];
-  templateRuleFile.value = [];
   // 重置验证
   resetValidate();
-  // 特色
-  if (urlParams.id) {
-    getData(urlParams.id, (data: QueryForm) => {
+  // 其他初始化
+  tabsKey.value = 1;
+  templateFile.value = [];
+  templateRuleFile.value = [];
+  // 编辑、查看 状态 查询数据
+  if (['edit', 'view'].includes(props.formState) && props.modelValue) {
+    getData(props.modelValue, (data: QueryForm) => {
+      // 表格数据处理
       formData.value = data;
       formData.value.fileCodeFormat = data.fileCode ? data.fileCode.split(",") : [];
       loadFiles(data.template, 't');
@@ -356,22 +276,129 @@ const loadModel = (urlParams: ListUrlParams) => {
       formData.value.businessTypeData = data.businessTypeData && typeof data.businessTypeData === 'string' ? JSON.parse(data.businessTypeData) : [];
       formData.value.businessRuleData = data.businessRuleData && typeof data.businessRuleData === 'string' ? JSON.parse(data.businessRuleData) : [];
       formData.value.businessMetaData = data.businessMetaData && typeof data.businessMetaData === 'string' ? JSON.parse(data.businessMetaData) : [];
-      urlParams.loadSuccessBack(data);
-    }, urlParams.loadFailBack);
+    });
   }
 }
-const submitModel = (done: any, successBack?: any, failBack?: any) => {
-  createOrUpdateData(cloneDeep(formData.value), successBack, failBack);
-};
 
-// 将方法暴露出去
-defineExpose({loadModel, submitModel});
+watch(() => props, () => {
+  if (props.visible === true) loadPage();
+}, {deep: true, immediate: true});
+
+/* 提供外部调用方法 */
+defineExpose({saveOrUpdate, loadPage});
 </script>
-<script lang="ts">
-export default {
-  name: 'FileTemplateModel'
-};
-</script>
+
+<template>
+  <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="left" type="line">
+    <a-tab-pane :key="1" class="a-tabs-one" title="基础信息">
+      <a-card class="">
+        <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
+          <a-row :gutter="wrapperCol">
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('security.file.index.form.title')"
+                  :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+                  field="title">
+                <a-input v-if="formState!=='view'" v-model.trim="formData.title" :max-length="32"/>
+                <span v-else>{{ formData.title }}</span>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('security.file.index.form.useType')"
+                  :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+                  field="useType">
+                <a-select v-if="formState!=='view'" v-model="formData.useType">
+                  <a-option v-for="item of useTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+                </a-select>
+                <span v-else>{{ $t(`security.file.index.form.useType.${formData.useType}`) }}</span>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('security.file.index.form.template')"
+                  :rules="[{required: !['import'].includes(formData.useType),message: $t('security.form.rules.match.required')}]"
+                  field="template">
+                <UploadBase64 v-model="formData.template"
+                              :accept="formData.useType==='import'?'.xls,.xlsx':'.doc,.docx,.xls,.xlsx'"
+                              :disabled="formState==='view'" @change="configValueBase64"/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('security.file.index.form.fileType')"
+                  :rules="[{required: !['import'].includes(formData.useType),message: $t('security.form.rules.match.required')}]"
+                  field="fileType">
+                <span>{{
+                    formData.fileType ? $t(`security.file.index.form.fileType.${formData.fileType}`) : $t('security.file.index.form.fileType.placeholder')
+                  }}</span>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('security.file.index.form.templateRule')"
+                  :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
+                  field="templateRule">
+                <UploadBase64 v-model="formData.templateRule" :disabled="formState==='view'" accept=".xls,.xlsx"/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('security.file.index.form.fileCode')"
+                  :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
+                  field="fileCodeFormat">
+                <a-input-tag v-if="formState!=='view'" v-model="formData.fileCodeFormat" :placeholder="$t('security.file.index.form.fileCode.placeholder')"
+                             :unique-value="true"
+                             allow-clear/>
+                <a-space v-else :style="{'flex-wrap':'wrap'}">
+                  <a-tag v-for="(item, index) of formData.fileCodeFormat" :key="index" :style="{'margin-bottom':'4px'}">{{ item }}</a-tag>
+                </a-space>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item :label="$t('security.file.index.form.appId')" field="appId">
+                <a-select v-model="formData.appId" :disabled="formState==='view'" :field-names="{value: 'id', label: 'name'}"
+                          :options="appSelectOptions" allow-search/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('security.file.index.form.enableStatus')"
+                  :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+                  field="enableStatus">
+                <a-select v-if="formState!=='view'" v-model="formData.enableStatus">
+                  <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+                </a-select>
+                <span v-else>{{ $t(`security.file.index.form.enableStatus.${formData.enableStatus}`) }}</span>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)">
+              <a-form-item :label="$t('security.file.index.form.description')" :label-col-props="{ span: labelCol/formCol }"
+                           :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }" field="description">
+                <a-textarea v-if="formState!=='view'" v-model="formData.description" :auto-size="{minRows:3,maxRows:6}" :max-length="512" show-word-limit/>
+                <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </a-form>
+      </a-card>
+    </a-tab-pane>
+    <a-tab-pane v-if="['import'].includes(formData.useType)" :key="2" class="a-tabs-one" title="模板字段定义">
+      <ImportBusinessType v-model="formData.businessTypeData" :disabled="formState==='view'" :hight="tableTabHeight"/>
+    </a-tab-pane>
+    <a-tab-pane v-if="['export'].includes(formData.useType)" :key="2" class="a-tabs-one" title="数据配置">
+      <ExportBusinessMeta v-model="formData.businessMetaData" :disabled="formState==='view'" :hight="tableTabHeight"/>
+    </a-tab-pane>
+    <a-tab-pane v-if="['import'].includes(formData.useType)" :key="3" class="a-tabs-two" title="数据处理规则">
+      <ImportBusinessRule v-model="formData.businessRuleData" :business-type-data="formData.businessTypeData as any[]"
+                          :disabled="formState==='view'" :hight="tableTabHeight"/>
+    </a-tab-pane>
+    <a-tab-pane v-if="['import'].includes(formData.useType)" :key="4" class="a-tabs-two" title="数据保存配置">
+      <ImportBusinessMeta v-model="formData.businessMetaData" :business-type-data="formData.businessTypeData as any[]"
+                          :disabled="formState==='view'" :hight="tableTabHeight"/>
+    </a-tab-pane>
+  </a-tabs>
+</template>
 
 <style lang="less" scoped>
 div.arco-form-item-content > span.textarea-span {

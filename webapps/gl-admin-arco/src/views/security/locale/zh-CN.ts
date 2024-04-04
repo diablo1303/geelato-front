@@ -148,6 +148,7 @@ export default {
   'searchTable.columns.operations.edit': '编辑',
   'searchTable.columns.operations.delete': '删除',
   'searchTable.columns.operations.deleteMsg': '是否删除该条数据？',
+  'searchTable.columns.operations.relevance.deleteMsg': '是否删除该条数据关联项？',
   // webapps/gl-admin-arco/src/views/security/org - form.operation
   'security.org.index.model.title.add': '新建组织',
   'security.org.index.model.title.edit': '编辑组织',
@@ -192,9 +193,12 @@ export default {
   'security.user.index.form.enableStatus': '状态',
   'security.user.index.form.enableStatus.0': '禁用',
   'security.user.index.form.enableStatus.1': '启用',
+  'security.user.index.form.enableStatus.false': '禁用',
+  'security.user.index.form.enableStatus.true': '启用',
   'security.user.index.form.seqNo': '排序',
   'security.user.index.form.description': '描述',
   'security.user.index.form.createAt': '创建时间',
+  'security.user.index.form.updateAt': '更新时间',
   'security.user.index.form.operations': '操作',
   // webapps/gl-admin-arco/src/views/security/user - list.operation
   // 同 org
@@ -214,7 +218,7 @@ export default {
   'security.user.forml.tab.title.two': '组织用户关联',
   'security.dict.index.form.index': '序号',
   'security.dict.index.form.tenantCode': '所属租户',
-  'security.dict.index.form.appId': '所属应用',
+  'security.dict.index.form.appId': '应用',
   'security.dict.index.form.dictName': '名称',
   'security.dict.index.form.dictName1': '字典名称',
   'security.dict.index.form.dictCode': '编码',
@@ -300,6 +304,7 @@ export default {
   'security.permission.index.form.appId': '所属应用',
   'security.permission.index.form.description': '描述',
   'security.permission.index.form.createAt': '创建时间',
+  'security.permission.index.form.updateAt': '更新时间',
   'security.permission.index.form.operations': '操作',
   'searchTable.columns.operations.subset': '子集',
   // webapps/gl-admin-arco/src/views/security/permission - list.operation
@@ -339,11 +344,11 @@ export default {
   // webapps/gl-admin-arco/src/views/security/role/app
   'security.role.index.menu.list': '应用管理',
   'security.role.index.menu.list.searchTable': '角色管理',
-  'security.role.form.tab.title.one': '角色基本信息',
-  'security.role.form.tab.title.two': '角色应用关联',
-  'security.role.form.tab.title.three': '角色权限关联',
-  'security.role.form.tab.title.four': '角色菜单关联',
-  'security.role.form.tab.title.five': '角色用户关联',
+  'security.role.form.tab.title.one': '基本信息',
+  'security.role.form.tab.title.two': '应用关联',
+  'security.role.form.tab.title.three': '权限关联',
+  'security.role.form.tab.title.four': '菜单关联',
+  'security.role.form.tab.title.five': '用户关联',
   // webapps/gl-admin-arco/src/views/security/role/app - list|form
   'security.role.index.form.index': '序号',
   'security.role.index.form.name': '名称',
@@ -443,6 +448,7 @@ export default {
   'security.encoding.index.form.template': '模板',
   'security.encoding.index.form.separators': '间隔',
   'security.encoding.index.form.example': '示例',
+  'security.encoding.index.form.rule': '规则',
   'security.encoding.index.form.latestSerialNumber': '最新序列',
   'security.encoding.index.form.appId': '所属应用',
   'security.encoding.index.form.enableStatus': '状态',

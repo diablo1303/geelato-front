@@ -162,9 +162,8 @@
       </a-table-column>
       <a-table-column :title="$t('security.user.index.form.seqNo')" :width="100" data-index="seqNo"></a-table-column>
       <a-table-column :title="$t('security.user.index.form.createAt')" :width="180" data-index="createAt"></a-table-column>
-      <a-table-column
-          :title="$t('security.user.index.form.operations')" :width="pageData.formState==='edit'?306:100" align="center" data-index="operations"
-          fixed="right">
+      <a-table-column :title="$t('security.user.index.form.operations')" :width="pageData.formState==='edit'?306:100" align="center"
+                      data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-popconfirm :content="$t('searchTable.columns.operations.resetMsg')" position="tr" type="warning" @ok="resetPwdTable(record.id)">
             <a-button v-show="pageData.formState==='edit'" size="small" status="danger" type="text">

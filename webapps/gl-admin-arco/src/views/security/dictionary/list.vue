@@ -1,23 +1,30 @@
 <script lang="ts">
 export default {
-  name: 'OrgList'
+  name: 'DictionaryList'
 };
 </script>
 
 <script lang="ts" setup>
-import {reactive, ref, watch} from 'vue';
+import {nextTick, onMounted, reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
 import {TableColumnData, TableSortable} from '@arco-design/web-vue';
-// 页面所需 对象、方法
 import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams} from '@/api/base';
-import {deleteOrg as deleteList, QueryOrgForm as QueryForm, pageQueryOrg as pageQueryList} from '@/api/security';
-import {categoryOptions, statusOptions, typeOptions} from "./searchTable";
+// 页面所需 对象、方法
+import {getAppSelectOptions, QueryAppForm} from "@/api/application";
+import {
+  deleteDict as deleteList,
+  QueryDictForm as QueryForm,
+  pageQueryDict as pageQueryList,
+  exportDictAndItems,
+} from '@/api/security'
+import {columns, enableStatusOptions} from "@/views/security/dictionary/searchTable";
 // 引入组件
-import OrgForm from './form.vue';
+import DictionaryLayout from './layout.vue';
+import DictionaryForm from './form.vue';
 
-// 页面所需参数
+// 页面所需 参数
 type PageParams = {
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
@@ -42,19 +49,17 @@ const {loading, setLoading} = useLoading(false);
 const renderData = ref<PageQueryFilter[]>([]);
 // 列表 - 分页
 const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
-const pagination = reactive({
-  ...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions
-});
+const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 1200, y: props.height});
+const scroll = ref({x: 1300, y: props.height});
 // 列表 - 排序
-const lastSort = ref<string>('');
 const sortable = ref<Record<string, TableSortable>>({
-  code: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
+  dictCode: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   seqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
 });
+const lastSort = ref<string>('');
 // 列表 - 查询条件布局
 const labelCol = ref<number>(6);
 const wrapperCol = ref<number>(18);
@@ -62,21 +67,20 @@ const wrapperCol = ref<number>(18);
 const generateFilterData = () => {
   return {
     id: '',
-    pid: '',
-    name: '',
-    code: '',
-    type: '',
-    category: '',
-    status: '',
+    dictName: '',
+    dictCode: '',
+    enableStatus: '',
     createAt: [],
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
   };
 };
 const filterData = ref(generateFilterData());
+const appSelectOptions = ref<QueryAppForm[]>([]);
 
 /**
  * 分页查询方法
+ * {current: 1, pageSize: pagination.pageSize, order: lastSort.value}
  * @param params
  */
 const fetchData = async (params: PageQueryRequest) => {
@@ -175,7 +179,7 @@ const onSorterChange = (dataIndex: string, direction: string) => {
 }
 
 /* 表单参数 */
-const formParams = ref<FormParams>({
+const formParams = ref({
   visible: false,
   isModal: true,
   title: '',
@@ -213,6 +217,38 @@ const editTable = (data: QueryForm) => {
     id: data.id, visible: true, formState: 'edit'
   });
 }
+
+const layoutParams = ref({
+  visible: false,
+  isModal: true,
+  title: '',
+  width: '1250px',
+  height: '',
+  parameter: {appId: '', tenantCode: ''},
+  formState: 'add',
+  id: '',
+  formCol: 1,
+});
+/**
+ * 列表按钮 - 新增表单
+ * @param ev
+ */
+/* const addTable = (ev: MouseEvent) => {
+  layoutParams.value = Object.assign(layoutParams.value, {
+    id: '', visible: true, formState: 'add', title: '新建数据字典',
+  });
+}; */
+/**
+ * 列表按钮 - 配置字典项
+ * @param data
+ */
+const configTable = (data: QueryForm) => {
+  layoutParams.value = Object.assign(layoutParams.value, {
+    id: data.id, visible: true, formState: 'edit', title: '编辑数据字典', parameter: {
+      appId: data.appId || '', tenantCode: data.tenantCode || ''
+    }
+  });
+}
 /**
  * 列表按钮 - 删除
  * 当前排序、过滤条件不变
@@ -230,13 +266,13 @@ const deleteTable = (data: QueryForm) => {
  * 新增：重置列表
  * 编辑：当前页数、排序、过滤条件不变
  * @param data
- * @param type
+ * @param _action
  */
-const saveSuccess = (data: QueryForm, type: string) => {
-  if (type === 'add') {
+const saveSuccess = (data: QueryForm, _action: string) => {
+  if (_action === 'add') {
     reset();
     emits('add', data);
-  } else if (type === 'edit') {
+  } else if (_action === 'edit') {
     search();
     emits('edit', data);
   }
@@ -244,68 +280,84 @@ const saveSuccess = (data: QueryForm, type: string) => {
 
 watch(() => props, (val) => {
   if (props.visible === true) {
-    // 页面设置
+    // 应用信息
+    if (!props.parameter.appId) {
+      getAppSelectOptions({
+        id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+      }, (data: QueryAppForm[]) => {
+        appSelectOptions.value = data || [];
+      }, () => {
+        appSelectOptions.value = [];
+      });
+    }
+    // 修改列表高度
     scroll.value.y = props.height;
+    // 修改列表查询条数
     basePagination.pageSize = props.pageSize;
-    // 表单参数
+    // 设置页面参数
     formParams.value.parameter = {
       appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
     }
-    // 加载数据
+    layoutParams.value.parameter = {
+      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }
+    // 重置查询
     reset();
   }
 }, {deep: true, immediate: true});
 </script>
 
 <template>
-  <OrgForm v-model:visible="formParams.visible"
-           :formCol="formParams.formCol"
-           :formState="formParams.formState"
-           :height="formParams.height"
-           :isModal="formParams.isModal"
-           :modelValue="formParams.id"
-           :parameter="formParams.parameter"
-           :title="formParams.title"
-           :width="formParams.width"
-           @saveSuccess="saveSuccess"/>
+  <DictionaryForm v-model:visible="formParams.visible"
+                  :formCol="formParams.formCol"
+                  :formState="formParams.formState"
+                  :height="formParams.height"
+                  :isModal="formParams.isModal"
+                  :modelValue="formParams.id"
+                  :parameter="formParams.parameter"
+                  :title="formParams.title"
+                  :width="formParams.width"
+                  @saveSuccess="saveSuccess"/>
+
+  <DictionaryLayout v-model:visible="layoutParams.visible"
+                    :formCol="layoutParams.formCol"
+                    :formState="layoutParams.formState"
+                    :height="layoutParams.height"
+                    :isModal="layoutParams.isModal"
+                    :modelValue="layoutParams.id"
+                    :parameter="layoutParams.parameter"
+                    :title="layoutParams.title"
+                    :width="layoutParams.width"
+                    @saveSuccess="saveSuccess"/>
 
   <a-row>
     <a-col :flex="1">
       <a-form :label-col-props="{ span: labelCol }" :model="filterData" :wrapper-col-props="{ span: wrapperCol }" label-align="left">
         <a-row :gutter="wrapperCol">
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.name')" field="name">
-              <a-input v-model="filterData.name" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
+            <a-form-item :label="$t('security.dict.index.form.dictName')" field="dictName">
+              <a-input v-model="filterData.dictName" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.code')" field="code">
-              <a-input v-model="filterData.code" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
+            <a-form-item :label="$t('security.dict.index.form.dictCode')" field="dictCode">
+              <a-input v-model="filterData.dictCode" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.type')" field="type">
-              <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-form-item :label="$t('security.dict.index.form.enableStatus')" field="enableStatus">
+              <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.category')" field="category">
-              <a-select v-model="filterData.category" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of categoryOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-              </a-select>
+          <a-col v-if="!parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
+            <a-form-item :label="$t('security.dict.index.form.appId')" field="appId">
+              <a-select v-model="filterData.appId" :field-names="{value: 'id', label: 'name'}" :options="appSelectOptions" allow-search/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.status')" field="status">
-              <a-select v-model="filterData.status" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of statusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.createAt')" field="createAt">
+            <a-form-item :label="$t('security.dict.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
@@ -334,7 +386,7 @@ watch(() => props, (val) => {
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button :disabled="formState==='view'" type="primary" @click="addTable($event)">
+        <a-button v-show="formState==='edit'" type="primary" @click="addTable($event)">
           <template #icon>
             <icon-plus/>
           </template>
@@ -356,34 +408,30 @@ watch(() => props, (val) => {
       row-key="id"
       @pageChange="onPageChange" @pageSizeChange="onPageSizeChange" @sorter-change="onSorterChange">
     <template #columns>
-      <a-table-column :title="$t('security.org.index.form.index')" :width="70" align="center" data-index="index">
+      <a-table-column :title="$t('security.dict.index.form.index')" :width="70" align="center" data-index="index" fixed="left">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.org.index.form.name')" :tooltip="true" :width="210" data-index="name"/>
-      <a-table-column :ellipsis="true" :sortable="sortable.code" :title="$t('security.org.index.form.code')" :tooltip="true" :width="150" data-index="code"/>
-      <a-table-column :title="$t('security.org.index.form.type')" :width="70" data-index="type">
+      <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictName')" :tooltip="true" :width="180" data-index="dictName" fixed="left"/>
+      <a-table-column :ellipsis="true" :sortable="sortable.dictCode" :title="$t('security.dict.index.form.dictCode')" :tooltip="true" :width="180"
+                      data-index="dictCode"/>
+      <a-table-column :title="$t('security.dict.index.form.enableStatus')" :width="70" data-index="enableStatus">
         <template #cell="{ record }">
-          {{ record.type ? $t(`security.org.index.form.type.${record.type}`) : '' }}
+          {{ $t(`security.dict.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.org.index.form.category')" :width="70" data-index="category">
+      <a-table-column :sortable="sortable.seqNo" :title="$t('security.dict.index.form.seqNo')" :width="100" align="right" data-index="seqNo"/>
+      <a-table-column :sortable="sortable.createAt" :title="$t('security.dict.index.form.createAt')" :width="180" data-index="createAt"/>
+      <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictRemark')" :tooltip="{position:'right'}" :width="240" data-index="dictRemark"/>
+      <a-table-column v-show="formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="280" align="center" data-index="operations"
+                      fixed="right">
         <template #cell="{ record }">
-          {{ record.category ? $t(`security.org.index.form.category.${record.category}`) : '' }}
-        </template>
-      </a-table-column>
-      <a-table-column :title="$t('security.org.index.form.status')" :width="70" data-index="status">
-        <template #cell="{ record }">
-          {{ $t(`security.org.index.form.status.${record.status}`) }}
-        </template>
-      </a-table-column>
-      <a-table-column :sortable="sortable.seqNo" :title="$t('security.org.index.form.seqNo')" :width="100" align="right" data-index="seqNo"/>
-      <a-table-column :sortable="sortable.createAt" :title="$t('security.org.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :title="$t('security.org.index.form.operations')" :width="210" align="center" data-index="operations" fixed="right">
-        <template #cell="{ record }">
-          <a-button size="small" type="text" @click="viewTable(record)">
-            {{ $t('searchTable.columns.operations.view') }}
+          <a-button size="small" type="text" @click="exportDictAndItems(record.id)">
+            {{ $t('searchTable.operation.export') }}
+          </a-button>
+          <a-button size="small" type="text" @click="configTable(record)">
+            {{ $t('searchTable.columns.operations.config') }}
           </a-button>
           <a-button :disabled="formState==='view'" size="small" type="text" @click="editTable(record)">
             {{ $t('searchTable.columns.operations.edit') }}

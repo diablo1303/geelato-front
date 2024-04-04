@@ -256,3 +256,22 @@ export function exportWps(dataType: string, templateId: string, data: Record<str
   readonly = readonly === true;
   return axios.post<AttachmentForm>(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}&markText=${markText}&markKey=${markKey}&readonly=${readonly}`, data);
 }
+
+/**
+ * 导出 - 数据字典
+ * @param fileName
+ * @param map
+ * @param list
+ */
+export const exportDictionary = async (fileName: string, map?: Record<string, any>, list?: any[]) => {
+  // {"valueMap": {}, "valueMapList": [{"dictItem": []}]}
+  const exportData = {"valueMap": map || {}, "valueMapList": list || []}
+  console.log(exportData);
+  try {
+    const {data} = await exportWps('data', '4942276091403440128', exportData, fileName || '字典管理数据导出');
+    if (data && data.id) fetchFileById(data.id);
+    Message.success('导出成功！');
+  } catch (err) {
+    console.log(err);
+  }
+}

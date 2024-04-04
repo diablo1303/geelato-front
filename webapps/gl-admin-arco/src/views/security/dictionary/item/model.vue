@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'RoleModel'
+  name: 'DictionaryEntryModel'
 };
 </script>
 <script lang="ts" setup>
@@ -8,18 +8,17 @@ import {ref, watch} from "vue";
 import {useI18n} from 'vue-i18n';
 import {FormInstance, Modal} from "@arco-design/web-vue";
 import {
-  createOrUpdateRole as createOrUpdateForm,
-  getRole as getForm,
-  QueryAppForm,
-  QueryRoleForm as QueryForm,
-  validateRoleCode
-} from '@/api/security';
-import {enableStatusOptions, typeOptions} from "@/views/security/role/searchTable";
-import {getAppSelectOptions} from "@/api/application";
+  createOrUpdateDictItem as createOrUpdateForm,
+  getDictItem as getForm,
+  QueryDictItemForm as QueryForm,
+  validateDictItemCode
+} from '@/api/security'
+import {enableStatusOptions} from "./searchTable";
 
 // 页面所需 参数
 type PageParams = {
-  type: string; // 角色类型
+  pid: string; // 父级主键
+  dictId: string; // 字典主键
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -42,20 +41,19 @@ const validateForm = ref<FormInstance>();// 表单-校验
 const generateFormData = (): QueryForm => {
   return {
     id: props.modelValue || '',
-    name: '',
-    code: '',
-    type: props.parameter.type || '',
-    weight: 5,
+    pid: props.parameter.pid || '',
+    dictId: props.parameter.dictId || '',
+    itemName: '',
+    itemCode: '',
     enableStatus: 1,
     seqNo: 999,
-    description: '',
-    appName: '',
+    itemRemark: '',
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
   };
 }
 const formData = ref(generateFormData());
-const appSelectOptions = ref<QueryAppForm[]>([]);
+
 /**
  * 新增或更新接口
  * @param params
@@ -66,7 +64,6 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
-      params.appId = ["app"].includes(params.type) ? params.appId : '';
       const {data} = await createOrUpdateForm(params);
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
@@ -95,7 +92,7 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
  */
 const validateCode = async (value: any, callback: any) => {
   try {
-    const {data} = await validateRoleCode(formData.value);
+    const {data} = await validateDictItemCode(formData.value);
     if (!data) callback(t('security.form.rules.match.uniqueness'));
   } catch (err) {
     console.log(err);
@@ -116,14 +113,6 @@ const resetValidate = async () => {
 };
 
 /**
- * 类型变更
- */
-const typeChange = () => {
-  formData.value.appId = '';
-  formData.value.appName = '';
-}
-
-/**
  * 页面数据创建或更新方法，对外提供
  * @param successBack
  * @param failBack
@@ -141,14 +130,6 @@ const saveOrUpdate = (successBack?: any, failBack?: any) => {
  * 页面加载方法，对外提供
  */
 const loadPage = () => {
-  // 应用信息
-  getAppSelectOptions({
-    id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
-  }, (data: QueryAppForm[]) => {
-    appSelectOptions.value = data || [];
-  }, () => {
-    appSelectOptions.value = [];
-  });
   // 表单数据重置
   formData.value = generateFormData();
   // 重置验证
@@ -176,73 +157,36 @@ defineExpose({saveOrUpdate, loadPage});
     <a-row :gutter="wrapperCol">
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
-            :label="$t('security.role.index.form.name')"
+            :label="$t('security.dictItem.index.form.itemName')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-            field="name">
-          <a-input v-if="formState!=='view'" v-model="formData.name" :max-length="32"/>
-          <span v-else>{{ formData.name }}</span>
+            field="itemName">
+          <a-input v-if="formState!=='view'" v-model.trim="formData.itemName" :max-length="32"/>
+          <span v-else>{{ formData.itemName }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
-            :label="$t('security.role.index.form.code')"
+            :label="$t('security.dictItem.index.form.itemCode')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateCode}]"
-            field="code">
-          <a-input v-if="formState!=='view'" v-model="formData.code" :max-length="32"/>
-          <span v-else>{{ formData.code }}</span>
+            field="itemCode">
+          <a-textarea v-if="formState!=='view'" v-model.trim="formData.itemCode" :auto-size="{minRows:1,maxRows:4}" :max-length="512" show-word-limit/>
+          <span v-else>{{ formData.itemCode }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
-            :label="$t('security.role.index.form.type')"
-            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-            field="type">
-          <a-select v-if="formState!=='view'&&!parameter.type" v-model="formData.type" @change="typeChange">
-            <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-          </a-select>
-          <span v-else>{{ $t(`security.role.index.form.type.${formData.type}`) }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item :label="$t('security.roleApp.index.form.appName')"
-                     :rules="[{required: ['app'].includes(formData.type),message: $t('security.form.rules.match.required')}]"
-                     field="appId">
-          <a-select v-if="formState!=='view'&&['app'].includes(formData.type)" v-model="formData.appId"
-                    :field-names="{value: 'id', label: 'name'}" :options="appSelectOptions" allow-search/>
-          <span v-else>{{ formData.appName }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item
-            :label="$t('security.role.index.form.weight')"
-            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-            field="weight">
-          <a-input-number
-              v-if="formState!=='view'" v-model="formData.weight" :max="999" :min="0" :placeholder="$t('security.form.rules.match.length.title')+'[0,999]'"
-              :precision="0"
-              :step="1"/>
-          <span v-else>{{ formData.weight }}</span>
-          <a-button v-if="formData.weight!==5&&formState!=='view'" size="medium" type="outline" @click="ev => {formData.weight=5;}">
-            <template #icon>
-              <icon-undo/>
-            </template>
-          </a-button>
-        </a-form-item>
-      </a-col>
-      <a-col :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item
-            :label="$t('security.role.index.form.enableStatus')"
+            :label="$t('security.dictItem.index.form.enableStatus')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="enableStatus">
           <a-select v-if="formState!=='view'" v-model="formData.enableStatus">
             <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
-          <span v-else>{{ $t(`security.role.index.form.enableStatus.${formData.enableStatus}`) }}</span>
+          <span v-else>{{ $t(`security.dictItem.index.form.enableStatus.${formData.enableStatus}`) }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
-            :label="$t('security.role.index.form.seqNo')"
+            :label="$t('security.dictItem.index.form.seqNo')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="seqNo">
           <a-input-number
@@ -253,10 +197,10 @@ defineExpose({saveOrUpdate, loadPage});
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)">
-        <a-form-item :label="$t('security.role.index.form.description')" :label-col-props="{ span: labelCol/formCol }"
-                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }" field="description">
-          <a-textarea v-if="formState!=='view'" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
-          <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+        <a-form-item :label="$t('security.dictItem.index.form.itemRemark')" :label-col-props="{ span: labelCol/formCol }"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }" field="itemRemark">
+          <a-textarea v-if="formState!=='view'" v-model="formData.itemRemark" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+          <span v-else :title="formData.itemRemark" class="textarea-span" @click="openModal(`${formData.itemRemark}`)">{{ formData.itemRemark }}</span>
         </a-form-item>
       </a-col>
     </a-row>

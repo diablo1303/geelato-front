@@ -1,217 +1,104 @@
-<template v-model="pageData">
-  <a-form ref="validateForm" :label-col-props="{ span: 4 }" :model="formData" :wrapper-col-props="{ span: 20 }" class="form">
-    <a-row :gutter="16">
-      <a-form-item
-          :label="$t('security.encoding.index.form.title')"
-          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-          field="title">
-        <a-input v-if="pageData.button" v-model.trim="formData.title" :max-length="32"/>
-        <span v-else>{{ formData.title }}</span>
-      </a-form-item>
-      <a-form-item :label="$t('security.encoding.index.form.template')" field="template">
-        <a-space>
-          <a-dropdown-button>
-            {{ $t('security.encoding.index.form.selectItemType') }}
-            <template #icon>
-              <icon-down/>
-            </template>
-            <template #content>
-              <a-doption
-                  v-for="item in modelItemTypeOptions"
-                  :key="item.value as string"
-                  :disabled="!pageData.button"
-                  @click="addTemplate(item.value as string)">
-                {{ $t(item.label) }}
-              </a-doption>
-            </template>
-          </a-dropdown-button>
-          <a-dropdown-button>
-            {{ $t('security.encoding.index.form.separators') }}{{ ` [ ${formData.separators} ]` }}
-            <template #icon>
-              <icon-down/>
-            </template>
-            <template #content>
-              <a-doption
-                  v-for="item in separatorsOptions"
-                  :key="item.value as string"
-                  :disabled="!pageData.button"
-                  @click="sepTemplate(item.value as string)">
-                {{ $t(item.label) }}
-              </a-doption>
-            </template>
-          </a-dropdown-button>
-        </a-space>
-      </a-form-item>
-      <a-form-item v-show="isShowTable" :wrapper-col-props="{ span: 20 }">
-        <a-table
-            :bordered="{cell:true}"
-            :data="(templateData as TableData[])"
-            :draggable="pageData.button?{ type: 'handle', width: 30 }:{}"
-            :pagination="false"
-            :show-header="false"
-            :stripe="true"
-            column-resizable
-            row-key="id"
-            size="small" @change="handleChange">
-          <template #columns>
-            <a-table-column v-if="!pageData.button" :ellipsis="true" :title="$t('security.encoding.index.form.seqNo')" :tooltip="true" :width="40"
-                            align="center" data-index="seqNo"/>
-            <a-table-column :ellipsis="true" :title="$t('security.encoding.index.form.itemType')" :tooltip="true" :width="100" data-index="itemType">
-              <template #cell="{record}">
-                {{ $t(`security.encoding.index.form.itemType.${record.itemType}`) }}
-              </template>
-            </a-table-column>
-            <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemContent')" :tooltip="true" :width="220" data-index="itemContent">
-              <template #cell="{record}">
-                <a-input
-                    v-if="record.itemType==='constant'&&pageData.button"
-                    v-model.trim="record.constantValue"
-                    :max-length="32"
-                    :placeholder="$t('security.encoding.index.form.itemType.constant.placeholder')"
-                    @blur="inputValueBlur($event)"/>
-                <span v-if="record.itemType==='constant'&&!pageData.button">{{ record.constantValue }}</span>
-                <a-space v-if="record.itemType==='serial'">
-                  <a-dropdown-button>
-                    {{ `${record.serialDigit} ` }}{{ $t('security.encoding.index.form.itemType.serial.digit') }}
-                    <template #icon>
-                      <icon-down/>
-                    </template>
-                    <template #content>
-                      <a-doption
-                          v-for="item in serialDigitOptions"
-                          :key="item"
-                          :disabled="!pageData.button"
-                          @click="serialDropdownClick(record.id,'serialDigit',item)">
-                        {{ `${item} ` }}{{ $t('security.encoding.index.form.itemType.serial.digit') }}
-                      </a-doption>
-                    </template>
-                  </a-dropdown-button>
-                  <a-dropdown-button>
-                    {{ $t(`security.encoding.index.form.serialType.${record.serialType}`) }}
-                    <template #icon>
-                      <icon-down/>
-                    </template>
-                    <template #content>
-                      <a-doption
-                          v-for="item in serialTypeOptions"
-                          :key="item.value as string"
-                          :disabled="!pageData.button"
-                          @click="serialDropdownClick(record.id,'serialType',item.value as string)">
-                        {{ $t(item.label) }}
-                      </a-doption>
-                    </template>
-                  </a-dropdown-button>
-                </a-space>
-                <a-select v-if="record.itemType==='date'&&pageData.button" v-model="record.dateType" @change="dateTypeChange">
-                  <a-option v-for="item of dateTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-                </a-select>
-                <span v-if="record.itemType==='date'&&!pageData.button">{{ record.dateType }}</span>
-              </template>
-            </a-table-column>
-            <a-table-column v-if="pageData.button" :title="$t('model.column.index.form.operations')" :width="55" align="center"
-                            data-index="operations" fixed="right">
-              <template #cell="{record}">
-                <a-button status="danger" type="text" @click="deleteItemColumn(record.id)">
-                  <template #icon>
-                    <IconClose/>
-                  </template>
-                </a-button>
-              </template>
-            </a-table-column>
-          </template>
-          <template #empty></template>
-        </a-table>
-      </a-form-item>
-      <a-form-item
-          :label="$t('security.encoding.index.form.example')"
-          field="example">
-        <span>{{ formData.example }}</span>
-      </a-form-item>
-      <a-form-item :label="$t('security.encoding.index.form.appId')" field="appId">
-        <a-select :disabled="!pageData.button" v-model="formData.appId" :field-names="{value: 'id', label: 'name'}"
-                  :options="selectAppOptions" allow-search/>
-      </a-form-item>
-      <a-form-item
-          :label="$t('security.encoding.index.form.enableStatus')"
-          :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-          field="enableStatus">
-        <a-select v-if="pageData.button" v-model="formData.enableStatus">
-          <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-        </a-select>
-        <span v-else>{{ $t(`security.encoding.index.form.enableStatus.${formData.enableStatus}`) }}</span>
-      </a-form-item>
-      <a-form-item :label="$t('security.encoding.index.form.description')" field="description">
-        <a-textarea v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:3,maxRows:6}" :max-length="512" show-word-limit/>
-        <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
-      </a-form-item>
-    </a-row>
-  </a-form>
-</template>
-
+<script lang="ts">
+export default {
+  name: 'EncodingModel'
+};
+</script>
 <script lang="ts" setup>
-import {computed, ref} from "vue";
-import {useI18n} from "vue-i18n";
-import {useRoute} from "vue-router";
-import {FormInstance, Modal, Notification} from "@arco-design/web-vue";
-import {ListUrlParams} from '@/api/base';
+import {ref, watch, computed} from "vue";
+import {useI18n} from 'vue-i18n';
+import {FormInstance, Message, Modal} from "@arco-design/web-vue";
 import {createOrUpdateEncoding as createOrUpdateForm, EncodingItem, getEncoding as getForm, QueryEncodingForm as QueryForm} from '@/api/encoding'
 import {formatTime, generateRandom} from '@/utils/strings';
 import {dateTypeOptions, enableStatusOptions, separatorsOptions, serialTypeOptions} from "@/views/security/encoding/searchTable";
 import {TableData} from "@arco-design/web-vue/es/table/interface";
 import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
 import {QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions} from "@/api/security";
+import {getAppSelectOptions} from "@/api/application";
 
-const route = useRoute();
-const {t} = useI18n();
-const pageData = ref({formState: 'add', button: true, formCol: 1});
-const validateForm = ref<FormInstance>();
+// 页面所需 参数
+type PageParams = {
+  appId?: string; // 应用主键
+  tenantCode?: string; // 租户编码
+}
+
+const emits = defineEmits(['update:modelValue']);
+const props = defineProps({
+  modelValue: {type: String, default: ''},// id
+  parameter: {type: Object, default: () => ({} as PageParams)},// 页面需要的参数
+  visible: {type: Boolean, default: false},// 显示
+  formState: {type: String, default: 'add'},// 表单状态
+  formCol: {type: Number, default: 1},// 表单列数
+});
+
+
+const {t} = useI18n();// 国际化
+const labelCol = ref<number>(6);// 表单-标题宽度
+const wrapperCol = ref<number>(18); // 表单-内容宽度
+const validateForm = ref<FormInstance>();// 表单-校验
 /* 表单 */
 const generateFormData = (): QueryForm => {
   return {
-    id: '',
+    id: props.modelValue || '',
     title: '',
     separators: '',
     template: '',
     example: '',
     enableStatus: 1,
     description: '',
-    appId: (route.params && route.params.appId as string) || '',
-    tenantCode: (route.params && route.params.tenantCode as string) || '',
+    appId: props.parameter?.appId || '',
+    tenantCode: props.parameter?.tenantCode || '',
   };
 }
 const formData = ref(generateFormData());
+const appSelectOptions = ref<QueryAppForm[]>([]);
 
+/**
+ * 新增或更新接口
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
 const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
   if (!res && validateTemplate()) {
     try {
       params.template = JSON.stringify(templateData.value);
       const {data} = await createOrUpdateForm(params);
-      successBack(data);
+      if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
-      failBack(err);
+      if (failBack && typeof failBack === 'function') failBack(err);
     }
-  } else {
-    failBack();
-  }
+  } else if (failBack && typeof failBack === 'function') failBack();
 };
+/**
+ * 获取单条数据接口
+ * @param id
+ * @param successBack
+ * @param failBack
+ */
 const getData = async (id: string, successBack?: any, failBack?: any) => {
   try {
     const {data} = await getForm(id);
-    successBack(data);
+    if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-    failBack(err);
+    if (failBack && typeof failBack === 'function') failBack(err);
   }
 };
 
+/**
+ * 文本域查看
+ * @param content
+ */
 const openModal = (content: string) => {
   Modal.open({'content': content, 'footer': false, 'simple': true});
 }
+/**
+ * 重置验证信息
+ */
 const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
+
 
 /* 模板 */
 const templateData = ref<EncodingItem[]>([]);
@@ -365,8 +252,8 @@ const validateTemplate = () => {
     // eslint-disable-next-line no-restricted-syntax
     for (const item of templateData.value) {
       if ((item.itemType === 'constant' && item.constantValue) ||
-        (item.itemType === 'serial' && serialDigitOptions.value.includes(item.serialDigit) && item.serialType) ||
-        (item.itemType === 'date' && item.dateType)) {
+          (item.itemType === 'serial' && serialDigitOptions.value.includes(item.serialDigit) && item.serialType) ||
+          (item.itemType === 'date' && item.dateType)) {
         // eslint-disable-next-line no-continue
         continue;
       }
@@ -375,56 +262,226 @@ const validateTemplate = () => {
     }
   }
   if (!isValid) {
-    Notification.warning(t('security.encoding.index.form.validate.warning'));
+    Message.warning(t('security.encoding.index.form.validate.warning'));
   }
   return isValid;
 }
 
-const selectAppOptions = ref<QuerySelectForm[]>([]);
-const getSelectAppOptions = async () => {
-  try {
-    const {data} = await querySelectOptions({
-      tenantCode: (route.params && route.params.tenantCode as string) || '',
-    } as unknown as QueryAppForm);
-    selectAppOptions.value = data || [];
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
+/**
+ * 页面数据创建或更新方法，对外提供
+ * @param successBack
+ * @param failBack
+ */
+const saveOrUpdate = (successBack?: any, failBack?: any) => {
+  createOrUpdateData(formData.value, (data: QueryForm) => {
+    // 设计当前页面的操作
+    if (successBack && typeof successBack === 'function') successBack(data);
+  }, () => {
+    if (failBack && typeof failBack === 'function') failBack();
+  });
 }
 
-/* 对外调用方法 */
-const loadModel = (urlParams: ListUrlParams) => {
-  getSelectAppOptions();
-  // 全局
-  pageData.value.formState = urlParams.action || "view";
-  pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
-  pageData.value.formCol = urlParams.formCol || 1;
+/**
+ * 页面加载方法，对外提供
+ */
+const loadPage = () => {
+  // 应用信息
+  getAppSelectOptions({
+    id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+  }, (data: QueryAppForm[]) => {
+    appSelectOptions.value = data || [];
+  }, () => {
+    appSelectOptions.value = [];
+  });
+  // 表单数据重置
   formData.value = generateFormData();
-  templateData.value = [];
   // 重置验证
   resetValidate();
-  // 特色
-  if (urlParams.id) {
-    getData(urlParams.id, (data: QueryForm) => {
+  // 其他初始化
+  templateData.value = [];
+  // 编辑、查看 状态 查询数据
+  if (['edit', 'view'].includes(props.formState) && props.modelValue) {
+    getData(props.modelValue, (data: QueryForm) => {
+      // 表格数据处理
       formData.value = data;
       templateData.value = data.template ? JSON.parse(data.template) : [];
-      urlParams.loadSuccessBack(data);
-    }, urlParams.loadFailBack);
+    });
   }
 }
-const submitModel = (done: any, successBack?: any, failBack?: any) => {
-  createOrUpdateData(formData.value, successBack, failBack);
-};
 
-// 将方法暴露出去
-defineExpose({loadModel, submitModel});
+watch(() => props, () => {
+  if (props.visible === true) loadPage();
+}, {deep: true, immediate: true});
+
+/* 提供外部调用方法 */
+defineExpose({saveOrUpdate, loadPage});
 </script>
-<script lang="ts">
-export default {
-  name: 'EncodingModel'
-};
-</script>
+
+<template>
+  <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
+    <a-row :gutter="wrapperCol">
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('security.encoding.index.form.title')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            field="title">
+          <a-input v-if="formState!=='view'" v-model.trim="formData.title" :max-length="32"/>
+          <span v-else>{{ formData.title }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col v-show="formState!=='view'" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('security.encoding.index.form.template')" field="template">
+          <a-space>
+            <a-dropdown-button>
+              {{ $t('security.encoding.index.form.selectItemType') }}
+              <template #icon>
+                <icon-down/>
+              </template>
+              <template #content>
+                <a-doption
+                    v-for="item in modelItemTypeOptions"
+                    :key="item.value as string"
+                    :disabled="formState==='view'"
+                    @click="addTemplate(item.value as string)">
+                  {{ $t(item.label) }}
+                </a-doption>
+              </template>
+            </a-dropdown-button>
+            <a-dropdown-button>
+              {{ $t('security.encoding.index.form.separators') }}{{ ` [ ${formData.separators} ]` }}
+              <template #icon>
+                <icon-down/>
+              </template>
+              <template #content>
+                <a-doption
+                    v-for="item in separatorsOptions"
+                    :key="item.value as string"
+                    :disabled="formState==='view'"
+                    @click="sepTemplate(item.value as string)">
+                  {{ $t(item.label) }}
+                </a-doption>
+              </template>
+            </a-dropdown-button>
+          </a-space>
+        </a-form-item>
+      </a-col>
+      <a-col v-show="isShowTable" :span="(labelCol+wrapperCol)">
+        <a-form-item :label="$t('security.encoding.index.form.rule')" :label-col-props="{ span: labelCol/formCol }"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }">
+          <a-table
+              :bordered="{cell:true}"
+              :data="(templateData as TableData[])"
+              :draggable="formState!=='view'?{ type: 'handle', width: 30 }:{}"
+              :pagination="false"
+              :scrollbar="false"
+              :show-header="false"
+              :stripe="true"
+              column-resizable
+              row-key="id"
+              size="small" @change="handleChange">
+            <template #columns>
+              <a-table-column v-if="formState==='view'" :ellipsis="true" :title="$t('security.encoding.index.form.seqNo')" :tooltip="true" :width="30"
+                              align="center" data-index="seqNo"/>
+              <a-table-column :ellipsis="true" :title="$t('security.encoding.index.form.itemType')" :tooltip="true" :width="60" data-index="itemType">
+                <template #cell="{record}">
+                  {{ $t(`security.encoding.index.form.itemType.${record.itemType}`) }}
+                </template>
+              </a-table-column>
+              <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemContent')" :tooltip="true" :width="240" data-index="itemContent">
+                <template #cell="{record}">
+                  <a-input
+                      v-if="record.itemType==='constant'&&formState!=='view'"
+                      v-model.trim="record.constantValue"
+                      :max-length="32"
+                      :placeholder="$t('security.encoding.index.form.itemType.constant.placeholder')"
+                      @blur="inputValueBlur($event)"/>
+                  <span v-if="record.itemType==='constant'&&formState==='view'">{{ record.constantValue }}</span>
+                  <a-space v-if="record.itemType==='serial'">
+                    <a-dropdown-button>
+                      {{ `${record.serialDigit} ` }}{{ $t('security.encoding.index.form.itemType.serial.digit') }}
+                      <template #icon>
+                        <icon-down/>
+                      </template>
+                      <template #content>
+                        <a-doption
+                            v-for="item in serialDigitOptions"
+                            :key="item"
+                            :disabled="formState==='view'"
+                            @click="serialDropdownClick(record.id,'serialDigit',item)">
+                          {{ `${item} ` }}{{ $t('security.encoding.index.form.itemType.serial.digit') }}
+                        </a-doption>
+                      </template>
+                    </a-dropdown-button>
+                    <a-dropdown-button>
+                      {{ $t(`security.encoding.index.form.serialType.${record.serialType}`) }}
+                      <template #icon>
+                        <icon-down/>
+                      </template>
+                      <template #content>
+                        <a-doption
+                            v-for="item in serialTypeOptions"
+                            :key="item.value as string"
+                            :disabled="formState==='view'"
+                            @click="serialDropdownClick(record.id,'serialType',item.value as string)">
+                          {{ $t(item.label) }}
+                        </a-doption>
+                      </template>
+                    </a-dropdown-button>
+                  </a-space>
+                  <a-select v-if="record.itemType==='date'&&formState!=='view'" v-model="record.dateType" @change="dateTypeChange">
+                    <a-option v-for="item of dateTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+                  </a-select>
+                  <span v-if="record.itemType==='date'&&formState==='view'">{{ record.dateType }}</span>
+                </template>
+              </a-table-column>
+              <a-table-column v-if="formState!=='view'" :title="$t('model.column.index.form.operations')" :width="30" align="center"
+                              data-index="operations" fixed="right">
+                <template #cell="{record}">
+                  <a-button status="danger" type="text" @click="deleteItemColumn(record.id)">
+                    <template #icon>
+                      <IconClose/>
+                    </template>
+                  </a-button>
+                </template>
+              </a-table-column>
+            </template>
+            <template #empty></template>
+          </a-table>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)">
+        <a-form-item :label="$t('security.encoding.index.form.example')" :label-col-props="{ span: labelCol/formCol }"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }" field="example">
+          <span style="color: rgb(var(--primary-6));">{{ formData.example }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('security.encoding.index.form.appId')" field="appId">
+          <a-select v-model="formData.appId" :disabled="formState==='view'" :field-names="{value: 'id', label: 'name'}"
+                    :options="appSelectOptions" allow-search/>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('security.encoding.index.form.enableStatus')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            field="enableStatus">
+          <a-select v-if="formState!=='view'" v-model="formData.enableStatus">
+            <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+          </a-select>
+          <span v-else>{{ $t(`security.encoding.index.form.enableStatus.${formData.enableStatus}`) }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)">
+        <a-form-item :label="$t('security.encoding.index.form.description')" :label-col-props="{ span: labelCol/formCol }"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }" field="description">
+          <a-textarea v-if="formState!=='view'" v-model="formData.description" :auto-size="{minRows:3,maxRows:6}" :max-length="512" show-word-limit/>
+          <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+        </a-form-item>
+      </a-col>
+    </a-row>
+  </a-form>
+</template>
 
 <style lang="less" scoped>
 div.arco-form-item-content > span.textarea-span {

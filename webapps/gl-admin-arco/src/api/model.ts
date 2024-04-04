@@ -1,6 +1,7 @@
 import axios from 'axios';
 import qs from 'query-string';
 import {PageQueryRequest, PageQueryResponse, QueryResult} from '@/api/base'
+import {SelectOptionData, SelectOptionGroup} from "@arco-design/web-vue";
 
 /* *************************** 数据库连接信息 ****************************** */
 export interface QueryConnectForm {
@@ -448,31 +449,95 @@ export function validateMetaView(connectId: string, viewSql: string) {
 }
 
 /* --------------------- 方法，接口调用 ------------------- */
-const queryDefaultMetas = async () => {
-  let defaultMetas: string[] = [];
+/**
+ * 查询默认模型字段
+ * @param successBack
+ * @param handleBack
+ * @param failBack
+ */
+export const getDefaultColumnMetas = async (successBack?: any, failBack?: any) => {
   try {
     const {data} = await queryDefaultMeta();
-    if (data != null && data.length > 0) {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const item of data) {
-        defaultMetas.push(item.name);
-      }
-    }
+    if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
-    console.log(err);
-    defaultMetas = [];
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+}
+/**
+ * 默认模型字段处理
+ * @param data
+ */
+const handleDefaultColumns = (data: QueryTableColumnForm[]) => {
+  const defaultMetas: string[] = [];
+  if (data != null && data.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      defaultMetas.push(item.name);
+    }
   }
   return defaultMetas;
 }
-const getSelectTypes = async () => {
-  let selectTypes: ColumnSelectType[] = [];
+/**
+ * 查询默认模型字段 - 名称（create_at）
+ * @param successBack
+ * @param failBack
+ */
+export const getDefaultColumnNames = async (successBack?: any, failBack?: any) => {
+  getDefaultColumnMetas((data: QueryTableColumnForm[]) => {
+    const handleData = handleDefaultColumns(data);
+    if (successBack && typeof successBack === 'function') successBack(handleData);
+  }, (err: any) => {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  });
+}
+
+/**
+ * 查询模型字段类型
+ * @param successBack
+ * @param handleBack
+ * @param failBack
+ */
+export const getTypeSelectOptions = async (successBack?: any, failBack?: any) => {
   try {
     const {data} = await querySelectType();
-    selectTypes = data;
+    if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
-    console.log(err);
-    selectTypes = [];
+    if (failBack && typeof failBack === 'function') failBack(err);
   }
-  return selectTypes;
 }
-export {queryDefaultMetas, getSelectTypes};
+/**
+ * 模型字段类型分组处理
+ * @param data
+ */
+const handleSelectType = (data: ColumnSelectType[]) => {
+  const optionGroup: SelectOptionGroup[] = [];
+  const groups: string[] = [];
+  for (let i = 0; i < data.length; i += 1) {
+    if (!groups.includes(data[i].group)) {
+      groups.push(data[i].group);
+      const optionDatas: SelectOptionData[] = [];
+      for (let j = 0; j < data.length; j += 1) {
+        if (data[j].group === data[i].group) {
+          optionDatas.push({value: data[j].value, label: data[j].label, disabled: data[j].disabled});
+        }
+      }
+      optionGroup.push({isGroup: true, label: data[i].group, options: optionDatas});
+    }
+  }
+
+  return optionGroup;
+}
+/**
+ * 查询模型字段类型
+ * @param successBack
+ * @param handleBack
+ * @param failBack
+ */
+export const getTypeSelectOptionGroup = async (successBack?: any, failBack?: any) => {
+  getTypeSelectOptions((data: ColumnSelectType[]) => {
+    const optionGroup = handleSelectType(data);
+    if (successBack && typeof successBack === 'function') successBack(optionGroup);
+  }, (err: any) => {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  });
+}

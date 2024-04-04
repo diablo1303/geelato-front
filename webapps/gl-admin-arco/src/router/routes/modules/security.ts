@@ -52,7 +52,7 @@ const USER: AppRouteRecordRaw = {
     {
       path: 'dictList',
       name: 'dictList',
-      component: () => import('@/views/security/dict/index.vue'),
+      component: () => import('@/views/security/dictionary/index.vue'),
       meta: {
         locale: 'security.dict.index.menu.list.searchTable',
         requiresAuth: true

@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'OrgList'
+  name: 'PermissionList'
 };
 </script>
 
@@ -10,14 +10,15 @@ import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
 import {TableColumnData, TableSortable} from '@arco-design/web-vue';
-// 页面所需 对象、方法
 import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams} from '@/api/base';
-import {deleteOrg as deleteList, QueryOrgForm as QueryForm, pageQueryOrg as pageQueryList} from '@/api/security';
-import {categoryOptions, statusOptions, typeOptions} from "./searchTable";
+// 页面所需 对象、方法
+import {getAppSelectOptions, QueryAppForm} from "@/api/application";
+import {deletePermission as deleteList, QueryPermissionForm as QueryForm, pageQueryPermission as pageQueryList} from '@/api/security';
+import {columns, typeOptions} from './searchTable';
 // 引入组件
-import OrgForm from './form.vue';
+import PermissionForm from './form.vue';
 
-// 页面所需参数
+// 页面所需 参数
 type PageParams = {
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
@@ -42,19 +43,15 @@ const {loading, setLoading} = useLoading(false);
 const renderData = ref<PageQueryFilter[]>([]);
 // 列表 - 分页
 const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
-const pagination = reactive({
-  ...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions
-});
+const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 1200, y: props.height});
+const scroll = ref({x: 1600, y: props.height});
 // 列表 - 排序
-const lastSort = ref<string>('');
 const sortable = ref<Record<string, TableSortable>>({
-  code: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
-  seqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
 });
+const lastSort = ref<string>('');
 // 列表 - 查询条件布局
 const labelCol = ref<number>(6);
 const wrapperCol = ref<number>(18);
@@ -62,19 +59,19 @@ const wrapperCol = ref<number>(18);
 const generateFilterData = () => {
   return {
     id: '',
-    pid: '',
     name: '',
     code: '',
     type: '',
-    category: '',
-    status: '',
+    object: '',
+    rule: '',
+    description: '',
     createAt: [],
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
   };
 };
 const filterData = ref(generateFilterData());
-
+const appSelectOptions = ref<QueryAppForm[]>([]);
 /**
  * 分页查询方法
  * @param params
@@ -175,16 +172,16 @@ const onSorterChange = (dataIndex: string, direction: string) => {
 }
 
 /* 表单参数 */
-const formParams = ref<FormParams>({
+const formParams = ref({
   visible: false,
   isModal: true,
   title: '',
-  width: '',
+  width: '850px',
   height: '',
   parameter: {appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
-  formCol: 1,
+  formCol: 2,
 });
 /**
  * 列表按钮 - 新增表单
@@ -215,7 +212,6 @@ const editTable = (data: QueryForm) => {
 }
 /**
  * 列表按钮 - 删除
- * 当前排序、过滤条件不变
  * @param data
  */
 const deleteTable = (data: QueryForm) => {
@@ -227,8 +223,6 @@ const deleteTable = (data: QueryForm) => {
 
 /**
  * 表单反馈方法，保存成功
- * 新增：重置列表
- * 编辑：当前页数、排序、过滤条件不变
  * @param data
  * @param type
  */
@@ -244,6 +238,14 @@ const saveSuccess = (data: QueryForm, type: string) => {
 
 watch(() => props, (val) => {
   if (props.visible === true) {
+    // 应用信息
+    getAppSelectOptions({
+      id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }, (data: QueryAppForm[]) => {
+      appSelectOptions.value = data || [];
+    }, () => {
+      appSelectOptions.value = [];
+    });
     // 页面设置
     scroll.value.y = props.height;
     basePagination.pageSize = props.pageSize;
@@ -258,54 +260,50 @@ watch(() => props, (val) => {
 </script>
 
 <template>
-  <OrgForm v-model:visible="formParams.visible"
-           :formCol="formParams.formCol"
-           :formState="formParams.formState"
-           :height="formParams.height"
-           :isModal="formParams.isModal"
-           :modelValue="formParams.id"
-           :parameter="formParams.parameter"
-           :title="formParams.title"
-           :width="formParams.width"
-           @saveSuccess="saveSuccess"/>
+  <PermissionForm v-model:visible="formParams.visible"
+                  :formCol="formParams.formCol"
+                  :formState="formParams.formState"
+                  :height="formParams.height"
+                  :isModal="formParams.isModal"
+                  :modelValue="formParams.id"
+                  :parameter="formParams.parameter"
+                  :title="formParams.title"
+                  :width="formParams.width"
+                  @saveSuccess="saveSuccess"/>
 
   <a-row>
     <a-col :flex="1">
       <a-form :label-col-props="{ span: labelCol }" :model="filterData" :wrapper-col-props="{ span: wrapperCol }" label-align="left">
         <a-row :gutter="wrapperCol">
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.name')" field="name">
+            <a-form-item :label="$t('security.permission.index.form.name')" field="name">
               <a-input v-model="filterData.name" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.code')" field="code">
+            <a-form-item :label="$t('security.permission.index.form.code')" field="code">
               <a-input v-model="filterData.code" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.type')" field="type">
+            <a-form-item :label="$t('security.permission.index.form.type')" field="type">
               <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.category')" field="category">
-              <a-select v-model="filterData.category" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of categoryOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-              </a-select>
+            <a-form-item :label="$t('security.permission.index.form.object')" field="object">
+              <a-input v-model="filterData.object" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.status')" field="status">
-              <a-select v-model="filterData.status" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of statusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-              </a-select>
+            <a-form-item :label="$t('security.permission.index.form.appId')" field="appId">
+              <a-select v-model="filterData.appId" :field-names="{value: 'id', label: 'name'}" :options="appSelectOptions" allow-search/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.createAt')" field="createAt">
+            <a-form-item :label="$t('security.permission.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
@@ -356,31 +354,21 @@ watch(() => props, (val) => {
       row-key="id"
       @pageChange="onPageChange" @pageSizeChange="onPageSizeChange" @sorter-change="onSorterChange">
     <template #columns>
-      <a-table-column :title="$t('security.org.index.form.index')" :width="70" align="center" data-index="index">
-        <template #cell="{  rowIndex }">
-          {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
-        </template>
+      <a-table-column :title="$t('security.permission.index.form.index')" :width="70" align="center" data-index="index">
+        <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.org.index.form.name')" :tooltip="true" :width="210" data-index="name"/>
-      <a-table-column :ellipsis="true" :sortable="sortable.code" :title="$t('security.org.index.form.code')" :tooltip="true" :width="150" data-index="code"/>
-      <a-table-column :title="$t('security.org.index.form.type')" :width="70" data-index="type">
+      <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.name')" :tooltip="true" :width="180" data-index="name"/>
+      <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.code')" :tooltip="true" :width="180" data-index="code"/>
+      <a-table-column :title="$t('security.permission.index.form.type')" :width="120" data-index="type">
         <template #cell="{ record }">
-          {{ record.type ? $t(`security.org.index.form.type.${record.type}`) : '' }}
+          {{ record.type ? $t(`security.permission.index.form.type.${record.type}`) : '' }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.org.index.form.category')" :width="70" data-index="category">
-        <template #cell="{ record }">
-          {{ record.category ? $t(`security.org.index.form.category.${record.category}`) : '' }}
-        </template>
-      </a-table-column>
-      <a-table-column :title="$t('security.org.index.form.status')" :width="70" data-index="status">
-        <template #cell="{ record }">
-          {{ $t(`security.org.index.form.status.${record.status}`) }}
-        </template>
-      </a-table-column>
-      <a-table-column :sortable="sortable.seqNo" :title="$t('security.org.index.form.seqNo')" :width="100" align="right" data-index="seqNo"/>
-      <a-table-column :sortable="sortable.createAt" :title="$t('security.org.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :title="$t('security.org.index.form.operations')" :width="210" align="center" data-index="operations" fixed="right">
+      <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.object')" :tooltip="true" :width="180" data-index="object"/>
+      <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.rule')" :tooltip="true" :width="180" data-index="rule"/>
+      <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.description')" :tooltip="true" :width="240" data-index="description"/>
+      <a-table-column :sortable="sortable.createAt" :title="$t('security.permission.index.form.createAt')" :width="180" data-index="createAt"/>
+      <a-table-column :title="$t('security.permission.index.form.operations')" :width="210" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button size="small" type="text" @click="viewTable(record)">
             {{ $t('searchTable.columns.operations.view') }}

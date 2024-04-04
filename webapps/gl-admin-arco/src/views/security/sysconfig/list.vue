@@ -1,38 +1,303 @@
-<template v-model="pageData">
+<script lang="ts">
+export default {
+  name: 'SystemConfigList'
+};
+</script>
+<script lang="ts" setup>
+import {reactive, ref, watch} from 'vue';
+import {useI18n} from "vue-i18n";
+import useLoading from '@/hooks/loading';
+import {Pagination} from '@/types/global';
+import {TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams} from '@/api/base';
+// 引用其他对象、方法
+import {deleteSysConfig as deleteList, pageQuerySysConfig as pageQueryList, QuerySysConfigForm as QueryForm} from '@/api/sysconfig';
+import {columns, enableStatusOptions, purposeOptions} from "@/views/security/sysconfig/searchTable";
+// 引用其他页面
+import {Base64FileParams, downloadFileByBase64Data, fetchFileById} from "@/api/attachment";
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
+import SystemConfigForm from './form.vue';
+
+// 页面所需 参数
+type PageParams = {
+  appId?: string; // 应用主键
+  tenantCode?: string; // 租户编码
+}
+
+const emits = defineEmits(['update:modelValue', 'fetch', 'add', 'edit', 'delete']);
+const props = defineProps({
+  modelValue: {type: String, default: ''},
+  visible: {type: Boolean, default: false},// 页面是否显示
+  parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
+  formState: {type: String, default: 'edit'}, // 页面状态
+  filterCol: {type: Number, default: 3}, // 列表 - 搜索条件 - 一行显示个数
+  pageSize: {type: Number, default: 10}, // 列表 - 条数
+  height: {type: Number, default: 245}, // 列表 - 数据列表高度，滑动条高度
+});
+
+// 国际化
+const {t} = useI18n();
+// 加载功能
+const {loading, setLoading} = useLoading(false);
+// 列表
+const renderData = ref<PageQueryFilter[]>([]);
+// 列表 - 分页
+const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
+const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
+// 列表 - 滑动条
+const scrollbar = ref(true);
+const scroll = ref({x: 1530, y: props.height});
+// 列表 - 排序
+const sortable = ref<Record<string, TableSortable>>({
+  createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
+});
+const lastSort = ref<string>('');
+// 列表 - 查询条件布局
+const labelCol = ref<number>(6);
+const wrapperCol = ref<number>(18);
+// 列表 - 查询条件
+const generateFilterData = () => {
+  return {
+    id: '',
+    keyType: '',
+    configKey: '',
+    valueType: '',
+    configValue: '',
+    remark: '',
+    purpose: '',
+    enableStatus: '',
+    encrypted: '',
+    createAt: [],
+    appId: props.parameter?.appId || '',
+    tenantCode: props.parameter?.tenantCode || '',
+  };
+};
+const filterData = ref(generateFilterData());
+
+/**
+ * 分页查询方法
+ * @param params
+ */
+const fetchData = async (params: PageQueryRequest) => {
+  setLoading(true);
+  try {
+    const {data} = await pageQueryList(params);
+    renderData.value = data.items;
+    pagination.current = params.current;
+    pagination.pageSize = basePagination.pageSize;
+    pagination.total = data.total;
+    emits('fetch', 'success', renderData.value);
+  } catch (err) {
+    emits('fetch', 'fail');
+  } finally {
+    setLoading(false);
+  }
+};
+
+/**
+ * 单个数据删除接口
+ * @param id
+ * @param successBack
+ * @param failBack
+ */
+const deleteData = async (id: string, successBack?: any, failBack?: any) => {
+  try {
+    await deleteList(id);
+    if (successBack && typeof successBack === 'function') successBack(id);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+};
+
+/**
+ * 查询 - 基础
+ * 排序，页数，条数，过滤
+ * @param ev
+ */
+const search = (ev?: Event) => {
+  fetchData({
+    ...basePagination, ...filterData.value, order: lastSort.value
+  } as unknown as PageQueryRequest);
+};
+/**
+ * 条件查询 - 搜索
+ * 排序，页数（1），条数，过滤（√）
+ * @param ev
+ */
+const condition = (ev?: Event) => {
+  basePagination.current = 1;
+  search();
+}
+/**
+ * 条件查询 - 重置
+ * 排序，页数（1），条数，过滤（×）
+ */
+const reset = (ev?: Event) => {
+  basePagination.current = 1;
+  filterData.value = generateFilterData();
+  search();
+};
+/**
+ * 分页 - 页面跳转
+ * 排序，页数（current），条数，过滤
+ * @param current
+ */
+const onPageChange = (current: number) => {
+  basePagination.current = current;
+  search();
+};
+/**
+ * 分页 - 数据条变更
+ * 排序，页数（current），条数（pageSize），过滤
+ * @param pageSize
+ */
+const onPageSizeChange = (pageSize: number) => {
+  basePagination.current = 1;
+  basePagination.pageSize = pageSize;
+  search();
+}
+/**
+ * 分页 - 排序变更
+ * 排序（dataIndex|direction），页数（1），条数，过滤
+ * @param dataIndex 排序字段
+ * @param direction 排序方向
+ */
+const onSorterChange = (dataIndex: string, direction: string) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key of Object.keys(sortable.value)) {
+    // @ts-ignore
+    sortable.value[key].sortOrder = dataIndex === key ? direction : '';
+  }
+  lastSort.value = direction ? `${dataIndex}|${direction}`.replace(/end/g, '') : '';
+  basePagination.current = 1;
+  search();
+}
+
+/* 表单参数 */
+const formParams = ref({
+  visible: false,
+  isModal: true,
+  title: '',
+  width: '850px',
+  height: '',
+  parameter: {appId: '', tenantCode: ''},
+  formState: 'add',
+  id: '',
+  formCol: 2,
+});
+/**
+ * 列表按钮 - 新增表单
+ * @param ev
+ */
+const addTable = (ev: MouseEvent) => {
+  formParams.value = Object.assign(formParams.value, {
+    id: '', visible: true, formState: 'add'
+  });
+};
+/**
+ * 列表按钮 - 查看表单
+ * @param data
+ */
+const viewTable = (data: QueryForm) => {
+  formParams.value = Object.assign(formParams.value, {
+    id: data.id, visible: true, formState: 'view'
+  });
+}
+/**
+ * 列表按钮 - 编辑表单
+ * @param data
+ */
+const editTable = (data: QueryForm) => {
+  formParams.value = Object.assign(formParams.value, {
+    id: data.id, visible: true, formState: 'edit'
+  });
+}
+/**
+ * 列表按钮 - 删除
+ * @param data
+ */
+const deleteTable = (data: QueryForm) => {
+  deleteData(data.id, (id: string) => {
+    condition();
+    emits('delete', data);
+  });
+}
+
+/**
+ * 表单反馈方法，保存成功
+ * @param data
+ * @param type
+ */
+const saveSuccess = (data: QueryForm, type: string) => {
+  if (type === 'add') {
+    reset();
+    emits('add', data);
+  } else if (type === 'edit') {
+    search();
+    emits('edit', data);
+  }
+}
+
+watch(() => props, (val) => {
+  if (props.visible === true) {
+    // 页面设置
+    scroll.value.y = props.height;
+    basePagination.pageSize = props.pageSize;
+    // 表单参数
+    formParams.value.parameter = {
+      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }
+    // 加载数据
+    reset();
+  }
+}, {deep: true, immediate: true});
+</script>
+<template>
+  <SystemConfigForm v-model:visible="formParams.visible"
+                    :formCol="formParams.formCol"
+                    :formState="formParams.formState"
+                    :height="formParams.height"
+                    :isModal="formParams.isModal"
+                    :modelValue="formParams.id"
+                    :parameter="formParams.parameter"
+                    :title="formParams.title"
+                    :width="formParams.width"
+                    @saveSuccess="saveSuccess"/>
+
   <a-row>
     <a-col :flex="1">
-      <a-form :label-col-props="{ span: 6 }" :model="filterData" :wrapper-col-props="{ span: 18 }" label-align="left">
-        <a-row :gutter="16">
-          <a-col :span="8">
+      <a-form :label-col-props="{ span: labelCol }" :model="filterData" :wrapper-col-props="{ span: wrapperCol }" label-align="left">
+        <a-row :gutter="wrapperCol">
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.sysConfig.index.form.configKey')" field="configKey">
-              <a-input v-model="filterData.configKey" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.configKey" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.sysConfig.index.form.configValue')" field="configValue">
-              <a-input v-model="filterData.configValue" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.configValue" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.sysConfig.index.form.purpose')" field="purpose">
               <a-select v-model="filterData.purpose" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="(item,index) of purposeOptions" :key="index" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.sysConfig.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="(item,index) of enableStatusOptions" :key="index" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.sysConfig.index.form.keyType')" field="keyType">
-              <a-input v-model="filterData.keyType" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.keyType" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.sysConfig.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
@@ -43,7 +308,7 @@
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
       <a-space :size="18" direction="vertical">
-        <a-button type="primary" @click="search($event)">
+        <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
           </template>
@@ -62,7 +327,7 @@
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button v-show="pageData.formState==='edit'" type="primary" @click="addTable($event)">
+        <a-button :disabled="formState==='view'" type="primary" @click="addTable($event)">
           <template #icon>
             <icon-plus/>
           </template>
@@ -70,60 +335,33 @@
         </a-button>
       </a-space>
     </a-col>
-    <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
-      <a-tooltip :content="$t('searchTable.actions.refresh')">
-        <div class="action-icon" @click="search($event)">
-          <icon-refresh size="18"/>
-        </div>
-      </a-tooltip>
-      <a-tooltip :content="$t('searchTable.actions.columnSetting')">
-        <a-popover position="bl" trigger="click" @popup-visible-change="popupVisibleChange">
-          <div class="action-icon">
-            <icon-settings size="18"/>
-          </div>
-          <template #content>
-            <div id="tableSetting">
-              <div v-for="(item, index) in showColumns" :key="item.dataIndex" class="setting">
-                <div style="margin-right: 4px; cursor: move">
-                  <icon-drag-arrow/>
-                </div>
-                <div>
-                  <a-checkbox v-model="item.checked" @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
-                </div>
-                <div class="title">
-                  {{ item.title === '#' ? $t('security.sysConfig.index.form.index') : $t(`${item.title}`) }}
-                </div>
-              </div>
-            </div>
-          </template>
-        </a-popover>
-      </a-tooltip>
-    </a-col>
   </a-row>
   <a-table
       :bordered="{cell:true}"
-      :columns="(cloneColumns as TableColumnData[])"
+      :columns="([] as TableColumnData[])"
       :data="renderData"
       :loading="loading"
       :pagination="pagination"
+      :scroll="scroll"
+      :scrollbar="scrollbar"
       :stripe="true"
       column-resizable
       row-key="id"
-      @page-change="onPageChange">
+      @pageChange="onPageChange" @pageSizeChange="onPageSizeChange" @sorter-change="onSorterChange">
     <template #columns>
-      <a-table-column :title="$t('security.sysConfig.index.form.index')" :width="80" align="center" data-index="index">
+      <a-table-column :title="$t('security.sysConfig.index.form.index')" :width="70" align="center" data-index="index">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.configKey')" :tooltip="true" :width="150" data-index="configKey">
+      <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.configKey')" :tooltip="true" :width="210" data-index="configKey">
         <template #cell="{ record }">
           <CopyToClipboard v-model="record.id" :title="$t('copy.to.clipboard.button.key.title')"/>
           {{ record.configKey }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.keyType')" :tooltip="true" :width="150" data-index="keyType"/>
-      <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.configValue')" :tooltip="true" :width="200" data-index="configValue">
+      <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.keyType')" :tooltip="true" :width="120" data-index="keyType"/>
+      <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.configValue')" :tooltip="true" :width="240" data-index="configValue">
         <template #cell="{ record }">
           <span v-if="['UPLOAD'].includes(record.valueType)&&record.configValue">
             <a-button type="text" @click="fetchFileById(record.configValue)">
@@ -144,34 +382,33 @@
           <span v-else>{{ record.configValue }}</span>
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.sysConfig.index.form.purpose')" :width="100" data-index="purpose">
+      <a-table-column :title="$t('security.sysConfig.index.form.purpose')" :width="90" data-index="purpose">
         <template #cell="{ record }">
           {{ record.purpose ? $t(`security.sysConfig.index.form.purpose.${record.purpose}`) : '' }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.sysConfig.index.form.enableStatus')" :width="100" data-index="enableStatus">
+      <a-table-column :title="$t('security.sysConfig.index.form.enableStatus')" :width="70" data-index="enableStatus">
         <template #cell="{ record }">
           {{ record.enableStatus ? $t(`security.sysConfig.index.form.enableStatus.${record.enableStatus}`) : '' }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.sysConfig.index.form.encrypted')" :width="80" data-index="encrypted">
+      <a-table-column :title="$t('security.sysConfig.index.form.encrypted')" :width="70" data-index="encrypted">
         <template #cell="{ record }">
           {{ $t(`security.sysConfig.index.form.encrypted.${record.encrypted}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.sysConfig.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.remark')" :tooltip="true" :width="150" data-index="remark"/>
-      <a-table-column :title="$t('security.sysConfig.index.form.operations')" :width="pageData.formState==='edit'?230:100" align="center"
-                      data-index="operations" fixed="right">
+      <a-table-column :sortable="sortable.createAt" :title="$t('security.sysConfig.index.form.createAt')" :width="180" data-index="createAt"/>
+      <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.remark')" :tooltip="true" :width="240" data-index="remark"/>
+      <a-table-column :title="$t('security.sysConfig.index.form.operations')" :width="210" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-button size="small" type="text" @click="viewTable(record.id)">
+          <a-button size="small" type="text" @click="viewTable(record)">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
-          <a-button v-show="pageData.formState==='edit'" size="small" type="text" @click="editTable(record.id)">
+          <a-button :disabled="formState==='view'" size="small" type="text" @click="editTable(record)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
-          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
-            <a-button v-show="pageData.formState==='edit'" size="small" status="danger" type="text">
+          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record)">
+            <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -179,198 +416,7 @@
       </a-table-column>
     </template>
   </a-table>
-  <SystemConfigDrawer ref="formRef"/>
 </template>
-
-<script lang="ts" setup>
-/* 导入 */
-import {nextTick, reactive, ref, watch} from 'vue';
-import {useI18n} from 'vue-i18n';
-import {useRoute} from "vue-router";
-import useLoading from '@/hooks/loading';
-// 分页列表
-import {Pagination} from '@/types/global';
-import type {TableColumnData} from '@arco-design/web-vue';
-import cloneDeep from 'lodash/cloneDeep';
-import Sortable from 'sortablejs';
-// 引用其他对象、方法
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
-import {deleteSysConfig as deleteList, FilterSysConfigForm as FilterForm, pageQuerySysConfig as pageQueryList} from '@/api/sysconfig';
-import {columns, enableStatusOptions, purposeOptions} from "@/views/security/sysconfig/searchTable";
-// 引用其他页面
-import SystemConfigDrawer from "@/views/security/sysconfig/drawer.vue";
-import {Base64FileParams, downloadFileByBase64Data, fetchFileById} from "@/api/attachment";
-import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
-
-
-/* 列表 */
-const route = useRoute();
-const routeParams = ref({
-  appId: (route && route.params && route.params.appId as string) || '',
-  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
-});
-type Column = TableColumnData & { checked?: true };
-const pageData = ref({current: 1, pageSize: 10, formState: 'edit'});
-const formRef = ref(null);
-// 国际化
-const {t} = useI18n();
-// 加载
-const {loading, setLoading} = useLoading(true);
-// 分页列表参数
-const cloneColumns = ref<Column[]>([]);
-const showColumns = ref<Column[]>([]);
-const basePagination: Pagination = {current: pageData.value.current, pageSize: pageData.value.pageSize};
-const pagination = reactive({...basePagination,});
-const renderData = ref<PageQueryFilter[]>([]);
-// 搜索条件
-const generateFilterData = (): FilterForm => {
-  return {
-    id: '',
-    keyType: '',
-    configKey: '',
-    valueType: '',
-    configValue: '',
-    remark: '',
-    purpose: '',
-    enableStatus: '',
-    encrypted: '',
-    appId: routeParams.value.appId,
-    tenantCode: routeParams.value.tenantCode,
-    createAt: []
-  };
-};
-const filterData = ref(generateFilterData());
-
-/**
- * 分页查询方法
- * @param params
- */
-const fetchData = async (params: PageQueryRequest = {current: pageData.value.current, pageSize: pageData.value.pageSize}) => {
-  setLoading(true);
-  try {
-    const {data} = await pageQueryList(params);
-    renderData.value = data.items;
-    pagination.current = params.current;
-    pagination.pageSize = basePagination.pageSize;
-    pagination.total = data.total;
-  } catch (err) {
-    console.log(err);
-  } finally {
-    setLoading(false);
-  }
-};
-/**
- * 条件查询 - 搜索
- */
-const search = (ev?: Event) => {
-  fetchData({...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
-};
-/**
- * 条件查询 - 重置
- */
-const reset = (ev?: Event) => {
-  basePagination.current = pageData.value.current;
-  filterData.value = generateFilterData();
-  search();
-};
-/**
- * 分页 - 页面跳转
- * @param current
- */
-const onPageChange = (current: number) => {
-  basePagination.current = current;
-  search();
-};
-
-/* 列表，按钮、操作列 */
-const addTable = (ev: MouseEvent) => {
-  if (formRef.value) {
-    // @ts-ignore
-    formRef.value?.openForm({action: 'add', closeBack: reset});
-  }
-};
-const viewTable = (id: string) => {
-  if (formRef.value) {
-    // @ts-ignore
-    formRef.value?.openForm({action: 'view', 'id': id});
-  }
-}
-const editTable = (id: string) => {
-  if (formRef.value) {
-    // @ts-ignore
-    formRef.value?.openForm({action: 'edit', 'id': id, closeBack: reset});
-  }
-}
-const deleteTable = (id: string) => {
-  deleteData(id, () => {
-    reset();
-  });
-}
-const deleteData = async (id: string, successBack: any) => {
-  try {
-    await deleteList(id);
-    successBack();
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
-};
-
-/* 分页功能区 - 固定方法 */
-const handleChange = (checked: boolean | (string | boolean | number)[], column: Column, index: number) => {
-  if (!checked) {
-    cloneColumns.value = showColumns.value.filter((item) => item.dataIndex !== column.dataIndex);
-  } else {
-    cloneColumns.value.splice(index, 0, column);
-  }
-};
-const exchangeArray = <T extends Array<any>>(array: T, beforeIdx: number, newIdx: number, isDeep = false): T => {
-  const newArray = isDeep ? cloneDeep(array) : array;
-  if (beforeIdx > -1 && newIdx > -1) {
-    // 先替换后面的，然后拿到替换的结果替换前面的
-    newArray.splice(beforeIdx, 1, newArray.splice(newIdx, 1, newArray[beforeIdx]).pop());
-  }
-  return newArray;
-};
-const popupVisibleChange = (val: boolean) => {
-  if (val) {
-    nextTick(() => {
-      const el = document.getElementById('tableSetting') as HTMLElement;
-      const sortable = new Sortable(el, {
-        onEnd(e: any) {
-          const {oldIndex, newIndex} = e;
-          exchangeArray(cloneColumns.value, oldIndex, newIndex);
-          exchangeArray(showColumns.value, oldIndex, newIndex);
-        }
-      });
-    });
-  }
-};
-watch(() => columns.value, (val) => {
-    cloneColumns.value = cloneDeep(val);
-    cloneColumns.value.forEach((item, index) => {
-      item.checked = true;
-    });
-    showColumns.value = cloneDeep(cloneColumns.value);
-  },
-  {deep: true, immediate: true}
-);
-
-/* 对外调用方法 */
-const loadList = (urlParams: ListUrlParams) => {
-  pageData.value.formState = urlParams.action || 'edit';
-  basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
-  reset();
-}
-// 将方法暴露出去
-defineExpose({loadList});
-</script>
-
-<script lang="ts">
-export default {
-  name: 'SystemConfigList'
-};
-</script>
 
 <style lang="less" scoped>
 :deep(.arco-table-th) {

@@ -26,12 +26,15 @@ const props = defineProps({
   modelValue: {type: Array<BusinessMetaData>, default: []},
   businessTypeData: {type: Array<BusinessTypeData>, default: []},
   disabled: {type: Boolean, default: false},
+  hight: {type: Number, default: 480},
 });
 const {businessTypeData} = toRefs(props);
 // 列表参数
 type Column = TableColumnData & { checked?: true };
 const cloneColumns = ref<Column[]>([]);
 const renderData = ref<BusinessMetaData[]>([]);
+const scrollbar = ref(true);
+const scroll = ref({x: 1940, y: props.hight - 125});
 /**
  * 初始化
  */
@@ -256,7 +259,7 @@ const tableNameChange = () => {
 }
 const primaryValueColumnChange = () => {
   if (formData.value.primaryTableName && formData.value.primaryColumnNameGoal &&
-    formData.value.primaryColumnNameMatch && formData.value.primaryColumnNameMatch.length > 0) {
+      formData.value.primaryColumnNameMatch && formData.value.primaryColumnNameMatch.length > 0) {
     formData.value.primaryValue = `${formData.value.primaryTableName}:${formData.value.primaryColumnNameGoal}|${formData.value.primaryColumnNameMatch.join(',')}`;
   } else {
     formData.value.primaryValue = '';
@@ -330,72 +333,80 @@ watch(() => renderData.value, () => {
 </script>
 
 <template>
-  <a-collapse-item :key="3" header="数据保存配置">
+  <a-card class="">
     <template #extra>
-      <a-button v-if="!disabled" type="primary" @click.stop="handleModelOpen($event)">
+      <a-button v-if="!disabled" type="text" @click.stop="handleModelOpen($event)">
         <template #icon>
           <icon-plus/>
         </template>
         新增
       </a-button>
     </template>
+    <template #title>
+      共 {{ renderData.length }} 条
+    </template>
     <a-table :bordered="{cell:true}"
              :columns="(cloneColumns as TableColumnData[])"
              :data="renderData"
-             :draggable="{type:'handle',width:40}"
+             :draggable="disabled?false:{type:'handle',width:40}"
              :pagination="false"
-             :scroll="{x:2000,y:400}"
-             :scrollbar="true"
+             :scroll="scroll"
+             :scrollbar="scrollbar"
              :stripe="true"
              column-resizable
              row-key="name" @change="handleChange">
       <template #columns>
-        <a-table-column :width="250" data-index="tableName" title="模型名称">
+        <a-table-column v-if="disabled" :width="70" align="center" data-index="index" title="序号">
+          <template #cell="{  rowIndex }">
+            {{ rowIndex + 1 }}
+          </template>
+        </a-table-column>
+        <a-table-column :width="180" data-index="tableName" title="模型名称">
           <template #cell="{ record }">
             {{ record.tableName }}
           </template>
         </a-table-column>
-        <a-table-column :width="250" data-index="columnName" title="字段名称">
+        <a-table-column :width="180" data-index="columnName" title="字段名称">
           <template #cell="{ record }">
             {{ record.columnName }}
           </template>
         </a-table-column>
-        <a-table-column :width="200" data-index="evaluation" title="字段值">
+        <a-table-column :width="180" data-index="evaluation" title="字段值">
           <template #cell="{ record }">
             {{ getLabel(record.evaluation, businessMetaEvaluationOptions) }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="constValue" title="常量">
+        <a-table-column :width="120" data-index="constValue" title="常量">
           <template #cell="{ record }">
             {{ record.constValue }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="variableValue" title="变量">
+        <a-table-column :width="180" data-index="variableValue" title="变量">
           <template #cell="{ record }">
             {{ record.variableValue }}
           </template>
         </a-table-column>
-        <a-table-column :width="250" data-index="expression" title="表达式">
+        <a-table-column :width="240" data-index="expression" title="表达式">
           <template #cell="{ record }">
             {{ record.expression }}
           </template>
         </a-table-column>
-        <a-table-column :width="200" data-index="dictCode" title="数据字典">
+        <a-table-column :width="180" data-index="dictCode" title="数据字典">
           <template #cell="{ record }">
             {{ record.dictCode }}
           </template>
         </a-table-column>
-        <a-table-column :width="250" data-index="primaryValue" title="模型">
+        <a-table-column :width="240" data-index="primaryValue" title="模型">
           <template #cell="{ record }">
             {{ record.primaryValue }}
           </template>
         </a-table-column>
-        <a-table-column :width="250" data-index="remark" title="备注">
+        <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="remark" title="备注">
           <template #cell="{ record }">
             {{ record.remark }}
           </template>
         </a-table-column>
-        <a-table-column v-if="!disabled" :width="150" align="center" data-index="operations" fixed="right" title="操作">
+        <a-table-column v-if="!disabled" :width="130" align="center" data-index="operations" fixed="right" title="操作">
           <template #cell="{ record }">
             <a-button size="small" title="编辑" type="text" @click="listEdit(record)">
               <icon-edit/>
@@ -500,7 +511,7 @@ watch(() => renderData.value, () => {
         </a-form-item>
       </a-form>
     </a-modal>
-  </a-collapse-item>
+  </a-card>
 </template>
 
 <style lang="less" scoped>

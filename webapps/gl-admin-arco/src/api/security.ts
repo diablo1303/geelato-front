@@ -1,8 +1,9 @@
 import axios from 'axios';
 import qs from 'query-string';
 import {PageQueryRequest, PageQueryResponse, QueryResult} from '@/api/base'
-import {SelectOptionData} from "@arco-design/web-vue";
+import {Message, SelectOptionData} from "@arco-design/web-vue";
 import {QueryTableColumnForm} from "@/api/model";
+import {exportDictionary} from "@/api/attachment";
 
 
 /* 组织分页查询 */
@@ -76,8 +77,24 @@ export function pageQueryRoleApp(params: PageQueryRequest) {
   });
 }
 
+export function pageQueryRoleAppOf(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/role/app/pageQueryOf', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 export function pageQueryRolePermission(params: PageQueryRequest) {
   return axios.get<PageQueryResponse>('/api/security/role/permission/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function pageQueryRolePermissionOf(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/role/permission/pageQueryOf', {
     params, paramsSerializer: (obj) => {
       return qs.stringify(obj);
     },
@@ -92,8 +109,24 @@ export function pageQueryRoleTreeNode(params: PageQueryRequest) {
   });
 }
 
+export function pageQueryRoleTreeNodeOf(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/role/tree/pageQueryOf', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 export function pageQueryRoleUser(params: PageQueryRequest) {
   return axios.get<PageQueryResponse>('/api/security/role/user/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function pageQueryRoleUserOf(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/role/user/pageQueryOf', {
     params, paramsSerializer: (obj) => {
       return qs.stringify(obj);
     },
@@ -252,9 +285,9 @@ export interface QueryDictItemForm {
   itemRemark: string;
   enableStatus: number;
   seqNo: number;
-  children?: QueryDictItemForm[];
   appId: string;
   tenantCode: string;
+  children?: QueryDictItemForm[];
 }
 
 export interface FilterDictItemForm {
@@ -500,6 +533,7 @@ export interface QueryRoleAppForm {
   appId: string;
   appName: string;
   tenantCode: string;
+  appIds?: string;
 }
 
 export interface QueryAppForm {
@@ -661,6 +695,8 @@ export interface QueryTreeNodeForm {
   description: string;
   appId: string;
   tenantCode: string;
+  children?: QueryTreeNodeForm[];
+  isSelected?: boolean;
 }
 
 export function queryTreeNodes(params: QueryTreeNodeForm) {
@@ -681,6 +717,10 @@ export function insertRoleTreeNode(params: QueryRoleTreeNodeForm) {
 
 export function deleteRoleTreeNode(id: string) {
   return axios.delete<QueryResult>(`/api/security/role/tree/isDelete/${id}`);
+}
+
+export function deleteRoleTreeNodeById(roleId: string, treeNodeId: string) {
+  return axios.delete<QueryResult>(`/api/security/role/tree/isDelete/${roleId}/${treeNodeId}`);
 }
 
 /* -----------------------------role user--------------------------- */
@@ -723,7 +763,7 @@ export function deleteRoleUser(id: string) {
   return axios.delete<QueryResult>(`/api/security/role/user/isDelete/${id}`);
 }
 
-const querySelectOptions = async (dictCode: string) => {
+export const querySelectOptions = async (dictCode: string) => {
   let selectOptions: SelectOptionData[] = [];
   try {
     const {data} = await queryItemByDictCode(dictCode);
@@ -739,4 +779,32 @@ const querySelectOptions = async (dictCode: string) => {
   }
   return selectOptions;
 }
-export {querySelectOptions};
+
+/**
+ * 导出数据字典
+ * @param data
+ */
+export const exportDictAndItems = async (dictId: string) => {
+  if (dictId) {
+    try {
+      // 字典
+      const dictData = await getDict(dictId);
+      // @ts-ignore
+      dictData.data.enableStatus = dictData.data.enableStatus === 1 ? '启用' : '禁用';
+      // 字典项
+      const itemData = await queryDictItems({dictId: dictData.data.id} as QueryDictItemForm);
+      itemData.data.forEach((item: QueryDictItemForm) => {
+        // @ts-ignore
+        item.enableStatus = item.enableStatus === 1 ? '启用' : '禁用';
+      });
+      // 导出
+      await exportDictionary(dictData.data.dictName, dictData.data, [{"dictItem": itemData.data}]);
+    } catch (err) {
+      console.log(err);
+    }
+  } else {
+    Message.warning("导出时，数据字典主键不能为空！");
+  }
+}
+
+

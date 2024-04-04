@@ -26,12 +26,15 @@ const props = defineProps({
   modelValue: {type: Array<BusinessRuleData>, default: []},
   businessTypeData: {type: Array<BusinessTypeData>, default: []},
   disabled: {type: Boolean, default: false},
+  hight: {type: Number, default: 480},
 });
 const {businessTypeData} = toRefs(props);
 // 列表参数
 type Column = TableColumnData & { checked?: true };
 const cloneColumns = ref<Column[]>([]);
 const renderData = ref<BusinessRuleData[]>([]);
+const scrollbar = ref(true);
+const scroll = ref({x: 1380, y: props.hight - 125});
 /**
  * 模型初始化
  */
@@ -325,42 +328,45 @@ watch(() => renderData.value, () => {
 </script>
 
 <template>
-  <a-collapse-item :key="2" header="Excel模板数据处理规则">
+  <a-card class="">
     <template #extra>
-      <a-button v-if="!disabled" type="primary" @click.stop="handleModelOpen($event)">
+      <a-button v-if="!disabled" type="text" @click.stop="handleModelOpen($event)">
         <template #icon>
           <icon-plus/>
         </template>
         新增
       </a-button>
     </template>
+    <template #title>
+      共 {{ renderData.length }} 条
+    </template>
     <a-table :bordered="{cell:true}"
              :columns="(cloneColumns as TableColumnData[])"
              :data="renderData"
-             :draggable="{type:'handle',width:40}"
+             :draggable="disabled?false:{type:'handle',width:40}"
              :pagination="false"
-             :scroll="{y:400}"
-             :scrollbar="true"
+             :scroll="scroll"
+             :scrollbar="scrollbar"
              :stripe="true"
              column-resizable
              row-key="name" @change="handleChange">
       <template #columns>
-        <a-table-column :width="60" data-index="order" title="序号">
+        <a-table-column :width="70" align="center" data-index="order" title="序号">
           <template #cell="{ record }">
             {{ record.order }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="type" title="规则类型">
+        <a-table-column :width="180" data-index="type" title="规则类型">
           <template #cell="{ record }">
             {{ getLabel(record.type, businessRuleDataTypeOptions) }}
           </template>
         </a-table-column>
-        <a-table-column :width="200" data-index="columnName" title="处理列名">
+        <a-table-column :width="240" data-index="columnName" title="处理列名">
           <template #cell="{ record }">
             {{ record.columnName }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="rule" title="规则">
+        <a-table-column :width="240" data-index="rule" title="规则">
           <template #cell="{ record }">
             {{ record.rule }}
           </template>
@@ -370,17 +376,17 @@ watch(() => renderData.value, () => {
             {{ record.goal }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="retain" title="保留原值">
+        <a-table-column :width="90" data-index="retain" title="保留原值">
           <template #cell="{ record }">
             {{ record.retain }}
           </template>
         </a-table-column>
-        <a-table-column :width="250" data-index="remark" title="说明">
+        <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="remark" title="说明">
           <template #cell="{ record }">
             {{ record.remark }}
           </template>
         </a-table-column>
-        <a-table-column v-if="!disabled" :width="150" align="center" data-index="operations" fixed="right" title="操作">
+        <a-table-column v-if="!disabled" :width="130" align="center" data-index="operations" fixed="right" title="操作">
           <template #cell="{ record }">
             <a-button size="small" title="编辑" type="text" @click="listEdit(record)">
               <icon-edit/>
@@ -488,7 +494,7 @@ watch(() => renderData.value, () => {
         </a-form-item>
       </a-form>
     </a-modal>
-  </a-collapse-item>
+  </a-card>
 </template>
 
 <style lang="less" scoped>

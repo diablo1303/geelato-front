@@ -70,6 +70,14 @@ export function queryApps() {
   return axios.get<QueryAppForm[]>('/api/app/query');
 }
 
+export function queryAppsByParams(params: Record<string, any>) {
+  return axios.get<QueryAppForm[]>('/api/app/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 export function getApp(id: string) {
   return axios.get<QueryAppForm>(`/api/app/get/${id}`);
 }
@@ -94,4 +102,19 @@ export function getMenus(params: QueryMenuForm) {
   const token = getToken();
   if (token) axios.defaults.headers.common.Authorization = `Bearer ${token}`;
   return axios.post<QueryMenuForm[]>(`${urlOrigin}/api/user/menu`, params);
+}
+
+/**
+ * 查询所有的应用
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
+export const getAppSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await queryAppsByParams(params);
+    if (successBack && typeof successBack === 'function') successBack(data);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
 }

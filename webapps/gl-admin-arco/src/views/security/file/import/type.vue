@@ -15,11 +15,14 @@ const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
   modelValue: {type: Array<BusinessTypeData>, default: []},
   disabled: {type: Boolean, default: false},
+  hight: {type: Number, default: 480},
 });
 // 列表参数
 type Column = TableColumnData & { checked?: true };
 const cloneColumns = ref<Column[]>([]);
 const renderData = ref<BusinessTypeData[]>([]);
+const scrollbar = ref(true);
+const scroll = ref({x: 980, y: props.hight - 125});
 /**
  * 模型初始化
  */
@@ -173,47 +176,55 @@ watch(() => renderData.value, () => {
 </script>
 
 <template>
-  <a-collapse-item :key="1" header="Excel模板字段定义">
+  <a-card class="">
     <template #extra>
-      <a-button v-if="!disabled" type="primary" @click.stop="handleModelOpen($event)">
+      <a-button v-if="!disabled" type="text" @click.stop="handleModelOpen($event)">
         <template #icon>
           <icon-plus/>
         </template>
         新增
       </a-button>
     </template>
+    <template #title>
+      共 {{ renderData.length }} 条
+    </template>
     <a-table :bordered="{cell:true}"
              :columns="(cloneColumns as TableColumnData[])"
              :data="renderData"
-             :draggable="{type:'handle',width:40}"
+             :draggable="disabled?false:{type:'handle',width:40}"
              :pagination="false"
-             :scroll="{y:400}"
-             :scrollbar="true"
+             :scroll="scroll"
+             :scrollbar="scrollbar"
              :stripe="true"
              column-resizable
              row-key="name" @change="handleChange">
       <template #columns>
-        <a-table-column :width="150" data-index="name" title="模板表头">
+        <a-table-column v-if="disabled" :width="70" align="center" data-index="index" title="序号">
+          <template #cell="{  rowIndex }">
+            {{ rowIndex + 1 }}
+          </template>
+        </a-table-column>
+        <a-table-column :width="240" data-index="name" title="模板表头">
           <template #cell="{ record }">
             {{ record.name }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="type" title="数据类型">
+        <a-table-column :width="90" data-index="type" title="数据类型">
           <template #cell="{ record }">
             {{ getLabel(record.type, businessTypeDataTypeOptions) }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="format" title="格式">
+        <a-table-column :width="210" data-index="format" title="格式">
           <template #cell="{ record }">
             {{ record.format }}
           </template>
         </a-table-column>
-        <a-table-column :width="250" data-index="remark" title="备注">
+        <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="remark" title="备注">
           <template #cell="{ record }">
             {{ record.remark }}
           </template>
         </a-table-column>
-        <a-table-column v-if="!disabled" :width="150" align="center" data-index="operations" fixed="right" title="操作">
+        <a-table-column v-if="!disabled" :width="130" align="center" data-index="operations" fixed="right" title="操作">
           <template #cell="{ record }">
             <a-button size="small" title="编辑" type="text" @click="listEdit(record)">
               <icon-edit/>
@@ -254,7 +265,7 @@ watch(() => renderData.value, () => {
         </a-form-item>
       </a-form>
     </a-modal>
-  </a-collapse-item>
+  </a-card>
 </template>
 
 <style lang="less" scoped>

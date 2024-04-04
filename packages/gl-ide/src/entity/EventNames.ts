@@ -55,7 +55,10 @@ enum EventNames {
   GlIdeStageComponentMove = 'GlIdeStageComponentMove',
 
   // 退出登录
-  GlIdeLogout = 'GlIdeLogout'
+  GlIdeLogout = 'GlIdeLogout',
+
+  // 监听浏览器窗口高度变化
+  WindowResize = 'resize',
 }
 
 export default EventNames

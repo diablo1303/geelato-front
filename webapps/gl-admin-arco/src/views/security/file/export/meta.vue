@@ -15,11 +15,14 @@ const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
   modelValue: {type: Array<BusinessMetaData>, default: []},
   disabled: {type: Boolean, default: false},
+  hight: {type: Number, default: 480},
 });
 // 列表参数
 type Column = TableColumnData & { checked?: true };
 const cloneColumns = ref<Column[]>([]);
 const renderData = ref<BusinessMetaData[]>([]);
+const scrollbar = ref(true);
+const scroll = ref({x: 2000, y: props.hight - 125});
 /**
  * 初始化
  */
@@ -168,37 +171,45 @@ watch(() => renderData.value, () => {
 </script>
 
 <template>
-  <a-collapse-item :key="1" header="导出的数据配置">
+  <a-card class="">
     <template #extra>
-      <a-button v-if="!disabled" type="primary" @click.stop="handleModelOpen($event)">
+      <a-button v-if="!disabled" type="text" @click.stop="handleModelOpen($event)">
         <template #icon>
           <icon-plus/>
         </template>
         新增
       </a-button>
     </template>
+    <template #title>
+      共 {{ renderData.length }} 条
+    </template>
     <a-table :bordered="{cell:true}"
              :columns="(cloneColumns as TableColumnData[])"
              :data="renderData"
-             :draggable="{type:'handle',width:40}"
+             :draggable="disabled?false:{type:'handle',width:40}"
              :pagination="false"
-             :scroll="{x:2000,y:400}"
-             :scrollbar="true"
+             :scroll="scroll"
+             :scrollbar="scrollbar"
              :stripe="true"
              column-resizable
              row-key="name" @change="handleChange">
       <template #columns>
-        <a-table-column :width="150" data-index="placeholder" title="占位符">
+        <a-table-column v-if="disabled" :width="70" align="center" data-index="index" title="序号">
+          <template #cell="{  rowIndex }">
+            {{ rowIndex + 1 }}
+          </template>
+        </a-table-column>
+        <a-table-column :width="180" data-index="placeholder" title="占位符">
           <template #cell="{ record }">
             {{ record.placeholder }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="var" title="变量">
+        <a-table-column :width="180" data-index="var" title="变量">
           <template #cell="{ record }">
             {{ record.var }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="listVar" title="列表变量">
+        <a-table-column :width="180" data-index="listVar" title="列表变量">
           <template #cell="{ record }">
             {{ record.listVar }}
           </template>
@@ -208,52 +219,52 @@ watch(() => renderData.value, () => {
             {{ record.constValue }}
           </template>
         </a-table-column>
-        <a-table-column :width="250" data-index="expression" title="表达式">
+        <a-table-column :width="240" data-index="expression" title="表达式">
           <template #cell="{ record }">
             {{ record.expression }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="valueType" title="值类型">
+        <a-table-column :width="90" data-index="valueType" title="值类型">
           <template #cell="{ record }">
             {{ getLabel(record.valueType, businessMetaDataValueTypeOptions) }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="valueComputeMode" title="取值计算方式">
+        <a-table-column :width="120" data-index="valueComputeMode" title="取值计算方式">
           <template #cell="{ record }">
             {{ getLabel(record.valueComputeMode, businessMetaDataValueComputeModeOptions) }}
           </template>
         </a-table-column>
-        <a-table-column :width="100" data-index="isList" title="是否列表">
+        <a-table-column :width="90" data-index="isList" title="是否列表">
           <template #cell="{ record }">
             {{ record.isList }}
           </template>
         </a-table-column>
-        <a-table-column :width="100" data-index="isMerge" title="是否合并">
+        <a-table-column :width="90" data-index="isMerge" title="是否合并">
           <template #cell="{ record }">
             {{ record.isMerge }}
           </template>
         </a-table-column>
-        <a-table-column :width="100" data-index="isImage" title="是否图片">
+        <a-table-column :width="90" data-index="isImage" title="是否图片">
           <template #cell="{ record }">
             {{ record.isImage }}
           </template>
         </a-table-column>
-        <a-table-column :width="150" data-index="imageWidth" title="图片宽度cm">
+        <a-table-column :width="120" data-index="imageWidth" title="图片宽度cm">
           <template #cell="{ record }">
             {{ record.imageWidth }}
           </template>
         </a-table-column>
-        <a-table-column :width="250" data-index="imageHeight" title="图片高度cm">
+        <a-table-column :width="120" data-index="imageHeight" title="图片高度cm">
           <template #cell="{ record }">
             {{ record.imageHeight }}
           </template>
         </a-table-column>
-        <a-table-column :width="250" data-index="description" title="备注">
+        <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="description" title="备注">
           <template #cell="{ record }">
             {{ record.description }}
           </template>
         </a-table-column>
-        <a-table-column v-if="!disabled" :width="150" align="center" data-index="operations" fixed="right" title="操作">
+        <a-table-column v-if="!disabled" :width="130" align="center" data-index="operations" fixed="right" title="操作">
           <template #cell="{ record }">
             <a-button size="small" title="编辑" type="text" @click="listEdit(record)">
               <icon-edit/>
@@ -354,9 +365,11 @@ watch(() => renderData.value, () => {
         </a-form-item>
       </a-form>
     </a-modal>
-  </a-collapse-item>
+  </a-card>
 </template>
 
 <style lang="less" scoped>
+.general-card {
 
+}
 </style>

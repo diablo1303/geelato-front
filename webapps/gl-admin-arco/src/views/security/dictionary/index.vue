@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'OrgIndex'
+  name: 'DictionaryIndex'
 };
 </script>
 
@@ -14,7 +14,7 @@ import {EventNames} from "@geelato/gl-ide";
 // 公共方法
 import {ListParams, PageSizeOptions, resetValueByOptions} from '@/api/base';
 // 引入组件
-import OrgList from "./list.vue";
+import DictionaryList from "./list.vue";
 
 // 常量使用
 const ListDefaultPageSize = 5;
@@ -49,7 +49,7 @@ const listParams = ref<ListParams>({
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode
   },
-  formState: 'view',
+  formState: 'edit',
   filterCol: 3,
   pageSize: resetListPageSize(),
   height: resetListHeight(),
@@ -74,14 +74,14 @@ onUnmounted(() => {
 
 <template>
   <div class="container">
-    <Breadcrumb :items="['security.org.index.menu.list', 'security.org.index.menu.list.searchTable']"/>
+    <Breadcrumb :items="['security.dict.index.menu.list', 'security.dict.index.menu.list.searchTable']"/>
     <a-card class="general-card">
-      <OrgList :filterCol="listParams.filterCol"
-               :formState="listParams.formState"
-               :height="listParams.height"
-               :pageSize="listParams.pageSize"
-               :parameter="listParams.parameter"
-               :visible="listParams.visible"/>
+      <DictionaryList :filterCol="listParams.filterCol"
+                      :formState="listParams.formState"
+                      :height="listParams.height"
+                      :pageSize="listParams.pageSize"
+                      :parameter="listParams.parameter"
+                      :visible="listParams.visible"/>
     </a-card>
   </div>
 </template>

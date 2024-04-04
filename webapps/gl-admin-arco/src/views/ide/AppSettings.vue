@@ -1,101 +1,346 @@
 <script lang="ts">
-  export default {
-    name: 'AppSettings',
-  };
+export default {
+  name: 'AppSettings',
+};
 </script>
 <script setup lang="ts">
-  import { onMounted, onUnmounted, provide, ref } from 'vue';
-  import { getToken } from '@/utils/auth';
-  import { getSysConfig } from '@/api/user';
-  import { EventNames } from '@geelato/gl-ide';
-  import { emitter, useGlobal } from '@geelato/gl-ui';
-  import useUser from '@/hooks/user';
-  import pinia, { useUserStore } from '../../store';
+import {onMounted, onUnmounted, provide, ref, shallowRef} from 'vue';
+import {getToken} from '@/utils/auth';
+import {getSysConfig} from '@/api/user';
+import {Message} from "@arco-design/web-vue";
+import {EventNames} from '@geelato/gl-ide';
+import {emitter, useGlobal} from '@geelato/gl-ui';
+import useUser from '@/hooks/user';
+import useLoading from "@/hooks/loading";
+import {getApp, QueryAppForm,} from "@/api/application";
+import {PageSizeOptions, resetValueByOptions} from '@/api/base';
+import ApplicationModel from "@/views/application/model.vue";
+import DictionaryList from "@/views/security/dictionary/list.vue";
+import RoleList from "@/views/security/role/list.vue";
+import EncodingList from "@/views/security/encoding/list.vue";
+import FileTemplateList from "@/views/security/file/list.vue";
+import SystemConfigList from "@/views/security/sysconfig/list.vue";
+import pinia, {useUserStore} from '../../store';
 
-  const appId = ref('');
-  const appName = ref('');
+// 常量使用
+const ListDefaultPageSize = 5;
+const ListUsedHeight = 425;
+const ListRowHeight = 49;
 
-  appId.value = new URL(window.location.href).searchParams.get('appId') || '';
-  appName.value =
-    new URL(window.location.href).searchParams.get('appName') || '';
+provide('pinia', pinia);
+const userStore = useUserStore();
+const global = useGlobal();
+const {ideRedirect, ideLogout} = useUser();
+const appData = ref<QueryAppForm>({} as unknown as QueryAppForm);
+const showPage = ref(false);
+const tableFormRef = shallowRef(ApplicationModel);
+const {loading, setLoading} = useLoading(false);
+const tabsKey = ref<number>(1);
 
-  provide('pinia', pinia);
-  const userStore = useUserStore();
-  const global = useGlobal();
-  const { ideRedirect, ideLogout } = useUser();
+/**
+ * 调整列表高度
+ */
+const resetListHeight = () => {
+  return window.innerHeight - ListUsedHeight;
+}
+/**
+ * 调整列表展示行数
+ */
+const resetListPageSize = () => {
+  return resetValueByOptions(PageSizeOptions, (resetListHeight() / ListRowHeight), ListDefaultPageSize);
+}
 
-  const handleLogout = () => {
-    ideLogout();
-  };
+// 引用页面所需参数
+// 应用信息
+const appModelParams = ref({
+  visible: false, id: '', formState: 'edit', formCol: 2, parameter: {appId: '', tenantCode: ''}
+});
+const generateListParams = () => {
+  return {
+    visible: false,
+    parameter: {appId: '', tenantCode: ''},
+    formState: 'edit',
+    filterCol: 3,
+    pageSize: resetListPageSize(),
+    height: resetListHeight(),
+  }
+};
+// 字典管理
+const dictListParams = ref(generateListParams());
+// 角色管理
+const roleListParams = ref(generateListParams());
+// 编码管理
+const encodingListParams = ref(generateListParams());
+// 文件管理
+const fileListParams = ref(generateListParams());
+// 系统配置
+const configListParams = ref(generateListParams());
 
-  const showPage = ref(false);
+/**
+ * 登出功能
+ */
+const handleLogout = () => {
+  ideLogout();
+};
+/**
+ * 浏览器高度调整时事件
+ */
+const handleResize = () => {
+  const listRecord = {height: resetListHeight(), pageSize: resetListPageSize()}
+  switch (tabsKey.value) {
+    case 2: // 应用字典
+      Object.assign(dictListParams.value, listRecord);
+      break;
+    case 3: // 应用角色
+      Object.assign(roleListParams.value, listRecord);
+      break;
+    case 4: // 应用编码
+      Object.assign(encodingListParams.value, listRecord);
+      break;
+    case 5: // 应用文件
+      Object.assign(fileListParams.value, listRecord);
+      break;
+    case 6: // 应用配置
+      Object.assign(configListParams.value, listRecord);
+      break;
+    default:
+      break;
+  }
+}
 
-  onMounted(() => {
-    // 未登录重定向
-    if (!getToken()) ideRedirect();
-    // 注册 登出 事件监听器的函数
-    emitter.on(EventNames.GlIdeLogout, handleLogout);
-    // 加载配置变量
-    const urlParams = new URL(window.location.href).searchParams;
-    userStore.info(() => {
-      getSysConfig(global, userStore && userStore.userInfo, {
-        tenantCode: urlParams.get('tenantCode') || '',
-        appId: urlParams.get('appId') || '',
-      });
+/**
+ * 获取应用信息
+ * @param id
+ * @param successBack
+ * @param failBack
+ */
+const getAppData = async (id: string, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await getApp(id);
+    if (successBack && typeof successBack === 'function') successBack(data);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+};
+
+/**
+ * 更新应用信息
+ */
+const updateApp = () => {
+  setLoading(true)
+  // @ts-ignore
+  if (tableFormRef.value && typeof tableFormRef.value?.saveOrUpdate === 'function') {
+    // @ts-ignore
+    tableFormRef.value?.saveOrUpdate((data: QueryAppForm) => {
+      setLoading(false);
+      Message.success("更新成功！");
+      appData.value = data;
+    }, () => {
+      setLoading(false);
     });
-    showPage.value = true;
-  });
+  }
+};
 
-  onUnmounted(() => {
-    emitter.off(EventNames.GlIdeLogout, handleLogout);
-  });
+/**
+ * 打开链接
+ * @param type
+ */
+const enterLink = (type: string) => {
+  if (appData.value.id && appData.value.tenantCode) {
+    const host = `${window.location.protocol}//${window.location.host}`;
+    switch (type) {
+      case 'index':
+        window.open(`${host}/${appData.value.tenantCode}/${appData.value.id}/page`, "_blank");
+        break;
+      case 'design':
+        // eslint-disable-next-line no-case-declarations
+        const params = `tenantCode=${appData.value.tenantCode}&appId=${appData.value.id}&appName=${appData.value.name}`;
+        window.open(`${host}/ide.html?${params}`, "_blank")
+        break;
+      case 'manage':
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+onMounted(() => {
+  // 未登录重定向
+  if (!getToken()) ideRedirect();
+  // 注册 登出 事件监听器的函数
+  emitter.on(EventNames.GlIdeLogout, handleLogout);
+  window.addEventListener(EventNames.WindowResize, handleResize);
+  // 加载配置变量
+  const urlParams = new URL(window.location.href).searchParams;
+  appData.value.id = urlParams.get('appId') || '';
+  if (appData.value.id) {
+    getAppData(appData.value.id, (data: QueryAppForm) => {
+      appData.value = data;
+      // 系统参数
+      userStore.info(() => {
+        getSysConfig(global, userStore && userStore.userInfo, {
+          appId: data.id, tenantCode: data.tenantCode || '',
+        });
+      });
+      document.title = `应用配置 | ${data.name}`;
+      // 应用基本信息
+      Object.assign(appModelParams.value, {
+        visible: true, id: data.id, parameter: {appId: data.id, tenantCode: data.tenantCode || ''}
+      })
+      // 列表
+      const listRecord = {visible: true, parameter: {appId: data.id, tenantCode: data.tenantCode || ''}}
+      // 字典管理
+      Object.assign(dictListParams.value, listRecord);
+      // 角色管理
+      Object.assign(roleListParams.value, listRecord);
+      // 编码管理
+      Object.assign(encodingListParams.value, listRecord);
+      // 文件管理
+      Object.assign(fileListParams.value, listRecord);
+      // 系统配置
+      Object.assign(configListParams.value, listRecord);
+    });
+  }
+
+  showPage.value = true;
+});
+
+onUnmounted(() => {
+  window.removeEventListener(EventNames.WindowResize, handleResize);
+  emitter.off(EventNames.GlIdeLogout, handleLogout);
+});
 </script>
 <template>
   <div class="gl-app-settings">
-    <div v-if="!appId">
+    <div v-if="!appData.id">
       <a-alert>
-        请在url中传入appId参数，如：https://域名:端口/appSettings.html?appId=xxxxxxxxxxxxxxxxxxx.
+        请在url中传入appId参数，如：https://域名:端口/appSettings.html?tenantCode=?&appId=?&appName=?。
       </a-alert>
     </div>
     <div v-else>
       <div :style="{ padding: '4px 14px' }" class="gl-page-header">
-      <a-page-header
-        title="应用设置"
-        :subtitle="appName"
-        :show-back="false"
-      >
-        <template #extra>
-          <!--            <a-radio-group type="button" default-value="large">-->
-          <!--              <a-radio value="mini">Mini</a-radio>-->
-          <!--              <a-radio value="small">Small</a-radio>-->
-          <!--              <a-radio value="large">Large</a-radio>-->
-          <!--            </a-radio-group>-->
-        </template>
-      </a-page-header>
+        <a-page-header title="应用设置" :subtitle="appData.name" :show-back="false"/>
       </div>
       <div :style="{ padding: '14px' }">
         <a-card>
-          <a-tabs direction="vertical">
-            <a-tab-pane key="1">
+          <a-tabs v-model:active-key="tabsKey" :default-active-key="1" direction="vertical" :lazy-load="true">
+            <a-tab-pane :key="1">
               <template #title>
-                <icon-calendar />
+                <icon-calendar/>
                 基本信息
               </template>
-              这里可以修改应用基本信息
+              <a-card class="general-card">
+                <template #extra>
+                  <a-space>
+                    <a-button type="text" class="app-button" @click="enterLink('index')">
+                      <template #icon>
+                        <icon-link/>
+                      </template>
+                      应用站点
+                    </a-button>
+                    <a-button type="text" class="app-button" @click="enterLink('design')">
+                      <template #icon>
+                        <icon-link/>
+                      </template>
+                      设计站点
+                    </a-button>
+                    <a-popconfirm content="是否更新该应用的基本信息？" position="br" type="info" @ok="updateApp">
+                      <a-button :disabled="!appModelParams.id" type="text" class="app-button" :loading="loading">
+                        <template #icon>
+                          <icon-save/>
+                        </template>
+                        更新
+                      </a-button>
+                    </a-popconfirm>
+                  </a-space>
+                </template>
+                <ApplicationModel ref="tableFormRef"
+                                  :visible="appModelParams.visible"
+                                  :parameter="appModelParams.parameter"
+                                  :formState="appModelParams.formState"
+                                  :modelValue="appModelParams.id"
+                                  :formCol="appModelParams.formCol"/>
+              </a-card>
             </a-tab-pane>
-            <a-tab-pane key="2">
+            <a-tab-pane :key="2">
               <template #title>
-                <icon-clock-circle />
+                <icon-clock-circle/>
                 应用字典
               </template>
-              Content of Tab Panel 2
+              <a-card class="general-card">
+                <DictionaryList :visible="dictListParams.visible"
+                                :parameter="dictListParams.parameter"
+                                :formState="dictListParams.formState"
+                                :filterCol="dictListParams.filterCol"
+                                :pageSize="dictListParams.pageSize"
+                                :height="dictListParams.height"/>
+              </a-card>
             </a-tab-pane>
-            <a-tab-pane key="3">
+            <a-tab-pane :key="3">
               <template #title>
-                <icon-user />
+                <icon-user/>
                 应用角色
               </template>
-              Content of Tab Panel 3
+              <a-card class="general-card">
+                <RoleList :visible="roleListParams.visible"
+                          :parameter="roleListParams.parameter"
+                          :formState="roleListParams.formState"
+                          :filterCol="roleListParams.filterCol"
+                          :pageSize="roleListParams.pageSize"
+                          :height="roleListParams.height"/>
+              </a-card>
+            </a-tab-pane>
+            <a-tab-pane :key="7">
+              <template #title>
+                <icon-user-add/>
+                用户授权
+              </template>
+              <a-card class="general-card">
+
+              </a-card>
+            </a-tab-pane>
+            <a-tab-pane :key="4">
+              <template #title>
+                <icon-code-block/>
+                应用编码
+              </template>
+              <a-card class="general-card">
+                <EncodingList :visible="encodingListParams.visible"
+                              :parameter="encodingListParams.parameter"
+                              :formState="encodingListParams.formState"
+                              :filterCol="encodingListParams.filterCol"
+                              :pageSize="encodingListParams.pageSize"
+                              :height="encodingListParams.height"/>
+              </a-card>
+            </a-tab-pane>
+            <a-tab-pane :key="5">
+              <template #title>
+                <icon-file/>
+                应用文件
+              </template>
+              <a-card class="general-card">
+                <FileTemplateList :visible="fileListParams.visible"
+                                  :parameter="fileListParams.parameter"
+                                  :formState="fileListParams.formState"
+                                  :filterCol="fileListParams.filterCol"
+                                  :pageSize="fileListParams.pageSize"
+                                  :height="fileListParams.height"/>
+              </a-card>
+            </a-tab-pane>
+            <a-tab-pane :key="6">
+              <template #title>
+                <icon-settings/>
+                应用配置
+              </template>
+              <a-card class="general-card">
+                <SystemConfigList :visible="configListParams.visible"
+                                  :parameter="configListParams.parameter"
+                                  :formState="configListParams.formState"
+                                  :filterCol="configListParams.filterCol"
+                                  :pageSize="configListParams.pageSize"
+                                  :height="configListParams.height"/>
+              </a-card>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -103,17 +348,23 @@
     </div>
   </div>
 </template>
-<style>
-  .gl-app-settings .gl-page-header {
-    //border-bottom: 1px #04559f solid;
-    background-image: url('@/assets/images/bg/page-header-bg-layered-peaks.png');
-    background-size: cover;
-  }
-  .gl-app-settings .arco-page-header-title{
-    color: white;
-  }
-  .gl-app-settings .arco-page-header-subtitle{
-    color: white;
-    font-size: 16px;
-  }
+<style lang="less" scoped>
+.gl-app-settings .gl-page-header {
+  //border-bottom: 1px #04559f solid;
+  background-image: url('@/assets/images/bg/page-header-bg-layered-peaks.png');
+  background-size: cover;
+}
+
+.gl-app-settings .arco-page-header-title {
+  color: white;
+}
+
+.gl-app-settings .arco-page-header-subtitle {
+  color: white;
+  font-size: 16px;
+}
+
+.app-button.arco-btn-size-medium {
+  padding: 0 10px;
+}
 </style>
