@@ -148,7 +148,7 @@ export class EntityApi {
       platform_province: minutes * 60,
       platform_user: minutes * 5
     }
-    if (!disabledClientQueryCache&&cachePromise) {
+    if (!disabledClientQueryCache && cachePromise) {
       console.log(`查询实体：${Object.keys(mql)[0]}，从缓存中获取数据`)
       return cachePromise
     } else {
@@ -160,7 +160,7 @@ export class EntityApi {
         data: mql
       })
       // 2秒缓存，解决短时间内大量相同的数据查询问题，如列表的字典、实体查询
-      if(!disabledClientQueryCache){
+      if (!disabledClientQueryCache) {
         entityQueryCache.set(key, promiseResult, entityTime[entityName] || defaultTime)
       }
       return promiseResult
@@ -385,6 +385,22 @@ export class EntityApi {
           reject(reason)
         })
     })
+  }
+
+  /**
+   * 从queryByEntityReader的返回结果中获取第一条记录
+   * 如果没有记录时返回undefined
+   * @param res
+   */
+  getFirstRecordFromRes(res: any) {
+    if (res?.data?.length > 0) {
+      return res.data[0]
+    }
+    return undefined
+  }
+
+  getFirstRecordsFromRes(res: any) {
+    return res?.data
   }
 
   /**
@@ -960,6 +976,29 @@ export class EntityApi {
       url: `${this.url.apiEntityLiteMetas}?appCode=${appCode}`,
       method: 'GET',
       data: ''
+    })
+  }
+
+  /**
+   * 单字检查是否唯一
+   * @param entityName
+   * @param filedName
+   * @param fieldValue
+   * @param id 可选，记录的id值
+   */
+  checkFieldUniqueness(entityName: string, filedName: string, fieldValue: any, id?: string) {
+    const mql = {
+      [entityName]: {
+        [filedName]: fieldValue
+      }
+    }
+    if (id) {
+      mql[entityName]['id|neq'] = id
+    }
+    return this.service({
+      url: `${this.url.apiMetaUniqueness}`,
+      method: 'POST',
+      data: mql
     })
   }
 

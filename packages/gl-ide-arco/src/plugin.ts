@@ -69,6 +69,7 @@ import GlSlotSetter from './components/setters/property-setters/GlSlotSetter.vue
 import GlModelList from './components/sidebar/model/GlModelList.vue'
 import GlDictList from './components/sidebar/dict/GlDictList.vue'
 import GlServiceList from './components/sidebar/services/GlServiceList.vue'
+import GlPageParamsSetter from './components/setters/property-setters/GlPageParamsSetter.vue'
 import './assets/style.css'
 
 const plugin = new GlPlugin('gl-plugin-arco')
@@ -314,6 +315,7 @@ const component: Plugin = {
     app.component(GlInputSetter.name, GlInputSetter)
     app.component(GlExpressionSetter.name, GlExpressionSetter)
     app.component(GlSlotSetter.name, GlSlotSetter)
+    app.component(GlPageParamsSetter.name, GlPageParamsSetter)
     // 注册组件元数据
     // ide.componentMetaManager.registerManyComponentRuntimeMeta(componentMeta.runtimeMeta)
     // ide.componentMetaManager.registerManyComponentDesignMeta(componentMeta.designMeta)

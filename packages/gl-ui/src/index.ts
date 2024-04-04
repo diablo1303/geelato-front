@@ -38,7 +38,10 @@ import useApiUrl from './m/hooks/useApiUrl'
 import useMessages from './m/hooks/useMessages'
 import jsScriptExecutor from './m/actions/JsScriptExecutor'
 import AppProvideProxy, {AppProvideKey} from './components/AppProvideProxy'
-import FormProvideProxy, {FormProvideKey} from './components/FormProvideProxy'
+import FormProvideProxy, {
+  FormProvideKey,
+  SubmitFormResult
+} from './components/FormProvideProxy'
 import {Schema} from 'b-validate'
 import type {ApiPagedResult, ApiResult, ApiResultStatus, Param} from './m/types/global'
 import {PageType} from './m/types/global'
@@ -196,7 +199,8 @@ export {
   ColumnSelectType,
   encodingApi,
   executeObjectPropsExpressions,
-  executeArrayExpressions
+  executeArrayExpressions,
+  SubmitFormResult
 }
 // 默认导出组件
 export default component

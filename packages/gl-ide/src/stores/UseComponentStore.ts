@@ -403,9 +403,10 @@ class ComponentStoreFactory {
                 }
               }
             }
+            let inst
             if (textPlain) {
               try {
-                const inst = JSON.parse(textPlain.toString())
+                inst = JSON.parse(textPlain.toString())
                 if (this.checkComponent(inst)) {
                   this.insertAfterCurrentSelectedComponent(inst)
                 } else {
@@ -424,7 +425,8 @@ class ComponentStoreFactory {
             }
             return {
               success: true,
-              message: ''
+              message: '',
+              inst:inst
             }
           },
           /**

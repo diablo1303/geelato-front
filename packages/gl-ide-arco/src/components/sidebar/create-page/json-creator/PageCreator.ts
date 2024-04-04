@@ -37,9 +37,9 @@ export const usePageConfig = ( pageType: PageType,label?: string) => {
 }
 
 export abstract class PageCreator {
-  create(options: PageCreatorOptions) {
+  async createPage(options: PageCreatorOptions) {
     const page = usePageConfig(options.pageInfo.type,options.pageInfo.label)
-    return this.buildChildren(page, options)
+    return await this.buildChildren(page, options)
   }
 
   /**
@@ -47,5 +47,5 @@ export abstract class PageCreator {
    * @param page
    * @param options
    */
-  abstract buildChildren(page: ComponentInstance, options: PageCreatorOptions): ComponentInstance
+   abstract buildChildren(page: ComponentInstance, options: PageCreatorOptions): Promise<ComponentInstance>
 }

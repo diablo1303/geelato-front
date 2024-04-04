@@ -3,7 +3,7 @@
     <template v-if="glIsRuntime">
       <template v-if="pageTemplateName">
         <!-- render gl-page-template -->
-        <component :is="pageTemplateName">
+        <component :is="pageTemplateName" v-bind="pageTemplateProps" :glComponentInst="glComponentInst" :glLoopItem="glLoopItem" :glLoopIndex="glLoopIndex">
           <slot></slot>
         </component>
       </template>
@@ -14,12 +14,10 @@
     <template v-else>
       <template v-if="pageTemplateName">
         <!-- render gl-page-template -->
-        <component :is="pageTemplateName">
-          <component :is="'GlInsts'" :glComponentInst="glComponentInst"></component>
-        </component>
+        <component :is="pageTemplateName" :glComponentInst="glComponentInst" :glLoopItem="glLoopItem" :glLoopIndex="glLoopIndex"> </component>
       </template>
       <template v-else>
-        <component :is="'GlInsts'" :glComponentInst="glComponentInst"></component>
+        <component :is="'GlInsts'" :glComponentInst="glComponentInst" :glLoopItem="glLoopItem" :glLoopIndex="glLoopIndex"></component>
       </template>
     </template>
     <div class="gl-page-timer" v-if="lastUpdateTime">{{ timerInfo }}</div>
@@ -53,6 +51,7 @@ import {
   ConvertUtil
 } from '@geelato/gl-ui'
 import type { Action } from '@geelato/gl-ui-schema'
+import type { ParamMeta } from '@geelato/gl-ui/src/m/types/global'
 
 const emits = defineEmits(['interval'])
 const proxy = getCurrentInstance()?.proxy
@@ -105,6 +104,15 @@ const props = defineProps({
    *  默认为空
    */
   pageTemplateName: String,
+  /**
+   *  页面模板组件的属性
+   */
+  pageTemplateProps:{
+    type:Object,
+    default(){
+      return {}
+    }
+  },
   pageMargin: {
     type: String,
     default() {
@@ -131,6 +139,15 @@ const props = defineProps({
     type: String,
     default() {
       return '自动保存@${lastUpdateTime}'
+    }
+  },
+  /**
+   *  页面参数的定义
+   */
+  paramsMeta: {
+    type: Array as PropType<Array<ParamMeta>>,
+    default() {
+      return []
     }
   },
   /**
@@ -170,6 +187,7 @@ pageProvideProxy.setPageStatus(props.pageStatus)
 pageProvideProxy.setPageCustom(props.pageCustom)
 pageProvideProxy.setPagePermission(props.pagePermission)
 pageProvideProxy.setParams(props.params)
+pageProvideProxy.setParamsMeta(props.paramsMeta)
 const onPageMounted = () => {
   //  触发页面配置的事件，只限运行时
   if (props.glIsRuntime) {

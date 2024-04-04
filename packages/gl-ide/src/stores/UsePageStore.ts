@@ -429,6 +429,12 @@ export const usePageStore = defineStore('GlPageStore', () => {
     )
   }
 
+  /**
+   * 操作记录
+   * @param title
+   * @param sourceContent 记录的页面sourceContent，JSON格式
+   * @param targetComponentInst 记录的页面Inst
+   */
   function log(title: string, sourceContent: any, targetComponentInst: ComponentInstance) {
     currentPageHistory.value.push(
       targetComponentInst.id,

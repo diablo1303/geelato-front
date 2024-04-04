@@ -48,7 +48,9 @@ import {
   FormProvideKey,
   FormProvideProxy,
   EntitySaver,
-  GetEntitySaversResult
+  GetEntitySaversResult,
+  emitter,
+  SubmitFormResult
 } from '@geelato/gl-ui'
 import { getFormParams, type ValidatedError } from './GlEntityForm'
 
@@ -534,6 +536,9 @@ const getEntitySavers = async () => {
  */
 const submitForm = async () => {
   const entitySavers = await getEntitySavers()
+  const submitFormResult: SubmitFormResult = new SubmitFormResult()
+  submitFormResult.entity = props.bindEntity.entityName
+  submitFormResult.id = props.glComponentInst.id
   // console.log('submitForm > entitySavers', entitySavers)
   if (!entitySavers.error) {
     setLoading(true)
@@ -552,6 +557,9 @@ const submitForm = async () => {
       })
     }
     setLoading(false)
+    submitFormResult.success = true
+    submitFormResult.record = entitySavers.values[0].record
+    emitter.emit('entityForm.submitForm', submitFormResult)
     return true
   } else {
     const content: string[] = []
@@ -564,6 +572,8 @@ const submitForm = async () => {
       title: '以下内容验证不通过',
       content: `${content.join(',')}`
     })
+    submitFormResult.success = false
+    emitter.emit('entityForm.submitForm', submitFormResult)
     return false
   }
 }

@@ -50,6 +50,9 @@ export class ApiPathName {
   api = "/api";
 
   getPageAndCustom = "/api/page/getPageAndCustom"
+
+  // 唯一校验
+  apiMetaUniqueness='/api/meta/uniqueness'
 }
 
 const getApiPathName = ()=>{

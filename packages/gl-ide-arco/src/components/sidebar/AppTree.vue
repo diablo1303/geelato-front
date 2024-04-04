@@ -33,13 +33,7 @@ export default {
 <script setup lang="ts">
 import { type Ref, ref } from 'vue'
 import { useIdeStore, useAppStore, Page, usePageStore } from '@geelato/gl-ide'
-import {
-  entityApi,
-  EntityReader,
-  EntityReaderParam,
-  EntitySaver,
-  FieldMeta
-} from '@geelato/gl-ui'
+import { entityApi, EntityReader, EntitySaver, FieldMeta } from '@geelato/gl-ui'
 import CreatePageNav from './create-page/CreatePageNav.vue'
 import type { PageInfo } from './create-page/CreatePageNav'
 
@@ -105,17 +99,6 @@ const onDeleteNode = (params: any) => {
     })
   }
 }
-
-// const onIconClick = (nodeData: any) => {
-//   console.log('onIconClick:', nodeData)
-//   ideStore.openPage(<Page>{
-//     type: nodeData._nodeType,
-//     extendId: nodeData.key,
-//     title: nodeData.title,
-//     iconType: nodeData.iconType
-//   })
-// }
-
 // 树实体查询
 const entityReader = new EntityReader()
 entityReader.entity = 'platform_tree_node'
@@ -128,9 +111,9 @@ entityReader.fields.push(new FieldMeta('iconType'))
 entityReader.fields.push(new FieldMeta('type', '_nodeType'))
 entityReader.fields.push(new FieldMeta('flag'))
 entityReader.fields.push(new FieldMeta('seqNo'))
-entityReader.params = []
-entityReader.params.push(new EntityReaderParam('treeId', 'eq', appStore.currentApp.id))
-entityReader.pageSize = 1000
+entityReader.pageSize = 2000
+entityReader.addParam('treeId', 'eq', appStore.currentApp.id)
+entityReader.addOrder('seqNo', '+')
 const contextMenuData = [
   {
     title: '新建目录',

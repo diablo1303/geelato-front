@@ -6,12 +6,13 @@ export default {
 <script lang="ts" setup>
 const props = defineProps({
   label: String,
-  _content: String
+  _content: String,
+  transparent:Boolean
 })
 </script>
 
 <template>
-  <a-alert>
+  <a-alert class="gl-alert" :class="{'gl-transparent':transparent}">
     <template #title v-if="label">
       {{ label }}
     </template>
@@ -21,3 +22,8 @@ const props = defineProps({
     </template>
   </a-alert>
 </template>
+<style>
+ .gl-alert.gl-transparent{
+     background-color: transparent;
+ }
+</style>

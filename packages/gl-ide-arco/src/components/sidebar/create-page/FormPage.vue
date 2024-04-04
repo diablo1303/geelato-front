@@ -52,8 +52,8 @@ const myForm = ref()
 /**
  *  获取页面配置
  */
-const getPage = () => {
-  pageInfo.value.content = formPageCreator.create(pageCreatorOptions.value)
+const getPage = async () => {
+  pageInfo.value.content = await formPageCreator.createPage(pageCreatorOptions.value)
   console.log('create formPage pageInfo:', pageInfo.value)
   return pageInfo.value
 }

@@ -303,6 +303,8 @@ const insertAfterCurrentSelectedComponent = async () => {
   const result = await componentStore.insertAfterCurrentSelectedComponentFromClipboard()
   if (!result.success) {
     useGlobal().$notification.error(result.message)
+  }else{
+    pageStore.operationLog('插入', pageStore.currentPage.sourceContent, result.inst)
   }
 }
 

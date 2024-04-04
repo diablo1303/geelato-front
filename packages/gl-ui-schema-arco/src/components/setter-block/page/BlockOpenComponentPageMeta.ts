@@ -78,7 +78,7 @@ export default {
       expanded: true,
       title: '页面宽度',
       setterComponentName: 'AInput',
-      setterDefaultValue:'80%',
+      setterDefaultValue: '80%',
       enableValueExpress: true,
       displayMode: 'tile'
     },
@@ -108,30 +108,6 @@ export default {
       show: true,
       expanded: true,
       title: '页面状态',
-      setterComponentName: 'ASelect',
-      displayMode: 'tile'
-    },
-    {
-      name: 'pageTemplateName',
-      setterComponentProps: {
-        options: [
-          {
-            label: '默认无模板',
-            value: ''
-          },
-          {
-            label: '工作流模板',
-            value: 'GlPageTemplateFlow'
-          }
-        ]
-      },
-      setterComponentVModelName: 'modelValue',
-      group: 'base',
-      type: 'props',
-      enableValueExpress: false,
-      show: true,
-      expanded: true,
-      title: '页面模板',
       setterComponentName: 'ASelect',
       displayMode: 'tile'
     },
@@ -237,6 +213,89 @@ export default {
       title: '调用指令',
       setterComponentName: 'ASelect',
       displayMode: 'tile'
+    },
+    {
+      name: 'pageTemplateName',
+      setterComponentProps: {
+        options: [
+          {
+            label: '默认无模板',
+            value: ''
+          },
+          {
+            label: '简单审批模板',
+            value: 'GlPageTemplateSimpleApprove'
+          },
+          {
+            label: '工作流模板（开发中）',
+            value: 'GlPageTemplateFlow'
+          }
+        ]
+      },
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      title: '页面模板',
+      setterComponentName: 'ASelect',
+      displayMode: 'tile'
+    },
+    {
+      name: 'pageTemplateProps',
+      setterComponentProps: {},
+      setterComponentVModelName: '',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      title: '页面模板属性',
+      setterComponentName: 'GlSimpleObjectSetter',
+      displayMode: 'tile',
+      _showSub: true,
+      properties: [
+        {
+          title: '标题',
+          name: 'label',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          setterComponentName: 'AInput'
+        },
+        {
+          title: '子标题',
+          name: 'subLabel',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          setterComponentName: 'AInput'
+        },
+        {
+          title: '处理环节名称',
+          name: 'nodeCode',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          setterComponentName: 'AInput'
+        }
+      ]
     }
   ]
 }

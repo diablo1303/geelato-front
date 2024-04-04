@@ -109,7 +109,7 @@ export default class History {
     /**
      * 添加历史记录
      * @param title 历史记录标题
-     * @param value 历史记录值
+     * @param value 历史记录值，如整个页面inst
      */
     push(id: string, title: string, value: any, description?: string) {
         const lastStep = last(this.stack)

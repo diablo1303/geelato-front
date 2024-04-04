@@ -60,12 +60,12 @@ export class LayoutRow {
 export class FormPageCreator extends PageCreator {
   componentStore = useComponentStore()
 
-  buildChildren(page: ComponentInstance, options: PageCreatorOptions): ComponentInstance {
+  async buildChildren(page: ComponentInstance, options: PageCreatorOptions): Promise<ComponentInstance> {
     const card = useCardConfig(options)
 
-    const insts = useFieldMetaToComponentInst(
-      options.entityMeta.entityName,
-      options.entityMeta.fieldMetas
+    const insts = await useFieldMetaToComponentInst(
+        options.entityMeta.entityName,
+        options.entityMeta.fieldMetas
     )
 
     // 占用一行的组件

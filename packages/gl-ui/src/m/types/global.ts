@@ -11,6 +11,18 @@ export enum PageType {
   flowPage = 'flowPage'
 }
 
+/**
+ *  页面接受的参数定义
+ *  便于其它页面在调用时，清楚应传入的参数
+ */
+export interface ParamMeta {
+  name:string
+  title?:string
+  required?:boolean
+  type?:any
+  description?:string
+}
+
 // 页面参数、方法调用参数
 export interface Param {
   name: string

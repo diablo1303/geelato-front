@@ -1,45 +1,60 @@
 <template>
   <div class="gl-property-setter-card">
     <gl-draggable
-        :list="items"
-        animation="700"
-        handle=".gl-dnd-item"
-        :group="{ name: 'options',  put: false }"
-        :sort="true"
-        tag="div"
-        itemKey="value"
-        @end="onEnd"
+      :list="items"
+      animation="700"
+      handle=".gl-dnd-item"
+      :group="{ name: 'options', put: false }"
+      :sort="true"
+      tag="div"
+      itemKey="value"
+      @start="onStart"
     >
-      <template #item="{element, index}">
+      <template #item="{ element, index }">
         <div>
-          <div class="gl-m-header" v-if="maxCount!==1" @click="editElement(index)" style="cursor: pointer">
+          <div
+            class="gl-m-header"
+            v-if="maxCount !== 1"
+            @click="editElement(element, index)"
+            style="cursor: pointer"
+          >
             <span v-if="enableSort">
-              <GlIconfont type="gl-drag" class="gl-dnd-item" style="cursor: move" /></span>
+              <GlIconfont type="gl-drag" class="gl-dnd-item" style="cursor: move"
+            /></span>
             <span class="gl-m-title" v-html="getElementTitle(element, titleField)"></span>
-            <span class="gl-m-sub-title" v-html="getElementTitle(element, subTitleField,alarmIfNoSubTitle)"></span>
-            <span class="gl-m-action" v-if="enableDelete"><GlIconfont type="gl-delete" @click="removeElement(index)"
-                                                                      style="color: red;cursor: pointer"></GlIconfont></span>
+            <span
+              class="gl-m-sub-title"
+              v-html="getElementTitle(element, subTitleField, alarmIfNoSubTitle)"
+            ></span>
+            <span class="gl-m-action" v-if="enableDelete"
+              ><GlIconfont
+                type="gl-delete"
+                @click="removeElement(index)"
+                style="color: red; cursor: pointer"
+              ></GlIconfont
+            ></span>
             <!--            <span class="gl-m-action" v-if="enableEdit"><FormOutlined /></span>-->
           </div>
-          <div class="gl-m-body" v-if="selectedIndex===index" style="border: 1px solid #ccc">
+          <div class="gl-m-body" v-if="selectedIndex === index" style="border: 1px solid #ccc">
             <slot :item="element" :index="index"></slot>
           </div>
         </div>
       </template>
     </gl-draggable>
-    <div v-if="!(maxCount>0&&items?.length === maxCount)&&maxCount!==1">
-      <a @click="addElement" style="line-height: 2em;cursor: pointer;padding-left: 1em">
-        <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加</a>
+    <div v-if="!(maxCount > 0 && items?.length === maxCount) && maxCount !== 1">
+      <a @click="addElement" style="line-height: 2em; cursor: pointer; padding-left: 1em">
+        <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加</a
+      >
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-import {utils} from "@geelato/gl-ui";
+import { defineComponent } from 'vue'
+import { utils } from '@geelato/gl-ui'
 
 export default defineComponent({
-  name: "GlPropertySetterCard",
+  name: 'GlPropertySetterCard',
   props: {
     modelValue: {
       type: Array,
@@ -86,8 +101,7 @@ export default defineComponent({
       default() {
         return true
       }
-    }
-    ,
+    },
     enableSort: {
       type: Boolean,
       default() {
@@ -106,7 +120,7 @@ export default defineComponent({
   },
   data() {
     return {
-      cardTitleField: '',
+      // cardTitleField: '',
       items: this.modelValue,
       selectedElement: {},
       selectedIndex: -1
@@ -119,14 +133,21 @@ export default defineComponent({
       this.addElement()
     }
     // 找出对象的第一个字段，作为卡片的标题字段
-    let element = this.elementTemplate ? JSON.parse(JSON.stringify(this.elementTemplate)) : undefined
-    if (element) {
-      const keys = Object.keys(element)
-      keys.length > 0 ? this.cardTitleField = keys[0] : ''
-      // console.log('this.cardTitleField:', this.cardTitleField, keys, element)
-    }
+    // let element = this.elementTemplate ? JSON.parse(JSON.stringify(this.elementTemplate)) : undefined
+    // if (element) {
+    //   const keys = Object.keys(element)
+    //   keys.length > 0 ? this.cardTitleField = keys[0] : ''
+    //   // console.log('this.cardTitleField:', this.cardTitleField, keys, element)
+    // }
   },
   methods: {
+    onStart(evt:any) {
+      // 在拖动前，如果该页面是打开的，需要关闭面板，即清空当前选择，否存存在错乱的情况
+      if(this.selectedIndex === evt.oldIndex){
+        this.selectedIndex = -1
+        this.selectedElement = {}
+      }
+    },
     // alarmIfNoSubTitle
     getElementTitle(element: any, titleField?: string, alarmIfNoTitle?: string) {
       // console.log('getElementTitle() > label:', element._component.props.label, element._component.props.bindField.fieldName,'titleField:', titleField, 'alarmIfNoTitle:', alarmIfNoTitle)
@@ -142,7 +163,11 @@ export default defineComponent({
             }
           }
           const key: string = keys.shift()!
-          return keys.length > 0 ? getValue(obj[key], keys) : (obj[key]?obj[key]:`<span style="color: red">${alarmIfNoTitle}</span>`)
+          return keys.length > 0
+            ? getValue(obj[key], keys)
+            : obj[key]
+            ? obj[key]
+            : `<span style="color: red">${alarmIfNoTitle}</span>`
         }
         return getValue(element, keys)
       } catch (e) {
@@ -167,14 +192,13 @@ export default defineComponent({
 
       this.emitSelectedElement()
     },
-    editElement(index: number) {
+    editElement(element: any, index: number) {
       if (this.selectedIndex === index) {
         this.selectedIndex = -1
         this.selectedElement = {}
       } else {
         this.selectedIndex = index
-        // @ts-ignore
-        this.selectedElement = this.items[index]
+        this.selectedElement = element
       }
       this.emitSelectedElement()
     },
@@ -188,19 +212,18 @@ export default defineComponent({
       }
       this.items.splice(index, 1)
       this.$emit('update:modelValue', this.items)
-      this.$emit('removeElement', {index: index})
+      this.$emit('removeElement', { index: index })
       this.emitSelectedElement()
     },
     emitSelectedElement() {
       // console.log('selectedElement:', {element: this.selectedElement, index: this.selectedIndex})
-      this.$emit('selectedElement', {element: this.selectedElement, index: this.selectedIndex})
+      this.$emit('selectedElement', { element: this.selectedElement, index: this.selectedIndex })
     },
     onEnd(evt: { newIndex: number }) {
       if (this.selectedIndex === -1) {
         return
       }
-      this.editElement(evt.newIndex)
-      // console.log('onEnd', evt)
+      this.editElement(this.items[evt.newIndex],evt.newIndex)
     }
   }
 })
@@ -224,7 +247,7 @@ export default defineComponent({
 .gl-property-setter-card .gl-m-header {
   padding: 0 0.68em;
   line-height: 2em;
-  border: 1px solid rgba(31, 56, 88, .2);
+  border: 1px solid rgba(31, 56, 88, 0.2);
   border-left: 3px solid #c8cdd4;
   border-radius: 2px;
   margin: 2px 0px;

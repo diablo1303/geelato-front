@@ -261,7 +261,7 @@ export class JsScriptExecutor {
   private getFeedbackFns($gl: any) {
     return {
       notification: $gl.$notification,
-      message:$gl.$message,
+      message: $gl.$message,
       confirm: $gl.$modal.confirm
     }
   }
@@ -323,14 +323,27 @@ export class JsScriptExecutor {
         params: Array<Param>,
         pageStatus: string,
         pageTemplateName?: string,
+        pageTemplateProps?: Record<string, any>,
         gl?: any
       ) => {
+        let _gl = gl
+        let _pageTemplateProps = pageTemplateProps
+        // 兼容旧的api，第6个为gl，无pageTemplateProps的情况
+        if(pageTemplateProps&&!gl){
+          // 是否pageTemplateProps为gl
+          if(pageTemplateProps.entityApi&&pageTemplateProps.fn&&pageTemplateProps.insts&&pageTemplateProps.fileApi){
+            _gl = pageTemplateProps
+            _pageTemplateProps = undefined
+          }
+        }
+
         return that.loadPage(
           pageId,
           extendId,
-          that.evalParams(params, gl || $gl.ctx, gl || $gl) || [],
+          that.evalParams(params, _gl || $gl.ctx, _gl || $gl) || [],
           pageStatus,
-          pageTemplateName
+          pageTemplateName,
+            _pageTemplateProps
         )
       },
       loadComponent: (componentName: string, props: Record<string, any>) => {
@@ -808,9 +821,10 @@ export class JsScriptExecutor {
     extendId: string,
     params: Array<Param>,
     pageStatus?: string,
-    pageTemplateName?: string
+    pageTemplateName?: string,
+    pageTemplateProps?: object
   ) {
-    const pageProps = { params: params }
+    const pageProps = { params: params, pageTemplateProps: pageTemplateProps }
     console.log(
       'JsScriptExecutor > loadPage > pageId:',
       pageId,
@@ -818,10 +832,10 @@ export class JsScriptExecutor {
       extendId,
       ',pageStatus:',
       pageStatus,
+      ',pageProps:',
+      pageProps,
       'pageTemplateName',
       pageTemplateName,
-      ',pageProps:',
-      pageProps
     )
     return h(GlPageViewer, { pageId, extendId, pageStatus, pageTemplateName, pageProps })
   }

@@ -40,3 +40,14 @@ export default class FormProvideProxy {
 
 }
 
+export class SubmitFormResult{
+    // GlEntityForm id
+    id:string  =''
+    // GlEntityForm bind entityName
+    entity:string = ''
+    // form data
+    record:Record<string, any> = {id:''}
+    // 提交表单是否成功
+    success:boolean = true
+}
+

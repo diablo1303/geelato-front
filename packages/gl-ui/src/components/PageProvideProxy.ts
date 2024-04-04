@@ -3,7 +3,7 @@
  */
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import type { ComponentInternalInstance } from 'vue'
-import type { InstPermission, Param } from '../m/types/global'
+import type {InstPermission, Param, ParamMeta} from '../m/types/global'
 import utils from '../m/utils/Utils'
 
 export type PageParamConfigType = { pName: string; pValue: any; pType: string }
@@ -114,6 +114,7 @@ export default class PageProvideProxy {
   pageInst: ComponentInstance
   pageVueInst: ComponentInternalInstance | null
   pageParams: Array<Param> = []
+  pageParamsMeta:Array<ParamMeta> = []
   pageCtx: object = {}
   vueRefMap: { [key: string]: ComponentInternalInstance | null } = {}
   componentInstMap: { [key: string]: ComponentInstance } = {}
@@ -254,6 +255,21 @@ export default class PageProvideProxy {
 
   paramStringify = paramStringify
 
+
+  /**
+   * 设置页面参数定义
+   * @param paramsMeta
+   */
+  setParamsMeta(paramsMeta: Array<ParamMeta>) {
+    this.pageParamsMeta = paramsMeta || []
+  }
+
+  /**
+   *  获取页面参数定义
+   */
+  getParamsMeta(): Array<ParamMeta> {
+    return this.pageParamsMeta
+  }
   /**
    * 设置页面参数，这里设置的是已完成解析的，键值对，不是参数配置信息
    * @param params

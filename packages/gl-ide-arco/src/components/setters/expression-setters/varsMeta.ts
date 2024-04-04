@@ -1,8 +1,8 @@
-import { entityApi, jsScriptExecutor, useGlobal } from '@geelato/gl-ui'
-import { useComponentStore, useActionStore, type VarMeta } from '@geelato/gl-ide'
-import { getLabel } from '@geelato/gl-ui-arco'
-import type { MethodMeta } from '@geelato/gl-ui-schema'
 import type { ComponentCustomProperties } from 'vue'
+import { entityApi, jsScriptExecutor } from '@geelato/gl-ui'
+import { useComponentStore, useActionStore, type VarMeta, usePageStore } from '@geelato/gl-ide'
+import { getLabel } from '@geelato/gl-ui-arco'
+import type { MethodMeta, ParamMeta, ComponentInstance } from '@geelato/gl-ui-schema'
 
 type TreeItem = {
   title: string
@@ -14,7 +14,17 @@ type TreeItem = {
   _description?: string
   // 特殊标记，用于在点击节点时进行特殊处理
   _flag?: string
+  // 有该属性时，在生成代码时替换_code的内容
+  _pathName?: string
   children?: TreeItem[]
+}
+
+/**
+ *  获取当前已选中的实体
+ */
+const getCurrentSelectedInst = () => {
+  const componentStore = useComponentStore()
+  return componentStore.currentSelectedComponentInstance
 }
 
 const user = {
@@ -221,7 +231,12 @@ export const useActionVarsTreeData = () => {
  *  组件实例
  */
 export const useComponentInstTreeData = () => {
+  const pageStore = usePageStore()
+  // @ts-ignore
+  const currentPageInst: ComponentInstance = pageStore.currentPage.sourceContent
   const componentStore = useComponentStore()
+  const currentSelectedInst = componentStore.currentSelectedComponentInstance
+
   const useCtxRecord = () => {
     const record = {
       title: '当前记录',
@@ -232,12 +247,10 @@ export const useComponentInstTreeData = () => {
     }
 
     if (
-      componentStore.currentSelectedComponentInstance &&
-      ['GlEntityTablePlus', 'GlEntityTableSub'].indexOf(
-        componentStore.currentSelectedComponentInstance.componentName
-      ) != -1
+      currentSelectedInst &&
+      ['GlEntityTablePlus', 'GlEntityTableSub'].indexOf(currentSelectedInst.componentName) != -1
     ) {
-      const columns = componentStore.currentSelectedComponentInstance.props.columns
+      const columns = currentSelectedInst.props.columns
       if (columns && columns.length > 0) {
         columns.forEach((col: any) => {
           record.children.push({
@@ -375,85 +388,186 @@ export const useComponentInstTreeData = () => {
     _flag: 'moreInsts'
   }
 
+  const getPageParams = () => {
+    const params: any[] = [
+      {
+        title: '手写参数',
+        _code: '手写参数',
+        _pathName: 'getPageParams',
+        _type: 'any',
+        _brackets: `("参数名")`,
+        _description: '获取页面参数值'
+      }
+    ]
+    currentPageInst.props.paramsMeta?.forEach((paramMeta: ParamMeta) => {
+      params.push({
+        title: `填入参数：${paramMeta.name}`,
+        _code: `填入参数：${paramMeta.name}`,
+        _pathName: 'getPageParams',
+        _type: paramMeta.type?.toLowerCase(),
+        _brackets: `("${paramMeta.name}")`,
+        _description: paramMeta.description || paramMeta.title
+      })
+    })
+    return params
+  }
+
+  const hasPageParam = () => {
+    const params: any[] = [
+      {
+        title: '手写参数',
+        _code: '手写参数',
+        _pathName: 'hasPageParam',
+        _type: 'boolean',
+        _brackets: `("参数名")`,
+        _description: '是否存在参数'
+      }
+    ]
+    currentPageInst.props.paramsMeta?.forEach((paramMeta: ParamMeta) => {
+      params.push({
+        title: `填入参数：${paramMeta.name}`,
+        _code: `填入参数：${paramMeta.name}`,
+        _pathName: 'hasPageParam',
+        _type: paramMeta.type?.toLowerCase(),
+        _brackets: `("${paramMeta.name}")`,
+        _description: paramMeta.description || paramMeta.title
+      })
+    })
+    return params
+  }
+
+  const isPageParamEquals = () => {
+    const params: any[] = [
+      {
+        title: '手写参数',
+        _code: '手写参数',
+        _pathName: 'isPageParamEquals',
+        _type: 'boolean',
+        _brackets: `("参数名",参数值)`,
+        _description: '页面参数值等于某值'
+      }
+    ]
+    currentPageInst.props.paramsMeta?.forEach((paramMeta: ParamMeta) => {
+      params.push({
+        title: `填入参数：${paramMeta.name}`,
+        _code: `填入参数：${paramMeta.name}`,
+        _pathName: 'isPageParamEquals',
+        _type: paramMeta.type?.toLowerCase(),
+        _brackets: `("${paramMeta.name}",参数值)`,
+        _description: paramMeta.description || paramMeta.title
+      })
+    })
+    return params
+  }
   const fn = {
     title: '方法',
     _code: 'fn',
     _type: 'object',
+    _description: '',
     children: [
       {
-        title: '页面参数值等于某值',
-        _code: 'isPageParamEquals',
-        _type: 'boolean',
-        _brackets: '("参数名",参数值)',
-        _description: '页面参数值是否等于某值'
+        title: '页面参数',
+        _pathName: '',
+        _code: 'pageParams',
+        _type: '',
+        _description: '页面参数',
+        children: [
+          {
+            title: '页面参数值等于某值',
+            _code: 'isPageParamEquals',
+            _type: 'any',
+            _pathName: '',
+            _description: '获取页面参数值',
+            children: isPageParamEquals()
+          },
+          {
+            title: '获取页面参数值',
+            _code: 'getPageParam',
+            _type: 'any',
+            _pathName: '',
+            _description: '获取页面参数值',
+            children: getPageParams()
+          },
+          {
+            title: '是否存在页面参数',
+            _code: 'hasPageParam',
+            _type: 'any',
+            _pathName: '',
+            _description: '是否存在页面参数',
+            children: hasPageParam()
+          }
+        ]
       },
       {
-        title: '页面是否为只读状态',
-        _code: 'isPageStatusRead',
-        _type: 'boolean',
-        _brackets: '()',
-        _description: '页面是否为只读状态'
+        title: '页面状态',
+        _pathName: '',
+        _code: 'pageStatus',
+        _type: '',
+        _description: '页面状态',
+        children: [
+          {
+            title: '页面为新增状态',
+            _code: 'isPageStatusCreate',
+            _type: 'boolean',
+            _brackets: '()',
+            _description: '页面为新增状态'
+          },
+          {
+            title: '页面为复制新增状态',
+            _code: 'isPageStatusCopyCreate',
+            _type: 'boolean',
+            _brackets: '()',
+            _description: '页面为复制新增状态'
+          },
+          {
+            title: '页面为新增或复制新增状态',
+            _code: 'isPageStatusCreateOrCopyCreate',
+            _type: 'boolean',
+            _brackets: '()',
+            _description: '页面为新增或复制新增状态'
+          },
+          {
+            title: '页面为更新状态',
+            _code: 'isPageStatusUpdate',
+            _type: 'boolean',
+            _brackets: '()',
+            _description: '页面为更新状态'
+          },
+          {
+            title: '页面为只读状态',
+            _code: 'isPageStatusRead',
+            _type: 'boolean',
+            _brackets: '()',
+            _description: '页面为只读状态'
+          }
+        ]
       },
       {
-        title: '页面是否为新增状态',
-        _code: 'isPageStatusCreate',
-        _type: 'boolean',
-        _brackets: '()',
-        _description: '页面是否为新增状态'
-      },
-      {
-        title: '页面是否为复制新增状态',
-        _code: 'isPageStatusCopyCreate',
-        _type: 'boolean',
-        _brackets: '()',
-        _description: '页面是否为复制新增状态'
-      },
-      {
-        title: '页面是否为新增或复制新增状态',
-        _code: 'isPageStatusCreateOrCopyCreate',
-        _type: 'boolean',
-        _brackets: '()',
-        _description: '页面是否为新增或复制新增状态'
-      },
-      {
-        title: '页面是否为更新状态',
-        _code: 'isPageStatusUpdate',
-        _type: 'boolean',
-        _brackets: '()',
-        _description: '页面是否为更新状态'
-      },
-      {
-        title: '获取页面参数值',
-        _code: 'getPageParam',
-        _type: 'any',
-        _brackets: '("参数名")',
-        _description: '获取页面参数值'
-      },
-      {
-        title: '是否存在页面参数',
-        _code: 'hasPageParam',
-        _type: 'any',
-        _brackets: '("参数名")',
-        _description: '是否存在页面参数'
-      },
-      {
-        title: '设置组件的属性值',
-        _code: 'setComponentProps',
-        _type: 'void',
-        _brackets: '("组件ID",{ "属性名": 属性值 })',
-        _description:
-          '设置组件的属性值，例如：setComponentProps("aDjnainSRp359kLJHhbc", { _hidden: true });'
-      },
-      {
-        title: '调用组件方法',
-        _code: 'invokeComponentMethod',
-        _type: 'any',
-        _brackets: '("组件ID","方法名",[{"参数名":参数值}])',
-        _description:
-          '调用组件方法，例如：invokeComponentMethod: (componentId: string, methodName: string, params: Array<Param>)'
+        title: '组件方法',
+        _pathName: '',
+        _code: 'component',
+        _type: '',
+        _description: '页面状态',
+        children: [
+          {
+            title: '设置组件的属性值',
+            _code: 'setComponentProps',
+            _type: 'void',
+            _brackets: '("组件ID",{ "属性名": 属性值 })',
+            _description:
+              '设置组件的属性值，例如：setComponentProps("aDjnainSRp359kLJHhbc", { _hidden: true });'
+          },
+          {
+            title: '调用组件方法',
+            _code: 'invokeComponentMethod',
+            _type: 'any',
+            _brackets: '("组件ID","方法名",[{"参数名":参数值}])',
+            _description:
+              '调用组件方法，例如：invokeComponentMethod: (componentId: string, methodName: string, params: Array<Param>)'
+          }
+        ]
       }
-    ],
-    _description: ''
+    ]
   }
 
   return [ctx, instTreeItem, refTreeItem, fn, moreInstTree]
@@ -495,8 +609,7 @@ export const useSrvTreeData = () => {
             _code: 'queryDictItems',
             _type: 'Promise',
             _brackets: '("字典id")',
-            _description:
-                '通过字典id，查询字典项：[{id: string, value: string, label: string}]'
+            _description: '通过字典id，查询字典项：[{id: string, value: string, label: string}]'
           },
           {
             title: '查询一个字典项',
