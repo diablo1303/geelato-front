@@ -101,7 +101,11 @@ export class JsScriptExecutor {
     // console.log('getComponentMethod() > pageProxyMap:', pageProxyMap)
     const ref = this.getRef(componentId)
     // 对于GlPage，ref?.exposed[methodName]
-    const fn = ref?.subTree?.component?.exposed![methodName] || ref?.exposed![methodName]
+    const exposed = ref?.subTree?.component?.exposed || ref?.exposed
+    let fn
+    if(exposed) {
+      fn = exposed[methodName]
+    }
     if (fn) {
       return fn
     }

@@ -47,12 +47,9 @@ export default {
       name: 'triggerMode',
       setterComponentProps: {
         options: [
-          {
-            label: '组件创建时',
-            __wY748nFdYBExuM4FRD: 'onCreated',
-            value: 'onCreated'
-          },
-          { label: '被调用时', __wY748nFdYBExuM4FRD: 'onInvoked', value: 'onInvoked' }
+          { label: '组件创建时', value: 'onCreated' },
+          { label: '被调用时', value: 'onInvoked' },
+          { label: '值改变时', value: 'onValueChanged' }
         ]
       },
       setterComponentVModelName: 'modelValue',
@@ -63,6 +60,24 @@ export default {
       expanded: true,
       title: '触发模式',
       setterComponentName: 'ARadioGroup',
+      description: '不选择时，默认为组件创建时'
+    },
+    {
+      name: 'triggerConstraint',
+      setterComponentProps: {
+        multiple:true,
+        options: [
+          { label: '组件值从空转为非空', value: 'ValueChangeToNotEmpty' }
+        ]
+      },
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      title: '触发模式',
+      setterComponentName: 'ASelect',
       description: '不选择时，默认为组件创建时'
     },
     {
@@ -119,11 +134,10 @@ export default {
         type: 'button',
         options: [
           {
-            label: '升序（从小到大）',
+            label: '升序（小到大）',
             value: '+',
-            __DHbuYtOTJ2D42vCO5i: '+'
           },
-          { label: '降序（从大到小）', value: '-', __DHbuYtOTJ2D42vCO5i: '-' }
+          { label: '降序（大到小）', value: '-'}
         ]
       },
       setterComponentVModelName: 'modelValue',

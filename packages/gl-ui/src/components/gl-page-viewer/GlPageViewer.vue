@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { type Ref, ref, watch } from 'vue'
 import { ComponentInstance } from '@geelato/gl-ui-schema'
-import { mixins, type PageCustomType, useGlobal } from '../../index'
+import {mixins, type PageCustomType, useGlobal, useLogger} from '../../index'
 import { entityApi } from '../../m/datasource/EntityApi'
 import { PagePermission } from '../PageProvideProxy'
+
+const logger = useLogger('gl-query')
 
 defineOptions({
   name: 'GlPageViewer'
@@ -41,9 +43,9 @@ const props = defineProps({
   ...mixins.props
 })
 
-console.log('useGlobal', useGlobal())
-console.log('GlPageViewer > props.pageProps:', props.pageProps)
-console.log('GlPageViewer > props:', props)
+logger.debug('useGlobal', useGlobal())
+logger.debug('GlPageViewer > props.pageProps:', props.pageProps)
+logger.debug('GlPageViewer > props:', props)
 const loading = ref(true)
 const glComponentInst = ref(new ComponentInstance())
 // 用户对于某页面的个性化配置
