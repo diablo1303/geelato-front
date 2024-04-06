@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // @ts-nocheck
-import { computed, onMounted, type PropType, ref, toRaw } from 'vue'
-import { EntityReaderParam, utils } from '@geelato/gl-ui'
+import { computed, inject, onMounted, type PropType, ref, toRaw } from 'vue'
+import { EntityReaderParam, PageProvideKey, type PageProvideProxy, utils } from '@geelato/gl-ui'
 import { ConvertUtil } from '@geelato/gl-ui'
 import QueryItem, { type QueryItemKv } from './query'
 import { GlIconfont } from '@geelato/gl-ui'
@@ -40,7 +40,7 @@ const props = defineProps({
    *  场景如：查询条件的值是动态添加的，不是初始值，且查询条件不可修改，若重置，查询条件值会被清空
    *  默认为false
    */
-  hideReset:Boolean,
+  hideReset: Boolean,
   disabled: {
     type: Boolean,
     default() {
@@ -49,6 +49,10 @@ const props = defineProps({
   }
 })
 
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
+// 页面配置参数为：query.axx=1,query.bxx=2，pageQueryParams为{axx:1,bxx:2}
+const pageQueryParams = pageProvideProxy?.getParamsByPrefixAsObject('query')
+console.log('获取的查询参数为：',pageQueryParams)
 /**
  *  基于组件参数及页面参数，创建查询表单值
  *  若有同名值，页面参数值优先
@@ -58,8 +62,27 @@ const generateFormModel = () => {
   // 组件值
   props.items?.forEach((item: QueryItem) => {
     // console.log('generateFormModel',item.component?.props.label,item.component!.value)
-    // 首次加载时，需要依据表达式的值进行计算
-    fModel[item.id] = item.component?.value
+    // 以字段名，或id从页面参数中获取值，一般地页面可以通过字段名传值
+    // 但有时查询条件中多个组件都绑定了多个同名的字段时，有可能只是希望某个组件参接收到参数
+    // 此时就可以通过组件的id，作为参数名进行传值如query.a234567890123456789=1，即值传了id为a234567890123456789的参数，值为1
+    // 字段名
+    const fieldName = item.component?.props?.bindField?.fieldName
+    let paramValue
+
+    // 如果页面参数有传值
+    if (fieldName && pageProvideProxy?.hasPageParam(`query.${fieldName}`)) {
+      paramValue = pageQueryParams[fieldName]
+      console.log(`将参数：${fieldName}的值：${paramValue}，绑定到查询条件中。`)
+    } else if (item.id && pageProvideProxy?.hasPageParam(item.id)) {
+      paramValue = pageQueryParams[item.id]
+    } else {
+      // 首次加载时，需要依据表达式的值进行计算
+      paramValue = item.component?.value
+    }
+    if(item.component){
+      item.component.value = paramValue
+    }
+    fModel[item.id] = paramValue
   })
   // console.log('GlQuery > generateFormModel() > fModel:', fModel)
   return fModel
@@ -112,6 +135,7 @@ const getQueryItemKvs = () => {
  * 基于当前的查询项键值对参数
  * 设置重置当前查询
  * 隐藏的查询字段不进行重置
+ * 只计的字段也不进行重置
  * @param queryItemKvs
  */
 const resetByQueryItemKvs = (queryItemKvs: Array<QueryItemKv>) => {
@@ -126,7 +150,10 @@ const resetByQueryItemKvs = (queryItemKvs: Array<QueryItemKv>) => {
     queryItemKvsCopy.forEach((kv: QueryItemKv) => {
       if (item.id === kv.key) {
         // 隐藏的查询字段不进行重置
-        if (item.component && item.component.props._hidden !== true) {
+        if (
+          item.component &&
+          (item.component.props._hidden !== true || item.component.props.readonly === true)
+        ) {
           // console.log(item.component?.props.label,item.component.value,'=>',toRaw(kv.value),utils.isEmpty(toRaw(kv.value)))
           item.component.value = utils.isEmpty(toRaw(kv.value)) ? undefined : toRaw(kv.value)
         }
@@ -147,13 +174,14 @@ const onSearch = useDebounceFn(() => {
 }, 100)
 /**
  *  隐藏的查询字段不进行重置
+ *  只读的字段不进行重置
  */
 const reset = () => {
   console.table(defaultValue)
   const defaultValueCopy = JSON.parse(JSON.stringify(defaultValue))
   props.items?.forEach((item: QueryItem) => {
     if (item.component?.value) {
-      if (item.component.props._hidden !== true) {
+      if (item.component.props._hidden !== true || item.component.props.readonly === true) {
         item.component.value = defaultValueCopy[item.id]
       }
     }
