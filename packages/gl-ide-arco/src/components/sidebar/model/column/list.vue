@@ -6,12 +6,10 @@ export default {
 
 <script lang="ts" setup>
 import {reactive, ref, watch, computed} from 'vue';
-import type {FormInstance, TableColumnData} from '@arco-design/web-vue';
+import type {FormInstance, TableSortable, TableColumnData} from '@arco-design/web-vue';
 import {modelApi, useGlobal, utils} from "@geelato/gl-ui";
-import type {QueryTableColumnForm, QueryTableForm, Pagination} from "@geelato/gl-ui";
+import type {ColumnSelectType, QueryTableColumnForm, QueryTableForm, Pagination} from "@geelato/gl-ui";
 import {
-  columnSelectType,
-  defaultColumnMetas,
   enableStatusOptions,
   encryptedOptions,
   keyOptions,
@@ -50,6 +48,12 @@ const renderData = ref<Record<string, any>[]>([]);
 const loading = ref<boolean>(false);
 const scrollbar = ref(true);
 const scroll = ref({x: 2000, y: props.height});
+// 列表 - 排序
+const sortable = ref<Record<string, TableSortable>>({
+  ordinalPosition: {sortDirections: ['descend', 'ascend'], sorter: true, sortOrder: ''},
+  createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
+});
+const lastSort = ref<string>('ordinalPosition|asc');
 // 是否隐藏基础字段
 const checked = ref<boolean>(true);
 const visible = ref<boolean>(false);
@@ -73,6 +77,8 @@ const generateFilterData = () => {
   };
 };
 const filterData = ref(generateFilterData());
+const columnSelectType = ref<ColumnSelectType[]>([]);
+const defaultColumnMetas = ref<string[]>([]);
 /**
  * 分页查询方法
  * @param params
@@ -111,7 +117,6 @@ const fetchData = async (params: Record<string, any>) => {
 const deleteData = async (id: string, successBack?: any, failBack?: any) => {
   try {
     await modelApi.deleteTableColumn(id);
-    successBack(id);
     if (successBack && typeof successBack === 'function') successBack(id);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -122,8 +127,17 @@ const deleteData = async (id: string, successBack?: any, failBack?: any) => {
  * 条件查询 - 搜索
  */
 const search = (ev?: Event) => {
-  fetchData({...basePagination, ...filterData.value,});
+  fetchData({...basePagination, ...filterData.value, order: lastSort.value});
 };
+/**
+ * 条件查询 - 搜索
+ * 排序，页数（1），条数，过滤（√）
+ * @param ev
+ */
+const condition = (ev?: Event) => {
+  basePagination.current = 1;
+  search();
+}
 /**
  * 条件查询 - 重置
  */
@@ -144,6 +158,32 @@ const onPageChange = (current: number) => {
   basePagination.current = current;
   search();
 };
+/**
+ * 分页 - 数据条变更
+ * 排序，页数（current），条数（pageSize），过滤
+ * @param pageSize
+ */
+const onPageSizeChange = (pageSize: number) => {
+  basePagination.current = 1;
+  basePagination.pageSize = pageSize;
+  search();
+}
+/**
+ * 分页 - 排序变更
+ * 排序（dataIndex|direction），页数（1），条数，过滤
+ * @param dataIndex 排序字段
+ * @param direction 排序方向
+ */
+const onSorterChange = (dataIndex: string, direction: string) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key of Object.keys(sortable.value)) {
+    // @ts-ignore
+    sortable.value[key].sortOrder = dataIndex === key ? direction : '';
+  }
+  lastSort.value = direction ? `${dataIndex}|${direction}`.replace(/end/g, '') : '';
+  basePagination.current = 1;
+  search();
+}
 
 const beforeChange = () => {
   checked.value = !checked.value;
@@ -192,12 +232,19 @@ const alterTable = (id: string) => {
 }
 
 const saveSuccess = (data: QueryTableColumnForm, type: string) => {
-  reset();
+  if (type === 'add') {
+    reset();
+    emits('add', data);
+  } else if (type === 'edit') {
+    search();
+    emits('edit', data);
+  }
 }
 
 const deleteTable = (data: QueryTableColumnForm) => {
   deleteData(data.id, (id: string) => {
-    reset();
+    condition();
+    emits('delete', data);
   });
 }
 
@@ -412,6 +459,18 @@ watch(() => selectVisible, (val) => {
 
 
 watch(() => props.parameter, (val) => {
+  // 模型字段类型
+  modelApi.getTypeSelectOptions((data: ColumnSelectType[]) => {
+    columnSelectType.value = data || [];
+  }, () => {
+    columnSelectType.value = [];
+  });
+  // 模型默认字段
+  modelApi.getDefaultColumnNames((data: string[]) => {
+    defaultColumnMetas.value = data || [];
+  }, () => {
+    defaultColumnMetas.value = [];
+  });
   reset();
   formPage.value.parameter = {
     connectId: props.parameter.connectId,
@@ -443,12 +502,12 @@ watch(() => props.height, (val) => {
         <a-row :gutter="16">
           <a-col :span="isModal?12:8">
             <a-form-item field="name" label="字段标识">
-              <a-input v-model="filterData.name" allow-clear @clear="search" @press-enter="search"/>
+              <a-input v-model="filterData.name" allow-clear @clear="condition" @press-enter="condition"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="title" label="名称（中文）">
-              <a-input v-model="filterData.title" allow-clear @clear="search" @press-enter="search"/>
+              <a-input v-model="filterData.title" allow-clear @clear="condition" @press-enter="condition"/>
             </a-form-item>
           </a-col>
           <!--          <a-col :span="isModal?12:8">
@@ -481,7 +540,7 @@ watch(() => props.height, (val) => {
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
       <a-space :size="18" direction="vertical">
-        <a-button type="primary" @click="search">
+        <a-button type="primary" @click="condition">
           <template #icon>
             <gl-iconfont type="gl-search"/>
           </template>
@@ -603,7 +662,7 @@ watch(() => props.height, (val) => {
       :stripe="true"
       column-resizable
       row-key="id"
-      @page-change="onPageChange">
+      @page-change="onPageChange" @sorter-change="onSorterChange">
     <template #columns>
       <a-table-column :width="80" align="center" data-index="index" fixed="left" title="序号">
         <template #cell="{  rowIndex }">
@@ -670,8 +729,8 @@ watch(() => props.height, (val) => {
       </a-table-column>
       <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="type" title="数据约束"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="130" data-index="defaultValue" title="默认值"/>
-      <a-table-column :width="100" data-index="ordinalPosition" title="次序"/>
-      <a-table-column :width="180" data-index="createAt" title="创建时间"/>
+      <a-table-column :sortable="sortable.ordinalPosition" :width="100" data-index="ordinalPosition" title="次序"/>
+      <a-table-column :sortable="sortable.createAt" :width="180" data-index="createAt" title="创建时间"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="200" data-index="comment" title="注释（中文）"/>
       <a-table-column v-if="formState==='edit'" :width="32+66*3" align="center" data-index="operations" fixed="right" title="操作">
         <template #cell="{ record,isDefault = isDefaultColumn(record.name)}">

@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {reactive, ref, watch, computed} from 'vue';
-import type {TableColumnData} from '@arco-design/web-vue';
+import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
 import {modelApi, utils} from "@geelato/gl-ui";
 import type {QueryTableColumnForm, QueryTableForeignForm, Pagination} from "@geelato/gl-ui";
 import {enableStatusOptions} from './searchTable';
@@ -38,7 +38,14 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<Record<string, any>[]>([]);
 const loading = ref<boolean>(false);
 const scrollbar = ref(true);
-const scroll = ref({x: 2000, y: props.height});
+const scroll = ref({x: 1350, y: props.height});
+// 列表 - 排序
+const sortable = ref<Record<string, TableSortable>>({
+  seqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
+  createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
+});
+const lastSort = ref<string>('');
+// 列表 - 查询条件
 const generateFilterData = () => {
   return {
     id: '',
@@ -82,7 +89,6 @@ const fetchData = async (params: Record<string, any> = {current: 1, pageSize: pr
 const deleteData = async (id: string, successBack?: any, failBack?: any) => {
   try {
     await modelApi.deleteTableForeign(id);
-    successBack(id);
     if (successBack && typeof successBack === 'function') successBack(id);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -93,8 +99,17 @@ const deleteData = async (id: string, successBack?: any, failBack?: any) => {
  * 条件查询 - 搜索
  */
 const search = (ev?: Event) => {
-  fetchData({...basePagination, ...filterData.value,});
+  fetchData({...basePagination, ...filterData.value, order: lastSort.value});
 };
+/**
+ * 条件查询 - 搜索
+ * 排序，页数（1），条数，过滤（√）
+ * @param ev
+ */
+const condition = (ev?: Event) => {
+  basePagination.current = 1;
+  search();
+}
 /**
  * 条件查询 - 重置
  */
@@ -113,6 +128,33 @@ const onPageChange = (current: number) => {
   basePagination.current = current;
   search();
 };
+
+/**
+ * 分页 - 数据条变更
+ * 排序，页数（current），条数（pageSize），过滤
+ * @param pageSize
+ */
+const onPageSizeChange = (pageSize: number) => {
+  basePagination.current = 1;
+  basePagination.pageSize = pageSize;
+  search();
+}
+/**
+ * 分页 - 排序变更
+ * 排序（dataIndex|direction），页数（1），条数，过滤
+ * @param dataIndex 排序字段
+ * @param direction 排序方向
+ */
+const onSorterChange = (dataIndex: string, direction: string) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key of Object.keys(sortable.value)) {
+    // @ts-ignore
+    sortable.value[key].sortOrder = dataIndex === key ? direction : '';
+  }
+  lastSort.value = direction ? `${dataIndex}|${direction}`.replace(/end/g, '') : '';
+  basePagination.current = 1;
+  search();
+}
 
 /* 表单参数 */
 const formPage = ref({
@@ -145,11 +187,18 @@ const editTable = (id: string) => {
 }
 
 const saveSuccess = (data: QueryTableForeignForm, type: string) => {
-  reset();
+  if (type === 'add') {
+    reset();
+    emits('add', data);
+  } else if (type === 'edit') {
+    search();
+    emits('edit', data);
+  }
 }
 const deleteTable = (data: QueryTableForeignForm) => {
   deleteData(data.id, (id: string) => {
-    reset();
+    condition();
+    emits('delete', data);
   });
 }
 
@@ -182,17 +231,17 @@ watch(() => props.height, (val) => {
         <a-row :gutter="16">
           <a-col :span="isModal?12:8">
             <a-form-item field="mainTableCol" label="主表字段">
-              <a-input v-model="filterData.mainTableCol" allow-clear @clear="search" @press-enter="search"/>
+              <a-input v-model="filterData.mainTableCol" allow-clear @clear="condition" @press-enter="condition"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="foreignTable" label="外表表名">
-              <a-input v-model="filterData.foreignTable" allow-clear @clear="search" @press-enter="search"/>
+              <a-input v-model="filterData.foreignTable" allow-clear @clear="condition" @press-enter="condition"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="foreignTableCol" label="外表字段">
-              <a-input v-model="filterData.foreignTableCol" allow-clear @clear="search" @press-enter="search"/>
+              <a-input v-model="filterData.foreignTableCol" allow-clear @clear="condition" @press-enter="condition"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
@@ -206,7 +255,7 @@ watch(() => props.height, (val) => {
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
       <a-space :size="18" direction="vertical">
-        <a-button type="primary" @click="search">
+        <a-button type="primary" @click="condition">
           <template #icon>
             <gl-iconfont type="gl-search"/>
           </template>
@@ -246,25 +295,25 @@ watch(() => props.height, (val) => {
       :stripe="true"
       column-resizable
       row-key="id"
-      @page-change="onPageChange">
+      @page-change="onPageChange" @sorter-change="onSorterChange">
     <template #columns>
-      <a-table-column :width="80" align="center" data-index="index" title="序号">
+      <a-table-column :width="70" align="center" data-index="index" title="序号">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :tooltip="true" :width="250" data-index="mainTable" title="主表表名"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="mainTable" title="主表表名"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="mainTableCol" title="主表字段"/>
-      <a-table-column :ellipsis="true" :tooltip="true" :width="200" data-index="foreignTable" title="外表表名"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="foreignTable" title="外表表名"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="foreignTableCol" title="外表字段"/>
-      <a-table-column :width="100" data-index="enableStatus" title="状态">
+      <a-table-column :width="70" data-index="enableStatus" title="状态">
         <template #cell="{ record }">
           {{ utils.getOptionLabel(record.enableStatus, enableStatusOptions) }}
         </template>
       </a-table-column>
-      <a-table-column :width="100" data-index="seqNo" title="排序"/>
-      <a-table-column :width="180" data-index="createAt" title="创建时间"/>
-      <a-table-column v-show="formState==='edit'" :width="50*2" align="center" data-index="operations" fixed="right" title="操作">
+      <a-table-column :sortable="sortable.seqNo" :width="100" data-index="seqNo" title="排序"/>
+      <a-table-column :sortable="sortable.createAt" :width="180" data-index="createAt" title="创建时间"/>
+      <a-table-column v-show="formState==='edit'" :width="140" align="center" data-index="operations" fixed="right" title="操作">
         <template #cell="{ record }">
           <a-button size="small" type="text" @click="editTable(record.id)">
             编辑

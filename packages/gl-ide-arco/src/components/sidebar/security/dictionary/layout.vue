@@ -1,17 +1,14 @@
 <script lang="ts">
 export default {
-  name: 'DictionaryLayout'
+  name: 'GlDictionaryLayout'
 }
 </script>
 <script lang="ts" setup>
 import {ref, shallowRef, watch} from "vue";
-import {useI18n} from "vue-i18n";
-import {Message} from "@arco-design/web-vue";
-import {exportDictAndItems, getDict as getForm, QueryDictForm as QueryForm,} from "@/api/security";
-import DictionaryModel from "@/views/security/dictionary/model.vue";
-import DictionaryEntryList from "@/views/security/dictionary/item/list.vue";
-import {FormState, ListParams} from "@/api/base";
-import GlDictionaryEntryList from "@geelato/gl-ide-arco/src/components/sidebar/security/dictionary/item/list.vue";
+import {fileApi, securityApi, useGlobal} from "@geelato/gl-ui";
+import type {QueryDictForm, QueryDictItemForm} from "@geelato/gl-ui";
+import GlDictionaryModel from "./model.vue";
+import GlDictionaryEntryList from "./item/list.vue";
 
 // 页面所需 参数
 type PageParams = {
@@ -32,14 +29,14 @@ const props = defineProps({
   formCol: {type: Number, default: 1},// 表单 - 一行显示个数
 });
 
-const {t} = useI18n();// 国际化
+const global = useGlobal();
 const dictLoading = ref<boolean>(false);
 const visibleForm = ref<boolean>(false);
-const tableFormRef = shallowRef(DictionaryModel);
-const tableListRef = shallowRef(DictionaryEntryList);
+const tableFormRef = shallowRef(GlDictionaryModel);
+const tableListRef = shallowRef(GlDictionaryEntryList);
 const dictItemTotal = ref<number>(0);
 // 表单
-const generateFormData = (): Record<string, any> => {
+const generateFormData = () => {
   return {
     id: props.modelValue,
     formState: props.formState,
@@ -49,7 +46,7 @@ const generateFormData = (): Record<string, any> => {
 }
 const modelParams = ref(generateFormData());
 // 列表信息
-const generateListParams = (): ListParams => {
+const generateListParams = () => {
   return {
     visible: false, // 是否加载列表
     parameter: {
@@ -57,7 +54,7 @@ const generateListParams = (): ListParams => {
       appId: props.parameter?.appId || '',
       tenantCode: props.parameter?.tenantCode || ''
     },
-    formState: props.formState as FormState,
+    formState: props.formState,
     filterCol: 2,
     pageSize: 10000,
     height: 350,
@@ -73,7 +70,7 @@ const listParams = ref(generateListParams());
  */
 const fetchDict = async (id: string, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await getForm(id);
+    const {data} = await securityApi.getDict(id);
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -84,7 +81,7 @@ const fetchDict = async (id: string, successBack?: any, failBack?: any) => {
  * 字典数据设置
  * @param data
  */
-const dictFormat = (data: QueryForm) => {
+const dictFormat = (data: QueryDictForm) => {
   data.seqNo = Number(data.seqNo);
   modelParams.value = Object.assign(modelParams.value, data);
   if (props.formState === 'add') modelParams.value.formState = 'edit';
@@ -103,12 +100,12 @@ const updateDict = () => {
   // @ts-ignore
   if (tableFormRef.value && typeof tableFormRef.value?.saveOrUpdate === 'function') {
     // @ts-ignore
-    tableFormRef.value?.saveOrUpdate((data: QueryForm) => {
+    tableFormRef.value?.saveOrUpdate((data: QueryDictForm) => {
       // 加载状态、数据设置、更新提示、更新注册
       dictLoading.value = false;
       dictFormat(data);
       emits('saveSuccess', data, props.formState);
-      Message.success("字典更新成功！");
+      global.$message.success({content: '字典更新成功！'});
     }, () => {
       dictLoading.value = false;
     });
@@ -126,7 +123,7 @@ const enterDictItems = () => {
       tableListRef.value?.openLocker(modelParams.value);
     }
   } else {
-    Message.warning("请先保存字典，再配置字典项！");
+    global.$message.warning({content: '请先保存字典，再配置字典项！'});
   }
 }
 /**
@@ -140,9 +137,46 @@ const addDictItem = () => {
       tableListRef.value?.openModel(modelParams.value);
     }
   } else {
-    Message.warning("请先保存字典，再新建字典项！");
+    global.$message.warning({content: '"请先保存字典，再新建字典项！'});
   }
 }
+
+/**
+ * 导出数据字典
+ * @param data
+ */
+const exportDictAndItems = async (dictId: string) => {
+  if (dictId) {
+    try {
+      // 字典
+      const dictData = await securityApi.getDict(dictId);
+      // @ts-ignore
+      dictData.data.enableStatus = dictData.data.enableStatus === 1 ? '启用' : '禁用';
+      // 字典项
+      const itemData = await securityApi.queryDictItems({dictId: dictData.data.id});
+      itemData.data.forEach((item: QueryDictItemForm) => {
+        // @ts-ignore
+        item.enableStatus = item.enableStatus === 1 ? '启用' : '禁用';
+      });
+      // 导出
+      const exportData = {
+        "valueMap": dictData.data || {},
+        "valueMapList": [{"dictItem": itemData.data}] || []
+      }
+      console.log(exportData);
+      const {data} = await fileApi.exportExcel(dictData.data.dictName || '字典管理数据导出', '4942276091403440128', 'data', exportData);
+      if (data && data.id) {
+        fileApi.downloadFileById(data.id);
+        global.$message.success({content: '导出成功！'});
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  } else {
+    global.$message.warning({content: '导出时，数据字典主键不能为空！'});
+  }
+}
+
 
 const fetchDictItems = (type: string, data: any[]) => {
   dictItemTotal.value = data && data.length > 0 ? data.length : 0;
@@ -159,7 +193,7 @@ watch(() => props, () => {
     dictItemTotal.value = 0;
     // 编辑、查看 状态 查询数据
     if (['edit', 'view'].includes(props.formState) && props.modelValue) {
-      fetchDict(props.modelValue, (data: QueryForm) => {
+      fetchDict(props.modelValue, (data: QueryDictForm) => {
         dictFormat(data);
       });
     }
@@ -177,10 +211,7 @@ watch(() => visibleForm, () => {
 </script>
 
 <template>
-  <a-modal v-model:visible="visibleForm"
-           :footer="false"
-           :title="title || '数据字典'"
-           :width="width || ''" title-align="start">
+  <a-modal v-model:visible="visibleForm" :footer="false" :title="title || '数据字典'" :width="width || ''" title-align="start">
     <a-layout style="height: 580px;">
       <a-layout style="flex-direction: row;">
         <a-layout-content style="width: 30%;">
@@ -190,15 +221,18 @@ watch(() => visibleForm, () => {
                             position="br" type="info" @ok="updateDict">
                 <a-button :loading="dictLoading" class="app-button" status="success" type="text">
                   <template #icon>
-                    <icon-save/>
+                    <gl-iconfont type="gl-save"/>
                   </template>
                   {{ modelParams.formState === 'add' ? '保存' : '更新' }}
                 </a-button>
               </a-popconfirm>
             </template>
-            <DictionaryModel ref="tableFormRef" :formCol="formCol"
-                             :formState="modelParams.formState" :model-value="modelParams.id"
-                             :parameter="parameter" :visible="visibleForm"/>
+            <GlDictionaryModel ref="tableFormRef"
+                               :formCol="formCol"
+                               :formState="modelParams.formState"
+                               :model-value="modelParams.id"
+                               :parameter="parameter"
+                               :visible="visibleForm"/>
           </a-card>
         </a-layout-content>
         <a-divider direction="vertical"/>
@@ -210,36 +244,37 @@ watch(() => visibleForm, () => {
             <template #extra>
               <a-button v-if="formState!=='view'&&modelParams.id" class="app-button" type="text" @click="exportDictAndItems(modelParams.id)">
                 <template #icon>
-                  <icon-export/>
+                  <gl-iconfont type="gl-export"/>
                 </template>
-                {{ $t('searchTable.operation.export') }}
+                导出
               </a-button>
               <a-tooltip v-if="formState!=='view'" content="新建字典项">
                 <a-button class="app-button" type="text" @click="addDictItem">
                   <template #icon>
-                    <icon-plus/>
+                    <gl-iconfont type="gl-plus-circle"/>
                   </template>
-                  {{ $t('searchTable.operation.create') }}
+                  新建
                 </a-button>
               </a-tooltip>
               <a-tooltip v-if="formState!=='view'" content="批量配置字典项">
                 <a-button class="app-button" type="text" @click="enterDictItems">
                   <template #icon>
-                    <icon-settings/>
+                    <gl-iconfont type="gl-setting"/>
                   </template>
-                  {{ $t('searchTable.columns.operations.config') }}
+                  配置
                 </a-button>
               </a-tooltip>
             </template>
-            <DictionaryEntryList v-if="listParams.visible" ref="tableListRef"
-                                 :filterCol="listParams.filterCol"
-                                 :formState="listParams.formState"
-                                 :height="listParams.height"
-                                 :pageSize="listParams.pageSize"
-                                 :parameter="listParams.parameter"
-                                 :visible="listParams.visible"
-                                 @fetch="fetchDictItems"
-                                 @change="changeDictItem"/>
+            <GlDictionaryEntryList v-if="listParams.visible"
+                                   ref="tableListRef"
+                                   :filterCol="listParams.filterCol"
+                                   :formState="listParams.formState"
+                                   :height="listParams.height"
+                                   :pageSize="listParams.pageSize"
+                                   :parameter="listParams.parameter"
+                                   :visible="listParams.visible"
+                                   @fetch="fetchDictItems"
+                                   @change="changeDictItem"/>
           </a-card>
         </a-layout-content>
       </a-layout>

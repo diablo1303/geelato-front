@@ -1,27 +1,19 @@
 <script lang="ts">
 export default {
-  name: 'DictionaryEntryList'
+  name: 'GlDictionaryEntryList'
 };
 </script>
 
 <script lang="ts" setup>
 import {reactive, ref, watch} from 'vue';
-import {useI18n} from "vue-i18n";
-import useLoading from '@/hooks/loading';
-import {Pagination} from '@/types/global';
-import {TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams} from '@/api/base';
-// 页面所需 对象、方法
-import {
-  deleteDictItem as deleteList,
-  QueryDictItemForm as QueryForm,
-  pageQueryDictItem as pageQueryList,
-  QueryDictForm,
-} from '@/api/security';
-import {columns, enableStatusOptions} from "./searchTable";
+import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {securityApi, utils} from "@geelato/gl-ui";
+import type {QueryDictItemForm, Pagination, QueryDictForm} from "@geelato/gl-ui";
+import {enableStatusOptions} from "../searchTable";
 // 引入组件
-import DictionaryEntryForm from './form.vue';
-import DictionaryEntryLocker from './locker.vue';
+import GlDictionaryEntryForm from './form.vue';
+import GlDictionaryEntryLocker from './locker.vue';
+
 
 // 页面所需 参数
 type PageParams = {
@@ -42,15 +34,16 @@ const props = defineProps({
   height: {type: Number, default: 245}, // 列表 - 数据列表高度，滑动条高度
 });
 
-// 国际化
-const {t} = useI18n();
 // 加载功能
-const {loading, setLoading} = useLoading(false);
+const loading = ref<boolean>(false);
 // 列表
-const renderData = ref<PageQueryFilter[]>([]);
+const renderData = ref<QueryDictItemForm[]>([]);
 // 列表 - 分页
 const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
-const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
+const pagination = reactive({
+  ...basePagination, showTotal: true, showPageSize: true,
+  pageSizeOptions: [5, 10, 20, 50, 100, 200]
+});
 // 列表 - 滑动条
 const scrollbar = ref(true);
 const scroll = ref({x: 1200, y: props.height});
@@ -86,7 +79,7 @@ const filterData = ref(generateFilterData());
  * @param cForms
  * @param forms
  */
-const treeIteration = (cForms: QueryForm[], forms: QueryForm[]) => {
+const treeIteration = (cForms: QueryDictItemForm[], forms: QueryDictItemForm[]) => {
   // eslint-disable-next-line no-restricted-syntax
   for (const cItem of cForms) {
     cItem.children = [];
@@ -110,8 +103,8 @@ const treeIteration = (cForms: QueryForm[], forms: QueryForm[]) => {
  * 设置树的根节点
  * @param totalData
  */
-const setTree = (totalData: QueryForm[]) => {
-  const forms: QueryForm[] = [];
+const setTree = (totalData: QueryDictItemForm[]) => {
+  const forms: QueryDictItemForm[] = [];
   if (totalData && totalData.length > 0) {
     // eslint-disable-next-line no-restricted-syntax
     for (const item of totalData) {
@@ -130,19 +123,16 @@ const setTree = (totalData: QueryForm[]) => {
  * {current: 1, pageSize: pagination.pageSize, order: lastSort.value}
  * @param params
  */
-const fetchData = async (params: PageQueryRequest) => {
-  setLoading(true);
+const fetchData = async (params: Record<string, any>) => {
+  loading.value = true;
   try {
-    const {data} = await pageQueryList(params);
-    emits('fetch', 'success', data.items);
-    renderData.value = setTree(data.items as unknown as QueryForm[]) as unknown as PageQueryFilter[];
-    pagination.current = params.current;
-    pagination.pageSize = basePagination.pageSize;
-    pagination.total = data.total;
+    const {data} = await securityApi.queryDictItems(params);
+    emits('fetch', 'success', data);
+    renderData.value = setTree(data);
   } catch (err) {
     emits('fetch', 'fail');
   } finally {
-    setLoading(false);
+    loading.value = false;
   }
 };
 
@@ -154,7 +144,7 @@ const fetchData = async (params: PageQueryRequest) => {
  */
 const deleteData = async (id: string, successBack?: any, failBack?: any) => {
   try {
-    await deleteList(id);
+    await securityApi.deleteDictItem(id);
     if (successBack && typeof successBack === 'function') successBack(id);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -167,9 +157,7 @@ const deleteData = async (id: string, successBack?: any, failBack?: any) => {
  * @param ev
  */
 const search = (ev?: Event) => {
-  fetchData({
-    ...basePagination, ...filterData.value, order: lastSort.value
-  } as unknown as PageQueryRequest);
+  fetchData({...basePagination, ...filterData.value, order: lastSort.value});
 };
 /**
  * 条件查询 - 搜索
@@ -243,16 +231,16 @@ const formParams = ref({
  */
 const addTable = (ev: MouseEvent) => {
   formParams.value = Object.assign(formParams.value, {
-    id: '', visible: true, formState: 'add'
+    id: '', title: '新建字典项', visible: true, formState: 'add'
   });
 };
 /**
  * 列表按钮 - 查看表单
  * @param data
  */
-const viewTable = (data: QueryForm) => {
+const viewTable = (data: QueryDictItemForm) => {
   formParams.value = Object.assign(formParams.value, {
-    id: data.id, visible: true, formState: 'view'
+    id: data.id, title: '查看字典项', visible: true, formState: 'view'
   });
 }
 
@@ -260,9 +248,9 @@ const viewTable = (data: QueryForm) => {
  * 列表按钮 - 编辑表单
  * @param data
  */
-const editTable = (data: QueryForm) => {
+const editTable = (data: QueryDictItemForm) => {
   formParams.value = Object.assign(formParams.value, {
-    id: data.id, visible: true, formState: 'edit'
+    id: data.id, title: '编辑字典项', visible: true, formState: 'edit'
   });
 }
 
@@ -270,7 +258,7 @@ const editTable = (data: QueryForm) => {
 const lockerParams = ref({
   visible: false,
   isModal: true,
-  title: '',
+  title: '编辑字典项',
   width: '1100px',
   height: '',
   parameter: {pid: '', dictId: '', appId: '', tenantCode: ''},
@@ -282,7 +270,7 @@ const lockerParams = ref({
  * 列表按钮 - 配置
  * @param data
  */
-const configTable = (data: QueryForm) => {
+const configTable = (data: QueryDictItemForm) => {
   lockerParams.value = Object.assign(lockerParams.value, {
     visible: true, parameter: {
       pid: data.id, dictId: data.dictId, appId: data.appId, tenantCode: data.tenantCode
@@ -306,7 +294,7 @@ const openLocker = (data: QueryDictForm) => {
  */
 const openModel = (data: QueryDictForm) => {
   formParams.value = Object.assign(formParams.value, {
-    id: '', visible: true, formState: 'add', parameter: {
+    id: '', title: '新建字典项', visible: true, formState: 'add', parameter: {
       dictId: data.id, appId: data.appId, tenantCode: data.tenantCode
     },
   });
@@ -316,7 +304,7 @@ const openModel = (data: QueryDictForm) => {
  * 当前排序、过滤条件不变
  * @param data
  */
-const deleteTable = (data: QueryForm) => {
+const deleteTable = (data: QueryDictItemForm) => {
   deleteData(data.id, (id: string) => {
     condition();
     emits('delete', data);
@@ -331,7 +319,7 @@ const deleteTable = (data: QueryForm) => {
  * @param data
  * @param _action
  */
-const saveSuccess = (data: QueryForm, _action: string) => {
+const saveSuccess = (data: QueryDictItemForm, _action: string) => {
   if (_action === 'add') {
     reset();
     emits('add', data);
@@ -367,51 +355,49 @@ defineExpose({openLocker, openModel});
 </script>
 
 <template>
-  <DictionaryEntryForm v-model:visible="formParams.visible"
-                       :formCol="formParams.formCol"
-                       :formState="formParams.formState"
-                       :height="formParams.height"
-                       :isModal="formParams.isModal"
-                       :modelValue="formParams.id"
-                       :parameter="formParams.parameter"
-                       :title="formParams.title"
-                       :width="formParams.width"
-                       @saveSuccess="saveSuccess"/>
-
-  <DictionaryEntryLocker v-model:visible="lockerParams.visible"
-                         :formCol="lockerParams.formCol"
-                         :formState="lockerParams.formState"
-                         :height="lockerParams.height"
-                         :isModal="lockerParams.isModal"
-                         :modelValue="lockerParams.id"
-                         :parameter="lockerParams.parameter"
-                         :title="lockerParams.title"
-                         :width="lockerParams.width"
+  <GlDictionaryEntryForm v-model:visible="formParams.visible"
+                         :formCol="formParams.formCol"
+                         :formState="formParams.formState"
+                         :height="formParams.height"
+                         :isModal="formParams.isModal"
+                         :modelValue="formParams.id"
+                         :parameter="formParams.parameter"
+                         :title="formParams.title"
+                         :width="formParams.width"
                          @saveSuccess="saveSuccess"/>
+
+  <GlDictionaryEntryLocker v-model:visible="lockerParams.visible"
+                           :formCol="lockerParams.formCol"
+                           :formState="lockerParams.formState"
+                           :height="lockerParams.height"
+                           :isModal="lockerParams.isModal"
+                           :modelValue="lockerParams.id"
+                           :parameter="lockerParams.parameter"
+                           :title="lockerParams.title"
+                           :width="lockerParams.width"
+                           @saveSuccess="saveSuccess"/>
 
   <a-row>
     <a-col :flex="1">
       <a-form :label-col-props="{ span: labelCol }" :model="filterData" :wrapper-col-props="{ span: wrapperCol }" label-align="left">
         <a-row :gutter="wrapperCol">
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.dictItem.index.form.itemName')" field="name">
+            <a-form-item field="name" label="名称">
               <a-input v-model="filterData.itemName" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.dictItem.index.form.itemCode')" field="code">
+            <a-form-item field="code" label="编码">
               <a-input v-model="filterData.itemCode" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.dictItem.index.form.enableStatus')" field="enableStatus">
-              <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-              </a-select>
+            <a-form-item field="enableStatus" label="状态">
+              <a-select v-model="filterData.enableStatus" :options="enableStatusOptions" placeholder="全部"/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.dictItem.index.form.createAt')" field="createAt">
+            <a-form-item field="createAt" label="创建时间">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
@@ -423,15 +409,15 @@ defineExpose({openLocker, openModel});
       <a-space :size="18" direction="vertical">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
-            <icon-search/>
+            <gl-iconfont type="gl-search"/>
           </template>
-          {{ $t('searchTable.form.search') }}
+          搜索
         </a-button>
         <a-button @click="reset($event)">
           <template #icon>
-            <icon-refresh/>
+            <gl-iconfont type="gl-reset"/>
           </template>
-          {{ $t('searchTable.form.reset') }}
+          重置
         </a-button>
       </a-space>
     </a-col>
@@ -442,9 +428,9 @@ defineExpose({openLocker, openModel});
       <a-space>
         <a-button :disabled="formState==='view'" type="primary" @click="addTable($event)">
           <template #icon>
-            <icon-plus/>
+            <gl-iconfont type="gl-plus-circle"/>
           </template>
-          {{ $t('searchTable.operation.create') }}
+          新建
         </a-button>
       </a-space>
     </a-col>
@@ -462,30 +448,30 @@ defineExpose({openLocker, openModel});
       row-key="id"
       @pageChange="onPageChange" @pageSizeChange="onPageSizeChange" @sorter-change="onSorterChange">
     <template #columns>
-      <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemName')" :tooltip="true" :width="240" data-index="itemName"/>
-      <a-table-column :ellipsis="true" :sortable="sortable.itemCode" :title="$t('security.dictItem.index.form.itemCode')" :tooltip="true" :width="150"
-                      data-index="itemCode"/>
-      <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" :width="70" data-index="enableStatus">
+      <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="itemName" title="名称"/>
+      <a-table-column :ellipsis="true" :sortable="sortable.itemCode" :tooltip="true" :width="150" data-index="itemCode"
+                      title="编码"/>
+      <a-table-column :width="70" data-index="enableStatus" title="状态">
         <template #cell="{ record }">
-          {{ $t(`security.dictItem.index.form.enableStatus.${record.enableStatus}`) }}
+          {{ utils.getOptionLabel(record.enableStatus, enableStatusOptions) }}
         </template>
       </a-table-column>
-      <a-table-column :sortable="sortable.seqNo" :title="$t('security.dictItem.index.form.seqNo')" :width="100" data-index="seqNo"/>
-      <a-table-column :sortable="sortable.createAt" :title="$t('security.dictItem.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemRemark')" :tooltip="true" :width="240" data-index="itemRemark"/>
-      <a-table-column :title="$t('security.dictItem.index.form.operations')" :width="210" align="center" data-index="operations" fixed="right">
+      <a-table-column :sortable="sortable.seqNo" :width="100" data-index="seqNo" title="排序"/>
+      <a-table-column :sortable="sortable.createAt" :width="180" data-index="createAt" title="创建时间"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="itemRemark" title="备注"/>
+      <a-table-column :width="210" align="center" data-index="operations" fixed="right" title="操作">
         <template #cell="{ record }">
           <a-tooltip content="批量配置子字典项">
             <a-button :disabled="formState==='view'" size="small" type="text" @click="configTable(record)">
-              {{ $t('searchTable.columns.operations.config') }}
+              配置
             </a-button>
           </a-tooltip>
           <a-button :disabled="formState==='view'" size="small" type="text" @click="editTable(record)">
-            {{ $t('searchTable.columns.operations.edit') }}
+            编辑
           </a-button>
-          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record)">
+          <a-popconfirm content="是否删除该条数据？" position="tr" type="warning" @ok="deleteTable(record)">
             <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
-              {{ $t('searchTable.columns.operations.delete') }}
+              删除
             </a-button>
           </a-popconfirm>
         </template>

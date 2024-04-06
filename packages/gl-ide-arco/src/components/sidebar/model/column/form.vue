@@ -6,8 +6,8 @@ export default {
 
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import type {FormInstance} from "@arco-design/web-vue";
 import {Modal} from "@arco-design/web-vue";
+import type {FormInstance, SelectOptionGroup} from "@arco-design/web-vue";
 import {applicationApi, modelApi, useGlobal, securityApi, utils, stringUtil} from "@geelato/gl-ui";
 import type {
   ColumnSelectType,
@@ -21,16 +21,15 @@ import type {
 } from '@geelato/gl-ui';
 import {
   autoIncrementOptions,
-  columnSelectType,
   enableStatusOptions,
   encryptedOptions,
   keyOptions,
   nullableOptions,
   numericSignedOptions,
-  selectTypeOptions,
   uniquedOptions
 } from "./searchTable";
-import GlDictPopver from "../../dict/popover.vue";
+import GlDictionaryLayout from '../../security/dictionary/layout.vue';
+import {it} from "vitest";
 
 interface PageParams {
   connectId: string; // 数据库链接id
@@ -58,6 +57,10 @@ const wrapperCol = ref<number>(18);
 const validateForm = ref<FormInstance>();
 const visibleForm = ref<boolean>(false);
 const appSelectOptions = ref<QueryAppForm[]>([]);
+const columnSelectType = ref<ColumnSelectType[]>([]);
+const selectTypeOptions = ref<SelectOptionGroup[]>([]);
+
+
 /* 表单 */
 const generateFormData = (): QueryTableColumnForm => {
   return {
@@ -405,7 +408,7 @@ const columnNameBlur = (ev?: FocusEvent) => {
 
 const formatSelectType = (value: string): ColumnSelectType => {
   // eslint-disable-next-line no-restricted-syntax
-  for (const item of columnSelectType) {
+  for (const item of columnSelectType.value) {
     if (item.value === value) {
       if (value === "SCORE") {
         item.radius = {max: 10000, min: 0, digit: 5, unDigit: 5, precision: 2};
@@ -537,7 +540,7 @@ const autoAddChange = (value: string) => {
 }
 const getFormatSelectType = (value: string): string => {
   // eslint-disable-next-line no-restricted-syntax
-  for (const item of columnSelectType) {
+  for (const item of columnSelectType.value) {
     if (item.value === value) {
       return item.label;
     }
@@ -545,23 +548,49 @@ const getFormatSelectType = (value: string): string => {
   return '';
 }
 
-const dictPage = ref({
-  id: '',
+const layoutParams = ref({
   visible: false,
+  isModal: true,
+  title: '数据字典',
+  width: '1250px',
+  height: '',
   parameter: {appId: '', tenantCode: ''},
   formState: 'add',
-  title: '数据字典',
-  width: '67%'
+  id: '',
+  formCol: 1,
 });
 const openAddDict = (ev?: MouseEvent) => {
-  dictPage.value.title = '新增数据字典';
-  dictPage.value.visible = true;
+  layoutParams.value = Object.assign(layoutParams.value, {
+    id: '', visible: true, formState: 'add', title: '新建数据字典',
+  });
 }
+const openEditDict = (ev?: MouseEvent) => {
+  let data: QueryDictForm = {} as unknown as QueryDictForm;
+  for (const item of selectDictionaryOptions.value) {
+    if (item.dictCode === formData.value.typeExtra) {
+      data = item;
+      break;
+    }
+  }
+  if (data && data.id) {
+    Object.assign(layoutParams.value, {
+      id: data.id, visible: true, formState: 'edit', title: '编辑数据字典', parameter: {
+        appId: data.appId || '', tenantCode: data.tenantCode || ''
+      }
+    });
+  } else {
+    global.$message.warning({content: '请选项需要编辑的字典！'});
+  }
+}
+
 const dictSaveSuccess = (params: QueryDictForm, action: string) => {
   formData.value.defaultValue = '';
   formData.value.typeExtra = params.dictCode;
   getSelectDictionaryOptions();
   dictionaryChange1();
+}
+const dictItemChange = (dictId: string) => {
+  dictionaryChange();
 }
 
 const openModal = (content: string) => {
@@ -622,15 +651,23 @@ watch(() => props, () => {
     }, () => {
       appSelectOptions.value = [];
     });
+    // 模型字段类型
+    modelApi.getTypeSelectOptions((data: ColumnSelectType[]) => {
+      columnSelectType.value = data || [];
+      selectTypeOptions.value = modelApi.handleSelectType(columnSelectType.value);
+    }, () => {
+      columnSelectType.value = [];
+      selectTypeOptions.value = [];
+    });
     // 表单数据重置
     formData.value = generateFormData();
     multiComponentData.value = [generateMultiComponentData()];
     // 重置验证
     resetValidate();
     // 数据字典
-    dictPage.value.parameter = {
+    layoutParams.value.parameter = {
       appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
-    };
+    }
     // 编辑、查看 状态 查询数据
     if (['edit', 'view'].includes(props.formState) && props.modelValue) {
       getData(props.modelValue, (data: QueryTableColumnForm) => {
@@ -677,12 +714,18 @@ watch(() => visibleForm, () => {
 </script>
 
 <template>
-  <GlDictPopver v-model:visible="dictPage.visible"
-                :formState="dictPage.formState"
-                :parameter="dictPage.parameter"
-                :title="dictPage.title"
-                :width="dictPage.width"
-                @saveSuccess="dictSaveSuccess"/>
+  <GlDictionaryLayout v-model:visible="layoutParams.visible"
+                      :formCol="layoutParams.formCol"
+                      :formState="layoutParams.formState"
+                      :height="layoutParams.height"
+                      :isModal="layoutParams.isModal"
+                      :modelValue="layoutParams.id"
+                      :parameter="layoutParams.parameter"
+                      :title="layoutParams.title"
+                      :width="layoutParams.width"
+                      @saveSuccess="dictSaveSuccess"
+                      @listChange="dictItemChange"/>
+
 
   <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title"
            :width="width || ''" cancel-text="取消" ok-text="确定" title-align="start"
@@ -800,13 +843,18 @@ watch(() => visibleForm, () => {
         </a-col>
         <a-col v-if="['DICTIONARY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
           <a-form-item field="typeExtra" label="默认范围">
+            <a-tooltip v-if="!formData.typeExtra" content="新增数据字典">
+              <a-button class="select-button button-primary" @click="openAddDict">
+                <gl-iconfont type="gl-plus-circle"/>
+              </a-button>
+            </a-tooltip>
             <a-select v-if="formState!=='view'&&['DICTIONARY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search
                       @change="dictionaryChange1">
               <a-option v-for="item of selectDictionaryOptions" :key="item.id" :label="`${item.dictName}[${item.dictCode}]`" :value="item.dictCode"/>
             </a-select>
-            <a-tooltip content="新增数据字典">
-              <a-button size="small" style="margin-left: 5px;" type="outline" @click="openAddDict">
-                <gl-iconfont type="gl-plus-circle"/>
+            <a-tooltip v-if="formData.typeExtra" content="编辑数据字典">
+              <a-button class="select-button button-success" @click="openEditDict">
+                <gl-iconfont type="gl-edit-square"/>
               </a-button>
             </a-tooltip>
           </a-form-item>
@@ -1006,5 +1054,19 @@ watch(() => visibleForm, () => {
 <style lang="less" scoped>
 .form .arco-form-item {
   margin-bottom: 12px;
+}
+
+.select-button {
+  height: 31.6px;
+  padding: 0 8px;
+  font-weight: bold;
+}
+
+.button-success {
+  color: rgb(var(--success-6));
+}
+
+.button-primary {
+  color: rgb(var(--primary-6));
 }
 </style>

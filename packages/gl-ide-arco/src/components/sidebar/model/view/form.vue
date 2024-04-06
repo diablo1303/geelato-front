@@ -7,11 +7,10 @@ export default {
 <script lang="ts" setup>
 import {computed, ref, watch} from "vue";
 import {Modal} from "@arco-design/web-vue";
-import type {TableColumnData, FormInstance, TableData} from "@arco-design/web-vue";
+import type {TableColumnData, FormInstance, SelectOptionGroup, TableData} from "@arco-design/web-vue";
 import {modelApi, applicationApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryViewForm, QueryTableColumnForm, QueryTableForm, QueryAppForm} from '@geelato/gl-ui';
 import {enableStatusOptions, linkedOptions, viewTypeOptions} from "./searchTable";
-import {selectTypeOptions, defaultColumnMetas} from '../column/searchTable';
 
 type PageParams = {
   connectId: string; // 数据库链接id
@@ -42,6 +41,8 @@ const tableTabStyle = ref({height: `${tableTabHeight.value}px`});
 const scrollbar = ref(true);
 const scroll = ref({x: 1000, y: tableTabHeight.value - 118});
 const appSelectOptions = ref<QueryAppForm[]>([]);
+const selectTypeOptions = ref<SelectOptionGroup[]>([]);
+const defaultColumnMetas = ref<string[]>([]);
 
 const generateFormData = (): QueryViewForm => {
   return {
@@ -62,6 +63,7 @@ const generateFormData = (): QueryViewForm => {
   };
 }
 const formData = ref(generateFormData());
+
 
 // 表单
 const columnData = ref<Record<string, any>[]>([]);
@@ -439,6 +441,18 @@ watch(() => props, () => {
       appSelectOptions.value = data || [];
     }, () => {
       appSelectOptions.value = [];
+    });
+    // 模型字段类型
+    modelApi.getTypeSelectOptionGroup((data: SelectOptionGroup[]) => {
+      selectTypeOptions.value = data || [];
+    }, () => {
+      selectTypeOptions.value = [];
+    });
+    // 模型默认字段
+    modelApi.getDefaultColumnNames((data: string[]) => {
+      defaultColumnMetas.value = data || [];
+    }, () => {
+      defaultColumnMetas.value = [];
     });
     // 清理视图字段
     columnData.value = [];

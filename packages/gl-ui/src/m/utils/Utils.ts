@@ -606,7 +606,7 @@ export class Utils {
   getUrlParams(params: Record<string, any>) {
     const parameters = [];
     for (const key in params) {
-      parameters.push(`${key}=${params[key]}`);
+      parameters.push(`${key}=${encodeURIComponent(params[key])}`);
     }
     return parameters;
   }

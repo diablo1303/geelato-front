@@ -6,10 +6,10 @@ export default {
 
 <script lang="ts" setup>
 import {reactive, ref, watch, computed} from 'vue';
-import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {modelApi, securityApi, useGlobal, utils} from "@geelato/gl-ui";
+import type {SelectOptionGroup, TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {applicationApi, modelApi, type QueryAppForm, securityApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {Pagination, QueryRoleForm, QueryTableColumnForm} from "@geelato/gl-ui";
-import {columnPermissionOptions, defaultColumnMetas, selectTypeOptions} from "../searchTable";
+import {columnPermissionOptions} from "../searchTable";
 import {typeOptions as roleTypeOptions} from "../../../security/role/searchTable";
 import GlModelTableColumnForm from "../form.vue";
 import GlSecurityRoleForm from "../../../security/role/form.vue";
@@ -50,6 +50,8 @@ const scrollbar = ref(true);
 const scroll = ref({y: props.height});
 const plusTooltip = ref<boolean>(false);
 const weightSortable = ref<TableSortable>({sortDirections: ['ascend', 'descend']});
+const selectTypeOptions = ref<SelectOptionGroup[]>([]);
+const defaultColumnMetas = ref<string[]>([]);
 
 /**
  * 分页查询方法
@@ -210,6 +212,19 @@ const isDefaultColumn = (value: string) => {
 }
 
 watch(() => props.parameter, () => {
+  // 模型字段类型
+  modelApi.getTypeSelectOptionGroup((data: SelectOptionGroup[]) => {
+    selectTypeOptions.value = data || [];
+  }, () => {
+    selectTypeOptions.value = [];
+  });
+  // 模型默认字段
+  modelApi.getDefaultColumnNames((data: string[]) => {
+    defaultColumnMetas.value = data || [];
+  }, () => {
+    defaultColumnMetas.value = [];
+  });
+
   fetchData();
   columnPage.value.parameter = {
     connectId: props.parameter.connectId,
