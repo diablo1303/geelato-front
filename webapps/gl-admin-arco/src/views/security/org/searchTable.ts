@@ -19,4 +19,9 @@ const categoryOptions = computed<SelectOptionData[]>(() => [
   {label: 'security.org.index.form.category.virtual', value: 'virtual',},
 ]);
 
-export {columns, statusOptions, typeOptions, categoryOptions};
+const defaultOrgOptions = computed<SelectOptionData[]>(() => [
+  {label: 'security.orgUser.index.form.defaultOrg.1', value: 1,},
+  {label: "security.orgUser.index.form.defaultOrg.0", value: 0,},
+]);
+
+export {columns, statusOptions, typeOptions, categoryOptions, defaultOrgOptions};

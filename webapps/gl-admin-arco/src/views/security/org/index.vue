@@ -49,7 +49,7 @@ const listParams = ref<ListParams>({
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode
   },
-  formState: 'view',
+  formState: 'edit',
   filterCol: 3,
   pageSize: resetListPageSize(),
   height: resetListHeight(),

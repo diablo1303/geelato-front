@@ -153,18 +153,17 @@ const loadedPage = () => {
   });
 }
 
-const orgFormTreating = (data: OrgTreeNode[]) => {
-  const formData: QueryOrgForm[] = [];
-  if (data && data.length > 0) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of data) {
-      if (item.redundant) {
-        formData.push(item.redundant as QueryOrgForm);
-      }
+const resetPage = () => {
+  searchKey.value = '';
+  fetchOrgTree().then((data) => {
+    refreshTreeOne(data);
+    // 选中、展开
+    if (props.hasRoot && props.rootSelected) {
+      selectedKeys.value = [rootPid];
+      emits("update:modelValue", selectedKeys.value);
+      emits('change', true, {});
     }
-  }
-
-  return formData;
+  });
 }
 
 /**
@@ -184,7 +183,6 @@ const treeClickSelected = (selectedKes: Array<string | number>, data: {
     return;
   }
   emits("update:modelValue", selectedKeys.value);
-  // emits("change", selectedKeys.value, orgFormTreating(data.selectedNodes));
   emits('change', data.selected, data.node?.redundant, data.node);
 }
 /**
@@ -206,7 +204,6 @@ const treeClickChecked = (checkedKeys: Array<string | number>, data: {
     return;
   }
   emits("update:modelValue", selectedKeys.value);
-  // emits("change", selectedKeys.value, orgFormTreating(data.checkedNodes));
   emits('change', data.checked, data.node?.redundant, data.node);
 }
 
@@ -251,7 +248,7 @@ watch(() => props.visible, () => {
         </template>
         <template #extra="nodeData">
           <a-tooltip :content="$t('searchTable.actions.refresh')">
-            <IconRefresh v-if="nodeData.key===rootPid" class="tree-extra-icon" @click="loadedPage"/>
+            <IconRefresh v-if="nodeData.key===rootPid" class="tree-extra-icon" @click="resetPage"/>
           </a-tooltip>
         </template>
       </a-tree>

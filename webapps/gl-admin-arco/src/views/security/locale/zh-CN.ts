@@ -160,6 +160,9 @@ export default {
   'security.user.index.menu.list': '应用管理',
   'security.user.index.menu.list.searchTable': '用户管理',
   // webapps/gl-admin-arco/src/views/security/org - list|form
+  'security.user.form.tab.title.one': '基本信息',
+  'security.user.form.tab.title.two': '组织关联',
+  'security.user.form.tab.title.three': '角色关联',
   'security.user.index.form.index': '序号',
   'security.user.index.form.name': '名称',
   'security.user.index.form.enName': '英文名',
@@ -214,8 +217,6 @@ export default {
   'security.dict.index.menu.list.searchTable': '字典管理',
   'security.dict.index.menu.list.searchTable1': '字典基本信息',
   // webapps/gl-admin-arco/src/views/security/dict - list|form
-  'security.user.forml.tab.title.one': '用户基本信息',
-  'security.user.forml.tab.title.two': '组织用户关联',
   'security.dict.index.form.index': '序号',
   'security.dict.index.form.tenantCode': '所属租户',
   'security.dict.index.form.appId': '应用',
@@ -324,12 +325,15 @@ export default {
   'security.orgUser.index.form.index': '序号',
   'security.orgUser.index.form.userName': '用户名称',
   'security.orgUser.index.form.orgName': '组织名称',
-  'security.orgUser.index.form.defaultOrg': '是否默认组织',
+  'security.orgUser.index.form.relevance': '关联',
   'security.orgUser.index.form.default': '默认',
+  'security.orgUser.index.form.partJob': '兼职',
+  'security.orgUser.index.form.defaultOrg': '是否默认组织',
   'security.orgUser.index.form.defaultOrg.0': '否',
   'security.orgUser.index.form.defaultOrg.1': '是',
   'security.orgUser.index.form.createAt': '创建时间',
   'security.orgUser.index.form.operations': '操作',
+  'security.orgUser.index.form.operations.default': '请在基本信息中修改默认组织！',
   // webapps/gl-admin-arco/src/views/security/user/org - list.operation
   // 同 org
   // webapps/gl-admin-arco/src/views/security/user/org - form.operation
@@ -360,6 +364,8 @@ export default {
   'security.role.index.form.enableStatus': '状态',
   'security.role.index.form.enableStatus.0': '禁用',
   'security.role.index.form.enableStatus.1': '启用',
+  'security.role.index.form.enableStatus.false': '禁用',
+  'security.role.index.form.enableStatus.true': '启用',
   'security.role.index.form.description': '描述',
   'security.role.index.form.seqNo': '排序',
   'security.role.index.form.createAt': '创建时间',

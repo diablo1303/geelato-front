@@ -60,6 +60,14 @@ export function pageQueryOrgUser(params: PageQueryRequest) {
   });
 }
 
+export function pageQueryOrgUserOf(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/org/user/pageQueryOf', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 /* 角色分页查询 */
 export function pageQueryRole(params: PageQueryRequest) {
   return axios.get<PageQueryResponse>('/api/security/role/pageQuery', {
@@ -509,6 +517,14 @@ export interface FilterRoleForm {
   tenantCode: string;
 }
 
+export function queryRoles(params: Record<string, any>) {
+  return axios.get<QueryRoleForm[]>('/api/security/role/query', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 export function getRole(id: string) {
   return axios.get<QueryRoleForm>(`/api/security/role/get/${id}`);
 }
@@ -755,10 +771,6 @@ export function insertRoleUser(params: QueryRoleUserForm) {
   return axios.post<QueryResult>('/api/security/role/user/insert', params);
 }
 
-export function insertRoleUsers(params: QueryRoleUserForm) {
-  return axios.post<QueryResult>('/api/security/role/user/inserts', params);
-}
-
 export function deleteRoleUser(id: string) {
   return axios.delete<QueryResult>(`/api/security/role/user/isDelete/${id}`);
 }
@@ -807,4 +819,17 @@ export const exportDictAndItems = async (dictId: string) => {
   }
 }
 
-
+/**
+ * 查询所有角色
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
+export const getRoleSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await queryRoles(params);
+    if (successBack && typeof successBack === 'function') successBack(data);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+}

@@ -13,19 +13,19 @@ import {Message, TableColumnData, TableSortable} from '@arco-design/web-vue';
 import {PageSizeOptions, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 页面所需 对象、方法
 import {
-  deleteOrgUser as deleteList,
-  QueryOrgUserForm as QueryForm,
-  pageQueryOrgUserOf as pageQueryList,
-  QueryOrgForm,
-  insertOrgUser
+  deleteRoleUser as deleteList,
+  QueryRoleUserForm as QueryForm,
+  pageQueryRoleUserOf as pageQueryList,
+  QueryRoleForm,
+  insertRoleUser,
+  getRoleSelectOptions
 } from '@/api/security';
-import {categoryOptions, statusOptions, typeOptions} from "@/views/security/org/searchTable";
-import OrgChooseBox from "@/components/org-choose-box/index.vue";
+import {enableStatusOptions, typeOptions} from "@/views/security/role/searchTable";
 
 // 页面所需参数
 type PageParams = {
   userId?: string; // 用户主键
-  orgId?: string; // 组织主键
+  roleId?: string; // 角色主键
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -57,8 +57,8 @@ const scrollbar = ref(true);
 const scroll = ref({x: 1200, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
-  orgCode: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
-  orgSeqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
+  roleWeight: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
+  roleSeqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
 });
 const lastSort = ref<string>('');
@@ -68,14 +68,12 @@ const wrapperCol = ref<number>(18);
 // 列表 - 查询条件
 const generateFilterData = () => {
   return {
-    orgId: props.parameter.orgId || '',
-    orgName: '',
-    orgCode: '',
-    orgType: '',
-    orgCategory: '',
-    orgStatus: '',
-    orgSeqNo: '',
-    orgDescription: '',
+    roleId: props.parameter.roleId || '',
+    roleName: '',
+    roleCode: '',
+    roleType: '',
+    roleWeight: '',
+    roleEnableStatus: '',
     userId: props.parameter?.userId || '',
     userName: '',
     userEnName: '',
@@ -101,8 +99,6 @@ const generateFilterData = () => {
   };
 };
 const filterData = ref(generateFilterData());
-const selectData = ref<string>('');
-const selectVisible = ref<boolean>(false);
 
 /**
  * 分页查询方法
@@ -146,7 +142,7 @@ const deleteData = async (id: string, successBack?: any, failBack?: any) => {
  */
 const search = (ev?: Event) => {
   fetchData({
-    ...basePagination, ...filterData.value, order: `defaultOrg|desc${lastSort.value ? `,${lastSort.value}` : ''}`
+    ...basePagination, ...filterData.value, order: lastSort.value
   } as unknown as PageQueryRequest);
 };
 /**
@@ -215,25 +211,51 @@ const deleteTable = (data: QueryForm) => {
   });
 }
 
-const openOrgSelect = () => {
-  selectData.value = '';
-  selectVisible.value = true;
+/* 常用字段选择 */
+const roleSelectOptions = ref<QueryRoleForm[]>([]);
+const selectVisible = ref(false);
+const selectAll = ref<boolean>(false);
+const selectData = ref<string[]>([]);
+/**
+ * 选择内容与全选联动
+ */
+const selectChange = () => {
+  let isAll = true;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of roleSelectOptions.value) {
+    if (item.enableStatus && !selectData.value.includes(item.id)) {
+      isAll = false;
+    }
+  }
+  selectAll.value = isAll;
 }
-
-const confirmModal = async (data: QueryOrgForm[]) => {
-  if (data && data.length > 0) {
-    const orgIds: string[] = [];
+/**
+ * 全选与选择项联动
+ */
+const selectAllChange = () => {
+  if (selectAll.value === true) {
     // eslint-disable-next-line no-restricted-syntax
-    for (const item of data) {
-      if (!orgIds.includes(item.id)) {
-        orgIds.push(item.id);
+    for (const item of roleSelectOptions.value) {
+      if (item.enableStatus && !selectData.value.includes(item.id)) {
+        selectData.value.push(item.id);
       }
     }
+  } else {
+    selectData.value = [];
+  }
+}
+/**
+ * 添加选择的字段
+ * @param ev
+ */
+const closeTrigger = async (ev?: MouseEvent) => {
+  if (selectData.value.length > 0) {
     try {
-      await insertOrgUser({
-        userId: props.parameter.userId,
-        orgId: orgIds.join(',')
+      await insertRoleUser({
+        userId: props.parameter.userId || '',
+        roleId: selectData.value.join(",") || ''
       } as unknown as QueryForm);
+      selectVisible.value = false;
       reset();
     } catch (err) {
       console.log(err);
@@ -242,9 +264,25 @@ const confirmModal = async (data: QueryOrgForm[]) => {
     Message.warning('请至少选择一项！');
   }
 }
+watch(() => selectVisible, (val) => {
+  if (selectVisible.value === true) {
+    selectData.value = [];
+    selectAll.value = false;
+  }
+}, {deep: true, immediate: true});
+
 
 watch(() => props, (val) => {
   if (props.visible === true) {
+    // 角色信息
+    getRoleSelectOptions({
+      order: 'weight|desc',
+      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }, (data: QueryRoleForm[]) => {
+      roleSelectOptions.value = data || [];
+    }, () => {
+      roleSelectOptions.value = [];
+    });
     // 页面设置
     scroll.value.y = props.height;
     basePagination.pageSize = props.pageSize;
@@ -260,38 +298,36 @@ watch(() => props, (val) => {
       <a-form :label-col-props="{ span: labelCol }" :model="filterData" :wrapper-col-props="{ span: wrapperCol }" label-align="left">
         <a-row :gutter="wrapperCol">
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.name')" field="orgName">
-              <a-input v-model="filterData.orgName" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
+            <a-form-item :label="$t('security.role.index.form.name')" field="roleName">
+              <a-input v-model="filterData.roleName" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.code')" field="orgCode">
-              <a-input v-model="filterData.orgCode" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
+            <a-form-item :label="$t('security.role.index.form.code')" field="roleCode">
+              <a-input v-model="filterData.roleCode" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.type')" field="orgType">
-              <a-select v-model="filterData.orgType" :placeholder="$t('searchTable.form.selectDefault')">
+            <a-form-item :label="$t('security.role.index.form.weight')" field="roleWeight">
+              <a-input-number v-model="filterData.roleWeight" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
+            <a-form-item :label="$t('security.role.index.form.type')" field="roleType">
+              <a-select v-model="filterData.roleType" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.category')" field="orgCategory">
-              <a-select v-model="filterData.orgCategory" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of categoryOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+            <a-form-item :label="$t('security.role.index.form.enableStatus')" field="roleEnableStatus">
+              <a-select v-model="filterData.roleEnableStatus" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.status')" field="orgStatus">
-              <a-select v-model="filterData.orgStatus" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of statusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.org.index.form.createAt')" field="createAt">
+          <a-col v-if="!selectVisible" :span="(labelCol+wrapperCol)/filterCol">
+            <a-form-item :label="$t('security.role.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
           </a-col>
@@ -313,12 +349,41 @@ watch(() => props, (val) => {
           </template>
           {{ $t('searchTable.form.reset') }}
         </a-button>
-        <a-button :disabled="formState==='view'" status="success" type="primary" @click="openOrgSelect">
-          <template #icon>
-            <icon-plus/>
+        <a-trigger v-model:popup-visible="selectVisible" :popup-translate="[0, -32]" position="br" trigger="click">
+          <a-button :disabled="formState==='view'" status="success" type="primary">
+            <template #icon>
+              <icon-plus/>
+            </template>
+            {{ $t('searchTable.operation.create') }}
+          </a-button>
+          <template #content>
+            <a-space style="align-items: flex-start;">
+              <a-select v-model="selectData" :style="{width:'320px'}" allow-clear allow-search multiple scrollbar
+                        placeholder="选择角色，关联当前用户" @change="selectChange">
+                <a-option v-for="(item,index) of roleSelectOptions" :key="index"
+                          :disabled="!item.enableStatus"
+                          :label="`${item.weight} | ${item.name} [${item.code}]`"
+                          :title="item.enableStatus?item.description:'已禁用，不可选'"
+                          :value="item.id"/>
+                <template #header>
+                  <div class="check-all">
+                    <a-checkbox v-model="selectAll" class="check-all-radio" @change="selectAllChange">
+                      <span class="check-all-span">全选</span>
+                    </a-checkbox>
+                  </div>
+                </template>
+              </a-select>
+              <a-space direction="vertical">
+                <a-button type="primary" @click="closeTrigger">
+                  <template #icon>
+                    <icon-save/>
+                  </template>
+                  保存
+                </a-button>
+              </a-space>
+            </a-space>
           </template>
-          {{ $t('searchTable.operation.create') }}
-        </a-button>
+        </a-trigger>
       </a-space>
     </a-col>
   </a-row>
@@ -336,45 +401,29 @@ watch(() => props, (val) => {
       row-key="id"
       @pageChange="onPageChange" @pageSizeChange="onPageSizeChange" @sorter-change="onSorterChange">
     <template #columns>
-      <a-table-column :title="$t('security.org.index.form.index')" :width="70" align="center" data-index="index">
+      <a-table-column :title="$t('security.role.index.form.index')" :width="70" align="center" data-index="index">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.org.index.form.name')" :tooltip="true" :width="210" data-index="orgName"/>
-      <a-table-column :ellipsis="true" :title="$t('security.orgUser.index.form.relevance')" :tooltip="true" :width="70" data-index="defaultOrg">
+      <a-table-column :ellipsis="true" :title="$t('security.role.index.form.name')" :tooltip="true" :width="180" data-index="roleName"/>
+      <a-table-column :sortable="sortable.roleWeight" :title="$t('security.role.index.form.weight')" :width="90" align="center" data-index="roleWeight"/>
+      <a-table-column :ellipsis="true" :title="$t('security.role.index.form.code')" :tooltip="true" :width="150" data-index="roleCode"/>
+      <a-table-column :title="$t('security.role.index.form.type')" :width="120" data-index="roleType">
         <template #cell="{ record }">
-          <span v-if="record.defaultOrg===1" style="font-weight: bold;color: rgb(var(--primary-6));">{{ $t('security.orgUser.index.form.default') }}</span>
-          <span v-else>{{ $t('security.orgUser.index.form.partJob') }}</span>
+          {{ $t(`security.role.index.form.type.${record.roleType}`) }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :sortable="sortable.orgCode" :title="$t('security.org.index.form.code')" :tooltip="true" :width="150"
-                      data-index="orgCode"/>
-      <a-table-column :title="$t('security.org.index.form.type')" :width="70" data-index="orgType">
+      <a-table-column :title="$t('security.role.index.form.enableStatus')" :width="70" data-index="roleEnableStatus">
         <template #cell="{ record }">
-          {{ record.orgType ? $t(`security.org.index.form.type.${record.orgType}`) : '' }}
+          {{ $t(`security.role.index.form.enableStatus.${record.roleEnableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.org.index.form.category')" :width="70" data-index="orgCategory">
+      <a-table-column :sortable="sortable.roleSeqNo" :title="$t('security.role.index.form.seqNo')" :width="90" align="right" data-index="roleSeqNo"/>
+      <a-table-column :sortable="sortable.createAt" :title="$t('security.role.index.form.createAt')" :width="180" data-index="createAt"/>
+      <a-table-column :title="$t('security.role.index.form.operations')" :width="90" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
-          {{ record.orgCategory ? $t(`security.org.index.form.category.${record.orgCategory}`) : '' }}
-        </template>
-      </a-table-column>
-      <a-table-column :title="$t('security.org.index.form.status')" :width="70" data-index="orgStatus">
-        <template #cell="{ record }">
-          {{ $t(`security.org.index.form.status.${record.orgStatus}`) }}
-        </template>
-      </a-table-column>
-      <a-table-column :sortable="sortable.orgSeqNo" :title="$t('security.org.index.form.seqNo')" :width="100" align="right" data-index="orgSeqNo"/>
-      <a-table-column :sortable="sortable.createAt" :title="$t('security.org.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :title="$t('security.org.index.form.operations')" :width="90" align="center" data-index="operations" fixed="right">
-        <template #cell="{ record }">
-          <a-tooltip v-if="record.defaultOrg===1" :content="$t('security.orgUser.index.form.operations.default')">
-            <a-button :disabled="true" size="small" status="danger" type="text">
-              {{ $t('searchTable.columns.operations.delete') }}
-            </a-button>
-          </a-tooltip>
-          <a-popconfirm v-else :content="$t('searchTable.columns.operations.relevance.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record)">
+          <a-popconfirm :content="$t('searchTable.columns.operations.relevance.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record)">
             <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
@@ -383,11 +432,6 @@ watch(() => props, (val) => {
       </a-table-column>
     </template>
   </a-table>
-
-  <OrgChooseBox v-model:model-value="selectData"
-                v-model:visible="selectVisible"
-                :only-modal="true" :max-count="0" :has-root="false"
-                @confirmModal="confirmModal"/>
 </template>
 
 <style lang="less" scoped>
@@ -420,10 +464,16 @@ watch(() => props, (val) => {
   }
 }
 
-.button-disabled {
-  cursor: not-allowed;
-  color: var(--color-text-3) !important;
-  background-color: transparent !important;
-  border: 1px solid transparent !important;
+.check-all {
+  padding: 6px 12px;
+
+  &-radio {
+    width: 100%
+  }
+
+  &-span {
+    font-weight: 600;
+    color: rgb(var(--primary-6));
+  }
 }
 </style>

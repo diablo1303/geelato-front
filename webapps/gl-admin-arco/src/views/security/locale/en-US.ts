@@ -159,8 +159,9 @@ export default {
   'security.user.index.menu.list': 'System',
   'security.user.index.menu.list.searchTable': 'User',
   // webapps/gl-admin-arco/src/views/security/user - list|form
-  'security.user.forml.tab.title.one': 'User Basic Info',
-  'security.user.forml.tab.title.two': 'User Of Organization',
+  'security.user.form.tab.title.one': 'Basic Info',
+  'security.user.form.tab.title.two': 'Of Organization',
+  'security.user.form.tab.title.three': 'Of Role',
   'security.user.index.form.index': 'index',
   'security.user.index.form.name': 'name',
   'security.user.index.form.enName': 'englishName',
@@ -323,12 +324,15 @@ export default {
   'security.orgUser.index.form.index': 'index',
   'security.orgUser.index.form.userName': 'userName',
   'security.orgUser.index.form.orgName': 'orgName',
-  'security.orgUser.index.form.defaultOrg': 'isDefaultOrg',
+  'security.orgUser.index.form.relevance': 'relevance',
   'security.orgUser.index.form.default': 'Default',
+  'security.orgUser.index.form.partJob': 'PartJob',
+  'security.orgUser.index.form.defaultOrg': 'isDefaultOrg',
   'security.orgUser.index.form.defaultOrg.0': 'NO',
   'security.orgUser.index.form.defaultOrg.1': 'YES',
   'security.orgUser.index.form.createAt': 'createTime',
   'security.orgUser.index.form.operations': 'operation',
+  'security.orgUser.index.form.operations.default': 'Modify the default organization in Basic information！',
   // webapps/gl-admin-arco/src/views/security/user/org - list.operation
   // 同 org
   // webapps/gl-admin-arco/src/views/security/user/org - form.operation
@@ -359,6 +363,8 @@ export default {
   'security.role.index.form.enableStatus': 'status',
   'security.role.index.form.enableStatus.0': 'disabled',
   'security.role.index.form.enableStatus.1': 'enabled',
+  'security.role.index.form.enableStatus.false': 'disabled',
+  'security.role.index.form.enableStatus.true': 'enabled',
   'security.role.index.form.description': 'description',
   'security.role.index.form.seqNo': 'sequence',
   'security.role.index.form.createAt': 'createTime',

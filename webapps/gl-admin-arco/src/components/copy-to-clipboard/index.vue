@@ -8,13 +8,14 @@ import {ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import {copyToClipboard} from "@/utils/strings";
 
-const {t} = useI18n();
 const emits = defineEmits(['update:modelValue', 'clickCopy']);
 const props = defineProps({
   modelValue: {type: String, default: ''},
   title: {type: String, default: ''},
   width: {type: String, default: '16px'}
 });
+
+const {t} = useI18n();
 const mv = ref({
   copyValue: props.modelValue,
   copyWidth: props.width,
@@ -26,11 +27,13 @@ const mv = ref({
  * 元组件参数变更，初始化
  */
 watch(() => props, () => {
+  console.log('props change', props);
   mv.value.copyValue = props.modelValue;
   mv.value.copyWidth = props.width || '16px';
   mv.value.copyHeight = props.width || '16px';
-  mv.value.copyTitle = props.title || t('copyToClipboard.button.tip');
+  mv.value.copyTitle = props.title;
 }, {deep: true, immediate: true});
+
 /**
  * 点击复制
  * @param value
@@ -41,7 +44,7 @@ const onClickCopy = (value: string) => {
 }
 </script>
 <template>
-  <a-tooltip :content="mv.copyTitle" mini position="top">
+  <a-tooltip :content="`${mv.copyTitle?mv.copyTitle:$t('copyToClipboard.button.tip')}`" mini position="top">
     <a-button :style="{'width':`${mv.copyWidth}`,'height':`${mv.copyHeight}`}" type="text" @click="onClickCopy(mv.copyValue)">
       <template #icon>
         <icon-copy/>

@@ -20,8 +20,7 @@ import favicon from "@/assets/favicon.ico";
 
 // 页面所需 参数
 type PageParams = {
-  roleId: string;
-  permissionId: string;
+  roleId: string; // 角色主键
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -235,7 +234,7 @@ const closeTrigger = async (ev?: MouseEvent) => {
     try {
       await insertRoleApp({
         roleId: props.parameter.roleId || '',
-        appIds: selectData.value.join(",") || ''
+        appId: selectData.value.join(",") || ''
       } as unknown as QueryRoleAppForm);
       selectVisible.value = false;
       reset();

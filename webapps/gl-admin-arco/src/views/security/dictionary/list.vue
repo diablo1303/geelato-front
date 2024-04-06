@@ -5,12 +5,13 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import {nextTick, onMounted, reactive, ref, watch} from 'vue';
+import {reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
 import {TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams} from '@/api/base';
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
+import {PageSizeOptions, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 页面所需 对象、方法
 import {getAppSelectOptions, QueryAppForm} from "@/api/application";
 import {
@@ -413,9 +414,19 @@ watch(() => props, (val) => {
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictName')" :tooltip="true" :width="180" data-index="dictName" fixed="left"/>
+      <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictName')" :tooltip="true" :width="180" data-index="dictName" fixed="left">
+        <template #cell="{ record }">
+          <CopyToClipboard v-if="record.id" :model-value="record.id" :title="$t('copy.to.clipboard.button.key.title')"/>
+          {{ record.dictName }}
+        </template>
+      </a-table-column>
       <a-table-column :ellipsis="true" :sortable="sortable.dictCode" :title="$t('security.dict.index.form.dictCode')" :tooltip="true" :width="180"
-                      data-index="dictCode"/>
+                      data-index="dictCode">
+        <template #cell="{ record }">
+          <CopyToClipboard v-if="record.dictCode" :model-value="record.dictCode"/>
+          {{ record.dictCode }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('security.dict.index.form.enableStatus')" :width="70" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`security.dict.index.form.enableStatus.${record.enableStatus}`) }}

@@ -13,7 +13,7 @@ import {Message, TableColumnData, TableSortable} from '@arco-design/web-vue';
 import {PageSizeOptions} from '@/api/base';
 // 页面所需 对象、方法
 import {PageQueryFilter, PageQueryRequest} from '@/api/base';
-import {deleteRoleUser as deleteList, insertRoleUsers, pageQueryRoleUserOf as pageQueryList, QueryRoleUserForm, QueryUserForm,} from '@/api/security';
+import {deleteRoleUser as deleteList, insertRoleUser, pageQueryRoleUserOf as pageQueryList, QueryRoleUserForm, QueryUserForm,} from '@/api/security';
 import {enableStatusOptions, sexOptions, typeOptions} from "@/views/security/user/searchTable";
 import UserChooseBox from "@/components/user-choose-box/index.vue";
 
@@ -216,7 +216,7 @@ const confirmModal = async (data: QueryUserForm[]) => {
       }
     }
     try {
-      await insertRoleUsers({
+      await insertRoleUser({
         roleId: props.parameter.roleId,
         userId: userIds.join(',')
       } as unknown as QueryRoleUserForm);

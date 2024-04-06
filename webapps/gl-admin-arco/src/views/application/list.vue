@@ -11,7 +11,8 @@ import {useRouter} from "vue-router";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
 import {Message, TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams} from '@/api/base';
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
+import {PageSizeOptions, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 页面所需 对象、方法
 import {deleteApp as deleteList, pageQueryApps as pageQueryList, QueryAppForm as QueryForm} from '@/api/application'
 import favicon from '@/assets/favicon.ico';
@@ -366,8 +367,13 @@ watch(() => props, (val) => {
           <img :src="record.logo?record.logo:favicon" alt="logo" style="width: 25px;height: 25px"/>
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.name')" :tooltip="true" :width="180" data-index="name"/>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.code')" :tooltip="true" :width="150" data-index="code"/>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.name')" :tooltip="true" :width="210" data-index="name">
+        <template #cell="{ record }">
+          <CopyToClipboard v-if="record.id" :model-value="record.id" :title="$t('copy.to.clipboard.button.key.title')"/>
+          {{ record.name }}
+        </template>
+      </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.code')" :tooltip="true" :width="180" data-index="code"/>
       <!-- <a-table-column :ellipsis="true" :title="$t('application.app.list.versionInfo')" :tooltip="true" :width="120" data-index="versionInfo"/>-->
       <a-table-column :ellipsis="true" :title="$t('application.app.list.applyStatus')" :tooltip="true" :width="90" data-index="applyStatus">
         <template #cell="{ record }">

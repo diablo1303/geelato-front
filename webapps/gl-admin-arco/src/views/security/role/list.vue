@@ -10,7 +10,8 @@ import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
 import {TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams} from '@/api/base';
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
+import {PageSizeOptions, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 页面所需 对象、方法
 import {deleteRole as deleteList, QueryRoleForm as QueryForm, pageQueryRole as pageQueryList} from '@/api/security';
 import {columns, enableStatusOptions, typeOptions} from './searchTable'
@@ -381,7 +382,12 @@ watch(() => props, (val) => {
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.role.index.form.name')" :tooltip="true" :width="180" data-index="name"/>
       <a-table-column :sortable="sortable.weight" :title="$t('security.role.index.form.weight')" :width="90" align="center" data-index="weight"/>
-      <a-table-column :ellipsis="true" :title="$t('security.role.index.form.code')" :tooltip="true" :width="150" data-index="code"/>
+      <a-table-column :ellipsis="true" :title="$t('security.role.index.form.code')" :tooltip="true" :width="180" data-index="code">
+        <template #cell="{ record }">
+          <CopyToClipboard v-if="record.code" :model-value="record.code"/>
+          {{ record.code }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('security.role.index.form.type')" :width="120" data-index="status">
         <template #cell="{ record }">
           {{ $t(`security.role.index.form.type.${record.type}`) }}
