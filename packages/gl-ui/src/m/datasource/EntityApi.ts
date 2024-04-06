@@ -11,10 +11,12 @@ import jsScriptExecutor from '../actions/JsScriptExecutor'
 import utils from '../utils/Utils'
 import useApiUrl from '../hooks/useApiUrl'
 import EntityQueryCache from '../datasource/EntityQueryCache'
+import useLogger from "../hooks/useLogger";
 
 export type MqlObject = { [key: string]: { [key: string]: any } }
 export type ParsedMqlResult = { key: string; mqlObj: Record<string, any> }
 const entityQueryCache = new EntityQueryCache()
+const logger = useLogger('entityApi')
 
 // 保存对象示例
 const entitySaverInstTemplate = new EntitySaver('必填，如entityABC')
@@ -129,7 +131,8 @@ export class EntityApi {
   queryByMql(
     mql: MqlObject | Array<MqlObject>,
     withMeta?: boolean,
-    disabledClientQueryCache?: boolean
+    disabledClientQueryCache?: boolean,
+    bizCode?: string
   ): Promise<any> {
     const isArray = Array.isArray(mql)
     const path = isArray ? this.url.metaMultiList : this.url.metaList
@@ -149,13 +152,15 @@ export class EntityApi {
       platform_user: minutes * 5
     }
     if (!disabledClientQueryCache && cachePromise) {
-      console.log(`查询实体：${Object.keys(mql)[0]}，从缓存中获取数据`)
+      logger.debug(`查询实体：${Object.keys(mql)[0]}，从缓存中获取数据`)
       return cachePromise
     } else {
-      console.log(`查询实体：${Object.keys(mql)[0]}，从服务端获取数据`)
+      logger.debug(`查询实体：${Object.keys(mql)[0]}，从服务端获取数据`)
       const entityName = Object.keys(mql)[0]
       const promiseResult = this.service({
-        url: `${path}?withMeta=${!!withMeta}&e=${isArray ? '_multiEntity' : entityName}`,
+        url: `${path}?withMeta=${!!withMeta}&biz=${bizCode}&e=${
+          isArray ? '_multiEntity' : entityName
+        }`,
         method: 'POST',
         data: mql
       })
@@ -177,7 +182,7 @@ export class EntityApi {
   convertEntityReaderToMql(entityReader: EntityReader): MqlObject {
     const ignoreDeleteStatusEntity = ['platform_oprecord']
     const ignoreOrderByUpdateAtEntity = ['platform_oprecord']
-    // console.log('queryByEntityReader > entityReader', entityReader.entity, entityReader)
+    // logger.debug('queryByEntityReader > entityReader', entityReader.entity, entityReader)
     const mql: Record<string, any> = {}
     mql[entityReader.entity] = {}
     // 1-fields
@@ -237,7 +242,7 @@ export class EntityApi {
         )
         param.groupName = param.groupName || defaultGroupName
         const simpleGroupName = param.groupName.split(subGroupFlag)[0]
-        // console.log('simpleGroupName',simpleGroupName,param.groupName)
+        // logger.debug('simpleGroupName',simpleGroupName,param.groupName)
         paramsGroups[simpleGroupName] =
           paramsGroups[simpleGroupName] || new EntityReaderParamGroup(simpleGroupName)
         paramsGroups[simpleGroupName].push(param, param.groupName, 0)
@@ -246,7 +251,7 @@ export class EntityApi {
         }
       }
 
-      // console.log('entityReader.params',entityReader.params,paramsGroups)
+      // logger.debug('entityReader.params',entityReader.params,paramsGroups)
 
       // 检查是否有删除状态，默认为0
       if (!hasDelStatus && ignoreDeleteStatusEntity.indexOf(entityReader.entity) === -1) {
@@ -282,7 +287,7 @@ export class EntityApi {
       const params: Record<string, any> = {}
       // 循环处理分组
       Object.keys(paramsGroups).forEach((key) => {
-        // console.log('key',key,paramsGroups[key])
+        // logger.debug('key',key,paramsGroups[key])
         if (key !== defaultGroupName) {
           // 其它分组参数部分，其它分组,统一以or分组进行处理，因为and不需要分组
           // @b brackets的简写，用于通过括号来组合条件
@@ -319,11 +324,12 @@ export class EntityApi {
    */
   queryByEntityReader(
     entityReader: EntityReader,
-    disabledClientQueryCache?: boolean
+    disabledClientQueryCache?: boolean,
+    bizCode?: string
   ): Promise<any> {
     const mql = this.convertEntityReaderToMql(entityReader)
     return new Promise((resolve, reject) => {
-      this.queryByMql(mql, entityReader.withMeta, disabledClientQueryCache)
+      this.queryByMql(mql, entityReader.withMeta, disabledClientQueryCache,bizCode)
         .then((res) => {
           // 是否需要处理返回结果
           const foundLocalComputeField = entityReader.fields.find((field) => {
@@ -504,7 +510,7 @@ export class EntityApi {
 
       es.children?.forEach((subEs) => {
         const subMqlResult = toMql(subEs, true, es.record.id)
-        // console.log('convertEntitySaverToMql() > entitySaver.entity',entityName,'result:',subMqlResult)
+        // logger.debug('convertEntitySaverToMql() > entitySaver.entity',entityName,'result:',subMqlResult)
         if (
           subMqlResult.mqlObj &&
           subMqlResult.mqlObj[subMqlResult.key] &&
@@ -517,7 +523,7 @@ export class EntityApi {
             mqlObj[entityName][subMqlResult.key] = mqlObj[entityName][subMqlResult.key] || []
             mqlObj[entityName][subMqlResult.key].push(...subMqlResult.mqlObj[subMqlResult.key])
           }
-          // console.log('convertEntitySaverToMql() > parent mqlObj',mqlObj,entityName)
+          // logger.debug('convertEntitySaverToMql() > parent mqlObj',mqlObj,entityName)
         }
       })
       return { key: entityName, mqlObj: mqlObj }
@@ -540,7 +546,7 @@ export class EntityApi {
     }
     const bizCode = biz || '0'
     const mqlObj = this.convertEntitySaverToMql(entitySaver, bizCode)
-    // console.log('saveEntity > entitySaver:', entitySaver, 'mql:', mqlObj)
+    // logger.debug('saveEntity > entitySaver:', entitySaver, 'mql:', mqlObj)
     return this.service({
       url: `${this.url.apiMetaSave}/${bizCode}`,
       method: 'POST',
@@ -558,7 +564,7 @@ export class EntityApi {
     // const mqObjs: Record<string, any> = {}
     // entitySavers.forEach((entitySaver: EntitySaver) => {
     //   const mqlResult = this.convertEntitySaverToMql(entitySaver, bizCode)
-    //   console.log('saveEntity > entitySaver:', entitySaver, 'mql:', mqlResult)
+    //   logger.debug('saveEntity > entitySaver:', entitySaver, 'mql:', mqlResult)
     //   mqObjs[mqlResult.key] = mqObjs[mqlResult.key] || []
     //   mqObjs[mqlResult.key].push(mqlResult.mqlObj)
     // })
@@ -580,7 +586,7 @@ export class EntityApi {
     const mqObjs: Record<string, any> = {}
     entitySavers.forEach((entitySaver: EntitySaver) => {
       const mqlObject = this.convertEntitySaverToMql(entitySaver, bizCode)
-      console.log(
+      logger.debug(
         'saveBatchEntity > convertEntitySaverToMql > entitySaver:',
         entitySaver,
         'mql:',
@@ -853,81 +859,6 @@ export class EntityApi {
       '@p': '1,1'
     })
   }
-
-  /**
-   * 返回数据处理
-   * @param res 请求响应（response）
-   * @param resultMapping res中的数据返回结果转换定义
-   * @returns {{data: Array, resultMapping: {}}}
-   */
-  // static entityReaderResultHandler(res: Record<string, any>, resultMapping: ResultMapping) {
-  //   // console.log(
-  //   //     "gl-ui > Api.js > entityReaderResultHandler() > res: ",
-  //   //     res
-  //   // );
-  //   const resultSet: Record<string, any> = {
-  //     //  依据传入参数resultMapping的定义处理后的数据
-  //     data: [],
-  //     // 经转换之后的列映射，key为组件中用到的变量名，value为data中的列名。
-  //     resultMapping: new ResultMapping()
-  //   }
-  //
-  //   // 返回结果预处理
-  //   // 获取返回结果的列名
-  //   const resColumns: Record<string, any> = {}
-  //   if (res.data && res.data.length > 0) {
-  //     const item = res.data[0]
-  //     const resultFieldNameAry = Object.keys(item)
-  //     // eslint-disable-next-line guard-for-in,no-restricted-syntax
-  //     for (const i in resultFieldNameAry) {
-  //       resColumns[resultFieldNameAry[i]] = resultFieldNameAry[i]
-  //     }
-  //   }
-  //   // 先找出需处理的列：resultMapping的key和value不相同，mapping，e.g. [{avatar:'https://xxxxx/xx/xx.jpg'}]
-  //   const toStatMappingItems: Array<any> = []
-  //   // console.log('gl-ui > toStatMappingItems>', toStatMappingItems)
-  //   const mapping = resultMapping.getMapping()
-  //   // eslint-disable-next-line guard-for-in,no-restricted-syntax
-  //   for (const key in mapping) {
-  //     const field = mapping[key]
-  //     // let resultName = resColumns[field]
-  //     if (key !== field) {
-  //       const isRename = resColumns[field] !== undefined && !!resColumns[field]
-  //       toStatMappingItems.push({ key, value: field, isRename })
-  //       resultSet.resultMapping[key] = key
-  //     }
-  //   }
-  //   // console.log(
-  //   //   'gl-ui > Api.js > entityReaderResultHandler() > resColumns: ',
-  //   //   resColumns
-  //   // );
-  //   // console.log(
-  //   //   'gl-ui > Api.js > entityReaderResultHandler() > resultMapping: ',
-  //   //   resultMapping
-  //   // );
-  //   // console.log(
-  //   //   'gl-ui > Api.js > entityReaderResultHandler() > toStatMappingItems: ',
-  //   //   toStatMappingItems
-  //   // );
-  //
-  //   // 如增加静态的列，列值格式化、列值组合;重命名列(在原有列的基础上增加重命名的列)等
-  //   const dataItems = res.data as Array<any>
-  //   dataItems.forEach((dataItem) => {
-  //     toStatMappingItems.forEach((mappingItem) => {
-  //       if (mappingItem.isRename) {
-  //         dataItem[mappingItem.key] = dataItem[mappingItem.value]
-  //       } else {
-  //         dataItem[mappingItem.key] = MixUtil.evalPlus(mappingItem.value, dataItem)
-  //       }
-  //     })
-  //   })
-  //   resultSet.data = res.data
-  //   // console.log(
-  //   //     "gl-ui > Api.js > entityReaderResultHandler() > resultSet: ",
-  //   //     resultSet
-  //   // );
-  //   return resultSet
-  // }
 
   /**
    * 实体对像的数据转换

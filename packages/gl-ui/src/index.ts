@@ -82,6 +82,7 @@ import GlTemplate from './components/gl-template/GlTemplate.vue'
 import GlChart from './components/gl-chart/GlChart.vue'
 import GlLoader from "./components/gl-loader/GlLoader.vue";
 import './assets/style.css'
+import useLogger from './m/hooks/useLogger'
 
 const Utils = AllUtils
 
@@ -167,6 +168,7 @@ export {
   useGlobal,
   useApiUrl,
   useMessages,
+  useLogger,
   jsScriptExecutor,
   dictApi,
   fileApi,

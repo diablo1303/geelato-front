@@ -1,12 +1,13 @@
 <script setup lang="ts">
 // @ts-nocheck
 import { computed, inject, onMounted, type PropType, ref, toRaw } from 'vue'
-import { EntityReaderParam, PageProvideKey, type PageProvideProxy, utils } from '@geelato/gl-ui'
+import {EntityReaderParam, PageProvideKey, type PageProvideProxy, useLogger, utils} from '@geelato/gl-ui'
 import { ConvertUtil } from '@geelato/gl-ui'
-import QueryItem, { type QueryItemKv } from './query'
+import QueryItem, {getQueryParams, type QueryItemKv} from './query'
 import { GlIconfont } from '@geelato/gl-ui'
 import { useDebounceFn } from '@vueuse/core'
 
+const logger = useLogger('gl-query')
 const emits = defineEmits(['search'])
 const props = defineProps({
   items: {
@@ -50,9 +51,7 @@ const props = defineProps({
 })
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
-// 页面配置参数为：query.axx=1,query.bxx=2，pageQueryParams为{axx:1,bxx:2}
-const pageQueryParams = pageProvideProxy?.getParamsByPrefixAsObject('query')
-console.log('获取的查询参数为：',pageQueryParams)
+const pageQueryParams = getQueryParams(pageProvideProxy)
 /**
  *  基于组件参数及页面参数，创建查询表单值
  *  若有同名值，页面参数值优先
@@ -61,7 +60,7 @@ const generateFormModel = () => {
   const fModel: any = {}
   // 组件值
   props.items?.forEach((item: QueryItem) => {
-    // console.log('generateFormModel',item.component?.props.label,item.component!.value)
+    // logger.debug('generateFormModel',item.component?.props.label,item.component!.value)
     // 以字段名，或id从页面参数中获取值，一般地页面可以通过字段名传值
     // 但有时查询条件中多个组件都绑定了多个同名的字段时，有可能只是希望某个组件参接收到参数
     // 此时就可以通过组件的id，作为参数名进行传值如query.a234567890123456789=1，即值传了id为a234567890123456789的参数，值为1
@@ -72,7 +71,7 @@ const generateFormModel = () => {
     // 如果页面参数有传值
     if (fieldName && pageProvideProxy?.hasPageParam(`query.${fieldName}`)) {
       paramValue = pageQueryParams[fieldName]
-      console.log(`将参数：${fieldName}的值：${paramValue}，绑定到查询条件中。`)
+      logger.debug(`将参数：${fieldName}的值：${paramValue}，绑定到查询条件中。`)
     } else if (item.id && pageProvideProxy?.hasPageParam(item.id)) {
       paramValue = pageQueryParams[item.id]
     } else {
@@ -84,7 +83,7 @@ const generateFormModel = () => {
     }
     fModel[item.id] = paramValue
   })
-  // console.log('GlQuery > generateFormModel() > fModel:', fModel)
+  // logger.debug('GlQuery > generateFormModel() > fModel:', fModel)
   return fModel
 }
 const defaultValue = JSON.parse(JSON.stringify(generateFormModel()))
@@ -154,7 +153,7 @@ const resetByQueryItemKvs = (queryItemKvs: Array<QueryItemKv>) => {
           item.component &&
           (item.component.props._hidden !== true || item.component.props.readonly === true)
         ) {
-          // console.log(item.component?.props.label,item.component.value,'=>',toRaw(kv.value),utils.isEmpty(toRaw(kv.value)))
+          // logger.debug(item.component?.props.label,item.component.value,'=>',toRaw(kv.value),utils.isEmpty(toRaw(kv.value)))
           item.component.value = utils.isEmpty(toRaw(kv.value)) ? undefined : toRaw(kv.value)
         }
       }

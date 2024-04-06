@@ -66,18 +66,28 @@ import {
   PageProvideProxy,
   utils
 } from '@geelato/gl-ui'
-import { EntityReaderOrderEnum } from '@geelato/gl-ui'
+import { EntityReaderOrderEnum,useLogger } from '@geelato/gl-ui'
 
+const logger = useLogger('gl-dynamic-select')
 const emits = defineEmits(['update:modelValue'])
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const enum TriggerMode {
   onCreated = 'onCreated',
-  onInvoked = 'onInvoked'
+  onInvoked = 'onInvoked',
+  onValueChanged = 'onValueChanged'
+}
+
+const enum TriggerConstraint {
+  // 组件值从空转为非空
+  ValueChangeToNotEmpty = 'ValueChangeToNotEmpty'
+  // // 查询条件的值都不为空
+  // QueryConditionAllNotEmpty = 'QueryConditionAllNotEmpty'
 }
 
 const props = defineProps({
+  id:String,
   modelValue: {
     type: [String, Array]
   },
@@ -91,6 +101,18 @@ const props = defineProps({
   triggerMode: {
     type: String as PropType<TriggerMode>
   },
+  /**
+   * 触发约束条件，限制触发条件
+   * 可以有多个触发约束条件，需要满足所有的条件，才会触发
+   * 为空则不限制
+   */
+  triggerConstraint: {
+    type: Array as PropType<Array<TriggerConstraint>>,
+    default() {
+      return []
+    }
+  },
+
   labelFieldNames: {
     type: Array as PropType<string[]>,
     required: true
@@ -181,7 +203,7 @@ const findCheckedOptions = (keys: string[]) => {
       return option[props.valueFiledName] === key
     })
     if (foundOption) {
-      console.log('foundOption', foundOption)
+      // logger.debug('foundOption', foundOption)
       result.push(foundOption.__record)
     }
   })
@@ -201,7 +223,7 @@ const isMultiLabelFieldName = computed(() => {
 })
 const enableVirtualList = ref(false)
 const autoEnableVirtualListWhenRecordCount = 1500
-// console.log('props:', props)
+// logger.debug('props:', props)
 const initValue = getPropValue(props.modelValue) || getDefaultValue()
 const mv: Ref<string | Array<string>> = ref(initValue)
 const inputMv = ref(undefined)
@@ -219,6 +241,7 @@ const getMvItem = (value: any) => {
   }
 }
 const mvItem = ref(getMvItem(initValue))
+
 watch(
   () => {
     return props.modelValue
@@ -230,17 +253,86 @@ watch(
   },
   { deep: true }
 )
-watch(
-  mv,
-  (val: any) => {
-    // console.log('update:modelValue', val)
-    emits('update:modelValue', val)
-  },
-  { deep: true }
-)
+
+/**
+ * 当值发生变化时，触发事件
+ * @param val
+ * @param oval
+ */
+const triggerOnValueChanged = (val?: any, oval?: any) => {
+  logger.debug(
+      'GlDynamicSelect > triggerOnValueChanged() > onValueChangeToNotEmpty > val',
+      val,
+      props,
+      props.triggerConstraint.includes(TriggerConstraint.ValueChangeToNotEmpty)
+  )
+  if (TriggerMode.onValueChanged === props.triggerMode) {
+    if (props.triggerConstraint.includes(TriggerConstraint.ValueChangeToNotEmpty)) {
+      if ((oval === undefined || oval === '') && !utils.isEmpty(val)) {
+        loadData()
+      }
+    } else {
+      loadData()
+    }
+  }
+}
+
+
+// logger.debug('GlDynamicSelect > create', props.entityName, useAttrs().id)
+const selectOne = (value: any) => {
+  // 将值设置到对应的组件中
+
+  if (value && props.extraFieldAndBindIds.length > 0) {
+    props.extraFieldAndBindIds.forEach((extraFieldAndBindId) => {
+      pageProvideProxy.setComponentValue(
+        extraFieldAndBindId.bindId,
+        value[extraFieldAndBindId.fieldName]
+      )
+    })
+  }
+  // 如果值为数组对象
+  if (props.multiple) {
+    // @ts-ignore
+    mv.value.splice(0)
+    value.forEach((vItem: any) => {
+      // @ts-ignore
+      mv.value.push(vItem[props.valueFiledName])
+    })
+  } else {
+    mv.value = value ? value[props.valueFiledName] : ''
+  }
+}
+
+/**
+ * TriggerMode.onCreated 或未设置时，默认直接加载数据
+ */
+const triggerOnCreated = () => {
+  if (TriggerMode.onCreated === props.triggerMode || props.triggerMode === undefined) {
+    logger.debug('GlDynamicSelect > triggerOnCreated() > props', props)
+    watch(
+      () => {
+        return (
+          props.entityName +
+          props.valueFiledName +
+          props.labelFieldNames?.join(' ') +
+          props.extraFieldAndBindIds
+        )
+      },
+      () => {
+        loadData()
+      },
+      { immediate: true, deep: true }
+    )
+  }
+}
+
+
+
+const onClear = () => {}
+const handleSearch = () => {}
 
 const loadData = () => {
-  // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'extraFieldAndBindIds:', props.extraFieldAndBindIds,'props',props)
+  // logger.debug('GlDynamicSelect > loadData() > entityName:', props.entityName, 'extraFieldAndBindIds:', props.extraFieldAndBindIds,'props',props)
   if (props.entityName && props.valueFiledName && theLabelFieldNames) {
     const fieldSet = new Set<string>().add(props.valueFiledName)
 
@@ -284,9 +376,9 @@ const loadData = () => {
     if (props.orderFiledName) {
       entityReader.order.push(new EntityReaderOrder(props.orderFiledName, props.ascOrDesc))
     }
-    return entityApi.queryByEntityReader(entityReader).then((resp: any) => {
+    return entityApi.queryByEntityReader(entityReader,false,props.id).then((resp: any) => {
       const items = resp.data || []
-      // console.log('selectOptions.value', selectOptions.value, selectOptions.value.length)
+      // logger.debug('selectOptions.value', selectOptions.value, selectOptions.value.length)
       if (items.length === 0) {
         inputMv.value = undefined
         if (props.multiple) {
@@ -329,54 +421,18 @@ const loadData = () => {
   }
 }
 
-// console.log('GlDynamicSelect > create', props.entityName, useAttrs().id)
-const selectOne = (value: any) => {
-  // 将值设置到对应的组件中
-
-  if (value && props.extraFieldAndBindIds.length > 0) {
-    props.extraFieldAndBindIds.forEach((extraFieldAndBindId) => {
-      pageProvideProxy.setComponentValue(
-        extraFieldAndBindId.bindId,
-        value[extraFieldAndBindId.fieldName]
-      )
-    })
-  }
-  // 如果值为数组对象
-  if (props.multiple) {
-    // @ts-ignore
-    mv.value.splice(0)
-    value.forEach((vItem: any) => {
-      // @ts-ignore
-      mv.value.push(vItem[props.valueFiledName])
-    })
-  } else {
-    mv.value = value ? value[props.valueFiledName] : ''
-  }
-}
-
-const onClear = () => {}
-
-if (props.triggerMode !== TriggerMode.onInvoked) {
-  // console.log('props.triggerMode !== TriggerMode.onInvoked', props.triggerMode)
-  watch(
-    () => {
-      return (
-        props.entityName +
-        props.valueFiledName +
-        props.labelFieldNames?.join(' ') +
-        props.extraFieldAndBindIds
-      )
-    },
-    () => {
-      loadData()
-    },
-    { immediate: true, deep: true }
-  )
-}
-
-const handleSearch = () => {}
-
 defineExpose({ fetchData: loadData })
+
+watch(
+    mv,
+    (val: any, oval: any) => {
+      emits('update:modelValue', val)
+      triggerOnValueChanged(val, oval)
+    },
+    { deep: true, immediate: true }
+)
+
+triggerOnCreated()
 </script>
 
 <style scoped>
