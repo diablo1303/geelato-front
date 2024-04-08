@@ -27,6 +27,8 @@ export default {
   'application.app.list.versionInfo': 'version',
   'application.app.list.seqNo': 'sequence',
   'application.app.list.description': 'description',
+  'application.app.list.roles': 'associatedRole',
+  'application.app.list.roles.placeholder': 'Relate the platform-level roles that are needed。',
   'application.app.list.createAt': 'createTime',
   'application.app.list.updateAt': 'updateTime',
   'application.app.list.operations': 'operations',

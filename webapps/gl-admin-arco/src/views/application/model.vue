@@ -10,6 +10,7 @@ import {useI18n} from 'vue-i18n';
 import {FileItem, FormInstance, Modal} from "@arco-design/web-vue";
 import {iconsJson} from "@geelato/gl-ui";
 import {createOrUpdateApp as createOrUpdateForm, getApp as getForm, QueryAppForm as QueryForm, validateAppCode} from '@/api/application'
+import {getRoleSelectOptions, QueryRoleForm} from "@/api/security";
 import UploadImageBase64 from '@/components/upload-base64/image.vue';
 import {statusOptions, watermarkOptions} from "./searchTable";
 
@@ -58,11 +59,14 @@ const generateFormData = (): QueryForm => {
     seqNo: 999,
     applyStatus: 1,
     designStatus: 1,
+    roles: '',
     tenantCode: props.parameter?.tenantCode || ''
   };
 }
 const formData = ref(generateFormData());
-
+const roleSelectOptions = ref<QueryRoleForm[]>([]);
+const selectAll = ref<boolean>(false);
+const selectData = ref<string[]>([]);
 /**
  * 新增或更新接口
  * @param params
@@ -73,6 +77,7 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
+      params.roles = selectData.value && selectData.value.toString();
       const {data} = await createOrUpdateForm(params);
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
@@ -143,6 +148,35 @@ const deleteIconClick = (ev?: MouseEvent) => {
 }
 
 /**
+ * 选择内容与全选联动
+ */
+const selectChange = () => {
+  let isAll = true;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of roleSelectOptions.value) {
+    if (!selectData.value.includes(item.id)) {
+      isAll = false;
+    }
+  }
+  selectAll.value = isAll;
+}
+/**
+ * 全选与选择项联动
+ */
+const selectAllChange = () => {
+  if (selectAll.value === true) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of roleSelectOptions.value) {
+      if (!selectData.value.includes(item.id)) {
+        selectData.value.push(item.id);
+      }
+    }
+  } else {
+    selectData.value = [];
+  }
+}
+
+/**
  * 页面数据创建或更新方法，对外提供
  * @param successBack
  * @param failBack
@@ -160,6 +194,16 @@ const saveOrUpdate = (successBack?: any, failBack?: any) => {
  * 页面加载方法，对外提供
  */
 const loadPage = () => {
+  if (['add'].includes(props.formState)) {
+    getRoleSelectOptions({type: 'platform', tenantCode: props.parameter?.tenantCode || ''},
+        (data: QueryRoleForm[]) => {
+          roleSelectOptions.value = data;
+        }, () => {
+          roleSelectOptions.value = [];
+        });
+  }
+  selectData.value = [];
+  selectAll.value = false;
   logoFile.value = [];
   // 表单数据重置
   formData.value = generateFormData();
@@ -276,6 +320,24 @@ defineExpose({saveOrUpdate, loadPage});
           <span v-else>{{ formData.seqNo }}</span>
         </a-form-item>
       </a-col>
+      <a-col v-if="formState==='add'" :span="(labelCol+wrapperCol)">
+        <a-form-item :label="$t('application.app.list.roles')"
+                     :label-col-props="{ span: labelCol/formCol }"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                     field="roles">
+          <a-select v-model="selectData" :field-names="{value: 'id', label: 'name'}" :options="roleSelectOptions"
+                    :placeholder="$t('application.app.list.roles.placeholder')"
+                    multiple allow-clear allow-search @change="selectChange">
+            <template #header>
+              <div class="check-all">
+                <a-checkbox v-model="selectAll" class="check-all-radio" @change="selectAllChange">
+                  <span class="check-all-span">全选</span>
+                </a-checkbox>
+              </div>
+            </template>
+          </a-select>
+        </a-form-item>
+      </a-col>
       <a-col :span="(labelCol+wrapperCol)">
         <a-form-item :label="$t('application.app.list.description')"
                      :label-col-props="{ span: labelCol/formCol }"
@@ -339,5 +401,18 @@ defineExpose({saveOrUpdate, loadPage});
 
 .gl-iconfont-setter-icon-item:hover {
   box-shadow: 0px 0px 4px #1890FF;
+}
+
+.check-all {
+  padding: 6px 12px;
+
+  &-radio {
+    width: 100%
+  }
+
+  &-span {
+    font-weight: 600;
+    color: rgb(var(--primary-6));
+  }
 }
 </style>

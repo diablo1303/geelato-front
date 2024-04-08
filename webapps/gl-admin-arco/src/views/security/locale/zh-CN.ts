@@ -368,6 +368,8 @@ export default {
   'security.role.index.form.enableStatus.false': '禁用',
   'security.role.index.form.enableStatus.true': '启用',
   'security.role.index.form.description': '描述',
+  'security.role.index.form.appIds': '关联应用',
+  'security.role.index.form.appIds.placeholder': '关联需要用到的应用',
   'security.role.index.form.seqNo': '排序',
   'security.role.index.form.createAt': '创建时间',
   'security.role.index.form.operations': '操作',

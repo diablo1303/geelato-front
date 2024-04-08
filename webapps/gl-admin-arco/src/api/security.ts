@@ -512,6 +512,7 @@ export interface QueryRoleForm {
   tenantCode: string;
   appId: string;
   appName?: string;
+  appIds?: string;
 }
 
 export interface FilterRoleForm {
@@ -778,6 +779,7 @@ export function queryRoleByUser(userId: string, appId: string, tenantCode: strin
 export function insertRoleUser(params: QueryRoleUserForm) {
   return axios.post<QueryResult>('/api/security/role/user/insert', params);
 }
+
 export function switchRoleUser(params: QueryRoleUserForm) {
   return axios.post<QueryResult>('/api/security/role/user/switch', params);
 }

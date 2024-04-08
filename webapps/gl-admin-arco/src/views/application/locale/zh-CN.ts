@@ -27,6 +27,8 @@ export default {
   'application.app.list.versionInfo': '版本信息',
   'application.app.list.seqNo': '排序',
   'application.app.list.description': '备注',
+  'application.app.list.roles': '关联角色',
+  'application.app.list.roles.placeholder': '关联需要用到的平台级角色。',
   'application.app.list.createAt': '创建时间',
   'application.app.list.updateAt': '更新时间',
   'application.app.list.operations': '操作',

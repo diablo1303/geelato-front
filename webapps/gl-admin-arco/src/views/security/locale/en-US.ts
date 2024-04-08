@@ -367,6 +367,8 @@ export default {
   'security.role.index.form.enableStatus.false': 'disabled',
   'security.role.index.form.enableStatus.true': 'enabled',
   'security.role.index.form.description': 'description',
+  'security.role.index.form.appIds': 'associatedApps',
+  'security.role.index.form.appIds.placeholder': 'Associate applications that need to be used。',
   'security.role.index.form.seqNo': 'sequence',
   'security.role.index.form.createAt': 'createTime',
   'security.role.index.form.operations': 'operation',

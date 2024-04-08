@@ -194,6 +194,7 @@ const addTable = (ev: MouseEvent) => {
   formParams.value = Object.assign(formParams.value, {
     id: '', visible: true, formState: 'add'
   });
+  if (!props.parameter.type && props.parameter.appId) formParams.value.parameter.type = 'app';
 };
 const tabsformParams = ref({
   visible: false,
@@ -223,6 +224,7 @@ const editTable = (data: QueryForm) => {
   tabsformParams.value = Object.assign(tabsformParams.value, {
     id: data.id, visible: true, formState: 'edit'
   });
+  if (!props.parameter.type && props.parameter.appId) formParams.value.parameter.type = 'app';
 }
 /**
  * 列表按钮 - 删除

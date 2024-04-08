@@ -26,6 +26,7 @@ export interface QueryAppForm {
   tenantCode?: string;
   applyStatus: number;
   designStatus: number;
+  roles?: string;
 }
 
 export interface FilterAppForm {

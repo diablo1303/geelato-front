@@ -7,6 +7,7 @@ export default {
 import {ref, watch} from "vue";
 import {useI18n} from 'vue-i18n';
 import {FormInstance, Modal} from "@arco-design/web-vue";
+import {getAppSelectOptions} from "@/api/application";
 import {
   createOrUpdateRole as createOrUpdateForm,
   getRole as getForm,
@@ -15,7 +16,7 @@ import {
   validateRoleCode
 } from '@/api/security';
 import {enableStatusOptions, typeOptions} from "@/views/security/role/searchTable";
-import {getAppSelectOptions} from "@/api/application";
+import ButtonTooltipIndex from "@/components/button-tooltip/index.vue";
 
 // 页面所需 参数
 type PageParams = {
@@ -50,12 +51,16 @@ const generateFormData = (): QueryForm => {
     seqNo: 999,
     description: '',
     appName: '',
+    appIds: '',
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
   };
 }
 const formData = ref(generateFormData());
 const appSelectOptions = ref<QueryAppForm[]>([]);
+const selectAll = ref<boolean>(false);
+const selectData = ref<string[]>([]);
+
 /**
  * 新增或更新接口
  * @param params
@@ -67,6 +72,7 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
   if (!res) {
     try {
       params.appId = ["app"].includes(params.type) ? params.appId : '';
+      params.appIds = selectData.value && selectData.value.toString();
       const {data} = await createOrUpdateForm(params);
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
@@ -121,6 +127,37 @@ const resetValidate = async () => {
 const typeChange = () => {
   formData.value.appId = '';
   formData.value.appName = '';
+  selectAll.value = false;
+  selectData.value = [];
+}
+
+/**
+ * 选择内容与全选联动
+ */
+const selectChange = () => {
+  let isAll = true;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of appSelectOptions.value) {
+    if (!selectData.value.includes(item.id)) {
+      isAll = false;
+    }
+  }
+  selectAll.value = isAll;
+}
+/**
+ * 全选与选择项联动
+ */
+const selectAllChange = () => {
+  if (selectAll.value === true) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of appSelectOptions.value) {
+      if (!selectData.value.includes(item.id)) {
+        selectData.value.push(item.id);
+      }
+    }
+  } else {
+    selectData.value = [];
+  }
 }
 
 /**
@@ -150,6 +187,8 @@ const loadPage = () => {
     appSelectOptions.value = [];
   });
   // 表单数据重置
+  selectAll.value = false;
+  selectData.value = [];
   formData.value = generateFormData();
   // 重置验证
   resetValidate();
@@ -197,18 +236,18 @@ defineExpose({saveOrUpdate, loadPage});
             :label="$t('security.role.index.form.type')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="type">
-          <a-select v-if="formState!=='view'&&!parameter.type" v-model="formData.type" @change="typeChange">
+          <a-select v-if="formState==='add'&&!parameter.type" v-model="formData.type" @change="typeChange">
             <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`security.role.index.form.type.${formData.type}`) }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="(labelCol+wrapperCol)/formCol">
+      <a-col v-if="['app'].includes(formData.type)" :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :label="$t('security.roleApp.index.form.appName')"
                      :rules="[{required: ['app'].includes(formData.type),message: $t('security.form.rules.match.required')}]"
                      field="appId">
-          <a-select v-if="formState!=='view'&&['app'].includes(formData.type)" v-model="formData.appId"
-                    :field-names="{value: 'id', label: 'name'}" :options="appSelectOptions" allow-search/>
+          <a-select v-if="formState==='add'" v-model="formData.appId" :field-names="{value: 'id', label: 'name'}"
+                    :options="appSelectOptions" allow-search/>
           <span v-else>{{ formData.appName }}</span>
         </a-form-item>
       </a-col>
@@ -222,11 +261,11 @@ defineExpose({saveOrUpdate, loadPage});
               :placeholder="$t('security.form.rules.match.length.title')+'[0,999]'"
               :precision="0" :step="1"/>
           <span v-else>{{ formData.weight }}</span>
-          <a-tooltip v-if="formData.weight!==5&&formState!=='view'" :content="$t('security.role.index.form.weight.reset.tip')">
-            <a-button class="select-button button-primary" @click="ev => {formData.weight=5;}">
-              <icon-undo/>
-            </a-button>
-          </a-tooltip>
+          <ButtonTooltipIndex v-if="formData.weight!==5&&formState!=='view'"
+                              :content="$t('security.role.index.form.weight.reset.tip')"
+                              @click="ev => {formData.weight=5;}">
+            <icon-undo/>
+          </ButtonTooltipIndex>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -250,6 +289,24 @@ defineExpose({saveOrUpdate, loadPage});
               :placeholder="$t('security.form.rules.match.length.title')+'[0,999999999]'"
               :precision="0"/>
           <span v-else>{{ formData.seqNo }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col v-if="formState==='add'&&['platform'].includes(formData.type)" :span="(labelCol+wrapperCol)">
+        <a-form-item :label="$t('security.role.index.form.appIds')"
+                     :label-col-props="{ span: labelCol/formCol }"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                     field="appIds">
+          <a-select v-model="selectData" :field-names="{value: 'id', label: 'name'}" :options="appSelectOptions"
+                    :placeholder="$t('security.role.index.form.appIds.placeholder')"
+                    multiple allow-clear allow-search @change="selectChange">
+            <template #header>
+              <div class="check-all">
+                <a-checkbox v-model="selectAll" class="check-all-radio" @change="selectAllChange">
+                  <span class="check-all-span">全选</span>
+                </a-checkbox>
+              </div>
+            </template>
+          </a-select>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)">
@@ -285,5 +342,18 @@ div.arco-form-item-content > span.textarea-span {
 
 .button-primary {
   color: rgb(var(--primary-6));
+}
+
+.check-all {
+  padding: 6px 12px;
+
+  &-radio {
+    width: 100%
+  }
+
+  &-span {
+    font-weight: 600;
+    color: rgb(var(--primary-6));
+  }
 }
 </style>

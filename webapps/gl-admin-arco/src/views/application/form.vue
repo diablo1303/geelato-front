@@ -87,10 +87,10 @@ watch(() => visibleForm, () => {
 <template>
   <a-modal v-if="isModal"
            v-model:visible="visibleForm"
-           :cancel-text="$t('security.permission.index.model.cancel.text')"
+           :cancel-text="$t('application.app.model.cancel.text')"
            :footer="formState!=='view'"
-           :ok-text="$t('security.permission.index.model.ok.text')"
-           :title="title || $t(`security.permission.index.model.title.${formState}`)"
+           :ok-text="$t('application.app.model.ok.text')"
+           :title="title || $t(`application.app.model.title.${formState}`)"
            :width="width || ''" title-align="start"
            @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
     <ApplicationModel ref="tableFormRef"
@@ -102,10 +102,10 @@ watch(() => visibleForm, () => {
   </a-modal>
   <a-drawer v-if="!isModal"
             v-model:visible="visibleForm"
-            :cancel-text="$t('security.permission.index.model.cancel.text')"
+            :cancel-text="$t('application.app.model.cancel.text')"
             :footer="formState!=='view'"
-            :ok-text="$t('security.permission.index.model.ok.text')"
-            :title="title || $t(`security.permission.index.model.title.${formState}`)"
+            :ok-text="$t('application.app.model.ok.text')"
+            :title="title || $t(`application.app.model.title.${formState}`)"
             :width="width || ''" title-align="start"
             @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
     <ApplicationModel ref="tableFormRef"

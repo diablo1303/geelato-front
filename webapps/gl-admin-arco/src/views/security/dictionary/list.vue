@@ -435,7 +435,7 @@ watch(() => props, (val) => {
       <a-table-column :sortable="sortable.seqNo" :title="$t('security.dict.index.form.seqNo')" :width="100" align="right" data-index="seqNo"/>
       <a-table-column :sortable="sortable.createAt" :title="$t('security.dict.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('security.dict.index.form.dictRemark')" :tooltip="{position:'right'}" :width="240" data-index="dictRemark"/>
-      <a-table-column v-show="formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="280" align="center" data-index="operations"
+      <a-table-column v-show="formState==='edit'" :title="$t('security.dict.index.form.operations')" :width="210" align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">
           <a-button size="small" type="text" @click="exportDictAndItems(record.id)">
@@ -444,9 +444,9 @@ watch(() => props, (val) => {
           <a-button size="small" type="text" @click="configTable(record)">
             {{ $t('searchTable.columns.operations.config') }}
           </a-button>
-          <a-button :disabled="formState==='view'" size="small" type="text" @click="editTable(record)">
-            {{ $t('searchTable.columns.operations.edit') }}
-          </a-button>
+          <!--          <a-button :disabled="formState==='view'" size="small" type="text" @click="editTable(record)">
+                      {{ $t('searchTable.columns.operations.edit') }}
+                    </a-button>-->
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record)">
             <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
