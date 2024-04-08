@@ -12,7 +12,7 @@ import type {ColumnSelectType, QueryTableColumnForm, QueryTableForm, Pagination}
 import {
   enableStatusOptions,
   encryptedOptions,
-  keyOptions,
+  keyOptions, markerOptions,
   nullableOptions,
   numericSignedOptions,
   uniquedOptions
@@ -198,7 +198,7 @@ const formPage = ref({
   formState: 'add',//
   formCol: 2,//
   title: '模型字段',
-  width: '850px',
+  width: '1020px',
   editName: true,// 是否可编辑模型名称
 });
 /* 列表，按钮、操作列 */
@@ -449,6 +449,7 @@ const isDefaultColumn = (value: string) => {
  */
 watch(() => selectVisible, (val) => {
   if (selectVisible.value) {
+    checked.value = true;
     modelApi.getCommonFieldsOptions((data: QueryTableColumnForm[]) => {
       selectCommonOptions.value = data || [];
     }, () => {
@@ -683,6 +684,9 @@ watch(() => props.height, (val) => {
             <a-button v-if="record.key===true" class="list-action-button-default" type="outline">
               {{ $t('model.column.index.form.name.key') }}
             </a-button>
+            <a-button v-if="record.key===false&&record.marker&&record.marker.indexOf('id')==-1" class="list-action-button-default" type="outline">
+              {{ utils.getOptionLabel(record.marker, markerOptions) }}
+            </a-button>
           </a-space>
         </template>
       </a-table-column>
@@ -759,7 +763,7 @@ watch(() => props.height, (val) => {
               删除
             </a-button>
           </a-tooltip>
-          <a-popconfirm v-else content="是否删除该条数据？" position="tr" type="warning" @ok="deleteTable(record.id)">
+          <a-popconfirm v-else content="是否删除该条数据？" position="tr" type="warning" @ok="deleteTable(record)">
             <a-button size="small" status="danger" type="text">
               删除
             </a-button>

@@ -411,7 +411,7 @@ watch(() => props.height, (val) => {
             权限
           </a-button>
           <!--    删除      -->
-          <a-popconfirm content="是否删除该条数据？" position="tr" type="warning" @ok="deleteTable(record.id)">
+          <a-popconfirm content="是否删除该条数据？" position="tr" type="warning" @ok="deleteTable(record)">
             <a-button size="small" status="danger" type="text">
               删除
             </a-button>

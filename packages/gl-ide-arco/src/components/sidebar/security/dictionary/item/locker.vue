@@ -6,7 +6,7 @@ export default {
 
 <script lang="ts" setup>
 import {reactive, ref, watch} from "vue";
-import type {TableData} from "@arco-design/web-vue";
+import type {TableData, TableRowSelection} from "@arco-design/web-vue";
 import {securityApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryDictItemForm} from "@geelato/gl-ui";
 import {enableStatusOptions} from "../searchTable";
@@ -38,7 +38,9 @@ const loading = ref<boolean>(false);
 const visibleForm = ref<boolean>(false);
 const columnData = ref<QueryDictItemForm[]>([]);
 const selectedKeys = ref([]);
-const rowSelection = reactive({type: 'checkbox', showCheckedAll: true, onlyCurrent: true});
+const rowSelection = ref<TableRowSelection>({
+  type: 'checkbox', showCheckedAll: true, onlyCurrent: true
+});
 const columnTitle = reactive([]);
 // 列表 - 滑动条
 const scrollbar = ref(true);

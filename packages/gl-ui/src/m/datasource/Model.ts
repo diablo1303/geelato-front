@@ -133,6 +133,7 @@ export interface QueryTableColumnForm {
   tenantCode: string;
   synced: boolean | number;
   encrypted: boolean | number;
+  marker: string | string[];
   delStatus: number;
   deptId?: string;
   buId?: string;

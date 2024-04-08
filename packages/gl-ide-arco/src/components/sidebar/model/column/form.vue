@@ -23,7 +23,7 @@ import {
   autoIncrementOptions,
   enableStatusOptions,
   encryptedOptions,
-  keyOptions,
+  keyOptions, markerOptions,
   nullableOptions,
   numericSignedOptions,
   uniquedOptions
@@ -102,6 +102,7 @@ const generateFormData = (): QueryTableColumnForm => {
     autoName: '',
     synced: false,
     encrypted: 0,
+    marker: [],
     seqNo: 1,
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
@@ -361,14 +362,16 @@ const entityChange1 = () => {
 const createOrUpdateData = async (params: QueryTableColumnForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
   if (!res) {
-    params.autoAdd = Number(params.autoAdd.toString());
-    params.defaultValue = params.defaultValue && params.defaultValue.toString();
-    params.typeExtra = params.typeExtra && params.typeExtra.toString();
-    if (['MULTICOMPONENT'].includes(params.selectType)) {
-      params.typeExtra = getMultiData();
+    const saveData = {...params};
+    saveData.autoAdd = Number(saveData.autoAdd.toString());
+    saveData.defaultValue = saveData.defaultValue && saveData.defaultValue.toString();
+    saveData.typeExtra = saveData.typeExtra && saveData.typeExtra.toString();
+    saveData.marker = saveData.marker && saveData.marker.toString();
+    if (['MULTICOMPONENT'].includes(saveData.selectType)) {
+      saveData.typeExtra = getMultiData();
     }
     try {
-      const {data} = await modelApi.createOrUpdateTableColumn(params);
+      const {data} = await modelApi.createOrUpdateTableColumn(saveData);
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
       if (failBack && typeof failBack === 'function') failBack(err);
@@ -488,6 +491,10 @@ const selectTypeChange = (value: string) => {
       }
     }
   }
+
+  if (['DICTIONARY'].includes(formData.value.selectType)) getSelectDictionaryOptions();
+  if (['CODE'].includes(formData.value.selectType)) getSelectCodeOptions();
+  if (['ENTITY'].includes(formData.value.selectType)) getSelectEntityOptions();
 }
 
 const numericPrecisionBlur = (ev?: FocusEvent) => {
@@ -610,10 +617,27 @@ const validateCode = async (value: any, callback: any) => {
     params.autoAdd = Number(params.autoAdd.toString());
     params.defaultValue = params.defaultValue && params.defaultValue.toString();
     params.typeExtra = params.typeExtra && params.typeExtra.toString();
+    params.marker = params.marker && params.marker.toString();
     const {data} = await modelApi.validateTableColumnName(params);
     if (!data) callback('不能重复');
   } catch (err) {
     console.log(err);
+  }
+}
+
+const keyChange = () => {
+  if (formData.value.key === 1) {
+    // (formData.value.marker as string[]).push('id');
+    formData.value.marker = ['id'];
+  } else {
+    formData.value.marker = (formData.value.marker as string[]).filter((item) => item !== 'id');
+  }
+}
+const markerChange = () => {
+  if ((formData.value.marker as string[]).includes('id')) {
+    formData.value.key = 1;
+  } else {
+    formData.value.key = 0;
   }
 }
 
@@ -638,11 +662,8 @@ const handleModelCancel = (ev?: Event) => {
   visibleForm.value = false;
 }
 
-watch(() => props, () => {
+watch(() => props, async () => {
   if (props.visible === true) {
-    getSelectDictionaryOptions();
-    getSelectCodeOptions();
-    getSelectEntityOptions();
     // 应用信息
     applicationApi.getAppSelectOptions({
       id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
@@ -652,7 +673,7 @@ watch(() => props, () => {
       appSelectOptions.value = [];
     });
     // 模型字段类型
-    modelApi.getTypeSelectOptions((data: ColumnSelectType[]) => {
+    await modelApi.getTypeSelectOptions((data: ColumnSelectType[]) => {
       columnSelectType.value = data || [];
       selectTypeOptions.value = modelApi.handleSelectType(columnSelectType.value);
     }, () => {
@@ -660,8 +681,8 @@ watch(() => props, () => {
       selectTypeOptions.value = [];
     });
     // 表单数据重置
-    formData.value = generateFormData();
     multiComponentData.value = [generateMultiComponentData()];
+    formData.value = generateFormData();
     // 重置验证
     resetValidate();
     // 数据字典
@@ -670,7 +691,7 @@ watch(() => props, () => {
     }
     // 编辑、查看 状态 查询数据
     if (['edit', 'view'].includes(props.formState) && props.modelValue) {
-      getData(props.modelValue, (data: QueryTableColumnForm) => {
+      await getData(props.modelValue, (data: QueryTableColumnForm) => {
         // string ==> number
         data.seqNo = Number(data.seqNo);
         data.ordinalPosition = Number(data.ordinalPosition);
@@ -684,6 +705,7 @@ watch(() => props, () => {
         data.autoIncrement = data.autoIncrement === true ? 1 : 0;
         data.isRefColumn = data.isRefColumn === true ? 1 : 0;
         data.autoAdd = [(data.autoAdd === true ? 1 : 0).toString()];
+        data.marker = (data.marker ? (data.marker as string).split(',') : []) as string[];
         if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT', 'DECIMAL', 'SCORE'].includes(data.selectType)) {
           data.defaultValue = (data.defaultValue == null || data.defaultValue === '') ? data.defaultValue : Number(data.defaultValue);
         }
@@ -696,11 +718,14 @@ watch(() => props, () => {
         }
         formData.value = data;
         if (['DICTIONARY'].includes(data.selectType)) {
+          getSelectDictionaryOptions();
           dictionaryChange(data.defaultValue as string);
         }
         if (['ENTITY'].includes(data.selectType)) {
+          getSelectEntityOptions();
           entityChange(data.defaultValue as string);
         }
+        if (['CODE'].includes(formData.value.selectType)) getSelectCodeOptions();
       });
     }
   }
@@ -1019,7 +1044,7 @@ watch(() => visibleForm, () => {
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
           <a-form-item field="key" label="是否主键">
-            <a-radio-group v-model="formData.key" :options="keyOptions" :rules="[{required: true,message: '这是必填项'}]">
+            <a-radio-group v-model="formData.key" :options="keyOptions" :rules="[{required: true,message: '这是必填项'}]" @change="keyChange">
               <template #label="{ data }">{{ data.label }}</template>
             </a-radio-group>
           </a-form-item>
@@ -1044,6 +1069,17 @@ watch(() => visibleForm, () => {
             <a-radio-group v-model="formData.encrypted" :options="encryptedOptions" :rules="[{required: true,message: '这是必填项'}]">
               <template #label="{ data }">{{ data.label }}</template>
             </a-radio-group>
+          </a-form-item>
+        </a-col>
+
+        <a-divider style="margin: 5px 0;"/>
+        <a-col :span="labelCol+wrapperCol">
+          <a-form-item :label-col-props="{ span: labelCol/formCol }"
+                       :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                       field="key" label="特殊标记">
+            <a-checkbox-group v-model="formData.marker as string[]" :options="markerOptions" :max="1" @change="markerChange">
+              <template #label="{ data }">{{ data.label }}</template>
+            </a-checkbox-group>
           </a-form-item>
         </a-col>
       </a-row>

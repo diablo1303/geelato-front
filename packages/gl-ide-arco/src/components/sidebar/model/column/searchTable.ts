@@ -34,7 +34,15 @@ const numericSignedOptions = computed<RadioOption[]>(() => [
   {label: '是', value: 1,},
   {label: "否", value: 0,},
 ]);
-
+const markerOptions = computed<RadioOption[]>(() => [
+  {label: '主键', value: 'id',},
+  {label: '标题', value: 'title',},
+  {label: '名称', value: 'name',},
+  {label: '编码', value: 'code',},
+  {label: '类型', value: 'type',},
+  {label: '状态', value: 'status',},
+  {label: '备注', value: 'remark',},
+]);
 const columnPermissionOptions = computed<SelectOptionData[]>(() => [
   {label: "可编辑", value: "0",},
   {label: '不可编辑', value: "1",},
@@ -44,6 +52,7 @@ const columnPermissionOptions = computed<SelectOptionData[]>(() => [
 export {
   enableStatusOptions,
   keyOptions,
+  markerOptions,
   nullableOptions,
   uniquedOptions,
   encryptedOptions,
