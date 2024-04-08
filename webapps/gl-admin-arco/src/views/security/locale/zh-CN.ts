@@ -361,6 +361,7 @@ export default {
   'security.role.index.form.type.app': '应用级角色',
   'security.role.index.form.type.platform': '平台级角色',
   'security.role.index.form.weight': '权重',
+  'security.role.index.form.weight.reset.tip': '重置为默认权重',
   'security.role.index.form.enableStatus': '状态',
   'security.role.index.form.enableStatus.0': '禁用',
   'security.role.index.form.enableStatus.1': '启用',

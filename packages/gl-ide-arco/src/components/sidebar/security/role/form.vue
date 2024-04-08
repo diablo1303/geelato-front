@@ -203,10 +203,8 @@ watch(() => visibleForm, () => {
             <a-input-number v-if="formState!=='view'" v-model="formData.weight" :max="999" :min="0" :precision="0" :step="1" placeholder="长度 [0,999]"/>
             <span v-else>{{ formData.weight }}</span>
             <a-tooltip v-if="formState!=='view'&&formData.weight!==5" content="重置为默认权重">
-              <a-button size="medium" type="text" @click="ev => {formData.weight=5;}">
-                <template #icon>
-                  <gl-iconfont type="gl-reset"/>
-                </template>
+              <a-button class="select-button button-primary" @click="ev => {formData.weight=5;}">
+                <gl-iconfont type="gl-reset"/>
               </a-button>
             </a-tooltip>
           </a-form-item>
@@ -244,5 +242,19 @@ div.arco-form-item-content > span.textarea-span {
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+}
+
+.select-button {
+  height: 31.6px;
+  padding: 0 8px;
+  font-weight: bold;
+}
+
+.button-success {
+  color: rgb(var(--success-6));
+}
+
+.button-primary {
+  color: rgb(var(--primary-6));
 }
 </style>

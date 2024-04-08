@@ -218,15 +218,15 @@ defineExpose({saveOrUpdate, loadPage});
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="weight">
           <a-input-number
-              v-if="formState!=='view'" v-model="formData.weight" :max="999" :min="0" :placeholder="$t('security.form.rules.match.length.title')+'[0,999]'"
-              :precision="0"
-              :step="1"/>
+              v-if="formState!=='view'" v-model="formData.weight" :max="999" :min="0"
+              :placeholder="$t('security.form.rules.match.length.title')+'[0,999]'"
+              :precision="0" :step="1"/>
           <span v-else>{{ formData.weight }}</span>
-          <a-button v-if="formData.weight!==5&&formState!=='view'" size="medium" type="outline" @click="ev => {formData.weight=5;}">
-            <template #icon>
+          <a-tooltip v-if="formData.weight!==5&&formState!=='view'" :content="$t('security.role.index.form.weight.reset.tip')">
+            <a-button class="select-button button-primary" @click="ev => {formData.weight=5;}">
               <icon-undo/>
-            </template>
-          </a-button>
+            </a-button>
+          </a-tooltip>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -271,5 +271,19 @@ div.arco-form-item-content > span.textarea-span {
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+}
+
+.select-button {
+  height: 31.6px;
+  padding: 0 8px;
+  font-weight: bold;
+}
+
+.button-success {
+  color: rgb(var(--success-6));
+}
+
+.button-primary {
+  color: rgb(var(--primary-6));
 }
 </style>
