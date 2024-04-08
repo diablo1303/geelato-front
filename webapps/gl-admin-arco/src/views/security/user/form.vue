@@ -12,6 +12,8 @@ import UserModel from './model.vue';
 
 // 页面所需 参数
 type PageParams = {
+  orgId: string; // 组织主键
+  orgName: string; // 组织名称
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }

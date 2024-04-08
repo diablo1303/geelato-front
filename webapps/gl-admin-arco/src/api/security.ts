@@ -24,6 +24,14 @@ export function pageQueryUser(params: PageQueryRequest) {
   });
 }
 
+export function pageQueryUserOf(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/user/pageQueryOf', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 /* 字典分页查询 */
 export function pageQueryDict(params: PageQueryRequest) {
   return axios.get<PageQueryResponse>('/api/dict/pageQuery', {
@@ -769,6 +777,9 @@ export function queryRoleByUser(userId: string, appId: string, tenantCode: strin
 
 export function insertRoleUser(params: QueryRoleUserForm) {
   return axios.post<QueryResult>('/api/security/role/user/insert', params);
+}
+export function switchRoleUser(params: QueryRoleUserForm) {
+  return axios.post<QueryResult>('/api/security/role/user/switch', params);
 }
 
 export function deleteRoleUser(id: string) {

@@ -13,13 +13,16 @@ import {emitter, useGlobal} from '@geelato/gl-ui';
 import useUser from '@/hooks/user';
 import useLoading from "@/hooks/loading";
 import {getApp, QueryAppForm,} from "@/api/application";
-import {PageSizeOptions, resetValueByOptions} from '@/api/base';
+import {ListParams, PageSizeOptions, resetValueByOptions} from '@/api/base';
+import {QueryOrgForm} from "@/api/security";
 import ApplicationModel from "@/views/application/model.vue";
 import DictionaryList from "@/views/security/dictionary/list.vue";
 import RoleList from "@/views/security/role/list.vue";
 import EncodingList from "@/views/security/encoding/list.vue";
 import FileTemplateList from "@/views/security/file/list.vue";
 import SystemConfigList from "@/views/security/sysconfig/list.vue";
+import OrgTree from "@/components/org-choose-box/tree.vue";
+import UserPermissionList from "@/views/security/user/permission/list.vue";
 import pinia, {useUserStore} from '../../store';
 
 // 常量使用
@@ -42,6 +45,12 @@ const tabsKey = ref<number>(1);
  */
 const resetListHeight = () => {
   return window.innerHeight - ListUsedHeight;
+}
+/**
+ * 调整树形结构高度
+ */
+const resetTreeHeight = () => {
+  return window.innerHeight - 200;
 }
 /**
  * 调整列表展示行数
@@ -76,6 +85,11 @@ const fileListParams = ref(generateListParams());
 // 系统配置
 const configListParams = ref(generateListParams());
 
+const userTreeParams = ref({
+  visible: false, parameter: {appId: '', tenantCode: ''}, height: resetTreeHeight()
+});
+const userPerListParams = ref(generateListParams());
+
 /**
  * 登出功能
  */
@@ -102,6 +116,10 @@ const handleResize = () => {
       break;
     case 6: // 应用配置
       Object.assign(configListParams.value, listRecord);
+      break;
+    case 7: // 应用配置
+      Object.assign(userPerListParams.value, listRecord);
+      Object.assign(userTreeParams.value, {height: resetTreeHeight()});
       break;
     default:
       break;
@@ -165,6 +183,31 @@ const enterLink = (type: string) => {
   }
 }
 
+/**
+ * 选中添加、取消移除
+ * @param isSelected
+ * @param data
+ */
+const selectChange = (isSelected: boolean, data: QueryOrgForm, forms: QueryOrgForm[]) => {
+  if (isSelected && data) {
+    const params = {orgIds: [] as string[], orgNames: [] as string[]};
+    if (forms && forms.length > 0) {
+      forms.forEach((item) => {
+        params.orgIds.push(item.id);
+        params.orgNames.push(item.name);
+      });
+    }
+    Object.assign(userPerListParams.value, {
+      parameter: {
+        orgId: params.orgIds.length > 0 ? params.orgIds.join() : '',
+        orgName: params.orgNames.length > 0 ? params.orgNames.join() : '',
+      }
+    })
+  } else {
+    Object.assign(userPerListParams.value, {parameter: {orgId: '', orgName: ''}})
+  }
+}
+
 onMounted(() => {
   // 未登录重定向
   if (!getToken()) ideRedirect();
@@ -200,6 +243,11 @@ onMounted(() => {
       Object.assign(fileListParams.value, listRecord);
       // 系统配置
       Object.assign(configListParams.value, listRecord);
+      // 用户管理
+      Object.assign(userTreeParams.value, listRecord);
+      // 组织管理
+      userPerListParams.value.filterCol = 2;
+      Object.assign(userPerListParams.value, listRecord);
     });
   }
 
@@ -297,7 +345,29 @@ onUnmounted(() => {
                 用户授权
               </template>
               <a-card class="general-card">
-
+                <a-row>
+                  <a-col :span="5">
+                    <div class="general-card1" style="padding-right: 10px;border-right: 1px solid var(--color-neutral-3);">
+                      <OrgTree :has-root="true" :root-selected="false"
+                               :check-strictly="false"
+                               :height="userTreeParams.height"
+                               :max-count="1"
+                               :parameter="userTreeParams.parameter"
+                               :visible="true"
+                               @change="selectChange"/>
+                    </div>
+                  </a-col>
+                  <a-col :span="19">
+                    <div class="general-card1" style="padding-left: 10px;">
+                      <UserPermissionList :visible="userPerListParams.visible"
+                                          :parameter="userPerListParams.parameter"
+                                          :formState="userPerListParams.formState"
+                                          :filterCol="userPerListParams.filterCol"
+                                          :pageSize="userPerListParams.pageSize"
+                                          :height="userPerListParams.height"/>
+                    </div>
+                  </a-col>
+                </a-row>
               </a-card>
             </a-tab-pane>
             <a-tab-pane :key="4">
@@ -348,7 +418,7 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
-<style lang="less" scoped>
+<style lang="less">
 .gl-app-settings .gl-page-header {
   //border-bottom: 1px #04559f solid;
   background-image: url('@/assets/images/bg/page-header-bg-layered-peaks.png');

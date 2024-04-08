@@ -23,6 +23,7 @@ import UserTabsForm from './tabForm.vue';
 // 页面所需参数
 type PageParams = {
   orgId: string; // 组织主键
+  orgName: string; // 组织名称
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -71,6 +72,7 @@ const generateFilterData = () => {
     jobNumber: '',
     orgId: props.parameter.orgId || '',
     orgName: '',
+    treeOrgName: props.parameter.orgName || '',
     sex: '',
     source: '',
     type: '',
@@ -189,7 +191,7 @@ const formParams = ref<FormParams>({
   title: '',
   width: '1250px',
   height: '',
-  parameter: {appId: '', tenantCode: ''},
+  parameter: {userId: '', userName: '', appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
   formCol: 3,
@@ -200,7 +202,9 @@ const formParams = ref<FormParams>({
  */
 const addTable = (ev: MouseEvent) => {
   formParams.value = Object.assign(formParams.value, {
-    id: '', visible: true, formState: 'add'
+    id: '', visible: true, formState: 'add', paramter: {
+      orgId: props.parameter.orgId || '', orgName: props.parameter.orgName || '',
+    }
   });
 };
 
@@ -210,7 +214,7 @@ const tabsformParams = ref({
   title: '',
   width: '1250px',
   height: '',
-  parameter: {appId: '', tenantCode: ''},
+  parameter: {orgId: '', orgName: '', appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
   formCol: 3,
@@ -293,9 +297,11 @@ watch(() => props, (val) => {
     basePagination.pageSize = props.pageSize;
     // 表单参数
     formParams.value.parameter = {
+      orgId: props.parameter.orgId || '', orgName: props.parameter.orgName || '',
       appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
     }
     tabsformParams.value.parameter = {
+      orgId: props.parameter.orgId || '', orgName: props.parameter.orgName || '',
       appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
     }
     // 加载数据
@@ -342,7 +348,8 @@ watch(() => props, (val) => {
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.user.index.form.orgName')" field="code">
-              <a-input v-model="filterData.orgName" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
+              <a-input v-if="parameter.orgName" v-model="filterData.treeOrgName" readonly style="color: rgb(var(--primary-6))"/>
+              <a-input v-else v-model="filterData.orgName" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">

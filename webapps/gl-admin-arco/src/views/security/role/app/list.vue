@@ -25,7 +25,7 @@ type PageParams = {
   tenantCode?: string; // 租户编码
 }
 
-const emits = defineEmits(['update:modelValue']);
+const emits = defineEmits(['update:modelValue', 'add', 'delete']);
 const props = defineProps({
   modelValue: {type: String, default: ''},
   visible: {type: Boolean, default: false},// 页面是否显示
@@ -188,6 +188,7 @@ const onSorterChange = (dataIndex: string, direction: string) => {
 const deleteTable = (id: string) => {
   deleteData(id, (id: string) => {
     condition();
+    emits('delete', id);
   });
 }
 
@@ -238,6 +239,7 @@ const closeTrigger = async (ev?: MouseEvent) => {
       } as unknown as QueryRoleAppForm);
       selectVisible.value = false;
       reset();
+      emits('add');
     } catch (err) {
       console.log(err);
     }

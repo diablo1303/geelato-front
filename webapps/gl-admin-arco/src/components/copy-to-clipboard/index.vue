@@ -27,7 +27,6 @@ const mv = ref({
  * 元组件参数变更，初始化
  */
 watch(() => props, () => {
-  console.log('props change', props);
   mv.value.copyValue = props.modelValue;
   mv.value.copyWidth = props.width || '16px';
   mv.value.copyHeight = props.width || '16px';

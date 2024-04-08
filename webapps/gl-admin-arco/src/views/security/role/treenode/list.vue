@@ -9,11 +9,11 @@ import {computed, reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
-import {type SelectOptionData, TableColumnData, TableData, TableSortable} from '@arco-design/web-vue';
+import {Message, type SelectOptionData, TableColumnData, TableData, TableSortable} from '@arco-design/web-vue';
 import {getOptionLabel, PageSizeOptions} from "@/api/base";
 // 页面所需 对象、方法
 import {PageQueryFilter, PageQueryRequest} from '@/api/base';
-import {deleteRoleTreeNodeById as deleteList, pageQueryRoleTreeNodeOf as pageQueryList} from '@/api/security';
+import {deleteRoleTreeNodeById as deleteList, pageQueryRoleAppOf, pageQueryRoleTreeNodeOf as pageQueryList} from '@/api/security';
 import {getAppSelectOptions, QueryAppForm} from "@/api/application";
 
 
@@ -64,7 +64,7 @@ const typeOptions = computed<SelectOptionData[]>(() => [
  * 分页查询方法
  * @param params
  */
-const fetchData = async (params: PageQueryRequest, successBack?: any, failBack?: any) => {
+const fetchRoleTreeNode = async (params: PageQueryRequest, successBack?: any, failBack?: any) => {
   setLoading(true);
   try {
     const {data} = await pageQueryList(params);
@@ -80,6 +80,21 @@ const fetchData = async (params: PageQueryRequest, successBack?: any, failBack?:
   } finally {
     setLoading(false);
     if (failBack && typeof failBack === 'function') failBack();
+  }
+};
+
+/**
+ * 角色应用查询方法
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
+const fetchRoleApp = async (params: PageQueryRequest, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await pageQueryRoleAppOf(params);
+    if (successBack && typeof successBack === 'function') successBack(data.items);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
   }
 };
 
@@ -104,7 +119,7 @@ const deleteData = async (roleId: string, treeNodeId: string, successBack?: any,
  * @param done
  */
 const loadMore = (record: TableData, done: any) => {
-  fetchData({
+  fetchRoleTreeNode({
     ...basePagination, order: lastSort.value,
     pid: record.id || '', roleId: props.parameter.roleId || '',
     appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || '',
@@ -117,7 +132,7 @@ const loadMore = (record: TableData, done: any) => {
  */
 const loadInit = () => {
   if (props.parameter?.appId) {
-    fetchData({
+    fetchRoleTreeNode({
       ...basePagination, order: lastSort.value,
       pid: props.parameter?.appId || '', roleId: props.parameter.roleId || '',
       appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || '',
@@ -125,11 +140,15 @@ const loadInit = () => {
       renderData.value = data;
     });
   } else {
-    getAppSelectOptions({tenantCode: props.parameter?.tenantCode || ''}, (data: QueryAppForm[]) => {
+    fetchRoleApp({
+      ...basePagination,
+      roleId: props.parameter.roleId || '',
+      tenantCode: props.parameter?.tenantCode || ''
+    } as unknown as PageQueryRequest, (data: Record<string, any>[]) => {
       const items: PageQueryFilter[] = [];
       data.forEach((item, index) => {
         items.push({
-          id: item.id, text: item.name, flag: 'app', iconType: item.icon, isRoled: false, isLeaf: false
+          id: item.appId, text: item.appName, flag: 'app', iconType: item.appIcon, isRoled: false, isLeaf: false
         } as unknown as PageQueryFilter);
       });
       renderData.value = items;

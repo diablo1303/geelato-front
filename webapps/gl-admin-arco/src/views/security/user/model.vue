@@ -20,6 +20,8 @@ import {sexOptions, sourceOptions, typeOptions, enableStatusOptions} from "./sea
 
 // 页面所需 参数
 type PageParams = {
+  orgId: string; // 组织主键
+  orgName: string; // 组织名称
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -54,8 +56,8 @@ const generateFormData = (): QueryForm => {
     mobilePrefix: '+86',
     mobilePhone: '',
     telephone: '',
-    orgId: '',
-    orgName: '',
+    orgId: props.parameter.orgId || '',
+    orgName: props.parameter.orgName || '',
     email: '',
     post: '',
     provinceCode: '',
@@ -267,7 +269,10 @@ defineExpose({saveOrUpdate, loadPage});
             :label="$t('security.user.index.form.orgName')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="orgId">
-          <OrgChooseBox v-if="formState!=='view'" v-model:model-value="formData.orgId" v-model:org-names="formData.orgName" :max-count="1" :has-root="false"/>
+          <OrgChooseBox v-if="formState!=='view'"
+                        v-model:model-value="formData.orgId"
+                        v-model:org-names="formData.orgName"
+                        :max-count="1" :has-root="false"/>
           <span v-else>{{ formData.orgName }}</span>
         </a-form-item>
       </a-col>
@@ -373,7 +378,8 @@ defineExpose({saveOrUpdate, loadPage});
             :label="$t('security.user.index.form.seqNo')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="seqNo">
-          <a-input-number v-if="formState!=='view'" v-model="formData.seqNo" :max="999999999" :min="1" :placeholder="$t('security.form.rules.match.length.title')+'[0,999999999]'" :precision="0"/>
+          <a-input-number v-if="formState!=='view'" v-model="formData.seqNo" :max="999999999" :min="1"
+                          :placeholder="$t('security.form.rules.match.length.title')+'[0,999999999]'" :precision="0"/>
           <span v-else>{{ formData.seqNo }}</span>
         </a-form-item>
       </a-col>

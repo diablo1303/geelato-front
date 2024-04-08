@@ -98,6 +98,44 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
 };
 
 /**
+ * 获取应用信息后格式化数据
+ * @param data
+ */
+const roleFormat = (data: QueryForm) => {
+  // 表格数据处理
+  data.seqNo = Number(data.seqNo);
+  formData.value = data;
+  // 角色应用关联
+  Object.assign(appListParams.value, {
+    formState: props.formState, visible: true, parameter: {
+      roleId: data.id,
+      appId: props.parameter?.appId || data.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }
+  });
+  // 角色权限关联
+  Object.assign(permissionListParams.value, {
+    formState: props.formState, visible: true, parameter: {
+      roleId: props.modelValue, permissionId: '',
+      appId: props.parameter?.appId || data.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }
+  });
+  // 角色菜单关联
+  Object.assign(nodeListParams.value, {
+    formState: props.formState, visible: true, parameter: {
+      roleId: props.modelValue, treeNodeId: '',
+      appId: props.parameter?.appId || data.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }
+  });
+  // 角色用户关联
+  Object.assign(userListParams.value, {
+    formState: props.formState, visible: true, parameter: {
+      roleId: props.modelValue, userId: '',
+      appId: props.parameter?.appId || data.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }
+  });
+}
+
+/**
  * 更新应用信息
  */
 const updateRole = () => {
@@ -108,7 +146,7 @@ const updateRole = () => {
     tableFormRef.value?.saveOrUpdate((data: QueryForm) => {
       setLoading(false);
       Message.success("更新成功！");
-      formData.value = data;
+      roleFormat(data);
       emits('saveSuccess', data, props.formState);
     }, () => {
       setLoading(false);
@@ -122,38 +160,7 @@ watch(() => props, () => {
     formData.value.id = props.modelValue;
     if (props.modelValue) {
       getData(props.modelValue, (data: QueryForm) => {
-        // 表格数据处理
-        data.seqNo = Number(data.seqNo);
-        formData.value = data;
-
-        // 角色应用关联
-        appListParams.value.formState = props.formState;
-        appListParams.value.parameter = {
-          roleId: props.modelValue,
-          appId: props.parameter?.appId || data.appId || '', tenantCode: props.parameter?.tenantCode || ''
-        }
-        // 角色权限关联
-        permissionListParams.value.formState = props.formState;
-        permissionListParams.value.parameter = {
-          roleId: props.modelValue, permissionId: '',
-          appId: props.parameter?.appId || data.appId || '', tenantCode: props.parameter?.tenantCode || ''
-        }
-        // 角色菜单关联
-        nodeListParams.value.formState = props.formState;
-        nodeListParams.value.parameter = {
-          roleId: props.modelValue, treeNodeId: '',
-          appId: props.parameter?.appId || data.appId || '', tenantCode: props.parameter?.tenantCode || ''
-        }
-        // 角色用户关联
-        userListParams.value.formState = props.formState;
-        userListParams.value.parameter = {
-          roleId: props.modelValue, userId: '',
-          appId: props.parameter?.appId || data.appId || '', tenantCode: props.parameter?.tenantCode || ''
-        }
-        appListParams.value.visible = true;
-        permissionListParams.value.visible = true;
-        nodeListParams.value.visible = true;
-        userListParams.value.visible = true;
+        roleFormat(data);
       });
     }
   }
@@ -182,7 +189,7 @@ watch(() => visibleForm, () => {
           <template #extra>
             <a-space>
               <a-popconfirm content="是否更新该角色的基本信息？" position="br" type="info" @ok="updateRole">
-                <a-button :loading="loading" class="app-button" type="text">
+                <a-button :disabled="formState==='view'" :loading="loading" class="app-button" type="text">
                   <template #icon>
                     <icon-save/>
                   </template>
@@ -203,7 +210,9 @@ watch(() => visibleForm, () => {
                        :height="appListParams.height"
                        :pageSize="appListParams.pageSize"
                        :parameter="appListParams.parameter"
-                       :visible="appListParams.visible"/>
+                       :visible="appListParams.visible"
+                       @add="()=>{nodeKey = generateRandom()}"
+                       @delete="()=>{nodeKey = generateRandom()}"/>
         </a-card>
       </a-tab-pane>
       <a-tab-pane :key="3" :title="$t('security.role.form.tab.title.three')">

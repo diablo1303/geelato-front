@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'UserIndet',
+  name: 'UserIndep',
 };
 </script>
 
@@ -16,11 +16,11 @@ import {ListParams, PageSizeOptions, resetValueByOptions} from '@/api/base';
 import {QueryOrgForm} from "@/api/security";
 // 引入组件
 import OrgTree from "@/components/org-choose-box/tree.vue";
-import UserList from "@/views/security/user/list.vue";
+import UserPermissionList from "@/views/security/user/permission/list.vue";
 
 // 常量使用
 const ListDefaultPageSize = 5;
-const ListUsedHeight = 480;
+const ListUsedHeight = 470;
 const ListRowHeight = 49;
 
 const {t} = useI18n(); // 国际化
@@ -74,9 +74,21 @@ const listParams = ref<ListParams>({
  * @param isSelected
  * @param data
  */
-const selectChange = (isSelected: boolean, data: QueryOrgForm) => {
+const selectChange = (isSelected: boolean, data: QueryOrgForm, forms: QueryOrgForm[]) => {
   if (isSelected && data) {
-    Object.assign(listParams.value, {parameter: {orgId: data.id, orgName: data.name}})
+    const params = {orgIds: [] as string[], orgNames: [] as string[]};
+    if (forms && forms.length > 0) {
+      forms.forEach((item) => {
+        params.orgIds.push(item.id);
+        params.orgNames.push(item.name);
+      });
+    }
+    Object.assign(listParams.value, {
+      parameter: {
+        orgId: params.orgIds.length > 0 ? params.orgIds.join() : '',
+        orgName: params.orgNames.length > 0 ? params.orgNames.join() : '',
+      }
+    })
   } else {
     Object.assign(listParams.value, {parameter: {orgId: '', orgName: ''}})
   }
@@ -109,7 +121,8 @@ onUnmounted(() => {
       <a-row>
         <a-col :span="5">
           <div class="general-card1" style="padding-right: 10px;border-right: 1px solid var(--color-neutral-3);">
-            <OrgTree :has-root="true" :root-selected="true"
+            <OrgTree :has-root="true" :root-selected="false"
+                     :check-strictly="false"
                      :height="treeParams.height"
                      :max-count="1"
                      :parameter="treeParams.parameter"
@@ -119,12 +132,12 @@ onUnmounted(() => {
         </a-col>
         <a-col :span="19">
           <div class="general-card1" style="padding-left: 10px;">
-            <UserList :visible="listParams.visible"
-                      :parameter="listParams.parameter"
-                      :formState="listParams.formState"
-                      :filterCol="listParams.filterCol"
-                      :pageSize="listParams.pageSize"
-                      :height="listParams.height"/>
+            <UserPermissionList :visible="listParams.visible"
+                                :parameter="listParams.parameter"
+                                :formState="listParams.formState"
+                                :filterCol="listParams.filterCol"
+                                :pageSize="listParams.pageSize"
+                                :height="listParams.height"/>
           </div>
         </a-col>
       </a-row>

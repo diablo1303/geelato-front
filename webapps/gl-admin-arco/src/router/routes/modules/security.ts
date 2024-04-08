@@ -24,7 +24,7 @@ const USER: AppRouteRecordRaw = {
     {
       path: 'userList',
       name: 'userList',
-      component: () => import('@/views/security/user/index.vue'),
+      component: () => import('@/views/security/user/indet.vue'),
       meta: {
         locale: 'security.user.index.menu.list.searchTable',
         requiresAuth: true,

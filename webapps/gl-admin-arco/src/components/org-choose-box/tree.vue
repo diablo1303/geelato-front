@@ -163,7 +163,42 @@ const resetPage = () => {
       emits("update:modelValue", selectedKeys.value);
       emits('change', true, {});
     }
+    if (props.checkStrictly === false && props.maxCount === 1) {
+      selectedKeys.value = [];
+      emits("update:modelValue", selectedKeys.value);
+      emits('change', true, {});
+    }
   });
+}
+
+/**
+ * 搜索数据
+ * @param orgs
+ * @param childs
+ */
+const checkStrictlyiteration = (orgs: QueryOrgForm[], childs: OrgTreeNode[]) => {
+  if (childs && childs.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of childs) {
+      orgs.push(item.redundant || {} as QueryOrgForm);
+      checkStrictlyiteration(orgs, item.children || []);
+    }
+  }
+}
+/**
+ * 搜索数据
+ * @param data
+ */
+const checkStrictlyFormat = (data: OrgTreeNode) => {
+  const orgs: QueryOrgForm[] = [];
+  if (props.checkStrictly === false) {
+    if (data.key !== rootPid) {
+      orgs.push(data.redundant || {} as QueryOrgForm);
+      checkStrictlyiteration(orgs, data.children || []);
+    }
+  }
+
+  return orgs;
 }
 
 /**
@@ -183,7 +218,7 @@ const treeClickSelected = (selectedKes: Array<string | number>, data: {
     return;
   }
   emits("update:modelValue", selectedKeys.value);
-  emits('change', data.selected, data.node?.redundant, data.node);
+  emits('change', data.selected, data.node?.redundant, checkStrictlyFormat(data.node || {}));
 }
 /**
  * 点击树节点复选框时触发
@@ -204,7 +239,7 @@ const treeClickChecked = (checkedKeys: Array<string | number>, data: {
     return;
   }
   emits("update:modelValue", selectedKeys.value);
-  emits('change', data.checked, data.node?.redundant, data.node);
+  emits('change', data.checked, data.node?.redundant, checkStrictlyFormat(data.node || {}));
 }
 
 /**
@@ -228,7 +263,7 @@ watch(() => props.visible, () => {
           v-model:selected-keys="selectedKeys"
           :block-node="false"
           :check-strictly="checkStrictly"
-          :checkable="props.maxCount===1?false:true"
+          :checkable="(props.maxCount===1&&checkStrictly)?false:true"
           :data="originTreeData"
           :load-more="loadMore"
           :multiple="props.maxCount===1?false:true"

@@ -16,6 +16,8 @@ import UserRoleList from './role/list.vue';
 
 // 页面所需 参数
 type PageParams = {
+  orgId: string; // 组织主键
+  orgName: string; // 组织名称
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -153,7 +155,7 @@ watch(() => visibleForm, () => {
           <template #extra>
             <a-space>
               <a-popconfirm content="是否更新该用户的基本信息？" position="br" type="info" @ok="updateForm">
-                <a-button :loading="loading" class="app-button" type="text">
+                <a-button :disabled="formState==='view'" :loading="loading" class="app-button" type="text">
                   <template #icon>
                     <icon-save/>
                   </template>
