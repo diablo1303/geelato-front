@@ -257,6 +257,27 @@ export default {
       _showSub: true,
       properties: [
         {
+          title: '流程定义',
+          name: 'procDefId',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {
+            label: '实体选择器',
+            entityName: 'platform_swf_proc_def',
+            triggerMode: 'onCreated',
+            labelFieldNames: ['name'],
+            valueFiledName: 'id',
+            valueFilter: [],
+            extraFieldAndBindIds: []
+          },
+          setterComponentVModelName: 'modelValue',
+          setterComponentName: 'GlDynamicSelect'
+        },
+        {
           title: '标题',
           name: 'label',
           group: 'base',
@@ -282,6 +303,7 @@ export default {
           setterComponentVModelName: 'modelValue',
           setterComponentName: 'AInput'
         },
+
         {
           title: '处理环节名称',
           name: 'nodeCode',

@@ -405,7 +405,7 @@ export class EntityApi {
     return undefined
   }
 
-  getFirstRecordsFromRes(res: any) {
+  getRecordsFromRes(res: any) {
     return res?.data
   }
 

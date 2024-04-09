@@ -16,17 +16,26 @@ import {
   PageProvideKey,
   PageProvideProxy,
   entityApi,
-  EntitySaver,
-  EntityReader,
-  SubmitFormResult
+  SubmitFormResult,
+  useGlobal
 } from '@geelato/gl-ui'
 import type { TabsPosition } from '@arco-design/web-vue/es/tabs/interface'
+import {
+  loadProcDefById,
+  loadProcInstByBizId,
+  ProcDef,
+  ProcInst,
+  ProcTask,
+  ProcTranDef,
+  submitProcInst
+} from './stateWfApi'
 
+const global = useGlobal()
 const LayoutMode = {
   collapse: 'collapse',
   tabs: 'tabs'
 }
-const Status = {
+const GraphState = {
   // 拟搞编辑
   none: 'none',
   // 审批中
@@ -40,12 +49,32 @@ const Status = {
 }
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
+  /**
+   *  流程定义ID
+   */
+  procDefId: {
+    type: String,
+    required: true
+  },
+  /**
+   *  流程实例任ID
+   *  创建流程时，该值为空
+   */
+  procInstId: String,
+  /**
+   *  当前流程实例任务节点ID
+   *  用于获取当前环节的处理信息
+   *  为空的场景：创建流程时、处理无明确处理人的公共任务时，从业务表单列表进入
+   *  不为空的场景：处理有明确处理人的公共任务时，从待办、已办列表进入
+   */
+  procTaskId: String,
+  /**
+   *  插槽模式，可用于打开页面时将页面内容分发到插槽中
+   */
+  slotMode: Boolean,
+
   label: String,
   subLabel: String,
-  /**
-   *  流程处理环节
-   */
-  nodeCode: String,
   /**
    *  布局模式
    *  折叠：collapse
@@ -68,32 +97,7 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
-  /**
-   *  流程定义ID
-   */
-  processDefinedId: {
-    type: String,
-    required: true
-  },
-  /**
-   *  流程实例任ID
-   *  创建流程时，该值为空
-   */
-  processInstId: {
-    type: String
-  },
-  /**
-   *  插槽模式，可用于打开页面时将页面内容分发到插槽中
-   */
-  slotMode: Boolean,
-  /**
-   *  当前流程实例任务节点ID
-   *  用于获取当前环节的处理信息
-   *  创建流程时，该值为空；待办、已办有这个值
-   */
-  taskId: {
-    type: String
-  },
+
   // /**
   //  *  当前节点的处理人ID
   //  */
@@ -105,23 +109,77 @@ const props = defineProps({
   ...mixins.props
 })
 
+// 检查输入的参数
+const hasReady = computed(() => {
+  // 有模板ID
+  // 无模拟ID，但有流程实例
+  // 都需要有标题label
+  return (props.procDefId || bizId.value) && props.label
+})
+
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const isRead = !!pageProvideProxy?.isPageStatusRead()
 
-// 是否审批环节
-const isApproval = ref(false)
-const layout = ref(props.layoutMode)
+// 业务表单的id
+const bizId = ref(pageProvideProxy.getParamValue('template.bizId'))
+const procInst = ref(new ProcInst())
+
+const isNew = ref(false)
 // 图标状态
-const status = ref(Status.none)
-// 流程实例记录
-const procRecord = ref({
-  id: '',
-  name: ''
-})
-// 审批意见状态
-const approvalStatus = ref()
+const graphState = ref(GraphState.none)
+// 流程定义
+const procDef: Ref<ProcDef> = ref(new ProcDef())
+const procDefId = ref(props.procDefId)
+// 打开页面时，当前流程实例的状态
+const lastState = ref('')
+// 下一步可选的环节 [{id,name,xxx}]
+const nextTrans = ref(<any>[])
+// 当前的任务
+const procTask = ref(new ProcTask())
+// 当前选中的步骤
+const selectedTran: Ref<ProcTranDef | undefined> = ref()
 // 详细审批意见、申请意见
 const remark = ref('')
+/**
+ *  初始化加载工作流定义、状态定义、状态转换定义、工作流实例
+ */
+const loadData = async () => {
+  // 通过业务ID加载流程实例
+  if (bizId.value) {
+    await loadProcInstByBizId(bizId.value).then((res) => {
+      procInst.value = entityApi.getFirstRecordFromRes(res)
+      if (procInst.value) {
+        procDefId.value = procInst.value.procDefId
+      }
+    })
+  }
+
+  // 如果传了业务表ID，则从已有的流程实例中加载数据
+  if (procDefId.value) {
+    await loadProcDefById(procDefId.value).then((procDefRes: any) => {
+      procDef.value = procDefRes
+    })
+  }
+
+  // 服务端流程实例的当前状态，是最新的状态
+  lastState.value = procInst.value?.currentStateId || procDef.value.initStateId
+  // 有实例时，是否为初始状态；无实例时为true
+  isNew.value = procInst ? procDef.value.initState === procInst.value?.currentStateId : true
+  // 从procDef.value.trans中找出，下一步可能的状态
+  // 如果lastState值为空，即为新创建流程状态
+  console.log('procDef.value.trans', procInst.value?.currentStateId, procDef.value.initStateId)
+  nextTrans.value = procDef.value.trans?.filter((tran: ProcTranDef) => {
+    return tran.srcStateId === lastState.value
+  })
+  // 图标状态 TODO 是否为审结
+  graphState.value = isNew.value ? GraphState.none : GraphState.underway
+}
+
+// 是否审批环节，如果有流程实例ID
+const layout = ref(props.layoutMode)
+// 审批意见状态
+const approvalStatus = ref()
+
 const changeLayout = () => {
   if (layout.value === LayoutMode.collapse) {
     layout.value = LayoutMode.tabs
@@ -145,61 +203,14 @@ const handleOk = () => {}
 
 const handleCancel = () => {}
 
-const myPage = ref()
-
-const changeApprove = (val: any) => {
-  approvalStatus.value = val
-  console.log('changeApprove', val)
+const changeTran = (tranId: any) => {
+  selectedTran.value = nextTrans.value.find((tran: ProcTranDef) => {
+    return tran.id === tranId
+  })
+  console.log('changeTran', tranId)
 }
 
 const submitFormResult: Ref<SubmitFormResult | Record<string, any>> = ref({})
-
-console.log('pageProvideProxy.getParams()', pageProvideProxy.getParams())
-// 业务表单的id
-const bizId = ref(pageProvideProxy.getParamValue('template.bizId'))
-
-/**
- *  加载流程实例信息
- *  加载完成之后加载任务列表
- *  更新审批状态图片
- */
-const loadProc = () => {
-  const entityReader = new EntityReader()
-  entityReader.entity = 'platform_wf_proc_inst'
-  entityReader.setFields('id')
-  entityReader.setFields('bizId')
-  entityReader.setFields('name')
-  entityReader.setFields('approvalStatus')
-  entityReader.addParam('bizId', 'eq', bizId.value)
-  entityApi.queryByEntityReader(entityReader).then((res: any) => {
-    procRecord.value = entityApi.getFirstRecordFromRes(res) || {}
-    loadTaskByProcId(procRecord.value.id)
-    //
-    console.log('loadProc', status)
-    status.value = Status.underway
-  })
-}
-
-/**
- * 依据流程ID获取当前的轨道
- * @param procId
- */
-const loadTaskByProcId = (procId: string) => {
-  if (!procId) return
-  const entityReader = new EntityReader()
-  entityReader.entity = 'platform_wf_proc_task'
-  entityReader.setFields('id')
-  entityReader.setFields('name')
-  entityReader.setFields('handler')
-  entityReader.setFields('handlerName')
-  entityReader.setFields('nodeName')
-  entityReader.setFields('approvalStatus')
-  entityReader.addParam('id', 'eq', procId)
-  entityApi.queryByEntityReader(entityReader).then((res: any) => {
-    const records = entityApi.getFirstRecordsFromRes(res)
-    console.log('records', records)
-  })
-}
 
 /**
  *  工作流信息提交，做以下操作：
@@ -208,67 +219,61 @@ const loadTaskByProcId = (procId: string) => {
  *  3、更新业务表中的流程审批状态等信息
  */
 const submitProcess = () => {
-  const entitySaver = new EntitySaver()
-  entitySaver.id = submitFormResult.value.id
-  entitySaver.entity = 'platform_wf_proc_inst'
-  entitySaver.record = {
-    id: procRecord.value.id,
-    bizId: bizId.value,
-    name: procRecord.value.name || props.label,
-    approvalStatus: '1'
-  }
-  entitySaver.children = []
+  // 在onCreatingEntitySaver中已对selectedTran先进行了检查
+  procInst.value.bizId = bizId.value
+  procInst.value.name = procInst.value.name || props.label || '未设置流程名称'
+  procInst.value.appId = procDef.value.appId
+  procInst.value.procDefId = procDefId.value!
+  procInst.value.currentStateId = selectedTran.value?.targetStateId!
 
-  const childEntitySaver = new EntitySaver()
-  childEntitySaver.id = submitFormResult.value.id
-  childEntitySaver.entity = 'platform_wf_proc_task'
-  childEntitySaver.record = {
-    procId: '$parent.id',
-    name: props.nodeCode,
-    code: props.nodeCode,
-    // 记录当前处理环节的意见
-    approvalStatus: approvalStatus.value || '1',
-    remark: remark.value
-  }
+  procTask.value.handlerId = global.$gl.user.id
+  procTask.value.handlerName = global.$gl.user.name
+  procTask.value.name = selectedTran.value?.name!
+  procTask.value.remark = remark.value
 
-  const bizEntitySaver = new EntitySaver()
-  bizEntitySaver.id = submitFormResult.value.id
-  bizEntitySaver.entity = submitFormResult.value.entity
-  bizEntitySaver.record = {
-    id: submitFormResult.value.id,
-    wfApprovalStatus: approvalStatus.value || '1'
-  }
-
-  entitySaver.children.push(childEntitySaver)
-  entitySaver.children.push(bizEntitySaver)
-  entityApi.saveEntity(entitySaver).then((res: any) => {
-    console.log('submitProcess res', res)
-  })
+  submitProcInst(procInst,procTask)
 }
 
+console.log('global', global)
+
 /**
- * 模板内的组件，提交表单时触发
+ * 模板内的组件，提交表单之后触发
  * @param result {id:props.glComponentInst.id,success:true,record:formProvideProxy.getForm()}
  */
 const onSubmitForm = (result: any) => {
   console.log('onSubmitForm', result)
-  if (result?.success) {
-    submitFormResult.value = result
-    submitProcess()
-  }
-}
-emitter.on('entityForm.submitForm', onSubmitForm)
-
-// 如果传了业务表ID，则从已有的流程实例中加载数据
-if (bizId.value) {
-  loadProc()
+  // if (result?.success) {
+  //   submitFormResult.value = result
+  //   submitProcess()
+  // }
 }
 
-const hasReady = computed(() => {
-  return bizId.value && props.nodeCode && props.label
-})
+loadData()
 onMounted(() => {})
+/**
+ * 表单在构建保存对象时，可以获取表单的值，或修改表单的值
+ * @param result
+ */
+const onCreatingEntitySaver = (result: any) => {
+  // 检查工作流模板中的录入
+  // console.log('result.entitySaver', result.entitySaver,selectedTran.value,global)
+  if (!selectedTran.value) {
+    global.$notification.error({content:'未选择步骤'})
+    return
+  }
+
+  if(!result.entitySaver.error){
+    // 是新建时，如果remark为空，取表单中的值
+    if(!remark.value){
+      remark.value =  result.entitySaver?.record?.wfRemark
+    }
+  }
+
+}
+emitter.on('entityForm.creatingEntitySaver', onCreatingEntitySaver)
+emitter.on('entityForm.submitForm', onSubmitForm)
 onUnmounted(() => {
+  emitter.off('entityForm.creatingEntitySaver', onCreatingEntitySaver)
   emitter.off('entityForm.submitForm', onSubmitForm)
 })
 </script>
@@ -306,7 +311,7 @@ onUnmounted(() => {
               <!--              <a-button>-->
               <!--                <GlIconfont type="gl-press-to-do" text="催办"></GlIconfont>-->
               <!--              </a-button>-->
-              <!--              <a-button status="warning">-->
+              <!--              <a-button graphState="warning">-->
               <!--                <a-popconfirm content="是否撤回?">-->
               <!--                  <GlIconfont type="gl-revocation" text="撤回"></GlIconfont>-->
               <!--                </a-popconfirm>-->
@@ -330,7 +335,7 @@ onUnmounted(() => {
         <div
           v-if="enabledStatusImage"
           class="background-svg-container"
-          :class="{ ['background-svg-' + status]: true }"
+          :class="{ ['background-svg-' + graphState]: true }"
         ></div>
         <a-tabs v-if="layout === LayoutMode.tabs" :position="tabsPosition">
           <a-tab-pane key="1">
@@ -343,7 +348,7 @@ onUnmounted(() => {
                 <slot></slot>
               </template>
               <template v-else>
-                <!--  作为组件时，用component-->
+                <!--  作为组件时，用component，这里的inst一般为GlPage-->
                 <component
                   v-if="!slotMode"
                   :is="'GlInsts' + glRuntimeFlag"
@@ -421,7 +426,7 @@ onUnmounted(() => {
         </a-collapse>
       </div>
       <a-affix :offsetBottom="79" v-if="!isRead">
-        <!--      <a-card v-if="status == Status.none" style="margin-top: 1em" size="small">-->
+        <!--      <a-card v-if="graphState == GraphState.none" style="margin-top: 1em" size="small">-->
         <!--        <template #title>-->
         <!--          <GlIconfont type="gl-right" text="申请描述"></GlIconfont>-->
         <!--        </template>-->
@@ -432,16 +437,17 @@ onUnmounted(() => {
         <!--        >-->
         <!--        </a-textarea>-->
         <!--      </a-card>-->
-        <a-card v-if="status != Status.none" style="margin-top: 1em" size="small">
+        <a-card style="margin-top: 1em" size="small">
           <template #title>
-            <GlIconfont type="gl-right" text="审批信息"></GlIconfont>
+            <GlIconfont type="gl-right" :text="isNew ? '提交申请' : '审批信息'"></GlIconfont>
           </template>
           <div style="padding: 0 0 1em 0">
-            <a-radio-group type="button" @change="changeApprove">
-              <a-radio value="1">同意</a-radio>
-              <a-radio value="2">不同意</a-radio>
-              <a-radio value="3">结束</a-radio>
-            </a-radio-group>
+            <a-space>
+              <span>选择步骤</span>
+              <a-radio-group @change="changeTran">
+                <a-radio v-for="tran in nextTrans" :value="tran.id">{{ tran.name }}</a-radio>
+              </a-radio-group>
+            </a-space>
           </div>
           <a-textarea
             v-model="remark"

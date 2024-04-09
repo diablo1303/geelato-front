@@ -42,7 +42,7 @@ import GlSpace from "./components/gl-space/GlSpace.vue";
 import GlSlot from "./components/gl-slot/GlSlot.vue";
 import GlOrgSelect from "./components/gl-org-select/index.vue";
 import GlOrgUserSelect from "./components/gl-org-user-select/index.vue";
-import GlPageTemplateSimpleApprove from "./components/gl-page-template/simple-approve/GlPageTemplateSimpleApprove.vue";
+import GlPageTemplateSimpleApprove from "./components/gl-page-template/state-wf/GlPageTemplateSimpleApprove.vue";
 import en from './locale/en-US'
 import cn from './locale/zh-CN'
 import {Drawer, Modal, RangePicker} from '@arco-design/web-vue'

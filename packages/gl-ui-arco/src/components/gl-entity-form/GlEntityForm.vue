@@ -475,7 +475,10 @@ const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
       }
     })
     entitySaver.record = record
+    emits('creatingEntitySaver', { entitySaver: entitySaver })
     emits('creatingEntitySavers', { entitySavers: [entitySaver] })
+    emitter.emit('entityForm.creatingEntitySaver', { entitySaver: entitySaver })
+    emitter.emit('entityForm.creatingEntitySavers', { entitySavers: [entitySaver] })
     return [entitySaver]
   }
   return null
