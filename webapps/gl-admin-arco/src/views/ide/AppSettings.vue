@@ -197,14 +197,12 @@ const selectChange = (isSelected: boolean, data: QueryOrgForm, forms: QueryOrgFo
         params.orgNames.push(item.name);
       });
     }
-    Object.assign(userPerListParams.value, {
-      parameter: {
-        orgId: params.orgIds.length > 0 ? params.orgIds.join() : '',
-        orgName: params.orgNames.length > 0 ? params.orgNames.join() : '',
-      }
+    Object.assign(userPerListParams.value.parameter, {
+      orgId: params.orgIds.length > 0 ? params.orgIds.join() : '',
+      orgName: params.orgNames.length > 0 ? params.orgNames.join() : '',
     })
   } else {
-    Object.assign(userPerListParams.value, {parameter: {orgId: '', orgName: ''}})
+    Object.assign(userPerListParams.value.parameter, {orgId: '', orgName: ''})
   }
 }
 
