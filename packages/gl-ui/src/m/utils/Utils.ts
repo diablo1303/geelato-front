@@ -361,12 +361,12 @@ export class Utils {
   /**
    *
    * @param d 需格式化的日期，可为数值或字符串或日期对象
-   * @param formatString 日期格式
+   * @param formatString 日期格式，默认为：yyyy-MM-dd HH:mm:ss
    * @returns {*}
    */
-  dateFormat(d: string | number | object, formatString: string) {
+  dateFormat(d: string | number | object, formatString?: string) {
     let date: Date
-    let fmt = formatString
+    let fmt = formatString || 'yyyy-MM-dd HH:mm:ss'
     if (typeof d === 'string') {
       date = new Date(parseInt(d))
     } else if (typeof d === 'number') {

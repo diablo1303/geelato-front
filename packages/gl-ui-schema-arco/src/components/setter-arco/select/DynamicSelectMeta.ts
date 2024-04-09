@@ -76,7 +76,7 @@ export default {
       enableValueExpress: false,
       show: true,
       expanded: true,
-      title: '触发模式',
+      title: '触发约束',
       setterComponentName: 'ASelect',
       description: '不选择时，默认为组件创建时'
     },
