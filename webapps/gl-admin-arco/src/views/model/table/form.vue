@@ -1,78 +1,123 @@
-<template v-model="pageData">
-  <a-modal
-      v-model:visible="visibleModel"
-      :cancel-text="$t('model.table.index.model.cancel.text')"
-      :footer="pageData.button"
-      :ok-text="$t('model.table.index.model.ok.text')"
-      :title="$t(`model.table.index.model.title.${pageData.formState}`)"
-      width="56%"
-      @cancel="handleModelCancel($event)"
-      @before-ok="handleModelOk">
-    <TableModel ref="tableModelRef"></TableModel>
-  </a-modal>
-</template>
+<script lang="ts">
+export default {
+  name: 'ModelTableForm'
+};
+</script>
 
 <script lang="ts" setup>
-import {ref} from "vue";
-import {QueryTableForm as QueryModel} from '@/api/model';
-import {ListUrlParams} from '@/api/base';
-import TableModel from "@/views/model/table/model.vue";
+import {ref, shallowRef, watch} from "vue";
+import {FormState, ModelParams} from "@/api/base";
+// 引入组件
+import ModelTableModel from './model.vue';
 
-const pageData = ref({formState: 'add', button: true});
-const tableModelRef = ref(null);
-// 显示隐藏
-const visibleModel = ref(false);
-// 页面响应
-let okSuccessBack: any;
-/* 表单 */
+// 页面所需 参数
+type PageParams = {
+  connectId: string; // 连接主键
+  appId?: string; // 应用主键
+  tenantCode?: string; // 租户编码
+}
+
+const emits = defineEmits(['update:modelValue', 'update:visible', 'saveSuccess']);
+const props = defineProps({
+  modelValue: {type: String, default: ''},// 表单 - 主键
+  visible: {type: Boolean, default: false},// 弹层 - 是否显示
+  isModal: {type: Boolean, default: true},// 弹层 - 方式，true-弹窗；false-抽屉
+  title: {type: String, default: ''},// 弹层 - 标题
+  width: {type: String, default: ''},// 弹层 - 高度，为空-自然变化
+  parameter: {type: Object, default: () => ({} as PageParams)},// 页面需要的参数
+  formState: {type: String, default: 'add'},// 页面状态
+  height: {type: [Number, String], default: ''},// 弹层 - 高度，为空-自然变化
+  formCol: {type: Number, default: 1},// 表单 - 一行显示个数
+});
+
+const tableFormRef = shallowRef(ModelTableModel);
+const visibleForm = ref<boolean>(false);
+const modelParams = ref<ModelParams>({
+  visible: false,
+  parameter: props.parameter,
+  formState: props.formState as FormState,
+  id: props.modelValue,
+  formCol: props.formCol,
+});
+
+/**
+ * 保存按钮
+ * @param ev
+ */
 const handleModelOk = (done: any) => {
-  if (tableModelRef.value) {
+  // @ts-ignore
+  if (tableFormRef.value && typeof tableFormRef.value?.saveOrUpdate === 'function') {
     // @ts-ignore
-    tableModelRef.value?.submitModel(done, () => {
+    tableFormRef.value?.saveOrUpdate((data: Record<string, any>) => {
       done();
-      okSuccessBack();
+      visibleForm.value = false;
+      emits('saveSuccess', data, props.formState);
     }, () => {
       done(false);
     });
   }
 };
-const handleModelCancel = (e: Event) => {
-  visibleModel.value = false;
+/**
+ * 取消按钮
+ * @param ev
+ */
+const handleModelCancel = (ev?: Event) => {
+  visibleForm.value = false;
 }
 
-const openForm = (urlParams: ListUrlParams) => {
-  // 全局
-  pageData.value.formState = urlParams.action;
-  pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
-  urlParams.loadFailBack = () => {
-    pageData.value.button = false;
+watch(() => props, () => {
+  if (props.visible === true) {
+    Object.assign(modelParams.value, {
+      visible: props.visible === true,
+      parameter: props.parameter,
+      formState: props.formState as FormState,
+      id: props.modelValue,
+      formCol: props.formCol,
+    })
   }
-  urlParams.loadSuccessBack = (data: QueryModel) => {
-    // eslint-disable-next-line no-console
-    console.log(data);
-  }
-  // 加载页面
-  if (tableModelRef.value) {
-    urlParams.formCol = 2;
-    // @ts-ignore
-    tableModelRef.value?.loadModel(urlParams);
-  }
-  // 显示
-  visibleModel.value = true;
-  okSuccessBack = urlParams.closeBack || null;
-}
+  // 显示页面
+  visibleForm.value = props.visible === true;
+}, {deep: true, immediate: true});
 
-// 将方法暴露出去
-defineExpose({openForm});
+watch(() => visibleForm, () => {
+  modelParams.value.visible = visibleForm.value;
+  emits('update:visible', visibleForm.value);
+}, {deep: true, immediate: true});
 </script>
 
+<template>
+  <a-modal v-if="isModal"
+           v-model:visible="visibleForm"
+           :cancel-text="$t('model.table.index.model.cancel.text')"
+           :footer="formState!=='view'"
+           :ok-text="$t('model.table.index.model.ok.text')"
+           :title="title || $t(`model.table.index.model.title.${formState}`)"
+           :width="width || ''" title-align="start"
+           @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
+    <ModelTableModel ref="tableFormRef"
+                     :formCol="modelParams.formCol"
+                     :formState="modelParams.formState"
+                     :modelValue="modelParams.id"
+                     :parameter="modelParams.parameter"
+                     :visible="modelParams.visible"/>
+  </a-modal>
+  <a-drawer v-if="!isModal"
+            v-model:visible="visibleForm"
+            :cancel-text="$t('model.table.index.model.cancel.text')"
+            :footer="formState!=='view'"
+            :ok-text="$t('model.table.index.model.ok.text')"
+            :title="title || $t(`model.table.index.model.title.${formState}`)"
+            :width="width || ''" title-align="start"
+            @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
+    <ModelTableModel ref="tableFormRef"
+                     :formCol="modelParams.formCol"
+                     :formState="modelParams.formState"
+                     :modelValue="modelParams.id"
+                     :parameter="modelParams.parameter"
+                     :visible="modelParams.visible"/>
+  </a-drawer>
+</template>
+
 <style lang="less" scoped>
-div.arco-form-item-content > span.textarea-span {
-  cursor: pointer;
-  display: -webkit-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-}
+
 </style>

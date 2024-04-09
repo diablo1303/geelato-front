@@ -33,7 +33,7 @@ const generateFormData = (): BusinessMetaData => {
     listVar: '',
     constValue: '',
     expression: '',
-    valueType: '',
+    valueType: 'STRING',
     valueComputeMode: '',
     isList: false,
     isMerge: false,
@@ -343,11 +343,12 @@ watch(() => renderData.value, () => {
         <a-form-item v-if="formData.isList" :rules="[{required: formData.isList,message: '这是必填项'}]" field="listVar" label="列表变量名">
           <a-input v-model.trim="formData.listVar"/>
         </a-form-item>
-        <a-form-item v-if="['VAR','EXPRESSION'].includes(formData.valueComputeMode)" :rules="[{required: true,message: '这是必填项'}]" field="var" label="变量名">
+        <a-form-item v-if="['VAR','EXPRESSION'].includes(formData.valueComputeMode)" :rules="[{required: true,message: '这是必填项'}]" field="var"
+                     label="变量名">
           <a-input v-model.trim="formData.var"/>
         </a-form-item>
         <a-divider orientation="left">数据导到模板之后，对导出文件的处理</a-divider>
-        <a-form-item v-if="formData.isList" field="isMerge" label="合并单元格">
+        <a-form-item v-if="formData.isList || ['CONST'].includes(formData.valueComputeMode)" field="isMerge" label="合并单元格">
           <a-switch v-model="formData.isMerge">
             <template #checked>
               是

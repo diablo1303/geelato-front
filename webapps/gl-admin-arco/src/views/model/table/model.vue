@@ -1,229 +1,46 @@
-<template v-model="pageData">
-  <a-form
-      ref="validateForm" :label-col-props="{ span: 6 }" :model="formData" :wrapper-col-props="{ span: 18 }"
-      class="form">
-    <a-row :gutter="16">
-      <a-col :span="24">
-        <a-form-item v-show="false">
-          <a-input v-show="false" v-model="formData.id"/>
-          <a-input v-show="false" v-model="formData.connectId"/>
-          <a-input v-show="false" v-model="formData.tableName"/>
-          <a-input v-show="false" v-model="formData.viewSql"/>
-          <a-input-number v-show="false" v-model="formData.seqNo"/>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.table.index.form.title')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="title">
-          <a-input v-if="pageData.button" v-model.trim="formData.title" :max-length="32"/>
-          <span v-else>{{ formData.title }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.table.index.form.entityName')"
-            :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')},
-            {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')},
-            {validator:validateCode}]"
-            field="entityName">
-          <a-input v-if="pageData.editName" v-model.trim="formData.entityName" :max-length="30"/>
-          <span v-else>{{ formData.entityName }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.table.index.form.tableName')"
-            field="tableName">
-          <!--           <a-input v-if="pageData.editName" v-model="formData.tableName" :max-length="32"/>-->
-          <span>{{ formData.tableName }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.table.index.form.tableType')"
-            :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
-            field="tableType">
-          <a-select v-if="pageData.formState==='add'" v-model="formData.tableType">
-            <a-option v-for="item of tableTypeOptions" :key="item.value as string" :disabled="item.disabled"
-                      :label="$t(`${item.label}`)" :value="item.value"/>
-          </a-select>
-          <span v-else>{{ $t(`model.table.index.form.tableType.${formData.tableType}`) }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.table.index.form.appId')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="appId">
-          <a-select v-model="formData.appId" :disabled="!pageData.button">
-            <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
-          </a-select>
-        </a-form-item>
-      </a-col>
-      <!--      <a-col v-show="formData.tableType==='view'" :span="24">
-              <a-form-item
-                  :label="$t('model.table.index.form.viewSql')"
-                  :label-col-props="{ span: (pageData.formCol===1?6:3) }"
-                  :rules="[{required: formData.tableType==='view',message: $t('model.form.rules.match.required')},
-                  {match:/^select .* from .*$/i,message:$t('model.form.rules.match.viewSql.match')}]"
-                  :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
-                  field="viewSql">
-                <a-space>
-                  <a-trigger :popup-offset="5" :unmount-on-close="false" position="left" show-arrow trigger="click">
-                    <a-button>
-                      {{ $t('model.table.index.form.viewSql.edit') }}
-                      <template #icon>
-                        <icon-edit/>
-                      </template>
-                    </a-button>
-                    <template #content>
-                      <div
-                          :style="{width:`${pageStyle.width}px`,height:`${pageStyle.height}px`}"
-                          class="trigger-demo-translate">
-                        <MonacoEditor
-                            v-model="formData.viewSql"
-                            :language="'sql'"
-                            :read-only="false"
-                            :theme="pageStyle.theme"
-                            @editor-mounted="editorMounted"/>
-                      </div>
-                    </template>
-                  </a-trigger>
-                  <a-popconfirm
-                      :content="$t('model.view.index.form.viewConstruct.validateMsg')"
-                      position="tr" type="info" @ok="validateViewSql">
-                    <a-button status="success" type="primary">
-                      {{ $t('model.view.index.form.viewConstruct.validate') }}
-                      <template #icon>
-                        <icon-scan/>
-                      </template>
-                    </a-button>
-                  </a-popconfirm>
-                </a-space>
-              </a-form-item>
-            </a-col>-->
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.table.index.form.enableStatus')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="enableStatus">
-          <a-select v-if="pageData.button" v-model="formData.enableStatus">
-            <a-option
-                v-for="item of enableStatusOptions" :key="item.value as string"
-                :label="$t(`${item.label}`)"
-                :value="item.value"/>
-          </a-select>
-          <span v-else>{{ $t(`model.table.index.form.enableStatus.${formData.enableStatus}`) }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col v-if="false" :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.table.index.form.linked')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="linked">
-          <a-select v-if="pageData.button" v-model="formData.linked">
-            <a-option v-for="item of linkedOptions" :key="item.value as string" :label="$t(`${item.label}`)"
-                      :value="item.value"/>
-          </a-select>
-          <span v-else>{{ $t(`model.table.index.form.linked.${formData.linked}`) }}</span>
-        </a-form-item>
-      </a-col>
-      <!--      <a-col :span="24/pageData.formCol">
-              <a-form-item
-                  :label="$t('model.table.index.form.seqNo')"
-                  :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-                  field="seqNo">
-                <a-input-number
-                    v-if="pageData.button"
-                    v-model="formData.seqNo"
-                    :max="999999999"
-                    :min="1"
-                    :placeholder="$t('model.form.rules.match.length.title')+'[0,999999999]'"
-                    :precision="0"/>
-                <span v-else>{{ formData.seqNo }}</span>
-              </a-form-item>
-            </a-col>-->
-      <a-col :span="24">
-        <a-form-item
-            :label="$t('model.table.index.form.tableComment')"
-            :label-col-props="{ span: (pageData.formCol===1?6:3) }"
-            :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
-            field="tableComment">
-          <a-textarea
-              v-if="pageData.button" v-model="formData.tableComment" :auto-size="{minRows:2,maxRows:4}"
-              :max-length="512" show-word-limit/>
-          <span
-              v-else :title="formData.tableComment" class="textarea-span"
-              @click="openModal(`${formData.tableComment}`)">{{ formData.tableComment }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24">
-        <a-form-item
-            :label="$t('model.table.index.form.description')"
-            :label-col-props="{ span: (pageData.formCol===1?6:3) }"
-            :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
-            field="description">
-          <a-textarea
-              v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
-              :max-length="512" show-word-limit/>
-          <span
-              v-else :title="formData.description" class="textarea-span"
-              @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
-        </a-form-item>
-      </a-col>
-    </a-row>
-  </a-form>
-</template>
-
+<script lang="ts">
+export default {
+  name: 'ModelTableModel'
+};
+</script>
 <script lang="ts" setup>
-import {ref} from 'vue';
+import {ref, watch} from "vue";
 import {useI18n} from 'vue-i18n';
-import {FormInstance, Modal, Notification} from "@arco-design/web-vue";
-import {ListUrlParams} from '@/api/base';
+import {FormInstance, Modal} from "@arco-design/web-vue";
+import {getAppSelectOptions, QueryAppForm} from '@/api/application';
 import {
+  QueryTableForm as QueryForm,
   createOrUpdateTable as createOrUpdateForm,
   getTable as getForm,
-  QueryTableForm as QueryForm,
-  validateMetaView,
   validateTableEntityName
-} from '@/api/model';
-import {enableStatusOptions, linkedOptions, tableTypeOptions} from "@/views/model/table/searchTable";
-import {useRoute} from "vue-router";
-import {QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions} from "@/api/security";
+} from "@/api/model";
+import {enableStatusOptions, linkedOptions, tableTypeOptions} from "./searchTable";
 
-const pageData = ref({formState: 'add', button: true, formCol: 1, editName: true});
-const validateForm = ref<FormInstance>();
-// 国际化
-const {t} = useI18n();
-const route = useRoute();
-const routeParams = ref({
-  appId: (route && route.params && route.params.appId as string) || '',
-  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
-});
-// 页面样式
-const resetPageStyle = () => {
-  return {
-    width: document.documentElement.clientWidth / 2,
-    height: document.documentElement.clientHeight * 2 / 3,
-    theme: document.body.getAttribute('arco-theme') === 'dark' ? 'vs-dark' : 'vs'
-  };
+// 页面所需 参数
+type PageParams = {
+  connectId: string; // 连接主键
+  appId?: string; // 应用主键
+  tenantCode?: string; // 租户编码
 }
-const pageStyle = ref(resetPageStyle());
-// html 属性变化监听
-const bodyObserver = new MutationObserver(function (mutations, instance) {
-  mutations.forEach(function (mutation) {
-    pageStyle.value = resetPageStyle();
-  });
-});
-// bodyObserver.observe(document.body, {attributes: true, attributeFilter: ["arco-theme"]});
 
+const emits = defineEmits(['update:modelValue']);
+const props = defineProps({
+  modelValue: {type: String, default: ''},// id
+  visible: {type: Boolean, default: false},// 显示
+  parameter: {type: Object, default: () => ({} as PageParams)},// 页面需要的参数
+  formState: {type: String, default: 'add'},// 表单状态
+  formCol: {type: Number, default: 1},// 表单列数
+});
+
+const {t} = useI18n();// 国际化
+const labelCol = ref<number>(6);// 表单-标题宽度
+const wrapperCol = ref<number>(18); // 表单-内容宽度
+const validateForm = ref<FormInstance>();// 表单-校验
 /* 表单 */
 const generateFormData = (): QueryForm => {
   return {
-    id: '',
-    connectId: '', // 数据库连接 id
+    id: props.modelValue || '',
+    connectId: props.parameter.connectId || '', // 数据库连接 id
     title: '', // 名称(中文)
     tableName: '', // 数据库中的表名
     entityName: '', // 实体名称
@@ -234,68 +51,46 @@ const generateFormData = (): QueryForm => {
     seqNo: 999, // 排序
     tableComment: '', // 备注
     description: '', // 补充描述
-    appId: routeParams.value.appId,
-    tenantCode: routeParams.value.tenantCode,
     synced: false,
-    sourceType: 'creation'
+    sourceType: 'creation', // 同步类型 creation:创建;update:更新
+    appId: props.parameter?.appId || '',
+    tenantCode: props.parameter?.tenantCode || '',
   };
 }
 const formData = ref(generateFormData());
+const appSelectOptions = ref<QueryAppForm[]>([]);
+const entityIsEdit = ref<boolean>(false);
 
-const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
+/**
+ * 新增或更新接口
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
+const saveData = async (params: QueryForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
       const {data} = await createOrUpdateForm(params);
-      successBack(data);
+      if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
-      failBack(err);
+      if (failBack && typeof failBack === 'function') failBack(err);
     }
-  } else {
-    failBack();
-  }
+  } else if (failBack && typeof failBack === 'function') failBack();
 };
+/**
+ * 获取单条数据接口
+ * @param id
+ * @param successBack
+ * @param failBack
+ */
 const getData = async (id: string, successBack?: any, failBack?: any) => {
   try {
     const {data} = await getForm(id);
-    successBack(data);
+    if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-    failBack(err);
+    if (failBack && typeof failBack === 'function') failBack(err);
   }
-};
-const validateTableView = async (params: QueryForm, successBack?: any, failBack?: any) => {
-  const res = await validateForm.value?.validate();
-  if (!res) {
-    try {
-      const {data} = await validateMetaView(params.connectId, params.viewSql);
-      successBack(data);
-    } catch (err) {
-      failBack(err);
-    }
-  } else {
-    failBack();
-  }
-};
-const validateViewSql = () => {
-  validateTableView(formData.value, (result: boolean) => {
-    if (result === true) {
-      Notification.success(t('model.view.index.model.viewSql.valid.success'));
-    } else {
-      Notification.error(t('model.view.index.model.viewSql.valid.fail'));
-    }
-  }, () => {
-  });
-}
-const editorMounted = (editor: any) => {
-  console.log('editor实例加载完成', editor)
-}
-const openModal = (content: string) => {
-  Modal.open({'content': content, 'footer': false, 'simple': true});
-}
-const resetValidate = async () => {
-  await validateForm.value?.resetFields();
 };
 /**
  * 唯一性校验
@@ -310,50 +105,182 @@ const validateCode = async (value: any, callback: any) => {
     console.log(err);
   }
 }
-
-const appSelectOptions = ref<QuerySelectForm[]>([]);
-const getAppSelectOptions = async () => {
-  try {
-    const {data} = await querySelectOptions({
-      tenantCode: (route.params && route.params.tenantCode as string) || '',
-    } as unknown as QueryAppForm);
-    appSelectOptions.value = data || [];
-  } catch (err) {
-    appSelectOptions.value = [];
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
+/**
+ * 文本域查看
+ * @param content
+ */
+const openModal = (content: string) => {
+  Modal.open({'content': content, 'footer': false, 'simple': true});
 }
-
-/* 对外调用方法 */
-const loadModel = (urlParams: ListUrlParams) => {
-  getAppSelectOptions();
-  // 全局
-  pageData.value.formState = urlParams.action || "view";
-  pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
-  pageData.value.formCol = urlParams.formCol || 1;
-  pageData.value.editName = urlParams.params?.editName || false;
-  formData.value = generateFormData();
-  formData.value.connectId = urlParams.params?.pId || '';
-  // 重置验证
-  resetValidate();
-  pageStyle.value = resetPageStyle();
-  // 特色
-  if (urlParams.id) {
-    getData(urlParams.id, (data: QueryForm) => {
-      data.seqNo = Number(data.seqNo);
-      formData.value = data;
-      urlParams.loadSuccessBack(data);
-    }, urlParams.loadFailBack);
-  }
-}
-const submitModel = (done: any, successBack?: any, failBack?: any) => {
-  createOrUpdateData(formData.value, successBack, failBack);
+/**
+ * 重置验证信息
+ */
+const resetValidate = async () => {
+  await validateForm.value?.resetFields();
 };
 
-// 将方法暴露出去
-defineExpose({loadModel, submitModel});
+/**
+ * 页面数据创建或更新方法，对外提供
+ * @param successBack
+ * @param failBack
+ */
+const saveOrUpdate = (successBack?: any, failBack?: any) => {
+  saveData(formData.value, (data: QueryForm) => {
+    // 设计当前页面的操作
+    if (successBack && typeof successBack === 'function') successBack(data);
+  }, () => {
+    if (failBack && typeof failBack === 'function') failBack();
+  });
+}
+
+/**
+ * 页面加载方法，对外提供
+ */
+const loadPage = () => {
+  entityIsEdit.value = props.formState === 'add';
+  // 应用信息
+  getAppSelectOptions({
+    id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+  }, (data: QueryAppForm[]) => {
+    appSelectOptions.value = data || [];
+  }, () => {
+    appSelectOptions.value = [];
+  });
+  // 表单数据重置
+  formData.value = generateFormData();
+  // 重置验证
+  resetValidate();
+  // 其他初始化
+  // 编辑、查看 状态 查询数据
+  if (['edit', 'view'].includes(props.formState) && props.modelValue) {
+    getData(props.modelValue, (data: QueryForm) => {
+      // 表格数据处理
+      data.seqNo = Number(data.seqNo);
+      entityIsEdit.value = !data.tableName;
+      formData.value = data;
+    });
+  }
+}
+
+watch(() => props, () => {
+  if (props.visible === true) loadPage();
+}, {deep: true, immediate: true});
+
+/* 提供外部调用方法 */
+defineExpose({saveOrUpdate, loadPage});
 </script>
+
+<template>
+  <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
+    <a-row :gutter="wrapperCol">
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.table.index.form.title')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="title">
+          <a-input v-if="formState!=='view'" v-model.trim="formData.title" :max-length="32"/>
+          <span v-else>{{ formData.title }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.table.index.form.entityName')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')},
+            {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.entityName.match')},
+            {validator:validateCode}]" field="entityName">
+          <a-input v-if="entityIsEdit" v-model.trim="formData.entityName" :max-length="30"/>
+          <span v-else>{{ formData.entityName }}</span>
+          <a-tooltip :content="$t('searchTable.columns.operations.alter.warning')">
+            <a-button v-if="!entityIsEdit" size="medium" type="text" @click="ev => {entityIsEdit=true}">
+              <icon-edit/>
+            </a-button>
+          </a-tooltip>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.table.index.form.tableName')" field="tableName">
+          <span>{{ formData.tableName || formData.entityName }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.table.index.form.tableType')"
+            :rules="[{required: formState==='add',message: $t('model.form.rules.match.required')}]"
+            field="tableType">
+          <a-select v-if="formState==='add'" v-model="formData.tableType">
+            <a-option v-for="item of tableTypeOptions" :key="item.value as string" :disabled="item.disabled"
+                      :label="$t(`${item.label}`)" :value="item.value"/>
+          </a-select>
+          <span v-else>{{ $t(`model.table.index.form.tableType.${formData.tableType}`) }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.table.index.form.appId')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="appId">
+          <a-select v-model="formData.appId" :disabled="formState==='view'">
+            <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.table.index.form.enableStatus')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="enableStatus">
+          <a-select v-if="formState!=='view'" v-model="formData.enableStatus">
+            <a-option
+                v-for="item of enableStatusOptions" :key="item.value as string"
+                :label="$t(`${item.label}`)"
+                :value="item.value"/>
+          </a-select>
+          <span v-else>{{ $t(`model.table.index.form.enableStatus.${formData.enableStatus}`) }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col v-if="false" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.table.index.form.linked')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="linked">
+          <a-select v-if="formState!=='view'" v-model="formData.linked">
+            <a-option v-for="item of linkedOptions" :key="item.value as string" :label="$t(`${item.label}`)"
+                      :value="item.value"/>
+          </a-select>
+          <span v-else>{{ $t(`model.table.index.form.linked.${formData.linked}`) }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)">
+        <a-form-item
+            :label="$t('model.table.index.form.tableComment')"
+            :label-col-props="{ span: labelCol/formCol }"
+            :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+            field="tableComment">
+          <a-textarea
+              v-if="formState!=='view'" v-model="formData.tableComment" :auto-size="{minRows:2,maxRows:4}"
+              :max-length="512" show-word-limit/>
+          <span
+              v-else :title="formData.tableComment" class="textarea-span"
+              @click="openModal(`${formData.tableComment}`)">{{ formData.tableComment }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)">
+        <a-form-item
+            :label="$t('model.table.index.form.description')"
+            :label-col-props="{ span: labelCol/formCol }"
+            :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+            field="description">
+          <a-textarea
+              v-if="formState!=='view'" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
+              :max-length="512" show-word-limit/>
+          <span
+              v-else :title="formData.description" class="textarea-span"
+              @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+        </a-form-item>
+      </a-col>
+    </a-row>
+  </a-form>
+</template>
 
 <style lang="less" scoped>
 div.arco-form-item-content > span.textarea-span {

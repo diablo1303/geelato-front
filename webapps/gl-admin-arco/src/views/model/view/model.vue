@@ -1,274 +1,15 @@
-<template v-model="pageData">
-  <a-form
-      ref="validateForm" :label-col-props="{ span: 6 }" :model="formData" :wrapper-col-props="{ span: 18 }"
-      class="form">
-    <a-row :gutter="16">
-      <a-col :span="24">
-        <a-form-item v-show="false">
-          <a-input v-show="false" v-model="formData.id"/>
-          <a-input v-show="false" v-model="formData.connectId"/>
-          <a-input v-show="false" v-model="formData.entityName"/>
-          <a-input v-show="false" v-model="formData.viewConstruct"/>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.view.index.form.title')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="title">
-          <a-input v-if="pageData.button" v-model.trim="formData.title" :max-length="32"/>
-          <span v-else>{{ formData.title }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.view.index.form.viewName')"
-            :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')},
-            {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.viewName.match')},
-            {match:pageData.formState==='add'?/^(?!v_|V_)/:/^[vV][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.viewName.match')},
-            {validator:validateCode}]"
-            field="viewName">
-          <a-input v-if="pageData.formState==='add'" v-model.trim="formData.viewName" :max-length="32" @blur="viewNameBlur($event)">
-            <template #prepend>
-              v_
-            </template>
-          </a-input>
-          <span v-else>{{ formData.viewName }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.view.index.form.viewType')"
-            :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
-            field="viewType">
-          <!-- <a-select v-model="formData.viewType">
-                      <a-option v-for="item of viewTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-                    </a-select>-->
-          <span>{{ $t(`model.view.index.form.viewType.${formData.viewType}`) }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24">
-        <a-form-item
-            :label="$t('model.view.index.form.viewConstruct')"
-            :label-col-props="{ span: (pageData.formCol===1?6:3) }"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')},
-            {match:/^select .* from .*$/i,message:$t('model.form.rules.match.viewSql.match')}]"
-            :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
-            field="viewConstruct">
-          <a-space>
-            <a-trigger :popup-offset="5" :unmount-on-close="false" position="left" show-arrow trigger="click">
-              <a-button>
-                {{ $t('model.view.index.form.viewConstruct.edit') }}
-                <template #icon>
-                  <icon-edit/>
-                </template>
-              </a-button>
-              <template #content>
-                <div
-                    :style="{width:`${pageStyle.width}px`,height:`${pageStyle.height}px`}"
-                    class="trigger-demo-translate">
-                  <MonacoEditor
-                      v-model="formData.viewConstruct"
-                      :language="'sql'"
-                      :read-only="false"
-                      :theme="pageStyle.theme"
-                      @editor-mounted="editorMounted"/>
-                </div>
-              </template>
-            </a-trigger>
-            <a-popconfirm
-                :content="$t('model.view.index.form.viewConstruct.validateMsg')"
-                position="tr" type="info" @ok="validateViewSql">
-              <a-button status="success" type="primary">
-                {{ $t('model.view.index.form.viewConstruct.validate') }}
-                <template #icon>
-                  <icon-scan/>
-                </template>
-              </a-button>
-            </a-popconfirm>
-          </a-space>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.view.index.form.appId')"
-            :rules="[{required: false,message: $t('model.form.rules.match.required')}]"
-            field="appId">
-          <a-select v-model="formData.appId" :disabled="!pageData.button">
-            <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
-          </a-select>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.view.index.form.enableStatus')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="enableStatus">
-          <a-select v-if="pageData.button" v-model="formData.enableStatus">
-            <a-option
-                v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)"
-                :value="item.value"/>
-          </a-select>
-          <span v-else>{{ $t(`model.view.index.form.enableStatus.${formData.enableStatus}`) }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col v-if="false" :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.view.index.form.linked')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="linked">
-          <a-select v-if="pageData.button" v-model="formData.linked">
-            <a-option v-for="item of linkedOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-          </a-select>
-          <span v-else>{{ $t(`model.view.index.form.linked.${formData.linked}`) }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.view.index.form.seqNo')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="seqNo">
-          <a-input-number
-              v-if="pageData.button"
-              v-model="formData.seqNo"
-              :max="999999999"
-              :min="1"
-              :placeholder="$t('model.form.rules.match.length.title')+'[0,999999999]'"
-              :precision="0"/>
-          <span v-else>{{ formData.seqNo }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24">
-        <a-form-item
-            :label="$t('model.view.index.form.description')"
-            :label-col-props="{ span: (pageData.formCol===1?6:3) }"
-            :wrapper-col-props="{ span: (pageData.formCol===1?18:21) }"
-            field="description">
-          <a-textarea
-              v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
-              :max-length="512" show-word-limit/>
-          <span
-              v-else :title="formData.description" class="textarea-span"
-              @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
-        </a-form-item>
-      </a-col>
-    </a-row>
-  </a-form>
-  <a-divider style="margin: 0 0 10px 0"/>
-  <a-space v-if="pageData.button" style="margin-bottom: 10px">
-    <a-button size="medium" type="primary" @click="customAddEntityClick($event)">
-      <icon-plus/>
-      {{ $t('model.view.index.form.entity.custom') }}
-    </a-button>
-    <a-popover v-model:popup-visible="entityPopover" position="right" trigger="click" style="max-width: 400px">
-      <a-button size="medium" type="primary" @click="entityPopoverClick($event)">
-        <icon-plus/>
-        {{ $t('model.view.index.form.entity.model') }}
-      </a-button>
-      <template #content>
-        <a-form ref="validateEntityForm" :label-col-props="{ span: 6 }" :model="entityData" :wrapper-col-props="{ span: 18 }" class="form2">
-          <a-row :gutter="16">
-            <a-col :span="24">
-              <a-form-item :label="$t('model.view.index.form.entity.tableId')"
-                           :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-                           field="tableId">
-                <a-select v-model="entityData.tableId" allow-search @change="entityChange">
-                  <a-option v-for="item of selectEntityOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.id"/>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :span="24">
-              <a-form-item :label="$t('model.view.index.form.entity.columnIds')"
-                           :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-                           field="columnIds">
-                <a-select v-model="entityData.columnIds" allow-search multiple @change="entityColumnChange">
-                  <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
-                  <template #header>
-                    <div class="check-all">
-                      <a-checkbox v-model="entityColumnSelectAll" class="check-all-radio" @change="entityColumnSelectAllChange">
-                            <span class="check-all-span">
-                              {{ $t('searchTable.columns.operations.all') }}
-                            </span>
-                      </a-checkbox>
-                    </div>
-                  </template>
-                </a-select>
-              </a-form-item>
-            </a-col>
-          </a-row>
-        </a-form>
-        <a-divider style="margin: 5px 0px"/>
-        <a-space style="display: flex;align-items: center;justify-content: end;">
-          <a-button size="medium" type="primary" @click="entitySubmitClick($event)">
-            确定
-          </a-button>
-        </a-space>
-      </template>
-    </a-popover>
-  </a-space>
-  <a-table
-      :bordered="{cell:true}"
-      :columns="columnTitle"
-      :data="(columnData as TableData[])"
-      :draggable="pageData.button?{type:'handle',width:40}:{}"
-      :pagination="false"
-      :stripe="true"
-      column-resizable
-      row-key="id" @change="handleChange">
-    <template #columns>
-      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.title')" :tooltip="true" :width="150" data-index="title" fixed="left">
-        <template #cell="{record}">
-          <a-input v-if="pageData.button" v-model.trim="record.title" :max-length="32"/>
-          <span v-else>{{ record.title }}</span>
-        </template>
-      </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.name')" :tooltip="true" :width="120" data-index="name">
-        <template #cell="{record}">
-          <a-input v-if="pageData.button&&!record.tableName" v-model.trim="record.name" :max-length="32"/>
-          <span v-else>{{ record.name }}</span>
-        </template>
-      </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.fieldName')" :tooltip="true" :width="150" data-index="fieldName">
-        <template #cell="{record}">
-          <a-input v-if="pageData.button" v-model.trim="record.fieldName" :max-length="32"/>
-          <span v-else>{{ record.fieldName }}</span>
-        </template>
-      </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.dataType')" :tooltip="true" :width="120" data-index="selectType">
-        <template #cell="{record}">
-          <a-select v-if="pageData.button" v-model="record.selectType" :options="selectTypeOptions" allow-search/>
-          <span v-else>{{ formatSelectType(record.selectType) }}</span>
-        </template>
-      </a-table-column>
-      <!--     <a-table-column :title="$t('model.column.index.form.key')" :width="100" data-index="key"/>-->
-      <!--      <a-table-column :title="$t('model.column.index.form.nullable')" :width="100" data-index="nullable"/>-->
-      <!--      <a-table-column :title="$t('model.column.index.form.charMaxLength')" :width="100" data-index="charMaxLength"/>-->
-      <!--      <a-table-column :title="$t('model.column.index.form.precision')" :width="100" data-index="precision"/>-->
-      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.tableName')" :tooltip="true" :width="120" data-index="tableName"/>
-      <a-table-column v-if="pageData.button" :title="$t('model.column.index.form.operations')" :width="80" align="center"
-                      data-index="operations" fixed="right">
-        <template #cell="{record}">
-          <a-button status="danger" type="text" @click="deleteViewColumn(record.tableName,record.fieldName)">
-            <template #icon>
-              <icon-delete/>
-            </template>
-          </a-button>
-        </template>
-      </a-table-column>
-    </template>
-    <template #empty>
-      <a-empty style="width: 57%;"/>
-    </template>
-  </a-table>
-</template>
-
+<script lang="ts">
+export default {
+  name: 'ModelTableViewModel'
+};
+</script>
 <script lang="ts" setup>
-import {reactive, ref} from 'vue';
+import {ref, watch} from "vue";
 import {useI18n} from 'vue-i18n';
-import {FormInstance, Modal, Notification, TableData} from "@arco-design/web-vue";
-import {ListUrlParams, PageQueryRequest} from '@/api/base';
+import {FormInstance, Message, Modal, SelectOptionGroup, TableColumnData} from "@arco-design/web-vue";
+import {PageQueryRequest} from '@/api/base';
 import {
-  createOrUpdateView as createOrUpdateForm,
+  createOrUpdateView as createOrUpdateForm, getDefaultColumnNames, getTypeSelectOptionGroup,
   getView as getForm,
   QueryTableColumnForm,
   queryTableColumns,
@@ -278,46 +19,45 @@ import {
   validateMetaView,
   validateViewName
 } from '@/api/model';
-import {enableStatusOptions, linkedOptions} from "@/views/model/view/searchTable";
 import MonacoEditor from '@/components/monaco/index.vue';
-import {useRoute} from "vue-router";
-import {columnSelectType, defaultColumnMetas, selectTypeOptions} from "@/views/model/column/searchTable";
 import {isJSON} from "@/utils/is";
-import {QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions} from "@/api/security";
+import {getAppSelectOptions, QueryAppForm} from "@/api/application";
+import {enableStatusOptions, linkedOptions} from "./searchTable";
 
-const pageData = ref({formState: 'add', button: true, formCol: 1});
-const validateForm = ref<FormInstance>();
-const validateEntityForm = ref<FormInstance>();
-// 国际化
-const {t} = useI18n();
-const route = useRoute();
-const routeParams = ref({
-  appId: (route && route.params && route.params.appId as string) || '',
-  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
-});
-// 页面样式
-const resetPageStyle = () => {
-  return {
-    width: document.documentElement.clientWidth / 2,
-    height: document.documentElement.clientHeight * 2 / 3,
-    theme: document.body.getAttribute('arco-theme') === 'dark' ? 'vs-dark' : 'vs'
-  };
+// 页面所需 参数
+type PageParams = {
+  connectId: string; // 数据库链接id
+  entityName: string; // 模型名称
+  appId?: string; // 应用主键
+  tenantCode?: string; // 租户编码
 }
-const pageStyle = ref(resetPageStyle());
-// html 属性变化监听
-const bodyObserver = new MutationObserver(function (mutations, instance) {
-  mutations.forEach(function (mutation) {
-    pageStyle.value = resetPageStyle();
-  });
+
+const emits = defineEmits(['update:modelValue']);
+const props = defineProps({
+  modelValue: {type: String, default: ''},// id
+  visible: {type: Boolean, default: false},// 显示
+  parameter: {type: Object, default: () => ({} as PageParams)},// 页面需要的参数
+  formState: {type: String, default: 'add'},// 表单状态
+  formCol: {type: Number, default: 1},// 表单列数
 });
-// bodyObserver.observe(document.body, {attributes: true, attributeFilter: ["arco-theme"]});
+
+const {t} = useI18n();// 国际化
+const labelCol = ref<number>(6);// 表单-标题宽度
+const wrapperCol = ref<number>(18); // 表单-内容宽度
+const validateForm = ref<FormInstance>();// 表单-校验
+const tabsKey = ref<number>(1);// 定位tabs页面
+const visibleForm = ref<boolean>(false);
+const tableTabHeight = ref<number>(555);
+const tableTabStyle = ref({height: `${tableTabHeight.value}px`});
+const scrollbar = ref(true);
+const scroll = ref({x: 1000, y: tableTabHeight.value - 118});
 
 /* 表单 */
 const generateFormData = (): QueryForm => {
   return {
-    id: '',
-    connectId: '', // 数据库连接 id
-    entityName: '', // 实体名称
+    id: props.modelValue || '',
+    connectId: props.parameter.connectId || '', // 数据库连接 id
+    entityName: props.parameter.entityName || '', // 实体名称
     title: '', // 名称(中文)
     viewName: '', // 数据库中的表名
     viewType: 'custom', // 视图类型 default:默认视图;custom:自定义视图
@@ -327,73 +67,80 @@ const generateFormData = (): QueryForm => {
     seqNo: 1, // 排序
     linked: 0, // 已链接
     description: '', // 补充描述
-    appId: routeParams.value.appId,
-    tenantCode: routeParams.value.tenantCode,
+    appId: props.parameter?.appId || '',
+    tenantCode: props.parameter?.tenantCode || '',
   };
 }
 const formData = ref(generateFormData());
+const appSelectOptions = ref<QueryAppForm[]>([]);
+const selectTypeOptions = ref<SelectOptionGroup[]>([]);
+const defaultColumnMetas = ref<string[]>([]);
+
 // 表单
-const columnData = ref<QueryTableColumnForm[]>([]);
+const columnData = ref<Record<string, any>[]>([]);
 const handleChange = (_data: any[]) => {
   columnData.value = _data;
 }
 
-const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
-  console.log(params);
+/**
+ * 新增或更新接口
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
+const saveData = async (params: QueryForm, successBack?: any, failBack?: any) => {
+  tabsKey.value = 1;
   const res = await validateForm.value?.validate();
   if (!res) {
-    params.viewName = pageData.value.formState === 'add' ? `v_${params.viewName}` : params.viewName;
+    params.viewName = props.formState === 'add' ? `v_${params.viewName}` : params.viewName;
     params.viewColumn = JSON.stringify(columnData.value);
     try {
       const {data} = await createOrUpdateForm(params);
-      successBack(data);
+      if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
-      failBack(err);
+      if (failBack && typeof failBack === 'function') failBack(err);
     }
   } else {
-    failBack();
+    if (failBack && typeof failBack === 'function') failBack();
+    setTimeout(() => {
+      if (!params.viewConstruct) {
+        tabsKey.value = 2;
+      } else if (columnData.value.length === 0) {
+        tabsKey.value = 3;
+      }
+    }, 1000 * 3);
   }
 };
+/**
+ * 获取单条数据接口
+ * @param id
+ * @param successBack
+ * @param failBack
+ */
 const getData = async (id: string, successBack?: any, failBack?: any) => {
   try {
     const {data} = await getForm(id);
-    successBack(data);
+    if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-    failBack(err);
+    if (failBack && typeof failBack === 'function') failBack(err);
   }
 };
+/**
+ * 唯一性校验
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
 const validateTableView = async (params: QueryForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
       const {data} = await validateMetaView(params.connectId, params.viewConstruct);
-      successBack(data);
+      if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
-      failBack(err);
+      if (failBack && typeof failBack === 'function') failBack(err);
     }
-  } else {
-    failBack();
-  }
-};
-
-const viewNameBlur = (ev?: FocusEvent) => {
-  const entity = formData.value.entityName.toLowerCase();
-  const view = formData.value.viewName ? formData.value.viewName.toLowerCase() : "";
-  if (formData.value.viewType === "custom" && entity === view) {
-    Notification.warning(`[v_${entity}]${t('model.view.index.form.entityName.valid')}`);
-  }
-  formData.value.viewName = view;
-}
-const editorMounted = (editor: any) => {
-  console.log('editor实例加载完成', editor)
-}
-const openModal = (content: string) => {
-  Modal.open({'content': content, 'footer': false, 'simple': true});
-}
-const resetValidate = async () => {
-  await validateForm.value?.resetFields();
+  } else if (failBack && typeof failBack === 'function') failBack();
 };
 /**
  * 唯一性校验
@@ -405,18 +152,60 @@ const validateCode = async (value: any, callback: any) => {
     const params = {...formData.value};
     if (params.viewName && !params.viewName.startsWith("v_")) params.viewName = `v_${params.viewName}`;
     const {data} = await validateViewName(params);
-    if (!data) callback(t('security.form.rules.match.uniqueness'));
+    if (!data) callback('不能重复');
   } catch (err) {
     console.log(err);
   }
 }
 
+/**
+ * 文本域查看
+ * @param content
+ */
+const openModal = (content: string) => {
+  Modal.open({'content': content, 'footer': false, 'simple': true});
+}
+/**
+ * 重置验证信息
+ */
+const resetValidate = async () => {
+  await validateForm.value?.resetFields();
+};
+
+const viewNameBlur = (ev?: FocusEvent) => {
+  const entity = formData.value.entityName.toLowerCase();
+  const view = formData.value.viewName ? formData.value.viewName.toLowerCase() : "";
+  if (formData.value.viewType === "custom" && entity === view) {
+    Message.warning(`[v_${entity}] 这是’默认视图‘的名称`);
+  }
+  formData.value.viewName = view;
+}
+
+const matchViewConstruct = (value: any, callback: any) => {
+  const regex = /^select .* from .*$/i;
+  if (formData.value.viewConstruct) {
+    const str = formData.value.viewConstruct.replace(/\r\n/g, ' ').replace(/\r\n\t/g, ' ');
+    console.log(str)
+    if (!str.match(regex)) callback('匹配：‘select * from table_name ...’');
+  }
+}
+
+
+/**
+ * 必填校验
+ * @param value
+ * @param callback
+ */
+const validateViewColumn = async (value: any, callback: any) => {
+  if (columnData.value.length === 0) callback('这是必填项');
+}
+
 const validateViewSql = () => {
   validateTableView(formData.value, (result: boolean) => {
     if (result === true) {
-      Notification.success(t('model.view.index.model.viewSql.valid.success'));
+      global.$message.success({content: '验证成功！'});
     } else {
-      Notification.error(t('model.view.index.model.viewSql.valid.fail'));
+      global.$message.warning({content: '验证失败，请检查Sql的正确性。'});
     }
   }, () => {
   });
@@ -430,16 +219,6 @@ const deleteViewColumn = (tableName: string, columnName: string) => {
     }
   }
   columnData.value.splice(index, 1);
-}
-
-const formatSelectType = (value: string): string => {
-  // eslint-disable-next-line no-restricted-syntax
-  for (const item of columnSelectType) {
-    if (item.value === value) {
-      return item.label;
-    }
-  }
-  return '';
 }
 
 /**
@@ -485,8 +264,8 @@ const customAddEntityClick = (ev?: MouseEvent) => {
     synced: false,
     encrypted: 0,
     seqNo: 1,
-    appId: routeParams.value.appId,
-    tenantCode: routeParams.value.tenantCode,
+    appId: props.parameter?.appId || '',
+    tenantCode: props.parameter?.tenantCode || '',
     deptId: '',
     buId: '',
     delStatus: 0,
@@ -499,33 +278,42 @@ const customAddEntityClick = (ev?: MouseEvent) => {
     deleteAt: '',
   } as QueryTableColumnForm);
 }
-/**
- * 添加，模型字段
- */
+
+/* 模型、字段选择 */
 const entityPopover = ref(false);
-const entityData = ref<{ tableId: string, columnIds: string[] }>({tableId: '', columnIds: []});
-const entityColumnSelectAll = ref<boolean>(false);
+const validateEntityForm = ref<FormInstance>();
+const entityData = ref({tableId: '', columnIds: []});
 const selectEntityOptions = ref<QueryTableForm[]>([]);
-const getSelectEntityOptions = async (params: PageQueryRequest = {
-  enableStatus: 1,
-  tableType: 'table', ...routeParams.value
-} as unknown as PageQueryRequest) => {
+const selectEntityColumnOptions = ref<QueryTableColumnForm[]>([]);
+const entityColumnSelectAll = ref<boolean>(false);
+/**
+ * 获取模型，启用的，当前租户
+ * @param params
+ */
+const getSelectEntityOptions = async (params?: Record<string, any>) => {
   try {
-    const {data} = await queryTables(params);
-    selectEntityOptions.value = data;
+    const {data} = await queryTables({
+      ...params,
+      enableStatus: 1, tableType: 'table',
+      appId: '', tenantCode: props.parameter.tenantCode || ''
+    } as unknown as PageQueryRequest);
+    selectEntityOptions.value = data || [];
   } catch (err) {
     selectEntityOptions.value = [];
-    // eslint-disable-next-line no-console
-    console.log(err);
   }
 }
-const selectEntityColumnOptions = ref<QueryTableColumnForm[]>([]);
-const getSelectEntityColumnOptions = async (params: PageQueryRequest = {
-  enableStatus: 1, tableId: entityData.value.tableId, ...routeParams.value
-} as unknown as PageQueryRequest) => {
+/**
+ * 获取模型字段，启用的，当前租户的，选中的模型
+ * @param params
+ */
+const getSelectEntityColumnOptions = async (params?: Record<string, any>) => {
   try {
     if (entityData.value.tableId) {
-      const {data} = await queryTableColumns(params);
+      const {data} = await queryTableColumns({
+        ...params,
+        enableStatus: 1, tableId: entityData.value.tableId,
+        appId: '', tenantCode: props.parameter.tenantCode || ''
+      } as unknown as PageQueryRequest);
       selectEntityColumnOptions.value = [];
       data.forEach((item, index) => {
         if (!defaultColumnMetas.value.includes((item as unknown as QueryTableColumnForm).name)) {
@@ -537,38 +325,61 @@ const getSelectEntityColumnOptions = async (params: PageQueryRequest = {
     }
   } catch (err) {
     selectEntityColumnOptions.value = [];
-    // eslint-disable-next-line no-console
-    console.log(err);
   }
 }
-
-const entityChange = (value?: string) => {
+/**
+ * 模型选择变更
+ * @param value
+ */
+const entityChange = () => {
+  // 清理模型字段，
   entityData.value.columnIds = [];
-  selectEntityColumnOptions.value = [];
+  // 取消全选
+  entityColumnSelectAll.value = false;
+  // 重置模型字段集合
   getSelectEntityColumnOptions();
 }
+/**
+ * 打开表单
+ * @param ev
+ */
 const entityPopoverClick = async (ev?: MouseEvent) => {
+  // 取消全选
   entityColumnSelectAll.value = false;
+  // 清理选择，
   entityData.value = {tableId: "", columnIds: []};
   selectEntityColumnOptions.value = [];
+  // 清理验证，
   await validateEntityForm.value?.resetFields();
+  // 获取模型，
+  await getSelectEntityOptions();
+  // 打开表单
   entityPopover.value = true;
 }
+/**
+ * 模型字段变更与全选的联动
+ */
 const entityColumnChange = () => {
   let isSelectedAll = true;
   // eslint-disable-next-line no-restricted-syntax
   for (const item of selectEntityColumnOptions.value) {
+    // @ts-ignore
     if (!entityData.value.columnIds.includes(item.id)) {
       isSelectedAll = false;
     }
   }
   entityColumnSelectAll.value = isSelectedAll;
 }
+/**
+ * 全选变更与模型字段选择联动
+ */
 const entityColumnSelectAllChange = () => {
   if (entityColumnSelectAll.value === true) {
     // eslint-disable-next-line no-restricted-syntax
     for (const item of selectEntityColumnOptions.value) {
+      // @ts-ignore
       if (!entityData.value.columnIds.includes(item.id)) {
+        // @ts-ignore
         entityData.value.columnIds.push(item.id);
       }
     }
@@ -576,6 +387,10 @@ const entityColumnSelectAllChange = () => {
     entityData.value.columnIds = [];
   }
 }
+/**
+ * 点击添加按钮
+ * @param ev
+ */
 const entitySubmitClick = async (ev?: MouseEvent) => {
   const res = await validateEntityForm.value?.validate();
   if (!res) {
@@ -589,72 +404,331 @@ const entitySubmitClick = async (ev?: MouseEvent) => {
         }
       }
     }
-    console.log(entityData.value);
   }
 }
 
-const appSelectOptions = ref<QuerySelectForm[]>([]);
-const getAppSelectOptions = async () => {
-  try {
-    const {data} = await querySelectOptions({
-      tenantCode: (route.params && route.params.tenantCode as string) || '',
-    } as unknown as QueryAppForm);
+/**
+ * 页面数据创建或更新方法，对外提供
+ * @param successBack
+ * @param failBack
+ */
+const saveOrUpdate = (successBack?: any, failBack?: any) => {
+  saveData(formData.value, (data: QueryForm) => {
+    // 设计当前页面的操作
+    if (successBack && typeof successBack === 'function') successBack(data);
+  }, () => {
+    if (failBack && typeof failBack === 'function') failBack();
+  });
+}
+
+/**
+ * 页面加载方法，对外提供
+ */
+const loadPage = () => {
+  tabsKey.value = 1;
+  // 调整高度
+  tableTabHeight.value = window.innerHeight * 0.6;
+  tableTabStyle.value.height = `${tableTabHeight.value}px`;
+  scroll.value.y = tableTabHeight.value - 118;
+  // 应用信息
+  getAppSelectOptions({
+    id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+  }, (data: QueryAppForm[]) => {
     appSelectOptions.value = data || [];
-  } catch (err) {
+  }, () => {
     appSelectOptions.value = [];
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
-}
-
-/* 对外调用方法 */
-const loadModel = (urlParams: ListUrlParams) => {
-  getSelectEntityOptions();
+  });
+  // 模型字段类型
+  getTypeSelectOptionGroup((data: SelectOptionGroup[]) => {
+    selectTypeOptions.value = data || [];
+  }, () => {
+    selectTypeOptions.value = [];
+  });
+  // 模型默认字段
+  getDefaultColumnNames((data: string[]) => {
+    defaultColumnMetas.value = data || [];
+  }, () => {
+    defaultColumnMetas.value = [];
+  });
+  // 清理视图字段
   columnData.value = [];
-  getAppSelectOptions();
-  // 全局
-  pageData.value.formState = urlParams.action || "view";
-  pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
-  pageData.value.formCol = urlParams.formCol || 1;
+  // 表单数据重置
   formData.value = generateFormData();
-  formData.value.connectId = urlParams.params?.connectId || '';
-  formData.value.entityName = urlParams.params?.entityName || '';
   // 重置验证
   resetValidate();
-  pageStyle.value = resetPageStyle();
-  // 特色
-  if (urlParams.id) {
-    getData(urlParams.id, (data: QueryForm) => {
+  // 其他初始化
+  // 编辑、查看 状态 查询数据
+  if (['edit', 'view'].includes(props.formState) && props.modelValue) {
+    getData(props.modelValue, (data: QueryForm) => {
       data.seqNo = Number(data.seqNo);
-      columnData.value = isJSON(data.viewColumn) ? JSON.parse(data.viewColumn) : [];
-      // data.viewName = data.viewName == null ? '' : data.viewName.replace(/^(v_|V_)*/, "");
       formData.value = data;
-      urlParams.loadSuccessBack(data);
-    }, urlParams.loadFailBack);
+      columnData.value = isJSON(data.viewColumn) ? JSON.parse(data.viewColumn) : [];
+    });
   }
 }
-const submitModel = (done: any, successBack?: any, failBack?: any) => {
-  createOrUpdateData(formData.value, successBack, failBack);
-};
 
-// 将方法暴露出去
-defineExpose({loadModel, submitModel});
+watch(() => props, () => {
+  if (props.visible === true) loadPage();
+}, {deep: true, immediate: true});
 
-const columnTitle = reactive([
-  {
-    title: '名称',
-    dataIndex: 'title',
-
-  },
-  {
-    title: '标识',
-    dataIndex: 'name',
-  }, {
-    title: '操作',
-    dataIndex: 'operations'
-  }
-]);
+/* 提供外部调用方法 */
+defineExpose({saveOrUpdate, loadPage});
 </script>
+
+<template>
+  <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="left" type="line">
+    <a-tab-pane :key="1" class="a-tabs-one" title="基础信息">
+      <a-card class="general-card">
+        <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
+          <a-row :gutter="wrapperCol">
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('model.view.index.form.title')"
+                  :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                  field="title">
+                <a-input v-if="formState!=='view'" v-model.trim="formData.title" :max-length="32"/>
+                <span v-else>{{ formData.title }}</span>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('model.view.index.form.viewName')"
+                  :rules="[{required: formState==='add',message: $t('model.form.rules.match.required')},
+            {match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.viewName.match')},
+            {match:formState==='add'?/^(?!v_|V_)/:/^[vV][a-zA-Z0-9_]*$/,message:$t('model.form.rules.match.viewName.match')},
+            {validator:validateCode}]"
+                  field="viewName">
+                <a-input v-if="formState==='add'" v-model.trim="formData.viewName" :max-length="32" @blur="viewNameBlur($event)">
+                  <template #prepend>
+                    v_
+                  </template>
+                </a-input>
+                <span v-else>{{ formData.viewName }}</span>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item :rules="[{required: true,message: '这是必填项'},{validator:matchViewConstruct}]" field="viewConstruct" label="视图语句">
+                <a-space>
+                  <a-button @click="()=>{tabsKey=2}">
+                    <template #icon>
+                      <gl-iconfont type="gl-edit-square"/>
+                    </template>
+                    编辑视图语句
+                  </a-button>
+                  <a-popconfirm content="是否验证视图语句有效性？" position="tr" type="info" @ok="validateViewSql">
+                    <a-button status="success" type="primary">
+                      验证
+                      <template #icon>
+                        <gl-iconfont type="gl-list"/>
+                      </template>
+                    </a-button>
+                  </a-popconfirm>
+                </a-space>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item :rules="[{validator:validateViewColumn}]" field="viewColumn" label="视图字段">
+                <a-button @click="()=>{tabsKey=3}">
+                  <template #icon>
+                    <icon-edit/>
+                  </template>
+                  编辑视图字段
+                </a-button>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('model.view.index.form.viewType')"
+                  :rules="[{required: formState==='add',message: $t('model.form.rules.match.required')}]"
+                  field="viewType">
+                <span>{{ $t(`model.view.index.form.viewType.${formData.viewType}`) }}</span>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('model.view.index.form.appId')"
+                  :rules="[{required: false,message: $t('model.form.rules.match.required')}]"
+                  field="appId">
+                <a-select v-model="formData.appId" :disabled="!formState!=='view'">
+                  <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('model.view.index.form.enableStatus')"
+                  :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                  field="enableStatus">
+                <a-select v-if="formState!=='view'" v-model="formData.enableStatus">
+                  <a-option
+                      v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)"
+                      :value="item.value"/>
+                </a-select>
+                <span v-else>{{ $t(`model.view.index.form.enableStatus.${formData.enableStatus}`) }}</span>
+              </a-form-item>
+            </a-col>
+            <a-col v-if="false" :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('model.view.index.form.linked')"
+                  :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                  field="linked">
+                <a-select v-if="formState!=='view'" v-model="formData.linked">
+                  <a-option v-for="item of linkedOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+                </a-select>
+                <span v-else>{{ $t(`model.view.index.form.linked.${formData.linked}`) }}</span>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)/formCol">
+              <a-form-item
+                  :label="$t('model.view.index.form.seqNo')"
+                  :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                  field="seqNo">
+                <a-input-number
+                    v-if="formState!=='view'"
+                    v-model="formData.seqNo"
+                    :max="999999999"
+                    :min="1"
+                    :placeholder="$t('model.form.rules.match.length.title')+'[0,999999999]'"
+                    :precision="0"/>
+                <span v-else>{{ formData.seqNo }}</span>
+              </a-form-item>
+            </a-col>
+            <a-col :span="labelCol+wrapperCol">
+              <a-form-item
+                  :label="$t('model.view.index.form.description')"
+                  :label-col-props="{ span: labelCol/formCol }"
+                  :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                  field="description">
+                <a-textarea
+                    v-if="formState!=='view'" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
+                    :max-length="512" show-word-limit/>
+                <span
+                    v-else :title="formData.description" class="textarea-span"
+                    @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </a-form>
+      </a-card>
+    </a-tab-pane>
+    <a-tab-pane :key="2" class="a-tabs-one" title="视图语句">
+      <a-card class="general-card">
+        <div class="trigger-demo-translate">
+          <!--          <GlMonacoEditor v-model="formData.viewConstruct" :height="tableTabHeight-34" language="sql" style="width: 100%;"/>-->
+          <MonacoEditor v-model="formData.viewConstruct" :language="'sql'" :read-only="false"/>
+        </div>
+      </a-card>
+    </a-tab-pane>
+    <a-tab-pane :key="3" class="a-tabs-two" title="视图字段">
+      <a-card class="general-card">
+        <a-space v-if="formState!=='view'" style="margin-bottom: 10px">
+          <a-button size="medium" type="primary" @click="customAddEntityClick">
+            <template #icon>
+              <gl-iconfont type="gl-plus-circle"/>
+            </template>
+            自定义字段
+          </a-button>
+          <a-popover v-model:popup-visible="entityPopover" position="right" style="max-width: 400px" trigger="click">
+            <a-button size="medium" type="primary" @click="entityPopoverClick">
+              <template #icon>
+                <gl-iconfont type="gl-plus-circle"/>
+              </template>
+              模型字段
+            </a-button>
+            <template #content>
+              <a-form ref="validateEntityForm" :label-col-props="{ span: labelCol }" :model="entityData" :wrapper-col-props="{ span: wrapperCol }"
+                      class="form2">
+                <a-row :gutter="wrapperCol">
+                  <a-col :span="(labelCol+wrapperCol)">
+                    <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="tableId" label="模型">
+                      <a-select v-model="entityData.tableId" allow-search @change="entityChange">
+                        <a-option v-for="item of selectEntityOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.id"/>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="(labelCol+wrapperCol)">
+                    <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="columnIds" label="字段">
+                      <a-select v-model="entityData.columnIds" allow-search multiple @change="entityColumnChange">
+                        <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
+                        <template #header>
+                          <div class="check-all">
+                            <a-checkbox v-model="entityColumnSelectAll" class="check-all-radio" @change="entityColumnSelectAllChange">
+                            <span class="check-all-span">
+                              全选
+                            </span>
+                            </a-checkbox>
+                          </div>
+                        </template>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+              </a-form>
+              <a-divider style="margin: 5px 0px"/>
+              <a-space style="display: flex;align-items: center;justify-content: end;">
+                <a-button size="medium" type="primary" @click="entitySubmitClick">
+                  确定
+                </a-button>
+              </a-space>
+            </template>
+          </a-popover>
+        </a-space>
+        <a-table
+            :key="tableTabHeight"
+            :bordered="{cell:true}"
+            :columns="([] as TableColumnData[])"
+            :data="columnData"
+            :draggable="formState!=='view'?{type:'handle',width:40}:{}"
+            :pagination="false"
+            :scroll="scroll"
+            :scrollbar="scrollbar"
+            :stripe="true"
+            column-resizable
+            row-key="id" @change="handleChange">
+          <template #columns>
+            <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="title" fixed="left" title="名称（中文）">
+              <template #cell="{record}">
+                <a-input v-if="formState!=='view'" v-model.trim="record.title" :max-length="32"/>
+                <span v-else>{{ record.title }}</span>
+              </template>
+            </a-table-column>
+            <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="name" title="字段标识">
+              <template #cell="{record}">
+                <a-input v-if="formState!=='view'&&!record.tableName" v-model.trim="record.name" :max-length="32"/>
+                <span v-else>{{ record.name }}</span>
+              </template>
+            </a-table-column>
+            <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="fieldName" title="名称（英文）">
+              <template #cell="{record}">
+                <a-input v-if="formState!=='view'" v-model.trim="record.fieldName" :max-length="32"/>
+                <span v-else>{{ record.fieldName }}</span>
+              </template>
+            </a-table-column>
+            <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="selectType" title="数据类型">
+              <template #cell="{record}">
+                <a-select v-if="formState!=='view'" v-model="record.selectType" :options="selectTypeOptions" allow-search/>
+                <span v-else>{{ utils.getOptionLabel(record.selectType, selectTypeOptions) }}</span>
+              </template>
+            </a-table-column>
+            <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="tableName" title="模型名称"/>
+            <a-table-column v-if="formState!=='view'" :width="60" align="center" data-index="operations" fixed="right" title="操作">
+              <template #cell="{record}">
+                <a-button status="danger" type="text" @click="deleteViewColumn(record.tableName,record.fieldName)">
+                  <template #icon>
+                    <gl-iconfont type="gl-delete"/>
+                  </template>
+                </a-button>
+              </template>
+            </a-table-column>
+          </template>
+          <template #empty>
+            <a-empty style="width: 57%;"/>
+          </template>
+        </a-table>
+      </a-card>
+    </a-tab-pane>
+  </a-tabs>
+</template>
 
 <style lang="less" scoped>
 div.arco-form-item-content > span.textarea-span {
@@ -664,34 +738,5 @@ div.arco-form-item-content > span.textarea-span {
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
-}
-
-.trigger-demo-translate {
-  padding: 10px;
-  min-width: 500px;
-  min-height: 360px;
-  background-color: var(--color-bg-popup);
-  border-radius: 4px;
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
-}
-
-.tree-extra-icon {
-  cursor: pointer;
-  font-size: 16px;
-  margin-left: 10px;
-  color: #3370ff;
-}
-
-.check-all {
-  padding: 6px 12px;
-
-  &-radio {
-    width: 100%
-  }
-
-  &-span {
-    font-weight: 600;
-    color: rgb(var(--primary-6));
-  }
 }
 </style>

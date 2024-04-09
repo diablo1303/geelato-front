@@ -1,166 +1,49 @@
-<template v-model="pageData">
-  <a-form
-      ref="validateForm" :label-col-props="{ span: 8 }" :model="formData" :wrapper-col-props="{ span: 16 }"
-      class="form">
-    <a-row :gutter="16">
-      <a-col :span="24">
-        <a-form-item v-show="false">
-          <a-input v-show="false" v-model="formData.id"/>
-          <a-input v-show="false" v-model="formData.updateAction"/>
-          <a-input v-show="false" v-model="formData.deleteAction"/>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.foreign.index.form.mainTable')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="mainTable">
-          <a-select
-              v-if="pageData.button" v-model="formData.mainTable" :disabled="pageData.mainTable!==''" allow-search
-              @change="mainTableChange(formData.mainTable)">
-            <a-option v-for="item of tableOptions" :key="item.id" :label="item.entityName" :value="item.entityName"/>
-          </a-select>
-          <span v-else>{{ formData.mainTable }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.foreign.index.form.mainTableCol')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="mainTableCol">
-          <a-select v-if="pageData.button" v-model="formData.mainTableCol" allow-search>
-            <a-option v-for="item of mainTableColOptions" :key="item.id" :label="item.name" :value="item.name"/>
-          </a-select>
-          <span v-else>{{ formData.mainTableCol }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.foreign.index.form.foreignTable')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="foreignTable">
-          <a-select v-if="pageData.button" v-model="formData.foreignTable" allow-search @change="foreignTableChange">
-            <a-option v-for="item of tableOptions" :key="item.id" :label="item.entityName" :value="item.entityName"/>
-          </a-select>
-          <span v-else>{{ formData.foreignTable }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.foreign.index.form.foreignTableCol')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="foreignTableCol">
-          <a-select v-if="pageData.button" v-model="formData.foreignTableCol" allow-search>
-            <a-option v-for="item of foreignTableColOptions" :key="item.id" :label="item.name" :value="item.name"/>
-          </a-select>
-          <span v-else>{{ formData.foreignTableCol }}</span>
-        </a-form-item>
-      </a-col>
-      <!-- <a-col :span="24/pageData.formCol">
-              <a-form-item :label="$t('model.foreign.index.form.updateAction')"
-                           :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-                           :tooltip="$t('model.foreign.index.form.action.tip')" field="updateAction">
-                <a-select v-model="formData.updateAction">
-                  <a-option value="RESTRICT">RESTRICT</a-option>
-                  <a-option value="NO ACTION">NO ACTION</a-option>
-                  <a-option value="SET NULL">SET NULL</a-option>
-                  <a-option value="CASCADE">CASCADE</a-option>
-                </a-select>
-              </a-form-item>
-            </a-col>-->
-      <!-- <a-col :span="24/pageData.formCol">
-              <a-form-item :label="$t('model.foreign.index.form.deleteAction')"
-                           :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-                           :tooltip="$t('model.foreign.index.form.action.tip')" field="deleteAction">
-                <a-select v-model="formData.deleteAction">
-                  <a-option value="RESTRICT">RESTRICT</a-option>
-                  <a-option value="NO ACTION">NO ACTION</a-option>
-                  <a-option value="SET NULL">SET NULL</a-option>
-                  <a-option value="CASCADE">CASCADE</a-option>
-                </a-select>
-              </a-form-item>
-            </a-col>-->
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.foreign.index.form.enableStatus')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="enableStatus">
-          <a-select v-if="pageData.button" v-model="formData.enableStatus">
-            <a-option
-                v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)"
-                :value="item.value"/>
-          </a-select>
-          <span v-else>{{ $t(`model.foreign.index.form.enableStatus.${formData.enableStatus}`) }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.foreign.index.form.seqNo')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="seqNo">
-          <a-input-number
-              v-if="pageData.button"
-              v-model="formData.seqNo"
-              :max="999999999"
-              :min="1"
-              :placeholder="$t('model.form.rules.match.length.title')+'[0,999999999]'"
-              :precision="0"/>
-          <span v-else>{{ formData.seqNo }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24">
-        <a-form-item
-            :label="$t('model.foreign.index.form.description')"
-            :label-col-props="{ span: (pageData.formCol===1?8:4) }"
-            :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
-            field="description">
-          <a-textarea
-              v-if="pageData.button" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}"
-              :max-length="512" show-word-limit/>
-          <span
-              v-else :title="formData.description" class="textarea-span"
-              @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
-        </a-form-item>
-      </a-col>
-    </a-row>
-  </a-form>
-</template>
-
+<script lang="ts">
+export default {
+  name: 'ModelTableForeignModel'
+};
+</script>
 <script lang="ts" setup>
-import {ref} from 'vue';
+import {ref, watch} from "vue";
 import {useI18n} from 'vue-i18n';
 import {FormInstance, Modal} from "@arco-design/web-vue";
-import {ListUrlParams, PageQueryRequest} from '@/api/base';
+import {PageQueryRequest} from "@/api/base";
+import {getAppSelectOptions, QueryAppForm} from "@/api/application";
 import {
   createOrUpdateTableForeign as createOrUpdateForm,
   getTableForeign as getForm,
-  QueryTableColumnForm,
-  queryTableColumns,
-  QueryTableForeignForm as QueryForm,
-  QueryTableForm,
+  QueryTableColumnForm, queryTableColumns,
+  QueryTableForeignForm as QueryForm, QueryTableForm,
   queryTables
-} from '@/api/model';
-import {enableStatusOptions} from "@/views/model/foreign/searchTable";
-import {useRoute} from "vue-router";
+} from "@/api/model";
+import {enableStatusOptions} from "./searchTable";
 
-const pageData = ref({formState: 'add', button: true, formCol: 1, mainTable: ''});
-const validateForm = ref<FormInstance>();
-const tableOptions = ref<QueryTableForm[]>([]);
-const mainTableColOptions = ref<QueryTableColumnForm[]>([]);
-const foreignTableColOptions = ref<QueryTableColumnForm[]>([]);
-const actionTooltip = ref("");
-// 国际化
-const {t} = useI18n();
-const route = useRoute();
-const routeParams = ref({
-  appId: (route && route.params && route.params.appId as string) || '',
-  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+// 页面所需 参数
+type PageParams = {
+  connectId: string; // 数据库链接id
+  mainTable: string; // 模型名称
+  appId?: string; // 应用主键
+  tenantCode?: string; // 租户编码
+}
+
+const emits = defineEmits(['update:modelValue']);
+const props = defineProps({
+  modelValue: {type: String, default: ''},// id
+  visible: {type: Boolean, default: false},// 显示
+  parameter: {type: Object, default: () => ({} as PageParams)},// 页面需要的参数
+  formState: {type: String, default: 'add'},// 表单状态
+  formCol: {type: Number, default: 1},// 表单列数
 });
+
+const {t} = useI18n();// 国际化
+const labelCol = ref<number>(6);// 表单-标题宽度
+const wrapperCol = ref<number>(18); // 表单-内容宽度
+const validateForm = ref<FormInstance>();// 表单-校验
 /* 表单 */
 const generateFormData = (): QueryForm => {
   return {
-    id: '',
-    mainTable: '', // 主表表名
+    id: props.modelValue || '',
+    mainTable: props.parameter.mainTable || '', // 主表表名
     mainTableCol: '', // 主表表名字段
     foreignTable: '', // 外键关联表表名
     foreignTableCol: '', // 外键关联表字段
@@ -169,63 +52,95 @@ const generateFormData = (): QueryForm => {
     enableStatus: 1, // 状态
     description: '',
     seqNo: 999,
-    appId: routeParams.value.appId,
-    tenantCode: routeParams.value.tenantCode,
+    appId: props.parameter?.appId || '',
+    tenantCode: props.parameter?.tenantCode || '',
   };
 }
 const formData = ref(generateFormData());
+const appSelectOptions = ref<QueryAppForm[]>([]);
+const tableOptions = ref<QueryTableForm[]>([]);
+const mainTableColOptions = ref<QueryTableColumnForm[]>([]);
+const foreignTableColOptions = ref<QueryTableColumnForm[]>([]);
 
-const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
+/**
+ * 新增或更新接口
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
+const saveData = async (params: QueryForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
       const {data} = await createOrUpdateForm(params);
-      successBack(data);
+      if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
-      failBack(err);
+      if (failBack && typeof failBack === 'function') failBack(err);
     }
-  } else {
-    failBack();
-  }
+  } else if (failBack && typeof failBack === 'function') failBack();
 };
+/**
+ * 获取单条数据接口
+ * @param id
+ * @param successBack
+ * @param failBack
+ */
 const getData = async (id: string, successBack?: any, failBack?: any) => {
   try {
     const {data} = await getForm(id);
-    successBack(data);
+    if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-    failBack(err);
+    if (failBack && typeof failBack === 'function') failBack(err);
   }
 };
-
-const fetchTables = async (params: PageQueryRequest = {
-  enableStatus: 1,
-  tableType: 'table'
-} as unknown as PageQueryRequest) => {
+/**
+ * 获取模型
+ * @param params
+ */
+const fetchTables = async (params?: Record<string, any>) => {
   try {
-    const {data} = await queryTables(params);
+    const {data} = await queryTables({
+      ...params,
+      enableStatus: 1, tableType: 'table', connectId: props.parameter?.connectId || '',
+      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || '',
+    } as unknown as PageQueryRequest);
     tableOptions.value = data;
   } catch (err) {
     tableOptions.value = [];
   }
 }
-const fetchTableColumns = async (params: PageQueryRequest = {enableStatus: 1} as unknown as PageQueryRequest): Promise<QueryTableColumnForm[]> => {
+/**
+ * 获取模型字段
+ * @param params
+ */
+const fetchTableColumns = async (params?: Record<string, any>): Promise<QueryTableColumnForm[]> => {
   let columnOptions: QueryTableColumnForm[] = [];
   try {
-    const {data} = await queryTableColumns(params);
+    const {data} = await queryTableColumns({...params, enableStatus: 1} as unknown as PageQueryRequest);
     columnOptions = data;
   } catch (err) {
     columnOptions = [];
   }
-
   return columnOptions;
 }
+/**
+ * 文本域查看
+ * @param content
+ */
+const openModal = (content: string) => {
+  Modal.open({'content': content, 'footer': false, 'simple': true});
+}
+/**
+ * 重置验证信息
+ */
+const resetValidate = async () => {
+  await validateForm.value?.resetFields();
+};
 
 const mainTableChange = (value: string) => {
   const name = formData.value.mainTable;
   if (name) {
-    fetchTableColumns({enableStatus: 1, tableName: name} as unknown as PageQueryRequest).then((data) => {
+    fetchTableColumns({tableName: name}).then((data) => {
       mainTableColOptions.value = data;
     });
   } else {
@@ -236,56 +151,158 @@ const foreignTableChange = (value: any) => {
   if (value) {
     formData.value.foreignTableCol = '';
     foreignTableColOptions.value = [];
-    fetchTableColumns({enableStatus: 1, tableName: value} as unknown as PageQueryRequest).then((data) => {
+    fetchTableColumns({tableName: value}).then((data) => {
       foreignTableColOptions.value = data;
     });
   }
 }
 
-const openModal = (content: string) => {
-  Modal.open({'content': content, 'footer': false, 'simple': true});
+/**
+ * 页面数据创建或更新方法，对外提供
+ * @param successBack
+ * @param failBack
+ */
+const saveOrUpdate = (successBack?: any, failBack?: any) => {
+  saveData(formData.value, (data: QueryForm) => {
+    // 设计当前页面的操作
+    if (successBack && typeof successBack === 'function') successBack(data);
+  }, () => {
+    if (failBack && typeof failBack === 'function') failBack();
+  });
 }
-const resetValidate = async () => {
-  await validateForm.value?.resetFields();
-};
 
-/* 对外调用方法 */
-const loadModel = (urlParams: ListUrlParams) => {
+/**
+ * 页面加载方法，对外提供
+ */
+const loadPage = () => {
+  // 应用信息
+  getAppSelectOptions({
+    id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+  }, (data: QueryAppForm[]) => {
+    appSelectOptions.value = data || [];
+  }, () => {
+    appSelectOptions.value = [];
+  });
   // 表单
   fetchTables();
-  // 全局
-  pageData.value.formState = urlParams.action || "view";
-  pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
-  pageData.value.formCol = urlParams.formCol || 1;
+  // 表单数据重置
   formData.value = generateFormData();
-  pageData.value.mainTable = urlParams.params?.pId || '';
-  if (pageData.value.mainTable) {
-    mainTableChange(pageData.value.mainTable);
-    formData.value.mainTable = pageData.value.mainTable;
+  if (['add'].includes(props.formState) && props.parameter.mainTable) {
+    mainTableChange(formData.value.mainTable);
   }
-  fetchTableColumns({enableStatus: 1, tableName: formData.value.mainTable} as unknown as PageQueryRequest).then((data) => {
-    mainTableColOptions.value = data;
-  });
-// 重置验证
+  // 重置验证
   resetValidate();
-// 特色
-  if (urlParams.id) {
-    getData(urlParams.id, (data: QueryForm) => {
-      mainTableChange(formData.value.mainTable);
-      foreignTableChange(formData.value.foreignTable);
+  // 其他初始化
+  // 编辑、查看 状态 查询数据
+  if (['edit', 'view'].includes(props.formState) && props.modelValue) {
+    getData(props.modelValue, (data: QueryForm) => {
+      mainTableChange(data.mainTable);
+      foreignTableChange(data.foreignTable);
+      // 表格数据处理
       data.seqNo = Number(data.seqNo);
       formData.value = data;
-      urlParams.loadSuccessBack(data);
-    }, urlParams.loadFailBack);
+    });
   }
 }
-const submitModel = (done: any, successBack?: any, failBack?: any) => {
-  createOrUpdateData(formData.value, successBack, failBack);
-};
 
-// 将方法暴露出去
-defineExpose({loadModel, submitModel});
+watch(() => props, () => {
+  if (props.visible === true) loadPage();
+}, {deep: true, immediate: true});
+
+/* 提供外部调用方法 */
+defineExpose({saveOrUpdate, loadPage});
 </script>
+
+<template>
+  <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
+    <a-row :gutter="wrapperCol">
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.foreign.index.form.mainTable')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="mainTable">
+          <a-select
+              v-if="formState!=='view'" v-model="formData.mainTable" :disabled="parameter.mainTable" allow-search
+              @change="mainTableChange(formData.mainTable)">
+            <a-option v-for="item of tableOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.entityName"/>
+          </a-select>
+          <span v-else>{{ formData.mainTable }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.foreign.index.form.mainTableCol')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="mainTableCol">
+          <a-select v-if="formState!=='view'" v-model="formData.mainTableCol" allow-search>
+            <a-option v-for="item of mainTableColOptions" :key="item.id" :label="`${item.title}[${item.name}]`" :value="item.name"/>
+          </a-select>
+          <span v-else>{{ formData.mainTableCol }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.foreign.index.form.foreignTable')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="foreignTable">
+          <a-select v-if="formState!=='view'" v-model="formData.foreignTable" allow-search @change="foreignTableChange">
+            <a-option v-for="item of tableOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.entityName"/>
+          </a-select>
+          <span v-else>{{ formData.foreignTable }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.foreign.index.form.foreignTableCol')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="foreignTableCol">
+          <a-select v-if="formState!=='view'" v-model="formData.foreignTableCol" allow-search>
+            <a-option v-for="item of foreignTableColOptions" :key="item.id" :label="`${item.title}[${item.name}]`" :value="item.name"/>
+          </a-select>
+          <span v-else>{{ formData.foreignTableCol }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.foreign.index.form.enableStatus')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="enableStatus">
+          <a-select v-if="formState!=='view'" v-model="formData.enableStatus">
+            <a-option
+                v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)"
+                :value="item.value"/>
+          </a-select>
+          <span v-else>{{ $t(`model.foreign.index.form.enableStatus.${formData.enableStatus}`) }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.foreign.index.form.seqNo')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="seqNo">
+          <a-input-number
+              v-if="formState!=='view'"
+              v-model="formData.seqNo"
+              :max="999999999"
+              :min="1"
+              :placeholder="$t('model.form.rules.match.length.title')+'[0,999999999]'"
+              :precision="0"/>
+          <span v-else>{{ formData.seqNo }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)">
+        <a-form-item
+            :label="$t('model.foreign.index.form.description')"
+            :label-col-props="{ span: labelCol/formCol }"
+            :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+            field="description">
+          <a-textarea v-if="formState!=='view'" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+          <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+        </a-form-item>
+      </a-col>
+    </a-row>
+  </a-form>
+</template>
 
 <style lang="less" scoped>
 div.arco-form-item-content > span.textarea-span {

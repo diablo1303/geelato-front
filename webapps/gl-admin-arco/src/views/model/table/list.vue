@@ -1,79 +1,354 @@
-<template v-model="pageData">
+<script lang="ts">
+export default {
+  name: 'ModelTableList'
+};
+</script>
+
+<script lang="ts" setup>
+import {reactive, ref, watch} from 'vue';
+import {useI18n} from "vue-i18n";
+import useLoading from '@/hooks/loading';
+import {Pagination} from '@/types/global';
+import {SelectOptionData, TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams, getOptionLabel} from '@/api/base';
+// 页面所需 对象、方法
+import {getAppSelectOptions, QueryAppForm} from "@/api/application";
+import {deleteTable as deleteList, initTables, pageQueryTables as pageQueryList, QueryTableForm as QueryForm} from '@/api/model';
+import {columns, enableStatusOptions, sourceTypeOptions, tableTypeOptions} from './searchTable';
+// 引入组件
+import ModelTableForm from './form.vue';
+
+// 页面所需参数
+type PageParams = {
+  connectId: string; // 连接主键
+  appId?: string; // 应用主键
+  tenantCode?: string; // 租户编码
+}
+
+const emits = defineEmits(['update:modelValue', 'fetch', 'add', 'edit', 'delete']);
+const props = defineProps({
+  modelValue: {type: String, default: ''},
+  visible: {type: Boolean, default: false},// 页面是否显示
+  parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
+  formState: {type: String, default: 'edit'}, // 页面状态
+  filterCol: {type: Number, default: 3}, // 列表 - 搜索条件 - 一行显示个数
+  pageSize: {type: Number, default: 10}, // 列表 - 条数
+  height: {type: Number, default: 245}, // 列表 - 数据列表高度，滑动条高度
+});
+
+// 国际化
+const {t} = useI18n();
+// 加载功能
+const {loading, setLoading} = useLoading(false);
+// 列表
+const renderData = ref<PageQueryFilter[]>([]);
+// 列表 - 分页
+const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
+const pagination = reactive({
+  ...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions
+});
+// 列表 - 滑动条
+const scrollbar = ref(true);
+const scroll = ref({x: 1800, y: props.height});
+// 列表 - 排序
+const sortable = ref<Record<string, TableSortable>>({
+  entityName: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
+  seqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
+  createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
+});
+const lastSort = ref<string>('createAt|desc');
+// 列表 - 查询条件布局
+const labelCol = ref<number>(6);
+const wrapperCol = ref<number>(18);
+// 列表 - 查询条件
+const generateFilterData = () => {
+  return {
+    id: '',
+    connectId: props.parameter.connectId || '',
+    title: '',
+    tableName: '',
+    entityName: '',
+    tableType: '',
+    enableStatus: '',
+    linked: '',
+    sourceType: '',
+    createAt: [],
+    appId: props.parameter?.appId || '',
+    tenantCode: props.parameter?.tenantCode || '',
+  };
+};
+const filterData = ref(generateFilterData());
+const appSelectOptions = ref<SelectOptionData[]>([]);
+
+/**
+ * 分页查询方法
+ * @param params
+ */
+const fetchData = async (params: PageQueryRequest) => {
+  setLoading(true);
+  try {
+    const {data} = await pageQueryList(params);
+    renderData.value = data.items;
+    pagination.current = params.current;
+    pagination.pageSize = basePagination.pageSize;
+    pagination.total = data.total;
+    emits('fetch', 'success', renderData.value);
+  } catch (err) {
+    emits('fetch', 'fail');
+  } finally {
+    setLoading(false);
+  }
+};
+
+/**
+ * 单个数据删除接口
+ * @param id
+ * @param successBack
+ * @param failBack
+ */
+const deleteData = async (id: string, successBack?: any, failBack?: any) => {
+  try {
+    await deleteList(id);
+    if (successBack && typeof successBack === 'function') successBack(id);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+};
+/**
+ * 是否将应用所有模型同步至数据库
+ */
+const tableInit = async () => {
+  try {
+    const {data} = await initTables(props.parameter.appId);
+    reset();
+    emits('add');
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+  }
+}
+
+/**
+ * 查询 - 基础
+ * 排序，页数，条数，过滤
+ * @param ev
+ */
+const search = (ev?: Event) => {
+  fetchData({
+    ...basePagination, ...filterData.value, order: lastSort.value
+  } as unknown as PageQueryRequest);
+};
+/**
+ * 条件查询 - 搜索
+ * 排序，页数（1），条数，过滤（√）
+ * @param ev
+ */
+const condition = (ev?: Event) => {
+  basePagination.current = 1;
+  search();
+}
+/**
+ * 条件查询 - 重置
+ * 排序，页数（1），条数，过滤（×）
+ */
+const reset = (ev?: Event) => {
+  basePagination.current = 1;
+  filterData.value = generateFilterData();
+  search();
+};
+/**
+ * 分页 - 页面跳转
+ * 排序，页数（current），条数，过滤
+ * @param current
+ */
+const onPageChange = (current: number) => {
+  basePagination.current = current;
+  search();
+};
+/**
+ * 分页 - 数据条变更
+ * 排序，页数（current），条数（pageSize），过滤
+ * @param pageSize
+ */
+const onPageSizeChange = (pageSize: number) => {
+  basePagination.current = 1;
+  basePagination.pageSize = pageSize;
+  search();
+}
+/**
+ * 分页 - 排序变更
+ * 排序（dataIndex|direction），页数（1），条数，过滤
+ * @param dataIndex 排序字段
+ * @param direction 排序方向
+ */
+const onSorterChange = (dataIndex: string, direction: string) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key of Object.keys(sortable.value)) {
+    // @ts-ignore
+    sortable.value[key].sortOrder = dataIndex === key ? direction : '';
+  }
+  lastSort.value = direction ? `${dataIndex}|${direction}`.replace(/end/g, '') : '';
+  basePagination.current = 1;
+  search();
+}
+
+/* 表单参数 */
+const formParams = ref<FormParams>({
+  visible: false,
+  isModal: true,
+  title: '',
+  width: '850px',
+  height: '',
+  parameter: {appId: '', tenantCode: ''},
+  formState: 'add',
+  id: '',
+  formCol: 2,
+});
+/**
+ * 列表按钮 - 新增表单
+ * @param ev
+ */
+const addTable = (ev: MouseEvent) => {
+  formParams.value = Object.assign(formParams.value, {
+    id: '', visible: true, formState: 'add'
+  });
+};
+/**
+ * 列表按钮 - 查看表单
+ * @param data
+ */
+const viewTable = (data: QueryForm) => {
+  formParams.value = Object.assign(formParams.value, {
+    id: data.id, visible: true, formState: 'view'
+  });
+}
+/**
+ * 列表按钮 - 编辑表单
+ * @param data
+ */
+const editTable = (data: QueryForm) => {
+  formParams.value = Object.assign(formParams.value, {
+    id: data.id, visible: true, formState: 'edit'
+  });
+}
+/**
+ * 列表按钮 - 删除
+ * 当前排序、过滤条件不变
+ * @param data
+ */
+const deleteTable = (data: QueryForm) => {
+  deleteData(data.id, (id: string) => {
+    condition();
+    emits('delete', data);
+  });
+}
+
+/**
+ * 表单反馈方法，保存成功
+ * 新增：重置列表
+ * 编辑：当前页数、排序、过滤条件不变
+ * @param data
+ * @param type
+ */
+const saveSuccess = (data: QueryForm, type: string) => {
+  if (type === 'add') {
+    reset();
+    emits('add', data);
+  } else if (type === 'edit') {
+    search();
+    emits('edit', data);
+  }
+}
+
+watch(() => props, (val) => {
+  if (props.visible === true) {
+    // 应用信息
+    appSelectOptions.value = [];
+    getAppSelectOptions({id: '', tenantCode: props.parameter?.tenantCode || ''},
+        (data: QueryAppForm[]) => {
+          if (data != null && data.length > 0) {
+            // eslint-disable-next-line no-restricted-syntax
+            for (const item of data) {
+              appSelectOptions.value.push({'value': item.id, 'label': item.name});
+            }
+          }
+        });
+    // 页面设置
+    scroll.value.y = props.height;
+    basePagination.pageSize = props.pageSize;
+    // 表单参数
+    formParams.value.parameter = {
+      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }
+    // 加载数据
+    reset();
+  }
+}, {deep: true, immediate: true});
+</script>
+
+<template>
+  <ModelTableForm v-model:visible="formParams.visible"
+                  :formCol="formParams.formCol"
+                  :formState="formParams.formState"
+                  :height="formParams.height"
+                  :isModal="formParams.isModal"
+                  :modelValue="formParams.id"
+                  :parameter="formParams.parameter"
+                  :title="formParams.title"
+                  :width="formParams.width"
+                  @saveSuccess="saveSuccess"/>
+
   <a-row>
     <a-col :flex="1">
-      <a-form :label-col-props="{ span: 6 }" :model="filterData" :wrapper-col-props="{ span: 18 }"
-              label-align="left">
-        <a-row :gutter="16">
-          <a-col :span="24">
-            <a-form-item v-show="false">
-              <a-input v-show="false" v-model="filterData.connectId"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="pageData.isModal?12:8">
+      <a-form :label-col-props="{ span: labelCol }" :model="filterData" :wrapper-col-props="{ span: wrapperCol }" label-align="left">
+        <a-row :gutter="wrapperCol">
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('model.table.index.form.entityName')" field="entityName">
-              <a-input v-model="filterData.entityName" allow-clear @clear="search($event)"
-                       @press-enter="search($event)"/>
+              <a-input v-model="filterData.entityName" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
-          <a-col :span="pageData.isModal?12:8">
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('model.table.index.form.title')" field="title">
-              <a-input v-model="filterData.title" allow-clear @clear="search($event)"
-                       @press-enter="search($event)"/>
+              <a-input v-model="filterData.title" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
-          <!-- <a-col :span="pageData.isModal?12:8">
-                      <a-form-item :label="$t('model.table.index.form.tableName')" field="tableName">
-                        <a-input v-model="filterData.tableName" @press-enter="search($event)" @clear="search($event)" allow-clear/>
-                      </a-form-item>
-                    </a-col>-->
-          <a-col :span="pageData.isModal?12:8">
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('model.table.index.form.tableType')" field="tableType">
-              <a-select v-model="filterData.tableType"
-                        :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of tableTypeOptions" :key="item.value as string"
-                          :disabled="item.disabled" :label="$t(`${item.label}`)"
-                          :value="item.value"/>
+              <a-select v-model="filterData.tableType" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="(item,index) of tableTypeOptions" :key="index" :disabled="item.disabled"
+                          :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="pageData.isModal?12:8">
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('model.table.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus"
                         :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of enableStatusOptions" :key="item.value as string"
+                <a-option v-for="(item,index) of enableStatusOptions" :key="index"
                           :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="pageData.isModal?12:8">
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('model.table.index.form.appId')" field="appId">
-              <a-select v-model="filterData.appId" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of appSelectOptions" :key="item.id" :label="item.name" :value="item.id"/>
-              </a-select>
+              <a-select v-model="filterData.appId" :options="appSelectOptions" :placeholder="$t('searchTable.form.selectDefault')"/>
             </a-form-item>
           </a-col>
-          <a-col :span="pageData.isModal?12:8">
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('model.table.index.form.sourceType')" field="sourceType">
               <a-select v-model="filterData.sourceType" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option v-for="item of sourceTypeOptions" :key="item.value as string"
+                <a-option v-for="(item,index) of sourceTypeOptions" :key="index"
                           :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
-          <!-- <a-col :span="pageData.isModal?12:8">
-                      <a-form-item :label="$t('model.table.index.form.linked')" field="linked">
-                        <a-select v-model="filterData.linked" :placeholder="$t('searchTable.form.selectDefault')">
-                          <a-option v-for="item of linkedOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-                        </a-select>
-                      </a-form-item>
-                    </a-col>-->
         </a-row>
       </a-form>
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
       <a-space :size="18" direction="vertical">
-        <a-button type="primary" @click="search($event)">
+        <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
           </template>
@@ -85,165 +360,106 @@
           </template>
           {{ $t('searchTable.form.reset') }}
         </a-button>
-      </a-space>
-    </a-col>
-  </a-row>
-  <a-divider style="margin-top: 0"/>
-  <a-row style="margin-bottom: 16px">
-    <a-col :span="12">
-      <a-space>
-        <a-button v-show="pageData.formState==='edit'" type="primary" @click="addTable($event)">
+        <a-button v-if="filterCol===2" :disabled="formState==='view'" type="primary" @click="addTable($event)">
           <template #icon>
             <icon-plus/>
           </template>
           {{ $t('searchTable.operation.create') }}
         </a-button>
-        <a-popconfirm :content="$t('model.table.index.model.title.init.dataMsg')" position="tr" type="warning"
-                      @ok="tableInit">
-          <a-button v-show="pageData.formState==='edit'&&routeParams.appId" type="primary">
+      </a-space>
+    </a-col>
+  </a-row>
+  <a-divider style="margin-top: 0"/>
+  <a-row v-if="false" style="margin-bottom: 16px">
+    <a-col :span="12">
+      <a-space>
+        <a-button v-show="formState==='edit'" type="primary" @click="addTable($event)">
+          <template #icon>
+            <icon-plus/>
+          </template>
+          {{ $t('searchTable.operation.create') }}
+        </a-button>
+        <a-popconfirm :content="$t('model.table.index.model.title.init.dataMsg')" position="tr" type="warning" @ok="tableInit">
+          <a-button :disabled="formState==='view'||!parameter.appId" type="primary">
             <template #icon>
               <icon-sync/>
             </template>
             {{ $t('model.table.index.model.title.init.data') }}
           </a-button>
         </a-popconfirm>
-        <a-button v-show="pageData.formState==='edit1'" type="primary">
-          <template #icon>
-            <icon-sync/>
-          </template>
-          {{ $t('model.connect.index.model.sync.model') }}
-        </a-button>
-        <a-button v-show="pageData.formState==='edit1'" type="primary">
-          <template #icon>
-            <icon-sync/>
-          </template>
-          {{ $t('model.connect.index.model.sync.table') }}
-        </a-button>
       </a-space>
-    </a-col>
-    <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
-      <a-tooltip :content="$t('searchTable.actions.refresh')">
-        <div class="action-icon" @click="search($event)">
-          <icon-refresh size="18"/>
-        </div>
-      </a-tooltip>
-      <a-tooltip :content="$t('searchTable.actions.columnSetting')">
-        <a-popover position="bl" trigger="click" @popup-visible-change="popupVisibleChange">
-          <div class="action-icon">
-            <icon-settings size="18"/>
-          </div>
-          <template #content>
-            <div id="tableSetting">
-              <div v-for="(item, index) in showColumns" :key="item.dataIndex" class="setting">
-                <div style="margin-right: 4px; cursor: move">
-                  <icon-drag-arrow/>
-                </div>
-                <div>
-                  <a-checkbox v-model="item.checked"
-                              @change="handleChange($event, item as TableColumnData, index)"></a-checkbox>
-                </div>
-                <div class="title">
-                  {{ item.title === '#' ? $t('model.table.index.form.index') : $t(`${item.title}`) }}
-                </div>
-              </div>
-            </div>
-          </template>
-        </a-popover>
-      </a-tooltip>
     </a-col>
   </a-row>
   <a-table
       :bordered="{cell:true}"
-      :columns="(cloneColumns as TableColumnData[])"
+      :columns="([] as TableColumnData[])"
       :data="renderData"
       :loading="loading"
-      :pagination="basePagination.pageSize>1000?false:pagination"
+      :pagination="pagination"
+      :scroll="scroll"
+      :scrollbar="scrollbar"
       :stripe="true"
       column-resizable
       row-key="id"
-      @page-change="onPageChange">
+      @pageChange="onPageChange" @pageSizeChange="onPageSizeChange" @sorter-change="onSorterChange">
     <template #columns>
-      <a-table-column :title="$t('model.table.index.form.index')" :width="80" align="center" data-index="index" fixed="left">
-        <template #cell="{  rowIndex }">{{
-            rowIndex + 1 + (pagination.current - 1) * pagination.pageSize
-          }}
-        </template>
+      <a-table-column :title="$t('model.table.index.form.index')" :width="70" align="center" data-index="index" fixed="left">
+        <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.entityName')" :tooltip="true"
-                      :width="200" data-index="entityName" fixed="left"/>
-      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.title')" :tooltip="true" :width="200"
-                      data-index="title"/>
-      <a-table-column :title="$t('model.table.index.form.enableStatus')" :width="100" data-index="enableStatus">
-        <template #cell="{ record }">
-          {{ $t(`model.table.index.form.enableStatus.${record.enableStatus}`) }}
-        </template>
-      </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.tableName')" :tooltip="true"
-                      :width="200" data-index="tableName"/>
-      <a-table-column :title="$t('model.table.index.form.tableType')" :width="100" data-index="tableType">
+      <a-table-column :ellipsis="true" :sortable="sortable.entityName" :title="$t('model.table.index.form.entityName')" :tooltip="true" :width="210"
+                      data-index="entityName" fixed="left"/>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.title')" :tooltip="true" :width="180" data-index="title"/>
+      <a-table-column :title="$t('model.table.index.form.tableType')" :width="90" data-index="tableType">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.tableType.${record.tableType}`) }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.appId')" :tooltip="true"
-                      :width="150" data-index="appId">
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.appId')" :tooltip="true" :width="150" data-index="appId">
         <template #cell="{ record }">
-          {{ getAppId(record.appId) }}
+          {{ getOptionLabel(record.appId, appSelectOptions) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.table.index.form.sourceType')" :width="100" data-index="sourceType">
+      <a-table-column :title="$t('model.table.index.form.sourceType')" :width="90" data-index="sourceType">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.sourceType.${record.sourceType}`) }}
         </template>
       </a-table-column>
-      <a-table-column v-if="false" :title="$t('model.table.index.form.linked')" :width="100" data-index="linked">
+      <a-table-column v-if="false" :title="$t('model.table.index.form.linked')" :width="90" data-index="linked">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.linked.${record.linked}`) }}
         </template>
       </a-table-column>
-
-      <a-table-column :title="$t('model.table.index.form.seqNo')" :width="100" data-index="seqNo"/>
-      <a-table-column :title="$t('model.table.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.tableComment')" :tooltip="true"
-                      :width="200" data-index="tableComment"/>
-      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.description')" :tooltip="true"
-                      :width="200" data-index="description"/>
-      <a-table-column
-          v-show="pageData.formState==='edit'" :title="$t('model.table.index.form.operations')"
-          :width="280" align="center" data-index="operations" fixed="right">
+      <a-table-column :title="$t('model.table.index.form.enableStatus')" :width="70" data-index="enableStatus">
+        <template #cell="{ record }">
+          {{ $t(`model.table.index.form.enableStatus.${record.enableStatus}`) }}
+        </template>
+      </a-table-column>
+      <a-table-column :sortable="sortable.seqNo" :title="$t('model.table.index.form.seqNo')" :width="100" data-index="seqNo"/>
+      <a-table-column :sortable="sortable.createAt" :title="$t('model.table.index.form.createAt')" :width="180" data-index="createAt"/>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.tableComment')" :tooltip="true" :width="240" data-index="tableComment"/>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.description')" :tooltip="true" :width="240" data-index="description"/>
+      <a-table-column v-show="formState==='edit'" :title="$t('model.table.index.form.operations')" :width="150" align="center" data-index="operations"
+                      fixed="right">
         <template #cell="{ record,isST = ['system','platform'].includes(record.sourceType)}">
           <a-tooltip v-if="isST" :content="$t('searchTable.tables.operations.sourceType.warning')">
-            <a-button size="small" type="text" class="button-disabled">
-              {{ $t('searchTable.tables.operations.alter') }}
-            </a-button>
-          </a-tooltip>
-          <a-tooltip v-else :content="$t('searchTable.tables.operations.alter.warning')">
-            <a-button size="small" type="text" @click="alterTable(record.id)">
-              {{ $t('searchTable.tables.operations.alter') }}
-            </a-button>
-          </a-tooltip>
-          <a-tooltip v-if="isST" :content="$t('searchTable.tables.operations.sourceType.warning')">
-            <a-button size="small" type="text" class="button-disabled">
+            <a-button :disabled="formState==='view'" class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.edit') }}
             </a-button>
           </a-tooltip>
-          <a-button v-else size="small" type="text" @click="editTable(record.id)">
+          <a-button v-else size="small" type="text" @click="editTable(record)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-tooltip v-if="isST" :content="$t('searchTable.tables.operations.sourceType.warning')">
-            <a-button size="small" type="text" class="button-disabled">
+            <a-button class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-tooltip>
           <a-popconfirm v-else :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
-                        @ok="deleteTable(record.id)">
-            <a-button size="small" status="danger" type="text">
+                        @ok="deleteTable(record)">
+            <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
-          <a-button size="small" type="text" @click="copyTable(record.id)">
-            {{ $t('searchTable.tables.operations.copy') }}
-          </a-button>
         </template>
       </a-table-column>
     </template>
@@ -251,315 +467,9 @@
       <a-empty style="width: 48%;"/>
     </template>
   </a-table>
-  <TableForm ref="tableFormRef"></TableForm>
-  <TableDrawer ref="tableDrawerRef"></TableDrawer>
-  <TableCopyForm ref="tableCopyFormRef"></TableCopyForm>
 </template>
 
-<script lang="ts" setup>
-/* 导入 */
-import {nextTick, reactive, ref, watch} from 'vue';
-import {useI18n} from 'vue-i18n';
-import useLoading from '@/hooks/loading';
-// 分页列表
-import {Pagination} from '@/types/global';
-import type {TableColumnData} from '@arco-design/web-vue';
-import {Notification} from "@arco-design/web-vue";
-import cloneDeep from 'lodash/cloneDeep';
-import Sortable from 'sortablejs';
-// 引用其他对象、方法
-import {ListUrlParams, PageQueryFilter, PageQueryRequest} from '@/api/base';
-import {deleteTable as deleteList, initTables, pageQueryTables as pageQueryList, QueryTableForm as QueryForm} from '@/api/model';
-import {columns, enableStatusOptions, sourceTypeOptions, tableTypeOptions} from '@/views/model/table/searchTable';
-// 引用其他页面
-import TableForm from '@/views/model/table/form.vue';
-import TableDrawer from '@/views/model/table/drawer.vue';
-import TableCopyForm from '@/views/model/table/copy.vue';
-import {useRoute} from "vue-router";
-import {QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions} from "@/api/security";
-
-/* 列表 */
-type Column = TableColumnData & { checked?: true };
-const pageData = ref({
-  current: 1, pageSize: 10, formState: 'edit', isModal: false, params: {pId: '', pName: ''},
-  modalAddBack: (data: QueryForm) => {
-  }, modalEditBack: (data: QueryForm) => {
-  }, modalDeleteBack: (id: string) => {
-  }
-});
-const tableFormRef = ref(null);
-const tableDrawerRef = ref(null);
-const tableCopyFormRef = ref(null);
-// 国际化
-const {t} = useI18n();
-const route = useRoute();
-const routeParams = ref({
-  appId: (route && route.params && route.params.appId as string) || '',
-  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
-});
-// 加载
-const {loading, setLoading} = useLoading(true);
-// 分页列表参数
-const cloneColumns = ref<Column[]>([]);
-const showColumns = ref<Column[]>([]);
-const basePagination: Pagination = {current: pageData.value.current, pageSize: pageData.value.pageSize};
-const pagination = reactive({...basePagination,});
-const renderData = ref<PageQueryFilter[]>([]);
-
-/* 列表 */
-const generateFilterData = () => {
-  return {
-    id: '',
-    connectId: '',
-    title: '',
-    tableName: '',
-    entityName: '',
-    tableType: '',
-    enableStatus: '',
-    linked: '',
-    createAt: [],
-    sourceType: '',
-    appId: routeParams.value.appId,
-    tenantCode: routeParams.value.tenantCode,
-  };
-};
-const filterData = ref(generateFilterData());
-/**
- * 分页查询方法
- * @param params
- */
-const fetchData = async (params: PageQueryRequest = {
-  current: pageData.value.current,
-  pageSize: pageData.value.pageSize
-}) => {
-  setLoading(true);
-  try {
-    const {data} = await pageQueryList(params);
-    renderData.value = data.items;
-    pagination.current = params.current;
-    pagination.pageSize = basePagination.pageSize;
-    pagination.total = data.total;
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  } finally {
-    setLoading(false);
-  }
-};
-/* 获取列表数据 */
-fetchData();
-/**
- * 条件查询 - 搜索
- */
-const search = (ev?: Event) => {
-  fetchData({...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
-};
-/**
- * 条件查询 - 重置
- */
-const reset = (ev?: Event) => {
-  basePagination.current = pageData.value.current;
-  filterData.value = generateFilterData();
-  filterData.value.connectId = pageData.value.params.pId || '';
-  search();
-};
-/**
- * 分页 - 页面跳转
- * @param current
- */
-const onPageChange = (current: number) => {
-  basePagination.current = current;
-  search();
-};
-
-/* 列表，按钮、操作列 */
-const addTable = (ev: MouseEvent) => {
-  if (pageData.value.isModal && !pageData.value.params.pId) {
-    Notification.warning(t('security.dict.index.notice.warning2'));
-    return;
-  }
-  if (tableDrawerRef.value) {
-    const formParams: Record<string, any> = pageData.value.params || {};
-    formParams.editName = true;
-    // @ts-ignore
-    tableDrawerRef.value?.openForm({
-      action: 'add', params: pageData.value.params, closeBack: (data: QueryForm) => {
-        reset();
-        pageData.value.modalAddBack(data);
-      }
-    });
-  }
-};
-const copyTable = (id: string) => {
-  if (tableCopyFormRef.value) {
-    const formParams: Record<string, any> = pageData.value.params || {};
-    formParams.editName = false;
-    // @ts-ignore
-    tableCopyFormRef.value?.openForm({
-      action: 'add', 'id': id, params: pageData.value.params, closeBack: (data: QueryForm) => {
-        reset();
-        pageData.value.modalAddBack(data);
-      }
-    });
-  }
-}
-const tableInit = async () => {
-  try {
-    const {data} = await initTables(routeParams.value.appId);
-    reset();
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
-}
-const viewTable = (id: string) => {
-  if (tableDrawerRef.value) {
-    const formParams: Record<string, any> = pageData.value.params || {};
-    formParams.editName = false;
-    // @ts-ignore
-    tableDrawerRef.value?.openForm({action: 'view', 'id': id, params: pageData.value.params});
-  }
-}
-const alterTable = (id: string) => {
-  if (tableDrawerRef.value) {
-    const formParams: Record<string, any> = pageData.value.params || {};
-    formParams.editName = true;
-    // @ts-ignore
-    tableDrawerRef.value?.openForm({
-      action: 'edit', 'id': id, params: pageData.value.params, closeBack: (data: QueryForm) => {
-        reset();
-        pageData.value.modalEditBack(data);
-      }
-    });
-  }
-}
-const editTable = (id: string) => {
-  if (tableDrawerRef.value) {
-    const formParams: Record<string, any> = pageData.value.params || {};
-    formParams.editName = false;
-    // @ts-ignore
-    tableDrawerRef.value?.openForm({
-      action: 'edit', 'id': id, params: pageData.value.params, closeBack: (data: QueryForm) => {
-        reset();
-        pageData.value.modalEditBack(data);
-      }
-    });
-  }
-}
-
-const deleteTable = (id: string) => {
-  deleteData(id, () => {
-    reset();
-    pageData.value.modalDeleteBack(id);
-  });
-}
-const deleteData = async (id: string, successBack: any) => {
-  try {
-    await deleteList(id);
-    successBack();
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
-};
-
-const appSelectOptions = ref<QuerySelectForm[]>([]);
-const getAppSelectOptions = async () => {
-  try {
-    const {data} = await querySelectOptions({
-      tenantCode: (route.params && route.params.tenantCode as string) || '',
-    } as unknown as QueryAppForm);
-    appSelectOptions.value = data || [];
-  } catch (err) {
-    appSelectOptions.value = [];
-    // eslint-disable-next-line no-console
-    console.log(err);
-  }
-}
-const getAppId = (id: string) => {
-  if (appSelectOptions.value && appSelectOptions.value.length > 0) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of appSelectOptions.value) {
-      if (item.id === id) {
-        return item.name;
-      }
-    }
-  }
-  return '';
-}
-
-/* 分页功能区 - 固定方法 */
-const handleChange = (checked: boolean | (string | boolean | number)[], column: Column, index: number) => {
-  if (!checked) {
-    cloneColumns.value = showColumns.value.filter((item) => item.dataIndex !== column.dataIndex);
-  } else {
-    cloneColumns.value.splice(index, 0, column);
-  }
-};
-const exchangeArray = <T extends Array<any>>(array: T, beforeIdx: number, newIdx: number, isDeep = false): T => {
-  const newArray = isDeep ? cloneDeep(array) : array;
-  if (beforeIdx > -1 && newIdx > -1) {
-    // 先替换后面的，然后拿到替换的结果替换前面的
-    newArray.splice(beforeIdx, 1, newArray.splice(newIdx, 1, newArray[beforeIdx]).pop());
-  }
-  return newArray;
-};
-const popupVisibleChange = (val: boolean) => {
-  if (val) {
-    nextTick(() => {
-      const el = document.getElementById('tableSetting') as HTMLElement;
-      const sortable = new Sortable(el, {
-        onEnd(e: any) {
-          const {oldIndex, newIndex} = e;
-          exchangeArray(cloneColumns.value, oldIndex, newIndex);
-          exchangeArray(showColumns.value, oldIndex, newIndex);
-        }
-      });
-    });
-  }
-};
-watch(() => columns.value, (val) => {
-    cloneColumns.value = cloneDeep(val);
-    cloneColumns.value.forEach((item, index) => {
-      item.checked = true;
-    });
-    showColumns.value = cloneDeep(cloneColumns.value);
-  },
-  {deep: true, immediate: true}
-);
-
-/* 对外调用方法 */
-const loadList = (urlParams: ListUrlParams) => {
-  getAppSelectOptions();
-  // 参数设置
-  pageData.value.formState = urlParams.action || 'edit';
-  pageData.value.isModal = urlParams.isModal || false;
-  pageData.value.params.pId = urlParams.params?.pId || '';
-  pageData.value.params.pName = urlParams.params?.pName || '';
-  basePagination.pageSize = urlParams.pageSize || pageData.value.pageSize;
-  // 方法反馈 新增、编辑、删除
-  pageData.value.modalAddBack = urlParams.modalAddBack ? urlParams.modalAddBack : pageData.value.modalAddBack;
-  pageData.value.modalEditBack = urlParams.modalEditBack ? urlParams.modalEditBack : pageData.value.modalEditBack;
-  pageData.value.modalDeleteBack = urlParams.modalDeleteBack ? urlParams.modalDeleteBack : pageData.value.modalDeleteBack;
-  // 初始化
-  reset();
-}
-
-// 将方法暴露出去
-defineExpose({loadList});
-</script>
-
-<script lang="ts">
-export default {
-  name: 'SearchTable'
-};
-</script>
-
 <style lang="less" scoped>
-.container {
-  padding: 0 20px 20px 20px;
-}
-
 :deep(.arco-table-th) {
   &:last-child {
     .arco-table-th-item-title {

@@ -207,6 +207,7 @@ export interface QueryTableColumnForm {
   tenantCode: string;
   synced: boolean | number;
   encrypted: boolean | number;
+  marker: string | string[];
   delStatus: number;
   deptId?: string;
   buId?: string;
@@ -509,7 +510,7 @@ export const getTypeSelectOptions = async (successBack?: any, failBack?: any) =>
  * 模型字段类型分组处理
  * @param data
  */
-const handleSelectType = (data: ColumnSelectType[]) => {
+export const handleSelectType = (data: ColumnSelectType[]) => {
   const optionGroup: SelectOptionGroup[] = [];
   const groups: string[] = [];
   for (let i = 0; i < data.length; i += 1) {
@@ -540,4 +541,20 @@ export const getTypeSelectOptionGroup = async (successBack?: any, failBack?: any
   }, (err: any) => {
     if (failBack && typeof failBack === 'function') failBack(err);
   });
+}
+
+/**
+ * 获取常用字段，platform_common_fields
+ * @param successBack
+ * @param failBack
+ */
+export const getCommonFieldsOptions = async (successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await queryTableColumns({
+      tableName: 'platform_common_fields', enableStatus: 1
+    } as unknown as PageQueryRequest);
+    if (successBack && typeof successBack === 'function') successBack(data);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
 }

@@ -1,78 +1,146 @@
-<template v-model="pageData">
-  <a-modal
-      v-model:visible="visibleModel"
-      :cancel-text="$t('model.connect.index.model.cancel.text')"
-      :footer="pageData.button"
-      :ok-text="$t('model.connect.index.model.ok.text')"
-      :title="$t(`model.connect.index.model.title.${pageData.formState}`)"
-      width="56%"
-      @cancel="handleModelCancel($event)"
-      @before-ok="handleModelOk">
-    <ConnectModel ref="connectModelRef"></ConnectModel>
-  </a-modal>
-</template>
+<script lang="ts">
+export default {
+  name: 'ModelConnectForm'
+};
+</script>
 
 <script lang="ts" setup>
-import {ref} from "vue";
-import {QueryConnectForm as QueryModel} from '@/api/model';
-import {ListUrlParams} from '@/api/base';
-import ConnectModel from "@/views/model/connect/model.vue";
+import {ref, shallowRef, watch} from "vue";
+import {FormState, ModelParams} from "@/api/base";
+// 引入组件
+import ModelConnectModel from './model.vue';
 
-const pageData = ref({formState: 'add', button: true});
-const connectModelRef = ref(null);
-// 显示隐藏
-const visibleModel = ref(false);
-// 页面响应
-let okSuccessBack: any;
-/* 表单 */
+// 页面所需 参数
+type PageParams = {
+  appId?: string; // 应用主键
+  tenantCode?: string; // 租户编码
+}
+
+const emits = defineEmits(['update:modelValue', 'update:visible', 'saveSuccess']);
+const props = defineProps({
+  modelValue: {type: String, default: ''},// 表单 - 主键
+  visible: {type: Boolean, default: false},// 弹层 - 是否显示
+  isModal: {type: Boolean, default: true},// 弹层 - 方式，true-弹窗；false-抽屉
+  title: {type: String, default: ''},// 弹层 - 标题
+  width: {type: String, default: ''},// 弹层 - 高度，为空-自然变化
+  parameter: {type: Object, default: () => ({} as PageParams)},// 页面需要的参数
+  formState: {type: String, default: 'add'},// 页面状态
+  height: {type: [Number, String], default: ''},// 弹层 - 高度，为空-自然变化
+  formCol: {type: Number, default: 1},// 表单 - 一行显示个数
+});
+
+const tableFormRef = shallowRef(ModelConnectModel);
+const visibleForm = ref<boolean>(false);
+const modelParams = ref<ModelParams>({
+  visible: false,
+  parameter: props.parameter,
+  formState: props.formState as FormState,
+  id: props.modelValue,
+  formCol: props.formCol,
+});
+
+/**
+ * 保存按钮
+ * @param ev
+ */
 const handleModelOk = (done: any) => {
-  if (connectModelRef.value) {
+  // @ts-ignore
+  if (tableFormRef.value && typeof tableFormRef.value?.saveOrUpdate === 'function') {
     // @ts-ignore
-    connectModelRef.value?.submitModel(done, () => {
-      done();
-      okSuccessBack();
-    }, () => {
-      done(false);
+    tableFormRef.value?.saveOrUpdate((data: Record<string, any>) => {
+      visibleForm.value = false;
+      emits('saveSuccess', data, props.formState);
     });
   }
 };
-const handleModelCancel = (e: Event) => {
-  visibleModel.value = false;
+/**
+ * 取消按钮
+ * @param ev
+ */
+const handleModelCancel = (ev?: Event) => {
+  visibleForm.value = false;
 }
-
-const openForm = (urlParams: ListUrlParams) => {
-  // 全局
-  pageData.value.formState = urlParams.action;
-  pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
-  urlParams.loadFailBack = () => {
-    pageData.value.button = false;
-  }
-  urlParams.loadSuccessBack = (data: QueryModel) => {
-    // eslint-disable-next-line no-console
-    console.log(data);
-  }
-  // 加载页面
-  if (connectModelRef.value) {
-    urlParams.formCol = 2;
+/**
+ * 测试连接
+ * @param ev
+ */
+const connectLinkTest = (ev?: Event) => {
+  // @ts-ignore
+  if (tableFormRef.value && typeof tableFormRef.value?.linkTest === 'function') {
     // @ts-ignore
-    connectModelRef.value?.loadModel(urlParams);
+    tableFormRef.value?.linkTest();
   }
-  // 显示
-  visibleModel.value = true;
-  okSuccessBack = urlParams.closeBack || null;
 }
 
-// 将方法暴露出去
-defineExpose({openForm});
+watch(() => props, () => {
+  if (props.visible === true) {
+    Object.assign(modelParams.value, {
+      visible: props.visible === true,
+      parameter: props.parameter,
+      formState: props.formState as FormState,
+      id: props.modelValue,
+      formCol: props.formCol,
+    })
+  }
+  // 显示页面
+  visibleForm.value = props.visible === true;
+}, {deep: true, immediate: true});
+
+watch(() => visibleForm, () => {
+  modelParams.value.visible = visibleForm.value;
+  emits('update:visible', visibleForm.value);
+}, {deep: true, immediate: true});
 </script>
 
+<template>
+  <a-modal v-if="isModal"
+           v-model:visible="visibleForm"
+           :footer="formState!=='view'"
+           :title="title || $t(`model.connect.index.model.title.${formState}`)"
+           :width="width || ''" title-align="start">
+    <ModelConnectModel ref="tableFormRef"
+                       :formCol="modelParams.formCol"
+                       :formState="modelParams.formState"
+                       :modelValue="modelParams.id"
+                       :parameter="modelParams.parameter"
+                       :visible="modelParams.visible"/>
+    <template #footer>
+      <a-space style="float: left;">
+        <a-button status="success" @click="connectLinkTest">
+          {{ $t('model.connect.index.model.title.link') }}
+        </a-button>
+      </a-space>
+      <a-space>
+        <a-button @click="handleModelCancel($event)">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
+        <a-button type="primary" @click="handleModelOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
+      </a-space>
+    </template>
+  </a-modal>
+  <a-drawer v-if="!isModal"
+            v-model:visible="visibleForm"
+            :footer="formState!=='view'"
+            :title="title || $t(`model.connect.index.model.title.${formState}`)"
+            :width="width || ''" title-align="start">
+    <ModelConnectModel ref="tableFormRef"
+                       :formCol="modelParams.formCol"
+                       :formState="modelParams.formState"
+                       :modelValue="modelParams.id"
+                       :parameter="modelParams.parameter"
+                       :visible="modelParams.visible"/>
+    <template #footer>
+      <a-space style="float: left;">
+        <a-button status="success" @click="connectLinkTest">
+          {{ $t('model.connect.index.model.title.link') }}
+        </a-button>
+      </a-space>
+      <a-space>
+        <a-button @click="handleModelCancel($event)">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
+        <a-button type="primary" @click="handleModelOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
+      </a-space>
+    </template>
+  </a-drawer>
+</template>
+
 <style lang="less" scoped>
-div.arco-form-item-content > span.textarea-span {
-  cursor: pointer;
-  display: -webkit-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-}
+
 </style>

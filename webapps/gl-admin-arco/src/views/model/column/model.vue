@@ -1,485 +1,71 @@
-<template v-model="pageData">
-  <a-form
-      ref="validateForm" :label-col-props="{ span: 8 }" :model="formData" :wrapper-col-props="{ span: 16 }"
-      class="form">
-    <a-row :gutter="16">
-      <!-- <a-col :span="24">
-              <a-form-item v-show="false">
-                <a-input v-show="false" v-model="formData.id"/>
-                <a-input v-show="false" v-model="formData.tableId"/>
-                <a-input v-show="false" v-model="formData.tableSchema"/>
-                <a-input v-show="false" v-model="formData.tableName"/>
-                <a-input v-show="false" v-model="formData.type"/>
-                <a-input-number v-show="false" v-model="formData.isRefColumn"/>
-                <a-input v-show="false" v-model="formData.refLocalCol"/>
-                <a-input v-show="false" v-model="formData.refTables"/>
-                <a-input v-show="false" v-model="formData.refColName"/>
-              </a-form-item>
-            </a-col>-->
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.title')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="title">
-          <a-input v-model.trim="formData.title" :max-length="32"/>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.name')"
-            :rules="[{required: pageData.editName,message: $t('model.form.rules.match.required')},
-            {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')},
-            {validator:validateCode}]"
-            field="name">
-          <a-input v-if="pageData.editName" v-model.trim="formData.name" :max-length="30" @blur="columnNameBlur($event)"/>
-          <span v-else>{{ formData.name }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.fieldName')"
-                     :rules="[{required: pageData.formState==='add',message: $t('model.form.rules.match.required')}]"
-                     field="fieldName">
-          <a-input v-if="pageData.formState==='add'" v-model.trim="formData.fieldName" :max-length="32"
-                   :placeholder="$t('model.column.index.form.fieldName.placeholder')" readonly/>
-          <span v-else>{{ formData.fieldName }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.enableStatus')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="enableStatus">
-          <a-select v-model="formData.enableStatus">
-            <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-          </a-select>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.ordinalPosition')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="ordinalPosition">
-          <a-input-number
-              v-model="formData.ordinalPosition"
-              :max="999999"
-              :min="1"
-              :placeholder="$t('model.form.rules.match.length.title')+'[0,999999]'"
-              :precision="0"/>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24">
-        <a-form-item
-            :label="$t('model.column.index.form.comment')"
-            :label-col-props="{ span: (pageData.formCol===1?8:4) }"
-            :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
-            field="comment">
-          <a-textarea v-model="formData.comment" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24">
-        <a-form-item
-            :label="$t('model.column.index.form.description')"
-            :label-col-props="{ span: (pageData.formCol===1?8:4) }"
-            :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
-            field="description">
-          <a-textarea v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
-        </a-form-item>
-      </a-col>
-
-      <a-divider style="margin:0 0 10px 0;"/>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.dataType')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
-            field="selectType">
-          <a-select v-model="formData.selectType" :options="selectTypeOptions" allow-search @change="selectTypeChange(formData.selectType)"/>
-        </a-form-item>
-      </a-col>
-      <!-- 字符串 长度设置 -->
-      <a-col v-if="['CHAR','VARCHAR','TEXT','MEDIUMTEXT','LONGTEXT'].includes(formData.dataType)" :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.charMaxLength')"
-            :rules="[{required: ['CHAR','VARCHAR','TEXT','MEDIUMTEXT','LONGTEXT'].includes(formData.dataType),message: $t('model.form.rules.match.required')}]"
-            field="charMaxLength">
-          <a-input-number
-              v-model="formData.charMaxLength"
-              :disabled="selectData.fixed"
-              :max="selectData.max"
-              :min="1"
-              :placeholder="$t('model.form.rules.match.length.title')+`[1,${selectData.max}]`" :precision="0"/>
-        </a-form-item>
-      </a-col>
-      <!-- 数值类型，是否有符号 -->
-      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(formData.selectType)" :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.numericSigned')"
-            :rules="[{required: ['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.selectType),message: $t('model.form.rules.match.required')}]"
-            field="numericSigned">
-          <a-radio-group v-model="formData.numericSigned" :disabled="['SCORE'].includes(formData.selectType)" :options="numericSignedOptions"
-                         @change="numericSignedChange(formData.numericSigned as boolean,$event)">
-            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
-          </a-radio-group>
-        </a-form-item>
-      </a-col>
-      <!-- 数值类型，整数位 -->
-      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(formData.selectType)" :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.numericPrecision')"
-            :rules="[{required: ['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(formData.selectType),message: $t('model.form.rules.match.required')}]"
-            field="numericPrecision">
-          <a-input-number
-              v-model="formData.numericPrecision"
-              :max="selectData.digit"
-              :min="1"
-              :placeholder="$t('model.form.rules.match.length.title')+`[1,${selectData.digit}]`"
-              :precision="0" @blur="numericPrecisionBlur($event)"/>
-        </a-form-item>
-      </a-col>
-      <!-- 数值类型，小数位 -->
-      <a-col v-if="['DECIMAL'].includes(formData.dataType)" :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.numericScale')"
-            :rules="[{required: ['DECIMAL'].includes(formData.dataType),message: $t('model.form.rules.match.required')}]"
-            field="numericScale">
-          <a-input-number
-              v-model="formData.numericScale"
-              :max="selectData.precision"
-              :min="1"
-              :placeholder="$t('model.form.rules.match.length.title')+`[1,${selectData.precision}]`"
-              :precision="0" @blur="numericScaleBlur($event)"/>
-        </a-form-item>
-      </a-col>
-      <!-- 默认值 defaultValue -->
-      <a-col v-if="['CHAR','VARCHAR','REMARK','TEXT','RICHTEXT','SCRIPT'].includes(formData.selectType)" :span="24">
-        <a-form-item
-            :label="$t('model.column.index.form.defaultValue')"
-            :label-col-props="{ span: (pageData.formCol===1?8:4) }"
-            :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
-            field="defaultValue">
-          <a-textarea v-model="formData.defaultValue" :auto-size="{minRows:2,maxRows:4}" :max-length="formData.charMaxLength" show-word-limit/>
-        </a-form-item>
-      </a-col>
-      <!--   默认范围 typeExtra 字典项、流水号、实体   -->
-      <a-col v-if="['CODE','ENTITY'].includes(formData.selectType)" :span="24">
-        <a-form-item
-            :label="$t('model.column.index.form.defaultRange')"
-            :label-col-props="{ span: (pageData.formCol===1?8:4) }"
-            :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
-            field="typeExtra">
-          <a-select v-if="pageData.button&&['CODE'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search>
-            <a-option v-for="item of selectCodeOptions" :key="item.id" :label="`${item.title}[${item.example}]`" :value="item.id"/>
-          </a-select>
-          <a-select v-if="pageData.button&&['ENTITY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search
-                    @change="entityChange1">
-            <a-option v-for="item of selectEntityOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.id"/>
-          </a-select>
-        </a-form-item>
-      </a-col>
-      <a-col v-if="['DICTIONARY'].includes(formData.selectType)" :span="24">
-        <a-form-item
-            :label="$t('model.column.index.form.defaultRange')"
-            :label-col-props="{ span: (pageData.formCol===1?8:4) }"
-            :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
-            field="typeExtra">
-          <a-select v-if="pageData.button&&['DICTIONARY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search
-                    @change="dictionaryChange1">
-            <a-option v-for="item of selectDictionaryOptions" :key="item.id" :label="`${item.dictName}[${item.dictCode}]`" :value="item.dictCode"/>
-          </a-select>
-          <a-popover v-model:popup-visible="dictPopover" position="left" trigger="click" style="width: 62%;">
-            <a-button type="outline" style="margin-left: 5px;" :title="$t('security.dictItem.index.popover.title')">
-              <icon-plus/>
-            </a-button>
-            <template #content>
-              <DictPopver @save="dictPopoverSave"/>
-            </template>
-          </a-popover>
-        </a-form-item>
-      </a-col>
-      <a-col v-if="['DICTIONARY'].includes(formData.selectType)" :span="24">
-        <a-form-item
-            :label="$t('model.column.index.form.defaultValue')"
-            :label-col-props="{ span: (pageData.formCol===1?8:4) }"
-            :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
-            field="defaultValue">
-          <a-select v-if="pageData.button" v-model="formData.defaultValue" allow-clear allow-search>
-            <a-option v-for="item of selectDictItemOptions" :key="item.id" :label="`${item.itemName}[${item.itemCode}]`" :value="item.itemCode"/>
-          </a-select>
-        </a-form-item>
-      </a-col>
-      <a-col v-if="['ENTITY'].includes(formData.selectType)" :span="24">
-        <a-form-item
-            :label="$t('model.column.index.form.defaultValue')"
-            :label-col-props="{ span: (pageData.formCol===1?8:4) }"
-            :wrapper-col-props="{ span: (pageData.formCol===1?16:20) }"
-            field="defaultValue">
-          <a-select v-if="pageData.button" v-model="formData.defaultValue" allow-clear allow-search>
-            <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
-          </a-select>
-        </a-form-item>
-      </a-col>
-      <!--  布尔值 defaultValue -->
-      <a-col v-if="['BIT','SWITCH'].includes(formData.selectType)" :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
-          <a-radio-group v-model="formData.defaultValue">
-            <a-radio value="1">TRUE</a-radio>
-            <a-radio value="0">FALSE</a-radio>
-            <a-radio v-if="['BIT'].includes(formData.selectType)" value="">NULL</a-radio>
-          </a-radio-group>
-        </a-form-item>
-      </a-col>
-      <!--      <a-col v-if="['BIT'].includes(formData.dataType)" :span="24/pageData.formCol">
-              <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
-                <a-checkbox-group v-model="formData.defaultValue" :max="1">
-                  <a-checkbox value="1">TRUE</a-checkbox>
-                  <a-checkbox value="0">FALSE</a-checkbox>
-                </a-checkbox-group>
-              </a-form-item>
-            </a-col>-->
-      <!--  数值类型 number   -->
-      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.selectType)" :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
-          <a-input-number
-              v-model="formData.defaultValue"
-              :max="selectData.max"
-              :min="selectData.min"
-              :placeholder="$t('model.form.rules.match.length.title')+`[${selectData.min},${selectData.max}]`"
-              :precision="formData.numericScale"/>
-        </a-form-item>
-      </a-col>
-      <!--   最大分数 score   -->
-      <a-col v-if="['SCORE'].includes(formData.selectType)" :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.defaultMaxValue')"
-            :rules="[{required: ['SCORE'].includes(formData.selectType),message: $t('model.form.rules.match.required')}]"
-            field="defaultValue">
-          <a-input-number
-              v-model="formData.defaultValue"
-              :max="selectData.max"
-              :min="selectData.min"
-              :placeholder="$t('model.form.rules.match.length.title')+`[${selectData.min},${selectData.max}]`"
-              :precision="formData.numericScale"/>
-        </a-form-item>
-      </a-col>
-
-      <!--  json类型，多组件   -->
-      <a-divider v-if="['MULTICOMPONENT'].includes(formData.selectType)" style="margin: 5px 0;"/>
-      <a-col v-if="['MULTICOMPONENT'].includes(formData.selectType)" :span="24">
-        <a-form-item :wrapper-col-props="{ span: 24 }" field="typeExtra">
-          <a-space :style="{'width':'100%'}" direction="vertical" size="mini">
-            <a-card v-for="(item,index) of multiComponentData" :key="index" :title="item.title" hoverable size="small">
-              <template #extra>
-                <a-space>
-                  <a-tooltip v-if="(index+1)===multiComponentData.length" :content="$t('model.column.index.multi.add.text')">
-                    <a-link @click="clickAddMulti($event)">
-                      <icon-plus/>
-                    </a-link>
-                  </a-tooltip>
-                  <a-tooltip v-if="item.isEdit" :content="$t('model.column.index.multi.save.text')">
-                    <a-link status="success" @click="clickSaveMulti(item)">
-                      <icon-save/>
-                    </a-link>
-                  </a-tooltip>
-                  <a-tooltip v-if="!item.isEdit" :content="$t('model.column.index.multi.edit.text')">
-                    <a-link @click="clickEditMulti(item)">
-                      <icon-edit/>
-                    </a-link>
-                  </a-tooltip>
-                  <a-tooltip v-if="1!==multiComponentData.length" :content="$t('model.column.index.multi.delete.text')">
-                    <a-link status="danger" @click="clickDeleteMulti(item)">
-                      <icon-delete/>
-                    </a-link>
-                  </a-tooltip>
-                </a-space>
-              </template>
-              <a-col v-if="item.isEdit" :span="24">
-                <a-form-item :label="$t('model.column.index.form.title')" :required="true" :style="{'margin-bottom': '5px'}">
-                  <a-input v-model.trim="item.title" :max-length="32" size="small"/>
-                </a-form-item>
-              </a-col>
-              <a-col v-if="item.isEdit" :span="24">
-                <a-form-item :label="$t('model.column.index.form.fieldName')" :required="true" :style="{'margin-bottom': '5px'}">
-                  <a-input v-model.trim="item.fieldName" :max-length="32" size="small"/>
-                </a-form-item>
-              </a-col>
-              <a-col v-if="item.isEdit" :span="24">
-                <a-form-item :label="$t('model.column.index.form.dataType')" :required="true" :style="{'margin-bottom': '5px'}">
-                  <a-select v-model="item.selectType" :options="selectTypeOptions" allow-search size="small" @change="selectTypeMultiChange(item)"/>
-                </a-form-item>
-              </a-col>
-              <a-col v-if="item.isEdit&&['CHAR','VARCHAR','TEXT','MEDIUMTEXT','LONGTEXT'].includes(item.dataType)" :span="24">
-                <a-form-item :label="$t('model.column.index.form.charMaxLength')" :required="true" :style="{'margin-bottom': '5px'}">
-                  <a-input-number v-model="item.charMaxLength" :disabled="item.columnSelectType.fixed" :max="item.columnSelectType.radius.max" :min="1"
-                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.max}]`"
-                                  :precision="0"/>
-                </a-form-item>
-              </a-col>
-              <a-col v-if="item.isEdit&&['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(item.selectType)" :span="24">
-                <a-form-item :label="$t('model.column.index.form.numericPrecision')" :required="true" :style="{'margin-bottom': '5px'}">
-                  <a-input-number v-model="item.numericPrecision" :max="item.columnSelectType.radius.unDigit" :min="1"
-                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.unDigit}]`"
-                                  :precision="0"/>
-                </a-form-item>
-              </a-col>
-              <a-col v-if="item.isEdit&&['DECIMAL'].includes(item.dataType)" :span="24">
-                <a-form-item :label="$t('model.column.index.form.numericScale')" :required="true" :style="{'margin-bottom': '5px'}">
-                  <a-input-number v-model="item.numericScale" :max="item.columnSelectType.radius.precision" :min="1"
-                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.precision}]`"
-                                  :precision="0"/>
-                </a-form-item>
-              </a-col>
-              <div v-if="!item.isEdit">
-                <div v-if="['CHAR','VARCHAR','REMARK','ORG','USER','UPLOAD'].includes(item.selectType)">
-                  {{ `${item.fieldName} | ${item.dataType}(${item.charMaxLength}) | ${getFormatSelectType(item.selectType)}` }}
-                </div>
-                <div v-else-if="['DICTIONARY','RADIO','CODE','COLOR','ENTITY','TEXT','RICHTEXT','SCRIPT'].includes(item.selectType)">
-                  {{ `${item.fieldName} | ${getFormatSelectType(item.selectType)}` }}
-                </div>
-                <div v-else-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT'].includes(item.selectType)">
-                  {{ `${item.fieldName} | ${item.dataType}(${item.numericPrecision}) | ${getFormatSelectType(item.selectType)}` }}
-                </div>
-                <div v-else-if="['DECIMAL','SCORE'].includes(item.selectType)">
-                  {{ `${item.fieldName} | ${item.dataType}(${item.numericPrecision}, ${item.numericScale}) | ${getFormatSelectType(item.selectType)}` }}
-                </div>
-                <div v-else>
-                  {{ `${item.fieldName} | ${getFormatSelectType(item.selectType)}` }}
-                </div>
-              </div>
-            </a-card>
-          </a-space>
-        </a-form-item>
-      </a-col>
-
-      <!--   组织用户特供   -->
-      <a-divider v-if="['ORG','USER'].includes(formData.selectType)" style="margin: 5px 0;"/>
-      <a-col v-if="['ORG','USER'].includes(formData.selectType)" :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.autoAdd')"
-                     :tooltip="$t('model.column.index.form.autoAdd.tip')"
-                     field="autoAdd">
-          <a-checkbox-group v-model="formData.autoAdd"
-                            :max="1"
-                            @change="autoAddChange(formData.autoAdd.toString())">
-            <a-checkbox value="1">{{ $t('model.column.index.form.autoAdd.1') }}</a-checkbox>
-            <a-checkbox value="0">{{ $t('model.column.index.form.autoAdd.0') }}</a-checkbox>
-          </a-checkbox-group>
-        </a-form-item>
-      </a-col>
-      <a-col v-if="formData.autoAdd.toString()==='1'" :span="24/pageData.formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.autoName')"
-            :rules="[{required: formData.autoAdd.toString()==='1',message: $t('model.form.rules.match.required')},
-            {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')}]"
-            :tooltip="$t('model.column.index.form.autoName.tip')"
-            field="autoName">
-          <a-input v-model="formData.autoName" :max-length="30" @blur="autoNameBlur($event)"/>
-        </a-form-item>
-      </a-col>
-
-      <a-divider style="margin: 5px 0;"/>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.nullable')" field="nullable">
-          <a-radio-group v-model="formData.nullable"
-                         :options="nullableOptions"
-                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
-            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
-          </a-radio-group>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.key')" field="key">
-          <a-radio-group v-model="formData.key"
-                         :options="keyOptions"
-                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
-            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
-          </a-radio-group>
-        </a-form-item>
-      </a-col>
-      <!--  数值类型，自动递增    -->
-      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT'].includes(formData.selectType)&&formData.key===1" :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.autoIncrement')" field="autoIncrement">
-          <a-radio-group v-model="formData.autoIncrement" :options="autoIncrementOptions">
-            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
-          </a-radio-group>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.uniqued')" field="key">
-          <a-radio-group v-model="formData.uniqued"
-                         :options="uniquedOptions"
-                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
-            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
-          </a-radio-group>
-        </a-form-item>
-      </a-col>
-      <a-col :span="24/pageData.formCol">
-        <a-form-item :label="$t('model.column.index.form.encrypted')" field="key">
-          <a-radio-group v-model="formData.encrypted"
-                         :options="encryptedOptions"
-                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
-            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
-          </a-radio-group>
-        </a-form-item>
-      </a-col>
-    </a-row>
-  </a-form>
-</template>
-
+<script lang="ts">
+export default {
+  name: 'ModelTableColumnModel'
+};
+</script>
 <script lang="ts" setup>
-import {ref} from 'vue';
+import {ref, watch} from "vue";
 import {useI18n} from 'vue-i18n';
-import {FormInstance, Modal, Notification} from "@arco-design/web-vue";
-import {ListUrlParams, PageQueryRequest} from '@/api/base';
-import {
-  autoIncrementOptions,
-  columnSelectType,
-  enableStatusOptions,
-  encryptedOptions,
-  keyOptions,
-  nullableOptions,
-  numericSignedOptions,
-  selectTypeOptions,
-  uniquedOptions
-} from "@/views/model/column/searchTable";
+import {FormInstance, Message, Modal, SelectOptionGroup} from "@arco-design/web-vue";
 import {
   ColumnSelectType,
-  createOrUpdateTableColumn as createOrUpdateForm,
-  getTableColumn as getForm,
+  createOrUpdateTableColumn as createOrUpdateForm, getTableColumn as getForm, getTypeSelectOptions, handleSelectType,
   QueryMultiComponentForm,
   QueryTableColumnForm,
   QueryTableColumnForm as QueryForm,
   queryTableColumns,
   QueryTableForm,
-  queryTables,
-  validateTableColumnName
-} from '@/api/model';
-import {formatSeparator, toCamelCase} from '@/utils/strings';
-import {isBlank, isNotBlank} from '@/utils/is';
-import {useRoute} from "vue-router";
+  queryTables, validateTableColumnName
+} from "@/api/model";
 import {QueryDictForm, QueryDictItemForm, queryDicts, queryItemByDictCode} from "@/api/security";
 import {QueryEncodingForm, queryEncodings} from "@/api/encoding";
-import DictPopver from '@/views/security/dict/popover.vue';
+import {PageQueryRequest} from "@/api/base";
+import {formatSeparator, toCamelCase} from "@/utils/strings";
+import {isBlank, isNotBlank} from "@/utils/is";
+import {getAppSelectOptions, QueryAppForm} from "@/api/application";
+import DictionaryLayout from "@/views/security/dictionary/layout.vue";
+import {
+  autoIncrementOptions,
+  enableStatusOptions,
+  encryptedOptions,
+  keyOptions, markerOptions,
+  nullableOptions,
+  numericSignedOptions
+  , uniquedOptions
+} from "./searchTable";
 
-// 国际化
-const {t} = useI18n();
-const route = useRoute();
-const routeParams = ref({
-  appId: (route && route.params && route.params.appId as string) || '',
-  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
+// 页面所需 参数
+type PageParams = {
+  connectId: string; // 数据库链接id
+  tableId: string; // 模型名称
+  tableName: string;
+  appId?: string; // 应用主键
+  tenantCode?: string; // 租户编码
+}
+
+const emits = defineEmits(['update:modelValue']);
+const props = defineProps({
+  modelValue: {type: String, default: ''},// id
+  visible: {type: Boolean, default: false},// 显示
+  parameter: {type: Object, default: () => ({} as PageParams)},// 页面需要的参数
+  formState: {type: String, default: 'add'},// 表单状态
+  formCol: {type: Number, default: 1},// 表单列数
 });
-const pageData = ref({
-  formState: 'add', button: true, formCol: 1,
-  mainTable: '', maxNumber: -1, editName: true
-});
-const validateForm = ref<FormInstance>();
+
+const {t} = useI18n();// 国际化
+const labelCol = ref<number>(6);// 表单-标题宽度
+const wrapperCol = ref<number>(18); // 表单-内容宽度
+const validateForm = ref<FormInstance>();// 表单-校验
 /* 表单 */
 const generateFormData = (): QueryForm => {
   return {
-    id: '', // *
-    tableId: '', // 表id *
+    id: props.modelValue || '',
+    tableId: props.parameter.tableId || '', // 表id *
     title: '', // 实体属性中文,中文名
     abstractColumnExpressions: '', //
     fieldName: '',// 列名
     tableSchema: '', // 数据库名
-    tableName: '', // 表名
+    tableName: props.parameter.tableName || '', // 表名
     tableCatalog: '', // 表目录 *
     name: '', // 列名
     comment: '', // 备注
@@ -511,18 +97,29 @@ const generateFormData = (): QueryForm => {
     autoName: '',
     synced: false,
     encrypted: 0,
+    marker: [],
     seqNo: 1,
-    appId: routeParams.value.appId,
-    tenantCode: routeParams.value.tenantCode,
+    appId: props.parameter?.appId || '',
+    tenantCode: props.parameter?.tenantCode || '',
   };
 }
 const formData = ref(generateFormData());
+const appSelectOptions = ref<QueryAppForm[]>([]);
+const columnSelectType = ref<ColumnSelectType[]>([]);
+const selectTypeOptions = ref<SelectOptionGroup[]>([]);
+const entityIsEdit = ref<boolean>(false);
 const selectData = ref({fixed: false, max: 21845, min: 0, digit: 5, precision: 0});
 const multiComponentData = ref<QueryMultiComponentForm[]>([]);
 const generateMultiComponentData = (): QueryMultiComponentForm => {
   return {
-    title: '', fieldName: '', selectType: 'VARCHAR', dataType: 'VARCHAR',
-    charMaxLength: 64, numericPrecision: 0, numericScale: 0, isEdit: true,
+    title: '',
+    fieldName: '',
+    selectType: 'VARCHAR',
+    dataType: 'VARCHAR',
+    charMaxLength: 64,
+    numericPrecision: 0,
+    numericScale: 0,
+    isEdit: true,
     // eslint-disable-next-line no-use-before-define
     columnSelectType: formatSelectType('VARCHAR')
   };
@@ -541,15 +138,17 @@ const validateMulti = () => {
     }
   }
   if (!isValid) {
-    Notification.warning(t('model.column.index.multi.valid.text'));
+    Message.warning(t('model.column.index.multi.valid.text'));
   }
   return isValid;
 }
+
 const clickAddMulti = (ev?: MouseEvent) => {
   if (validateMulti()) {
     multiComponentData.value.push(generateMultiComponentData());
   }
 }
+
 const clickEditMulti = (data: QueryMultiComponentForm) => {
   if (validateMulti()) {
     // eslint-disable-next-line no-restricted-syntax
@@ -637,12 +236,13 @@ const loadMultiData = (list: QueryMultiComponentForm[]) => {
 const selectDictionaryOptions = ref<QueryDictForm[]>([]);
 const getSelectDictionaryOptions = async () => {
   try {
-    const {data} = await queryDicts({enableStatus: 1, ...routeParams.value} as unknown as QueryDictForm);
+    const {data} = await queryDicts({
+      enableStatus: 1,
+      appId: '', tenantCode: props.parameter?.tenantCode || ''
+    } as unknown as QueryDictForm);
     selectDictionaryOptions.value = data || [];
   } catch (err) {
     selectDictionaryOptions.value = [];
-    // eslint-disable-next-line no-console
-    console.log(err);
   }
 }
 const selectDictItemOptions = ref<QueryDictItemForm[]>([]);
@@ -657,8 +257,6 @@ const getSelectDictItemOptions = async (value?: string) => {
     }
   } catch (err) {
     selectDictionaryOptions.value = [];
-    // eslint-disable-next-line no-console
-    console.log(err);
   }
 }
 
@@ -669,31 +267,38 @@ const dictionaryChange = (value?: string) => {
 }
 const dictionaryChange1 = () => {
   dictionaryChange();
+  // 优化字段标识自动填写
+  if (!formData.value.name) {
+    if (formData.value.typeExtra && formData.value.typeExtra.indexOf('_') !== -1) {
+      formData.value.name = formData.value.typeExtra as string;
+      columnNameBlur();
+    }
+  }
 }
 
 const selectCodeOptions = ref<QueryEncodingForm[]>([]);
 const getSelectCodeOptions = async () => {
   try {
-    const {data} = await queryEncodings({enableStatus: 1, ...routeParams.value} as unknown as QueryEncodingForm);
+    const {data} = await queryEncodings({
+      enableStatus: 1,
+      appId: '', tenantCode: props.parameter?.tenantCode || ''
+    } as unknown as QueryEncodingForm);
     selectCodeOptions.value = data || [];
   } catch (err) {
     selectCodeOptions.value = [];
-    // eslint-disable-next-line no-console
-    console.log(err);
   }
 }
 const selectEntityOptions = ref<QueryTableForm[]>([]);
-const getSelectEntityOptions = async (params: PageQueryRequest = {
-  enableStatus: 1,
-  tableType: 'table', ...routeParams.value
-} as unknown as PageQueryRequest) => {
+const getSelectEntityOptions = async (params?: Record<string, any>) => {
   try {
-    const {data} = await queryTables(params);
+    const {data} = await queryTables({
+      ...params,
+      enableStatus: 1, tableType: 'table',
+      appId: '', tenantCode: props.parameter?.tenantCode || ''
+    } as unknown as PageQueryRequest);
     selectEntityOptions.value = data;
   } catch (err) {
     selectEntityOptions.value = [];
-    // eslint-disable-next-line no-console
-    console.log(err);
   }
 }
 const getKeyId = (data: QueryTableColumnForm[]): string => {
@@ -708,12 +313,14 @@ const getKeyId = (data: QueryTableColumnForm[]): string => {
   return '';
 }
 const selectEntityColumnOptions = ref<QueryTableColumnForm[]>([]);
-const getSelectEntityColumnOptions = async (value: string, params: PageQueryRequest = {
-  enableStatus: 1, tableId: formData.value.typeExtra, ...routeParams.value
-} as unknown as PageQueryRequest) => {
+const getSelectEntityColumnOptions = async (value: string, params?: Record<string, any>) => {
   try {
     if (formData.value.typeExtra) {
-      const {data} = await queryTableColumns(params);
+      const {data} = await queryTableColumns({
+        ...params,
+        enableStatus: 1, tableId: formData.value.typeExtra,
+        appId: '', tenantCode: props.parameter?.tenantCode || ''
+      } as unknown as PageQueryRequest);
       selectEntityColumnOptions.value = data;
       formData.value.defaultValue = value || getKeyId(data);
     } else {
@@ -721,8 +328,6 @@ const getSelectEntityColumnOptions = async (value: string, params: PageQueryRequ
     }
   } catch (err) {
     selectEntityColumnOptions.value = [];
-    // eslint-disable-next-line no-console
-    console.log(err);
   }
 }
 
@@ -733,37 +338,79 @@ const entityChange = (value?: string) => {
 }
 const entityChange1 = () => {
   entityChange();
+  // 优化字段标识自动填写
+  if (!formData.value.name) {
+    if (formData.value.typeExtra) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of selectEntityOptions.value) {
+        if (formData.value.typeExtra === item.id) {
+          formData.value.name = `${item.entityName}_id`;
+          columnNameBlur();
+          break;
+        }
+      }
+    }
+  }
 }
 
-const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack?: any) => {
+/**
+ * 新增或更新接口
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
+const saveData = async (params: QueryForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
   if (!res) {
-    params.autoAdd = Number(params.autoAdd.toString());
-    params.defaultValue = params.defaultValue && params.defaultValue.toString();
-    params.typeExtra = params.typeExtra && params.typeExtra.toString();
-    if (['MULTICOMPONENT'].includes(params.selectType)) {
-      params.typeExtra = getMultiData();
+    const saveData = {...params};
+    saveData.autoAdd = Number(saveData.autoAdd.toString());
+    saveData.defaultValue = saveData.defaultValue && saveData.defaultValue.toString();
+    saveData.typeExtra = saveData.typeExtra && saveData.typeExtra.toString();
+    saveData.marker = saveData.marker && saveData.marker.toString();
+    if (['MULTICOMPONENT'].includes(saveData.selectType)) {
+      saveData.typeExtra = getMultiData();
     }
     try {
       const {data} = await createOrUpdateForm(params);
-      successBack(data);
+      if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
-      failBack(err);
+      if (failBack && typeof failBack === 'function') failBack(err);
     }
-  } else {
-    failBack();
-  }
+  } else if (failBack && typeof failBack === 'function') failBack();
 };
+/**
+ * 获取单条数据接口
+ * @param id
+ * @param successBack
+ * @param failBack
+ */
 const getData = async (id: string, successBack?: any, failBack?: any) => {
   try {
     const {data} = await getForm(id);
-    successBack(data);
+    if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.log(err);
-    failBack(err);
+    if (failBack && typeof failBack === 'function') failBack(err);
   }
 };
+/**
+ * 唯一性校验
+ * @param value
+ * @param callback
+ */
+const validateCode = async (value: any, callback: any) => {
+  try {
+    const params = {...formData.value};
+    params.autoAdd = Number(params.autoAdd.toString());
+    params.defaultValue = params.defaultValue && params.defaultValue.toString();
+    params.typeExtra = params.typeExtra && params.typeExtra.toString();
+    params.marker = params.marker && params.marker.toString();
+    const {data} = await validateTableColumnName(params);
+    if (!data) callback(t('security.form.rules.match.uniqueness'));
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 
 const formatFieldString = (value: string) => {
   value = formatSeparator(value, " ").join("_");
@@ -773,7 +420,7 @@ const formatFieldString = (value: string) => {
 /**
  * 字段名称 生成 字段名称
  */
-const columnNameBlur = (ev: FocusEvent) => {
+const columnNameBlur = (ev?: FocusEvent) => {
   formData.value.name = formatFieldString(formData.value.name);
   validateForm.value?.validateField("name");
   formData.value.fieldName = toCamelCase(formData.value.name);
@@ -783,7 +430,7 @@ const columnNameBlur = (ev: FocusEvent) => {
 
 const formatSelectType = (value: string): ColumnSelectType => {
   // eslint-disable-next-line no-restricted-syntax
-  for (const item of columnSelectType) {
+  for (const item of columnSelectType.value) {
     if (item.value === value) {
       if (value === "SCORE") {
         item.radius = {max: 10000, min: 0, digit: 5, unDigit: 5, precision: 2};
@@ -850,7 +497,25 @@ const selectTypeChange = (value: string) => {
   if (['SWITCH'].includes(formData.value.selectType)) {
     formData.value.defaultValue = '0';
   }
+  // 数据字典预选
+  if (['DICTIONARY'].includes(formData.value.selectType)) {
+    if (formData.value.name && formData.value.fieldName) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of selectDictionaryOptions.value) {
+        if ([formData.value.name, formData.value.fieldName].includes(item.dictCode)) {
+          formData.value.typeExtra = item.dictCode;
+          dictionaryChange1();
+          break;
+        }
+      }
+    }
+  }
+
+  if (['DICTIONARY'].includes(formData.value.selectType)) getSelectDictionaryOptions();
+  if (['CODE'].includes(formData.value.selectType)) getSelectCodeOptions();
+  if (['ENTITY'].includes(formData.value.selectType)) getSelectEntityOptions();
 }
+
 const numericPrecisionBlur = (ev?: FocusEvent) => {
   const cst: ColumnSelectType = formatSelectType(formData.value.selectType);
   // 最大、最小 限制
@@ -901,7 +566,7 @@ const autoAddChange = (value: string) => {
 }
 const getFormatSelectType = (value: string): string => {
   // eslint-disable-next-line no-restricted-syntax
-  for (const item of columnSelectType) {
+  for (const item of columnSelectType.value) {
     if (item.value === value) {
       return item.label;
     }
@@ -909,58 +574,130 @@ const getFormatSelectType = (value: string): string => {
   return '';
 }
 
-const dictPopover = ref(false);
-const dictPopoverSave = (params: QueryDictForm) => {
-  formData.value.defaultValue = '';
-  formData.value.typeExtra = params.dictCode;
-  dictPopover.value = false;
-  getSelectDictionaryOptions();
-  dictionaryChange1();
+const layoutParams = ref({
+  visible: false,
+  isModal: true,
+  title: '数据字典',
+  width: '1250px',
+  height: '',
+  parameter: {appId: '', tenantCode: ''},
+  formState: 'add',
+  id: '',
+  formCol: 1,
+});
+const openAddDict = (ev?: MouseEvent) => {
+  layoutParams.value = Object.assign(layoutParams.value, {
+    id: '', visible: true, formState: 'add', title: '新建数据字典',
+  });
 }
-
-const openModal = (content: string) => {
-  Modal.open({'content': content, 'footer': false, 'simple': true});
-}
-const resetValidate = async () => {
-  await validateForm.value?.resetFields();
-};
-/**
- * 唯一性校验
- * @param value
- * @param callback
- */
-const validateCode = async (value: any, callback: any) => {
-  try {
-    const params = {...formData.value};
-    params.autoAdd = Number(params.autoAdd.toString());
-    params.defaultValue = params.defaultValue && params.defaultValue.toString();
-    params.typeExtra = params.typeExtra && params.typeExtra.toString();
-    const {data} = await validateTableColumnName(params);
-    if (!data) callback(t('security.form.rules.match.uniqueness'));
-  } catch (err) {
-    console.log(err);
+const openEditDict = (ev?: MouseEvent) => {
+  let data: QueryDictForm = {} as unknown as QueryDictForm;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of selectDictionaryOptions.value) {
+    if (item.dictCode === formData.value.typeExtra) {
+      data = item;
+      break;
+    }
+  }
+  if (data && data.id) {
+    Object.assign(layoutParams.value, {
+      id: data.id, visible: true, formState: 'edit', title: '编辑数据字典', parameter: {
+        appId: data.appId || '', tenantCode: data.tenantCode || ''
+      }
+    });
+  } else {
+    Message.warning('请选项需要编辑的字典！');
   }
 }
 
-/* 对外调用方法 */
-const loadModel = (urlParams: ListUrlParams) => {
+const dictSaveSuccess = (params: QueryDictForm, action: string) => {
+  formData.value.defaultValue = '';
+  formData.value.typeExtra = params.dictCode;
   getSelectDictionaryOptions();
-  getSelectCodeOptions();
-  getSelectEntityOptions();
-  // 全局
-  pageData.value.formState = urlParams.action || "view";
-  pageData.value.button = (urlParams.action === 'add' || urlParams.action === 'edit');
-  pageData.value.formCol = urlParams.formCol || 1;
-  pageData.value.editName = urlParams.params?.editName || false;
-  formData.value = generateFormData();
-  formData.value.tableId = urlParams.params?.pId || '';
-  formData.value.tableName = urlParams.params?.pName || '';
-// 重置验证
-  resetValidate();
+  dictionaryChange1();
+}
+const dictItemChange = (dictId: string) => {
+  dictionaryChange();
+}
+
+const keyChange = () => {
+  if (formData.value.key === 1) {
+    // (formData.value.marker as string[]).push('id');
+    formData.value.marker = ['id'];
+  } else {
+    formData.value.marker = (formData.value.marker as string[]).filter((item) => item !== 'id');
+  }
+}
+const markerChange = () => {
+  if ((formData.value.marker as string[]).includes('id')) {
+    formData.value.key = 1;
+  } else {
+    formData.value.key = 0;
+  }
+}
+/**
+ * 文本域查看
+ * @param content
+ */
+const openModal = (content: string) => {
+  Modal.open({'content': content, 'footer': false, 'simple': true});
+}
+/**
+ * 重置验证信息
+ */
+const resetValidate = async () => {
+  await validateForm.value?.resetFields();
+};
+
+/**
+ * 页面数据创建或更新方法，对外提供
+ * @param successBack
+ * @param failBack
+ */
+const saveOrUpdate = (successBack?: any, failBack?: any) => {
+  saveData(formData.value, (data: QueryForm) => {
+    // 设计当前页面的操作
+    if (successBack && typeof successBack === 'function') successBack(data);
+  }, () => {
+    if (failBack && typeof failBack === 'function') failBack();
+  });
+}
+
+/**
+ * 页面加载方法，对外提供
+ */
+const loadPage = async () => {
+  entityIsEdit.value = props.formState === 'add';
+  // 应用信息
+  getAppSelectOptions({
+    id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+  }, (data: QueryAppForm[]) => {
+    appSelectOptions.value = data || [];
+  }, () => {
+    appSelectOptions.value = [];
+  });
+  // 模型字段类型
+  await getTypeSelectOptions((data: ColumnSelectType[]) => {
+    columnSelectType.value = data || [];
+    selectTypeOptions.value = handleSelectType(columnSelectType.value);
+  }, () => {
+    columnSelectType.value = [];
+    selectTypeOptions.value = [];
+  });
+  // 表单数据重置
   multiComponentData.value = [generateMultiComponentData()];
-// 特色
-  if (urlParams.id) {
-    getData(urlParams.id, (data: QueryForm) => {
+  // 表单数据重置
+  formData.value = generateFormData();
+  // 重置验证
+  resetValidate();
+  // 数据字典
+  layoutParams.value.parameter = {
+    appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+  }
+  // 其他初始化
+  // 编辑、查看 状态 查询数据
+  if (['edit', 'view'].includes(props.formState) && props.modelValue) {
+    await getData(props.modelValue, (data: QueryForm) => {
       // string ==> number
       data.seqNo = Number(data.seqNo);
       data.ordinalPosition = Number(data.ordinalPosition);
@@ -974,6 +711,7 @@ const loadModel = (urlParams: ListUrlParams) => {
       data.autoIncrement = data.autoIncrement === true ? 1 : 0;
       data.isRefColumn = data.isRefColumn === true ? 1 : 0;
       data.autoAdd = [(data.autoAdd === true ? 1 : 0).toString()];
+      data.marker = (data.marker ? (data.marker as string).split(',') : []) as string[];
       if (['TINYINT', 'SMALLINT', 'MEDIUMINT', 'INT', 'BIGINT', 'DECIMAL', 'SCORE'].includes(data.selectType)) {
         data.defaultValue = (data.defaultValue == null || data.defaultValue === '') ? data.defaultValue : Number(data.defaultValue);
       }
@@ -982,27 +720,466 @@ const loadModel = (urlParams: ListUrlParams) => {
       }
       if (['MULTICOMPONENT'].includes(data.selectType)) {
         multiComponentData.value = (data.typeExtra == null || data.typeExtra === '' || data.typeExtra === '[]')
-          ? [generateMultiComponentData()] : loadMultiData(JSON.parse(data.typeExtra as string) as QueryMultiComponentForm[]);
+            ? [generateMultiComponentData()] : loadMultiData(JSON.parse(data.typeExtra as string) as QueryMultiComponentForm[]);
       }
       formData.value = data;
       if (['DICTIONARY'].includes(data.selectType)) {
+        getSelectDictionaryOptions();
         dictionaryChange(data.defaultValue as string);
       }
       if (['ENTITY'].includes(data.selectType)) {
+        getSelectEntityOptions();
         entityChange(data.defaultValue as string);
       }
-      urlParams.loadSuccessBack(data);
-    }, urlParams.loadFailBack);
+      if (['CODE'].includes(formData.value.selectType)) getSelectCodeOptions();
+    });
   }
 }
 
-const submitModel = (done: any, successBack?: any, failBack?: any) => {
-  createOrUpdateData(formData.value, successBack, failBack);
-};
+watch(() => props, () => {
+  if (props.visible === true) loadPage();
+}, {deep: true, immediate: true});
 
-// 将方法暴露出去
-defineExpose({loadModel, submitModel});
+/* 提供外部调用方法 */
+defineExpose({saveOrUpdate, loadPage});
 </script>
+
+<template>
+  <DictionaryLayout v-model:visible="layoutParams.visible"
+                    :formCol="layoutParams.formCol"
+                    :formState="layoutParams.formState"
+                    :height="layoutParams.height"
+                    :isModal="layoutParams.isModal"
+                    :modelValue="layoutParams.id"
+                    :parameter="layoutParams.parameter"
+                    :title="layoutParams.title"
+                    :width="layoutParams.width"
+                    @listChange="dictItemChange"
+                    @saveSuccess="dictSaveSuccess"/>
+  <DictionaryLayout v-model:visible="layoutParams.visible"
+                    :formCol="layoutParams.formCol"
+                    :formState="layoutParams.formState"
+                    :height="layoutParams.height"
+                    :isModal="layoutParams.isModal"
+                    :modelValue="layoutParams.id"
+                    :parameter="layoutParams.parameter"
+                    :title="layoutParams.title"
+                    :width="layoutParams.width"
+                    @listChange="dictItemChange"
+                    @saveSuccess="dictSaveSuccess"/>
+
+  <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
+    <a-row :gutter="wrapperCol">
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.title')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="title">
+          <a-input v-model.trim="formData.title" :max-length="32"/>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.name')"
+            :rules="[{required: editName,message: $t('model.form.rules.match.required')},
+            {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')},
+            {validator:validateCode}]"
+            field="name">
+          <a-input v-if="entityIsEdit" v-model.trim="formData.name" :max-length="30" @blur="columnNameBlur($event)"/>
+          <span v-else>{{ formData.name }}</span>
+          <a-tooltip :content="$t('searchTable.columns.operations.alter.warning')">
+            <a-button v-if="!entityIsEdit" size="medium" type="text" @click="ev => {entityIsEdit=true}">
+              <icon-edit/>
+            </a-button>
+          </a-tooltip>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.column.index.form.fieldName')"
+                     :rules="[{required: formState==='add',message: $t('model.form.rules.match.required')}]"
+                     field="fieldName">
+          <a-input v-if="formState==='add'" v-model.trim="formData.fieldName" :max-length="32"
+                   :placeholder="$t('model.column.index.form.fieldName.placeholder')" readonly/>
+          <span v-else>{{ formData.fieldName }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.column.index.form.appId')"
+                     :rules="[{required: formState==='add',message: $t('model.form.rules.match.required')}]"
+                     field="appId">
+          <a-select v-model="formData.appId" :disabled="formState==='view'">
+            <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.comment')"
+            field="comment">
+          <a-textarea v-model="formData.comment" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.description')"
+            field="description">
+          <a-textarea v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.enableStatus')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="enableStatus">
+          <a-select v-model="formData.enableStatus">
+            <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.ordinalPosition')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="ordinalPosition">
+          <a-input-number
+              v-model="formData.ordinalPosition"
+              :max="999999"
+              :min="1"
+              :placeholder="$t('model.form.rules.match.length.title')+'[0,999999]'"
+              :precision="0"/>
+        </a-form-item>
+      </a-col>
+
+
+      <a-divider style="margin:0 0 10px 0;"/>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.dataType')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="selectType">
+          <a-select v-model="formData.selectType" :options="selectTypeOptions" allow-search @change="selectTypeChange(formData.selectType)"/>
+        </a-form-item>
+      </a-col>
+      <!-- 字符串 长度设置 -->
+      <a-col v-if="['CHAR','VARCHAR','TEXT','MEDIUMTEXT','LONGTEXT'].includes(formData.dataType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.charMaxLength')"
+            :rules="[{required: ['CHAR','VARCHAR','TEXT','MEDIUMTEXT','LONGTEXT'].includes(formData.dataType),message: $t('model.form.rules.match.required')}]"
+            field="charMaxLength">
+          <a-input-number
+              v-model="formData.charMaxLength"
+              :disabled="selectData.fixed"
+              :max="selectData.max"
+              :min="1"
+              :placeholder="$t('model.form.rules.match.length.title')+`[1,${selectData.max}]`" :precision="0"/>
+        </a-form-item>
+      </a-col>
+      <!-- 数值类型，是否有符号 -->
+      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.numericSigned')"
+            :rules="[{required: ['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.selectType),message: $t('model.form.rules.match.required')}]"
+            field="numericSigned">
+          <a-radio-group v-model="formData.numericSigned" :disabled="['SCORE'].includes(formData.selectType)" :options="numericSignedOptions"
+                         @change="numericSignedChange(formData.numericSigned as boolean,$event)">
+            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
+          </a-radio-group>
+        </a-form-item>
+      </a-col>
+      <!-- 数值类型，整数位 -->
+      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.numericPrecision')"
+            :rules="[{required: ['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(formData.selectType),message: $t('model.form.rules.match.required')}]"
+            field="numericPrecision">
+          <a-input-number
+              v-model="formData.numericPrecision"
+              :max="selectData.digit"
+              :min="1"
+              :placeholder="$t('model.form.rules.match.length.title')+`[1,${selectData.digit}]`"
+              :precision="0" @blur="numericPrecisionBlur($event)"/>
+        </a-form-item>
+      </a-col>
+      <!-- 数值类型，小数位 -->
+      <a-col v-if="['DECIMAL'].includes(formData.dataType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.numericScale')"
+            :rules="[{required: ['DECIMAL'].includes(formData.dataType),message: $t('model.form.rules.match.required')}]"
+            field="numericScale">
+          <a-input-number
+              v-model="formData.numericScale"
+              :max="selectData.precision"
+              :min="1"
+              :placeholder="$t('model.form.rules.match.length.title')+`[1,${selectData.precision}]`"
+              :precision="0" @blur="numericScaleBlur($event)"/>
+        </a-form-item>
+      </a-col>
+      <!-- 默认值 defaultValue -->
+      <a-col v-if="['CHAR','VARCHAR','REMARK','TEXT','RICHTEXT','SCRIPT'].includes(formData.selectType)" :span="(labelCol+wrapperCol)">
+        <a-form-item
+            :label="$t('model.column.index.form.defaultValue')"
+            :label-col-props="{ span: labelCol/formCol }"
+            :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+            field="defaultValue">
+          <a-textarea v-model="formData.defaultValue" :auto-size="{minRows:2,maxRows:4}" :max-length="formData.charMaxLength" show-word-limit/>
+        </a-form-item>
+      </a-col>
+      <!--   默认范围 typeExtra 字典项、流水号、实体   -->
+      <a-col v-if="['CODE','ENTITY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.defaultRange')"
+            field="typeExtra">
+          <a-select v-if="formState!=='view'&&['CODE'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search>
+            <a-option v-for="item of selectCodeOptions" :key="item.id" :label="`${item.title}[${item.example}]`" :value="item.id"/>
+          </a-select>
+          <a-select v-if="formState!=='view'&&['ENTITY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search
+                    @change="entityChange1">
+            <a-option v-for="item of selectEntityOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.id"/>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col v-if="['DICTIONARY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.defaultRange')"
+            field="typeExtra">
+          <a-tooltip v-if="!formData.typeExtra" content="新增数据字典">
+            <a-button class="select-button button-primary" @click="openAddDict">
+              <icon-plus/>
+            </a-button>
+          </a-tooltip>
+          <a-select v-if="formState!=='view'&&['DICTIONARY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search
+                    @change="dictionaryChange1">
+            <a-option v-for="item of selectDictionaryOptions" :key="item.id" :label="`${item.dictName}[${item.dictCode}]`" :value="item.dictCode"/>
+          </a-select>
+          <a-tooltip v-if="formData.typeExtra" content="编辑数据字典">
+            <a-button class="select-button button-success" @click="openEditDict">
+              <icon-edit/>
+            </a-button>
+          </a-tooltip>
+        </a-form-item>
+      </a-col>
+      <a-col v-if="['DICTIONARY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.defaultValue')"
+            field="defaultValue">
+          <a-select v-if="formState!=='view'" v-model="formData.defaultValue" allow-clear allow-search>
+            <a-option v-for="item of selectDictItemOptions" :key="item.id" :label="`${item.itemName}[${item.itemCode}]`" :value="item.itemCode"/>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col v-if="['ENTITY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.defaultValue')"
+            field="defaultValue">
+          <a-select v-if="formState!=='view'" v-model="formData.defaultValue" allow-clear allow-search>
+            <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <!--  布尔值 defaultValue -->
+      <a-col v-if="['BIT','SWITCH'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
+          <a-radio-group v-model="formData.defaultValue">
+            <a-radio value="1">TRUE</a-radio>
+            <a-radio value="0">FALSE</a-radio>
+            <a-radio v-if="['BIT'].includes(formData.selectType)" value="">NULL</a-radio>
+          </a-radio-group>
+        </a-form-item>
+      </a-col>
+      <!--  数值类型 number   -->
+      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
+          <a-input-number
+              v-model="formData.defaultValue"
+              :max="selectData.max"
+              :min="selectData.min"
+              :placeholder="$t('model.form.rules.match.length.title')+`[${selectData.min},${selectData.max}]`"
+              :precision="formData.numericScale"/>
+        </a-form-item>
+      </a-col>
+      <!--   最大分数 score   -->
+      <a-col v-if="['SCORE'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.defaultMaxValue')"
+            :rules="[{required: ['SCORE'].includes(formData.selectType),message: $t('model.form.rules.match.required')}]"
+            field="defaultValue">
+          <a-input-number
+              v-model="formData.defaultValue"
+              :max="selectData.max"
+              :min="selectData.min"
+              :placeholder="$t('model.form.rules.match.length.title')+`[${selectData.min},${selectData.max}]`"
+              :precision="formData.numericScale"/>
+        </a-form-item>
+      </a-col>
+      <!--  json类型，多组件   -->
+      <a-divider v-if="['MULTICOMPONENT'].includes(formData.selectType)" style="margin: 5px 0;"/>
+      <a-col v-if="['MULTICOMPONENT'].includes(formData.selectType)" :span="(labelCol+wrapperCol)">
+        <a-form-item :wrapper-col-props="{ span: labelCol+wrapperCol }" field="typeExtra">
+          <a-space direction="horizontal" size="mini" style="width:100%;display: inline-flex;flex-wrap: wrap;justify-content: flex-start;">
+            <a-card v-for="(item,index) of multiComponentData" :key="index" :title="item.title" hoverable size="small" style="width:318px;margin-top: 4px;">
+              <template #extra>
+                <a-space>
+                  <a-tooltip v-if="(index+1)===multiComponentData.length" :content="$t('model.column.index.multi.add.text')">
+                    <a-link @click="clickAddMulti($event)">
+                      <icon-plus/>
+                    </a-link>
+                  </a-tooltip>
+                  <a-tooltip v-if="item.isEdit" :content="$t('model.column.index.multi.save.text')">
+                    <a-link status="success" @click="clickSaveMulti(item)">
+                      <icon-save/>
+                    </a-link>
+                  </a-tooltip>
+                  <a-tooltip v-if="!item.isEdit" :content="$t('model.column.index.multi.edit.text')">
+                    <a-link @click="clickEditMulti(item)">
+                      <icon-edit/>
+                    </a-link>
+                  </a-tooltip>
+                  <a-tooltip v-if="1!==multiComponentData.length" :content="$t('model.column.index.multi.delete.text')">
+                    <a-link status="danger" @click="clickDeleteMulti(item)">
+                      <icon-delete/>
+                    </a-link>
+                  </a-tooltip>
+                </a-space>
+              </template>
+              <a-col v-if="item.isEdit">
+                <a-form-item :label="$t('model.column.index.form.m.title')" :required="true" :style="{'margin-bottom': '5px'}">
+                  <a-input v-model.trim="item.title" :max-length="32" :placeholder="$t('model.column.index.form.m.title.p')" size="small"/>
+                </a-form-item>
+              </a-col>
+              <a-col v-if="item.isEdit">
+                <a-form-item :label="$t('model.column.index.form.m.fieldName')" :required="true" :style="{'margin-bottom': '5px'}">
+                  <a-input v-model.trim="item.fieldName" :max-length="32" :placeholder="$t('model.column.index.form.m.fieldName.p')" size="small"/>
+                </a-form-item>
+              </a-col>
+              <a-col v-if="item.isEdit">
+                <a-form-item :label="$t('model.column.index.form.dataType')" :required="true" :style="{'margin-bottom': '5px'}">
+                  <a-select v-model="item.selectType" :options="selectTypeOptions" allow-search size="small" @change="selectTypeMultiChange(item)"/>
+                </a-form-item>
+              </a-col>
+              <a-col v-if="item.isEdit&&['CHAR','VARCHAR','TEXT','MEDIUMTEXT','LONGTEXT'].includes(item.dataType)">
+                <a-form-item :label="$t('model.column.index.form.charMaxLength')" :required="true" :style="{'margin-bottom': '5px'}">
+                  <a-input-number v-model="item.charMaxLength" :disabled="item.columnSelectType.fixed" :max="item.columnSelectType.radius.max" :min="1"
+                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.max}]`"
+                                  :precision="0"/>
+                </a-form-item>
+              </a-col>
+              <a-col v-if="item.isEdit&&['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT','DECIMAL','SCORE'].includes(item.selectType)">
+                <a-form-item :label="$t('model.column.index.form.numericPrecision')" :required="true" :style="{'margin-bottom': '5px'}">
+                  <a-input-number v-model="item.numericPrecision" :max="item.columnSelectType.radius.unDigit" :min="1"
+                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.unDigit}]`"
+                                  :precision="0"/>
+                </a-form-item>
+              </a-col>
+              <a-col v-if="item.isEdit&&['DECIMAL'].includes(item.dataType)">
+                <a-form-item :label="$t('model.column.index.form.numericScale')" :required="true" :style="{'margin-bottom': '5px'}">
+                  <a-input-number v-model="item.numericScale" :max="item.columnSelectType.radius.precision" :min="1"
+                                  :placeholder="$t('model.form.rules.match.length.title')+`[1,${item.columnSelectType.radius.precision}]`"
+                                  :precision="0"/>
+                </a-form-item>
+              </a-col>
+              <div v-if="!item.isEdit">
+                <div v-if="['CHAR','VARCHAR','REMARK','ORG','USER','UPLOAD'].includes(item.selectType)">
+                  {{ `${item.fieldName} | ${item.dataType}(${item.charMaxLength}) | ${getFormatSelectType(item.selectType)}` }}
+                </div>
+                <div v-else-if="['DICTIONARY','RADIO','CODE','COLOR','ENTITY','TEXT','RICHTEXT','SCRIPT'].includes(item.selectType)">
+                  {{ `${item.fieldName} | ${getFormatSelectType(item.selectType)}` }}
+                </div>
+                <div v-else-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT'].includes(item.selectType)">
+                  {{ `${item.fieldName} | ${item.dataType}(${item.numericPrecision}) | ${getFormatSelectType(item.selectType)}` }}
+                </div>
+                <div v-else-if="['DECIMAL','SCORE'].includes(item.selectType)">
+                  {{ `${item.fieldName} | ${item.dataType}(${item.numericPrecision}, ${item.numericScale}) | ${getFormatSelectType(item.selectType)}` }}
+                </div>
+                <div v-else>
+                  {{ `${item.fieldName} | ${getFormatSelectType(item.selectType)}` }}
+                </div>
+              </div>
+            </a-card>
+          </a-space>
+        </a-form-item>
+      </a-col>
+      <!--   组织用户特供   -->
+      <a-divider v-if="['ORG','USER'].includes(formData.selectType)" style="margin: 5px 0;"/>
+      <a-col v-if="['ORG','USER'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.column.index.form.autoAdd')"
+                     :tooltip="$t('model.column.index.form.autoAdd.tip')"
+                     field="autoAdd">
+          <a-checkbox-group v-model="formData.autoAdd"
+                            :max="1"
+                            @change="autoAddChange(formData.autoAdd.toString())">
+            <a-checkbox value="1">{{ $t('model.column.index.form.autoAdd.1') }}</a-checkbox>
+            <a-checkbox value="0">{{ $t('model.column.index.form.autoAdd.0') }}</a-checkbox>
+          </a-checkbox-group>
+        </a-form-item>
+      </a-col>
+      <a-col v-if="formData.autoAdd.toString()==='1'" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.autoName')"
+            :rules="[{required: formData.autoAdd.toString()==='1',message: $t('model.form.rules.match.required')},
+            {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')}]"
+            :tooltip="$t('model.column.index.form.autoName.tip')"
+            field="autoName">
+          <a-input v-model="formData.autoName" :max-length="30" @blur="autoNameBlur($event)"/>
+        </a-form-item>
+      </a-col>
+      <a-divider style="margin: 5px 0;"/>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.column.index.form.nullable')" field="nullable">
+          <a-radio-group v-model="formData.nullable"
+                         :options="nullableOptions"
+                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
+            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
+          </a-radio-group>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.column.index.form.key')" field="key">
+          <a-radio-group v-model="formData.key"
+                         :options="keyOptions"
+                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]" @change="keyChange">
+            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
+          </a-radio-group>
+        </a-form-item>
+      </a-col>
+      <!--  数值类型，自动递增    -->
+      <a-col v-if="['TINYINT','SMALLINT','MEDIUMINT','INT','BIGINT'].includes(formData.selectType)&&formData.key===1" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.column.index.form.autoIncrement')" field="autoIncrement">
+          <a-radio-group v-model="formData.autoIncrement" :options="autoIncrementOptions">
+            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
+          </a-radio-group>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.column.index.form.uniqued')" field="key">
+          <a-radio-group v-model="formData.uniqued"
+                         :options="uniquedOptions"
+                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
+            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
+          </a-radio-group>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.column.index.form.encrypted')" field="key">
+          <a-radio-group v-model="formData.encrypted"
+                         :options="encryptedOptions"
+                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
+            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
+          </a-radio-group>
+        </a-form-item>
+      </a-col>
+      <a-divider style="margin: 5px 0;"/>
+      <a-col :span="labelCol+wrapperCol">
+        <a-form-item :label-col-props="{ span: labelCol/formCol }"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                     field="key" label="特殊标记">
+          <a-checkbox-group v-model="formData.marker" :max="1" :options="markerOptions" @change="markerChange">
+            <template #label="{ data }">{{ data.label }}</template>
+          </a-checkbox-group>
+        </a-form-item>
+      </a-col>
+    </a-row>
+  </a-form>
+</template>
 
 <style lang="less" scoped>
 div.arco-form-item-content > span.textarea-span {
@@ -1012,5 +1189,23 @@ div.arco-form-item-content > span.textarea-span {
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+}
+
+.form .arco-form-item {
+  margin-bottom: 12px;
+}
+
+.select-button {
+  height: 31.6px;
+  padding: 0 8px;
+  font-weight: bold;
+}
+
+.button-success {
+  color: rgb(var(--success-6));
+}
+
+.button-primary {
+  color: rgb(var(--primary-6));
 }
 </style>
