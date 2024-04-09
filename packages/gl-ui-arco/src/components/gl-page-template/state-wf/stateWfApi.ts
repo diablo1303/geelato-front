@@ -15,24 +15,24 @@ export class ProcDef {
 export class ProcStateDef {
   [key: string]: any
 
-  id: string = undefined
-  procDefId: string = undefined
-  appId: string = undefined
-  remark: string = undefined
-  name: string = undefined
+  id: string = ''
+  procDefId: string = ''
+  appId: string = ''
+  remark: string = ''
+  name: string = ''
 }
 
 export class ProcTranDef {
   [key: string]: any
 
-  id: string = undefined
-  procDefId: string = undefined
-  tranCondition: string = undefined
-  appId: string = undefined
-  remark: string = undefined
-  targetStateId: string = undefined
-  srcStateId: string = undefined
-  name: string = undefined
+  id: string = ''
+  procDefId: string = ''
+  tranCondition: string = ''
+  appId: string = ''
+  remark: string = ''
+  targetStateId: string = ''
+  srcStateId: string = ''
+  name: string = ''
 }
 
 export class ProcInst {
@@ -42,6 +42,8 @@ export class ProcInst {
   appId = ''
   procDefId = ''
   bizId = ''
+  startedAt?:string
+  endAt?:string
 }
 
 /**
@@ -124,7 +126,6 @@ export const loadProcInstByBizId = (bizId: string) => {
  */
 export const submitProcInst = (procInst: ProcInst, procTask: ProcTask,bizEntitySaver:EntitySaver) => {
   const entitySaver = new EntitySaver()
-  entitySaver.id = submitFormResult.value.id
   entitySaver.entity = 'platform_swf_proc_inst'
   if (procInst.id) {
     // 修改
@@ -132,7 +133,7 @@ export const submitProcInst = (procInst: ProcInst, procTask: ProcTask,bizEntityS
       id: procInst.id,
       name: procInst.name,
       currentStateId: procInst.currentStateId,
-      endAt: procInst.endA
+      endAt: procInst.endAt
     }
   } else {
     // 新增
@@ -151,7 +152,6 @@ export const submitProcInst = (procInst: ProcInst, procTask: ProcTask,bizEntityS
   entitySaver.children = []
 
   const taskEntitySaver = new EntitySaver()
-  taskEntitySaver.id = submitFormResult.value.id
   taskEntitySaver.entity = 'platform_swf_proc_task'
   taskEntitySaver.record = {...procTask}
   taskEntitySaver.record.procInstId = '$parent.id'

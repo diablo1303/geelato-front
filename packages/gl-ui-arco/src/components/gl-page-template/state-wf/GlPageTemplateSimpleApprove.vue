@@ -231,7 +231,7 @@ const submitProcess = () => {
   procTask.value.name = selectedTran.value?.name!
   procTask.value.remark = remark.value
 
-  submitProcInst(procInst,procTask)
+  // submitProcInst(procInst,procTask)
 }
 
 console.log('global', global)

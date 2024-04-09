@@ -57,7 +57,7 @@ import { getFormParams, type ValidatedError } from './GlEntityForm'
 // onLoadingData：从服务端加载数据，但未设置到表单中
 // onLoadedData：从服务端加载完数据并设置到表单中
 // creatingEntitySavers 完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理
-const emits = defineEmits(['onLoadingData', 'onLoadedData', 'creatingEntitySavers'])
+const emits = defineEmits(['onLoadingData', 'onLoadedData', 'creatingEntitySavers','creatingEntitySaver'])
 const formProvideProxy = new FormProvideProxy()
 provide(FormProvideKey, formProvideProxy)
 
