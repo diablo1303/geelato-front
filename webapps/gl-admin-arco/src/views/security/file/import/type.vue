@@ -6,26 +6,24 @@ export default {
 
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import {FormInstance, SelectOptionData, TableColumnData} from "@arco-design/web-vue";
-import {generateRandom} from "@/utils/strings";
 import {cloneDeep} from "lodash";
+import {getOptionLabel} from "@/api/base";
+import {generateRandom} from "@/utils/strings";
+import {FormInstance, TableColumnData} from "@arco-design/web-vue";
 import {BusinessTypeData, businessTypeDataTypeOptions} from "./template";
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
   modelValue: {type: Array<BusinessTypeData>, default: []},
   disabled: {type: Boolean, default: false},
-  hight: {type: Number, default: 480},
+  height: {type: Number, default: 480},
 });
+
 // 列表参数
-type Column = TableColumnData & { checked?: true };
-const cloneColumns = ref<Column[]>([]);
-const renderData = ref<BusinessTypeData[]>([]);
 const scrollbar = ref(true);
-const scroll = ref({x: 980, y: props.hight - 125});
-/**
- * 模型初始化
- */
+const scroll = ref({x: 980, y: props.height - 125});
+const renderData = ref<BusinessTypeData[]>([]);
+// 表单参数
 const generateFormData = (): BusinessTypeData => {
   return {
     name: '',
@@ -35,10 +33,25 @@ const generateFormData = (): BusinessTypeData => {
     sign: '',
   };
 }
-// 表单参数
-const visibleModel = ref(false);
 const formData = ref(generateFormData());
 const validateForm = ref<FormInstance>();
+const visibleModel = ref(false);
+
+/**
+ * 值变化，传递给父组件
+ * 排序、新增、修改、删除
+ */
+const watchRenderData = () => {
+  console.log('watch:renderData', renderData.value);
+  const data = cloneDeep(renderData.value);
+  if (data && data.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      delete item.sign;
+    }
+  }
+  emits("update:modelValue", data);
+}
 
 /**
  * 列表排序
@@ -46,6 +59,7 @@ const validateForm = ref<FormInstance>();
  */
 const handleChange = (_data: any[]) => {
   renderData.value = _data;
+  watchRenderData();
 }
 /**
  * 列表编辑
@@ -74,24 +88,8 @@ const listDelete = (data: BusinessTypeData) => {
     indexs.forEach(i => {
       renderData.value.splice(i, 1);
     });
+    watchRenderData();
   }
-}
-
-/**
- * 下拉选项匹配
- * @param value
- * @param data
- */
-const getLabel = (value: string, data: SelectOptionData[]) => {
-  if (data && data.length > 0) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of data) {
-      if (item.value === value) {
-        return item.label;
-      }
-    }
-  }
-  return '';
 }
 
 /**
@@ -121,6 +119,7 @@ const handleModelOk = async (done: any) => {
       formData.value.sign = generateRandom(6);
       renderData.value.push(formData.value);
     }
+    watchRenderData();
   }
   done(!res);
 };
@@ -153,6 +152,7 @@ const validateRule = async (value: any, callback: any) => {
  * 输入
  */
 watch(() => props.modelValue, () => {
+  console.log('watch:modelValue', props.modelValue);
   const data = cloneDeep(props.modelValue);
   if (data && data.length > 0) {
     // eslint-disable-next-line no-restricted-syntax
@@ -161,17 +161,6 @@ watch(() => props.modelValue, () => {
     }
   }
   renderData.value = data || [];
-}, {deep: true, immediate: true});
-/**
- * 输出
- */
-watch(() => renderData.value, () => {
-  const data = cloneDeep(renderData.value);
-  // eslint-disable-next-line no-restricted-syntax
-  for (const item of data) {
-    delete item.sign;
-  }
-  emits("update:modelValue", data);
 }, {deep: true, immediate: true});
 </script>
 
@@ -189,7 +178,7 @@ watch(() => renderData.value, () => {
       共 {{ renderData.length }} 条
     </template>
     <a-table :bordered="{cell:true}"
-             :columns="(cloneColumns as TableColumnData[])"
+             :columns="([] as TableColumnData[])"
              :data="renderData"
              :draggable="disabled?false:{type:'handle',width:40}"
              :pagination="false"
@@ -211,7 +200,7 @@ watch(() => renderData.value, () => {
         </a-table-column>
         <a-table-column :width="90" data-index="type" title="数据类型">
           <template #cell="{ record }">
-            {{ getLabel(record.type, businessTypeDataTypeOptions) }}
+            {{ getOptionLabel(record.type, businessTypeDataTypeOptions) }}
           </template>
         </a-table-column>
         <a-table-column :width="210" data-index="format" title="格式">

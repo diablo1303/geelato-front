@@ -6,26 +6,24 @@ export default {
 
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import {FormInstance, SelectOptionData, TableColumnData} from "@arco-design/web-vue";
-import {generateRandom} from "@/utils/strings";
 import {cloneDeep} from "lodash";
+import {getOptionLabel} from "@/api/base";
+import {generateRandom} from "@/utils/strings";
+import {FormInstance, TableColumnData} from "@arco-design/web-vue";
 import {BusinessMetaData, businessMetaDataValueComputeModeOptions, businessMetaDataValueTypeOptions} from "./template";
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
   modelValue: {type: Array<BusinessMetaData>, default: []},
   disabled: {type: Boolean, default: false},
-  hight: {type: Number, default: 480},
+  height: {type: Number, default: 480},
 });
+
 // 列表参数
-type Column = TableColumnData & { checked?: true };
-const cloneColumns = ref<Column[]>([]);
-const renderData = ref<BusinessMetaData[]>([]);
 const scrollbar = ref(true);
-const scroll = ref({x: 2000, y: props.hight - 125});
-/**
- * 初始化
- */
+const scroll = ref({x: 2000, y: props.height - 125});
+const renderData = ref<BusinessMetaData[]>([]);
+// 表单参数
 const generateFormData = (): BusinessMetaData => {
   return {
     placeholder: '',
@@ -44,11 +42,25 @@ const generateFormData = (): BusinessMetaData => {
     sign: '',
   };
 };
-
-// 表单参数
-const visibleModel = ref(false);
 const formData = ref(generateFormData());
 const validateForm = ref<FormInstance>();
+const visibleModel = ref(false);
+
+/**
+ * 值变化，传递给父组件
+ * 排序、新增、修改、删除
+ */
+const watchRenderData = () => {
+  console.log('watch:renderData', renderData.value);
+  const data = cloneDeep(renderData.value);
+  if (data && data.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      delete item.sign;
+    }
+  }
+  emits("update:modelValue", data);
+}
 
 /**
  * 列表排序
@@ -56,6 +68,7 @@ const validateForm = ref<FormInstance>();
  */
 const handleChange = (_data: any[]) => {
   renderData.value = _data;
+  watchRenderData();
 }
 /**
  * 列表编辑
@@ -85,24 +98,8 @@ const listDelete = (data: BusinessMetaData) => {
     indexs.forEach(i => {
       renderData.value.splice(i, 1);
     });
+    watchRenderData();
   }
-}
-
-/**
- * 下拉选项匹配
- * @param value
- * @param data
- */
-const getLabel = (value: string, data: SelectOptionData[]) => {
-  if (data && data.length > 0) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of data) {
-      if (item.value === value) {
-        return item.label;
-      }
-    }
-  }
-  return '';
 }
 
 /**
@@ -132,6 +129,7 @@ const handleModelOk = async (done: any) => {
       formData.value.sign = generateRandom(6);
       renderData.value.push(formData.value);
     }
+    watchRenderData();
   }
   done(!res);
 };
@@ -148,6 +146,7 @@ const handleModelCancel = async (e: Event) => {
  * 输入
  */
 watch(() => props.modelValue, () => {
+  console.log('watch:modelValue', props.modelValue);
   const data = cloneDeep(props.modelValue);
   if (data && data.length > 0) {
     // eslint-disable-next-line no-restricted-syntax
@@ -156,17 +155,6 @@ watch(() => props.modelValue, () => {
     }
   }
   renderData.value = data || [];
-}, {deep: true, immediate: true});
-/**
- * 输出
- */
-watch(() => renderData.value, () => {
-  const data = cloneDeep(renderData.value);
-  // eslint-disable-next-line no-restricted-syntax
-  for (const item of data) {
-    delete item.sign;
-  }
-  emits("update:modelValue", data);
 }, {deep: true, immediate: true});
 </script>
 
@@ -184,7 +172,7 @@ watch(() => renderData.value, () => {
       共 {{ renderData.length }} 条
     </template>
     <a-table :bordered="{cell:true}"
-             :columns="(cloneColumns as TableColumnData[])"
+             :columns="([] as TableColumnData[])"
              :data="renderData"
              :draggable="disabled?false:{type:'handle',width:40}"
              :pagination="false"
@@ -226,12 +214,12 @@ watch(() => renderData.value, () => {
         </a-table-column>
         <a-table-column :width="90" data-index="valueType" title="值类型">
           <template #cell="{ record }">
-            {{ getLabel(record.valueType, businessMetaDataValueTypeOptions) }}
+            {{ getOptionLabel(record.valueType, businessMetaDataValueTypeOptions) }}
           </template>
         </a-table-column>
         <a-table-column :width="120" data-index="valueComputeMode" title="取值计算方式">
           <template #cell="{ record }">
-            {{ getLabel(record.valueComputeMode, businessMetaDataValueComputeModeOptions) }}
+            {{ getOptionLabel(record.valueComputeMode, businessMetaDataValueComputeModeOptions) }}
           </template>
         </a-table-column>
         <a-table-column :width="90" data-index="isList" title="是否列表">
@@ -370,7 +358,5 @@ watch(() => renderData.value, () => {
 </template>
 
 <style lang="less" scoped>
-.general-card {
 
-}
 </style>

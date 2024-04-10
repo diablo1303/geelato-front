@@ -6,38 +6,33 @@ export default {
 
 <script lang="ts" setup>
 import {ref, toRefs, watch} from "vue";
-import {FormInstance, SelectOptionData, TableColumnData} from "@arco-design/web-vue";
-import {useRoute} from "vue-router";
+import {cloneDeep} from "lodash";
 import {generateRandom} from "@/utils/strings";
+import {getOptionLabel, PageQueryRequest} from "@/api/base";
+import {FormInstance, TableColumnData} from "@arco-design/web-vue";
 import {QueryDictForm, queryDicts} from "@/api/security";
 import {QueryTableColumnForm, queryTableColumns, QueryTableForm, queryTables} from "@/api/model";
-import {PageQueryRequest} from "@/api/base";
-import {cloneDeep} from "lodash";
 import {BusinessMetaData, businessMetaEvaluationOptions, BusinessTypeData} from "./template";
 
-const route = useRoute();
-const routeParams = ref({
-  appId: (route && route.params && route.params.appId as string) || '',
-  tenantCode: (route && route.params && route.params.tenantCode as string) || ''
-});
+// 页面所需 参数
+type PageParams = { appId?: string; tenantCode?: string; }
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
   modelValue: {type: Array<BusinessMetaData>, default: []},
   businessTypeData: {type: Array<BusinessTypeData>, default: []},
+  parameter: {type: Object, default: () => ({} as PageParams)},// 页面需要的参数
   disabled: {type: Boolean, default: false},
-  hight: {type: Number, default: 480},
+  height: {type: Number, default: 480},
 });
+
 const {businessTypeData} = toRefs(props);
+
 // 列表参数
-type Column = TableColumnData & { checked?: true };
-const cloneColumns = ref<Column[]>([]);
-const renderData = ref<BusinessMetaData[]>([]);
 const scrollbar = ref(true);
-const scroll = ref({x: 1940, y: props.hight - 125});
-/**
- * 初始化
- */
+const scroll = ref({x: 1940, y: props.height - 125});
+const renderData = ref<BusinessMetaData[]>([]);
+// 表单参数
 const generateFormData = (): BusinessMetaData => {
   return {
     tableName: '',
@@ -57,42 +52,44 @@ const generateFormData = (): BusinessMetaData => {
     sign: '',
   };
 };
-
-// 表单参数
-const visibleModel = ref(false);
 const formData = ref(generateFormData());
 const validateForm = ref<FormInstance>();
+const visibleModel = ref(false);
 const businessTypeNameData = ref<string[]>([]);
 const selectDictionaryOptions = ref<QueryDictForm[]>([]);
 const selectEntityOptions = ref<QueryTableForm[]>([]);
+
 /**
  * 获取数据字典
  */
 const getSelectDictionaryOptions = async () => {
   try {
     const {data} = await queryDicts({
-      enableStatus: 1, ...routeParams.value
+      enableStatus: 1,
+      appId: props.parameter?.appId || '',
+      tenantCode: props.parameter?.tenantCode || '',
     } as unknown as QueryDictForm);
     selectDictionaryOptions.value = data || [];
   } catch (err) {
     selectDictionaryOptions.value = [];
   }
 }
-getSelectDictionaryOptions();
 /**
  * 获取模型
  */
 const getSelectEntityOptions = async () => {
   try {
     const {data} = await queryTables({
-      enableStatus: 1, tableType: 'table', ...routeParams.value
+      enableStatus: 1,
+      tableType: 'table',
+      appId: props.parameter?.appId || '',
+      tenantCode: props.parameter?.tenantCode || '',
     } as unknown as PageQueryRequest);
     selectEntityOptions.value = data;
   } catch (err) {
     selectEntityOptions.value = [];
   }
 }
-getSelectEntityOptions();
 /**
  * 获取模型字段
  * @param entityName
@@ -101,7 +98,8 @@ getSelectEntityOptions();
  * @param params
  */
 const getSelectEntityColumnOptions = async (entityName: string, successCallBack: any, failCallBack: any, params: PageQueryRequest = {
-  enableStatus: 1, tableName: entityName, ...routeParams.value
+  enableStatus: 1, tableName: entityName,
+  appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || '',
 } as unknown as PageQueryRequest) => {
   try {
     const {data} = await queryTableColumns(params);
@@ -112,11 +110,33 @@ const getSelectEntityColumnOptions = async (entityName: string, successCallBack:
 }
 
 /**
+ * 值变化，传递给父组件
+ * 排序、新增、修改、删除
+ */
+const watchRenderData = () => {
+  console.log('watch:renderData', renderData.value);
+  const data = cloneDeep(renderData.value);
+  if (data && data.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      delete item.columnNameOptions;
+      delete item.primaryTableName;
+      delete item.primaryColumnNameGoal;
+      delete item.primaryColumnNameMatch;
+      delete item.primaryValueOptions;
+      delete item.sign;
+    }
+  }
+  emits("update:modelValue", data);
+}
+
+/**
  * 列表排序
  * @param _data
  */
 const handleChange = (_data: any[]) => {
   renderData.value = _data;
+  watchRenderData();
 }
 /**
  * 列表编辑
@@ -162,24 +182,8 @@ const listDelete = (data: BusinessMetaData) => {
     indexs.forEach(i => {
       renderData.value.splice(i, 1);
     });
+    watchRenderData();
   }
-}
-
-/**
- * 下拉选项匹配
- * @param value
- * @param data
- */
-const getLabel = (value: string, data: SelectOptionData[]) => {
-  if (data && data.length > 0) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of data) {
-      if (item.value === value) {
-        return item.label;
-      }
-    }
-  }
-  return '';
 }
 
 /**
@@ -209,6 +213,7 @@ const handleModelOk = async (done: any) => {
       formData.value.sign = generateRandom(6);
       renderData.value.push(formData.value);
     }
+    watchRenderData();
   }
   done(!res);
 };
@@ -286,6 +291,7 @@ const primaryValueEntityChange = () => {
  * 输入
  */
 watch(() => props.modelValue, () => {
+  console.log('watch:modelValue', props.modelValue);
   const data = cloneDeep(props.modelValue);
   if (data && data.length > 0) {
     data.forEach((item) => {
@@ -306,29 +312,21 @@ watch(() => props.modelValue, () => {
   }
   renderData.value = data || [];
 }, {deep: true, immediate: true});
+
 watch(() => props.businessTypeData, () => {
+  console.log('watch:businessTypeData', props.businessTypeData);
   businessTypeNameData.value = [];
   // eslint-disable-next-line no-restricted-syntax
   for (const item of businessTypeData.value) {
     businessTypeNameData.value.push(item.name);
   }
   formatVariableValue();
+  watchRenderData();
 }, {deep: true, immediate: true});
-/**
- * 输出
- */
-watch(() => renderData.value, () => {
-  const data = cloneDeep(renderData.value);
-  // eslint-disable-next-line no-restricted-syntax
-  for (const item of data) {
-    delete item.columnNameOptions;
-    delete item.primaryTableName;
-    delete item.primaryColumnNameGoal;
-    delete item.primaryColumnNameMatch;
-    delete item.primaryValueOptions;
-    delete item.sign;
-  }
-  emits("update:modelValue", data);
+
+watch(() => props.parameter, () => {
+  getSelectDictionaryOptions();
+  getSelectEntityOptions();
 }, {deep: true, immediate: true});
 </script>
 
@@ -346,7 +344,7 @@ watch(() => renderData.value, () => {
       共 {{ renderData.length }} 条
     </template>
     <a-table :bordered="{cell:true}"
-             :columns="(cloneColumns as TableColumnData[])"
+             :columns="([] as TableColumnData[])"
              :data="renderData"
              :draggable="disabled?false:{type:'handle',width:40}"
              :pagination="false"
@@ -373,7 +371,7 @@ watch(() => renderData.value, () => {
         </a-table-column>
         <a-table-column :width="180" data-index="evaluation" title="字段值">
           <template #cell="{ record }">
-            {{ getLabel(record.evaluation, businessMetaEvaluationOptions) }}
+            {{ getOptionLabel(record.evaluation, businessMetaEvaluationOptions) }}
           </template>
         </a-table-column>
         <a-table-column :width="120" data-index="constValue" title="常量">

@@ -18,6 +18,7 @@ import ImportBusinessMeta from "@/views/security/file/import/meta.vue";
 import ExportBusinessMeta from "@/views/security/file/export/meta.vue";
 import {QueryAppForm} from "@/api/security";
 import {getAppSelectOptions} from "@/api/application";
+import cloneDeep from "lodash/cloneDeep";
 
 // 页面所需 参数
 type PageParams = {
@@ -68,6 +69,10 @@ const appSelectOptions = ref<QueryAppForm[]>([]);
 const tabsKey = ref<number>(1);// 定位tabs页面
 const tableTabHeight = ref<number>(480);
 const tableTabStyle = ref({height: `${tableTabHeight.value}px`});
+const importParameter = ref({
+  appId: props.parameter?.appId || '',
+  tenantCode: props.parameter?.tenantCode || '',
+});
 
 /**
  * 新增或更新接口
@@ -79,13 +84,14 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
-      params.fileCode = params.fileCodeFormat ? params.fileCodeFormat.join(",") : '';
-      params.fileType = params.useType === 'import' ? 'excel' : params.fileType;
-      params.businessTypeData = params.businessTypeData && params.businessTypeData.length > 0 ? JSON.stringify(params.businessTypeData) : '';
-      params.businessRuleData = params.businessRuleData && params.businessRuleData.length > 0 ? JSON.stringify(params.businessRuleData) : '';
-      params.businessMetaData = params.businessMetaData && params.businessMetaData.length > 0 ? JSON.stringify(params.businessMetaData) : '';
-      delete params.fileCodeFormat;
-      const {data} = await createOrUpdateForm(params);
+      const record = cloneDeep(params);
+      record.fileCode = record.fileCodeFormat ? record.fileCodeFormat.join(",") : '';
+      record.fileType = record.useType === 'import' ? 'excel' : record.fileType;
+      record.businessTypeData = record.businessTypeData && record.businessTypeData.length > 0 ? JSON.stringify(record.businessTypeData) : '';
+      record.businessRuleData = record.businessRuleData && record.businessRuleData.length > 0 ? JSON.stringify(record.businessRuleData) : '';
+      record.businessMetaData = record.businessMetaData && record.businessMetaData.length > 0 ? JSON.stringify(record.businessMetaData) : '';
+      delete record.fileCodeFormat;
+      const {data} = await createOrUpdateForm(record);
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
       if (failBack && typeof failBack === 'function') failBack(err);
@@ -231,6 +237,10 @@ const configValueBase64 = (base64String: string) => {
   }
 }
 
+const appSelectChange = () => {
+  Object.assign(importParameter.value, {appId: formData.value.appId || ''});
+}
+
 /**
  * 页面数据创建或更新方法，对外提供
  * @param successBack
@@ -269,13 +279,17 @@ const loadPage = () => {
   if (['edit', 'view'].includes(props.formState) && props.modelValue) {
     getData(props.modelValue, (data: QueryForm) => {
       // 表格数据处理
+      data.fileCodeFormat = data.fileCode ? data.fileCode.split(",") : [];
+      // loadFiles(data.template, 't');
+      // loadFiles(data.templateRule, 'tr');
+      data.businessTypeData = data.businessTypeData && typeof data.businessTypeData === 'string' ? JSON.parse(data.businessTypeData) : [];
+      data.businessRuleData = data.businessRuleData && typeof data.businessRuleData === 'string' ? JSON.parse(data.businessRuleData) : [];
+      data.businessMetaData = data.businessMetaData && typeof data.businessMetaData === 'string' ? JSON.parse(data.businessMetaData) : [];
+
       formData.value = data;
-      formData.value.fileCodeFormat = data.fileCode ? data.fileCode.split(",") : [];
-      loadFiles(data.template, 't');
-      loadFiles(data.templateRule, 'tr');
-      formData.value.businessTypeData = data.businessTypeData && typeof data.businessTypeData === 'string' ? JSON.parse(data.businessTypeData) : [];
-      formData.value.businessRuleData = data.businessRuleData && typeof data.businessRuleData === 'string' ? JSON.parse(data.businessRuleData) : [];
-      formData.value.businessMetaData = data.businessMetaData && typeof data.businessMetaData === 'string' ? JSON.parse(data.businessMetaData) : [];
+      Object.assign(importParameter.value, {
+        appId: formData.value.appId || '', tenantCode: formData.value.tenantCode || ''
+      });
     });
   }
 }
@@ -358,7 +372,7 @@ defineExpose({saveOrUpdate, loadPage});
             <a-col :span="(labelCol+wrapperCol)/formCol">
               <a-form-item :label="$t('security.file.index.form.appId')" field="appId">
                 <a-select v-model="formData.appId" :disabled="formState==='view'" :field-names="{value: 'id', label: 'name'}"
-                          :options="appSelectOptions" allow-search/>
+                          :options="appSelectOptions" allow-search @change="appSelectChange"/>
               </a-form-item>
             </a-col>
             <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -391,11 +405,11 @@ defineExpose({saveOrUpdate, loadPage});
     </a-tab-pane>
     <a-tab-pane v-if="['import'].includes(formData.useType)" :key="3" class="a-tabs-two" title="数据处理规则">
       <ImportBusinessRule v-model="formData.businessRuleData" :business-type-data="formData.businessTypeData as any[]"
-                          :disabled="formState==='view'" :hight="tableTabHeight"/>
+                          :parameter="importParameter" :disabled="formState==='view'" :hight="tableTabHeight"/>
     </a-tab-pane>
     <a-tab-pane v-if="['import'].includes(formData.useType)" :key="4" class="a-tabs-two" title="数据保存配置">
       <ImportBusinessMeta v-model="formData.businessMetaData" :business-type-data="formData.businessTypeData as any[]"
-                          :disabled="formState==='view'" :hight="tableTabHeight"/>
+                          :parameter="importParameter" :disabled="formState==='view'" :hight="tableTabHeight"/>
     </a-tab-pane>
   </a-tabs>
 </template>
