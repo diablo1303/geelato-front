@@ -60,7 +60,7 @@ const scroll = ref({x: 1110, y: props.height});
 const sortable = ref<Record<string, TableSortable>>({
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
 });
-const lastSort = ref<string>('');
+const lastSort = ref<string>('updateAt|desc');
 // 列表 - 查询条件布局
 const labelCol = ref<number>(6);
 const wrapperCol = ref<number>(18);
@@ -347,11 +347,11 @@ watch(() => props, (val) => {
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.file.index.form.createAt')" field="createAt">
-              <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
-            </a-form-item>
-          </a-col>
+          <!--          <a-col :span="(labelCol+wrapperCol)/filterCol">
+                      <a-form-item :label="$t('security.file.index.form.createAt')" field="createAt">
+                        <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
+                      </a-form-item>
+                    </a-col>-->
         </a-row>
       </a-form>
     </a-col>
