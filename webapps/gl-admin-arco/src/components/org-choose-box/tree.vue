@@ -5,9 +5,9 @@ export default {
 </script>
 <script lang="ts" setup>
 import {computed, watch, ref, VNode} from 'vue';
-import {Message, TreeNodeData} from "@arco-design/web-vue";
 import {useI18n} from 'vue-i18n';
-import {useRoute} from "vue-router";
+import cloneDeep from "lodash/cloneDeep";
+import {Message, TreeNodeData} from "@arco-design/web-vue";
 import {QueryOrgForm, queryTrees} from '@/api/security';
 
 interface OrgTreeNode extends TreeNodeData {
@@ -112,10 +112,18 @@ const loadMore = (nodeData: OrgTreeNode) => {
   return new Promise<void>((resolve) => {
     fetchOrgTree({pid: `${nodeData.key}`} as unknown as QueryOrgForm).then((data) => {
       nodeData.children = data;
+      if (props.maxCount === 1 && props.checkStrictly === false) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const item of nodeData.children) {
+          if (!item.isLeaf) loadMore(item);
+        }
+      }
     });
     resolve();
   });
 }
+
+
 /**
  * 刷新第一层树，根目录
  * @param data OrgTreeNode[]
@@ -202,6 +210,23 @@ const checkStrictlyFormat = (data: OrgTreeNode) => {
 }
 
 /**
+ * 选中的数据
+ * @param orgs
+ * @param data
+ */
+const checkStrictlyChecked = (orgs: QueryOrgForm[], data: OrgTreeNode[]) => {
+  if (data && data.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      if (selectedKeys.value.includes(item.key as string)) {
+        orgs.push(item.redundant || {} as QueryOrgForm);
+      }
+      checkStrictlyChecked(orgs, item.children || []);
+    }
+  }
+}
+
+/**
  * 点击树节点时触发
  * @param selectedKey
  * @param data
@@ -217,8 +242,18 @@ const treeClickSelected = (selectedKes: Array<string | number>, data: {
     Message.warning({content: t('orgChooseBox.tree.max.warn'), duration: 3 * 1000});
     return;
   }
+  // 特殊情况
+  let formatData: QueryOrgForm[] = [];
+  if (props.maxCount === 1 && props.checkStrictly === false) {
+    formatData = checkStrictlyFormat(data.node || {}) || [];
+    selectedKeys.value = [];
+    formatData.forEach((item) => {
+      selectedKeys.value.push(item.id);
+    });
+  }
+
   emits("update:modelValue", selectedKeys.value);
-  emits('change', data.selected, data.node?.redundant, checkStrictlyFormat(data.node || {}));
+  emits('change', data.selected, data.node?.redundant, formatData);
 }
 /**
  * 点击树节点复选框时触发
@@ -238,8 +273,27 @@ const treeClickChecked = (checkedKeys: Array<string | number>, data: {
     Message.warning({content: t('orgChooseBox.tree.max.warn'), duration: 3 * 1000});
     return;
   }
+
+  // 特殊情况
+  let formatData: QueryOrgForm[] = [];
+  if (props.maxCount === 1 && props.checkStrictly === false) {
+    const checkedData = checkStrictlyFormat(data.node || {}) || [];
+    if (data.checked) {
+      selectedKeys.value = [];
+      checkedData.forEach((item) => {
+        selectedKeys.value.push(item.id);
+      });
+      formatData = cloneDeep(checkedData);
+    } else {
+      checkedData.forEach((item) => {
+        selectedKeys.value.filter((key) => key !== item.id);
+      });
+      checkStrictlyChecked(formatData, treeData.value);
+    }
+  }
+
   emits("update:modelValue", selectedKeys.value);
-  emits('change', data.checked, data.node?.redundant, checkStrictlyFormat(data.node || {}));
+  emits('change', data.checked, data.node?.redundant, formatData);
 }
 
 /**

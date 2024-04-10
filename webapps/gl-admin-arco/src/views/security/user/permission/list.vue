@@ -345,19 +345,19 @@ watch(() => props, (val) => {
       row-key="id"
       @pageChange="onPageChange" @pageSizeChange="onPageSizeChange" @sorter-change="onSorterChange">
     <template #columns>
-      <a-table-column :title="$t('security.user.index.form.index')" :width="70" align="center" data-index="index">
+      <a-table-column :title="$t('security.user.index.form.index')" :width="70" align="center" fixed="left" data-index="index">
         <template #cell="{  rowIndex }">
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
       <a-table-column title="用户信息">
-        <a-table-column :ellipsis="true" :title="$t('security.user.index.form.name')" :tooltip="true" :width="150" data-index="name">
+        <a-table-column :ellipsis="true" :title="$t('security.user.index.form.name')" :tooltip="true" :width="150" fixed="left" data-index="name">
           <template #cell="{ record }">
             <CopyToClipboard v-if="record.name" :model-value="record.name"/>
             {{ record.name }}
           </template>
         </a-table-column>
-        <a-table-column :ellipsis="true" :title="$t('security.user.index.form.loginName')" :tooltip="true" :width="150" data-index="loginName">
+        <a-table-column :ellipsis="true" :title="$t('security.user.index.form.loginName')" :tooltip="true" :width="150" fixed="left" data-index="loginName">
           <template #cell="{ record }">
             <CopyToClipboard v-if="record.loginName" :model-value="record.loginName"/>
             {{ record.loginName }}
