@@ -49,8 +49,11 @@ const selectedKeys = ref([]);
 const rowSelection = reactive({type: 'checkbox', showCheckedAll: true, onlyCurrent: true});
 const columnTitle = reactive([]);
 // 列表 - 滑动条
+const resetListHeight = () => {
+  return (props.height as number) - 80;
+}
 const scrollbar = ref(true);
-const scroll = ref({x: 1140, y: 410});
+const scroll = ref({x: 1140, y: resetListHeight()});
 
 /**
  * 加载数据
@@ -295,6 +298,8 @@ const reset = (ev?: Event) => {
 
 watch(() => props, () => {
   if (props.visible === true) {
+    scroll.value.y = resetListHeight();
+
     columnData.value = [];
     if (['edit', 'view'].includes(props.formState) && props.parameter.dictId) {
       reset();
@@ -318,7 +323,7 @@ watch(() => visibleForm, () => {
            :title="title || $t(`security.dictItem.index.model.title.${formState}`)"
            :width="width || ''" title-align="start"
            @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
-    <div class="general-card" style="height: 480px">
+    <div class="general-card" :style="{height:`${height}px`}">
       <a-row v-show="formState==='edit'" style="margin-bottom: 10px">
         <a-col :span="12">
           <a-space>

@@ -32,7 +32,7 @@ const props = defineProps({
   width: {type: String, default: ''},// 弹层 - 高度，为空-自然变化
   parameter: {type: Object, default: () => ({} as PageParams)},// 页面需要的参数
   formState: {type: String, default: 'add'},// 页面状态
-  height: {type: [Number, String], default: ''},// 弹层 - 高度，为空-自然变化
+  height: {type: [Number, String], default: 544},// 弹层 - 高度，为空-自然变化
   formCol: {type: Number, default: 1},// 表单 - 一行显示个数
 });
 
@@ -41,8 +41,6 @@ const visibleForm = ref<boolean>(false);
 const formData = ref<QueryForm>({} as unknown as QueryForm);
 const tableFormRef = shallowRef(RoleModel);
 const tabsKey = ref<number>(1);// 定位tabs页面
-const tableTabHeight = ref<number>(544);
-const tableTabStyle = ref({height: `${tableTabHeight.value}px`});
 
 // 角色应用关联
 const appListParams = ref({
@@ -50,7 +48,7 @@ const appListParams = ref({
   parameter: {roleId: '', appId: '', tenantCode: ''},
   formState: 'edit',
   filterCol: 2,
-  height: tableTabHeight.value - 300,
+  height: (props.height as number) - 300,
   pageSize: 50,
 });
 // 角色与权限关联
@@ -59,7 +57,7 @@ const permissionListParams = ref({
   parameter: {roleId: '', permissionId: '', appId: '', tenantCode: ''},
   formState: 'edit',
   filterCol: 2,
-  height: tableTabHeight.value - 245,
+  height: (props.height as number) - 245,
   pageSize: 50,
 });
 // 角色菜单关联
@@ -69,7 +67,7 @@ const nodeListParams = ref({
   parameter: {roleId: '', treeNodeId: '', appId: '', tenantCode: ''},
   formState: 'edit',
   filterCol: 2,
-  height: tableTabHeight.value - 125,
+  height: (props.height as number) - 125,
   pageSize: 10000,
 });
 // 角色用户关联
@@ -78,7 +76,7 @@ const userListParams = ref({
   parameter: {roleId: '', userId: '', appId: '', tenantCode: ''},
   formState: 'edit',
   filterCol: 2,
-  height: tableTabHeight.value - 300,
+  height: (props.height as number) - 300,
   pageSize: 50,
 });
 
@@ -183,7 +181,7 @@ watch(() => visibleForm, () => {
   <a-modal v-if="isModal" v-model:visible="visibleForm" :footer="false"
            :title="title || $t(`security.role.index.model.title.${formState}`)"
            :width="width || ''" title-align="start">
-    <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="left" type="line">
+    <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="{height: `${height}px`}" position="left" type="line">
       <a-tab-pane :key="1" :title="$t('security.role.form.tab.title.one')">
         <a-card class="">
           <template #extra>

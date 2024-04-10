@@ -39,9 +39,6 @@ const props = defineProps({
 
 const global = useGlobal();
 // 分页列表参数
-type Column = TableColumnData & { checked?: true };
-const columns = computed<TableColumnData[]>(() => []);
-const cloneColumns = ref<Column[]>([]);
 const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
 const pagination = reactive({...basePagination,});
 const renderData = ref<Record<string, any>[]>([]);
@@ -449,7 +446,6 @@ const isDefaultColumn = (value: string) => {
  */
 watch(() => selectVisible, (val) => {
   if (selectVisible.value) {
-    checked.value = true;
     modelApi.getCommonFieldsOptions((data: QueryTableColumnForm[]) => {
       selectCommonOptions.value = data || [];
     }, () => {
@@ -460,6 +456,7 @@ watch(() => selectVisible, (val) => {
 
 
 watch(() => props.parameter, (val) => {
+  checked.value = true;
   // 模型字段类型
   modelApi.getTypeSelectOptions((data: ColumnSelectType[]) => {
     columnSelectType.value = data || [];
@@ -654,7 +651,7 @@ watch(() => props.height, (val) => {
   <a-table
       :key="height"
       :bordered="{cell:true}"
-      :columns="(cloneColumns as TableColumnData[])"
+      :columns="([] as TableColumnData[])"
       :data="renderData"
       :loading="loading"
       :pagination="false"

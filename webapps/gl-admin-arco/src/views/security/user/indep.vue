@@ -20,7 +20,7 @@ import UserPermissionList from "@/views/security/user/permission/list.vue";
 
 // 常量使用
 const ListDefaultPageSize = 5;
-const ListUsedHeight = 470;
+const ListUsedHeight = 475;
 const ListRowHeight = 49;
 
 const {t} = useI18n(); // 国际化
@@ -31,6 +31,15 @@ const routeParams = ref({
   tenantCode: (route && route.params && route.params.tenantCode as string) || userStore.tenantCode || ''
 });// 页面的应用id、租户编码(路由或用户所属)
 
+/**
+ * 调整树形结构高度
+ */
+const resetSplitHeight = () => {
+  return window.innerHeight - 220;
+}
+const splitHeight = ref<number>(resetSplitHeight());
+const splitMin = ref<number | string>('300px');
+const splitSize = ref<number | string>(splitMin.value);
 /**
  * 调整列表高度
  */
@@ -104,6 +113,7 @@ const handleResize = () => {
   Object.assign(treeParams.value, {
     height: resetTreeHeight(),
   })
+  splitHeight.value = resetSplitHeight();
 }
 
 onMounted(() => {
@@ -118,9 +128,10 @@ onUnmounted(() => {
   <div class="container">
     <Breadcrumb :items="['security.user.index.menu.list', 'security.user.index.menu.list.searchTable']"/>
     <a-card class="general-card" style="padding-top: 20px;">
-      <a-row>
-        <a-col :span="5">
-          <div class="general-card1" style="padding-right: 10px;border-right: 1px solid var(--color-neutral-3);">
+      <a-split v-model:size="splitSize" :min="splitMin"
+               :style="{height: `${splitHeight}px`,width: '100%'}">
+        <template #first>
+          <div class="general-card1" style="padding-right: 10px;">
             <OrgTree :has-root="true" :root-selected="false"
                      :check-strictly="false"
                      :height="treeParams.height"
@@ -129,8 +140,8 @@ onUnmounted(() => {
                      :visible="true"
                      @change="selectChange"/>
           </div>
-        </a-col>
-        <a-col :span="19">
+        </template>
+        <template #second>
           <div class="general-card1" style="padding-left: 10px;">
             <UserPermissionList :visible="listParams.visible"
                                 :parameter="listParams.parameter"
@@ -139,8 +150,8 @@ onUnmounted(() => {
                                 :pageSize="listParams.pageSize"
                                 :height="listParams.height"/>
           </div>
-        </a-col>
-      </a-row>
+        </template>
+      </a-split>
     </a-card>
   </div>
 </template>

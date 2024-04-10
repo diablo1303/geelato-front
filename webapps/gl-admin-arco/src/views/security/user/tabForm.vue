@@ -40,17 +40,15 @@ const visibleForm = ref<boolean>(false);
 const formData = ref<QueryForm>({} as unknown as QueryForm);
 const tableFormRef = shallowRef(UserModel);
 const tabsKey = ref<number>(1);// 定位tabs页面
-const tableTabHeight = ref<number>(544);
-const tableTabStyle = ref({height: `${tableTabHeight.value}px`});
 const loadUserOrg = ref<string>(generateRandom());
-
+const baseHeight = ref<number>((props.height as number) - 85);
 // 关联组织
 const orgListParams = ref({
   visible: false,
   parameter: {userId: '', appId: '', tenantCode: ''},
   formState: 'edit',
   filterCol: 2,
-  height: tableTabHeight.value - 300,
+  height: (props.height as number) - 300,
   pageSize: 20,
 });
 // 关联角色
@@ -59,7 +57,7 @@ const roleListParams = ref({
   parameter: {userId: '', appId: '', tenantCode: ''},
   formState: 'edit',
   filterCol: 2,
-  height: tableTabHeight.value - 300,
+  height: (props.height as number) - 300,
   pageSize: 20,
 });
 
@@ -143,13 +141,19 @@ watch(() => visibleForm, () => {
   }
   emits('update:visible', visibleForm.value);
 }, {deep: true, immediate: true});
+
+watch(() => props.height, () => {
+  baseHeight.value = (props.height as number) - 85;
+  orgListParams.value.height = (props.height as number) - 300;
+  roleListParams.value.height = (props.height as number) - 300;
+}, {deep: true, immediate: true});
 </script>
 
 <template>
   <a-modal v-if="isModal" v-model:visible="visibleForm" :footer="false"
            :title="title || $t(`security.user.index.model.title.${formState}`)"
            :width="width || ''" title-align="start">
-    <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="left" type="line">
+    <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="{height:`${height}px`}" position="left" type="line">
       <a-tab-pane :key="1" :title="$t('security.user.form.tab.title.one')">
         <a-card class="">
           <template #extra>
@@ -164,12 +168,16 @@ watch(() => visibleForm, () => {
               </a-popconfirm>
             </a-space>
           </template>
-          <UserModel ref="tableFormRef"
-                     :visible="visibleForm"
-                     :parameter="parameter"
-                     :formState="formState"
-                     :modelValue="formData.id"
-                     :formCol="formCol"/>
+          <a-scrollbar :style="{overflow:'auto',height:`${baseHeight}px`}">
+            <div style="width: 98.6%;">
+              <UserModel ref="tableFormRef"
+                         :visible="visibleForm"
+                         :parameter="parameter"
+                         :formState="formState"
+                         :modelValue="formData.id"
+                         :formCol="formCol"/>
+            </div>
+          </a-scrollbar>
         </a-card>
       </a-tab-pane>
       <a-tab-pane :key="2" :title="$t('security.user.form.tab.title.two')">

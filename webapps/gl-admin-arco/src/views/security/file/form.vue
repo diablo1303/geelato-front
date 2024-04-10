@@ -65,6 +65,7 @@ const handleModelCancel = (ev?: Event) => {
 }
 
 watch(() => props, () => {
+  console.log('props', props);
   if (props.visible === true) {
     Object.assign(modelParams.value, {
       visible: props.visible === true,
@@ -98,6 +99,7 @@ watch(() => visibleForm, () => {
                        :formState="modelParams.formState"
                        :modelValue="modelParams.id"
                        :parameter="modelParams.parameter"
+                       :height="props.height"
                        :visible="modelParams.visible"/>
   </a-modal>
   <a-drawer v-if="!isModal"
@@ -113,6 +115,7 @@ watch(() => visibleForm, () => {
                        :formState="modelParams.formState"
                        :modelValue="modelParams.id"
                        :parameter="modelParams.parameter"
+                       :height="props.height"
                        :visible="modelParams.visible"/>
   </a-drawer>
 </template>

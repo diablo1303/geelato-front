@@ -223,8 +223,8 @@ const layoutParams = ref({
   visible: false,
   isModal: true,
   title: '',
-  width: '1250px',
-  height: '',
+  width: '80%',
+  height: window.innerHeight * 0.8,
   parameter: {appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
@@ -293,6 +293,7 @@ watch(() => props, (val) => {
     }
     // 修改列表高度
     scroll.value.y = props.height;
+    layoutParams.value.height = window.innerHeight * 0.8;
     // 修改列表查询条数
     basePagination.pageSize = props.pageSize;
     // 设置页面参数

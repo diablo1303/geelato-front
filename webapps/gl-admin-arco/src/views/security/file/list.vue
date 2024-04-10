@@ -225,8 +225,8 @@ const formParams = ref({
   visible: false,
   isModal: true,
   title: '',
-  width: '1200px',
-  height: '',
+  width: '80%',
+  height: window.innerHeight * 0.8,
   parameter: {appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
@@ -289,6 +289,7 @@ watch(() => props, (val) => {
   if (props.visible === true) {
     // 页面设置
     scroll.value.y = props.height;
+    formParams.value.height = window.innerHeight * 0.8;
     basePagination.pageSize = props.pageSize;
     // 表单参数
     formParams.value.parameter = {

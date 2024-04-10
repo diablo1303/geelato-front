@@ -156,6 +156,11 @@ watch(() => props.modelValue, () => {
   }
   renderData.value = data || [];
 }, {deep: true, immediate: true});
+
+watch(() => props.height, () => {
+  console.log('watch:height', props.height);
+  scroll.value.y = props.height - 125;
+}, {deep: true, immediate: true});
 </script>
 
 <template>

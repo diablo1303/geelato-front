@@ -33,6 +33,7 @@ const props = defineProps({
   visible: {type: Boolean, default: false},// 显示
   formState: {type: String, default: 'add'},// 表单状态
   formCol: {type: Number, default: 1},// 表单列数
+  height: {type: [Number, String], default: ''},// 弹层 - 高度，为空-自然变化
 });
 
 
@@ -67,8 +68,6 @@ const templateRuleFile = ref<FileItem[]>([]);
 const appSelectOptions = ref<QueryAppForm[]>([]);
 
 const tabsKey = ref<number>(1);// 定位tabs页面
-const tableTabHeight = ref<number>(480);
-const tableTabStyle = ref({height: `${tableTabHeight.value}px`});
 const importParameter = ref({
   appId: props.parameter?.appId || '',
   tenantCode: props.parameter?.tenantCode || '',
@@ -303,7 +302,7 @@ defineExpose({saveOrUpdate, loadPage});
 </script>
 
 <template>
-  <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="left" type="line">
+  <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="{height: `${height}px`}" position="left" type="line">
     <a-tab-pane :key="1" class="a-tabs-one" title="基础信息">
       <a-card class="">
         <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
@@ -398,18 +397,18 @@ defineExpose({saveOrUpdate, loadPage});
       </a-card>
     </a-tab-pane>
     <a-tab-pane v-if="['import'].includes(formData.useType)" :key="2" class="a-tabs-one" title="模板字段定义">
-      <ImportBusinessType v-model="formData.businessTypeData" :disabled="formState==='view'" :hight="tableTabHeight"/>
+      <ImportBusinessType v-model="formData.businessTypeData" :disabled="formState==='view'" :height="height"/>
     </a-tab-pane>
     <a-tab-pane v-if="['export'].includes(formData.useType)" :key="2" class="a-tabs-one" title="数据配置">
-      <ExportBusinessMeta v-model="formData.businessMetaData" :disabled="formState==='view'" :hight="tableTabHeight"/>
+      <ExportBusinessMeta v-model="formData.businessMetaData" :disabled="formState==='view'" :height="height"/>
     </a-tab-pane>
     <a-tab-pane v-if="['import'].includes(formData.useType)" :key="3" class="a-tabs-two" title="数据处理规则">
       <ImportBusinessRule v-model="formData.businessRuleData" :business-type-data="formData.businessTypeData as any[]"
-                          :parameter="importParameter" :disabled="formState==='view'" :hight="tableTabHeight"/>
+                          :parameter="importParameter" :disabled="formState==='view'" :height="height"/>
     </a-tab-pane>
     <a-tab-pane v-if="['import'].includes(formData.useType)" :key="4" class="a-tabs-two" title="数据保存配置">
       <ImportBusinessMeta v-model="formData.businessMetaData" :business-type-data="formData.businessTypeData as any[]"
-                          :parameter="importParameter" :disabled="formState==='view'" :hight="tableTabHeight"/>
+                          :parameter="importParameter" :disabled="formState==='view'" :height="height"/>
     </a-tab-pane>
   </a-tabs>
 </template>

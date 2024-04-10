@@ -197,7 +197,7 @@ const formParams = ref<FormParams>({
   visible: false,
   isModal: true,
   title: '',
-  width: '850px',
+  width: '1020px',
   height: '',
   parameter: {appId: '', tenantCode: ''},
   formState: 'add',

@@ -189,12 +189,12 @@ const formParams = ref<FormParams>({
   visible: false,
   isModal: true,
   title: '',
-  width: '1250px',
+  width: '1020px',
   height: '',
   parameter: {userId: '', userName: '', appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
-  formCol: 3,
+  formCol: 2,
 });
 /**
  * 列表按钮 - 新增表单
@@ -212,12 +212,12 @@ const tabsformParams = ref({
   visible: false,
   isModal: true,
   title: '',
-  width: '1250px',
-  height: '',
+  width: '80%',
+  height: window.innerHeight * 0.8,
   parameter: {orgId: '', orgName: '', appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
-  formCol: 3,
+  formCol: 2,
 });
 /**
  * 列表按钮 - 查看表单
@@ -294,6 +294,7 @@ watch(() => props, (val) => {
   if (props.visible === true) {
     // 页面设置
     scroll.value.y = props.height;
+    tabsformParams.value.height = window.innerHeight * 0.8;
     basePagination.pageSize = props.pageSize;
     // 表单参数
     formParams.value.parameter = {

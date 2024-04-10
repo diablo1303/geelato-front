@@ -40,8 +40,6 @@ const showPage = ref(false);
 const tableFormRef = shallowRef(ApplicationModel);
 const {loading, setLoading} = useLoading(false);
 const tabsKey = ref<number>(1);
-const splitMin = ref<number | string>('300px');
-const splitSize = ref<number | string>(splitMin.value);
 
 /**
  * 调整树形结构高度
@@ -50,6 +48,8 @@ const resetSplitHeight = () => {
   return window.innerHeight - 165;
 }
 const splitHeight = ref<number>(resetSplitHeight());
+const splitMin = ref<number | string>('300px');
+const splitSize = ref<number | string>(splitMin.value);
 /**
  * 调整列表高度
  */

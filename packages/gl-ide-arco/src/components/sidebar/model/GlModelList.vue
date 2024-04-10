@@ -114,7 +114,7 @@ const tableOpen = (id: string) => {
 
 /* 模型表单所需参数 */
 const formParams = ref({
-  id: '', visible: false, formState: 'add', formCol: 2, width: '850px',
+  id: '', visible: false, formState: 'add', formCol: 2, width: '1020px',
   parameter: {connectId: '', appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
 });
 /**

@@ -271,8 +271,8 @@ const lockerParams = ref({
   visible: false,
   isModal: true,
   title: '',
-  width: '1100px',
-  height: '',
+  width: '78%',
+  height: window.innerHeight * 0.74 - 64,
   parameter: {pid: '', dictId: '', appId: '', tenantCode: ''},
   formState: 'edit',
   id: '',
@@ -473,7 +473,7 @@ defineExpose({openLocker, openModel});
       <a-table-column :sortable="sortable.seqNo" :title="$t('security.dictItem.index.form.seqNo')" :width="100" data-index="seqNo"/>
       <a-table-column :sortable="sortable.createAt" :title="$t('security.dictItem.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemRemark')" :tooltip="true" :width="240" data-index="itemRemark"/>
-      <a-table-column :title="$t('security.dictItem.index.form.operations')" :width="210" align="center" data-index="operations" fixed="right">
+      <a-table-column :title="$t('security.dictItem.index.form.operations')" :width="220" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-tooltip content="批量配置子字典项">
             <a-button :disabled="formState==='view'" size="small" type="text" @click="configTable(record)">

@@ -411,7 +411,7 @@ watch(() => props, (val) => {
           </template>
         </a-table-column>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.operations')" :width="90" align="center" data-index="operations" fixed="right">
+      <a-table-column v-if="false" :title="$t('security.user.index.form.operations')" :width="90" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button :disabled="formState==='view'" size="small" type="text" @click="editTable(record.id)">
             {{ $t('security.orgUser.index.form.relevance') }}

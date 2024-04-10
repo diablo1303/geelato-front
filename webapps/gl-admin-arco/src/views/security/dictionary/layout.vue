@@ -49,6 +49,9 @@ const generateFormData = (): Record<string, any> => {
 }
 const modelParams = ref(generateFormData());
 // 列表信息
+const resetListHeight = () => {
+  return (props.height as number) - 240;
+}
 const generateListParams = (): ListParams => {
   return {
     visible: false, // 是否加载列表
@@ -60,7 +63,7 @@ const generateListParams = (): ListParams => {
     formState: props.formState as FormState,
     filterCol: 2,
     pageSize: 10000,
-    height: 350,
+    height: resetListHeight(),
   }
 }
 const listParams = ref(generateListParams());
@@ -154,6 +157,7 @@ const changeDictItem = () => {
 watch(() => props, () => {
   if (props.visible === true) {
     // 恢复设置
+  listParams.value.height = resetListHeight();
     modelParams.value = generateFormData();
     listParams.value = generateListParams();
     dictItemTotal.value = 0;
@@ -181,7 +185,7 @@ watch(() => visibleForm, () => {
            :footer="false"
            :title="title || '数据字典'"
            :width="width || ''" title-align="start">
-    <a-layout style="height: 580px;">
+    <a-layout :style="{height: `${height}px`}">
       <a-layout style="flex-direction: row;">
         <a-layout-content style="width: 30%;">
           <a-card class="" size="small" title="字典">

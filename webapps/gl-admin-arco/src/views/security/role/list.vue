@@ -179,7 +179,7 @@ const formParams = ref({
   visible: false,
   isModal: true,
   title: '',
-  width: '850px',
+  width: '1020px',
   height: '',
   parameter: {type: '', appId: '', tenantCode: ''},
   formState: 'add',
@@ -200,8 +200,8 @@ const tabsformParams = ref({
   visible: false,
   isModal: true,
   title: '',
-  width: '1200px',
-  height: '',
+  width: '80%',
+  height: window.innerHeight * 0.8,
   parameter: {type: '', appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
@@ -256,6 +256,7 @@ watch(() => props, (val) => {
   if (props.visible === true) {
     scroll.value.y = props.height;
     basePagination.pageSize = props.pageSize;
+    tabsformParams.value.height = window.innerHeight * 0.8;
     reset();
     formParams.value.parameter = {
       type: props.parameter.type || '',
