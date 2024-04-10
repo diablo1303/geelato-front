@@ -208,6 +208,16 @@ export default {
         description: '在脚本编辑器中通过$gl.ctx.args[0].data获取到该条记录值',
         docId: ''
       }
+    },
+    {
+      name: 'onCreatedEntitySavers',
+      description: '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
+      title: '保存对象完成前',
+      returnInfo: {
+        returnType: '{data:Record<string,any>}',
+        description: '在脚本编辑器中通过$gl.ctx.args[0].data获取到该条记录值',
+        docId: ''
+      }
     }
   ],
   methods: [

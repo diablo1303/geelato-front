@@ -1,5 +1,5 @@
 export default {
-  componentName: 'GlPageTemplateSimpleApprove',
+  componentName: 'GlPageTemplateStateWF',
   displayMode: 'tile',
   iconType: 'gl-flow',
   group: 'pageTemplate',

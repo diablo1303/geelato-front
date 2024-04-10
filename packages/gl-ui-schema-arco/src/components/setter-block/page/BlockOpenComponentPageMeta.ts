@@ -223,11 +223,11 @@ export default {
             value: ''
           },
           {
-            label: '简单审批模板',
-            value: 'GlPageTemplateSimpleApprove'
+            label: '基于状态机的申请审批模板',
+            value: 'GlPageTemplateStateWF'
           },
           {
-            label: '工作流模板（开发中）',
+            label: '基于工作流的申请审批模板（开发中）',
             value: 'GlPageTemplateFlow'
           }
         ]
@@ -305,17 +305,18 @@ export default {
         },
 
         {
-          title: '处理环节名称',
-          name: 'nodeCode',
+          title: '业务表单ID',
+          name: 'bizId',
           group: 'base',
           type: 'props',
-          enableValueExpress: false,
+          enableValueExpress: true,
           show: true,
           expanded: true,
           displayMode: 'tile',
           setterComponentProps: {},
           setterComponentVModelName: 'modelValue',
-          setterComponentName: 'AInput'
+          setterComponentName: 'AInput',
+          placeholder:'如：$gl.ctx.record?.id'
         }
       ]
     }

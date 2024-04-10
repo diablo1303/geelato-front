@@ -1,11 +1,11 @@
 <script lang="ts">
 /**
- *  简单审批模板
+ *  基于状态机实现的审批模板
  *
  *  打开时，若页面参数中传入了业务表单id，则基于业务表单id加载流程实例及流程处理过程数据
  */
 export default {
-  name: 'GlPageTemplateSimpleApprove'
+  name: 'GlPageTemplateStateWF'
 }
 </script>
 <script lang="ts" setup>
@@ -17,18 +17,21 @@ import {
   PageProvideProxy,
   entityApi,
   SubmitFormResult,
-  useGlobal
+  useGlobal,
+  UiEventNames,
+  GetEntitySaversResult
 } from '@geelato/gl-ui'
 import type { TabsPosition } from '@arco-design/web-vue/es/tabs/interface'
 import {
+  getProcInstEntitySaver,
   loadProcDefById,
   loadProcInstByBizId,
   ProcDef,
   ProcInst,
   ProcTask,
-  ProcTranDef,
-  submitProcInst
+  ProcTranDef
 } from './stateWfApi'
+import StateWFApprove from './StateWFApprove.vue'
 
 const global = useGlobal()
 const LayoutMode = {
@@ -68,6 +71,10 @@ const props = defineProps({
    *  不为空的场景：处理有明确处理人的公共任务时，从待办、已办列表进入
    */
   procTaskId: String,
+  /**
+   *  业务表ID
+   */
+  bizId: String,
   /**
    *  插槽模式，可用于打开页面时将页面内容分发到插槽中
    */
@@ -114,14 +121,12 @@ const hasReady = computed(() => {
   // 有模板ID
   // 无模拟ID，但有流程实例
   // 都需要有标题label
-  return (props.procDefId || bizId.value) && props.label
+  return (props.procDefId || props.bizId) && props.label
 })
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const isRead = !!pageProvideProxy?.isPageStatusRead()
 
-// 业务表单的id
-const bizId = ref(pageProvideProxy.getParamValue('template.bizId'))
 const procInst = ref(new ProcInst())
 
 const isNew = ref(false)
@@ -140,13 +145,14 @@ const procTask = ref(new ProcTask())
 const selectedTran: Ref<ProcTranDef | undefined> = ref()
 // 详细审批意见、申请意见
 const remark = ref('')
+const remarkLabel = ref('')
 /**
  *  初始化加载工作流定义、状态定义、状态转换定义、工作流实例
  */
 const loadData = async () => {
   // 通过业务ID加载流程实例
-  if (bizId.value) {
-    await loadProcInstByBizId(bizId.value).then((res) => {
+  if (props.bizId) {
+    await loadProcInstByBizId(props.bizId).then((res) => {
       procInst.value = entityApi.getFirstRecordFromRes(res)
       if (procInst.value) {
         procDefId.value = procInst.value.procDefId
@@ -164,7 +170,10 @@ const loadData = async () => {
   // 服务端流程实例的当前状态，是最新的状态
   lastState.value = procInst.value?.currentStateId || procDef.value.initStateId
   // 有实例时，是否为初始状态；无实例时为true
-  isNew.value = procInst ? procDef.value.initState === procInst.value?.currentStateId : true
+  isNew.value = procInst.value?.id
+    ? procDef.value.initState === procInst.value?.currentStateId
+    : true
+  remarkLabel.value = isNew.value ? '申请说明' : '审批意见'
   // 从procDef.value.trans中找出，下一步可能的状态
   // 如果lastState值为空，即为新创建流程状态
   console.log('procDef.value.trans', procInst.value?.currentStateId, procDef.value.initStateId)
@@ -210,28 +219,31 @@ const changeTran = (tranId: any) => {
   console.log('changeTran', tranId)
 }
 
-const submitFormResult: Ref<SubmitFormResult | Record<string, any>> = ref({})
-
 /**
- *  工作流信息提交，做以下操作：
+ *  构建工作流信息保存信息：
  *  1、保存流程实例主表
  *  2、保存流程审批记录
- *  3、更新业务表中的流程审批状态等信息
+ *  3、保存附件
  */
-const submitProcess = () => {
+const getEntitySaver = () => {
   // 在onCreatingEntitySaver中已对selectedTran先进行了检查
-  procInst.value.bizId = bizId.value
+  // 新增时，bizId为空
+  procInst.value.bizId = props.bizId || '$parent.id'
   procInst.value.name = procInst.value.name || props.label || '未设置流程名称'
   procInst.value.appId = procDef.value.appId
   procInst.value.procDefId = procDefId.value!
   procInst.value.currentStateId = selectedTran.value?.targetStateId!
 
+  procTask.value.procDefId = procDefId.value!
+  procTask.value.procInstId = procInst.value.id || '$parent.id'
   procTask.value.handlerId = global.$gl.user.id
   procTask.value.handlerName = global.$gl.user.name
   procTask.value.name = selectedTran.value?.name!
   procTask.value.remark = remark.value
-
-  // submitProcInst(procInst,procTask)
+  procTask.value.srcStateId = selectedTran.value?.srcStateId!
+  procTask.value.targetStateId = selectedTran.value?.targetStateId!
+  console.log('getEntitySaver', procInst.value)
+  return getProcInstEntitySaver(procInst.value, procTask.value)
 }
 
 console.log('global', global)
@@ -250,31 +262,67 @@ const onSubmitForm = (result: any) => {
 
 loadData()
 onMounted(() => {})
+const stateWFApprove = ref()
 /**
- * 表单在构建保存对象时，可以获取表单的值，或修改表单的值
- * @param result
+ * 表单在构建保存对象时，可以获取表单的值，并设置业务表的工作流相关状态信息
+ * 将流程信息作为子表单一起保存
+ * 注意：这个方法不能是异步的，否则该模板内嵌的表单提交事件不会等模板自身的表单验证结果
+ * @param args GetEntitySaversResult
  */
-const onCreatingEntitySaver = (result: any) => {
+const onCreatedEntitySavers = (args: any) => {
   // 检查工作流模板中的录入
-  // console.log('result.entitySaver', result.entitySaver,selectedTran.value,global)
+  const result: GetEntitySaversResult = args.result
+  // 注意：这个方法不能是异步的，否则该模板内嵌的表单提交事件不会等模板自身的表单验证结果
+  stateWFApprove.value.validate()
+  // 上面只是调用了异常验证，确保整个onCreatedEntitySavers不是异步的
+  // 错误信息通过惧下的验证来返回到表单result中
   if (!selectedTran.value) {
-    global.$notification.error({content:'未选择步骤'})
-    return
+    result.error = true
+    result.validateResult = result.validateResult || {}
+    result.validateResult._selectedTran = { label: '选择步骤' }
+  }
+  if (!remark.value) {
+    result.error = true
+    result.validateResult = result.validateResult || {}
+    result.validateResult._remark = { label: remarkLabel.value }
   }
 
-  if(!result.entitySaver.error){
-    // 是新建时，如果remark为空，取表单中的值
-    if(!remark.value){
-      remark.value =  result.entitySaver?.record?.wfRemark
-    }
-  }
+  // 2、不通过则返回
+  if (result.error) return
+
+
+  // 将工作流信息，作为业务子表一起保存
+  result.values[0].children.push( getEntitySaver())
+  // 设置业务表的工作流相关状态信息，依赖于getEntitySaver()，中的procTask，在其它执行
+  // 对于状态机的工作流场景，不设置wfProcId的值result.values[0].record.wfProcId
+  result.values[0].record.wfApprovalStatus = procTask.value.targetStateId
+  result.values[0].record.wfApprovalStatus = procTask.value.targetStateId
+  result.values[0].record.wfExtInfo = procTask.value.targetStateId
 
 }
-emitter.on('entityForm.creatingEntitySaver', onCreatingEntitySaver)
-emitter.on('entityForm.submitForm', onSubmitForm)
+
+const pageParams = computed(() => {
+  return [
+    {
+      name: 'query.bizId',
+      value: props.bizId
+    },
+    {
+      name: 'query.procInstId',
+      value: procInst.value?.id
+    },
+    {
+      name: 'query.procDefId',
+      value: procDefId.value
+    }
+  ]
+})
+
+emitter.on(UiEventNames.EntityForm.onCreatedEntitySavers, onCreatedEntitySavers)
+emitter.on(UiEventNames.EntityForm.onSubmitted, onSubmitForm)
 onUnmounted(() => {
-  emitter.off('entityForm.creatingEntitySaver', onCreatingEntitySaver)
-  emitter.off('entityForm.submitForm', onSubmitForm)
+  emitter.off(UiEventNames.EntityForm.onCreatedEntitySavers, onCreatedEntitySavers)
+  emitter.off(UiEventNames.EntityForm.onSubmitted, onSubmitForm)
 })
 </script>
 
@@ -285,38 +333,38 @@ onUnmounted(() => {
         <div class="gl-header" :class="{ 'gl-not-rt-fix': !glIsRuntime }">
           <a-page-header :title="label" :subtitle="subLabel" :show-back="false">
             <template #extra>
-              <!--            <a-button-group size="small" shape="round">-->
-              <!--              <a-button>-->
-              <!--                <GlIconfont type="gl-save" text="暂存"></GlIconfont>-->
-              <!--              </a-button>-->
-              <!--              <a-button type="primary">-->
-              <!--                <GlIconfont-->
-              <!--                    type="gl-start-event-none"-->
-              <!--                    text="同意"-->
-              <!--                    @click="showApproveModal"-->
-              <!--                ></GlIconfont>-->
-              <!--              </a-button>-->
-              <!--              <a-button type="primary">-->
-              <!--                <GlIconfont type="gl-arrow-left" text="退回"></GlIconfont>-->
-              <!--              </a-button>-->
-              <!--              <a-button>-->
-              <!--                <GlIconfont type="gl-deliver" text="转交"></GlIconfont>-->
-              <!--              </a-button>-->
-              <!--              <a-button>-->
-              <!--                <GlIconfont type="gl-pass-for-read" text="传阅"></GlIconfont>-->
-              <!--              </a-button>-->
-              <!--              <a-button>-->
-              <!--                <GlIconfont type="gl-add-approval" text="加签"></GlIconfont>-->
-              <!--              </a-button>-->
-              <!--              <a-button>-->
-              <!--                <GlIconfont type="gl-press-to-do" text="催办"></GlIconfont>-->
-              <!--              </a-button>-->
-              <!--              <a-button graphState="warning">-->
-              <!--                <a-popconfirm content="是否撤回?">-->
-              <!--                  <GlIconfont type="gl-revocation" text="撤回"></GlIconfont>-->
-              <!--                </a-popconfirm>-->
-              <!--              </a-button>-->
-              <!--            </a-button-group>-->
+              <!--                          <a-button-group size="small" shape="round">-->
+              <!--                            <a-button>-->
+              <!--                              <GlIconfont type="gl-save" text="暂存"></GlIconfont>-->
+              <!--                            </a-button>-->
+              <!--                            <a-button type="primary">-->
+              <!--                              <GlIconfont-->
+              <!--                                  type="gl-start-event-none"-->
+              <!--                                  text="同意"-->
+              <!--                                  @click="showApproveModal"-->
+              <!--                              ></GlIconfont>-->
+              <!--                            </a-button>-->
+              <!--                            <a-button type="primary">-->
+              <!--                              <GlIconfont type="gl-arrow-left" text="退回"></GlIconfont>-->
+              <!--                            </a-button>-->
+              <!--                            <a-button>-->
+              <!--                              <GlIconfont type="gl-deliver" text="转交"></GlIconfont>-->
+              <!--                            </a-button>-->
+              <!--                            <a-button>-->
+              <!--                              <GlIconfont type="gl-pass-for-read" text="传阅"></GlIconfont>-->
+              <!--                            </a-button>-->
+              <!--                            <a-button>-->
+              <!--                              <GlIconfont type="gl-add-approval" text="加签"></GlIconfont>-->
+              <!--                            </a-button>-->
+              <!--                            <a-button>-->
+              <!--                              <GlIconfont type="gl-press-to-do" text="催办"></GlIconfont>-->
+              <!--                            </a-button>-->
+              <!--                            <a-button graphState="warning">-->
+              <!--                              <a-popconfirm content="是否撤回?">-->
+              <!--                                <GlIconfont type="gl-revocation" text="撤回"></GlIconfont>-->
+              <!--                              </a-popconfirm>-->
+              <!--                            </a-button>-->
+              <!--                          </a-button-group>-->
               <a-button
                 size="small"
                 shape="circle"
@@ -376,6 +424,7 @@ onUnmounted(() => {
             <div>
               <GlPageViewer
                 pageId="5037920844148510721"
+                :pageProps="{ params: pageParams}"
                 :glIsRuntime="true"
                 glRuntimeFlag="Runtime"
               ></GlPageViewer>
@@ -441,27 +490,20 @@ onUnmounted(() => {
           <template #title>
             <GlIconfont type="gl-right" :text="isNew ? '提交申请' : '审批信息'"></GlIconfont>
           </template>
-          <div style="padding: 0 0 1em 0">
-            <a-space>
-              <span>选择步骤</span>
-              <a-radio-group @change="changeTran">
-                <a-radio v-for="tran in nextTrans" :value="tran.id">{{ tran.name }}</a-radio>
-              </a-radio-group>
-            </a-space>
-          </div>
-          <a-textarea
-            v-model="remark"
-            placeholder="输入意见"
-            style="background-color: rgba(145, 203, 253, 0.23)"
-          >
-          </a-textarea>
+          <StateWFApprove
+            ref="stateWFApprove"
+            v-model:tran="selectedTran"
+            v-model:remark="remark"
+            :remarkLabel="remarkLabel"
+            :next-trans="nextTrans"
+          ></StateWFApprove>
         </a-card>
       </a-affix>
     </template>
     <template v-else>
       在打开页面组件的页面参数中，需要传入以下参数：
       <br />
-      template.bizId，当前值为：{{ bizId }}
+      bizId，当前值为：{{ bizId }}
       <br />
       在打开页面组件的模板页面参数中，需要传入以下参数：
     </template>

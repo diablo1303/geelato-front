@@ -51,6 +51,7 @@ export class ProcInst {
  */
 export class ProcTask {
   id = ''
+  procDefId=''
   procInstId = ''
   name = ''
   srcStateId = ''
@@ -124,7 +125,7 @@ export const loadProcInstByBizId = (bizId: string) => {
  *  2、保存流程审批记录
  *  3、更新业务表中的流程审批状态等信息
  */
-export const submitProcInst = (procInst: ProcInst, procTask: ProcTask,bizEntitySaver:EntitySaver) => {
+export const getProcInstEntitySaver = (procInst: ProcInst, procTask: ProcTask) => {
   const entitySaver = new EntitySaver()
   entitySaver.entity = 'platform_swf_proc_inst'
   if (procInst.id) {
@@ -153,8 +154,7 @@ export const submitProcInst = (procInst: ProcInst, procTask: ProcTask,bizEntityS
 
   const taskEntitySaver = new EntitySaver()
   taskEntitySaver.entity = 'platform_swf_proc_task'
-  taskEntitySaver.record = {...procTask}
-  taskEntitySaver.record.procInstId = '$parent.id'
+  taskEntitySaver.record = procTask
 
   // const bizEntitySaver = new EntitySaver()
   // bizEntitySaver.id = submitFormResult.value.id
@@ -165,8 +165,7 @@ export const submitProcInst = (procInst: ProcInst, procTask: ProcTask,bizEntityS
   // }
 
   entitySaver.children.push(taskEntitySaver)
-  entitySaver.children.push(bizEntitySaver)
-  entityApi.saveEntity(entitySaver).then((res: any) => {
-    console.log('submitProcess res', res)
-  })
+
+  console.log('entitySaver',entitySaver)
+  return entitySaver
 }

@@ -432,7 +432,7 @@ export class GetEntitySaversResult {
   // 组件名
   componentName: string = ''
   // 验证结果
-  validateResult?: object
+  validateResult?: Record<string, any>
 }
 
 export default {

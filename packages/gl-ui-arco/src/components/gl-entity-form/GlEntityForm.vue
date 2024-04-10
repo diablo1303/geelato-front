@@ -50,14 +50,19 @@ import {
   EntitySaver,
   GetEntitySaversResult,
   emitter,
-  SubmitFormResult
+  SubmitFormResult, UiEventNames
 } from '@geelato/gl-ui'
-import { getFormParams, type ValidatedError } from './GlEntityForm'
+import {getFormParams, type ValidatedError} from './GlEntityForm'
 
 // onLoadingData：从服务端加载数据，但未设置到表单中
 // onLoadedData：从服务端加载完数据并设置到表单中
 // creatingEntitySavers 完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理
-const emits = defineEmits(['onLoadingData', 'onLoadedData', 'creatingEntitySavers','creatingEntitySaver'])
+const emits = defineEmits([
+  'onLoadingData',
+  'onLoadedData',
+  'creatingEntitySavers',
+  'onCreatedEntitySavers'
+])
 const formProvideProxy = new FormProvideProxy()
 provide(FormProvideKey, formProvideProxy)
 
@@ -475,10 +480,7 @@ const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
       }
     })
     entitySaver.record = record
-    emits('creatingEntitySaver', { entitySaver: entitySaver })
     emits('creatingEntitySavers', { entitySavers: [entitySaver] })
-    emitter.emit('entityForm.creatingEntitySaver', { entitySaver: entitySaver })
-    emitter.emit('entityForm.creatingEntitySavers', { entitySavers: [entitySaver] })
     return [entitySaver]
   }
   return null
@@ -489,7 +491,7 @@ const hasSubFormTable = () => {
   return subFormInstIds.value.length > 0
 }
 
-const getEntitySavers = async () => {
+const getEntitySavers = async (): Promise<GetEntitySaversResult> => {
   // checkConfig()
   // 构建表单数据项，设置值
   buildFieldItems()
@@ -538,15 +540,17 @@ const getEntitySavers = async () => {
  *  submitForm() --> saveForm()
  */
 const submitForm = async () => {
-  const entitySavers = await getEntitySavers()
+  const entitySaversResult:GetEntitySaversResult = await getEntitySavers()
+  emits('onCreatedEntitySavers',{result:entitySaversResult})
+  emitter.emit(UiEventNames.EntityForm.onCreatedEntitySavers,{result:entitySaversResult})
   const submitFormResult: SubmitFormResult = new SubmitFormResult()
   submitFormResult.entity = props.bindEntity.entityName
   submitFormResult.id = props.glComponentInst.id
-  // console.log('submitForm > entitySavers', entitySavers)
-  if (!entitySavers.error) {
+  console.log('submitForm > entitySaversResult', entitySaversResult)
+  if (!entitySaversResult.error) {
     setLoading(true)
     // console.log('submitForm() > formData', formData)
-    const saveResult = await entityApi.saveEntity(entitySavers.values[0])
+    const saveResult = await entityApi.saveEntity(entitySaversResult.values[0])
     entityRecordId.value = saveResult?.data
     // 将表单值，注册到表单的子项中
     formProvideProxy.setRecordId(entityRecordId.value)
@@ -561,14 +565,14 @@ const submitForm = async () => {
     }
     setLoading(false)
     submitFormResult.success = true
-    submitFormResult.record = entitySavers.values[0].record
-    emitter.emit('entityForm.submitForm', submitFormResult)
+    submitFormResult.record = entitySaversResult.values[0].record
+    emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)
     return true
   } else {
     const content: string[] = []
-    Object.keys(entitySavers.validateResult!).forEach((key: string) => {
+    Object.keys(entitySaversResult.validateResult!).forEach((key: string) => {
       // @ts-ignore
-      const err = entitySavers.validateResult[key]
+      const err = entitySaversResult.validateResult[key]
       content.push(err.label)
     })
     global.$notification.error({
@@ -576,7 +580,7 @@ const submitForm = async () => {
       content: `${content.join(',')}`
     })
     submitFormResult.success = false
-    emitter.emit('entityForm.submitForm', submitFormResult)
+    emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)
     return false
   }
 }

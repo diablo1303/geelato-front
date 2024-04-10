@@ -42,7 +42,7 @@ import GlSpace from "./components/gl-space/GlSpace.vue";
 import GlSlot from "./components/gl-slot/GlSlot.vue";
 import GlOrgSelect from "./components/gl-org-select/index.vue";
 import GlOrgUserSelect from "./components/gl-org-user-select/index.vue";
-import GlPageTemplateSimpleApprove from "./components/gl-page-template/state-wf/GlPageTemplateSimpleApprove.vue";
+import GlPageTemplateStateWF from "./components/gl-page-template/state-wf/GlPageTemplateStateWF.vue";
 import en from './locale/en-US'
 import cn from './locale/zh-CN'
 import {Drawer, Modal, RangePicker} from '@arco-design/web-vue'
@@ -99,7 +99,7 @@ const component: Plugin = {
     Vue.component(GlSlot.name, GlSlot)
     Vue.component(GlOrgSelect.name, GlOrgSelect);
     Vue.component(GlOrgUserSelect.name, GlOrgUserSelect);
-    Vue.component(GlPageTemplateSimpleApprove.name,GlPageTemplateSimpleApprove)
+    Vue.component(GlPageTemplateStateWF.name,GlPageTemplateStateWF)
     Vue.component('GlRangePicker', RangePicker)
     Vue.component('GlModal', Modal)
     Vue.component('GlDrawer', Drawer)

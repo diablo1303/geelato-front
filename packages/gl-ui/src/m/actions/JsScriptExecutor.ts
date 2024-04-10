@@ -103,7 +103,7 @@ export class JsScriptExecutor {
     // 对于GlPage，ref?.exposed[methodName]
     const exposed = ref?.subTree?.component?.exposed || ref?.exposed
     let fn
-    if(exposed) {
+    if (exposed) {
       fn = exposed[methodName]
     }
     if (fn) {
@@ -333,9 +333,14 @@ export class JsScriptExecutor {
         let _gl = gl
         let _pageTemplateProps = pageTemplateProps
         // 兼容旧的api，第6个为gl，无pageTemplateProps的情况
-        if(pageTemplateProps&&!gl){
+        if (pageTemplateProps && !gl) {
           // 是否pageTemplateProps为gl
-          if(pageTemplateProps.entityApi&&pageTemplateProps.fn&&pageTemplateProps.insts&&pageTemplateProps.fileApi){
+          if (
+            pageTemplateProps.entityApi &&
+            pageTemplateProps.fn &&
+            pageTemplateProps.insts &&
+            pageTemplateProps.fileApi
+          ) {
             _gl = pageTemplateProps
             _pageTemplateProps = undefined
           }
@@ -347,7 +352,7 @@ export class JsScriptExecutor {
           that.evalParams(params, _gl || $gl.ctx, _gl || $gl) || [],
           pageStatus,
           pageTemplateName,
-            _pageTemplateProps
+          that.evalProps(_pageTemplateProps || {}, _gl || $gl.ctx, _gl || $gl) || []
         )
       },
       loadComponent: (componentName: string, props: Record<string, any>) => {
@@ -555,6 +560,50 @@ export class JsScriptExecutor {
     }
     // console.log('evalParams params:', params, 'ctx:', ctx, 'newParams:', newParams)
     return newParams
+  }
+
+  /**
+   * 打开页面模板时，可动态设置模板的属性
+   * @param props 示例如下：
+   *        {
+   *             "label": "订单调账申请流程",
+   *             "procInstId": "1044706817799999999",
+   *             "procDefId": "5044706817716916224",
+   *             "_propsExpressions": {
+   *                 "bizId": "$gl.ctx.record.id"
+   *             }
+   *         }
+   * @param ctx
+   * @param gl
+   * @return Record 输出结果示例：
+   *         {
+   *             "label": "订单调账申请流程",
+   *             "procInstId": "1044706817799999999",
+   *             "procDefId": "5044706817716916224",
+   *             “bizId”:"1231968177169162131",
+   *             "_propsExpressions": {
+   *                 "bizId": "$gl.ctx.record.id"
+   *             }
+   *         }
+   */
+
+  evalProps(props: Record<string, any>, ctx: Ctx, gl?: any) {
+    if (props && typeof props._propsExpressions === 'object') {
+      for (const key in props._propsExpressions) {
+        const valueExpression = props._propsExpressions[key]
+        console.log('key:', key, 'valueExpression', valueExpression)
+        // param.value未设置，且valueExpression有值时
+        if (typeof valueExpression === 'string') {
+          // console.log('param.valueExpression:', param.valueExpression, gl,param)
+          props[key] = this.evalExpression(valueExpression, ctx, undefined, gl)
+        } else {
+          // valueExpression 为不带引号的值，相当于表达式已完成求值
+          props[key] = valueExpression
+        }
+      }
+    }
+    console.log('evalProps ctx:', ctx, 'newProps:', props)
+    return props
   }
 
   /**
@@ -839,7 +888,7 @@ export class JsScriptExecutor {
       ',pageProps:',
       pageProps,
       'pageTemplateName',
-      pageTemplateName,
+      pageTemplateName
     )
     return h(GlPageViewer, { pageId, extendId, pageStatus, pageTemplateName, pageProps })
   }

@@ -1,6 +1,6 @@
 export default {
     "id":"",
-    "componentName": "GlPageTemplateSimpleApprove",
+    "componentName": "",
     "props": {"label": "审批模板页面","bordered":false},
     "slots": {},
     "children": [
