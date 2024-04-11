@@ -305,6 +305,9 @@ export class EntityApi {
       })
 
       Object.assign(mql[entityReader.entity], params)
+    }else{
+      // 若无参数，默认添加数据未删除的条件
+      mql[entityReader.entity]['delStatus|eq'] = '0'
     }
 
     const pageNo = entityReader.pageNo || 1

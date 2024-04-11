@@ -513,6 +513,7 @@ const getEntitySavers = async (): Promise<GetEntitySaversResult> => {
     }
   }
   const result = new GetEntitySaversResult()
+  result.id = props.glComponentInst.id
   result.componentName = props.glComponentInst.componentName
   result.validateResult = validateResult
   // 数据验证

@@ -316,7 +316,8 @@ export default {
           setterComponentProps: {},
           setterComponentVModelName: 'modelValue',
           setterComponentName: 'AInput',
-          placeholder:'如：$gl.ctx.record?.id'
+          placeholder:'如：$gl.ctx.record?.id',
+          description:'相关业务申请单的ID，无值时，代表新发起流程创建新的申请单。'
         }
       ]
     }

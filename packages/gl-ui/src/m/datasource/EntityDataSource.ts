@@ -423,6 +423,8 @@ export class EntitySaver {
  *  默认值为失败
  */
 export class GetEntitySaversResult {
+  // 可以保存表单组件的id，以便于表单事件中获取到GetEntitySaversResult时可以区分是哪个表单
+  id?:string
   // 如果在获取时，组件对数据验证不通过，则为true
   error: boolean = true
   // 获取的结果

@@ -34,6 +34,12 @@ const props = defineProps({
     default() {
       return new AppTemplateSelectResult()
     }
+  },
+  /**
+   *  类型，useType:'export'、'import'
+   */
+  useType:{
+    type:String
   }
 })
 const emits = defineEmits(['update:modelValue'])
@@ -44,6 +50,9 @@ const fetchData = () => {
   const entityReader = new EntityReader()
   entityReader.entity = 'platform_export_template'
   entityReader.setFields('id,title,fileType')
+  if(props.useType&&['export','import'].includes(props.useType)){
+    entityReader.addParam('useType','eq',props.useType)
+  }
   entityApi.queryByEntityReader(entityReader).then((res: any) => {
     fileTemplates.value = res.data
   })

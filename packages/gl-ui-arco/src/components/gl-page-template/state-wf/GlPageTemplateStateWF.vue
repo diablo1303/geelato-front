@@ -16,14 +16,14 @@ import {
   PageProvideKey,
   PageProvideProxy,
   entityApi,
-  SubmitFormResult,
   useGlobal,
   UiEventNames,
-  GetEntitySaversResult
+  GetEntitySaversResult, utils
 } from '@geelato/gl-ui'
 import type { TabsPosition } from '@arco-design/web-vue/es/tabs/interface'
 import {
-  getProcInstEntitySaver,
+  getGraphStateByApprovalStatus,
+  getProcInstEntitySaver, GraphState, isEndApprovalStatus,
   loadProcDefById,
   loadProcInstByBizId,
   ProcDef,
@@ -32,24 +32,14 @@ import {
   ProcTranDef
 } from './stateWfApi'
 import StateWFApprove from './StateWFApprove.vue'
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const global = useGlobal()
 const LayoutMode = {
   collapse: 'collapse',
   tabs: 'tabs'
 }
-const GraphState = {
-  // 拟搞编辑
-  none: 'none',
-  // 审批中
-  underway: 'underway',
-  // 已审批（已通过）
-  approved: 'approved',
-  // 已拒绝（不通过）
-  rejected: 'rejected',
-  // 已取消
-  canceled: 'canceled'
-}
+
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
   /**
@@ -129,6 +119,9 @@ const isRead = !!pageProvideProxy?.isPageStatusRead()
 
 const procInst = ref(new ProcInst())
 
+// 是否开始状态
+const isStart= ref(false)
+// 是否新建流程，isStart不一定isNew
 const isNew = ref(false)
 // 图标状态
 const graphState = ref(GraphState.none)
@@ -146,6 +139,27 @@ const selectedTran: Ref<ProcTranDef | undefined> = ref()
 // 详细审批意见、申请意见
 const remark = ref('')
 const remarkLabel = ref('')
+
+/**
+ *  业务表单的组件id
+ *  由于
+ */
+const bizFormId = computed(()=>{
+  const findEntityForm = (inst:ComponentInstance):ComponentInstance|undefined=>{
+    if(inst.componentName === 'GlEntityForm'){
+      return inst
+    }
+    let found
+    for(let subInst of inst.children){
+      found = findEntityForm(subInst)
+      if(found){
+        return found
+      }
+    }
+    return undefined
+  }
+  return findEntityForm(props.glComponentInst)?.id
+})
 /**
  *  初始化加载工作流定义、状态定义、状态转换定义、工作流实例
  */
@@ -169,25 +183,22 @@ const loadData = async () => {
 
   // 服务端流程实例的当前状态，是最新的状态
   lastState.value = procInst.value?.currentStateId || procDef.value.initStateId
-  // 有实例时，是否为初始状态；无实例时为true
-  isNew.value = procInst.value?.id
-    ? procDef.value.initState === procInst.value?.currentStateId
-    : true
-  remarkLabel.value = isNew.value ? '申请说明' : '审批意见'
+  isNew.value = !procInst.value?.id
+  isStart.value = isNew.value || procDef.value.initState === procInst.value?.currentStateId
+  remarkLabel.value = isStart.value ? '申请说明' : '审批意见'
   // 从procDef.value.trans中找出，下一步可能的状态
   // 如果lastState值为空，即为新创建流程状态
-  console.log('procDef.value.trans', procInst.value?.currentStateId, procDef.value.initStateId)
   nextTrans.value = procDef.value.trans?.filter((tran: ProcTranDef) => {
     return tran.srcStateId === lastState.value
   })
-  // 图标状态 TODO 是否为审结
-  graphState.value = isNew.value ? GraphState.none : GraphState.underway
+  console.log('procInst', procInst)
+
+  // 图标状态
+  graphState.value = getGraphStateByApprovalStatus(procInst.value.approvalStatus)
 }
 
 // 是否审批环节，如果有流程实例ID
 const layout = ref(props.layoutMode)
-// 审批意见状态
-const approvalStatus = ref()
 
 const changeLayout = () => {
   if (layout.value === LayoutMode.collapse) {
@@ -208,15 +219,15 @@ const visibleApprove = ref(false)
 const showApproveModal = () => {
   visibleApprove.value = true
 }
-const handleOk = () => {}
 
-const handleCancel = () => {}
-
-const changeTran = (tranId: any) => {
-  selectedTran.value = nextTrans.value.find((tran: ProcTranDef) => {
-    return tran.id === tranId
-  })
-  console.log('changeTran', tranId)
+/**
+ * 通过业务状态ID获取标准审批状态
+ * @param stateId
+ */
+const getApprovalStatus = (stateId:string)=>{
+  return  procDef.value.states.find((state)=>{
+    return state.id === stateId
+  })?.approvalStatus || '0'
 }
 
 /**
@@ -233,11 +244,14 @@ const getEntitySaver = () => {
   procInst.value.appId = procDef.value.appId
   procInst.value.procDefId = procDefId.value!
   procInst.value.currentStateId = selectedTran.value?.targetStateId!
+  procInst.value.approvalStatus = getApprovalStatus(selectedTran.value?.targetStateId!)
+  procInst.value.startedAt =  procInst.value.startedAt || '$fn.now'
+  procInst.value.endAt = isEndApprovalStatus(selectedTran.value?.targetStateId!)?'$fn.now':undefined
 
   procTask.value.procDefId = procDefId.value!
   procTask.value.procInstId = procInst.value.id || '$parent.id'
-  procTask.value.handlerId = global.$gl.user.id
-  procTask.value.handlerName = global.$gl.user.name
+  procTask.value.handlerId = '$ctx.userId'
+  procTask.value.handlerName = '$ctx.userName'
   procTask.value.name = selectedTran.value?.name!
   procTask.value.remark = remark.value
   procTask.value.srcStateId = selectedTran.value?.srcStateId!
@@ -270,6 +284,8 @@ const stateWFApprove = ref()
  * @param args GetEntitySaversResult
  */
 const onCreatedEntitySavers = (args: any) => {
+  // 检查是否为工作流的主表单
+
   // 检查工作流模板中的录入
   const result: GetEntitySaversResult = args.result
   // 注意：这个方法不能是异步的，否则该模板内嵌的表单提交事件不会等模板自身的表单验证结果
@@ -295,8 +311,7 @@ const onCreatedEntitySavers = (args: any) => {
   result.values[0].children.push( getEntitySaver())
   // 设置业务表的工作流相关状态信息，依赖于getEntitySaver()，中的procTask，在其它执行
   // 对于状态机的工作流场景，不设置wfProcId的值result.values[0].record.wfProcId
-  result.values[0].record.wfApprovalStatus = procTask.value.targetStateId
-  result.values[0].record.wfApprovalStatus = procTask.value.targetStateId
+  result.values[0].record.wfApprovalStatus = getApprovalStatus(selectedTran.value?.targetStateId!)
   result.values[0].record.wfExtInfo = procTask.value.targetStateId
 
 }
@@ -310,6 +325,10 @@ const pageParams = computed(() => {
     {
       name: 'query.procInstId',
       value: procInst.value?.id
+    },
+    {
+      name: 'query.procDefId',
+      value: procDefId.value
     },
     {
       name: 'query.procDefId',
@@ -414,7 +433,12 @@ onUnmounted(() => {
               <GlIconfont type="gl-affix" text="表单附件"></GlIconfont>
             </template>
             <div>
-              <a-empty></a-empty>
+              <GlPageViewer
+                  pageId="5064173938314186753"
+                  :pageProps="{ params: pageParams}"
+                  :glIsRuntime="true"
+                  glRuntimeFlag="Runtime"
+              ></GlPageViewer>
             </div>
           </a-tab-pane>
           <a-tab-pane key="3">
@@ -488,7 +512,7 @@ onUnmounted(() => {
         <!--      </a-card>-->
         <a-card style="margin-top: 1em" size="small">
           <template #title>
-            <GlIconfont type="gl-right" :text="isNew ? '提交申请' : '审批信息'"></GlIconfont>
+            <GlIconfont type="gl-right" :text="isStart ? '提交申请' : '审批信息'"></GlIconfont>
           </template>
           <StateWFApprove
             ref="stateWFApprove"

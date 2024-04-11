@@ -3,6 +3,55 @@
  */
 import { entityApi, EntityReader, EntitySaver, utils } from '@geelato/gl-ui'
 
+export const GraphState = {
+  // 拟搞编辑
+  none: 'none',
+  // 审批中
+  underway: 'underway',
+  // 已审批（已通过）
+  approved: 'approved',
+  // 已拒绝（不通过）
+  rejected: 'rejected',
+  // 已取消
+  canceled: 'canceled'
+}
+
+export const getGraphStateByApprovalStatus = (status: string) => {
+  switch (status) {
+    // 0 拟稿编制
+    case '0':
+      return GraphState.none
+    // 1 审批中
+    case '1':
+      return GraphState.underway
+    // 2 已通过
+    case '2':
+      return GraphState.approved
+    // 4 不通过
+    case '4':
+      return GraphState.rejected
+  }
+  // 5 已挂起
+  // 6 中断关闭
+  // 7 不需审批
+  return GraphState.none
+}
+
+/**
+ * 是否为流程的审批结束状态
+ * @param status
+ */
+export const isEndApprovalStatus = (status: string) => {
+  switch (status) {
+      // 2 已通过
+    case '2':
+      return true
+      // 4 不通过
+    default:
+      return false
+  }
+}
+
 export class ProcDef {
   [key: string]: any
 
@@ -17,6 +66,8 @@ export class ProcStateDef {
 
   id: string = ''
   procDefId: string = ''
+  // 该状态对应的标准审批状态
+  approvalStatus: string = ''
   appId: string = ''
   remark: string = ''
   name: string = ''
@@ -39,11 +90,12 @@ export class ProcInst {
   id = ''
   name = ''
   currentStateId = ''
+  approvalStatus = ''
   appId = ''
   procDefId = ''
   bizId = ''
-  startedAt?:string
-  endAt?:string
+  startedAt?: string
+  endAt?: string
 }
 
 /**
@@ -51,7 +103,7 @@ export class ProcInst {
  */
 export class ProcTask {
   id = ''
-  procDefId=''
+  procDefId = ''
   procInstId = ''
   name = ''
   srcStateId = ''
@@ -103,7 +155,7 @@ export const loadProcTranDefById = (procDefId: string) => {
 export const loadProcStateDefById = (procDefId: string) => {
   const entityReader = new EntityReader()
   entityReader.entity = 'platform_swf_proc_state_def'
-  entityReader.setFields('id,name,procDefId,appId,remark')
+  entityReader.setFields('id,name,procDefId,approvalStatus,appId,remark')
   entityReader.addParam('procDefId', 'eq', procDefId)
   return entityApi.queryByEntityReader(entityReader)
 }
@@ -114,7 +166,7 @@ export const loadProcStateDefById = (procDefId: string) => {
 export const loadProcInstByBizId = (bizId: string) => {
   const entityReader = new EntityReader()
   entityReader.entity = 'platform_swf_proc_inst'
-  entityReader.setFields('id,name,procDefId,bizId,currentStateId,startedAt,endedAt')
+  entityReader.setFields('id,name,procDefId,bizId,currentStateId,approvalStatus,startedAt,endedAt')
   entityReader.addParam('bizId', 'eq', bizId)
   return entityApi.queryByEntityReader(entityReader)
 }
@@ -126,46 +178,30 @@ export const loadProcInstByBizId = (bizId: string) => {
  *  3、更新业务表中的流程审批状态等信息
  */
 export const getProcInstEntitySaver = (procInst: ProcInst, procTask: ProcTask) => {
-  const entitySaver = new EntitySaver()
-  entitySaver.entity = 'platform_swf_proc_inst'
+  const instEntitySaver = new EntitySaver()
+  instEntitySaver.entity = 'platform_swf_proc_inst'
   if (procInst.id) {
     // 修改
-    entitySaver.record = {
+    instEntitySaver.record = {
       id: procInst.id,
       name: procInst.name,
+      approvalStatus: procInst.approvalStatus,
       currentStateId: procInst.currentStateId,
       endAt: procInst.endAt
     }
   } else {
     // 新增
-    entitySaver.record = {
-      id: procInst.id,
-      bizId: procInst.bizId,
-      name: procInst.name,
-      currentStateId: procInst.currentStateId,
-      startedAt: procInst.startedAt || utils.dateFormat(new Date()),
-      endAt: procInst.endAt || undefined,
-      appId: procInst.appId,
-      procDefId: procInst.procDefId
-    }
+    instEntitySaver.record = procInst
   }
 
-  entitySaver.children = []
+  instEntitySaver.children = []
 
   const taskEntitySaver = new EntitySaver()
   taskEntitySaver.entity = 'platform_swf_proc_task'
   taskEntitySaver.record = procTask
 
-  // const bizEntitySaver = new EntitySaver()
-  // bizEntitySaver.id = submitFormResult.value.id
-  // bizEntitySaver.entity = submitFormResult.value.entity
-  // bizEntitySaver.record = {
-  //   id: submitFormResult.value.id,
-  //   wfApprovalStatus: approvalStatus.value || '1'
-  // }
+  instEntitySaver.children.push(taskEntitySaver)
 
-  entitySaver.children.push(taskEntitySaver)
-
-  console.log('entitySaver',entitySaver)
-  return entitySaver
+  console.log('entitySaver', instEntitySaver)
+  return instEntitySaver
 }

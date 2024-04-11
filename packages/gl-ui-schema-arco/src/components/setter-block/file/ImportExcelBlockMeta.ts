@@ -13,7 +13,9 @@ export default {
       type: 'props',
       show: true,
       expanded: true,
-      setterComponentProps: {},
+      setterComponentProps: {
+        useType:'import'
+      },
       setterComponentVModelName: 'modelValue',
       title: 'Excel模板',
       setterComponentName: 'GlAppFileTemplateSelect',

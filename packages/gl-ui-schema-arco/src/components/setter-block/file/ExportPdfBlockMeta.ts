@@ -26,7 +26,9 @@ export default {
       type: 'props',
       show: true,
       expanded: true,
-      setterComponentProps: {},
+      setterComponentProps: {
+        useType:'export'
+      },
       setterComponentVModelName: 'modelValue',
       title: 'Excel模板',
       setterComponentName: 'GlAppFileTemplateSelect',
@@ -40,23 +42,22 @@ export default {
         options: [
           {
             label: '最终数据对象',
-            value: 'data',
-            __MSKzjrlvedxBnMhBMm: 'data'
+            value: 'data'
           },
-          { label: 'mql数据查询对象', value: 'mql', __MSKzjrlvedxBnMhBMm: 'mql' }
+          { label: 'mql数据查询对象', value: 'mql' }
         ]
       },
       setterComponentVModelName: 'modelValue',
       group: 'base',
       type: 'props',
       enableValueExpress: false,
-      show: true,
+      show: false,
       expanded: true,
       displayMode: 'tile',
       title: '数据类型',
       description: '传到服务端的数据类型',
       setterComponentName: 'ASelect',
-      setterDefaultValue: 'mql'
+      setterDefaultValue: 'data'
     },
     {
       name: 'varName',
