@@ -5,17 +5,18 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import {reactive, ref, watch} from 'vue';
+import {compile, h, reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
 import {copyToClipboard} from "@/utils/strings";
-import {Modal, TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {Message, Modal, TableColumnData, TableSortable} from '@arco-design/web-vue';
 import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams, getOptionLabel} from '@/api/base';
 // 页面所需 对象、方法
-import {pageQueryUserOf as pageQueryList, QueryRoleForm, QueryRoleUserForm, QueryUserForm as QueryForm, switchRoleUser} from '@/api/security';
+import {insertRoleUser, pageQueryUserOf as pageQueryList, QueryRoleForm, QueryRoleUserForm, QueryUserForm as QueryForm, switchRoleUser} from '@/api/security';
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 import UserRoleList from "@/views/security/user/role/list.vue";
+import RoleTabsForm from "@/views/security/role/tabsForm.vue";
 import {enableStatusOptions} from '../searchTable';
 
 // 页面所需参数
@@ -158,6 +159,24 @@ const fetchData = async (params: PageQueryRequest) => {
   }
 };
 
+const switchRU = async (params?: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    await switchRoleUser({...params} as QueryRoleUserForm);
+    if (successBack && typeof successBack === 'function') successBack();
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack();
+  }
+}
+
+const insertRU = async (params?: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    await insertRoleUser({...params} as QueryRoleUserForm);
+    if (successBack && typeof successBack === 'function') successBack();
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack();
+  }
+}
+
 /**
  * 查询 - 基础
  * 排序，页数，条数，过滤
@@ -222,44 +241,130 @@ const onSorterChange = (dataIndex: string, direction: string) => {
   search();
 }
 
+/**
+ * 文本域查看
+ * @param content
+ */
+const openModal = (content: string) => {
+  Modal.open({'content': content, 'footer': false, 'simple': true});
+}
+
 const listParams = ref({
   visible: false,
   parameter: {userId: '', appId: '', tenantCode: ''},
   formState: 'edit',
   filterCol: 2,
-  height: 330,
+  height: window.innerHeight * 0.8 - 260,
   pageSize: 50,
+  modalHeight: window.innerHeight * 0.8,
+  modalWidth: '80%',
+  modalTitle: '',
 });
 
 /**
  * 列表按钮 - 查看表单
  * @param id
  */
-const editTable = (id: string) => {
-  console.log(listParams.value);
+const userRoles = (data: Record<string, any>) => {
   Object.assign(listParams.value, {
-    visible: true, parameter: {
-      userId: id,
+    modalTitle: `${data.name} 关联角色`,
+    visible: true, formState: props.formState, parameter: {
+      userId: data.id,
       appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
     }
   });
 }
 
-const switchBeforeChange = async (roleId: string, userId: string) => {
+const tabsformParams = ref({
+  visible: false,
+  isModal: true,
+  title: '',
+  width: '80%',
+  height: window.innerHeight * 0.8,
+  parameter: {type: '', appId: '', tenantCode: ''},
+  formState: 'add',
+  id: '',
+  formCol: 2,
+});
+const editRole = (data: QueryRoleForm) => {
+  Object.assign(tabsformParams.value, {
+    id: data.id, visible: true, formState: 'edit', parameter: {
+      type: props.parameter?.appId ? 'app' : '',
+      appId: props.parameter?.appId || '',
+      tenantCode: props.parameter?.tenantCode || ''
+    }
+  });
+}
+
+const switchBeforeChange = async (roleId: string, userId: string, successBack?: any,) => {
   let isSuccess = false;
-  try {
-    await switchRoleUser({'roleId': roleId, 'userId': userId} as QueryRoleUserForm);
+  await switchRU({'roleId': roleId, 'userId': userId}, () => {
     isSuccess = true;
-  } catch (err) {
-    console.log(err);
-  }
+    Message.success('操作成功！');
+  });
   return isSuccess;
+}
+
+const roleUsers = (data: QueryRoleForm) => {
+  const userIds: string[] = [];
+  const userNames: string[] = [];
+  let isAll = true;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of renderData.value) {
+    userIds.push(item.id);
+    // @ts-ignore
+    userNames.push(`${item.name}${item[data.id] === true ? ' √' : ''}`);
+    // @ts-ignore
+    if (item[data.id] === false) isAll = false;
+  }
+  if (userIds.length > 0) {
+    Modal.open({
+      title: `批量${isAll ? '取消关联' : '关联'}`,
+      titleAlign: 'start',
+      content: () => h(compile(
+          `<strong>${data.name}</strong> <strong style="color: red">${isAll ? '取消关联' : '关联'}</strong> 当前展示的所有用户？<br/>
+                    <span  style="display: -webkit-box;overflow: hidden;text-overflow: ellipsis;-webkit-line-clamp: 4;
+                    -webkit-box-orient: vertical;margin-top: 5px;border-top: 1px solid var(--color-neutral-6);"
+                    title="${userNames.join('，')}">${userNames.join('，')}</span>`
+      )),
+      onOk: async () => {
+        if (isAll) {
+          await switchRU({'roleId': data.id, 'userId': userIds.join(',')}, () => {
+            Message.success('操作成功！');
+            // eslint-disable-next-line no-restricted-syntax
+            for (const item of renderData.value) {
+              if (userIds.includes(item.id)) {
+                // @ts-ignore
+                item[data.id] = false;
+              }
+            }
+          });
+        } else {
+          await insertRU({'roleId': data.id, 'userId': userIds.join(',')}, () => {
+            Message.success('操作成功！');
+            // eslint-disable-next-line no-restricted-syntax
+            for (const item of renderData.value) {
+              if (userIds.includes(item.id)) {
+                // @ts-ignore
+                item[data.id] = true;
+              }
+            }
+          });
+        }
+      }
+    });
+  } else {
+    Message.warning('请选择用户！');
+  }
 }
 
 watch(() => props, (val) => {
   if (props.visible === true) {
     // 页面设置
     scroll.value.y = props.height;
+    tabsformParams.value.height = window.innerHeight * 0.8;
+    listParams.value.modalHeight = window.innerHeight * 0.8;
+    listParams.value.height = window.innerHeight * 0.8 - 260;
     basePagination.pageSize = props.pageSize;
     listParams.value.parameter = {
       userId: '',
@@ -272,8 +377,12 @@ watch(() => props, (val) => {
 </script>
 
 <template>
-  <a-modal v-model:visible="listParams.visible" :footer="false" title="关联角色信息" width="1250px" title-align="start">
-    <div style="min-height: 500px">
+  <a-modal v-model:visible="listParams.visible"
+           :footer="false"
+           :title="listParams.modalTitle"
+           :width="listParams.modalWidth"
+           title-align="start">
+    <div :style="{height:`${listParams.modalHeight}px`}">
       <UserRoleList :filterCol="listParams.filterCol"
                     :formState="listParams.formState"
                     :height="listParams.height"
@@ -282,7 +391,16 @@ watch(() => props, (val) => {
                     :visible="listParams.visible"/>
     </div>
   </a-modal>
-
+  <RoleTabsForm v-model:visible="tabsformParams.visible"
+                :formCol="tabsformParams.formCol"
+                :formState="tabsformParams.formState"
+                :height="tabsformParams.height"
+                :isModal="tabsformParams.isModal"
+                :modelValue="tabsformParams.id"
+                :parameter="tabsformParams.parameter"
+                :title="tabsformParams.title"
+                :width="tabsformParams.width"
+                @saveSuccess="condition"/>
   <a-row>
     <a-col :flex="1">
       <a-form :label-col-props="{ span: labelCol }" :model="filterData" :wrapper-col-props="{ span: wrapperCol }" label-align="left">
@@ -374,8 +492,12 @@ watch(() => props, (val) => {
         <a-table-column v-for="(item,index) of nape.data" :key="index" :ellipsis="true" :tooltip="true" :width="180" :title="item.name" :dataIndex="item.id"
                         align="center">
           <template #title>
-            <a-popover :title="item.name" position="br" style="max-width: 300px">
-              <span style="cursor: pointer;">{{ item.name }} <gl-iconfont type="gl-warning-circle"/></span>
+            <a-popover :title="item.name" position="tr" style="max-width: 300px">
+              <span style="cursor: pointer;">
+                <span v-if="item.type==='platform'" style="font-weight: bold">{{ item.name }}</span>
+                <span v-else>{{ item.name }}</span>
+                &nbsp;<icon-info-circle/>
+              </span>
               <template #content>
               <span>
                 <strong>编码：</strong>{{ item.code }}
@@ -391,16 +513,28 @@ watch(() => props, (val) => {
               </span>
                 <br/>
                 <strong v-if="['app'].includes(item.type)">应用：</strong>
-                <span v-if="item.appName&&['app'].includes(item.type)">{{ item.appName }}</span>
+                <span v-if="item.appName&&['app'].includes(item.type)">{{ item.appName }}
+              </span>
                 <br v-if="['app'].includes(item.type)"/>
                 <span :title="item.description" class="span-textarea">
                 <strong>描述：</strong>{{ item.description }}
               </span>
+                <a-divider v-if="!parameter.appId || (!!parameter.appId&&item.appId===parameter.appId)" style="margin: 5px 0px"/>
+                <a-space v-if="!parameter.appId || (!!parameter.appId&&item.appId===parameter.appId)"
+                         style="display: flex;align-items: center;justify-content: end;">
+                  <a-button :disabled="formState==='view'" size="mini" type="primary" @click="editRole(item)">
+                    {{ $t('searchTable.columns.operations.edit') }}
+                  </a-button>
+                  <a-button :disabled="formState==='view'" size="mini" status="danger" type="primary" @click="roleUsers(item)">
+                    {{ $t('security.orgUser.index.form.relevance') }}
+                  </a-button>
+                </a-space>
               </template>
             </a-popover>
           </template>
           <template #cell="{record}">
-            <a-switch v-model="record[item.id]" :before-change="newValue => switchBeforeChange(item.id,record.id)">
+            <a-switch :disabled="formState==='view' || (!!parameter.appId&&(item.appId!==parameter.appId || item.type==='platform'))"
+                      v-model="record[item.id]" :before-change="newValue => switchBeforeChange(item.id,record.id)">
               <template #checked>
                 YES
               </template>
@@ -411,9 +545,9 @@ watch(() => props, (val) => {
           </template>
         </a-table-column>
       </a-table-column>
-      <a-table-column v-if="false" :title="$t('security.user.index.form.operations')" :width="90" align="center" data-index="operations" fixed="right">
+      <a-table-column :title="$t('security.user.index.form.operations')" :width="110" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
-          <a-button :disabled="formState==='view'" size="small" type="text" @click="editTable(record.id)">
+          <a-button size="small" type="text" @click="userRoles(record)">
             {{ $t('security.orgUser.index.form.relevance') }}
           </a-button>
         </template>
@@ -450,5 +584,14 @@ watch(() => props, (val) => {
     margin-left: 12px;
     cursor: pointer;
   }
+}
+
+span.textarea-span {
+  cursor: pointer;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 </style>
