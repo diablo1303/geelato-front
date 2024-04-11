@@ -44,7 +44,7 @@ const useTenantStore = defineStore('tenant', {
         fileNames.push(getCurrentLocale());
         const res = await formDataFromFile(fileName || fileNames.join('_'));
         data = (res && res.data) ? JSON.parse(res.data) : {};
-        if (data.logoIcon) {
+        if (data.logoIcon && !(data.logoIcon.startsWith('data:') && data.logoIcon.indexOf(";base64") !== -1)) {
           const url = getDownloadUrlById(data.logoIcon, false);
           await checkFileExists(url, () => {
             data.logoIcon = url;
