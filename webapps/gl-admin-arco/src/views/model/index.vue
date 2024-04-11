@@ -20,7 +20,7 @@ import ModelTableList from "./table/list.vue";
 
 // 常量使用
 const ListDefaultPageSize = 20;
-const ListUsedHeight = 520;
+const ListUsedHeight = 510;
 const ListRowHeight = 49;
 
 const {t} = useI18n(); // 国际化
@@ -39,6 +39,15 @@ const props = defineProps({
 });
 
 /**
+ * 调整树形结构高度
+ */
+const resetSplitHeight = () => {
+  return window.innerHeight - 180;
+}
+const splitHeight = ref<number>(resetSplitHeight());
+const splitMin = ref<number | string>('320px');
+const splitSize = ref<number | string>(splitMin.value);
+/**
  * 调整列表高度
  */
 const resetListHeight = () => {
@@ -48,13 +57,13 @@ const resetListHeight = () => {
  * 调整树高度
  */
 const resetTreeHeight = () => {
-  return window.innerHeight - 290;
+  return window.innerHeight - 275;
 }
 /**
  * 调整tab高度
  */
 const resetTabsHeight = () => {
-  return window.innerHeight - 290;
+  return window.innerHeight - 285;
 }
 /**
  * 调整列表展示行数
@@ -216,138 +225,97 @@ onUnmounted(() => {
 <template>
   <div class="container">
     <Breadcrumb :items="['model.connect.index.menu.list', 'model.dataBase.index.menu.list']"/>
-    <a-card class="general-card general-card1">
-      <a-row>
-        <a-col :span="6">
-          <a-spin>{{ $t('model.dataBase.index.menu.list') }}</a-spin>
-        </a-col>
-        <a-col :span="18">
-          <a-spin>
-            {{ pageData.tree.title !== '' ? pageData.tree.title : $t('model.connect.index.menu.list.searchTable') }}
-          </a-spin>
-          <a-spin v-if="pageData.isSystem" style="padding-right: 5px;">
-            <a-button v-show="pageData.tree.level===2" class="list-action-button-default" status="warning" type="primary">
-              <a-spin>{{ $t('model.table.index.form.sourceType.system') }}</a-spin>
-            </a-button>
-          </a-spin>
-          <a-spin>
-            <a-button v-show="pageData.tree.level===2" :disabled="pageData.isSync===0" class="list-action-button-default" type="primary">
-              <a-spin v-if="pageData.isSync===2">{{ $t('model.table.index.form.tableName.yes') }}</a-spin>
-              <a-spin v-else-if="pageData.isSync===1">{{ $t('model.table.index.form.tableName.edit') }}</a-spin>
-              <a-spin v-else>{{ $t('model.table.index.form.tableName.no') }}</a-spin>
-            </a-button>
-          </a-spin>
-        </a-col>
-      </a-row>
-      <a-row>
-        <a-col :span="6">
-          <div class="general-card1" style="padding-right: 10px;border-right: 1px solid var(--color-neutral-3);">
-            <ModelTree :height="treeParams.height"
-                       :parameter="treeParams.parameter"
-                       :visible="treeParams.visible"
-                       @tree-selected="treeSelected"/>
+    <div class="general-card2">
+      <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
+        <template #first>
+          <div class="general-card3">
+            <div class="card-header">
+              <div class="card-header-title">
+                {{ $t('model.dataBase.index.menu.list') }}
+              </div>
+            </div>
+            <a-divider style="margin:0 0 5px 0"/>
+            <div class="card-body1">
+              <ModelTree :height="treeParams.height"
+                         :parameter="treeParams.parameter"
+                         :visible="treeParams.visible"
+                         @tree-selected="treeSelected"/>
+            </div>
           </div>
-        </a-col>
-        <a-col :span="18">
-          <div v-if="pageData.tree.level===0" style="padding-left: 10px;">
-            <ModelConnectList :filterCol="connectListParams.filterCol"
-                              :formState="connectListParams.formState"
-                              :height="connectListParams.height"
-                              :pageSize="connectListParams.pageSize"
-                              :parameter="connectListParams.parameter"
-                              :visible="connectListParams.visible"
-                              @add="modelConnectListAdd"
-                              @delete="modelConnectListDelete"
-                              @edit="modelConnectListEdit"/>
+        </template>
+        <template #second>
+          <div class="general-card3">
+            <div class="card-header">
+              <div class="card-header-title">
+              <span>
+                {{ pageData.tree.title !== '' ? pageData.tree.title : $t('model.connect.index.menu.list.searchTable') }}
+              </span>
+                <span v-if="pageData.isSystem" style="padding-right: 5px;">
+                <a-button v-show="pageData.tree.level===2" class="list-action-button-default" status="warning" type="primary">
+                  <span>{{ $t('model.table.index.form.sourceType.system') }}</span>
+                </a-button>
+              </span>
+                <span>
+                <a-button v-show="pageData.tree.level===2" :disabled="pageData.isSync===0" class="list-action-button-default" type="primary">
+                  <span v-if="pageData.isSync===2">{{ $t('model.table.index.form.tableName.yes') }}</span>
+                  <span v-else-if="pageData.isSync===1">{{ $t('model.table.index.form.tableName.edit') }}</span>
+                  <span v-else>{{ $t('model.table.index.form.tableName.no') }}</span>
+                </a-button>
+              </span>
+              </div>
+            </div>
+            <a-divider style="margin:0 0 5px 0"/>
+            <div class="card-body2">
+              <div v-if="pageData.tree.level===0" style="padding-left: 10px;">
+                <ModelConnectList :filterCol="connectListParams.filterCol"
+                                  :formState="connectListParams.formState"
+                                  :height="connectListParams.height"
+                                  :pageSize="connectListParams.pageSize"
+                                  :parameter="connectListParams.parameter"
+                                  :visible="connectListParams.visible"
+                                  @add="modelConnectListAdd"
+                                  @delete="modelConnectListDelete"
+                                  @edit="modelConnectListEdit"/>
+              </div>
+              <div v-if="pageData.tree.level===1" style="padding-left: 10px;">
+                <ModelTableList :filterCol="tableListParams.filterCol"
+                                :formState="tableListParams.formState"
+                                :height="tableListParams.height"
+                                :pageSize="tableListParams.pageSize"
+                                :parameter="tableListParams.parameter"
+                                :visible="tableListParams.visible"
+                                @add="modelTableListAdd"
+                                @delete="modelTableListDelete"
+                                @edit="modelTableListEdit"/>
+              </div>
+              <div v-if="pageData.tree.level===2" style="padding-left: 10px;">
+                <ModelTableTabs :formState="tableTabsParams.formState"
+                                :height="tableTabsParams.height"
+                                :model-value="tableTabsParams.id"
+                                :parameter="tableTabsParams.parameter"
+                                :visible="tableTabsParams.visible"
+                                @toModel="modelTableTabsToModel"
+                                @toTable="modelTableTabsToTable"/>
+              </div>
+            </div>
           </div>
-          <div v-if="pageData.tree.level===1" style="padding-left: 10px;">
-            <ModelTableList :filterCol="tableListParams.filterCol"
-                            :formState="tableListParams.formState"
-                            :height="tableListParams.height"
-                            :pageSize="tableListParams.pageSize"
-                            :parameter="tableListParams.parameter"
-                            :visible="tableListParams.visible"
-                            @add="modelTableListAdd"
-                            @delete="modelTableListDelete"
-                            @edit="modelTableListEdit"/>
-          </div>
-          <div v-if="pageData.tree.level===2" style="padding-left: 10px;">
-            <ModelTableTabs :formState="tableTabsParams.formState"
-                            :height="tableTabsParams.height"
-                            :model-value="tableTabsParams.id"
-                            :parameter="tableTabsParams.parameter"
-                            :visible="tableTabsParams.visible"
-                            @toModel="modelTableTabsToModel"
-                            @toTable="modelTableTabsToTable"/>
-          </div>
-        </a-col>
-      </a-row>
-    </a-card>
+        </template>
+      </a-split>
+    </div>
   </div>
 </template>
 
 <style lang="less" scoped>
 .container {
   padding: 0 20px 20px 20px;
+}
+
+.general-card2 {
   position: relative;
-}
-
-.general-card1 .list-item1 {
-  cursor: pointer;
-  padding: 10px 10px !important;
-}
-
-.general-card1 .list-item1.active {
-  background-color: var(--color-fill-3);
-  color: rgb(var(--primary-6));
-}
-
-.arco-btn {
-  border-radius: 6px;
-}
-
-.arco-btn-size-medium {
-  /* padding: 0 8px; */
-}
-
-.general-card > .arco-tabs-content {
-  padding: 10px 0px 0px 10px;
-}
-
-.general-card1 > .arco-card-body > .arco-row:first-child {
-  height: auto;
-  padding: 20px 10px 10px 10px;
+  background: var(--color-bg-2);
+  border-radius: 4px;
   border: none;
-}
-
-.general-card1 > .arco-card-body > .arco-row > .arco-col > .arco-spin {
-  flex: 1;
-  color: var(--color-text-1);
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.5715;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-
-.form {
-  width: 500px;
-}
-
-.wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 64px 0;
-  background-color: var(--color-bg-2);
-}
-
-.tree-extra-icon {
-  font-size: 16px;
-  margin-left: 10px;
-  color: #3370ff;
+  transition: box-shadow 0.2s cubic-bezier(0, 0, 1, 1);
 }
 
 .list-action-button-default {
@@ -357,5 +325,28 @@ onUnmounted(() => {
   border-radius: 5px;
   line-height: 20px;
   padding: 0 5px;
+}
+
+.general-card3 {
+  .card-header {
+    height: 41px;
+    padding: 10px 16px;
+
+    .card-header-title {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.3715;
+    }
+  }
+
+  .card-body1 {
+    padding: 0px 10px 16px 16px;
+    color: var(--color-text-2);
+  }
+
+  .card-body2 {
+    padding: 0px 16px 20px 10px;
+    color: var(--color-text-2);
+  }
 }
 </style>

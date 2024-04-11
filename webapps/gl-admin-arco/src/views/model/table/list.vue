@@ -347,7 +347,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -409,7 +409,7 @@ watch(() => props, (val) => {
       <a-table-column :ellipsis="true" :sortable="sortable.entityName" :title="$t('model.table.index.form.entityName')" :tooltip="true" :width="210"
                       data-index="entityName" fixed="left"/>
       <a-table-column :ellipsis="true" :title="$t('model.table.index.form.title')" :tooltip="true" :width="180" data-index="title"/>
-      <a-table-column :title="$t('model.table.index.form.tableType')" :width="90" data-index="tableType">
+      <a-table-column :title="$t('model.table.index.form.tableType')" :width="120" data-index="tableType">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.tableType.${record.tableType}`) }}
         </template>
@@ -419,26 +419,26 @@ watch(() => props, (val) => {
           {{ getOptionLabel(record.appId, appSelectOptions) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.table.index.form.sourceType')" :width="90" data-index="sourceType">
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.sourceType')" :tooltip="true" :width="120" data-index="sourceType">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.sourceType.${record.sourceType}`) }}
         </template>
       </a-table-column>
-      <a-table-column v-if="false" :title="$t('model.table.index.form.linked')" :width="90" data-index="linked">
+      <a-table-column v-if="false" :title="$t('model.table.index.form.linked')" :width="100" data-index="linked">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.linked.${record.linked}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.table.index.form.enableStatus')" :width="70" data-index="enableStatus">
+      <a-table-column :title="$t('model.table.index.form.enableStatus')" :width="90" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :sortable="sortable.seqNo" :title="$t('model.table.index.form.seqNo')" :width="100" data-index="seqNo"/>
+      <a-table-column :sortable="sortable.seqNo" :title="$t('model.table.index.form.seqNo')" :width="120" data-index="seqNo"/>
       <a-table-column :sortable="sortable.createAt" :title="$t('model.table.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('model.table.index.form.tableComment')" :tooltip="true" :width="240" data-index="tableComment"/>
       <a-table-column :ellipsis="true" :title="$t('model.table.index.form.description')" :tooltip="true" :width="240" data-index="description"/>
-      <a-table-column v-show="formState==='edit'" :title="$t('model.table.index.form.operations')" :width="150" align="center" data-index="operations"
+      <a-table-column v-show="formState==='edit'" :title="$t('model.table.index.form.operations')" :width="180" align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record,isST = ['system','platform'].includes(record.sourceType)}">
           <a-tooltip v-if="isST" :content="$t('searchTable.tables.operations.sourceType.warning')">

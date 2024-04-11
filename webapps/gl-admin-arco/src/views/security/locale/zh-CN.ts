@@ -42,6 +42,7 @@ export default {
   'searchTable.size.medium': '中等',
   'searchTable.size.large': '偏大',
   // actions
+  'searchTable.actions.search': '搜索',
   'searchTable.actions.refresh': '刷新',
   'searchTable.actions.density': '密度',
   'searchTable.actions.columnSetting': '列设置',

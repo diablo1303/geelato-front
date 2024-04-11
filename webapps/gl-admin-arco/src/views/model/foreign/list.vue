@@ -184,12 +184,12 @@ const formParams = ref<FormParams>({
   visible: false,
   isModal: true,
   title: '',
-  width: '1020px',
+  width: '600px',
   height: '',
   parameter: {connectId: '', mainTable: '', appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
-  formCol: 2,
+  formCol: 1,
 });
 /**
  * 列表按钮 - 新增表单
@@ -311,7 +311,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -368,14 +368,14 @@ watch(() => props, (val) => {
       <a-table-column :ellipsis="true" :title="$t('model.foreign.index.form.mainTableCol')" :tooltip="true" :width="210" data-index="mainTableCol"/>
       <a-table-column :ellipsis="true" :title="$t('model.foreign.index.form.foreignTable')" :tooltip="true" :width="210" data-index="foreignTable"/>
       <a-table-column :ellipsis="true" :title="$t('model.foreign.index.form.foreignTableCol')" :tooltip="true" :width="210" data-index="foreignTableCol"/>
-      <a-table-column :title="$t('model.foreign.index.form.enableStatus')" :width="70" data-index="enableStatus">
+      <a-table-column :title="$t('model.foreign.index.form.enableStatus')" :width="90" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`model.foreign.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :sortable="sortable.seqNo" :title="$t('model.foreign.index.form.seqNo')" :width="100" data-index="seqNo"/>
+      <a-table-column :sortable="sortable.seqNo" :title="$t('model.foreign.index.form.seqNo')" :width="120" align="right" data-index="seqNo"/>
       <a-table-column :sortable="sortable.createAt" :title="$t('model.foreign.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :title="$t('model.foreign.index.form.operations')" :width="160" align="center" data-index="operations" fixed="right">
+      <a-table-column :title="$t('model.foreign.index.form.operations')" :width="180" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button :disabled="formState==='view'" size="small" type="text" @click="editTable(record)">
             {{ $t('searchTable.columns.operations.edit') }}

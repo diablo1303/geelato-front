@@ -61,7 +61,7 @@ const pagination = reactive({
 });
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 2400, y: props.height});
+const scroll = ref({x: 2500, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
   name: {sortDirections: ['descend', 'ascend'], sorter: true, sortOrder: ''},
@@ -216,7 +216,7 @@ const formParams = ref<FormParams>({
   visible: false,
   isModal: true,
   title: '',
-  width: '1020px',
+  width: '1150px',
   height: '',
   parameter: {connectId: '', tableId: '', tableName: '', appId: '', tenantCode: ''},
   formState: 'add',
@@ -563,7 +563,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -714,7 +714,7 @@ watch(() => props, (val) => {
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.title')" :tooltip="true" :width="150" data-index="title"/>
-      <a-table-column :title="$t('model.column.index.form.enableStatus')" :width="70" data-index="enableStatus">
+      <a-table-column :title="$t('model.column.index.form.enableStatus')" :width="90" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`model.column.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
@@ -755,10 +755,10 @@ watch(() => props, (val) => {
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.type')" :tooltip="true" :width="150" data-index="type"/>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.defaultValue')" :tooltip="true" :width="120" data-index="defaultValue"/>
-      <a-table-column :sortable="sortable.ordinalPosition" :title="$t('model.column.index.form.ordinalPosition')" :width="100" data-index="ordinalPosition"/>
+      <a-table-column :sortable="sortable.ordinalPosition" :title="$t('model.column.index.form.ordinalPosition')" :width="120" data-index="ordinalPosition"/>
       <a-table-column :sortable="sortable.createAt" :title="$t('model.column.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.comment')" :tooltip="true" :width="210" data-index="comment"/>
-      <a-table-column v-if="formState==='edit'" :title="$t('model.column.index.form.operations')" :width="160" align="center" data-index="operations"
+      <a-table-column v-if="formState==='edit'" :title="$t('model.column.index.form.operations')" :width="180" align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record,isDefault = defaultColumnMetas.includes(record.name)}">
           <!--    编辑      -->

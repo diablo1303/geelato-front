@@ -41,6 +41,7 @@ export default {
   'searchTable.size.medium': 'middle',
   'searchTable.size.large': 'large',
   // actions
+  'searchTable.actions.search': 'search',
   'searchTable.actions.refresh': 'refresh',
   'searchTable.actions.density': 'density',
   'searchTable.actions.columnSetting': 'columnSetting',

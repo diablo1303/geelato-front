@@ -42,7 +42,7 @@ const generateListParams = () => {
     parameter: {connectId: '', tableId: '', tableName: '', appId: '', tenantCode: ''},
     formState: props.formState,
     filterCol: 2,
-    height: props.height - 235,
+    height: props.height - 255,
     pageSize: 10000,
   }
 };
@@ -125,7 +125,7 @@ const tableFormat = (id: string) => {
     Object.assign(columnListParams.value, {
       formState: isSystem.value ? 'view' : props.formState,
       parameter: listParameter,
-      height: props.height - 235,
+      height: props.height - 255,
       visible: true,
     });
     // 加载模型外键
@@ -137,19 +137,19 @@ const tableFormat = (id: string) => {
     // 加载模型视图
     Object.assign(viewListParams.value, {
       parameter: listParameter,
-      height: props.height - 235,
+      height: props.height - 255,
       visible: true,
     });
     // 加载模型权限
     Object.assign(tablePermissionListParams.value, {
       parameter: {...listParameter, type: 'dp,mp', object: data.entityName,},
-      height: props.height - 200,
+      height: props.height - 215,
       visible: true,
     });
     // 加载字段权限
     Object.assign(columnPermissionListParams.value, {
       parameter: {...listParameter, type: 'cp', object: data.entityName,},
-      height: props.height - 200,
+      height: props.height - 150,
       visible: true,
     });
   });
@@ -198,12 +198,14 @@ watch(() => props, (val) => {
                   @saveSuccess="tableCopySuccess"/>
   <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" position="top" type="line">
     <a-tab-pane :key="1" :title="$t('model.column.index.menu.list.searchTable')" class="a-tabs-one">
-      <ModelTableColumnList :filterCol="columnListParams.filterCol"
-                            :formState="columnListParams.formState"
-                            :height="columnListParams.height"
-                            :pageSize="columnListParams.pageSize"
-                            :parameter="columnListParams.parameter"
-                            :visible="columnListParams.visible"/>
+      <a-card class="general-card">
+        <ModelTableColumnList :filterCol="columnListParams.filterCol"
+                              :formState="columnListParams.formState"
+                              :height="columnListParams.height"
+                              :pageSize="columnListParams.pageSize"
+                              :parameter="columnListParams.parameter"
+                              :visible="columnListParams.visible"/>
+      </a-card>
     </a-tab-pane>
     <a-tooltip :content="$t('model.foreign.index.menu.list.tab.tip')" position="top">
       <a-tab-pane :key="2" :title="$t('model.foreign.index.menu.list.searchTable')" class="a-tabs-two">

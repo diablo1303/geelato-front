@@ -278,7 +278,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <a-input-search v-model="searchKey" :placeholder="$t('orgChooseBox.tree.search')" allow-clear/>
+  <a-input-search v-model="searchKey" :placeholder="$t('searchTable.form.search')" allow-clear/>
   <a-scrollbar :style="{overflow:'auto',height:`${props.height}px`}">
     <a-tree
         v-model:expanded-keys="expandedKeys"

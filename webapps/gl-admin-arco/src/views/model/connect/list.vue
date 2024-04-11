@@ -177,7 +177,7 @@ const formParams = ref<FormParams>({
   visible: false,
   isModal: true,
   title: '',
-  width: '1020px',
+  width: '1050px',
   height: '',
   parameter: {appId: '', tenantCode: ''},
   formState: 'add',
@@ -308,7 +308,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 132px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical"  style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -366,7 +366,7 @@ watch(() => props, (val) => {
       <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbPort')" :tooltip="true" :width="90" data-index="dbPort"/>
       <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbUserName')" :tooltip="true" :width="120" data-index="dbUserName"/>
       <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.dbSchema')" :tooltip="true" :width="150" data-index="dbSchema"/>
-      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.enableStatus')" :tooltip="true" :width="70" data-index="enableStatus">
+      <a-table-column :ellipsis="true" :title="$t('model.connect.index.form.enableStatus')" :tooltip="true" :width="90" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`model.connect.index.form.enableStatus.${record.enableStatus}`) }}
         </template>

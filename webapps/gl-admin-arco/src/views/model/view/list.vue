@@ -61,6 +61,7 @@ const scrollbar = ref(true);
 const scroll = ref({x: 1200, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
+  viewName: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   seqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
 });
@@ -364,7 +365,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -415,7 +416,8 @@ watch(() => props, (val) => {
       <a-table-column :title="$t('model.view.index.form.index')" :width="80" align="center" data-index="index" fixed="left">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('model.view.index.form.viewName')" :tooltip="true" :width="200" data-index="viewName" fixed="left"/>
+      <a-table-column :sortable="sortable.viewName" :ellipsis="true" :title="$t('model.view.index.form.viewName')" :tooltip="true" :width="200"
+                      data-index="viewName" fixed="left"/>
       <a-table-column :ellipsis="true" :title="$t('model.view.index.form.title')" :tooltip="true" :width="200" data-index="title"/>
       <!-- <a-table-column :title="$t('model.view.index.form.entityName')" data-index="entityName" :ellipsis="true" :tooltip="true" :width="200"/>-->
       <a-table-column :title="$t('model.view.index.form.enableStatus')" :width="100" data-index="enableStatus">
@@ -433,10 +435,10 @@ watch(() => props, (val) => {
           {{ $t(`model.view.index.form.linked.${record.linked}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.view.index.form.seqNo')" :width="100" data-index="seqNo"/>
-      <a-table-column :title="$t('model.view.index.form.createAt')" :width="180" data-index="createAt"/>
+      <a-table-column :sortable="sortable.seqNo" :title="$t('model.view.index.form.seqNo')" :width="120" align="right" data-index="seqNo"/>
+      <a-table-column :sortable="sortable.createAt" :title="$t('model.view.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('model.view.index.form.description')" :tooltip="true" :width="200" data-index="description"/>
-      <a-table-column v-show="formState==='edit'" :title="$t('model.view.index.form.operations')" :width="275" align="center"
+      <a-table-column v-show="formState==='edit'" :title="$t('model.view.index.form.operations')" :width="360" align="center"
                       data-index="operations" fixed="right">
         <template #cell="{ record,isDefault=record.viewType==='default'}">
           <a-button v-if="isDefault" size="small" type="text" @click="viewTable(record)">
