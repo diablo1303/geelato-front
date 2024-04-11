@@ -138,6 +138,8 @@ const procTask = ref(new ProcTask())
 const selectedTran: Ref<ProcTranDef | undefined> = ref()
 // 详细审批意见、申请意见
 const remark = ref('')
+// 附件 ids
+const attachIds = ref('')
 const remarkLabel = ref('')
 
 /**
@@ -256,6 +258,7 @@ const getEntitySaver = () => {
   procTask.value.remark = remark.value
   procTask.value.srcStateId = selectedTran.value?.srcStateId!
   procTask.value.targetStateId = selectedTran.value?.targetStateId!
+  procTask.value.attachIds = attachIds.value
   console.log('getEntitySaver', procInst.value)
   return getProcInstEntitySaver(procInst.value, procTask.value)
 }
@@ -346,8 +349,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="gl-page-template-simple-approve">
-    <template v-if="hasReady">
+  <div class="gl-page-template-state-wf" style="width: 100%">
+    <div v-if="hasReady" >
       <a-affix :offsetTop="65" style="margin-bottom: 10px">
         <div class="gl-header" :class="{ 'gl-not-rt-fix': !glIsRuntime }">
           <a-page-header :title="label" :subtitle="subLabel" :show-back="false">
@@ -398,132 +401,123 @@ onUnmounted(() => {
           </a-page-header>
         </div>
       </a-affix>
-      <div class="gl-body" style="position: relative">
-        <div
-          v-if="enabledStatusImage"
-          class="background-svg-container"
-          :class="{ ['background-svg-' + graphState]: true }"
-        ></div>
-        <a-tabs v-if="layout === LayoutMode.tabs" :position="tabsPosition">
-          <a-tab-pane key="1">
-            <template #title>
-              <GlIconfont type="gl-form" text="流程表单"></GlIconfont>
-            </template>
-            <div>
-              <!--  作为模板时，用slot-->
-              <template v-if="slotMode">
-                <slot></slot>
+      <div class="gl-body" style="position: relative;display: flex">
+          <div style="overflow: auto;flex:1">
+            <div
+                v-if="enabledStatusImage"
+                class="background-svg-container"
+                :class="{ ['background-svg-' + graphState]: true }"
+            ></div>
+            <a-tabs v-if="layout === LayoutMode.tabs" :position="tabsPosition">
+              <a-tab-pane key="1">
+                <template #title>
+                  <GlIconfont type="gl-form" text="流程表单"></GlIconfont>
+                </template>
+                <div>
+                  <!--  作为模板时，用slot-->
+                  <template v-if="slotMode">
+                    <slot></slot>
+                  </template>
+                  <template v-else>
+                    <!--  作为组件时，用component，这里的inst一般为GlPage-->
+                    <component
+                        v-if="!slotMode"
+                        :is="'GlInsts' + glRuntimeFlag"
+                        :glComponentInst="glComponentInst"
+                        :glIsRuntime="glIsRuntime"
+                        :glLoopItem="glLoopItem"
+                        :glLoopIndex="glLoopIndex"
+                        :glRuntimeFlag="glRuntimeFlag"
+                    />
+                  </template>
+                </div>
+              </a-tab-pane>
+<!--              <a-tab-pane key="2">-->
+<!--                <template #title>-->
+<!--                  <GlIconfont type="gl-affix" text="表单附件"></GlIconfont>-->
+<!--                </template>-->
+<!--                <div>-->
+<!--                  <GlPageViewer-->
+<!--                      pageId="5064173938314186753"-->
+<!--                      :pageProps="{ params: pageParams}"-->
+<!--                      :glIsRuntime="true"-->
+<!--                      glRuntimeFlag="Runtime"-->
+<!--                  ></GlPageViewer>-->
+<!--                </div>-->
+<!--              </a-tab-pane>-->
+              <a-tab-pane key="3">
+                <template #title>
+                  <GlIconfont type="gl-timeline" text="审批记录"></GlIconfont>
+                </template>
+                <div>
+                  <GlPageViewer v-if="procInst.id"
+                                pageId="5037920844148510721"
+                                :pageProps="{ params: pageParams}"
+                                :glIsRuntime="true"
+                                glRuntimeFlag="Runtime"
+                  ></GlPageViewer>
+                  <a-empty v-else></a-empty>
+                </div>
+              </a-tab-pane>
+              <!--          <a-tab-pane key="4">-->
+              <!--            <template #title>-->
+              <!--              <GlIconfont type="gl-flow" text="关联流程"></GlIconfont>-->
+              <!--            </template>-->
+              <!--            <div>-->
+              <!--              <a-empty></a-empty>-->
+              <!--            </div>-->
+              <!--          </a-tab-pane>-->
+            </a-tabs>
+            <a-collapse v-else-if="layout === LayoutMode.collapse" :default-active-key="['1']">
+              <a-collapse-item header="流程表单" key="1" class="gl-flow-form">
+                <template #expand-icon="{ active }">
+                  <GlIconfont type="gl-form"></GlIconfont>
+                </template>
+                <div>
+                  <slot></slot>
+                </div>
+              </a-collapse-item>
+              <a-collapse-item header="审批记录" key="3" class="gl-flow-timeline">
+                <template #expand-icon="{ active }">
+                  <GlIconfont type="gl-timeline"></GlIconfont>
+                </template>
+                <div>
+                  <GlPageViewer v-if="procInst.id"
+                                pageId="5037920844148510721"
+                                :pageProps="{ params: pageParams}"
+                                :glIsRuntime="true"
+                                glRuntimeFlag="Runtime"
+                  ></GlPageViewer>
+                  <a-empty v-else></a-empty>
+                </div>
+              </a-collapse-item>
+              <!--          <a-collapse-item header="关联流程" key="4" class="gl-flow-process">-->
+              <!--            <template #expand-icon="{ active }">-->
+              <!--              <GlIconfont type="gl-flow"></GlIconfont>-->
+              <!--            </template>-->
+              <!--            <div>-->
+              <!--              <a-empty></a-empty>-->
+              <!--            </div>-->
+              <!--          </a-collapse-item>-->
+            </a-collapse>
+          </div>
+          <div v-if="!isRead" style="width: 400px">
+            <a-card size="small" style="box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);">
+              <template #title>
+                <GlIconfont type="gl-right" :text="isStart ? '申请' : '审批'"></GlIconfont>
               </template>
-              <template v-else>
-                <!--  作为组件时，用component，这里的inst一般为GlPage-->
-                <component
-                  v-if="!slotMode"
-                  :is="'GlInsts' + glRuntimeFlag"
-                  :glComponentInst="glComponentInst"
-                  :glIsRuntime="glIsRuntime"
-                  :glLoopItem="glLoopItem"
-                  :glLoopIndex="glLoopIndex"
-                  :glRuntimeFlag="glRuntimeFlag"
-                />
-              </template>
-            </div>
-          </a-tab-pane>
-          <a-tab-pane key="2">
-            <template #title>
-              <GlIconfont type="gl-affix" text="表单附件"></GlIconfont>
-            </template>
-            <div>
-              <GlPageViewer
-                  pageId="5064173938314186753"
-                  :pageProps="{ params: pageParams}"
-                  :glIsRuntime="true"
-                  glRuntimeFlag="Runtime"
-              ></GlPageViewer>
-            </div>
-          </a-tab-pane>
-          <a-tab-pane key="3">
-            <template #title>
-              <GlIconfont type="gl-timeline" text="审批记录"></GlIconfont>
-            </template>
-            <div>
-              <GlPageViewer
-                pageId="5037920844148510721"
-                :pageProps="{ params: pageParams}"
-                :glIsRuntime="true"
-                glRuntimeFlag="Runtime"
-              ></GlPageViewer>
-            </div>
-          </a-tab-pane>
-          <a-tab-pane key="4">
-            <template #title>
-              <GlIconfont type="gl-flow" text="关联流程"></GlIconfont>
-            </template>
-            <div>
-              <a-empty></a-empty>
-            </div>
-          </a-tab-pane>
-        </a-tabs>
-        <a-collapse v-else-if="layout === LayoutMode.collapse" :default-active-key="['1']">
-          <a-collapse-item header="流程表单" key="1" class="gl-flow-form">
-            <template #expand-icon="{ active }">
-              <GlIconfont type="gl-form"></GlIconfont>
-            </template>
-            <div>
-              <slot></slot>
-            </div>
-          </a-collapse-item>
-          <a-collapse-item header="表单附件" :key="2" class="gl-flow-attachments">
-            <template #expand-icon="{ active }">
-              <GlIconfont type="gl-affix"></GlIconfont>
-            </template>
-            <div>
-              <a-empty></a-empty>
-            </div>
-          </a-collapse-item>
-          <a-collapse-item header="审批记录" key="3" class="gl-flow-timeline">
-            <template #expand-icon="{ active }">
-              <GlIconfont type="gl-timeline"></GlIconfont>
-            </template>
-            <div>
-              <a-empty></a-empty>
-            </div>
-          </a-collapse-item>
-          <a-collapse-item header="关联流程" key="4" class="gl-flow-process">
-            <template #expand-icon="{ active }">
-              <GlIconfont type="gl-flow"></GlIconfont>
-            </template>
-            <div>
-              <a-empty></a-empty>
-            </div>
-          </a-collapse-item>
-        </a-collapse>
+              <StateWFApprove
+                  ref="stateWFApprove"
+                  v-model:tran="selectedTran"
+                  v-model:remark="remark"
+                  v-model:attachIds="attachIds"
+                  :remarkLabel="remarkLabel"
+                  :next-trans="nextTrans"
+              ></StateWFApprove>
+            </a-card>
+          </div>
+        </div>
       </div>
-      <a-affix :offsetBottom="79" v-if="!isRead">
-        <!--      <a-card v-if="graphState == GraphState.none" style="margin-top: 1em" size="small">-->
-        <!--        <template #title>-->
-        <!--          <GlIconfont type="gl-right" text="申请描述"></GlIconfont>-->
-        <!--        </template>-->
-        <!--        <a-textarea-->
-        <!--          v-model="remark"-->
-        <!--          placeholder="输入申请描述信息"-->
-        <!--          style="background-color: rgba(145, 203, 253, 0.42)"-->
-        <!--        >-->
-        <!--        </a-textarea>-->
-        <!--      </a-card>-->
-        <a-card style="margin-top: 1em" size="small">
-          <template #title>
-            <GlIconfont type="gl-right" :text="isStart ? '提交申请' : '审批信息'"></GlIconfont>
-          </template>
-          <StateWFApprove
-            ref="stateWFApprove"
-            v-model:tran="selectedTran"
-            v-model:remark="remark"
-            :remarkLabel="remarkLabel"
-            :next-trans="nextTrans"
-          ></StateWFApprove>
-        </a-card>
-      </a-affix>
-    </template>
     <template v-else>
       在打开页面组件的页面参数中，需要传入以下参数：
       <br />
@@ -535,12 +529,12 @@ onUnmounted(() => {
 </template>
 
 <style lang="less">
-.gl-page-template-simple-approve .background-svg-container {
+.gl-page-template-state-wf .background-svg-container {
   width: 120px;
   height: 120px;
   position: absolute;
   top: -20px;
-  right: 180px;
+  right: 400px;
   z-index: 999;
   background-repeat: no-repeat; /* 不重复 */
   background-size: contain; /* 保持图片完整性，可能会有留白 */
@@ -563,7 +557,7 @@ onUnmounted(() => {
   }
 }
 
-.gl-page-template-simple-approve {
+.gl-page-template-state-wf {
   .gl-header {
     margin: -18px -16px;
     line-height: 3em;
@@ -591,5 +585,21 @@ onUnmounted(() => {
       margin: 0;
     }
   }
+
+  .gl-flow-form{
+    .arco-collapse-item-header{
+      .arco-collapse-item-header-title{
+        font-weight: 600;
+      }
+    }
+  }
+  .gl-flow-timeline{
+    .arco-collapse-item-header{
+      .arco-collapse-item-header-title{
+        font-weight: 600;
+      }
+    }
+  }
 }
+
 </style>

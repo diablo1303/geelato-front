@@ -5,10 +5,10 @@ export default {
 </script>
 <script lang="ts" setup>
 import { type PropType, ref, watch } from 'vue'
-import type {  ProcTranDef } from './stateWfApi'
-const emits = defineEmits(['update:tran', 'update:remark'])
-const props = defineProps({
+import type { ProcTranDef } from './stateWfApi'
 
+const emits = defineEmits(['update:tran', 'update:remark','update:attachIds'])
+const props = defineProps({
   tran: Object as PropType<ProcTranDef>,
   nextTrans: {
     type: Array as PropType<Array<ProcTranDef>>,
@@ -18,9 +18,10 @@ const props = defineProps({
     }
   },
   remark: String,
-  remarkLabel:String,
+  remarkLabel: String,
+  attachIds: String
 })
-const form = ref({ tranId: '', remark: '' })
+const form = ref({ tranId: '', remark: '', attachIds: '' })
 // 默认选择第一个
 watch(
   () => {
@@ -51,29 +52,39 @@ watch(
     emits('update:remark', form.value.remark)
   }
 )
+watch(
+    () => {
+      return form.value.attachIds
+    },
+    () => {
+      emits('update:attachIds', form.value.attachIds)
+    }
+)
 const myForm = ref()
 const validate = () => {
   // { values, errors }
   return myForm.value.validate()
 }
-defineExpose({validate})
+defineExpose({ validate })
 </script>
 
 <template>
-  <a-form ref="myForm" :model="form">
-    <a-form-item field="tranId" label="选择步骤" :rules="[{ required: true, message: '必填' }]">
-      <a-radio-group v-model="form.tranId">
-        <a-radio v-for="tran in nextTrans" :value="tran.id">{{ tran.name }}</a-radio>
-      </a-radio-group>
+  <a-form ref="myForm" :model="form" layout="vertical">
+    <a-form-item field="tranId" label="选择操作" :rules="[{ required: true, message: '必填' }]">
+      <a-select v-model="form.tranId" placeholder="请选择">
+        <a-option v-for="tran in nextTrans" :value="tran.id">{{ tran.name }}</a-option>
+      </a-select>
     </a-form-item>
-    <a-form-item field="remark" :label="remarkLabel||'描述'" :rules="[{ required: true, message: '必填' }]">
-      <a-textarea
-        v-model="form.remark"
-        placeholder="申请描述/审批意见"
-      />
-<!--      style="background-color: rgba(145, 203, 253, 0.23)"-->
+    <a-form-item
+      field="remark"
+      :label="remarkLabel || '描述'"
+      :rules="[{ required: true, message: '必填' }]"
+    >
+      <a-textarea v-model="form.remark" style="height: 240px" placeholder="申请描述/审批意见" />
+      <!--      style="background-color: rgba(145, 203, 253, 0.23)"-->
+    </a-form-item>
+    <a-form-item field="attachIds" label="附件">
+      <gl-upload v-model="form.attachIds"></gl-upload>
     </a-form-item>
   </a-form>
 </template>
-
-<style scoped></style>

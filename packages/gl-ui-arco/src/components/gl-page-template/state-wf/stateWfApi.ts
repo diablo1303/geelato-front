@@ -111,6 +111,7 @@ export class ProcTask {
   handlerId = ''
   handlerName = ''
   remark = ''
+  attachIds = ''
 }
 
 /**
