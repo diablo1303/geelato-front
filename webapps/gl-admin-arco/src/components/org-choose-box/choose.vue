@@ -120,10 +120,10 @@ watch(() => rightData, () => {
       <a-layout-content :style="{height:`${props.height+24}px`}" class="content-right">
         <div style="width:100%;display: inline-flex;flex-direction: column;">
           <div style="width:100%;display: inline-flex;align-items: center;justify-content: space-between;">
-            <span>已选择 {{ rightData.length }}</span>
+            <span>{{ $t('orgChooseBox.choose.selected') }} {{ rightData.length }}</span>
             <a-button style="padding-right: 0px;" type="text" @click="ev => {rightData = []}">
               <icon-delete/>
-              &nbsp;清空
+              &nbsp;{{ $t('orgChooseBox.choose.clear') }}
             </a-button>
           </div>
           <a-divider style="margin: 1px 0;border-bottom: 1px solid var(--color-neutral-5);"/>

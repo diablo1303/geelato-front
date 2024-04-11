@@ -22,7 +22,6 @@ export default {
   'application.app.list.status.1': '启用',
   'application.app.list.status.0': '停用',
   'application.app.list.href': '首页链接',
-  'application.app.list.dependAppCode': 'dependAppCode',
   'application.app.list.powerInfo': '权限信息',
   'application.app.list.versionInfo': '版本信息',
   'application.app.list.seqNo': '排序',
@@ -46,4 +45,7 @@ export default {
   'application.app.model.title.view': '查看应用',
   'application.app.model.cancel.text': '取消',
   'application.app.model.ok.text': '确认',
+  'searchTable.app.operations.all': '全选',
+  'application.app.model.icon.title': '选择图标',
+  'application.app.model.icon.placeholder': '输入查询过滤图标',
 };

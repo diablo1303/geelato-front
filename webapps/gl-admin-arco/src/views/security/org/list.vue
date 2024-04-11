@@ -47,7 +47,7 @@ const pagination = reactive({
 });
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 1200, y: props.height});
+const scroll = ref({x: 1350, y: props.height});
 // 列表 - 排序
 const lastSort = ref<string>('');
 const sortable = ref<Record<string, TableSortable>>({
@@ -314,7 +314,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -363,24 +363,24 @@ watch(() => props, (val) => {
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.org.index.form.name')" :tooltip="true" :width="210" data-index="name"/>
       <a-table-column :ellipsis="true" :sortable="sortable.code" :title="$t('security.org.index.form.code')" :tooltip="true" :width="150" data-index="code"/>
-      <a-table-column :title="$t('security.org.index.form.type')" :width="70" data-index="type">
+      <a-table-column :title="$t('security.org.index.form.type')" :width="120" data-index="type">
         <template #cell="{ record }">
           {{ record.type ? $t(`security.org.index.form.type.${record.type}`) : '' }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.org.index.form.category')" :width="70" data-index="category">
+      <a-table-column :title="$t('security.org.index.form.category')" :width="120" data-index="category">
         <template #cell="{ record }">
           {{ record.category ? $t(`security.org.index.form.category.${record.category}`) : '' }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.org.index.form.status')" :width="70" data-index="status">
+      <a-table-column :title="$t('security.org.index.form.status')" :width="120" data-index="status">
         <template #cell="{ record }">
           {{ $t(`security.org.index.form.status.${record.status}`) }}
         </template>
       </a-table-column>
-      <a-table-column :sortable="sortable.seqNo" :title="$t('security.org.index.form.seqNo')" :width="100" align="right" data-index="seqNo"/>
+      <a-table-column :sortable="sortable.seqNo" :title="$t('security.org.index.form.seqNo')" :width="120" align="right" data-index="seqNo"/>
       <a-table-column :sortable="sortable.createAt" :title="$t('security.org.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :title="$t('security.org.index.form.operations')" :width="210" align="center" data-index="operations" fixed="right">
+      <a-table-column :title="$t('security.org.index.form.operations')" :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button size="small" type="text" @click="viewTable(record)">
             {{ $t('searchTable.columns.operations.view') }}

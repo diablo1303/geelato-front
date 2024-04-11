@@ -315,7 +315,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -364,7 +364,7 @@ watch(() => props, (val) => {
           </template>
         </a-table-column>
         <a-table-column :ellipsis="true" :title="$t('security.user.index.form.orgName')" :tooltip="true" :width="150" data-index="orgName"/>
-        <a-table-column :title="$t('security.user.index.form.enableStatus')" :width="70" data-index="enableStatus">
+        <a-table-column :title="$t('security.user.index.form.enableStatus')" :width="90" data-index="enableStatus">
           <template #cell="{ record }">
             {{ $t(`security.user.index.form.enableStatus.${record.enableStatus}`) }}
           </template>

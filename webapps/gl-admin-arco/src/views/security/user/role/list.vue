@@ -54,7 +54,7 @@ const pagination = reactive({
 });
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 1200, y: props.height});
+const scroll = ref({x: 1300, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
   roleWeight: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
@@ -336,7 +336,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-end;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -350,14 +350,14 @@ watch(() => props, (val) => {
           {{ $t('searchTable.form.reset') }}
         </a-button>
         <a-trigger v-model:popup-visible="selectVisible" :popup-translate="[0, -32]" position="br" trigger="click">
-          <a-button :disabled="formState==='view'" status="success" type="primary">
+          <a-button :disabled="formState==='view'" status="success" :type="selectVisible?'text':'primary'">
             <template #icon>
               <icon-plus/>
             </template>
             {{ $t('searchTable.operation.create') }}
           </a-button>
           <template #content>
-            <a-space style="align-items: flex-start;">
+            <a-space style="align-items: flex-end;">
               <a-select v-model="selectData" :style="{width:'320px'}" allow-clear allow-search multiple scrollbar
                         placeholder="选择角色，关联当前用户" @change="selectChange">
                 <a-option v-for="(item,index) of roleSelectOptions" :key="index"
@@ -368,19 +368,17 @@ watch(() => props, (val) => {
                 <template #header>
                   <div class="check-all">
                     <a-checkbox v-model="selectAll" class="check-all-radio" @change="selectAllChange">
-                      <span class="check-all-span">全选</span>
+                      <span class="check-all-span">{{ $t('searchTable.app.operations.all') }}</span>
                     </a-checkbox>
                   </div>
                 </template>
               </a-select>
-              <a-space direction="vertical">
-                <a-button type="primary" @click="closeTrigger">
-                  <template #icon>
-                    <icon-save/>
-                  </template>
-                  保存
-                </a-button>
-              </a-space>
+              <a-button type="primary" @click="closeTrigger">
+                <template #icon>
+                  <icon-save/>
+                </template>
+                {{ $t('security.dictItem.index.popover.ok') }}
+              </a-button>
             </a-space>
           </template>
         </a-trigger>
@@ -414,14 +412,14 @@ watch(() => props, (val) => {
           {{ $t(`security.role.index.form.type.${record.roleType}`) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.role.index.form.enableStatus')" :width="70" data-index="roleEnableStatus">
+      <a-table-column :title="$t('security.role.index.form.enableStatus')" :width="90" data-index="roleEnableStatus">
         <template #cell="{ record }">
           {{ $t(`security.role.index.form.enableStatus.${record.roleEnableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :sortable="sortable.roleSeqNo" :title="$t('security.role.index.form.seqNo')" :width="90" align="right" data-index="roleSeqNo"/>
+      <a-table-column :sortable="sortable.roleSeqNo" :title="$t('security.role.index.form.seqNo')" :width="120" align="right" data-index="roleSeqNo"/>
       <a-table-column :sortable="sortable.createAt" :title="$t('security.role.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :title="$t('security.role.index.form.operations')" :width="90" align="center" data-index="operations" fixed="right">
+      <a-table-column :title="$t('security.role.index.form.operations')" :width="100" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-popconfirm :content="$t('searchTable.columns.operations.relevance.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record)">
             <a-button :disabled="formState==='view'" size="small" status="danger" type="text">

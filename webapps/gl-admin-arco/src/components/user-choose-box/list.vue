@@ -37,7 +37,7 @@ const renderData = ref<PageQueryFilter[]>([]);
 const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
 const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
 const scrollbar = ref(true);
-const scroll = {x: 1900, y: 285};
+const scroll = {x: 1960, y: 285};
 const rowSelection = ref<TableRowSelection>({
   type: 'radio',
   showCheckedAll: false,
@@ -287,7 +287,7 @@ watch(() => props.orgId, () => {
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="search($event)">
           <template #icon>
             <icon-search/>
@@ -331,7 +331,7 @@ watch(() => props.orgId, () => {
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.name')" :tooltip="true" :width="120" data-index="name"/>
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.loginName')" :tooltip="true" :width="120" data-index="loginName"/>
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.jobNumber')" :tooltip="true" :width="120" data-index="jobNumber"/>
-      <a-table-column :title="$t('security.user.index.form.enableStatus')" :width="70" data-index="enableStatus">
+      <a-table-column :title="$t('security.user.index.form.enableStatus')" :width="90" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`security.user.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
@@ -340,7 +340,7 @@ watch(() => props.orgId, () => {
       <a-table-column :title="$t('security.user.index.form.mobilePhone')" :width="150" data-index="mobilePhone"/>
       <a-table-column :ellipsis="true" :title="$t('security.user.index.form.email')" :tooltip="true" :width="180" data-index="email"/>
       <a-table-column :title="$t('security.user.index.form.post')" :width="120" data-index="post"/>
-      <a-table-column :title="$t('security.user.index.form.sex')" :width="70" data-index="sex">
+      <a-table-column :title="$t('security.user.index.form.sex')" :width="90" data-index="sex">
         <template #cell="{ record }">
           {{ $t(`security.user.index.form.sex.${record.sex}`) }}
         </template>
@@ -355,7 +355,7 @@ watch(() => props.orgId, () => {
           {{ $t(`security.user.index.form.source.${record.source}`) }}
         </template>
       </a-table-column>
-      <a-table-column :sortable="sortable.seqNo" :title="$t('security.user.index.form.seqNo')" :width="100" data-index="seqNo"/>
+      <a-table-column :sortable="sortable.seqNo" :title="$t('security.user.index.form.seqNo')" :width="120" align="right" data-index="seqNo"/>
       <a-table-column :sortable="sortable.updateAt" :title="$t('security.user.index.form.updateAt')" :width="180" data-index="updateAt"/>
       <a-table-column :sortable="sortable.createAt" :title="$t('security.user.index.form.createAt')" :width="180" data-index="createAt"/>
     </template>

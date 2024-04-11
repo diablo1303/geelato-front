@@ -55,7 +55,7 @@ const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
 const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 1110, y: props.height});
+const scroll = ref({x: 1200, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
@@ -226,7 +226,7 @@ const formParams = ref({
   isModal: true,
   title: '',
   width: '80%',
-  height: window.innerHeight * 0.8,
+  height: window.innerHeight * 0.8 - 64,
   parameter: {appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
@@ -289,7 +289,7 @@ watch(() => props, (val) => {
   if (props.visible === true) {
     // 页面设置
     scroll.value.y = props.height;
-    formParams.value.height = window.innerHeight * 0.8;
+    formParams.value.height = window.innerHeight * 0.8 - 64;
     basePagination.pageSize = props.pageSize;
     // 表单参数
     formParams.value.parameter = {
@@ -358,7 +358,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -427,7 +427,7 @@ watch(() => props, (val) => {
           {{ record.title }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.file.index.form.useType')" :width="70" data-index="useType">
+      <a-table-column :title="$t('security.file.index.form.useType')" :width="90" data-index="useType">
         <template #cell="{ record }">
           {{ record.useType ? $t(`security.file.index.form.useType.${record.useType}`) : '' }}
         </template>
@@ -438,13 +438,13 @@ watch(() => props, (val) => {
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.file.index.form.fileCode')" :tooltip="true" :width="150" data-index="fileCode"/>
-      <a-table-column :title="$t('security.file.index.form.enableStatus')" :width="70" data-index="enableStatus">
+      <a-table-column :title="$t('security.file.index.form.enableStatus')" :width="90" data-index="enableStatus">
         <template #cell="{ record }">
-          {{ record.enableStatus ? $t(`security.file.index.form.enableStatus.${record.enableStatus}`) : '' }}
+          {{ $t(`security.file.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
       <a-table-column :sortable="sortable.createAt" :title="$t('security.file.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :title="$t('security.file.index.form.operations')" :width="280" align="center" data-index="operations" fixed="right">
+      <a-table-column :title="$t('security.file.index.form.operations')" :width="340" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-dropdown :disabled="formState==='view'" position="br" trigger="hover">
             <a-button :disabled="formState==='view'" size="small" type="text">

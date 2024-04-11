@@ -47,7 +47,7 @@ const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
 const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 1440, y: props.height});
+const scroll = ref({x: 1600, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
   seqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
@@ -319,7 +319,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 136px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-end;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -333,7 +333,7 @@ watch(() => props, (val) => {
           {{ $t('searchTable.form.reset') }}
         </a-button>
         <a-trigger v-model:popup-visible="selectVisible" :popup-translate="[0, -32]" position="br" trigger="click">
-          <a-button :disabled="formState==='view'" status="success" type="primary">
+          <a-button :disabled="formState==='view'" status="success" :type="selectVisible?'text':'primary'">
             <template #icon>
               <icon-plus/>
             </template>
@@ -347,19 +347,17 @@ watch(() => props, (val) => {
                 <template #header>
                   <div class="check-all">
                     <a-checkbox v-model="selectAll" class="check-all-radio" @change="selectAllChange">
-                      <span class="check-all-span">全选</span>
+                      <span class="check-all-span">{{ $t('searchTable.app.operations.all') }}</span>
                     </a-checkbox>
                   </div>
                 </template>
               </a-select>
-              <a-space direction="vertical">
-                <a-button type="primary" @click="closeTrigger">
-                  <template #icon>
-                    <icon-save/>
-                  </template>
-                  保存
-                </a-button>
-              </a-space>
+              <a-button type="primary" @click="closeTrigger">
+                <template #icon>
+                  <icon-save/>
+                </template>
+                {{ $t('security.dictItem.index.popover.ok') }}
+              </a-button>
             </a-space>
           </template>
         </a-trigger>
@@ -392,12 +390,12 @@ watch(() => props, (val) => {
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.name')" :tooltip="true" :width="180" data-index="appName"/>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.code')" :tooltip="true" :width="150" data-index="appCode"/>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.applyStatus')" :tooltip="true" :width="90" data-index="appApplyStatus">
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.applyStatus')" :tooltip="true" :width="120" data-index="appApplyStatus">
         <template #cell="{ record }">
           {{ [0, 1].includes(record.appApplyStatus) ? $t(`application.app.list.status.${record.appApplyStatus}`) : "" }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.designStatus')" :tooltip="true" :width="90" data-index="appDesignStatus">
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.designStatus')" :tooltip="true" :width="120" data-index="appDesignStatus">
         <template #cell="{ record }">
           {{ [0, 1].includes(record.appDesignStatus) ? $t(`application.app.list.status.${record.appDesignStatus}`) : "" }}
         </template>
@@ -408,17 +406,17 @@ watch(() => props, (val) => {
           {{ record.appIcon }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.watermark')" :tooltip="true" :width="70" data-index="appWaterMark">
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.watermark')" :tooltip="true" :width="120" data-index="appWaterMark">
         <template #cell="{ record }">
           {{ [0, 1].includes(record.appWaterMark) ? $t(`application.app.list.watermark.${record.appWaterMark}`) : "" }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :sortable="sortable.seqNo" :title="$t('application.app.list.seqNo')" :tooltip="true" :width="90" align="right"
+      <a-table-column :ellipsis="true" :sortable="sortable.seqNo" :title="$t('application.app.list.seqNo')" :tooltip="true" :width="120" align="right"
                       data-index="appSeqNo"/>
       <a-table-column :ellipsis="true" :sortable="sortable.updateAt" :title="$t('application.app.list.updateAt')" :tooltip="true" :width="180"
                       data-index="updateAt"/>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.description')" :tooltip="true" :width="240" data-index="appDescription"/>
-      <a-table-column :title="$t('application.app.list.operations')" :width="90" align="center" data-index="operations" fixed="right">
+      <a-table-column :title="$t('application.app.list.operations')" :width="100" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-popconfirm :content="$t('searchTable.columns.operations.relevance.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record.id)">
             <a-button :disabled="formState==='view'" size="small" status="danger" type="text">

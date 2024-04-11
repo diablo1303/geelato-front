@@ -157,7 +157,7 @@ const changeDictItem = () => {
 watch(() => props, () => {
   if (props.visible === true) {
     // 恢复设置
-  listParams.value.height = resetListHeight();
+    listParams.value.height = resetListHeight();
     modelParams.value = generateFormData();
     listParams.value = generateListParams();
     dictItemTotal.value = 0;
@@ -183,20 +183,20 @@ watch(() => visibleForm, () => {
 <template>
   <a-modal v-model:visible="visibleForm"
            :footer="false"
-           :title="title || '数据字典'"
+           :title="title || $t(`security.dict.index.model.title.${formState}`)"
            :width="width || ''" title-align="start">
     <a-layout :style="{height: `${height}px`}">
       <a-layout style="flex-direction: row;">
         <a-layout-content style="width: 30%;">
-          <a-card class="" size="small" title="字典">
+          <a-card class="" size="small" :title="$t('security.dictItem.index.popover.dict.title')">
             <template #extra>
-              <a-popconfirm v-if="formState!=='view'" :content="`是否${modelParams.formState==='add'?'保存':'更新'}字典？`"
+              <a-popconfirm v-if="formState!=='view'" :content="$t('searchTable.columns.operations.update.msg')"
                             position="br" type="info" @ok="updateDict">
                 <a-button :loading="dictLoading" class="app-button" status="success" type="text">
                   <template #icon>
                     <icon-save/>
                   </template>
-                  {{ modelParams.formState === 'add' ? '保存' : '更新' }}
+                  {{ $t('searchTable.columns.operations.update') }}
                 </a-button>
               </a-popconfirm>
             </template>
@@ -207,9 +207,9 @@ watch(() => visibleForm, () => {
         </a-layout-content>
         <a-divider direction="vertical"/>
         <a-layout-content style="width: 68%;">
-          <a-card class="" size="small" title="字典项">
+          <a-card class="" size="small">
             <template #title>
-              字典项（当前 {{ dictItemTotal }} 条）
+              {{ $t('security.dictItem.index.popover.item.title') }}（当前 {{ dictItemTotal }} 条）
             </template>
             <template #extra>
               <a-button v-if="formState!=='view'&&modelParams.id" class="app-button" type="text" @click="exportDictAndItems(modelParams.id)">

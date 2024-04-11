@@ -22,7 +22,6 @@ export default {
   'application.app.list.status.1': 'enabled',
   'application.app.list.status.0': 'disabled',
   'application.app.list.href': 'homeHref',
-  'application.app.list.dependAppCode': 'dependAppCode',
   'application.app.list.powerInfo': 'power',
   'application.app.list.versionInfo': 'version',
   'application.app.list.seqNo': 'sequence',
@@ -46,4 +45,7 @@ export default {
   'application.app.model.title.view': 'View Application',
   'application.app.model.cancel.text': 'Cancel',
   'application.app.model.ok.text': 'Confirm',
+  'searchTable.app.operations.all': 'Select All',
+  'application.app.model.icon.title': 'Select icon',
+  'application.app.model.icon.placeholder': 'Enter the query filter icon',
 };

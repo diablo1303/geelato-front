@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'List'
+  name: 'UserOrgList'
 };
 </script>
 
@@ -54,7 +54,7 @@ const pagination = reactive({
 });
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 1200, y: props.height});
+const scroll = ref({x: 1350, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
   orgCode: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
@@ -300,7 +300,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -342,7 +342,7 @@ watch(() => props, (val) => {
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.org.index.form.name')" :tooltip="true" :width="210" data-index="orgName"/>
-      <a-table-column :ellipsis="true" :title="$t('security.orgUser.index.form.relevance')" :tooltip="true" :width="70" data-index="defaultOrg">
+      <a-table-column :ellipsis="true" :title="$t('security.orgUser.index.form.relevance')" :tooltip="true" :width="100" data-index="defaultOrg">
         <template #cell="{ record }">
           <span v-if="record.defaultOrg===1" style="font-weight: bold;color: rgb(var(--primary-6));">{{ $t('security.orgUser.index.form.default') }}</span>
           <span v-else>{{ $t('security.orgUser.index.form.partJob') }}</span>
@@ -350,24 +350,24 @@ watch(() => props, (val) => {
       </a-table-column>
       <a-table-column :ellipsis="true" :sortable="sortable.orgCode" :title="$t('security.org.index.form.code')" :tooltip="true" :width="150"
                       data-index="orgCode"/>
-      <a-table-column :title="$t('security.org.index.form.type')" :width="70" data-index="orgType">
+      <a-table-column :title="$t('security.org.index.form.type')" :width="120" data-index="orgType">
         <template #cell="{ record }">
           {{ record.orgType ? $t(`security.org.index.form.type.${record.orgType}`) : '' }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.org.index.form.category')" :width="70" data-index="orgCategory">
+      <a-table-column :title="$t('security.org.index.form.category')" :width="90" data-index="orgCategory">
         <template #cell="{ record }">
           {{ record.orgCategory ? $t(`security.org.index.form.category.${record.orgCategory}`) : '' }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.org.index.form.status')" :width="70" data-index="orgStatus">
+      <a-table-column :title="$t('security.org.index.form.status')" :width="90" data-index="orgStatus">
         <template #cell="{ record }">
           {{ $t(`security.org.index.form.status.${record.orgStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :sortable="sortable.orgSeqNo" :title="$t('security.org.index.form.seqNo')" :width="100" align="right" data-index="orgSeqNo"/>
+      <a-table-column :sortable="sortable.orgSeqNo" :title="$t('security.org.index.form.seqNo')" :width="120" align="right" data-index="orgSeqNo"/>
       <a-table-column :sortable="sortable.createAt" :title="$t('security.org.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :title="$t('security.org.index.form.operations')" :width="90" align="center" data-index="operations" fixed="right">
+      <a-table-column :title="$t('security.org.index.form.operations')" :width="100" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-tooltip v-if="record.defaultOrg===1" :content="$t('security.orgUser.index.form.operations.default')">
             <a-button :disabled="true" size="small" status="danger" type="text">

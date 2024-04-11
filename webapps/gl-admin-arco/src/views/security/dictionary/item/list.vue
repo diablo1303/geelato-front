@@ -53,7 +53,7 @@ const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
 const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 1200, y: props.height});
+const scroll = ref({x: 1250, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
   itemCode: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
@@ -420,7 +420,7 @@ defineExpose({openLocker, openModel});
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -465,15 +465,15 @@ defineExpose({openLocker, openModel});
       <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemName')" :tooltip="true" :width="240" data-index="itemName"/>
       <a-table-column :ellipsis="true" :sortable="sortable.itemCode" :title="$t('security.dictItem.index.form.itemCode')" :tooltip="true" :width="150"
                       data-index="itemCode"/>
-      <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" :width="70" data-index="enableStatus">
+      <a-table-column :title="$t('security.dictItem.index.form.enableStatus')" :width="90" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`security.dictItem.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :sortable="sortable.seqNo" :title="$t('security.dictItem.index.form.seqNo')" :width="100" data-index="seqNo"/>
+      <a-table-column :sortable="sortable.seqNo" :title="$t('security.dictItem.index.form.seqNo')" :width="100" align="right" data-index="seqNo"/>
       <a-table-column :sortable="sortable.createAt" :title="$t('security.dictItem.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemRemark')" :tooltip="true" :width="240" data-index="itemRemark"/>
-      <a-table-column :title="$t('security.dictItem.index.form.operations')" :width="220" align="center" data-index="operations" fixed="right">
+      <a-table-column :title="$t('security.dictItem.index.form.operations')" :width="250" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-tooltip content="批量配置子字典项">
             <a-button :disabled="formState==='view'" size="small" type="text" @click="configTable(record)">

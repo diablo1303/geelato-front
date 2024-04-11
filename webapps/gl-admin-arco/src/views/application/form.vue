@@ -94,11 +94,11 @@ watch(() => visibleForm, () => {
            :width="width || ''" title-align="start"
            @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
     <ApplicationModel ref="tableFormRef"
-                      :visible="modelParams.visible"
-                      :parameter="modelParams.parameter"
+                      :formCol="modelParams.formCol"
                       :formState="modelParams.formState"
                       :modelValue="modelParams.id"
-                      :formCol="modelParams.formCol"/>
+                      :parameter="modelParams.parameter"
+                      :visible="modelParams.visible"/>
   </a-modal>
   <a-drawer v-if="!isModal"
             v-model:visible="visibleForm"
@@ -109,11 +109,11 @@ watch(() => visibleForm, () => {
             :width="width || ''" title-align="start"
             @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
     <ApplicationModel ref="tableFormRef"
-                      :visible="modelParams.visible"
-                      :parameter="modelParams.parameter"
+                      :formCol="modelParams.formCol"
                       :formState="modelParams.formState"
                       :modelValue="modelParams.id"
-                      :formCol="modelParams.formCol"/>
+                      :parameter="modelParams.parameter"
+                      :visible="modelParams.visible"/>
   </a-drawer>
 </template>
 

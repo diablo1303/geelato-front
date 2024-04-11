@@ -158,12 +158,12 @@ watch(() => props.height, () => {
         <a-card class="">
           <template #extra>
             <a-space>
-              <a-popconfirm content="是否更新该用户的基本信息？" position="br" type="info" @ok="updateForm">
+              <a-popconfirm :content="$t('searchTable.columns.operations.update.msg')" position="br" type="info" @ok="updateForm">
                 <a-button :disabled="formState==='view'" :loading="loading" class="app-button" type="text">
                   <template #icon>
                     <icon-save/>
                   </template>
-                  更新
+                  {{ $t('searchTable.columns.operations.update') }}
                 </a-button>
               </a-popconfirm>
             </a-space>

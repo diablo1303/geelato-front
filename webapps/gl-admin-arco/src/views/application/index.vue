@@ -76,12 +76,12 @@ onUnmounted(() => {
   <div class="container">
     <Breadcrumb :items="['menu.application', 'menu.application.app.list']"/>
     <a-card class="general-card">
-      <ApplicationList :visible="listParams.visible"
-                       :parameter="listParams.parameter"
+      <ApplicationList :filterCol="listParams.filterCol"
                        :formState="listParams.formState"
-                       :filterCol="listParams.filterCol"
+                       :height="listParams.height"
                        :pageSize="listParams.pageSize"
-                       :height="listParams.height"/>
+                       :parameter="listParams.parameter"
+                       :visible="listParams.visible"/>
     </a-card>
   </div>
 </template>

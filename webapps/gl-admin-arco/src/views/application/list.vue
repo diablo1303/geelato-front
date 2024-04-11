@@ -50,7 +50,7 @@ const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
 const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 1700, y: props.height});
+const scroll = ref({x: 2000, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
   seqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
@@ -272,14 +272,14 @@ watch(() => props, (val) => {
 
 <template>
   <ApplicationForm v-model:visible="formParams.visible"
+                   :formCol="formParams.formCol"
+                   :formState="formParams.formState"
+                   :height="formParams.height"
                    :isModal="formParams.isModal"
+                   :modelValue="formParams.id"
+                   :parameter="formParams.parameter"
                    :title="formParams.title"
                    :width="formParams.width"
-                   :height="formParams.height"
-                   :parameter="formParams.parameter"
-                   :formState="formParams.formState"
-                   :modelValue="formParams.id"
-                   :formCol="formParams.formCol"
                    @saveSuccess="saveSuccess"/>
 
   <a-row>
@@ -315,7 +315,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -375,12 +375,12 @@ watch(() => props, (val) => {
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.code')" :tooltip="true" :width="180" data-index="code"/>
       <!-- <a-table-column :ellipsis="true" :title="$t('application.app.list.versionInfo')" :tooltip="true" :width="120" data-index="versionInfo"/>-->
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.applyStatus')" :tooltip="true" :width="90" data-index="applyStatus">
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.applyStatus')" :tooltip="true" :width="120" data-index="applyStatus">
         <template #cell="{ record }">
           {{ [0, 1].includes(record.applyStatus) ? $t(`application.app.list.status.${record.applyStatus}`) : "" }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.designStatus')" :tooltip="true" :width="90" data-index="designStatus">
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.designStatus')" :tooltip="true" :width="120" data-index="designStatus">
         <template #cell="{ record }">
           {{ [0, 1].includes(record.designStatus) ? $t(`application.app.list.status.${record.designStatus}`) : "" }}
         </template>
@@ -391,17 +391,17 @@ watch(() => props, (val) => {
           {{ record.icon }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('application.app.list.watermark')" :tooltip="true" :width="70" data-index="watermark">
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.watermark')" :tooltip="true" :width="120" data-index="watermark">
         <template #cell="{ record }">
           {{ [0, 1].includes(record.watermark) ? $t(`application.app.list.watermark.${record.watermark}`) : "" }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :sortable="sortable.seqNo" :title="$t('application.app.list.seqNo')" :tooltip="true" :width="90" align="right"
+      <a-table-column :ellipsis="true" :sortable="sortable.seqNo" :title="$t('application.app.list.seqNo')" :tooltip="true" :width="120" align="right"
                       data-index="seqNo"/>
       <a-table-column :ellipsis="true" :sortable="sortable.createAt" :title="$t('application.app.list.createAt')" :tooltip="true" :width="180"
                       data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.description')" :tooltip="true" :width="240" data-index="description"/>
-      <a-table-column :title="$t('application.app.list.operations')" :width="350" align="center" data-index="operations" fixed="right">
+      <a-table-column :title="$t('application.app.list.operations')" :width="400" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button :disabled="![1].includes(record.applyStatus)" size="small" type="text" @click="enterTable(record,'index')">
             {{ $t('application.app.list.operations.enter.index') }}

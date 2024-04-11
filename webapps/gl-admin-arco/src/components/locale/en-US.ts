@@ -25,8 +25,10 @@ export default {
   'orgChooseBox.index.modal.cancel': 'Cancel',
   'orgChooseBox.index.modal.confirm': 'Confirm',
   'orgChooseBox.choose.delete': 'Delete',
+  'orgChooseBox.choose.selected': 'Selected',
+  'orgChooseBox.choose.clear': 'Clear',
   'orgChooseBox.tree.search': 'Search Organization',
-  'orgChooseBox.tree.root': 'Organization Management',
+  'orgChooseBox.tree.root': 'Organization Manage',
   'orgChooseBox.tree.max.warn': 'The maximum selection is exceeded',
   /* 用户选择 */
   'userChooseBox.index.empty': 'Please select User',
@@ -36,5 +38,7 @@ export default {
   'userChooseBox.index.modal.cancel': 'Cancel',
   'userChooseBox.index.modal.confirm': 'Confirm',
   'userChooseBox.choose.delete': 'Delete',
+  'userChooseBox.choose.selected': 'Selected',
+  'userChooseBox.choose.clear': 'Clear',
   'userChooseBox.list.max.warn': 'The maximum selection is exceeded'
 };

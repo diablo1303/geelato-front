@@ -25,6 +25,8 @@ export default {
   'orgChooseBox.index.modal.cancel': '取消',
   'orgChooseBox.index.modal.confirm': '确定',
   'orgChooseBox.choose.delete': '删除',
+  'orgChooseBox.choose.selected': '已选择',
+  'orgChooseBox.choose.clear': '清空',
   'orgChooseBox.tree.search': '搜索',
   'orgChooseBox.tree.root': '组织管理',
   'orgChooseBox.tree.max.warn': '超过最大选择量',
@@ -36,5 +38,7 @@ export default {
   'userChooseBox.index.modal.cancel': '取消',
   'userChooseBox.index.modal.confirm': '确定',
   'userChooseBox.choose.delete': '删除',
+  'userChooseBox.choose.selected': '已选择',
+  'userChooseBox.choose.clear': '清空',
   'userChooseBox.list.max.warn': '超过最大选择量'
 };

@@ -186,12 +186,12 @@ watch(() => visibleForm, () => {
         <a-card class="">
           <template #extra>
             <a-space>
-              <a-popconfirm content="是否更新该角色的基本信息？" position="br" type="info" @ok="updateRole">
+              <a-popconfirm :content="$t('searchTable.columns.operations.update.msg')" position="br" type="info" @ok="updateRole">
                 <a-button :disabled="formState==='view'" :loading="loading" class="app-button" type="text">
                   <template #icon>
                     <icon-save/>
                   </template>
-                  更新
+                  {{ $t('searchTable.columns.operations.update') }}
                 </a-button>
               </a-popconfirm>
             </a-space>
@@ -231,7 +231,7 @@ watch(() => visibleForm, () => {
                 <template #icon>
                   <icon-refresh/>
                 </template>
-                刷新
+                {{ $t('searchTable.actions.refresh') }}
               </a-button>
             </a-space>
           </template>

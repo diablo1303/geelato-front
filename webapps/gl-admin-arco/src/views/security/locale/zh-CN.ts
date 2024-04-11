@@ -33,6 +33,8 @@ export default {
   'searchTable.columns.status': '状态',
   'searchTable.columns.operations': '操作',
   'searchTable.columns.operations.view': '查看',
+  'searchTable.columns.operations.update': '更新',
+  'searchTable.columns.operations.update.msg': '是否更新该基本信息？',
 
   // size
   'searchTable.size.mini': '迷你',

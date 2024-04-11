@@ -327,11 +327,11 @@ defineExpose({saveOrUpdate, loadPage});
                      field="roles">
           <a-select v-model="selectData" :field-names="{value: 'id', label: 'name'}" :options="roleSelectOptions"
                     :placeholder="$t('application.app.list.roles.placeholder')"
-                    multiple allow-clear allow-search @change="selectChange">
+                    allow-clear allow-search multiple @change="selectChange">
             <template #header>
               <div class="check-all">
                 <a-checkbox v-model="selectAll" class="check-all-radio" @change="selectAllChange">
-                  <span class="check-all-span">全选</span>
+                  <span class="check-all-span">{{ $t('searchTable.app.operations.all') }}</span>
                 </a-checkbox>
               </div>
             </template>
@@ -354,8 +354,9 @@ defineExpose({saveOrUpdate, loadPage});
 
   <a-modal v-model:visible="visible" :footer="false" style="top: 20px" width="930px">
     <template #title>
-      选择图标：
-      <a-input-search v-model="searchText" style="width: 18em;margin-left: 0.5em" allow-clear placeholder="输入查询过滤图标"/>
+      {{ $t('application.app.model.icon.title') }}：
+      <a-input-search v-model="searchText" :placeholder="$t('application.app.model.icon.placeholder')" allow-clear
+                      style="width: 18em;margin-left: 0.5em"/>
     </template>
     <div :style="{'height':'555px','overflow-y':'scroll','padding':'1em','margin':'-20px'}">
       <div v-for="item in glIconItems" :key="item.icon_id" class="gl-iconfont-setter-icon-item" @click="onSelected(item)">

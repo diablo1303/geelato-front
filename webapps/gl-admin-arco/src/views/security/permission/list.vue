@@ -176,12 +176,12 @@ const formParams = ref({
   visible: false,
   isModal: true,
   title: '',
-  width: '1020px',
+  width: '',
   height: '',
   parameter: {appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
-  formCol: 2,
+  formCol: 1,
 });
 /**
  * 列表按钮 - 新增表单
@@ -312,7 +312,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
@@ -359,7 +359,7 @@ watch(() => props, (val) => {
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.name')" :tooltip="true" :width="180" data-index="name"/>
       <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.code')" :tooltip="true" :width="180" data-index="code"/>
-      <a-table-column :title="$t('security.permission.index.form.type')" :width="120" data-index="type">
+      <a-table-column :title="$t('security.permission.index.form.type')" :width="130" data-index="type">
         <template #cell="{ record }">
           {{ record.type ? $t(`security.permission.index.form.type.${record.type}`) : '' }}
         </template>
@@ -368,7 +368,7 @@ watch(() => props, (val) => {
       <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.rule')" :tooltip="true" :width="180" data-index="rule"/>
       <a-table-column :ellipsis="true" :title="$t('security.permission.index.form.description')" :tooltip="true" :width="240" data-index="description"/>
       <a-table-column :sortable="sortable.createAt" :title="$t('security.permission.index.form.createAt')" :width="180" data-index="createAt"/>
-      <a-table-column :title="$t('security.permission.index.form.operations')" :width="210" align="center" data-index="operations" fixed="right">
+      <a-table-column :title="$t('security.permission.index.form.operations')" :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button size="small" type="text" @click="viewTable(record)">
             {{ $t('searchTable.columns.operations.view') }}

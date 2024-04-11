@@ -48,7 +48,7 @@ const resetSplitHeight = () => {
   return window.innerHeight - 165;
 }
 const splitHeight = ref<number>(resetSplitHeight());
-const splitMin = ref<number | string>('300px');
+const splitMin = ref<number | string>('250px');
 const splitSize = ref<number | string>(splitMin.value);
 /**
  * 调整列表高度
