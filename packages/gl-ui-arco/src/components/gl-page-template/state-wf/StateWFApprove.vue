@@ -4,8 +4,12 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { type PropType, ref, watch } from 'vue'
+import {inject, type PropType, ref, watch} from 'vue'
 import type { ProcTranDef } from './stateWfApi'
+import {PageProvideKey, PageProvideProxy} from "@geelato/gl-ui";
+
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
+const isRead = !!pageProvideProxy?.isPageStatusRead()
 
 const emits = defineEmits(['update:tran', 'update:remark','update:attachIds'])
 const props = defineProps({
@@ -69,7 +73,7 @@ defineExpose({ validate })
 </script>
 
 <template>
-  <a-form ref="myForm" :model="form" layout="vertical">
+  <a-form ref="myForm" :model="form" layout="vertical" :disabled="isRead">
     <a-form-item field="tranId" label="选择操作" :rules="[{ required: true, message: '必填' }]">
       <a-select v-model="form.tranId" placeholder="请选择">
         <a-option v-for="tran in nextTrans" :value="tran.id">{{ tran.name }}</a-option>

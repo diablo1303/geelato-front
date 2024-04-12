@@ -700,6 +700,14 @@ const text = {
                 '如字符串key1,key2,key3，可为[key1,key2,key3],可为key1。value1可为string，也可为object，当前object时，支持多语言翻译，格式为{cn:value11,en:value12}'
         },
         {
+            title: '数字转中文币值格式',
+            _code: 'toChineseCurrency',
+            _type: 'string',
+            _brackets: '("123123.23")',
+            _description:
+                '输入可以是数字格式或字符串格式，示例：toChineseCurrency(123456789.12)；//壹亿贰仟叁佰肆拾伍万陆仟柒佰捌拾玖元壹角贰分'
+        },
+        {
             title: '获取文本长度',
             _code: 'len',
             _type: 'number',

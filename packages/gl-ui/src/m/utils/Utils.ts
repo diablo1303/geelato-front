@@ -1,4 +1,5 @@
 import {RecordsUtil} from './RecordsUtil'
+import {toChineseCurrency} from "./toChineseCurrency";
 
 export class Utils {
   constructor() {
@@ -641,7 +642,9 @@ export class Utils {
     }
     return result;
   }
-
+  toChineseCurrency(num:number|string){
+    return  toChineseCurrency(num)
+  }
 }
 
 const utils = new Utils()
