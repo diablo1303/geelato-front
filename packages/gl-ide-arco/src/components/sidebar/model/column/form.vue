@@ -35,6 +35,8 @@ interface PageParams {
   connectId: string; // 数据库链接id
   tableId: string; // 模型名称
   tableName: string;
+  isSync: boolean; // 是否同步
+  isSystem: boolean; // 是否系统表
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -48,7 +50,6 @@ const props = defineProps({
   formCol: {type: Number, default: 1},// 表单列数
   title: {type: String, default: '模型字段'},// 表达标题
   width: {type: String, default: ''},// 表单宽度
-  editName: {type: Boolean, default: true},
 });
 
 const global = useGlobal();
@@ -109,6 +110,7 @@ const generateFormData = (): QueryTableColumnForm => {
   };
 }
 const formData = ref(generateFormData());
+const entityIsEdit = ref<boolean>(false);
 const selectData = ref({fixed: false, max: 21845, min: 0, digit: 5, precision: 0});
 const multiComponentData = ref<QueryMultiComponentForm[]>([]);
 const generateMultiComponentData = (): QueryMultiComponentForm => {
@@ -664,6 +666,11 @@ const handleModelCancel = (ev?: Event) => {
 
 watch(() => props, async () => {
   if (props.visible === true) {
+    if (props.formState === 'add' || (props.formState === 'edit' && props.parameter.isSync === false)) {
+      entityIsEdit.value = true;
+    } else {
+      entityIsEdit.value = false;
+    }
     // 应用信息
     applicationApi.getAppSelectOptions({
       id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
@@ -764,11 +771,16 @@ watch(() => visibleForm, () => {
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
           <a-form-item
-              :rules="[{required: editName,message: '这是必填项'},{match: /^[a-z][a-z0-9_]+$/,message:'匹配：‘a-z’、‘0-9’、‘_’'},{validator:validateCode}]"
+              :rules="[{required: true,message: '这是必填项'},{match: /^[a-z][a-z0-9_]+$/,message:'匹配：‘a-z’、‘0-9’、‘_’'},{validator:validateCode}]"
               field="name" label="字段标识">
-            <a-input v-if="editName" v-model.trim="formData.name" :max-length="30" placeholder="存入数据库表的字段，如：‘create_time’用‘_’分割的字符串。"
+            <a-input v-if="entityIsEdit" v-model.trim="formData.name" :max-length="30" placeholder="存入数据库表的字段，如：‘create_time’用‘_’分割的字符串。"
                      @blur="columnNameBlur"/>
             <span v-else>{{ formData.name }}</span>
+            <a-tooltip v-if="!entityIsEdit" content="变更“字段标识”，更新后会同步至数据库">
+              <a-button size="medium" type="text" @click="ev => {entityIsEdit=true}">
+                <gl-iconfont type="gl-edit-square"/>
+              </a-button>
+            </a-tooltip>
           </a-form-item>
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">

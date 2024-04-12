@@ -17,6 +17,8 @@ type PageParams = {
   connectId: string; // 数据库连接主键
   tableId: string; // 模型主键
   tableName: string; // 模型名称
+  isSync: boolean; // 是否同步
+  isSystem: boolean; // 是否系统表
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -29,7 +31,6 @@ const props = defineProps({
   isModal: {type: Boolean, default: false},
   pageSize: {type: Number, default: 10000},
   height: {type: Number, default: 0},
-  tableSync: {type: Boolean, default: false},
 });
 
 // 分页列表参数
@@ -396,7 +397,7 @@ watch(() => props.height, (val) => {
             编辑
           </a-button>
           <!--    发布      -->
-          <a-tooltip v-if="!tableSync" content="表格未同步至数据库，不能发布！">
+          <a-tooltip v-if="parameter.isSync===false" content="表格未同步至数据库，不能发布！">
             <a-button class="button-disabled" size="small" type="text">
               发布
             </a-button>

@@ -19,6 +19,8 @@ type PageParams = {
   tableId: string; // 模型主键
   object: string; // 模型 entity
   type: string; // 权限类型
+  isSync: boolean; // 是否同步
+  isSystem: boolean; // 是否系统表
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -31,7 +33,6 @@ const props = defineProps({
   isModal: {type: Boolean, default: false},// 是否表单
   pageSize: {type: Number, default: 10000},
   height: {type: Number, default: 0},
-  isSystem: {type: Boolean, default: false},// 是否表单
 });
 
 const global = useGlobal();
@@ -127,26 +128,25 @@ const deleteTableRole = async (id: string) => {
 const columnPage = ref({
   id: '',// 主键
   visible: false,//
-  parameter: {connectId: '', tableId: '', tableName: '', appId: '', tenantCode: ''},
+  parameter: {
+    connectId: '', tableId: '', tableName: '',
+    isSync: false, isSystem: false,
+    appId: '', tenantCode: ''
+  },
   formState: 'add',//
   formCol: 2,//
   title: '模型字段',
-  width: '67%',
-  editName: true,// 是否可编辑模型名称
+  width: '1020px',
 });
 const addColumn = (ev?: MouseEvent) => {
-  columnPage.value.formState = 'add';
-  columnPage.value.title = '新增模型字段';
-  columnPage.value.id = '';
-  columnPage.value.editName = true;
-  columnPage.value.visible = true;
+  Object.assign(columnPage.value, {
+    id: '', visible: true, formState: 'add', title: '新增模型字段'
+  })
 }
 const editColumn = (id: string) => {
-  columnPage.value.formState = 'edit';
-  columnPage.value.title = '编辑模型字段';
-  columnPage.value.id = id;
-  columnPage.value.editName = false;
-  columnPage.value.visible = true;
+  Object.assign(columnPage.value, {
+    "id": id, visible: true, formState: 'edit', title: '编辑模型字段'
+  })
 }
 const deleteTablePermission = async (id: string) => {
   try {
@@ -230,6 +230,8 @@ watch(() => props.parameter, () => {
     connectId: props.parameter.connectId,
     tableId: props.parameter.tableId,
     tableName: props.parameter.object,
+    isSync: props.parameter?.isSync === true,
+    isSystem: props.parameter?.isSystem === true,
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
   };
@@ -245,7 +247,6 @@ watch(() => props.height, (val) => {
 
 <template>
   <GlModelTableColumnForm v-model:visible="columnPage.visible"
-                          :editName="columnPage.editName"
                           :formCol="columnPage.formCol"
                           :formState="columnPage.formState"
                           :modelValue="columnPage.id"
@@ -265,21 +266,21 @@ watch(() => props.height, (val) => {
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button type="primary" @click="addColumnRole">
+        <a-button :disabled="formState==='view'" type="primary" @click="addColumnRole">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
           新增角色
         </a-button>
         <a-tooltip :popup-visible="plusTooltip" position="bottom" content="默认字段不参与字段权限控制，请新增其他字段。">
-          <a-button type="primary" @click="addColumn">
+          <a-button :disabled="formState==='view'||parameter.isSystem===true" type="primary" @click="addColumn">
             <template #icon>
               <gl-iconfont type="gl-plus-circle"/>
             </template>
             新增模型字段
           </a-button>
         </a-tooltip>
-        <a-button type="primary" @click="resetColumnDefaultPermission">
+        <a-button :disabled="formState==='view'" type="primary" @click="resetColumnDefaultPermission">
           <template #icon>
             <gl-iconfont type="gl-reset"/>
           </template>
@@ -393,8 +394,8 @@ watch(() => props.height, (val) => {
               <span :title="item.comment" class="span-textarea">
                 <strong>注释：</strong>{{ item.comment || item.description }}
               </span>
-              <a-divider v-if="!isDefault&&formState==='edit'&&!isSystem" style="margin: 5px 0px"/>
-              <a-space v-if="!isDefault&&formState==='edit'&&!isSystem" style="display: flex;align-items: center;justify-content: end;">
+              <a-divider v-if="!isDefault&&formState==='edit'&&parameter.isSystem===false" style="margin: 5px 0px"/>
+              <a-space v-if="!isDefault&&formState==='edit'&&parameter.isSystem===false" style="display: flex;align-items: center;justify-content: end;">
                 <a-button size="mini" type="primary" @click="editColumn(item.id)">
                   编辑
                 </a-button>

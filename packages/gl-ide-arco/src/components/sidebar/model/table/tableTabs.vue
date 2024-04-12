@@ -47,7 +47,9 @@ const tableFormParams = ref({
 });
 const columnListParams = ref({
   formState: 'edit', isModal: true, height: 0, parameter: {
-    connectId: '', tableId: '', tableName: '', appId: '', tenantCode: ''
+    connectId: '', tableId: '', tableName: '',
+    isSync: false, isSystem: false,
+    appId: '', tenantCode: ''
   }
 });
 const foreignListParams = ref({
@@ -56,8 +58,10 @@ const foreignListParams = ref({
   }
 });
 const viewListParams = ref({
-  formState: 'edit', isModal: true, height: 0, tableSync: false, parameter: {
-    connectId: '', tableId: '', tableName: '', appId: '', tenantCode: ''
+  formState: 'edit', isModal: true, height: 0, parameter: {
+    connectId: '', tableId: '', tableName: '',
+    isSync: false, isSystem: false,
+    appId: '', tenantCode: ''
   }
 });
 const tablePermissionFormParams = ref({
@@ -67,7 +71,9 @@ const tablePermissionFormParams = ref({
 });
 const columnPermissionFormParams = ref({
   formState: 'edit', isModal: true, height: 0, isSystem: false, parameter: {
-    connectId: '', tableId: '', object: '', type: '', appId: '', tenantCode: ''
+    connectId: '', tableId: '', object: '', type: '',
+    isSync: false, isSystem: false,
+    appId: '', tenantCode: ''
   }
 });
 const tableCopyParams = ref({
@@ -131,7 +137,7 @@ const tableFormat = (id: string) => {
     tableData.value = data;
     // 加载模型信息
     tableFormParams.value.id = tableData.value.id;
-    tableFormParams.value.formState = props.formState;
+    tableFormParams.value.formState = isSystem.value ? 'view' : props.formState;
     tableFormParams.value.parameter = {
       connectId: data.connectId, appId: data.appId, tenantCode: data.tenantCode
     };
@@ -140,6 +146,7 @@ const tableFormat = (id: string) => {
     columnListParams.value.height = tableTabHeight.value - 310;
     columnListParams.value.parameter = {
       connectId: data.connectId, tableId: data.id, tableName: data.entityName,
+      isSync: isSync.value >= 1, isSystem: isSystem.value,
       appId: data.appId, tenantCode: data.tenantCode
     };
     // 加载模型外键
@@ -150,9 +157,9 @@ const tableFormat = (id: string) => {
     };
     // 加载模型视图
     viewListParams.value.height = tableTabHeight.value - 310;
-    viewListParams.value.tableSync = isSync.value === 2;
     viewListParams.value.parameter = {
       connectId: data.connectId, tableId: data.id, tableName: data.entityName,
+      isSync: isSync.value === 2, isSystem: isSystem.value,
       appId: data.appId, tenantCode: data.tenantCode
     };
     // 加载模型权限
@@ -162,10 +169,10 @@ const tableFormat = (id: string) => {
       appId: data.appId, tenantCode: data.tenantCode
     };
     // 加载字段权限
-    columnPermissionFormParams.value.isSystem = isSystem.value;
     columnPermissionFormParams.value.height = tableTabHeight.value - 210;
     columnPermissionFormParams.value.parameter = {
       connectId: data.connectId, tableId: data.id, type: 'cp', object: data.entityName,
+      isSync: isSync.value >= 1, isSystem: isSystem.value,
       appId: data.appId, tenantCode: data.tenantCode
     };
   });
@@ -345,8 +352,7 @@ watch(() => visibleForm, () => {
           <GlModelTableViewList v-if="visibleForm" :formState="viewListParams.formState"
                                 :height="viewListParams.height"
                                 :isModal="viewListParams.isModal"
-                                :parameter="viewListParams.parameter"
-                                :tableSync="viewListParams.tableSync"/>
+                                :parameter="viewListParams.parameter"/>
         </a-card>
       </a-tab-pane>
       <a-tab-pane :key="5" class="a-tabs-four" title="模型权限">
@@ -362,21 +368,20 @@ watch(() => visibleForm, () => {
           <GlModelTableColumnPermissionForm v-if="visibleForm" :formState="columnPermissionFormParams.formState"
                                             :height="columnPermissionFormParams.height"
                                             :isModal="columnPermissionFormParams.isModal"
-                                            :isSystem="columnPermissionFormParams.isSystem"
                                             :parameter="columnPermissionFormParams.parameter"/>
         </a-card>
       </a-tab-pane>
       <template #extra>
-        <a-space v-if="!isSystem">
-          <a-popconfirm v-if="tabsKey===1" content="是否更新该条模型数据？" position="bottom" type="info" @ok="updateTable">
-            <a-button v-if="tabsKey===1" size="small" type="outline">
+        <a-space>
+          <a-popconfirm v-if="!isSystem&&tabsKey===1" content="是否更新该条模型数据？" position="bottom" type="info" @ok="updateTable">
+            <a-button size="small" type="outline">
               <template #icon>
                 <gl-iconfont type="gl-save"/>
               </template>
               更新
             </a-button>
           </a-popconfirm>
-          <a-popconfirm v-if="tabsKey===1" content="是否删除该条模型数据？" position="bottom" type="warning" @ok="deleteTable">
+          <a-popconfirm v-if="!isSystem&&tabsKey===1" content="是否删除该条模型数据？" position="bottom" type="warning" @ok="deleteTable">
             <a-button size="small" status="danger" type="outline">
               <template #icon>
                 <gl-iconfont type="gl-delete"/>
@@ -384,7 +389,7 @@ watch(() => visibleForm, () => {
               删除
             </a-button>
           </a-popconfirm>
-          <a-button size="small" type="outline" @click="syncFromModelToTable">
+          <a-button :disabled="isSystem" size="small" type="outline" @click="syncFromModelToTable">
             <template #icon>
               <gl-iconfont type="gl-sync"/>
             </template>
@@ -403,7 +408,7 @@ watch(() => visibleForm, () => {
                 复制模型
               </a-doption>
               <a-divider style="margin: 0px 0px;"/>
-              <a-doption style="color: rgb(var(--primary-6));" @click="syncFromTableToModel">
+              <a-doption :disabled="isSystem" style="color: rgb(var(--primary-6));" @click="syncFromTableToModel">
                 <template #icon>
                   <gl-iconfont type="gl-sync"/>
                 </template>

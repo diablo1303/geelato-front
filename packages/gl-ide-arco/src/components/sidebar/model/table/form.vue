@@ -6,8 +6,8 @@ export default {
 
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import type {FormInstance} from "@arco-design/web-vue";
-import {modelApi, applicationApi} from "@geelato/gl-ui";
+import {type FormInstance, Modal} from "@arco-design/web-vue";
+import {modelApi, applicationApi, utils} from "@geelato/gl-ui";
 import type {QueryConnectForm, QueryTableForm, QueryAppForm} from '@geelato/gl-ui';
 import {enableStatusOptions, linkedOptions, tableTypeOptions} from "./searchTable";
 
@@ -103,7 +103,13 @@ const validateCode = async (value: any, callback: any) => {
     console.log(err);
   }
 }
-
+/**
+ * 文本域查看
+ * @param content
+ */
+const openModal = (content: string) => {
+  Modal.open({'content': content, 'footer': false, 'simple': true});
+}
 /**
  * 重置验证信息
  */
@@ -152,6 +158,7 @@ const saveOrUpdate = (successBack?: any, failBack?: any) => {
 }
 
 watch(() => props, () => {
+  console.log('watch props', props);
   if (props.visible === true) {
     loadPage();
   }
@@ -166,7 +173,8 @@ defineExpose({saveOrUpdate, loadPage});
     <a-row :gutter="wrapperCol">
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="title" label="名称(中文)">
-          <a-input v-model.trim="formData.title" :max-length="32" :readonly="formState==='view'"/>
+          <a-input v-if="formState!=='view'" v-model.trim="formData.title" :max-length="32"/>
+          <span v-else>{{ formData.title }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -174,7 +182,7 @@ defineExpose({saveOrUpdate, loadPage});
                         {validator:validateCode}]" field="entityName" label="实体名称">
           <a-input v-if="entityIsEdit" v-model.trim="formData.entityName" :max-length="30"/>
           <span v-else>{{ formData.entityName }}</span>
-          <a-tooltip content="变更“实体名称”，更新后会同步至数据库">
+          <a-tooltip v-if="formState!=='view'" content="变更“实体名称”，更新后会同步至数据库">
             <a-button v-if="!entityIsEdit" size="medium" type="text" @click="ev => {entityIsEdit=true}">
               <gl-iconfont type="gl-edit-square"/>
             </a-button>
@@ -188,7 +196,8 @@ defineExpose({saveOrUpdate, loadPage});
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: formState==='add',message: '这是必填项'}]" field="tableType" label="表格类型">
-          <a-select v-model="formData.tableType" :disabled="formState!=='add'" :options="tableTypeOptions"/>
+          <a-select v-if="formState!=='view'" v-model="formData.tableType" :options="tableTypeOptions"/>
+          <span v-else>{{ utils.getOptionLabel(formData.tableType, tableTypeOptions) }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -207,26 +216,30 @@ defineExpose({saveOrUpdate, loadPage});
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="enableStatus" label="状态">
-          <a-select v-model="formData.enableStatus" :disabled="formState==='view'" :options="enableStatusOptions"/>
+          <a-select v-if="formState!=='view'" v-model="formData.enableStatus" :options="enableStatusOptions"/>
+          <span v-else>{{ utils.getOptionLabel(formData.enableStatus, enableStatusOptions) }}</span>
         </a-form-item>
       </a-col>
       <a-col v-if="false" :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="linked" label="连接状态">
-          <a-select v-model="formData.linked" :disabled="formState==='view'" :options="linkedOptions"/>
+          <a-select v-if="formState!=='view'" v-model="formData.linked" :options="linkedOptions"/>
+          <span v-else>{{ utils.getOptionLabel(formData.linked, linkedOptions) }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="labelCol+wrapperCol">
         <a-form-item :label-col-props="{ span: labelCol/formCol }"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                      field="tableComment" label="数据库注释">
-          <a-textarea v-model="formData.tableComment" :auto-size="{minRows:2,maxRows:4}" :disabled="formState==='view'" :max-length="512" show-word-limit/>
+          <a-textarea v-if="formState!=='view'" v-model="formData.tableComment" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+          <span v-else :title="formData.tableComment" class="textarea-span" @click="openModal(`${formData.tableComment}`)">{{ formData.tableComment }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="labelCol+wrapperCol">
         <a-form-item :label-col-props="{ span: labelCol/formCol }"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                      field="description" label="补充描述">
-          <a-textarea v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :disabled="formState==='view'" :max-length="512" show-word-limit/>
+          <a-textarea v-if="formState!=='view'" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+          <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
         </a-form-item>
       </a-col>
     </a-row>

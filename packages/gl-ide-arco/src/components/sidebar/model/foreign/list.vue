@@ -41,6 +41,7 @@ const scrollbar = ref(true);
 const scroll = ref({x: 1350, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
+  mainTableCol: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   seqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
 });
@@ -303,7 +304,7 @@ watch(() => props.height, (val) => {
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="mainTable" title="主表表名"/>
-      <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="mainTableCol" title="主表字段"/>
+      <a-table-column :sortable="sortable.mainTableCol" :ellipsis="true" :tooltip="true" :width="150" data-index="mainTableCol" title="主表字段"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="foreignTable" title="外表表名"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="foreignTableCol" title="外表字段"/>
       <a-table-column :width="70" data-index="enableStatus" title="状态">

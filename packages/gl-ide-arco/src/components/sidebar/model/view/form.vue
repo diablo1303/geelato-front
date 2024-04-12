@@ -594,15 +594,15 @@ const cloneColumns = ref<Column[]>([]);
       </a-tab-pane>
       <a-tab-pane :key="3" class="a-tabs-two" title="视图字段">
         <a-card class="general-card">
-          <a-space v-if="formState!=='view'" style="margin-bottom: 10px">
-            <a-button size="medium" type="primary" @click="customAddEntityClick">
+          <a-space style="margin-bottom: 10px">
+            <a-button :disabled="formState==='view'" size="medium" type="primary" @click="customAddEntityClick">
               <template #icon>
                 <gl-iconfont type="gl-plus-circle"/>
               </template>
               自定义字段
             </a-button>
             <a-popover v-model:popup-visible="entityPopover" position="right" style="max-width: 400px" trigger="click">
-              <a-button size="medium" type="primary" @click="entityPopoverClick">
+              <a-button :disabled="formState==='view'" size="medium" type="primary" @click="entityPopoverClick">
                 <template #icon>
                   <gl-iconfont type="gl-plus-circle"/>
                 </template>
@@ -705,6 +705,15 @@ const cloneColumns = ref<Column[]>([]);
 </template>
 
 <style lang="less" scoped>
+div.arco-form-item-content > span.textarea-span {
+  cursor: pointer;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
 .check-all {
   padding: 0px 12px;
   line-height: 33px;

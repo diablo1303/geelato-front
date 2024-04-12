@@ -23,6 +23,8 @@ type PageParams = {
   connectId: string; // 数据库连接主键
   tableId: string; // 模型主键
   tableName: string; // 模型名称
+  isSync: boolean; // 是否同步
+  isSystem: boolean; // 是否系统表
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -47,6 +49,7 @@ const scrollbar = ref(true);
 const scroll = ref({x: 2000, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
+  name: {sortDirections: ['descend', 'ascend'], sorter: true, sortOrder: ''},
   ordinalPosition: {sortDirections: ['descend', 'ascend'], sorter: true, sortOrder: ''},
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
 });
@@ -84,13 +87,9 @@ const fetchData = async (params: Record<string, any>) => {
   loading.value = true;
   try {
     const {data} = await modelApi.pageQueryTableColumns(params);
-    renderData.value = [];
     if (checked.value) {
-      data.items.forEach((item, index) => {
-        if (!defaultColumnMetas.value.includes((item as unknown as QueryTableColumnForm).name)) {
-          renderData.value.push(item);
-        }
-      });
+      // @ts-ignore
+      renderData.value = data.items.filter((item) => !defaultColumnMetas.value.includes(item.name));
     } else {
       renderData.value = data.items;
     }
@@ -191,41 +190,26 @@ const beforeChange = () => {
 const formPage = ref({
   id: '',// 主键
   visible: false,//
-  parameter: {connectId: '', tableId: '', tableName: '', appId: '', tenantCode: ''},
+  parameter: {
+    connectId: '', tableId: '', tableName: '',
+    isSync: false, isSystem: false,
+    appId: '', tenantCode: ''
+  },
   formState: 'add',//
   formCol: 2,//
   title: '模型字段',
   width: '1020px',
-  editName: true,// 是否可编辑模型名称
 });
-/* 列表，按钮、操作列 */
-const viewTable = (id: string) => {
-  formPage.value.formState = 'view';
-  formPage.value.title = '查看模型字段';
-  formPage.value.id = id;
-  formPage.value.editName = false;
-  formPage.value.visible = false;
-}
+
 const addTable = (ev?: MouseEvent) => {
-  formPage.value.formState = 'add';
-  formPage.value.title = '新增模型字段';
-  formPage.value.id = '';
-  formPage.value.editName = true;
-  formPage.value.visible = true;
+  Object.assign(formPage.value, {
+    id: '', visible: true, formState: 'add', title: '新增模型字段'
+  })
 };
-const editTable = (id: string) => {
-  formPage.value.formState = 'edit';
-  formPage.value.title = '编辑模型字段';
-  formPage.value.id = id;
-  formPage.value.editName = false;
-  formPage.value.visible = true;
-}
-const alterTable = (id: string) => {
-  formPage.value.formState = 'edit';
-  formPage.value.title = '编辑模型字段';
-  formPage.value.id = id;
-  formPage.value.editName = true;
-  formPage.value.visible = true;
+const editTable = (data: QueryTableColumnForm) => {
+  Object.assign(formPage.value, {
+    id: data.id, visible: true, formState: 'edit', title: '编辑模型字段'
+  })
 }
 
 const saveSuccess = (data: QueryTableColumnForm, type: string) => {
@@ -456,7 +440,6 @@ watch(() => selectVisible, (val) => {
 
 
 watch(() => props.parameter, (val) => {
-  checked.value = true;
   // 模型字段类型
   modelApi.getTypeSelectOptions((data: ColumnSelectType[]) => {
     columnSelectType.value = data || [];
@@ -474,6 +457,8 @@ watch(() => props.parameter, (val) => {
     connectId: props.parameter.connectId,
     tableId: props.parameter.tableId,
     tableName: props.parameter.tableName,
+    isSync: props.parameter?.isSync === true,
+    isSystem: props.parameter?.isSystem === true,
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
   };
@@ -482,11 +467,14 @@ watch(() => props.parameter, (val) => {
 watch(() => props.height, (val) => {
   scroll.value.y = props.height;
 }, {deep: true, immediate: true});
+
+watch(() => props, (val) => {
+  checked.value = true;
+}, {deep: true, immediate: true});
 </script>
 
 <template>
   <GlModelTableColumnForm v-model:visible="formPage.visible"
-                          :editName="formPage.editName"
                           :formCol="formPage.formCol"
                           :formState="formPage.formState"
                           :modelValue="formPage.id"
@@ -557,14 +545,14 @@ watch(() => props.height, (val) => {
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button v-show="formState==='edit'" type="primary" @click="addTable">
+        <a-button :disabled="formState==='view'" type="primary" @click="addTable">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
           新建
         </a-button>
-        <a-popover v-if="formState==='edit'" v-model:popup-visible="entityPopover" position="right" style="max-width: 400px" trigger="click">
-          <a-button size="medium" type="primary" @click="entityPopoverClick">
+        <a-popover v-model:popup-visible="entityPopover" position="right" style="max-width: 400px" trigger="click">
+          <a-button :disabled="formState==='view'" size="medium" type="primary" @click="entityPopoverClick">
             <template #icon>
               <gl-iconfont type="gl-plus-circle"/>
             </template>
@@ -606,7 +594,7 @@ watch(() => props.height, (val) => {
             </a-space>
           </template>
         </a-popover>
-        <a-select v-if="formState==='edit'" v-model="commonSelectData"
+        <a-select v-model="commonSelectData"
                   v-model:popup-visible="selectVisible" allow-search multiple placeholder="全部" scrollbar
                   @change="commonSelectDataChange">
           <a-option v-for="item of selectCommonOptions"
@@ -630,8 +618,8 @@ watch(() => props.height, (val) => {
             </div>
           </template>
           <template #trigger>
-            <div style="width: 320px">
-              <a-button type="primary" @click="openCommonColumn">
+            <div :style="{width:`${formState==='view'?'10px':'320px'}`}">
+              <a-button :disabled="formState==='view'" type="primary" @click="openCommonColumn">
                 <template #icon>
                   <gl-iconfont type="gl-plus-circle"/>
                 </template>
@@ -667,8 +655,8 @@ watch(() => props.height, (val) => {
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column
-          :ellipsis="true" :tooltip="true" :width="180" data-index="name" fixed="left" title="字段标识">
+      <a-table-column :sortable="sortable.name"
+                      :ellipsis="true" :tooltip="true" :width="180" data-index="name" fixed="left" title="字段标识">
         <template #cell="{record}">
           <a-space>
             <a-tooltip v-if="!record.synced" content="还未同步至数据库" position="left">
@@ -733,25 +721,15 @@ watch(() => props.height, (val) => {
       <a-table-column :sortable="sortable.ordinalPosition" :width="100" data-index="ordinalPosition" title="次序"/>
       <a-table-column :sortable="sortable.createAt" :width="180" data-index="createAt" title="创建时间"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="200" data-index="comment" title="注释（中文）"/>
-      <a-table-column v-if="formState==='edit'" :width="32+66*3" align="center" data-index="operations" fixed="right" title="操作">
+      <a-table-column v-if="formState==='edit'" :width="32+66*2" align="center" data-index="operations" fixed="right" title="操作">
         <template #cell="{ record,isDefault = isDefaultColumn(record.name)}">
-          <a-tooltip v-if="isDefault" content="系统字段不可编辑">
-            <a-button class="button-disabled" size="small" type="text">
-              变更
-            </a-button>
-          </a-tooltip>
-          <a-tooltip v-else content="变更“字段标识”并同步至数据库">
-            <a-button size="small" type="text" @click="alterTable(record.id)">
-              变更
-            </a-button>
-          </a-tooltip>
           <!--    编辑      -->
           <a-tooltip v-if="isDefault" content="系统字段不可编辑">
             <a-button class="button-disabled" size="small" type="text">
               编辑
             </a-button>
           </a-tooltip>
-          <a-button v-else size="small" type="text" @click="editTable(record.id)">
+          <a-button v-else size="small" type="text" @click="editTable(record)">
             编辑
           </a-button>
           <!--    删除      -->
