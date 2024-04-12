@@ -7,8 +7,8 @@ export default {
 <script lang="ts" setup>
 import {ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
-import {createOrUpdateModelToTable, createOrUpdateTable, getTable, QueryTableForm, resetModelFormTable} from "@/api/model";
-import {Modal, Notification} from "@arco-design/web-vue";
+import {createOrUpdateModelToTable, getTable, QueryTableForm, resetModelFormTable} from "@/api/model";
+import {Message, Modal, Notification} from "@arco-design/web-vue";
 import ModelTableColumnList from "../column/list.vue";
 import ModelTableForeignList from "../foreign/list.vue";
 import ModelTableViewList from "../view/list.vue";
@@ -39,7 +39,11 @@ const isSystem = ref<boolean>(false);// 是否是平台或系统表，不可修�
 const generateListParams = () => {
   return {
     visible: false,
-    parameter: {connectId: '', tableId: '', tableName: '', appId: '', tenantCode: ''},
+    parameter: {
+      connectId: '', tableId: '', tableName: '',
+      isSync: false, isSystem: false,
+      appId: '', tenantCode: ''
+    },
     formState: props.formState,
     filterCol: 2,
     height: props.height - 255,
@@ -75,14 +79,27 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
     if (failBack && typeof failBack === 'function') failBack(err);
   }
 };
-
+/**
+ * 将模型 同步至 数据库中
+ * @param entityName
+ * @param successBack
+ * @param failBack
+ */
+const createOrUpdateTable = async (entityName: string, successBack?: any, failBack?: any) => {
+  try {
+    await createOrUpdateModelToTable(entityName);
+    if (successBack && typeof successBack === 'function') successBack();
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack();
+  }
+}
 /**
  * 从数据库中 将表同步至模型
  * @param entityName
  * @param successBack
  * @param failBack
  */
-const resetModel = async (tableId: string, successBack: any, failBack: any) => {
+const resetModel = async (tableId: string, successBack?: any, failBack?: any) => {
   try {
     await resetModelFormTable(tableId);
     if (successBack && typeof successBack === 'function') successBack();
@@ -95,36 +112,70 @@ const resetModel = async (tableId: string, successBack: any, failBack: any) => {
  * @param ev
  */
 const syncFromTableToModel = (ev?: MouseEvent) => {
-
+  Modal.open({
+    title: t('security.dict.index.modal.title'),
+    titleAlign: 'start',
+    content: `${tableData.value.entityName}，${t('model.table.index.modal.table.content')}`,
+    cancelText: t('model.connect.index.model.cancel.text'),
+    okText: t('security.dict.index.modal.ok.text'),
+    onOk() {
+      resetModel(tableData.value.id, () => {
+        Message.success(t('model.table.index.notice.update.success'));
+        tableFormat(tableData.value.id, () => {
+          emits('toModel', tableData.value);
+        });
+      }, () => {
+        Message.error(t('model.table.index.notice.update.fail'));
+      });
+    }
+  });
 }
 /**
  *
  * @param ev
  */
 const syncFromModelToTable = (ev?: MouseEvent) => {
-
+  Modal.open({
+    title: t('security.dict.index.modal.title'),
+    titleAlign: 'start',
+    content: `${tableData.value.entityName}，${t('model.table.index.modal.model.content')}`,
+    cancelText: t('model.connect.index.model.cancel.text'),
+    okText: t('security.dict.index.modal.ok.text'),
+    onOk() {
+      createOrUpdateTable(tableData.value.entityName, () => {
+        Message.success(t('model.table.index.notice.update.success'));
+        tableFormat(tableData.value.id, () => {
+          emits('toTable', tableData.value);
+        });
+      }, () => {
+        Message.error(t('model.table.index.notice.update.fail'));
+      });
+    }
+  });
 }
 
 /**
  * 获取模型数据，并处理
  * @param id
  */
-const tableFormat = (id: string) => {
+const tableFormat = (id: string, successBack?: any) => {
   getData(id, (data: QueryTableForm) => {
     data.seqNo = Number(data.seqNo);
     // eslint-disable-next-line no-nested-ternary
     isSync.value = (data.tableName != null && data.tableName.length > 0) ? (data.synced ? 2 : 1) : 0;
     isSystem.value = ['system', 'platform'].includes(data.sourceType);
     tableData.value = data;
+    if (successBack && typeof successBack === 'function') successBack();
     // 加载模型字段
     const listParameter = {
       connectId: data.connectId, tableId: data.id, tableName: data.entityName,
+      isSystem: isSystem.value,
       appId: data.appId, tenantCode: data.tenantCode
     };
     // 加载模型字段
     Object.assign(columnListParams.value, {
       formState: isSystem.value ? 'view' : props.formState,
-      parameter: listParameter,
+      parameter: {...listParameter, isSync: isSync.value >= 1},
       height: props.height - 255,
       visible: true,
     });
@@ -136,19 +187,19 @@ const tableFormat = (id: string) => {
     });
     // 加载模型视图
     Object.assign(viewListParams.value, {
-      parameter: listParameter,
+      parameter: {...listParameter, isSync: isSync.value === 2},
       height: props.height - 255,
       visible: true,
     });
     // 加载模型权限
     Object.assign(tablePermissionListParams.value, {
       parameter: {...listParameter, type: 'dp,mp', object: data.entityName,},
-      height: props.height - 215,
+      height: props.height - 190,
       visible: true,
     });
     // 加载字段权限
     Object.assign(columnPermissionListParams.value, {
-      parameter: {...listParameter, type: 'cp', object: data.entityName,},
+      parameter: {...listParameter, isSync: isSync.value >= 1, type: 'cp', object: data.entityName,},
       height: props.height - 150,
       visible: true,
     });
@@ -256,15 +307,15 @@ watch(() => props, (val) => {
       </a-card>
     </a-tab-pane>
     <template #extra>
-      <a-space v-if="!isSystem">
-        <a-button type="outline" @click="syncFromModelToTable($event)">
+      <a-space>
+        <a-button :disabled="isSystem || formState==='view'" type="outline" @click="syncFromModelToTable($event)">
           <template #icon>
             <icon-sync/>
           </template>
           {{ $t('model.connect.index.model.sync.table') }}
         </a-button>
         <a-dropdown position="br">
-          <a-button type="outline">
+          <a-button :disabled="formState==='view'" type="outline">
             {{ $t('model.connect.index.model.sync.more') }}&nbsp;
             <icon-down/>
           </a-button>
@@ -276,7 +327,7 @@ watch(() => props, (val) => {
               {{ $t('model.connect.index.model.sync.copy') }}
             </a-doption>
             <a-divider style="margin: 0px 0px;"/>
-            <a-doption style="color: rgb(var(--primary-6));" @click="syncFromTableToModel">
+            <a-doption :disabled="isSystem" style="color: rgb(var(--primary-6));" @click="syncFromTableToModel">
               <template #icon>
                 <icon-sync/>
               </template>

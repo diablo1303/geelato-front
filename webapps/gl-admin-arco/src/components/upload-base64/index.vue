@@ -63,7 +63,6 @@ const base64Upload = (ev?: MouseEvent) => {
     // @ts-ignore
     const files = event && event.target && event.target.files;
     if (files && files.length > 0) {
-      console.log(files[0]);
       const URL = window.URL || window.webkitURL;
       mv.value.baseName = files[0].name;
       const reader = new FileReader();

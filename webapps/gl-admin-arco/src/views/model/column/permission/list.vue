@@ -9,18 +9,22 @@ import {computed, reactive, ref, watch} from "vue";
 import {useRoute} from "vue-router";
 import {useI18n} from "vue-i18n";
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
-import {SelectOptionData, TableColumnData} from "@arco-design/web-vue";
+import {SelectOptionData, TableColumnData, TableSortable} from "@arco-design/web-vue";
 import useLoading from "@/hooks/loading";
 import {deleteTableColumn, QueryTableColumnForm} from "@/api/model";
 import {Pagination} from "@/types/global";
 import {deleteRole, insertColumnRolePermission, queryColumnRolePermissions, QueryRoleForm, resetDefaultPermission} from "@/api/security";
-import {PageQueryRequest} from "@/api/base";
+import {FormParams, PageQueryRequest} from "@/api/base";
+import RoleForm from "@/views/security/role/form.vue";
+import ModelTableColumnForm from "@/views/model/column/form.vue";
 
 type PageParams = {
   connectId: string; // 数据库链接id
   tableId: string; // 模型主键
   object: string; // 模型 entity
   type: string; // 权限类型
+  isSync: boolean; // 是否同步
+  isSystem: boolean; // 是否系统表
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -40,10 +44,9 @@ const props = defineProps({
 const {t} = useI18n();
 // 加载功能
 const {loading, setLoading} = useLoading(false);
-type Column = TableColumnData & { checked?: true };
 const scrollbar = ref(true);
 const scroll = ref({y: props.height});
-const cloneColumns = ref<Column[]>([]);
+const weightSortable = ref<TableSortable>({sortDirections: ['ascend', 'descend']});
 const rowColumns = ref<QueryRoleForm[]>([]);
 const cowColumns = ref<QueryTableColumnForm[]>([]);
 const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
@@ -77,13 +80,30 @@ const tableRefresh = (ev?: Event) => {
   fetchData();
 };
 
-
+const roleFormParams = ref({
+  visible: false,
+  isModal: true,
+  title: '',
+  width: '',
+  height: '',
+  parameter: {type: '', appId: '', tenantCode: ''},
+  formState: 'add',
+  id: '',
+  formCol: 1,
+});
 const addColumnRole = (ev: MouseEvent) => {
-
+  roleFormParams.value.parameter.type = props.parameter.appId ? 'app' : '';
+  Object.assign(roleFormParams.value, {
+    id: '', visible: true, formState: 'add'
+  });
 };
 const editColumnRole = (id: string) => {
-
+  roleFormParams.value.parameter.type = props.parameter.appId ? 'app' : '';
+  Object.assign(roleFormParams.value, {
+    'id': id, visible: true, formState: 'edit'
+  });
 }
+
 const deleteTableRole = async (id: string) => {
   try {
     await deleteRole(id);
@@ -94,29 +114,30 @@ const deleteTableRole = async (id: string) => {
   }
 }
 /* 表单参数 */
-const formPage = ref({
-  visible: false,//
-  formState: 'add',//
-  formCol: 1,//
-  id: '',// 主键
-  editName: true,// 是否可编辑模型名称
-  parameter: {connectId: '', tableId: '', tableName: '', appId: ''}
+const columnFormParams = ref<FormParams>({
+  visible: false,
+  isModal: true,
+  title: '',
+  width: '1150px',
+  height: '',
+  parameter: {
+    connectId: '', tableId: '', tableName: '',
+    isSync: false, isSystem: false,
+    appId: '', tenantCode: ''
+  },
+  formState: 'add',
+  id: '',
+  formCol: 2,
 });
 const addColumn = (ev: MouseEvent) => {
-  formPage.value = {
-    visible: true, formState: 'add', formCol: 1, id: '', editName: true,
-    parameter: {
-      connectId: props.parameter.connectId, tableId: props.parameter.id, tableName: props.parameter.object, appId: props.parameter.appId
-    }
-  };
+  Object.assign(columnFormParams.value, {
+    id: '', visible: true, formState: 'add'
+  });
 }
 const editColumn = (id: string) => {
-  formPage.value = {
-    visible: true, formState: 'edit', formCol: 1, "id": id, editName: false,
-    parameter: {
-      connectId: props.parameter.connectId, tableId: props.parameter.tableId, tableName: props.parameter.object, appId: props.parameter.appId
-    }
-  };
+  Object.assign(columnFormParams.value, {
+    'id': id, visible: true, formState: 'view'
+  });
 }
 const deleteTablePermission = async (id: string) => {
   try {
@@ -180,6 +201,20 @@ watch(() => props, (val) => {
   if (props.visible === true) {
     // 页面设置
     scroll.value.y = props.height;
+    roleFormParams.value.parameter = {
+      type: '',
+      appId: props.parameter?.appId || '',
+      tenantCode: props.parameter?.tenantCode || ''
+    }
+    columnFormParams.value.parameter = {
+      connectId: props.parameter.connectId,
+      tableId: props.parameter.tableId,
+      tableName: props.parameter.object,
+      isSync: props.parameter?.isSync === true,
+      isSystem: props.parameter?.isSystem === true,
+      appId: props.parameter?.appId || '',
+      tenantCode: props.parameter?.tenantCode || '',
+    }
     // 加载数据
     fetchData();
   }
@@ -187,22 +222,44 @@ watch(() => props, (val) => {
 </script>
 
 <template>
+  <RoleForm v-model:visible="roleFormParams.visible"
+            :formCol="roleFormParams.formCol"
+            :formState="roleFormParams.formState"
+            :height="roleFormParams.height"
+            :isModal="roleFormParams.isModal"
+            :modelValue="roleFormParams.id"
+            :parameter="roleFormParams.parameter"
+            :title="roleFormParams.title"
+            :width="roleFormParams.width"
+            @saveSuccess="tableRefresh"/>
+
+  <ModelTableColumnForm v-model:visible="columnFormParams.visible"
+                        :formCol="columnFormParams.formCol"
+                        :formState="columnFormParams.formState"
+                        :height="columnFormParams.height"
+                        :isModal="columnFormParams.isModal"
+                        :modelValue="columnFormParams.id"
+                        :parameter="columnFormParams.parameter"
+                        :title="columnFormParams.title"
+                        :width="columnFormParams.width"
+                        @saveSuccess="tableRefresh"/>
+
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button type="primary" @click="addColumnRole($event)">
+        <a-button :disabled="formState==='view'" type="primary" @click="addColumnRole($event)">
           <template #icon>
             <icon-plus/>
           </template>
           {{ $t('model.column.permission.index.model.role.add') }}
         </a-button>
-        <a-button type="primary" @click="addColumn($event)">
+        <a-button :disabled="formState==='view'" type="primary" @click="addColumn($event)">
           <template #icon>
             <icon-plus/>
           </template>
           {{ $t('model.column.permission.index.model.column.add') }}
         </a-button>
-        <a-button type="primary" @click="resetColumnDefaultPermission($event)">
+        <a-button :disabled="formState==='view'" type="primary" @click="resetColumnDefaultPermission($event)">
           <template #icon>
             <icon-undo/>
           </template>
@@ -233,7 +290,17 @@ watch(() => props, (val) => {
       column-resizable
       row-key="id">
     <template #columns>
-      <a-table-column :ellipsis="true" :title="$t('model.column.permission.index.list.role')" :tooltip="false" :width="150" data-index="name" fixed="left">
+      <a-table-column :ellipsis="true" :tooltip="false" :width="210" data-index="name" fixed="left">
+        <template #title>
+          <a-popover position="tl">
+            {{ $t('model.table.permission.index.list.role') }}&nbsp;<icon-info-circle style="color: #ff696d"/>
+            <template #content>
+              <p>角色A ，权重 5，自定义</p>
+              <p>角色B ，权重 10 ，看自己</p>
+              <p>这里取的是角色B的看自己</p>
+            </template>
+          </a-popover>
+        </template>
         <template #cell="{record}">
           <a-popover :title="record.name" position="right" style="max-width: 300px">
             <span style="cursor: pointer;">{{ record.name }} <icon-info-circle/></span>
@@ -271,6 +338,8 @@ watch(() => props, (val) => {
           </a-popover>
         </template>
       </a-table-column>
+      <a-table-column :ellipsis="true" :sortable="weightSortable" :title="$t('security.role.index.form.weight')" :tooltip="false" :width="90"
+                      align="center" data-index="weight"/>
       <a-table-column v-for="item of cowColumns" :key="item.id" :data-index="item.id" :ellipsis="true" :tooltip="true" :width="150" align="center">
         <template #title>
           <a-popover :title="item.title" position="br" style="max-width: 400px">
@@ -324,7 +393,7 @@ watch(() => props, (val) => {
         </template>
         <template #cell="{record}">
           <a-select v-model="record[item.id]"
-                    :bordered="false"
+                    :bordered="false" :disabled="formState==='view'"
                     :style="{color:`${record[item.id]==='1'?'#00b42a':(record[item.id]==='2'?'#165dff':'#86909c')}`}"
                     @change="columnRolePermissionChange(record.id,item.id,record[item.id])">
             <a-option value="0">{{ $t('model.column.permission.columnPermission.0') }}</a-option>

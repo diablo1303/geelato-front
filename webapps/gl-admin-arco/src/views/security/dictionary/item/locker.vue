@@ -238,7 +238,6 @@ const okLoading = ref(false);
 const handleModelOk = async (done: any) => {
   okLoading.value = true;
   try {
-    console.log(columnData.value);
     if (columnData.value && columnData.value.length > 0) {
       // eslint-disable-next-line no-restricted-syntax
       for (const item of columnData.value) {

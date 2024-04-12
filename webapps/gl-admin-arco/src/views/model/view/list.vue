@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'List'
+  name: 'ModelTableViewList'
 };
 </script>
 
@@ -23,13 +23,16 @@ import {
 } from '@/api/model';
 import {columns, enableStatusOptions, viewTypeOptions} from './searchTable';
 // 引入组件
-import Form from './form.vue';
+import ModelTableViewForm from './form.vue';
+import ModelTablePermissionForm from '../table/permission/form.vue';
 
 // 页面所需参数
 type PageParams = {
   connectId: string; // 数据库连接主键
   tableId: string; // 模型主键
   tableName: string; // 模型名称
+  isSync: boolean; // 是否同步
+  isSystem: boolean; // 是否系统表
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -262,16 +265,18 @@ const permissionFormPage = ref({
   id: '',// 主键
   visible: false,//
   parameter: {connectId: '', object: '', type: '', appId: '', tenantCode: ''},
-  formState: 'add',//
+  formState: props.formState,//
   formCol: 1,//
   title: '视图权限',
   width: '67%',
 });
 const openViewPermission = (data: QueryViewForm) => {
-  permissionFormPage.value.parameter = {
-    connectId: data.connectId, object: data.viewName, type: 'dp,mp', appId: data.appId, tenantCode: data.tenantCode
-  };
   permissionFormPage.value.visible = true;
+  permissionFormPage.value.parameter = {
+    connectId: data.connectId,
+    object: data.viewName, type: 'dp,mp',
+    appId: data.appId, tenantCode: data.tenantCode
+  };
 }
 /**
  * 列表按钮 - 删除
@@ -321,16 +326,23 @@ watch(() => props, (val) => {
 </script>
 
 <template>
-  <Form v-model:visible="formParams.visible"
-        :formCol="formParams.formCol"
-        :formState="formParams.formState"
-        :height="formParams.height"
-        :isModal="formParams.isModal"
-        :modelValue="formParams.id"
-        :parameter="formParams.parameter"
-        :title="formParams.title"
-        :width="formParams.width"
-        @saveSuccess="saveSuccess"/>
+  <ModelTableViewForm v-model:visible="formParams.visible"
+                      :formCol="formParams.formCol"
+                      :formState="formParams.formState"
+                      :height="formParams.height"
+                      :isModal="formParams.isModal"
+                      :modelValue="formParams.id"
+                      :parameter="formParams.parameter"
+                      :title="formParams.title"
+                      :width="formParams.width"
+                      @saveSuccess="saveSuccess"/>
+
+  <ModelTablePermissionForm v-model:visible="permissionFormPage.visible"
+                            :formCol="permissionFormPage.formCol"
+                            :formState="permissionFormPage.formState"
+                            :parameter="permissionFormPage.parameter"
+                            :title="permissionFormPage.title"
+                            :width="permissionFormPage.width"/>
 
   <a-row>
     <a-col :flex="1">
@@ -416,7 +428,7 @@ watch(() => props, (val) => {
       <a-table-column :title="$t('model.view.index.form.index')" :width="80" align="center" data-index="index" fixed="left">
         <template #cell="{  rowIndex }">{{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}</template>
       </a-table-column>
-      <a-table-column :sortable="sortable.viewName" :ellipsis="true" :title="$t('model.view.index.form.viewName')" :tooltip="true" :width="200"
+      <a-table-column :ellipsis="true" :sortable="sortable.viewName" :title="$t('model.view.index.form.viewName')" :tooltip="true" :width="200"
                       data-index="viewName" fixed="left"/>
       <a-table-column :ellipsis="true" :title="$t('model.view.index.form.title')" :tooltip="true" :width="200" data-index="title"/>
       <!-- <a-table-column :title="$t('model.view.index.form.entityName')" data-index="entityName" :ellipsis="true" :tooltip="true" :width="200"/>-->
@@ -441,20 +453,20 @@ watch(() => props, (val) => {
       <a-table-column v-show="formState==='edit'" :title="$t('model.view.index.form.operations')" :width="360" align="center"
                       data-index="operations" fixed="right">
         <template #cell="{ record,isDefault=record.viewType==='default'}">
-          <a-button v-if="isDefault" size="small" type="text" @click="viewTable(record)">
+          <a-button v-if="isDefault || formState==='view'" size="small" type="text" @click="viewTable(record)">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
-          <a-button v-else size="small" type="text" @click="editTable(record)">
+          <a-button v-else :disabled="formState==='view'" size="small" type="text" @click="editTable(record)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <!--    发布      -->
-          <a-tooltip v-if="!tableSync" :content="$t('model.view.index.form.operations.noRel')">
+          <a-tooltip v-if="parameter.isSync===false" :content="$t('model.view.index.form.operations.noRel')">
             <a-button class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.release') }}
             </a-button>
           </a-tooltip>
           <a-popconfirm v-else :content="$t('searchTable.columns.operations.releaseMsg')" position="tr" type="info" @ok="releaseTable(record)">
-            <a-button size="small" type="text">
+            <a-button :disabled="formState==='view'" size="small" type="text">
               {{ $t('searchTable.columns.operations.release') }}
             </a-button>
           </a-popconfirm>
@@ -465,7 +477,7 @@ watch(() => props, (val) => {
           <!--    删除      -->
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning"
                         @ok="deleteTable(record)">
-            <a-button size="small" status="danger" type="text">
+            <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>
           </a-popconfirm>
@@ -506,5 +518,12 @@ watch(() => props, (val) => {
     margin-left: 12px;
     cursor: pointer;
   }
+}
+
+.button-disabled {
+  cursor: not-allowed;
+  color: var(--color-text-3) !important;
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
 }
 </style>

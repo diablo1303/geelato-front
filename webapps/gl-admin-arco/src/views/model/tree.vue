@@ -168,7 +168,6 @@ const refreshTreeOne = (data: TreeNode[]) => {
     expandedKeys.value.push(itemData.key.toString());
     loadMore(itemData);
   }
-  console.log(nodeData);
   emits("treeSelected", treeKey, 0, {});
 }
 
@@ -187,14 +186,12 @@ const refreshTreeTwo = (connectId: string, nodes: TreeNode[], isSelected: boolea
           const form = node.formData as unknown as QueryTableForm;
           if (form.id === data.id || form.entityName === data.entityName) {
             selectedKeys.value = [form.id];
-            console.log(node);
             emits("treeSelected", form.id, 2, form);
             break;
           }
         }
       } else {
         selectedKeys.value = [item.key];
-        console.log(item);
         emits("treeSelected", item.key, 1, item.formData);
       }
       break;
@@ -208,7 +205,6 @@ const refreshTreeTwo = (connectId: string, nodes: TreeNode[], isSelected: boolea
  * @param nodeData TreeNode
  */
 const treeSelected = (selectedKey: string, nodeData: TreeNode) => {
-  console.log(nodeData);
   emits("treeSelected", nodeData.key, nodeData.level, nodeData.formData);
 }
 
@@ -230,7 +226,6 @@ const treeClickSelected = (selectedKey: (string | number)[], data: {
  * @param nodeData
  */
 const treeIconRefreshOne = (nodeData?: TreeNode) => {
-  console.log("treeIconRefreshOne")
   fetchConnects().then((data) => {
     refreshTreeOne(data);
   });

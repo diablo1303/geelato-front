@@ -57,6 +57,7 @@ const scrollbar = ref(true);
 const scroll = ref({x: 1400, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
+  mainTableCol: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   seqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
 });
@@ -365,7 +366,8 @@ watch(() => props, (val) => {
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('model.foreign.index.form.mainTable')" :tooltip="true" :width="210" data-index="mainTable"/>
-      <a-table-column :ellipsis="true" :title="$t('model.foreign.index.form.mainTableCol')" :tooltip="true" :width="210" data-index="mainTableCol"/>
+      <a-table-column :ellipsis="true" :sortable="sortable.mainTableCol" :title="$t('model.foreign.index.form.mainTableCol')" :tooltip="true" :width="210"
+                      data-index="mainTableCol"/>
       <a-table-column :ellipsis="true" :title="$t('model.foreign.index.form.foreignTable')" :tooltip="true" :width="210" data-index="foreignTable"/>
       <a-table-column :ellipsis="true" :title="$t('model.foreign.index.form.foreignTableCol')" :tooltip="true" :width="210" data-index="foreignTableCol"/>
       <a-table-column :title="$t('model.foreign.index.form.enableStatus')" :width="90" data-index="enableStatus">

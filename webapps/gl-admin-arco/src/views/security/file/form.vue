@@ -65,7 +65,6 @@ const handleModelCancel = (ev?: Event) => {
 }
 
 watch(() => props, () => {
-  console.log('props', props);
   if (props.visible === true) {
     Object.assign(modelParams.value, {
       visible: props.visible === true,

@@ -173,7 +173,7 @@ export default {
   'model.column.index.form.tableCatalog': '表目录',
   'model.column.index.form.title': '名称(中文)',
   'model.column.index.form.fieldName': '名称(英文)',
-  'model.column.index.form.fieldName.placeholder': '根据 “字段标识” 生成',
+  'model.column.index.form.fieldName.placeholder': '根据 “字段标识” 生成，如：‘createTime’。',
   'model.column.index.form.name': '字段标识',
   'model.column.index.form.comment': '注释(中文)',
   'model.column.index.form.ordinalPosition': '次序',

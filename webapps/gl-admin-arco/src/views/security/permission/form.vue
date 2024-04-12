@@ -29,16 +29,18 @@ const props = defineProps({
   formState: {type: String, default: 'add'},// 页面状态
   height: {type: [Number, String], default: ''},// 弹层 - 高度，为空-自然变化
   formCol: {type: Number, default: 1},// 表单 - 一行显示个数
+  autoCode: {type: Boolean, default: false},// 默认19位字符串
 });
 
 const visibleForm = ref<boolean>(false);
 const tableFormRef = shallowRef(PermissionFormModel);
-const modelParams = ref<ModelParams>({
+const modelParams = ref({
   visible: false,
   parameter: props.parameter,
   formState: props.formState as FormState,
   id: props.modelValue,
   formCol: props.formCol,
+  autoCode: props.autoCode,
 });
 
 /**
@@ -89,10 +91,10 @@ watch(() => visibleForm, () => {
 <template>
   <a-modal v-if="isModal"
            v-model:visible="visibleForm"
-           :cancel-text="$t('application.app.model.cancel.text')"
+           :cancel-text="$t('security.permission.index.model.cancel.text')"
            :footer="formState!=='view'"
-           :ok-text="$t('application.app.model.ok.text')"
-           :title="title || $t(`application.app.model.title.${formState}`)"
+           :ok-text="$t('security.permission.index.model.ok.text')"
+           :title="title || $t(`security.permission.index.model.title.${formState}`)"
            :width="width || ''" title-align="start"
            @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
     <PermissionFormModel ref="tableFormRef"
@@ -100,14 +102,15 @@ watch(() => visibleForm, () => {
                          :formState="modelParams.formState"
                          :modelValue="modelParams.id"
                          :parameter="modelParams.parameter"
+                         :autoCode="modelParams.autoCode"
                          :visible="modelParams.visible"/>
   </a-modal>
   <a-drawer v-if="!isModal"
             v-model:visible="visibleForm"
-            :cancel-text="$t('application.app.model.cancel.text')"
+            :cancel-text="$t('security.permission.index.model.cancel.text')"
             :footer="formState!=='view'"
-            :ok-text="$t('application.app.model.ok.text')"
-            :title="title || $t(`application.app.model.title.${formState}`)"
+            :ok-text="$t('security.permission.index.model.ok.text')"
+            :title="title || $t(`security.permission.index.model.title.${formState}`)"
             :width="width || ''" title-align="start"
             @cancel="handleModelCancel($event)" @before-ok="handleModelOk">
     <PermissionFormModel ref="tableFormRef"
@@ -115,6 +118,7 @@ watch(() => visibleForm, () => {
                          :formState="modelParams.formState"
                          :modelValue="modelParams.id"
                          :parameter="modelParams.parameter"
+                         :autoCode="modelParams.autoCode"
                          :visible="modelParams.visible"/>
   </a-drawer>
 </template>

@@ -29,7 +29,7 @@ const props = defineProps({
 
 const visibleForm = ref<boolean>(false);
 const tablePermissionFormParams = ref({
-  formState: 'add', isModal: true, height: 0, parameter: {
+  formState: props.modelValue, isModal: true, height: 0, parameter: {
     connectId: '', object: '', type: '', appId: '', tenantCode: ''
   }
 });
@@ -37,6 +37,7 @@ const tablePermissionFormParams = ref({
 watch(() => props, () => {
   if (props.visible === true) {
     tablePermissionFormParams.value.height = window.innerHeight - 340;
+    tablePermissionFormParams.value.formState = props.formState;
     tablePermissionFormParams.value.parameter = {
       connectId: props.parameter.connectId,
       type: props.parameter.type,

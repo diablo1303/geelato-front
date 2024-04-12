@@ -42,7 +42,6 @@ const visibleModel = ref(false);
  * 排序、新增、修改、删除
  */
 const watchRenderData = () => {
-  console.log('watch:renderData', renderData.value);
   const data = cloneDeep(renderData.value);
   if (data && data.length > 0) {
     // eslint-disable-next-line no-restricted-syntax
@@ -152,7 +151,6 @@ const validateRule = async (value: any, callback: any) => {
  * 输入
  */
 watch(() => props.modelValue, () => {
-  console.log('watch:modelValue', props.modelValue);
   const data = cloneDeep(props.modelValue);
   if (data && data.length > 0) {
     // eslint-disable-next-line no-restricted-syntax

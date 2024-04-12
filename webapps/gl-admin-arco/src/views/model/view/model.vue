@@ -7,7 +7,7 @@ export default {
 import {ref, watch} from "vue";
 import {useI18n} from 'vue-i18n';
 import {FormInstance, Message, Modal, SelectOptionGroup, TableColumnData} from "@arco-design/web-vue";
-import {PageQueryRequest} from '@/api/base';
+import {getOptionLabel, PageQueryRequest} from '@/api/base';
 import {
   createOrUpdateView as createOrUpdateForm, getDefaultColumnNames, getTypeSelectOptionGroup,
   getView as getForm,
@@ -19,9 +19,9 @@ import {
   validateMetaView,
   validateViewName
 } from '@/api/model';
-import MonacoEditor from '@/components/monaco/index.vue';
 import {isJSON} from "@/utils/is";
 import {getAppSelectOptions, QueryAppForm} from "@/api/application";
+import MonacoEditor from "@/components/monaco/index.vue";
 import {enableStatusOptions, linkedOptions} from "./searchTable";
 
 // 页面所需 参数
@@ -185,7 +185,6 @@ const matchViewConstruct = (value: any, callback: any) => {
   const regex = /^select .* from .*$/i;
   if (formData.value.viewConstruct) {
     const str = formData.value.viewConstruct.replace(/\r\n/g, ' ').replace(/\r\n\t/g, ' ');
-    console.log(str)
     if (!str.match(regex)) callback('匹配：‘select * from table_name ...’');
   }
 }
@@ -203,9 +202,9 @@ const validateViewColumn = async (value: any, callback: any) => {
 const validateViewSql = () => {
   validateTableView(formData.value, (result: boolean) => {
     if (result === true) {
-      global.$message.success({content: '验证成功！'});
+      Message.success('验证成功！');
     } else {
-      global.$message.warning({content: '验证失败，请检查Sql的正确性。'});
+      Message.warning('验证失败，请检查Sql的正确性。');
     }
   }, () => {
   });
@@ -511,7 +510,7 @@ defineExpose({saveOrUpdate, loadPage});
                 <a-space>
                   <a-button @click="()=>{tabsKey=2}">
                     <template #icon>
-                      <gl-iconfont type="gl-edit-square"/>
+                      <icon-edit/>
                     </template>
                     编辑视图语句
                   </a-button>
@@ -519,7 +518,7 @@ defineExpose({saveOrUpdate, loadPage});
                     <a-button status="success" type="primary">
                       验证
                       <template #icon>
-                        <gl-iconfont type="gl-list"/>
+                        <icon-scan/>
                       </template>
                     </a-button>
                   </a-popconfirm>
@@ -549,7 +548,7 @@ defineExpose({saveOrUpdate, loadPage});
                   :label="$t('model.view.index.form.appId')"
                   :rules="[{required: false,message: $t('model.form.rules.match.required')}]"
                   field="appId">
-                <a-select v-model="formData.appId" :disabled="!formState!=='view'">
+                <a-select v-model="formData.appId" :disabled="formState==='view'">
                   <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
                 </a-select>
               </a-form-item>
@@ -613,23 +612,22 @@ defineExpose({saveOrUpdate, loadPage});
     </a-tab-pane>
     <a-tab-pane :key="2" class="a-tabs-one" title="视图语句">
       <a-card class="general-card">
-        <div class="trigger-demo-translate">
-          <!--          <GlMonacoEditor v-model="formData.viewConstruct" :height="tableTabHeight-34" language="sql" style="width: 100%;"/>-->
-          <MonacoEditor v-model="formData.viewConstruct" :language="'sql'" :read-only="false"/>
+        <div :style="{width:'100%',height:`${tableTabHeight-1}px`}" class="trigger-demo-translate">
+          <MonacoEditor v-model="formData.viewConstruct" :read-only="false" language="sql"/>
         </div>
       </a-card>
     </a-tab-pane>
     <a-tab-pane :key="3" class="a-tabs-two" title="视图字段">
       <a-card class="general-card">
-        <a-space v-if="formState!=='view'" style="margin-bottom: 10px">
-          <a-button size="medium" type="primary" @click="customAddEntityClick">
+        <a-space style="margin-bottom: 10px">
+          <a-button :disabled="formState==='view'" size="medium" type="primary" @click="customAddEntityClick">
             <template #icon>
               <gl-iconfont type="gl-plus-circle"/>
             </template>
             自定义字段
           </a-button>
           <a-popover v-model:popup-visible="entityPopover" position="right" style="max-width: 400px" trigger="click">
-            <a-button size="medium" type="primary" @click="entityPopoverClick">
+            <a-button :disabled="formState==='view'" size="medium" type="primary" @click="entityPopoverClick">
               <template #icon>
                 <gl-iconfont type="gl-plus-circle"/>
               </template>
@@ -707,7 +705,7 @@ defineExpose({saveOrUpdate, loadPage});
             <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="selectType" title="数据类型">
               <template #cell="{record}">
                 <a-select v-if="formState!=='view'" v-model="record.selectType" :options="selectTypeOptions" allow-search/>
-                <span v-else>{{ utils.getOptionLabel(record.selectType, selectTypeOptions) }}</span>
+                <span v-else>{{ getOptionLabel(record.selectType, selectTypeOptions) }}</span>
               </template>
             </a-table-column>
             <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="tableName" title="模型名称"/>
@@ -738,5 +736,30 @@ div.arco-form-item-content > span.textarea-span {
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+}
+
+.trigger-demo-translate {
+  padding: 0px;
+  min-width: 500px;
+  min-height: 360px;
+  background-color: var(--color-bg-popup);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
+}
+
+.check-all {
+  padding: 0px 12px;
+  line-height: 33px;
+  display: flex;
+  align-items: center;
+
+  &-radio {
+    width: 100%
+  }
+
+  &-span {
+    font-weight: 600;
+    color: rgb(var(--primary-6));
+  }
 }
 </style>

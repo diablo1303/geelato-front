@@ -158,7 +158,6 @@ const saveOrUpdate = (successBack?: any, failBack?: any) => {
 }
 
 watch(() => props, () => {
-  console.log('watch props', props);
   if (props.visible === true) {
     loadPage();
   }
@@ -180,7 +179,7 @@ defineExpose({saveOrUpdate, loadPage});
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: formState==='add',message: '这是必填项'},{match: /^[a-zA-Z][a-zA-Z0-9_]*$/,message:'匹配：‘a-z’、‘A-Z’、‘0-9’、‘_’'},
                         {validator:validateCode}]" field="entityName" label="实体名称">
-          <a-input v-if="entityIsEdit" v-model.trim="formData.entityName" :max-length="30"/>
+          <a-input v-if="entityIsEdit&&formState!=='view'" v-model.trim="formData.entityName" :max-length="30"/>
           <span v-else>{{ formData.entityName }}</span>
           <a-tooltip v-if="formState!=='view'" content="变更“实体名称”，更新后会同步至数据库">
             <a-button v-if="!entityIsEdit" size="medium" type="text" @click="ev => {entityIsEdit=true}">

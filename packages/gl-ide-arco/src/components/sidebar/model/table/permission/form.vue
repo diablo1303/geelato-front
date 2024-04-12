@@ -356,19 +356,19 @@ watch(() => props.height, (val) => {
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button type="primary" @click="addTableRole">
+        <a-button :disabled="formState==='view'" type="primary" @click="addTableRole">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
           新增角色
         </a-button>
-        <a-button type="primary" @click="addTablePermission">
+        <a-button :disabled="formState==='view'" type="primary" @click="addTablePermission">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
           查看权限（自定义）
         </a-button>
-        <a-button type="primary" @click="resetTableDefaultPermission">
+        <a-button :disabled="formState==='view'" type="primary" @click="resetTableDefaultPermission">
           <template #icon>
             <gl-iconfont type="gl-reset"/>
           </template>
@@ -400,7 +400,7 @@ watch(() => props.height, (val) => {
       column-resizable
       row-key="id">
     <template #columns>
-      <a-table-column :ellipsis="true" :tooltip="false" :width="150" data-index="name" fixed="left" title="角色">
+      <a-table-column align="center">
         <template #title>
           <a-popover position="tl">
             角色&nbsp;<gl-iconfont type="gl-warning-circle" style="color: #ff696d"/>
@@ -411,45 +411,47 @@ watch(() => props.height, (val) => {
             </template>
           </a-popover>
         </template>
-        <template #cell="{record}">
-          <a-popover :title="record.name" position="right" style="max-width: 300px">
-            <span style="cursor: pointer;">{{ record.name }} <gl-iconfont type="gl-warning-circle"/></span>
-            <template #content>
+        <a-table-column :ellipsis="true" :tooltip="false" :width="210" data-index="name" fixed="left" title="名称">
+          <template #cell="{record}">
+            <a-popover :title="record.name" position="right" style="max-width: 300px">
+              <span style="cursor: pointer;">{{ record.name }} <gl-iconfont type="gl-warning-circle"/></span>
+              <template #content>
               <span>
                 <strong>编码：</strong>{{ record.code }}
                 <GlCopyToClipboard v-model="record.code" title="点击复制编码"/>
               </span>
-              <br/>
-              <span>
+                <br/>
+                <span>
                 <strong>权重：</strong>{{ record.weight }}
               </span>
-              <br/>
-              <span>
+                <br/>
+                <span>
                 <strong>类型：</strong>{{ utils.getOptionLabel(record.type, roleTypeOptions) }}
               </span>
-              <br/>
-              <strong v-if="['app'].includes(record.type)">应用：</strong>
-              <span v-if="record.appName&&['app'].includes(record.type)">{{ record.appName }}</span>
-              <br v-if="['app'].includes(record.type)"/>
-              <span :title="record.description" class="span-textarea">
+                <br/>
+                <strong v-if="['app'].includes(record.type)">应用：</strong>
+                <span v-if="record.appName&&['app'].includes(record.type)">{{ record.appName }}</span>
+                <br v-if="['app'].includes(record.type)"/>
+                <span :title="record.description" class="span-textarea">
                 <strong>描述：</strong>{{ record.description }}
               </span>
-              <a-divider v-if="formState==='edit'&&parameter.appId===record.appId" style="margin: 5px 0px"/>
-              <a-space v-if="formState==='edit'&&parameter.appId===record.appId" style="display: flex;align-items: center;justify-content: end;">
-                <a-button size="mini" type="primary" @click="editTableRole(record.id)">
-                  编辑
-                </a-button>
-                <a-popconfirm content="是否删除该条数据？" position="tr" type="warning" @ok="deleteTableRole(record.id)">
-                  <a-button size="mini" status="danger" type="primary">
-                    删除
+                <a-divider v-if="formState==='edit'&&parameter.appId===record.appId" style="margin: 5px 0px"/>
+                <a-space v-if="formState==='edit'&&parameter.appId===record.appId" style="display: flex;align-items: center;justify-content: end;">
+                  <a-button size="mini" type="primary" @click="editTableRole(record.id)">
+                    编辑
                   </a-button>
-                </a-popconfirm>
-              </a-space>
-            </template>
-          </a-popover>
-        </template>
+                  <a-popconfirm content="是否删除该条数据？" position="tr" type="warning" @ok="deleteTableRole(record.id)">
+                    <a-button size="mini" status="danger" type="primary">
+                      删除
+                    </a-button>
+                  </a-popconfirm>
+                </a-space>
+              </template>
+            </a-popover>
+          </template>
+        </a-table-column>
+        <a-table-column :width="90" data-index="weight" align="center" title="权重" :sortable="weightSortable"/>
       </a-table-column>
-      <a-table-column :width="90" data-index="weight" align="center" title="权重" :sortable="weightSortable"/>
       <a-table-column v-for="(nape,index) of cowColumns" :key="index" :ellipsis="true" :tooltip="true"
                       :title="`${utils.getOptionLabel(nape.type,classifyOptions)}`">
         <a-table-column v-for="item of nape.data" :key="item.id" :data-index="item.id" :ellipsis="true" :tooltip="true" :width="120" align="center">
@@ -491,7 +493,7 @@ watch(() => props.height, (val) => {
             </a-popover>
           </template>
           <template #cell="{record}">
-            <a-switch v-model="record[item.id]"
+            <a-switch v-model="record[item.id]" :disabled="formState==='view'"
                       :before-change="newValue => switchBeforeChange(item.id,record.id)"
                       :checked-color="nape.type==='custom'?'rgb(0,180,42)':nape.type==='view'?'rgb(20,201,201)':''">
               <template #checked>

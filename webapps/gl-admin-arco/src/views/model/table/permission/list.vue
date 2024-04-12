@@ -8,7 +8,7 @@ export default {
 import {reactive, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
-import {TableColumnData} from "@arco-design/web-vue";
+import {TableColumnData, TableSortable} from "@arco-design/web-vue";
 import useLoading from "@/hooks/loading";
 import {
   deletePermission,
@@ -22,6 +22,8 @@ import {
 } from "@/api/security";
 import {Pagination} from "@/types/global";
 import {PageQueryRequest} from "@/api/base";
+import RoleForm from "@/views/security/role/form.vue";
+import PermissionForm from "@/views/security/permission/form.vue";
 
 type PageParams = {
   connectId: string; // 数据库链接id
@@ -46,10 +48,9 @@ const props = defineProps({
 const {t} = useI18n();
 // 加载功能
 const {loading, setLoading} = useLoading(false);
-type Column = TableColumnData & { checked?: true };
 const scrollbar = ref(true);
 const scroll = ref({y: props.height});
-const cloneColumns = ref<Column[]>([]);
+const weightSortable = ref<TableSortable>({sortDirections: ['ascend', 'descend']});
 const rowColumns = ref<QueryRoleForm[]>([]);
 const cowColumns = ref<QueryPermissionClassifyForm[]>([]);
 const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
@@ -215,12 +216,29 @@ const fetchData = async (params: PageQueryRequest = {current: 1, pageSize: props
 const tableRefresh = (ev?: Event) => {
   fetchData();
 };
-
+const roleFormParams = ref({
+  visible: false,
+  isModal: true,
+  title: '',
+  width: '',
+  height: '',
+  parameter: {type: '', appId: '', tenantCode: ''},
+  formState: 'add',
+  id: '',
+  formCol: 1,
+});
 const addTableRole = (ev: MouseEvent) => {
-
+  roleFormParams.value.parameter.type = props.parameter.appId ? 'app' : '';
+  Object.assign(roleFormParams.value, {
+    id: '', visible: true, formState: 'add'
+  });
 };
-const editTableRole = (id: string) => {
 
+const editTableRole = (id: string) => {
+  roleFormParams.value.parameter.type = props.parameter.appId ? 'app' : '';
+  Object.assign(roleFormParams.value, {
+    'id': id, visible: true, formState: 'edit'
+  });
 }
 const deleteTableRole = async (id: string) => {
   try {
@@ -231,13 +249,29 @@ const deleteTableRole = async (id: string) => {
     console.log(err);
   }
 }
-
+const permissionFormParams = ref({
+  visible: false,
+  isModal: true,
+  title: '',
+  width: '',
+  height: '',
+  parameter: {object: '', type: 'mp', appId: '', tenantCode: ''},
+  formState: 'add',
+  id: '',
+  formCol: 1,
+  autoCode: true,
+});
 const addTablePermission = (ev: MouseEvent) => {
-
+  Object.assign(permissionFormParams.value, {
+    id: '', visible: true, formState: 'add'
+  });
 }
 const editTablePermission = (id: string) => {
-
+  Object.assign(permissionFormParams.value, {
+    'id': id, visible: true, formState: 'edit'
+  });
 }
+
 const deleteTablePermission = async (id: string) => {
   try {
     await deletePermission(id);
@@ -290,6 +324,14 @@ watch(() => props, (val) => {
   if (props.visible === true) {
     // 页面设置
     scroll.value.y = props.height;
+    roleFormParams.value.parameter = {
+      type: '',
+      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }
+    permissionFormParams.value.parameter = {
+      object: props.parameter.object, type: 'mp',
+      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }
     // 加载数据
     fetchData();
   }
@@ -297,22 +339,44 @@ watch(() => props, (val) => {
 </script>
 
 <template>
+  <RoleForm v-model:visible="roleFormParams.visible"
+            :formCol="roleFormParams.formCol"
+            :formState="roleFormParams.formState"
+            :height="roleFormParams.height"
+            :isModal="roleFormParams.isModal"
+            :modelValue="roleFormParams.id"
+            :parameter="roleFormParams.parameter"
+            :title="roleFormParams.title"
+            :width="roleFormParams.width"
+            @saveSuccess="tableRefresh"/>
+
+  <PermissionForm v-model:visible="permissionFormParams.visible"
+                  :autoCode="permissionFormParams.autoCode"
+                  :formCol="permissionFormParams.formCol"
+                  :formState="permissionFormParams.formState"
+                  :height="permissionFormParams.height"
+                  :isModal="permissionFormParams.isModal"
+                  :modelValue="permissionFormParams.id"
+                  :parameter="permissionFormParams.parameter"
+                  :title="permissionFormParams.title"
+                  :width="permissionFormParams.width"
+                  @saveSuccess="tableRefresh"/>
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button type="primary" @click="addTableRole($event)">
+        <a-button :disabled="formState==='view'" type="primary" @click="addTableRole($event)">
           <template #icon>
             <icon-plus/>
           </template>
           {{ $t('model.table.permission.index.model.role.add') }}
         </a-button>
-        <a-button type="primary" @click="addTablePermission($event)">
+        <a-button :disabled="formState==='view'" type="primary" @click="addTablePermission($event)">
           <template #icon>
             <icon-plus/>
           </template>
           {{ $t('model.table.permission.index.model.permission.add') }}
         </a-button>
-        <a-button type="primary" @click="resetTableDefaultPermission($event)">
+        <a-button :disabled="formState==='view'" type="primary" @click="resetTableDefaultPermission($event)">
           <template #icon>
             <icon-undo/>
           </template>
@@ -343,45 +407,62 @@ watch(() => props, (val) => {
       column-resizable
       row-key="id">
     <template #columns>
-      <a-table-column :ellipsis="true" :title="$t('model.table.permission.index.list.role')" :tooltip="false" :width="150" data-index="name" fixed="left">
-        <template #cell="{record}">
-          <a-popover :title="record.name" position="right" style="max-width: 300px">
-            <span style="cursor: pointer;">{{ record.name }} <icon-info-circle/></span>
+      <a-table-column :ellipsis="true" :tooltip="false" align="center">
+        <template #title>
+          <a-popover position="tl">
+            {{ $t('model.table.permission.index.list.role') }}&nbsp;<icon-info-circle style="color: #ff696d"/>
             <template #content>
+              <p>角色A ，权重 5，自定义</p>
+              <p>角色B ，权重 10 ，看自己</p>
+              <p>这里取的是角色B的看自己</p>
+            </template>
+          </a-popover>
+        </template>
+        <a-table-column :ellipsis="true" :title="$t('security.role.index.form.name')" :tooltip="false" :width="210" data-index="name" fixed="left">
+          <template #cell="{record}">
+            <a-popover :title="record.name" position="right" style="max-width: 300px">
+              <span style="cursor: pointer;">{{ record.name }} <icon-info-circle/></span>
+              <template #content>
                     <span>
                       <strong>{{ $t('security.role.index.form.code') }}：</strong>
                       {{ record.code }}
                       <CopyToClipboard v-model="record.code" :title="$t('copy.to.clipboard.button.code.title')"/>
                     </span>
-              <br/>
-              <span>
+                <br/>
+                <span>
                       <strong>{{ $t('security.role.index.form.type') }}：</strong>
                       {{ $t(`security.role.index.form.type.${record.type}`) }}
                     </span>
-              <br/>
-              <strong v-if="['app'].includes(record.type)">{{ $t('security.roleApp.index.form.appName') }}：</strong>
-              <span v-if="record.appName&&['app'].includes(record.type)">{{ record.appName }}</span>
-              <br v-if="['app'].includes(record.type)"/>
-              <span :title="record.description" class="span-textarea">
+                <br/>
+                <strong v-if="['app'].includes(record.type)">{{ $t('security.roleApp.index.form.appName') }}：</strong>
+                <span v-if="record.appName&&['app'].includes(record.type)">{{ record.appName }}</span>
+                <br v-if="['app'].includes(record.type)"/>
+                <span :title="record.description" class="span-textarea">
                       <strong>{{ $t('security.role.index.form.description') }}：</strong>
                       {{ record.description }}
                     </span>
-              <a-divider v-if="formState==='edit'" style="margin: 5px 0px"/>
-              <a-space v-if="formState==='edit'" style="display: flex;align-items: center;justify-content: end;">
-                <a-button size="mini" type="primary" @click="editTableRole(record.id)">
-                  {{ $t('searchTable.columns.operations.edit') }}
-                </a-button>
-                <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTableRole(record.id)">
-                  <a-button size="mini" status="danger" type="primary">
-                    {{ $t('searchTable.columns.operations.delete') }}
+                <a-divider v-if="formState==='edit'&&(!parameter.appId || (!!parameter.appId&&record.appId===parameter.appId))"
+                           style="margin: 5px 0px"/>
+                <a-space v-if="formState==='edit'&&(!parameter.appId || (!!parameter.appId&&record.appId===parameter.appId))"
+                         style="display: flex;align-items: center;justify-content: end;">
+                  <a-button size="mini" type="primary" @click="editTableRole(record.id)">
+                    {{ $t('searchTable.columns.operations.edit') }}
                   </a-button>
-                </a-popconfirm>
-              </a-space>
-            </template>
-          </a-popover>
-        </template>
+                  <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTableRole(record.id)">
+                    <a-button size="mini" status="danger" type="primary">
+                      {{ $t('searchTable.columns.operations.delete') }}
+                    </a-button>
+                  </a-popconfirm>
+                </a-space>
+              </template>
+            </a-popover>
+          </template>
+        </a-table-column>
+        <a-table-column :ellipsis="true" :sortable="weightSortable" :title="$t('security.role.index.form.weight')" :tooltip="false" :width="90" align="center"
+                        data-index="weight"/>
       </a-table-column>
-      <a-table-column v-for="(nape,index) of cowColumns" :key="index" :title="$t(`security.permission.index.form.classify.${nape.type}`)">
+      <a-table-column v-for="(nape,index) of cowColumns" :key="index" :ellipsis="true" :title="$t(`security.permission.index.form.classify.${nape.type}`)"
+                      :tooltip="false">
         <a-table-column v-for="item of nape.data" :key="item.id" :data-index="item.id" :ellipsis="true" :tooltip="true" :width="120" align="center">
           <template #title>
             <a-popover :title="item.name" position="br" style="max-width: 300px">
@@ -407,6 +488,7 @@ watch(() => props, (val) => {
                       <strong>{{ $t('security.permission.index.form.rule') }}：</strong>
                       {{ item.rule }}
                     </span>
+                <br/>
                 <span :title="item.description" class="span-textarea">
                       <strong>{{ $t('security.permission.index.form.description') }}：</strong>
                       {{ item.description }}
@@ -426,8 +508,9 @@ watch(() => props, (val) => {
             </a-popover>
           </template>
           <template #cell="{record}">
-            <a-switch v-model="record[item.id]" :checked-color="nape.type==='custom'?'rgb(0,180,42)':nape.type==='view'?'rgb(20,201,201)':''"
-                      :before-change="newValue => switchBeforeChange(item.id,record.id)">
+            <a-switch v-model="record[item.id]" :before-change="newValue => switchBeforeChange(item.id,record.id)"
+                      :checked-color="nape.type==='custom'?'rgb(0,180,42)':nape.type==='view'?'rgb(20,201,201)':''"
+                      :disabled="formState==='view'">
               <template #checked>
                 YES
               </template>

@@ -43,34 +43,34 @@ const isSystem = ref<boolean>(false);
 const tabsKey = ref<number>(1);// 定位tabs页面
 const tableFormRef = ref(null);
 const tableFormParams = ref({
-  id: '', formState: 'edit', formCol: 2, parameter: {connectId: '', appId: '', tenantCode: ''}
+  id: '', formState: props.formState, formCol: 2, parameter: {connectId: '', appId: '', tenantCode: ''}
 });
 const columnListParams = ref({
-  formState: 'edit', isModal: true, height: 0, parameter: {
+  formState: props.formState, isModal: true, height: 0, parameter: {
     connectId: '', tableId: '', tableName: '',
     isSync: false, isSystem: false,
     appId: '', tenantCode: ''
   }
 });
 const foreignListParams = ref({
-  formState: 'edit', isModal: true, height: 0, parameter: {
+  formState: props.formState, isModal: true, height: 0, parameter: {
     connectId: '', tableId: '', tableName: '', appId: '', tenantCode: ''
   }
 });
 const viewListParams = ref({
-  formState: 'edit', isModal: true, height: 0, parameter: {
+  formState: props.formState, isModal: true, height: 0, parameter: {
     connectId: '', tableId: '', tableName: '',
     isSync: false, isSystem: false,
     appId: '', tenantCode: ''
   }
 });
 const tablePermissionFormParams = ref({
-  formState: 'edit', isModal: true, height: 0, parameter: {
+  formState: props.formState, isModal: true, height: 0, parameter: {
     connectId: '', object: '', type: '', appId: '', tenantCode: ''
   }
 });
 const columnPermissionFormParams = ref({
-  formState: 'edit', isModal: true, height: 0, isSystem: false, parameter: {
+  formState: props.formState, isModal: true, height: 0, isSystem: false, parameter: {
     connectId: '', tableId: '', object: '', type: '',
     isSync: false, isSystem: false,
     appId: '', tenantCode: ''
@@ -374,7 +374,7 @@ watch(() => visibleForm, () => {
       <template #extra>
         <a-space>
           <a-popconfirm v-if="!isSystem&&tabsKey===1" content="是否更新该条模型数据？" position="bottom" type="info" @ok="updateTable">
-            <a-button size="small" type="outline">
+            <a-button :disabled="formState==='view'" size="small" type="outline">
               <template #icon>
                 <gl-iconfont type="gl-save"/>
               </template>
@@ -382,21 +382,21 @@ watch(() => visibleForm, () => {
             </a-button>
           </a-popconfirm>
           <a-popconfirm v-if="!isSystem&&tabsKey===1" content="是否删除该条模型数据？" position="bottom" type="warning" @ok="deleteTable">
-            <a-button size="small" status="danger" type="outline">
+            <a-button :disabled="formState==='view'" size="small" status="danger" type="outline">
               <template #icon>
                 <gl-iconfont type="gl-delete"/>
               </template>
               删除
             </a-button>
           </a-popconfirm>
-          <a-button :disabled="isSystem" size="small" type="outline" @click="syncFromModelToTable">
+          <a-button :disabled="isSystem||formState==='view'" size="small" type="outline" @click="syncFromModelToTable">
             <template #icon>
               <gl-iconfont type="gl-sync"/>
             </template>
             模型同步至数据库
           </a-button>
           <a-dropdown position="br">
-            <a-button size="small" type="outline">
+            <a-button :disabled="formState==='view'" size="small" type="outline">
               更多&nbsp;
               <gl-iconfont type="gl-arrow-down"/>
             </a-button>

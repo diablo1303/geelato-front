@@ -291,13 +291,4 @@ div.arco-form-item-content > span.textarea-span {
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
 }
-
-.trigger-demo-translate {
-  padding: 10px;
-  min-width: 500px;
-  min-height: 360px;
-  background-color: var(--color-bg-popup);
-  border-radius: 4px;
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
-}
 </style>

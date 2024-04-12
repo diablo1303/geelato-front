@@ -11,8 +11,10 @@ import {useRoute} from "vue-router";
 import {useUserStore} from "@/store";
 import {EventNames} from "@geelato/gl-ide";
 import {emitter} from "@geelato/gl-ui";
-import {ListParams, PageSizeOptions, resetValueByOptions} from '@/api/base';
+import {SelectOptionData} from "@arco-design/web-vue";
+import {getOptionLabel, ListParams, PageSizeOptions, resetValueByOptions} from '@/api/base';
 import {QueryConnectForm, QueryTableForm} from "@/api/model";
+import {getAppSelectOptions, QueryAppForm} from "@/api/application";
 import ModelTableTabs from "./table/tableTabs.vue";
 import ModelTree from "./tree.vue";
 import ModelConnectList from "./connect/list.vue";
@@ -37,6 +39,8 @@ const props = defineProps({
   formState: {type: String, default: 'edit'},
   isModal: {type: Boolean, default: true},
 });
+
+const appSelectOptions = ref<QueryAppForm[]>([]);
 
 /**
  * 调整树形结构高度
@@ -76,6 +80,7 @@ const resetListPageSize = () => {
 const pageData = ref({
   isSync: 0,
   isSystem: false,
+  application: {},
   tree: { // 选中节点：id，层级，标题，数据
     key: '0', level: 0, title: '', data: {}
   },
@@ -91,26 +96,26 @@ const treeParams = ref({
   height: resetTreeHeight(),
 });
 // 连接列表
-const connectListParams = ref<ListParams>({
+const connectListParams = ref({
   visible: true,
   parameter: {
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode
   },
-  formState: 'edit',
+  formState: props.formState,
   filterCol: 2,
   pageSize: resetListPageSize(),
   height: resetListHeight(),
 });
 // 模型列表
-const tableListParams = ref<ListParams>({
+const tableListParams = ref({
   visible: false,
   parameter: {
     connectId: '',
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode
   },
-  formState: 'edit',
+  formState: props.formState,
   filterCol: 2,
   pageSize: resetListPageSize(),
   height: resetListHeight(),
@@ -119,7 +124,7 @@ const tableListParams = ref<ListParams>({
 const tableTabsParams = ref({
   id: '',
   visible: false,
-  formState: 'edit',
+  formState: props.formState,
   parameter: {
     appId: routeParams.value.appId,
     tenantCode: routeParams.value.tenantCode
@@ -138,6 +143,7 @@ const swapTableTitle = (item: QueryTableForm): string => {
   // eslint-disable-next-line no-nested-ternary
   pageData.value.isSync = (item.tableName != null && item.tableName.length > 0) ? (item.synced ? 2 : 1) : 0;
   pageData.value.isSystem = ['system', 'platform'].includes(item.sourceType);
+  pageData.value.application = appSelectOptions.value.find(v => v.id === item.appId) || {};
   return `${item.title}（${item.entityName || item.tableName}）`;
 }
 
@@ -216,6 +222,14 @@ const handleResize = () => {
 
 onMounted(() => {
   window.addEventListener(EventNames.WindowResize, handleResize);
+  // 应用信息
+  getAppSelectOptions({
+    id: '', tenantCode: routeParams.value.tenantCode || ''
+  }, (data: QueryAppForm[]) => {
+    appSelectOptions.value = data || [];
+  }, () => {
+    appSelectOptions.value = [];
+  });
 });
 onUnmounted(() => {
   window.removeEventListener(EventNames.WindowResize, handleResize);
@@ -254,6 +268,11 @@ onUnmounted(() => {
                 <a-button v-show="pageData.tree.level===2" class="list-action-button-default" status="warning" type="primary">
                   <span>{{ $t('model.table.index.form.sourceType.system') }}</span>
                 </a-button>
+              </span>
+                <span v-if="pageData.application.name" style="padding-right: 5px;">
+                  <a-button v-show="pageData.tree.level===2" class="list-action-button-default" status="success" type="primary">
+                    <span>{{ pageData.application.name }}</span>
+                  </a-button>
               </span>
                 <span>
                 <a-button v-show="pageData.tree.level===2" :disabled="pageData.isSync===0" class="list-action-button-default" type="primary">

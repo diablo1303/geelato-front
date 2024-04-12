@@ -36,10 +36,12 @@ const getRouter = (_modules: any, result: string[]) => {
 export const pageParamsIsFull = (params: object, type?: number) => {
   if (params) {
     if (type === 1 && 'tenantCode' in params && 'appId' in params) {
+      // @ts-ignore
       if (!!params.tenantCode && !!params.appId) {
         return true;
       }
     } else if ('tenantCode' in params && 'appId' in params && 'pageId' in params) {
+      // @ts-ignore
       if (!!params.tenantCode && !!params.appId && !!params.pageId) {
         return true;
       }

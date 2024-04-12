@@ -33,6 +33,8 @@ type PageParams = {
   connectId: string; // 数据库连接主键
   tableId: string; // 模型主键
   tableName: string; // 模型名称
+  isSync: boolean; // 是否同步
+  isSystem: boolean; // 是否系统表
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -218,7 +220,11 @@ const formParams = ref<FormParams>({
   title: '',
   width: '1150px',
   height: '',
-  parameter: {connectId: '', tableId: '', tableName: '', appId: '', tenantCode: ''},
+  parameter: {
+    connectId: '', tableId: '', tableName: '',
+    isSync: false, isSystem: false,
+    appId: '', tenantCode: ''
+  },
   formState: 'add',
   id: '',
   formCol: 2,
@@ -228,7 +234,7 @@ const formParams = ref<FormParams>({
  * @param ev
  */
 const addTable = (ev: MouseEvent) => {
-  formParams.value = Object.assign(formParams.value, {
+  Object.assign(formParams.value, {
     id: '', visible: true, formState: 'add'
   });
 };
@@ -237,7 +243,7 @@ const addTable = (ev: MouseEvent) => {
  * @param data
  */
 const viewTable = (data: QueryForm) => {
-  formParams.value = Object.assign(formParams.value, {
+  Object.assign(formParams.value, {
     id: data.id, visible: true, formState: 'view'
   });
 }
@@ -246,7 +252,7 @@ const viewTable = (data: QueryForm) => {
  * @param data
  */
 const editTable = (data: QueryForm) => {
-  formParams.value = Object.assign(formParams.value, {
+  Object.assign(formParams.value, {
     id: data.id, visible: true, formState: 'edit'
   });
 }
@@ -509,6 +515,8 @@ watch(() => props, (val) => {
       connectId: props.parameter.connectId,
       tableId: props.parameter.tableId,
       tableName: props.parameter.tableName,
+      isSync: props.parameter?.isSync === true,
+      isSystem: props.parameter?.isSystem === true,
       appId: props.parameter?.appId || '',
       tenantCode: props.parameter?.tenantCode || '',
     }
@@ -589,8 +597,8 @@ watch(() => props, (val) => {
           </template>
           {{ $t('searchTable.operation.create') }}
         </a-button>
-        <a-popover v-if="formState==='edit'" v-model:popup-visible="entityPopover" position="bottom" style="max-width: 400px" trigger="click">
-          <a-button size="medium" type="primary" @click="entityPopoverClick($event)">
+        <a-popover v-model:popup-visible="entityPopover" position="bottom" style="max-width: 400px" trigger="click">
+          <a-button :disabled="formState==='view'" size="medium" type="primary" @click="entityPopoverClick($event)">
             <icon-plus/>
             {{ $t('searchTable.columns.operations.addModel') }}
           </a-button>
@@ -634,8 +642,8 @@ watch(() => props, (val) => {
             </a-space>
           </template>
         </a-popover>
-        <a-select v-if="formState==='edit'" v-model="commonSelectData"
-                  v-model:popup-visible="selectVisible" :placeholder="$t('searchTable.form.selectDefault')" allow-search multiple scrollbar
+        <a-select v-model="commonSelectData" v-model:popup-visible="selectVisible"
+                  :placeholder="$t('searchTable.form.selectDefault')" allow-search multiple scrollbar
                   @change="commonSelectDataChange">
           <a-option v-for="item of selectCommonOptions"
                     :key="item.id" :label="`${item.title}[${item.fieldName}]`"
@@ -658,8 +666,8 @@ watch(() => props, (val) => {
             </div>
           </template>
           <template #trigger>
-            <div style="width: 320px">
-              <a-button type="primary" @click="openCommonColumn($event)">
+            <div :style="{width:`${formState==='view'?'10px':'320px'}`}">
+              <a-button :disabled="formState==='view'" type="primary" @click="openCommonColumn($event)">
                 <template #icon>
                   <icon-plus/>
                 </template>
@@ -725,9 +733,9 @@ watch(() => props, (val) => {
           {{ getOptionLabel(record.selectType, columnSelectType) }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('model.column.index.form.charMaxLength')" :width="90" data-index="charMaxLength"/>
-      <a-table-column :title="$t('model.column.index.form.numericPrecision')" :width="90" data-index="numericPrecision"/>
-      <a-table-column :title="$t('model.column.index.form.numericScale')" :width="90" data-index="numericScale"/>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.charMaxLength')" :tooltip="true" :width="90" data-index="charMaxLength"/>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.numericPrecision')" :tooltip="true" :width="90" data-index="numericPrecision"/>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.numericScale')" :tooltip="true" :width="90" data-index="numericScale"/>
       <a-table-column :title="$t('model.column.index.form.encrypted')" :width="90" data-index="encrypted">
         <template #cell="{ record }">
           {{ $t(`model.column.index.form.encrypted.${record.encrypted}`) }}

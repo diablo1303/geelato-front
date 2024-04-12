@@ -312,7 +312,7 @@ watch(() => props.height, (val) => {
       column-resizable
       row-key="id">
     <template #columns>
-      <a-table-column :ellipsis="true" :tooltip="false" :width="150" data-index="name" fixed="left" title="角色">
+      <a-table-column :ellipsis="true" :tooltip="false" :width="210" data-index="name" fixed="left" title="角色">
         <template #title>
           <a-popover position="tl">
             角色&nbsp;<gl-iconfont type="gl-warning-circle" style="color: #ff696d"/>
@@ -410,8 +410,7 @@ watch(() => props.height, (val) => {
         </template>
         <template #cell="{record}">
           <a-select v-model="record[item.id]"
-                    :bordered="false"
-                    :options="columnPermissionOptions"
+                    :bordered="false" :disabled="formState==='view'" :options="columnPermissionOptions"
                     :style="{color:`${record[item.id]==='1'?'#00b42a':(record[item.id]==='2'?'#165dff':'#86909c')}`}"
                     @change="columnRolePermissionChange(record.id,item.id,record[item.id])"/>
         </template>

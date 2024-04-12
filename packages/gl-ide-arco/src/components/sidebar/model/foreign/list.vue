@@ -275,7 +275,7 @@ watch(() => props.height, (val) => {
   <a-row style="margin-bottom: 16px">
     <a-col :span="12">
       <a-space>
-        <a-button v-show="formState==='edit'" type="primary" @click="addTable">
+        <a-button :disabled="formState==='view'" type="primary" @click="addTable">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
@@ -316,11 +316,11 @@ watch(() => props.height, (val) => {
       <a-table-column :sortable="sortable.createAt" :width="180" data-index="createAt" title="创建时间"/>
       <a-table-column v-show="formState==='edit'" :width="140" align="center" data-index="operations" fixed="right" title="操作">
         <template #cell="{ record }">
-          <a-button size="small" type="text" @click="editTable(record.id)">
+          <a-button :disabled="formState==='view'" size="small" type="text" @click="editTable(record.id)">
             编辑
           </a-button>
           <a-popconfirm content="是否删除该条数据？" position="tr" type="warning" @ok="deleteTable(record)">
-            <a-button size="small" status="danger" type="text">
+            <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
               删除
             </a-button>
           </a-popconfirm>

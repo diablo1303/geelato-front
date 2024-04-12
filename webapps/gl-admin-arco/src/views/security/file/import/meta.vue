@@ -114,7 +114,6 @@ const getSelectEntityColumnOptions = async (entityName: string, successCallBack:
  * 排序、新增、修改、删除
  */
 const watchRenderData = () => {
-  console.log('watch:renderData', renderData.value);
   const data = cloneDeep(renderData.value);
   if (data && data.length > 0) {
     // eslint-disable-next-line no-restricted-syntax
@@ -291,7 +290,6 @@ const primaryValueEntityChange = () => {
  * 输入
  */
 watch(() => props.modelValue, () => {
-  console.log('watch:modelValue', props.modelValue);
   const data = cloneDeep(props.modelValue);
   if (data && data.length > 0) {
     data.forEach((item) => {
@@ -314,7 +312,6 @@ watch(() => props.modelValue, () => {
 }, {deep: true, immediate: true});
 
 watch(() => props.businessTypeData, () => {
-  console.log('watch:businessTypeData', props.businessTypeData);
   businessTypeNameData.value = [];
   // eslint-disable-next-line no-restricted-syntax
   for (const item of businessTypeData.value) {

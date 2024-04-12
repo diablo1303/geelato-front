@@ -181,7 +181,7 @@ defineExpose({saveOrUpdate, loadPage});
             :label="$t('security.permission.index.form.code')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateCode}]"
             field="code">
-          <a-input v-if="formState!=='view'&&!formData.default" v-model="formData.code" :max-length="32"/>
+          <a-input v-if="formState!=='view'&&!formData.default&&!autoCode" v-model="formData.code" :max-length="32"/>
           <span v-else>{{ formData.code }}</span>
         </a-form-item>
       </a-col>

@@ -308,7 +308,7 @@ watch(() => props, (val) => {
     </a-col>
     <a-divider direction="vertical" style="height: 132px"/>
     <a-col :flex="'86px'" style="text-align: right">
-      <a-space :size="18" direction="vertical"  style="align-items: flex-start;">
+      <a-space :size="18" direction="vertical" style="align-items: flex-start;">
         <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>

@@ -226,14 +226,16 @@ const permissionFormPage = ref({
   id: '',// 主键
   visible: false,//
   parameter: {connectId: '', object: '', type: '', appId: '', tenantCode: ''},
-  formState: 'add',//
+  formState: props.formState,//
   formCol: 1,//
   title: '视图权限',
   width: '67%',
 });
 const openViewPermission = (data: QueryViewForm) => {
   permissionFormPage.value.parameter = {
-    connectId: data.connectId, object: data.viewName, type: 'dp,mp', appId: data.appId, tenantCode: data.tenantCode
+    connectId: data.connectId,
+    object: data.viewName, type: 'dp,mp',
+    appId: data.appId, tenantCode: data.tenantCode
   };
   permissionFormPage.value.visible = true;
 }
@@ -390,10 +392,10 @@ watch(() => props.height, (val) => {
       <a-table-column :ellipsis="true" :tooltip="true" :width="210" data-index="description" title="补充描述"/>
       <a-table-column v-show="formState==='edit'" :width="240" align="center" data-index="operations" fixed="right" title="操作">
         <template #cell="{ record,isDefault=record.viewType==='default'}">
-          <a-button v-if="isDefault" size="small" type="text" @click="viewTable(record.id)">
+          <a-button v-if="isDefault || formState==='view'" size="small" type="text" @click="viewTable(record.id)">
             查看
           </a-button>
-          <a-button v-else size="small" type="text" @click="editTable(record.id)">
+          <a-button v-else :disabled="formState==='view'" size="small" type="text" @click="editTable(record.id)">
             编辑
           </a-button>
           <!--    发布      -->
@@ -403,7 +405,7 @@ watch(() => props.height, (val) => {
             </a-button>
           </a-tooltip>
           <a-popconfirm v-else content="是否发布该条视图？" position="tr" type="info" @ok="releaseTable(record)">
-            <a-button size="small" type="text">
+            <a-button :disabled="formState==='view'" size="small" type="text">
               发布
             </a-button>
           </a-popconfirm>
@@ -413,7 +415,7 @@ watch(() => props.height, (val) => {
           </a-button>
           <!--    删除      -->
           <a-popconfirm content="是否删除该条数据？" position="tr" type="warning" @ok="deleteTable(record)">
-            <a-button size="small" status="danger" type="text">
+            <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
               删除
             </a-button>
           </a-popconfirm>

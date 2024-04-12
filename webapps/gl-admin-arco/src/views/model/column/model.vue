@@ -39,6 +39,8 @@ type PageParams = {
   connectId: string; // 数据库链接id
   tableId: string; // 模型名称
   tableName: string;
+  isSync: boolean; // 是否同步
+  isSystem: boolean; // 是否系统表
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -578,8 +580,8 @@ const layoutParams = ref({
   visible: false,
   isModal: true,
   title: '数据字典',
-  width: '1250px',
-  height: '',
+  width: '80%',
+  height: window.innerHeight * 0.8,
   parameter: {appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
@@ -667,7 +669,12 @@ const saveOrUpdate = (successBack?: any, failBack?: any) => {
  * 页面加载方法，对外提供
  */
 const loadPage = async () => {
-  entityIsEdit.value = props.formState === 'add';
+  if (props.formState === 'add' || (props.formState === 'edit' && props.parameter.isSync === false)) {
+    entityIsEdit.value = true;
+  } else {
+    entityIsEdit.value = false;
+  }
+  layoutParams.value.height = window.innerHeight * 0.8;
   // 应用信息
   getAppSelectOptions({
     id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
@@ -781,13 +788,15 @@ defineExpose({saveOrUpdate, loadPage});
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
             :label="$t('model.column.index.form.name')"
-            :rules="[{required: editName,message: $t('model.form.rules.match.required')},
+            :rules="[{required: true,message: $t('model.form.rules.match.required')},
             {match: /^[a-z][a-z0-9_]+$/,message:$t('model.form.rules.match.columnName.match')},
             {validator:validateCode}]"
             field="name">
-          <a-input v-if="entityIsEdit" v-model.trim="formData.name" :max-length="30" @blur="columnNameBlur($event)"/>
+          <a-input v-if="entityIsEdit" v-model.trim="formData.name" :max-length="30"
+                   placeholder="存入数据库表的字段，如：‘create_time’用‘_’分割的字符串。"
+                   @blur="columnNameBlur($event)"/>
           <span v-else>{{ formData.name }}</span>
-          <a-tooltip :content="$t('searchTable.columns.operations.alter.warning')">
+          <a-tooltip content="变更“字段标识”，更新后会同步至数据库">
             <a-button v-if="!entityIsEdit" size="medium" type="text" @click="ev => {entityIsEdit=true}">
               <icon-edit/>
             </a-button>
@@ -805,7 +814,7 @@ defineExpose({saveOrUpdate, loadPage});
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :label="$t('model.column.index.form.appId')"
-                     :rules="[{required: formState==='add',message: $t('model.form.rules.match.required')}]"
+                     :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
                      field="appId">
           <a-select v-model="formData.appId" :disabled="formState==='view'">
             <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>

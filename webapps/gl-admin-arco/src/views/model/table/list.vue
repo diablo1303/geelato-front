@@ -442,11 +442,11 @@ watch(() => props, (val) => {
                       fixed="right">
         <template #cell="{ record,isST = ['system','platform'].includes(record.sourceType)}">
           <a-tooltip v-if="isST" :content="$t('searchTable.tables.operations.sourceType.warning')">
-            <a-button :disabled="formState==='view'" class="button-disabled" size="small" type="text">
+            <a-button class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.edit') }}
             </a-button>
           </a-tooltip>
-          <a-button v-else size="small" type="text" @click="editTable(record)">
+          <a-button v-else :disabled="formState==='view'" size="small" type="text" @click="editTable(record)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
           <a-tooltip v-if="isST" :content="$t('searchTable.tables.operations.sourceType.warning')">
