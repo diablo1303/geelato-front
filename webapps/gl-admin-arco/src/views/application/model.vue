@@ -336,6 +336,9 @@ defineExpose({saveOrUpdate, loadPage});
               </div>
             </template>
           </a-select>
+          <template #extra>
+            {{ $t('application.app.list.roles.extra') }}
+          </template>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)">

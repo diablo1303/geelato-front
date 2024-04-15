@@ -15,8 +15,9 @@ import {
   QueryRoleForm as QueryForm,
   validateRoleCode
 } from '@/api/security';
-import {enableStatusOptions, typeOptions} from "@/views/security/role/searchTable";
+import {enableStatusOptions, typeOptions, usedAppOptions} from "@/views/security/role/searchTable";
 import ButtonTooltipIndex from "@/components/button-tooltip/index.vue";
+import {autoIncrementOptions} from "@/views/model/column/searchTable";
 
 // 页面所需 参数
 type PageParams = {
@@ -50,6 +51,7 @@ const generateFormData = (): QueryForm => {
     enableStatus: 1,
     seqNo: 999,
     description: '',
+    usedApp: 0,
     appName: '',
     appIds: '',
     appId: props.parameter?.appId || '',
@@ -127,6 +129,12 @@ const resetValidate = async () => {
 const typeChange = () => {
   formData.value.appId = '';
   formData.value.appName = '';
+  formData.value.usedApp = 0;
+  selectAll.value = false;
+  selectData.value = [];
+}
+
+const usedAppChange = () => {
   selectAll.value = false;
   selectData.value = [];
 }
@@ -197,6 +205,7 @@ const loadPage = () => {
     getData(props.modelValue, (data: QueryForm) => {
       // 表格数据处理
       data.seqNo = Number(data.seqNo);
+      data.usedApp = data.usedApp === true ? 1 : 0;
       formData.value = data;
     });
   }
@@ -291,7 +300,17 @@ defineExpose({saveOrUpdate, loadPage});
           <span v-else>{{ formData.seqNo }}</span>
         </a-form-item>
       </a-col>
-      <a-col v-if="formState==='add'&&['platform'].includes(formData.type)" :span="(labelCol+wrapperCol)">
+      <a-col v-if="['platform'].includes(formData.type)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('security.role.index.form.usedApp')" field="usedApp">
+          <a-radio-group v-model="formData.usedApp" :options="usedAppOptions" @change="usedAppChange">
+            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
+          </a-radio-group>
+          <template #extra>
+            {{ $t('security.role.index.form.usedApp.extra') }}
+          </template>
+        </a-form-item>
+      </a-col>
+      <a-col v-if="formState==='add'&&['platform'].includes(formData.type)&&formData.usedApp" :span="(labelCol+wrapperCol)">
         <a-form-item :label="$t('security.role.index.form.appIds')"
                      :label-col-props="{ span: labelCol/formCol }"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
@@ -307,6 +326,9 @@ defineExpose({saveOrUpdate, loadPage});
               </div>
             </template>
           </a-select>
+          <template #extra>
+            {{ $t('security.role.index.form.appIds.extra') }}
+          </template>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)">

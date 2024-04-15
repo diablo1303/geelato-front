@@ -511,6 +511,7 @@ export interface QueryRoleForm {
   description: string;
   tenantCode: string;
   appId: string;
+  usedApp: number | boolean;
   appName?: string;
   appIds?: string;
 }

@@ -322,11 +322,12 @@ const roleUsers = (data: QueryRoleForm) => {
       title: `批量${isAll ? '取消关联' : '关联'}`,
       titleAlign: 'start',
       content: () => h(compile(
-          `<strong>${data.name}</strong> <strong style="color: red">${isAll ? '取消关联' : '关联'}</strong> 当前展示的所有用户？<br/>
+          `<strong>${data.name}</strong>&nbsp;
+                    <strong style="color: rgb(var(--success-6))">${isAll ? '取消关联' : '关联'}</strong>&nbsp;
+                    当前展示的所有用户？<br/>
                     <span  style="display: -webkit-box;overflow: hidden;text-overflow: ellipsis;-webkit-line-clamp: 4;
                     -webkit-box-orient: vertical;margin-top: 5px;border-top: 1px solid var(--color-neutral-6);"
-                    title="${userNames.join('，')}">${userNames.join('，')}</span>`
-      )),
+                    title="${userNames.join('，')}">${userNames.join('，')}</span>`)),
       onOk: async () => {
         if (isAll) {
           await switchRU({'roleId': data.id, 'userId': userIds.join(',')}, () => {
@@ -525,7 +526,7 @@ watch(() => props, (val) => {
                   <a-button :disabled="formState==='view'" size="mini" type="primary" @click="editRole(item)">
                     {{ $t('searchTable.columns.operations.edit') }}
                   </a-button>
-                  <a-button :disabled="formState==='view'" size="mini" status="danger" type="primary" @click="roleUsers(item)">
+                  <a-button :disabled="formState==='view'" size="mini" status="success" type="primary" @click="roleUsers(item)">
                     {{ $t('security.orgUser.index.form.relevance') }}
                   </a-button>
                 </a-space>
@@ -533,7 +534,7 @@ watch(() => props, (val) => {
             </a-popover>
           </template>
           <template #cell="{record}">
-            <a-switch :disabled="formState==='view' || (!!parameter.appId&&(item.appId!==parameter.appId || item.type==='platform'))"
+            <a-switch :disabled="formState==='view'"
                       v-model="record[item.id]" :before-change="newValue => switchBeforeChange(item.id,record.id)">
               <template #checked>
                 YES
@@ -545,7 +546,7 @@ watch(() => props, (val) => {
           </template>
         </a-table-column>
       </a-table-column>
-      <a-table-column :title="$t('security.user.index.form.operations')" :width="110" align="center" data-index="operations" fixed="right">
+      <a-table-column v-if="false" :title="$t('security.user.index.form.operations')" :width="110" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button size="small" type="text" @click="userRoles(record)">
             {{ $t('security.orgUser.index.form.relevance') }}

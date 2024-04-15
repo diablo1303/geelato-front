@@ -201,7 +201,7 @@ watch(() => visibleForm, () => {
                      :parameter="parameter" :visible="visibleForm"/>
         </a-card>
       </a-tab-pane>
-      <a-tab-pane v-if="formData.type!=='app'" :key="2" :title="$t('security.role.form.tab.title.two')">
+      <a-tab-pane v-if="formData.type==='platform'&&formData.usedApp===true" :key="2" :title="$t('security.role.form.tab.title.two')">
         <a-card class="">
           <RoleAppList :filterCol="appListParams.filterCol"
                        :formState="appListParams.formState"
