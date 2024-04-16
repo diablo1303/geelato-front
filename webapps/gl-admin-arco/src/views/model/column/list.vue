@@ -63,7 +63,7 @@ const pagination = reactive({
 });
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 2500, y: props.height});
+const scroll = ref({x: 2700, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
   name: {sortDirections: ['descend', 'ascend'], sorter: true, sortOrder: ''},
@@ -759,6 +759,7 @@ watch(() => props, async (val) => {
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.type')" :tooltip="true" :width="150" data-index="type"/>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.defaultValue')" :tooltip="true" :width="120" data-index="defaultValue"/>
+      <a-table-column :ellipsis="true" :title="$t('model.column.index.form.defaultRange2')" :tooltip="true" :width="210" data-index="extraValue"/>
       <a-table-column :sortable="sortable.ordinalPosition" :title="$t('model.column.index.form.ordinalPosition')" :width="120" data-index="ordinalPosition"/>
       <a-table-column :sortable="sortable.createAt" :title="$t('model.column.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column :ellipsis="true" :title="$t('model.column.index.form.comment')" :tooltip="true" :width="210" data-index="comment"/>

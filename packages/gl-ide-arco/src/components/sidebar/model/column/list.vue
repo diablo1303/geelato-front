@@ -46,7 +46,7 @@ const pagination = reactive({...basePagination,});
 const renderData = ref<Record<string, any>[]>([]);
 const loading = ref<boolean>(false);
 const scrollbar = ref(true);
-const scroll = ref({x: 2000, y: props.height});
+const scroll = ref({x: 2200, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
   name: {sortDirections: ['descend', 'ascend'], sorter: true, sortOrder: ''},
@@ -718,6 +718,7 @@ watch(() => props, (val) => {
       </a-table-column>
       <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="type" title="数据约束"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="130" data-index="defaultValue" title="默认值"/>
+      <a-table-column :ellipsis="true" title="默认字段" :tooltip="true" :width="210" data-index="extraValue"/>
       <a-table-column :sortable="sortable.ordinalPosition" :width="100" data-index="ordinalPosition" title="次序"/>
       <a-table-column :sortable="sortable.createAt" :width="180" data-index="createAt" title="创建时间"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="200" data-index="comment" title="注释（中文）"/>
