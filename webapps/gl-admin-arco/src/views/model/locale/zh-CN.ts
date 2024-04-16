@@ -182,6 +182,8 @@ export default {
   'model.column.index.form.ordinalPosition': '次序',
   'model.column.index.form.defaultValue': '默认值',
   'model.column.index.form.defaultRange': '默认范围',
+  'model.column.index.form.defaultRange1': '默认实体',
+  'model.column.index.form.defaultRange2': '默认字段',
   'model.column.index.form.defaultMaxValue': '最大值',
   'model.column.index.form.type': '数据约束',
   'model.column.index.form.key': '是否主键',

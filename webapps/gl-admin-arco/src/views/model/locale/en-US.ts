@@ -184,6 +184,8 @@ export default {
   'model.column.index.form.ordinalPosition': 'order',
   'model.column.index.form.defaultValue': 'defaultValue',
   'model.column.index.form.defaultRange': 'defaultRange',
+  'model.column.index.form.defaultRange1': 'defaultEntity',
+  'model.column.index.form.defaultRange2': 'defaultColumn',
   'model.column.index.form.defaultMaxValue': 'maxValue',
   'model.column.index.form.type': 'restraint',
   'model.column.index.form.key': 'primaryKey',

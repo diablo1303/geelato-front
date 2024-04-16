@@ -79,6 +79,7 @@ const generateFormData = (): QueryForm => {
     dataType: 'VARCHAR', // 数据类型
     selectType: 'VARCHAR',
     typeExtra: '',
+    extraValue: '',
     extra: '', // 特别 auto_increment
     autoIncrement: 0, // auto_increment
     uniqued: 0, // 唯一约束
@@ -324,7 +325,7 @@ const getSelectEntityColumnOptions = async (value: string, params?: Record<strin
         appId: '', tenantCode: props.parameter?.tenantCode || ''
       } as unknown as PageQueryRequest);
       selectEntityColumnOptions.value = data;
-      formData.value.defaultValue = value || getKeyId(data);
+      formData.value.extraValue = value || getKeyId(data);
     } else {
       selectEntityColumnOptions.value = [];
     }
@@ -334,7 +335,7 @@ const getSelectEntityColumnOptions = async (value: string, params?: Record<strin
 }
 
 const entityChange = (value?: string) => {
-  formData.value.defaultValue = '';
+  formData.value.extraValue = '';
   selectEntityColumnOptions.value = [];
   getSelectEntityColumnOptions(value || "");
 }
@@ -460,6 +461,7 @@ const selectTypeChange = (value: string) => {
   formData.value.charMaxLength = 0;
   formData.value.defaultValue = '';
   formData.value.typeExtra = '';
+  formData.value.extraValue = '';
   formData.value.numericPrecision = 0;
   formData.value.numericScale = 0;
   formData.value.numericSigned = 0;
@@ -934,19 +936,34 @@ defineExpose({saveOrUpdate, loadPage});
         </a-form-item>
       </a-col>
       <!--   默认范围 typeExtra 字典项、流水号、实体   -->
-      <a-col v-if="['CODE','ENTITY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+      <a-col v-if="['CODE'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
             :label="$t('model.column.index.form.defaultRange')"
             field="typeExtra">
           <a-select v-if="formState!=='view'&&['CODE'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search>
             <a-option v-for="item of selectCodeOptions" :key="item.id" :label="`${item.title}[${item.example}]`" :value="item.id"/>
           </a-select>
+        </a-form-item>
+      </a-col>
+      <!--  实体字段    -->
+      <a-col v-if="['ENTITY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.column.index.form.defaultRange1')" field="typeExtra">
           <a-select v-if="formState!=='view'&&['ENTITY'].includes(formData.selectType)" v-model="formData.typeExtra" allow-clear allow-search
                     @change="entityChange1">
             <a-option v-for="item of selectEntityOptions" :key="item.id" :label="`${item.title}[${item.entityName}]`" :value="item.id"/>
           </a-select>
         </a-form-item>
       </a-col>
+      <a-col v-if="['ENTITY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.defaultRange2')"
+            field="extraValue">
+          <a-select v-if="formState!=='view'" v-model="formData.extraValue" allow-clear allow-search>
+            <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <!--  数据字典    -->
       <a-col v-if="['DICTIONARY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
             :label="$t('model.column.index.form.defaultRange')"
@@ -976,15 +993,7 @@ defineExpose({saveOrUpdate, loadPage});
           </a-select>
         </a-form-item>
       </a-col>
-      <a-col v-if="['ENTITY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item
-            :label="$t('model.column.index.form.defaultValue')"
-            field="defaultValue">
-          <a-select v-if="formState!=='view'" v-model="formData.defaultValue" allow-clear allow-search>
-            <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
-          </a-select>
-        </a-form-item>
-      </a-col>
+
       <!--  布尔值 defaultValue -->
       <a-col v-if="['BIT','SWITCH'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :label="$t('model.column.index.form.defaultValue')" field="defaultValue">
