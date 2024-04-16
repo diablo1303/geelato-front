@@ -84,12 +84,12 @@ const roleFormParams = ref({
   visible: false,
   isModal: true,
   title: '',
-  width: '',
+  width: '1020px',
   height: '',
   parameter: {type: '', appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
-  formCol: 1,
+  formCol: 2,
 });
 const addColumnRole = (ev: MouseEvent) => {
   roleFormParams.value.parameter.type = props.parameter.appId ? 'app' : '';

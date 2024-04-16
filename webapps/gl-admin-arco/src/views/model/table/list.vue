@@ -199,7 +199,7 @@ const formParams = ref<FormParams>({
   title: '',
   width: '1020px',
   height: '',
-  parameter: {appId: '', tenantCode: ''},
+  parameter: {connectId: '', appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
   formCol: 2,
@@ -278,6 +278,7 @@ watch(() => props, (val) => {
     basePagination.pageSize = props.pageSize;
     // 表单参数
     formParams.value.parameter = {
+      connectId: props.parameter.connectId || '',
       appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
     }
     // 加载数据

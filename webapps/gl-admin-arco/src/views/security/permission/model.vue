@@ -205,7 +205,7 @@ defineExpose({saveOrUpdate, loadPage});
           <span v-else>{{ formData.object }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="(labelCol+wrapperCol)/formCol">
+      <a-col v-if="!!parameter.appId" :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :label="$t('security.permission.index.form.appId')"
                      :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
                      field="appId">

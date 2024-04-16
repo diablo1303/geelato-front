@@ -217,7 +217,7 @@ defineExpose({saveOrUpdate, loadPage});
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
             :label="$t('model.table.index.form.appId')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            :rules="[{required: !!parameter.appId,message: $t('model.form.rules.match.required')}]"
             field="appId">
           <a-select v-model="formData.appId" :disabled="formState==='view'">
             <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>

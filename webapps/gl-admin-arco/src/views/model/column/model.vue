@@ -373,7 +373,7 @@ const saveData = async (params: QueryForm, successBack?: any, failBack?: any) =>
       saveData.typeExtra = getMultiData();
     }
     try {
-      const {data} = await createOrUpdateForm(params);
+      const {data} = await createOrUpdateForm(saveData);
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
       if (failBack && typeof failBack === 'function') failBack(err);
@@ -814,9 +814,9 @@ defineExpose({saveOrUpdate, loadPage});
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :label="$t('model.column.index.form.appId')"
-                     :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+                     :rules="[{required: !!parameter.appId,message: $t('model.form.rules.match.required')}]"
                      field="appId">
-          <a-select v-model="formData.appId" :disabled="formState==='view'">
+          <a-select v-model="formData.appId" :disabled="formState==='view'||!parameter.appId">
             <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
           </a-select>
         </a-form-item>

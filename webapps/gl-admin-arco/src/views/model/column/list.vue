@@ -110,11 +110,7 @@ const fetchData = async (params: PageQueryRequest) => {
     const {data} = await pageQueryList(params);
     renderData.value = [];
     if (checked.value) {
-      data.items.forEach((item, index) => {
-        if (!defaultColumnMetas.value.includes((item as unknown as QueryTableColumnForm).name)) {
-          renderData.value.push(item);
-        }
-      });
+      renderData.value = data.items.filter(item => !defaultColumnMetas.value.includes((item as unknown as QueryTableColumnForm).name));
     } else {
       renderData.value = data.items;
     }
@@ -492,7 +488,7 @@ watch(() => selectVisible, (val) => {
   }
 }, {deep: true, immediate: true});
 
-watch(() => props, (val) => {
+watch(() => props, async (val) => {
   if (props.visible === true) {
     // 模型字段类型
     getTypeSelectOptions((data: ColumnSelectType[]) => {
@@ -501,7 +497,7 @@ watch(() => props, (val) => {
       columnSelectType.value = [];
     });
     // 模型默认字段
-    getDefaultColumnNames((data: string[]) => {
+    await getDefaultColumnNames((data: string[]) => {
       defaultColumnMetas.value = data || [];
     }, () => {
       defaultColumnMetas.value = [];
