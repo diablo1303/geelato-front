@@ -11,6 +11,7 @@ import {FileItem, FormInstance, Modal} from "@arco-design/web-vue";
 import {iconsJson} from "@geelato/gl-ui";
 import {createOrUpdateApp as createOrUpdateForm, getApp as getForm, QueryAppForm as QueryForm, validateAppCode} from '@/api/application'
 import {getRoleSelectOptions, QueryRoleForm} from "@/api/security";
+import {getConnectSelectOptions, QueryConnectForm} from "@/api/model";
 import UploadImageBase64 from '@/components/upload-base64/image.vue';
 import {statusOptions, watermarkOptions} from "./searchTable";
 
@@ -60,13 +61,17 @@ const generateFormData = (): QueryForm => {
     applyStatus: 1,
     designStatus: 1,
     roles: '',
+    connects: '',
     tenantCode: props.parameter?.tenantCode || ''
   };
 }
 const formData = ref(generateFormData());
 const roleSelectOptions = ref<QueryRoleForm[]>([]);
-const selectAll = ref<boolean>(false);
-const selectData = ref<string[]>([]);
+const roleSelectAll = ref<boolean>(false);
+const roleSelectData = ref<string[]>([]);
+const connectSelectOptions = ref<QueryConnectForm[]>([]);
+const connectSelectAll = ref<boolean>(false);
+const connectSelectData = ref<string[]>([]);
 /**
  * 新增或更新接口
  * @param params
@@ -77,7 +82,8 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
-      params.roles = selectData.value && selectData.value.toString();
+      params.roles = roleSelectData.value && roleSelectData.value.toString();
+      params.connects = connectSelectData.value && connectSelectData.value.toString();
       const {data} = await createOrUpdateForm(params);
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
@@ -150,29 +156,58 @@ const deleteIconClick = (ev?: MouseEvent) => {
 /**
  * 选择内容与全选联动
  */
-const selectChange = () => {
+const roleSelectChange = () => {
   let isAll = true;
   // eslint-disable-next-line no-restricted-syntax
   for (const item of roleSelectOptions.value) {
-    if (!selectData.value.includes(item.id)) {
+    if (!roleSelectData.value.includes(item.id)) {
       isAll = false;
     }
   }
-  selectAll.value = isAll;
+  roleSelectAll.value = isAll;
 }
 /**
  * 全选与选择项联动
  */
-const selectAllChange = () => {
-  if (selectAll.value === true) {
+const roleSelectAllChange = () => {
+  if (roleSelectAll.value === true) {
     // eslint-disable-next-line no-restricted-syntax
     for (const item of roleSelectOptions.value) {
-      if (!selectData.value.includes(item.id)) {
-        selectData.value.push(item.id);
+      if (!roleSelectData.value.includes(item.id)) {
+        roleSelectData.value.push(item.id);
       }
     }
   } else {
-    selectData.value = [];
+    roleSelectData.value = [];
+  }
+}
+
+/**
+ * 选择内容与全选联动
+ */
+const connectSelectChange = () => {
+  let isAll = true;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of connectSelectOptions.value) {
+    if (!connectSelectData.value.includes(item.id)) {
+      isAll = false;
+    }
+  }
+  connectSelectAll.value = isAll;
+}
+/**
+ * 全选与选择项联动
+ */
+const connectSelectAllChange = () => {
+  if (connectSelectAll.value === true) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of connectSelectOptions.value) {
+      if (!connectSelectData.value.includes(item.id)) {
+        connectSelectData.value.push(item.id);
+      }
+    }
+  } else {
+    connectSelectData.value = [];
   }
 }
 
@@ -194,6 +229,12 @@ const saveOrUpdate = (successBack?: any, failBack?: any) => {
  * 页面加载方法，对外提供
  */
 const loadPage = () => {
+  getConnectSelectOptions({tenantCode: props.parameter?.tenantCode || ''},
+      (data: QueryConnectForm[]) => {
+        connectSelectOptions.value = data || [];
+      }, () => {
+        connectSelectOptions.value = [];
+      });
   if (['add'].includes(props.formState)) {
     getRoleSelectOptions({type: 'platform', tenantCode: props.parameter?.tenantCode || ''},
         (data: QueryRoleForm[]) => {
@@ -202,8 +243,10 @@ const loadPage = () => {
           roleSelectOptions.value = [];
         });
   }
-  selectData.value = [];
-  selectAll.value = false;
+  roleSelectData.value = [];
+  roleSelectAll.value = false;
+  connectSelectData.value = [];
+  connectSelectAll.value = false;
   logoFile.value = [];
   // 表单数据重置
   formData.value = generateFormData();
@@ -213,6 +256,8 @@ const loadPage = () => {
   if (['edit', 'view'].includes(props.formState) && props.modelValue) {
     getData(props.modelValue, (data: QueryForm) => {
       data.seqNo = Number(data.seqNo);
+      connectSelectData.value = data.connects && data.connects.split(',') || [];
+      connectSelectChange();
       formData.value = data;
     });
   }
@@ -325,12 +370,12 @@ defineExpose({saveOrUpdate, loadPage});
                      :label-col-props="{ span: labelCol/formCol }"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                      field="roles">
-          <a-select v-model="selectData" :field-names="{value: 'id', label: 'name'}" :options="roleSelectOptions"
+          <a-select v-model="roleSelectData" :field-names="{value: 'id', label: 'name'}" :options="roleSelectOptions"
                     :placeholder="$t('application.app.list.roles.placeholder')"
-                    allow-clear allow-search multiple @change="selectChange">
+                    allow-clear allow-search multiple @change="roleSelectChange">
             <template #header>
               <div class="check-all">
-                <a-checkbox v-model="selectAll" class="check-all-radio" @change="selectAllChange">
+                <a-checkbox v-model="roleSelectAll" class="check-all-radio" @change="roleSelectAllChange">
                   <span class="check-all-span">{{ $t('searchTable.app.operations.all') }}</span>
                 </a-checkbox>
               </div>
@@ -338,6 +383,28 @@ defineExpose({saveOrUpdate, loadPage});
           </a-select>
           <template #extra>
             {{ $t('application.app.list.roles.extra') }}
+          </template>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)">
+        <a-form-item :label="$t('application.app.list.connects')"
+                     :label-col-props="{ span: labelCol/formCol }"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                     field="connects">
+          <a-select v-model="connectSelectData" :placeholder="$t('application.app.list.connects.placeholder')"
+                    allow-clear allow-search multiple @change="connectSelectChange">
+            <a-option v-for="(item,index) of connectSelectOptions" :key="index" :label="`${item.dbConnectName}[${item.dbName}]`"
+                      :value="item.id" :disabled="!item.enableStatus"/>
+            <template #header>
+              <div class="check-all">
+                <a-checkbox v-model="connectSelectAll" class="check-all-radio" @change="connectSelectAllChange">
+                  <span class="check-all-span">{{ $t('searchTable.app.operations.all') }}</span>
+                </a-checkbox>
+              </div>
+            </template>
+          </a-select>
+          <template #extra>
+            {{ $t('application.app.list.connects.extra') }}
           </template>
         </a-form-item>
       </a-col>

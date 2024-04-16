@@ -6,7 +6,7 @@ export default {
 
 <script lang="ts" setup>
 import {ref, watch} from "vue";
-import {type FormInstance, Modal} from "@arco-design/web-vue";
+import {type FormInstance, Modal, type SelectOptionData} from "@arco-design/web-vue";
 import {modelApi, applicationApi, utils} from "@geelato/gl-ui";
 import type {QueryConnectForm, QueryTableForm, QueryAppForm} from '@geelato/gl-ui';
 import {enableStatusOptions, linkedOptions, tableTypeOptions} from "./searchTable";
@@ -33,7 +33,7 @@ const wrapperCol = ref<number>(18);
 const validateForm = ref<FormInstance>();
 const visibleForm = ref<boolean>(false);
 const appSelectOptions = ref<QueryAppForm[]>([]);
-const connectSelectOptions = ref<QueryConnectForm[]>([]);
+const connectSelectOptions = ref<SelectOptionData[]>([]);
 const entityIsEdit = ref<boolean>(false);
 /* 表单 */
 const generateFormData = (): QueryTableForm => {
@@ -90,6 +90,30 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
   }
 };
 
+const getConnectSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await applicationApi.pageQueryAppConnectOf({
+      ...params, current: 1, pageSize: 10000, order: 'updateAt|desc'
+    });
+    const options: SelectOptionData[] = [];
+    if (data && data.items && data.items.length > 0) {
+      for (const item of data.items) {
+        options.push({
+          // @ts-ignore
+          label: `${item.connectTitle}[${item.connectName}]`,
+          // @ts-ignore
+          value: item.connectId,
+          // @ts-ignore
+          disabled: item.connectEnableStatus === false,
+        });
+      }
+    }
+    if (successBack && typeof successBack === 'function') successBack(options);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+}
+
 /**
  * 唯一性校验
  * @param value
@@ -117,7 +141,7 @@ const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
 
-const loadPage = () => {
+const loadPage = async () => {
   entityIsEdit.value = props.formState === 'add';
   // 应用信息
   applicationApi.getAppSelectOptions({
@@ -128,9 +152,9 @@ const loadPage = () => {
     appSelectOptions.value = [];
   });
   // 数据连接信息
-  modelApi.getConnectSelectOptions({
-    appId: '', tenantCode: props.parameter?.tenantCode || ''
-  }, (data: QueryConnectForm[]) => {
+  getConnectSelectOptions({
+    appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+  }, (data: SelectOptionData[]) => {
     connectSelectOptions.value = data || [];
   }, () => {
     connectSelectOptions.value = [];
@@ -208,9 +232,8 @@ defineExpose({saveOrUpdate, loadPage});
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="appId" label="数据库链接">
-          <a-select v-model="formData.connectId" :disabled="formState!=='add'">
-            <a-option v-for="item of connectSelectOptions" :key="item.id as string" :label="`${item.dbConnectName}[${item.dbName}]`" :value="item.id"/>
-          </a-select>
+          <a-select v-if="formState==='add'" v-model="formData.connectId" :options="connectSelectOptions"/>
+          <span v-else>{{ utils.getOptionLabel(formData.connectId, connectSelectOptions) }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">

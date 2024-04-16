@@ -6,8 +6,9 @@ export default {
 <script lang="ts" setup>
 import {ref, watch} from "vue";
 import {useI18n} from 'vue-i18n';
-import {FormInstance, Modal} from "@arco-design/web-vue";
-import {getAppSelectOptions, QueryAppForm} from '@/api/application';
+import {PageQueryRequest} from "@/api/base";
+import {FormInstance, Modal, SelectOptionData} from "@arco-design/web-vue";
+import {pageQueryAppConnectOf} from '@/api/application';
 import {
   QueryTableForm as QueryForm,
   createOrUpdateTable as createOrUpdateForm,
@@ -58,7 +59,7 @@ const generateFormData = (): QueryForm => {
   };
 }
 const formData = ref(generateFormData());
-const appSelectOptions = ref<QueryAppForm[]>([]);
+const appSelectOptions = ref<SelectOptionData[]>([]);
 const entityIsEdit = ref<boolean>(false);
 
 /**
@@ -105,6 +106,26 @@ const validateCode = async (value: any, callback: any) => {
     console.log(err);
   }
 }
+
+const getAppSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await pageQueryAppConnectOf({
+      ...params, current: 1, pageSize: 10000, order: 'updateAt|desc'
+    } as unknown as PageQueryRequest);
+    const options: SelectOptionData[] = [];
+    if (data && data.items && data.items.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of data.items) {
+        // @ts-ignore
+        options.push({label: item.appName, value: item.appId,});
+      }
+    }
+    if (successBack && typeof successBack === 'function') successBack(options);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+}
+
 /**
  * 文本域查看
  * @param content
@@ -140,8 +161,9 @@ const loadPage = () => {
   entityIsEdit.value = props.formState === 'add';
   // 应用信息
   getAppSelectOptions({
-    id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
-  }, (data: QueryAppForm[]) => {
+    connectId: props.parameter?.connectId || '',
+    appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+  }, (data: SelectOptionData[]) => {
     appSelectOptions.value = data || [];
   }, () => {
     appSelectOptions.value = [];
@@ -219,9 +241,7 @@ defineExpose({saveOrUpdate, loadPage});
             :label="$t('model.table.index.form.appId')"
             :rules="[{required: !!parameter.appId,message: $t('model.form.rules.match.required')}]"
             field="appId">
-          <a-select v-model="formData.appId" :disabled="formState==='view'">
-            <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
-          </a-select>
+          <a-select v-model="formData.appId" :disabled="formState==='view'" :options="appSelectOptions"/>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">

@@ -27,6 +27,7 @@ export interface QueryAppForm {
   applyStatus: number;
   designStatus: number;
   roles?: string;
+  connects?: string;
 }
 
 export interface FilterAppForm {
@@ -103,6 +104,18 @@ export function getMenus(params: QueryMenuForm) {
   const token = getToken();
   if (token) axios.defaults.headers.common.Authorization = `Bearer ${token}`;
   return axios.post<QueryMenuForm[]>(`${urlOrigin}/api/user/menu`, params);
+}
+
+/**
+ * 应用与数据链接关系表
+ * @param params
+ */
+export function pageQueryAppConnectOf(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/app/connect/pageQueryOf', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
 }
 
 /**

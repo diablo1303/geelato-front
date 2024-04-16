@@ -17,6 +17,7 @@ export interface QueryConnectForm {
   enableStatus: number; // 状态
   appId: string;
   tenantCode: string;
+  apps?: string;
 }
 
 export interface FilterConnectForm {
@@ -450,6 +451,20 @@ export function validateMetaView(connectId: string, viewSql: string) {
 }
 
 /* --------------------- 方法，接口调用 ------------------- */
+/**
+ * 查询所有的数据连接
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
+export const getConnectSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await queryConnects({...params} as unknown as PageQueryRequest);
+    if (successBack && typeof successBack === 'function') successBack(data);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+}
 /**
  * 查询默认模型字段
  * @param successBack

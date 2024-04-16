@@ -8,6 +8,7 @@ import {ref, watch} from "vue";
 import {useI18n} from 'vue-i18n';
 import {FormInstance, Message, Modal, SelectOptionData} from "@arco-design/web-vue";
 import {querySelectOptions} from "@/api/security";
+import {getAppSelectOptions, QueryAppForm} from "@/api/application";
 import {createOrUpdateConnect as createOrUpdateForm, getConnect as getForm, jdbcConnect, QueryConnectForm as QueryForm} from "@/api/model";
 import {enableStatusOptions} from "./searchTable";
 
@@ -43,12 +44,16 @@ const generateFormData = (): QueryForm => {
     dbUserName: '',// 用户名
     dbPassword: '', // 密码
     enableStatus: 1, // 状态
+    apps: '',
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
   };
 }
 const formData = ref(generateFormData());
 const dbTypeOptions = ref<SelectOptionData[]>([]);
+const appSelectOptions = ref<QueryAppForm[]>([]);
+const appSelectAll = ref<boolean>(false);
+const appSelectData = ref<string[]>([]);
 
 /**
  * 新增或更新接口
@@ -60,6 +65,7 @@ const saveData = async (params: QueryForm, successBack?: any, failBack?: any) =>
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
+      params.apps = appSelectData.value && appSelectData.value.toString();
       const {data} = await createOrUpdateForm(params);
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
@@ -128,6 +134,35 @@ const linkTest = (ev?: MouseEvent) => {
 }
 
 /**
+ * 选择内容与全选联动
+ */
+const appSelectChange = () => {
+  let isAll = true;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of appSelectOptions.value) {
+    if (!appSelectData.value.includes(item.id)) {
+      isAll = false;
+    }
+  }
+  appSelectAll.value = isAll;
+}
+/**
+ * 全选与选择项联动
+ */
+const appSelectAllChange = () => {
+  if (appSelectAll.value === true) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of appSelectOptions.value) {
+      if (!appSelectData.value.includes(item.id)) {
+        appSelectData.value.push(item.id);
+      }
+    }
+  } else {
+    appSelectData.value = [];
+  }
+}
+
+/**
  * 页面数据创建或更新方法，对外提供
  * @param successBack
  * @param failBack
@@ -149,14 +184,25 @@ const loadPage = () => {
   querySelectOptions("dbType").then((data) => {
     dbTypeOptions.value = data || [];
   });
+  getAppSelectOptions({
+    id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+  }, (data: QueryAppForm[]) => {
+    appSelectOptions.value = data || [];
+  }, () => {
+    appSelectOptions.value = [];
+  })
   // 表单数据重置
   formData.value = generateFormData();
   // 重置验证
   resetValidate();
   // 其他初始化
+  appSelectData.value = [];
+  appSelectAll.value = false;
   // 编辑、查看 状态 查询数据
   if (['edit', 'view'].includes(props.formState) && props.modelValue) {
     getData(props.modelValue, (data: QueryForm) => {
+      appSelectData.value = data.apps && data.apps.split(',') || [];
+      appSelectChange();
       formData.value = data;
     });
   }
@@ -266,6 +312,27 @@ defineExpose({saveOrUpdate, loadPage, linkTest});
           <span v-else>{{ $t(`model.connect.index.form.enableStatus.${formData.enableStatus}`) }}</span>
         </a-form-item>
       </a-col>
+      <a-col :span="(labelCol+wrapperCol)">
+        <a-form-item :label="$t('model.connect.index.form.apps')"
+                     :label-col-props="{ span: labelCol/formCol }"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                     field="apps">
+          <a-select v-model="appSelectData" :placeholder="$t('model.connect.index.form.apps.placeholder')"
+                    allow-clear allow-search multiple @change="appSelectChange">
+            <a-option v-for="(item,index) of appSelectOptions" :key="index" :label="item.name" :value="item.id"/>
+            <template #header>
+              <div class="check-all">
+                <a-checkbox v-model="appSelectAll" class="check-all-radio" @change="appSelectAllChange">
+                  <span class="check-all-span">{{ $t('searchTable.app.operations.all') }}</span>
+                </a-checkbox>
+              </div>
+            </template>
+          </a-select>
+          <template #extra>
+            {{ $t('model.connect.index.form.apps.extra') }}
+          </template>
+        </a-form-item>
+      </a-col>
     </a-row>
   </a-form>
 </template>
@@ -278,5 +345,18 @@ div.arco-form-item-content > span.textarea-span {
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+}
+
+.check-all {
+  padding: 6px 12px;
+
+  &-radio {
+    width: 100%
+  }
+
+  &-span {
+    font-weight: 600;
+    color: rgb(var(--primary-6));
+  }
 }
 </style>

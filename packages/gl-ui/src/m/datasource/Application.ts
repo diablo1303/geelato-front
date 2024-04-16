@@ -1,5 +1,6 @@
 import {entityApi} from "./EntityApi";
 import utils from "../utils/Utils";
+import type {PageQueryResponse} from "./Base";
 
 export interface QueryAppForm {
   id: string;
@@ -26,6 +27,11 @@ export interface QueryAppForm {
 export function queryApps(params: Record<string, any>) {
   const records = utils.getUrlParams(params);
   return entityApi.getAxios().get<QueryAppForm[]>(`/api/app/query?${records.join('&')}`);
+}
+
+export function pageQueryAppConnectOf(params: Record<string, any>) {
+  const records = utils.getUrlParams(params);
+  return entityApi.getAxios().get<PageQueryResponse>(`/api/app/connect/pageQueryOf?${records.join('&')}`);
 }
 
 /**
