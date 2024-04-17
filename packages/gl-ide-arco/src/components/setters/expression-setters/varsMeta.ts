@@ -58,9 +58,26 @@ const user = {
             _type: 'string'
         },
         {
+            title: '部门ID',
+            _code: 'orgId',
+            _type: 'string'
+        },
+        {
             title: '部门名称',
             _code: 'orgName',
             _type: 'string'
+        },
+        {
+            title: '公司ID',
+            _code: 'corpId',
+            _type: 'string',
+            _description: '如果是外部单位用户，此ID仍为该应用所有企业的ID（组织树中的公司节点ID）'
+        },
+        {
+            title: '公司名称',
+            _code: 'corpName',
+            _type: 'string',
+            _description: '如果是外部单位用户，此名称仍为该应用所有企业的名称（组织树中的公司节点名称）'
         },
         {
             title: '外部组织ID',
@@ -657,7 +674,23 @@ export const useSrvTreeData = () => {
                         _description: '下载文件'
                     }
                 ]
-            }
+            },
+            {
+                title: '系统API',
+                _code: 'sysApi',
+                _type: 'object',
+                _description: '基于系统管理的相关接口',
+                children: [
+                    {
+                        title: '获取用户所在公司',
+                        _code: 'getCompanyOfUser',
+                        _type: 'Promise',
+                        _brackets: '("userId")',
+                        _description:
+                            '获取用户所在的公司信息，用户在分子公司则返回该分子公司信息，否则返顺总公司信息。'
+                    },
+                ]
+            },
         ]
     }
     return [srv]

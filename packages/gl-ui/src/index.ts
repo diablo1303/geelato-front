@@ -95,6 +95,7 @@ import GlChart from './components/gl-chart/GlChart.vue'
 import GlLoader from './components/gl-loader/GlLoader.vue'
 import './assets/style.css'
 import useLogger from './m/hooks/useLogger'
+import {getUserCompany} from "./m/datasource/Security";
 
 const Utils = AllUtils
 
@@ -215,7 +216,8 @@ export {
   executeObjectPropsExpressions,
   executeArrayExpressions,
   SubmitFormResult,
-  UiEventNames
+  UiEventNames,
+  getUserCompany
 }
 // 默认导出组件
 export default component

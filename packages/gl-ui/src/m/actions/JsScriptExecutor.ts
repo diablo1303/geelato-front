@@ -1,5 +1,6 @@
 import type { App } from 'vue'
 import { h } from 'vue'
+import axios, { type CreateAxiosDefaults } from 'axios'
 import type { Action } from '@geelato/gl-ui-schema'
 import utils from '../utils/Utils'
 import GlPageViewer from '../../components/gl-page-viewer/GlPageViewer.vue'
@@ -7,29 +8,26 @@ import type PageProvideProxy from '../../components/PageProvideProxy'
 import type { Param } from '../types/global'
 import { entityApi } from '../datasource/EntityApi'
 import * as fileApi from '../datasource/FileApi'
+import { getUserCompany } from '../datasource/Security'
+import type { EntityReader, EntityReaderParam } from '../datasource/EntityDataSource'
 import dayjs from 'dayjs'
 import { getDateTimeFns } from './fns/datetime'
-import axios, { type CreateAxiosDefaults } from 'axios'
-import type { EntityReader, EntityReaderParam } from '../datasource/EntityDataSource'
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 type OptionsType = { [key: string]: any }
-
-// export const getInstMethod = (ref: ComponentInternalInstance | null, methodName: string) => {
-//     if (!ref) {
-//         return null
-//     }
-//     let exposed = ref?.subTree?.component?.exposed
-//     if (!ref?.subTree?.component) {
-//         exposed = ref?.exposed
-//     }
-//     return  exposed![methodName]
-// }
 
 export class Ctx {
   pageProxy?: PageProvideProxy;
 
   [key: string]: any
+}
+
+/**
+ *  获取系统api
+ *  如获取用户信息等
+ */
+const sysApi = {
+  getCompanyOfUser: getUserCompany
 }
 
 export class JsScriptExecutor {
@@ -806,6 +804,7 @@ export class JsScriptExecutor {
       fn: utils,
       entityApi,
       fileApi,
+      sysApi,
       // todo,date待转成具体的方法合到fn中
       date: dayjs,
       // 当前执行方法的变量
