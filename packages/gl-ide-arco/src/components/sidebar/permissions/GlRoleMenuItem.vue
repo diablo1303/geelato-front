@@ -6,7 +6,8 @@ export default {
 <script lang="ts" setup>
 import {type Ref, ref, watch} from 'vue'
 import {useAppStore} from '@geelato/gl-ide'
-import {entityApi, utils} from '@geelato/gl-ui'
+import {applicationApi, entityApi, securityApi, useGlobal, utils} from '@geelato/gl-ui'
+import type {QueryRolePermissionForm} from '@geelato/gl-ui'
 
 interface RoleGrantedMenuItem {
   id: string
@@ -30,6 +31,24 @@ interface Role {
   code: string
 }
 
+interface Permission {
+  id: string;
+  name: string;
+  code: string;
+  type: string;
+  object: string;
+  rule: string;
+  description: string;
+  checked: boolean;
+  treeId: string;
+}
+
+interface treePermission {
+  data: Permission[];
+  count: number;
+  checkedAll: boolean;
+}
+
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
   modelValue: {
@@ -45,6 +64,7 @@ watch(mv, () => {
 })
 const size = 0.5
 
+const global = useGlobal()
 const appStore = useAppStore()
 const appId = appStore.currentApp.id
 const currentRoleIndex = ref(-1)
@@ -57,21 +77,74 @@ const appMenuItems: Ref<AppMenuItem[]> = ref([])
 const currentRoleGrantedMenuItems: Ref<RoleGrantedMenuItem[]> = ref([])
 // 树结构数据，当前正在配置的应和菜单，包括当前的应用菜单信息、授权的菜单信息
 const currentRoleAppMenuItems: Ref<AppMenuItem[]> = ref([])
+const currentMenuPermissions: Ref<Record<string, treePermission>> = ref({});
 
 // 当前应用的角色
 const loadAppRoles = (appId: string) => {
   // TODO 待增加应用id条件
-  entityApi.query('platform_role', 'id,name,code', {'@p': '1,1000','@order':'name|+'}).then((res) => {
+  entityApi.query('platform_role', 'id,name,code', {'@p': '1,1000', '@order': 'name|+'}).then((res) => {
     appRoles.value = res.data
   })
 }
 
 const loadAppMenuItems = (appId: string) => {
   entityApi
-    .query('platform_tree_node', 'id key,pid,text name,iconType', {'@p': '1,2000', treeId: appId})
-    .then((res) => {
-      appMenuItems.value = utils.listToTree(res.data, appId, {id: 'key'})
-    })
+      .query('platform_tree_node', 'id key,pid,text name,iconType', {'@p': '1,2000', treeId: appId})
+      .then((res) => {
+        appMenuItems.value = utils.listToTree(res.data, appId, {id: 'key'})
+      })
+}
+
+const loadAppPagePermissions = async (appId: string) => {
+  try {
+    const {data} = await applicationApi.queryPermissionByPage({'appId': appId, type: 'ep'});
+    if (data && (data as unknown as Permission[]).length > 0) {
+      const treeIds: string[] = [];
+      for (const item of (data as unknown as Permission[])) {
+        if (!treeIds.includes(item.treeId)) {
+          treeIds.push(item.treeId);
+        }
+      }
+      for (const treeId of treeIds) {
+        const permissions: Permission[] = [];
+        for (const item of (data as unknown as Permission[])) {
+          if (treeId === item.treeId) {
+            item.checked = false;
+            permissions.push(item);
+          }
+        }
+        currentMenuPermissions.value[treeId] = {data: permissions, count: permissions.length, checkedAll: false};
+      }
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+const loadAppPageRolePermission = async (appId: string, roleId: string) => {
+  if (roleId) {
+    try {
+      const {data} = await applicationApi.queryRolePermissionByPage({'appId': appId, type: 'ep', 'roleId': roleId});
+      for (const key in currentMenuPermissions.value) {
+        let checkedAll = true;
+        for (const item of currentMenuPermissions.value[key].data) {
+          item.checked = false;
+          if (data && data.length > 0) {
+            for (const permission of data) {
+              if (item.id === permission.permissionId && permission.roleId === roleId) {
+                item.checked = true;
+                break;
+              }
+            }
+          }
+          if (item.checked === false) checkedAll = false;
+        }
+        currentMenuPermissions.value[key].checkedAll = checkedAll;
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
 }
 
 /**
@@ -95,21 +168,21 @@ const setTreeItemChecked = (menuItems: AppMenuItem[], treeNodeId: string) => {
 const loadRoleGrantedMenuItem = (appId: string, roleId: string) => {
   if (roleId) {
     entityApi
-      .query('platform_role_r_tree_node', 'id,treeNodeId,roleId', {
-        treeId: appId,
-        roleId: roleId
-      })
-      .then((res) => {
-        // 从服务端获取已有权限
-        currentRoleGrantedMenuItems.value = res.data
-        console.log('从服务端获取已有权限',res.data)
-        // 重置当前的角色菜单
-        const appMenuItemsCopy: AppMenuItem[] = JSON.parse(JSON.stringify(appMenuItems.value))
-        currentRoleGrantedMenuItems.value?.forEach((item: RoleGrantedMenuItem) => {
-          setTreeItemChecked(appMenuItemsCopy, item.treeNodeId)
+        .query('platform_role_r_tree_node', 'id,treeNodeId,roleId', {
+          treeId: appId,
+          roleId: roleId
         })
-        currentRoleAppMenuItems.value = appMenuItemsCopy
-      })
+        .then((res) => {
+          // 从服务端获取已有权限
+          currentRoleGrantedMenuItems.value = res.data
+          console.log('从服务端获取已有权限', res.data)
+          // 重置当前的角色菜单
+          const appMenuItemsCopy: AppMenuItem[] = JSON.parse(JSON.stringify(appMenuItems.value))
+          currentRoleGrantedMenuItems.value?.forEach((item: RoleGrantedMenuItem) => {
+            setTreeItemChecked(appMenuItemsCopy, item.treeNodeId)
+          })
+          currentRoleAppMenuItems.value = appMenuItemsCopy
+        })
   }
 }
 
@@ -145,6 +218,7 @@ const selectRole = (role: any, roleIndex: number) => {
   currentRoleAppMenuItems.value = []
   currentRoleGrantedMenuItems.value = []
   loadRoleGrantedMenuItem(appId, currentRole.value.id)
+  loadAppPageRolePermission(appId, currentRole.value.id)
 }
 
 const save = () => {
@@ -169,9 +243,9 @@ const save = () => {
       const item = currentRoleAppMenuItemMap[key]
       if (item.checked) {
         const foundNotToAddItem = currentRoleGrantedMenuItems.value.find(
-          (grantedItem: RoleGrantedMenuItem) => {
-            return grantedItem.treeNodeId === item.key
-          }
+            (grantedItem: RoleGrantedMenuItem) => {
+              return grantedItem.treeNodeId === item.key
+            }
         )
         if (!foundNotToAddItem) {
           toAddItems.push({
@@ -209,10 +283,64 @@ const save = () => {
   })
 }
 
+const loadChecked = (record: treePermission) => {
+  let isChecked = true;
+  for (const item of record.data) {
+    if (!item.checked) {
+      isChecked = false;
+      break;
+    }
+  }
+  record.checkedAll = isChecked;
+}
+
+const permissionCheckedChange = async (item: Permission, record: treePermission) => {
+  try {
+    await securityApi.switchRolePermission({
+      roleId: currentRole.value.id, permissionId: item.id
+    } as unknown as QueryRolePermissionForm);
+    global.$message.success(item.checked ? '授权成功！' : '取消授权成功！');
+  } catch (e) {
+    item.checked = !item.checked;
+    console.log(e)
+  } finally {
+    loadChecked(record);
+  }
+}
+
+const permissionCheckedSubmit = async (record: treePermission) => {
+  const checkedIds: string[] = [];
+  const unCheckedIds: string[] = [];
+  for (const item of record.data) {
+    if (item.checked) {
+      checkedIds.push(item.id);
+    } else {
+      unCheckedIds.push(item.id);
+    }
+  }
+  try {
+    await securityApi.switchRolePermission({
+      roleId: currentRole.value.id,
+      // 有没有选中的，即 全部授权，反之 即 全部取消
+      permissionId: unCheckedIds.length > 0 ? unCheckedIds.join(',') : checkedIds.join(','),
+    } as unknown as QueryRolePermissionForm);
+    global.$message.success(unCheckedIds.length > 0 ? '全部授权成功！' : '全部取消授权成功！');
+    for (const item of record.data) {
+      item.checked = unCheckedIds.length > 0;
+    }
+  } catch (e) {
+    console.log(e)
+  } finally {
+    loadChecked(record);
+  }
+}
+
 const reset = () => {
   loadAppRoles(appId)
   loadAppMenuItems(appId)
+  loadAppPagePermissions(appId);
   loadRoleGrantedMenuItem(appId, currentRole.value.id)
+  loadAppPageRolePermission(appId, currentRole.value.id)
 }
 
 reset()
@@ -242,7 +370,7 @@ defineExpose({save})
       <a-tabs>
         <a-tab-pane key="1">
           <template #title>
-            <icon-calendar/>
+            <gl-iconfont type="gl-calendar"/>
             菜单页面权限
           </template>
           <a-table
@@ -272,16 +400,31 @@ defineExpose({save})
                   <a-switch v-model="record.checked"/>
                 </template>
               </a-table-column>
-              <a-table-column title="该页面相关的模型" data-index="entities">
-                <template #cell="{ record }"></template>
+              <a-table-column title="该页面相关元素权限" data-index="entities">
+                <template #cell="{ record,info = currentMenuPermissions[record.key] }">
+                  <a-space v-if="info&&info.count>0">
+                    <a-popconfirm position="tl" :content="info.checkedAll?'是否全部取消授权？':'是否全部授权？'"
+                                  @ok="permissionCheckedSubmit(info)">
+                      <a-button type="text" style="height: 20px;padding: 0px;">
+                        <gl-iconfont type="gl-setting"/>
+                      </a-button>
+                    </a-popconfirm>
+                    <div>
+                      <a-checkbox v-for="(item,index) in info.data" v-model="item.checked" :key="index"
+                                  :value="item.id" @change="permissionCheckedChange(item,info)">
+                        {{ item.name }}
+                      </a-checkbox>
+                    </div>
+                  </a-space>
+                </template>
               </a-table-column>
             </template>
           </a-table>
         </a-tab-pane>
         <a-tab-pane key="2">
           <template #title>
-            <icon-clock-circle/>
-            页面元素权限
+            <gl-iconfont type="gl-table"/>
+            应用模型权限
           </template>
           Content of Tab Panel 2
         </a-tab-pane>
@@ -292,24 +435,24 @@ defineExpose({save})
 
 <style>
 .gl-role-menuitem {
-    display: flex;
-    min-height: 800px;
+  display: flex;
+  min-height: 800px;
 }
 
 .gl-role-menuitem .gl-title {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .gl-role-menuitem .arco-list-header {
-    background-color: #efefef;
+  background-color: #efefef;
 }
 
 .gl-role-menuitem .gl-layout-left {
-    width: 250px;
+  width: 250px;
 }
 
 .gl-role-menuitem .gl-layout-right {
-    min-width: 800px;
-    flex: auto;
+  min-width: 800px;
+  flex: auto;
 }
 </style>

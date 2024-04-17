@@ -1,6 +1,7 @@
 import {entityApi} from "./EntityApi";
 import utils from "../utils/Utils";
-import type {PageQueryResponse} from "./Base";
+import type {PageQueryResponse, QueryResult} from "./Base";
+import type {QueryRolePermissionForm} from "./Security";
 
 export interface QueryAppForm {
   id: string;
@@ -32,6 +33,16 @@ export function queryApps(params: Record<string, any>) {
 export function pageQueryAppConnectOf(params: Record<string, any>) {
   const records = utils.getUrlParams(params);
   return entityApi.getAxios().get<PageQueryResponse>(`/api/app/connect/pageQueryOf?${records.join('&')}`);
+}
+
+export function queryPermissionByPage(params: Record<string, any>) {
+  const records = utils.getUrlParams(params);
+  return entityApi.getAxios().get<QueryResult>(`/api/app/queryPermissionByPage?${records.join('&')}`);
+}
+
+export function queryRolePermissionByPage(params: Record<string, any>) {
+  const records = utils.getUrlParams(params);
+  return entityApi.getAxios().get<QueryRolePermissionForm[]>(`/api/app/queryRolePermissionByPage?${records.join('&')}`);
 }
 
 /**

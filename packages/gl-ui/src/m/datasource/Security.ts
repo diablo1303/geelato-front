@@ -262,6 +262,10 @@ export function insertRolePermission(params: QueryRolePermissionForm) {
   return entityApi.getAxios().post<QueryResult>('/api/security/role/permission/insert', params);
 }
 
+export function switchRolePermission(params: QueryRolePermissionForm) {
+  return entityApi.getAxios().post<QueryResult>('/api/security/role/permission/switch', params);
+}
+
 export function deleteRolePermission(id: string) {
   return entityApi.getAxios().delete<QueryResult>(`/api/security/role/permission/isDelete/${id}`);
 }
