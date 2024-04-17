@@ -63,6 +63,13 @@ export function pageQueryUser(params: Record<string, any>) {
   return entityApi.getAxios().get<PageQueryResponse>(`/api/security/user/pageQuery?${records.join('&')}`);
 }
 
+export function getUserCompany(id: string) {
+  return entityApi.getAxios().get<QueryOrgForm>(`/api/security/user/getCompany/${id}`);
+}
+
+export function getOrgCompany(id: string) {
+  return entityApi.getAxios().get<QueryOrgForm>(`/api/security/org/getCompany/${id}`);
+}
 
 /* -----------------------------字典管理 - 字典项--------------------------- */
 export interface QueryDictItemForm {
