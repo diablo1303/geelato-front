@@ -107,16 +107,14 @@ export default {
       setterComponentProps: {
         type: 'button',
         options: [
-          { label: '上', __tSp7EKessXKGubfoAD: 'top', value: 'top' },
+          { label: '上',value: 'top' },
           {
             label: '右',
-            __tSp7EKessXKGubfoAD: 'right',
             value: 'right'
           },
-          { label: '下', __tSp7EKessXKGubfoAD: 'bottom', value: 'bottom' },
+          { label: '下', value: 'bottom' },
           {
             label: '左',
-            __tSp7EKessXKGubfoAD: 'left',
             value: 'left'
           }
         ]
@@ -127,9 +125,22 @@ export default {
       enableValueExpress: false,
       show: true,
       expanded: true,
-      title: '位置',
+      title: '标签位置',
       setterComponentName: 'ARadioGroup',
       setterDefaultValue: ''
+    },
+    {
+      name: 'enableFixedTitle',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: true,
+      show: true,
+      expanded: true,
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      title: '固定标签',
+      setterComponentName: 'ASwitch',
+      description:'标签位置固定（绝对定位），不受滚动条上下拖动影响。注意，该属性只对标签位置为“上”或“左”时生效。'
     },
     {
       name: 'extra',
