@@ -8,6 +8,8 @@ export default class ParseResult {
     // 占位符名称格式为#{xxxKey}
     invokeBlockNames: Array<string> = []
 
+    isEndWithLineFeed:boolean = false
+
 
     constructor(startLine?: string, endLine?: string) {
         this.startLine = startLine || ''
@@ -63,8 +65,21 @@ export default class ParseResult {
                 lines.push(this.replaceUnUsePlaceholder(this.endLine))
             }
             result = lines.length > 0 ? lines.join(';') : ''
+            if(this.isEndWithLineFeed){
+                result += '\n'
+            }
         }
         return result.replace(/;;{1,}/g, ';')
+    }
+
+    /**
+     * 生成的代码字符串（toString）时，是否增加换行作为结尾
+     * 避免影响下一个代码块生成的代码，如代码以 注释//作为结束行时，会影响下一代码块
+     * 对于不受控的，提供给用户直接编写代码的XXBlockHandler，需要调用该方法，如：JsCodeBlockHandler
+     */
+    endWithLineFeed(){
+        this.isEndWithLineFeed = true
+        return this
     }
 
     replaceUnUsePlaceholder(str: string) {

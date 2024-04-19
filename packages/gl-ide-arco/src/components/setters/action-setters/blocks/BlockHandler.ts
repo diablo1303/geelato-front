@@ -49,6 +49,7 @@ export class BlocksHandler {
     // console.log('BlocksHandler > parseToScript() > block:', block)
     if (!block) return ''
     const commandLines: Array<string> = []
+    // 未停用的代码块才生成
     if (!block._disabled) {
       const line = this.parseOne(block).toString()
       if (line) {
