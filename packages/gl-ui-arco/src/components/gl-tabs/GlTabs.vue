@@ -5,8 +5,9 @@ export default {
 </script>
 <script setup lang="ts">
 import { mixins, useGlobal, utils } from '@geelato/gl-ui'
-import { nextTick, onMounted, onUpdated, type PropType, type Ref, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUpdated, type PropType, type Ref, ref, watch } from 'vue'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
+import type { TabsPosition } from '@arco-design/web-vue/es/tabs/interface'
 
 const emits = defineEmits(['update:modelValue', 'update:items'])
 
@@ -28,11 +29,22 @@ const props = defineProps({
   items: {
     type: Array as PropType<Array<TabItem>>
   },
+  /**
+   *  固定标题
+   *  如可用于在打开详情页面时，tab标题固定，tab面板可以上下可以滚动
+   *  默认为false
+   */
+  enableFixedTitle: {
+    type:Boolean,
+    default(){
+      return true
+    }
+  },
   // /**
   //  *  默认值，用于在初始时，选中对应面板
   //  */
   // defaultValue:[String, Number],
-  // position: String,
+  position: String as PropType<TabsPosition>,
   // type: String,
   // direction: String,
   ...mixins.props
@@ -259,6 +271,14 @@ const selectByIndex = (params: { index: number }) => {
   return true
 }
 
+const fixedClass = computed(() => {
+  const className = `gl-fixed-${props.position || 'top'}`
+  if (props.enableFixedTitle && ['left', 'top'].includes(props.position || '')) {
+    return { 'gl-fixed': true, [className]: true }
+  }
+  return {}
+})
+
 // 先snapshot
 snapshot()
 onMounted(() => {
@@ -268,7 +288,14 @@ onMounted(() => {
 defineExpose({ getValue, selectByValue, selectByIndex })
 </script>
 <template>
-  <a-tabs class="gl-tabs" v-if="!currentTabPaneChanged" :active-key="mv" @tabClick="onTabClick">
+  <a-tabs
+    class="gl-tabs"
+    :class="fixedClass"
+    v-if="!currentTabPaneChanged"
+    :position="position"
+    :active-key="mv"
+    @tabClick="onTabClick"
+  >
     <template #extra>
       <div v-show="!(itemMv.hideRightTopSlot === true)">
         <slot name="extra"></slot>
@@ -295,7 +322,30 @@ defineExpose({ getValue, selectByValue, selectByIndex })
 .gl-tabs {
   background-color: white;
 }
+
 body[arco-theme='dark'] .gl-tabs {
-  background-color:var(--color-bg-3);
+  background-color: var(--color-bg-3);
 }
+
+.gl-tabs.gl-fixed > .arco-tabs-nav {
+  position:fixed;
+  z-index: 20;
+}
+.gl-tabs.gl-fixed-top > .arco-tabs-nav {
+  width: 100%;
+}
+
+.gl-tabs.gl-fixed-top > .arco-tabs-content {
+  margin-top: 40px;
+}
+
+.gl-tabs.gl-fixed-left > .arco-tabs-content {
+  margin-left: 75px;
+}
+.gl-tabs.gl-fixed-left > .arco-tabs-nav > .arco-tabs-nav-tab {
+  flex:inherit;
+  height: auto;
+}
+
+
 </style>

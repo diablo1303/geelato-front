@@ -6,6 +6,7 @@ import {QueryResult} from "@/api/base";
 import {getToken} from "@/utils/auth";
 import globalConfig from "@/config/globalConfig";
 import {getApp} from "@/api/application";
+import {getUserCompany} from "@geelato/gl-ui";
 
 export interface LoginData {
   username: string;
@@ -131,6 +132,12 @@ export const getSysConfig = async (global: ComponentCustomProperties & Record<st
       if (!config.app && params?.appId && token) {
         const appData = await getApp(params?.appId);
         global.$gl.app = appData?.data || {};
+      }
+      // 服务端未提供用户的公司信息时，在前端发起请求另行获取
+      if(userInfo?.id&&!userInfo?.corpId){
+        const resp =   await getUserCompany(userInfo.id)
+        userInfo.corpId = resp.data?.id
+        userInfo.corpName = resp.data?.name
       }
     }
     console.log(global);
