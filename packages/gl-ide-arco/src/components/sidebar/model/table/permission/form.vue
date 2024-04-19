@@ -7,8 +7,8 @@ export default {
 <script lang="ts" setup>
 import {reactive, ref, watch, computed} from 'vue';
 import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {securityApi, useGlobal, utils} from "@geelato/gl-ui";
-import type {Pagination, QueryRoleForm, QueryPermissionClassifyForm, QueryPermissionForm, QueryRolePermissionForm} from "@geelato/gl-ui";
+import {modelApi, securityApi, useGlobal, utils} from "@geelato/gl-ui";
+import type {Pagination, QueryAppTableForm, QueryRoleForm, QueryPermissionClassifyForm, QueryPermissionForm, QueryRolePermissionForm} from "@geelato/gl-ui";
 import {typeOptions as roleTypeOptions} from "../../../security/role/searchTable";
 import {classifyOptions, typeOptions as permissionTypeOptions} from "../../../security/permission/searchTable";
 import GlSecurityPermissionForm from "../../../security/permission/form.vue";
@@ -16,6 +16,7 @@ import GlSecurityRoleForm from "../../../security/role/form.vue";
 
 type PageParams = {
   connectId: string; // 数据库链接id
+  tableId: string; // 数据库表id
   object: string; // 模型 entity
   type: string; // 权限类型
   appId?: string; // 应用主键
@@ -30,6 +31,7 @@ const props = defineProps({
   isModal: {type: Boolean, default: false},// 是否表单
   pageSize: {type: Number, default: 10000},
   height: {type: Number, default: 0},
+  refApp: {type: Boolean, default: false},
 });
 
 const global = useGlobal();
@@ -46,7 +48,7 @@ const loading = ref<boolean>(false);
 const scrollbar = ref(true);
 const scroll = ref({x: 1000, y: props.height});
 const weightSortable = ref<TableSortable>({sortDirections: ['ascend', 'descend']});
-
+const appTablePermissionIds = ref<string[]>([]);
 const viewTypes = ["&all", "&myBusiness", "&myDept", "&myself"];
 const viewPers = ref<QueryPermissionForm[]>([]);
 const viewPerIds = ref<string[]>([]);
@@ -73,15 +75,33 @@ const setViewPermissions = () => {
   }
 }
 
+const getAppTablePermissionIds = (data: QueryAppTableForm[]) => {
+  let permissionIds: string[] = [];
+  if (data && data.length > 0) {
+    for (const item of data) {
+      if (item.permissionId) {
+        permissionIds = permissionIds.concat(item.permissionId.split(","));
+      }
+    }
+  }
+  return permissionIds;
+};
+
 const permissionFilter = (qpcf: QueryPermissionClassifyForm[]) => {
   const data: QueryPermissionClassifyForm[] = [];
   if (qpcf && qpcf.length > 0) {
     for (let i = 0; i < qpcf.length; i += 1) {
       if (qpcf[i].type && qpcf[i].data && qpcf[i].data.length > 0) {
+        if (props.refApp) {
+          qpcf[i].data = qpcf[i].data.filter((item: QueryPermissionForm) => {
+            return appTablePermissionIds.value.includes(item.id);
+          });
+        }
         data.push(qpcf[i]);
       }
     }
   }
+  console.log(data);
   return data;
 }
 
@@ -208,8 +228,31 @@ const fetchData = async (params?: Record<string, any>) => {
   }
 };
 
+const queryAppTablePermissions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await modelApi.queryAppTables(params);
+    if (successBack && typeof successBack === 'function') successBack(data);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+}
+
 const tableRefresh = (ev?: Event) => {
-  fetchData();
+  if (props.refApp) {
+    queryAppTablePermissions({
+      enableStatus: 1, approvalStatus: 'agree',
+      tableId: props.parameter?.tableId || '',
+      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }, (data: QueryAppTableForm[]) => {
+      appTablePermissionIds.value = getAppTablePermissionIds(data);
+      console.log(appTablePermissionIds.value);
+      fetchData();
+    }, () => {
+      appTablePermissionIds.value = [];
+    });
+  } else {
+    fetchData();
+  }
 };
 
 const rolePage = ref({
@@ -319,7 +362,7 @@ const switchBeforeChange = async (permission: string, role: string) => {
 }
 
 watch(() => props.parameter, () => {
-  fetchData();
+  tableRefresh();
   permissionPage.value.parameter = {
     object: props.parameter.object, type: props.parameter.type,
     appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
@@ -362,13 +405,13 @@ watch(() => props.height, (val) => {
           </template>
           新增角色
         </a-button>
-        <a-button :disabled="formState==='view'" type="primary" @click="addTablePermission">
+        <a-button :disabled="formState==='view' || refApp" type="primary" @click="addTablePermission">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
           查看权限（自定义）
         </a-button>
-        <a-button :disabled="formState==='view'" type="primary" @click="resetTableDefaultPermission">
+        <a-button :disabled="formState==='view' || refApp" type="primary" @click="resetTableDefaultPermission">
           <template #icon>
             <gl-iconfont type="gl-reset"/>
           </template>
@@ -478,8 +521,8 @@ watch(() => props.height, (val) => {
                 <span :title="item.description" class="span-textarea">
                   <strong>描述：</strong>{{ item.description }}
                 </span>
-                <a-divider v-if="!item.default&&formState==='edit'" style="margin: 5px 0px"/>
-                <a-space v-if="!item.default&&formState==='edit'" style="display: flex;align-items: center;justify-content: end;">
+                <a-divider v-if="!item.default&&formState==='edit'&&!refApp" style="margin: 5px 0px"/>
+                <a-space v-if="!item.default&&formState==='edit'&&!refApp" style="display: flex;align-items: center;justify-content: end;">
                   <a-button size="mini" type="primary" @click="editTablePermission(item.id)">
                     编辑
                   </a-button>

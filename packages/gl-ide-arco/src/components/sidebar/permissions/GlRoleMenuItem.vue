@@ -43,7 +43,7 @@ interface Permission {
   treeId: string;
 }
 
-interface treePermission {
+interface TreePermission {
   data: Permission[];
   count: number;
   checkedAll: boolean;
@@ -77,7 +77,7 @@ const appMenuItems: Ref<AppMenuItem[]> = ref([])
 const currentRoleGrantedMenuItems: Ref<RoleGrantedMenuItem[]> = ref([])
 // 树结构数据，当前正在配置的应和菜单，包括当前的应用菜单信息、授权的菜单信息
 const currentRoleAppMenuItems: Ref<AppMenuItem[]> = ref([])
-const currentMenuPermissions: Ref<Record<string, treePermission>> = ref({});
+const currentMenuPermissions = ref<Record<string, TreePermission>>({});
 
 // 当前应用的角色
 const loadAppRoles = (appId: string) => {
@@ -283,7 +283,7 @@ const save = () => {
   })
 }
 
-const loadChecked = (record: treePermission) => {
+const loadChecked = (record: TreePermission) => {
   let isChecked = true;
   for (const item of record.data) {
     if (!item.checked) {
@@ -294,7 +294,7 @@ const loadChecked = (record: treePermission) => {
   record.checkedAll = isChecked;
 }
 
-const permissionCheckedChange = async (item: Permission, record: treePermission) => {
+const permissionCheckedChange = async (item: Permission, record: TreePermission) => {
   try {
     await securityApi.switchRolePermission({
       roleId: currentRole.value.id, permissionId: item.id
@@ -308,7 +308,7 @@ const permissionCheckedChange = async (item: Permission, record: treePermission)
   }
 }
 
-const permissionCheckedSubmit = async (record: treePermission) => {
+const permissionCheckedSubmit = async (record: TreePermission) => {
   const checkedIds: string[] = [];
   const unCheckedIds: string[] = [];
   for (const item of record.data) {
@@ -333,6 +333,15 @@ const permissionCheckedSubmit = async (record: treePermission) => {
   } finally {
     loadChecked(record);
   }
+}
+
+const getTreePermission = (treeId: string) => {
+  for (const key in currentMenuPermissions.value) {
+    if (treeId === key) {
+      return currentMenuPermissions.value[key];
+    }
+  }
+  return {data: [], count: 0, checkedAll: false};
 }
 
 const reset = () => {
@@ -401,10 +410,10 @@ defineExpose({save})
                 </template>
               </a-table-column>
               <a-table-column title="该页面相关元素权限" data-index="entities">
-                <template #cell="{ record,info = currentMenuPermissions[record.key] }">
+                <template #cell="{ record,info = getTreePermission(record.key) }">
                   <a-space v-if="info&&info.count>0">
                     <a-popconfirm position="tl" :content="info.checkedAll?'是否全部取消授权？':'是否全部授权？'"
-                                  @ok="permissionCheckedSubmit(info)">
+                                  @ok="permissionCheckedSubmit((info as TreePermission))">
                       <a-button type="text" style="height: 20px;padding: 0px;">
                         <gl-iconfont type="gl-setting"/>
                       </a-button>

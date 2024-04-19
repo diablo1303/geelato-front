@@ -17,8 +17,10 @@ import GlModelTableForeignList from '../foreign/list.vue';
 import GlModelTableViewList from '../view/list.vue';
 import GlModelTablePermissionForm from './permission/form.vue';
 import GlModelTableColumnPermissionForm from '../column/permission/form.vue';
+import GlModelTableAppList from '../application/list.vue';
 
 type PageParams = {
+  refApp: string; // 引用应用
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -30,6 +32,7 @@ const props = defineProps({
   visible: {type: Boolean, default: false},// 显示
   formState: {type: String, default: 'edit'},// 表单状态
   width: {type: String, default: ''},// 表单宽度
+  refApp: {type: Boolean, default: false},
 });
 
 const global = useGlobal();
@@ -64,9 +67,16 @@ const viewListParams = ref({
     appId: '', tenantCode: ''
   }
 });
+const appListParams = ref({
+  formState: props.formState, isModal: true, height: 0, parameter: {
+    connectId: '', tableId: '', tableName: '',
+    isSync: false, isSystem: false, author: false,
+    appId: '', tenantCode: ''
+  }
+});
 const tablePermissionFormParams = ref({
   formState: props.formState, isModal: true, height: 0, parameter: {
-    connectId: '', object: '', type: '', appId: '', tenantCode: ''
+    connectId: '', tableId: '', object: '', type: '', appId: '', tenantCode: ''
   }
 });
 const columnPermissionFormParams = ref({
@@ -137,12 +147,12 @@ const tableFormat = (id: string) => {
     tableData.value = data;
     // 加载模型信息
     tableFormParams.value.id = tableData.value.id;
-    tableFormParams.value.formState = isSystem.value ? 'view' : props.formState;
+    tableFormParams.value.formState = isSystem.value || props.refApp ? 'view' : props.formState;
     tableFormParams.value.parameter = {
       connectId: data.connectId, appId: data.appId, tenantCode: data.tenantCode
     };
     // 加载模型字段
-    columnListParams.value.formState = isSystem.value ? 'view' : props.formState;
+    columnListParams.value.formState = isSystem.value || props.refApp ? 'view' : props.formState;
     columnListParams.value.height = tableTabHeight.value - 310;
     columnListParams.value.parameter = {
       connectId: data.connectId, tableId: data.id, tableName: data.entityName,
@@ -150,12 +160,14 @@ const tableFormat = (id: string) => {
       appId: data.appId, tenantCode: data.tenantCode
     };
     // 加载模型外键
+    foreignListParams.value.formState = props.refApp ? 'view' : props.formState;
     foreignListParams.value.height = tableTabHeight.value - 310;
     foreignListParams.value.parameter = {
       connectId: data.connectId, tableId: data.id, tableName: data.entityName,
       appId: data.appId, tenantCode: data.tenantCode
     };
     // 加载模型视图
+    viewListParams.value.formState = props.refApp ? 'view' : props.formState;
     viewListParams.value.height = tableTabHeight.value - 310;
     viewListParams.value.parameter = {
       connectId: data.connectId, tableId: data.id, tableName: data.entityName,
@@ -165,8 +177,10 @@ const tableFormat = (id: string) => {
     // 加载模型权限
     tablePermissionFormParams.value.height = tableTabHeight.value - 250;
     tablePermissionFormParams.value.parameter = {
-      connectId: data.connectId, type: 'dp,mp', object: data.entityName,
-      appId: data.appId, tenantCode: data.tenantCode
+      connectId: data.connectId, tableId: data.id,
+      type: 'dp,mp', object: data.entityName,
+      appId: props.refApp ? props.parameter.appId : data.appId,
+      tenantCode: data.tenantCode
     };
     // 加载字段权限
     columnPermissionFormParams.value.height = tableTabHeight.value - 210;
@@ -175,6 +189,13 @@ const tableFormat = (id: string) => {
       isSync: isSync.value >= 1, isSystem: isSystem.value,
       appId: data.appId, tenantCode: data.tenantCode
     };
+    // 加载应用授权
+    appListParams.value.height = tableTabHeight.value - 260;
+    appListParams.value.parameter = {
+      connectId: data.connectId, tableId: data.id, tableName: data.entityName,
+      isSync: isSync.value === 2, isSystem: isSystem.value, author: false,
+      appId: data.appId, tenantCode: data.tenantCode
+    }
   });
 }
 
@@ -360,10 +381,11 @@ watch(() => visibleForm, () => {
           <GlModelTablePermissionForm v-if="visibleForm" :formState="tablePermissionFormParams.formState"
                                       :height="tablePermissionFormParams.height"
                                       :isModal="tablePermissionFormParams.isModal"
+                                      :refApp="refApp"
                                       :parameter="tablePermissionFormParams.parameter"/>
         </a-card>
       </a-tab-pane>
-      <a-tab-pane :key="6" class="a-tabs-five" title="字段权限">
+      <a-tab-pane v-if="!refApp" :key="6" class="a-tabs-five" title="字段权限">
         <a-card class="general-card">
           <GlModelTableColumnPermissionForm v-if="visibleForm" :formState="columnPermissionFormParams.formState"
                                             :height="columnPermissionFormParams.height"
@@ -371,8 +393,16 @@ watch(() => visibleForm, () => {
                                             :parameter="columnPermissionFormParams.parameter"/>
         </a-card>
       </a-tab-pane>
+      <a-tab-pane v-if="!refApp" :key="7" class="a-tabs-three" title="授权应用">
+        <a-card class="general-card">
+          <GlModelTableAppList v-if="visibleForm" :formState="appListParams.formState"
+                               :height="appListParams.height"
+                               :isModal="appListParams.isModal"
+                               :parameter="appListParams.parameter"/>
+        </a-card>
+      </a-tab-pane>
       <template #extra>
-        <a-space>
+        <a-space v-if="!refApp">
           <a-popconfirm v-if="!isSystem&&tabsKey===1" content="是否更新该条模型数据？" position="bottom" type="info" @ok="updateTable">
             <a-button :disabled="formState==='view'" size="small" type="outline">
               <template #icon>
