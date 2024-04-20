@@ -6,9 +6,9 @@ export default {
 
 <script lang="ts" setup>
 import {reactive, ref, watch, computed} from 'vue';
+import {modelApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {modelApi, type QueryAppTableForm, useGlobal, utils} from "@geelato/gl-ui";
-import type {Pagination} from "@geelato/gl-ui";
+import type {Pagination, QueryAppTableForm} from "@geelato/gl-ui";
 import {approvalNeedOptions, approvalStatusOptions, enableStatusOptions} from './searchTable';
 import GlModelTableAppForm from "./form.vue";
 
@@ -334,17 +334,18 @@ watch(() => props.height, (val) => {
                 {{ utils.getOptionLabel(record.enableStatus, enableStatusOptions) }}
               </template>
             </a-table-column>-->
-      <a-table-column :width="90" data-index="approvalNeed" title="是否审批">
-        <template #cell="{ record }">
-          {{ utils.getOptionLabel(record.approvalNeed, approvalNeedOptions) }}
-        </template>
-      </a-table-column>
+      <!--      <a-table-column :width="90" data-index="approvalNeed" title="是否审批">
+              <template #cell="{ record }">
+                {{ utils.getOptionLabel(record.approvalNeed, approvalNeedOptions) }}
+              </template>
+            </a-table-column>-->
       <a-table-column :width="90" data-index="approvalStatus" title="审批状态">
         <template #cell="{ record }">
           {{ utils.getOptionLabel(record.approvalStatus, approvalStatusOptions) }}
         </template>
       </a-table-column>
-      <a-table-column :sortable="sortable.createAt" :width="180" data-index="createAt" title="创建时间"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="creatorName" title="申请人员"/>
+      <a-table-column :sortable="sortable.createAt" :width="180" data-index="createAt" title="申请时间"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="210" data-index="description" title="补充描述"/>
       <a-table-column v-show="formState==='edit'" :width="230" align="center" data-index="operations" fixed="right" title="操作">
         <template #cell="{ record,isDefault=record.viewType==='default'}">

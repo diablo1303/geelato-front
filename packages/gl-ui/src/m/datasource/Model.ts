@@ -293,6 +293,7 @@ export interface QueryAppTableForm {
   tableId: string;
   tableName: string;
   tableTitle: string;
+  tableAppId: string;
   permissionId: string;
   permissionName: string;
   approvalStatus: string;

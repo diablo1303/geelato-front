@@ -12,7 +12,7 @@ import type {QueryAppForm, QueryPermissionForm, QueryAppTableForm, QueryTableFor
 import {modelApi, applicationApi, useGlobal, utils, securityApi} from "@geelato/gl-ui";
 import {enableStatusOptions, approvalNeedOptions, approvalStatusOptions} from "./searchTable";
 import {classifyOptions} from "../../security/permission/searchTable";
-import {sourceTypeOptions, tableSyncOptions} from "@/components/sidebar/model/table/searchTable";
+import {sourceTypeOptions, tableSyncOptions} from "../table/searchTable";
 
 type PageParams = {
   tableId: string; // 数据库链接id
@@ -53,6 +53,7 @@ const generateFormData = (): QueryAppTableForm => {
     tableId: '',
     tableName: '',
     tableTitle: '',
+    tableAppId: '',
     permissionId: '',
     permissionName: '',
     approvalStatus: 'draft',
@@ -119,10 +120,10 @@ const queryTablePermission = async (params: Record<string, any>, successBack?: a
     const {data} = await securityApi.queryPermissions(params);
     const permissionGroup: SelectOptionGroup[] = [];
     const viewGroup: QueryPermissionForm[] = data.filter((item) => viewTypes.includes(`${item.code.replace(item.object, '')}`));
-    viewGroup.sort((a, b) => viewTypes.indexOf(a.code) - viewTypes.indexOf(b.code));
+    viewGroup.sort((a, b) => viewTypes.indexOf(a.code.replace(a.object, '')) - viewTypes.indexOf(b.code.replace(b.object, '')));
     handleSelectOptionGroup('view', permissionGroup, viewGroup);
     const editGroup: QueryPermissionForm[] = data.filter((item) => editTypes.includes(`${item.code.replace(item.object, '')}`));
-    editGroup.sort((a, b) => editTypes.indexOf(a.code) - editTypes.indexOf(b.code));
+    editGroup.sort((a, b) => editTypes.indexOf(a.code.replace(a.object, '')) - editTypes.indexOf(b.code.replace(b.object, '')));
     handleSelectOptionGroup('edit', permissionGroup, editGroup);
     const customGroup: QueryPermissionForm[] = data.filter((item) =>
         !(viewTypes.includes(`${item.code.replace(item.object, '')}`) || editTypes.includes(`${item.code.replace(item.object, '')}`)));
@@ -243,6 +244,36 @@ const tableIdChange = () => {
   }
 }
 
+const tableAppIdChange = () => {
+  tableSelectOptions.value = [];
+  if (formData.value.tableAppId) {
+    queryConnectSelectOptions({
+      appId: formData.value.tableAppId, tenantCode: props.parameter?.tenantCode || ''
+    }, (connectData: Record<string, any>[]) => {
+      const connectIds = connectData.map((item) => item.connectId);
+      queryTableSelectOptions({
+        connectId: connectIds.join(','), order: 'entityName|asc',
+        appId: formData.value.tableAppId, tenantCode: props.parameter?.tenantCode || ''
+      }, (tableData: QueryTableForm[]) => {
+        // tableData = tableData.filter((item) => item.appId !== props.parameter?.appId);
+        for (const connectItem of connectData) {
+          const option: SelectOptionData[] = [];
+          const tableDataFormat = tableData.filter((item) => item.connectId === connectItem.connectId);
+          for (const item of tableDataFormat) {
+            option.push({
+              label: `${item.title}[${item.entityName}]`,
+              value: item.id,
+              disabled: item.enableStatus === 0,
+              other: item,
+            });
+          }
+          tableSelectOptions.value.push({isGroup: true, label: connectItem.connectName, options: option});
+        }
+      });
+    });
+  }
+}
+
 /**
  * 删除
  */
@@ -268,9 +299,8 @@ const handleModelOk = () => {
 };
 const handleModelReset = () => {
   formData.value.approvalStatus = 'draft';
-  createOrUpdateData(formData.value, (data: QueryAppTableForm) => {
-    emits('saveSuccess', data, props.formState);
-  });
+  formData.value.enableStatus = 1;
+  handleModelOk();
 }
 /**
  * 取消修改按钮
@@ -286,35 +316,11 @@ watch(() => props, () => {
   if (props.visible === true) {
     // 应用信息
     applicationApi.getAppSelectOptions({
-      id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+      id: '', tenantCode: props.parameter?.tenantCode || ''
     }, (data: QueryAppForm[]) => {
-      appSelectOptions.value = data || [];
+      appSelectOptions.value = data.filter((item) => item.id !== props.parameter?.appId) || [];
     }, () => {
       appSelectOptions.value = [];
-    });
-    tableSelectOptions.value = [];
-    queryConnectSelectOptions({
-      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
-    }, (connectData: Record<string, any>[]) => {
-      const connectIds = connectData.map((item) => item.connectId);
-      queryTableSelectOptions({
-        connectId: connectIds.join(','), order: 'entityName|asc', tenantCode: props.parameter?.tenantCode || ''
-      }, (tableData: QueryTableForm[]) => {
-        tableData = tableData.filter((item) => item.appId !== props.parameter?.appId);
-        for (const connectItem of connectData) {
-          const option: SelectOptionData[] = [];
-          const tableDataFormat = tableData.filter((item) => item.connectId === connectItem.connectId);
-          for (const item of tableDataFormat) {
-            option.push({
-              label: `${item.title}[${item.entityName}]`,
-              value: item.id,
-              disabled: item.enableStatus === 0,
-              other: item,
-            });
-          }
-          tableSelectOptions.value.push({isGroup: true, label: connectItem.connectName, options: option});
-        }
-      });
     });
     // 表单数据重置
     selectAll.value = false;
@@ -324,9 +330,10 @@ watch(() => props, () => {
     resetValidate();
     // 编辑、查看 状态 查询数据
     if (['edit', 'view'].includes(props.formState) && props.modelValue) {
-      if (!!props.parameter.tableName) getTablePermission(props.parameter.tableName);
       getData(props.modelValue, (data: QueryAppTableForm) => {
         formData.value = data;
+        tableAppIdChange();
+        getTablePermission(props.parameter.tableName);
         selectData.value = data.permissionId && data.permissionId.split(',') || [];
         selectChange()
       });
@@ -344,7 +351,7 @@ const cloneColumns = ref<Column[]>([]);
 </script>
 
 <template>
-  <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :width="width"
+  <a-modal v-model:visible="visibleForm" :footer="formState!=='view'&&['draft','reject'].includes(formData.approvalStatus)" :width="width"
            cancel-text="取消" ok-text="确认" title-align="start"
            @cancel="handleModelCancel" @before-ok="handleModelOk">
     <template #title>
@@ -367,16 +374,21 @@ const cloneColumns = ref<Column[]>([]);
           确认
         </a-button>
         <a-popconfirm v-if="!!parameter.author&&['reject'].includes(formData.approvalStatus)"
-                      content="是否重新起草该申请？" position="tr" type="warning" @ok="handleModelReset">
-          <a-button type="primary">重置</a-button>
+                      content="是否重新申请？" position="tr" type="warning" @ok="handleModelReset">
+          <a-button type="primary">重新申请</a-button>
         </a-popconfirm>
       </a-space>
     </template>
     <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
       <a-row :gutter="wrapperCol">
-        <a-col :span="(labelCol+wrapperCol)/formCol">
-          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="appId" label="应用名称">
-            <a-select v-if="formState==='add'" allow-search v-model="formData.appId" :disabled="!!parameter.appId">
+        <a-col v-if="!parameter.author" :span="(labelCol+wrapperCol)/formCol">
+          <a-form-item field="appId" label="申请来源">
+            <span>{{ formData.appName }}</span>
+          </a-form-item>
+        </a-col>
+        <a-col v-else :span="(labelCol+wrapperCol)/formCol">
+          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="tableAppId" label="所属应用">
+            <a-select v-if="formState!=='view'&&!!parameter.author" allow-search v-model="formData.tableAppId" @change="tableAppIdChange">
               <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
             </a-select>
             <span v-else>{{ formData.appName }}</span>
@@ -406,21 +418,21 @@ const cloneColumns = ref<Column[]>([]);
             </a-space>
           </a-form-item>
         </a-col>
-        <a-col :span="(labelCol+wrapperCol)/formCol">
-          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="approvalNeed" label="是否审批">
-            <a-select v-if="formState!=='view'&&!parameter.author" v-model="formData.approvalNeed" :options="approvalNeedOptions"/>
-            <span v-else>{{ utils.getOptionLabel(formData.approvalNeed, approvalNeedOptions) }}</span>
-            <template #extra>
-              申请需要走过审批流程才能生效
-            </template>
-          </a-form-item>
-        </a-col>
-        <a-col v-if="!!parameter.author" :span="(labelCol+wrapperCol)/formCol">
-          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="enableStatus" label="状态">
-            <a-select v-if="formState!=='view'" v-model="formData.enableStatus" :options="enableStatusOptions"/>
-            <span v-else>{{ utils.getOptionLabel(formData.enableStatus, enableStatusOptions) }}</span>
-          </a-form-item>
-        </a-col>
+        <!--        <a-col :span="(labelCol+wrapperCol)/formCol">
+                  <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="approvalNeed" label="是否审批">
+                    <a-select v-if="formState!=='view'&&!parameter.author" v-model="formData.approvalNeed" :options="approvalNeedOptions"/>
+                    <span v-else>{{ utils.getOptionLabel(formData.approvalNeed, approvalNeedOptions) }}</span>
+                    <template #extra>
+                      申请需要走过审批流程才能生效
+                    </template>
+                  </a-form-item>
+                </a-col>-->
+        <!--        <a-col v-if="!!parameter.author" :span="(labelCol+wrapperCol)/formCol">
+                  <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="enableStatus" label="状态">
+                    <a-select v-if="formState!=='view'" v-model="formData.enableStatus" :options="enableStatusOptions"/>
+                    <span v-else>{{ utils.getOptionLabel(formData.enableStatus, enableStatusOptions) }}</span>
+                  </a-form-item>
+                </a-col>-->
         <a-col :span="labelCol+wrapperCol">
           <a-form-item :label-col-props="{ span: labelCol/formCol }"
                        :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"

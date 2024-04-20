@@ -12,7 +12,7 @@ const approvalNeedOptions = computed<SelectOptionData[]>(() => [
 ]);
 
 const approvalStatusOptions = computed<SelectOptionData[]>(() => [
-  {label: '草稿', value: 'draft', other: {'color': 'rgb(22,93,255)'}},
+  {label: '待审批', value: 'draft', other: {'color': 'rgb(22,93,255)'}},
   {label: '审批', value: 'verify', other: {'color': 'rgb(255,125,0)'}},
   {label: '同意', value: 'agree', other: {'color': 'rgb(0,180,42)'}},
   {label: '拒绝', value: 'reject', other: {'color': 'rgb(245,63,63)'}},
