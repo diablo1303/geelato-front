@@ -32,6 +32,9 @@
       <span class="gl-item" v-if="isLogin()">
         <GlIconfont type="gl-setting" text="应用设置" @click="openAppSettings"></GlIconfont>
       </span>
+      <span class="gl-item" v-if="isLogin()">
+        <GlIconfont type="gl-version" text="应用版本" @click="openAppVersion"></GlIconfont>
+      </span>
     </span>
 
     <span>
@@ -269,6 +272,10 @@ const openAppSite = () => {
  */
 const openAppSettings = () => {
   window.open(`${window.location.origin}/appSettings.html?appId=${appStore.currentApp.id}&appName=${appStore.currentApp.name}`, '_blank')
+}
+
+const openAppVersion = () => {
+  window.open(`${window.location.origin}/appVersion.html?appId=${appStore.currentApp.id}&appName=${appStore.currentApp.name}`, '_blank')
 }
 
 const showPageReplaceEditor = () => {
