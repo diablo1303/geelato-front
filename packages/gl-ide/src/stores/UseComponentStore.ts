@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { ComponentMeta } from '@geelato/gl-ui-schema'
+import type { Action, ComponentMeta} from '@geelato/gl-ui-schema'
 import { emitter, utils } from '@geelato/gl-ui'
 import { ComponentInstance } from '@geelato/gl-ui-schema'
 import ClipboardJS from 'clipboard'
@@ -759,7 +759,7 @@ class ComponentStoreFactory {
             this.setCurrentSelectedComponentById('', fromPageId)
           },
           /**
-           *  获取当前页面的组件动作列表
+           *  获取当前页面中，包含动作的组件列表
            *  对于一些特定的组件需要特殊处理，如：'GlEntityTablePlus', 'GlEntityTable', 'GlEntityTableSub'
            *  TODO 可以将这些特定的信息在组件的元数据中进行标识定义，这里依据约定的标识定义进行解析获取actions
            */
@@ -808,7 +808,46 @@ class ComponentStoreFactory {
             }
             return actionList
           },
+          /**
+           * 获取被引用的Action数组
+           * @return 引用的Action数组 {actionId:[{ownerComponentId,refAction,actionIndex}]}
+           */
+          getBeRefActions(){
+            const actionOwnerInsts = this.getActionList()
+            // 被引用action.id为key，label为引用者组件的标题，action为引用者的action
+            const actionRefs:{[key:string]:Array<{ownerComponentId:string,componentId:string,label:string,action:Action}>} = {}
 
+            const findAction = (instId:string,actonName:string)=>{
+              for (const key in actionOwnerInsts) {
+                const inst = actionOwnerInsts[key]
+                if(inst.id === instId){
+                  return inst.actions?.find(action=> actonName === action.name)
+                }
+              }
+            }
+            const getRefAction = (action:Action,actionOwnerInst:ComponentInstance)=>{
+                if(action.__commandBlock){
+                  action.__commandBlock.children?.forEach((blockInst:ComponentInstance)=>{
+                    if(blockInst.componentName === 'GlTriggerComponentActionBlock'){
+                      const refAction = findAction(blockInst.props.componentId,blockInst.props.actionName)
+                      if(refAction&&refAction.id){
+                        actionRefs[refAction.id] = actionRefs[refAction.id] || []
+                        actionRefs[refAction.id].push({
+                          ownerComponentId:blockInst.props.componentId,
+                          componentId:actionOwnerInst.id,
+                          label:actionOwnerInst.props.label||actionOwnerInst.componentName,
+                          action})
+                      }
+                    }
+                  })
+                }
+            }
+            actionOwnerInsts?.forEach((actionOwnerInst:ComponentInstance)=>{
+              actionOwnerInst.actions?.forEach(action=>getRefAction(action,actionOwnerInst))
+            })
+
+            return actionRefs
+          },
           /**
            *  获取当前组件的导航
            *  TODO 插槽的场景，需要能进一步向上查找

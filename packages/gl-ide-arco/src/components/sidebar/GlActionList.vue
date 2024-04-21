@@ -25,16 +25,14 @@ watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
 
-const actionList = ref(componentStore.getActionList())
-onMounted(() => {
-  actionList.value = componentStore.getActionList()
-})
+
+const beRefActions = ref(componentStore.getBeRefActions())
 
 const selectComponent = (inst: ComponentInstance) => {
   componentStore.setCurrentSelectedComponent(inst)
 }
 
-const openActionSetter = (inst: ComponentInstance, action: Action, actionIndex: number) => {
+const openActionSetter = (inst: ComponentInstance, action: Action, actionIndex?: number) => {
   selectComponent(inst)
   // 等组件属性面板打开，200ms后，切换到动作面板
   utils.sleep(200).then(() => {
@@ -44,6 +42,14 @@ const openActionSetter = (inst: ComponentInstance, action: Action, actionIndex: 
   utils.sleep(200).then(() => {
     emitter.emit(EventNames.GlIdeOpenActionEditor, {action, actionIndex})
   })
+}
+
+const openRefActionSetter = (beRefAction:{componentId:string,action:Action})=>{
+  const inst = componentStore.findComponentFromTreeById(beRefAction.componentId)
+  const action = inst.actions.find((action:Action)=>{
+    return beRefAction.action.id === action.id
+  })
+  openActionSetter(inst,action)
 }
 </script>
 
@@ -61,14 +67,26 @@ const openActionSetter = (inst: ComponentInstance, action: Action, actionIndex: 
         </template>
         <div
           v-for="(action, actionIndex) in inst.actions"
-          class="gl-action-item"
-          @click="openActionSetter(inst, action, actionIndex)"
         >
-          <div class="gl-title">{{ action.title }}：{{ action.name }}</div>
-          <div style="flex: 0 0 2em; text-align: center; line-height: 2em">
-            <GlIconfont type="gl-thunderbolt" class="gl-active" style="cursor: pointer" />
+          <div class="gl-action-item">
+            <div class="gl-title" @click="openActionSetter(inst, action, actionIndex)">{{ action.title }}：{{ action.name }}</div>
+            <div style="flex: 0 0 2em; text-align: center; line-height: 2em">
+              <GlIconfont type="gl-thunderbolt" class="gl-active" style="cursor: pointer"  @click="openActionSetter(inst, action, actionIndex)"/>
+            </div>
+          </div>
+          <div v-for="beRefAction in beRefActions[action.id]" :key="beRefAction.action.id">
+            <a-tooltip :content="`以上事件（${action.title}），被此事件引用，该事件来源于组件（${beRefAction.label}）`">
+              <div class="gl-action-item">
+                <GlIconfont type="gl-link" style="margin: 0 0.5em"></GlIconfont>
+                <div class="gl-title" @click="openRefActionSetter(beRefAction)">{{ beRefAction.action.title }}：{{ beRefAction.action.name }}</div>
+                <div style="flex: 0 0 2em; text-align: center; line-height: 2em">
+                  <GlIconfont type="gl-thunderbolt" class="gl-active" style="cursor: pointer"  @click="openRefActionSetter(beRefAction)"/>
+                </div>
+              </div>
+            </a-tooltip>
           </div>
         </div>
+
       </a-collapse-item>
     </a-collapse>
   </div>
@@ -87,10 +105,12 @@ const openActionSetter = (inst: ComponentInstance, action: Action, actionIndex: 
 
 .gl-action-item:hover {
   background-color: #e8f7ff;
+  color: #0e72cc;
 }
 
 .gl-action-item .gl-title {
   flex: auto;
   cursor: pointer;
 }
+
 </style>

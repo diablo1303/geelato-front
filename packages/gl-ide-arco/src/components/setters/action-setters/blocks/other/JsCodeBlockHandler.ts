@@ -13,7 +13,7 @@ export default class JsCodeBlockHandler implements IBlockHandler {
       `
             ${propsExpressions?.code || props.code};
             `
-    )
+    ).endWithLineFeed()
   }
 }
 

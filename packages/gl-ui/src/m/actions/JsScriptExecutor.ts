@@ -92,6 +92,7 @@ export class JsScriptExecutor {
 
   /**
    * 获取组件的方法
+   * 先从真实的组件中获取方法，获取不到，则从包装的组件GlComponent中获取公共方法
    * @param componentId
    * @param methodName
    */
@@ -99,10 +100,18 @@ export class JsScriptExecutor {
     // console.log('getComponentMethod() > pageProxyMap:', pageProxyMap)
     const ref = this.getRef(componentId)
     // 对于GlPage，ref?.exposed[methodName]
-    const exposed = ref?.subTree?.component?.exposed || ref?.exposed
+    // 对于一般的组件ref?.exposed取的是GlComponent上的公共方法
+    let exposed = ref?.subTree?.component?.exposed
     let fn
     if (exposed) {
       fn = exposed[methodName]
+    }
+    if (fn) {
+      return fn
+    }
+    // 如果在具体组件中都找不到方法时，从包装的组件GlComponent上的公共方法上获取
+    if(ref?.exposed){
+      fn = ref?.exposed[methodName]
     }
     if (fn) {
       return fn

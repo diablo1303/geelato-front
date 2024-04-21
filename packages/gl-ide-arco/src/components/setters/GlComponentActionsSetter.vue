@@ -138,9 +138,9 @@ const update = () => {}
 const refreshFlag = ref(true)
 
 const currentAction = ref(new Action())
-const currentActionIndex = ref(-1)
+// const currentActionIndex = ref(-1)
 const actionCodeEditorVisible = ref(false)
-const openActionSetter = (action: Action, actionIndex: number, actionMeta?: ActionMeta) => {
+const openActionSetter = (action: Action, actionIndex?: number, actionMeta?: ActionMeta) => {
   // console.log('openActionSetter,action, actionIndex, actionMeta:', action, actionIndex, actionMeta)
   if (!action.title) {
     action.title = actionMeta?.title || ''
@@ -155,7 +155,7 @@ const openActionSetter = (action: Action, actionIndex: number, actionMeta?: Acti
     action.id = utils.gid('act', 20)
   }
   currentAction.value = action ? JSON.parse(JSON.stringify(action)) : new Action()
-  currentActionIndex.value = actionIndex
+  // currentActionIndex.value = actionIndex
   actionCodeEditorVisible.value = true
   // global.$modal.open({
   //   title: "动作（事件）编排",
@@ -173,7 +173,16 @@ const openActionSetter = (action: Action, actionIndex: number, actionMeta?: Acti
 const onUpdateAction = (action: Action) => {
   // console.log('onUpdateAction', action)
   // @ts-ignore
-  props.componentInstance.actions[currentActionIndex.value] = action
+  // props.componentInstance.actions[currentActionIndex.value] = action
+  for (const index in props.componentInstance.actions) {
+    if(!props.componentInstance.actions[index].id){
+      console.error('onUpdateAction时，发现id为空的action:',action,'需解决，确保action都有id。')
+    }
+    if(props.componentInstance.actions[index].id===action.id){
+      props.componentInstance.actions[index] = action
+      break
+    }
+  }
 }
 
 const saveCurrentPage = () => {
@@ -196,7 +205,8 @@ const closeActionCodeEditor = () => {
  * 基于block生成脚本
  */
 const generateScript = () => {
-  const action = props.componentInstance?.actions[currentActionIndex.value]
+  const action = props.componentInstance?.actions?.find(action=>action.id === currentAction.value.id)
+  // const action = props.componentInstance?.actions[currentActionIndex.value]
   // console.log('generateScript action:', action)
   if (action) {
     action.body = blocksHandler.parseToScript(action.__commandBlock)
