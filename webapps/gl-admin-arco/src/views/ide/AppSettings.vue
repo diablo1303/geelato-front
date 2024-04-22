@@ -379,7 +379,7 @@ onUnmounted(() => {
             <a-tab-pane :key="4">
               <template #title>
                 <icon-code-block/>
-                应用编码
+                字段编码
               </template>
               <a-card class="general-card">
                 <EncodingList :visible="encodingListParams.visible"
