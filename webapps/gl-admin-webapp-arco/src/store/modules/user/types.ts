@@ -20,6 +20,8 @@ export interface UserState {
   locationName?: string; //
   orgId?: string; // 部门ID
   orgName?: string; // 部门名称
+  companyId?: string; // 公司ID
+  companyName?: string; // 公司名称
   description?: string; // 简介
   nationCode?: string; // 详细地址
   provinceCode?: string; // 详细地址

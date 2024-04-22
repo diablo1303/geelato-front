@@ -25,6 +25,7 @@ const allItems: Ref<Item[]> = ref([])
 const renderItems: Ref<Item[]> = ref([])
 const allAccreditItems: Ref<QueryAppTableForm[]> = ref([])
 const renderAccreditItems: Ref<QueryAppTableForm[]> = ref([])
+const allTableAppItems: Ref<QueryAppTableForm[]> = ref([]);
 const searchText = ref('')
 const orderBy = ref('updateAt')
 const activeKey = ref<number[]>([1, 2]);
@@ -97,6 +98,7 @@ type Item = {
   updaterName: string
   creatorName: string
   entityName: string
+  approval: QueryAppTableForm[]
   title?: string
   tableComment?: string
 }
@@ -113,7 +115,19 @@ const fetchData = () => {
   entityReader.params = []
   entityReader.params.push(new EntityReaderParam('appId', 'eq', appStore.currentApp.id))
   entityApi.queryByEntityReader(entityReader).then(
-      (res: any) => {
+      async (res: any) => {
+        const {data} = await modelApi.queryAppTables({
+          tableAppId: appStore.currentApp.id, approvalStatus: "draft"
+        });
+        allTableAppItems.value = data.filter((item) => item.approvalStatus === "draft");
+        for (const item of res.data) {
+          item.approval = [];
+          for (const node of allTableAppItems.value) {
+            if (node.tableName === item.entityName) {
+              item.approval.push(node);
+            }
+          }
+        }
         allItems.value = res.data
         generateRenderItems()
       }, () => {
@@ -243,17 +257,17 @@ const addAppTableForm = (ev?: MouseEvent) => {
     </a-tabs>
 
     <div style="padding: 4px 10px;">
-      <a-input-search v-model="searchText" placeholder="录入中、英文名查询" size="small" style="width: 100%"/>
+      <a-input-search v-model="searchText" allow-clear placeholder="录入中、英文名查询" size="small" style="width: 100%"/>
     </div>
 
-    <a-collapse class="collapse1" :bordered="true" v-model:active-key="activeKey">
-      <a-collapse-item class="colapse-list1" :header="`授权模型（${renderAccreditItems.length}）`" :key="1">
+    <a-collapse v-model:active-key="activeKey" :bordered="true" class="collapse1">
+      <a-collapse-item :key="1" :header="`授权模型（${renderAccreditItems.length}）`" class="colapse-list1">
         <template #extra>
           <a-space>
-            <a-button size="mini" type="text" style="padding: 0 5px;" @click.stop="addAppTableForm">
+            <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addAppTableForm">
               <gl-iconfont type="gl-plus-circle"/>
             </a-button>
-            <a-button size="mini" type="text" style="padding: 0 5px;" @click.stop="fetchAccreditData">
+            <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="fetchAccreditData">
               <gl-iconfont type="gl-reset"/>
             </a-button>
           </a-space>
@@ -279,13 +293,16 @@ const addAppTableForm = (ev?: MouseEvent) => {
           </template>
         </a-list>
       </a-collapse-item>
-      <a-collapse-item class="colapse-list1" :header="`应用模型（${renderItems.length}）`" :key="2">
+      <a-collapse-item :key="2" class="colapse-list1">
+        <template #header>
+          {{ `应用模型（${renderItems.length}${allTableAppItems.length > 0 ? '，' + allTableAppItems.length : ''}）` }}
+        </template>
         <template #extra>
           <a-space>
-            <a-button size="mini" type="text" style="padding: 0 5px;" @click.stop="addTableForm">
+            <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addTableForm">
               <gl-iconfont type="gl-plus-circle"/>
             </a-button>
-            <a-button size="mini" type="text" style="padding: 0 5px;" @click.stop="fetchData">
+            <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="fetchData">
               <gl-iconfont type="gl-reset"/>
             </a-button>
           </a-space>
@@ -293,7 +310,17 @@ const addAppTableForm = (ev?: MouseEvent) => {
         <a-list size="small">
           <template v-for="item in renderItems" :key="item.id">
             <a-list-item style="cursor: pointer;" @click="tableOpen(item.id)">
-              <a-list-item-meta :description="item.title as string" :title="item.entityName"/>
+              <a-list-item-meta :title="item.entityName">
+                <template #title>
+                  <a-tooltip v-if="item.approval.length>0" :content="`模型权限申请（${item.approval.length}）`">
+                    <gl-iconfont style="color: rgb(245,63,63)" type="gl-warning-circle"/>
+                  </a-tooltip>
+                  {{ item.entityName }}
+                </template>
+                <template #description>
+                  {{ item.title }}
+                </template>
+              </a-list-item-meta>
               <template #actions>
                 <span :title="`${item.updaterName || ''}更新@${item.updateAt}`" class="gl-actions-description">
                   {{ utils.timeAgo(item.updateAt) }}
@@ -322,7 +349,7 @@ const addAppTableForm = (ev?: MouseEvent) => {
 
   <GlModelTableTabs v-model:visible="formTabsParams.visible" :formState="formTabsParams.formState"
                     :modelValue="formTabsParams.id" :parameter="formTabsParams.parameter"
-                    :width="formTabsParams.width" :refApp="formTabsParams.refApp"
+                    :refApp="formTabsParams.refApp" :width="formTabsParams.width"
                     @deleteSuccess="tableFormSaveSuccess" @updateSuccess="tableFormSaveSuccess"/>
 </template>
 <style>

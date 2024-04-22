@@ -231,7 +231,7 @@ onMounted(() => {
           appId: data.id, tenantCode: data.tenantCode || '',
         });
       });
-      document.title = `应用配置 | ${data.name}`;
+      document.title = `应用版本管理 | ${data.name}`;
       // 应用基本信息
       Object.assign(appModelParams.value, {
         visible: true, id: data.id, parameter: {appId: data.id, tenantCode: data.tenantCode || ''}

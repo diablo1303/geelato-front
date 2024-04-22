@@ -26,6 +26,8 @@ const useUserStore = defineStore('user', {
     locationName: undefined,
     orgId: undefined,
     orgName: undefined,
+    companyId: undefined,
+    companyName: undefined,
     tenantCode: undefined,
     description: undefined,
     nationCode: undefined,
