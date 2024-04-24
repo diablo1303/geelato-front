@@ -9,10 +9,11 @@ import {reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
-import {TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {SelectOptionData, TableColumnData, TableSortable} from '@arco-design/web-vue';
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
-import {PageSizeOptions, PageQueryFilter, PageQueryRequest} from '@/api/base';
+import {PageSizeOptions, PageQueryFilter, PageQueryRequest, getOptionLabel} from '@/api/base';
 // 页面所需 对象、方法
+import {queryAppSelectOptions} from "@/api/application";
 import {deleteRole as deleteList, QueryRoleForm as QueryForm, pageQueryRole as pageQueryList} from '@/api/security';
 import {columns, enableStatusOptions, typeOptions} from './searchTable'
 // 引入组件
@@ -74,7 +75,7 @@ const generateFilterData = () => {
   };
 };
 const filterData = ref(generateFilterData());
-
+const appSelectOptions = ref<SelectOptionData[]>([]);
 /**
  * 分页查询方法
  * @param params
@@ -254,6 +255,17 @@ const saveSuccess = (data: QueryForm, type: string) => {
 
 watch(() => props, (val) => {
   if (props.visible === true) {
+    // 应用信息
+    if (!props.parameter.appId) {
+      queryAppSelectOptions({
+        id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+      }, (data: SelectOptionData[]) => {
+        appSelectOptions.value = data || [];
+      }, () => {
+        appSelectOptions.value = [];
+      });
+    }
+    // 修改列表高度
     scroll.value.y = props.height;
     basePagination.pageSize = props.pageSize;
     tabsformParams.value.height = window.innerHeight * 0.8;
@@ -312,11 +324,16 @@ watch(() => props, (val) => {
               <a-input-number v-model="filterData.weight" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
-          <a-col :span="(labelCol+wrapperCol)/filterCol">
+          <a-col v-if="!parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.role.index.form.type')" field="type">
               <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col v-if="['app'].includes(filterData.type)&&!parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
+            <a-form-item :label="$t('security.roleApp.index.form.appName')" field="appId">
+              <a-select v-model="filterData.appId" :options="appSelectOptions" :placeholder="$t('searchTable.form.selectDefault')" allow-search/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
@@ -326,7 +343,7 @@ watch(() => props, (val) => {
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="(labelCol+wrapperCol)/filterCol">
+          <a-col v-if="!['app'].includes(filterData.type)" :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.role.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
@@ -394,6 +411,12 @@ watch(() => props, (val) => {
       <a-table-column :title="$t('security.role.index.form.type')" :width="120" data-index="status">
         <template #cell="{ record }">
           {{ $t(`security.role.index.form.type.${record.type}`) }}
+        </template>
+      </a-table-column>
+      <a-table-column v-if="!parameter.appId" :ellipsis="true" :title="$t('security.roleApp.index.form.appName')" :tooltip="true" :width="180"
+                      data-index="appId">
+        <template #cell="{ record }">
+          {{ getOptionLabel(record.appId, appSelectOptions) }}
         </template>
       </a-table-column>
       <a-table-column :title="$t('security.role.index.form.enableStatus')" :width="90" data-index="enableStatus">

@@ -9,11 +9,11 @@ import {reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
-import {TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {SelectOptionData, TableColumnData, TableSortable} from '@arco-design/web-vue';
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
-import {PageSizeOptions, PageQueryFilter, PageQueryRequest} from '@/api/base';
+import {PageSizeOptions, PageQueryFilter, PageQueryRequest, getOptionLabel} from '@/api/base';
 // 页面所需 对象、方法
-import {getAppSelectOptions, QueryAppForm} from "@/api/application";
+import {queryAppSelectOptions} from "@/api/application";
 import {
   deleteDict as deleteList,
   QueryDictForm as QueryForm,
@@ -77,7 +77,7 @@ const generateFilterData = () => {
   };
 };
 const filterData = ref(generateFilterData());
-const appSelectOptions = ref<QueryAppForm[]>([]);
+const appSelectOptions = ref<SelectOptionData[]>([]);
 
 /**
  * 分页查询方法
@@ -283,9 +283,9 @@ watch(() => props, (val) => {
   if (props.visible === true) {
     // 应用信息
     if (!props.parameter.appId) {
-      getAppSelectOptions({
+      queryAppSelectOptions({
         id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
-      }, (data: QueryAppForm[]) => {
+      }, (data: SelectOptionData[]) => {
         appSelectOptions.value = data || [];
       }, () => {
         appSelectOptions.value = [];
@@ -355,7 +355,7 @@ watch(() => props, (val) => {
           </a-col>
           <a-col v-if="!parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.dict.index.form.appId')" field="appId">
-              <a-select v-model="filterData.appId" :field-names="{value: 'id', label: 'name'}" :options="appSelectOptions" allow-search/>
+              <a-select v-model="filterData.appId" :options="appSelectOptions" :placeholder="$t('searchTable.form.selectDefault')" allow-search/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
@@ -426,6 +426,12 @@ watch(() => props, (val) => {
         <template #cell="{ record }">
           <CopyToClipboard v-if="record.dictCode" :model-value="record.dictCode"/>
           {{ record.dictCode }}
+        </template>
+      </a-table-column>
+      <a-table-column v-if="!parameter.appId" :ellipsis="true" :title="$t('security.dict.index.form.appId')" :tooltip="true" :width="180"
+                      data-index="appId">
+        <template #cell="{ record }">
+          {{ getOptionLabel(record.appId, appSelectOptions) }}
         </template>
       </a-table-column>
       <a-table-column :title="$t('security.dict.index.form.enableStatus')" :width="90" data-index="enableStatus">

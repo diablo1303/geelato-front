@@ -9,8 +9,8 @@ import {reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
-import {Modal, TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams} from '@/api/base';
+import {Modal, SelectOptionData, TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams, getOptionLabel} from '@/api/base';
 // 页面所需 对象、方法
 import {
   deleteFileTemplate as deleteList,
@@ -18,6 +18,7 @@ import {
   generateTemplateOrMetaFile,
   pageQueryFileTemplate as pageQueryList
 } from '@/api/template';
+import {queryAppSelectOptions} from "@/api/application";
 import {columns, enableStatusOptions, fileTypeOptions, useTypeOptions} from "@/views/security/file/searchTable";
 import {getValueByKeys} from "@/api/sysconfig";
 import {downloadFileByBase64Data, fetchFileById} from "@/api/attachment";
@@ -82,6 +83,7 @@ const generateFilterData = () => {
   };
 };
 const filterData = ref(generateFilterData());
+const appSelectOptions = ref<SelectOptionData[]>([]);
 
 /**
  * 分页查询方法
@@ -287,6 +289,16 @@ const saveSuccess = (data: QueryForm, type: string) => {
 
 watch(() => props, (val) => {
   if (props.visible === true) {
+    // 应用信息
+    if (!props.parameter.appId) {
+      queryAppSelectOptions({
+        id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+      }, (data: SelectOptionData[]) => {
+        appSelectOptions.value = data || [];
+      }, () => {
+        appSelectOptions.value = [];
+      });
+    }
     // 页面设置
     scroll.value.y = props.height;
     formParams.value.height = window.innerHeight * 0.8 - 64;
@@ -339,6 +351,11 @@ watch(() => props, (val) => {
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.file.index.form.fileCode')" field="fileCode">
               <a-input v-model="filterData.fileCode" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
+            </a-form-item>
+          </a-col>
+          <a-col v-if="!parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
+            <a-form-item :label="$t('security.file.index.form.appId')" field="appId">
+              <a-select v-model="filterData.appId" :options="appSelectOptions" :placeholder="$t('searchTable.form.selectDefault')" allow-search/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
@@ -438,6 +455,12 @@ watch(() => props, (val) => {
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.file.index.form.fileCode')" :tooltip="true" :width="150" data-index="fileCode"/>
+      <a-table-column v-if="!parameter.appId" :ellipsis="true" :title="$t('security.file.index.form.appId')" :tooltip="true" :width="180"
+                      data-index="appId">
+        <template #cell="{ record }">
+          {{ getOptionLabel(record.appId, appSelectOptions) }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('security.file.index.form.enableStatus')" :width="90" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`security.file.index.form.enableStatus.${record.enableStatus}`) }}

@@ -9,9 +9,10 @@ import {reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
-import {TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams} from '@/api/base';
+import {SelectOptionData, TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams, getOptionLabel} from '@/api/base';
 // 页面所需 对象、方法
+import {queryAppSelectOptions} from "@/api/application";
 import {deleteEncoding as deleteList, QueryEncodingForm as QueryForm, pageQueryEncoding as pageQueryList} from '@/api/encoding';
 import {columns, enableStatusOptions} from "@/views/security/encoding/searchTable";
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
@@ -46,7 +47,7 @@ const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
 const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 1140, y: props.height});
+const scroll = ref({x: 1200, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
@@ -70,6 +71,7 @@ const generateFilterData = () => {
   };
 };
 const filterData = ref(generateFilterData());
+const appSelectOptions = ref<SelectOptionData[]>([]);
 
 /**
  * 分页查询方法
@@ -237,6 +239,16 @@ const saveSuccess = (data: QueryForm, type: string) => {
 
 watch(() => props, (val) => {
   if (props.visible === true) {
+    // 应用信息
+    if (!props.parameter.appId) {
+      queryAppSelectOptions({
+        id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+      }, (data: SelectOptionData[]) => {
+        appSelectOptions.value = data || [];
+      }, () => {
+        appSelectOptions.value = [];
+      });
+    }
     // 页面设置
     scroll.value.y = props.height;
     basePagination.pageSize = props.pageSize;
@@ -274,6 +286,11 @@ watch(() => props, (val) => {
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.encoding.index.form.title')" field="title">
               <a-input v-model="filterData.title" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
+            </a-form-item>
+          </a-col>
+          <a-col v-if="!parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
+            <a-form-item :label="$t('security.encoding.index.form.appId')" field="appId">
+              <a-select v-model="filterData.appId" :options="appSelectOptions" :placeholder="$t('searchTable.form.selectDefault')" allow-search/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
@@ -348,6 +365,12 @@ watch(() => props, (val) => {
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('security.encoding.index.form.title')" :tooltip="true" :width="180" data-index="title"/>
       <a-table-column :ellipsis="true" :title="$t('security.encoding.index.form.example')" :tooltip="true" :width="150" data-index="example"/>
+      <a-table-column v-if="!parameter.appId" :ellipsis="true" :title="$t('security.encoding.index.form.appId')" :tooltip="true" :width="180"
+                      data-index="appId">
+        <template #cell="{ record }">
+          {{ getOptionLabel(record.appId, appSelectOptions) }}
+        </template>
+      </a-table-column>
       <a-table-column :title="$t('security.encoding.index.form.enableStatus')" :width="90" data-index="enableStatus">
         <template #cell="{ record }">
           {{ $t(`security.encoding.index.form.enableStatus.${record.enableStatus}`) }}

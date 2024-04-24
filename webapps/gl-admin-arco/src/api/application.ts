@@ -3,6 +3,7 @@ import qs from "query-string";
 import {PageQueryRequest, PageQueryResponse, QueryResult} from "@/api/base";
 import {getToken} from "@/utils/auth";
 import {useApiUrl} from "@geelato/gl-ui";
+import {SelectOptionData} from "@arco-design/web-vue";
 
 const urlOrigin = useApiUrl().getApiBaseUrl()
 
@@ -131,4 +132,22 @@ export const getAppSelectOptions = async (params: Record<string, any>, successBa
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
   }
+}
+
+/**
+ * 查询所有的应用
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
+export const queryAppSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
+  await getAppSelectOptions(params, (data: QueryAppForm[]) => {
+    const options: SelectOptionData[] = [];
+    if (data && data.length > 0) {
+      for (let i = 0; i < data.length; i += 1) {
+        options.push({label: data[i].name, value: data[i].id});
+      }
+    }
+    if (successBack && typeof successBack === 'function') successBack(options);
+  }, failBack);
 }

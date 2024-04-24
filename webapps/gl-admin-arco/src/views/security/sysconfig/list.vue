@@ -8,13 +8,14 @@ import {reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
-import {TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams} from '@/api/base';
+import {SelectOptionData, TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams, getOptionLabel} from '@/api/base';
 // 引用其他对象、方法
+import {queryAppSelectOptions} from "@/api/application";
+import {Base64FileParams, downloadFileByBase64Data, fetchFileById} from "@/api/attachment";
 import {deleteSysConfig as deleteList, pageQuerySysConfig as pageQueryList, QuerySysConfigForm as QueryForm} from '@/api/sysconfig';
 import {columns, enableStatusOptions, purposeOptions} from "@/views/security/sysconfig/searchTable";
 // 引用其他页面
-import {Base64FileParams, downloadFileByBase64Data, fetchFileById} from "@/api/attachment";
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 import SystemConfigForm from './form.vue';
 
@@ -73,6 +74,7 @@ const generateFilterData = () => {
   };
 };
 const filterData = ref(generateFilterData());
+const appSelectOptions = ref<SelectOptionData[]>([]);
 
 /**
  * 分页查询方法
@@ -240,6 +242,16 @@ const saveSuccess = (data: QueryForm, type: string) => {
 
 watch(() => props, (val) => {
   if (props.visible === true) {
+    // 应用信息
+    if (!props.parameter.appId) {
+      queryAppSelectOptions({
+        id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+      }, (data: SelectOptionData[]) => {
+        appSelectOptions.value = data || [];
+      }, () => {
+        appSelectOptions.value = [];
+      });
+    }
     // 页面设置
     scroll.value.y = props.height;
     basePagination.pageSize = props.pageSize;
@@ -274,6 +286,11 @@ watch(() => props, (val) => {
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
+            <a-form-item :label="$t('security.sysConfig.index.form.keyType')" field="keyType">
+              <a-input v-model="filterData.keyType" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.sysConfig.index.form.configValue')" field="configValue">
               <a-input v-model="filterData.configValue" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
@@ -285,6 +302,11 @@ watch(() => props, (val) => {
               </a-select>
             </a-form-item>
           </a-col>
+          <a-col v-if="!parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
+            <a-form-item :label="$t('security.sysConfig.index.form.appId')" field="appId">
+              <a-select v-model="filterData.appId" :options="appSelectOptions" :placeholder="$t('searchTable.form.selectDefault')" allow-search/>
+            </a-form-item>
+          </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.sysConfig.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
@@ -292,12 +314,7 @@ watch(() => props, (val) => {
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="(labelCol+wrapperCol)/filterCol">
-            <a-form-item :label="$t('security.sysConfig.index.form.keyType')" field="keyType">
-              <a-input v-model="filterData.keyType" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="(labelCol+wrapperCol)/filterCol">
+          <a-col v-if="!!parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.sysConfig.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
@@ -387,14 +404,20 @@ watch(() => props, (val) => {
           {{ record.purpose ? $t(`security.sysConfig.index.form.purpose.${record.purpose}`) : '' }}
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.sysConfig.index.form.enableStatus')" :width="90" data-index="enableStatus">
-        <template #cell="{ record }">
-          {{ $t(`security.sysConfig.index.form.enableStatus.${record.enableStatus}`) }}
-        </template>
-      </a-table-column>
       <a-table-column :title="$t('security.sysConfig.index.form.encrypted')" :width="90" data-index="encrypted">
         <template #cell="{ record }">
           {{ $t(`security.sysConfig.index.form.encrypted.${record.encrypted}`) }}
+        </template>
+      </a-table-column>
+      <a-table-column v-if="!parameter.appId" :ellipsis="true" :title="$t('security.sysConfig.index.form.appId')" :tooltip="true" :width="180"
+                      data-index="appId">
+        <template #cell="{ record }">
+          {{ getOptionLabel(record.appId, appSelectOptions) }}
+        </template>
+      </a-table-column>
+      <a-table-column :title="$t('security.sysConfig.index.form.enableStatus')" :width="90" data-index="enableStatus">
+        <template #cell="{ record }">
+          {{ $t(`security.sysConfig.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
       <a-table-column :sortable="sortable.createAt" :title="$t('security.sysConfig.index.form.createAt')" :width="180" data-index="createAt"/>
