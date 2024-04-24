@@ -149,7 +149,7 @@ watch(() => rightData, () => {
         <div style="width:100%;display: inline-flex;flex-direction: column;">
           <div style="width:100%;display: inline-flex;align-items: center;justify-content: space-between;">
             <span>{{ $t('userChooseBox.choose.selected') }} {{ rightData.length }}</span>
-            <a-button style="padding-right: 0px;" type="text" @click="ev => {rightData = []}">
+            <a-button style="padding: 0px;" type="text" @click="ev => {rightData = []}">
               <icon-delete/>
               &nbsp;{{ $t('userChooseBox.choose.clear') }}
             </a-button>

@@ -5,11 +5,12 @@ export default {
 </script>
 <script lang="ts" setup>
 import {computed, watch, ref} from 'vue';
+import cloneDeep from "lodash/cloneDeep";
 import {Message} from "@arco-design/web-vue";
 import type {TreeNodeData} from "@arco-design/web-vue";
-import {useRoute} from "vue-router";
 import type {QueryOrgForm} from "@geelato/gl-ui";
 import {securityApi} from "@geelato/gl-ui";
+import {queryTree} from "@geelato/gl-ui/src/m/datasource/Security";
 
 class OrgTreeNode implements TreeNodeData {
   key?: string | number;
@@ -24,17 +25,22 @@ class OrgTreeNode implements TreeNodeData {
   redundant?: QueryOrgForm
 }
 
-const route = useRoute();
+type PageParams = { appId?: string; tenantCode?: string; }
 
 const emits = defineEmits(['update:modelValue', 'change']);
 const props = defineProps({
   modelValue: {type: Array<string | number>, default: []},
-  hasRoot: {type: Boolean, default: true},
-  rootSelected: {type: Boolean, default: false},
-  maxCount: {type: Number, default: 0},
-  height: {type: Number, default: 420}
+  parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
+  visible: {type: Boolean, default: false},// 控制弹窗隐显
+  hasRoot: {type: Boolean, default: true},// 显示根目录
+  rootOrgId: {type: String, default: ''},// 根节点id
+  rootSelected: {type: Boolean, default: false},// 根目录是否可选
+  checkStrictly: {type: Boolean, default: true},// 是否取消父子节点关联
+  maxCount: {type: Number, default: 0},// 可选数量
+  height: {type: Number, default: 420},// 高度
 });
 
+const rootPid = 'root';
 const expandedKeys = ref<(string | number)[]>([]);
 const selectedKeys = ref<(string | number)[]>([]);
 
@@ -76,11 +82,12 @@ const originTreeData = computed(() => {
 /**
  * 接口，从数据库获取字典信息
  */
-const fetchOrgTree = async (pid: string): Promise<OrgTreeNode[]> => {
+const fetchOrgTree = async (params: Record<string, any>): Promise<OrgTreeNode[]> => {
   let treeOptions: OrgTreeNode[] = [];
   try {
-    // params.tenantCode = (route.params && route.params.tenantCode as string) || '';
-    const {data} = await securityApi.queryTrees(pid);
+    params.tenantCode = props.parameter?.tenantCode || '';
+    params.status = 1;
+    const {data} = await securityApi.queryTree(params);
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {
       treeOptions.push({
@@ -101,8 +108,14 @@ const fetchOrgTree = async (pid: string): Promise<OrgTreeNode[]> => {
  */
 const loadMore = (nodeData: OrgTreeNode) => {
   return new Promise<void>((resolve) => {
-    fetchOrgTree(`${nodeData.key}`).then((data) => {
+    fetchOrgTree({pid: `${nodeData.key}`} as unknown as QueryOrgForm).then((data) => {
       nodeData.children = data;
+      if (props.maxCount === 1 && props.checkStrictly === false) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const item of nodeData.children) {
+          if (!item.isLeaf) loadMore(item);
+        }
+      }
     });
     resolve();
   });
@@ -114,7 +127,7 @@ const loadMore = (nodeData: OrgTreeNode) => {
 const refreshTreeOne = (data: OrgTreeNode[]) => {
   const rootParent = {
     title: '组织管理',
-    key: '',
+    key: rootPid,
     selectable: props.rootSelected,
     checkable: false,
     disableCheckbox: false,
@@ -139,24 +152,76 @@ const refreshTreeOne = (data: OrgTreeNode[]) => {
  */
 const loadedPage = () => {
   searchKey.value = '';
-  fetchOrgTree('0').then((data) => {
+  const params = !!props.rootOrgId ? {id: props.rootOrgId} : {pid: rootPid};
+  fetchOrgTree(params).then((data) => {
     refreshTreeOne(data);
   });
 }
-loadedPage();
 
-const orgFormTreating = (data: OrgTreeNode[]) => {
-  const formData: QueryOrgForm[] = [];
-  if (data && data.length > 0) {
+const resetPage = () => {
+  searchKey.value = '';
+  const params = !!props.rootOrgId ? {id: props.rootOrgId} : {pid: rootPid};
+  fetchOrgTree(params).then((data) => {
+    refreshTreeOne(data);
+    // 选中、展开
+    if (props.hasRoot && props.rootSelected) {
+      selectedKeys.value = [rootPid];
+      emits("update:modelValue", selectedKeys.value);
+      emits('change', true, {});
+    }
+    if (props.checkStrictly === false && props.maxCount === 1) {
+      selectedKeys.value = [];
+      emits("update:modelValue", selectedKeys.value);
+      emits('change', true, {});
+    }
+  });
+}
+
+/**
+ * 搜索数据
+ * @param orgs
+ * @param childs
+ */
+const checkStrictlyiteration = (orgs: QueryOrgForm[], childs: OrgTreeNode[]) => {
+  if (childs && childs.length > 0) {
     // eslint-disable-next-line no-restricted-syntax
-    for (const item of data) {
-      if (item.redundant) {
-        formData.push(item.redundant as QueryOrgForm);
-      }
+    for (const item of childs) {
+      orgs.push(item.redundant || {} as QueryOrgForm);
+      checkStrictlyiteration(orgs, item.children || []);
+    }
+  }
+}
+/**
+ * 搜索数据
+ * @param data
+ */
+const checkStrictlyFormat = (data: OrgTreeNode) => {
+  const orgs: QueryOrgForm[] = [];
+  if (props.checkStrictly === false) {
+    if (data.key !== rootPid) {
+      orgs.push(data.redundant || {} as QueryOrgForm);
+      checkStrictlyiteration(orgs, data.children || []);
     }
   }
 
-  return formData;
+  return orgs;
+}
+
+/**
+ * 选中的数据
+ * @param orgs
+ * @param data
+ */
+const checkStrictlyChecked = (orgs: QueryOrgForm[], data: OrgTreeNode[]) => {
+  if (data && data.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      if (selectedKeys.value.includes(item.key as string)) {
+        orgs.push(item.redundant || {} as QueryOrgForm);
+      }
+      checkStrictlyChecked(orgs, item.children || []);
+    }
+  }
 }
 
 /**
@@ -175,9 +240,18 @@ const treeClickSelected = (selectedKes: Array<string | number>, data: {
     Message.warning({content: '超过最大选择量', duration: 3 * 1000});
     return;
   }
+  // 特殊情况
+  let formatData: QueryOrgForm[] = [];
+  if (props.maxCount === 1 && props.checkStrictly === false) {
+    formatData = checkStrictlyFormat(data.node || {}) || [];
+    selectedKeys.value = [];
+    formatData.forEach((item) => {
+      selectedKeys.value.push(item.id);
+    });
+  }
+
   emits("update:modelValue", selectedKeys.value);
-  // emits("change", selectedKeys.value, orgFormTreating(data.selectedNodes));
-  emits('change', data.selected, data.node?.redundant);
+  emits('change', data.selected, data.node?.redundant, formatData);
 }
 /**
  * 点击树节点复选框时触发
@@ -197,9 +271,26 @@ const treeClickChecked = (checkedKeys: Array<string | number>, data: {
     Message.warning({content: '超过最大选择量', duration: 3 * 1000});
     return;
   }
+  // 特殊情况
+  let formatData: QueryOrgForm[] = [];
+  if (props.maxCount === 1 && props.checkStrictly === false) {
+    const checkedData = checkStrictlyFormat(data.node || {}) || [];
+    if (data.checked) {
+      selectedKeys.value = [];
+      checkedData.forEach((item) => {
+        selectedKeys.value.push(item.id);
+      });
+      formatData = cloneDeep(checkedData);
+    } else {
+      checkedData.forEach((item) => {
+        selectedKeys.value.filter((key) => key !== item.id);
+      });
+      checkStrictlyChecked(formatData, treeData.value);
+    }
+  }
+
   emits("update:modelValue", selectedKeys.value);
-  // emits("change", selectedKeys.value, orgFormTreating(data.checkedNodes));
-  emits('change', data.checked, data.node?.redundant);
+  emits('change', data.checked, data.node?.redundant, formatData);
 }
 
 /**
@@ -208,22 +299,26 @@ const treeClickChecked = (checkedKeys: Array<string | number>, data: {
 watch(() => props.modelValue, () => {
   selectedKeys.value = props.modelValue;
 }, {immediate: true});
+
+watch(() => props.visible, () => {
+  if (props.visible === true) loadedPage();
+}, {immediate: true});
 </script>
 <template>
   <span class="tree-layout">
     <a-input-search v-model="searchKey" allow-clear class="tree-search"
                     placeholder="搜索"/>
-    <a-scrollbar :style="{overflow:'auto',height:`${props.height}px`}">
+    <a-scrollbar :style="{overflow:'auto',height:`${height}px`}">
       <a-tree
           v-model:checked-keys="selectedKeys"
           v-model:expanded-keys="expandedKeys"
           v-model:selected-keys="selectedKeys"
-          :block-node="true"
-          :check-strictly="true"
-          :checkable="props.maxCount===1?false:true"
+          :block-node="false"
+          :check-strictly="checkStrictly"
+          :checkable="(maxCount===1&&checkStrictly)?false:true"
           :data="originTreeData"
           :load-more="loadMore"
-          :multiple="props.maxCount===1?false:true"
+          :multiple="maxCount===1?false:true"
           :show-line="true"
           @check="treeClickChecked" @select="treeClickSelected">
         <template #title="nodeData">
@@ -238,9 +333,19 @@ watch(() => props.modelValue, () => {
             {{ nodeData?.title?.substr(getMatchIndex(nodeData?.title) + searchKey.length) }}
           </span>
         </template>
+        <template #extra="nodeData">
+          <a-tooltip content="刷新">
+            <gl-iconfont v-if="nodeData.key===rootPid" class="tree-extra-icon" type="gl-refresh" @click="resetPage"/>
+          </a-tooltip>
+        </template>
       </a-tree>
     </a-scrollbar>
   </span>
 </template>
 <style lang="less" scoped>
+.tree-extra-icon {
+  font-size: 16px;
+  margin-left: 10px;
+  color: #3370ff;
+}
 </style>

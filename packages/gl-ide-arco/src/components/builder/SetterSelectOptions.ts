@@ -61,7 +61,7 @@ export const setterSelectOptions = [
     {name: 'GlEntitySelect', label: '实体名称选择器', vModelName: 'modelValue', type: 'String'},
     {name: 'GlFieldSelect', label: '字段名称选择器', vModelName: 'modelValue', type: 'String'},
     {name: 'GlUserSelect', label: '用户选择器', vModelName: 'modelValue', type: 'String'},
-    {name: 'GlGroupSelect', label: '组织选择器', vModelName: 'modelValue', type: 'String'},
+    {name: 'GlOrgSelect', label: '组织选择器', vModelName: 'modelValue', type: 'String'},
     {name: 'GlValueTypes', label: '值类型选择器', vModelName: 'modelValue', type: 'String'},
     {name: 'GlCompareValueSetter', label: '值选择器', vModelName: 'modelValue', type: 'String'},
     {name: 'GlJson', label: 'Json编辑器', vModelName: 'modelValue', type: 'String'},

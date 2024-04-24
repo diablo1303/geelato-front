@@ -10,12 +10,16 @@ import OrgTree from "../gl-org-select/tree.vue";
 import UserList from "./list.vue";
 
 type QueryForm = QueryUserForm;
+type PageParams = { appId?: string; tenantCode?: string; }
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
   modelValue: {type: Array<QueryForm>, default: []},
+  parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
+  visible: {type: Boolean, default: false},// 控制弹窗隐显
   disabled: {type: Boolean, default: false},// 是否禁用
   maxCount: {type: Number, default: 0},// 取值数量
+  rootOrgId: {type: String, default: ''},// 根节点id
   height: {type: Number, default: 420}
 });
 
@@ -26,7 +30,7 @@ const rightData = ref<QueryForm[]>([]);
 // 选中数据
 const selectedKeys = ref<Array<string | number>>([]);
 // 组织id
-const selectedOrgIds = ref<string>('');
+const selectedOrgIds = ref<string>(props.rootOrgId || '');
 
 /**
  * 删除选中的数据
@@ -41,7 +45,7 @@ const deleteClick = (data: QueryForm) => {
  * @param data
  */
 const selectChange = (isSelected: boolean, data: QueryOrgForm) => {
-  selectedOrgIds.value = data && data.id || '';
+  selectedOrgIds.value = data && data.id || props.rootOrgId || '';
 }
 
 /**
@@ -97,7 +101,7 @@ watch(() => props.modelValue, () => {
  * 高度调整
  */
 watch(() => props.height, () => {
-  scrollbar.value.height = `${props.height + 24}px`;
+  scrollbar.value.height = `${props.height - 14}px`;
 }, {immediate: true});
 /**
  * 标签变更
@@ -120,33 +124,47 @@ watch(() => rightData, () => {
 
 </script>
 <template>
-  <a-layout :style="{height:`${props.height}px`}" class="choose-layout">
+  <a-layout :style="{height:`${height}px`}" class="choose-layout">
     <a-layout class="layout-content">
-      <a-layout-content :style="{height:`${props.height+24}px`}" class="content-left">
+      <a-layout-content :style="{height:`${height+24}px`}" class="content-left">
         <OrgTree :has-root="true"
-                 :height="props.height"
+                 :height="height"
                  :max-count="1"
-                 :root-selected="true"
+                 :root-org-id="rootOrgId"
+                 :parameter="parameter"
+                 :root-selected="!rootOrgId"
+                 :visible="visible"
                  @change="selectChange"/>
       </a-layout-content>
-      <a-divider :style="{height:`${props.height+48}px`}" class="content-divider" direction="vertical"/>
-      <a-layout-content :style="{height:`${props.height+24}px`}" class="content-centre">
+      <a-divider :style="{height:`${height+48}px`}" class="content-divider" direction="vertical"/>
+      <a-layout-content :style="{height:`${height+24}px`}" class="content-centre">
         <UserList v-model="selectedKeys"
-                  :height="props.height"
-                  :max-count="props.maxCount"
+                  :height="height"
+                  :max-count="maxCount"
                   :org-id="selectedOrgIds"
+                  :parameter="parameter"
+                  :visible="visible"
                   @change="userChooseChange"/>
       </a-layout-content>
-      <a-divider :style="{height:`${props.height+48}px`}" class="content-divider" direction="vertical"/>
-      <a-layout-content :style="{height:`${props.height+24}px`}" class="content-right">
-        <a-scrollbar :style="scrollbar">
+      <a-divider :style="{height:`${height+48}px`}" class="content-divider" direction="vertical"/>
+      <a-layout-content :style="{height:`${height+24}px`}" class="content-right">
+        <div style="width:100%;display: inline-flex;flex-direction: column;">
+          <div style="width:100%;display: inline-flex;align-items: center;justify-content: space-between;">
+            <span>已选择 {{ rightData.length }}</span>
+            <a-button style="padding: 0px;" type="text" @click="ev => {rightData = []}">
+              <gl-iconfont type="gl-delete"/>&nbsp;清空
+            </a-button>
+          </div>
+          <a-divider style="margin: 1px 0;border-bottom: 1px solid var(--color-neutral-5);"/>
+          <a-scrollbar :style="scrollbar">
           <span class="box-inner">
             <span v-for="(item,index) of rightData" :key="index" :title="item.name" class="box-data">
               {{ item.name }}
               <GlIconfont class="data-close" title="删除" type="gl-wrong" @click="deleteClick(item)"/>
             </span>
           </span>
-        </a-scrollbar>
+          </a-scrollbar>
+        </div>
       </a-layout-content>
     </a-layout>
   </a-layout>

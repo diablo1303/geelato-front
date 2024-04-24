@@ -9,14 +9,19 @@ import type {QueryOrgForm} from "@geelato/gl-ui";
 import OrgTree from "./tree.vue";
 
 type QueryForm = QueryOrgForm;
+type PageParams = { appId?: string; tenantCode?: string; }
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
   modelValue: {type: Array<QueryForm>, default: []},
+  parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
+  visible: {type: Boolean, default: false},// 控制弹窗隐显
   disabled: {type: Boolean, default: false},// 是否禁用
-  maxCount: {type: Number, default: 0},// 取值数量
   hasRoot: {type: Boolean, default: true},// 是否存在根节点
-  height: {type: Number, default: 420}
+  rootOrgId: {type: String, default: ''},// 根节点id
+  checkStrictly: {type: Boolean, default: true},// 是否取消父子节点关联
+  maxCount: {type: Number, default: 0},// 取值数量
+  height: {type: Number, default: 420},// 显示高度
 });
 // 标签的滚动条
 const scrollbar = ref({height: '444px', overflow: 'auto'});
@@ -78,7 +83,7 @@ watch(() => props.modelValue, () => {
  * 高度调整
  */
 watch(() => props.height, () => {
-  scrollbar.value.height = `${props.height + 24}px`;
+  scrollbar.value.height = `${props.height - 14}px`;
 }, {immediate: true});
 /**
  * 标签变更
@@ -100,25 +105,38 @@ watch(() => rightData, () => {
 }, {deep: true, immediate: true});
 </script>
 <template>
-  <a-layout :style="{height:`${props.height}px`}" class="choose-layout">
+  <a-layout :style="{height:`${height}px`}" class="choose-layout">
     <a-layout class="layout-content">
-      <a-layout-content :style="{height:`${props.height+24}px`}" class="content-left">
+      <a-layout-content :style="{height:`${height+24}px`}" class="content-left">
         <OrgTree v-model="selectedKeys"
-                 :has-root="props.hasRoot"
-                 :height="props.height"
-                 :max-count="props.maxCount"
+                 :check-strictly="checkStrictly"
+                 :has-root="hasRoot"
+                 :root-org-id="rootOrgId"
+                 :height="height"
+                 :max-count="maxCount"
+                 :parameter="parameter"
+                 :visible="visible"
                  @change="selectChange"/>
       </a-layout-content>
-      <a-divider :style="{height:`${props.height+48}px`}" class="content-divider" direction="vertical"/>
-      <a-layout-content :style="{height:`${props.height+24}px`}" class="content-right">
-        <a-scrollbar :style="scrollbar">
+      <a-divider :style="{height:`${height+48}px`}" class="content-divider" direction="vertical"/>
+      <a-layout-content :style="{height:`${height+24}px`}" class="content-right">
+        <div style="width:100%;display: inline-flex;flex-direction: column;">
+          <div style="width:100%;display: inline-flex;align-items: center;justify-content: space-between;">
+            <span>已选择 {{ rightData.length }}</span>
+            <a-button style="padding: 0px;" type="text" @click="ev => {rightData = []}">
+              <gl-iconfont type="gl-delete"/>&nbsp;清空
+            </a-button>
+          </div>
+          <a-divider style="margin: 1px 0;border-bottom: 1px solid var(--color-neutral-5);"/>
+          <a-scrollbar :style="scrollbar">
           <span class="box-inner">
             <span v-for="(item,index) of rightData" :key="index" :title="item.name" class="box-data">
               {{ item.name }}
               <GlIconfont class="data-close" title="删除" type="gl-wrong" @click="deleteClick(item)"/>
             </span>
           </span>
-        </a-scrollbar>
+          </a-scrollbar>
+        </div>
       </a-layout-content>
     </a-layout>
   </a-layout>

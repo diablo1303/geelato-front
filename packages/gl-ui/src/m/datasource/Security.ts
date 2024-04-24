@@ -54,6 +54,11 @@ export function queryTrees(pid: string) {
   return entityApi.getAxios().get<QueryOrgForm[]>(`/api/security/org/queryTree?pid=${pid}`);
 }
 
+export function queryTree(params: Record<string, any>) {
+  const records = utils.getUrlParams(params);
+  return entityApi.getAxios().get<QueryOrgForm[]>(`/api/security/org/queryTree?${records.join('&')}`);
+}
+
 export function queryUsersByParams(params: Record<string, any>) {
   return entityApi.getAxios().post<QueryUserForm[]>('/api/security/user/queryByParams', params);
 }
