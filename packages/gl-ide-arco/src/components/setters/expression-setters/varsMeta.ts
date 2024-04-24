@@ -153,7 +153,8 @@ const page = {
         {title: '页面ID', _code: 'id', _type: 'string'},
         {title: '页面名称', _code: 'label', _type: 'string'},
         {title: '页面状态', _code: 'status', _type: 'string'},
-        {title: '页面参数', _code: 'params', _type: 'array', children: []}
+        {title: '页面参数', _code: 'params', _type: 'array', children: []},
+        {title: '页面模板', _code: 'template', _type: 'object'},
         // {title: '页面树节点ID', _code: 'treeNodeId', _type: 'string'},
     ]
 }

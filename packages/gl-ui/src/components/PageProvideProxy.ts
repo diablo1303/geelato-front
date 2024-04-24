@@ -15,6 +15,16 @@ export type PageCustomType = {
 }
 
 /**
+ *  页面模板数据对象
+ *  如作为工作流模板时，用于注入到表单等组件中，如可在提交表单时，表单获取到该template对象，清楚下一步是审批通过还是审批不通过
+ */
+export interface PageTemplate {
+  // 如GlPageTemplateStateWF，基于状态机的工作流模板
+  type:string
+  [key:string]:any
+}
+
+/**
  * 页面权限管理
  */
 export class PagePermission {
@@ -110,7 +120,8 @@ export default class PageProvideProxy {
   pageStatus: string = 'read'
   pageCustom?: PageCustomType
   pagePermission?: PagePermission
-  pageTemplateName: string = ''
+  pageTemplateName?: string
+  pageTemplate: PageTemplate = {type:''}
   pageInst: ComponentInstance
   pageVueInst: ComponentInternalInstance | null
   pageParams: Array<Param> = []
@@ -211,10 +222,21 @@ export default class PageProvideProxy {
     }
   }
 
+  /**
+   * 组件卸载时，清掉引用
+   * @param componentId
+   */
+  // removeVueRef(componentId: string) {
+  //   if (componentId) {
+  //
+  //   }
+  // }
+
   removeVueInst(componentId: string) {
     if (componentId) {
       delete this.vueRefMap[componentId]
       delete this.componentInstMap[componentId]
+      // console.log('removeVueInst', componentId)
     }
   }
 
@@ -256,12 +278,21 @@ export default class PageProvideProxy {
   paramStringify = paramStringify
 
 
+
   /**
    * 设置页面参数定义
    * @param paramsMeta
    */
   setParamsMeta(paramsMeta: Array<ParamMeta>) {
     this.pageParamsMeta = paramsMeta || []
+  }
+
+  setPateTemplateName(pageTemplateName?:string){
+    this.pageTemplateName = pageTemplateName
+  }
+
+  setPateTemplate(pageTemplate:PageTemplate){
+    this.pageTemplate = pageTemplate
   }
 
   /**
@@ -465,5 +496,36 @@ export default class PageProvideProxy {
 
   isPageStatusCreateOrUpdate() {
     return this.isPageStatusCreate() || this.isPageStatusUpdate()
+  }
+
+  /**
+   *  在销毁之前调用
+   */
+  destroy(){
+    // console.log('destroy pageProvideProxy')
+    // @ts-ignore
+    this.pageCustom = null
+    // @ts-ignore
+    this.pageCustom  = null
+    // @ts-ignore
+    this.pageInst = null
+    this.pageVueInst = null
+    this.pageParams.length = 0
+    // @ts-ignore
+    this.pageParams = null
+    this.pageParamsMeta.length = 0
+    // @ts-ignore
+    this.pageParamsMeta = null
+    // @ts-ignore
+    this.pageCtx = null
+    // @ts-ignore
+    this.vueRefMap = null
+    // @ts-ignore
+    this.componentInstMap = null
+    // @ts-ignore
+    this.unMountedIds = null
+    this.onPageMountedEvents.length = 0
+    // @ts-ignore
+    this.onPageMountedEvents = null
   }
 }

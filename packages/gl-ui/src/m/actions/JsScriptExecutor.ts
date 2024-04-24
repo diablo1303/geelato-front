@@ -794,6 +794,7 @@ export class JsScriptExecutor {
   public getGl(pageProxy?: PageProvideProxy) {
     const $gl = {
       id: utils.gid('id'),
+      // TODO 去掉这种写法，需检查是否有引用
       jsEngine: this,
       // getComponentValue: this.getComponentValue,
       // setComponentValue: this.setComponentValue,
@@ -836,6 +837,7 @@ export class JsScriptExecutor {
       id: pageProxy?.pageInst.id,
       label: pageProxy?.pageInst.title,
       status: pageProxy?.pageStatus,
+      template: pageProxy?.pageTemplate,
       templateName: pageProxy?.pageTemplateName,
       params: pageProxy?.pageInst.props.params
     }

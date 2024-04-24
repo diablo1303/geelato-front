@@ -18,12 +18,15 @@ import {
   entityApi,
   useGlobal,
   UiEventNames,
-  GetEntitySaversResult, utils
+  GetEntitySaversResult,
+  utils
 } from '@geelato/gl-ui'
 import type { TabsPosition } from '@arco-design/web-vue/es/tabs/interface'
 import {
   getGraphStateByApprovalStatus,
-  getProcInstEntitySaver, GraphState, isEndApprovalStatus,
+  getProcInstEntitySaver,
+  GraphState,
+  isEndApprovalStatus,
   loadProcDefById,
   loadProcInstByBizId,
   ProcDef,
@@ -32,7 +35,8 @@ import {
   ProcTranDef
 } from './stateWfApi'
 import StateWFApprove from './StateWFApprove.vue'
-import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import type { ComponentInstance } from '@geelato/gl-ui-schema'
+import type { PageTemplate } from '@geelato/gl-ui'
 
 const global = useGlobal()
 const LayoutMode = {
@@ -106,6 +110,9 @@ const props = defineProps({
   ...mixins.props
 })
 
+// 模板数据，用于注入到表单等组件中，如可在提交表单时，表单获取到该template对象，清楚下一步是审批通过还是审批不通过
+const pageTemplate: Ref<PageTemplate> = ref({ type: 'GlPageTemplateStateWF' })
+
 // 检查输入的参数
 const hasReady = computed(() => {
   // 有模板ID
@@ -115,12 +122,13 @@ const hasReady = computed(() => {
 })
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
+pageProvideProxy.setPateTemplate(pageTemplate.value)
 const isRead = !!pageProvideProxy?.isPageStatusRead()
 
 const procInst = ref(new ProcInst())
 
 // 是否开始状态
-const isStart= ref(false)
+const isStart = ref(false)
 // 是否新建流程，isStart不一定isNew
 const isNew = ref(false)
 // 图标状态
@@ -142,19 +150,28 @@ const remark = ref('')
 const attachIds = ref('')
 const remarkLabel = ref('')
 
+watch(
+  [selectedTran, remark, attachIds],
+  () => {
+    pageTemplate.value.selectedTran = selectedTran.value
+    pageTemplate.value.remark = remark.value
+    pageTemplate.value.attachIds = attachIds.value
+  },
+  { deep: true, immediate: true }
+)
 /**
  *  业务表单的组件id
  *  由于
  */
-const bizFormId = computed(()=>{
-  const findEntityForm = (inst:ComponentInstance):ComponentInstance|undefined=>{
-    if(inst.componentName === 'GlEntityForm'){
+const bizFormId = computed(() => {
+  const findEntityForm = (inst: ComponentInstance): ComponentInstance | undefined => {
+    if (inst.componentName === 'GlEntityForm') {
       return inst
     }
     let found
-    for(let subInst of inst.children){
+    for (let subInst of inst.children) {
       found = findEntityForm(subInst)
-      if(found){
+      if (found) {
         return found
       }
     }
@@ -226,10 +243,12 @@ const showApproveModal = () => {
  * 通过业务状态ID获取标准审批状态
  * @param stateId
  */
-const getApprovalStatus = (stateId:string)=>{
-  return  procDef.value.states.find((state)=>{
-    return state.id === stateId
-  })?.approvalStatus || '0'
+const getApprovalStatus = (stateId: string) => {
+  return (
+    procDef.value.states.find((state) => {
+      return state.id === stateId
+    })?.approvalStatus || '0'
+  )
 }
 
 /**
@@ -247,8 +266,10 @@ const getEntitySaver = () => {
   procInst.value.procDefId = procDefId.value!
   procInst.value.currentStateId = selectedTran.value?.targetStateId!
   procInst.value.approvalStatus = getApprovalStatus(selectedTran.value?.targetStateId!)
-  procInst.value.startedAt =  procInst.value.startedAt || '$fn.now'
-  procInst.value.endAt = isEndApprovalStatus(selectedTran.value?.targetStateId!)?'$fn.now':undefined
+  procInst.value.startedAt = procInst.value.startedAt || '$fn.now'
+  procInst.value.endAt = isEndApprovalStatus(selectedTran.value?.targetStateId!)
+    ? '$fn.now'
+    : undefined
 
   procTask.value.procDefId = procDefId.value!
   procTask.value.procInstId = procInst.value.id || '$parent.id'
@@ -287,7 +308,9 @@ const stateWFApprove = ref()
  * @param args GetEntitySaversResult
  */
 const onCreatedEntitySavers = (args: any) => {
+  console.log('onCreatedEntitySavers args:', args)
   // 检查是否为工作流的主表单
+  // TODO
 
   // 检查工作流模板中的录入
   const result: GetEntitySaversResult = args.result
@@ -309,14 +332,12 @@ const onCreatedEntitySavers = (args: any) => {
   // 2、不通过则返回
   if (result.error) return
 
-
   // 将工作流信息，作为业务子表一起保存
-  result.values[0].children.push( getEntitySaver())
+  result.values[0].children.push(getEntitySaver())
   // 设置业务表的工作流相关状态信息，依赖于getEntitySaver()，中的procTask，在其它执行
   // 对于状态机的工作流场景，不设置wfProcId的值result.values[0].record.wfProcId
   result.values[0].record.wfApprovalStatus = getApprovalStatus(selectedTran.value?.targetStateId!)
   result.values[0].record.wfExtInfo = procTask.value.targetStateId
-
 }
 
 const pageParams = computed(() => {
@@ -350,7 +371,7 @@ onUnmounted(() => {
 
 <template>
   <div class="gl-page-template-state-wf" style="width: 100%">
-    <div v-if="hasReady" >
+    <div v-if="hasReady">
       <a-affix :offsetTop="65" style="margin-bottom: 10px">
         <div class="gl-header" :class="{ 'gl-not-rt-fix': !glIsRuntime }">
           <a-page-header :title="label" :subtitle="subLabel" :show-back="false">
@@ -401,123 +422,127 @@ onUnmounted(() => {
           </a-page-header>
         </div>
       </a-affix>
-      <div class="gl-body" style="position: relative;display: flex">
-          <div style="overflow: auto;flex:1">
-            <div
-                v-if="enabledStatusImage"
-                class="background-svg-container"
-                :class="{ ['background-svg-' + graphState]: true }"
-            ></div>
-            <a-tabs v-if="layout === LayoutMode.tabs" :position="tabsPosition">
-              <a-tab-pane key="1">
-                <template #title>
-                  <GlIconfont type="gl-form" text="流程表单"></GlIconfont>
-                </template>
-                <div>
-                  <!--  作为模板时，用slot-->
-                  <template v-if="slotMode">
-                    <slot></slot>
-                  </template>
-                  <template v-else>
-                    <!--  作为组件时，用component，这里的inst一般为GlPage-->
-                    <component
-                        v-if="!slotMode"
-                        :is="'GlInsts' + glRuntimeFlag"
-                        :glComponentInst="glComponentInst"
-                        :glIsRuntime="glIsRuntime"
-                        :glLoopItem="glLoopItem"
-                        :glLoopIndex="glLoopIndex"
-                        :glRuntimeFlag="glRuntimeFlag"
-                    />
-                  </template>
-                </div>
-              </a-tab-pane>
-<!--              <a-tab-pane key="2">-->
-<!--                <template #title>-->
-<!--                  <GlIconfont type="gl-affix" text="表单附件"></GlIconfont>-->
-<!--                </template>-->
-<!--                <div>-->
-<!--                  <GlPageViewer-->
-<!--                      pageId="5064173938314186753"-->
-<!--                      :pageProps="{ params: pageParams}"-->
-<!--                      :glIsRuntime="true"-->
-<!--                      glRuntimeFlag="Runtime"-->
-<!--                  ></GlPageViewer>-->
-<!--                </div>-->
-<!--              </a-tab-pane>-->
-              <a-tab-pane key="3">
-                <template #title>
-                  <GlIconfont type="gl-timeline" text="审批记录"></GlIconfont>
-                </template>
-                <div>
-                  <GlPageViewer v-if="procInst.id"
-                                pageId="5037920844148510721"
-                                :pageProps="{ params: pageParams}"
-                                :glIsRuntime="true"
-                                glRuntimeFlag="Runtime"
-                  ></GlPageViewer>
-                  <a-empty v-else></a-empty>
-                </div>
-              </a-tab-pane>
-              <!--          <a-tab-pane key="4">-->
-              <!--            <template #title>-->
-              <!--              <GlIconfont type="gl-flow" text="关联流程"></GlIconfont>-->
-              <!--            </template>-->
-              <!--            <div>-->
-              <!--              <a-empty></a-empty>-->
-              <!--            </div>-->
-              <!--          </a-tab-pane>-->
-            </a-tabs>
-            <a-collapse v-else-if="layout === LayoutMode.collapse" :default-active-key="['1']">
-              <a-collapse-item header="流程表单" key="1" class="gl-flow-form">
-                <template #expand-icon="{ active }">
-                  <GlIconfont type="gl-form"></GlIconfont>
-                </template>
-                <div>
-                  <slot></slot>
-                </div>
-              </a-collapse-item>
-              <a-collapse-item header="审批记录" key="3" class="gl-flow-timeline">
-                <template #expand-icon="{ active }">
-                  <GlIconfont type="gl-timeline"></GlIconfont>
-                </template>
-                <div>
-                  <GlPageViewer v-if="procInst.id"
-                                pageId="5037920844148510721"
-                                :pageProps="{ params: pageParams}"
-                                :glIsRuntime="true"
-                                glRuntimeFlag="Runtime"
-                  ></GlPageViewer>
-                  <a-empty v-else></a-empty>
-                </div>
-              </a-collapse-item>
-              <!--          <a-collapse-item header="关联流程" key="4" class="gl-flow-process">-->
-              <!--            <template #expand-icon="{ active }">-->
-              <!--              <GlIconfont type="gl-flow"></GlIconfont>-->
-              <!--            </template>-->
-              <!--            <div>-->
-              <!--              <a-empty></a-empty>-->
-              <!--            </div>-->
-              <!--          </a-collapse-item>-->
-            </a-collapse>
-          </div>
-          <div v-if="!isRead" style="width: 400px">
-            <a-card size="small" style="box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);">
+      <div class="gl-body" style="position: relative; display: flex">
+        <div style="overflow: auto; flex: 1; margin-right: 0.5em">
+          <div
+            v-if="enabledStatusImage"
+            class="background-svg-container"
+            :class="{ ['background-svg-' + graphState]: true }"
+          ></div>
+          <a-tabs v-if="layout === LayoutMode.tabs" :position="tabsPosition">
+            <a-tab-pane key="1">
               <template #title>
-                <GlIconfont type="gl-right" :text="isStart ? '申请' : '审批'"></GlIconfont>
+                <GlIconfont type="gl-form" text="流程表单"></GlIconfont>
               </template>
-              <StateWFApprove
-                  ref="stateWFApprove"
-                  v-model:tran="selectedTran"
-                  v-model:remark="remark"
-                  v-model:attachIds="attachIds"
-                  :remarkLabel="remarkLabel"
-                  :next-trans="nextTrans"
-              ></StateWFApprove>
-            </a-card>
-          </div>
+              <div style="padding: 0 2em">
+                <!--  作为模板时，用slot-->
+                <template v-if="slotMode">
+                  <slot></slot>
+                </template>
+                <template v-else>
+                  <!--  作为组件时，用component，这里的inst一般为GlPage-->
+                  <component
+                    style="overflow: auto"
+                    :pageTemplate="pageTemplate"
+                    v-if="!slotMode"
+                    :is="'GlInsts' + glRuntimeFlag"
+                    :glComponentInst="glComponentInst"
+                    :glIsRuntime="glIsRuntime"
+                    :glLoopItem="glLoopItem"
+                    :glLoopIndex="glLoopIndex"
+                    :glRuntimeFlag="glRuntimeFlag"
+                  />
+                </template>
+              </div>
+            </a-tab-pane>
+            <!--              <a-tab-pane key="2">-->
+            <!--                <template #title>-->
+            <!--                  <GlIconfont type="gl-affix" text="表单附件"></GlIconfont>-->
+            <!--                </template>-->
+            <!--                <div>-->
+            <!--                  <GlPageViewer-->
+            <!--                      pageId="5064173938314186753"-->
+            <!--                      :pageProps="{ params: pageParams}"-->
+            <!--                      :glIsRuntime="true"-->
+            <!--                      glRuntimeFlag="Runtime"-->
+            <!--                  ></GlPageViewer>-->
+            <!--                </div>-->
+            <!--              </a-tab-pane>-->
+            <a-tab-pane key="3">
+              <template #title>
+                <GlIconfont type="gl-timeline" text="审批记录"></GlIconfont>
+              </template>
+              <div>
+                <GlPageViewer
+                  v-if="procInst.id"
+                  pageId="5037920844148510721"
+                  :pageProps="{ params: pageParams }"
+                  :glIsRuntime="true"
+                  glRuntimeFlag="Runtime"
+                ></GlPageViewer>
+                <a-empty v-else></a-empty>
+              </div>
+            </a-tab-pane>
+            <!--          <a-tab-pane key="4">-->
+            <!--            <template #title>-->
+            <!--              <GlIconfont type="gl-flow" text="关联流程"></GlIconfont>-->
+            <!--            </template>-->
+            <!--            <div>-->
+            <!--              <a-empty></a-empty>-->
+            <!--            </div>-->
+            <!--          </a-tab-pane>-->
+          </a-tabs>
+          <a-collapse v-else-if="layout === LayoutMode.collapse" :default-active-key="['1']">
+            <a-collapse-item header="流程表单" key="1" class="gl-flow-form">
+              <template #expand-icon="{ active }">
+                <GlIconfont type="gl-form"></GlIconfont>
+              </template>
+              <div>
+                <slot></slot>
+              </div>
+            </a-collapse-item>
+            <a-collapse-item header="审批记录" key="3" class="gl-flow-timeline">
+              <template #expand-icon="{ active }">
+                <GlIconfont type="gl-timeline"></GlIconfont>
+              </template>
+              <div>
+                <GlPageViewer
+                  v-if="procInst.id"
+                  pageId="5037920844148510721"
+                  :pageProps="{ params: pageParams }"
+                  :glIsRuntime="true"
+                  glRuntimeFlag="Runtime"
+                ></GlPageViewer>
+                <a-empty v-else></a-empty>
+              </div>
+            </a-collapse-item>
+            <!--          <a-collapse-item header="关联流程" key="4" class="gl-flow-process">-->
+            <!--            <template #expand-icon="{ active }">-->
+            <!--              <GlIconfont type="gl-flow"></GlIconfont>-->
+            <!--            </template>-->
+            <!--            <div>-->
+            <!--              <a-empty></a-empty>-->
+            <!--            </div>-->
+            <!--          </a-collapse-item>-->
+          </a-collapse>
+        </div>
+        <div v-if="!isRead" style="width: 400px">
+          <a-card size="small" style="box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1)">
+            <template #title>
+              <GlIconfont type="gl-right" :text="isStart ? '申请' : '审批'"></GlIconfont>
+            </template>
+            <StateWFApprove
+              ref="stateWFApprove"
+              v-model:tran="selectedTran"
+              v-model:remark="remark"
+              v-model:attachIds="attachIds"
+              :remarkLabel="remarkLabel"
+              :next-trans="nextTrans"
+            ></StateWFApprove>
+          </a-card>
         </div>
       </div>
+    </div>
     <template v-else>
       在打开页面组件的页面参数中，需要传入以下参数：
       <br />
@@ -586,20 +611,20 @@ onUnmounted(() => {
     }
   }
 
-  .gl-flow-form{
-    .arco-collapse-item-header{
-      .arco-collapse-item-header-title{
+  .gl-flow-form {
+    .arco-collapse-item-header {
+      .arco-collapse-item-header-title {
         font-weight: 600;
       }
     }
   }
-  .gl-flow-timeline{
-    .arco-collapse-item-header{
-      .arco-collapse-item-header-title{
+
+  .gl-flow-timeline {
+    .arco-collapse-item-header {
+      .arco-collapse-item-header-title {
         font-weight: 600;
       }
     }
   }
 }
-
 </style>
