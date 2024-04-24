@@ -6,14 +6,13 @@ export default {
 <script lang="ts" setup>
 import {ref, watch, computed} from "vue";
 import {useI18n} from 'vue-i18n';
-import {FormInstance, Message, Modal} from "@arco-design/web-vue";
-import {createOrUpdateEncoding as createOrUpdateForm, EncodingItem, getEncoding as getForm, QueryEncodingForm as QueryForm} from '@/api/encoding'
+import cloneDeep from "lodash/cloneDeep";
+import {FormInstance, Modal, TableData, SelectOptionData} from "@arco-design/web-vue";
+import type {CascaderOption} from "@arco-design/web-vue";
 import {formatTime, generateRandom} from '@/utils/strings';
-import {dateTypeOptions, enableStatusOptions, separatorsOptions, serialTypeOptions} from "@/views/security/encoding/searchTable";
-import {TableData} from "@arco-design/web-vue/es/table/interface";
-import {SelectOptionData} from "@arco-design/web-vue/es/select/interface";
-import {QueryAppForm, QueryAppForm as QuerySelectForm, queryApps as querySelectOptions} from "@/api/security";
-import {getAppSelectOptions} from "@/api/application";
+import {QueryAppForm, getAppSelectOptions} from "@/api/application";
+import {createOrUpdateEncoding as createOrUpdateForm, EncodingItem, getEncoding as getForm, QueryEncodingForm as QueryForm} from '@/api/encoding'
+import {dateTypeOptions, enableStatusOptions, separatorsOptions, serialTypeOptions, variableTypeOptions} from "@/views/security/encoding/searchTable";
 
 // 页面所需 参数
 type PageParams = {
@@ -51,6 +50,8 @@ const generateFormData = (): QueryForm => {
 }
 const formData = ref(generateFormData());
 const appSelectOptions = ref<QueryAppForm[]>([]);
+const argumentReg = /^[a-zA-Z][a-zA-Z0-9_]+$/;
+const variableOptions = ref<CascaderOption[]>([]);
 
 /**
  * 新增或更新接口
@@ -107,7 +108,11 @@ const isShowTable = computed(() => {
 });
 const serialDigitOptions = ref<number[]>([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]);
 const modelItemTypeOptions = computed<SelectOptionData[]>(() => {
-  const options = [{label: 'security.encoding.index.form.itemType.constant', value: 'constant'}];
+  const options = [
+    {label: 'security.encoding.index.form.itemType.constant', value: 'constant'},
+    {label: 'security.encoding.index.form.itemType.variable', value: 'variable'},
+    {label: 'security.encoding.index.form.itemType.argument', value: 'argument'},
+  ];
   const isExist = {date: false, serial: false, business: false};
   if (templateData.value.length > 0) {
     // eslint-disable-next-line no-restricted-syntax
@@ -127,28 +132,33 @@ const modelItemTypeOptions = computed<SelectOptionData[]>(() => {
  * @param type
  */
 const addTemplate = (type: string) => {
-  if (validateTemplate()) {
-    switch (type) {
-      case 'constant':
-        templateData.value.push({id: generateRandom(), itemType: type, seqNo: templateData.value.length + 1, constantValue: ''} as unknown as EncodingItem);
-        break;
-      case 'serial':
-        templateData.value.push({
-          id: generateRandom(),
-          itemType: type,
-          seqNo: templateData.value.length + 1,
-          serialDigit: 4,
-          serialType: 'random'
-        } as unknown as EncodingItem);
-        break;
-      case 'date':
-        templateData.value.push({id: generateRandom(), itemType: type, seqNo: templateData.value.length + 1, dateType: 'yyyyMMdd'} as unknown as EncodingItem);
-        break;
-      default:
-        break;
-    }
-    exampleChange();
+  switch (type) {
+    case 'constant':
+      templateData.value.push({id: generateRandom(), itemType: type, seqNo: templateData.value.length + 1, constantValue: ''} as unknown as EncodingItem);
+      break;
+    case 'variable':
+      templateData.value.push({id: generateRandom(), itemType: type, seqNo: templateData.value.length + 1, constantValue: ''} as unknown as EncodingItem);
+      break;
+    case 'argument':
+      templateData.value.push({id: generateRandom(), itemType: type, seqNo: templateData.value.length + 1, constantValue: ''} as unknown as EncodingItem);
+      break;
+    case 'serial':
+      templateData.value.push({
+        id: generateRandom(),
+        itemType: type,
+        seqNo: templateData.value.length + 1,
+        serialDigit: 4,
+        serialType: 'random'
+      } as unknown as EncodingItem);
+      break;
+    case 'date':
+      templateData.value.push({id: generateRandom(), itemType: type, seqNo: templateData.value.length + 1, dateType: 'yyyyMMdd'} as unknown as EncodingItem);
+      break;
+
+    default:
+      break;
   }
+  exampleChange();
 }
 /**
  * 选择分隔符
@@ -196,6 +206,14 @@ const exampleChange = () => {
           if (item.constantValue)
             example.push(item.constantValue);
           break;
+        case 'variable':
+          if (item.constantValue)
+            example.push(`[${item.constantValue}]`);
+          break;
+        case 'argument':
+          if (item.constantValue)
+            example.push(`{${item.constantValue}}`);
+          break;
         case 'serial':
           // eslint-disable-next-line no-nested-ternary
           if (serialDigitOptions.value.includes(serialDigit) && item.serialType)
@@ -214,16 +232,50 @@ const exampleChange = () => {
 }
 /**
  * 固定字段值变更
- * @param ev
+ * @param record
  */
-const inputValueBlur = (ev?: FocusEvent) => {
+const constantInputValueBlur = (record: EncodingItem) => {
+  record.validate = !!record.constantValue;
+  record.errorMsg = record.validate === false ? t('security.encoding.index.form.validate.warning') : '';
+  exampleChange();
+}
+/**
+ * 系统变量变更
+ * @param record
+ */
+const variableTypeChange = (record: EncodingItem) => {
+  record.validate = !!record.constantValue;
+  record.errorMsg = record.validate === false ? t('security.encoding.index.form.validate.warning') : '';
+  exampleChange();
+}
+/**
+ *
+ * @param record
+ */
+const argumentInputValueBlur = (record: EncodingItem) => {
+  record.validate = !!record.constantValue;
+  record.errorMsg = record.validate === false ? t('security.encoding.index.form.validate.warning') : '';
+  if (record.validate !== false) {
+    record.validate = (!(record.constantValue && !argumentReg.test(record.constantValue)));
+    record.errorMsg = record.validate === false ? t('security.encoding.index.form.itemType.argument.placeholder') : '';
+  }
   exampleChange();
 }
 /**
  * 日期类型变更
  */
-const dateTypeChange = () => {
+const dateTypeChange = (record: EncodingItem) => {
+  record.validate = !!record.dateType;
+  record.errorMsg = record.validate === false ? t('security.encoding.index.form.validate.warning') : '';
   exampleChange();
+}
+/**
+ * 系统变量展示
+ * @param options
+ */
+const formatCascader = (options: CascaderOption[]) => {
+  const labels = options.map(option => t(`${option.label}`))
+  return labels.join(' / ')
 }
 /**
  * 序列号，位数、类型 设置值
@@ -251,20 +303,42 @@ const validateTemplate = () => {
   if (templateData.value.length > 0) {
     // eslint-disable-next-line no-restricted-syntax
     for (const item of templateData.value) {
-      if ((item.itemType === 'constant' && item.constantValue) ||
-          (item.itemType === 'serial' && serialDigitOptions.value.includes(item.serialDigit) && item.serialType) ||
-          (item.itemType === 'date' && item.dateType)) {
-        // eslint-disable-next-line no-continue
-        continue;
+      item.validate = true;
+      // 校验规则
+      if (item.itemType === 'argument' && item.constantValue && !argumentReg.test(item.constantValue)) {
+        isValid = false;
+        item.validate = false;
+        item.errorMsg = item.validate === false ? t('security.encoding.index.form.itemType.argument.placeholder') : '';
       }
-      isValid = false;
-      break;
+      if (['constant', 'variable', 'argument'].includes(item.itemType) && !item.constantValue) {
+        isValid = false;
+        item.validate = false;
+        item.errorMsg = item.validate === false ? t('security.encoding.index.form.validate.warning') : '';
+      }
+      if (item.itemType === 'serial' && (!serialDigitOptions.value.includes(item.serialDigit) || !item.serialType)) {
+        isValid = false;
+        item.validate = false;
+        item.errorMsg = item.validate === false ? t('security.encoding.index.form.validate.warning') : '';
+      }
+      if (item.itemType === 'date' && !item.dateType) {
+        isValid = false;
+        item.validate = false;
+        item.errorMsg = item.validate === false ? t('security.encoding.index.form.validate.warning') : '';
+      }
     }
   }
-  if (!isValid) {
-    Message.warning(t('security.encoding.index.form.validate.warning'));
-  }
+
   return isValid;
+}
+
+const formatVariableTypeOptions = (options: CascaderOption[]) => {
+  if (options && options.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of options) {
+      item.label = t(`${item.label}`);
+      formatVariableTypeOptions(item.children || []);
+    }
+  }
 }
 
 /**
@@ -285,6 +359,8 @@ const saveOrUpdate = (successBack?: any, failBack?: any) => {
  * 页面加载方法，对外提供
  */
 const loadPage = () => {
+  variableOptions.value = cloneDeep(variableTypeOptions.value);
+  formatVariableTypeOptions(variableOptions.value);
   // 应用信息
   getAppSelectOptions({
     id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
@@ -389,13 +465,31 @@ defineExpose({saveOrUpdate, loadPage});
               </a-table-column>
               <a-table-column :ellipsis="true" :title="$t('security.dictItem.index.form.itemContent')" :tooltip="true" :width="240" data-index="itemContent">
                 <template #cell="{record}">
+                  <!--        固定字符          -->
                   <a-input
                       v-if="record.itemType==='constant'&&formState!=='view'"
                       v-model.trim="record.constantValue"
-                      :max-length="32"
-                      :placeholder="$t('security.encoding.index.form.itemType.constant.placeholder')"
-                      @blur="inputValueBlur($event)"/>
+                      :error="record.validate===false"
+                      :max-length="32" :placeholder="$t('security.encoding.index.form.itemType.constant.placeholder')"
+                      allow-clear
+                      @blur="constantInputValueBlur(record)"/>
                   <span v-if="record.itemType==='constant'&&formState==='view'">{{ record.constantValue }}</span>
+                  <!--        系统变量          -->
+                  <a-cascader v-if="record.itemType==='variable'&&formState!=='view'" v-model="record.constantValue"
+                              :error="record.validate===false" :format-label="formatCascader" :options="variableOptions"
+                              :placeholder="$t('security.encoding.index.form.itemType.variable.placeholder')"
+                              allow-clear allow-search expand-trigger="hover" @change="variableTypeChange(record)"/>
+                  <span v-if="record.itemType==='variable'&&formState==='view'">{{ record.constantValue }}</span>
+                  <!--        传递参数          -->
+                  <a-input
+                      v-if="record.itemType==='argument'&&formState!=='view'"
+                      v-model.trim="record.constantValue"
+                      :error="record.validate===false"
+                      :max-length="32" :placeholder="$t('security.encoding.index.form.itemType.argument.placeholder')"
+                      allow-clear
+                      @blur="argumentInputValueBlur(record)"/>
+                  <span v-if="record.itemType==='argument'&&formState==='view'">{{ record.constantValue }}</span>
+                  <!--        序列号（唯一）          -->
                   <a-space v-if="record.itemType==='serial'">
                     <a-dropdown-button>
                       {{ `${record.serialDigit} ` }}{{ $t('security.encoding.index.form.itemType.serial.digit') }}
@@ -428,10 +522,15 @@ defineExpose({saveOrUpdate, loadPage});
                       </template>
                     </a-dropdown-button>
                   </a-space>
-                  <a-select v-if="record.itemType==='date'&&formState!=='view'" v-model="record.dateType" @change="dateTypeChange">
-                    <a-option v-for="item of dateTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+                  <!--        日期          -->
+                  <a-select v-if="record.itemType==='date'&&formState!=='view'" v-model="record.dateType"
+                            :error="record.validate===false" @change="dateTypeChange(record)">
+                    <a-option v-for="(item,index) of dateTypeOptions" :key="index" :label="$t(`${item.label}`)" :value="item.value"/>
                   </a-select>
                   <span v-if="record.itemType==='date'&&formState==='view'">{{ record.dateType }}</span>
+                  <div v-if="record.validate===false" style="min-height: 20px;color: rgb(var(--danger-6));font-size: 12px;line-height: 20px;">
+                    {{ record.errorMsg }}
+                  </div>
                 </template>
               </a-table-column>
               <a-table-column v-if="formState!=='view'" :title="$t('model.column.index.form.operations')" :width="30" align="center"

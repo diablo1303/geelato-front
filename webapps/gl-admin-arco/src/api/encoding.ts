@@ -16,6 +16,9 @@ export interface EncodingItem {
   // 序列号 serial
   serialDigit: number;
   serialType: string;
+  // 参数 argument
+  validate: boolean;
+  errorMsg: string;
 }
 
 export interface QueryEncodingForm {
