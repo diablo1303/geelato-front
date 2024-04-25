@@ -320,4 +320,13 @@ export default {
   'model.form.rules.match.viewSql.match': 'Match：’select * from table_name ...‘',
   'model.form.rules.match.length.title': 'length',
   'model.form.rules.match.max.title': 'maxNumber',
+
+  'model.list.role.permission.tip.1': 'If multiple roles of a user have access to model M:',
+  'model.list.role.permission.tip.2': 'Give priority to roles with significant power; If the weight is the same, take the first role.',
+  'model.list.role.permission.tip.3': 'In the read permission of the role, select a rule with the following priority to query filtered data:',
+  'model.list.role.permission.tip.4': 'Custom > See All > See Company/Division > See Department > See Yourself.',
+  'model.list.role.permission.tip.5': 'For example, user Zhang SAN has the following roles and read permissions:',
+  'model.list.role.permission.tip.6': 'Role A (Weight 5: <Custom> , <See All>).',
+  'model.list.role.permission.tip.7': 'Role B (Weight 10, <See Department> , <See Yourself>).',
+  'model.list.role.permission.tip.8': 'Finally, the permission of [ Role B > See Department ] is obtained.',
 };

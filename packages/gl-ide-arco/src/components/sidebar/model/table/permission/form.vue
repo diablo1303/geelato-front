@@ -445,12 +445,17 @@ watch(() => props.height, (val) => {
     <template #columns>
       <a-table-column align="center">
         <template #title>
-          <a-popover position="tl">
+          <a-popover position="right">
             角色&nbsp;<gl-iconfont type="gl-warning-circle" style="color: #ff696d"/>
             <template #content>
-              <p>角色A ，权重 5，自定义</p>
-              <p>角色B ，权重 10 ，看自己</p>
-              <p>这里取的是角色B的看自己</p>
+              <p style="margin: 0px 0px;">若用户的多个角色都对模型M有读取权限：</p>
+              <p style="margin: 0px 0px;font-weight: bold;">优先采用权重大的角色；若权重一样时，取第一个角色。</p>
+              <p style="margin: 0px 0px;">在角色的读取权限中，按如下优先级选择一条规则查询过滤数据：</p>
+              <p style="margin: 0px 0px;font-weight: bold;">自定义 > 看全部 > 看公司/事业部 > 看部门 > 看自己。</p>
+              <p style="margin: 0px 0px;">例如：用户“张三”有以下角色及其读取权限：</p>
+              <p style="margin: 0px 0px;">角色A（权重 5，自定义查看权限、看全部），</p>
+              <p style="margin: 0px 0px;">角色B（权重 10，看部门、看自己），</p>
+              <p style="margin: 0px 0px;">则最终取【角色B > 看部门】的权限。</p>
             </template>
           </a-popover>
         </template>

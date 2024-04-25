@@ -292,12 +292,17 @@ watch(() => props, (val) => {
     <template #columns>
       <a-table-column :ellipsis="true" :tooltip="false" :width="210" data-index="name" fixed="left">
         <template #title>
-          <a-popover position="tl">
+          <a-popover position="right">
             {{ $t('model.table.permission.index.list.role') }}&nbsp;<icon-info-circle style="color: #ff696d"/>
             <template #content>
-              <p>角色A ，权重 5，自定义</p>
-              <p>角色B ，权重 10 ，看自己</p>
-              <p>这里取的是角色B的看自己</p>
+              <p style="margin: 0px 0px;">{{ $t('model.list.role.permission.tip.1') }}</p>
+              <p style="margin: 0px 0px;font-weight: bold;">{{ $t('model.list.role.permission.tip.2') }}</p>
+              <p style="margin: 0px 0px;">{{ $t('model.list.role.permission.tip.3') }}</p>
+              <p style="margin: 0px 0px;font-weight: bold;">{{ $t('model.list.role.permission.tip.4') }}</p>
+              <p style="margin: 0px 0px;">{{ $t('model.list.role.permission.tip.5') }}</p>
+              <p style="margin: 0px 0px;">{{ $t('model.list.role.permission.tip.6') }}</p>
+              <p style="margin: 0px 0px;">{{ $t('model.list.role.permission.tip.7') }}</p>
+              <p style="margin: 0px 0px;">{{ $t('model.list.role.permission.tip.8') }}</p>
             </template>
           </a-popover>
         </template>

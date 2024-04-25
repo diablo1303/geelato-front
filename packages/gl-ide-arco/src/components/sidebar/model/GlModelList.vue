@@ -8,27 +8,34 @@ export default {
 </script>
 <script lang="ts" setup>
 import {type Ref, ref, watch} from 'vue'
-import {modelApi, type QueryAppTableForm, type QueryTableForm} from '@geelato/gl-ui'
-import {entityApi, EntityReader, EntityReaderParam, useGlobal, utils} from '@geelato/gl-ui'
 import {useAppStore} from '@geelato/gl-ide'
+import type {QueryAppTableForm, QueryTableForm, QueryViewForm} from '@geelato/gl-ui'
+import {modelApi, entityApi, EntityReader, EntityReaderParam, useGlobal, utils} from '@geelato/gl-ui'
+import {approvalStatusOptions} from "./application/searchTable";
+import {viewTypeOptions} from "./view/searchTable";
 import GlModelTableModal from "./table/modal.vue";
 import GlModelTableTabs from "./table/tableTabs.vue";
 import GlModelTableAppForm from "./application/form.vue";
-import {approvalStatusOptions} from "./application/searchTable";
+import GlModelTableViewForm from "./view/form.vue";
 
 const props = defineProps({
   recordId: String
 })
 const global = useGlobal()
 const appStore = useAppStore()
+// 应用模型
 const allItems: Ref<Item[]> = ref([])
 const renderItems: Ref<Item[]> = ref([])
+// 模型授权
 const allAccreditItems: Ref<QueryAppTableForm[]> = ref([])
 const renderAccreditItems: Ref<QueryAppTableForm[]> = ref([])
 const allTableAppItems: Ref<QueryAppTableForm[]> = ref([]);
+// 应用视图
+const allViewItems: Ref<QueryViewForm[]> = ref([])
+const renderViewItems: Ref<QueryViewForm[]> = ref([])
 const searchText = ref('')
 const orderBy = ref('updateAt')
-const activeKey = ref<number[]>([1, 2]);
+const activeKey = ref<number[]>([1, 2, 3]);
 
 const generateRenderItems = () => {
   // 如果有排序值，则先对数据进行排序
@@ -82,14 +89,42 @@ const generateRenderAccreditItems = () => {
     activeKey.value.push(1);
   }
 }
+const generateRenderViewItems = () => {
+  // 如果有排序值，则先对数据进行排序
+  if (orderBy.value === 'updateAt') {
+    // @ts-ignore 从最新到最老
+    allViewItems.value.sort((a, b) => b[orderBy.value].localeCompare(a[orderBy.value]))
+  } else if (orderBy.value === 'entityName') {
+    // @ts-ignore 从小到大
+    allViewItems.value.sort((a, b) => a['viewName'].localeCompare(b['viewName']))
+  }
+
+  if (!searchText.value) {
+    renderViewItems.value.length = 0
+    renderViewItems.value.push(...allViewItems.value)
+  } else {
+    renderViewItems.value = allViewItems.value.filter((item) => {
+      return (
+          item.viewName.indexOf(searchText.value) != -1 || item.viewName?.indexOf(searchText.value) != -1
+      )
+    })
+  }
+
+  activeKey.value = activeKey.value.filter(item => item !== 3);
+  if (renderViewItems.value.length > 0) {
+    activeKey.value.push(3);
+  }
+}
 
 watch(searchText, () => {
   generateRenderItems()
   generateRenderAccreditItems()
+  generateRenderViewItems()
 })
 watch(orderBy, () => {
   generateRenderItems()
   generateRenderAccreditItems()
+  generateRenderViewItems()
 })
 type Item = {
   id: string
@@ -150,12 +185,27 @@ const fetchAccreditData = async () => {
   }
 }
 
+const fetchViewData = async () => {
+  if (!appStore.currentApp.id) {
+    return
+  }
+  try {
+    const {data} = await modelApi.queryViews({appId: appStore.currentApp.id});
+    allViewItems.value = data;
+  } catch (err) {
+    allViewItems.value = [];
+  } finally {
+    generateRenderViewItems()
+  }
+}
+
 const changeTab = (value: any) => {
   orderBy.value = value
 }
 
 fetchData()
 fetchAccreditData()
+fetchViewData()
 
 /* 模型tab页所需参数 */
 const formTabsParams = ref({
@@ -207,6 +257,11 @@ const aTableFormSaveSuccess = (data: QueryAppTableForm, action: string) => {
   fetchAccreditData();
 }
 
+const viewFormSaveSuccess = (data: QueryViewForm, action: string) => {
+  // 刷新模型列表
+  fetchViewData();
+}
+
 const atFormParams = ref({
   id: '', visible: false, formState: 'add', formCol: 1, width: '', title: '',
   parameter: {
@@ -242,6 +297,35 @@ const addAppTableForm = (ev?: MouseEvent) => {
   atFormParams.value.formState = 'add';
   atFormParams.value.visible = true;
 }
+
+
+const vFormParams = ref({
+  id: '', visible: false, formState: 'add', formCol: 2, title: '', width: '76%',
+  parameter: {
+    connectId: '', entityName: '',
+    appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode
+  },
+});
+const addViewForm = () => {
+  Object.assign(vFormParams.value, {
+    id: '', visible: true, formState: 'add', title: '新建模型视图',
+    parameter: {
+      connectId: '', entityName: '',
+      appId: appStore.currentApp.id,
+      tenantCode: appStore.currentApp.tenantCode
+    }
+  });
+}
+const editViewForm = (record: QueryViewForm) => {
+  Object.assign(vFormParams.value, {
+    id: record.id, visible: true, formState: 'edit', title: '编辑模型视图',
+    parameter: {
+      connectId: record.connectId, entityName: record.entityName,
+      appId: appStore.currentApp.id,
+      tenantCode: appStore.currentApp.tenantCode
+    }
+  });
+}
 </script>
 
 <template>
@@ -251,7 +335,7 @@ const addAppTableForm = (ev?: MouseEvent) => {
       <a-tab-pane key="entityName" title="按名称排序"/>
       <template #extra>
         <a-tag color="arcoblue" size="small" style="margin-right: 8px" title="当前应用的模型总数量">
-          {{ allItems.length + allAccreditItems.length }}
+          {{ allItems.length + allAccreditItems.length + allViewItems.length }}
         </a-tag>
       </template>
     </a-tabs>
@@ -330,6 +414,33 @@ const addAppTableForm = (ev?: MouseEvent) => {
           </template>
         </a-list>
       </a-collapse-item>
+      <a-collapse-item :key="3" :header="`应用视图（${renderViewItems.length}）`" class="colapse-list1">
+        <template #extra>
+          <a-space>
+            <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addViewForm">
+              <gl-iconfont type="gl-plus-circle"/>
+            </a-button>
+            <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="fetchViewData">
+              <gl-iconfont type="gl-reset"/>
+            </a-button>
+          </a-space>
+        </template>
+        <a-list size="small">
+          <template v-for="item in renderViewItems" :key="item.id">
+            <a-list-item style="cursor: pointer;" @click="editViewForm(item)">
+              <a-tooltip position="right"
+                         :content="`${utils.getOptionLabel(item.viewType, viewTypeOptions)} ${item.entityName || ''} ${item.description || ''}`">
+                <a-list-item-meta :description="item.title" :title="item.viewName"/>
+              </a-tooltip>
+              <template #actions>
+            <span :title="`${item.updaterName || ''}更新@${item.updateAt}`" class="gl-actions-description">
+              {{ utils.timeAgo(item.updateAt || '') }}
+            </span>
+              </template>
+            </a-list-item>
+          </template>
+        </a-list>
+      </a-collapse-item>
     </a-collapse>
   </div>
 
@@ -351,6 +462,16 @@ const addAppTableForm = (ev?: MouseEvent) => {
                     :modelValue="formTabsParams.id" :parameter="formTabsParams.parameter"
                     :refApp="formTabsParams.refApp" :width="formTabsParams.width"
                     @deleteSuccess="tableFormSaveSuccess" @updateSuccess="tableFormSaveSuccess"/>
+
+  <GlModelTableViewForm v-model:visible="vFormParams.visible"
+                        :formCol="vFormParams.formCol"
+                        :formState="vFormParams.formState"
+                        :modelValue="vFormParams.id"
+                        :parameter="vFormParams.parameter"
+                        :title="vFormParams.title"
+                        :width="vFormParams.width"
+                        :isPermission="vFormParams.formState==='add'?false:true"
+                        @saveSuccess="viewFormSaveSuccess"/>
 </template>
 <style>
 .gl-model-list .gl-has {

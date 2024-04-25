@@ -163,7 +163,7 @@ const treeSelected = (key: string, level: number, form: QueryTableForm | QueryCo
     connectListParams.value.visible = false;
     tableListParams.value.visible = true;
     tableTabsParams.value.visible = false;
-    tableListParams.value.parameter = {connectId: (form as QueryConnectForm).id};
+    tableListParams.value.parameter.connectId = (form as QueryConnectForm).id;
     pageData.value.tree.title = swapConnectTitle(form as unknown as QueryConnectForm);
   } else if (pageData.value.tree.level === 2) {
     connectListParams.value.visible = false;
@@ -217,6 +217,7 @@ const handleResize = () => {
     default:
       break;
   }
+  splitHeight.value = resetSplitHeight();
   Object.assign(treeParams.value, {height: resetTreeHeight()});
 }
 

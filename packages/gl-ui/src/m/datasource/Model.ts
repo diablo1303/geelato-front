@@ -258,11 +258,13 @@ export interface QueryViewForm {
   seqNo: number; // 排序
   appId: string;
   tenantCode: string;
+  updaterName?: string;
+  updateAt?: string;
 }
 
 export function queryViews(params: Record<string, any>) {
   const records = utils.getUrlParams(params);
-  return entityApi.getAxios().get<QueryTableColumnForm[]>(`/api/model/view/query?${records.join('&')}`);
+  return entityApi.getAxios().get<QueryViewForm[]>(`/api/model/view/query?${records.join('&')}`);
 }
 
 export function getView(id: string) {

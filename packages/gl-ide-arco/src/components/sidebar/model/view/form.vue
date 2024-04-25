@@ -6,11 +6,12 @@ export default {
 
 <script lang="ts" setup>
 import {computed, ref, watch} from "vue";
-import {Modal} from "@arco-design/web-vue";
+import {Modal, type SelectOptionData} from "@arco-design/web-vue";
 import type {TableColumnData, FormInstance, SelectOptionGroup, TableData} from "@arco-design/web-vue";
 import {modelApi, applicationApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryViewForm, QueryTableColumnForm, QueryTableForm, QueryAppForm} from '@geelato/gl-ui';
 import {enableStatusOptions, linkedOptions, viewTypeOptions} from "./searchTable";
+import GlModelTablePermissionForm from "../table/permission/form.vue";
 
 type PageParams = {
   connectId: string; // 数据库链接id
@@ -28,6 +29,7 @@ const props = defineProps({
   formCol: {type: Number, default: 1},// 表单列数
   title: {type: String, default: '模型视图'},// 表达标题
   width: {type: String, default: ''},// 表单宽度
+  isPermission: {type: Boolean, default: false}
 });
 
 const global = useGlobal();
@@ -41,6 +43,8 @@ const tableTabStyle = ref({height: `${tableTabHeight.value}px`});
 const scrollbar = ref(true);
 const scroll = ref({x: 1000, y: tableTabHeight.value - 118});
 const appSelectOptions = ref<QueryAppForm[]>([]);
+const connectSelectOptions = ref<SelectOptionData[]>([]);
+const tableSelectOptions = ref<SelectOptionData[]>([]);
 const selectTypeOptions = ref<SelectOptionGroup[]>([]);
 const defaultColumnMetas = ref<string[]>([]);
 
@@ -427,7 +431,86 @@ const bodyObserver = new MutationObserver(function (mutations, instance) {
   });
 });
 
+const queryTableSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await modelApi.pageQueryTable(params);
+    if (successBack && typeof successBack === 'function') successBack(data.items || []);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+}
+
+const queryConnectSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await applicationApi.pageQueryAppConnectOf({
+      current: 1, pageSize: 10000, order: 'updateAt|asc', ...params,
+    });
+    if (successBack && typeof successBack === 'function') successBack(data.items || []);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+}
+
+const appSelectChange = (value: string) => {
+  connectSelectOptions.value = [];
+  formData.value.connectId = '';
+  if (value) {
+    queryConnectSelectOptions({
+      connectId: props.parameter?.connectId || '',
+      appId: value, tenantCode: props.parameter?.tenantCode || ''
+    }, (data: Record<string, any>[]) => {
+      if (data && data.length > 0) {
+        for (const item of data) {
+          connectSelectOptions.value.push({
+            label: `${item.connectTitle}[${item.connectName}]`, value: item.connectId,
+            disabled: item.connectEnableStatus === 0, other: item,
+          });
+        }
+      }
+    });
+  }
+}
+
+const connectSelectChange = (value: string) => {
+  tableSelectOptions.value = [];
+  formData.value.entityName = '';
+  if (value) {
+    queryTableSelectOptions({
+      connectId: value, order: 'entityName|asc',
+      entityName: props.parameter?.entityName || '',
+      appId: formData.value.appId, tenantCode: props.parameter?.tenantCode || ''
+    }, (data: QueryTableForm[]) => {
+      if (data && data.length > 0) {
+        for (const item of data) {
+          tableSelectOptions.value.push({
+            label: `${item.title}[${item.entityName}]`, value: item.entityName,
+            disabled: item.enableStatus === 0, other: item,
+          });
+        }
+      }
+    });
+  }
+}
+
+const tableSelectChange = (value: string) => {
+  formData.value.viewName = value || '';
+  validateForm.value?.validateField("viewName");
+}
+
+const pFormParams = ref({
+  formState: props.modelValue, isModal: true, height: tableTabHeight.value + 35,
+  parameter: {
+    connectId: props.parameter?.connectId || '',
+    object: props.parameter?.entityName || '',
+    type: 'dp,mp',
+    appId: props.parameter?.appId || '',
+    tenantCode: props.parameter?.tenantCode || '',
+  }
+});
+
+
 watch(() => props, () => {
+  console.log('form', props);
   if (props.visible === true) {
     tabsKey.value = 1;
     // 调整高度
@@ -458,6 +541,10 @@ watch(() => props, () => {
     columnData.value = [];
     // 表单数据重置
     formData.value = generateFormData();
+    if (['add'].includes(props.formState)) {
+      appSelectChange(props.parameter?.appId || '');
+      connectSelectChange(props.parameter?.connectId || '');
+    }
     // 重置验证
     resetValidate();
     pageStyle.value = resetPageStyle();
@@ -465,8 +552,14 @@ watch(() => props, () => {
     if (['edit', 'view'].includes(props.formState) && props.modelValue) {
       getData(props.modelValue, (data: QueryViewForm) => {
         data.seqNo = Number(data.seqNo);
+        appSelectChange(data.appId || '');
+        connectSelectChange(data.connectId || '');
         formData.value = data;
         columnData.value = utils.isJSON(data.viewColumn) ? JSON.parse(data.viewColumn) : [];
+        pFormParams.value.parameter = {
+          connectId: data.connectId, object: data.viewName,
+          type: 'dp,mp', appId: data.appId, tenantCode: data.tenantCode
+        };
       });
     }
   }
@@ -548,9 +641,22 @@ const cloneColumns = ref<Column[]>([]);
               </a-col>
               <a-col :span="(labelCol+wrapperCol)/formCol">
                 <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="appId" label="所属应用">
-                  <a-select v-model="formData.appId" :disabled="formState==='view'">
+                  <a-select v-model="formData.appId" :disabled="!!parameter.appId || formState==='view'"
+                            @change="appSelectChange(formData.appId)">
                     <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
                   </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="(labelCol+wrapperCol)/formCol">
+                <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="connectId" label="数据链接">
+                  <a-select v-model="formData.connectId" :disabled="!!parameter.connectId || formState==='view'"
+                            :options="connectSelectOptions" allow-search @change="connectSelectChange(formData.connectId)"/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="(labelCol+wrapperCol)/formCol">
+                <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="entityName" label="所属模型">
+                  <a-select v-model="formData.entityName" :disabled="!!parameter.entityName || formState==='view'"
+                            :options="tableSelectOptions" allow-search @change="tableSelectChange(formData.entityName)"/>
                 </a-form-item>
               </a-col>
               <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -698,6 +804,14 @@ const cloneColumns = ref<Column[]>([]);
               <a-empty style="width: 57%;"/>
             </template>
           </a-table>
+        </a-card>
+      </a-tab-pane>
+      <a-tab-pane v-if="isPermission===true" :key="4" class="a-tabs-two" title="视图权限">
+        <a-card class="general-card">
+          <GlModelTablePermissionForm v-if="visibleForm" :formState="pFormParams.formState"
+                                      :height="pFormParams.height"
+                                      :isModal="pFormParams.isModal"
+                                      :parameter="pFormParams.parameter"/>
         </a-card>
       </a-tab-pane>
     </a-tabs>

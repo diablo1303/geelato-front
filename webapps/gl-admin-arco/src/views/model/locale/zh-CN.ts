@@ -322,4 +322,13 @@ export default {
   'model.form.rules.match.viewSql.match': '匹配：’select * from table_name ...‘',
   'model.form.rules.match.length.title': '长度',
   'model.form.rules.match.max.title': '最大值',
+
+  'model.list.role.permission.tip.1': '若用户的多个角色都对模型M有读取权限：',
+  'model.list.role.permission.tip.2': '优先采用权重大的角色；若权重一样时，取第一个角色。',
+  'model.list.role.permission.tip.3': '在角色的读取权限中，按如下优先级选择一条规则查询过滤数据：',
+  'model.list.role.permission.tip.4': '自定义 > 看全部 > 看公司/事业部 > 看部门 > 看自己。',
+  'model.list.role.permission.tip.5': '例如：用户“张三”有以下角色及其读取权限：',
+  'model.list.role.permission.tip.6': '角色A（权重 5，自定义查看权限、看全部）。',
+  'model.list.role.permission.tip.7': '角色B（权重 10，看部门、看自己）。',
+  'model.list.role.permission.tip.8': '则最终取【角色B > 看部门】的权限。',
 };

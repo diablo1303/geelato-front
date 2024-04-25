@@ -29,7 +29,7 @@ const props = defineProps({
 
 const visibleForm = ref<boolean>(false);
 const tablePermissionFormParams = ref({
-  formState: props.modelValue, isModal: true, height: 0, parameter: {
+  formState: props.formState, isModal: true, height: 0, parameter: {
     connectId: '', object: '', type: '', appId: '', tenantCode: ''
   }
 });
