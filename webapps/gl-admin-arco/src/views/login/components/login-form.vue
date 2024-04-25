@@ -143,7 +143,7 @@ const enterApp = () => {
   }
 }
 onMounted(() => {
-  getSysConfig(global, userStore && userStore.userInfo,{
+  getSysConfig(global, userStore && userStore.userInfo, {
     tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore.userInfo && userStore.userInfo.tenantCode) || '',
     appId: (route && route.params && route.params.appId) as string || ''
   });
@@ -179,7 +179,8 @@ const setRememberPassword = (value: boolean) => {
   loginConfig.value.rememberPassword = value;
 };
 const forgetPassword = (ev?: MouseEvent) => {
-  window.open(router.resolve({name: "forget"}).href, "_blank");
+  const currentUrl = encodeURIComponent(window.location.href);
+  window.open(`${window.location.origin}/forget?redirect=${currentUrl}`, "_blank");
 }
 </script>
 
