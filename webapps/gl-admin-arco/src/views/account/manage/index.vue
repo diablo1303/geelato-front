@@ -113,7 +113,7 @@ onMounted(() => {
 
 <script lang="ts">
 export default {
-  name: 'userAccount',
+  name: 'manageAccount',
 };
 </script>
 

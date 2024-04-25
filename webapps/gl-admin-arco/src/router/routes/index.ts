@@ -176,7 +176,7 @@ const formatModules = (_modules: any, result: RouteRecordNormalized[]) => {
     defaultModule.path = URL_PREFIX + path + defaultModule.path;
     if (defaultModule.children && defaultModule.children.length > 0) {
       defaultModule.children.forEach((value: any, index: number) => {
-        value.params = urlParams;
+        if (!['userAccount', 'manageAccount'].includes(value.name)) value.params = urlParams;
       });
     }
     const moduleList = Array.isArray(defaultModule) ? [...defaultModule] : [defaultModule];

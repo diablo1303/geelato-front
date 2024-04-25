@@ -1,13 +1,13 @@
 <template>
   <router-view v-slot="{ Component, route }">
     <transition appear mode="out-in" name="fade">
-      <component
-          :is="Component"
-          v-if="route.meta.ignoreCache"
-          :key="route.fullPath"
-      />
+      <div v-if="route.meta.ignoreCache" :key="route.fullPath">
+        <component :is="Component"/>
+      </div>
       <keep-alive v-else :include="cacheList">
-        <component :is="Component" :key="route.fullPath"/>
+        <div :key="route.fullPath">
+          <component :is="Component"/>
+        </div>
       </keep-alive>
     </transition>
   </router-view>
