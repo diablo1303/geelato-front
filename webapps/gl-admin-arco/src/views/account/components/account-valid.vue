@@ -77,7 +77,7 @@ const validTypeData = () => {
   if (userStore.userInfo.mobilePhone) {
     options.push({
       value: '1',
-      label: `${t('account.manage.valid.validType.mobile.prefix')} ${abbreviateValue(userStore.userInfo.mobilePhone, '1')} ${t('account.manage.valid.validType.suffix')}`
+      label: `${t('account.manage.valid.validType.mobile.prefix')} ${userStore.userInfo.mobilePrefix} ${abbreviateValue(userStore.userInfo.mobilePhone, '1')} ${t('account.manage.valid.validType.suffix')}`
     });
   }
   if (userStore.userInfo.email) {
@@ -148,14 +148,14 @@ const nextModelClick = async (ev?: MouseEvent) => {
 }
 
 watch(
-  () => props.modelValue,
-  (newValue) => {
-    if (newValue === true) {
-      validTypeData();
-      formData.value = formatValidData();
+    () => props.modelValue,
+    (newValue) => {
+      if (newValue === true) {
+        validTypeData();
+        formData.value = formatValidData();
+      }
+      visible.value = newValue;
     }
-    visible.value = newValue;
-  }
 )
 </script>
 

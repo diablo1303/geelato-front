@@ -25,16 +25,15 @@
             :hide-asterisk="true"
             :rules="[{required: true,message: $t('reset.password.validBox.mobile.rules.required')}]"
             field="validBox">
-          <a-input v-model="formData.validBox" :disabled="step===2" :placeholder="$t('reset.password.validBox.mobile.placeholder')">
-            <template #prepend>
-              <a-select v-model="formData.prefix" :disabled="step===2" :options="prefixTypeOptions" :style="{width:'112.5px'}"
-                        allow-search>
-                <template #label="{data}">
-                  {{ data.value }}
-                </template>
-              </a-select>
+          <a-select v-model="formData.prefix" :disabled="step===2" :style="prefixStyle"
+                    allow-search @popupVisibleChange="prefixVisibleChange">
+            <a-option v-for="(item,index) in prefixTypeOptions" :key="index" :title="item.label"
+                      :label="item.label" :value="item.value" :disabled="item.disabled"/>
+            <template #label="{data}">
+              {{ data.value }}
             </template>
-          </a-input>
+          </a-select>
+          <a-input v-model="formData.validBox" :disabled="step===2" :placeholder="$t('reset.password.validBox.mobile.placeholder')"/>
         </a-form-item>
         <a-form-item
             v-if="[1,2].includes(step)&&formData.validType==='2'"
@@ -211,6 +210,11 @@ const prefixTypeOptions = computed<SelectOptionData[]>(() => {
   });
   return options;
 });
+/* 区域选择框宽度变化 */
+const prefixStyle = ref({width: '86px'});
+const prefixVisibleChange = (visible: boolean) => {
+  prefixStyle.value = {width: visible ? '200px' : '94px'};
+}
 </script>
 
 <script lang="ts">

@@ -79,6 +79,11 @@ const prefixTypeOptions = computed<SelectOptionData[]>(() => {
   });
   return options;
 });
+/* 区域选择框宽度变化 */
+const prefixStyle = ref({width: '86px'});
+const prefixVisibleChange = (visible: boolean) => {
+  prefixStyle.value = {width: visible ? '200px' : '94px'};
+}
 
 /**
  * 新增或更新接口
@@ -292,15 +297,15 @@ defineExpose({saveOrUpdate, loadPage});
             :label="$t('security.user.index.form.mobilePhone')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')},{validator:validateMobilePhone}]"
             field="mobilePhone">
-          <a-input v-if="formState!=='view'" v-model="formData.mobilePhone" :max-length="32">
-            <template #prepend>
-              <a-select v-model="formData.mobilePrefix" :options="prefixTypeOptions" :style="{width:'112.5px'}" allow-search>
-                <template #label="{data}">
-                  {{ data.value }}
-                </template>
-              </a-select>
+          <a-select v-if="formState!=='view'" v-model="formData.mobilePrefix" :style="prefixStyle"
+                    allow-search @popupVisibleChange="prefixVisibleChange">
+            <a-option v-for="(item,index) in prefixTypeOptions" :key="index" :title="item.label"
+                      :label="item.label" :value="item.value" :disabled="item.disabled"/>
+            <template #label="{data}">
+              {{ data.value }}
             </template>
-          </a-input>
+          </a-select>
+          <a-input v-if="formState!=='view'" v-model="formData.mobilePhone" :max-length="32"/>
           <span v-else>{{ formData.mobilePrefix }} {{ formData.mobilePhone }}</span>
         </a-form-item>
       </a-col>
