@@ -5,8 +5,8 @@ export default {
 </script>
 <script lang="ts" setup>
 import {computed, reactive, ref, watch} from 'vue';
-import {Message, TableSortable} from "@arco-design/web-vue";
-import type {TableColumnData, TableRowSelection, SelectOptionData, TableData} from "@arco-design/web-vue";
+import {Message} from "@arco-design/web-vue";
+import type {TableColumnData, TableRowSelection, SelectOptionData, TableSortable, TableData} from "@arco-design/web-vue";
 import type {QueryUserForm} from "@geelato/gl-ui";
 import {securityApi, utils} from "@geelato/gl-ui";
 
@@ -225,7 +225,12 @@ const listSelect = (rowKeys: (string | number)[], rowKey: string | number, recor
   }
   emits('change', rowKeys.includes(rowKey), [record]);
 }
-const listRowClick = (record: QueryUserForm) => {
+/**
+ * 点击行时触发
+ * @param record
+ * @param ev
+ */
+const listRowClick = (record: TableData, ev?: Event) => {
   if (selectedKeys.value.includes(record.id)) {
     selectedKeys.value = selectedKeys.value.filter(item => item !== record.id);
   } else {
