@@ -289,7 +289,7 @@ const buildFieldItems = () => {
 
   buildFieldItem(props.glComponentInst)
   formProvideProxy.setValues(formData.value)
-  console.log('buildFieldItems formItems:', formItems.value, 'formData:', formData.value)
+  // console.log('buildFieldItems formItems:', formItems.value, 'formData:', formData.value)
 }
 
 /**
@@ -480,8 +480,9 @@ const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
       }
     })
     entitySaver.record = record
-    emits('creatingEntitySavers', { entitySavers: [entitySaver] })
-    return [entitySaver]
+    const entitySavers = [entitySaver]
+    emits('creatingEntitySavers', { entitySavers: entitySavers })
+    return entitySavers
   }
   return null
 }
@@ -541,35 +542,13 @@ const getEntitySavers = async (): Promise<GetEntitySaversResult> => {
  *  submitForm() --> saveForm()
  */
 const submitForm = async () => {
-  const entitySaversResult:GetEntitySaversResult = await getEntitySavers()
-  emits('onCreatedEntitySavers',{result:entitySaversResult})
-  emitter.emit(UiEventNames.EntityForm.onCreatedEntitySavers,{result:entitySaversResult})
+  const entitySaversResult: GetEntitySaversResult = await getEntitySavers()
   const submitFormResult: SubmitFormResult = new SubmitFormResult()
   submitFormResult.entity = props.bindEntity.entityName
   submitFormResult.id = props.glComponentInst.id
-  console.log('submitForm > entitySaversResult', entitySaversResult)
-  if (!entitySaversResult.error) {
-    setLoading(true)
-    // console.log('submitForm() > formData', formData)
-    const saveResult = await entityApi.saveEntity(entitySaversResult.values[0])
-    entityRecordId.value = saveResult?.data
-    // 将表单值，注册到表单的子项中
-    formProvideProxy.setRecordId(entityRecordId.value)
-    if (hasSubFormTable()) {
-      // 保存之后刷新子表
-      subFormInstIds.value.forEach((instId: string) => {
-        const refreshFn = pageProvideProxy.getMethod(instId, 'refresh')
-        if (typeof refreshFn === 'function') {
-          refreshFn()
-        }
-      })
-    }
-    setLoading(false)
-    submitFormResult.success = true
-    submitFormResult.record = entitySaversResult.values[0].record
-    emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)
-    return true
-  } else {
+  submitFormResult.success = true
+
+  const notification = ()=>{
     const content: string[] = []
     Object.keys(entitySaversResult.validateResult!).forEach((key: string) => {
       // @ts-ignore
@@ -581,9 +560,64 @@ const submitForm = async () => {
       content: `${content.join(',')}`
     })
     submitFormResult.success = false
+  }
+  // console.log('submitForm > entitySaversResult', entitySaversResult)
+  // 先对表单验证结果进行通知处理
+  if (entitySaversResult.error) {
+    notification()
     emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)
     return false
   }
+
+  // 是否需要OnCreatedEntitySaversEvent事件同步执行，用于需要在该事件中对提交的表单数据进行处理的场景
+  // if(params.isOnCreatedEntitySaversEventSync){
+  //   //
+  // }
+
+  const promise = new Promise((resolve, reject) => {
+    emits('onCreatedEntitySavers', {
+      result: entitySaversResult,
+      $resolve: resolve,
+      $reject: reject
+    })
+  })
+  return promise.then( () => {
+    emitter.emit(UiEventNames.EntityForm.onCreatedEntitySavers, { result: entitySaversResult })
+    // onCreatedEntitySavers 事件中，可能对entitySaversResult做了修改，如验证模板的
+    if (entitySaversResult.error) {
+      notification()
+      emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)
+      return false
+    }else{
+      setLoading(true)
+      // console.log('submitForm() > formData', formData)
+      return entityApi.saveEntity(entitySaversResult.values[0]).then((saveResult)=>{
+        entityRecordId.value = saveResult?.data
+        // 将表单值，注册到表单的子项中
+        formProvideProxy.setRecordId(entityRecordId.value)
+        if (hasSubFormTable()) {
+          // 保存之后刷新子表
+          subFormInstIds.value.forEach((instId: string) => {
+            const refreshFn = pageProvideProxy.getMethod(instId, 'refresh')
+            if (typeof refreshFn === 'function') {
+              refreshFn()
+            }
+          })
+        }
+        setLoading(false)
+        submitFormResult.success = true
+        submitFormResult.record = entitySaversResult.values[0].record
+        emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)
+        return true
+      }).catch((err)=>{
+        console.error("submitForm catch: ", err);
+        return false
+      })
+    }
+  }).catch((err )=>{
+    console.error("submitForm catch: ", err);
+    return false
+  })
 }
 
 /**

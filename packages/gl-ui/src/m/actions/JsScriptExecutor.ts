@@ -489,7 +489,7 @@ export class JsScriptExecutor {
    * @param callback
    * @param gl 如果多个表达式需要用同一下$gl时，可以传进来，不在本方法内创建
    */
-  doAction(action: Action, ctx: Ctx, callback?: Function, gl?: any) {
+  doAction(action: Action, ctx: Ctx, callback?: Function, gl?: any):Promise<any> {
     // console.log('JsScriptExecutor > doAction(),action:', action, 'ctx:', ctx)
     return this.evalFn(action.body!, ctx, callback, gl, true)
   }

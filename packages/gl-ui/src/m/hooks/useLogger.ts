@@ -69,10 +69,10 @@ export class Logger {
 
     switch (level) {
       case LoggerLevel.ERROR:
-        console.error(logEntry)
+        console.error(logEntry,...optionalParams)
         break
       default:
-        console.log(logEntry)
+        console.log(logEntry,...optionalParams)
         break
     }
   }

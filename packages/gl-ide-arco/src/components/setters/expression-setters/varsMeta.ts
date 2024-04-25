@@ -742,6 +742,22 @@ const text = {
                 '输入可以是数字格式或字符串格式，示例：toChineseCurrency(123456789.12)；//壹亿贰仟叁佰肆拾伍万陆仟柒佰捌拾玖元壹角贰分'
         },
         {
+            title: '字符串转对象格式',
+            _code: 'convertStrToObj',
+            _type: 'object',
+            _brackets: '(“CNY:18.1;USD:17”)',
+            _description:
+                '字符串转对象格式，如应用于多币种的值转换，输入多币种字符串格式：CNY:18145.1;USD:176.48，返回{CNY:18145.1,USD:176.48}，输入为空时，返回{}。第二个参数为分隔符号，可选，默认为“;”。'
+        },
+        {
+            title: '简单对象转为字符串格式',
+            _code: 'convertObjToStr',
+            _type: 'string',
+            _brackets: '({CNY:18145.1,USD:176.48},“;”)',
+            _description:
+                '简单的对象转为字符串格式，如应用于多币种的值转换，输入多币种字符串格式{CNY:18145.1,USD:176.48}，返回CNY:18145.1;USD:176.48，输入为空时，返回空字符串。第二个参数为分隔符号，可选，默认为“;”。'
+        },
+        {
             title: '获取文本长度',
             _code: 'len',
             _type: 'number',

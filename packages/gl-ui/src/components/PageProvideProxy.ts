@@ -295,6 +295,10 @@ export default class PageProvideProxy {
     this.pageTemplate = pageTemplate
   }
 
+  getPageTemplate(){
+    return this.pageTemplate
+  }
+
   /**
    *  获取页面参数定义
    */

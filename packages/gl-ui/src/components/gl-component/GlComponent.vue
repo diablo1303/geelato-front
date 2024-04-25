@@ -81,15 +81,16 @@
 </template>
 
 <script lang="ts" setup>
-import { getCurrentInstance, inject, nextTick, onMounted, ref, watch } from 'vue'
+import {getCurrentInstance, inject, nextTick, onBeforeUnmount, onMounted, onUnmounted, ref, watch} from 'vue'
 import mixins from '../mixins'
 import jsScriptExecutor from '../../m/actions/JsScriptExecutor'
 import type { Action } from '@geelato/gl-ui-schema'
 import PageProvideProxy, { PageProvideKey } from '../PageProvideProxy'
 import { executePropsExpressions } from './GlComponentSupport'
-import useLogger from "../../m/hooks/useLogger";
+import useLogger from '../../m/hooks/useLogger'
 
-const logger = useLogger('gl-component')
+const detachedElementRef = ref(null);
+let logger = useLogger('gl-component')
 defineOptions({ name: 'GlComponent' })
 
 const emits = defineEmits([
@@ -112,7 +113,7 @@ const props = defineProps({
 // 由于在一些场景下更新props.glComponentInst.props._hidden的值，不能响应式更新UI,这里增加一个值来控制
 const hidden = ref(!!props.glComponentInst.props?._hidden)
 const unRender = ref(!!props.glComponentInst.props?.unRender)
-const pageProvideProxy: PageProvideProxy | undefined = props.glIgnoreInjectPageProxy
+let pageProvideProxy: PageProvideProxy | undefined = props.glIgnoreInjectPageProxy
   ? undefined
   : inject(PageProvideKey)!
 
@@ -142,26 +143,34 @@ const stopPropagation = (...args: any) => {
  */
 const doAction = (actionName: string, args: any) => {
   // logger.debug('GlComponent > doAction() > args:', actionName, args)
-    if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
-      props.glComponentInst.actions.forEach((action: Action) => {
-        if (action.eventName === actionName) {
-          // logger.debug('GlComponent > doAction > action', action)
-          // let ctx = inject('$ctx') as object || {}
-          let ctx = {}
-          Object.assign(
-              ctx,
-              props.glCtx,
-              { args },
-              {
-                pageProxy: pageProvideProxy
-              }
-          )
-          logger.debug(`GlComponent(${props.glComponentInst.componentName},${props.glComponentInst.id}) > doAction() > ctx:`, actionName, ctx)
-          jsScriptExecutor.doAction(action, ctx)
-        }
-      })
-    }
+  const promises:Promise<any>[] = []
+  if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
+    props.glComponentInst.actions.forEach((action: Action) => {
+      if (action.eventName === actionName) {
+        // logger.debug('GlComponent > doAction > action', action)
+        // let ctx = inject('$ctx') as object || {}
+        let ctx = {}
+        Object.assign(
+          ctx,
+          props.glCtx,
+          { args },
+          {
+            pageProxy: pageProvideProxy
+          }
+        )
+        logger.debug(
+          `GlComponent(${props.glComponentInst.componentName},${props.glComponentInst.id}) > doAction() > ctx:`,
+          actionName,
+          ctx
+        )
+        promises.push(jsScriptExecutor.doAction(action, ctx))
+      }
+    })
+  }
+  return Promise.all(promises)
 }
+
+
 
 const createActionHandler = (actionName: string) => {
   return (...args: any) => {
@@ -171,14 +180,46 @@ const createActionHandler = (actionName: string) => {
       glComponentInst: props.glComponentInst,
       glCtx: props.glCtx
     })
-    doAction(actionName, args)
+    if(args.length >0&&typeof args[0]?.$resolve === 'function') {
+      // 表示侦听的事件需要同步执行
+      return doAction(actionName, args).then(()=>{
+        return args[0].$resolve()
+      })
+    }else{
+      // 否则正常异步调用
+      return doAction(actionName, args)
+    }
+  }
+}
+
+const defaultSyncActionHandler = (...args: any) => {
+  stopPropagation(args)
+  emits('onAction', {
+    arguments: args,
+    glComponentInst: props.glComponentInst,
+    glCtx: props.glCtx
+  })
+  if(args.length >0&&typeof args[0]?.$resolve === 'function') {
+    return args[0].$resolve()
   }
 }
 
 // 所有的action处理器，依据组件实体配置的action形成action事件响应对象，匹配不同的事件
-const onActionsHandler: { [key: string]: any } = {}
+let onActionsHandler: { [key: string]: any } = {}
 props.glComponentInst?.actions?.forEach((action: Action) => {
   onActionsHandler[action.eventName] = createActionHandler(action.eventName)
+})
+
+// TODO defaultSyncEvents需要在外部注册进来
+// 默认需要同步执行的事件，如果组件没有配置该事件，则会默认会侦听该事件，以实现回调
+const defaultSyncEvents:Record<string, Array<string>> = {}
+defaultSyncEvents['GlEntityForm'] = ['onCreatedEntitySavers']
+// 注册默认的事件
+defaultSyncEvents[props.glComponentInst.componentName]?.forEach((eventName:string)=>{
+  // 如果没有配置该事件，则默认加上
+  if(!onActionsHandler[eventName]){
+    onActionsHandler[eventName] = defaultSyncActionHandler
+  }
 })
 
 const onValueChange = (...args: any) => {
@@ -271,7 +312,7 @@ watch(
   },
   { immediate: true }
 )
-const _reRender = (updatedProps?:object) => {
+const _reRender = (updatedProps?: object) => {
   // logger.debug('_reRender updatedProps',updatedProps)
   // logger.debug('_reRender props.glComponentInst', props.glComponentInst)
   refreshFlag.value = false
@@ -331,6 +372,26 @@ onMounted(() => {
     unRender.value = props.glComponentInst.props.unRender || false
   }
   // logger.debug('onMounted', props.glComponentInst.props.label, props.glComponentInst.props._hidden)
+})
+
+
+onUnmounted(() => {
+  /**
+   * 释放资源
+   */
+  // @ts-ignore
+  logger = null
+  pageProvideProxy?.removeVueInst(props.glComponentInst.id)
+  if (typeof onActionsHandler === 'object') {
+    Object.keys(onActionsHandler).forEach((key) => {
+      delete onActionsHandler[key]
+    })
+  }
+  // @ts-ignore
+  onActionsHandler = null
+  if(detachedElementRef.value){
+    detachedElementRef.value = null
+  }
 })
 defineExpose({ onMouseLeave, onMouseOver, _reRender })
 </script>

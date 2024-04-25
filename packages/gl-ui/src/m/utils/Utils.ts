@@ -1,9 +1,8 @@
-import {RecordsUtil} from './RecordsUtil'
-import {toChineseCurrency} from "./toChineseCurrency";
+import { RecordsUtil } from './RecordsUtil'
+import { toChineseCurrency } from './toChineseCurrency'
 
 export class Utils {
-  constructor() {
-  }
+  constructor() {}
 
   trim(str: string) {
     return str.replace(/(^\s*)|(\s*$)/g, '')
@@ -301,29 +300,30 @@ export class Utils {
       [key: string]: any
     }
   >(list: Array<T>) {
-    const tree: Record<string, any>[] = [];
-    const lookup: Record<string, Record<string, any>> = {};
+    const tree: Record<string, any>[] = []
+    const lookup: Record<string, Record<string, any>> = {}
 
     // 将列表转换为对象，以便快速查找
     list.forEach((item) => {
-      lookup[item.id] = item;
-    });
+      lookup[item.id] = item
+    })
 
     // 将对象转换为树结构
     list.forEach((item) => {
-      if (item.pid === '') { // 如果pid为空字符串，表示这是一个根节点
-        tree.push(lookup[item.id]);
+      if (item.pid === '') {
+        // 如果pid为空字符串，表示这是一个根节点
+        tree.push(lookup[item.id])
       } else {
         if (lookup[item.pid]) {
           if (lookup[item.pid].children === undefined) {
             lookup[item.pid].children = []
           }
-          lookup[item.pid].children.push(lookup[item.id]);
+          lookup[item.pid].children.push(lookup[item.id])
         }
       }
-    });
+    })
 
-    return tree;
+    return tree
   }
 
   /**
@@ -447,7 +447,6 @@ export class Utils {
       }
     }
   }
-
 
   /**
    * 获取对象的属性值
@@ -593,11 +592,11 @@ export class Utils {
       // eslint-disable-next-line no-restricted-syntax
       for (const item of data) {
         if (item.value === optionValue) {
-          return item.label;
+          return item.label
         }
       }
     }
-    return '';
+    return ''
   }
 
   /**
@@ -605,11 +604,11 @@ export class Utils {
    * @param params
    */
   getUrlParams(params: Record<string, any>) {
-    const parameters = [];
+    const parameters = []
     for (const key in params) {
-      parameters.push(`${key}=${encodeURIComponent(params[key])}`);
+      parameters.push(`${key}=${encodeURIComponent(params[key])}`)
     }
-    return parameters;
+    return parameters
   }
 
   /**
@@ -620,10 +619,10 @@ export class Utils {
    */
   copyToClipboard = async (value: string, successCallBack: any, failCallBack?: any) => {
     try {
-      await navigator.clipboard.writeText(value);
-      if (successCallBack && typeof successCallBack === 'function') successCallBack(value);
+      await navigator.clipboard.writeText(value)
+      if (successCallBack && typeof successCallBack === 'function') successCallBack(value)
     } catch (err) {
-      if (failCallBack && typeof failCallBack === 'function') failCallBack(value);
+      if (failCallBack && typeof failCallBack === 'function') failCallBack(value)
     }
   }
 
@@ -633,17 +632,48 @@ export class Utils {
    * @constructor
    */
   generateRandom(extent?: number) {
-    extent = extent && extent > 0 ? extent : 32;
-    const chars = '0123456789';
-    let result = '';
+    extent = extent && extent > 0 ? extent : 32
+    const chars = '0123456789'
+    let result = ''
     for (let i = 0; i < extent; i += 1) {
-      const randomIndex = Math.floor(Math.random() * chars.length);
-      result += chars[randomIndex];
+      const randomIndex = Math.floor(Math.random() * chars.length)
+      result += chars[randomIndex]
     }
-    return result;
+    return result
   }
-  toChineseCurrency(num:number|string){
-    return  toChineseCurrency(num)
+
+  toChineseCurrency(num: number | string) {
+    return toChineseCurrency(num)
+  }
+
+  /**
+   *  字符串转对象格式，如应用于多币种的值转换
+   *  @param str 多币种字符串格式：CNY:18145.1;USD:176.48
+   *  @param separator 默认为：“;”
+   *  @return  对象{CNY:18145.1,USD:176.48}，为空时{}
+   */
+  convertStrToObj(str: string,separator?:string) {
+    if (str) {
+      let parsedAmount: Record<string, string | number> = {}
+      str.split(separator || ';').forEach((segment) => {
+        let kvs = segment.split(':')
+        parsedAmount[kvs[0]] = kvs[1]
+      })
+      return parsedAmount
+    }
+    return {}
+  }
+
+  /**
+   * 简单的对象转为字符串格式，如应用于多币种的值转换
+   * @param obj 如 {CNY:18145.1,USD:176.48}
+   * @param separator 默认为：“;”
+   * @return 如 CNY:18145.1;USD:176.48
+   */
+  convertObjToStr(obj: Record<string, string>,separator?:string) {
+    return Object.keys(obj)
+      .map(key => `${key}:${obj[key]}`)
+      .join(separator || ';')
   }
 }
 

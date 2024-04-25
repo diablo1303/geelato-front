@@ -240,7 +240,7 @@ const showApproveModal = () => {
 }
 
 /**
- * 通过业务状态ID获取标准审批状态
+ * 通过业务状态ID获取标准审批状态(所有业务流程的标准审批状态是一样的，但业务状态ID不一样，如多个业务状态对应标准审批状态的“审批中”)
  * @param stateId
  */
 const getApprovalStatus = (stateId: string) => {
@@ -283,8 +283,6 @@ const getEntitySaver = () => {
   console.log('getEntitySaver', procInst.value)
   return getProcInstEntitySaver(procInst.value, procTask.value)
 }
-
-console.log('global', global)
 
 /**
  * 模板内的组件，提交表单之后触发
