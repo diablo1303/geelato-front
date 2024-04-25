@@ -61,7 +61,7 @@ const buildAccountForm = (user: UserState) => {
     {
       index: 1,
       title: `${t('account.manage.list.mobile.title')}`,
-      description: !(user && user.mobilePhone) ? t('account.manage.list.mobile.description') : abbreviateValue(user.mobilePhone, '1'),
+      description: !(user && user.mobilePhone) ? t('account.manage.list.mobile.description') :  `${user.mobilePrefix} ${abbreviateValue(user.mobilePhone, '1')}`,
       isNull: !(user && user.mobilePhone)
     }, {
       index: 2,
@@ -113,7 +113,7 @@ onMounted(() => {
 
 <script lang="ts">
 export default {
-  name: 'userAccount',
+  name: 'manageAccount',
 };
 </script>
 

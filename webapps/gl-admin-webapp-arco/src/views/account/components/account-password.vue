@@ -6,14 +6,14 @@
           :hide-asterisk="true"
           :rules="[{required: true,message:$t('account.manage.password.validBox.rules.required')}]"
           field="validBox">
-        <a-input-password v-model="formData.validBox" :placeholder="$t('account.manage.password.validBox.placeholder')"
+        <a-input-password v-model="formData.validBox" allow-clear :placeholder="$t('account.manage.password.validBox.placeholder')"
                           @change="inputChange"/>
       </a-form-item>
       <a-form-item
           :hide-asterisk="true"
           :rules="[{required: true,message:$t('account.manage.password.authCode.rules.required')}]"
           field="authCode">
-        <a-input-password v-model="formData.authCode" :placeholder="$t('account.manage.password.authCode.placeholder')"
+        <a-input-password v-model="formData.authCode" allow-clear :placeholder="$t('account.manage.password.authCode.placeholder')"
                           @change="inputChange"/>
         <template #help>
           <span class="account-password-error-msg">{{ errorMessage }}</span>

@@ -35,5 +35,8 @@ export default {
   'reset.password.button.next.content': '下一步',
   'reset.password.button.last.content': '上一步',
   'reset.password.button.update.content': '确认重置',
-  'reset.password.result.success.title': '重置成功！'
+  'reset.password.result.success.title': '重置成功！',
+  'reset.password.result.success.button': '进入登录页',
+  'reset.password.authCode.button.fail.msg': '获取验证码失败！',
+  'reset.password.authCode.button.fail.msg1': '缺失用户信息，请重试！',
 };

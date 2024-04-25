@@ -61,14 +61,14 @@
             :hide-asterisk="true"
             :rules="[{required: step===2,message:$t('reset.password.password.rules.required')}]"
             field="password">
-          <a-input-password v-model="formData.password" :placeholder="$t('reset.password.password.placeholder')"/>
+          <a-input-password v-model="formData.password" allow-clear :placeholder="$t('reset.password.password.placeholder')"/>
         </a-form-item>
         <a-form-item
             v-show="step===2"
             :hide-asterisk="true"
             :rules="[{required: step===2,message:$t('reset.password.rPassword.rules.required')}]"
             field="rPassword">
-          <a-input-password v-model="formData.rPassword" :placeholder="$t('reset.password.rPassword.placeholder')"/>
+          <a-input-password v-model="formData.rPassword" allow-clear :placeholder="$t('reset.password.rPassword.placeholder')"/>
         </a-form-item>
         <a-space v-show="step===1" class="reset-form-one-button">
           <a-button :loading="validNextButtonLoading" type="primary" @click="validNextClick($event)">

@@ -35,5 +35,8 @@ export default {
   'reset.password.button.next.content': 'Next Step',
   'reset.password.button.last.content': 'Last Step',
   'reset.password.button.update.content': 'Confirm Reset',
-  'reset.password.result.success.title': 'Reset successfully!'
+  'reset.password.result.success.title': 'Reset successfully!',
+  'reset.password.result.success.button': 'Goto Login',
+  'reset.password.authCode.button.fail.msg': 'Failed to obtain the verification code. Procedure！',
+  'reset.password.authCode.button.fail.msg1': 'Missing user information, please try again！',
 };

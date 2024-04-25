@@ -30,7 +30,7 @@
           :hide-asterisk="true"
           :rules="[{required: true,message:$t('account.manage.valid.password.rules.required')}]"
           field="authCode">
-        <a-input-password v-model="formData.authCode" :placeholder="$t('account.manage.valid.password.placeholder')"/>
+        <a-input-password v-model="formData.authCode" allow-clear :placeholder="$t('account.manage.valid.password.placeholder')"/>
       </a-form-item>
     </a-form>
     <template #footer>

@@ -30,7 +30,7 @@
           :hide-asterisk="true"
           :rules="[{required: true,message:$t('account.manage.valid.password.rules.required')}]"
           field="authCode">
-        <a-input-password v-model="formData.authCode" :placeholder="$t('account.manage.valid.password.placeholder')"/>
+        <a-input-password v-model="formData.authCode" allow-clear :placeholder="$t('account.manage.valid.password.placeholder')"/>
       </a-form-item>
     </a-form>
     <template #footer>
@@ -77,7 +77,7 @@ const validTypeData = () => {
   if (userStore.userInfo.mobilePhone) {
     options.push({
       value: '1',
-      label: `${t('account.manage.valid.validType.mobile.prefix')} ${abbreviateValue(userStore.userInfo.mobilePhone, '1')} ${t('account.manage.valid.validType.suffix')}`
+      label: `${t('account.manage.valid.validType.mobile.prefix')} ${userStore.userInfo.mobilePrefix} ${abbreviateValue(userStore.userInfo.mobilePhone, '1')} ${t('account.manage.valid.validType.suffix')}`
     });
   }
   if (userStore.userInfo.email) {

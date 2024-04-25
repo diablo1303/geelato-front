@@ -25,16 +25,15 @@
             :hide-asterisk="true"
             :rules="[{required: true,message: $t('reset.password.validBox.mobile.rules.required')}]"
             field="validBox">
-          <a-input v-model="formData.validBox" :disabled="step===2" :placeholder="$t('reset.password.validBox.mobile.placeholder')">
-            <template #prepend>
-              <a-select v-model="formData.prefix" :disabled="step===2" :options="prefixTypeOptions" :style="{width:'112.5px'}"
-                        allow-search>
-                <template #label="{data}">
-                  {{ data.value }}
-                </template>
-              </a-select>
+            <a-select v-model="formData.prefix" :disabled="step===2" :style="prefixStyle"
+                    allow-search @popupVisibleChange="prefixVisibleChange">
+            <a-option v-for="(item,index) in prefixTypeOptions" :key="index" :title="item.label"
+                      :label="item.label" :value="item.value" :disabled="item.disabled"/>
+            <template #label="{data}">
+              {{ data.value }}
             </template>
-          </a-input>
+          </a-select>
+          <a-input v-model="formData.validBox" :disabled="step===2" allow-clear :placeholder="$t('reset.password.validBox.mobile.placeholder')"/>
         </a-form-item>
         <a-form-item
             v-if="[1,2].includes(step)&&formData.validType==='2'"
@@ -42,7 +41,7 @@
             :rules="[{required: true,message:$t('reset.password.validBox.email.rules.required')},
                 {match: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,message: $t('reset.password.validBox.email.rules.match')}]"
             field="validBox">
-          <a-input v-model="formData.validBox" :disabled="step===2" :placeholder="$t('reset.password.validBox.email.placeholder')"/>
+          <a-input v-model="formData.validBox" :disabled="step===2" allow-clear :placeholder="$t('reset.password.validBox.email.placeholder')"/>
         </a-form-item>
         <!--     重置密码     -->
         <a-form-item
@@ -62,14 +61,14 @@
             :hide-asterisk="true"
             :rules="[{required: step===2,message:$t('reset.password.password.rules.required')}]"
             field="password">
-          <a-input-password v-model="formData.password" :placeholder="$t('reset.password.password.placeholder')"/>
+          <a-input-password v-model="formData.password" allow-clear :placeholder="$t('reset.password.password.placeholder')"/>
         </a-form-item>
         <a-form-item
             v-show="step===2"
             :hide-asterisk="true"
             :rules="[{required: step===2,message:$t('reset.password.rPassword.rules.required')}]"
             field="rPassword">
-          <a-input-password v-model="formData.rPassword" :placeholder="$t('reset.password.rPassword.placeholder')"/>
+          <a-input-password v-model="formData.rPassword" allow-clear:placeholder="$t('reset.password.rPassword.placeholder')"/>
         </a-form-item>
         <a-space v-show="step===1" class="reset-form-one-button">
           <a-button :loading="validNextButtonLoading" type="primary" @click="validNextClick($event)">
@@ -85,7 +84,13 @@
           </a-button>
         </a-space>
         <div v-show="step===3" class="reset-form-success-wrap">
-          <a-result :title="$t('reset.password.result.success.title')" status="success"/>
+          <a-result :title="$t('reset.password.result.success.title')" status="success">
+            <template #extra>
+              <a-button v-if="!!redirect" type='primary' @click="backRedirect">
+                {{ $t('reset.password.result.success.button') }}（{{ backLoginTime }}）
+              </a-button>
+            </template>
+          </a-result>
         </div>
       </a-form>
     </keep-alive>
@@ -95,13 +100,17 @@
 <script lang="ts" setup>
 import {computed, ref} from 'vue';
 import {useI18n} from "vue-i18n";
+import {useRouter} from "vue-router";
 import {FormInstance, SelectOptionData} from "@arco-design/web-vue";
 import {AuthCodeForm, forgetPasswordEdit, forgetPasswordValid, generateAuthCode, ResetPasswordForm} from "@/api/user";
 import mobilePrefix from '@/config/mobilePrefix.json';
 
 const {t} = useI18n();
+const router = useRouter();
+const {redirect, ...othersQuery} = router.currentRoute.value.query;
 const step = ref(1);
 const errorMessage = ref('');
+const backLoginTime = ref(10);
 /* 验证方式 */
 const validFormRef = ref<FormInstance>();
 const validNextButtonLoading = ref(false);
@@ -164,10 +173,10 @@ const authCodeClick = async (ev?: MouseEvent) => {
       await generateAuthCode(otherParams as AuthCodeForm);
       authCodeInterval();
     } catch (err) {
-      errorMessage.value = '获取验证码失败！';
+      errorMessage.value = t('reset.password.authCode.button.fail.msg');
     }
   } else {
-    errorMessage.value = '缺失用户信息，请重试！';
+    errorMessage.value = t('reset.password.authCode.button.fail.msg1');
   }
 }
 const validLastClick = (ev?: MouseEvent) => {
@@ -191,6 +200,17 @@ const updatePwdClick = async (ev?: MouseEvent) => {
       await forgetPasswordEdit(formData.value);
       errorMessage.value = '';
       step.value = 3;
+      if (redirect) {
+        backLoginTime.value = 10;
+        const backInterval = setInterval(() => {
+          backLoginTime.value -= 1;
+          console.log(backLoginTime.value);
+          if (backLoginTime.value === 0) {
+            clearInterval(backInterval);
+            backRedirect();
+          }
+        }, 1000);
+      }
     } catch (err) {
       errorMessage.value = t('reset.password.error.msg.update');
     } finally {
@@ -211,6 +231,15 @@ const prefixTypeOptions = computed<SelectOptionData[]>(() => {
   });
   return options;
 });
+/* 区域选择框宽度变化 */
+const prefixStyle = ref({width: '86px'});
+const prefixVisibleChange = (visible: boolean) => {
+  prefixStyle.value = {width: visible ? '200px' : '94px'};
+}
+
+const backRedirect = () => {
+  if (redirect) window.location.assign(`${redirect}`);
+}
 </script>
 
 <script lang="ts">
