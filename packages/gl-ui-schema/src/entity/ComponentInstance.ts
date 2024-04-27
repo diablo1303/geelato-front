@@ -122,7 +122,7 @@ export default class ComponentInstance {
 
     // 组件是否启用权限控制，用于在渲染时，确定是否需要检查权限，perms为空、为r为0或空、w为0或空都表示不需要检查
     perms?: { r?: number, w?: number }
-    // 组件的权限管制配置，用于设计时配置
-    __perms?: { r: {id:string,name:string}, w: {id:string,name:string} }
+    // 组件的权限控制配置，用于设计时配置
+    __perms?: { r: {id:string,name:string,enabled:number}, w: {id:string,name:string,enabled:number} }
 
 }
