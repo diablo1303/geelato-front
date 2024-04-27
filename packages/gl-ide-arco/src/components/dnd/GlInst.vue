@@ -224,8 +224,8 @@ const onClick = (...args: any[]) => {
             :componentStoreId="componentStoreId"
           >
           </GlComponentDnd>
-          <template v-if="glComponentInst?.props?.extra" #extra>
-            <div>{{ i18nConvert(glComponentInst?.props?.extra) }}</div>
+          <template v-if="glComponentInst?.props?.description" #extra>
+            <div>{{ i18nConvert(glComponentInst?.props?.description) }}</div>
           </template>
           <template v-if="glComponentInst?.props?.help" #help>
             <div>{{ i18nConvert(glComponentInst?.props?.help) }}</div>
