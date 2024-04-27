@@ -582,7 +582,10 @@ const submitForm = async () => {
     })
   })
   return promise.then( () => {
-    emitter.emit(UiEventNames.EntityForm.onCreatedEntitySavers, { result: entitySaversResult })
+    // emitter.emit(UiEventNames.EntityForm.onCreatedEntitySavers, { result: entitySaversResult })
+    if(typeof pageProvideProxy.pageTemplate?.onBeforeSubmit === 'function'){
+      pageProvideProxy.pageTemplate?.onBeforeSubmit({id:props.glComponentInst.id, data: entitySaversResult })
+    }
     // onCreatedEntitySavers 事件中，可能对entitySaversResult做了修改，如验证模板的
     if (entitySaversResult.error) {
       notification()

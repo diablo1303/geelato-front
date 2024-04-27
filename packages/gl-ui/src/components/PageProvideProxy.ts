@@ -21,6 +21,8 @@ export type PageCustomType = {
 export interface PageTemplate {
   // 如GlPageTemplateStateWF，基于状态机的工作流模板
   type:string
+  // 可用于表单在保存之前调用该模板的回调方法
+  onBeforeSubmit?:Function
   [key:string]:any
 }
 

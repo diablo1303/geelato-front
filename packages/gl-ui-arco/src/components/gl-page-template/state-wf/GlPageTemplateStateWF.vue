@@ -110,9 +110,6 @@ const props = defineProps({
   ...mixins.props
 })
 
-// 模板数据，用于注入到表单等组件中，如可在提交表单时，表单获取到该template对象，清楚下一步是审批通过还是审批不通过
-const pageTemplate: Ref<PageTemplate> = ref({ type: 'GlPageTemplateStateWF' })
-
 // 检查输入的参数
 const hasReady = computed(() => {
   // 有模板ID
@@ -122,7 +119,6 @@ const hasReady = computed(() => {
 })
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
-pageProvideProxy.setPateTemplate(pageTemplate.value)
 const isRead = !!pageProvideProxy?.isPageStatusRead()
 
 const procInst = ref(new ProcInst())
@@ -150,15 +146,7 @@ const remark = ref('')
 const attachIds = ref('')
 const remarkLabel = ref('')
 
-watch(
-  [selectedTran, remark, attachIds],
-  () => {
-    pageTemplate.value.selectedTran = selectedTran.value
-    pageTemplate.value.remark = remark.value
-    pageTemplate.value.attachIds = attachIds.value
-  },
-  { deep: true, immediate: true }
-)
+
 /**
  *  业务表单的组件id
  *  由于
@@ -288,13 +276,13 @@ const getEntitySaver = () => {
  * 模板内的组件，提交表单之后触发
  * @param result {id:props.glComponentInst.id,success:true,record:formProvideProxy.getForm()}
  */
-const onSubmitForm = (result: any) => {
-  console.log('onSubmitForm', result)
+// const onSubmitForm = (result: any) => {
+//   console.log('onSubmitForm', result)
   // if (result?.success) {
   //   submitFormResult.value = result
   //   submitProcess()
   // }
-}
+// }
 
 loadData()
 onMounted(() => {})
@@ -303,15 +291,15 @@ const stateWFApprove = ref()
  * 表单在构建保存对象时，可以获取表单的值，并设置业务表的工作流相关状态信息
  * 将流程信息作为子表单一起保存
  * 注意：这个方法不能是异步的，否则该模板内嵌的表单提交事件不会等模板自身的表单验证结果
- * @param args GetEntitySaversResult
+ * @param args {id:来源的组件标识，如表单组件id;data: GetEntitySaversResult}
  */
-const onCreatedEntitySavers = (args: any) => {
-  console.log('onCreatedEntitySavers args:', args)
+const onCreatedEntitySavers = (args: {id:string, data:GetEntitySaversResult }) => {
+  // console.log('onCreatedEntitySavers args:', args)
   // 检查是否为工作流的主表单
   // TODO
 
   // 检查工作流模板中的录入
-  const result: GetEntitySaversResult = args.result
+  const result: GetEntitySaversResult = args.data
   // 注意：这个方法不能是异步的，否则该模板内嵌的表单提交事件不会等模板自身的表单验证结果
   stateWFApprove.value.validate()
   // 上面只是调用了异常验证，确保整个onCreatedEntitySavers不是异步的
@@ -338,6 +326,21 @@ const onCreatedEntitySavers = (args: any) => {
   result.values[0].record.wfExtInfo = procTask.value.targetStateId
 }
 
+// 模板数据，用于注入到表单等组件中，如可在提交表单时，表单获取到该template对象，清楚下一步是审批通过还是审批不通过
+const pageTemplate: Ref<PageTemplate> = ref({ type: 'GlPageTemplateStateWF' })
+pageTemplate.value.onBeforeSubmit = onCreatedEntitySavers
+pageProvideProxy.setPateTemplate(pageTemplate.value)
+
+watch(
+    [selectedTran, remark, attachIds],
+    () => {
+      pageTemplate.value.selectedTran = selectedTran.value
+      pageTemplate.value.remark = remark.value
+      pageTemplate.value.attachIds = attachIds.value
+    },
+    { deep: true, immediate: true }
+)
+
 const pageParams = computed(() => {
   return [
     {
@@ -359,12 +362,12 @@ const pageParams = computed(() => {
   ]
 })
 
-emitter.on(UiEventNames.EntityForm.onCreatedEntitySavers, onCreatedEntitySavers)
-emitter.on(UiEventNames.EntityForm.onSubmitted, onSubmitForm)
-onUnmounted(() => {
-  emitter.off(UiEventNames.EntityForm.onCreatedEntitySavers, onCreatedEntitySavers)
-  emitter.off(UiEventNames.EntityForm.onSubmitted, onSubmitForm)
-})
+// // emitter.on(UiEventNames.EntityForm.onCreatedEntitySavers, onCreatedEntitySavers)
+// emitter.on(UiEventNames.EntityForm.onSubmitted, onSubmitForm)
+// onUnmounted(() => {
+//   // emitter.off(UiEventNames.EntityForm.onCreatedEntitySavers, onCreatedEntitySavers)
+//   emitter.off(UiEventNames.EntityForm.onSubmitted, onSubmitForm)
+// })
 </script>
 
 <template>
