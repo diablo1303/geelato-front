@@ -229,6 +229,20 @@ const deleteTable = async () => {
   }
 }
 
+const refreshMeta = async () => {
+  try {
+    await modelApi.refreshMetaRedis({
+      tableId: props.modelValue,
+      connectId: props.parameter.connectId || '',
+      appId: props.parameter?.appId || '',
+      tenantCode: props.parameter?.tenantCode || ''
+    });
+    global.$message.success({content: '刷新缓存成功！'})
+  } catch (err) {
+    global.$message.error({content: '刷新缓存失败！'})
+  }
+}
+
 const copyTable = () => {
   tableCopyParams.value.id = props.modelValue;
   tableCopyParams.value.title = '复制模型';
@@ -403,7 +417,7 @@ watch(() => visibleForm, () => {
       </a-tab-pane>
       <template #extra>
         <a-space v-if="!refApp">
-          <a-popconfirm v-if="!isSystem&&tabsKey===1" content="是否更新该条模型数据？" position="bottom" type="info" @ok="updateTable">
+          <a-popconfirm v-if="!isSystem&&tabsKey===1" content="是否更新该条模型数据？" position="br" type="info" @ok="updateTable">
             <a-button :disabled="formState==='view'" size="small" type="outline">
               <template #icon>
                 <gl-iconfont type="gl-save"/>
@@ -411,12 +425,20 @@ watch(() => visibleForm, () => {
               更新
             </a-button>
           </a-popconfirm>
-          <a-popconfirm v-if="!isSystem&&tabsKey===1" content="是否删除该条模型数据？" position="bottom" type="warning" @ok="deleteTable">
+          <a-popconfirm v-if="!isSystem&&tabsKey===1" content="是否删除该条模型数据？" position="br" type="warning" @ok="deleteTable">
             <a-button :disabled="formState==='view'" size="small" status="danger" type="outline">
               <template #icon>
                 <gl-iconfont type="gl-delete"/>
               </template>
               删除
+            </a-button>
+          </a-popconfirm>
+          <a-popconfirm content="是否刷新该模型及拥有的视图的缓存？" position="br" type="warning" @ok="refreshMeta">
+            <a-button :disabled="formState==='view'" size="small" status="warning" type="outline">
+              <template #icon>
+                <gl-iconfont type="gl-sync"/>
+              </template>
+              刷新模型缓存
             </a-button>
           </a-popconfirm>
           <a-button :disabled="isSystem||formState==='view'" size="small" type="outline" @click="syncFromModelToTable">

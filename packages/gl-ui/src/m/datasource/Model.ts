@@ -351,6 +351,14 @@ export function validateMetaView(connectId: string, viewSql: string) {
   return entityApi.getAxios().post<QueryResult>(`/api/meta/ddl/view/valid/${connectId}`, {sql: viewSql});
 }
 
+/**
+ * 刷新元数据缓存
+ * @param params 限制条件，tenantCode,appId,connectId,entityName,tableId
+ */
+export function refreshMetaRedis(params?: Record<string, string>) {
+  return entityApi.getAxios().post<QueryResult>('/api/meta/ddl/redis/refresh', params || {});
+}
+
 /* --------------------- 方法，接口调用 ------------------- */
 
 /**

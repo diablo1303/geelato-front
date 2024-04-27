@@ -9,10 +9,10 @@ import {reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
-import {SelectOptionData, TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {Message, SelectOptionData, TableColumnData, TableSortable} from '@arco-design/web-vue';
 import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams} from '@/api/base';
 // 页面所需 对象、方法
-import {deleteConnect as deleteList, pageQueryConnects as pageQueryList, QueryConnectForm as QueryForm} from '@/api/model';
+import {deleteConnect as deleteList, pageQueryConnects as pageQueryList, QueryConnectForm as QueryForm, refreshMetaRedis} from '@/api/model';
 import {querySelectOptions} from "@/api/security";
 import {enableStatusOptions} from "./searchTable";
 // 引入组件
@@ -223,6 +223,19 @@ const deleteTable = (data: QueryForm) => {
   });
 }
 
+const refreshMeta = async (data: QueryForm) => {
+  try {
+    await refreshMetaRedis({
+      connectId: data.id,
+      appId: props.parameter?.appId || '',
+      tenantCode: props.parameter?.tenantCode || ''
+    });
+    Message.success(t('searchTable.columns.operations.refresh.success'));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 /**
  * 表单反馈方法，保存成功
  * 新增：重置列表
@@ -373,11 +386,16 @@ watch(() => props, (val) => {
       </a-table-column>
       <a-table-column :sortable="sortable.createAt" :title="$t('model.connect.index.form.createAt')" :width="180" data-index="createAt"/>
       <a-table-column v-show="formState==='edit'" :title="$t('model.connect.index.form.operations')"
-                      :width="170" align="center" data-index="operations" fixed="right">
+                      :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button :disabled="formState==='view'" size="small" type="text" @click="editTable(record)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
+          <a-popconfirm :content="$t('searchTable.columns.operations.refresh.connectMsg')" position="tr" type="warning" @ok="refreshMeta(record)">
+            <a-button :disabled="formState==='view'" size="small" status="warning" type="text">
+              {{ $t('searchTable.columns.operations.refresh') }}
+            </a-button>
+          </a-popconfirm>
           <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record)">
             <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}

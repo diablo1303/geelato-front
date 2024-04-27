@@ -329,4 +329,10 @@ export default {
   'model.list.role.permission.tip.6': 'Role A (Weight 5: <Custom> , <See All>).',
   'model.list.role.permission.tip.7': 'Role B (Weight 10, <See Department> , <See Yourself>).',
   'model.list.role.permission.tip.8': 'Finally, the permission of [ Role B > See Department ] is obtained.',
+
+  'searchTable.columns.operations.refresh': 'Refresh',
+  'searchTable.columns.operations.refresh.success': 'Flush cache successfully！',
+  'searchTable.columns.operations.refresh.connectMsg': 'Whether to refresh the cache of all models and views under this data link？',
+  'searchTable.columns.operations.refresh.table': 'Refresh Meta Redis',
+  'searchTable.columns.operations.refresh.tableMsg': 'Whether to refresh the cache of all models and views under this data link？',
 };

@@ -7,8 +7,8 @@ export default {
 <script lang="ts" setup>
 import {ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
-import {createOrUpdateModelToTable, getTable, QueryTableForm, resetModelFormTable} from "@/api/model";
-import {Message, Modal, Notification} from "@arco-design/web-vue";
+import {createOrUpdateModelToTable, getTable, QueryTableForm, refreshMetaRedis, resetModelFormTable} from "@/api/model";
+import {Message, Modal} from "@arco-design/web-vue";
 import ModelTableColumnList from "../column/list.vue";
 import ModelTableForeignList from "../foreign/list.vue";
 import ModelTableViewList from "../view/list.vue";
@@ -218,6 +218,20 @@ const copyTable = () => {
   });
 }
 
+const refreshMeta = async () => {
+  try {
+    await refreshMetaRedis({
+      tableId: props.modelValue,
+      connectId: props.parameter.connectId || '',
+      appId: props.parameter?.appId || '',
+      tenantCode: props.parameter?.tenantCode || ''
+    });
+    Message.success(t('searchTable.columns.operations.refresh.success'));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 /**
  * 复制成功
  * @param data
@@ -308,6 +322,15 @@ watch(() => props, (val) => {
     </a-tab-pane>
     <template #extra>
       <a-space>
+        <a-popconfirm :content="$t('searchTable.columns.operations.refresh.tableMsg')"
+                      position="br" type="warning" @ok="refreshMeta">
+          <a-button :disabled="formState==='view'" status="warning" type="outline">
+            <template #icon>
+              <icon-sync/>
+            </template>
+            {{ $t('searchTable.columns.operations.refresh.table') }}
+          </a-button>
+        </a-popconfirm>
         <a-button :disabled="isSystem || formState==='view'" type="outline" @click="syncFromModelToTable($event)">
           <template #icon>
             <icon-sync/>

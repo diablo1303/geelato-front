@@ -140,7 +140,7 @@ type Item = {
 /**
  * 加载记录
  */
-const fetchData = () => {
+const fetchData = (successBack?: any, failBack?: any) => {
   if (!appStore.currentApp.id) {
     return
   }
@@ -164,6 +164,7 @@ const fetchData = () => {
           }
         }
         allItems.value = res.data
+        if (successBack && typeof successBack === 'function') successBack(res.data);
         generateRenderItems()
       }, () => {
         global.$message.error({content: '获取应用的模型数据失败'})
@@ -171,29 +172,33 @@ const fetchData = () => {
   )
 }
 
-const fetchAccreditData = async () => {
+const fetchAccreditData = async (successBack?: any, failBack?: any) => {
   if (!appStore.currentApp.id) {
     return
   }
   try {
     const {data} = await modelApi.queryAppTables({appId: appStore.currentApp.id});
     allAccreditItems.value = data;
+    if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     allAccreditItems.value = [];
+    if (failBack && typeof failBack === 'function') failBack(err);
   } finally {
     generateRenderAccreditItems()
   }
 }
 
-const fetchViewData = async () => {
+const fetchViewData = async (successBack?: any, failBack?: any) => {
   if (!appStore.currentApp.id) {
     return
   }
   try {
     const {data} = await modelApi.queryViews({appId: appStore.currentApp.id});
     allViewItems.value = data;
+    if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     allViewItems.value = [];
+    if (failBack && typeof failBack === 'function') failBack(err);
   } finally {
     generateRenderViewItems()
   }
@@ -201,6 +206,40 @@ const fetchViewData = async () => {
 
 const changeTab = (value: any) => {
   orderBy.value = value
+}
+
+const refreshMeta = async () => {
+  try {
+    await modelApi.refreshMetaRedis({
+      appId: appStore.currentApp.id || '',
+      tenantCode: appStore.currentApp.tenantCode || ''
+    });
+    global.$message.success({content: '刷新缓存成功！'})
+    fetchData()
+    fetchViewData()
+  } catch (err) {
+    global.$message.error({content: '刷新缓存失败！'})
+  }
+}
+
+const resetData = (type: string) => {
+  if (type === 'table') {
+    fetchData(() => {
+      global.$message.success({content: '应用模型数据重置成功！'})
+    });
+  } else if (type === 'view') {
+    fetchViewData(() => {
+      global.$message.success({content: '应用视图数据重置成功！'})
+    }, () => {
+      global.$message.error({content: '应用视图数据重置失败！'})
+    })
+  } else if (type === 'accredit') {
+    fetchAccreditData(() => {
+      global.$message.success({content: '授权模型数据重置成功！'})
+    }, () => {
+      global.$message.error({content: '授权模型数据重置失败！'})
+    })
+  }
 }
 
 fetchData()
@@ -250,6 +289,7 @@ const tableFormSaveSuccess = (data: QueryTableForm, action: string) => {
   if (data.id && action === 'add') tableOpen(data.id);
   // 刷新模型列表
   fetchData();
+  fetchViewData();
 }
 
 const aTableFormSaveSuccess = (data: QueryAppTableForm, action: string) => {
@@ -340,20 +380,35 @@ const editViewForm = (record: QueryViewForm) => {
       </template>
     </a-tabs>
 
-    <div style="padding: 4px 10px;">
-      <a-input-search v-model="searchText" allow-clear placeholder="录入中、英文名查询" size="small" style="width: 100%"/>
+    <div style="padding: 4px 5px 4px 5px;">
+      <a-space style="justify-content: flex-start;">
+        <a-input-search v-model="searchText" allow-clear placeholder="录入中、英文名查询" size="small"/>
+        <a-popconfirm content="是否刷新该应用下所有模型及视图的缓存？" position="bottom" type="warning" @ok="refreshMeta">
+          <a-button size="small" type="outline" style="height: 27px;">
+            <template #icon>
+              <a-tooltip content="刷新模型缓存">
+                <gl-iconfont type="gl-sync"/>
+              </a-tooltip>
+            </template>
+          </a-button>
+        </a-popconfirm>
+      </a-space>
     </div>
 
     <a-collapse v-model:active-key="activeKey" :bordered="true" class="collapse1">
       <a-collapse-item :key="1" :header="`授权模型（${renderAccreditItems.length}）`" class="colapse-list1">
         <template #extra>
           <a-space>
-            <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addAppTableForm">
-              <gl-iconfont type="gl-plus-circle"/>
-            </a-button>
-            <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="fetchAccreditData">
-              <gl-iconfont type="gl-reset"/>
-            </a-button>
+            <a-tooltip content="新建">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addAppTableForm">
+                <gl-iconfont type="gl-plus-circle"/>
+              </a-button>
+            </a-tooltip>
+            <a-tooltip content="重置">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="resetData('accredit')">
+                <gl-iconfont type="gl-reset"/>
+              </a-button>
+            </a-tooltip>
           </a-space>
         </template>
         <a-list size="small">
@@ -383,12 +438,16 @@ const editViewForm = (record: QueryViewForm) => {
         </template>
         <template #extra>
           <a-space>
-            <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addTableForm">
-              <gl-iconfont type="gl-plus-circle"/>
-            </a-button>
-            <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="fetchData">
-              <gl-iconfont type="gl-reset"/>
-            </a-button>
+            <a-tooltip content="新建">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addTableForm">
+                <gl-iconfont type="gl-plus-circle"/>
+              </a-button>
+            </a-tooltip>
+            <a-tooltip content="重置">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="resetData('table')">
+                <gl-iconfont type="gl-reset"/>
+              </a-button>
+            </a-tooltip>
           </a-space>
         </template>
         <a-list size="small">
@@ -417,12 +476,16 @@ const editViewForm = (record: QueryViewForm) => {
       <a-collapse-item :key="3" :header="`应用视图（${renderViewItems.length}）`" class="colapse-list1">
         <template #extra>
           <a-space>
-            <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addViewForm">
-              <gl-iconfont type="gl-plus-circle"/>
-            </a-button>
-            <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="fetchViewData">
-              <gl-iconfont type="gl-reset"/>
-            </a-button>
+            <a-tooltip content="新建">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addViewForm">
+                <gl-iconfont type="gl-plus-circle"/>
+              </a-button>
+            </a-tooltip>
+            <a-tooltip content="重置">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="resetData('view')">
+                <gl-iconfont type="gl-reset"/>
+              </a-button>
+            </a-tooltip>
           </a-space>
         </template>
         <a-list size="small">

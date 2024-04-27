@@ -331,4 +331,10 @@ export default {
   'model.list.role.permission.tip.6': '角色A（权重 5，自定义查看权限、看全部）。',
   'model.list.role.permission.tip.7': '角色B（权重 10，看部门、看自己）。',
   'model.list.role.permission.tip.8': '则最终取【角色B > 看部门】的权限。',
+
+  'searchTable.columns.operations.refresh': '刷新',
+  'searchTable.columns.operations.refresh.success': '刷新缓存成功！',
+  'searchTable.columns.operations.refresh.connectMsg': '是否刷新该数据链接下所有模型和视图的缓存？',
+  'searchTable.columns.operations.refresh.table': '刷新模型缓存',
+  'searchTable.columns.operations.refresh.tableMsg': '是否刷新该模型及拥有的视图的缓存？',
 };
