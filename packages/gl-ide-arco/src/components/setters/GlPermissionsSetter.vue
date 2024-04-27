@@ -49,8 +49,8 @@ watch(
     // code:${inst.id}，组件id
     // rule:'r' || 'w'，一般为read，用于操作一些操作按钮，或表单的描些字段不可见。有时也需要控制在可见的基础上，有些组件不可修改nw（no write）。
     // description：${组件名}
-    props.componentInstance.perms.r = readPerms.value.enabled
-    props.componentInstance.__perms.r = readPerms.value
+    props.componentInstance.perms!.r = readPerms.value.enabled
+    props.componentInstance.__perms!.r = readPerms.value
     emits('change:permissionValue', props.componentInstance.perms)
   },
   { deep: true }
