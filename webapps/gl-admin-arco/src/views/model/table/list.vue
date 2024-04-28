@@ -425,6 +425,11 @@ watch(() => props, (val) => {
           {{ $t(`model.table.index.form.sourceType.${record.sourceType}`) }}
         </template>
       </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('model.table.index.form.packBusData')" :tooltip="true" :width="130" data-index="packBusData">
+        <template #cell="{ record }">
+          {{ $t(`model.table.index.form.packBusData.${record.packBusData}`) }}
+        </template>
+      </a-table-column>
       <a-table-column v-if="false" :title="$t('model.table.index.form.linked')" :width="100" data-index="linked">
         <template #cell="{ record }">
           {{ $t(`model.table.index.form.linked.${record.linked}`) }}

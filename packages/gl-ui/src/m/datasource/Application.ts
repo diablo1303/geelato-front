@@ -20,9 +20,10 @@ export interface QueryAppForm {
   versionInfo: string;
   description: string;// 描述
   seqNo: number;
-  tenantCode?: string;
   applyStatus: number;
   designStatus: number;
+  appStorage: string;
+  tenantCode?: string;
 }
 
 export function queryApps(params: Record<string, any>) {

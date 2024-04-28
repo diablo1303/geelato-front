@@ -15,7 +15,7 @@ import {
   getTable as getForm,
   validateTableEntityName
 } from "@/api/model";
-import {enableStatusOptions, linkedOptions, tableTypeOptions} from "./searchTable";
+import {enableStatusOptions, linkedOptions, packBusDataOptions, tableTypeOptions} from "./searchTable";
 
 // 页面所需 参数
 type PageParams = {
@@ -54,6 +54,7 @@ const generateFormData = (): QueryForm => {
     description: '', // 补充描述
     synced: false,
     sourceType: 'creation', // 同步类型 creation:创建;update:更新
+    packBusData: false, // 打包业务数据
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
   };
@@ -256,6 +257,21 @@ defineExpose({saveOrUpdate, loadPage});
                 :value="item.value"/>
           </a-select>
           <span v-else>{{ $t(`model.table.index.form.enableStatus.${formData.enableStatus}`) }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.table.index.form.packBusData')"
+            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            field="linked">
+          <a-select v-if="formState!=='view'" v-model="formData.packBusData">
+            <a-option v-for="(item,index) of packBusDataOptions" :key="index" :label="$t(`${item.label}`)"
+                      :value="item.value"/>
+          </a-select>
+          <span v-else>{{ $t(`model.table.index.form.packBusData.${formData.packBusData}`) }}</span>
+          <template #extra>
+            {{ $t("model.table.index.form.packBusData.extra") }}
+          </template>
         </a-form-item>
       </a-col>
       <a-col v-if="false" :span="(labelCol+wrapperCol)/formCol">

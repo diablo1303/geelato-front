@@ -9,7 +9,7 @@ import {ref, watch} from "vue";
 import {type FormInstance, Modal, type SelectOptionData} from "@arco-design/web-vue";
 import {modelApi, applicationApi, utils} from "@geelato/gl-ui";
 import type {QueryConnectForm, QueryTableForm, QueryAppForm} from '@geelato/gl-ui';
-import {enableStatusOptions, linkedOptions, tableTypeOptions} from "./searchTable";
+import {enableStatusOptions, linkedOptions, packBusDataOptions, tableTypeOptions} from "./searchTable";
 
 type PageParams = {
   connectId?: string; // 数据库连接主键
@@ -52,6 +52,7 @@ const generateFormData = (): QueryTableForm => {
     description: '', // 补充描述
     synced: false,
     sourceType: 'creation',
+    packBusData: false,
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
   };
@@ -240,6 +241,16 @@ defineExpose({saveOrUpdate, loadPage});
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="enableStatus" label="状态">
           <a-select v-if="formState!=='view'" v-model="formData.enableStatus" :options="enableStatusOptions"/>
           <span v-else>{{ utils.getOptionLabel(formData.enableStatus, enableStatusOptions) }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="packBusData" label="打包业务数据">
+          <a-select v-if="formState!=='view' || ['creation'].includes(formData.sourceType)"
+                    v-model="formData.packBusData" :options="packBusDataOptions"/>
+          <span v-else>{{ utils.getOptionLabel(formData.packBusData, packBusDataOptions) }}</span>
+          <template #extra>
+            是否打包业务数据。选择是时，会将模型的业务数据一起打包，在部署时会更新到业务数据中。
+          </template>
         </a-form-item>
       </a-col>
       <a-col v-if="false" :span="(labelCol+wrapperCol)/formCol">

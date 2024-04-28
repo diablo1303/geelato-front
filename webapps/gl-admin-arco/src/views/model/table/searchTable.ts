@@ -25,4 +25,9 @@ const sourceTypeOptions = computed<SelectOptionData[]>(() => [
   {label: 'model.table.index.form.sourceType.creation', value: 'creation',},
 ]);
 
-export {columns, tableTypeOptions, enableStatusOptions, linkedOptions, sourceTypeOptions};
+const packBusDataOptions = computed<SelectOptionData[]>(() => [
+  {label: 'model.table.index.form.packBusData.true', value: true,},
+  {label: "model.table.index.form.packBusData.false", value: false,},
+]);
+
+export {columns, tableTypeOptions, enableStatusOptions, linkedOptions, sourceTypeOptions, packBusDataOptions};

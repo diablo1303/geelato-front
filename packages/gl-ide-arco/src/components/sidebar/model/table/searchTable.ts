@@ -27,4 +27,9 @@ const tableSyncOptions = computed<SelectOptionData[]>(() => [
   {label: '已同步', value: 2,},
 ]);
 
-export {tableTypeOptions, enableStatusOptions, linkedOptions, sourceTypeOptions, tableSyncOptions};
+const packBusDataOptions = computed<SelectOptionData[]>(() => [
+  {label: '是', value: true,},
+  {label: "否", value: false,},
+]);
+
+export {tableTypeOptions, enableStatusOptions, linkedOptions, sourceTypeOptions, tableSyncOptions, packBusDataOptions};
