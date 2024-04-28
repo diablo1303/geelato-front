@@ -12,4 +12,9 @@ const statusOptions = computed<SelectOptionData[]>(() => [
   {label: "application.app.list.status.0", value: 0,},
 ]);
 
-export {columns, watermarkOptions, statusOptions};
+const appTypeOptions = computed<SelectOptionData[]>(() => [
+  {label: 'application.app.list.type.platform', value: 'platform',},
+  {label: "application.app.list.type.normal", value: 'normal',},
+]);
+
+export {columns, watermarkOptions, statusOptions, appTypeOptions};

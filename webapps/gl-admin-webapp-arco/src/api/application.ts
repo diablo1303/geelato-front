@@ -23,6 +23,7 @@ export interface QueryAppForm {
   versionInfo: string;
   description: string;// 描述
   seqNo: number;
+  appStorage: string;
   tenantCode?: string;
 }
 

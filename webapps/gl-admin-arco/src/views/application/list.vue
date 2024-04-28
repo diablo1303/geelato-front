@@ -16,7 +16,7 @@ import {PageSizeOptions, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 页面所需 对象、方法
 import {deleteApp as deleteList, pageQueryApps as pageQueryList, QueryAppForm as QueryForm} from '@/api/application'
 import favicon from '@/assets/favicon.ico';
-import {watermarkOptions} from "./searchTable";
+import {appTypeOptions, watermarkOptions} from "./searchTable";
 // 引入组件
 import ApplicationForm from './form.vue';
 
@@ -36,7 +36,6 @@ const props = defineProps({
   pageSize: {type: Number, default: 10}, // 列表 - 条数
   height: {type: Number, default: 245}, // 列表 - 数据列表高度，滑动条高度
 });
-
 
 const router = useRouter();
 // 国际化
@@ -65,6 +64,7 @@ const generateFilterData = () => {
   return {
     id: props.parameter?.appId || '',
     name: '',
+    type: '',
     code: '',
     watermark: '',
     versionInfo: '',
@@ -297,11 +297,17 @@ watch(() => props, (val) => {
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
+            <a-form-item :label="$t('application.app.list.type')" field="type">
+              <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="(item,index) of appTypeOptions" :key="index" :label="$t(`${item.label}`)" :value="item.value"/>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('application.app.list.watermark')" field="watermark">
               <a-select v-model="filterData.watermark" :placeholder="$t('searchTable.form.selectDefault')">
-                <a-option
-                    v-for="item of watermarkOptions" :key="item.value as string" :label="$t(`${item.label}`)"
-                    :value="item.value"/>
+                <a-option v-for="item of watermarkOptions" :key="item.value as string" :label="$t(`${item.label}`)"
+                          :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
@@ -374,6 +380,11 @@ watch(() => props, (val) => {
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.code')" :tooltip="true" :width="180" data-index="code"/>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.type')" :tooltip="true" :width="100" data-index="type">
+        <template #cell="{ record }">
+          {{ record.type ? $t(`application.app.list.type.${record.type}`) : "" }}
+        </template>
+      </a-table-column>
       <!-- <a-table-column :ellipsis="true" :title="$t('application.app.list.versionInfo')" :tooltip="true" :width="120" data-index="versionInfo"/>-->
       <a-table-column :ellipsis="true" :title="$t('application.app.list.applyStatus')" :tooltip="true" :width="120" data-index="applyStatus">
         <template #cell="{ record }">
@@ -400,6 +411,12 @@ watch(() => props, (val) => {
                       data-index="seqNo"/>
       <a-table-column :ellipsis="true" :sortable="sortable.createAt" :title="$t('application.app.list.createAt')" :tooltip="true" :width="180"
                       data-index="createAt"/>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.appStorage')" :tooltip="true" :width="180" data-index="appStorage">
+        <template #cell="{ record }">
+          <CopyToClipboard v-if="record.appStorage" :model-value="record.appStorage"/>
+          {{ record.appStorage }}
+        </template>
+      </a-table-column>
       <a-table-column :ellipsis="true" :title="$t('application.app.list.description')" :tooltip="true" :width="240" data-index="description"/>
       <a-table-column :title="$t('application.app.list.operations')" :width="400" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">

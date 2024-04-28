@@ -13,7 +13,7 @@ import {createOrUpdateApp as createOrUpdateForm, getApp as getForm, QueryAppForm
 import {getRoleSelectOptions, QueryRoleForm} from "@/api/security";
 import {getConnectSelectOptions, QueryConnectForm} from "@/api/model";
 import UploadImageBase64 from '@/components/upload-base64/image.vue';
-import {statusOptions, watermarkOptions} from "./searchTable";
+import {appTypeOptions, statusOptions, watermarkOptions} from "./searchTable";
 
 // 页面所需 参数
 type PageParams = {
@@ -45,6 +45,7 @@ const generateFormData = (): QueryForm => {
     id: props.modelValue || '',
     name: '',// 应用名称
     code: '',// 应用编码
+    type: 'normal',// 应用类型
     icon: '',// 图标
     appKey: '',
     token: '',
@@ -60,6 +61,7 @@ const generateFormData = (): QueryForm => {
     seqNo: 999,
     applyStatus: 1,
     designStatus: 1,
+    appStorage: '',
     roles: '',
     connects: '',
     tenantCode: props.parameter?.tenantCode || ''
@@ -294,6 +296,17 @@ defineExpose({saveOrUpdate, loadPage});
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
+            :label="$t('application.app.list.type')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            field="type">
+          <a-select v-if="formState!=='view'" v-model="formData.type">
+            <a-option v-for="(item,index) of appTypeOptions" :key="index" :label="$t(`${item.label}`)" :value="item.value"/>
+          </a-select>
+          <span v-else>{{ $t(`application.app.list.type.${formData.type}`) }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
             :label="$t('application.app.list.icon')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="icon">
@@ -320,6 +333,8 @@ defineExpose({saveOrUpdate, loadPage});
             field="logo">
           <UploadImageBase64 v-model="formData.logo" :disabled="formState==='view'" image-name="logo"/>
         </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
@@ -409,14 +424,25 @@ defineExpose({saveOrUpdate, loadPage});
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)">
+        <a-form-item :label="$t('application.app.list.appStorage')"
+                     :label-col-props="{ span: labelCol/formCol }"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                     field="appStorage">
+          <a-textarea v-if="formState!=='view'" v-model="formData.appStorage" :auto-size="{minRows:1,maxRows:4}" :max-length="512" show-word-limit/>
+          <span v-else :title="formData.appStorage" class="textarea-span" @click="openModal(`${formData.appStorage}`)">
+           {{ formData.appStorage }}
+          </span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)">
         <a-form-item :label="$t('application.app.list.description')"
                      :label-col-props="{ span: labelCol/formCol }"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                      field="description">
           <a-textarea v-if="formState!=='view'" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
           <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">
-        {{ formData.description }}
-      </span>
+            {{ formData.description }}
+          </span>
         </a-form-item>
       </a-col>
     </a-row>

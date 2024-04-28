@@ -42,6 +42,12 @@ const {loading, setLoading} = useLoading(false);
 const tabsKey = ref<number>(1);
 
 /**
+ * 调整应用信息高度
+ */
+const resetAppModelHeight = () => {
+  return window.innerHeight - 215;
+}
+/**
  * 调整树形结构高度
  */
 const resetSplitHeight = () => {
@@ -72,6 +78,7 @@ const resetListPageSize = () => {
 // 引用页面所需参数
 // 应用信息
 const appModelParams = ref({
+  height: resetAppModelHeight(),
   visible: false, id: '', formState: 'edit', formCol: 2, parameter: {appId: '', tenantCode: ''}
 });
 const generateListParams = () => {
@@ -112,6 +119,9 @@ const handleLogout = () => {
 const handleResize = () => {
   const listRecord = {height: resetListHeight(), pageSize: resetListPageSize()}
   switch (tabsKey.value) {
+    case 1: // 应用信息
+      appModelParams.value.height = resetAppModelHeight();
+      break;
     case 2: // 应用字典
       Object.assign(dictListParams.value, listRecord);
       break;
@@ -308,12 +318,16 @@ onUnmounted(() => {
                     </a-popconfirm>
                   </a-space>
                 </template>
-                <ApplicationModel ref="tableFormRef"
-                                  :visible="appModelParams.visible"
-                                  :parameter="appModelParams.parameter"
-                                  :formState="appModelParams.formState"
-                                  :modelValue="appModelParams.id"
-                                  :formCol="appModelParams.formCol"/>
+                <a-scrollbar :style="{overflow:'auto',height:`${appModelParams.height}px`}">
+                  <div style="width: 98.6%;">
+                    <ApplicationModel ref="tableFormRef"
+                                      :visible="appModelParams.visible"
+                                      :parameter="appModelParams.parameter"
+                                      :formState="appModelParams.formState"
+                                      :modelValue="appModelParams.id"
+                                      :formCol="appModelParams.formCol"/>
+                  </div>
+                </a-scrollbar>
               </a-card>
             </a-tab-pane>
             <a-tab-pane :key="2">
