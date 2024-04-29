@@ -75,7 +75,7 @@ const openRefActionSetter = (beRefAction:{componentId:string,action:Action})=>{
             </div>
           </div>
           <div v-for="beRefAction in beRefActions[action.id]" :key="beRefAction.action.id">
-            <a-tooltip :content="`以上事件（${action.title}），被此事件引用，该事件来源于组件（${beRefAction.label}）`">
+            <a-tooltip :content="`以上事件（${action.title}），被此事件引用，该事件来源于组件（${beRefAction.label}）`" position="right">
               <div class="gl-action-item">
                 <GlIconfont type="gl-link" style="margin: 0 0.5em"></GlIconfont>
                 <div class="gl-title" @click="openRefActionSetter(beRefAction)">{{ beRefAction.action.title }}：{{ beRefAction.action.name }}</div>

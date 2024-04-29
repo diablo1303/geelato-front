@@ -101,7 +101,7 @@ const ruleOptions = [
   {
     label: '正数（数值）',
     value: 'positive',
-    message: '不是正数',
+    message: '需大于0',
     type: 'number',
     setter: 'ASwitch',
     props: {placeholder: '数值', title: '数值'},
@@ -111,7 +111,7 @@ const ruleOptions = [
   {
     label: '负数（数值）',
     value: 'negative',
-    message: '不是负数',
+    message: '需小于0',
     type: 'number',
     setter: 'ASwitch',
     props: {placeholder: '数值', title: '数值'},
