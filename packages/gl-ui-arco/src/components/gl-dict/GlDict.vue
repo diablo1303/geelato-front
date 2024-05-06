@@ -5,9 +5,10 @@ export default {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import { inject, type Ref, ref, watch } from 'vue'
-import { entityApi, mixins, PageProvideKey, type PageProvideProxy } from '@geelato/gl-ui'
+import {inject, onUnmounted, type Ref, ref, watch} from 'vue'
+import {entityApi, mixins, PageProvideKey, type PageProvideProxy, useLogger} from '@geelato/gl-ui'
 
+const logger = useLogger('GlDict')
 const emits = defineEmits(['update:modelValue', 'onOptionChange'])
 type OptionType = { value: string; label: string }
 const props = defineProps({
@@ -84,18 +85,24 @@ const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 // console.log('props.modelValue', props.modelValue, props.dictId)
 const mv = ref(props.modelValue)
 let selectedOption: Ref<OptionType | undefined> = ref({ value: '', label: '' })
-watch(
-  () => {
-    return props.displayType
-  },
-  (val) => {
-    if (val === 'checkbox') {
-      mv.value = []
-    } else {
-      mv.value = undefined
-    }
-  }
-)
+const isRead = pageProvideProxy.isPageStatusRead() || props.disabled || props.readonly
+
+// 设计时才需要在切换字典展示类型
+if(!props.glIsRuntime){
+  watch(
+      () => {
+        return props.displayType
+      },
+      (val) => {
+        if (val === 'checkbox') {
+          mv.value = []
+        } else {
+          mv.value = undefined
+        }
+      }
+  )
+}
+
 watch(
   () => {
     return props.modelValue
@@ -116,18 +123,22 @@ const callBackToSetValue = () => {
     return option.value === mv.value
   })
   const label = foundOption?.label || ''
-  if (props.nameFieldBindComponentId) {
-    const ids = props.nameFieldBindComponentId.split(',')
-    ids.forEach((id: string) => {
-      pageProvideProxy.setComponentValue(id, label)
-    })
-  }
-  // 回写值
-  if (props.valueFieldBindComponentId) {
-    const ids = props.valueFieldBindComponentId.split(',')
-    ids.forEach((id: string) => {
-      pageProvideProxy.setComponentValue(id, mv.value)
-    })
+  try{
+    if (props.nameFieldBindComponentId) {
+      const ids = props.nameFieldBindComponentId.split(',')
+      ids.forEach((id: string) => {
+        pageProvideProxy.setComponentValue(id, label)
+      })
+    }
+    // 回写值
+    if (props.valueFieldBindComponentId) {
+      const ids = props.valueFieldBindComponentId.split(',')
+      ids.forEach((id: string) => {
+        pageProvideProxy.setComponentValue(id, mv.value)
+      })
+    }
+  }catch (e) {
+    logger.error('基于字典值回填组件值时失败',e)
   }
   selectedOption.value = foundOption
   emits('onOptionChange', selectedOption.value)
@@ -154,10 +165,10 @@ const loadData = () => {
     entityApi
       .query(
         'platform_dict_item',
-        'id,itemCode value,itemName label' + (props.showRemarkInLabel ? ',itemRemark remark' : ''),
+        'id,enableStatus,itemCode value,itemName label' + (props.showRemarkInLabel ? ',itemRemark remark' : ''),
         {
           dictId: props.dictId,
-          enableStatus: 1,
+          // enableStatus: 1,
           delStatus: 0,
           '@p': '1,2000',
           '@order': 'seqNo|' + props.dictAscOrDesc
@@ -170,15 +181,6 @@ const loadData = () => {
   }
 }
 
-watch(
-  () => {
-    return props.dictId
-  },
-  () => {
-    loadData()
-  },
-  { immediate: true }
-)
 /**
  *  注意，需在onOptionChange之后调用
  */
@@ -186,40 +188,66 @@ const getSelectedOption = () => {
   return selectedOption.value
 }
 
+/**
+ * 将备注、名称展示在下拉项中
+ * @param option
+ */
 const getLabel = (option: Record<string, any>) => {
   return (
     option.label +
     (props.showValueInLabel ? '(' + option.value + ')' : '') +
-    (props.showRemarkInLabel && option.remark ? '(' + (option.remark.length>8?option.remark.substring(0,8)+'...':option.remark) + ')' : '')
+    (props.showRemarkInLabel && option.remark
+      ? '(' +
+        (option.remark.length > 8 ? option.remark.substring(0, 8) + '...' : option.remark) +
+        ')'
+      : '')
   )
 }
 
+// 设计时才需要在切换字典时重新加载数据
+if(!props.glIsRuntime){
+  watch(
+      () => {
+        return props.dictId
+      },
+      () => {
+        loadData()
+      }
+  )
+}
+// 初始加载数据
+loadData()
 defineExpose({ getSelectedOption })
+
 </script>
 
 <template>
   <div class="gl-dict">
     <template v-if="displayType === 'select'">
-      <a-select
-        placeholder="请选择"
-        v-model="mv"
-        allow-clear
-        allow-search
-        @clear="onClear"
-        :disabled="disabled || readonly"
-        :readonly="readonly"
-      >
-        <a-option v-for="opt in options" :value="opt.value">
-          {{ getLabel(opt) }}
-        </a-option>
-      </a-select>
+      <!--  下拉时，在只读状态才需要展示为文本  -->
+      <template v-if="glIsRuntime&&isRead">{{ selectedOption?.label||'无' }}</template>
+      <template v-else>
+        <a-select
+          placeholder="请选择"
+          v-model="mv"
+          allow-clear
+          allow-search
+          @clear="onClear"
+          :disabled="disabled || readonly"
+          :readonly="readonly"
+        >
+          <a-option v-for="opt in options" :value="opt.value" :disabled="opt.enableStatus=='0'">
+            {{ getLabel(opt) }}
+          </a-option>
+        </a-select>
+      </template>
     </template>
     <template v-else-if="displayType === 'checkbox'">
       <template v-if="options && options.length === 0">
         <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
       </template>
       <a-checkbox-group v-model="mv" :max="maxCount" :disabled="disabled" :readonly="readonly">
-        <a-checkbox v-for="opt in options" :value="opt.value">
+        <a-checkbox v-for="opt in options" :value="opt.value" :disabled="opt.enableStatus=='0'">
           {{ getLabel(opt) }}
         </a-checkbox>
       </a-checkbox-group>
@@ -229,7 +257,7 @@ defineExpose({ getSelectedOption })
         <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
       </template>
       <a-radio-group v-model="mv" :disabled="disabled" :readonly="readonly">
-        <a-radio v-for="opt in options" :value="opt.value">
+        <a-radio v-for="opt in options" :value="opt.value" :disabled="opt.enableStatus=='0'">
           {{ getLabel(opt) }}
         </a-radio>
       </a-radio-group>

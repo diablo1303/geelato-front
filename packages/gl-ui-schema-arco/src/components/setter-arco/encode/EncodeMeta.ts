@@ -34,11 +34,12 @@ export default {
         "type": "props",
         "show": true,
         "expanded": true,
-        "setterComponentProps": {"entityName": "platform_encoding", "labelFieldName": "title", "valueFieldName": "id"},
+        "setterComponentProps": {"entityName": "platform_encoding", "labelFieldNames": ["title"], "valueFieldName": "id"},
         "setterComponentVModelName": "modelValue",
-        "title": "编码Id",
+        "title": "字段编码",
         "setterComponentName": "GlDynamicSelect",
-        "enableValueExpress": false
+        "enableValueExpress": false,
+        "description": "选择应用配置中定义的字段编码规则",
     }],
     "actions": [{"name": "onValueChange", "description": "值改变时触发", "title": "值改变"}]
 }
