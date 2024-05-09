@@ -112,6 +112,10 @@ export const uploadHeader = (): Record<string, string> => {
   return {Authorization: ''};
 }
 
+export const updateFile = (formData: FormData, isRename: boolean, objectId?: string, genre?: string, root?: string) => {
+  return axios.post<QueryResult>(`/api/upload/file?isRename=${isRename !== false}&objectId=${objectId || ''}&genre=${genre || ''}&root=${root || ''}`, formData);
+};
+
 /**
  * 校验文件是否存在
  * @param url
