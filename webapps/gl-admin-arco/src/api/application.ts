@@ -99,6 +99,58 @@ export function validateAppCode(params: QueryAppForm) {
   return axios.post<QueryResult>('/api/app/validate', params);
 }
 
+/* -----------------------------版本管理--------------------------- */
+export interface QueryAppVersionForm {
+  id: string;
+  version: string;
+  packagePath: string;
+  packageSource: string;
+  packetTime: string;
+  status: string;
+  description: string;
+  appId: string;
+  tenantCode: string;
+  createAt?: string;
+  creator?: string;
+  creatorName?: string;
+  updateAt?: string;
+  updater?: string;
+  updaterName?: string;
+}
+
+export function pageQueryAppVersions(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/app/version/pageQuery', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
+export function getAppVersion(id: string) {
+  return axios.get<QueryAppVersionForm>(`/api/app/version/get/${id}`);
+}
+
+export function createOrUpdateAppVersion(params: QueryAppVersionForm) {
+  return axios.post<QueryResult>('/api/app/version/createOrUpdate', params);
+}
+
+export function deleteAppVersion(id: string) {
+  return axios.delete<QueryResult>(`/api/app/version/isDelete/${id}`);
+}
+
+/**
+ * 应用打包
+ * @param appId
+ */
+export function packetAppVersion(appId: string) {
+  return axios.get<QueryResult>(`/package/packet/${appId}`);
+}
+
+export function queryAppPackage(appVersionId: string) {
+  return axios.get<QueryResult>(`/api/app/version/package/${appVersionId}`);
+}
+
+/* -------------------------------------------------------------- */
 /**
  * 获取应用菜单
  * @param params

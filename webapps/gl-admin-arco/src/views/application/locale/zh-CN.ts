@@ -44,6 +44,7 @@ export default {
   'application.app.list.operations.enter.design': '设计',
   'application.app.list.operations.enter.index': '应用',
   'application.app.list.operations.enter.settings': '配置',
+  'application.app.list.operations.enter.version': '版本',
   'application.app.list.operations.view': '查看',
   'application.app.list.operations.edit': '编辑',
   'application.app.list.operations.delete': '删除',

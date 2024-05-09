@@ -44,6 +44,7 @@ export default {
   'application.app.list.operations.enter.design': 'Design',
   'application.app.list.operations.enter.index': 'Index',
   'application.app.list.operations.enter.settings': 'Settings',
+  'application.app.list.operations.enter.version': 'Version',
   'application.app.list.operations.view': 'View',
   'application.app.list.operations.edit': 'Edit',
   'application.app.list.operations.delete': 'Delete',

@@ -209,6 +209,10 @@ const enterTable = (data: QueryForm, type: string) => {
         console.log('window.location.host: ', window.location.host)
         window.open(`${window.location.protocol}//${window.location.host}/appSettings.html?tenantCode=${data.tenantCode}&appId=${data.id}&appName=${data.name}`, "_blank")
         break;
+      case 'version':
+        console.log('window.location.host: ', window.location.host)
+        window.open(`${window.location.protocol}//${window.location.host}/appVersion.html?tenantCode=${data.tenantCode}&appId=${data.id}&appName=${data.name}`, "_blank")
+        break;
       case 'manage':
         break;
       default:
@@ -428,6 +432,9 @@ watch(() => props, (val) => {
           </a-button>
           <a-button :disabled="formState==='view'" size="small" type="text" @click="enterTable(record,'settings')">
             {{ $t('application.app.list.operations.enter.settings') }}
+          </a-button>
+          <a-button :disabled="formState==='view'" size="small" type="text" @click="enterTable(record,'version')">
+            {{ $t('application.app.list.operations.enter.version') }}
           </a-button>
           <a-button :disabled="formState==='view'" size="small" type="text" @click="editTable(record)">
             {{ $t('application.app.list.operations.edit') }}

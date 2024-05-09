@@ -12,8 +12,9 @@ import {EventNames} from '@geelato/gl-ide';
 import {emitter, useGlobal} from '@geelato/gl-ui';
 import useUser from '@/hooks/user';
 import useLoading from "@/hooks/loading";
-import {getApp, QueryAppForm,} from "@/api/application";
+import {deleteAppVersion, getApp, packetAppVersion, QueryAppForm, QueryAppVersionForm,} from "@/api/application";
 import {ListParams, PageSizeOptions, resetValueByOptions} from '@/api/base';
+import {fetchFileById} from "@/api/attachment";
 import {QueryOrgForm} from "@/api/security";
 import ApplicationModel from "@/views/application/model.vue";
 import DictionaryList from "@/views/security/dictionary/list.vue";
@@ -24,6 +25,10 @@ import SystemConfigList from "@/views/security/sysconfig/list.vue";
 import OrgTree from "@/components/org-choose-box/tree.vue";
 import UserPermissionList from "@/views/security/user/permission/list.vue";
 import cloneDeep from "lodash/cloneDeep";
+import AppVersionList from "@/views/version/list.vue";
+import AppVersionTabs from "@/views/version/tabsForm.vue";
+import AppVersionForm from "@/views/version/form.vue";
+import {generateRandom} from "@/utils/strings";
 import pinia, {useUserStore} from '../../store';
 
 // 常量使用
@@ -45,10 +50,10 @@ const tabsKey = ref<number>(1);
  * 调整树形结构高度
  */
 const resetSplitHeight = () => {
-  return window.innerHeight - 165;
+  return window.innerHeight - 135;
 }
 const splitHeight = ref<number>(resetSplitHeight());
-const splitMin = ref<number | string>('250px');
+const splitMin = ref<number | string>('300px');
 const splitSize = ref<number | string>(splitMin.value);
 /**
  * 调整列表高度
@@ -60,7 +65,7 @@ const resetListHeight = () => {
  * 调整树形结构高度
  */
 const resetTreeHeight = () => {
-  return window.innerHeight - 200;
+  return window.innerHeight - 180;
 }
 /**
  * 调整列表展示行数
@@ -69,36 +74,26 @@ const resetListPageSize = () => {
   return resetValueByOptions(PageSizeOptions, (resetListHeight() / ListRowHeight), ListDefaultPageSize);
 }
 
-// 引用页面所需参数
-// 应用信息
-const appModelParams = ref({
-  visible: false, id: '', formState: 'edit', formCol: 2, parameter: {appId: '', tenantCode: ''}
+const listParams = ref({
+  load: generateRandom(),
+  visible: false,
+  parameter: {appId: '', tenantCode: ''},
+  formState: 'edit',
+  pageSize: 10000,
+  height: resetTreeHeight(),
+  selected: {id: '', title: '', item: {}},
 });
-const generateListParams = () => {
-  return {
-    visible: false,
-    parameter: {appId: '', tenantCode: ''},
-    formState: 'edit',
-    filterCol: 3,
-    pageSize: resetListPageSize(),
-    height: resetListHeight(),
-  }
-};
-// 字典管理
-const dictListParams = ref(generateListParams());
-// 角色管理
-const roleListParams = ref(generateListParams());
-// 编码管理
-const encodingListParams = ref(generateListParams());
-// 文件管理
-const fileListParams = ref(generateListParams());
-// 系统配置
-const configListParams = ref(generateListParams());
-
-const userTreeParams = ref({
-  visible: false, parameter: {appId: '', tenantCode: ''}, height: resetTreeHeight()
+const formParams = ref({
+  visible: false,
+  isModal: true,
+  title: '',
+  width: '',
+  height: '',
+  parameter: {appId: '', tenantCode: ''},
+  formState: 'add',
+  id: '',
+  formCol: 1,
 });
-const userPerListParams = ref(generateListParams());
 
 /**
  * 登出功能
@@ -110,31 +105,7 @@ const handleLogout = () => {
  * 浏览器高度调整时事件
  */
 const handleResize = () => {
-  const listRecord = {height: resetListHeight(), pageSize: resetListPageSize()}
-  switch (tabsKey.value) {
-    case 2: // 应用字典
-      Object.assign(dictListParams.value, listRecord);
-      break;
-    case 3: // 应用角色
-      Object.assign(roleListParams.value, listRecord);
-      break;
-    case 4: // 应用编码
-      Object.assign(encodingListParams.value, listRecord);
-      break;
-    case 5: // 应用文件
-      Object.assign(fileListParams.value, listRecord);
-      break;
-    case 6: // 应用配置
-      Object.assign(configListParams.value, listRecord);
-      break;
-    case 7: // 应用配置
-      Object.assign(userPerListParams.value, listRecord);
-      Object.assign(userTreeParams.value, {height: resetTreeHeight()});
-      splitHeight.value = resetSplitHeight();
-      break;
-    default:
-      break;
-  }
+  listParams.value.height = resetTreeHeight();
 }
 
 /**
@@ -153,38 +124,22 @@ const getAppData = async (id: string, successBack?: any, failBack?: any) => {
 };
 
 /**
- * 更新应用信息
- */
-const updateApp = () => {
-  setLoading(true)
-  // @ts-ignore
-  if (tableFormRef.value && typeof tableFormRef.value?.saveOrUpdate === 'function') {
-    // @ts-ignore
-    tableFormRef.value?.saveOrUpdate((data: QueryAppForm) => {
-      setLoading(false);
-      Message.success("更新成功！");
-      appData.value = data;
-    }, () => {
-      setLoading(false);
-    });
-  }
-};
-
-/**
  * 打开链接
  * @param type
  */
 const enterLink = (type: string) => {
   if (appData.value.id && appData.value.tenantCode) {
     const host = `${window.location.protocol}//${window.location.host}`;
+    const params = `tenantCode=${appData.value.tenantCode}&appId=${appData.value.id}&appName=${appData.value.name}`;
     switch (type) {
       case 'index':
         window.open(`${host}/${appData.value.tenantCode}/${appData.value.id}/page`, "_blank");
         break;
       case 'design':
-        // eslint-disable-next-line no-case-declarations
-        const params = `tenantCode=${appData.value.tenantCode}&appId=${appData.value.id}&appName=${appData.value.name}`;
-        window.open(`${host}/ide.html?${params}`, "_blank")
+        window.open(`${host}/ide.html?${params}`, "_blank");
+        break;
+      case 'settings':
+        window.open(`${host}/appSettings.html?${params}`, "_blank");
         break;
       case 'manage':
         break;
@@ -194,23 +149,53 @@ const enterLink = (type: string) => {
   }
 }
 
-/**
- * 选中添加、取消移除
- * @param isSelected
- * @param data
- */
-const selectChange = (isSelected: boolean, data: QueryOrgForm, forms: QueryOrgForm[]) => {
-  const params = {orgIds: [] as string[], orgNames: [] as string[]};
-  if (forms && forms.length > 0) {
-    forms.forEach((item) => {
-      params.orgIds.push(item.id);
-      params.orgNames.push(item.name);
+const listSelected = (record: QueryAppVersionForm) => {
+  console.log("listSelected", record);
+  if (record.id) {
+    Object.assign(listParams.value.selected, {
+      id: record.id,
+      title: `${record.version} | ${record.packetTime || record.createAt}`,
+      item: record
     });
+  } else {
+    Object.assign(listParams.value.selected, {id: '', title: '', item: {}});
   }
-  Object.assign(userPerListParams.value.parameter, {
-    orgId: params.orgIds.length > 0 ? params.orgIds.join() : '',
-    orgName: params.orgNames.length > 0 ? params.orgNames.join() : '',
-  })
+  console.log(listParams.value);
+}
+
+const packAppVersion = async () => {
+  try {
+    const {data} = await packetAppVersion(appData.value.id);
+    Message.success('打包成功!');
+    // @ts-ignore
+    listParams.value.selected.id = data.id || '';
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+const saveSuccess = (record: QueryAppVersionForm, action: string) => {
+  listParams.value.selected.id = record.id || '';
+}
+
+const openAppVersionForm = () => {
+  Object.assign(formParams.value, {
+    visible: true, id: '', title: '版本上传', formState: 'add',
+    parameter: {appId: appData.value.id, tenantCode: appData.value.tenantCode},
+  });
+}
+
+const deployVersion = async (item: QueryAppVersionForm) => {
+
+}
+const deleteVersion = async (item: QueryAppVersionForm) => {
+  try {
+    await deleteAppVersion(item.id);
+    Message.success("删除成功");
+    listParams.value.selected.id = '';
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 onMounted(() => {
@@ -232,27 +217,9 @@ onMounted(() => {
         });
       });
       document.title = `应用版本管理 | ${data.name}`;
-      // 应用基本信息
-      Object.assign(appModelParams.value, {
-        visible: true, id: data.id, parameter: {appId: data.id, tenantCode: data.tenantCode || ''}
-      })
       // 列表
       const listRecord = {visible: true, parameter: {appId: data.id, tenantCode: data.tenantCode || ''}}
-      // 字典管理
-      Object.assign(dictListParams.value, listRecord);
-      // 角色管理
-      Object.assign(roleListParams.value, listRecord);
-      // 编码管理
-      Object.assign(encodingListParams.value, listRecord);
-      // 文件管理
-      Object.assign(fileListParams.value, listRecord);
-      // 系统配置
-      Object.assign(configListParams.value, listRecord);
-      // 用户管理
-      Object.assign(userTreeParams.value, listRecord);
-      // 组织管理
-      userPerListParams.value.filterCol = 2;
-      Object.assign(userPerListParams.value, cloneDeep(listRecord));
+      Object.assign(listParams.value, listRecord);
     });
   }
 
@@ -273,156 +240,111 @@ onUnmounted(() => {
     </div>
     <div v-else>
       <div :style="{ padding: '4px 14px' }" class="gl-page-header">
-        <a-page-header title="应用版本管理" :subtitle="appData.name" :show-back="false"/>
+        <a-page-header title="应用版本管理" :subtitle="appData.name" :show-back="false">
+          <template #extra>
+            <a-space>
+              <a-button type="text" class="app-button" @click="openAppVersionForm">
+                <template #icon>
+                  <icon-import/>
+                </template>
+                上传版本
+              </a-button>
+              <a-popconfirm content="是否将当前版本打包？" position="br" type="warning" @ok="packAppVersion">
+                <a-button type="text" class="app-button">
+                  <template #icon>
+                    <icon-export/>
+                  </template>
+                  应用打包
+                </a-button>
+              </a-popconfirm>
+              <a-divider direction="vertical" style="margin: 0px 1px;height: 16px;"/>
+              <a-button type="text" class="app-button" @click="enterLink('index')">
+                <template #icon>
+                  <icon-link/>
+                </template>
+                应用站点
+              </a-button>
+              <a-button type="text" class="app-button" @click="enterLink('design')">
+                <template #icon>
+                  <icon-link/>
+                </template>
+                设计站点
+              </a-button>
+              <a-button type="text" class="app-button" @click="enterLink('settings')">
+                <template #icon>
+                  <icon-link/>
+                </template>
+                配置管理
+              </a-button>
+            </a-space>
+          </template>
+        </a-page-header>
       </div>
       <div :style="{ padding: '14px' }">
         <a-card>
-          <a-tabs v-model:active-key="tabsKey" :default-active-key="1" direction="vertical" :lazy-load="true">
-            <a-tab-pane :key="1">
-              <template #title>
-                <icon-calendar/>
-                基本信息
-              </template>
-              <a-card class="general-card">
-                <template #extra>
-                  <a-space>
-                    <a-button type="text" class="app-button" @click="enterLink('index')">
-                      <template #icon>
-                        <icon-link/>
-                      </template>
-                      应用站点
-                    </a-button>
-                    <a-button type="text" class="app-button" @click="enterLink('design')">
-                      <template #icon>
-                        <icon-link/>
-                      </template>
-                      设计站点
-                    </a-button>
-                    <a-popconfirm content="是否更新该应用的基本信息？" position="br" type="info" @ok="updateApp">
-                      <a-button :disabled="!appModelParams.id" type="text" class="app-button" :loading="loading">
-                        <template #icon>
-                          <icon-save/>
-                        </template>
-                        更新
+          <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
+            <template #first>
+              <AppVersionList v-if="listParams.visible"
+                              :key="listParams.load"
+                              :model-value="listParams.selected.id"
+                              :visible="listParams.visible"
+                              :parameter="listParams.parameter"
+                              :form-state="listParams.formState"
+                              :page-size="listParams.pageSize"
+                              :height="listParams.height"
+                              @listSelected="listSelected"/>
+            </template>
+            <template #second>
+              <div class="general-card3">
+                <div class="card-header">
+                  <a-space style="width: 100%;justify-content: space-between;">
+                    <div class="card-header-title">
+                      {{ listParams.selected.title }}
+                    </div>
+                    <div v-if="!!listParams.selected.id" class="card-header-extra">
+                      <a-button type="text" style="color: rgb(var(--primary-6))"
+                                @click.stop="fetchFileById(listParams.selected.item.packagePath)">
+                        <icon-download/>
+                        下载
                       </a-button>
-                    </a-popconfirm>
+                      <a-popconfirm position="br" content="是否部署该版本？" @ok="deployVersion(listParams.selected.item)">
+                        <a-button type="text" style="color: rgb(var(--success-6))">
+                          <icon-star/>
+                          部署
+                        </a-button>
+                      </a-popconfirm>
+                      <a-popconfirm position="br" content="是否删除该版本数据？" type="warning" @ok="deleteVersion(listParams.selected.item)">
+                        <a-button type="text" style="color: rgb(var(--danger-6))">
+                          <icon-delete/>
+                          删除
+                        </a-button>
+                      </a-popconfirm>
+                    </div>
                   </a-space>
-                </template>
-                <ApplicationModel ref="tableFormRef"
-                                  :visible="appModelParams.visible"
-                                  :parameter="appModelParams.parameter"
-                                  :formState="appModelParams.formState"
-                                  :modelValue="appModelParams.id"
-                                  :formCol="appModelParams.formCol"/>
-              </a-card>
-            </a-tab-pane>
-            <a-tab-pane :key="2">
-              <template #title>
-                <icon-clock-circle/>
-                应用字典
-              </template>
-              <a-card class="general-card">
-                <DictionaryList :visible="dictListParams.visible"
-                                :parameter="dictListParams.parameter"
-                                :formState="dictListParams.formState"
-                                :filterCol="dictListParams.filterCol"
-                                :pageSize="dictListParams.pageSize"
-                                :height="dictListParams.height"/>
-              </a-card>
-            </a-tab-pane>
-            <a-tab-pane :key="3">
-              <template #title>
-                <icon-user/>
-                应用角色
-              </template>
-              <a-card class="general-card">
-                <RoleList :visible="roleListParams.visible"
-                          :parameter="roleListParams.parameter"
-                          :formState="roleListParams.formState"
-                          :filterCol="roleListParams.filterCol"
-                          :pageSize="roleListParams.pageSize"
-                          :height="roleListParams.height"/>
-              </a-card>
-            </a-tab-pane>
-            <a-tab-pane :key="7">
-              <template #title>
-                <icon-user-add/>
-                用户授权
-              </template>
-              <a-card class="general-card">
-                <a-split v-model:size="splitSize" :min="splitMin"
-                         :style="{height: `${splitHeight}px`,width: '100%'}">
-                  <template #first>
-                    <div class="general-card1" style="padding-right: 10px;">
-                      <OrgTree :has-root="true" :root-selected="false"
-                               :check-strictly="false"
-                               :height="userTreeParams.height"
-                               :max-count="1"
-                               :parameter="userTreeParams.parameter"
-                               :visible="true"
-                               @change="selectChange"/>
-                    </div>
-                  </template>
-                  <template #second>
-                    <div class="general-card1" style="padding-left: 10px;">
-                      <UserPermissionList :visible="userPerListParams.visible"
-                                          :parameter="userPerListParams.parameter"
-                                          :formState="userPerListParams.formState"
-                                          :filterCol="userPerListParams.filterCol"
-                                          :pageSize="userPerListParams.pageSize"
-                                          :height="userPerListParams.height"/>
-                    </div>
-                  </template>
-                </a-split>
-              </a-card>
-            </a-tab-pane>
-            <a-tab-pane :key="4">
-              <template #title>
-                <icon-code-block/>
-                应用编码
-              </template>
-              <a-card class="general-card">
-                <EncodingList :visible="encodingListParams.visible"
-                              :parameter="encodingListParams.parameter"
-                              :formState="encodingListParams.formState"
-                              :filterCol="encodingListParams.filterCol"
-                              :pageSize="encodingListParams.pageSize"
-                              :height="encodingListParams.height"/>
-              </a-card>
-            </a-tab-pane>
-            <a-tab-pane :key="5">
-              <template #title>
-                <icon-file/>
-                应用文件
-              </template>
-              <a-card class="general-card">
-                <FileTemplateList :visible="fileListParams.visible"
-                                  :parameter="fileListParams.parameter"
-                                  :formState="fileListParams.formState"
-                                  :filterCol="fileListParams.filterCol"
-                                  :pageSize="fileListParams.pageSize"
-                                  :height="fileListParams.height"/>
-              </a-card>
-            </a-tab-pane>
-            <a-tab-pane :key="6">
-              <template #title>
-                <icon-settings/>
-                应用配置
-              </template>
-              <a-card class="general-card">
-                <SystemConfigList :visible="configListParams.visible"
-                                  :parameter="configListParams.parameter"
-                                  :formState="configListParams.formState"
-                                  :filterCol="configListParams.filterCol"
-                                  :pageSize="configListParams.pageSize"
-                                  :height="configListParams.height"/>
-              </a-card>
-            </a-tab-pane>
-          </a-tabs>
+                </div>
+                <a-divider style="margin:0 0 5px 0"/>
+                <div v-if="!!listParams.selected.id" class="card-body2">
+                  <AppVersionTabs :visible="true" :model-value="listParams.selected.id" :height="listParams.height"/>
+                </div>
+                <a-empty v-else/>
+              </div>
+            </template>
+          </a-split>
         </a-card>
       </div>
     </div>
   </div>
+
+  <AppVersionForm v-model:visible="formParams.visible"
+                  :formCol="formParams.formCol"
+                  :formState="formParams.formState"
+                  :height="formParams.height"
+                  :isModal="formParams.isModal"
+                  :modelValue="formParams.id"
+                  :parameter="formParams.parameter"
+                  :title="formParams.title"
+                  :width="formParams.width"
+                  @saveSuccess="saveSuccess"/>
 </template>
 <style lang="less">
 .gl-app-settings .gl-page-header {
@@ -440,7 +362,25 @@ onUnmounted(() => {
   font-size: 16px;
 }
 
-.app-button.arco-btn-size-medium {
+.gl-app-settings .app-button {
+  color: white !important;
   padding: 0 10px;
+}
+
+.gl-app-settings .app-button[type='button']:hover {
+  background-color: transparent;
+}
+
+.general-card3 {
+  .card-header {
+    height: 32px;
+    padding: 2px 16px;
+
+    .card-header-title {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 28px;
+    }
+  }
 }
 </style>
