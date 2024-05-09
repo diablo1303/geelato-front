@@ -313,9 +313,9 @@ export default {
           show: true,
           expanded: true,
           displayMode: 'tile',
-          setterComponentProps: {},
+          setterComponentProps: {showInput:true},
           setterComponentVModelName: 'modelValue',
-          setterComponentName: 'AInput',
+          setterComponentName: 'GlExpressionSetter',
           placeholder:'如：$gl.ctx.record?.id',
           description:'相关业务申请单的ID，无值时，代表新发起流程创建新的申请单。'
         }
