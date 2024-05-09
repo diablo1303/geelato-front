@@ -11,6 +11,7 @@ export interface BusinessMetaData {
   valueComputeMode: string;
   isList: boolean;
   isMerge: boolean;
+  isUnique: boolean;
   isImage: boolean;
   imageWidth: number;
   imageHeight: number;

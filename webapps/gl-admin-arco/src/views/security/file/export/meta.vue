@@ -35,6 +35,7 @@ const generateFormData = (): BusinessMetaData => {
     valueComputeMode: '',
     isList: false,
     isMerge: false,
+    isUnique: false,
     isImage: false,
     imageWidth: 0,
     imageHeight: 0,
@@ -234,6 +235,11 @@ watch(() => props.height, () => {
             {{ record.isMerge }}
           </template>
         </a-table-column>
+        <a-table-column :width="120" data-index="isUnique" title="合并唯一约束">
+          <template #cell="{ record }">
+            {{ record.isUnique }}
+          </template>
+        </a-table-column>
         <a-table-column :width="90" data-index="isImage" title="是否图片">
           <template #cell="{ record }">
             {{ record.isImage }}
@@ -349,6 +355,19 @@ watch(() => props.height, () => {
           </a-switch>
           <template #extra>
             <div>如果合并，则将上下左右相同值的单元格进行合并处理；否则不处理；只适用于导出Excel。</div>
+          </template>
+        </a-form-item>
+        <a-form-item v-if="formData.isMerge===true" field="isUnique" label="合并唯一约束">
+          <a-switch v-model="formData.isUnique">
+            <template #checked>
+              是
+            </template>
+            <template #unchecked>
+              否
+            </template>
+          </a-switch>
+          <template #extra>
+            <div>选择是，如果有10行数据，该字段数据相同的区间是[第1行，第4行]，其他列可以合并的字段仅在此区间内的数据且相同时进行合并。</div>
           </template>
         </a-form-item>
         <a-form-item field="description" label="备注">
