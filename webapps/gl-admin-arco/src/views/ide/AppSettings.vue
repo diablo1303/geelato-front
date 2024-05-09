@@ -51,7 +51,7 @@ const resetAppModelHeight = () => {
  * 调整树形结构高度
  */
 const resetSplitHeight = () => {
-  return window.innerHeight - 165;
+  return window.innerHeight - 168;
 }
 const splitHeight = ref<number>(resetSplitHeight());
 const splitMin = ref<number | string>('250px');
@@ -187,14 +187,16 @@ const updateApp = () => {
 const enterLink = (type: string) => {
   if (appData.value.id && appData.value.tenantCode) {
     const host = `${window.location.protocol}//${window.location.host}`;
+    const params = `tenantCode=${appData.value.tenantCode}&appId=${appData.value.id}&appName=${appData.value.name}`;
     switch (type) {
       case 'index':
         window.open(`${host}/${appData.value.tenantCode}/${appData.value.id}/page`, "_blank");
         break;
       case 'design':
-        // eslint-disable-next-line no-case-declarations
-        const params = `tenantCode=${appData.value.tenantCode}&appId=${appData.value.id}&appName=${appData.value.name}`;
-        window.open(`${host}/ide.html?${params}`, "_blank")
+        window.open(`${host}/ide.html?${params}`, "_blank");
+        break;
+      case 'version':
+        window.open(`${host}/appVersion.html?${params}`, "_blank");
         break;
       case 'manage':
         break;
@@ -283,7 +285,30 @@ onUnmounted(() => {
     </div>
     <div v-else>
       <div :style="{ padding: '4px 14px' }" class="gl-page-header">
-        <a-page-header title="应用设置" :subtitle="appData.name" :show-back="false"/>
+        <a-page-header title="应用设置" :subtitle="appData.name" :show-back="false">
+          <template #extra>
+            <a-space>
+              <a-button type="text" class="app-button" @click="enterLink('index')">
+                <template #icon>
+                  <icon-link/>
+                </template>
+                应用站点
+              </a-button>
+              <a-button type="text" class="app-button" @click="enterLink('design')">
+                <template #icon>
+                  <icon-link/>
+                </template>
+                设计站点
+              </a-button>
+              <a-button type="text" class="app-button" @click="enterLink('version')">
+                <template #icon>
+                  <icon-link/>
+                </template>
+                版本管理
+              </a-button>
+            </a-space>
+          </template>
+        </a-page-header>
       </div>
       <div :style="{ padding: '14px' }">
         <a-card>
@@ -296,20 +321,8 @@ onUnmounted(() => {
               <a-card class="general-card">
                 <template #extra>
                   <a-space>
-                    <a-button type="text" class="app-button" @click="enterLink('index')">
-                      <template #icon>
-                        <icon-link/>
-                      </template>
-                      应用站点
-                    </a-button>
-                    <a-button type="text" class="app-button" @click="enterLink('design')">
-                      <template #icon>
-                        <icon-link/>
-                      </template>
-                      设计站点
-                    </a-button>
                     <a-popconfirm content="是否更新该应用的基本信息？" position="br" type="info" @ok="updateApp">
-                      <a-button :disabled="!appModelParams.id" type="text" class="app-button" :loading="loading">
+                      <a-button :disabled="!appModelParams.id" type="text" :loading="loading">
                         <template #icon>
                           <icon-save/>
                         </template>
@@ -454,7 +467,12 @@ onUnmounted(() => {
   font-size: 16px;
 }
 
-.app-button.arco-btn-size-medium {
+.gl-app-settings .app-button {
+  color: white !important;
   padding: 0 10px;
+}
+
+.gl-app-settings .app-button[type='button']:hover {
+  background-color: transparent;
 }
 </style>
