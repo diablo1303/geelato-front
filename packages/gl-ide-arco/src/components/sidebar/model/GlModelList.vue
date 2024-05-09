@@ -396,42 +396,6 @@ const editViewForm = (record: QueryViewForm) => {
     </div>
 
     <a-collapse v-model:active-key="activeKey" :bordered="true" class="collapse1">
-      <a-collapse-item :key="1" :header="`授权模型（${renderAccreditItems.length}）`" class="colapse-list1">
-        <template #extra>
-          <a-space>
-            <a-tooltip content="新建">
-              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addAppTableForm">
-                <gl-iconfont type="gl-plus-circle"/>
-              </a-button>
-            </a-tooltip>
-            <a-tooltip content="重置">
-              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="resetData('accredit')">
-                <gl-iconfont type="gl-reset"/>
-              </a-button>
-            </a-tooltip>
-          </a-space>
-        </template>
-        <a-list size="small">
-          <template v-for="item in renderAccreditItems" :key="item.id">
-            <a-list-item style="cursor: pointer;" @click="appTableOpen(item)">
-              <a-list-item-meta :title="item.tableName">
-                <template #description>
-                  <span v-for="option of approvalStatusOptions.filter((option)=> option.value===item.approvalStatus)"
-                        :style="option.other">
-                    {{ option.label }}
-                  </span>
-                  {{ `| ${item.tableTitle}` }}
-                </template>
-              </a-list-item-meta>
-              <template #actions>
-            <span :title="`${item.updaterName || ''}更新@${item.updateAt}`" class="gl-actions-description">
-              {{ utils.timeAgo(item.updateAt || '') }}
-            </span>
-              </template>
-            </a-list-item>
-          </template>
-        </a-list>
-      </a-collapse-item>
       <a-collapse-item :key="2" class="colapse-list1">
         <template #header>
           {{ `应用模型（${renderItems.length}${allTableAppItems.length > 0 ? '，' + allTableAppItems.length : ''}）` }}
@@ -495,6 +459,42 @@ const editViewForm = (record: QueryViewForm) => {
                          :content="`${utils.getOptionLabel(item.viewType, viewTypeOptions)} ${item.entityName || ''} ${item.description || ''}`">
                 <a-list-item-meta :description="item.title" :title="item.viewName"/>
               </a-tooltip>
+              <template #actions>
+            <span :title="`${item.updaterName || ''}更新@${item.updateAt}`" class="gl-actions-description">
+              {{ utils.timeAgo(item.updateAt || '') }}
+            </span>
+              </template>
+            </a-list-item>
+          </template>
+        </a-list>
+      </a-collapse-item>
+      <a-collapse-item :key="1" :header="`授权模型（${renderAccreditItems.length}）`" class="colapse-list1">
+        <template #extra>
+          <a-space>
+            <a-tooltip content="新建">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addAppTableForm">
+                <gl-iconfont type="gl-plus-circle"/>
+              </a-button>
+            </a-tooltip>
+            <a-tooltip content="重置">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="resetData('accredit')">
+                <gl-iconfont type="gl-reset"/>
+              </a-button>
+            </a-tooltip>
+          </a-space>
+        </template>
+        <a-list size="small">
+          <template v-for="item in renderAccreditItems" :key="item.id">
+            <a-list-item style="cursor: pointer;" @click="appTableOpen(item)">
+              <a-list-item-meta :title="item.tableName">
+                <template #description>
+                  <span v-for="option of approvalStatusOptions.filter((option)=> option.value===item.approvalStatus)"
+                        :style="option.other">
+                    {{ option.label }}
+                  </span>
+                  {{ `| ${item.tableTitle}` }}
+                </template>
+              </a-list-item-meta>
               <template #actions>
             <span :title="`${item.updaterName || ''}更新@${item.updateAt}`" class="gl-actions-description">
               {{ utils.timeAgo(item.updateAt || '') }}
