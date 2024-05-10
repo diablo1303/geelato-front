@@ -211,13 +211,16 @@ const renderColumns: Ref<GlTableColumn[]> = ref(genRenderColumns(showColumns))
  *  重置所有的列
  */
 const resetColumns = () => {
+  // 查询数据库的列
   queryColumns.value = genQueryColumns(props, localShowDataIndexes, localHideDataIndexes)
+  // 可展示的列，用于选择哪些展进行展示
   showColumns.value = genShowColumns(queryColumns, {
     isShowByComponent: false,
     showOptColumn: showOptColumn(),
     showSeqNoColumn: showSeqNoColumn(),
     showRecordStatus: showRecordStatus()
   })
+  // 最终展示在列表中的列
   renderColumns.value = genRenderColumns(showColumns)
 }
 const resetRenderColumns = () => {
@@ -253,6 +256,8 @@ const renderData = ref<Array<Record<string, any>>>([])
 const pagination = ref({
   ...props.pagination
 })
+// 默认分页值
+pagination.value.pageSize = props.pagination.defaultPageSize || 15
 
 /**
  * 加载数据的最终方法，在查询、切换分页等场景中调用
@@ -380,7 +385,6 @@ if (!props.glIsRuntime) {
 }
 
 const copyColumnActions = () => {
-  // return cloneDeep(props.columnActions)
   return JSON.parse(JSON.stringify(props.columnActions))
   // return props.columnActions
 }

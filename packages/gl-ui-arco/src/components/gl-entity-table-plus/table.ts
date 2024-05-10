@@ -184,13 +184,13 @@ export const showAction = (
       action: actionCopy,
       rowIndex: toRaw(data.rowIndex)
     }
-    console.log(
-      'showAction()',
-      data.record.id,
-      data.action.props.label,
-      actionCopy.props.unRender !== true && actionCopy.props._hidden !== true,
-      data.record.recordLock
-    )
+    // console.log(
+    //   'showAction()',
+    //   data.record.id,
+    //   data.action.props.label,
+    //   actionCopy.props.unRender !== true && actionCopy.props._hidden !== true,
+    //   data.record.recordLock
+    // )
     executeObjectPropsExpressions(actionCopy, ctx)
     return actionCopy.props.unRender !== true && actionCopy.props._hidden !== true
   } else {
@@ -257,12 +257,8 @@ export const changeColumnsVisible = (
  * @param showDataIndexes
  * @param hideDataIndexes
  */
-export const genQueryColumns = (
-  props: any,
-  showDataIndexes: string[],
-  hideDataIndexes: string[]
-) => {
-  // 如果启用了多语言，则需要对标题进行翻译
+export const genQueryColumns = (props: { columns:Array<any>, enableI18n:boolean}, showDataIndexes: string[], hideDataIndexes: string[]) => {
+  // 如果启用了多语言，}则需要对标题进行翻译
   let qColumns: Array<GlTableColumn> = []
   if (props.columns && props.columns.length > 0) {
     qColumns = JSON.parse(JSON.stringify(props.columns))

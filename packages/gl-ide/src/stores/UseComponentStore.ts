@@ -157,10 +157,16 @@ class ComponentStoreFactory {
             currentHoverComponentName: '',
             currentDragComponentId: '',
             currentDragComponentName: '',
+            // 当前组件树，只有一个根节点
             currentComponentTree: new Array<ComponentInstance>()
           }
         },
         actions: {
+          /**
+           * 当前组件树，只有一个根节点
+           * 在设置时，会清空当前组件树，并添加当前组件实例作为根节点
+           * @param componentInst
+           */
           setComponentTree(componentInst: ComponentInstance) {
             this.currentComponentTree.length = 0
             if (componentInst) {
@@ -350,8 +356,29 @@ class ComponentStoreFactory {
             }
           },
           /**
-           * 将组件插入当前的组件之后
+           *  复制当前选中的组件树到粘贴板
+           *  @param withRoot 是否包含根节点，默认为false
+           */
+          copyCurrentComponentTreeToClipboard(withRoot: boolean = false) {
+            if(this.currentComponentTree.length===0) return
+            const inst = this.currentComponentTree[0]
+            if (inst && inst.id) {
+              // 复制组件，组件内的id需重新创建
+              const newInst = copyComponentInst(inst)
+              let newInstStr = ''
+              if(withRoot){
+                newInstStr = JSON.stringify(newInst)
+              }else {
+                newInstStr = JSON.stringify(newInst.children)
+              }
+              ClipboardJS.copy(newInstStr)
+              return newInstStr
+            }
+          },
+          /**
+           * 将单个组件插入当前的组件之后
            * @param insertInst
+           * @return {success:boolean,message:string}
            */
           insertAfterCurrentSelectedComponent(insertInst: ComponentInstance) {
             if (this.currentSelectedComponentInstance && this.currentSelectedComponentInstance.id) {
@@ -376,6 +403,11 @@ class ComponentStoreFactory {
                   }
                 }
               }
+            }else{
+              return {
+                success: false,
+                message: '没有选择组件，找不到需要插入的位置。'
+              }
             }
           },
           /**
@@ -388,8 +420,16 @@ class ComponentStoreFactory {
           },
           /**
            *  插入粘贴版的组件实例信息
+           *  可以是单个组件，也可以是多个组件
            */
           async insertAfterCurrentSelectedComponentFromClipboard() {
+            if (!this.currentSelectedComponentInstance || !this.currentSelectedComponentInstance.id){
+              return  {
+                success: false,
+                message: '没有选择组件，找不到需要插入的位置。'
+              }
+            }
+
             const clipboardItems = await window.navigator.clipboard.read()
             let textHtml, textPlain
             for (const clipboardItem of clipboardItems) {
@@ -403,30 +443,48 @@ class ComponentStoreFactory {
                 }
               }
             }
-            let inst
+            let parseResult
             if (textPlain) {
               try {
-                inst = JSON.parse(textPlain.toString())
-                if (this.checkComponent(inst)) {
-                  this.insertAfterCurrentSelectedComponent(inst)
-                } else {
-                  return {
-                    success: false,
-                    message: '将粘贴版中的数据转换成组件实例失败，不是正确的组件实例格式'
+                parseResult = JSON.parse(textPlain.toString())
+                if(utils.isArray(parseResult)){
+                  const insts:[] = parseResult
+                  for (const inst of insts) {
+                    if (!this.checkComponent(inst)) {
+                      return {
+                        success: false,
+                        message: '将粘贴版中的数据转换成组件实例失败，不是正确的组件实例格式'
+                      }
+                    }
+                  }
+                  // 检查通过，插入组件
+                  insts.forEach((inst:ComponentInstance) => {
+                    this.insertAfterCurrentSelectedComponent(inst)
+                  })
+                }else{
+                  const inst = parseResult
+                  if (this.checkComponent(inst)) {
+                    this.insertAfterCurrentSelectedComponent(inst)
+                  } else {
+                    return {
+                      success: false,
+                      message: '将粘贴版中的数据转换成组件实例失败，不是正确的组件实例格式'
+                    }
                   }
                 }
               } catch (e: any) {
-                console.error(e)
+                // console.error(e)
                 return {
                   success: false,
-                  message: '将粘贴版中的数据转换成JSON失败，不是有效的组件实例'
+                  message: '将粘贴版中的数据转换成JSON失败，不是有效的组件实例。'+e.message
                 }
               }
             }
             return {
               success: true,
               message: '',
-              inst:inst
+              // 可能是多个组件，也可能是单个组件
+              inst:parseResult
             }
           },
           /**

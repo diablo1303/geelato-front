@@ -25,22 +25,22 @@ import {
   FormProvideProxy,
   FormProvideKey,
   PageProvideProxy,
-  PageProvideKey
+  PageProvideKey,
+  mixins
 } from '@geelato/gl-ui'
-import type { Column, GlTableColumn } from './table'
 import { Schema } from 'b-validate'
 import {
+  type Column,
+  type GlTableColumn,
   evalColorExpression,
   exchangeArray,
   logicDeleteFieldName,
-  resetRecordsSeqNo
+  resetRecordsSeqNo, genQueryColumns, genRenderColumns
 } from './table'
-import { mixins } from '@geelato/gl-ui'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
-import type { ValidatedError } from '@/components/gl-entity-form/GlEntityForm'
+import type { ValidatedError } from '../gl-entity-form/GlEntityForm'
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const global = useGlobal()
-const $modal = global.$modal
 // fetch 加载完成数据之后
 const emits = defineEmits(['updateColumns', 'updateRow', 'fetchSuccess', 'change'])
 const props = defineProps({
@@ -132,7 +132,7 @@ const props = defineProps({
   },
   tableDraggable: Boolean,
   autoResetSeqNoAfterDrag: Boolean,
-  readonly:Boolean,
+  readonly: Boolean,
   ...mixins.props
 })
 
@@ -140,62 +140,41 @@ const formProvideProxy: FormProvideProxy | undefined = inject(FormProvideKey)
 const pageProvideProxy: PageProvideProxy | undefined = inject(PageProvideKey)
 let recordValidateSchema = new Schema({})
 
-const slotNameFlag = '__slot'
+const { loading, setLoading } = useLoading(false)
 
-const setSlotNames = () => {
-  // console.log('setSlotNames')
-  // 不管是否编辑状态，如查配置了自定义渲染脚本，需要确保列有slotName
-  // 对于编辑状态，需将column中没有设置插槽的，生成插槽
-  props.columns.forEach((col: Column) => {
-    if (col._renderScript || col._component) {
-      col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
-    } else {
-      delete col.slotName
-    }
-  })
-
-  // 对于编辑状态，需将column中没有设置插槽的，生成插槽
-  // props.columns.forEach((col: Column) => {
-  //   if (col._component) {
-  //     col.dataIndex = col._component.props.bindField?.fieldName
-  //     // 验证信息
-  //     if (col._component.props.rules) {
-  //       // @ts-ignore
-  //       recordValidateSchema.schema[col.dataIndex!] = toRaw(col._component.props.rules)
-  //     }
-  //   }
-  // })
-
-  // props.columns.forEach((col: Column) => {
-  //   if (col._renderScript) {
-  //     col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
-  //   } else {
-  //     delete col.slotName
-  //   }
-  // })
-  //
-  // // 对于编辑状态，需将column中没有设置插槽的，生成插槽
-  // props.columns.forEach((col: Column) => {
-  //   if (col._component) {
-  //     col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
-  //     col.dataIndex = col._component.props.bindField?.fieldName
-  //     // 验证信息
-  //     if (col._component.props.rules) {
-  //       // @ts-ignore
-  //       recordValidateSchema.schema[col.dataIndex!] = toRaw(col._component.props.rules)
-  //     }
-  //   } else {
-  //     col.slotName = undefined
-  //   }
-  // })
-  // console.log('GlEntityTable > columns after convert:', recordValidateSchema)
+const t = (str: any) => {
+  return str
 }
+// 渲染展示的数据
+props.glComponentInst.value = props.glComponentInst.value || []
+// @ts-ignore
+const renderData: Ref<Array<object>> = ref(props.glComponentInst.value)
+// 用于构建查询语句的列，包含一些隐藏的列；该列的数据基于输入的props.columns进行复制转换
+const queryColumns: Ref<GlTableColumn[]> = ref([])
+// 最终展示的列
+const renderColumns = ref<Column[]>([])
+// 用于工具条中控制哪些列显示与否
+const showColumns = ref<Column[]>([])
 
-const setDataIndexes = () => {
-  // console.log('setDataIndexes')
+// const slotNameFlag = '__slot'
+// const setSlotNames = () => {
+//   // 如查配置了自定义渲染脚本，需要确保列有slotName
+//   // 对于编辑状态，需将column中没有设置插槽的，生成插槽
+//   props.columns.forEach((col: Column) => {
+//     if (col._renderScript || col._component) {
+//       col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
+//     } else {
+//       delete col.slotName
+//     }
+//   })
+// }
+
+const resetColumns = () => {
+  // console.log('resetColumns')
   // dataIndex需与bindField的fieldName一致
   const dataIndexes: string[] = []
-  props.columns.forEach((col: Column) => {
+  const cols = props.columns
+  cols.forEach((col: Column) => {
     if (col._component) {
       col.dataIndex = col._component.props.bindField?.fieldName
       // 验证信息
@@ -224,6 +203,9 @@ const setDataIndexes = () => {
       }
     })
   }
+
+  queryColumns.value = genQueryColumns(props, [], [])
+  renderColumns.value = genRenderColumns(showColumns)
 }
 
 const refreshFlag = ref(true)
@@ -236,8 +218,7 @@ const reRender = () => {
     refreshFlag.value = true
   })
 }
-setSlotNames()
-setDataIndexes()
+resetColumns()
 // 这个watch 用于设计时，监控列变化时，及时刷新（主要是用于让表达式生效）
 if (!props.glIsRuntime) {
   watch(
@@ -245,35 +226,13 @@ if (!props.glIsRuntime) {
       return props.columns
     },
     () => {
-      setDataIndexes()
+      resetColumns()
       reRender()
     },
     { deep: true }
   )
 }
 
-/**
- *  基于是否启用编辑功能，进行插槽信息的转换
- */
-// watch(() => props.enableEdit,
-//     () => {
-//       setSlotNames()
-//     },
-//     {immediate: true}
-// )
-
-const { loading, setLoading } = useLoading(false)
-// const {t} = CheckUtil.isBrowser() ? useI18n() : {
-//   t: () => {
-//   }
-// };
-const t = (str: any) => {
-  return str
-}
-// 渲染展示的数据
-props.glComponentInst.value = props.glComponentInst.value || []
-// @ts-ignore
-const renderData: Ref<Array<object>> = ref(props.glComponentInst.value)
 
 // 编辑状态时删除的数据，
 const deleteDataWhenEnableEdit = ref<Array<{ id: string; [logicDeleteFieldName]: number }>>([])
@@ -323,7 +282,7 @@ const createEntityReader = () => {
   entityReader.order = []
 
   const fieldMetas = new Array<FieldMeta>()
-  props.columns?.forEach((column) => {
+  queryColumns.value.forEach((column) => {
     // 过滤掉操作列
     if (column.slotName !== 'optional') {
       const fm = new FieldMeta()
@@ -408,7 +367,7 @@ watch(
 /**
  * 表格数据发生变化时触发
  * 如表格数据拖动时（表格内置表单字段输入控件值改变时，不会触发）
- * @param _data
+ * @param data
  */
 const change = (data: []) => {
   // console.log('table change renderData:', data)
@@ -435,18 +394,18 @@ const onPageSizeChange = (pageSize: number) => {
   fetchData({ pageSize })
 }
 
-// cloneColumns:TableColumnData[]
-const cloneColumns = ref<Column[]>([])
-const showColumns = ref<Column[]>([])
+
+
+
 const changeShowColumns = (
   checked: boolean | (string | boolean | number)[],
   column: Column,
   index: number
 ) => {
   if (!checked) {
-    cloneColumns.value = showColumns.value.filter((item) => item.dataIndex !== column.dataIndex)
+    renderColumns.value = showColumns.value.filter((item) => item.dataIndex !== column.dataIndex)
   } else {
-    cloneColumns.value.splice(index, 0, column)
+    renderColumns.value.splice(index, 0, column)
   }
 }
 const popupVisibleChange = (val: boolean) => {
@@ -456,7 +415,7 @@ const popupVisibleChange = (val: boolean) => {
       const sortable = new Sortable(el, {
         onEnd(e: any) {
           const { oldIndex, newIndex } = e
-          exchangeArray(cloneColumns.value, oldIndex, newIndex)
+          exchangeArray(renderColumns.value, oldIndex, newIndex)
           exchangeArray(showColumns.value, oldIndex, newIndex)
           emits('updateColumns', showColumns.value)
         }
@@ -477,15 +436,15 @@ watch(
     //   col.title = col._component?.props.label
     // })
     // @ts-ignore
-    cloneColumns.value = cloneDeep(val)
-    cloneColumns.value.forEach((item, index) => {
+    renderColumns.value = cloneDeep(val)
+    renderColumns.value.forEach((item, index) => {
       item.checked = true
       item.width = item.width || 150
       item.align = item.align || 'center'
     })
-    cloneColumns.value.push(optColumn as Column)
-    showColumns.value = cloneDeep(cloneColumns.value)
-    // console.log('GlEntityTable > update cloneColumns:', cloneColumns)
+    renderColumns.value.push(optColumn as Column)
+    showColumns.value = cloneDeep(renderColumns.value)
+    // console.log('GlEntityTable > update renderColumns:', renderColumns)
     emits('updateColumns', showColumns.value)
   },
   { deep: true, immediate: true }
@@ -496,7 +455,7 @@ watch(
  *  这些列中，不包括操作列（即slotName为#的列）
  */
 const slotColumns = computed(() => {
-  return cloneColumns.value.filter((column) => {
+  return renderColumns.value.filter((column) => {
     return column.slotName && column.slotName !== '#'
   })
 })
@@ -525,7 +484,7 @@ const validateRecord = (record: object, rowIndex: number) => {
 }
 // 对应整个数据表，构建对应的检查错误信息表
 const tableErrors = ref<Array<object | null>>([])
-tableErrors.value.length = cloneColumns.value.length
+tableErrors.value.length = renderColumns.value.length
 const setError = (record: object, rowIndex: number, err: { [key: string]: any }) => {
   // console.log('setError',record,rowIndex,err)
   if (!err) {
@@ -533,7 +492,7 @@ const setError = (record: object, rowIndex: number, err: { [key: string]: any })
     return
   }
   tableErrors.value[rowIndex] = tableErrors.value[rowIndex] = {}
-  cloneColumns.value.forEach((col: Column) => {
+  renderColumns.value.forEach((col: Column) => {
     // console.log('tableErrors.value[rowIndex]:', tableErrors.value[rowIndex])
     Object.keys(err).forEach((errKey: string) => {
       if (col.dataIndex === errKey) {
@@ -664,7 +623,7 @@ const getDeleteRecords = () => {
   return deleteDataWhenEnableEdit.value
 }
 const getRenderColumns = () => {
-  return cloneColumns.value
+  return renderColumns.value
 }
 
 const isPageRead = !!pageProvideProxy?.isPageStatusRead()
@@ -716,7 +675,7 @@ defineExpose({
     :loading="loading"
     :pagination="false"
     :row-selection="rowSelection"
-    :columns="cloneColumns"
+    :columns="renderColumns"
     :data="renderData"
     :bordered="{ cell: true }"
     :hoverable="true"
@@ -766,7 +725,7 @@ defineExpose({
       >
         <GlComponent
           v-model="renderData[rowIndex][column.dataIndex]"
-          @update="updateRow(record, rowIndex, cloneColumns, $event, this)"
+          @update="updateRow(record, rowIndex, renderColumns, $event, this)"
           :glComponentInst="cloneDeepColumnComponent(column._component)"
           :glCtx="{
             record,
@@ -775,7 +734,10 @@ defineExpose({
             cellLastValue: renderData[rowIndex][column.dataIndex]
           }"
           :disabled="
-            isPageRead|| readonly || column._component?.props?.readonly || column._component?.props?.disabled
+            isPageRead ||
+            readonly ||
+            column._component?.props?.readonly ||
+            column._component?.props?.disabled
           "
         ></GlComponent>
         <span class="gl-validate-message">{{

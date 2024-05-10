@@ -1,7 +1,11 @@
 <template>
   <div class="gl-ide-sidebar-components gl-scrollbar-small">
-    <a-tabs size="small" default-active-key="1">
-      <a-tab-pane key="1" title="组件">
+    <a-tabs size="small" default-active-key="组件">
+      <a-tab-pane key="组件" v-if="getTabShow('组件')">
+        <template #title>
+          <span>{{getTabTitle('组件')}}</span>
+          <GlIconfont v-if="getTabTips('组件')" :title="getTabTips('组件')" type="gl-help" style="margin-left: 0.5em"></GlIconfont>
+        </template>
         <div v-for="componentMaterialGroup in componentMaterialGroups">
           <div
             class="gl-group-title"
@@ -26,7 +30,11 @@
           </div>
         </div>
       </a-tab-pane>
-      <a-tab-pane key="2" title="模板">
+      <a-tab-pane key="模板" v-if="getTabShow('模板')">
+        <template #title>
+          <span>{{getTabTitle('模板')}}</span>
+          <GlIconfont v-if="getTabTips('模板')" :title="getTabTips('模板')" type="gl-help" style="margin-left: 0.5em"></GlIconfont>
+        </template>
         <div v-for="templateMaterialGroup in templateMaterialGroups">
           <div
             class="gl-group-title"
@@ -51,7 +59,16 @@
           </div>
         </div>
       </a-tab-pane>
-      <a-tab-pane key="3" title="自定义区块"> Coming Soon ...</a-tab-pane>
+      <a-tab-pane
+        key="自定义区块"
+        v-if="getTabShow('自定义区块')"
+      >
+        <template #title>
+          <span>{{getTabTitle('自定义区块')}}</span>
+          <GlIconfont v-if="getTabTips('自定义区块')" :title="getTabTips('自定义区块')" type="gl-help" style="margin-left: 0.5em"></GlIconfont>
+        </template>
+        Coming Soon ...
+      </a-tab-pane>
     </a-tabs>
   </div>
 </template>
@@ -62,7 +79,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed, type PropType, ref, defineComponent, watch, getCurrentInstance,VueElement } from 'vue'
+import { computed, type PropType, ref } from 'vue'
 import { useIdeStore } from '@geelato/gl-ide'
 import { entityApi, EntityReader, fileApi, utils } from '@geelato/gl-ui'
 import type {
@@ -73,13 +90,23 @@ import type {
 import { useComponentMaterialStore } from '@geelato/gl-ui-schema-arco'
 import ComponentsDndItem from '../../dnd/ComponentDndItem.vue'
 import { SizeType } from '../../setters/Types'
-import useComponentGroups from './componentGroups'
+import useComponentGroups, { type ComponentSidebarTab } from './componentGroups'
 
 const props = defineProps({
   size: {
     type: String as PropType<SizeType>,
     default() {
       return SizeType.small
+    }
+  },
+  tabs: {
+    type: Array as PropType<Array<ComponentSidebarTab>>,
+    default() {
+      return [
+        { key: '组件', title: '组件', show: true,tips:'' },
+        { key: '模板', title: '模板', show: true,tips:'' },
+        { key: '自定义区块', title: '自定义区块', show: true,tips:'' }
+      ]
     }
   },
   componentGroups: {
@@ -103,6 +130,30 @@ const props = defineProps({
     }
   }
 })
+
+const getTabTitle = (key: string) => {
+  return (
+    props.tabs?.find((tab) => {
+      return tab.key === key
+    })?.title || '无'
+  )
+}
+
+const getTabTips = (key: string) => {
+  return (
+      props.tabs?.find((tab) => {
+        return tab.key === key
+      })?.tips || ''
+  )
+}
+
+const getTabShow = (key: string) => {
+  return (
+    props.tabs?.find((tab) => {
+      return tab.key === key
+    })?.show || false
+  )
+}
 
 const fontSize = computed(() => {
   switch (props.size) {

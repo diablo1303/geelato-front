@@ -10,13 +10,14 @@ import { getToken } from '../utils/auth'
 import jsScriptExecutor from '../actions/JsScriptExecutor'
 import utils from '../utils/Utils'
 import useApiUrl from '../hooks/useApiUrl'
-import EntityQueryCache from '../datasource/EntityQueryCache'
+import entityQueryCache from '../datasource/EntityQueryCache'
 import useLogger from "../hooks/useLogger";
 
 export type MqlObject = { [key: string]: { [key: string]: any } }
 export type ParsedMqlResult = { key: string; mqlObj: Record<string, any> }
-const entityQueryCache = new EntityQueryCache()
+
 const logger = useLogger('entityApi')
+
 
 // 保存对象示例
 const entitySaverInstTemplate = new EntitySaver('必填，如entityABC')

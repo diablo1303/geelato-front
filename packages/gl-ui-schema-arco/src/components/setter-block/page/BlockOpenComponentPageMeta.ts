@@ -230,7 +230,8 @@ export default {
             label: '基于工作流的申请审批模板（开发中）',
             value: 'GlPageTemplateFlow'
           }
-        ]
+        ],
+        allowClear: false
       },
       setterComponentVModelName: 'modelValue',
       group: 'base',
@@ -272,7 +273,9 @@ export default {
             labelFieldNames: ['name'],
             valueFiledName: 'id',
             valueFilter: [],
-            extraFieldAndBindIds: []
+            extraFieldAndBindIds: [],
+            allowClear: true,
+            allowSearch: true
           },
           setterComponentVModelName: 'modelValue',
           setterComponentName: 'GlDynamicSelect'

@@ -98,6 +98,7 @@ import './assets/style.css'
 import useLogger from './m/hooks/useLogger'
 import { getUserCompany } from './m/datasource/Security'
 import type {PageTemplate} from "./components/PageProvideProxy";
+import {PageStatus} from './components/PageProvideProxy';
 
 const Utils = AllUtils
 
@@ -221,7 +222,8 @@ export {
   SubmitFormResult,
   UiEventNames,
   getUserCompany,
-  PageTemplate
+  PageTemplate,
+  PageStatus
 }
 // 默认导出组件
 export default component

@@ -317,6 +317,8 @@ export class JsScriptExecutor {
         return $gl.$modal.open(options)
       },
       openDrawer: (options: OptionsType) => {
+        // options.header = h('div', ['xxxxxxx']);
+        // console.log('options',options)
         // return $gl.$drawer.open(that.evalOptions(options, $gl.ctx, ['title', 'width', 'okText', 'cancelText']))
         return $gl.$drawer.open(options)
       },

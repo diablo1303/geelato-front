@@ -22,8 +22,10 @@
           </td>
           <td style="width: 50%">
             <a-select size="small" v-model="mv[index].field"
+                      allow-search
+                      allow-clear
                       @change="onChangeElement($event,element,index)">
-              <a-option v-for="item in entityFieldMetas" :value="item.name" :title="item.name">{{ item.title }}
+              <a-option v-for="item in entityFieldMetas" :value="item.name" :title="item.name">{{ item.title }} {{item.name}}
               </a-option>
             </a-select>
           </td>
