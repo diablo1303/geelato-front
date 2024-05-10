@@ -47,9 +47,10 @@ const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
 const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 1200, y: props.height});
+const scroll = ref({x: 1600, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
+  updateAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
 });
 const lastSort = ref<string>('');
@@ -357,7 +358,7 @@ watch(() => props, (val) => {
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.encoding.index.form.id')" :tooltip="true" :width="180" data-index="title">
+      <a-table-column :ellipsis="true" :title="$t('security.encoding.index.form.id')" :tooltip="true" :width="180" data-index="id">
         <template #cell="{ record }">
           <CopyToClipboard v-model="record.id" :title="$t('copy.to.clipboard.button.key.title')"/>
           {{ record.id }}
@@ -376,7 +377,12 @@ watch(() => props, (val) => {
           {{ $t(`security.encoding.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :sortable="sortable.createAt" :title="$t('security.encoding.index.form.createAt')" :width="180" data-index="createAt"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.encoding.index.form.creatorName')" :width="130" data-index="creatorName"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :title="$t('security.encoding.index.form.createAt')" :width="180"
+                      data-index="createAt"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.encoding.index.form.updaterName')" :width="130" data-index="updaterName"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.updateAt" :title="$t('security.encoding.index.form.updateAt')" :width="180"
+                      data-index="updateAt"/>
       <a-table-column :title="$t('security.encoding.index.form.operations')" :width="230" align="center" data-index="operations"
                       fixed="right">
         <template #cell="{ record }">

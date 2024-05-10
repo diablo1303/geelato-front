@@ -54,6 +54,7 @@ const scroll = ref({x: 1270, y: props.height});
 const sortable = ref<Record<string, TableSortable>>({
   weight: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   seqNo: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
+  updateAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
 });
 const lastSort = ref<string>('');
@@ -425,7 +426,12 @@ watch(() => props, (val) => {
         </template>
       </a-table-column>
       <a-table-column :sortable="sortable.seqNo" :title="$t('security.role.index.form.seqNo')" :width="120" align="right" data-index="seqNo"/>
-      <a-table-column :sortable="sortable.createAt" :title="$t('security.role.index.form.createAt')" :width="180" data-index="createAt"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.role.index.form.creatorName')" :width="130" data-index="creatorName"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :title="$t('security.role.index.form.createAt')" :width="180"
+                      data-index="createAt"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.role.index.form.updaterName')" :width="130" data-index="updaterName"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.updateAt" :title="$t('security.role.index.form.updateAt')" :width="180"
+                      data-index="updateAt"/>
       <a-table-column :title="$t('security.role.index.form.operations')" :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-button size="small" type="text" @click="viewTable(record)">

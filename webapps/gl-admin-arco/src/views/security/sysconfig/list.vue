@@ -50,6 +50,7 @@ const scrollbar = ref(true);
 const scroll = ref({x: 1600, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
+  updateAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
 });
 const lastSort = ref<string>('');
@@ -420,7 +421,12 @@ watch(() => props, (val) => {
           {{ $t(`security.sysConfig.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :sortable="sortable.createAt" :title="$t('security.sysConfig.index.form.createAt')" :width="180" data-index="createAt"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.sysConfig.index.form.creatorName')" :width="130" data-index="creatorName"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :title="$t('security.sysConfig.index.form.createAt')" :width="180"
+                      data-index="createAt"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.sysConfig.index.form.updaterName')" :width="130" data-index="updaterName"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.updateAt" :title="$t('security.sysConfig.index.form.updateAt')" :width="180"
+                      data-index="updateAt"/>
       <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.remark')" :tooltip="true" :width="240" data-index="remark"/>
       <a-table-column :title="$t('security.sysConfig.index.form.operations')" :width="230" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">

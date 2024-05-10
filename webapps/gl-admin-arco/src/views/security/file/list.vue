@@ -331,6 +331,11 @@ watch(() => props, (val) => {
       <a-form :label-col-props="{ span: labelCol }" :model="filterData" :wrapper-col-props="{ span: wrapperCol }" label-align="left">
         <a-row :gutter="wrapperCol">
           <a-col :span="(labelCol+wrapperCol)/filterCol">
+            <a-form-item :label="$t('security.file.index.form.id')" field="id">
+              <a-input v-model="filterData.id" allow-clear @clear="condition($event)" @input="condition"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.file.index.form.title')" field="title">
               <a-input v-model="filterData.title" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
@@ -359,7 +364,7 @@ watch(() => props, (val) => {
               <a-select v-model="filterData.appId" :options="appSelectOptions" :placeholder="$t('searchTable.form.selectDefault')" allow-search/>
             </a-form-item>
           </a-col>
-          <a-col :span="(labelCol+wrapperCol)/filterCol">
+          <a-col v-if="!!parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.file.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
@@ -439,12 +444,13 @@ watch(() => props, (val) => {
           {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :title="$t('security.file.index.form.title')" :tooltip="true" :width="240" data-index="title">
+      <a-table-column :ellipsis="true" :title="$t('security.file.index.form.id')" :tooltip="true" :width="180" data-index="id">
         <template #cell="{ record }">
           <CopyToClipboard v-model="record.id" :title="$t('copy.to.clipboard.button.key.title')"/>
-          {{ record.title }}
+          {{ record.id }}
         </template>
       </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('security.file.index.form.title')" :tooltip="true" :width="240" data-index="title"/>
       <a-table-column :title="$t('security.file.index.form.useType')" :width="90" data-index="useType">
         <template #cell="{ record }">
           {{ record.useType ? $t(`security.file.index.form.useType.${record.useType}`) : '' }}
@@ -467,10 +473,10 @@ watch(() => props, (val) => {
           {{ $t(`security.file.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.file.index.form.creatorName')" :width="120" data-index="creatorName"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.file.index.form.creatorName')" :width="130" data-index="creatorName"/>
       <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :title="$t('security.file.index.form.createAt')" :width="180"
                       data-index="createAt"/>
-      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.file.index.form.updaterName')" :width="120" data-index="updaterName"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.file.index.form.updaterName')" :width="130" data-index="updaterName"/>
       <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.updateAt" :title="$t('security.file.index.form.updateAt')" :width="180"
                       data-index="updateAt"/>
       <a-table-column :title="$t('security.file.index.form.operations')" :width="340" align="center" data-index="operations" fixed="right">
