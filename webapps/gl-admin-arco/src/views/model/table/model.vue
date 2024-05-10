@@ -259,7 +259,7 @@ defineExpose({saveOrUpdate, loadPage});
           <span v-else>{{ $t(`model.table.index.form.enableStatus.${formData.enableStatus}`) }}</span>
         </a-form-item>
       </a-col>
-      <a-col :span="(labelCol+wrapperCol)/formCol">
+      <a-col v-if="['platform'].includes(formData.sourceType)" :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
             :label="$t('model.table.index.form.packBusData')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"

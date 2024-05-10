@@ -446,7 +446,7 @@ watch(() => props, (val) => {
       <a-table-column :ellipsis="true" :title="$t('model.table.index.form.description')" :tooltip="true" :width="240" data-index="description"/>
       <a-table-column v-show="formState==='edit'" :title="$t('model.table.index.form.operations')" :width="180" align="center" data-index="operations"
                       fixed="right">
-        <template #cell="{ record,isST = ['system','platform'].includes(record.sourceType)}">
+        <template #cell="{ record,isST = ['system'].includes(record.sourceType)}">
           <a-tooltip v-if="isST" :content="$t('searchTable.tables.operations.sourceType.warning')">
             <a-button class="button-disabled" size="small" type="text">
               {{ $t('searchTable.columns.operations.edit') }}

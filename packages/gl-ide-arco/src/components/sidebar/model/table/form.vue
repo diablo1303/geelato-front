@@ -245,7 +245,7 @@ defineExpose({saveOrUpdate, loadPage});
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="packBusData" label="打包业务数据">
-          <a-select v-if="formState!=='view' || ['creation'].includes(formData.sourceType)"
+          <a-select v-if="formState!=='view' && ['platform'].includes(formData.sourceType)"
                     v-model="formData.packBusData" :options="packBusDataOptions"/>
           <span v-else>{{ utils.getOptionLabel(formData.packBusData, packBusDataOptions) }}</span>
           <template #extra>
