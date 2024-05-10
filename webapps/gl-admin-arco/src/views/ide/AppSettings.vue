@@ -28,7 +28,7 @@ import pinia, {useUserStore} from '../../store';
 
 // 常量使用
 const ListDefaultPageSize = 5;
-const ListUsedHeight = 425;
+const ListUsedHeight = 428;
 const ListRowHeight = 49;
 
 provide('pinia', pinia);

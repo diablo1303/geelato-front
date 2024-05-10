@@ -329,12 +329,15 @@ defineExpose({saveOrUpdate, loadPage});
             </a-col>
             <a-col :span="(labelCol+wrapperCol)/formCol">
               <a-form-item
-                  :label="$t('security.file.index.form.template')"
-                  :rules="[{required: !['import'].includes(formData.useType),message: $t('security.form.rules.match.required')}]"
-                  field="template">
-                <UploadBase64 v-model="formData.template"
-                              :accept="formData.useType==='import'?'.xls,.xlsx':'.doc,.docx,.xls,.xlsx'"
-                              :disabled="formState==='view'" @change="configValueBase64"/>
+                  :label="$t('security.file.index.form.fileCode')"
+                  :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
+                  field="fileCodeFormat">
+                <a-input-tag v-if="formState!=='view'" v-model="formData.fileCodeFormat" :placeholder="$t('security.file.index.form.fileCode.placeholder')"
+                             :unique-value="true"
+                             allow-clear/>
+                <a-space v-else :style="{'flex-wrap':'wrap'}">
+                  <a-tag v-for="(item, index) of formData.fileCodeFormat" :key="index" :style="{'margin-bottom':'4px'}">{{ item }}</a-tag>
+                </a-space>
               </a-form-item>
             </a-col>
             <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -347,25 +350,34 @@ defineExpose({saveOrUpdate, loadPage});
                   }}</span>
               </a-form-item>
             </a-col>
-            <a-col :span="(labelCol+wrapperCol)/formCol">
+            <a-col :span="(labelCol+wrapperCol)">
               <a-form-item
+                  :label-col-props="{ span: labelCol/formCol }"
+                  :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                  :label="$t('security.file.index.form.template')"
+                  :rules="[{required: !['import'].includes(formData.useType),message: $t('security.form.rules.match.required')}]"
+                  field="template">
+                <UploadBase64 v-model="formData.template"
+                              :accept="formData.useType==='import'?'.xls,.xlsx':'.doc,.docx,.xls,.xlsx'"
+                              :disabled="formState==='view'" @change="configValueBase64"/>
+                <template #help>
+                  <p v-if="['import'].includes(formData.useType)">来源：1，手动上传文件；2，数据配置填写保存后，点击列表按钮【生成-模板文件】生成文件。</p>
+                  <p v-if="['import'].includes(formData.useType)">优先级：优先使用文件，其次若没有文件则使用模板字段定义信息。</p>
+                </template>
+              </a-form-item>
+            </a-col>
+            <a-col :span="(labelCol+wrapperCol)">
+              <a-form-item
+                  :label-col-props="{ span: labelCol/formCol }"
+                  :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                   :label="$t('security.file.index.form.templateRule')"
                   :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
                   field="templateRule">
                 <UploadBase64 v-model="formData.templateRule" :disabled="formState==='view'" accept=".xls,.xlsx"/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="(labelCol+wrapperCol)/formCol">
-              <a-form-item
-                  :label="$t('security.file.index.form.fileCode')"
-                  :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
-                  field="fileCodeFormat">
-                <a-input-tag v-if="formState!=='view'" v-model="formData.fileCodeFormat" :placeholder="$t('security.file.index.form.fileCode.placeholder')"
-                             :unique-value="true"
-                             allow-clear/>
-                <a-space v-else :style="{'flex-wrap':'wrap'}">
-                  <a-tag v-for="(item, index) of formData.fileCodeFormat" :key="index" :style="{'margin-bottom':'4px'}">{{ item }}</a-tag>
-                </a-space>
+                <template #help>
+                  <p>来源：1，手动上传文件；2，数据配置填写保存后，点击列表按钮【生成-元数据文件】生成文件。</p>
+                  <p>优先级：优先使用文件，其次若没有文件则使用数据配置信息。</p>
+                </template>
               </a-form-item>
             </a-col>
             <a-col :span="(labelCol+wrapperCol)/formCol">

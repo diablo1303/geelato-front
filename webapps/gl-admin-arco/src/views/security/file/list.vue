@@ -56,9 +56,10 @@ const basePagination: Pagination = {current: 1, pageSize: props.pageSize};
 const pagination = reactive({...basePagination, showTotal: true, showPageSize: true, pageSizeOptions: PageSizeOptions});
 // 列表 - 滑动条
 const scrollbar = ref(true);
-const scroll = ref({x: 1200, y: props.height});
+const scroll = ref({x: 1600, y: props.height});
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
+  updateAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''},
   createAt: {sortDirections: ['ascend', 'descend'], sorter: true, sortOrder: ''}
 });
 const lastSort = ref<string>('updateAt|desc');
@@ -466,7 +467,12 @@ watch(() => props, (val) => {
           {{ $t(`security.file.index.form.enableStatus.${record.enableStatus}`) }}
         </template>
       </a-table-column>
-      <a-table-column :sortable="sortable.createAt" :title="$t('security.file.index.form.createAt')" :width="180" data-index="createAt"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.file.index.form.creatorName')" :width="120" data-index="creatorName"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :title="$t('security.file.index.form.createAt')" :width="180"
+                      data-index="createAt"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.file.index.form.updaterName')" :width="120" data-index="updaterName"/>
+      <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.updateAt" :title="$t('security.file.index.form.updateAt')" :width="180"
+                      data-index="updateAt"/>
       <a-table-column :title="$t('security.file.index.form.operations')" :width="340" align="center" data-index="operations" fixed="right">
         <template #cell="{ record }">
           <a-dropdown :disabled="formState==='view'" position="br" trigger="hover">
