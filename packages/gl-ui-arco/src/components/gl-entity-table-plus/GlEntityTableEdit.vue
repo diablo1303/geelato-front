@@ -20,7 +20,6 @@ import {
   FieldMeta,
   EntityReader,
   EntityReaderParam,
-  utils,
   useGlobal,
   FormProvideProxy,
   FormProvideKey,
@@ -35,14 +34,17 @@ import {
   evalColorExpression,
   exchangeArray,
   logicDeleteFieldName,
-  resetRecordsSeqNo, genQueryColumns, genRenderColumns
+  resetRecordsSeqNo,
+  genQueryColumns,
+  genRenderColumns,
+  statIsRowReadonly
 } from './table'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import type { ValidatedError } from '../gl-entity-form/GlEntityForm'
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const global = useGlobal()
 // fetch 加载完成数据之后
-const emits = defineEmits(['updateColumns', 'updateRow', 'fetchSuccess', 'change'])
+const emits = defineEmits(['updateColumns', 'updateRow', 'fetchSuccess', 'change','copyRecord'])
 const props = defineProps({
   modelValue: {
     type: Array,
@@ -130,6 +132,10 @@ const props = defineProps({
     type: String,
     required: true
   },
+  /**
+   *  行是否只读的表达式
+   */
+  isRowReadonlyExpression: String,
   tableDraggable: Boolean,
   autoResetSeqNoAfterDrag: Boolean,
   readonly: Boolean,
@@ -155,7 +161,25 @@ const queryColumns: Ref<GlTableColumn[]> = ref([])
 const renderColumns = ref<Column[]>([])
 // 用于工具条中控制哪些列显示与否
 const showColumns = ref<Column[]>([])
-
+// 行是否只读
+const isRowReadonlyArray = ref([] as boolean[])
+/**
+ *  统计行是否只读
+ */
+const reStatIsRowReadonly = (records:Array)=>{
+  isRowReadonlyArray.value.length = 0
+  isRowReadonlyArray.value = statIsRowReadonly(
+      props.isRowReadonlyExpression,
+      records,
+      pageProvideProxy
+  )
+}
+/**
+ * 行是否只读，用于UI展示调用
+ */
+const isRowReadonly = (rowIndex: number) => {
+  return isRowReadonlyArray.value.length > rowIndex ? isRowReadonlyArray.value[rowIndex] : false
+}
 // const slotNameFlag = '__slot'
 // const setSlotNames = () => {
 //   // 如查配置了自定义渲染脚本，需要确保列有slotName
@@ -170,7 +194,6 @@ const showColumns = ref<Column[]>([])
 // }
 
 const resetColumns = () => {
-  // console.log('resetColumns')
   // dataIndex需与bindField的fieldName一致
   const dataIndexes: string[] = []
   const cols = props.columns
@@ -232,7 +255,6 @@ if (!props.glIsRuntime) {
     { deep: true }
   )
 }
-
 
 // 编辑状态时删除的数据，
 const deleteDataWhenEnableEdit = ref<Array<{ id: string; [logicDeleteFieldName]: number }>>([])
@@ -335,6 +357,7 @@ const fetchData = async (readerInfo?: {
     const response: any = await entityApi.queryByEntityReader(entityReader, true)
     // console.log('GlEntityTable > fetchData() > response:', response)
     renderData.value = response.data
+    reStatIsRowReadonly(renderData.value)
     pagination.pageSize = readerInfo?.pageSize || pagination.pageSize
     pagination.current = readerInfo?.pageNo || 1
     pagination.total = response.data.total
@@ -354,11 +377,13 @@ watch(
     return props.glComponentInst.value
   },
   (value, oldValue) => {
-    console.log('update value:', props.glComponentInst.value)
+    // console.log('update value:', props.glComponentInst.value)
     // 这里不能使用 reRender()，reRender会导致用户每录入一个字符都会重绘整个列表
     renderData.value = []
     // @ts-ignore
     renderData.value = [...props.glComponentInst.value]
+    // 值有变化时，重新统计一下是否只读
+    reStatIsRowReadonly(renderData.value)
     emits('change', renderData.value)
   },
   { deep: true }
@@ -393,9 +418,6 @@ const onPageChange = (pageNo: number) => {
 const onPageSizeChange = (pageSize: number) => {
   fetchData({ pageSize })
 }
-
-
-
 
 const changeShowColumns = (
   checked: boolean | (string | boolean | number)[],
@@ -597,6 +619,7 @@ const copyRecord = (record: object, rowIndex: number) => {
   if (newRecord.id) {
     newRecord.id = undefined
   }
+  emits('copyRecord', { record: newRecord,rowIndex })
   renderData.value.splice(rowIndex + 1, 0, newRecord)
   // eslint-disable-next-line vue/no-mutating-props
   props.glComponentInst.value = renderData.value
@@ -648,6 +671,7 @@ const cloneDeepColumnComponent = (component: ComponentInstance) => {
   inst.value = undefined
   return inst
 }
+
 
 defineExpose({
   selectAll,
@@ -704,7 +728,7 @@ defineExpose({
           status="danger"
           size="small"
           @click="deleteRecord(record, rowIndex)"
-          :disabled="isPageRead || readonly"
+          :disabled="isPageRead || readonly || isRowReadonly(rowIndex)"
         >
           删除
         </a-button>
@@ -737,7 +761,8 @@ defineExpose({
             isPageRead ||
             readonly ||
             column._component?.props?.readonly ||
-            column._component?.props?.disabled
+            column._component?.props?.disabled ||
+            isRowReadonly(rowIndex)
           "
         ></GlComponent>
         <span class="gl-validate-message">{{

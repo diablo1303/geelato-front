@@ -238,6 +238,22 @@ export default {
           title: '左侧冻结列数',
           setterComponentName: 'ARadioGroup'
         },
+
+        {
+          name: 'isRowReadonlyExpression',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          setterComponentProps: {showInput:true},
+          setterComponentVModelName: 'modelValue',
+          title: '行只读',
+          setterComponentName: 'GlExpressionSetter',
+          description:
+            '控制行是否只讯的表达式，如该行数据已审批或审批中，则不可以进行编辑。表达式的结果为true，表示相应行只读，否则表示行可编辑。' +
+            '在本表达式中，可以使用行上线文$gl.ctx.record进行计算，如表达式为：$gl.ctx.record.status==="2"，意思为状态为“2”时，整行只读'
+        },
         {
           name: 'tableDraggable',
           group: 'base',
@@ -262,8 +278,9 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '拖动自动排序',
           setterComponentName: 'ASwitch',
-          description: '启用行拖动为true才生效，当行拖动行之后，自动重新设置排序号字段SeqNo的值，从1开始排序。'
-        },
+          description:
+            '启用行拖动为true才生效，当行拖动行之后，自动重新设置排序号字段SeqNo的值，从1开始排序。'
+        }
       ],
       title: '总体设置',
       setterComponentName: 'GlSimpleObjectSetter'
@@ -582,13 +599,20 @@ export default {
       description: '在数据表的行内编辑模式下，当数据表的行记录信息更换时触发'
     },
     {
+      name: 'copyRecord',
+      title: '复制记录',
+      description: '当点击行的复制操作时触发，参数{record:Record<string,any>,rowIndex:number}'
+    },
+    {
       name: 'change',
       title: '表格数据变更（行调整顺序）',
-      description: '表格数据发生变化时触发，如在可编辑表格下，行数据数据拖动时出发（表格内置表单字段输入控件值改变时，不会触发）'
+      description:
+        '表格数据发生变化时触发，如在可编辑表格下，行数据数据拖动时出发（表格内置表单字段输入控件值改变时，不会触发）'
     },
     {
       name: 'creatingEntitySavers',
-      description: '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
+      description:
+        '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
       title: '保存对象完成前'
     }
   ],

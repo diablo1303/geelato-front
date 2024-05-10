@@ -62,7 +62,9 @@ const emits = defineEmits([
   'pushRecords',
   'unPushRecords',
   'pushOrUnPushRecords',
-  'change'
+  'change',
+  // 编辑状态
+  'copyRecord'
 ])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const isRead = pageProvideProxy.isPageStatusRead()
@@ -131,7 +133,7 @@ const props = defineProps({
       }
     }
   },
-  readonly:Boolean,
+  readonly: Boolean,
   ...mixins.props
 })
 
@@ -472,6 +474,10 @@ const cellContextmenu = (record: TableData, column: TableColumnData, ev: Event) 
  */
 const change = (data: any) => {
   emits('change', data)
+}
+
+const copyRecord = (data: { record:any,rowIndex:any }) => {
+  emits('copyRecord', data)
 }
 
 const rowSelection = computed(() => {
@@ -1211,7 +1217,13 @@ defineExpose({
     >
       <template #leftItems>
         <div v-if="base.enableEdit && base.showAddRowBtn !== false" class="action-icon">
-          <a-button @click="addRow" shape="round" type="text" size="small" :disabled="isRead || readonly">
+          <a-button
+            @click="addRow"
+            shape="round"
+            type="text"
+            size="small"
+            :disabled="isRead || readonly"
+          >
             <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加一行
           </a-button>
         </div>
@@ -1332,6 +1344,7 @@ defineExpose({
       :isFormSubTable="base.isFormSubTable"
       :subTablePidName="base.subTablePidName"
       :isLogicDeleteMode="base.isLogicDeleteMode"
+      :isRowReadonlyExpression="base.isRowReadonlyExpression"
       :rowSelection="rowSelection"
       :glComponentInst="glComponentInst"
       :glIsRuntime="glIsRuntime"
@@ -1356,6 +1369,7 @@ defineExpose({
       @cellContextmenu="cellContextmenu"
       @cellDblclick="cellDblclick"
       @change="change"
+      @copyRecord="copyRecord"
     ></component>
   </a-card>
 </template>
