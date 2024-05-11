@@ -230,7 +230,8 @@ export default {
             label: '基于工作流的申请审批模板（开发中）',
             value: 'GlPageTemplateFlow'
           }
-        ]
+        ],
+        allowClear: false
       },
       setterComponentVModelName: 'modelValue',
       group: 'base',
@@ -272,7 +273,9 @@ export default {
             labelFieldNames: ['name'],
             valueFiledName: 'id',
             valueFilter: [],
-            extraFieldAndBindIds: []
+            extraFieldAndBindIds: [],
+            allowClear: true,
+            allowSearch: true
           },
           setterComponentVModelName: 'modelValue',
           setterComponentName: 'GlDynamicSelect'
@@ -313,9 +316,9 @@ export default {
           show: true,
           expanded: true,
           displayMode: 'tile',
-          setterComponentProps: {},
+          setterComponentProps: {showInput:true},
           setterComponentVModelName: 'modelValue',
-          setterComponentName: 'AInput',
+          setterComponentName: 'GlExpressionSetter',
           placeholder:'如：$gl.ctx.record?.id',
           description:'相关业务申请单的ID，无值时，代表新发起流程创建新的申请单。'
         }

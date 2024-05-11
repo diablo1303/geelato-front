@@ -11,15 +11,12 @@ export default {
 <script lang="ts" setup>
 import { onMounted, type PropType, type Ref, ref, watch, inject, onUnmounted, computed } from 'vue'
 import {
-  emitter,
   mixins,
   PageProvideKey,
   PageProvideProxy,
   entityApi,
   useGlobal,
-  UiEventNames,
   GetEntitySaversResult,
-  utils
 } from '@geelato/gl-ui'
 import type { TabsPosition } from '@arco-design/web-vue/es/tabs/interface'
 import {
@@ -35,10 +32,8 @@ import {
   ProcTranDef
 } from './stateWfApi'
 import StateWFApprove from './StateWFApprove.vue'
-import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import type { PageTemplate } from '@geelato/gl-ui'
 
-const global = useGlobal()
 const LayoutMode = {
   collapse: 'collapse',
   tabs: 'tabs'
@@ -110,6 +105,8 @@ const props = defineProps({
   ...mixins.props
 })
 
+console.log('打开基于状态机的流程模板，传入props：',props)
+
 // 检查输入的参数
 const hasReady = computed(() => {
   // 有模板ID
@@ -151,22 +148,22 @@ const remarkLabel = ref('')
  *  业务表单的组件id
  *  由于
  */
-const bizFormId = computed(() => {
-  const findEntityForm = (inst: ComponentInstance): ComponentInstance | undefined => {
-    if (inst.componentName === 'GlEntityForm') {
-      return inst
-    }
-    let found
-    for (let subInst of inst.children) {
-      found = findEntityForm(subInst)
-      if (found) {
-        return found
-      }
-    }
-    return undefined
-  }
-  return findEntityForm(props.glComponentInst)?.id
-})
+// const bizFormId = computed(() => {
+//   const findEntityForm = (inst: ComponentInstance): ComponentInstance | undefined => {
+//     if (inst.componentName === 'GlEntityForm') {
+//       return inst
+//     }
+//     let found
+//     for (let subInst of inst.children) {
+//       found = findEntityForm(subInst)
+//       if (found) {
+//         return found
+//       }
+//     }
+//     return undefined
+//   }
+//   return findEntityForm(props.glComponentInst)?.id
+// })
 /**
  *  初始化加载工作流定义、状态定义、状态转换定义、工作流实例
  */
@@ -179,15 +176,22 @@ const loadData = async () => {
         procDefId.value = procInst.value.procDefId
       }
     })
+    console.log(`通过业务ID（${props.bizId}），加载流程实例数据，procInst:`,procInst.value)
   }
 
-  // 如果传了业务表ID，则从已有的流程实例中加载数据
+  // 通过流程定义ID，加载流程定义
   if (procDefId.value) {
     await loadProcDefById(procDefId.value).then((procDefRes: any) => {
       procDef.value = procDefRes
     })
+    console.log(`通过流程定义ID（${procDefId.value}），加载流程定义数据，procDef:`,procDef.value)
   }
 
+  if(procInst.value.id){
+    if(!procInst.value.currentStateId){
+      console.error(`当前已存在流程实例，但流程实例的currentStateId为空（${procInst.value.currentStateId}）`)
+    }
+  }
   // 服务端流程实例的当前状态，是最新的状态
   lastState.value = procInst.value?.currentStateId || procDef.value.initStateId
   isNew.value = !procInst.value?.id
@@ -198,7 +202,7 @@ const loadData = async () => {
   nextTrans.value = procDef.value.trans?.filter((tran: ProcTranDef) => {
     return tran.srcStateId === lastState.value
   })
-  console.log('procInst', procInst)
+  console.log('当前流程定义最新状态', procInst)
 
   // 图标状态
   graphState.value = getGraphStateByApprovalStatus(procInst.value.approvalStatus)
@@ -545,11 +549,9 @@ const pageParams = computed(() => {
       </div>
     </div>
     <template v-else>
-      在打开页面组件的页面参数中，需要传入以下参数：
+      在打开页面组件的页面参数中，如果是新流程发起，则不需传入业务表单ID(bizId)，如果是审批环节，则需要传入业务表单ID(bizId)。
       <br />
-      bizId，当前值为：{{ bizId }}
-      <br />
-      在打开页面组件的模板页面参数中，需要传入以下参数：
+      当前业务表单ID(bizId)为：{{ bizId }}
     </template>
   </div>
 </template>

@@ -789,7 +789,8 @@ export default {
           setterComponentVModelName: 'modelValue',
           description: '是否显示数据条数选择器',
           title: '记录选择器',
-          setterComponentName: 'ASwitch'
+          setterComponentName: 'ASwitch',
+          setterDefaultValue:true
         },
         {
           name: 'pageSizeOptions',

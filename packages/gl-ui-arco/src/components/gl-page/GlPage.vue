@@ -37,7 +37,7 @@ import {
   provide,
   ref,
   nextTick,
-  computed
+  computed, onBeforeUnmount
 } from 'vue'
 import {
   type PageType,
@@ -48,13 +48,12 @@ import {
   PageParamsKey,
   type Param,
   utils,
-  ConvertUtil
+  ConvertUtil, PageStatus
 } from '@geelato/gl-ui'
 import type { Action } from '@geelato/gl-ui-schema'
 import type { ParamMeta } from '@geelato/gl-ui/src/m/types/global'
 
 const emits = defineEmits(['interval'])
-const proxy = getCurrentInstance()?.proxy
 const props = defineProps({
   breadcrumb: {
     type: Array,
@@ -88,15 +87,15 @@ const props = defineProps({
     }
   },
   /**
-   *  页面状态默认为read
+   *  页面状态默认为none
    *  注意在给页面添加类似pageStatus的属性时，为了确保打开页面时有传该值进来，需处理如下：
    *  1、需在JsScriptExecutor中增加相应信息，如loadPage时需传参数
    *  2、在脚本生成的blockHandler中传入相应的信息
    */
   pageStatus: {
-    type: String,
+    type: String as PropType<PageStatus>,
     default() {
-      return 'read'
+      return PageStatus.none
     }
   },
   /**
@@ -180,7 +179,7 @@ const style = {
 }
 
 // console.log('GlPage > props:', props)
-const pageProvideProxy = new PageProvideProxy(props.glComponentInst, getCurrentInstance()!)
+let pageProvideProxy:PageProvideProxy|null = new PageProvideProxy(props.glComponentInst, getCurrentInstance()!)
 pageProvideProxy.pageId = props.pageId
 pageProvideProxy.setVueRef(props.glComponentInst.id, getCurrentInstance())
 pageProvideProxy.setPageStatus(props.pageStatus)
@@ -195,7 +194,7 @@ const onPageMounted = () => {
       // console.log('onPageMounted() > action:', action)
       if (action.eventName === 'onMounted') {
         jsScriptExecutor.doAction(action, {
-          pageProxy: pageProvideProxy
+          pageProxy: pageProvideProxy!
         })
       }
     })
@@ -230,10 +229,7 @@ if (props.params && props.params.length > 0) {
 provide(PageProvideKey, pageProvideProxy)
 provide(PageParamsKey, props.params)
 // console.log('GlPage > provide() > pageProvideProxy:', pageProvideProxy)
-onUnmounted(() => {
-  jsScriptExecutor.removePageProxy(props.glComponentInst.id)
-  // console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
-})
+
 
 /**
  *  以当前页面参数数据重新加载
@@ -269,6 +265,12 @@ onUnmounted(() => {
   if (pageIntervalId) {
     clearInterval(pageIntervalId)
   }
+  // jsScriptExecutor.removePageProxy(props.glComponentInst.id)
+  // console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
+  // pageProvideProxy?.destroy()
+  // pageProvideProxy = null
+  // @ts-ignore
+  // props.glComponentInst = null
 })
 
 defineExpose({ refresh })

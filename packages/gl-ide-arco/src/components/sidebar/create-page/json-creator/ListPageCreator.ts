@@ -214,8 +214,11 @@ const useColumnsInst = (options: PageCreatorOptions) => {
   const columns: any[] = []
   columns.push({
     title: 'ID',
-    dataIndex: 'id'
+    dataIndex: 'id',
+    _show: false
   })
+  let hasCreateAt = false
+  let hasCreator = false
   options.showFields.forEach((fieldMeta: FieldMeta) => {
     columns.push({
       title: fieldMeta.title,
@@ -224,8 +227,26 @@ const useColumnsInst = (options: PageCreatorOptions) => {
       // sortable: { sortDirections: ['ascend', 'descend'] },
       sortable: {}
     })
+    if((fieldMeta.alias || fieldMeta.name)=='creatorName') {
+      hasCreator = true
+    }else if((fieldMeta.alias || fieldMeta.name)=='createAt') {
+      hasCreator = true
+    }
   })
-
+  if(!hasCreator){
+    columns.push({
+      title: "创建人",
+      dataIndex: "creatorName",
+      width:80
+    })
+  }
+  if(!hasCreateAt){
+    columns.push({
+      title: "创建时间",
+      dataIndex: "createAt",
+      width:180
+    })
+  }
   return columns
 }
 
@@ -599,6 +620,7 @@ const useTableInst = (options: PageCreatorOptions): ComponentInstance => {
         showQuery: true,
         showPagination: true,
         showToolbar: true,
+        showSeqNo: true,
         tablePadding: '',
         enableEdit: false,
         tableTitle: options.entityMeta.entityTitle,

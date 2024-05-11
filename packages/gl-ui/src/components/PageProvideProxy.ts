@@ -6,6 +6,20 @@ import type { ComponentInternalInstance } from 'vue'
 import type {InstPermission, Param, ParamMeta} from '../m/types/global'
 import utils from '../m/utils/Utils'
 
+
+export enum PageStatus {
+  // 默认的状态，不指定是只读还是编辑状态，如可用在列表页面，在列表页面中查询区域是可编辑的，数据列区域有可能可编辑，也有可能不可编辑。
+  none = 'none',
+  // 只读，如可用于表单页面，表单的组件可不可编辑
+  read = 'read',
+  // 创建，如可用于表单页面，表单的组件可编辑
+  create = 'create',
+  // 复制并创建，如可用于表单页面，表单的组件可编辑，且此时表单无id
+  copyCreate = 'copyCreate',
+  // 更新，如可用于表单页面，表单的组件可编辑，且此时表单有id
+  update = 'update'
+}
+
 export type PageParamConfigType = { pName: string; pValue: any; pType: string }
 export type PageCustomType = {
   id: string
@@ -119,7 +133,8 @@ export default class PageProvideProxy {
   id: string = ''
   // 数据库中的字段，页面id
   pageId: string = ''
-  pageStatus: string = 'read'
+  // read create copyCreate update
+  pageStatus: PageStatus = PageStatus.none
   pageCustom?: PageCustomType
   pagePermission?: PagePermission
   pageTemplateName?: string
@@ -460,8 +475,8 @@ export default class PageProvideProxy {
     return null
   }
 
-  setPageStatus(pageStatus: string) {
-    this.pageStatus = pageStatus || 'read'
+  setPageStatus(pageStatus: PageStatus) {
+    this.pageStatus = pageStatus
   }
 
   setPageCustom(pageCustom?: PageCustomType) {
@@ -481,23 +496,23 @@ export default class PageProvideProxy {
   }
 
   isPageStatusRead() {
-    return this.pageStatus === 'read'
+    return this.pageStatus === PageStatus.read
   }
 
   isPageStatusCreate() {
-    return this.pageStatus === 'create'
+    return this.pageStatus === PageStatus.create
   }
 
   isPageStatusCopyCreate() {
-    return this.pageStatus === 'copyCreate'
+    return this.pageStatus === PageStatus.copyCreate
   }
 
   isPageStatusCreateOrCopyCreate() {
-    return this.pageStatus === 'create' || this.pageStatus === 'copyCreate'
+    return this.pageStatus === PageStatus.create || this.pageStatus === PageStatus.copyCreate
   }
 
   isPageStatusUpdate() {
-    return this.pageStatus === 'update'
+    return this.pageStatus === PageStatus.update
   }
 
   isPageStatusCreateOrUpdate() {

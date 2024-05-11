@@ -53,9 +53,23 @@
 export default {
   name: 'GlDynamicSelect'
 }
+
+const enum TriggerMode {
+  onCreated = 'onCreated',
+  // onInvoked = 'onInvoked',
+  onValueChanged = 'onValueChanged'
+}
+
+const enum TriggerConstraint {
+  // 组件值从空转为非空
+  ValueChangeToNotEmpty = 'ValueChangeToNotEmpty'
+  // // 查询条件的值都不为空
+  // QueryConditionAllNotEmpty = 'QueryConditionAllNotEmpty'
+}
+
 </script>
 <script lang="ts" setup>
-import { computed, inject, type PropType, type Ref, ref, toRaw, watch } from 'vue'
+import {computed, inject, type PropType, type Ref, ref, watch} from 'vue'
 import {
   entityApi,
   EntityReader,
@@ -73,18 +87,6 @@ const emits = defineEmits(['update:modelValue'])
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
-const enum TriggerMode {
-  onCreated = 'onCreated',
-  onInvoked = 'onInvoked',
-  onValueChanged = 'onValueChanged'
-}
-
-const enum TriggerConstraint {
-  // 组件值从空转为非空
-  ValueChangeToNotEmpty = 'ValueChangeToNotEmpty'
-  // // 查询条件的值都不为空
-  // QueryConditionAllNotEmpty = 'QueryConditionAllNotEmpty'
-}
 
 const props = defineProps({
   id:String,
@@ -433,6 +435,12 @@ watch(
 )
 
 triggerOnCreated()
+
+// onUnmounted(()=>{
+  // selectOptions.value.length = 0
+  // // @ts-ignore
+  // selectOptions.value = null
+// })
 </script>
 
 <style scoped>

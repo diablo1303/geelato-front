@@ -16,7 +16,7 @@ export default {
       show: true,
       expanded: true,
       title: '描述',
-      setterComponentName: 'AInput'
+      setterComponentName: 'ATextarea'
     }
   ],
   actions: []

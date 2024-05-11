@@ -40,6 +40,18 @@ export default {
       expanded: true,
       title: '表达式',
       setterComponentName: 'GlExpressionSetter'
+    },
+    {
+      name: 'description',
+      setterComponentProps: { showInput: true },
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      title: '描述',
+      setterComponentName: 'ATextarea'
     }
   ],
   actions: []

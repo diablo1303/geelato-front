@@ -20,3 +20,11 @@ export default function useComponentGroups(
   }
   return componentMaterialGroups
 }
+
+export  type ComponentSidebarTab ={
+  // 内置的TAB key，如“组件”、“模板”、“自定义区块”
+  key: string,
+  title: string,
+  show: boolean,
+  tips?: string
+}

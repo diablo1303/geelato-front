@@ -8,9 +8,8 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { mixins, type Param, utils } from '@geelato/gl-ui'
+import {mixins, PageProvideKey, PageProvideProxy, type Param, utils,type PageStatus, PageParamsKey} from '@geelato/gl-ui'
 import { inject, nextTick, type PropType, ref } from 'vue'
-import { PageParamsKey } from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -28,14 +27,10 @@ const props = defineProps({
   // 引用的页面地址
   pageSrc: String,
   /**
-   *  页面状态默认为read
-   *  注意在给页面添加类似pageStatus的属性时，为了确保打开页面时有传该值进来，需处理如下：
+   *  页面状态默认为none
    */
   pageStatus: {
-    type: String,
-    default() {
-      return 'read'
-    }
+    type: String as PropType<PageStatus>
   },
   // 引用平台的页面所属的应用Id
   appId: String,
@@ -51,6 +46,11 @@ const props = defineProps({
     }
   }
 })
+
+
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
+// 如果props中未指定页面状态，则取当前引用页面所在页面的状态
+const _pageStatus = props.pageStatus || pageProvideProxy.pageStatus
 
 /**
  *  参数合并
@@ -107,7 +107,7 @@ defineExpose({ refresh })
       <div v-if="!extendId">
         <a-alert type="error"> 未配置页面 </a-alert>
       </div>
-      <GlPageViewer v-if="extendId" :pageProps="{ params }" v-bind="props" :pageStatus="pageStatus"></GlPageViewer>
+      <GlPageViewer v-if="extendId" :pageProps="{ params }" v-bind="props" :pageStatus="_pageStatus"></GlPageViewer>
     </template>
   </div>
 </template>

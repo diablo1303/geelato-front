@@ -439,7 +439,7 @@ export class Utils {
         monthDifference -= 1
       }
       if (monthDifference === 1) {
-        return '一个月前'
+        return '1个月前'
       } else if (monthDifference < 12) {
         return `${monthDifference}个月前`
       } else {

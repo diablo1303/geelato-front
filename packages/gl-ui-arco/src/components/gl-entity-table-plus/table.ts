@@ -99,6 +99,8 @@ export class BaseInfo {
   clickAsCheck?: boolean = false
   // 数据删除模式是否为逻辑删除模式 !!！暂不支持，平台全为逻辑删除
   isLogicDeleteMode?: boolean = true
+  // 行是否只计的表达式，用于控制在一些场景下，如某行的数据已审批，则不能编辑
+  isRowReadonlyExpression?: string
   //  基于表达式计算出来的值，_propsExpression的示例值：{label:“用户列表”}
   _propsExpressions? = {}
 }
@@ -167,6 +169,58 @@ export const evalColorExpression = (
   return jsScriptExecutor.evalExpression(data.column._bgColor, ctx)
 }
 
+/**
+ * 执行行级别的表达式
+ * 场景：检查某行是否只读，如某数据已审核，则不能修改
+ * @param rowExpression
+ * @param data
+ * @param pageProvideProxy
+ */
+// export const evalRowExpression = (
+//   rowExpression: string,
+//   data: {
+//     record: TableData
+//     rowIndex: number
+//   },
+//   pageProvideProxy: PageProvideProxy
+// ) => {
+//   const ctx = {
+//     pageProxy: pageProvideProxy,
+//     record: toRaw(data.record),
+//     rowIndex: toRaw(data.rowIndex)
+//   }
+//   // console.log('evalRowExpression', data)
+//   return jsScriptExecutor.evalExpression(rowExpression, ctx)
+// }
+/**
+ * 计算出某行是否只读
+ * @param isRowReadonlyExpression
+ * @param records
+ * @param pageProvideProxy
+ * @returns boolean[]，其中index为rowIndex，value为true/false
+ */
+export const statIsRowReadonly = (
+  isRowReadonlyExpression: string,
+  records: Array<TableData>,
+  pageProvideProxy: PageProvideProxy
+) => {
+  if(!isRowReadonlyExpression){
+    return []
+  }
+  // console.log('statIsRowReadonly', isRowReadonlyExpression,records)
+  // key为rowIndex，value为true/false
+  let result:boolean[] = []
+  records.forEach((record, rowIndex) => {
+    const ctx = {
+      pageProxy: pageProvideProxy,
+      record: toRaw(record),
+      rowIndex: rowIndex
+    }
+    result.push(jsScriptExecutor.evalExpression(isRowReadonlyExpression, ctx))
+  })
+  return result
+}
+
 export const showAction = (
   data: {
     record: TableData
@@ -184,13 +238,13 @@ export const showAction = (
       action: actionCopy,
       rowIndex: toRaw(data.rowIndex)
     }
-    console.log(
-      'showAction()',
-      data.record.id,
-      data.action.props.label,
-      actionCopy.props.unRender !== true && actionCopy.props._hidden !== true,
-      data.record.recordLock
-    )
+    // console.log(
+    //   'showAction()',
+    //   data.record.id,
+    //   data.action.props.label,
+    //   actionCopy.props.unRender !== true && actionCopy.props._hidden !== true,
+    //   data.record.recordLock
+    // )
     executeObjectPropsExpressions(actionCopy, ctx)
     return actionCopy.props.unRender !== true && actionCopy.props._hidden !== true
   } else {
@@ -258,11 +312,14 @@ export const changeColumnsVisible = (
  * @param hideDataIndexes
  */
 export const genQueryColumns = (
-  props: any,
+  props: {
+    columns: Array<any>
+    enableI18n: boolean
+  },
   showDataIndexes: string[],
   hideDataIndexes: string[]
 ) => {
-  // 如果启用了多语言，则需要对标题进行翻译
+  // 如果启用了多语言，}则需要对标题进行翻译
   let qColumns: Array<GlTableColumn> = []
   if (props.columns && props.columns.length > 0) {
     qColumns = JSON.parse(JSON.stringify(props.columns))

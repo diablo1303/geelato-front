@@ -33,7 +33,7 @@
           <a-tab-pane key="2">
             <template #title>
               <GlIconfont type="gl-eye" />
-              查看生成的配置JSON
+              生成的配置JSON
             </template>
             <div style="padding: 2px 4px">
               <GlMonacoEditor
@@ -49,7 +49,7 @@
           <a-tab-pane key="3">
             <template #title>
               <GlIconfont type="gl-eye" />
-              查看生成的脚本JS
+              生成的脚本JS
             </template>
             <div style="padding: 2px 4px">
               <GlMonacoEditor
@@ -62,6 +62,12 @@
               ></GlMonacoEditor>
             </div>
           </a-tab-pane>
+          <template #extra>
+            <a-button-group type="primary" size="mini">
+              <a-button @click="copyAll" title="复制整个动作动作">复制动作</a-button>
+              <a-button @click="pasteAll">插入</a-button>
+            </a-button-group>
+          </template>
         </a-tabs>
       </a-col>
       <a-col
@@ -146,7 +152,7 @@ const props = defineProps({
     }
   }
 })
-
+const global = useGlobal()
 const themeStore = useThemeStore()
 const actionStore = useActionStore()
 const mainHeight = themeStore.modalBodyHeight + 'px'
@@ -216,7 +222,31 @@ const generateScript = () => {
 const insertAfterCurrentSelectedComponent = async () => {
   const result = await componentStore.insertAfterCurrentSelectedComponentFromClipboard()
   if (!result.success) {
-    useGlobal().$notification.error(result.message)
+    global.$notification.error(result.message)
+  }
+}
+
+const copyAll = () => {
+  const result = componentStore.copyCurrentComponentTreeToClipboard(false)
+  console.log('copyAll', result)
+}
+
+const pasteAll = () => {
+  const selectedInst = componentStore.currentSelectedComponentInstance
+  if (selectedInst && selectedInst.id) {
+    // 如果当前选中的组件是GlPage，则选中GlPage的最后一个子组件，以便直接粘贴到该子组件之后。
+    if (selectedInst.componentName === 'GlPage') {
+      componentStore.setCurrentSelectedComponent(
+        selectedInst.children[selectedInst.children.length - 1]
+      )
+    }
+    componentStore.insertAfterCurrentSelectedComponentFromClipboard().then((result: any) => {
+      if (result.success === false) {
+        global.$notification.error(result?.message)
+      }
+    })
+  } else {
+    global.$notification.error('请先选择一个组件，作为插入的目标组件。')
   }
 }
 
