@@ -4,10 +4,10 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { inject, type Ref, ref, watch } from 'vue'
-import type { FileItem } from '@arco-design/web-vue'
-import { Notification } from '@arco-design/web-vue'
-import { entityApi, fileApi, PageProvideKey, PageProvideProxy } from '@geelato/gl-ui'
+import {inject, type Ref, ref, watch} from 'vue'
+import type {FileItem} from '@arco-design/web-vue'
+import {Notification} from '@arco-design/web-vue'
+import {entityApi, fileApi, PageProvideKey, PageProvideProxy} from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -30,11 +30,11 @@ watch(mv, () => {
 // console.log('GlUpload props.modelValue:', props.modelValue)
 // 转成字符串格式，并去掉空项
 const accept = ref(
-  props.acceptArray &&
+    props.acceptArray &&
     JSON.stringify(
-      props.acceptArray?.filter((acceptItem) => {
-        return !acceptItem
-      }) || []
+        props.acceptArray?.filter((acceptItem) => {
+          return !acceptItem
+        }) || []
     )
 )
 
@@ -64,17 +64,17 @@ const clearLocalFileItem = (fileList: FileItem[], delUid: string) => {
 const beforeRemove = (fileItem: FileItem): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     fileApi
-      .deleteAttachment(fileItem.uid)
-      .then(() => {
-        clearLocalFileItem(fileList.value, fileItem.uid)
-        Notification.success('删除成功')
-        resolve(true)
-      })
-      .catch((e) => {
-        Notification.success('删除失败')
-        console.error('删除失败', e)
-        reject(false)
-      })
+        .deleteAttachment(fileItem.uid)
+        .then(() => {
+          clearLocalFileItem(fileList.value, fileItem.uid)
+          Notification.success('删除成功')
+          resolve(true)
+        })
+        .catch((e) => {
+          Notification.success('删除失败')
+          console.error('删除失败', e)
+          reject(false)
+        })
   })
 }
 
@@ -119,10 +119,11 @@ const loadFiles = () => {
             return fileItem.uid === value.id
           })
           if (!foundItem) {
+            const isPreview = value.type && (value.type.startsWith('image') || value.type === 'application/pdf');
             fileList.value.push({
               uid: value.id,
               name: value.name,
-              url: fileApi.getDownloadUrlById(value.id)
+              url: fileApi.getDownloadUrlById(value.id, false, isPreview)
             })
           }
         }
@@ -137,14 +138,14 @@ const loadFiles = () => {
 
 // 初始化，加载文件
 watch(
-  () => {
-    return props.modelValue
-  },
-  () => {
-    mv.value = props.modelValue
-    loadFiles()
-  },
-  { immediate: true }
+    () => {
+      return props.modelValue
+    },
+    () => {
+      mv.value = props.modelValue
+      loadFiles()
+    },
+    {immediate: true}
 )
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
@@ -154,15 +155,15 @@ const isRead = !!pageProvideProxy?.isPageStatusRead()
 
 <template>
   <a-upload
-    class="gl-upload"
-    :action="fileApi.getUploadUrl()"
-    :file-list="fileList"
-    :accept="accept"
-    :headers="entityApi.getHeader()"
-    :show-remove-button="!isRead"
-    @error="uploadError"
-    @success="uploadSuccess"
-    @before-remove="beforeRemove"
+      class="gl-upload"
+      :action="fileApi.getUploadUrl()"
+      :file-list="fileList"
+      :accept="accept"
+      :headers="entityApi.getHeader()"
+      :show-remove-button="!isRead"
+      @error="uploadError"
+      @success="uploadSuccess"
+      @before-remove="beforeRemove"
   >
   </a-upload>
 </template>

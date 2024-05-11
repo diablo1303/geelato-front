@@ -54,8 +54,8 @@ export function getUploadUrl(isRename?: boolean) {
  * 下载附件
  * @param id 附件id
  */
-export function getDownloadUrlById(id: string, isPdf?: boolean) {
-  return id ? `${entityApi.getAxios().defaults.baseURL}/api/resources/file?rstk=download&id=${id}&isPdf=${isPdf === true}` : ''
+export function getDownloadUrlById(id: string, isPdf?: boolean, isPreview?: boolean) {
+  return id ? `${entityApi.getAxios().defaults.baseURL}/api/resources/file?rstk=download&id=${id}&isPdf=${isPdf === true}&isPreview=${isPreview === true}` : ''
 }
 
 /**
@@ -119,12 +119,12 @@ export function importFile(templateId: string, attachId: string, importType?: st
  * @param id
  * @param isPdf 是否转成pdf下载
  */
-export function downloadFileById(id: string, isPdf?: boolean) {
+export function downloadFileById(id: string, isPdf?: boolean, isPreview?: boolean) {
   const iframe = document.createElement('iframe')
   iframe.style.display = 'none' // 防止影响页面
   iframe.style.height = '0' // 防止影响页面
-  console.log('getDownloadUrlById(id,isPdf)',getDownloadUrlById(id,isPdf))
-  iframe.src = getDownloadUrlById(id,isPdf)
+  console.log('getDownloadUrlById(id,isPdf)', getDownloadUrlById(id, isPdf, isPreview))
+  iframe.src = getDownloadUrlById(id, isPdf, isPreview)
   document.body.appendChild(iframe) // 这一行必须，iframe挂在到dom树上才会发请求
   // 等待iframe加载完成
   iframe.onload = () => {
