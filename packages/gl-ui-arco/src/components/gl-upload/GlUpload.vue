@@ -123,7 +123,7 @@ const loadFiles = () => {
             fileList.value.push({
               uid: value.id,
               name: value.name,
-              url: fileApi.getDownloadUrlById(value.id, false, isPreview)
+              url: fileApi.getDownloadUrlById(value.id, false, isPreview === true)
             })
           }
         }
