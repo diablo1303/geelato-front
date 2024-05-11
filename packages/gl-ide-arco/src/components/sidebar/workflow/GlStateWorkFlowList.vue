@@ -89,7 +89,7 @@ const openSWFDrawer = () => {
   global.$drawer.open({
     title: '流程定义列表',
     width:'90%',
-    content: loadPageContent({pageId:'5043859628304240641',params:[{name:'query.name',value:global.$gl.app.id}]}),
+    content: loadPageContent({pageId:'5043859628304240641',params:[{name:'query.appId',value:global.$gl.app.id}]}),
   })
 }
 
