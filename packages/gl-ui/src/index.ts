@@ -45,8 +45,14 @@ import jsScriptExecutor from './m/actions/JsScriptExecutor'
 import AppProvideProxy, { AppProvideKey } from './components/AppProvideProxy'
 import FormProvideProxy, { FormProvideKey, SubmitFormResult } from './components/FormProvideProxy'
 import { Schema } from 'b-validate'
-import type { ApiPagedResult, ApiResult, ApiResultStatus, Param } from './m/types/global'
-import { PageType } from './m/types/global'
+import type {
+  ApiPagedResult,
+  ApiResult,
+  ApiResultStatus,
+  Param,
+  PageConfig
+} from './m/types/global'
+import { PageType, PageStatus } from './m/types/global'
 import {
   executeArrayExpressions,
   executeObjectPropsExpressions
@@ -97,8 +103,8 @@ import GlLoader from './components/gl-loader/GlLoader.vue'
 import './assets/style.css'
 import useLogger from './m/hooks/useLogger'
 import { getUserCompany } from './m/datasource/Security'
-import type {PageTemplate} from "./components/PageProvideProxy";
-import {PageStatus} from './components/PageProvideProxy';
+import type { PageTemplate } from './components/PageProvideProxy'
+import { loadPageContent } from './components/PageLoader'
 
 const Utils = AllUtils
 
@@ -142,8 +148,12 @@ export {
   AppProvideProxy,
   PageParamsKey,
   PageProvideKey,
+  PageTemplate,
   PageCustomType,
   PageProvideProxy,
+  PageConfig,
+  PageStatus,
+  loadPageContent,
   paramStringify,
   FormProvideKey,
   FormProvideProxy,
@@ -221,9 +231,7 @@ export {
   executeArrayExpressions,
   SubmitFormResult,
   UiEventNames,
-  getUserCompany,
-  PageTemplate,
-  PageStatus
+  getUserCompany
 }
 // 默认导出组件
 export default component

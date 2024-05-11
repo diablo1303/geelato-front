@@ -69,6 +69,7 @@ import GlSlotSetter from './components/setters/property-setters/GlSlotSetter.vue
 import GlModelList from './components/sidebar/model/GlModelList.vue'
 import GlDictList from './components/sidebar/dict/GlDictList.vue'
 import GlServiceList from './components/sidebar/services/GlServiceList.vue'
+import GlStateWorkFlowList from './components/sidebar/workflow/GlStateWorkFlowList.vue'
 import GlPageParamsSetter from './components/setters/property-setters/GlPageParamsSetter.vue'
 import './assets/style.css'
 
@@ -134,6 +135,15 @@ plugin.sidebar.push(
     name: '服务',
     iconType: 'gl-api',
     componentName: GlServiceList.name
+  })
+)
+
+plugin.sidebar.push(
+  new Panel({
+    title: '流程',
+    name: '流程',
+    iconType: 'gl-flow',
+    componentName: GlStateWorkFlowList.name
   })
 )
 
@@ -246,6 +256,7 @@ const component: Plugin = {
     app.component(GlModelList.name, GlModelList)
     app.component(GlDictList.name, GlDictList)
     app.component(GlServiceList.name, GlServiceList)
+    app.component(GlStateWorkFlowList.name, GlStateWorkFlowList)
     app.component(GlPermissionList.name, GlPermissionList)
     app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
     app.component(GlPageOpHistory.name, GlPageOpHistory)

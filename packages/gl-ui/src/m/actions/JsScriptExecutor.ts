@@ -880,6 +880,8 @@ export class JsScriptExecutor {
    * @param extendId 应用页面树节点ID
    * @param params
    * @param pageStatus 页面状态
+   * @param pageTemplateName
+   * @param pageTemplateProps
    */
   loadPage(
     pageId: string,

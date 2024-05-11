@@ -3,22 +3,9 @@
  */
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import type { ComponentInternalInstance } from 'vue'
-import type {InstPermission, Param, ParamMeta} from '../m/types/global'
+import type { InstPermission, Param, ParamMeta } from '../m/types/global'
+import { PageStatus } from '../m/types/global'
 import utils from '../m/utils/Utils'
-
-
-export enum PageStatus {
-  // 默认的状态，不指定是只读还是编辑状态，如可用在列表页面，在列表页面中查询区域是可编辑的，数据列区域有可能可编辑，也有可能不可编辑。
-  none = 'none',
-  // 只读，如可用于表单页面，表单的组件可不可编辑
-  read = 'read',
-  // 创建，如可用于表单页面，表单的组件可编辑
-  create = 'create',
-  // 复制并创建，如可用于表单页面，表单的组件可编辑，且此时表单无id
-  copyCreate = 'copyCreate',
-  // 更新，如可用于表单页面，表单的组件可编辑，且此时表单有id
-  update = 'update'
-}
 
 export type PageParamConfigType = { pName: string; pValue: any; pType: string }
 export type PageCustomType = {
@@ -34,10 +21,11 @@ export type PageCustomType = {
  */
 export interface PageTemplate {
   // 如GlPageTemplateStateWF，基于状态机的工作流模板
-  type:string
+  type: string
   // 可用于表单在保存之前调用该模板的回调方法
-  onBeforeSubmit?:Function
-  [key:string]:any
+  onBeforeSubmit?: Function
+
+  [key: string]: any
 }
 
 /**
@@ -58,7 +46,7 @@ export class PagePermission {
     const found = this.perms?.find((permission: InstPermission) => {
       return permission.code === instId && permission.rule === 'r'
     })
-    console.log('found',found)
+    console.log('found', found)
     return !!found
   }
 
@@ -138,11 +126,11 @@ export default class PageProvideProxy {
   pageCustom?: PageCustomType
   pagePermission?: PagePermission
   pageTemplateName?: string
-  pageTemplate: PageTemplate = {type:''}
+  pageTemplate: PageTemplate = { type: '' }
   pageInst: ComponentInstance
   pageVueInst: ComponentInternalInstance | null
   pageParams: Array<Param> = []
-  pageParamsMeta:Array<ParamMeta> = []
+  pageParamsMeta: Array<ParamMeta> = []
   pageCtx: object = {}
   vueRefMap: { [key: string]: ComponentInternalInstance | null } = {}
   componentInstMap: { [key: string]: ComponentInstance } = {}
@@ -157,7 +145,7 @@ export default class PageProvideProxy {
     const statAllComponentIds = () => {
       const ids: { [key: string]: boolean } = {}
       const statId = (inst: ComponentInstance) => {
-        if(inst&&inst.id&&inst.componentName){
+        if (inst && inst.id && inst.componentName) {
           // 过滤无效的组件
           if (ignoreComponents.indexOf(inst.componentName) === -1) {
             ids[inst.id] = true
@@ -294,8 +282,6 @@ export default class PageProvideProxy {
 
   paramStringify = paramStringify
 
-
-
   /**
    * 设置页面参数定义
    * @param paramsMeta
@@ -304,15 +290,15 @@ export default class PageProvideProxy {
     this.pageParamsMeta = paramsMeta || []
   }
 
-  setPateTemplateName(pageTemplateName?:string){
+  setPateTemplateName(pageTemplateName?: string) {
     this.pageTemplateName = pageTemplateName
   }
 
-  setPateTemplate(pageTemplate:PageTemplate){
+  setPateTemplate(pageTemplate: PageTemplate) {
     this.pageTemplate = pageTemplate
   }
 
-  getPageTemplate(){
+  getPageTemplate() {
     return this.pageTemplate
   }
 
@@ -322,6 +308,7 @@ export default class PageProvideProxy {
   getParamsMeta(): Array<ParamMeta> {
     return this.pageParamsMeta
   }
+
   /**
    * 设置页面参数，这里设置的是已完成解析的，键值对，不是参数配置信息
    * @param params
@@ -522,12 +509,12 @@ export default class PageProvideProxy {
   /**
    *  在销毁之前调用
    */
-  destroy(){
+  destroy() {
     // console.log('destroy pageProvideProxy')
     // @ts-ignore
     this.pageCustom = null
     // @ts-ignore
-    this.pageCustom  = null
+    this.pageCustom = null
     // @ts-ignore
     this.pageInst = null
     this.pageVueInst = null
