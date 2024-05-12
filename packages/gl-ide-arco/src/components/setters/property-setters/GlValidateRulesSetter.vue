@@ -47,14 +47,6 @@ const ruleOptions = [
     props: {placeholder: '长度值'}
   },
   {
-    label: '正则校验（字符串）',
-    value: 'match',
-    message: 'XX校验不通过',
-    type: 'string',
-    setter: 'AInput',
-    props: {placeholder: '正则'}
-  },
-  {
     label: '大写（字符串）',
     value: 'uppercase',
     message: '需大写',
@@ -91,9 +83,9 @@ const ruleOptions = [
     props: {placeholder: '最大值'}
   },
   {
-    label: '校验数值（数值）',
+    label: '数值需等于',
     value: 'equal',
-    message: '不符合数值要求',
+    message: '数值需等于{0}',
     type: 'number',
     setter: 'AInputNumber',
     props: {placeholder: '校验数值', title: '校验数值'}
@@ -137,6 +129,25 @@ const ruleOptions = [
     props: {placeholder: '', title: ''},
     defaultValue: true,
     showSetter: false
+  },
+  {
+    label: '是否为空（object）',
+    value: 'empty',
+    message: '不能为空/可以为空',
+    type: 'boolean',
+    setter: 'ASwitch',
+    props: {placeholder: '', title: '选中，表示不能为空，否则可以为空'},
+    defaultValue: false,
+    showSetter: true
+  },
+  {
+    label: '正则校验（字符串）',
+    value: 'match',
+    message: 'XX校验不通过',
+    type: 'string',
+    setter: 'GlRegExpSetter',
+    props: {placeholder: '正则'},
+    showSetter: true
   }
 ]
 
@@ -285,7 +296,7 @@ const removeRule = (args: any) => {
           </div>
         </div>
       </GlArrayBaseSetter>
-      <a-divider><span class="gl-tips" title="从下拉列表中选择添加规则">添加规则</span></a-divider>
+      <a-divider><span class="gl-tips" title="从下拉列表中选择添加规则，每种只能添加一次">添加规则</span></a-divider>
       <a-select v-model="selectedRule">
         <a-option v-for="ruleOption in ruleOptions" :value="ruleOption" :label="ruleOption.label" />
       </a-select>

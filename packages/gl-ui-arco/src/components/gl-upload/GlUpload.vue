@@ -20,7 +20,9 @@ const props = defineProps({
       return ''
     }
   },
-  acceptArray: Array
+  acceptArray: Array,
+  readonly: Boolean,
+  disabled: Boolean
 })
 const mv = ref(props.modelValue)
 
@@ -150,7 +152,7 @@ watch(
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
-const isRead = !!pageProvideProxy?.isPageStatusRead()
+const isRead = pageProvideProxy.isPageStatusRead() || props.readonly || props.disabled
 </script>
 
 <template>
@@ -161,6 +163,8 @@ const isRead = !!pageProvideProxy?.isPageStatusRead()
       :accept="accept"
       :headers="entityApi.getHeader()"
       :show-remove-button="!isRead"
+      :readonly="readonly"
+      :disabled="disabled"
       @error="uploadError"
       @success="uploadSuccess"
       @before-remove="beforeRemove"

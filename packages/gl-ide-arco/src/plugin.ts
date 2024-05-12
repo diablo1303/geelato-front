@@ -41,6 +41,7 @@ import GlArrayNumberBuilder from './components/builder/props-builder/GlArrayNumb
 import GlArrayStringSetter from './components/setters/property-setters/GlArrayStringSetter.vue'
 import GlArrayBooleanSetter from './components/setters/property-setters/GlArrayBooleanSetter.vue'
 import GlArrayColorSetter from './components/setters/property-setters/GlArrayColorSetter.vue'
+import GlRegExpSetter from './components/setters/property-setters/GlRegExpSetter.vue'
 import GlArrayComponentSetter from './components/setters/property-setters/GlArrayComponentSetter.vue'
 import GlDictSetter from './components/setters/property-setters/GlDictSetter.vue'
 import GlInst from './components/dnd/GlInst.vue'
@@ -327,6 +328,7 @@ const component: Plugin = {
     app.component(GlExpressionSetter.name, GlExpressionSetter)
     app.component(GlSlotSetter.name, GlSlotSetter)
     app.component(GlPageParamsSetter.name, GlPageParamsSetter)
+    app.component(GlRegExpSetter.name, GlRegExpSetter)
     // 注册组件元数据
     // ide.componentMetaManager.registerManyComponentRuntimeMeta(componentMeta.runtimeMeta)
     // ide.componentMetaManager.registerManyComponentDesignMeta(componentMeta.designMeta)
