@@ -769,6 +769,13 @@ export default {
           description: '需要插入的记录集中，忽略掉的字段，如：["id"]',
           title: '忽略的字段',
           defaultValue: []
+        },
+        {
+          name: 'uniqueDataIndexes',
+          type: 'string[]',
+          description: '需要插入的记录集中，唯一约束的字段，多个字段时，表示联合唯一，如：["aId","bId"]，不是不能插入字段aId值相同,字段bId也相同的记录。',
+          title: '唯一约束字段',
+          defaultValue: []
         }
       ]
     },
