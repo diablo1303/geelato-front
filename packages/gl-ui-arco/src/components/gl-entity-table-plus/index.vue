@@ -67,7 +67,7 @@ const emits = defineEmits([
   'copyRecord'
 ])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
-const isRead = pageProvideProxy.isPageStatusRead()
+const isRead = !!pageProvideProxy?.isPageStatusRead()
 const { t } = CheckUtil.isBrowser()
   ? useI18n()
   : {

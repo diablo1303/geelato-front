@@ -116,7 +116,7 @@ const props = defineProps({
   alarmWhenReadInRuntime: Boolean,
   ...mixins.props
 })
-const isRead = ref(pageProvideProxy.isPageStatusRead())
+const isRead = ref(!!pageProvideProxy?.isPageStatusRead())
 // 是否复制新增，如果是复制新增，则在打开页面加载数据时，用copyEntityRecordId加载
 const isCopyCreate = ref(pageProvideProxy.isPageStatusCopyCreate())
 // 通过默认通用关键字form获取的表单值，好处就是在配置打开页面传参时，不需要配置具体表单名，配置方便

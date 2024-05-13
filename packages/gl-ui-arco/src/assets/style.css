@@ -54,3 +54,10 @@
 /*.gl-entity-table .arco-table-tr:hover td:first-child {*/
 /*   border-left:solid 2px dodgerblue !important;*/
 /*}*/
+.arco-input[disabled],input[disabled] {
+    -webkit-text-fill-color: rgb(29,33,41)
+}
+
+.arco-select-view-single.arco-select-view-disabled{
+    color: rgb(29,33,41)
+}

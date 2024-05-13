@@ -85,7 +85,7 @@ const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 // console.log('props.modelValue', props.modelValue, props.dictId)
 const mv = ref(props.modelValue)
 let selectedOption: Ref<OptionType | undefined> = ref({ value: '', label: '' })
-const isRead = pageProvideProxy.isPageStatusRead() || props.disabled || props.readonly
+const isRead = pageProvideProxy?.isPageStatusRead() || props.disabled || props.readonly
 
 // 设计时才需要在切换字典展示类型
 if(!props.glIsRuntime){

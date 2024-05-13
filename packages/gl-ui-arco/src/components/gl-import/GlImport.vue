@@ -84,7 +84,7 @@ defineExpose({
 <template>
   <div>
     <div>
-      <GlUpload v-model="fileId" v-bind="uploadProps">
+      <GlUpload v-model="fileId" v-bind="uploadProps" :readonly="false">
         <template #upload-button>
           <div
             style="

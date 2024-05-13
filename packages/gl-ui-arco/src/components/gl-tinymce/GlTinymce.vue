@@ -156,7 +156,7 @@ watch(
   },
   {deep: true, immediate: true}
 )
-const isRead = ref(pageProvideProxy.isPageStatusRead())
+const isRead = ref(!!pageProvideProxy?.isPageStatusRead())
 
 const updateEmits = (type: number) => {
   if (baseUrl.value) {

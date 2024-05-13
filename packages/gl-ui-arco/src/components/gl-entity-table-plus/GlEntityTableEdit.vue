@@ -597,7 +597,10 @@ const insertRecords = (params: {
         insertRecords.push(record)
       }
     })
+  }else{
+    insertRecords.push(...params.records||[])
   }
+
   if (sameRecords.length > 0) {
     global.$notification.warning({
       duration:5000,
