@@ -28,6 +28,8 @@ const useUserStore = defineStore('user', {
     orgName: undefined,
     companyId: undefined,
     companyName: undefined,
+    corpId: undefined,
+    corpName: undefined,
     tenantCode: undefined,
     description: undefined,
     nationCode: undefined,
@@ -63,6 +65,10 @@ const useUserStore = defineStore('user', {
     // Get user's information
     async info(successCallBack?: any) {
       const res = await getUserInfo();
+      if (res && res.data) {
+        res.data.corpId = res.data.companyId;
+        res.data.corpName = res.data.companyName;
+      }
       this.setInfo(res.data);
       if (typeof successCallBack === "function") successCallBack();
     },

@@ -22,6 +22,8 @@ export interface UserState {
   orgName?: string; // 部门名称
   companyId?: string; // 公司ID
   companyName?: string; // 公司名称
+  corpId?: string; // 集团ID
+  corpName?: string; // 集团名称
   description?: string; // 简介
   nationCode?: string; // 详细地址
   provinceCode?: string; // 详细地址
