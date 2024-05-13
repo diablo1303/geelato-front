@@ -25,7 +25,7 @@ import {
   FormProvideKey,
   PageProvideProxy,
   PageProvideKey,
-  mixins
+  mixins, EntityReaderOrder
 } from '@geelato/gl-ui'
 import { Schema } from 'b-validate'
 import {
@@ -115,10 +115,10 @@ const props = defineProps({
     default() {
       return {
         current: 1,
-        pageSize: 15,
+        pageSize: 1000,
         showTotal: true,
         showPageSize: true,
-        pageSizeOptions: [5, 10, 15, 20, 30, 40, 50]
+        pageSizeOptions: [1000]
       }
     }
   },
@@ -303,6 +303,7 @@ const createEntityReader = () => {
   entityReader.entity = props.entityName
   entityReader.order = []
 
+  const defaultOrders: EntityReaderOrder[] = []
   const fieldMetas = new Array<FieldMeta>()
   queryColumns.value.forEach((column) => {
     // 过滤掉操作列
@@ -314,7 +315,18 @@ const createEntityReader = () => {
       fm.title = column.title
       fieldMetas.push(fm)
     }
+    // 构建
+    if (column.sortable?.defaultSortOrder) {
+      const order = new EntityReaderOrder(column.dataIndex, column.sortable?.defaultSortOrder)
+      defaultOrders.push(order)
+    }
   })
+
+  // 如未设置排序，采用默认排序
+  if (entityReader.order.length === 0) {
+    entityReader.order.push(...defaultOrders)
+  }
+
   entityReader.fields = fieldMetas
   return entityReader
 }
@@ -328,13 +340,15 @@ const fetchData = async (readerInfo?: {
   pageNo?: number
   params?: Array<EntityReaderParam>
 }) => {
+  setLoading(true)
   resetDeleteDataWhenEnableEdit()
   // 绑定了有效的实体才发起查询
   // 作为子表时，必须指定子表外键，即对应主表ID的字段
   if (!props.entityName || (props.isFormSubTable && !props.subTablePidName)) {
+    setLoading(false)
     return
   }
-  setLoading(true)
+
   try {
     const entityReader = createEntityReader()
     entityReader.params = readerInfo?.params || []
@@ -344,6 +358,7 @@ const fetchData = async (readerInfo?: {
     if (props.isFormSubTable) {
       const pid = formProvideProxy?.getRecordId()
       if (!pid) {
+        setLoading(false)
         return
       }
       entityReader.params.push(new EntityReaderParam(props.subTablePidName, 'eq', pid))

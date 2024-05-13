@@ -248,7 +248,7 @@ const popupVisibleChange = (val: boolean) => {
   }
 }
 
-const { loading, setLoading } = useLoading(false)
+const { loading } = useLoading(false)
 
 // 渲染展示的数据与查询出的结果集数据相同，
 const renderData = ref<Array<Record<string, any>>>([])
@@ -276,7 +276,8 @@ const fetchData = useFetchData(
   },
     (result: any) => {
       emits('fetchFail', result)
-    }
+    },
+    loading
 )
 
 const tableRef = ref()

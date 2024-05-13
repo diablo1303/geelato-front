@@ -137,7 +137,6 @@ const props = defineProps({
   ...mixins.props
 })
 
-const loading = ref(false)
 
 // 数据预处理
 onMounted(() => {
@@ -241,7 +240,6 @@ const unPushedRecordKeys: Ref<string[]> = ref([])
 const onSearch = (entityReaderParams: Array<EntityReaderParam>) => {
   // console.log("onSearch() > entityReaderParams:", entityReaderParams);
   if (tableRef.value) {
-    loading.value = true
     selectedKeys.value = []
     lastEntityReaderParams = entityReaderParams
     tableRef.value.selectAll(false)
@@ -720,11 +718,9 @@ const reRender = () => {
 const onFetchSuccess = (args: { data: []; pagination: object }) => {
   // @ts-ignore
   props.glComponentInst.value = args.data
-  loading.value = false
   emits('fetchSuccess', args)
 }
 const onFetchFail = (args: { data: undefined; pagination: object }) => {
-  loading.value = false
   emits('fetchFail', args)
 }
 
@@ -1364,7 +1360,6 @@ defineExpose({
       :tableDraggable="base.tableDraggable"
       :autoResetSeqNoAfterDrag="base.autoResetSeqNoAfterDrag"
       :readonly="readonly"
-      :loading="loading"
       @select="select"
       @selectionChange="selectionChange"
       @headerClick="headerClick"

@@ -510,6 +510,25 @@ export default {
               setterComponentVModelName: 'modelValue',
               title: '方向',
               setterComponentName: 'ASelect'
+            },
+            {
+              name: 'defaultSortOrder',
+              group: 'base',
+              type: 'props',
+              enableValueExpress: false,
+              show: true,
+              expanded: true,
+              displayMode: 'tile',
+              setterComponentProps: {
+                options: [
+                  { label: '升序', value: 'ascend' },
+                  { label: '降序', value: 'descend' },
+                  { label: '无', value: '' }
+                ]
+              },
+              setterComponentVModelName: 'modelValue',
+              title: '初始方向',
+              setterComponentName: 'ASelect'
             }
           ],
           setterComponentName: 'GlSimpleObjectSetter',
