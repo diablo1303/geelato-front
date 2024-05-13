@@ -1191,7 +1191,7 @@ defineExpose({saveOrUpdate, loadPage});
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                      field="key" label="特殊标记">
           <a-checkbox-group v-model="formData.marker" :max="1" :options="markerOptions" @change="markerChange">
-            <template #label="{ data }">{{ data.label }}</template>
+            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
           </a-checkbox-group>
         </a-form-item>
       </a-col>

@@ -712,7 +712,7 @@ watch(() => props, async (val) => {
               {{ $t('model.column.index.form.name.key') }}
             </a-button>
             <a-button v-if="record.key===false&&record.marker&&record.marker.indexOf('id')==-1" class="list-action-button-default" type="outline">
-              {{ getOptionLabel(record.marker, markerOptions) }}
+              {{ $t(`model.column.index.form.marker.${record.marker}`) }}
             </a-button>
           </a-space>
         </template>

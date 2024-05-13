@@ -37,10 +37,10 @@ const numericSignedOptions = computed<RadioOption[]>(() => [
 const markerOptions = computed<RadioOption[]>(() => [
   {label: '主键', value: 'id',},
   {label: '标题', value: 'title',},
-  {label: '名称', value: 'name',},
-  {label: '编码', value: 'code',},
-  {label: '类型', value: 'type',},
-  {label: '状态', value: 'status',},
+  // {label: '名称', value: 'name',},
+  // {label: '编码', value: 'code',},
+  // {label: '类型', value: 'type',},
+  // {label: '状态', value: 'status',},
   {label: '备注', value: 'remark',},
 ]);
 const columnPermissionOptions = computed<SelectOptionData[]>(() => [
