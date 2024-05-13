@@ -603,7 +603,8 @@ export const useFetchData = (
   queryColumns: Ref<GlTableColumn[]>,
   pagination: Ref<any>,
   getPid?: Function,
-  success?: Function
+  success?: Function,
+  fail?: Function
 ) => {
   return (simpleReaderInfo?: EntityFetchDataInfo) => {
     // console.log('simpleReaderInfo',simpleReaderInfo)
@@ -640,6 +641,9 @@ export const useFetchData = (
         setLoading(false)
       },
       () => {
+        if (fail && typeof fail === 'function') {
+          fail({ data: undefined, pagination })
+        }
         setLoading(false)
       }
     )

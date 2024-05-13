@@ -44,7 +44,7 @@ import type { ValidatedError } from '../gl-entity-form/GlEntityForm'
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const global = useGlobal()
 // fetch 加载完成数据之后
-const emits = defineEmits(['updateColumns', 'updateRow', 'fetchSuccess', 'change','copyRecord'])
+const emits = defineEmits(['updateColumns', 'updateRow', 'fetchSuccess','fetchFail', 'change','copyRecord'])
 const props = defineProps({
   modelValue: {
     type: Array,
@@ -364,6 +364,7 @@ const fetchData = async (readerInfo?: {
     emits('fetchSuccess', { data: renderData.value, pagination })
   } catch (err) {
     console.error(err)
+    emits('fetchFail', { data: undefined, pagination })
   } finally {
     setLoading(false)
   }

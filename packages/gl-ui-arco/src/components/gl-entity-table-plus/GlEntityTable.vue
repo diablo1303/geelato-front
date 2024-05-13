@@ -34,7 +34,7 @@ import cloneDeep from "lodash/cloneDeep";
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal
 // fetch 加载完成数据之后
-const emits = defineEmits(['updateColumns', 'fetchSuccess'])
+const emits = defineEmits(['updateColumns', 'fetchSuccess','fetchFail'])
 const props = defineProps({
   /**
    *  绑定的实体名称
@@ -273,7 +273,10 @@ const fetchData = useFetchData(
     // 刷新操作列
     refreshOptColumn()
     emits('fetchSuccess', result)
-  }
+  },
+    (result: any) => {
+      emits('fetchFail', result)
+    }
 )
 
 const tableRef = ref()
