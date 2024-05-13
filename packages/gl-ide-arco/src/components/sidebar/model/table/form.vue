@@ -10,6 +10,7 @@ import {type FormInstance, Modal, type SelectOptionData} from "@arco-design/web-
 import {modelApi, applicationApi, utils} from "@geelato/gl-ui";
 import type {QueryConnectForm, QueryTableForm, QueryAppForm} from '@geelato/gl-ui';
 import {enableStatusOptions, linkedOptions, packBusDataOptions, tableTypeOptions} from "./searchTable";
+import {appTypeOptions} from "../application/searchTable";
 
 type PageParams = {
   connectId?: string; // 数据库连接主键
@@ -35,6 +36,7 @@ const visibleForm = ref<boolean>(false);
 const appSelectOptions = ref<QueryAppForm[]>([]);
 const connectSelectOptions = ref<SelectOptionData[]>([]);
 const entityIsEdit = ref<boolean>(false);
+const isShowPackBusData = ref<boolean>(false);
 /* 表单 */
 const generateFormData = (): QueryTableForm => {
   return {
@@ -142,6 +144,27 @@ const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
 
+const changePackBusData = () => {
+  isShowPackBusData.value = false;
+  if (formData.value.appId) {
+    if (appSelectOptions.value && appSelectOptions.value.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of appSelectOptions.value) {
+        if (item.id === formData.value.appId) {
+          isShowPackBusData.value = item.type === 'platform';
+          break;
+        }
+      }
+    }
+  }
+}
+
+const appSelectChange = () => {
+  formData.value.packBusData = false;
+  changePackBusData();
+}
+
+
 const loadPage = async () => {
   entityIsEdit.value = props.formState === 'add';
   // 应用信息
@@ -164,12 +187,14 @@ const loadPage = async () => {
   formData.value = generateFormData();
   // 重置验证
   resetValidate();
+  changePackBusData();
   // 编辑、查看 状态 查询数据
   if (['edit', 'view'].includes(props.formState) && props.modelValue) {
     getData(props.modelValue, (data: QueryTableForm) => {
       data.seqNo = Number(data.seqNo);
       entityIsEdit.value = !data.tableName;
       formData.value = data;
+      changePackBusData();
     });
   }
 }
@@ -226,8 +251,9 @@ defineExpose({saveOrUpdate, loadPage});
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="appId" label="所属应用">
-          <a-select v-model="formData.appId" :disabled="formState==='view'">
-            <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
+          <a-select v-model="formData.appId" :disabled="formState==='view'" @change="appSelectChange">
+            <a-option v-for="item of appSelectOptions" :key="item.id as string" :value="item.id"
+                      :label="`${utils.getOptionLabel(item.type,appTypeOptions)} | ${item.name}`"/>
           </a-select>
         </a-form-item>
       </a-col>
@@ -245,7 +271,7 @@ defineExpose({saveOrUpdate, loadPage});
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="packBusData" label="打包业务数据">
-          <a-select v-if="formState!=='view' && ['platform'].includes(formData.sourceType)"
+          <a-select v-if="formState!=='view' && isShowPackBusData"
                     v-model="formData.packBusData" :options="packBusDataOptions"/>
           <span v-else>{{ utils.getOptionLabel(formData.packBusData, packBusDataOptions) }}</span>
           <template #extra>

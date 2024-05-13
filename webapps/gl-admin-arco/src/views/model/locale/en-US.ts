@@ -57,6 +57,7 @@ export default {
   'model.table.index.form.sourceType.system': 'System Entity',
   'model.table.index.form.sourceType.creation': 'Creation Model',
   'model.table.index.form.packBusData': 'packBusData',
+  'model.table.index.form.tablePack.yes': 'Pack Business Data',
   'model.table.index.form.packBusData.false': 'NO',
   'model.table.index.form.packBusData.true': 'YES',
   'model.table.index.form.packBusData.extra': 'Whether to package business data. When yes is selected, the business data for the model is packaged together and updated into the business data when deployed.',

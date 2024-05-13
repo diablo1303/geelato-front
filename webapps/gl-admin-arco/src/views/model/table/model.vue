@@ -7,8 +7,8 @@ export default {
 import {ref, watch} from "vue";
 import {useI18n} from 'vue-i18n';
 import {PageQueryRequest} from "@/api/base";
-import {FormInstance, Modal, SelectOptionData} from "@arco-design/web-vue";
-import {pageQueryAppConnectOf} from '@/api/application';
+import {FormInstance, Modal} from "@arco-design/web-vue";
+import {pageQueryAppConnectOf, QueryAppForm} from '@/api/application';
 import {
   QueryTableForm as QueryForm,
   createOrUpdateTable as createOrUpdateForm,
@@ -60,8 +60,9 @@ const generateFormData = (): QueryForm => {
   };
 }
 const formData = ref(generateFormData());
-const appSelectOptions = ref<SelectOptionData[]>([]);
+const appSelectOptions = ref<QueryAppForm[]>([]);
 const entityIsEdit = ref<boolean>(false);
+const isShowPackBusData = ref<boolean>(false);
 
 /**
  * 新增或更新接口
@@ -94,6 +95,26 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
     if (failBack && typeof failBack === 'function') failBack(err);
   }
 };
+
+const getAppSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await pageQueryAppConnectOf({
+      ...params, current: 1, pageSize: 10000, order: 'updateAt|desc'
+    } as unknown as PageQueryRequest);
+    const options: QueryAppForm[] = [];
+    if (data && data.items && data.items.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of data.items) {
+        // @ts-ignore
+        options.push({id: item.appId, name: item.appName, code: item.appCode, type: item.appType});
+      }
+    }
+    if (successBack && typeof successBack === 'function') successBack(options);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+}
+
 /**
  * 唯一性校验
  * @param value
@@ -105,25 +126,6 @@ const validateCode = async (value: any, callback: any) => {
     if (!data) callback(t('security.form.rules.match.uniqueness'));
   } catch (err) {
     console.log(err);
-  }
-}
-
-const getAppSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
-  try {
-    const {data} = await pageQueryAppConnectOf({
-      ...params, current: 1, pageSize: 10000, order: 'updateAt|desc'
-    } as unknown as PageQueryRequest);
-    const options: SelectOptionData[] = [];
-    if (data && data.items && data.items.length > 0) {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const item of data.items) {
-        // @ts-ignore
-        options.push({label: item.appName, value: item.appId,});
-      }
-    }
-    if (successBack && typeof successBack === 'function') successBack(options);
-  } catch (err) {
-    if (failBack && typeof failBack === 'function') failBack(err);
   }
 }
 
@@ -155,16 +157,37 @@ const saveOrUpdate = (successBack?: any, failBack?: any) => {
   });
 }
 
+const changePackBusData = () => {
+  isShowPackBusData.value = false;
+  if (formData.value.appId) {
+    if (appSelectOptions.value && appSelectOptions.value.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of appSelectOptions.value) {
+        if (item.id === formData.value.appId) {
+          isShowPackBusData.value = item.type === 'platform';
+          break;
+        }
+      }
+    }
+  }
+}
+
+const appSelectChange = () => {
+  formData.value.packBusData = false;
+  changePackBusData();
+}
+
 /**
  * 页面加载方法，对外提供
  */
 const loadPage = () => {
   entityIsEdit.value = props.formState === 'add';
+  isShowPackBusData.value = false;
   // 应用信息
   getAppSelectOptions({
     connectId: props.parameter?.connectId || '',
     appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
-  }, (data: SelectOptionData[]) => {
+  }, (data: QueryAppForm[]) => {
     appSelectOptions.value = data || [];
   }, () => {
     appSelectOptions.value = [];
@@ -173,6 +196,7 @@ const loadPage = () => {
   formData.value = generateFormData();
   // 重置验证
   resetValidate();
+  changePackBusData();
   // 其他初始化
   // 编辑、查看 状态 查询数据
   if (['edit', 'view'].includes(props.formState) && props.modelValue) {
@@ -181,6 +205,7 @@ const loadPage = () => {
       data.seqNo = Number(data.seqNo);
       entityIsEdit.value = !data.tableName;
       formData.value = data;
+      changePackBusData();
     });
   }
 }
@@ -242,7 +267,10 @@ defineExpose({saveOrUpdate, loadPage});
             :label="$t('model.table.index.form.appId')"
             :rules="[{required: !!parameter.appId,message: $t('model.form.rules.match.required')}]"
             field="appId">
-          <a-select v-model="formData.appId" :disabled="formState==='view'" :options="appSelectOptions"/>
+          <a-select v-model="formData.appId" :disabled="formState==='view'" @change="appSelectChange">
+            <a-option v-for="(item,index) of appSelectOptions" :key="index" :value="item.id"
+                      :label="`${$t(`application.app.list.type.${item.type}`)} | ${item.name}`"/>
+          </a-select>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -259,7 +287,7 @@ defineExpose({saveOrUpdate, loadPage});
           <span v-else>{{ $t(`model.table.index.form.enableStatus.${formData.enableStatus}`) }}</span>
         </a-form-item>
       </a-col>
-      <a-col v-if="['platform'].includes(formData.sourceType)" :span="(labelCol+wrapperCol)/formCol">
+      <a-col v-if="isShowPackBusData" :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
             :label="$t('model.table.index.form.packBusData')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"

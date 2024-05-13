@@ -332,6 +332,9 @@ watch(() => visibleForm, () => {
         <a-button v-if="isSystem" class="list-action-button-default" status="warning" type="primary">
           <span>{{ utils.getOptionLabel(tableData.sourceType, sourceTypeOptions) }}</span>
         </a-button>
+        <a-button v-if="tableData.packBusData" class="list-action-button-default" status="danger" type="primary">
+          <span>打包业务数据</span>
+        </a-button>
         <a-button :disabled="isSync===0" class="list-action-button-default" type="primary">
           <span>{{ utils.getOptionLabel(isSync, tableSyncOptions) }}</span>
         </a-button>

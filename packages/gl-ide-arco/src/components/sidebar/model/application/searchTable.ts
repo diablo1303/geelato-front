@@ -18,4 +18,9 @@ const approvalStatusOptions = computed<SelectOptionData[]>(() => [
   {label: '拒绝', value: 'reject', other: {'color': 'rgb(245,63,63)'}},
 ]);
 
-export {enableStatusOptions, approvalNeedOptions, approvalStatusOptions};
+const appTypeOptions = computed<SelectOptionData[]>(() => [
+  {label: '平台应用', value: 'platform',},
+  {label: '普通应用', value: 'normal',},
+]);
+
+export {enableStatusOptions, approvalNeedOptions, approvalStatusOptions, appTypeOptions};

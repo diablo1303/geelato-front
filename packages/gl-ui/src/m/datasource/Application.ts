@@ -7,6 +7,7 @@ export interface QueryAppForm {
   id: string;
   name: string;// 应用名称
   code: string;// 应用编码
+  type: string;// 应用类型
   icon: string;// 图标
   appKey: string;
   token: string;

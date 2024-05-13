@@ -57,6 +57,7 @@ export default {
   'model.table.index.form.sourceType.system': '系统内置',
   'model.table.index.form.sourceType.creation': '应用创建',
   'model.table.index.form.packBusData': '打包业务数据',
+  'model.table.index.form.tablePack.yes': '打包业务数据',
   'model.table.index.form.packBusData.false': '否',
   'model.table.index.form.packBusData.true': '是',
   'model.table.index.form.packBusData.extra': '是否打包业务数据。选择是时，会将模型的业务数据一起打包，在部署时会更新到业务数据中。',
