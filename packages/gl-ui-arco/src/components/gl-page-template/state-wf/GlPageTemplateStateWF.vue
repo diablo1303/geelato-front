@@ -171,8 +171,9 @@ const loadData = async () => {
   // 通过业务ID加载流程实例
   if (props.bizId) {
     await loadProcInstByBizId(props.bizId).then((res) => {
-      procInst.value = entityApi.getFirstRecordFromRes(res)
-      if (procInst.value) {
+      const result = entityApi.getFirstRecordFromRes(res)
+      if (result) {
+        procInst.value = result
         procDefId.value = procInst.value.procDefId
       }
     })
@@ -479,7 +480,7 @@ const pageParams = computed(() => {
               </template>
               <div>
                 <GlPageViewer
-                  v-if="procInst.id"
+                  v-if="procInst?.id"
                   pageId="5037920844148510721"
                   :pageProps="{ params: pageParams }"
                   :glIsRuntime="true"
