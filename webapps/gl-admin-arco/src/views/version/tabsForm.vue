@@ -13,6 +13,7 @@ import UploadFile from "@/components/upload-file/index.vue";
 import PlatformSysConfigList from "@/views/version/package/platform-sys-config.vue";
 import PlatformDictList from "@/views/version/package/platform-dict.vue";
 import PlatformModelList from "@/views/version/package/platform-model.vue";
+import PlatformRoleList from "@/views/version/package/platform-role.vue";
 
 type PageParams = {
   appId?: string; // 应用主键
@@ -171,7 +172,13 @@ watch(() => props, (val) => {
       <a-empty v-else/>
     </a-tab-pane>
     <a-tab-pane :key="4" title="角色管理" class="a-tabs-five">
-      <a-empty/>
+      <a-card v-if="listParams.visible" class="general-card6">
+        <PlatformRoleList :model-value="appMetaList"
+                          :visible="listParams.visible"
+                          :height="listParams.height"
+                          :parameter="listParams.parameter"/>
+      </a-card>
+      <a-empty v-else/>
     </a-tab-pane>
     <a-tab-pane :key="5" title="系统配置" class="a-tabs-five">
       <a-card v-if="listParams.visible" class="general-card6">

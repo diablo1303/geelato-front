@@ -40,18 +40,12 @@ const appMetaList = ref<AppMeta[]>([]);
 const renderData = ref<PageQueryFilter[]>([]);
 
 watch(() => props, (val) => {
-  console.log('watch props', props);
   if (props.visible === true) {
     // 页面设置
     scroll.value.y = props.height - 115;
     // 加载数据
     appMetaList.value = cloneDeep(props.modelValue) || [];
-    const data = (appMetaList.value.find(item => item.metaName === "platform_sys_config")?.metaData || []) as PageQueryFilter[];
-    for (let j = 0; j < data.length; j += 1) {
-      for (let i = 0; i < data.length; i += 1) {
-        renderData.value.push(data[i]);
-      }
-    }
+    renderData.value = (appMetaList.value.find(item => item.metaName === "platform_sys_config")?.metaData || []) as PageQueryFilter[];
   }
 }, {deep: true, immediate: true});
 </script>

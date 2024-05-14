@@ -400,7 +400,7 @@ const editViewForm = (record: QueryViewForm) => {
         <a-popconfirm content="是否将该应用下所有模型同步至数据库？" position="bottom" type="warning" @ok="tableInit">
           <a-button size="small" type="outline" status="danger" style="height: 27px;">
             <template #icon>
-              <a-tooltip content="同步至数据库">
+              <a-tooltip content="应用模型同步至数据库">
                 <gl-iconfont type="gl-sync"/>
               </a-tooltip>
             </template>
@@ -409,7 +409,7 @@ const editViewForm = (record: QueryViewForm) => {
         <a-popconfirm content="是否刷新该应用下所有模型及视图的缓存？" position="bottom" type="warning" @ok="refreshMeta">
           <a-button size="small" type="outline" style="height: 27px;">
             <template #icon>
-              <a-tooltip content="刷新模型缓存">
+              <a-tooltip content="刷新应用模型和视图缓存">
                 <gl-iconfont type="gl-sync"/>
               </a-tooltip>
             </template>

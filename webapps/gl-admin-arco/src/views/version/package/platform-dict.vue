@@ -154,7 +154,6 @@ watch(() => selectedKeys, (val) => {
 
 watch(() => props, (val) => {
   if (props.visible === true) {
-    console.log("ddfdfdfd");
     // 页面设置
     splitHeight.value = resetSplitHeight();
     scroll.value.y = props.height - 135;
