@@ -152,7 +152,7 @@ watch(
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
-const isRead = pageProvideProxy.isPageStatusRead() || props.readonly || props.disabled
+const isRead = pageProvideProxy?.isPageStatusRead() || props.readonly || props.disabled
 </script>
 
 <template>

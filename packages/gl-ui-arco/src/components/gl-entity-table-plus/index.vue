@@ -67,7 +67,7 @@ const emits = defineEmits([
   'copyRecord'
 ])
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
-const isRead = pageProvideProxy.isPageStatusRead()
+const isRead = !!pageProvideProxy?.isPageStatusRead()
 const { t } = CheckUtil.isBrowser()
   ? useI18n()
   : {
@@ -136,6 +136,7 @@ const props = defineProps({
   readonly: Boolean,
   ...mixins.props
 })
+
 
 // 数据预处理
 onMounted(() => {
@@ -719,6 +720,10 @@ const onFetchSuccess = (args: { data: []; pagination: object }) => {
   props.glComponentInst.value = args.data
   emits('fetchSuccess', args)
 }
+const onFetchFail = (args: { data: undefined; pagination: object }) => {
+  emits('fetchFail', args)
+}
+
 
 const entityTable = computed(() => {
   return props.base?.enableEdit ? GlEntityTableEditable : GlEntityTable
@@ -1362,6 +1367,7 @@ defineExpose({
       @updateColumns="updateColumns"
       @updateRow="onUpdateRow"
       @fetchSuccess="onFetchSuccess"
+      @fetchFail="onFetchFail"
       @rowClick="rowClick"
       @rowContextmenu="rowContextmenu"
       @rowDblclick="rowDblclick"

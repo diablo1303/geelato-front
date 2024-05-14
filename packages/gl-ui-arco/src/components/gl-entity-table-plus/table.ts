@@ -14,8 +14,6 @@ import { type Ref, toRaw } from 'vue'
 import useLoading from '../../hooks/loading'
 import { EntityDataSource } from '@geelato/gl-ui'
 
-const { setLoading } = useLoading(false)
-
 export type SizeProps = 'mini' | 'small' | 'medium' | 'large'
 
 export const SlotNameSeq: string = '__slot__seq'
@@ -597,13 +595,17 @@ export const createEntityReader = (
  * @param pagination
  * @param getPid 作为子表单时，需指定获取父亲表单id的方法
  * @param success
+ * @param fail
+ * @param loading
  */
 export const useFetchData = (
   props: EntityFetchDataProps,
   queryColumns: Ref<GlTableColumn[]>,
   pagination: Ref<any>,
   getPid?: Function,
-  success?: Function
+  success?: Function,
+  fail?: Function,
+  loading?: Ref<boolean>
 ) => {
   return (simpleReaderInfo?: EntityFetchDataInfo) => {
     // console.log('simpleReaderInfo',simpleReaderInfo)
@@ -612,7 +614,7 @@ export const useFetchData = (
     if (!props.entityName || (props.isSubForm && !props.subFormPidName)) {
       return
     }
-    setLoading(true)
+    loading!.value = true
     if (simpleReaderInfo) {
       simpleReaderInfo.pageSize = simpleReaderInfo.pageSize || pagination.value.pageSize
     }
@@ -637,10 +639,13 @@ export const useFetchData = (
         if (success && typeof success === 'function') {
           success({ data: res.data, pagination })
         }
-        setLoading(false)
+        loading!.value = false
       },
       () => {
-        setLoading(false)
+        if (fail && typeof fail === 'function') {
+          fail({ data: undefined, pagination })
+        }
+        loading!.value = false
       }
     )
   }

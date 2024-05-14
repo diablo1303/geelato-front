@@ -25,7 +25,8 @@ import {
   FormProvideKey,
   PageProvideProxy,
   PageProvideKey,
-  mixins
+  mixins,
+  EntityReaderOrder
 } from '@geelato/gl-ui'
 import { Schema } from 'b-validate'
 import {
@@ -44,7 +45,14 @@ import type { ValidatedError } from '../gl-entity-form/GlEntityForm'
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const global = useGlobal()
 // fetch 加载完成数据之后
-const emits = defineEmits(['updateColumns', 'updateRow', 'fetchSuccess', 'change','copyRecord'])
+const emits = defineEmits([
+  'updateColumns',
+  'updateRow',
+  'fetchSuccess',
+  'fetchFail',
+  'change',
+  'copyRecord'
+])
 const props = defineProps({
   modelValue: {
     type: Array,
@@ -115,10 +123,10 @@ const props = defineProps({
     default() {
       return {
         current: 1,
-        pageSize: 15,
+        pageSize: 1000,
         showTotal: true,
         showPageSize: true,
-        pageSizeOptions: [5, 10, 15, 20, 30, 40, 50]
+        pageSizeOptions: [1000]
       }
     }
   },
@@ -166,12 +174,12 @@ const isRowReadonlyArray = ref([] as boolean[])
 /**
  *  统计行是否只读
  */
-const reStatIsRowReadonly = (records:Array)=>{
+const reStatIsRowReadonly = (records: Array) => {
   isRowReadonlyArray.value.length = 0
   isRowReadonlyArray.value = statIsRowReadonly(
-      props.isRowReadonlyExpression,
-      records,
-      pageProvideProxy
+    props.isRowReadonlyExpression,
+    records,
+    pageProvideProxy
   )
 }
 /**
@@ -303,6 +311,7 @@ const createEntityReader = () => {
   entityReader.entity = props.entityName
   entityReader.order = []
 
+  const defaultOrders: EntityReaderOrder[] = []
   const fieldMetas = new Array<FieldMeta>()
   queryColumns.value.forEach((column) => {
     // 过滤掉操作列
@@ -314,7 +323,18 @@ const createEntityReader = () => {
       fm.title = column.title
       fieldMetas.push(fm)
     }
+    // 构建
+    if (column.sortable?.defaultSortOrder) {
+      const order = new EntityReaderOrder(column.dataIndex, column.sortable?.defaultSortOrder)
+      defaultOrders.push(order)
+    }
   })
+
+  // 如未设置排序，采用默认排序
+  if (entityReader.order.length === 0) {
+    entityReader.order.push(...defaultOrders)
+  }
+
   entityReader.fields = fieldMetas
   return entityReader
 }
@@ -328,13 +348,15 @@ const fetchData = async (readerInfo?: {
   pageNo?: number
   params?: Array<EntityReaderParam>
 }) => {
+  setLoading(true)
   resetDeleteDataWhenEnableEdit()
   // 绑定了有效的实体才发起查询
   // 作为子表时，必须指定子表外键，即对应主表ID的字段
   if (!props.entityName || (props.isFormSubTable && !props.subTablePidName)) {
+    setLoading(false)
     return
   }
-  setLoading(true)
+
   try {
     const entityReader = createEntityReader()
     entityReader.params = readerInfo?.params || []
@@ -344,6 +366,7 @@ const fetchData = async (readerInfo?: {
     if (props.isFormSubTable) {
       const pid = formProvideProxy?.getRecordId()
       if (!pid) {
+        setLoading(false)
         return
       }
       entityReader.params.push(new EntityReaderParam(props.subTablePidName, 'eq', pid))
@@ -364,6 +387,7 @@ const fetchData = async (readerInfo?: {
     emits('fetchSuccess', { data: renderData.value, pagination })
   } catch (err) {
     console.error(err)
+    emits('fetchFail', { data: undefined, pagination })
   } finally {
     setLoading(false)
   }
@@ -543,12 +567,48 @@ const addRow = () => {
 /**
  * 表格在编辑模式下，基于外部的数据记录，插入新记录到当前组件
  * @param params ignoreDataIndexes 忽列掉的字段
+ *               uniqueDataIndexes 唯一字段，多个字段时，表示联合唯一
  */
 const insertRecords = (params: {
   records: Record<string, any>[]
   ignoreDataIndexes?: string[]
+  uniqueDataIndexes?: string[]
 }) => {
-  params?.records?.forEach((record: Record<string, any>) => {
+  // 先做唯一性检查，如果有重复，则不插入，并记录重复的记录数
+  const sameRecords: Array<Record<string, any>> = []
+  const insertRecords: Array<Record<string, any>> = []
+  if (params.uniqueDataIndexes && params.uniqueDataIndexes.length > 0) {
+    params?.records?.forEach((record: Record<string, any>) => {
+      let isSameRecord = false
+      // 判断是否与当前列表中的数据重复
+      const foundSameRecord =  renderData.value.find((item: Record<string, any>) => {
+        let allUniqueDataIndexAreSame = true
+        params.uniqueDataIndexes.forEach((uniqueDataIndex: string) => {
+          if (item[uniqueDataIndex] != record[uniqueDataIndex]) {
+            allUniqueDataIndexAreSame = false
+          }
+        })
+        return allUniqueDataIndexAreSame
+      })
+
+      if (foundSameRecord) {
+        sameRecords.push(record)
+      } else {
+        insertRecords.push(record)
+      }
+    })
+  }else{
+    insertRecords.push(...params.records||[])
+  }
+
+  if (sameRecords.length > 0) {
+    global.$notification.warning({
+      duration:5000,
+      content: `插入的数据中，${sameRecords.length}条与当前列表的数据一致，不插入这部分数据。`
+    })
+  }
+
+  insertRecords.forEach((record: Record<string, any>) => {
     const newRow: Record<string, any> = {}
     props.columns.forEach((col: Column) => {
       let dataIndex: string = col.dataIndex!
@@ -619,7 +679,7 @@ const copyRecord = (record: object, rowIndex: number) => {
   if (newRecord.id) {
     newRecord.id = undefined
   }
-  emits('copyRecord', { record: newRecord,rowIndex })
+  emits('copyRecord', { record: newRecord, rowIndex })
   renderData.value.splice(rowIndex + 1, 0, newRecord)
   // eslint-disable-next-line vue/no-mutating-props
   props.glComponentInst.value = renderData.value
@@ -671,7 +731,6 @@ const cloneDeepColumnComponent = (component: ComponentInstance) => {
   inst.value = undefined
   return inst
 }
-
 
 defineExpose({
   selectAll,

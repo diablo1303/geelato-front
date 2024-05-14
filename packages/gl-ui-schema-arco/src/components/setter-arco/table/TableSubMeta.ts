@@ -510,6 +510,25 @@ export default {
               setterComponentVModelName: 'modelValue',
               title: '方向',
               setterComponentName: 'ASelect'
+            },
+            {
+              name: 'defaultSortOrder',
+              group: 'base',
+              type: 'props',
+              enableValueExpress: false,
+              show: true,
+              expanded: true,
+              displayMode: 'tile',
+              setterComponentProps: {
+                options: [
+                  { label: '升序', value: 'ascend' },
+                  { label: '降序', value: 'descend' },
+                  { label: '无', value: '' }
+                ]
+              },
+              setterComponentVModelName: 'modelValue',
+              title: '初始方向',
+              setterComponentName: 'ASelect'
             }
           ],
           setterComponentName: 'GlSimpleObjectSetter',
@@ -749,6 +768,13 @@ export default {
           type: 'string[]',
           description: '需要插入的记录集中，忽略掉的字段，如：["id"]',
           title: '忽略的字段',
+          defaultValue: []
+        },
+        {
+          name: 'uniqueDataIndexes',
+          type: 'string[]',
+          description: '需要插入的记录集中，唯一约束的字段，多个字段时，表示联合唯一，如：["aId","bId"]，不是不能插入字段aId值相同,字段bId也相同的记录。',
+          title: '唯一约束字段',
           defaultValue: []
         }
       ]
