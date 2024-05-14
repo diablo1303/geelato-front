@@ -9,13 +9,12 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { onMounted, type PropType, type Ref, ref, watch, inject, onUnmounted, computed } from 'vue'
+import { type PropType, type Ref, ref, watch, inject, computed } from 'vue'
 import {
   mixins,
   PageProvideKey,
   PageProvideProxy,
   entityApi,
-  useGlobal,
   GetEntitySaversResult,
 } from '@geelato/gl-ui'
 import type { TabsPosition } from '@arco-design/web-vue/es/tabs/interface'
@@ -33,6 +32,7 @@ import {
 } from './stateWfApi'
 import StateWFApprove from './StateWFApprove.vue'
 import type { PageTemplate } from '@geelato/gl-ui'
+import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 const LayoutMode = {
   collapse: 'collapse',
@@ -290,8 +290,31 @@ const getEntitySaver = () => {
 // }
 
 loadData()
-onMounted(() => {})
+
 const stateWFApprove = ref()
+
+/**
+ * 找到主表单
+ * 从嵌入的页面中，找到第一个GlEntityForm
+ */
+const findMasterEntityForm = () => {
+  function findNodeFromTree(nodeName: string, nodes: Array<any>): any {
+    for (let index in nodes) {
+      let node: ComponentInstance = nodes[index]
+      // console.log('compare node.id,componentId', node.id, componentId, node.id === componentId)
+      if (node.componentName === nodeName) {
+        return node
+      } else if (node.children && node.children.length > 0) {
+        // 从子节点查找
+        const foundNode = findNodeFromTree(nodeName, node.children)
+        if (foundNode) return foundNode
+      }
+    }
+  }
+ return findNodeFromTree('GlEntityForm', [props.glComponentInst]) || {}
+}
+const masterEntityForm = findMasterEntityForm()
+
 /**
  * 表单在构建保存对象时，可以获取表单的值，并设置业务表的工作流相关状态信息
  * 将流程信息作为子表单一起保存
@@ -299,9 +322,11 @@ const stateWFApprove = ref()
  * @param args {id:来源的组件标识，如表单组件id;data: GetEntitySaversResult}
  */
 const onCreatedEntitySavers = (args: {id:string, data:GetEntitySaversResult }) => {
-  // console.log('onCreatedEntitySavers args:', args)
-  // 检查是否为工作流的主表单
-  // TODO
+  console.log('onCreatedEntitySavers args:', args,'masterEntityForm:',masterEntityForm)
+  // 检查是否为工作流的主表单，主表单才触发工作流
+  if(masterEntityForm.id !== args.id){
+    return;
+  }
 
   // 检查工作流模板中的录入
   const result: GetEntitySaversResult = args.data
