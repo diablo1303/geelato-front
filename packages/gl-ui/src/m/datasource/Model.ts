@@ -72,6 +72,10 @@ export function copyTable(params: Record<string, any>) {
   return entityApi.getAxios().post<QueryResult>('/api/model/table/copy', params);
 }
 
+export function initTables(appId: string) {
+  return entityApi.getAxios().post<QueryResult>(`/api/meta/ddl/tables/${appId}`);
+}
+
 /**
  * 重置实体模型（从数据库同步至模型）
  * @param tableId

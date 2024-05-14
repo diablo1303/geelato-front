@@ -222,6 +222,20 @@ const refreshMeta = async () => {
   }
 }
 
+const tableInit = async () => {
+  if (!appStore.currentApp.id) {
+    return
+  }
+  try {
+    const {data} = await modelApi.initTables(appStore.currentApp.id);
+    global.$message.success({content: '刷新缓存成功！'})
+    fetchData()
+    fetchViewData()
+  } catch (err) {
+    global.$message.error({content: '模型同步至数据库失败！'})
+  }
+}
+
 const resetData = (type: string) => {
   if (type === 'table') {
     fetchData(() => {
@@ -383,6 +397,15 @@ const editViewForm = (record: QueryViewForm) => {
     <div style="padding: 4px 5px 4px 5px;">
       <a-space style="justify-content: flex-start;">
         <a-input-search v-model="searchText" allow-clear placeholder="录入中、英文名查询" size="small"/>
+        <a-popconfirm content="是否将该应用下所有模型同步至数据库？" position="bottom" type="warning" @ok="tableInit">
+          <a-button size="small" type="outline" status="danger" style="height: 27px;">
+            <template #icon>
+              <a-tooltip content="同步至数据库">
+                <gl-iconfont type="gl-sync"/>
+              </a-tooltip>
+            </template>
+          </a-button>
+        </a-popconfirm>
         <a-popconfirm content="是否刷新该应用下所有模型及视图的缓存？" position="bottom" type="warning" @ok="refreshMeta">
           <a-button size="small" type="outline" style="height: 27px;">
             <template #icon>
