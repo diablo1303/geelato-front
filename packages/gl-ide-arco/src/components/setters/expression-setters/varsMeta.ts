@@ -414,12 +414,12 @@ export const useComponentInstTreeData = () => {
         _flag: 'moreInsts'
     }
 
-    const getPageParams = () => {
+    const getPageParam = () => {
         const params: any[] = [
             {
                 title: '手写参数',
                 _code: '手写参数',
-                _pathName: 'getPageParams',
+                _pathName: 'getPageParam',
                 _type: 'any',
                 _brackets: `("参数名")`,
                 _description: '获取页面参数值'
@@ -429,7 +429,7 @@ export const useComponentInstTreeData = () => {
             params.push({
                 title: `填入参数：${paramMeta.name}`,
                 _code: `填入参数：${paramMeta.name}`,
-                _pathName: 'getPageParams',
+                _pathName: 'getPageParam',
                 _type: paramMeta.type?.toLowerCase(),
                 _brackets: `("${paramMeta.name}")`,
                 _description: paramMeta.description || paramMeta.title
@@ -512,7 +512,14 @@ export const useComponentInstTreeData = () => {
                         _type: 'any',
                         _pathName: '',
                         _description: '获取页面参数值',
-                        children: getPageParams()
+                        children: getPageParam()
+                    },
+                    {
+                        title: '获取页面所有参数',
+                        _code: 'getPageParams',
+                        _type: 'array<object>',
+                        _brackets: '()',
+                        _description: '获取页面所有参数,返回所有的参数数组对象,如：[{"page.isFinApproval":true},{"form.id":"1234567891234567890"}]'
                     },
                     {
                         title: '是否存在页面参数',

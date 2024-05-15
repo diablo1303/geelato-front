@@ -62,7 +62,7 @@ export default class OpenComponentPageBlockHandler implements IBlockHandler {
       `
             const ${contentName} = $gl.fn.loadPage("${props.pageId || ''}","${
         props.extendId
-      }",${JSON.stringify(props.params || [])},"${props.pageStatus}","${props.pageTemplateName}",${JSON.stringify(props.pageTemplateProps || {})});
+      }",${JSON.stringify(props.params || [])},"${props.pageStatus}","${props.pageTemplateName}",${JSON.stringify(props.pageTemplateProps || {})},$gl);
             $gl.fn.open${mode}({
                 title:${title},
                 content: ${contentName},

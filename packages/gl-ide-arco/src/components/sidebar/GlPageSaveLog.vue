@@ -113,7 +113,7 @@ const rollback = (id: string) => {
     entityReader.params.push(new EntityReaderParam('id', 'eq', id))
     entityApi.queryByEntityReader(entityReader).then((res: any) => {
       pageStore.rollbackPage(JSON.parse(res.data[0]?.sourceContent))
-      global.$message.success({ content: '回滚成功' })
+      global.$message.success({ content: '回滚成功，需保存才能生效。' })
     })
   } catch (e) {
     console.error(e)

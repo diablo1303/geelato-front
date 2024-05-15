@@ -350,6 +350,7 @@ export class JsScriptExecutor {
             pageTemplateProps.insts &&
             pageTemplateProps.fileApi
           ) {
+            // 兼容旧的api，此场景pageTemplateProps实为gl
             _gl = pageTemplateProps
             _pageTemplateProps = undefined
           }
@@ -358,10 +359,10 @@ export class JsScriptExecutor {
         return that.loadPage(
           pageId,
           extendId,
-          that.evalParams(params, _gl || $gl.ctx, _gl || $gl) || [],
+          that.evalParams(params, (_gl || $gl).ctx, _gl || $gl) || [],
           pageStatus,
           pageTemplateName,
-          that.evalProps(_pageTemplateProps || {}, _gl || $gl.ctx, _gl || $gl) || []
+          that.evalProps(_pageTemplateProps || {}, (_gl || $gl).ctx, _gl || $gl) || []
         )
       },
       loadComponent: (componentName: string, props: Record<string, any>) => {
@@ -796,8 +797,8 @@ export class JsScriptExecutor {
   public getGl(pageProxy?: PageProvideProxy) {
     const $gl = {
       id: utils.gid('id'),
-      // TODO 去掉这种写法，需检查是否有引用
-      jsEngine: this,
+      // TODO 去掉这种写法（jsEngine: this），需检查是否有引用
+      // jsEngine: this,
       // getComponentValue: this.getComponentValue,
       // setComponentValue: this.setComponentValue,
       // getComponentProps: this.getComponentProps,
