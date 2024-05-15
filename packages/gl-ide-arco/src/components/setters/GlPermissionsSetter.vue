@@ -137,59 +137,66 @@ loadPermission('r')
 
 <template>
   <div class="gl-permissions-setter">
-    <a-card title="查看权限控制" :bordered="false">
-      <a-form :model="readPerms">
-        <a-form-item label="启用权限">
-          <div>
-            <a-switch
-              v-model="readPerms.enabled"
-              checked-text="当前已启用查看权限控制"
-              unchecked-text="当前未启用查看权限控制"
-              :checked-value="1"
-              :unchecked-value="0"
-              @change="changeEnabled"
-            ></a-switch>
-            <a-alert type="normal" class="gl-normal">
-              如果不开启权限控制，默认所有用户都可见。开启了查看权限控制之后，默认看不到该组件，只有给角色分配了该查看权限才可看到。
-              用于控制查看、编辑、删除、导出等操作按钮、表单字段等是否可见。
-            </a-alert>
-          </div>
-        </a-form-item>
-        <a-form-item label="权限名称">
-          <a-input
-            v-model="readPerms.name"
-            placeholder="启用时，默认为组件标题或组件ID"
-            :readsonly="!readPerms.enabled"
-            @change="savePermission"
-          ></a-input>
-        </a-form-item>
-        <a-form-item label="服务端ID">
-          <a-input
-            v-model="readPerms.id"
-            placeholder="启用时，服务端保存的权限ID"
-            readonly
-          ></a-input>
-        </a-form-item>
-      </a-form>
-    </a-card>
-    <!--    <a-card title="编辑权限控制" :bordered="false">-->
-    <!--      <a-form>-->
-    <!--        <a-form-item label="启用权限">-->
-    <!--          <div>-->
-    <!--            <a-switch-->
-    <!--              checked-text="当前已启用编辑权限控制"-->
-    <!--              unchecked-text="当前未启用编辑权限控制"-->
-    <!--            ></a-switch>-->
-    <!--            <a-alert type="normal" class="gl-normal">-->
-    <!--              用于管制表单字段是否可修改。-->
-    <!--            </a-alert>-->
-    <!--          </div>-->
-    <!--        </a-form-item>-->
-    <!--        <a-form-item label="权限名称">-->
-    <!--          <a-input placeholder="启用时，默认为组件标题或组件ID"></a-input>-->
-    <!--        </a-form-item>-->
-    <!--      </a-form>-->
-    <!--    </a-card>-->
+    <template v-if="pageId">
+      <a-card title="查看权限控制" :bordered="false">
+        <a-form :model="readPerms">
+          <a-form-item label="启用权限">
+            <div>
+              <a-switch
+                  v-model="readPerms.enabled"
+                  checked-text="当前已启用查看权限控制"
+                  unchecked-text="当前未启用查看权限控制"
+                  :checked-value="1"
+                  :unchecked-value="0"
+                  @change="changeEnabled"
+              ></a-switch>
+              <a-alert type="normal" class="gl-normal">
+                如果不开启权限控制，默认所有用户都可见。开启了查看权限控制之后，默认看不到该组件，只有给角色分配了该查看权限才可看到。
+                用于控制查看、编辑、删除、导出等操作按钮、表单字段等是否可见。
+              </a-alert>
+            </div>
+          </a-form-item>
+          <a-form-item label="权限名称">
+            <a-input
+                v-model="readPerms.name"
+                placeholder="启用时，默认为组件标题或组件ID"
+                :readsonly="!readPerms.enabled"
+                @change="savePermission"
+            ></a-input>
+          </a-form-item>
+          <a-form-item label="服务端ID">
+            <a-input
+                v-model="readPerms.id"
+                placeholder="启用时，服务端保存的权限ID"
+                readonly
+            />
+          </a-form-item>
+        </a-form>
+      </a-card>
+      <!--    <a-card title="编辑权限控制" :bordered="false">-->
+      <!--      <a-form>-->
+      <!--        <a-form-item label="启用权限">-->
+      <!--          <div>-->
+      <!--            <a-switch-->
+      <!--              checked-text="当前已启用编辑权限控制"-->
+      <!--              unchecked-text="当前未启用编辑权限控制"-->
+      <!--            ></a-switch>-->
+      <!--            <a-alert type="normal" class="gl-normal">-->
+      <!--              用于管制表单字段是否可修改。-->
+      <!--            </a-alert>-->
+      <!--          </div>-->
+      <!--        </a-form-item>-->
+      <!--        <a-form-item label="权限名称">-->
+      <!--          <a-input placeholder="启用时，默认为组件标题或组件ID"></a-input>-->
+      <!--        </a-form-item>-->
+      <!--      </a-form>-->
+      <!--    </a-card>-->
+    </template>
+    <template v-else>
+      <a-alert type="info" class="gl-normal">
+        需先保存当前页面，再配置权限。
+      </a-alert>
+    </template>
   </div>
 </template>
 

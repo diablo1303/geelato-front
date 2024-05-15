@@ -90,18 +90,66 @@ const genIdMap = (
 }
 
 /**
+ * 递归删除组件实例的权限
+ * @param inst
+ */
+const removePerms = (
+    inst: ComponentInstance
+) => {
+  if (inst.perms) {
+    delete inst.perms
+  }
+  if (inst.__perms) {
+    delete inst.__perms
+  }
+  // 对于actions
+  if (inst.actions && inst.actions.length > 0) {
+    inst.actions.forEach((actionInst) => {
+      // 对于命令块组件实例
+      if (actionInst.__commandBlock) {
+        if (actionInst.__commandBlock.children && actionInst.__commandBlock.children.length > 0) {
+          actionInst.__commandBlock.children.forEach((subInst) => {
+            removePerms(subInst)
+          })
+        }
+      }
+    })
+  }
+
+  // 对于命令块组件实例，无权限，不需要处理
+  // if (
+  //     inst.__commandBlock &&
+  //     inst.__commandBlock.children &&
+  //     inst.__commandBlock.children.length > 0
+  // ) {
+  //   inst.__commandBlock.children.forEach((subInst) => {
+  //     removePerms(subInst)
+  //   })
+  // }
+
+  // 对于页面UI组件实例
+  if (inst.children && inst.children.length > 0) {
+    inst.children.forEach((subInst) => {
+      removePerms(subInst)
+    })
+  }
+}
+
+
+/**
  * 基于字符串替换，深度复制组件
  * 重新生成组件和各子组件的id
  * 当前组件内的id引用也会被替换
  * @param inst
  */
 export const copyComponentInst = (inst: ComponentInstance) => {
-  // const copyInst = JSON.parse(JSON.stringify(inst))
-  // changeId(copyInst)
-  // return copyInst
   return copyComponentInsts([inst])[0]
 }
 
+/**
+ * 基于JSON字符串转换，深度复制组件
+ * @param insts
+ */
 export const copyComponentInsts = (insts: Array<ComponentInstance>) => {
   // 先找出所有的id，并算出应转换的id
   const idMap: {
@@ -125,7 +173,12 @@ export const copyComponentInsts = (insts: Array<ComponentInstance>) => {
   Object.keys(idMap).forEach((id) => {
     instsStr = instsStr.replace(new RegExp(id, 'g'), idMap[id])
   })
-  return JSON.parse(instsStr)
+  // 删除组件copy上的权限信息
+  let copyInsts =  JSON.parse(instsStr)
+  copyInsts.forEach((inst:ComponentInstance) => {
+    removePerms(inst)
+  })
+  return copyInsts
 }
 
 class ComponentStoreFactory {
