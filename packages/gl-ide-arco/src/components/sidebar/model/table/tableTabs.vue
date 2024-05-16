@@ -421,7 +421,7 @@ watch(() => visibleForm, () => {
       <template #extra>
         <a-space v-if="!refApp">
           <a-popconfirm v-if="!isSystem&&tabsKey===1" content="是否更新该条模型数据？" position="br" type="info" @ok="updateTable">
-            <a-button :disabled="formState==='view'" size="small" type="outline">
+            <a-button :disabled="formState==='view'" size="small" type="outline" title="更新模型信息">
               <template #icon>
                 <gl-iconfont type="gl-save"/>
               </template>
@@ -429,7 +429,7 @@ watch(() => visibleForm, () => {
             </a-button>
           </a-popconfirm>
           <a-popconfirm v-if="!isSystem&&tabsKey===1" content="是否删除该条模型数据？" position="br" type="warning" @ok="deleteTable">
-            <a-button :disabled="formState==='view'" size="small" status="danger" type="outline">
+            <a-button :disabled="formState==='view'" size="small" status="danger" type="outline" title="删除模型信息">
               <template #icon>
                 <gl-iconfont type="gl-delete"/>
               </template>
@@ -437,14 +437,16 @@ watch(() => visibleForm, () => {
             </a-button>
           </a-popconfirm>
           <a-popconfirm content="是否刷新该模型及拥有的视图的缓存？" position="br" type="warning" @ok="refreshMeta">
-            <a-button :disabled="formState==='view'" size="small" status="warning" type="outline">
+            <a-button :disabled="formState==='view'" size="small" status="warning" type="outline"
+                      title="若应用设计时，在选择实体、实体字段和视图没有该模型、字段和视图，可点击此按钮。">
               <template #icon>
                 <gl-iconfont type="gl-sync"/>
               </template>
               刷新模型缓存
             </a-button>
           </a-popconfirm>
-          <a-button :disabled="isSystem||formState==='view'" size="small" type="outline" @click="syncFromModelToTable">
+          <a-button :disabled="isSystem||formState==='view'" size="small" type="outline"
+                    title="将模型信息，模型字段在数据库中创建或更新。" @click="syncFromModelToTable">
             <template #icon>
               <gl-iconfont type="gl-sync"/>
             </template>
