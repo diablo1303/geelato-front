@@ -260,6 +260,7 @@ export default {
   'model.column.index.form.seqNo': '排序',
   'model.column.index.form.description': '注释(英文)',
   'model.column.index.form.marker': '特殊标记',
+  'model.column.index.form.marker.nothing': '无',
   'model.column.index.form.marker.id': '主键',
   'model.column.index.form.marker.title': '标题',
   'model.column.index.form.marker.name': '名称',

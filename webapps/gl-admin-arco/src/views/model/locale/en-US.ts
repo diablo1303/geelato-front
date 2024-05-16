@@ -262,6 +262,7 @@ export default {
   'model.column.index.form.seqNo': 'sequence',
   'model.column.index.form.description': 'description',
   'model.column.index.form.marker': 'specialMark',
+  'model.column.index.form.marker.nothing': 'nothing',
   'model.column.index.form.marker.id': 'primaryKey',
   'model.column.index.form.marker.title': 'title',
   'model.column.index.form.marker.name': 'name',
