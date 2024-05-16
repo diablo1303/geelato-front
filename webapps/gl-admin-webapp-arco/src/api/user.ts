@@ -125,14 +125,19 @@ export const getSysConfig = async (global: ComponentCustomProperties & Record<st
     const config = data.code === globalConfig.interceptorCode ? data.data : data;
     if (config && global) {
       global.$gl = global.$gl || {};
-      global.$gl.sys = config.sys || {};
-      global.$gl.tenant = config.tenant || {};
-      global.$gl.app = config.app || {};
-      global.$gl.user = userInfo || {};
+      // 系统配置信息
+      global.$gl.cfg = global.$gl.cfg || {};
+      global.$gl.cfg.sys = Object.assign(global.$gl.cfg.sys || {}, config.sys) || {};
+      global.$gl.cfg.tenant = Object.assign(global.$gl.cfg.tenant || {}, config.tenant) || {};
+      global.$gl.cfg.app = Object.assign(global.$gl.cfg.app || {}, config.app) || {};
+      // 当前应用
+      global.$gl.app = global.$gl.app || {};
       if (params?.appId && token) {
         const appData = await getApp(params?.appId);
         global.$gl.app = Object.assign(global.$gl.app, appData?.data || {});
       }
+      // 用户信息
+      global.$gl.user = Object.assign(global.$gl.user || {}, userInfo) || {};
       // 服务端未提供用户的公司信息时，在前端发起请求另行获取
       if (userInfo?.id && !userInfo?.corpId) {
         const resp = await getUserCompany(userInfo.id)
