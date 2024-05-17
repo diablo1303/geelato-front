@@ -226,6 +226,9 @@ const tableInit = async () => {
   if (!appStore.currentApp.id) {
     return
   }
+  // @ts-ignore
+  appStore.tableInitLoading = true;
+  const msgLoading = global.$message.loading({content: `正在将 ${appStore.currentApp.name} 下的所有模型同步至数据库`, duration: 100000 * 10000});
   try {
     const {data} = await modelApi.initTables(appStore.currentApp.id);
     global.$message.success({content: '刷新缓存成功！'})
@@ -233,6 +236,10 @@ const tableInit = async () => {
     fetchViewData()
   } catch (err) {
     global.$message.error({content: '模型同步至数据库失败！'})
+  } finally {
+    // @ts-ignore
+    delete appStore.tableInitLoading;
+    msgLoading.close();
   }
 }
 
@@ -398,7 +405,7 @@ const editViewForm = (record: QueryViewForm) => {
       <a-space style="justify-content: flex-start;">
         <a-input-search v-model="searchText" allow-clear placeholder="录入中、英文名查询" size="small"/>
         <a-popconfirm content="是否将该应用下所有模型同步至数据库？" position="bottom" type="warning" @ok="tableInit">
-          <a-button size="small" type="outline" status="danger" style="height: 27px;">
+          <a-button size="small" type="outline" status="danger" style="height: 27px;" :loading="appStore?.tableInitLoading">
             <template #icon>
               <a-tooltip content="应用模型同步至数据库">
                 <gl-iconfont type="gl-sync"/>
