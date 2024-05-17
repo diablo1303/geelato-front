@@ -780,7 +780,7 @@ const createEntitySavers = (
         subFormTableData = getRenderRecords()
       }
   }
-  // 作为子表，对应主表单ID的字段名
+  // 作为子表，对应主表单ID的字段名，如orderId、pId等
   const subTablePidName = props.base.subTablePidName!
   // console.log(
   //   'GlEntityTablePlus > createEntitySavers() > subTablePidName:',

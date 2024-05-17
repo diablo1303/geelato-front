@@ -1,7 +1,15 @@
 <template>
-  <a-select size="small" v-model="mv" @change="onChange" allow-search allow-clear :multiple="multiple" @click="onClick">
+  <a-select
+    size="small"
+    v-model="mv"
+    @change="onChange"
+    allow-search
+    allow-clear
+    :multiple="multiple"
+    @click="onClick"
+  >
     <a-option
-      v-for="item in entityFieldMetas"
+      v-for="item in selectableFieldMetas"
       :value="item.name"
       :class="{ 'gl-selected': mv === item.name }"
     >
@@ -16,7 +24,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { inject, onMounted, provide, ref, watch } from 'vue'
+import { computed, inject, onMounted, type PropType, ref, watch } from 'vue'
 import type { FieldMeta } from '@geelato/gl-ui'
 import { ComponentSetterProvideKey, ComponentSetterProvideProxy } from '@geelato/gl-ide'
 
@@ -38,7 +46,11 @@ const props = defineProps({
       return 'entityMeta'
     }
   },
-  multiple: Boolean
+  multiple: Boolean,
+  /**
+   * 忽略的字段，不可选择的字段
+   */
+  ignoreFields: Array as PropType<Array<string>>
 })
 const componentSetterProvideProxy: ComponentSetterProvideProxy = inject(ComponentSetterProvideKey)!
 
@@ -53,6 +65,15 @@ const onChange = () => {}
 const onClick = () => {
   setData()
 }
+
+/**
+ *  过滤掉ignoreFields中的字段
+ */
+const selectableFieldMetas = computed(() => {
+  if (props.ignoreFields && props.ignoreFields.length > 0)
+    return entityFieldMetas.value?.filter((item) => !props.ignoreFields?.includes(item.name))
+  return entityFieldMetas.value
+})
 
 const setData = () => {
   // console.log('componentSetterProvideProxy.getVarsRef():', componentSetterProvideProxy.getVarsRef())

@@ -74,15 +74,17 @@ export default {
         },
         {
           name: 'subTablePidName',
-          setterComponentProps: {},
+          setterComponentProps: {
+            ignoreFields: ['id','creator','creatorName','createAt','updateAt','updater','updaterName','delStatus','deleteAt'],
+          },
           setterComponentVModelName: 'modelValue',
           group: 'base',
           type: 'props',
           enableValueExpress: false,
           show: true,
           expanded: true,
-          title: '关联主表单ID',
-          description: '子表中，对应主表单主键ID的字段',
+          title: '关联主表字段',
+          description: '本表中指向主表单主键id字段（值相同）。如pId、billId、orderId、nodeId等指向主表的字段，注意这里不能选择id字段，id字段是本表的主键。',
           setterComponentName: 'GlFieldSelect'
         },
         {
