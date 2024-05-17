@@ -330,6 +330,9 @@ defineExpose({saveOrUpdate, loadPage});
             <a-option v-for="item of purposeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ formData.purpose ? $t(`security.sysConfig.index.form.purpose.${formData.purpose}`) : '' }}</span>
+          <template #help>
+            {{ $t('security.sysConfig.index.form.purpose.help') }}
+          </template>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
