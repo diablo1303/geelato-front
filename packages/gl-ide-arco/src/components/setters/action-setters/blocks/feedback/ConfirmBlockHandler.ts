@@ -16,13 +16,13 @@ export default class ConfirmBlockHandler implements IBlockHandler {
     let onCancel = ''
     const invokeBlocks = props.invokeBlocks
     if (invokeBlocks?.includes('onOk')) {
-      onOk = `onOk: ()=>{
+      onOk = `onOk:async()=>{
                   ${varStr} = true;
                   #{onOk}
                 },`
     }
     if (invokeBlocks?.includes('onCancel')) {
-      onCancel = `onCancel: ()=>{
+      onCancel = `onCancel:async()=>{
                   ${varStr} = false;
                   #{onCancel}
                 },`

@@ -69,7 +69,7 @@ import GlVueEditor from './components/setters/property-setters/GlVueEditor.vue'
 import GlSlotSetter from './components/setters/property-setters/GlSlotSetter.vue'
 import GlModelList from './components/sidebar/model/GlModelList.vue'
 import GlDictList from './components/sidebar/dict/GlDictList.vue'
-import GlServiceList from './components/sidebar/services/GlServiceList.vue'
+import GlApiList from './components/sidebar/api/GlApiList.vue'
 import GlStateWorkFlowList from './components/sidebar/workflow/GlStateWorkFlowList.vue'
 import GlPageParamsSetter from './components/setters/property-setters/GlPageParamsSetter.vue'
 import './assets/style.css'
@@ -132,10 +132,10 @@ plugin.sidebar.push(
 
 plugin.sidebar.push(
   new Panel({
-    title: '服务',
-    name: '服务',
+    title: '接口',
+    name: '接口',
     iconType: 'gl-api',
-    componentName: GlServiceList.name
+    componentName: GlApiList.name
   })
 )
 
@@ -256,7 +256,7 @@ const component: Plugin = {
     app.component(GlActionList.name, GlActionList)
     app.component(GlModelList.name, GlModelList)
     app.component(GlDictList.name, GlDictList)
-    app.component(GlServiceList.name, GlServiceList)
+    app.component(GlApiList.name, GlApiList)
     app.component(GlStateWorkFlowList.name, GlStateWorkFlowList)
     app.component(GlPermissionList.name, GlPermissionList)
     app.component(GlIdePluginCoreAppTree.name, GlIdePluginCoreAppTree)
