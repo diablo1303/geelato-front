@@ -102,17 +102,40 @@ export default {
           setterDefaultValue: false
         },
         {
-          name: 'showPagination',
+          name: 'triggerByValueChange',
           group: 'base',
           type: 'props',
           enableValueExpress: false,
-          show: false,
+          show: true,
           expanded: true,
-          setterComponentProps: {},
+          displayMode: 'tile',
+          setterComponentProps: {
+            checkedText: '查询条件值改变即刻触发',
+            uncheckedText: '查询条件值改变时不触发'
+          },
           setterComponentVModelName: 'modelValue',
-          title: '显示分页',
+          title: '改值查询',
           setterComponentName: 'ASwitch',
-          setterDefaultValue: false
+          setterDefaultValue: true,
+          description: '为了优化查询，可以控制在什么条件下触发'
+        },
+        {
+          name: 'triggerByInit',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {
+            checkedText: '组件初始后即刻查询',
+            uncheckedText: '组件初始后不查询'
+          },
+          setterComponentVModelName: 'modelValue',
+          title: '初始查询 ',
+          description: '在组件初始加载之后触发查询，可控制查询时机，减少不必要的查询',
+          setterComponentName: 'ASwitch',
+          setterDefaultValue: true
         },
         {
           name: 'showToolbar',
@@ -125,6 +148,19 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '显示工具条',
           setterComponentName: 'ASwitch'
+        },
+        {
+          name: 'showPagination',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: false,
+          expanded: true,
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          title: '显示分页',
+          setterComponentName: 'ASwitch',
+          setterDefaultValue: false
         },
         {
           name: 'showAddRowBtn',
@@ -640,101 +676,124 @@ export default {
   methods: [
     { name: 'refresh', title: '刷新', description: '刷新表格', params: [] },
     {
+      name: 'getEntitySavers',
+      title: '获取实体保存对象',
+      description: '获取当前表格页面实体保存对象',
+      params: [],
+      returnInfo: {
+        returnType: 'GetEntitySaversResult，格式：{error:boolean,values:EntitySaver[]}。',
+        description: '将当前表格的数据转换成实体保存对象（EntitySaver），便于用脚本的方式组合成新的实体保存对象，一起进行保存。另外，若需对列表值进行修改再保存，一般建议可以通过表格的creatingEntitySavers动作（详见动作面板）中，获取实体保存对象（EntitySaver）,并对其进行相应的值修改。',
+        docId: '4919301630853255168'
+      }
+    },
+    {
+      name: 'getSelectedEntitySavers',
+      title: '获取已选记录的实体保存对象',
+      description: '获取已选记录的实体保存对象，返回{error:boolean,values:EntitySaver[]}',
+      params: [],
+      returnInfo: {
+        returnType: 'GetEntitySaversResult，格式：{error:boolean,values:EntitySaver[]}。',
+        description: '将当前表格已选的数据转换成实体保存对象（EntitySaver），便于用脚本的方式组合成新的实体保存对象，一起进行保存。另外，若需对列表值进行修改再保存，一般建议可以通过表格的creatingEntitySavers动作（详见动作面板）中，获取实体保存对象（EntitySaver）,并对其进行相应的值修改。',
+        docId: '4919301630853255168'
+      }
+    },
+    {
       name: 'getRenderRecords',
       title: '获取页面展示的记录',
       description: '获取当前列表页面展示的记录，返回记录数据组,没记录时返回空数组[]。',
-      params: []
-    },
-    {
-      name: 'getEntitySavers',
-      title: '获取实体保存对象',
-      description: '获取实体保存对象',
       params: [],
       returnInfo: {
-        returnType: 'GetEntitySaversResult',
-        description: 'GetEntitySaversResult的格式：{error:boolean,values:EntitySaver[]}',
-        docId: '4919301630853255168'
+        returnType: 'Array<Record<string,any>>',
+        description: '获取当前列表页面展示的记录，返回记录数据组,没记录时返回空数组[]，例如：[{id:"1234567890123456789",name:"xxx"}]。'
       }
     },
     {
       name: 'getSelectedRecords',
       title: '获取已选的记录',
       description: '获取已选的记录，返回记录数据组,没记录时返回空数组[]。',
-      params: []
+      params: [],
+      returnInfo: {
+        returnType: 'Array<Record<string,any>>',
+        description: '获取已选的记录，返回记录数据组,没记录时返回空数组[]，例如：[{id:"1234567890123456789",name:"xxx"}]。'
+      }
     },
     {
       name: 'getSelectedKeys',
       title: '获取已选的记录keys',
       description: '获取已选的记录keys，返回记录数据组,没记录时返回空数组[]。',
-      params: []
-    },
-    {
-      name: 'getSelectedEntitySavers',
-      title: '获取选择的实体保存对象',
-      description: '获取选择的实体保存对象，返回{error:boolean,values:EntitySaver[]}',
-      params: []
+      params: [],
+      returnInfo: {
+        returnType: 'Array<string>',
+        description: '获取已选的记录keys，返回记录数据组,没记录时返回空数组[]，例如：["1234567890123456789","2234567890123456789"]。',
+      }
     },
     {
       name: 'hasSelectedRecords',
       title: '是否选择了记录',
       description: '是否选择了记录，返回true | false',
-      params: []
+      params: [
+        {
+          name: 'enableAlert',
+          title: '启用告警提醒',
+          required: false,
+          type: 'boolean',
+          description: '若启用的话，返回值为false时，会弹出告警信息'
+        },
+        {
+          name: 'content',
+          title: '告警提醒的内容',
+          required: false,
+          type: 'string',
+          description: '启用告警提醒时才生效，默认为“请先选择记录”'
+        }
+      ],
+      returnInfo: {
+        returnType: 'boolean，值为：true | false',
+        description: '是否选择了记录。',
+      }
     },
     {
       name: 'getColumnSum',
       title: '获取单个列的求和',
-      description: '获取多个列的求和,输入参数“{dataIndex:列名1}”，返回数值',
+      description: '获取单个列的求和，返回数值',
       params: [
         {
           name: 'dataIndex',
           title: '字段名',
           required: true,
           type: 'string',
-          description: '需要求和的字段名称'
+          description: '需要求和的列字段名称'
         }
-      ]
+      ],
+      returnInfo: {
+        returnType: 'number',
+        description: '获取当前列表中，某一列的值求和。',
+      }
     },
     {
       name: 'getColumnsSum',
-      title: '获取多个列的求和',
+      title: '获取多个列的分别求和',
       description:
-        '获取多个列的求和,输入参数[{dataIndex:列名1},{dataIndex:列名2}]，返回{列名1:值1,列名2:值2}',
+          '获取多个列的分别求和',
       params: [
         {
           name: 'dataIndexes',
           title: '字段名数组',
           required: true,
-          type: 'string[]',
-          description: '需要求和的字段名数组'
+          type: 'Array<string>',
+          description: '需要求和的字段名数组，如：["money","count"]'
         }
-      ]
-    },
-    {
-      name: 'getColumnJoin',
-      title: '获取列值拼接字符串',
-      description: '获取列值拼接字符串，空值被排除,输入参数"{dataIndex:列名1}"，返回“值1,值2”',
-      params: [
-        {
-          name: 'dataIndex',
-          title: '字段名',
-          required: true,
-          type: 'string',
-          description: '需要拼接的字段名称'
-        },
-        {
-          name: 'separator',
-          title: '字段值分隔符',
-          required: false,
-          type: 'string',
-          description: '字段值分隔符，默认为“,”'
-        }
-      ]
+      ],
+      returnInfo: {
+        returnType: 'Record<string, number>,key为列名，value为该列的求和值',
+        description: '获取当前列表中，多个列的值分别求和，返回求和值对象，如：{money:100,count:200}。',
+      }
     },
     {
       name: 'getColumnGroupSum',
       title: '分组求和',
       description:
-        '分组求和，输入参数[{groupDataIndex:列名1},{sumDataIndex:列名2}],返回{groupName1:value1,groupName2:value2}',
+          '分组求和，返回{groupName1:value1,groupName2:value2}',
       params: [
         {
           name: 'groupDataIndex',
@@ -750,7 +809,36 @@ export default {
           type: 'string',
           description: ''
         }
-      ]
+      ],
+      returnInfo: {
+        returnType: 'Record<string, number>,key为分组的列名，value为值列的求和值',
+        description: '分组求和，以某列作为组名，求另一列的汇总值，如在一个班级人员清单中（班级、人员名称、费用），统计各年级的费用，{班级1:100,班级2:102,班级3:300}。',
+      }
+    },
+    {
+      name: 'getColumnJoin',
+      title: '获取列值拼接字符串',
+      description: '获取列值拼接字符串',
+      params: [
+        {
+          name: 'dataIndex',
+          title: '字段名',
+          required: true,
+          type: 'string',
+          description: '需要拼接的字段名称'
+        },
+        {
+          name: 'separator',
+          title: '字段值分隔符',
+          required: false,
+          type: 'string',
+          description: '字段值分隔符，默认为“,”'
+        }
+      ],
+      returnInfo: {
+        returnType: 'string，如“值1,值2,值3”',
+        description: '获取列值拼接字符串，空值被排除，例如，4行记录，列值分别为100、60、undefined、40，返回："100,60,40"。',
+      }
     },
     { name: 'reRender', title: '重新渲染', description: '基于当前的表格数据重新渲染', params: [] },
     {
@@ -783,23 +871,40 @@ export default {
     },
     {
       name: 'updateRecord',
-      title: '单条更新',
+      title: '更新单条记录，保存到服务端',
       description:
-        '更新表格的指定一条记录，需要输传递需更新的记录record，该记录需要有id值。在表格行操作中，值示例：$gl.ctx.record',
-      params: []
+          '更新表格的指定一条记录，依据传入的record，更新该记录，保存到服务端，该记录需要有id值。',
+      params: [
+        {
+          name: 'record',
+          title: '需更新的记录值',
+          required: true,
+          type: 'Record<string, any>',
+          description:
+              '需更新的记录字段及值信息，key为字段名，即列名,value为更新后的列值，如{id:"xxx",orderNo:“912881”},【注意】该记录需有id字段，为作更新的依据。'
+        }
+      ],
+      returnInfo: {
+        returnType: 'Promise | undefined',
+        description: '依据传入的record，更新该记录，保存到服务端，该记录需要有id值。在表格的操作列的动用中调用此方法时，可以通过$gl.ctx.record，获取当前操作的行记录。',
+      }
     },
     {
       name: 'deleteRecord',
-      title: '删除行',
+      title: '删除一行记录（基于ID）',
       params: [
         {
           name: 'id',
-          type: 'String',
+          type: 'string',
           description: '在表格行操作中，值示例：$gl.ctx.record.id',
           title: '记录ID',
           defaultValue: ''
         }
-      ]
+      ],
+      returnInfo: {
+        returnType: 'Promise | string | boolean',
+        description: '删除一行记录（基于ID）,如果未传入需要删除的记录id，则返回false，若删除了push进来（即标记删除）的记录，则返回该记录id，若是删除服务端的记录则返回promise。',
+      }
     },
     { name: 'getRenderData', title: '获取表数据' }
   ]
