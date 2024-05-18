@@ -3,13 +3,13 @@
  *  服务列表
  */
 export default {
-  name: 'GlServiceList'
+  name: 'GlApiList'
 }
 </script>
 <script lang="ts" setup>
-import { type Ref, ref, watch, onUnmounted } from 'vue'
-import { entityApi, EntityReader, EntityReaderParam, useGlobal, utils } from '@geelato/gl-ui'
-import { useComponentStore, EventNames, useAppStore } from '@geelato/gl-ide'
+import { type Ref, ref, watch } from 'vue'
+import {entityApi, EntityReader, EntityReaderParam, useGlobal, utils} from '@geelato/gl-ui'
+import {  useAppStore } from '@geelato/gl-ide'
 
 const props = defineProps({
   recordId: String
@@ -26,7 +26,7 @@ const generateRenderItems = () => {
   if (orderBy.value === 'updateAt') {
     // @ts-ignore 从最新到最老
     allItems.value.sort((a, b) => b[orderBy.value].localeCompare(a[orderBy.value]))
-  } else if (orderBy.value === 'dictCode') {
+  } else if (orderBy.value === 'name') {
     // @ts-ignore 从小到大
     allItems.value.sort((a, b) => a[orderBy.value].localeCompare(b[orderBy.value]))
   }
@@ -38,7 +38,7 @@ const generateRenderItems = () => {
   }
   renderItems.value = allItems.value.filter((item) => {
     return (
-      item.dictName.indexOf(searchText.value) != -1 || item.dictCode?.indexOf(searchText.value) != -1
+      item.name.indexOf(searchText.value) != -1 || item.name?.indexOf(searchText.value) != -1
     )
   })
 }
@@ -54,9 +54,9 @@ type Item = {
   updateAt: string
   updaterName:string
   creatorName: string
-  dictName: string
-  dictCode: string
-  dictRemark?: string
+  name: string
+  enableStatus:boolean
+  remark?: string
 }
 /**
  * 加载记录
@@ -66,11 +66,10 @@ const fetchData = () => {
     return
   }
   const entityReader = new EntityReader()
-  entityReader.entity = 'platform_dict'
-  entityReader.setFields('id,creator,creatorName,updateAt,updaterName,dictName,dictRemark,dictCode,seqNo')
+  entityReader.entity = 'platform_api'
+  entityReader.setFields('id,creator,creatorName,updateAt,updaterName,name,enableStatus,remark')
   entityReader.params = []
   entityReader.params.push(new EntityReaderParam('appId', 'eq', appStore.currentApp.id))
-  entityReader.params.push(new EntityReaderParam('enableStatus', 'eq', 1))
 
   entityApi.queryByEntityReader(entityReader).then(
     (res: any) => {
@@ -78,7 +77,7 @@ const fetchData = () => {
       generateRenderItems()
     },
     () => {
-      global.$message.error({ content: '获取应用的模型数据失败' })
+      global.$message.error({ content: '获取应用的接口数据失败' })
     }
   )
 }
@@ -94,9 +93,9 @@ fetchData()
   <div class="gl-service-list">
     <a-tabs :default-active-key="orderBy" size="mini" @change="changeTab">
       <a-tab-pane key="updateAt" title="按时间排序"></a-tab-pane>
-      <a-tab-pane key="dictCode" title="按名称排序"></a-tab-pane>
+      <a-tab-pane key="name" title="按名称排序"></a-tab-pane>
       <template #extra>
-        <a-tag style="margin-right: 8px" color="arcoblue" size="small" title="当前应用的模型总数量"
+        <a-tag style="margin-right: 8px" color="arcoblue" size="small" title="当前应用的接口总数量"
           >{{ allItems.length }}
         </a-tag>
       </template>
@@ -113,20 +112,19 @@ fetchData()
         style="width: 100%"
       ></a-input-search>
     </a-space>
-    coming soon
-<!--    <a-list size="small">-->
-<!--      &lt;!&ndash;      utils.timeAgo(item.updateAt)&ndash;&gt;-->
-<!--      <template v-for="item in renderItems">-->
-<!--        <a-list-item>-->
-<!--          <a-list-item-meta :title="item.dictName" :description="item.dictCode"></a-list-item-meta>-->
-<!--          <template #actions>-->
-<!--            <span class="gl-actions-description" :title="`${item.updaterName||''}更新@${item.updateAt}`">{{-->
-<!--              utils.timeAgo(item.updateAt)-->
-<!--            }}</span>-->
-<!--          </template>-->
-<!--        </a-list-item>-->
-<!--      </template>-->
-<!--    </a-list>-->
+    <a-list size="small">
+      <!--      utils.timeAgo(item.updateAt)-->
+      <template v-for="item in renderItems">
+        <a-list-item>
+          <a-list-item-meta :title="item.name" :description="item.remark"></a-list-item-meta>
+          <template #actions>
+            <span class="gl-actions-description" :title="`${item.updaterName||''}更新@${item.updateAt}`">{{
+              utils.timeAgo(item.updateAt)
+            }}</span>
+          </template>
+        </a-list-item>
+      </template>
+    </a-list>
   </div>
 </template>
 <style>

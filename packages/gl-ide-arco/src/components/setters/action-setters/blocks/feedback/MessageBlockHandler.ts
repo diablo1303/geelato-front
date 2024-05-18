@@ -26,7 +26,7 @@ export default class MessageBlockHandler implements IBlockHandler {
     const duration = props.duration ? `duration:${props.duration},` : ''
     const resetOnHover = props.resetOnHover ? `resetOnHover:${props.resetOnHover},` : ''
     const id = props.id ? `id:${idStr}` : ''
-    const onClose = props.invokeBlocks?.length > 0 ? `onClose:(id)=>{$gl.vars.${props.id} = id;#{onClose}},` : ''
+    const onClose = props.invokeBlocks?.length > 0 ? `onClose:async(id)=>{$gl.vars.${props.id} = id;#{onClose}},` : ''
 
     return new ParseResult(
       `$gl.fn.message.${method}({

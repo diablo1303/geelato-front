@@ -78,7 +78,7 @@ export class BaseInfo {
   enableEdit?: boolean = false
   // 作为表单的子表
   isFormSubTable?: boolean = false
-  // 外键，对应主表ID字段
+  // 外键，对应主表ID字段，这里不能为id字段
   subTablePidName?: string = ''
   // 显示序号
   showSeqNo?: boolean = false

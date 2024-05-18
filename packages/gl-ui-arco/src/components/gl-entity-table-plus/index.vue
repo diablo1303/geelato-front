@@ -566,7 +566,7 @@ const pushRecordsByKeys = (params: { keys: string[] }) => {
 }
 
 const pushSelectedRecords = () => {
-  pushRecordsByKeys({ keys: selectedKeys.value })
+  return pushRecordsByKeys({ keys: selectedKeys.value })
 }
 
 /**
@@ -627,7 +627,7 @@ const unPushRecordsByKeys = (params: { keys: string[] }) => {
  *  此时只是更新前端的数据，不更新服务端
  */
 const unPushSelectedRecords = () => {
-  unPushRecordsByKeys({ keys: selectedKeys.value })
+  return unPushRecordsByKeys({ keys: selectedKeys.value })
 }
 /**
  *  获取需要unPush的记录
@@ -780,7 +780,7 @@ const createEntitySavers = (
         subFormTableData = getRenderRecords()
       }
   }
-  // 作为子表，对应主表单ID的字段名
+  // 作为子表，对应主表单ID的字段名，如orderId、pId等
   const subTablePidName = props.base.subTablePidName!
   // console.log(
   //   'GlEntityTablePlus > createEntitySavers() > subTablePidName:',
@@ -923,7 +923,7 @@ const batchUpdate = (params: { record: Record<string, any> }) => {
           }
         })
       })
-      entityApi.saveBatch(props.base.entityName, copyRecords).then(() => {
+     return entityApi.saveBatch(props.base.entityName, copyRecords).then(() => {
         refresh()
         global.$notification.info({ title: '更新成功', content: `更新${records.length}条记录` })
       })
@@ -950,7 +950,7 @@ const updateRecord = (params: { record: Record<string, any> }) => {
     })
     return saveResult
   }
-  return null
+  return undefined
 }
 
 /**

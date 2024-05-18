@@ -27,7 +27,7 @@ export default class NotificationBlockHandler implements IBlockHandler {
     const duration = props.duration ? `duration:${props.duration},` : ''
     const id = props.id ? `id:${idStr}` : ''
     const onClose =
-      props.invokeBlocks?.length > 0 ? `onClose:(id)=>{$gl.vars.${props.id} = id;#{onClose}},` : ''
+      props.invokeBlocks?.length > 0 ? `onClose:async(id)=>{$gl.vars.${props.id} = id;#{onClose}},` : ''
 
     return new ParseResult(
       `$gl.fn.notification.${method}({
