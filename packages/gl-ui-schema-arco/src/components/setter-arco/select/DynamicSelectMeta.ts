@@ -107,7 +107,8 @@ export default {
       title: '值字段',
       description: '实体中，用于作为值的字段名',
       placeholder: '实体值字段名',
-      setterComponentName: 'GlFieldSelect'
+      setterComponentName: 'GlFieldSelect',
+      setterDefaultValue:'id'
     },
     {
       name: 'orderFiledName',
@@ -219,7 +220,11 @@ export default {
                 label: '包括',
                 value: 'contains',
                 __sfh6bOn4TZO1ya3MA3: 'contains'
-              }
+              },
+              { label: '在数组范围(in)', value: 'in' },
+              { label: '不在数组范围(not in)', value: 'nin' },
+              { label: '在...两值之间(between)', value: 'bt' },
+              { label: '是否空', value: 'nil' }
             ]
           },
           setterComponentVModelName: 'modelValue',
@@ -337,6 +342,19 @@ export default {
       title: '允许搜索',
       setterComponentName: 'ASwitch',
       enableValueExpress: false
+    },
+    {
+      name: 'ignoreSearchWords',
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      title: '不可搜索的词',
+      setterComponentName: 'ATextarea',
+      enableValueExpress: true,
+      description: '不可搜索的词，多个用英文逗号分隔，如："广,州,深,圳,市,有,限,公,司,东,上,海"'
     },
     {
       name: 'allowClear',

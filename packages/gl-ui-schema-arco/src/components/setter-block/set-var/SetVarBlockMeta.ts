@@ -17,7 +17,9 @@ export default {
       expanded: true,
       isBlockVarProp: true,
       title: '变量名称',
-      setterComponentName: 'AInput'
+      setterComponentName: 'AInput',
+      description: '变量名称，如：var1、var2，不需在带上前缀“$gl.vars.”，如果录入“$gl.vars.”，会被自动清空。在JS代码块中编写引用该变量时，需要带上,如：$gl.vars.var1',
+      placeholder: '如：var1，不要写：$gl.vars.var1'
     },
     {
       name: 'varValue',

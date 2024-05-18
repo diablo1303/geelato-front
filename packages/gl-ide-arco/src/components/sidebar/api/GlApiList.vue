@@ -10,6 +10,7 @@ export default {
 import { type Ref, ref, watch } from 'vue'
 import {entityApi, EntityReader, EntityReaderParam, useGlobal, utils} from '@geelato/gl-ui'
 import {  useAppStore } from '@geelato/gl-ide'
+import GlApiModal from "./GlApiModal.vue";
 
 const props = defineProps({
   recordId: String
@@ -86,6 +87,18 @@ const changeTab = (value: any) => {
   orderBy.value = value
 }
 
+const visible = ref(false)
+const openModal = (item?: Item) => {
+  // 无item 说明是新增
+  visible.value = true
+}
+const handleOk = () => {
+  visible.value = false
+}
+const handleCancel = () => {
+  visible.value = false
+}
+
 fetchData()
 </script>
 
@@ -102,7 +115,7 @@ fetchData()
     </a-tabs>
 
     <a-space size="mini" style="padding: 4px 0">
-      <a-button size="small" type="primary">
+      <a-button size="small" type="primary" @click="openModal(undefined)">
         <gl-iconfont type="gl-plus-circle"></gl-iconfont>
       </a-button>
       <a-input-search
@@ -115,7 +128,7 @@ fetchData()
     <a-list size="small">
       <!--      utils.timeAgo(item.updateAt)-->
       <template v-for="item in renderItems">
-        <a-list-item>
+        <a-list-item @click="openModal(item)">
           <a-list-item-meta :title="item.name" :description="item.remark"></a-list-item-meta>
           <template #actions>
             <span class="gl-actions-description" :title="`${item.updaterName||''}更新@${item.updateAt}`">{{
@@ -125,6 +138,9 @@ fetchData()
         </a-list-item>
       </template>
     </a-list>
+    <a-modal v-model:visible="visible" @ok="handleOk" @cancel="handleCancel" width="1024px" >
+      <GlApiModal></GlApiModal>
+    </a-modal>
   </div>
 </template>
 <style>

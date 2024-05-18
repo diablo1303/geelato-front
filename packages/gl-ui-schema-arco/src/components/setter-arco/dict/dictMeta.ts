@@ -124,12 +124,9 @@ export default {
       expanded: true,
       setterComponentProps: {
         options: [
-          {
-            label: '下拉单选',
-            __o4MjAffwf6JXJF09HC: 'select',
-            value: 'select'
-          },
-          { label: '展开单选', __o4MjAffwf6JXJF09HC: 'radio', value: 'radio' },
+          { label: '下拉单选', value: 'select' },
+          { label: '下拉复选', value: 'multiSelect' },
+          { label: '展开单选', value: 'radio' },
           { label: '展开复选', value: 'checkbox' }
         ]
       },
@@ -137,6 +134,42 @@ export default {
       title: '显示类型',
       setterComponentName: 'ARadioGroup',
       setterDefaultValue: 'select'
+    },
+    {
+      name: 'dictItemDisplayMode',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: true,
+      show: true,
+      expanded: true,
+      setterComponentProps: {
+        options: [
+          { label: '编辑状态下隐藏禁用项', value: 'hideInEdit' },
+          { label: '在各状态下展示禁用项', value: 'show' },
+          { label: '在各状态下隐藏禁用项', value: 'hide' }
+        ]
+      },
+      setterComponentVModelName: 'modelValue',
+      title: '禁用项显示',
+      setterComponentName: 'ASelect',
+      setterDefaultValue: 'hideInEdit',
+      description: '用于控制字典项中已禁用的项是否显示，默认为：在页面编辑状态下隐藏禁用项，在查看等其它状态下可见。'
+    },
+    {
+      name: 'isForbiddenItemCanSelect',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: true,
+      show: true,
+      expanded: true,
+      setterComponentProps: {
+        checkedText:'禁用项可以选择',
+        uncheckedText:'禁用项不可以选择'
+      },
+      setterComponentVModelName: 'modelValue',
+      title: '禁用项可选',
+      setterComponentName: 'ASwitch',
+      description: '用于控制已禁用的字典项，是否可以选择（默认为false，即不可选择），对于表单建议按默认值，即不可选择，对于查询条件建议设置为true，即可以选择（因为可能存在一些历史数据需要查询）。注意该属性受“禁用项显示”属性影响，只有可见的才能控制是否可选。'
     },
     {
       name: 'showValueInLabel',

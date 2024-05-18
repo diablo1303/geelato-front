@@ -2,15 +2,24 @@
 export default {
   name: 'GlDict'
 }
+export const enum DictItemDisplayMode {
+  // 编辑状态下隐藏禁用项，在其它状态不隐藏，此为默认值
+  hideInEdit = 'hideInEdit',
+  // 各状态下隐藏禁用项
+  hide = 'hide',
+  // 各状态下展示禁用项
+  show = 'show'
+}
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import {inject, onUnmounted, type Ref, ref, watch} from 'vue'
-import {entityApi, mixins, PageProvideKey, type PageProvideProxy, useLogger} from '@geelato/gl-ui'
+import {computed, inject, onUnmounted, type PropType, type Ref, ref, watch} from 'vue'
+import { entityApi, mixins, PageProvideKey, type PageProvideProxy, useLogger } from '@geelato/gl-ui'
 
 const logger = useLogger('GlDict')
 const emits = defineEmits(['update:modelValue', 'onOptionChange'])
 type OptionType = { value: string; label: string }
+
 const props = defineProps({
   modelValue: {
     type: [String, Number, Array<String | Number>],
@@ -51,7 +60,7 @@ const props = defineProps({
     }
   },
   /**
-   *  下拉单选select|展开单选radio|展开复选checkbox
+   *  下拉单选select|下拉复选multiSelect|展开单选radio|展开复选checkbox
    */
   displayType: {
     type: String,
@@ -76,30 +85,51 @@ const props = defineProps({
    * 在label中，同时展示描述信息
    */
   showRemarkInLabel: Boolean,
+  /**
+   *  禁用项的展示模式
+   *  默认DictItemDisplayMode.hideInEdit
+   */
+  dictItemDisplayMode: String,
+  /**
+   *  禁用项是否可以被选中，默认为false
+   *  一般用于查询条件时，需要将禁用项选中，因为存在一些历史数据需要查询
+   */
+  isForbiddenItemCanSelect: Boolean,
   disabled: Boolean,
   readonly: Boolean,
   ...mixins.props
 })
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
-// console.log('props.modelValue', props.modelValue, props.dictId)
 const mv = ref(props.modelValue)
 let selectedOption: Ref<OptionType | undefined> = ref({ value: '', label: '' })
-const isRead = pageProvideProxy?.isPageStatusRead() || props.disabled || props.readonly
-
+const isRead = !!(pageProvideProxy?.isPageStatusRead() || props.disabled || props.readonly)
+const isEdit = !isRead && (pageProvideProxy?.isPageStatusUpdate() || pageProvideProxy?.isPageStatusCreateOrCopyCreate())
+const showDictItem = computed(() => {
+  switch (props.dictItemDisplayMode) {
+    case DictItemDisplayMode.hideInEdit:
+      return !isEdit
+    case DictItemDisplayMode.hide:
+      return false
+    case DictItemDisplayMode.show:
+      return true
+    default:
+      return !isEdit
+  }
+})
 // 设计时才需要在切换字典展示类型
-if(!props.glIsRuntime){
+if (!props.glIsRuntime) {
   watch(
-      () => {
-        return props.displayType
-      },
-      (val) => {
-        if (val === 'checkbox') {
-          mv.value = []
-        } else {
-          mv.value = undefined
-        }
+    () => {
+      return props.displayType
+    },
+    (val) => {
+      if (val === 'checkbox' || val === 'multiSelect') {
+        mv.value = []
+      } else {
+        mv.value = undefined
       }
+    }
   )
 }
 
@@ -113,8 +143,14 @@ watch(
   { deep: true }
 )
 
+// 服务端加载的字典项
 let options: Ref<Array<OptionType>> = ref([])
+// 最展的字典项
+let renderOptions: Ref<Array<OptionType>> = ref([])
 
+/**
+ * 加载字典项的回调事件，用于设置其它组件的值
+ */
 const callBackToSetValue = () => {
   // 下拉列表还没有加载完成之前不执行
   if (options.value.length === 0) return
@@ -123,7 +159,7 @@ const callBackToSetValue = () => {
     return option.value === mv.value
   })
   const label = foundOption?.label || ''
-  try{
+  try {
     if (props.nameFieldBindComponentId) {
       const ids = props.nameFieldBindComponentId.split(',')
       ids.forEach((id: string) => {
@@ -137,8 +173,8 @@ const callBackToSetValue = () => {
         pageProvideProxy.setComponentValue(id, mv.value)
       })
     }
-  }catch (e) {
-    logger.error('基于字典值回填组件值时失败',e)
+  } catch (e) {
+    logger.error('基于字典值回填组件值时失败', e)
   }
   selectedOption.value = foundOption
   emits('onOptionChange', selectedOption.value)
@@ -165,7 +201,8 @@ const loadData = () => {
     entityApi
       .query(
         'platform_dict_item',
-        'id,enableStatus,itemCode value,itemName label' + (props.showRemarkInLabel ? ',itemRemark remark' : ''),
+        'id,enableStatus,itemCode value,itemName label' +
+          (props.showRemarkInLabel ? ',itemRemark remark' : ''),
         {
           dictId: props.dictId,
           // enableStatus: 1,
@@ -176,6 +213,9 @@ const loadData = () => {
       )
       .then((resp: any) => {
         options.value = resp.data
+        renderOptions.value = options.value.filter((option: OptionType) => {
+          return option.enableStatus || (!option.enableStatus&&showDictItem.value)
+        })
         callBackToSetValue()
       })
   }
@@ -205,29 +245,29 @@ const getLabel = (option: Record<string, any>) => {
 }
 
 // 设计时才需要在切换字典时重新加载数据
-if(!props.glIsRuntime){
+if (!props.glIsRuntime) {
   watch(
-      () => {
-        return props.dictId
-      },
-      () => {
-        loadData()
-      }
+    () => {
+      return props.dictId
+    },
+    () => {
+      loadData()
+    }
   )
 }
 // 初始加载数据
 loadData()
 defineExpose({ getSelectedOption })
-
 </script>
 
 <template>
   <div class="gl-dict">
-    <template v-if="displayType === 'select'">
+    <template v-if="displayType === 'select' || displayType === 'multiSelect'">
       <!--  下拉时，在只读状态才需要展示为文本  -->
-      <template v-if="glIsRuntime&&isRead">{{ selectedOption?.label||'无' }}</template>
+      <template v-if="glIsRuntime && isRead">{{ selectedOption?.label || '无' }}</template>
       <template v-else>
         <a-select
+          :multiple="displayType === 'multiSelect'"
           placeholder="请选择"
           v-model="mv"
           allow-clear
@@ -236,28 +276,28 @@ defineExpose({ getSelectedOption })
           :disabled="disabled || readonly"
           :readonly="readonly"
         >
-          <a-option v-for="opt in options" :value="opt.value" :disabled="opt.enableStatus=='0'">
+          <a-option v-for="opt in renderOptions" :value="opt.value" :disabled="!isForbiddenItemCanSelect&&opt.enableStatus == '0'">
             {{ getLabel(opt) }}
           </a-option>
         </a-select>
       </template>
     </template>
     <template v-else-if="displayType === 'checkbox'">
-      <template v-if="options && options.length === 0">
+      <template v-if="renderOptions && renderOptions.length === 0">
         <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
       </template>
       <a-checkbox-group v-model="mv" :max="maxCount" :disabled="disabled" :readonly="readonly">
-        <a-checkbox v-for="opt in options" :value="opt.value" :disabled="opt.enableStatus=='0'">
+        <a-checkbox v-for="opt in renderOptions" :value="opt.value" :disabled="!isForbiddenItemCanSelect&&opt.enableStatus == '0'">
           {{ getLabel(opt) }}
         </a-checkbox>
       </a-checkbox-group>
     </template>
     <template v-else>
-      <template v-if="options && options.length === 0">
+      <template v-if="renderOptions && renderOptions.length === 0">
         <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
       </template>
       <a-radio-group v-model="mv" :disabled="disabled" :readonly="readonly">
-        <a-radio v-for="opt in options" :value="opt.value" :disabled="opt.enableStatus=='0'">
+        <a-radio v-for="opt in renderOptions" :value="opt.value" :disabled="!isForbiddenItemCanSelect&&opt.enableStatus == '0'">
           {{ getLabel(opt) }}
         </a-radio>
       </a-radio-group>
