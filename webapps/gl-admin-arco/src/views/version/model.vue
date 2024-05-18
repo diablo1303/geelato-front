@@ -7,14 +7,13 @@ export default {
 import {ref, watch} from "vue";
 import {useI18n} from 'vue-i18n';
 import {FormInstance, Modal, SelectOptionData} from "@arco-design/web-vue";
-import {getAppSelectOptions, QueryAppForm, queryAppSelectOptions} from "@/api/application";
+import {queryAppSelectOptions} from "@/api/application";
 import {
   QueryAppVersionForm as QueryForm,
   createOrUpdateAppVersion as saveForm,
   getAppVersion as getForm,
 } from '@/api/application'
 import UploadFile from "@/components/upload-file/index.vue";
-import {getUploadUrl, uploadHeader} from "@/api/attachment";
 
 // 页面所需 参数
 type PageParams = {
@@ -151,7 +150,8 @@ defineExpose({saveOrUpdate, loadPage});
     <a-row :gutter="wrapperCol">
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" label="应用包上传" field="packagePath">
-          <UploadFile :disabled="formState==='view'" accept=".zgdp" v-model="formData.packagePath"/>
+          <UploadFile :disabled="formState==='view'" accept=".zgdp" v-model="formData.packagePath"
+                      genre="uploadVersion" :parameter="parameter" :object-id="formData.id"/>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">

@@ -4,6 +4,7 @@ import {getToken} from "@/utils/auth";
 import {Message} from "@arco-design/web-vue";
 import {PageQueryRequest, PageQueryResponse, QueryResult} from "@/api/base";
 import {isJSON} from "@/utils/is";
+import {getUrlParams} from "@/utils/strings";
 
 export interface AttachmentForm {
   id: string;
@@ -37,6 +38,16 @@ export interface Base64FileParams {
   base64: string;
 }
 
+export interface UploadFileParams {
+  tableType?: string;// 所属表
+  isRename?: boolean;// 文件重命名，默认：true
+  objectId?: string;// 所属业务id
+  genre?: string;// 类型
+  root?: string;// 根目录
+  appId?: string;// 所属应用
+  tenantCode?: string;// 所属租户
+}
+
 export function exportFileList(params: PageQueryRequest) {
   return axios.get<PageQueryResponse>('/api/export/file/list', {
     params, paramsSerializer: (obj) => {
@@ -64,11 +75,26 @@ export function deleteAttachment(id: string, isRemoveFile?: boolean) {
 
 /**
  * 上传附件
- * @param isRename 重置文件名，默认：true
+ * @param params appId,isRename,objectId,genre,root
  */
-export function getUploadUrl(isRename?: boolean) {
-  return `${axios.defaults.baseURL}/api/upload/file?isRename=${isRename !== false}`;
+export function getUploadUrl(params?: Record<string, any>) {
+  params = params || {};
+  params.isRename = params.isRename !== false;
+  const records = getUrlParams(params);
+  return `${axios.defaults.baseURL}/api/upload/file?${records.join('&')}`;
 }
+
+/**
+ * 上传附件
+ * @param formData
+ * @param params
+ */
+export const updateFile = (formData: FormData, params?: Record<string, any>) => {
+  params = params || {};
+  params.isRename = params.isRename !== false;
+  const records = getUrlParams(params);
+  return axios.post<QueryResult>(`/api/upload/file?${records.join('&')}`, formData);
+};
 
 /**
  * 下载附件
@@ -111,10 +137,6 @@ export const uploadHeader = (): Record<string, string> => {
   }
   return {Authorization: ''};
 }
-
-export const updateFile = (formData: FormData, isRename: boolean, objectId?: string, genre?: string, root?: string) => {
-  return axios.post<QueryResult>(`/api/upload/file?isRename=${isRename !== false}&objectId=${objectId || ''}&genre=${genre || ''}&root=${root || ''}`, formData);
-};
 
 /**
  * 校验文件是否存在

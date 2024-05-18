@@ -8,15 +8,16 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { computed, inject, type Ref, ref, watch } from 'vue'
+import {computed, inject, type Ref, ref, watch} from 'vue'
 import {
   entityApi,
   fileApi,
   PageProvideKey,
   type PageProvideProxy,
+  type UploadFileParams,
   useGlobal
 } from '@geelato/gl-ui'
-import type { FileItem } from '@arco-design/web-vue'
+import type {FileItem} from '@arco-design/web-vue'
 
 const props = defineProps({
   modelValue: {
@@ -47,6 +48,15 @@ const isPageRead = ref(pageProvideProxy?.isPageStatusRead())
 const isRead = computed(() => {
   return isPageRead.value || props.readonly === true
 })
+
+const uploadParams = ref<UploadFileParams>({
+  tableType: '',// 类型
+  isRename: true,// 文件重命名，默认：true
+  objectId: '',// 文件所属对象id
+  genre: '',// 类型
+  appId: global.$gl.app.appId || '',// 所属应用
+  tenantCode: global.$gl.app.tenantCode || '',// 所属租户
+});// 上传参数
 
 const mv = ref(props.modelValue)
 const isIDMode = ref(props.srcType === 'ID')
@@ -100,17 +110,17 @@ const setFileItem = (fileItem?: FileItem) => {
 const beforeRemove = (fileItem: FileItem): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     fileApi
-      .deleteAttachment(fileItem.uid)
-      .then(() => {
-        setFileItem()
-        global.$notification.success('删除成功')
-        resolve(true)
-      })
-      .catch((e) => {
-        global.$notification.success('删除失败')
-        console.error('删除失败', e)
-        reject(false)
-      })
+        .deleteAttachment(fileItem.uid)
+        .then(() => {
+          setFileItem()
+          global.$notification.success('删除成功')
+          resolve(true)
+        })
+        .catch((e) => {
+          global.$notification.success('删除失败')
+          console.error('删除失败', e)
+          reject(false)
+        })
   })
 }
 
@@ -159,27 +169,27 @@ const loadFiles = () => {
 <template>
   <a-space>
     <a-image
-      v-if="!(fileId && fileBase64)"
-      class="gl-image"
-      :style="defaultStyle"
-      :width="width"
-      :height="height"
-      :src="src"
+        v-if="!(fileId && fileBase64)"
+        class="gl-image"
+        :style="defaultStyle"
+        :width="width"
+        :height="height"
+        :src="src"
     >
     </a-image>
     <a-upload
-      v-if="!isRead"
-      list-type="picture-card"
-      accept="image/*"
-      :limit="1"
-      image-preview
-      :file-list="fileList"
-      :action="fileApi.getUploadUrl()"
-      :headers="entityApi.getHeader()"
-      @error="uploadError"
-      @success="uploadSuccess"
-      @before-remove="beforeRemove"
-      title="上传替换"
+        v-if="!isRead"
+        list-type="picture-card"
+        accept="image/*"
+        :limit="1"
+        image-preview
+        :file-list="fileList"
+        :action="fileApi.getUploadUrl(uploadParams)"
+        :headers="entityApi.getHeader()"
+        @error="uploadError"
+        @success="uploadSuccess"
+        @before-remove="beforeRemove"
+        title="上传替换"
     >
     </a-upload>
   </a-space>

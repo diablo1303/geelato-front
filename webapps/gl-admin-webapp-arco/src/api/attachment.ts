@@ -2,12 +2,23 @@ import {getToken} from "@/utils/auth";
 import axios from "axios";
 import {Message} from "@arco-design/web-vue";
 import {isJSON} from "@/utils/is";
+import {getUrlParams} from "@/utils/strings";
 
 export interface Base64FileParams {
   name: string;
   size: number;
   type: string;
   base64: string;
+}
+
+export interface UploadFileParams {
+  tableType?: string;// 所属表
+  isRename?: boolean;// 文件重命名，默认：true
+  objectId?: string;// 所属业务id
+  genre?: string;// 类型
+  root?: string;// 根目录
+  appId?: string;// 所属应用
+  tenantCode?: string;// 所属租户
 }
 
 /**
@@ -23,10 +34,13 @@ export const uploadHeader = (): Record<string, string> => {
 
 /**
  * 上传附件
- * @param isRename 重置文件名，默认：true
+ * @param params appId,isRename,objectId,genre,root
  */
-export function getUploadUrl(isRename?: boolean) {
-  return `${axios.defaults.baseURL}/api/upload/file?isRename=${isRename !== false}`;
+export function getUploadUrl(params?: Record<string, any>) {
+  params = params || {};
+  params.isRename = params.isRename !== false;
+  const records = getUrlParams(params);
+  return `${axios.defaults.baseURL}/api/upload/file?${records.join('&')}`;
 }
 
 /**

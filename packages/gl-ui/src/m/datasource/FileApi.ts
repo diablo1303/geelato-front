@@ -19,6 +19,16 @@ export interface Base64FileParams {
   base64: string;
 }
 
+export interface UploadFileParams {
+  tableType?: string;// 所属表
+  isRename?: boolean;// 文件重命名，默认：true
+  objectId?: string;// 所属业务id
+  genre?: string;// 类型
+  root?: string;// 根目录
+  appId?: string;// 所属应用
+  tenantCode?: string;// 所属租户
+}
+
 export function getAttachment(id: string) {
   return entityApi.getAxios().get<AttachmentForm>(`/api/attach/get/${id}`)
 }
@@ -44,10 +54,13 @@ export function deleteAttachment(id: string, isRemoveFile?: boolean) {
 
 /**
  * 上传附件
- * @param isRename 重置文件名，默认：true
+ * @param params appId,isRename,objectId,genre,root
  */
-export function getUploadUrl(isRename?: boolean) {
-  return `${entityApi.getAxios().defaults.baseURL}/api/upload/file?isRename=${!!isRename}`
+export function getUploadUrl(params?: Record<string, any>) {
+  params = params || {};
+  params.isRename = params.isRename !== false;
+  const records = utils.getUrlParams(params);
+  return `${entityApi.getAxios().defaults.baseURL}/api/upload/file?${records.join('&')}`;
 }
 
 /**
