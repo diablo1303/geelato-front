@@ -6,7 +6,6 @@
  */
 // @ts-nocheck
 import {
-  computed,
   inject,
   nextTick,
   type PropType,
@@ -132,7 +131,7 @@ const props = defineProps({
     default() {
       return {
         current: 1,
-        pageSize: 1000,
+        defaultPageSize: 1000,
         showTotal: false,
         showPageSize: false,
         pageSizeOptions: [1000]
@@ -342,7 +341,8 @@ const resetDeleteDataWhenEnableEdit = () => {
   deleteDataWhenEnableEdit.value = []
 }
 const _pagination = reactive({
-  ...props.pagination
+  ...props.pagination,
+  pageSize: props.pagination.defaultPageSize,
 })
 
 /**
@@ -407,6 +407,8 @@ const createEntityReader = () => {
     entityReader.order.push(...defaultOrders)
   }
 
+  entityReader.pageNo = _pagination.pageNo || 1
+  entityReader.pageSize = _pagination.pageSize || 15
   entityReader.fields = fieldMetas
   return entityReader
 }
@@ -472,7 +474,7 @@ watch(
   () => {
     return props.glComponentInst.value
   },
-  (value, oldValue) => {
+  () => {
     // console.log('update value:', props.glComponentInst.value)
     // 这里不能使用 reRender()，reRender会导致用户每录入一个字符都会重绘整个列表
     renderData.value = []
@@ -542,7 +544,7 @@ const popupVisibleChange = (val: boolean) => {
   }
 }
 
-const optColumn = { title: '操作', slotName: '#', fixed: 'right', width: 140, align: 'center' }
+// const optColumn = { title: '操作', slotName: '#', fixed: 'right', width: 140, align: 'center' }
 const scroll = {
   x: '100%'
 }
@@ -651,7 +653,7 @@ const insertRecords = (params: {
   const insertRecords: Array<Record<string, any>> = []
   if (params.uniqueDataIndexes && params.uniqueDataIndexes.length > 0) {
     params?.records?.forEach((record: Record<string, any>) => {
-      let isSameRecord = false
+      // let isSameRecord = false
       // 判断是否与当前列表中的数据重复
       const foundSameRecord =  renderData.value.find((item: Record<string, any>) => {
         let allUniqueDataIndexAreSame = true
