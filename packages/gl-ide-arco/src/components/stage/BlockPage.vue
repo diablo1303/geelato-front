@@ -15,12 +15,14 @@ const emits = defineEmits(['update'])
 const props = defineProps({
   glComponentInst: {
     type: Object as PropType<ComponentInstance>
+  },
+  componentStoreId: {
+    type: String,
+    default: 'useComponentBrowserBlockStore'
   }
 })
 
-const global = useGlobal()
-const componentStoreId = 'useComponentBlockStore'
-const componentStore = componentStoreFactory.useComponentStore(componentStoreId)
+const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
 
 /**
  *  初始的组件树

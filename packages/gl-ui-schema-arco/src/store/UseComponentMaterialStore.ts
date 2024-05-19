@@ -8,7 +8,8 @@ import {
     ComponentMaterialGroup
 } from "@geelato/gl-ui-schema";
 import {schemaArco} from "../components/schemaArco";
-import {schemaBlock} from "../components/schemaBlock";
+import {schemaBlockBrowser} from "../components/schemaBlockBrowser";
+import {schemaBlockApi} from "../components/schemaBlockApi";
 import {schemaBpmn} from "../components/schemaBpmn";
 import {schemaChart} from "../components/schemaChart";
 
@@ -111,8 +112,10 @@ export const useComponentMaterialStore = defineStore('GlComponentMaterialStore',
         registerComponentMaterials(schema.componentInstances)
         registerComponentMetas(schemaArco.componentMetas)
         registerComponentMaterials(schemaArco.componentInstances)
-        registerComponentMetas(schemaBlock.componentMetas)
-        registerComponentMaterials(schemaBlock.componentInstances)
+        registerComponentMetas(schemaBlockBrowser.componentMetas)
+        registerComponentMaterials(schemaBlockBrowser.componentInstances)
+        registerComponentMetas(schemaBlockApi.componentMetas)
+        registerComponentMaterials(schemaBlockApi.componentInstances)
         registerComponentMetas(schemaBpmn.componentMetas)
         registerComponentMaterials(schemaBpmn.componentInstances)
         registerComponentMetas(schemaChart.componentMetas)

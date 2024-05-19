@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { Action, ComponentInstance, type IPropertySetterMeta } from '@geelato/gl-ui-schema'
-import { useComponentBlockStore } from './UseComponentStore'
+import { useComponentBrowserBlockStore } from './UseComponentStore'
 
 export type VarMeta = {
   // 变量名
@@ -21,7 +21,7 @@ export const useActionStore = defineStore({
     action: new Action(),
     // varMeta
     vars: new Array<VarMeta>(),
-    componentBlockStore: useComponentBlockStore()
+    componentBlockStore: useComponentBrowserBlockStore()
   }),
   getters: {},
   actions: {

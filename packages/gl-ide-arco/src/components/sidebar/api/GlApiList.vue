@@ -88,12 +88,27 @@ const changeTab = (value: any) => {
 }
 
 const visible = ref(false)
+const saving = ref(false)
+const apiModal = ref()
+const currentApiId = ref('')
+const currentApi= ref<Item>()
+// 用于刷新modal，确保每新都是重新创建modal
 const openModal = (item?: Item) => {
-  // 无item 说明是新增
+  if (item) {
+    // 有item 说明是编辑
+    currentApiId.value = item.id
+    currentApi.value = item
+  } else {
+    // 无item 说明是新增
+  }
   visible.value = true
 }
+const handleBeforeOk = () => {
+  // visible.value = true
+  return apiModal.value?.save()
+}
+
 const handleOk = () => {
-  visible.value = false
 }
 const handleCancel = () => {
   visible.value = false
@@ -138,8 +153,21 @@ fetchData()
         </a-list-item>
       </template>
     </a-list>
-    <a-modal v-model:visible="visible" @ok="handleOk" @cancel="handleCancel" width="1024px" >
-      <GlApiModal></GlApiModal>
+    <a-modal
+        draggable
+        ok-text="保存"
+        cancel-text="取消"
+        body-style="padding:0"
+        v-model:visible="visible"
+        :on-before-ok="handleBeforeOk"
+        @cancel="handleCancel"
+        @ok="handleOk"
+        fullscreen>
+      <template #title>
+        <GlIconfont type="gl-api" style="margin-right: 4px"></GlIconfont>
+        <span>{{`接口编排-${currentApi?.name}`}}</span>
+      </template>
+      <GlApiModal :key="currentApiId" ref="apiModal" :apiId="currentApiId"></GlApiModal>
     </a-modal>
   </div>
 </template>

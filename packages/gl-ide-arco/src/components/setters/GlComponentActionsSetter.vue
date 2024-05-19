@@ -95,15 +95,14 @@ export default {
 // @ts-nocheck
 import { nextTick, onUnmounted, type PropType, ref } from 'vue'
 import { Action, ComponentInstance, ComponentMeta } from '@geelato/gl-ui-schema'
+import type { ActionMeta } from '@geelato/gl-ui-schema'
+import { emitter, utils } from '@geelato/gl-ui'
+import { EventNames, useIdeStore } from '@geelato/gl-ide'
+import { blocksHandler } from './action-setters/BlockHandler'
 import GlArrayBaseSetter from './property-setters/GlArrayBaseSetter.vue'
 import GlCommandEditor from './action-setters/GlCommandEditor.vue'
-import { emitter, useGlobal, utils } from '@geelato/gl-ui'
-import { blocksHandler } from './action-setters/blocks/BlockHandler'
-import type { ActionMeta } from '@geelato/gl-ui-schema'
-import { EventNames, useIdeStore } from '@geelato/gl-ide'
 
 const ideStore = useIdeStore()
-const global = useGlobal()
 const props = defineProps({
   componentMeta: {
     type: Object as PropType<ComponentMeta>,
@@ -130,9 +129,6 @@ if (props.componentMeta.actions && props.componentMeta.actions.length > 0) {
   })
 }
 
-const handleSelect = (val: Action) => {
-  // console.log('handleSelect action:', val)
-}
 const update = () => {}
 // console.log('GlComponentActionsSetter > props:', props)
 const refreshFlag = ref(true)
@@ -157,23 +153,13 @@ const openActionSetter = (action: Action, actionIndex?: number, actionMeta?: Act
   currentAction.value = action ? JSON.parse(JSON.stringify(action)) : new Action()
   // currentActionIndex.value = actionIndex
   actionCodeEditorVisible.value = true
-  // global.$modal.open({
-  //   title: "动作（事件）编排",
-  //   content: h(GlCommandEditor, {key: currentAction.value.id, action: currentAction.value}),
-  //   width: 1360,
-  //   bodyStyle: "padding:0",
-  //   onOk: openActionSetter,
-  //   onCancel: closeActionCodeEditor
-  // })
+
   refreshFlag.value = false
   nextTick(() => {
     refreshFlag.value = true
   })
 }
 const onUpdateAction = (action: Action) => {
-  // console.log('onUpdateAction', action)
-  // @ts-ignore
-  // props.componentInstance.actions[currentActionIndex.value] = action
   for (const index in props.componentInstance.actions) {
     if(!props.componentInstance.actions[index].id){
       console.error('onUpdateAction时，发现id为空的action:',action,'需解决，确保action都有id。')
