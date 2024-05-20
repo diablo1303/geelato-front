@@ -35,6 +35,7 @@ const numericSignedOptions = computed<RadioOption[]>(() => [
   {label: "否", value: 0,},
 ]);
 const markerOptions = computed<RadioOption[]>(() => [
+  {label: '无', value: '',},
   {label: '主键', value: 'id',},
   {label: '标题', value: 'title',},
   // {label: '名称', value: 'name',},

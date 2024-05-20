@@ -7,7 +7,7 @@ export default {
 import {inject, type Ref, ref, watch} from 'vue'
 import type {FileItem} from '@arco-design/web-vue'
 import {Notification} from '@arco-design/web-vue'
-import {entityApi, fileApi, PageProvideKey, PageProvideProxy} from '@geelato/gl-ui'
+import {entityApi, fileApi, PageProvideKey, PageProvideProxy, type UploadFileParams, useGlobal} from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -25,6 +25,16 @@ const props = defineProps({
   disabled: Boolean
 })
 const mv = ref(props.modelValue)
+const global = useGlobal()
+
+const uploadParams = ref<UploadFileParams>({
+  tableType: '',// 类型
+  isRename: true,// 文件重命名，默认：true
+  objectId: '',// 文件所属对象id
+  genre: '',// 类型
+  appId: global.$gl.app.appId || '',// 所属应用
+  tenantCode: global.$gl.app.tenantCode || '',// 所属租户
+});// 上传参数
 
 watch(mv, () => {
   emits('update:modelValue', mv.value)
@@ -158,7 +168,7 @@ const isRead = pageProvideProxy?.isPageStatusRead() || props.readonly || props.d
 <template>
   <a-upload
       class="gl-upload"
-      :action="fileApi.getUploadUrl()"
+      :action="fileApi.getUploadUrl(uploadParams)"
       :file-list="fileList"
       :accept="accept"
       :headers="entityApi.getHeader()"

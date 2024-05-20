@@ -52,6 +52,45 @@ export function isWindow(el: any): el is Window {
   return el === window;
 }
 
+
+/**
+ * 字符串是为空[null，'']
+ * @param s
+ * @returns {boolean}
+ */
+export function isEmpty(s: string) {
+  return s == null || s.length === 0;
+}
+
+/**
+ * 字符串不为空
+ * @param s
+ * @returns {boolean}
+ */
+export function isNotEmpty(s: string) {
+  return !isEmpty(s);
+}
+
+/**
+ * 字符串是空白的
+ * @param s
+ */
+export function isBlank(s: string) {
+  if (isNotEmpty(s)) {
+    return s.trim().length === 0;
+  }
+  return true;
+}
+
+/**
+ * 字符串不是空白的
+ * @param s
+ * @returns {boolean}
+ */
+export function isNotBlank(s: string) {
+  return !isBlank(s);
+}
+
 /**
  * 是否是Json字符串
  * @param val

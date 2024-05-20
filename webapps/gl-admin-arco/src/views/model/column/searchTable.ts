@@ -40,6 +40,7 @@ const numericSignedOptions = computed<RadioOption[]>(() => [
 ]);
 
 const markerOptions = computed<RadioOption[]>(() => [
+  {label: 'model.column.index.form.marker.nothing', value: '',},
   {label: 'model.column.index.form.marker.id', value: 'id',},
   {label: 'model.column.index.form.marker.title', value: 'title',},
   // {label: 'model.column.index.form.marker.name', value: 'name',},

@@ -324,14 +324,17 @@ watch(() => props, (val) => {
       <a-space>
         <a-popconfirm :content="$t('searchTable.columns.operations.refresh.tableMsg')"
                       position="br" type="warning" @ok="refreshMeta">
-          <a-button :disabled="formState==='view'" status="warning" type="outline">
+          <a-button :disabled="formState==='view'" status="warning" type="outline"
+                    :title="$t('searchTable.columns.operations.refresh.table.title')">
             <template #icon>
               <icon-sync/>
             </template>
             {{ $t('searchTable.columns.operations.refresh.table') }}
           </a-button>
         </a-popconfirm>
-        <a-button :disabled="isSystem || formState==='view'" type="outline" @click="syncFromModelToTable($event)">
+        <a-button :disabled="isSystem || formState==='view'" type="outline"
+                  :title="$t('model.connect.index.model.sync.table.title')"
+                  @click="syncFromModelToTable($event)">
           <template #icon>
             <icon-sync/>
           </template>

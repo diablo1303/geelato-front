@@ -400,7 +400,7 @@ watch(() => props, (val) => {
           <span v-else>{{ record.configValue }}</span>
         </template>
       </a-table-column>
-      <a-table-column :title="$t('security.sysConfig.index.form.purpose')" :width="120" data-index="purpose">
+      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.sysConfig.index.form.purpose')" :width="120" data-index="purpose">
         <template #cell="{ record }">
           {{ record.purpose ? $t(`security.sysConfig.index.form.purpose.${record.purpose}`) : '' }}
         </template>

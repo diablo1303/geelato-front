@@ -210,6 +210,7 @@ const onSorterChange = (dataIndex: string, direction: string) => {
 const releaseTable = (record: QueryViewForm) => {
   releaseTableView(record, () => {
     Message.success(t('model.view.index.model.info.release'));
+    Message.warning({content: t('model.view.index.model.info.release.tip'), duration: 10 * 1000});
     reset();
   })
 }

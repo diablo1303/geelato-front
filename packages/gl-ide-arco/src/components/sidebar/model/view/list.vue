@@ -181,6 +181,7 @@ const onSorterChange = (dataIndex: string, direction: string) => {
 const releaseTable = (record: QueryViewForm) => {
   releaseTableView(record, () => {
     global.$message.success({content: '发布成功！'})
+    global.$message.warning({content: '若在应用设计选择实体中查询不到该视图，请点击按钮“刷新模型缓存”', duration: 10 * 1000})
     reset();
   })
 }
@@ -404,8 +405,8 @@ watch(() => props.height, (val) => {
               发布
             </a-button>
           </a-tooltip>
-          <a-popconfirm v-else content="是否发布该条视图？" position="tr" type="info" @ok="releaseTable(record)">
-            <a-button :disabled="formState==='view'" size="small" type="text">
+          <a-popconfirm v-else content="是否发布该条视图? 即将该视图在数据库中创建或更新。" position="tr" type="info" @ok="releaseTable(record)">
+            <a-button :disabled="formState==='view'" size="small" type="text" title="将该视图在数据库中创建或更新。">
               发布
             </a-button>
           </a-popconfirm>

@@ -6,9 +6,9 @@ export default {
 <script lang="ts" setup>
 import {computed, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
-import {FileItem, FormInstance, Modal, Notification, SelectOptionGroup} from "@arco-design/web-vue";
+import {FileItem, FormInstance, Message, Modal, SelectOptionGroup} from "@arco-design/web-vue";
 import {createOrUpdateSysConfig as createOrUpdateForm, getSysConfig as getForm, QuerySysConfigForm as QueryForm, validateSysConfigKey} from '@/api/sysconfig'
-import {AttachmentForm, Base64FileParams, getAttachmentByIds, getDownloadUrlById, getUploadUrl, uploadHeader} from "@/api/attachment";
+import {AttachmentForm, Base64FileParams, getAttachmentByIds, getDownloadUrlById, getUploadUrl, UploadFileParams, uploadHeader} from "@/api/attachment";
 import {getAppSelectOptions, QueryAppForm} from "@/api/application";
 import {getTypeSelectOptionGroup} from "@/api/model";
 import UploadBase64 from "@/components/upload-base64/index.vue";
@@ -34,6 +34,14 @@ const {t} = useI18n();// 国际化
 const labelCol = ref<number>(6);// 表单-标题宽度
 const wrapperCol = ref<number>(18); // 表单-内容宽度
 const validateForm = ref<FormInstance>();// 表单-校验
+const uploadParams = ref<UploadFileParams>({
+  tableType: 'resources',// 类型
+  isRename: true,// 文件重命名，默认：true
+  objectId: '',// 文件所属对象id
+  genre: 'sysConfig',// 类型
+  appId: props.parameter?.appId || '',// 所属应用
+  tenantCode: props.parameter?.tenantCode || '',// 所属租户
+});// 上传参数
 /* 表单 */
 const generateFormData = (): QueryForm => {
   return {
@@ -145,22 +153,22 @@ const setTemplate = (fileName?: string) => {
 }
 const beforeRemoveT = async (fileItem: FileItem): Promise<boolean> => {
   try {
-    Notification.success("删除成功");
     deleteFileItem(templateFile.value, fileItem.uid);
     setTemplate('');
+    Message.success("删除成功");
     return true;
   } catch (err) {
     return false;
   }
 }
 const uploadTSuccess = (fileItem: FileItem) => {
-  Notification.success("上传成功");
   fileItem.uid = fileItem.response.data.id;
   templateFile.value.push(fileItem);
   setTemplate(fileItem.name);
+  Message.success("上传成功");
 }
 const uploadError = (fileItem: FileItem) => {
-  Notification.error("上传失败，请重试！");
+  Message.error("上传失败，请重试！");
 }
 const loadFiles = (attachmentIds: string) => {
   if (attachmentIds !== null && attachmentIds !== '') {
@@ -168,7 +176,7 @@ const loadFiles = (attachmentIds: string) => {
       if (attachs != null && attachs.length > 0) {
         attachs.forEach((value, index, array) => {
           if (value.delStatus === 0) {
-            const file = {uid: value.id, name: value.name, url: getDownloadUrlById(value.id)};
+            const file = {uid: value.id, name: value.name, url: getDownloadUrlById(value.id, false, true)};
             templateFile.value.push(file);
           }
         });
@@ -212,6 +220,9 @@ const loadPage = () => {
   });
   // 表单数据重置
   formData.value = generateFormData();
+  Object.assign(uploadParams.value, {
+    appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+  });
   // 重置验证
   resetValidate();
   // 其他初始化
@@ -225,6 +236,7 @@ const loadPage = () => {
         data.keyType = (data.keyType as string).split(",") || [];
       }
       formData.value = data;
+      uploadParams.value.objectId = formData.value.id;
       if (['UPLOAD'].includes(formData.value.valueType)) {
         loadFiles(formData.value.configValue);
       } else if (['BASE64'].includes(formData.value.valueType) && isJSON(formData.value.configValue)) {
@@ -289,7 +301,7 @@ defineExpose({saveOrUpdate, loadPage});
                      :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                      field="configValue">
-          <a-upload :action="getUploadUrl()"
+          <a-upload :action="getUploadUrl(uploadParams)"
                     :file-list="templateFile"
                     :headers="uploadHeader()"
                     :limit="1"
@@ -330,6 +342,9 @@ defineExpose({saveOrUpdate, loadPage});
             <a-option v-for="item of purposeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
           </a-select>
           <span v-else>{{ formData.purpose ? $t(`security.sysConfig.index.form.purpose.${formData.purpose}`) : '' }}</span>
+          <template #help>
+            {{ $t('security.sysConfig.index.form.purpose.help') }}
+          </template>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">

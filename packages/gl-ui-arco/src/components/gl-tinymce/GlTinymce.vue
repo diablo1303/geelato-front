@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {type PropType, type Ref, ref, reactive, watch, onMounted, computed} from 'vue'
-import {entityApi, EntityReader, fileApi, PageProvideKey, PageProvideProxy, useApiUrl, utils} from '@geelato/gl-ui'
+import {entityApi, EntityReader, fileApi, PageProvideKey, PageProvideProxy, type UploadFileParams, useApiUrl, useGlobal, utils} from '@geelato/gl-ui'
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
 import Editor from '@tinymce/tinymce-vue'
 import {TINY_FONT_FAMILY_FORMATS, TINY_FONT_SIZE_FORMATS, TINY_PLUGINS, TINY_TOOLBAR} from './type'
@@ -45,17 +45,26 @@ const props = defineProps({
   disabled: {type: Boolean, default: false},
   readonly: {type: Boolean, default: false},
 })
+const global = useGlobal()
 const key = ref(utils.gid());
 const isGetKey = ref<boolean>(false);
 const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
 const baseUrl = ref<string>(useApiUrl().getApiBaseUrl() || apiBaseUrl);
 console.log(baseUrl.value);
 const replaceStr = "REPLACE_API_BASE_URL";
+const uploadParams = ref<UploadFileParams>({
+  tableType: '',// 类型
+  isRename: true,// 文件重命名，默认：true
+  objectId: '',// 文件所属对象id
+  genre: 'tinymce',// 类型
+  appId: global.$gl.app.appId || '',// 所属应用
+  tenantCode: global.$gl.app.tenantCode || '',// 所属租户
+});// 上传参数
 
 const example_image_upload_handler = (blobInfo: any, progress: any) => new Promise((resolve, reject) => {
   const xhr = new XMLHttpRequest();
   xhr.withCredentials = false;
-  xhr.open('POST', fileApi.getUploadUrl(), true);
+  xhr.open('POST', fileApi.getUploadUrl(uploadParams), true);
   xhr.setRequestHeader('Authorization', entityApi.getAuthorization() || '');
   xhr.upload.onprogress = (e) => {
     progress(e.loaded / e.total * 100);
@@ -105,56 +114,56 @@ const tinyInit = ref({
 });
 
 watch(
-  () => {
-    return props.height
-  },
-  () => {
-    tinyInit.value.height = props.height
-    key.value = utils.gid()
-  },
-  {deep: true, immediate: true}
+    () => {
+      return props.height
+    },
+    () => {
+      tinyInit.value.height = props.height
+      key.value = utils.gid()
+    },
+    {deep: true, immediate: true}
 )
 watch(
-  () => {
-    return props.autoUpload
-  },
-  () => {
-    tinyInit.value.automatic_uploads = props.autoUpload
-    key.value = utils.gid()
-  },
-  {deep: true, immediate: true}
+    () => {
+      return props.autoUpload
+    },
+    () => {
+      tinyInit.value.automatic_uploads = props.autoUpload
+      key.value = utils.gid()
+    },
+    {deep: true, immediate: true}
 )
 watch(
-  () => {
-    return props.resize
-  },
-  () => {
-    tinyInit.value.resize = props.resize
-    key.value = utils.gid()
-  },
-  {deep: true, immediate: true}
+    () => {
+      return props.resize
+    },
+    () => {
+      tinyInit.value.resize = props.resize
+      key.value = utils.gid()
+    },
+    {deep: true, immediate: true}
 )
 watch(
-  () => {
-    return props.menubar
-  },
-  () => {
-    tinyInit.value.menubar = props.menubar
-    key.value = utils.gid()
-  },
-  {deep: true, immediate: true}
+    () => {
+      return props.menubar
+    },
+    () => {
+      tinyInit.value.menubar = props.menubar
+      key.value = utils.gid()
+    },
+    {deep: true, immediate: true}
 )
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 watch(
-  () => {
-    return props.readonly
-  },
-  () => {
-    tinyInit.value.toolbar = props.readonly === false ? props.toolbar : false;
-    key.value = utils.gid()
-  },
-  {deep: true, immediate: true}
+    () => {
+      return props.readonly
+    },
+    () => {
+      tinyInit.value.toolbar = props.readonly === false ? props.toolbar : false;
+      key.value = utils.gid()
+    },
+    {deep: true, immediate: true}
 )
 const isRead = ref(!!pageProvideProxy?.isPageStatusRead())
 
@@ -196,12 +205,12 @@ watch(mv, () => {
   updateM(1);
 })
 watch(
-  () => {
-    return props.modelValue
-  },
-  () => {
-    updateM(2);
-  }, {deep: true, immediate: true}
+    () => {
+      return props.modelValue
+    },
+    () => {
+      updateM(2);
+    }, {deep: true, immediate: true}
 )
 </script>
 

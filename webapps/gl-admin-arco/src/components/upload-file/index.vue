@@ -5,17 +5,37 @@ export default {
 </script>
 <script lang="ts" setup>
 import {reactive, ref, watch} from 'vue';
-import {AttachmentForm, fetchFileById, getAttachment, updateFile} from "@/api/attachment";
+import {AttachmentForm, fetchFileById, getAttachment, updateFile, UploadFileParams} from "@/api/attachment";
+
+// 页面所需 参数
+type PageParams = {
+  appId?: string; // 应用主键
+  tenantCode?: string; // 租户编码
+}
 
 const emits = defineEmits(['update:modelValue', 'change']);
 const props = defineProps({
   modelValue: {type: String, default: ''},
+  parameter: {type: Object, default: () => ({} as PageParams)},// 页面需要的参数
   accept: {type: String, default: ''},
   disabled: {type: Boolean, default: false},
   showButtonUpload: {type: Boolean, default: true},
   showButtonDownload: {type: Boolean, default: true},
   showButtonRemove: {type: Boolean, default: true},
+  tableType: {type: String, default: ''},
+  genre: {type: String, default: ''},
+  objectId: {type: String, default: ''},
 });
+
+const uploadParams = ref<UploadFileParams>({
+  tableType: props.tableType || '',// 类型
+  isRename: true,// 文件重命名，默认：true
+  objectId: props.objectId || '',// 文件所属对象id
+  genre: props.genre || '',// 类型
+  appId: props.parameter?.appId || '',// 所属应用
+  tenantCode: props.parameter?.tenantCode || '',// 所属租户
+});// 上传参数
+
 const mv = ref({
   baseName: '',
   baseId: props.modelValue,
@@ -51,7 +71,7 @@ const getAttach = async (id: string, successBack?: any, failBack?: any) => {
 
 const uploadSome = async (formData: FormData, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await updateFile(formData, false);
+    const {data} = await updateFile(formData, uploadParams.value);
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -72,6 +92,13 @@ watch(() => props, () => {
       mv.value.baseName = data.name;
     });
   }
+  Object.assign(uploadParams.value, {
+    tableType: props.tableType || '',// 类型
+    objectId: props.objectId || '',// 文件所属对象id
+    genre: props.genre || '',// 类型
+    appId: props.parameter?.appId || '',// 所属应用
+    tenantCode: props.parameter?.tenantCode || '',// 所属租户
+  });
 }, {deep: true, immediate: true});
 
 /**
