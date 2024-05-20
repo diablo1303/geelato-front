@@ -16,7 +16,7 @@ import {useIdeStore} from './stores/UseIdeStore'
 import {useEntityStore} from './stores/UseEntityStore'
 import {usePageStore} from './stores/UsePageStore'
 import {useActionStore, type VarMeta} from './stores/UseActionStore'
-import {componentStoreFactory, useComponentBlockStore, useComponentBpmnStore, useComponentStore} from './stores/UseComponentStore'
+import {componentStoreFactory, useComponentBrowserBlockStore, useComponentBpmnStore, useComponentStore} from './stores/UseComponentStore'
 import {useThemeStore} from './stores/UseThemeStore'
 import {useAppStore} from './stores/UseAppStore'
 import uiLibAdapter from './utils/UiLibAdapter'
@@ -62,7 +62,7 @@ export {
   componentStoreFactory,
   usePageStore,
   useComponentStore,
-  useComponentBlockStore,
+  useComponentBrowserBlockStore,
   useComponentBpmnStore,
   useThemeStore,
   useActionStore,

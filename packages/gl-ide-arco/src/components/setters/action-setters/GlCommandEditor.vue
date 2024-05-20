@@ -7,7 +7,7 @@
         :style="sidebarStyle"
       >
         <KeepAlive>
-          <GlCommandEditorSidebar></GlCommandEditorSidebar>
+          <GlCommandEditorSidebar :componentStoreId="componentStoreId"></GlCommandEditorSidebar>
         </KeepAlive>
       </a-col>
       <a-col
@@ -24,6 +24,7 @@
             <div style="width: 100%; line-height: 2em; min-height: 38em">
               <BlockPage
                 v-if="refreshFlag"
+                :componentStoreId="componentStoreId"
                 :key="mv.id"
                 :glComponentInst="mv.__commandBlock"
                 @update="updateInstance"
@@ -127,28 +128,48 @@
 export default {
   name: 'GlCommandEditor'
 }
+export type GenerateScriptConfig = {
+  // 脚本头，如用于后端时，自动添加“function(ctx){”及Java.Type等引用全局对象
+  header: string
+  // 脚本尾，如用于后端时，自动添加"}"结束方法
+  footer: string
+}
 </script>
 <script lang="ts" setup>
 import { onMounted, type PropType, ref, watch } from 'vue'
 import { Action, ComponentInstance } from '@geelato/gl-ui-schema'
+import { useGlobal } from '@geelato/gl-ui'
 import { componentStoreFactory, useThemeStore, useActionStore } from '@geelato/gl-ide'
 import GlCommandEditorSidebar from './GlCommandEditorSidebar.vue'
-import { blocksHandler } from './blocks/BlockHandler'
+import { blocksHandler } from './BlockHandler'
 import BlockPage from '../../../components/stage/BlockPage.vue'
-import './blocks/style.css'
-import { useGlobal } from '@geelato/gl-ui'
+import './style.css'
+
 
 const props = defineProps({
   componentStoreId: {
     type: String,
     default() {
-      return 'useComponentBlockStore'
+      return 'useComponentBrowserBlockStore'
     }
   },
   action: {
     type: Object as PropType<Action>,
     default() {
       return new Action()
+    }
+  },
+  /**
+   * 生成脚本配置
+   * 添加脚本头和脚本尾
+   */
+  generateScriptConfig: {
+    type:Object as PropType<GenerateScriptConfig>,
+    default() {
+      return {
+        header:'',
+        footer:''
+      }
     }
   }
 })
@@ -174,7 +195,7 @@ const settingStyle = ref({
 })
 
 // const componentMaterialStore = useComponentMaterialStore()
-const componentStore = componentStoreFactory.useComponentStore('useComponentBlockStore')
+const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
 const emits = defineEmits(['update:action', 'updateAction'])
 
 const mv = ref(props.action)
@@ -211,7 +232,7 @@ const updateInstance = (instance: ComponentInstance) => {
 }
 
 const generateScript = () => {
-  mv.value.body = blocksHandler.parseToScript(componentStore.currentComponentTree[0])
+  mv.value.body = `${props.generateScriptConfig.header}${blocksHandler.parseToScript(componentStore.currentComponentTree[0])}${props.generateScriptConfig.footer}`
   mvStr.value = JSON.stringify(mv.value)
   mvBodyStr.value = mv.value.body
 }

@@ -353,7 +353,8 @@ export const usePageStore = defineStore('GlPageStore', () => {
       type: page.type,
       sourceContent: es.record.sourceContent,
       releaseContent: es.record.releaseContent,
-      previewContent: es.record.previewContent,
+      // 操作记录表不存该值
+      // previewContent: es.record.previewContent,
       description: page.description
     }
     es.children = [esSub]

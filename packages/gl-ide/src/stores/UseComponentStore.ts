@@ -996,8 +996,14 @@ class ComponentStoreFactory {
 }
 
 export const componentStoreFactory = new ComponentStoreFactory()
+// 用于前端页面编排
 export const useComponentStore = componentStoreFactory.getComponentStore('useComponentStore')
-export const useComponentBlockStore =
-  componentStoreFactory.getComponentStore('useComponentBlockStore')
+// 用于前端页面脚本编排
+export const useComponentBrowserBlockStore =
+  componentStoreFactory.getComponentStore('useComponentBrowserBlockStore')
+// 用于工作流脚本编排
 export const useComponentBpmnStore =
   componentStoreFactory.getComponentStore('useComponentBpmnStore')
+// 用于服务端接口脚本编排
+export const useComponentApiBlockStore =
+    componentStoreFactory.getComponentStore('useComponentApiBlockStore')

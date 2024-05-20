@@ -350,6 +350,36 @@ type GenShowColumnOptions = {
 }
 
 /**
+ * 是否显示序号列
+ * @param props
+ */
+export const showSeqNoColumn = (props:any) => {
+  return props.showSeqNo
+}
+
+/**
+ * 是否显示操作列
+ * @param props
+ */
+export const showOptColumn = (props:any) => {
+  let showOpt = false
+  props.columnActions?.forEach((action: ComponentInstance) => {
+    if (!action.props._hidden) {
+      showOpt = true
+    }
+  })
+  return showOpt
+}
+
+/**
+ * 是否显示记录状态列
+ * @param props
+ */
+export const showRecordStatus = (props:any) => {
+  return props.isFormSubTable
+}
+
+/**
  * 构建新可供展示的列（用于选择是否展示），但不是最终展示例
  * @param queryColumns
  * @param options
@@ -358,7 +388,7 @@ export const genShowColumns = (
   queryColumns: Ref<GlTableColumn[]>,
   options?: GenShowColumnOptions
 ) => {
-  // console.log('genShowColumns options:', options)
+  console.log('genShowColumns options:', options)
   const cols: Array<GlTableColumn> = []
   // 默认需要展示序号列，但不默认展示
   // if (options?.showSeqColumn !== false) {
@@ -421,22 +451,26 @@ export const genShowColumns = (
     }
     cols.push(optColumn as Column)
   }
+  console.log('genShowColumns() > cols', cols)
   return cols
 }
 
 /**
  * 构建最终展示的列
  * @param showColumns 可选择的展示的列
+ * @param keepClientSorter 保留客户端排序，默认为false，即关闭客户端排序
  */
-export const genRenderColumns = (showColumns: Ref<GlTableColumn[]>) => {
+export const genRenderColumns = (showColumns: Ref<GlTableColumn[]>,keepClientSorter?:boolean) => {
   const cols: Array<GlTableColumn> = []
   showColumns?.value.forEach((column) => {
     if (column._checked !== false) {
       cols.push(column)
     }
-    if (column.sortable) {
-      // 关闭表格组件内置的前端排序，采用服务端排序
-      column.sortable.sorter = true
+    if(!keepClientSorter){
+      if (column.sortable) {
+        // 关闭表格组件内置的前端排序，采用服务端排序
+        column.sortable.sorter = true
+      }
     }
   })
   return cols

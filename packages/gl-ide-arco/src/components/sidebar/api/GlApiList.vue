@@ -10,6 +10,7 @@ export default {
 import { type Ref, ref, watch } from 'vue'
 import {entityApi, EntityReader, EntityReaderParam, useGlobal, utils} from '@geelato/gl-ui'
 import {  useAppStore } from '@geelato/gl-ide'
+import GlApiModal from "./GlApiModal.vue";
 
 const props = defineProps({
   recordId: String
@@ -86,6 +87,33 @@ const changeTab = (value: any) => {
   orderBy.value = value
 }
 
+const visible = ref(false)
+const saving = ref(false)
+const apiModal = ref()
+const currentApiId = ref('')
+const currentApi= ref<Item>()
+// 用于刷新modal，确保每新都是重新创建modal
+const openModal = (item?: Item) => {
+  if (item) {
+    // 有item 说明是编辑
+    currentApiId.value = item.id
+    currentApi.value = item
+  } else {
+    // 无item 说明是新增
+  }
+  visible.value = true
+}
+const handleBeforeOk = () => {
+  // visible.value = true
+  return apiModal.value?.save()
+}
+
+const handleOk = () => {
+}
+const handleCancel = () => {
+  visible.value = false
+}
+
 fetchData()
 </script>
 
@@ -102,7 +130,7 @@ fetchData()
     </a-tabs>
 
     <a-space size="mini" style="padding: 4px 0">
-      <a-button size="small" type="primary">
+      <a-button size="small" type="primary" @click="openModal(undefined)">
         <gl-iconfont type="gl-plus-circle"></gl-iconfont>
       </a-button>
       <a-input-search
@@ -115,7 +143,7 @@ fetchData()
     <a-list size="small">
       <!--      utils.timeAgo(item.updateAt)-->
       <template v-for="item in renderItems">
-        <a-list-item>
+        <a-list-item @click="openModal(item)">
           <a-list-item-meta :title="item.name" :description="item.remark"></a-list-item-meta>
           <template #actions>
             <span class="gl-actions-description" :title="`${item.updaterName||''}更新@${item.updateAt}`">{{
@@ -125,6 +153,22 @@ fetchData()
         </a-list-item>
       </template>
     </a-list>
+    <a-modal
+        draggable
+        ok-text="保存"
+        cancel-text="取消"
+        body-style="padding:0"
+        v-model:visible="visible"
+        :on-before-ok="handleBeforeOk"
+        @cancel="handleCancel"
+        @ok="handleOk"
+        fullscreen>
+      <template #title>
+        <GlIconfont type="gl-api" style="margin-right: 4px"></GlIconfont>
+        <span>{{`接口编排-${currentApi?.name}`}}</span>
+      </template>
+      <GlApiModal :key="currentApiId" ref="apiModal" :apiId="currentApiId"></GlApiModal>
+    </a-modal>
   </div>
 </template>
 <style>

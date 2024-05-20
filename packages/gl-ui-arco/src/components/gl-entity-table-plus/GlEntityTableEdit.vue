@@ -1,7 +1,11 @@
 <script setup lang="ts">
+/**
+ * 编辑表格
+ * 1、不分页，直接展示所有数据
+ * 2、采用客户端排序
+ */
 // @ts-nocheck
 import {
-  computed,
   inject,
   nextTick,
   type PropType,
@@ -38,7 +42,11 @@ import {
   resetRecordsSeqNo,
   genQueryColumns,
   genRenderColumns,
-  statIsRowReadonly
+  statIsRowReadonly,
+  genShowColumns,
+  showSeqNoColumn,
+  SlotNameSeq,
+  genSlotColumnsWithNoOperation
 } from './table'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import type { ValidatedError } from '../gl-entity-form/GlEntityForm'
@@ -123,9 +131,9 @@ const props = defineProps({
     default() {
       return {
         current: 1,
-        pageSize: 1000,
-        showTotal: true,
-        showPageSize: true,
+        defaultPageSize: 1000,
+        showTotal: false,
+        showPageSize: false,
         pageSizeOptions: [1000]
       }
     }
@@ -140,6 +148,10 @@ const props = defineProps({
     type: String,
     required: true
   },
+  /**
+   *  是否显示序列号
+   */
+  showSeqNo: Boolean,
   /**
    *  行是否只读的表达式
    */
@@ -165,12 +177,14 @@ props.glComponentInst.value = props.glComponentInst.value || []
 const renderData: Ref<Array<object>> = ref(props.glComponentInst.value)
 // 用于构建查询语句的列，包含一些隐藏的列；该列的数据基于输入的props.columns进行复制转换
 const queryColumns: Ref<GlTableColumn[]> = ref([])
-// 最终展示的列
-const renderColumns = ref<Column[]>([])
 // 用于工具条中控制哪些列显示与否
-const showColumns = ref<Column[]>([])
+const showColumns: Ref<GlTableColumn[]> = ref([])
+// 最终展示的列
+const renderColumns: Ref<GlTableColumn[]> = ref([])
 // 行是否只读
 const isRowReadonlyArray = ref([] as boolean[])
+
+
 /**
  *  统计行是否只读
  */
@@ -201,7 +215,12 @@ const isRowReadonly = (rowIndex: number) => {
 //   })
 // }
 
-const resetColumns = () => {
+/**
+ * 依赖各列的定义（props.columns）
+ * 创建验校规则对象recordValidateSchema
+ * 用于后续对每一行数据的校验
+ */
+const genRecordValidateSchema = () => {
   // dataIndex需与bindField的fieldName一致
   const dataIndexes: string[] = []
   const cols = props.columns
@@ -234,9 +253,61 @@ const resetColumns = () => {
       }
     })
   }
+}
 
+/**
+ *  生成列标题和必填验证的插槽名（便于生成红色必填标识）
+ */
+const genColumnTitleAndRequired = () => {
+  const cols = props.columns
+  cols.forEach((col: Column) => {
+    // 设置列表标题
+    col.title = col._component?.props?.label ? t(col._component?.props?.label + '') : ''
+    // 增加必填标识
+    // @ts-ignore
+    if (col._component?.props?.rules?.length > 0) {
+      // @ts-ignore
+      const foundIndex = col._component.props.rules.findIndex((rule) => {
+        return rule.required === true && rule.ruleName === 'required'
+      })
+      if (foundIndex >= 0) {
+        col._required = true
+        // 标题名插槽，便于生成红色必填标识
+        col.titleSlotName = 'titleSlotRequired'
+      }
+    }
+    // ID width
+    if (col.dataIndex === 'id' && !col.width) {
+      col.width = 160
+    }
+  })
+}
+
+/**
+ *  重置所有的列
+ */
+const resetColumns = () => {
+
+  // 基于输入的props.columns，完善标题、必填验证等信息
+  genColumnTitleAndRequired()
+
+  // 查询数据库的列
   queryColumns.value = genQueryColumns(props, [], [])
-  renderColumns.value = genRenderColumns(showColumns)
+  // 可展示的列，用于选择哪些展进行展示
+  showColumns.value = genShowColumns(queryColumns, {
+    isShowByComponent: false,
+    // 编辑列表暂没有提供自定义操作配置，不按props.columnActions控制是否展示操作列
+    // showOptColumn: showOptColumn(props),
+    showOptColumn: true,
+    showSeqNoColumn: showSeqNoColumn(props),
+    // 编辑表不需要是否已保存的记录状态 showRecordStatus: showRecordStatus(props)
+    showRecordStatus: false
+  })
+  // 最终展示在列表中的列
+  renderColumns.value = genRenderColumns(showColumns,true)
+
+  // 基于生成校验规则对象
+  genRecordValidateSchema()
 }
 
 const refreshFlag = ref(true)
@@ -269,8 +340,9 @@ const deleteDataWhenEnableEdit = ref<Array<{ id: string; [logicDeleteFieldName]:
 const resetDeleteDataWhenEnableEdit = () => {
   deleteDataWhenEnableEdit.value = []
 }
-const pagination = reactive({
-  ...props.pagination
+const _pagination = reactive({
+  ...props.pagination,
+  pageSize: props.pagination.defaultPageSize,
 })
 
 /**
@@ -278,33 +350,33 @@ const pagination = reactive({
  *  如果启用了多语言，则需要对标题进行翻译
  *  对于一些特殊的列，设置默认值，如ID的宽度
  */
-const columns = computed<GlTableColumn[]>(() => {
-  let columnData: Array<GlTableColumn> = []
-  if (props.columns) {
-    columnData = JSON.parse(JSON.stringify(props.columns))
-    columnData.forEach((item: GlTableColumn) => {
-      // console.log("gl-entity-table > columns item:", item, item.title);
-      item.title = item._component?.props?.label ? t(item._component?.props?.label + '') : ''
-      // 增加必填标识
-      // @ts-ignore
-      if (item._component?.props?.rules?.length > 0) {
-        // @ts-ignore
-        const foundIndex = item._component.props.rules.findIndex((rule) => {
-          return rule.required === true && rule.ruleName === 'required'
-        })
-        if (foundIndex >= 0) {
-          item._required = true
-          item.titleSlotName = 'titleSlotRequired'
-        }
-      }
-      // ID width
-      if (item.dataIndex === 'id' && !item.width) {
-        item.width = 160
-      }
-    })
-  }
-  return columnData
-})
+// const columns = computed<GlTableColumn[]>(() => {
+//   let columnData: Array<GlTableColumn> = []
+//   if (props.columns) {
+//     columnData = JSON.parse(JSON.stringify(props.columns))
+//     columnData.forEach((item: GlTableColumn) => {
+//       // console.log("gl-entity-table > columns item:", item, item.title);
+//       item.title = item._component?.props?.label ? t(item._component?.props?.label + '') : ''
+//       // 增加必填标识
+//       // @ts-ignore
+//       if (item._component?.props?.rules?.length > 0) {
+//         // @ts-ignore
+//         const foundIndex = item._component.props.rules.findIndex((rule) => {
+//           return rule.required === true && rule.ruleName === 'required'
+//         })
+//         if (foundIndex >= 0) {
+//           item._required = true
+//           item.titleSlotName = 'titleSlotRequired'
+//         }
+//       }
+//       // ID width
+//       if (item.dataIndex === 'id' && !item.width) {
+//         item.width = 160
+//       }
+//     })
+//   }
+//   return columnData
+// })
 
 const createEntityReader = () => {
   let entityReader = new EntityReader()
@@ -335,6 +407,8 @@ const createEntityReader = () => {
     entityReader.order.push(...defaultOrders)
   }
 
+  entityReader.pageNo = _pagination.pageNo || 1
+  entityReader.pageSize = _pagination.pageSize || 15
   entityReader.fields = fieldMetas
   return entityReader
 }
@@ -376,18 +450,18 @@ const fetchData = async (readerInfo?: {
     if (props.isLogicDeleteMode) {
       entityReader.params.push(new EntityReaderParam(logicDeleteFieldName, 'eq', 0))
     }
-    entityReader.pageSize = readerInfo?.pageSize || pagination.pageSize!
+    entityReader.pageSize = readerInfo?.pageSize || _pagination.pageSize!
     const response: any = await entityApi.queryByEntityReader(entityReader, true)
     // console.log('GlEntityTable > fetchData() > response:', response)
     renderData.value = response.data
     reStatIsRowReadonly(renderData.value)
-    pagination.pageSize = readerInfo?.pageSize || pagination.pageSize
-    pagination.current = readerInfo?.pageNo || 1
-    pagination.total = response.data.total
-    emits('fetchSuccess', { data: renderData.value, pagination })
+    _pagination.pageSize = readerInfo?.pageSize || _pagination.pageSize
+    _pagination.current = readerInfo?.pageNo || 1
+    _pagination.total = response.data.total
+    emits('fetchSuccess', { data: renderData.value, _pagination })
   } catch (err) {
     console.error(err)
-    emits('fetchFail', { data: undefined, pagination })
+    emits('fetchFail', { data: undefined, _pagination })
   } finally {
     setLoading(false)
   }
@@ -400,7 +474,7 @@ watch(
   () => {
     return props.glComponentInst.value
   },
-  (value, oldValue) => {
+  () => {
     // console.log('update value:', props.glComponentInst.value)
     // 这里不能使用 reRender()，reRender会导致用户每录入一个字符都会重绘整个列表
     renderData.value = []
@@ -470,41 +544,41 @@ const popupVisibleChange = (val: boolean) => {
   }
 }
 
-const optColumn = { title: '操作', slotName: '#', fixed: 'right', width: 140, align: 'center' }
+// const optColumn = { title: '操作', slotName: '#', fixed: 'right', width: 140, align: 'center' }
 const scroll = {
   x: '100%'
 }
-watch(
-  () => columns.value,
-  (val) => {
-    // val.forEach((col) => {
-    //   // @ts-ignore
-    //   col.title = col._component?.props.label
-    // })
-    // @ts-ignore
-    renderColumns.value = cloneDeep(val)
-    renderColumns.value.forEach((item, index) => {
-      item.checked = true
-      item.width = item.width || 150
-      item.align = item.align || 'center'
-    })
-    renderColumns.value.push(optColumn as Column)
-    showColumns.value = cloneDeep(renderColumns.value)
-    // console.log('GlEntityTable > update renderColumns:', renderColumns)
-    emits('updateColumns', showColumns.value)
-  },
-  { deep: true, immediate: true }
-)
+// watch(
+//   () => columns.value,
+//   (val) => {
+//     // val.forEach((col) => {
+//     //   // @ts-ignore
+//     //   col.title = col._component?.props.label
+//     // })
+//     // @ts-ignore
+//     renderColumns.value = cloneDeep(val)
+//     renderColumns.value.forEach((item, index) => {
+//       item.checked = true
+//       item.width = item.width || 150
+//       item.align = item.align || 'center'
+//     })
+//     renderColumns.value.push(optColumn as Column)
+//     showColumns.value = cloneDeep(renderColumns.value)
+//     // console.log('GlEntityTable > update renderColumns:', renderColumns)
+//     emits('updateColumns', showColumns.value)
+//   },
+//   { deep: true, immediate: true }
+// )
 
 /**
  *  计算出带有插槽的列
  *  这些列中，不包括操作列（即slotName为#的列）
  */
-const slotColumns = computed(() => {
-  return renderColumns.value.filter((column) => {
-    return column.slotName && column.slotName !== '#'
-  })
-})
+// const slotColumns = computed(() => {
+//   return renderColumns.value.filter((column) => {
+//     return column.slotName && column.slotName !== '#'
+//   })
+// })
 
 /**
  *  在表格修改状态下，验证表格的一行数据
@@ -579,7 +653,7 @@ const insertRecords = (params: {
   const insertRecords: Array<Record<string, any>> = []
   if (params.uniqueDataIndexes && params.uniqueDataIndexes.length > 0) {
     params?.records?.forEach((record: Record<string, any>) => {
-      let isSameRecord = false
+      // let isSameRecord = false
       // 判断是否与当前列表中的数据重复
       const foundSameRecord =  renderData.value.find((item: Record<string, any>) => {
         let allUniqueDataIndexAreSame = true
@@ -756,7 +830,7 @@ defineExpose({
     v-if="refreshFlag"
     row-key="id"
     :loading="loading"
-    :pagination="false"
+    :pagination="showPagination === false ? false : _pagination"
     :row-selection="rowSelection"
     :columns="renderColumns"
     :data="renderData"
@@ -793,7 +867,10 @@ defineExpose({
         </a-button>
       </a-space>
     </template>
-    <template v-for="column in slotColumns" v-slot:[column.slotName]="{ record, rowIndex }">
+    <template v-for="slotColumn in genSlotColumnsWithNoOperation(renderColumns)" v-slot:[slotColumn.slotName]="{ record, rowIndex,column }">
+      <template v-if="slotColumn.slotName === SlotNameSeq">
+        {{ rowIndex + 1 }}
+      </template>
       <div
         class="gl-entity-table-cols-opt"
         :style="{
@@ -806,7 +883,7 @@ defineExpose({
         }"
         :title="tableErrors[rowIndex]?.[column.dataIndex]?.message"
       >
-        <GlComponent
+        <GlComponent v-if="column._component"
           v-model="renderData[rowIndex][column.dataIndex]"
           @update="updateRow(record, rowIndex, renderColumns, $event, this)"
           :glComponentInst="cloneDeepColumnComponent(column._component)"
@@ -836,6 +913,11 @@ defineExpose({
 .gl-entity-table-edit .arco-upload-list-item-thumbnail {
   width: 1.5em !important;
   height: 1.5em !important;
+}
+
+ /* 隐藏分页器中的分页码部分，只显示当前这个列表最多展示多少行 */
+.gl-entity-table-edit span.arco-pagination-simple {
+    display: none;
 }
 
 .gl-entity-table-edit .gl-validate-message {

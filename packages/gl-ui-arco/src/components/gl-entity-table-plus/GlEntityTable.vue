@@ -16,7 +16,14 @@ import {
   EntityReaderOrder,
   EntityDataSource
 } from '@geelato/gl-ui'
-import type { Column, EntityFetchDataProps, GlTableColumn } from './table'
+import {
+  type Column,
+  type EntityFetchDataProps,
+  type GlTableColumn,
+  showOptColumn,
+  showRecordStatus,
+  showSeqNoColumn
+} from './table'
 import {
   evalExpression,
   genRenderColumns,
@@ -154,15 +161,7 @@ const reRender = () => {
   })
 }
 
-const showOptColumn = () => {
-  let showOpt = false
-  props.columnActions?.forEach((action: ComponentInstance) => {
-    if (!action.props._hidden) {
-      showOpt = true
-    }
-  })
-  return showOpt
-}
+
 
 const optColumnKey = ref(utils.gid())
 /**
@@ -174,13 +173,7 @@ const refreshOptColumn = () => {
   optColumnKey.value = utils.gid()
 }
 
-const showSeqNoColumn = () => {
-  return props.showSeqNo
-}
 
-const showRecordStatus = () => {
-  return props.isFormSubTable
-}
 const formProvideProxy: FormProvideProxy | undefined = props.isFormSubTable
   ? inject(FormProvideKey)
   : undefined
@@ -199,9 +192,9 @@ const queryColumns: Ref<GlTableColumn[]> = ref(
 const showColumns: Ref<GlTableColumn[]> = ref(
   genShowColumns(queryColumns, {
     isShowByComponent: false,
-    showOptColumn: showOptColumn(),
-    showSeqNoColumn: showSeqNoColumn(),
-    showRecordStatus: showRecordStatus()
+    showOptColumn: showOptColumn(props),
+    showSeqNoColumn: showSeqNoColumn(props),
+    showRecordStatus: showRecordStatus(props)
   })
 )
 // 最终展示的列
@@ -216,9 +209,9 @@ const resetColumns = () => {
   // 可展示的列，用于选择哪些展进行展示
   showColumns.value = genShowColumns(queryColumns, {
     isShowByComponent: false,
-    showOptColumn: showOptColumn(),
-    showSeqNoColumn: showSeqNoColumn(),
-    showRecordStatus: showRecordStatus()
+    showOptColumn: showOptColumn(props),
+    showSeqNoColumn: showSeqNoColumn(props),
+    showRecordStatus: showRecordStatus(props)
   })
   // 最终展示在列表中的列
   renderColumns.value = genRenderColumns(showColumns)

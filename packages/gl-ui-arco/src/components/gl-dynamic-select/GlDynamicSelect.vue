@@ -1,50 +1,59 @@
 <template>
-  <a-select
-    v-if="enableVirtualList"
-    class="gl-dynamic-select"
-    v-model="mvItem"
-    v-model:input-value="inputMv"
-    :allow-clear="allowClear"
-    :allow-search="allowSearch"
-    :readonly="readonly"
-    :size="size"
-    :disabled="disabled"
-    :multiple="multiple"
-    :placeholder="placeholder"
-    @change="selectOne"
-    @search="handleSearch"
-    @clear="onClear"
-    :valueKey="valueFiledName"
-    :field-names="{ label: '__label', value: '__record' }"
-    :virtual-list-props="{ height: 200 }"
-    :options="selectOptions"
-  >
-  </a-select>
-  <a-select
-    v-else
-    class="gl-dynamic-select"
-    v-model="mvItem"
-    v-model:input-value="inputMv"
-    :allow-clear="allowClear"
-    :allow-search="allowSearch"
-    :readonly="readonly"
-    :size="size"
-    :disabled="disabled"
-    :multiple="multiple"
-    :placeholder="placeholder"
-    @change="selectOne"
-    @search="handleSearch"
-    @clear="onClear"
-    :valueKey="valueFiledName"
-  >
-    <a-option
-      v-for="item in selectOptions"
-      :value="item.__record"
-      :label="item.__label"
-      :title="item.__label"
-      :class="{ 'gl-selected': mv === item[valueFiledName] }"
-    ></a-option>
-  </a-select>
+  <div class="gl-dynamic-select">
+    <template v-if="glIsRuntime && isRead && !multiple">{{ getLabel||'无' }}</template>
+    <template v-else>
+      <a-select
+        v-if="enableVirtualList"
+        v-model="mvItem"
+        v-model:input-value="inputMv"
+        :allow-clear="allowClear"
+        :allow-search="allowSearch"
+        :readonly="readonly"
+        :size="size"
+        :disabled="disabled"
+        :multiple="multiple"
+        :placeholder="placeholder"
+        @change="selectOne"
+        @search="handleSearch"
+        @clear="onClear"
+        :valueKey="valueFiledName"
+        :field-names="{ label: '__label', value: '__record' }"
+        :virtual-list-props="{ height: 200 }"
+        :options="renderOptions"
+      >
+        <!--        <template #prefix>-->
+        <!--          xx-->
+        <!--        </template>-->
+      </a-select>
+      <a-select
+        v-else
+        v-model="mvItem"
+        v-model:input-value="inputMv"
+        :allow-clear="allowClear"
+        :allow-search="allowSearch"
+        :readonly="readonly"
+        :size="size"
+        :disabled="disabled"
+        :multiple="multiple"
+        :placeholder="placeholder"
+        @change="selectOne"
+        @search="handleSearch"
+        @clear="onClear"
+        :valueKey="valueFiledName"
+      >
+        <!--        <template #prefix>-->
+        <!--          <gl-iconfont type="gl-refresh" @click="loadData"></gl-iconfont>-->
+        <!--        </template>-->
+        <a-option
+          v-for="item in renderOptions"
+          :value="item.__record"
+          :label="item.__label"
+          :title="item.__label"
+          :class="{ 'gl-selected': mv === item[valueFiledName] }"
+        ></a-option>
+      </a-select>
+    </template>
+  </div>
 </template>
 <script lang="ts">
 /**
@@ -66,30 +75,30 @@ const enum TriggerConstraint {
   // // 查询条件的值都不为空
   // QueryConditionAllNotEmpty = 'QueryConditionAllNotEmpty'
 }
-
 </script>
 <script lang="ts" setup>
-import {computed, inject, type PropType, type Ref, ref, watch} from 'vue'
+import { computed, inject, type PropType, type Ref, ref, watch } from 'vue'
 import {
   entityApi,
   EntityReader,
   EntityReaderOrder,
   EntityReaderParam,
   executeObjectPropsExpressions,
+  mixins,
   PageProvideKey,
   PageProvideProxy,
+  useGlobal,
   utils
 } from '@geelato/gl-ui'
-import { EntityReaderOrderEnum,useLogger } from '@geelato/gl-ui'
+import { EntityReaderOrderEnum } from '@geelato/gl-ui'
 
-const logger = useLogger('gl-dynamic-select')
+
 const emits = defineEmits(['update:modelValue'])
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
-
 const props = defineProps({
-  id:String,
+  id: String,
   modelValue: {
     type: [String, Array]
   },
@@ -176,10 +185,10 @@ const props = defineProps({
       return 2000
     }
   },
-  readonly: Boolean,
   size: String as PropType<'medium' | 'small' | 'mini' | 'large' | undefined>,
   placeholder: String,
   disabled: Boolean,
+  readonly: Boolean,
   /**
    *  是否可多选
    */
@@ -188,10 +197,55 @@ const props = defineProps({
     default() {
       return false
     }
-  }
+  },
+  /**
+   * 忽略搜索的词，不参与搜索
+   * 比如：'公司,广州'，多个词用半角逗号“,”分隔
+   * 输入这些词，不会触发查询
+   * !!注意，如果启用了该属性，默认加载的数据不展示
+   * 需要依据该输入的内容，进行查询过滤
+   */
+  ignoreSearchWords: {
+    type: String,
+    default() {
+      return ''
+    }
+  },
+  /**
+   *  是否启用服务器端查询过滤
+   *  TODO 暂不支持
+   *  目前只支持客户端查询过滤
+   */
+  isSearchFormServer:{
+    type:Boolean,
+    default(){
+      return false
+    }
+  },
+  ...mixins.props
 })
 
-const selectOptions: Ref<Record<string, any>[]> = ref([])
+const global = useGlobal()
+// 加载的选项
+const loadedOptions: Ref<Record<string, any>[]> = ref([])
+// 查询过滤后的选项
+const renderOptions: Ref<Record<string, any>[]> = ref([])
+// 当前选中的选项
+const selectedOptions: Ref<Record<string, any>[]> = ref([])
+
+/**
+ * 加载完成，渲染数据后触发
+ * 服务端模式，加载完成时触发
+ * 客户端模式，加载完成时，看是否有设置忽略搜索词，有则不触发（考虑到数据保密性，如业务员知道一些客户的名称，才能查询出这个客户）
+ */
+const renderAfterLoad = () => {
+  if(props.isSearchFormServer){
+    return true
+  }else{
+    return !(props.ignoreSearchWords?.length>0)
+  }
+}
+const isRead = !!(pageProvideProxy?.isPageStatusRead() || props.disabled || props.readonly)
 
 /**
  * 基于初始化的值，获取列表的选项
@@ -200,12 +254,11 @@ const selectOptions: Ref<Record<string, any>[]> = ref([])
 const findCheckedOptions = (keys: string[]) => {
   const result: Record<string, any> = []
   keys.forEach((key: String) => {
-    // 注意selectOptions是从后端加载完成，再经加工的数据 {__record:xx,__label,[props.valueFiledName]}
-    const foundOption = selectOptions.value.find((option: Record<string, any>) => {
+    // 注意renderOptions是从后端加载完成，再经加工的数据 {__record:xx,__label,[props.valueFiledName]}
+    const foundOption = renderOptions.value.find((option: Record<string, any>) => {
       return option[props.valueFiledName] === key
     })
     if (foundOption) {
-      // logger.debug('foundOption', foundOption)
       result.push(foundOption.__record)
     }
   })
@@ -218,6 +271,23 @@ const getPropValue = (val?: string | Array<any>) => {
 const getDefaultValue = () => {
   return props.multiple ? [] : ''
 }
+
+/**
+ * 获取label名称，适用于单选的场景
+ * @param option
+ */
+const getLabel = computed(() => {
+  if (props.multiple) {
+    // 多选时，可能返回的label较多，保持原有的下拉展示风格，不展示成文本
+    return '不支持多选只读时展示为文本'
+  }
+  // foundOption：{id,__label,__record}
+  const foundOption = renderOptions.value.find((option: Record<string, any>) => {
+    return option[props.valueFiledName] == mv.value
+  })
+  return foundOption?.__label
+})
+
 let theLabelFieldNames: string[] = props.labelFieldNames
 
 const isMultiLabelFieldName = computed(() => {
@@ -225,7 +295,6 @@ const isMultiLabelFieldName = computed(() => {
 })
 const enableVirtualList = ref(false)
 const autoEnableVirtualListWhenRecordCount = 1500
-// logger.debug('props:', props)
 const initValue = getPropValue(props.modelValue) || getDefaultValue()
 const mv: Ref<string | Array<string>> = ref(initValue)
 const inputMv = ref(undefined)
@@ -262,12 +331,12 @@ watch(
  * @param oval
  */
 const triggerOnValueChanged = (val?: any, oval?: any) => {
-  logger.debug(
-      'GlDynamicSelect > triggerOnValueChanged() > onValueChangeToNotEmpty > val',
-      val,
-      props,
-      props.triggerConstraint.includes(TriggerConstraint.ValueChangeToNotEmpty)
-  )
+  // console.log(
+  //   'GlDynamicSelect > triggerOnValueChanged() > onValueChangeToNotEmpty > val',
+  //   val,
+  //   props,
+  //   props.triggerConstraint.includes(TriggerConstraint.ValueChangeToNotEmpty)
+  // )
   if (TriggerMode.onValueChanged === props.triggerMode) {
     if (props.triggerConstraint.includes(TriggerConstraint.ValueChangeToNotEmpty)) {
       if ((oval === undefined || oval === '') && !utils.isEmpty(val)) {
@@ -277,13 +346,11 @@ const triggerOnValueChanged = (val?: any, oval?: any) => {
       loadData()
     }
   }
+  return true
 }
 
-
-// logger.debug('GlDynamicSelect > create', props.entityName, useAttrs().id)
 const selectOne = (value: any) => {
   // 将值设置到对应的组件中
-
   if (value && props.extraFieldAndBindIds.length > 0) {
     props.extraFieldAndBindIds.forEach((extraFieldAndBindId) => {
       pageProvideProxy.setComponentValue(
@@ -303,6 +370,11 @@ const selectOne = (value: any) => {
   } else {
     mv.value = value ? value[props.valueFiledName] : ''
   }
+
+  // const foundOption = options.value.find((option: OptionType) => {
+  //   return option.value === mv.value
+  // })
+  // const label = foundOption?.label || ''
 }
 
 /**
@@ -310,7 +382,7 @@ const selectOne = (value: any) => {
  */
 const triggerOnCreated = () => {
   if (TriggerMode.onCreated === props.triggerMode || props.triggerMode === undefined) {
-    logger.debug('GlDynamicSelect > triggerOnCreated() > props', props)
+    // console.log('GlDynamicSelect > triggerOnCreated() > props', props)
     watch(
       () => {
         return (
@@ -328,13 +400,37 @@ const triggerOnCreated = () => {
   }
 }
 
-
-
-const onClear = () => {}
-const handleSearch = () => {}
+const onClear = () => {
+}
+/**
+ * 搜索框内容变化时
+ * 1、客户端过滤模式，直接过滤
+ * 2、服务器端过滤模式，发送请求到服务端（TODO）
+ */
+const handleSearch = () => {
+  // 启用了 忽略搜索词
+  if(props.ignoreSearchWords?.length>0){
+    if (!inputMv.value || String(inputMv.value).trim() === '') {
+      return false
+    }
+    const searchText = String(inputMv.value).trim()
+    if (props.ignoreSearchWords.indexOf(searchText)>=0) {
+      global.$message.warning(`该词“${inputMv.value}”不可以查询。`)
+      return false
+    }
+    renderOptions.value.length = 0
+    renderOptions.value = loadedOptions.value.filter((option: any) => {
+      // __label：已合并了多个label字段内容，不用再从labelFieldNames中取
+      return option.__label?.indexOf(searchText) > -1;
+    })
+  }else{
+    // 没有启用时展示所有
+    renderOptions.value = loadedOptions.value
+  }
+}
 
 const loadData = () => {
-  // logger.debug('GlDynamicSelect > loadData() > entityName:', props.entityName, 'extraFieldAndBindIds:', props.extraFieldAndBindIds,'props',props)
+  // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'extraFieldAndBindIds:', props.extraFieldAndBindIds,'props',props)
   if (props.entityName && props.valueFiledName && theLabelFieldNames) {
     const fieldSet = new Set<string>().add(props.valueFiledName)
 
@@ -378,9 +474,9 @@ const loadData = () => {
     if (props.orderFiledName) {
       entityReader.order.push(new EntityReaderOrder(props.orderFiledName, props.ascOrDesc))
     }
-    return entityApi.queryByEntityReader(entityReader,false,props.id).then((resp: any) => {
+    return entityApi.queryByEntityReader(entityReader, false, props.id).then((resp: any) => {
       const items = resp.data || []
-      // logger.debug('selectOptions.value', selectOptions.value, selectOptions.value.length)
+      // console.log('loadedOptions.value', loadedOptions.value, loadedOptions.value.length)
       if (items.length === 0) {
         inputMv.value = undefined
         if (props.multiple) {
@@ -388,7 +484,7 @@ const loadData = () => {
         } else {
           mv.value = ''
         }
-        selectOptions.value = []
+        loadedOptions.value = []
         enableVirtualList.value = false
       } else {
         enableVirtualList.value = items.length > autoEnableVirtualListWhenRecordCount
@@ -417,33 +513,30 @@ const loadData = () => {
             })
           })
         }
-        selectOptions.value = newItems
+        loadedOptions.value = newItems
+      }
+      // 加载完成数据之后，如果需要马上展示，则执行客户端过滤查询
+      if(renderAfterLoad()){
+        handleSearch()
       }
     })
   }
 }
 
-defineExpose({ fetchData: loadData })
-
 watch(
-    mv,
-    (val: any, oval: any) => {
-      emits('update:modelValue', val)
-      triggerOnValueChanged(val, oval)
-    },
-    { deep: true, immediate: true }
+  mv,
+  (val: any, oval: any) => {
+    emits('update:modelValue', val)
+    triggerOnValueChanged(val, oval)
+  },
+  { deep: true, immediate: true }
 )
 
 triggerOnCreated()
-
-// onUnmounted(()=>{
-  // selectOptions.value.length = 0
-  // // @ts-ignore
-  // selectOptions.value = null
-// })
+defineExpose({ fetchData: loadData })
 </script>
 
-<style scoped>
+<style>
 .gl-dynamic-select {
   width: 100%;
 }
