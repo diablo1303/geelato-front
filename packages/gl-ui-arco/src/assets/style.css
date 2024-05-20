@@ -61,3 +61,8 @@
 .arco-select-view-single.arco-select-view-disabled{
     color: rgb(29,33,41)
 }
+
+/* 组件设置为隐藏标题 */
+.gl-form-item.gl-hidden .arco-form-item-label-col{
+    display: none;
+}

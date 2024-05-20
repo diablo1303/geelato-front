@@ -24,7 +24,7 @@
               <a-select size="small" v-model="element.name" style="width: 100%"
                         allow-search
                         allow-clear
-                        placeholder="数据字段"
+                        placeholder="查询字段"
                         @change="onFieldChange($event,element,index)">
                 <template #prefix>数据字段</template>
                 <a-option v-for="item in entityFieldMetas" :value="item.name" :title="item.name+' '+item.title">
@@ -38,27 +38,30 @@
                         @change="onAliasChange($event,element,index)"
                         title="选择重命名后的字段名"
               >
-                <template #prefix>字段别名</template>
+                <template #prefix>
+                  <span title="将查询的数据字段直接绑定到组件相应的字段">组件字段</span>
+                </template>
                 <a-option v-for="item in aliasOptions" :value="item.value" :title="item.value+' '+item.label">
                   {{ item.label }}{{ item.value }}
                 </a-option>
               </a-select>
             </div>
             <div v-else>
+              <GlExpressionSetter v-model="mv[index].valueExpression" :showInput="true">
+                <template #prefix>
+                  <span title='基于数据字段等计算、格式化等，如：日期转换，$gl.fn.dateText($gl.ctx.record.nodeTime, "MM-DD HH:mm")'>计算字段</span></template>
+              </GlExpressionSetter>
               <a-select size="small" v-model="element.name" style="width: 100%"
                         allow-clear
                         allow-search
                         placeholder="字段"
                         title="组件用到的字段"
               >
-                <template #prefix>计算字段</template>
+                <template #prefix><span title="基于数据字段等计算得出的结果，绑定到组件相应的字段">组件字段</span></template>
                 <a-option v-for="item in aliasOptions" :value="item.value" :title="item.value+' '+item.label">
                   {{ item.label }}{{ item.value }}
                 </a-option>
               </a-select>
-              <GlExpressionSetter v-model="mv[index].valueExpression" :showInput="true">
-                <template #prefix>计算公式</template>
-              </GlExpressionSetter>
             </div>
           </td>
           <td class="gl-extra">

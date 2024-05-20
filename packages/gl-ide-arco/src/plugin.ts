@@ -15,7 +15,7 @@ import GlSimpleArrayBuilder from './components/builder/props-builder/GlSimpleArr
 import GlSimpleArraySetter from './components/setters/property-setters/GlSimpleArraySetter.vue'
 import GlComponentSetter from './components/setters/GlComponentSetter.vue'
 import GlComponentPropertiesSetter from './components/setters/GlComponentPropertiesSetter.vue'
-import GlComponentStyleSetter from './components/setters/GlComponentStyleSetter.vue'
+import GlComponentStyleSetter from './components/setters/style-setters/GlComponentStyleSetter.vue'
 import GlComponentActionsSetter from './components/setters/GlComponentActionsSetter.vue'
 import GlSimpleObjectSetter from './components/setters/property-setters/GlSimpleObjectSetter.vue'
 import GlPropertySetter from './components/setters/GlPropertySetter.vue'

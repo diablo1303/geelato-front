@@ -1,10 +1,10 @@
 <script lang="ts">
 export default {
-  name: "GlColor"
+  name: 'GlColor'
 }
 </script>
 <script setup lang="ts">
-import {ref, watch} from "vue";
+import { ref, watch } from 'vue'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -12,6 +12,18 @@ const props = defineProps({
     type: String,
     default() {
       return '#165DFF'
+    }
+  },
+  showHistory: {
+    type: Boolean,
+    default() {
+      return true
+    }
+  },
+  showPreset: {
+    type: Boolean,
+    default() {
+      return true
     }
   }
 })
@@ -23,18 +35,23 @@ watch(mv, () => {
 })
 
 const history = ref(['#165DFF'])
-const addHistory = (visible:boolean, color:string) => {
+const addHistory = (visible: boolean, color: string) => {
   if (!visible) {
-    const index = history.value.indexOf(color);
+    const index = history.value.indexOf(color)
     if (index !== -1) {
-      history.value.splice(index, 1);
+      history.value.splice(index, 1)
     }
-    history.value.unshift(color);
+    history.value.unshift(color)
   }
 }
-
 </script>
 
 <template>
-  <a-color-picker class="gl-color" v-model="mv" @popup-visible-change="addHistory"></a-color-picker>
+  <a-color-picker
+    class="gl-color"
+    v-model="mv"
+    :showHistory="showHistory"
+    :showPreset="showPreset"
+    @popup-visible-change="addHistory"
+  ></a-color-picker>
 </template>

@@ -1,4 +1,6 @@
 import type {App, Plugin} from 'vue'
+import GlInputPassword from "./components/gl-input/GlInputPassword.vue";
+import GlInputSearch from "./components/gl-input/GlInputSearch.vue";
 import GlPage from './components/gl-page/GlPage.vue'
 import GlPageTemplateFlow from './components/gl-page-template/GlPageTemplateFlow.vue'
 import GlEntityTablePlus from './components/gl-entity-table-plus/index.vue'
@@ -56,6 +58,8 @@ const component: Plugin = {
     if (PluginUtil.markInstalledPlugin(Vue, 'gl-ui-arco')) {
       return
     }
+    Vue.component(GlInputPassword.name, GlInputPassword)
+    Vue.component(GlInputSearch.name, GlInputSearch)
     Vue.component(GlSelect.name, GlSelect)
     Vue.component(GlEmpty.name, GlEmpty)
     Vue.component(GlOpRecord.name, GlOpRecord)
