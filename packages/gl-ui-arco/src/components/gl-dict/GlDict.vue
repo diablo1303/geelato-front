@@ -13,7 +13,7 @@ export const enum DictItemDisplayMode {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import {computed, inject, onUnmounted, type PropType, type Ref, ref, watch} from 'vue'
+import {computed, inject, type Ref, ref, watch} from 'vue'
 import { entityApi, mixins, PageProvideKey, type PageProvideProxy, useLogger } from '@geelato/gl-ui'
 
 const logger = useLogger('GlDict')
@@ -233,12 +233,13 @@ const getSelectedOption = () => {
  * @param option
  */
 const getLabel = (option: Record<string, any>) => {
+  if (!option) return ''
   return (
     option.label +
     (props.showValueInLabel ? '(' + option.value + ')' : '') +
     (props.showRemarkInLabel && option.remark
       ? '(' +
-        (option.remark.length > 8 ? option.remark.substring(0, 8) + '...' : option.remark) +
+        (option.remark?.length > 8 ? option.remark.substring(0, 8) + '...' : option.remark) +
         ')'
       : '')
   )
@@ -264,7 +265,7 @@ defineExpose({ getSelectedOption })
   <div class="gl-dict">
     <template v-if="displayType === 'select' || displayType === 'multiSelect'">
       <!--  下拉时，在只读状态才需要展示为文本  -->
-      <template v-if="glIsRuntime && isRead">{{ selectedOption?.label || '无' }}</template>
+      <template v-if="glIsRuntime && isRead">{{ getLabel(selectedOption) || '无' }}</template>
       <template v-else>
         <a-select
           :multiple="displayType === 'multiSelect'"

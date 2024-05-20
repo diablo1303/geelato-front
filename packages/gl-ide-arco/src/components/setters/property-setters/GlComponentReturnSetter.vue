@@ -6,7 +6,7 @@
         {{ returnInfo.returnType || '无' }}
       </div>
       <div>
-        <div style="font-weight: 600; padding: 8px 0">返回描述</div>
+        <div style="font-weight: 600; padding: 8px 0">方法描述</div>
         {{ returnInfo.description || '无' }}
       </div>
       <div v-if="returnInfo.docId" style="padding: 8px 0; color: #165dff">

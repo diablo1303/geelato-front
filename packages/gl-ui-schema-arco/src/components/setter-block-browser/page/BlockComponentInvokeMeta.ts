@@ -77,7 +77,7 @@ export default {
       type: 'props',
       show: true,
       expanded: true,
-      title: '方法返回说明',
+      title: '方法说明',
       setterComponentName: 'GlComponentReturnSetter',
       enableValueExpress: false,
       displayMode: 'tile'

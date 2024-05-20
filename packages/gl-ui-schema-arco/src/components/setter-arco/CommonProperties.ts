@@ -189,6 +189,9 @@ export const commonMethods: MethodMeta[] = [
       // }
     ],
     defaultValue: undefined,
-    returnInfo: undefined
+    returnInfo: {
+      returnType: 'void',
+      description: '重新渲染组件，注意对于组件外部传入的参数并不会重新计算，因为它们不属于本组件的内容，若需重新计算，需重新渲染组件该组件的上一层组件。例如：本组件为页面组件A，在属性面板中设置了参数form.id值为另一个列表的当前选中值，若需要本组件的页面依据列表的当前当中值变化，则需要调用页面组件A的上一级组件进行重新渲染。',
+    }
   }
 ]

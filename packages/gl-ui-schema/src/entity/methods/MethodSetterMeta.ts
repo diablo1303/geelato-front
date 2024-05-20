@@ -6,7 +6,7 @@ export class ReturnInfoMeta {
     // 对返回的内容进行补充描述
     description: string = ''
     // 内部的文档指引中的文档id
-    docId: string = ''
+    docId?: string = ''
 }
 
 export class MethodSetterMeta {
