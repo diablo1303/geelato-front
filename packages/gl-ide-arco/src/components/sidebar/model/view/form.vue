@@ -540,11 +540,11 @@ watch(() => props, () => {
     // 清理视图字段
     columnData.value = [];
     // 表单数据重置
-    formData.value = generateFormData();
     if (['add'].includes(props.formState)) {
       appSelectChange(props.parameter?.appId || '');
       connectSelectChange(props.parameter?.connectId || '');
     }
+    formData.value = generateFormData();
     // 重置验证
     resetValidate();
     pageStyle.value = resetPageStyle();
