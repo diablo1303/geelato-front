@@ -10,10 +10,13 @@ import {useI18n} from "vue-i18n";
 import {getAppSelectOptions, getAppVersion, QueryAppForm, queryAppPackage, QueryAppVersionForm} from "@/api/application";
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 import UploadFile from "@/components/upload-file/index.vue";
-import PlatformSysConfigList from "@/views/version/package/platform-sys-config.vue";
 import PlatformDictList from "@/views/version/package/platform-dict.vue";
 import PlatformModelList from "@/views/version/package/platform-model.vue";
 import PlatformRoleList from "@/views/version/package/platform-role.vue";
+import PlatformSysConfigList from "@/views/version/package/platform-sys-config.vue";
+import PlatformExportTemplateList from "@/views/version/package/platform-export-template.vue";
+import PlatformEncodingList from "@/views/version/package/platform-encoding.vue";
+import PlatformResourcesList from "@/views/version/package/platform-resources.vue";
 
 type PageParams = {
   appId?: string; // 应用主键
@@ -180,7 +183,10 @@ watch(() => props, (val) => {
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="5" title="系统配置" class="a-tabs-five">
+    <a-tab-pane :key="5" title="菜单管理" class="a-tabs-five">
+      <a-empty/>
+    </a-tab-pane>
+    <a-tab-pane :key="6" title="系统配置" class="a-tabs-five">
       <a-card v-if="listParams.visible" class="general-card6">
         <PlatformSysConfigList :model-value="appMetaList"
                                :visible="listParams.visible"
@@ -189,8 +195,32 @@ watch(() => props, (val) => {
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="6" title="菜单管理" class="a-tabs-five">
-      <a-empty/>
+    <a-tab-pane :key="7" title="文件管理" class="a-tabs-five">
+      <a-card v-if="listParams.visible" class="general-card6">
+        <PlatformExportTemplateList :model-value="appMetaList"
+                                    :visible="listParams.visible"
+                                    :height="listParams.height"
+                                    :parameter="listParams.parameter"/>
+      </a-card>
+      <a-empty v-else/>
+    </a-tab-pane>
+    <a-tab-pane :key="8" title="编码管理" class="a-tabs-five">
+      <a-card v-if="listParams.visible" class="general-card6">
+        <PlatformEncodingList :model-value="appMetaList"
+                              :visible="listParams.visible"
+                              :height="listParams.height"
+                              :parameter="listParams.parameter"/>
+      </a-card>
+      <a-empty v-else/>
+    </a-tab-pane>
+    <a-tab-pane :key="9" title="资源管理" class="a-tabs-five">
+      <a-card v-if="listParams.visible" class="general-card6">
+        <PlatformResourcesList :model-value="appMetaList"
+                               :visible="listParams.visible"
+                               :height="listParams.height"
+                               :parameter="listParams.parameter"/>
+      </a-card>
+      <a-empty v-else/>
     </a-tab-pane>
   </a-tabs>
 </template>

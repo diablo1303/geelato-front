@@ -5,8 +5,8 @@ export default {
 </script>
 <script lang="ts" setup>
 import {computed, h, ref, watch} from 'vue';
-import {TableColumnData, TableSortable, TreeNodeData} from '@arco-design/web-vue';
-import {PageQueryFilter} from '@/api/base';
+import {type SelectOptionData, TableColumnData, TableData, TableSortable, TreeNodeData} from '@arco-design/web-vue';
+import {getOptionLabel, PageQueryFilter, PageQueryRequest} from '@/api/base';
 import {
   QueryDictItemForm,
   QueryPermissionForm,
@@ -68,7 +68,8 @@ const treeNodeData = ref<QueryTreeNodeForm[]>([]);
 
 const appFilterData = ref<QueryRoleAppForm[]>([]);
 const permissionFilterData = ref<QueryPermissionForm[]>([]);
-const treeNodeFilterData = ref<QueryTreeNodeForm[]>([]);
+const roleTreeNodeFilterData = ref<QueryRoleTreeNodeForm[]>([]);
+const treeNodeFilterData = ref<PageQueryFilter[]>([]);
 /**
  * 调整树形结构高度
  */
@@ -92,6 +93,16 @@ const setRoleItemData = () => {
   roleTree.value = [parentDict];
   selectedKeys.value = [rootPid];
 }
+
+const typeOptions = computed<SelectOptionData[]>(() => [
+  {value: 'folder', label: '目录'},
+  {value: 'listPage', label: '列表页面'},
+  {value: 'freePage', label: '自定义页面'},
+  {value: 'formPage', label: '表单页面'},
+  {value: 'flowPage', label: '工作流页面'},
+  {value: 'templatePage', label: '模型页面'},
+]);
+
 const searchKey = ref('');
 const searchData = (keyword: string) => {
   const loop = (data: TreeNodeModel[]) => {
@@ -123,6 +134,58 @@ const originTreeData = computed(() => {
   return searchData(searchKey.value);
 });
 
+/**
+ * 构建第一层
+ * @param appId
+ */
+const buildGroundFloor = (appId: string) => {
+  const items: PageQueryFilter[] = [];
+  if (appFilterData.value.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of appFilterData.value) {
+      items.push({
+        // @ts-ignore
+        id: item.app_id, text: item.app_name, flag: 'app', iconType: '', isRoled: false, isLeaf: false
+      } as unknown as PageQueryFilter);
+    }
+  } else if (treeNodeData.value.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of treeNodeData.value) {
+      // @ts-ignore
+      if (item.pid === appId) {
+        items.push({
+          // @ts-ignore
+          id: item.id, text: item.text, flag: item.flag, iconType: item.icon_type, type: item.type, updateAt: item.update_at,
+          // @ts-ignore
+          isRoled: roleTreeNodeFilterData.value.filter(roleItem => roleItem.tree_node_id === item.id).length > 0,
+          // @ts-ignore
+          isLeaf: treeNodeData.value.filter(treeItem => treeItem.pid === item.id).length <= 0
+        } as unknown as PageQueryFilter);
+      }
+    }
+  }
+  treeNodeFilterData.value = items;
+}
+
+const loadMore = (record: TableData, done: any) => {
+  const items: PageQueryFilter[] = [];
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of treeNodeData.value) {
+    // @ts-ignore
+    if (item.pid === record.id) {
+      items.push({
+        // @ts-ignore
+        id: item.id, text: item.text, flag: item.flag, iconType: item.icon_type, type: item.type, updateAt: item.update_at,
+        // @ts-ignore
+        isRoled: roleTreeNodeFilterData.value.filter(roleItem => roleItem.tree_node_id === item.id).length > 0,
+        // @ts-ignore
+        isLeaf: treeNodeData.value.filter(treeItem => treeItem.pid === item.id).length <= 0
+      } as unknown as PageQueryFilter);
+    }
+  }
+  done(items);
+}
+
 const treeClickSelected = (selectedKey: (string | number)[], data: {
   selected?: boolean | undefined;
   selectedNodes: TreeNodeModel[];
@@ -139,10 +202,9 @@ const treeClickSelected = (selectedKey: (string | number)[], data: {
     // @ts-ignore
     const permissionIds = rolePermissionData.value.filter(item => item.role_id === selectedData.value?.data?.id).map(item => item.permission_id);
     permissionFilterData.value = permissionData.value.filter(item => permissionIds.includes(item.id));
-    console.log(permissionFilterData.value);
     // @ts-ignore
-    const treeNodeIds = roleNodeData.value.filter(item => item.role_id === selectedData.value?.data?.id).map(item => item.tree_node_id);
-    treeNodeFilterData.value = treeNodeData.value.filter(item => treeNodeIds.includes(item.id));
+    roleTreeNodeFilterData.value = roleNodeData.value.filter(item => item.role_id === selectedData.value?.data?.id);
+    buildGroundFloor(selectedData.value?.data?.app_id);
   }
 }
 
@@ -155,13 +217,14 @@ watch(() => props, (val) => {
     appMetaList.value = cloneDeep(props.modelValue) || [];
     roleData.value = (appMetaList.value.find(item => item.metaName === "platform_role")?.metaData || []) as QueryRoleForm[];
     roleData.value.sort((a, b) => b.weight - a.weight);
-    console.log(roleData.value);
     setRoleItemData();
     roleAppData.value = (appMetaList.value.find(item => item.metaName === "platform_role_r_app")?.metaData || []) as QueryRoleAppForm[];
     rolePermissionData.value = (appMetaList.value.find(item => item.metaName === "platform_role_r_permission")?.metaData || []) as QueryRolePermissionForm[];
     permissionData.value = (appMetaList.value.find(item => item.metaName === "platform_permission")?.metaData || []) as QueryPermissionForm[];
     roleNodeData.value = (appMetaList.value.find(item => item.metaName === "platform_role_r_tree_node")?.metaData || []) as QueryRoleTreeNodeForm[];
     treeNodeData.value = (appMetaList.value.find(item => item.metaName === "platform_tree_node")?.metaData || []) as QueryTreeNodeForm[];
+    // @ts-ignore
+    treeNodeData.value.sort((a, b) => a.seq_no - b.seq_no);
   }
 }, {deep: true, immediate: true});
 </script>
@@ -278,7 +341,48 @@ watch(() => props, (val) => {
         </a-tab-pane>
         <a-tab-pane :key="3" title="菜单关联" class="a-tabs-one">
           <a-card class="general-card6">
-
+            <a-table :bordered="{cell:true}"
+                     :columns="([] as TableColumnData[])"
+                     :data="treeNodeFilterData"
+                     :load-more="loadMore"
+                     :pagination="false"
+                     :scroll="{x: 720, y: scroll.y}"
+                     :scrollbar="scrollbar"
+                     :stripe="true"
+                     column-resizable
+                     row-key="id">
+              <template #columns>
+                <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="text" title="标题">
+                  <template #cell="{ record }">
+                    &nbsp;
+                    <span :style="{color: record.flag==='app'?'rgb(var(--primary-6))':''}"><gl-iconfont :type="record.iconType"/> {{ record.text }}</span>
+                  </template>
+                </a-table-column>
+                <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="flag" title="菜单">
+                  <template #cell="{ record }">
+                    {{ record.flag === 'app' ? '应用' : (record.flag === 'menuItem' ? '菜单' : '') }}
+                  </template>
+                </a-table-column>
+                <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="type" title="类型">
+                  <template #cell="{ record }">
+                    {{ getOptionLabel(record.type, typeOptions) }}
+                  </template>
+                </a-table-column>
+                <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="updateAt" title="更新时间"/>
+                <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="isRoled" title="选中">
+                  <template #cell="{ record }">
+                    <a-switch v-model="record.isRoled" :disabled="true">
+                      <template #checked>
+                        YES
+                      </template>
+                      <template #unchecked>
+                        NO
+                      </template>
+                    </a-switch>
+                  </template>
+                </a-table-column>
+              </template>
+            </a-table>
           </a-card>
         </a-tab-pane>
       </a-tabs>
