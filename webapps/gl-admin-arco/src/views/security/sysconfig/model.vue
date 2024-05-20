@@ -6,7 +6,7 @@ export default {
 <script lang="ts" setup>
 import {computed, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
-import {FileItem, FormInstance, Modal, Notification, SelectOptionGroup} from "@arco-design/web-vue";
+import {FileItem, FormInstance, Message, Modal, SelectOptionGroup} from "@arco-design/web-vue";
 import {createOrUpdateSysConfig as createOrUpdateForm, getSysConfig as getForm, QuerySysConfigForm as QueryForm, validateSysConfigKey} from '@/api/sysconfig'
 import {AttachmentForm, Base64FileParams, getAttachmentByIds, getDownloadUrlById, getUploadUrl, UploadFileParams, uploadHeader} from "@/api/attachment";
 import {getAppSelectOptions, QueryAppForm} from "@/api/application";
@@ -153,22 +153,22 @@ const setTemplate = (fileName?: string) => {
 }
 const beforeRemoveT = async (fileItem: FileItem): Promise<boolean> => {
   try {
-    Notification.success("删除成功");
     deleteFileItem(templateFile.value, fileItem.uid);
     setTemplate('');
+    Message.success("删除成功");
     return true;
   } catch (err) {
     return false;
   }
 }
 const uploadTSuccess = (fileItem: FileItem) => {
-  Notification.success("上传成功");
   fileItem.uid = fileItem.response.data.id;
   templateFile.value.push(fileItem);
   setTemplate(fileItem.name);
+  Message.success("上传成功");
 }
 const uploadError = (fileItem: FileItem) => {
-  Notification.error("上传失败，请重试！");
+  Message.error("上传失败，请重试！");
 }
 const loadFiles = (attachmentIds: string) => {
   if (attachmentIds !== null && attachmentIds !== '') {
@@ -220,6 +220,9 @@ const loadPage = () => {
   });
   // 表单数据重置
   formData.value = generateFormData();
+  Object.assign(uploadParams.value, {
+    appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+  });
   // 重置验证
   resetValidate();
   // 其他初始化

@@ -92,6 +92,13 @@ watch(() => props, () => {
       mv.value.baseName = data.name;
     });
   }
+  Object.assign(uploadParams.value, {
+    tableType: props.tableType || '',// 类型
+    objectId: props.objectId || '',// 文件所属对象id
+    genre: props.genre || '',// 类型
+    appId: props.parameter?.appId || '',// 所属应用
+    tenantCode: props.parameter?.tenantCode || '',// 所属租户
+  });
 }, {deep: true, immediate: true});
 
 /**
