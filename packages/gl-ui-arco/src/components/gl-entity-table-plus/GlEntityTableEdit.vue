@@ -6,6 +6,7 @@
  */
 // @ts-nocheck
 import {
+  computed,
   inject,
   nextTick,
   type PropType,
@@ -36,7 +37,7 @@ import { Schema } from 'b-validate'
 import {
   type Column,
   type GlTableColumn,
-  evalColorExpression,
+  evalColumnExpression,
   exchangeArray,
   logicDeleteFieldName,
   resetRecordsSeqNo,
@@ -45,8 +46,7 @@ import {
   statIsRowReadonly,
   genShowColumns,
   showSeqNoColumn,
-  SlotNameSeq,
-  genSlotColumnsWithNoOperation
+  SlotNameSeq, slotNameOperation,
 } from './table'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import type { ValidatedError } from '../gl-entity-form/GlEntityForm'
@@ -532,7 +532,7 @@ const popupVisibleChange = (val: boolean) => {
   if (val) {
     nextTick(() => {
       const el = document.getElementById(props.tableSettingId) as HTMLElement
-      const sortable = new Sortable(el, {
+      new Sortable(el, {
         onEnd(e: any) {
           const { oldIndex, newIndex } = e
           exchangeArray(renderColumns.value, oldIndex, newIndex)
@@ -806,6 +806,16 @@ const cloneDeepColumnComponent = (component: ComponentInstance) => {
   return inst
 }
 
+/**
+ *  计算出带有插槽的列
+ *  这些列中，不包括操作列（即slotName为#的列）
+ */
+const slotColumnsWithNoOperation = computed(() => {
+  return renderColumns.value.filter((column) => {
+    return column.slotName && column.slotName !== slotNameOperation
+  })
+})
+
 defineExpose({
   selectAll,
   search,
@@ -867,7 +877,7 @@ defineExpose({
         </a-button>
       </a-space>
     </template>
-    <template v-for="slotColumn in genSlotColumnsWithNoOperation(renderColumns)" v-slot:[slotColumn.slotName]="{ record, rowIndex,column }">
+    <template v-for="slotColumn in slotColumnsWithNoOperation" v-slot:[slotColumn.slotName]="{ record, rowIndex,column }">
       <template v-if="slotColumn.slotName === SlotNameSeq">
         {{ rowIndex + 1 }}
       </template>
@@ -875,7 +885,7 @@ defineExpose({
         class="gl-entity-table-cols-opt"
         :style="{
           'background-color': column._bgColor
-            ? evalColorExpression({ record, column, rowIndex }, pageProvideProxy)
+            ? evalColumnExpression('_bgColor',{ record, column, rowIndex }, pageProvideProxy)
             : ''
         }"
         :class="{

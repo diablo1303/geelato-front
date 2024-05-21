@@ -41,12 +41,8 @@ const props = defineProps({
   placeholder: String
 })
 const monacoEditor = ref()
-const systemVarsTree = ref()
 const mv = ref(props.modelValue)
 const inputMv = ref(props.modelValue)
-// watch(mv, () => {
-//   emits('update:modelValue', mv.value)
-// })
 
 const _systemVarsTreeData: Ref<any[]> = ref([])
 const _actionVarsTreeData: Ref<any[]> = ref([])
@@ -209,7 +205,6 @@ const selectDictId = (key:any) => {
   monacoEditor.value.replaceSelectOrInsert(`"${key}"`)
 }
 
-const iconMv = ref('')
 </script>
 
 <template>
@@ -437,14 +432,6 @@ const iconMv = ref('')
 .gl-expression-setter-editor .arco-collapse-item-content {
   background-color: #fff;
   padding-left: 14px;
-}
-
-.gl-expression-setter-editor .arco-tree-node {
-  /*cursor: none;*/
-}
-
-.gl-expression-setter-editor .arco-tree-node:hover {
-  /*background-color: #f6f6f6;*/
 }
 
 .gl-expression-setter-editor .arco-tree-node .gl-title {

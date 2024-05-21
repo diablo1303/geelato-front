@@ -485,6 +485,19 @@ export default {
           setterComponentName: 'ASwitch'
         },
         {
+          name: '_icon',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          setterComponentProps: {showInput: true,placeholder:"如：'gl-user'"},
+          setterComponentVModelName: 'modelValue',
+          title: '显示图标',
+          setterComponentName: 'GlExpressionSetter',
+          description:'显示图标表达式运行结果为图标名称字符串，如："gl-user"；如果配置了图标表达式，生成的图标将添加到列前。'
+        },
+        {
           name: '_renderScript',
           setterComponentProps: { showInput: true },
           setterComponentVModelName: 'modelValue',
@@ -493,7 +506,8 @@ export default {
           show: true,
           expanded: true,
           description:
-            "对字段值进行处理，示例：\"$gl.ctx.record.enableStatus == 1 ? '已启用' : '未启用'\"。",
+            "显示为自定义的文本，对字段值进行计算，值转换示例：\"$gl.ctx.record.enableStatus == 1 ? '已启用' : '未启用'\"。" +
+              "字段加颜色示例：`<span style='color:red'>${$gl.ctx.record.ecoNo}</span>`;",
           title: '显示脚本',
           setterComponentName: 'GlExpressionSetter',
           enableValueExpress: false
@@ -507,8 +521,8 @@ export default {
           expanded: true,
           setterComponentProps: {},
           setterComponentVModelName: 'modelValue',
-          title: '显示组件',
-          description: '一般不需选，显示为文本，若需显示为图片等格式时，需选择。',
+          title: '显示为组件',
+          description: '选择此项则显示脚本无效，可用于字典项、图片等格式显示。',
           setterComponentName: 'GlComponentSelect'
         },
         {
@@ -624,7 +638,8 @@ export default {
           setterComponentProps: {},
           setterComponentVModelName: 'modelValue',
           title: '文本省略',
-          setterComponentName: 'ASwitch'
+          setterComponentName: 'ASwitch',
+          description:'启用后，文本内容较多时，会展示为“...”'
         },
         {
           name: 'tooltip',
@@ -636,7 +651,8 @@ export default {
           setterComponentProps: {},
           setterComponentVModelName: 'modelValue',
           title: '文本提示',
-          setterComponentName: 'ASwitch'
+          setterComponentName: 'ASwitch',
+          description:'和文本省略一起使用，启用后，文本内容较多时，会展示为“...”，鼠标移到文本位置，可以看到隐藏的内容。'
         }
       ],
       setterComponentName: 'GlObjectArraySetter',

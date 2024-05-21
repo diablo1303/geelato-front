@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // @ts-nocheck
-import { inject, nextTick, type PropType, type Ref, ref, watch } from 'vue'
+import { computed, h, inject, nextTick, type PropType, type Ref, ref, watch } from 'vue'
 import type { TableRowSelection, PaginationProps } from '@arco-design/web-vue'
 import useLoading from '../../hooks/loading'
 import Sortable from 'sortablejs'
@@ -19,29 +19,27 @@ import {
 import {
   type Column,
   type EntityFetchDataProps,
+  evalColumnExpression,
   type GlTableColumn,
   showOptColumn,
   showRecordStatus,
-  showSeqNoColumn
-} from './table'
-import {
-  evalExpression,
+  showSeqNoColumn,
   genRenderColumns,
   genShowColumns,
   useFetchData,
-  genSlotColumnsWithNoOperation,
   genQueryColumns,
   SlotNameSeq,
   SlotNameRecordStatus,
   getRecordPushStatus,
-  RecordPushStatusNames
+  RecordPushStatusNames,
+  slotNameOperation
 } from './table'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
-import cloneDeep from "lodash/cloneDeep";
+import cloneDeep from 'lodash/cloneDeep'
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal
 // fetch 加载完成数据之后
-const emits = defineEmits(['updateColumns', 'fetchSuccess','fetchFail'])
+const emits = defineEmits(['updateColumns', 'fetchSuccess', 'fetchFail'])
 const props = defineProps({
   /**
    *  绑定的实体名称
@@ -161,8 +159,6 @@ const reRender = () => {
   })
 }
 
-
-
 const optColumnKey = ref(utils.gid())
 /**
  *  更新操作列
@@ -172,7 +168,6 @@ const optColumnKey = ref(utils.gid())
 const refreshOptColumn = () => {
   optColumnKey.value = utils.gid()
 }
-
 
 const formProvideProxy: FormProvideProxy | undefined = props.isFormSubTable
   ? inject(FormProvideKey)
@@ -267,10 +262,10 @@ const fetchData = useFetchData(
     refreshOptColumn()
     emits('fetchSuccess', result)
   },
-    (result: any) => {
-      emits('fetchFail', result)
-    },
-    loading
+  (result: any) => {
+    emits('fetchFail', result)
+  },
+  loading
 )
 
 const tableRef = ref()
@@ -411,6 +406,15 @@ const getRecordStatus = (key: string) => {
   ]
 }
 
+/**
+ *  计算出带有插槽的列
+ *  这些列中，不包括操作列（即slotName为#的列）
+ */
+const slotColumnsWithNoOperation = computed(() => {
+  return renderColumns.value.filter((column) => {
+    return column.slotName && column.slotName !== slotNameOperation
+  })
+})
 
 defineExpose({
   resetColumns,
@@ -449,7 +453,12 @@ defineExpose({
     @sorter-change="onSorterChange"
   >
     <template ##="{ rowIndex }">
-      <a-space :key="optColumnKey" v-if="renderData[rowIndex]" :size="0" class="gl-entity-table-cols-opt">
+      <a-space
+        :key="optColumnKey"
+        v-if="renderData[rowIndex]"
+        :size="0"
+        class="gl-entity-table-cols-opt"
+      >
         <template
           v-for="(columnAction, index) in copyColumnActions()"
           :key="rowIndex + '_' + index"
@@ -464,34 +473,61 @@ defineExpose({
         </template>
       </a-space>
     </template>
+    <!-- 带插槽的列，即自下定义列 -->
     <template
-      v-for="slotColumn in genSlotColumnsWithNoOperation(renderColumns)"
+      v-for="slotColumn in slotColumnsWithNoOperation"
       v-slot:[slotColumn.slotName]="{ column, rowIndex }"
     >
-      <template v-if="slotColumn.slotName === SlotNameSeq">
-        {{ rowIndex + 1 }}
+      <template v-if="column._icon">
+        <gl-iconfont
+          :type="
+            evalColumnExpression(
+              '_icon',
+              { record: renderData[rowIndex], column, rowIndex },
+              pageProvideProxy
+            )
+          "
+          style="margin-right: 4px"
+        />
       </template>
-      <template v-else-if="slotColumn.slotName === SlotNameRecordStatus">
-        {{ getRecordStatus(renderData[rowIndex][EntityDataSource.ConstObject.keyFiledName]) }}
+      <!-- 如果只是配置了图标，字段内容渲染未用自下定义渲染，则在此直接展示内容 -->
+      <template v-if="column._noCustomRender">
+        {{ renderData[rowIndex][column.dataIndex] }}
       </template>
-      <template v-else-if="column._component && renderData[rowIndex]">
-        <GlComponent
-            v-model="renderData[rowIndex][column.dataIndex]"
-            :glComponentInst="cloneDeep(column._component)"
-            :glCtx="{
-            record:renderData[rowIndex],
+      <template v-else>
+        <template v-if="slotColumn.slotName === SlotNameSeq">
+          {{ rowIndex + 1 }}
+        </template>
+        <template v-else-if="slotColumn.slotName === SlotNameRecordStatus">
+          {{ getRecordStatus(renderData[rowIndex][EntityDataSource.ConstObject.keyFiledName]) }}
+        </template>
+        <template v-else-if="column._component && renderData[rowIndex]">
+          <GlComponent
+              v-model="renderData[rowIndex][column.dataIndex]"
+              :glComponentInst="cloneDeep(column._component)"
+              :glCtx="{
+            record: renderData[rowIndex],
             rowIndex,
             dataIndex: column.dataIndex,
             cellLastValue: renderData[rowIndex][column.dataIndex]
           }"
-            :disabled="
+              :disabled="
             isPageRead || column._component?.props?.readonly || column._component?.props?.disabled
           "
-        ></GlComponent>
+          ></GlComponent>
+        </template>
+        <template v-else>
+        <span
+            v-html="
+            evalColumnExpression(
+              '_renderScript',
+              { record: renderData[rowIndex], column, rowIndex },
+              pageProvideProxy
+            )
+          "
+        />
+        </template>
       </template>
-      <span v-else>
-        {{ evalExpression({ record: renderData[rowIndex], column, rowIndex }, pageProvideProxy) }}
-      </span>
     </template>
   </a-table>
 </template>

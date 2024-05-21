@@ -23,11 +23,17 @@ export interface GlTableColumn extends TableColumnData {
   // 对于展示表格，非编辑表格，为了便于操作，不使用_component的字段绑定功能，即显示隐藏的控制在此
   // 是否显示，用于控制数据查询加载，但不展示，可用于前端列计算或record传值，恒等于false时才不显示
   _show?: boolean
+  // 列图标的名称，如:gl-api
+  _icon?: string
+  // 列图标的颜色
+  // _iconColor?: string
   // 数据显示的处理脚本
   _renderScript: string
   // 用于编辑表格时，作为编辑组件
   // 用于展示表格时，作为展示组件，展示特殊的数据
   _component?: ComponentInstance
+  // 如果_renderScript、_component都为空时，表示没有自定义渲染
+  _noCustomRender?: boolean
   // 是否必填，用于编辑状态
   _required?: boolean
   // 用于运行时表格配置时，设置是否在列表中展示该列
@@ -126,15 +132,25 @@ export const exchangeArray = <T extends Array<any>>(
   return newArray
 }
 
-export const evalExpression = (
-  data: {
-    record: TableData
-    column: GlTableColumn
-    rowIndex: number
-  },
-  pageProvideProxy: PageProvideProxy
+
+/**
+ * 列属性的表达式计算
+ * @param columnPropName
+ * @param data
+ * @param pageProvideProxy
+ * @param widthDoubleQuotationMarks 在执行前是否给表达式加上双引号，默认是false
+ */
+export const evalColumnExpression = (
+    columnPropName:string,
+    data: {
+      record: TableData
+      column: GlTableColumn
+      rowIndex: number
+    },
+    pageProvideProxy: PageProvideProxy
 ) => {
-  if (!data.column._renderScript) {
+  // @ts-ignore
+  if (!data.column[columnPropName]) {
     return data.record[data.rowIndex]
   }
   const ctx = {
@@ -143,29 +159,51 @@ export const evalExpression = (
     column: toRaw(data.column),
     rowIndex: toRaw(data.rowIndex)
   }
-  return jsScriptExecutor.evalExpression(data.column._renderScript, ctx)
+
+  // @ts-ignore
+  return jsScriptExecutor.evalExpression(data.column[columnPropName], ctx)
 }
 
-export const evalColorExpression = (
-  data: {
-    record: TableData
-    column: GlTableColumn
-    rowIndex: number
-  },
-  pageProvideProxy: PageProvideProxy
-) => {
-  if (!data.column._bgColor) {
-    return ''
-  }
-  const ctx = {
-    pageProxy: pageProvideProxy,
-    record: toRaw(data.record),
-    column: toRaw(data.column),
-    rowIndex: toRaw(data.rowIndex)
-  }
-  // console.log('evalExpression', data)
-  return jsScriptExecutor.evalExpression(data.column._bgColor, ctx)
-}
+// export const evalExpression = (
+//   data: {
+//     record: TableData
+//     column: GlTableColumn
+//     rowIndex: number
+//   },
+//   pageProvideProxy: PageProvideProxy,
+// ) => {
+//   if (!data.column._renderScript) {
+//     return data.record[data.rowIndex]
+//   }
+//   const ctx = {
+//     pageProxy: pageProvideProxy,
+//     record: toRaw(data.record),
+//     column: toRaw(data.column),
+//     rowIndex: toRaw(data.rowIndex)
+//   }
+//   return jsScriptExecutor.evalExpression(data.column._renderScript, ctx)
+// }
+
+// export const evalColorExpression = (
+//   data: {
+//     record: TableData
+//     column: GlTableColumn
+//     rowIndex: number
+//   },
+//   pageProvideProxy: PageProvideProxy
+// ) => {
+//   if (!data.column._bgColor) {
+//     return ''
+//   }
+//   const ctx = {
+//     pageProxy: pageProvideProxy,
+//     record: toRaw(data.record),
+//     column: toRaw(data.column),
+//     rowIndex: toRaw(data.rowIndex)
+//   }
+//   // console.log('evalExpression', data)
+//   return jsScriptExecutor.evalExpression(data.column._bgColor, ctx)
+// }
 
 /**
  * 执行行级别的表达式
@@ -255,7 +293,7 @@ export const t = (str: any) => {
 }
 
 const slotNameFlag = '__slot'
-const slotNameOperation = '#'
+export const slotNameOperation = '#'
 
 /**
  * 设置列的插槽名称
@@ -268,7 +306,11 @@ export const setSlotNames = (queryColumns: GlTableColumn[]) => {
     // col.tooltip = true
     if (col._renderScript || col._component || col._bgColor) {
       col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
-    } else {
+    } else if(col._icon){
+      // 只是图标渲染，没有字段内容的自定义渲染
+      col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
+      col._noCustomRender = true
+    }else {
       delete col.slotName
     }
   })
@@ -476,15 +518,15 @@ export const genRenderColumns = (showColumns: Ref<GlTableColumn[]>,keepClientSor
   return cols
 }
 
-/**
- *  计算出带有插槽的列
- *  这些列中，不包括操作列（即slotName为#的列）
- */
-export const genSlotColumnsWithNoOperation = (renderColumns: GlTableColumn[]) => {
-  return renderColumns.filter((column) => {
-    return column.slotName && column.slotName !== slotNameOperation
-  })
-}
+// /**
+//  *  计算出带有插槽的列
+//  *  这些列中，不包括操作列（即slotName为#的列）
+//  */
+// export const genSlotColumnsWithNoOperation = (renderColumns: GlTableColumn[]) => {
+//   return renderColumns.filter((column) => {
+//     return column.slotName && column.slotName !== slotNameOperation
+//   })
+// }
 
 /**
  *  在查询列表中，用于用户操作的查询信息，如查询条件、选择的页码信息
