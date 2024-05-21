@@ -17,6 +17,7 @@ import PlatformSysConfigList from "@/views/version/package/platform-sys-config.v
 import PlatformExportTemplateList from "@/views/version/package/platform-export-template.vue";
 import PlatformEncodingList from "@/views/version/package/platform-encoding.vue";
 import PlatformResourcesList from "@/views/version/package/platform-resources.vue";
+import PlatformPageList from "@/views/version/package/platform-page.vue";
 
 type PageParams = {
   appId?: string; // 应用主键
@@ -45,7 +46,7 @@ const appMetaList = ref<AppMeta[]>([]);
 const generateListParams = () => {
   return {
     visible: false,
-    parameter: {appId: '', tenantCode: ''},
+    parameter: {appCode: '', appId: '', tenantCode: ''},
     formState: props.formState,
     height: props.height,
   }
@@ -111,8 +112,11 @@ const tableFormat = (id: string, successBack?: any) => {
   });
   getPackData(id, (data: Record<string, any>) => {
     appMetaList.value = data?.appMetaList || [];
-    console.log(appMetaList.value);
-    Object.assign(listParams.value, {visible: true});
+    Object.assign(listParams.value, {
+      visible: true, parameter: {
+        appCode: data?.appCode || '', appId: data?.sourceAppId || '', tenantCode: ''
+      },
+    });
   });
 }
 
@@ -184,7 +188,13 @@ watch(() => props, (val) => {
       <a-empty v-else/>
     </a-tab-pane>
     <a-tab-pane :key="5" title="菜单管理" class="a-tabs-five">
-      <a-empty/>
+      <a-card v-if="listParams.visible" class="general-card6">
+        <PlatformPageList :model-value="appMetaList"
+                          :visible="listParams.visible"
+                          :height="listParams.height"
+                          :parameter="listParams.parameter"/>
+      </a-card>
+      <a-empty v-else/>
     </a-tab-pane>
     <a-tab-pane :key="6" title="系统配置" class="a-tabs-five">
       <a-card v-if="listParams.visible" class="general-card6">
