@@ -54,7 +54,7 @@ const generateFormData = (): QueryTableForm => {
     description: '', // 补充描述
     synced: false,
     sourceType: 'creation',
-    packBusData: false,
+    packBusData: 0,
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
   };
@@ -160,7 +160,7 @@ const changePackBusData = () => {
 }
 
 const appSelectChange = () => {
-  formData.value.packBusData = false;
+  formData.value.packBusData = 0;
   changePackBusData();
 }
 
@@ -275,7 +275,7 @@ defineExpose({saveOrUpdate, loadPage});
                     v-model="formData.packBusData" :options="packBusDataOptions"/>
           <span v-else>{{ utils.getOptionLabel(formData.packBusData, packBusDataOptions) }}</span>
           <template #extra>
-            是否打包业务数据。选择是时，会将模型的业务数据一起打包，在部署时会更新到业务数据中。
+            打包业务数据时，增量为：更新和插入打包数据；全量为：先清空表在插入打包数据。
           </template>
         </a-form-item>
       </a-col>

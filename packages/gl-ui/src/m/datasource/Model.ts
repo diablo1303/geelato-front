@@ -43,7 +43,7 @@ export interface QueryTableForm {
   sourceType: string;
   appId: string;
   tenantCode: string;
-  packBusData: boolean;
+  packBusData: number;
 }
 
 export function pageQueryTable(params: Record<string, any>) {

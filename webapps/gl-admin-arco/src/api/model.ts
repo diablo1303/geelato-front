@@ -79,7 +79,7 @@ export interface QueryTableForm {
   description: string; // 补充描述
   synced: boolean;
   sourceType: string;
-  packBusData: boolean;
+  packBusData: number;
   appId: string;
   tenantCode: string;
 }

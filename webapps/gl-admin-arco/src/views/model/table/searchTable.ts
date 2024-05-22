@@ -26,8 +26,9 @@ const sourceTypeOptions = computed<SelectOptionData[]>(() => [
 ]);
 
 const packBusDataOptions = computed<SelectOptionData[]>(() => [
-  {label: 'model.table.index.form.packBusData.true', value: true,},
-  {label: "model.table.index.form.packBusData.false", value: false,},
+  {label: 'model.table.index.form.packBusData.0', value: 0,},
+  {label: "model.table.index.form.packBusData.1", value: 1,},
+  {label: "model.table.index.form.packBusData.2", value: 2,},
 ]);
 
 export {columns, tableTypeOptions, enableStatusOptions, linkedOptions, sourceTypeOptions, packBusDataOptions};

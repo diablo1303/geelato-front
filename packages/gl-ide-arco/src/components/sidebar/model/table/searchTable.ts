@@ -28,8 +28,9 @@ const tableSyncOptions = computed<SelectOptionData[]>(() => [
 ]);
 
 const packBusDataOptions = computed<SelectOptionData[]>(() => [
-  {label: '是', value: true,},
-  {label: "否", value: false,},
+  {label: '不打包', value: 0,},
+  {label: "增量打包", value: 1,},
+  {label: "全量打包", value: 2,},
 ]);
 
 export {tableTypeOptions, enableStatusOptions, linkedOptions, sourceTypeOptions, tableSyncOptions, packBusDataOptions};

@@ -54,7 +54,7 @@ const generateFormData = (): QueryForm => {
     description: '', // 补充描述
     synced: false,
     sourceType: 'creation', // 同步类型 creation:创建;update:更新
-    packBusData: false, // 打包业务数据
+    packBusData: 0, // 数据打包策略：0 不打包，1 增量，2 全量
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
   };
@@ -173,7 +173,7 @@ const changePackBusData = () => {
 }
 
 const appSelectChange = () => {
-  formData.value.packBusData = false;
+  formData.value.packBusData = 0;
   changePackBusData();
 }
 
