@@ -37,8 +37,8 @@ const validateForm = ref<FormInstance>();// 表单-校验
 const uploadParams = ref<UploadFileParams>({
   tableType: 'resources',// 类型
   isRename: true,// 文件重命名，默认：true
-  objectId: '',// 文件所属对象id
   genre: 'sysConfig',// 类型
+  objectId: '',// 文件所属对象id
   appId: props.parameter?.appId || '',// 所属应用
   tenantCode: props.parameter?.tenantCode || '',// 所属租户
 });// 上传参数
@@ -200,6 +200,10 @@ const saveOrUpdate = (successBack?: any, failBack?: any) => {
   });
 }
 
+const appSelectChange = () => {
+  uploadParams.value.appId = formData.value.appId || '';
+}
+
 /**
  * 页面加载方法，对外提供
  */
@@ -236,7 +240,10 @@ const loadPage = () => {
         data.keyType = (data.keyType as string).split(",") || [];
       }
       formData.value = data;
-      uploadParams.value.objectId = formData.value.id;
+      Object.assign(uploadParams.value, {
+        objectId: formData.value.id,
+        appId: formData.value.appId || '', tenantCode: formData.value.tenantCode || ''
+      });
       if (['UPLOAD'].includes(formData.value.valueType)) {
         loadFiles(formData.value.configValue);
       } else if (['BASE64'].includes(formData.value.valueType) && isJSON(formData.value.configValue)) {
@@ -275,6 +282,26 @@ defineExpose({saveOrUpdate, loadPage});
             field="configKey">
           <a-input v-if="formState!=='view'" v-model.trim="formData.configKey" :max-length="100"/>
           <span v-else>{{ formData.configKey }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('security.sysConfig.index.form.appId')" field="appId">
+          <a-select v-model="formData.appId" :disabled="formState==='view'" :field-names="{value: 'id', label: 'name'}"
+                    :options="appSelectOptions" allow-search @change="appSelectChange"/>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('security.sysConfig.index.form.purpose')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            field="purpose">
+          <a-select v-if="formState!=='view'" v-model="formData.purpose">
+            <a-option v-for="item of purposeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+          </a-select>
+          <span v-else>{{ formData.purpose ? $t(`security.sysConfig.index.form.purpose.${formData.purpose}`) : '' }}</span>
+          <template #help>
+            {{ $t('security.sysConfig.index.form.purpose.help') }}
+          </template>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -325,26 +352,6 @@ defineExpose({saveOrUpdate, loadPage});
                      field="configValue">
           <a-textarea v-if="formState!=='view'" v-model="formData.configValue" :auto-size="{minRows:1,maxRows:4}" :max-length="2000" show-word-limit/>
           <span v-else :title="formData.configValue" class="textarea-span" @click="openModal(`${formData.configValue}`)">{{ formData.configValue }}</span>
-        </a-form-item>
-      </a-col>
-      <a-col :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item :label="$t('security.sysConfig.index.form.appId')" field="appId">
-          <a-select v-model="formData.appId" :disabled="formState==='view'" :field-names="{value: 'id', label: 'name'}"
-                    :options="appSelectOptions" allow-search/>
-        </a-form-item>
-      </a-col>
-      <a-col :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item
-            :label="$t('security.sysConfig.index.form.purpose')"
-            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-            field="purpose">
-          <a-select v-if="formState!=='view'" v-model="formData.purpose">
-            <a-option v-for="item of purposeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
-          </a-select>
-          <span v-else>{{ formData.purpose ? $t(`security.sysConfig.index.form.purpose.${formData.purpose}`) : '' }}</span>
-          <template #help>
-            {{ $t('security.sysConfig.index.form.purpose.help') }}
-          </template>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
