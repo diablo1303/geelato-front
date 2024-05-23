@@ -32,7 +32,9 @@ import {
   SlotNameRecordStatus,
   getRecordPushStatus,
   RecordPushStatusNames,
-  slotNameOperation
+  slotNameOperation,
+  createEntityReader,
+  type EntityFetchDataInfo
 } from './table'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import cloneDeep from 'lodash/cloneDeep'
@@ -168,7 +170,7 @@ const optColumnKey = ref(utils.gid())
 const refreshOptColumn = () => {
   optColumnKey.value = utils.gid()
 }
-
+// 如果作为子表单，需要注入主表，便于获取主表的记录ID
 const formProvideProxy: FormProvideProxy | undefined = props.isFormSubTable
   ? inject(FormProvideKey)
   : undefined
@@ -192,7 +194,7 @@ const showColumns: Ref<GlTableColumn[]> = ref(
     showRecordStatus: showRecordStatus(props)
   })
 )
-// 最终展示的列
+// 最终查询数据并进行展示的列，注意这些列中_show为false时不展示，但数据仍会查询加载
 const renderColumns: Ref<GlTableColumn[]> = ref(genRenderColumns(showColumns))
 
 /**
@@ -248,6 +250,34 @@ const pagination = ref({
 pagination.value.pageSize = props.pagination.defaultPageSize || 15
 
 /**
+ * 基于当前的列表查询设置，获取查询对象
+ * 该操作，不会更换当前的列表状态信息，如last查询条件、排序等，不会更新UI
+ * 该操作主要用于获取查询对象，传到服务端，做多页面的数据导出一起导出
+ * @param entityReaderParams 传入当前最新查询条件进行查询
+ * @param pageInfo 一般这里pageNo为1，pageSize为需要查询的最大记录数，如excel最多导出5000条，则pageSize为5000。
+ */
+const getEntityReader = (
+  entityReaderParams: Array<EntityReaderParam>,
+  pageInfo: {
+    pageNo?: number
+    pageSize: number
+  }
+) => {
+  const info: EntityFetchDataInfo = {}
+  info.pageSize = pageInfo?.pageSize
+  info.pageNo = pageInfo.pageNo || 1
+  info.order = lastOrder
+  info.params = entityReaderParams
+  info.pushedRecordKeys = lastPushedRecordKeys
+  info.unPushedRecordKeys = lastUnPushedRecordKeys
+  return createEntityReader(
+    props as EntityFetchDataProps,
+    queryColumns.value,
+    info,
+    formProvideProxy?.getRecordId
+  )!
+}
+/**
  * 加载数据的最终方法，在查询、切换分页等场景中调用
  * @param readerInfo
  */
@@ -273,10 +303,16 @@ const selectAll = (checked: boolean) => {
   return tableRef.value.selectAll(checked)
 }
 
+const select = (rowIndex: string | number | (string | number)[], checked: boolean) => {
+  return tableRef.value.select(rowIndex, checked)
+}
+
+// 记录上一次查询的参数、排序等信息，便于在分页等操作时，可以带上这些信息进行查询
 let lastEntityReaderParams: Array<EntityReaderParam>
 let lastOrder: EntityReaderOrder[] = []
 let lastPushedRecordKeys: string[]
 let lastUnPushedRecordKeys: string[]
+
 const search = (
   entityReaderParams: Array<EntityReaderParam>,
   pushedRecordKeys: string[],
@@ -314,14 +350,16 @@ const onPageSizeChange = (pageSize: number) => {
   })
 }
 
+/**
+ * @param dataIndex 排序字段
+ * @param direction 排序方向
+ */
 const onSorterChange = (dataIndex: string, direction: string) => {
-  // console.log(dataIndex, direction)
   if (!direction) {
     // 如果清空了当前字段的排序
     lastOrder = []
   } else {
-    const order: EntityReaderOrder[] = [new EntityReaderOrder(dataIndex, direction)]
-    lastOrder = order
+    lastOrder = [new EntityReaderOrder(dataIndex, direction)]
   }
   fetchData({
     order: lastOrder,
@@ -417,8 +455,10 @@ const slotColumnsWithNoOperation = computed(() => {
 })
 
 defineExpose({
+  getEntityReader,
   resetColumns,
   search,
+  select,
   selectAll,
   popupVisibleChange,
   changeShowColumns,
@@ -503,29 +543,29 @@ defineExpose({
         </template>
         <template v-else-if="column._component && renderData[rowIndex]">
           <GlComponent
-              v-model="renderData[rowIndex][column.dataIndex]"
-              :glComponentInst="cloneDeep(column._component)"
-              :glCtx="{
-            record: renderData[rowIndex],
-            rowIndex,
-            dataIndex: column.dataIndex,
-            cellLastValue: renderData[rowIndex][column.dataIndex]
-          }"
-              :disabled="
-            isPageRead || column._component?.props?.readonly || column._component?.props?.disabled
-          "
+            v-model="renderData[rowIndex][column.dataIndex]"
+            :glComponentInst="cloneDeep(column._component)"
+            :glCtx="{
+              record: renderData[rowIndex],
+              rowIndex,
+              dataIndex: column.dataIndex,
+              cellLastValue: renderData[rowIndex][column.dataIndex]
+            }"
+            :disabled="
+              isPageRead || column._component?.props?.readonly || column._component?.props?.disabled
+            "
           ></GlComponent>
         </template>
         <template v-else>
-        <span
+          <span
             v-html="
-            evalColumnExpression(
-              '_renderScript',
-              { record: renderData[rowIndex], column, rowIndex },
-              pageProvideProxy
-            )
-          "
-        />
+              evalColumnExpression(
+                '_renderScript',
+                { record: renderData[rowIndex], column, rowIndex },
+                pageProvideProxy
+              )
+            "
+          />
         </template>
       </template>
     </template>

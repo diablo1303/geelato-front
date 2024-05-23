@@ -74,11 +74,22 @@ export default {
       expanded: true,
       displayMode: 'tile',
       setterComponentProps: {
-        ignoreFields: ['id','creator','creatorName','createAt','updateAt','updater','updaterName','delStatus','deleteAt'],
+        ignoreFields: [
+          'id',
+          'creator',
+          'creatorName',
+          'createAt',
+          'updateAt',
+          'updater',
+          'updaterName',
+          'delStatus',
+          'deleteAt'
+        ]
       },
       setterComponentVModelName: 'modelValue',
       title: '关联主表字段',
-      description: '本表中指向主表单主键id字段（值相同）。如pId、billId、orderId、nodeId等指向主表的字段，注意这里不能选择id字段，id字段是本表的主键。',
+      description:
+        '本表中指向主表单主键id字段（值相同）。如pId、billId、orderId、nodeId等指向主表的字段，注意这里不能选择id字段，id字段是本表的主键。',
       setterComponentName: 'GlFieldSelect'
     },
     {
@@ -203,7 +214,8 @@ export default {
     },
     {
       name: 'creatingEntitySavers',
-      description: '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
+      description:
+        '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
       title: '保存对象完成前',
       returnInfo: {
         returnType: '{data:Record<string,any>}',
@@ -213,7 +225,8 @@ export default {
     },
     {
       name: 'onCreatedEntitySavers',
-      description: '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
+      description:
+        '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
       title: '保存对象完成前',
       returnInfo: {
         returnType: '{data:Record<string,any>}',
@@ -224,6 +237,27 @@ export default {
   ],
   methods: [
     { name: 'submitForm', title: '提交表单', description: '', params: [] },
+    {
+      name: 'fetchData',
+      title: '从服务端获取数据',
+      description: '从服务端获取表单实体数据',
+      params: [
+        {
+          name: 'id',
+          title: '表单ID',
+          required: true,
+          type: 'string',
+          description: '填写表单的ID值，如果不是基于表单ID查询，如订单的编码查询订单，可以删除该参数，另加订单的编码参数'
+        }
+      ],
+      returnInfo: {
+        returnType: 'Promise',
+        description:
+          '从服务端获取表单实体数据，可以传入id进行查询，也可以通过其它字段进行查询，但如果其它字段查询的结果有多条记录时，只取第一条绑定到表单中',
+        docId: ''
+      },
+      isDynamicParams:true
+    },
     {
       name: 'getValue',
       title: '获取表单值',

@@ -301,7 +301,7 @@ defineExpose({ getValue, selectByValue, selectByIndex })
         <slot name="extra"></slot>
       </div>
     </template>
-    <a-tab-pane v-for="(item, index) in tabItems" :key="item.value" :disabled="item.disabled">
+    <a-tab-pane class="gl-tab-pane" v-for="(item, index) in tabItems" :key="item.value" :disabled="item.disabled">
       <template #title>
         <GlIconfont v-if="item.iconType" :type="item.iconType" />
         {{ item.title }}
@@ -347,5 +347,8 @@ body[arco-theme='dark'] .gl-tabs {
   height: auto;
 }
 
+.gl-tab-pane{
+  padding: 0 14px;
+}
 
 </style>

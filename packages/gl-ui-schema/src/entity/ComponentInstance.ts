@@ -35,6 +35,10 @@ export class ComponentInstanceProps {
     // 组件个性化属性
     [key: string]: any
 
+    // 占位符
+    placeholder?:string
+    // 描述
+    description?:string
     // 默认值表达式，在值为null或undefined时生效。注：应叫_defaultValue，名称上合理
     _valueExpression?: any
     // 是否禁用

@@ -789,6 +789,10 @@ const tableRef = ref()
 const selectAll = (checked: boolean) => {
   return tableRef.value.selectAll(checked)
 }
+const select = (rowIndex:number,checked: boolean) => {
+  return tableRef.value.select(rowIndex,checked)
+}
+
 
 const getRef = () => {
   return tableRef.value
@@ -817,6 +821,7 @@ const slotColumnsWithNoOperation = computed(() => {
 })
 
 defineExpose({
+  select,
   selectAll,
   search,
   popupVisibleChange,

@@ -1,9 +1,16 @@
 <script setup lang="ts">
 // @ts-nocheck
 import { computed, inject, onMounted, type PropType, ref, toRaw } from 'vue'
-import {EntityReaderParam, PageProvideKey, type PageProvideProxy, useLogger, utils} from '@geelato/gl-ui'
+import {
+  EntityReaderParam,
+  jsScriptExecutor,
+  PageProvideKey,
+  type PageProvideProxy,
+  useLogger,
+  utils
+} from '@geelato/gl-ui'
 import { ConvertUtil } from '@geelato/gl-ui'
-import QueryItem, {getQueryParams, type QueryItemKv} from './query'
+import QueryItem, { getQueryParams, type QueryItemKv } from './query'
 import { GlIconfont } from '@geelato/gl-ui'
 import { useDebounceFn } from '@vueuse/core'
 
@@ -36,6 +43,13 @@ const props = defineProps({
       return true
     }
   },
+  /**
+   *  阻断查询表达式
+   *  表达式执行结果为true时，触发的查询操作在发出查询事件(emits search)之前会被中断
+   *  表达式执行结果为false或undefined时，不中断
+   *  表达式为空时不中断
+   */
+  interdictExpression: String,
   /**
    *  隐藏重置按钮
    *  场景如：查询条件的值是动态添加的，不是初始值，且查询条件不可修改，若重置，查询条件值会被清空
@@ -78,7 +92,7 @@ const generateFormModel = () => {
       // 首次加载时，需要依据表达式的值进行计算
       paramValue = item.component?.value
     }
-    if(item.component){
+    if (item.component) {
       item.component.value = paramValue
     }
     fModel[item.id] = paramValue
@@ -92,8 +106,11 @@ const formModel = ref(generateFormModel())
 
 /**
  *  创建查询参数
+ *  基于页面的组件，设置form表单的值，并构建查询参数
  */
-const createEntityReaderParams = () => {
+const createEntityReaderParams = ():Array<EntityReaderParam> => {
+  formModel.value = generateFormModel()
+
   const entityReaderParams: Array<EntityReaderParam> = []
   props.items?.forEach((item: QueryItem) => {
     if (
@@ -167,9 +184,19 @@ const resetByQueryItemKvs = (queryItemKvs: Array<QueryItemKv>) => {
  *  增加100ms的防抖动，解决短时间内连续多次触发查询的问题
  */
 const onSearch = useDebounceFn(() => {
-  formModel.value = generateFormModel()
+
   const entityReaderParams = createEntityReaderParams()
-  emits('search', entityReaderParams)
+  let stop = false
+
+  if (props.interdictExpression) {
+    stop = jsScriptExecutor.evalExpression(props.interdictExpression, {
+      pageProxy: pageProvideProxy
+    })
+  }
+  // console.log(`查询阻断表达式：${props.interdictExpression}，执行结果为：`,stop,'，当前查询参数为：entityReaderParams:',entityReaderParams)
+  if (!stop) {
+    emits('search', entityReaderParams)
+  }
 }, 100)
 /**
  *  隐藏的查询字段不进行重置
@@ -257,6 +284,9 @@ defineExpose({
                 :glComponentInst="item.component"
                 @update="changeValue"
               ></GlComponent>
+              <template #help>
+                {{ item.component?.props.description }}
+              </template>
             </a-form-item>
           </a-col>
         </a-row>
@@ -269,6 +299,9 @@ defineExpose({
                 :glComponentInst="item.component"
                 @update="changeValue"
               ></GlComponent>
+              <template #help>
+                {{ item.component?.props.description }}
+              </template>
             </a-form-item>
           </a-col>
         </a-row>

@@ -38,7 +38,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { mixins } from '@geelato/gl-ui'
 
 const props = defineProps({

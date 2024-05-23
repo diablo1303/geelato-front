@@ -12,11 +12,18 @@ import GlQuery from '../gl-query/index.vue'
 import GlToolbar from '../gl-toolbar/index.vue'
 import GlEntityTable from './GlEntityTable.vue'
 import GlEntityTableEditable from './GlEntityTableEdit.vue'
-import { computed, inject, onMounted, type PropType, ref, type Ref } from 'vue'
+import { computed, inject, onMounted, type PropType, ref, type Ref, toRaw } from 'vue'
 import type { EntityReaderParam } from '@geelato/gl-ui'
 import QueryItem, { QueryItemKv } from '../gl-query/query'
 import cloneDeep from 'lodash/cloneDeep'
-import { type SizeProps, type Column, defaultTable, type GlTableColumn, BaseInfo } from './table'
+import {
+  type SizeProps,
+  type Column,
+  defaultTable,
+  type GlTableColumn,
+  BaseInfo,
+  createExportColumns
+} from './table'
 import Toolbar, { defaultToolbar } from '../gl-toolbar/toolbar'
 import { useI18n } from 'vue-i18n'
 import {
@@ -117,9 +124,9 @@ const props = defineProps({
       return []
     }
   },
-  size: {
-    type: String as PropType<SizeProps>
-  },
+  // size: {
+  //   type: String as PropType<SizeProps>
+  // },
   pagination: {
     type: Object as PropType<PaginationProps>,
     default() {
@@ -137,6 +144,15 @@ const props = defineProps({
   ...mixins.props
 })
 
+// 是否隐藏卡片的内容，即折叠
+const isHidden = ref(false)
+const isShowLabel = computed(() => {
+  return !props.base.hideLabel
+})
+
+const switchHide = () => {
+  isHidden.value = !isHidden.value
+}
 
 // 数据预处理
 onMounted(() => {
@@ -477,7 +493,7 @@ const change = (data: any) => {
   emits('change', data)
 }
 
-const copyRecord = (data: { record:any,rowIndex:any }) => {
+const copyRecord = (data: { record: any; rowIndex: any }) => {
   emits('copyRecord', data)
 }
 
@@ -724,7 +740,6 @@ const onFetchFail = (args: { data: undefined; pagination: object }) => {
   emits('fetchFail', args)
 }
 
-
 const entityTable = computed(() => {
   return props.base?.enableEdit ? GlEntityTableEditable : GlEntityTable
 })
@@ -923,7 +938,7 @@ const batchUpdate = (params: { record: Record<string, any> }) => {
           }
         })
       })
-     return entityApi.saveBatch(props.base.entityName, copyRecords).then(() => {
+      return entityApi.saveBatch(props.base.entityName, copyRecords).then(() => {
         refresh()
         global.$notification.info({ title: '更新成功', content: `更新${records.length}条记录` })
       })
@@ -1152,7 +1167,147 @@ const getColumnGroupSum = (params: { groupDataIndex: string; sumDataIndex: strin
   return groupSum
 }
 
+const createExportColumns = () => {
+  return createExportColumns(tableRef.value.getRenderColumns)
+}
+
+const createEntityReader = (params: { pageSize: number; pageNo?: number }) => {
+  const entityReaderParams: Array<EntityReaderParam> = queryRef.value.createEntityReaderParams()
+  return tableRef.value.getEntityReader(entityReaderParams, params)
+}
+
+/**
+ * 创建元数据查询Mql对象，可作为POST请求的data传到服务端，可用于服务端编排
+ * @param params
+ */
+const createEntityReaderAsMql = (params: { pageSize: number; pageNo?: number }) => {
+  return entityApi.convertEntityReaderToMql(createEntityReader(params))
+}
+
+/**
+ *  基于当前的查询条件，进行数据查询并返回数据结果集
+ *  获取的数据不做分页，在一页中返回
+ *  常用于导出数据到excel中
+ *  ！！ 注意，该操作不会更新当前的页面呈现
+ *  @params {pageSize}，pageSize为查询一页时，最大的记录数
+ */
+const searchAndExportRecords = (params: { pageSize: number }) => {
+  return entityApi.queryByEntityReader(createEntityReader(params))
+}
+
+/**
+ * 通过行的索引位置来设置记录的选中状态
+ * 常用于打开页面时，默认选中第1条的场景
+ * @param params rowIndex：0表示第一条
+ *               checked：true选中，false不选
+ *               info:如果有信息且选的记录不存在时进行提醒
+ */
+const selectRecordByIndex = (params: {
+  rowIndex: string | number | (string | number)[]
+  checked: boolean
+  warning?: string
+}) => {
+  let isArray = utils.isArray(params.rowIndex)
+  let indexes = params.rowIndex
+  if (!isArray) {
+    indexes = [params.rowIndex]
+  }
+
+  // 转为数字
+  let numberIndexes = []
+  try {
+    indexes.forEach((index) => {
+      numberIndexes.push(Number.parseInt(index))
+    })
+  } catch (e) {
+    global.$notification.error(
+      'selectRecordByIndex的参数不正确，rowIndex应为number或string格式的数字，或数组'
+    )
+    console.error(
+      'selectRecordByIndex的参数不正确,格式应为：{ rowIndex: number, checked: boolean, warning?: string }，实为：',
+      params
+    )
+    return false
+  }
+
+  // 检查设置的index是否越界
+  const renderRecords = getRenderRecords()
+  for (let index of numberIndexes) {
+    if (params.warning && renderRecords?.length - 1 < index) {
+      // 如：数组越界，选择不到指定的记录
+      global.$notification.warning(params.warning)
+      return false
+    }
+  }
+
+  // 基于index获取rowKey
+  let rowKeys = []
+  let selectedRecordsThisTime = []
+  renderRecords.forEach((record, recordIndex) => {
+    let foundIndex = numberIndexes.find((index) => {
+      return index === recordIndex
+    })
+    if (foundIndex >= 0) {
+      rowKeys.push(record.id)
+      selectedRecordsThisTime.push(record)
+    }
+  })
+  tableRef.value.select(rowKeys, params.checked)
+  // 触发事件
+  // ！！！ 注意 由于用表格的select方法，所以不会触发select事件，所以手动触发
+  select(
+    toRaw(getSelectedKeys()),
+    isArray ? rowKeys : rowKeys[0],
+    isArray ? selectedRecordsThisTime : selectedRecordsThisTime[0]
+  )
+}
+
+/**
+ * 通过行的ID值来设置记录的选中状态
+ * @param params rowKey：记录的ID值
+ *               checked：true选中，false不选
+ *               info:如果有信息且选的记录不存在时进行提醒
+ */
+const selectRecordByKey = (params: {
+  rowKey: string | number | (string | number)[]
+  checked: boolean
+  warning?: string
+}) => {
+  let isArray = utils.isArray(params.rowKey)
+  let rowKeys = params.rowKey
+  if (!isArray) {
+    rowKeys = [params.rowKey]
+  }
+
+  // 检查records中是否都存在此次设置的rowKey
+  let selectedRecordsThisTime = []
+  const renderRecords = getRenderRecords()
+  for (let rowKey of rowKeys) {
+    let foundRecord = renderRecords.find((record) => {
+      return record.id == rowKey
+    })
+    if (!foundRecord) {
+      global.$notification.warning(params.warning)
+      return false
+    } else {
+      selectedRecordsThisTime.push(foundRecord)
+    }
+  }
+
+  tableRef.value.select(rowKeys, params.checked)
+  // 触发事件
+  // ！！！ 注意 由于用表格的select方法，所以不会触发select事件，所以手动触发
+  select(
+    toRaw(getSelectedKeys()),
+    isArray ? rowKeys : rowKeys[0],
+    isArray ? selectedRecordsThisTime : selectedRecordsThisTime[0]
+  )
+}
+
 defineExpose({
+  createEntityReaderAsMql,
+  createEntityReader,
+  searchAndExportRecords,
   pushRecordsByKeys,
   pushSelectedRecords,
   unPushRecordsByKeys,
@@ -1160,6 +1315,8 @@ defineExpose({
   createEntitySavers,
   changeColumnsVisible,
   batchUpdate,
+  selectRecordByIndex,
+  selectRecordByKey,
   updateRecord,
   insertRecords,
   deleteRecord,
@@ -1198,11 +1355,27 @@ defineExpose({
 
 <template>
   <a-card
-    class="gl-entity-table-plus"
-    :title="base.hideLabel === true ? '' : base.label"
+    class="gl-card gl-entity-table-plus"
+    :class="{ 'gl-hidden': isHidden, 'gl-hide-header': !isShowLabel }"
     :body-style="{ padding: base.tablePadding }"
-    :style="{ 'padding-top': base.hideLabel === true ? '1.2em' : '0' }"
-  >
+    :bordered="base.bordered"
+    :hoverable="base.hoverable"
+    :size="base.size"
+    >
+    <template #extra>
+      <div class="gl-card-extra-items">
+        <slot name="extra"></slot>
+      </div>
+    </template>
+    <template #title v-if="isShowLabel">
+      <span @click="switchHide" style="cursor: pointer">
+        <span>
+          <GlIconfont v-if="isHidden" type="gl-down-circle"></GlIconfont>
+          <GlIconfont v-else type="gl-right-circle"></GlIconfont>
+        </span>
+        <span>{{ base.hideLabel === true ? '' : base.label }}</span>
+      </span>
+    </template>
     <GlQuery
       v-if="query"
       v-show="base.showQuery !== false"
@@ -1210,8 +1383,10 @@ defineExpose({
       :items="query"
       :triggerByInit="base.triggerByInit"
       :triggerByValueChange="base.triggerByValueChange"
+      :interdictExpression="base.interdictExpression"
       :hideReset="base.hideReset"
       @search="onSearch"
+      style="margin-top: 12px"
     ></GlQuery>
     <a-divider v-show="base.showQuery !== false" style="margin: 8px 0 12px" />
     <GlToolbar
@@ -1341,7 +1516,7 @@ defineExpose({
       :entityName="base.entityName"
       :columns="columns"
       :columnActions="columnActions"
-      :size="size"
+      :size="base.size"
       :showPagination="base.showPagination"
       :showSeqNo="base.showSeqNo"
       :pagination="pagination"
@@ -1380,20 +1555,22 @@ defineExpose({
   </a-card>
 </template>
 
-<style scoped lang="less">
-.action-icon {
-  margin-left: 12px;
-  cursor: pointer;
-}
-
-.setting {
-  display: flex;
-  align-items: center;
-  width: 200px;
-
-  .title {
+<style lang="less">
+.gl-entity-table-plus {
+  .action-icon {
     margin-left: 12px;
     cursor: pointer;
+  }
+
+  .setting {
+    display: flex;
+    align-items: center;
+    width: 200px;
+
+    .title {
+      margin-left: 12px;
+      cursor: pointer;
+    }
   }
 }
 </style>
