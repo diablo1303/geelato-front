@@ -103,6 +103,25 @@ export function exportFile(fileName: string, templateId: string, dataType: strin
 }
 
 /**
+ * 传递 表头、数据定义、业务数据，导出excel
+ * @param fileName 文件名称
+ * @param data { column；meta；values}
+ *   column: GlTableExportColumn[]; // 表格数据
+ *   meta: BusinessMetaData[]; // 元数据
+ *   valueMap: Record<string, any>; // 变量值
+ *   valueMapList:[{ list: Record<string, any>[];}] // 业务数据
+ * @param params 其他参数
+ *   readonly 只读
+ *   waterMark {markKey:水印样式选定,markText:水印文本，默认样式} 水印
+ */
+export function exportExcelByColumnMeta(fileName: string, data: object, params?: Record<string, any>) {
+  const responseParams = `readonly=${params?.readonly === true}&markKey=${params?.waterMark?.markKey || ''}&markText=${params?.waterMark?.markText || ''}`;
+  return entityApi
+    .getAxios()
+    .post(`/api/export/file/column/meta/list?fileName=${fileName}&${responseParams}`, data)
+}
+
+/**
  * 导出excel
  * @param fileName 文件名称
  * @param templateId 模型文档id
