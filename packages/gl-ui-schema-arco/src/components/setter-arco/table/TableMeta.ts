@@ -187,10 +187,11 @@ export default {
           show: true,
           expanded: true,
           displayMode: 'tile',
-          setterComponentProps: {showInput:true},
+          setterComponentProps: { showInput: true },
           setterComponentVModelName: 'modelValue',
           title: '阻断查询 ',
-          description: '阻断查询表达式，主要用于在查询条件为某些值时，中断触发查询操作。表达式执行结果为true时，触发的查询操作在发出查询事件(emits search)之前会被中断， 表达式执行结果为false或undefined时，不中断，表达式为空时不中断。',
+          description:
+            '阻断查询表达式，主要用于在查询条件为某些值时，中断触发查询操作。表达式执行结果为true时，触发的查询操作在发出查询事件(emits search)之前会被中断， 表达式执行结果为false或undefined时，不中断，表达式为空时不中断。',
           setterComponentName: 'GlExpressionSetter'
         },
         {
@@ -550,11 +551,12 @@ export default {
           enableValueExpress: false,
           show: true,
           expanded: true,
-          setterComponentProps: {showInput: true,placeholder:"如：'gl-user'"},
+          setterComponentProps: { showInput: true, placeholder: "如：'gl-user'" },
           setterComponentVModelName: 'modelValue',
           title: '显示图标',
           setterComponentName: 'GlExpressionSetter',
-          description:'显示图标表达式运行结果为图标名称字符串，如："gl-user"；如果配置了图标表达式，生成的图标将添加到列前。'
+          description:
+            '显示图标表达式运行结果为图标名称字符串，如："gl-user"；如果配置了图标表达式，生成的图标将添加到列前。'
         },
         {
           name: '_renderScript',
@@ -566,7 +568,7 @@ export default {
           expanded: true,
           description:
             "显示为自定义的文本，对字段值进行计算，值转换示例：\"$gl.ctx.record.enableStatus == 1 ? '已启用' : '未启用'\"。" +
-              "字段加颜色示例：`<span style='color:red'>${$gl.ctx.record.ecoNo}</span>`;",
+            "字段加颜色示例：`<span style='color:red'>${$gl.ctx.record.ecoNo}</span>`;",
           title: '显示脚本',
           setterComponentName: 'GlExpressionSetter',
           enableValueExpress: false
@@ -698,7 +700,7 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '文本省略',
           setterComponentName: 'ASwitch',
-          description:'启用后，文本内容较多时，会展示为“...”'
+          description: '启用后，文本内容较多时，会展示为“...”'
         },
         {
           name: 'tooltip',
@@ -711,7 +713,24 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '文本提示',
           setterComponentName: 'ASwitch',
-          description:'和文本省略一起使用，启用后，文本内容较多时，会展示为“...”，鼠标移到文本位置，可以看到隐藏的内容。'
+          description:
+            '和文本省略一起使用，启用后，文本内容较多时，会展示为“...”，鼠标移到文本位置，可以看到隐藏的内容。'
+        },
+        {
+          name: '_cellMeta',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          setterComponentProps: {
+            hidePlaceholder: true,
+            hideList: true
+          },
+          setterComponentVModelName: 'modelValue',
+          title: '导出Excel',
+          setterComponentName: 'GlExcelCellSetter',
+          description: '导出Excel时，该列的数据格式定义'
         }
       ],
       setterComponentName: 'GlObjectArraySetter',
@@ -865,7 +884,7 @@ export default {
           description: '是否显示数据条数选择器',
           title: '记录选择器',
           setterComponentName: 'ASwitch',
-          setterDefaultValue:true
+          setterDefaultValue: true
         },
         {
           name: 'pageSizeOptions',
@@ -949,7 +968,7 @@ export default {
       slotComponentName: 'GlComponent',
       slotComponentBindTarget: 'v-model',
       slotComponentBindName: 'glComponentInst'
-    },
+    }
   ],
   actions: [
     {
@@ -959,7 +978,8 @@ export default {
     },
     {
       name: 'creatingEntitySavers',
-      description: '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
+      description:
+        '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
       title: '保存对象完成前'
     },
     {
@@ -994,7 +1014,8 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'Mql',
-        description: '基于当前页面的查询、排序条件获取实体查询对象（Mql格式），可进一步的服务编排，如查询Mql，导出Excel数据。',
+        description:
+          '基于当前页面的查询、排序条件获取实体查询对象（Mql格式），可进一步的服务编排，如查询Mql，导出Excel数据。',
         docId: ''
       }
     },
@@ -1013,7 +1034,8 @@ export default {
       ],
       returnInfo: {
         returnType: 'Promise<Mql>',
-        description: '基于当前的查询条件，进行数据查询并返回数据结果集，获取的数据不做分页，在一页中返回。',
+        description:
+          '基于当前的查询条件，进行数据查询并返回数据结果集，获取的数据不做分页，在一页中返回。',
         docId: ''
       }
     },
@@ -1024,7 +1046,8 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'GetEntitySaversResult，格式：{error:boolean,values:EntitySaver[]}。',
-        description: '将当前表格的数据转换成实体保存对象（EntitySaver），便于用脚本的方式组合成新的实体保存对象，一起进行保存。另外，若需对列表值进行修改再保存，一般建议可以通过表格的creatingEntitySavers动作（详见动作面板）中，获取实体保存对象（EntitySaver）,并对其进行相应的值修改。',
+        description:
+          '将当前表格的数据转换成实体保存对象（EntitySaver），便于用脚本的方式组合成新的实体保存对象，一起进行保存。另外，若需对列表值进行修改再保存，一般建议可以通过表格的creatingEntitySavers动作（详见动作面板）中，获取实体保存对象（EntitySaver）,并对其进行相应的值修改。',
         docId: '4919301630853255168'
       }
     },
@@ -1035,7 +1058,8 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'GetEntitySaversResult，格式：{error:boolean,values:EntitySaver[]}。',
-        description: '将当前表格已选的数据转换成实体保存对象（EntitySaver），便于用脚本的方式组合成新的实体保存对象，一起进行保存。另外，若需对列表值进行修改再保存，一般建议可以通过表格的creatingEntitySavers动作（详见动作面板）中，获取实体保存对象（EntitySaver）,并对其进行相应的值修改。',
+        description:
+          '将当前表格已选的数据转换成实体保存对象（EntitySaver），便于用脚本的方式组合成新的实体保存对象，一起进行保存。另外，若需对列表值进行修改再保存，一般建议可以通过表格的creatingEntitySavers动作（详见动作面板）中，获取实体保存对象（EntitySaver）,并对其进行相应的值修改。',
         docId: '4919301630853255168'
       }
     },
@@ -1046,7 +1070,8 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'Array<Record<string,any>>',
-        description: '获取当前列表页面展示的记录，返回记录数据组,没记录时返回空数组[]，例如：[{id:"1234567890123456789",name:"xxx"}]。'
+        description:
+          '获取当前列表页面展示的记录，返回记录数据组,没记录时返回空数组[]，例如：[{id:"1234567890123456789",name:"xxx"}]。'
       }
     },
     {
@@ -1056,7 +1081,8 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'Array<Record<string,any>>',
-        description: '获取已选的记录，返回记录数据组,没记录时返回空数组[]，例如：[{id:"1234567890123456789",name:"xxx"}]。'
+        description:
+          '获取已选的记录，返回记录数据组,没记录时返回空数组[]，例如：[{id:"1234567890123456789",name:"xxx"}]。'
       }
     },
     {
@@ -1066,7 +1092,8 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'Array<string>',
-        description: '获取已选的记录keys，返回记录数据组,没记录时返回空数组[]，例如：["1234567890123456789","2234567890123456789"]。',
+        description:
+          '获取已选的记录keys，返回记录数据组,没记录时返回空数组[]，例如：["1234567890123456789","2234567890123456789"]。'
       }
     },
     {
@@ -1076,8 +1103,10 @@ export default {
         '获取通过外部添加进来的记录，返回记录数据组,没记录时返回空数组[]。用于作为子列表时，打开页面选择记录进来的场景，如，创建账单的明细时，需要引用订单中的费用明细记录，此时可以打开订单费用明细表，选择记录之后，调用本方法，将所选记录push进账单的费用明细记录上。',
       params: [],
       returnInfo: {
-        returnType: 'Array<Record<string,any>>，没记录时返回空数组[]，例如：[{id:"1234567890123456789",name:"xxx"}]，这里的id为选择push进来的记录的id。',
-        description: '获取通过外部添加进来的记录，返回记录数据组。用于作为子列表时，打开页面选择记录进来的场景，如，创建账单时，需要关键订单中已存在的费用明细记录，可以打开订单费用明细表页面，选择记录之后，调用本方法，将所选记录push进账单的费用明细记录上，实现引用，便于进一步为这些明细设置账单id。'
+        returnType:
+          'Array<Record<string,any>>，没记录时返回空数组[]，例如：[{id:"1234567890123456789",name:"xxx"}]，这里的id为选择push进来的记录的id。',
+        description:
+          '获取通过外部添加进来的记录，返回记录数据组。用于作为子列表时，打开页面选择记录进来的场景，如，创建账单时，需要关键订单中已存在的费用明细记录，可以打开订单费用明细表页面，选择记录之后，调用本方法，将所选记录push进账单的费用明细记录上，实现引用，便于进一步为这些明细设置账单id。'
       }
     },
     {
@@ -1087,7 +1116,8 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'Array<string>',
-        description: '获取通过外部添加进来的记录keys(ids)，返回记录数据组,没记录时返回空数组[]，例如：["1234567890123456789","2234567890123456789"]。',
+        description:
+          '获取通过外部添加进来的记录keys(ids)，返回记录数据组,没记录时返回空数组[]，例如：["1234567890123456789","2234567890123456789"]。'
       }
     },
     {
@@ -1097,7 +1127,8 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'Record<string,any>',
-        description: '获取已选第一条记录,没记录时返回空对象{}，例如：{id:"1234567890123456789",name:"xxx"}。',
+        description:
+          '获取已选第一条记录,没记录时返回空对象{}，例如：{id:"1234567890123456789",name:"xxx"}。'
       }
     },
     {
@@ -1107,7 +1138,8 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'Record<string,any>',
-        description: '获取已选最后一条记录,没记录时返回空对象{}，例如：{id:"1234567890123456789",name:"xxx"}。',
+        description:
+          '获取已选最后一条记录,没记录时返回空对象{}，例如：{id:"1234567890123456789",name:"xxx"}。'
       }
     },
     {
@@ -1125,14 +1157,13 @@ export default {
       ],
       returnInfo: {
         returnType: 'number',
-        description: '获取当前列表中，某一列的值求和。',
+        description: '获取当前列表中，某一列的值求和。'
       }
     },
     {
       name: 'getColumnsSum',
       title: '获取多个列的分别求和',
-      description:
-        '获取多个列的分别求和',
+      description: '获取多个列的分别求和',
       params: [
         {
           name: 'dataIndexes',
@@ -1144,14 +1175,14 @@ export default {
       ],
       returnInfo: {
         returnType: 'Record<string, number>,key为列名，value为该列的求和值',
-        description: '获取当前列表中，多个列的值分别求和，返回求和值对象，如：{money:100,count:200}。',
+        description:
+          '获取当前列表中，多个列的值分别求和，返回求和值对象，如：{money:100,count:200}。'
       }
     },
     {
       name: 'getColumnGroupSum',
       title: '分组求和',
-      description:
-        '分组求和，返回{groupName1:value1,groupName2:value2}',
+      description: '分组求和，返回{groupName1:value1,groupName2:value2}',
       params: [
         {
           name: 'groupDataIndex',
@@ -1170,7 +1201,8 @@ export default {
       ],
       returnInfo: {
         returnType: 'Record<string, number>,key为分组的列名，value为值列的求和值',
-        description: '分组求和，以某列作为组名，求另一列的汇总值，如在一个班级人员清单中（班级、人员名称、费用），统计各年级的费用，{班级1:100,班级2:102,班级3:300}。',
+        description:
+          '分组求和，以某列作为组名，求另一列的汇总值，如在一个班级人员清单中（班级、人员名称、费用），统计各年级的费用，{班级1:100,班级2:102,班级3:300}。'
       }
     },
     {
@@ -1195,7 +1227,8 @@ export default {
       ],
       returnInfo: {
         returnType: 'string，如“值1,值2,值3”',
-        description: '获取列值拼接字符串，空值被排除，例如，4行记录，列值分别为100、60、undefined、40，返回："100,60,40"。',
+        description:
+          '获取列值拼接字符串，空值被排除，例如，4行记录，列值分别为100、60、undefined、40，返回："100,60,40"。'
       }
     },
     {
@@ -1213,15 +1246,17 @@ export default {
         }
       ],
       returnInfo: {
-        returnType: '{ pushedKeys:Array<string>, failPushedKeys:Array<string> }，其中pushedKeys为成功添加的ids，failPushedKeys为因目标列表相应id已存在，未能添加成功的ids。',
-        description: '给列表标记添加ids作为or查询条件，以查询出相应的记录在前端进行标记展示（只是在前端标记，需要保存整个列表才会最终生效），类似于选择库存商品（ids）到已选择商品列表中，触发已选择商品列表依据ids进行数据加载并展示。',
+        returnType:
+          '{ pushedKeys:Array<string>, failPushedKeys:Array<string> }，其中pushedKeys为成功添加的ids，failPushedKeys为因目标列表相应id已存在，未能添加成功的ids。',
+        description:
+          '给列表标记添加ids作为or查询条件，以查询出相应的记录在前端进行标记展示（只是在前端标记，需要保存整个列表才会最终生效），类似于选择库存商品（ids）到已选择商品列表中，触发已选择商品列表依据ids进行数据加载并展示。'
       }
     },
     {
       name: 'unPushRecordsByKeys',
       title: '基于ids【标记】移除列表前端页面的记录',
       description:
-          '基于ids移除列表前端页面的记录，这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录。',
+        '基于ids移除列表前端页面的记录，这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录。',
       params: [
         {
           name: 'keys',
@@ -1232,8 +1267,10 @@ export default {
         }
       ],
       returnInfo: {
-        returnType: '{ unPushedKeys:Array<string>, needToUnPushFormServerKeys:Array<string> }，其中unPushedKeys为成功标记移除的ids，needToUnPushFormServerKeys为标记待删除，服务端待删除的记录ids。',
-        description: '基于ids标记移除列表前端页面的记录（只是在前端标记，需要保存整个列表才会最终生效），这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录，类似于从购车中标记移除已选择的商品。',
+        returnType:
+          '{ unPushedKeys:Array<string>, needToUnPushFormServerKeys:Array<string> }，其中unPushedKeys为成功标记移除的ids，needToUnPushFormServerKeys为标记待删除，服务端待删除的记录ids。',
+        description:
+          '基于ids标记移除列表前端页面的记录（只是在前端标记，需要保存整个列表才会最终生效），这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录，类似于从购车中标记移除已选择的商品。'
       }
     },
     {
@@ -1243,8 +1280,10 @@ export default {
         '将选择的记录，重新标记为待添加状态，其内调用了pushRecordsByKeys方法，将当前已选择的keys作为参数自动传入。',
       params: [],
       returnInfo: {
-        returnType: '{ pushedKeys:Array<string>, failPushedKeys:Array<string> }，其中pushedKeys为成功添加的ids，failPushedKeys为因目标列表相应id已存在，未能添加成功的ids。',
-        description: '将选择的记录，重新标记为待添加状态，其内调用了pushRecordsByKeys方法，将当前已选择的keys作为参数自动传入。',
+        returnType:
+          '{ pushedKeys:Array<string>, failPushedKeys:Array<string> }，其中pushedKeys为成功添加的ids，failPushedKeys为因目标列表相应id已存在，未能添加成功的ids。',
+        description:
+          '将选择的记录，重新标记为待添加状态，其内调用了pushRecordsByKeys方法，将当前已选择的keys作为参数自动传入。'
       }
     },
     {
@@ -1254,8 +1293,10 @@ export default {
         '标记已选的记录为待移除，这些记录可能是刚加入前端页面还未保存的，也可能是之前已保存的记录。',
       params: [],
       returnInfo: {
-        returnType: '{ unPushedKeys:Array<string>, needToUnPushFormServerKeys:Array<string> }，其中unPushedKeys为成功标记移除的ids，needToUnPushFormServerKeys为标记待删除，服务端待删除的记录ids。',
-        description: '将选择的记录，重新标记为待删除状态，其内调用了unPushRecordsByKeys方法，将当前已选择的keys作为参数自动传入。',
+        returnType:
+          '{ unPushedKeys:Array<string>, needToUnPushFormServerKeys:Array<string> }，其中unPushedKeys为成功标记移除的ids，needToUnPushFormServerKeys为标记待删除，服务端待删除的记录ids。',
+        description:
+          '将选择的记录，重新标记为待删除状态，其内调用了unPushRecordsByKeys方法，将当前已选择的keys作为参数自动传入。'
       }
     },
     {
@@ -1280,7 +1321,7 @@ export default {
       ],
       returnInfo: {
         returnType: 'boolean，值为：true | false',
-        description: '是否选择了记录。',
+        description: '是否选择了记录。'
       }
     },
     {
@@ -1290,7 +1331,7 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'boolean，值为：true | false',
-        description: '如果对表做了push或unPush操作，未保存时，返回true，否则返回false。',
+        description: '如果对表做了push或unPush操作，未保存时，返回true，否则返回false。'
       }
     },
     {
@@ -1300,14 +1341,13 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'boolean，值为：true | false',
-        description: '当前列表页面是否有数据。',
+        description: '当前列表页面是否有数据。'
       }
     },
     {
       name: 'isSelectedRecordsSameColumn',
       title: '检查某一列的值是否相同',
-      description:
-          '检查某一列的值是否相同，如果检查的列存两个或以上不同的值',
+      description: '检查某一列的值是否相同，如果检查的列存两个或以上不同的值',
       params: [
         {
           name: 'dataIndex',
@@ -1319,7 +1359,8 @@ export default {
       ],
       returnInfo: {
         returnType: 'boolean，值为：true | false',
-        description: '检查某一列的值是否相同，如果检查的列存两个或以上不同的值，或当前列表没有选择记录，返回false，否则返回true',
+        description:
+          '检查某一列的值是否相同，如果检查的列存两个或以上不同的值，或当前列表没有选择记录，返回false，否则返回true'
       }
     },
     {
@@ -1344,7 +1385,7 @@ export default {
       ],
       returnInfo: {
         returnType: 'void',
-        description: '更改列的展示/隐藏属性，不指定的列保持原状。',
+        description: '更改列的展示/隐藏属性，不指定的列保持原状。'
       }
     },
     {
@@ -1363,7 +1404,7 @@ export default {
       ],
       returnInfo: {
         returnType: 'Promise | undefined',
-        description: '批量更新所选记录，保存到服务端。',
+        description: '批量更新所选记录，保存到服务端。'
       }
     },
     {
@@ -1383,7 +1424,8 @@ export default {
       ],
       returnInfo: {
         returnType: 'Promise | undefined',
-        description: '依据传入的record，更新该记录，保存到服务端，该记录需要有id值。在表格的操作列的动用中调用此方法时，可以通过$gl.ctx.record，获取当前操作的行记录。',
+        description:
+          '依据传入的record，更新该记录，保存到服务端，该记录需要有id值。在表格的操作列的动用中调用此方法时，可以通过$gl.ctx.record，获取当前操作的行记录。'
       }
     },
     {
@@ -1400,7 +1442,8 @@ export default {
       ],
       returnInfo: {
         returnType: 'Promise | string | boolean',
-        description: '删除一行记录（基于ID）,如果未传入需要删除的记录id，则返回false，若删除了push进来（即标记删除）的记录，则返回该记录id，若是删除服务端的记录则返回promise。',
+        description:
+          '删除一行记录（基于ID）,如果未传入需要删除的记录id，则返回false，若删除了push进来（即标记删除）的记录，则返回该记录id，若是删除服务端的记录则返回promise。'
       }
     },
     {
@@ -1417,7 +1460,8 @@ export default {
       ],
       returnInfo: {
         returnType: 'Promise | string | boolean',
-        description: '删除一行记录（基于ID）,如果未传入需要删除的记录id，则返回false，若删除了push进来（即标记删除）的记录，则返回该记录id，若是删除服务端的记录则返回promise。与deleteRecord类似，不同的是，该方法会在删除前进行确认，是否要删除。',
+        description:
+          '删除一行记录（基于ID）,如果未传入需要删除的记录id，则返回false，若删除了push进来（即标记删除）的记录，则返回该记录id，若是删除服务端的记录则返回promise。与deleteRecord类似，不同的是，该方法会在删除前进行确认，是否要删除。'
       }
     },
     {
@@ -1426,7 +1470,7 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'Promise | undefined',
-        description: '删除选择的记录（基于IDs）',
+        description: '删除选择的记录（基于IDs）'
       }
     },
     {
@@ -1435,14 +1479,13 @@ export default {
       params: [],
       returnInfo: {
         returnType: 'Promise | undefined',
-        description: '删除选择的记录（基于IDs）,带删除确认提醒',
+        description: '删除选择的记录（基于IDs）,带删除确认提醒'
       }
     },
     {
       name: 'selectRecordByIndex',
       title: '基于记录索引设置行选择器状态',
-      description:
-          '设置行选择器状态，标识为选中或非选中状态',
+      description: '设置行选择器状态，标识为选中或非选中状态',
       params: [
         {
           name: 'rowIndex',
@@ -1450,15 +1493,14 @@ export default {
           required: true,
           type: 'number|number[]',
           description:
-              '第几条记录，0表示第1条，1表示第2条，以此类推，可以选择多条记录如：[0,1]选择第一和第二条。'
+            '第几条记录，0表示第1条，1表示第2条，以此类推，可以选择多条记录如：[0,1]选择第一和第二条。'
         },
         {
           name: 'checked',
           title: '选择器的状态',
           required: true,
           type: 'boolean',
-          description:
-              '选择器的状态，true为选中,false为不选中。'
+          description: '选择器的状态，true为选中,false为不选中。'
         },
         {
           name: 'warning',
@@ -1466,19 +1508,19 @@ export default {
           required: false,
           type: 'boolean',
           description:
-              '如果配置了该信息，在没设置成功时，进行提醒，设置成功则不提醒。提示信息示例：“在当前的列表范围内找不到要设置的记录”。'
+            '如果配置了该信息，在没设置成功时，进行提醒，设置成功则不提醒。提示信息示例：“在当前的列表范围内找不到要设置的记录”。'
         }
       ],
       returnInfo: {
         returnType: 'void',
-        description: '通过记录的索引值设置行选择器状态，可用配合fetchSuccess事件一起使用，在fetchSuccess之后，默认选择第一条记录。',
+        description:
+          '通过记录的索引值设置行选择器状态，可用配合fetchSuccess事件一起使用，在fetchSuccess之后，默认选择第一条记录。'
       }
     },
     {
       name: 'selectRecordByKey',
       title: '基于记录ID设置行选择器状态',
-      description:
-          '设置行选择器状态，标识为选中或非选中状态',
+      description: '设置行选择器状态，标识为选中或非选中状态',
       params: [
         {
           name: 'rowKey',
@@ -1486,15 +1528,14 @@ export default {
           required: true,
           type: 'string|string[]',
           description:
-              '可以是一个或多个ID值，如“1234567890123456789”，或["1234567890123456789","1234567890123456781"]。'
+            '可以是一个或多个ID值，如“1234567890123456789”，或["1234567890123456789","1234567890123456781"]。'
         },
         {
           name: 'checked',
           title: '选择器的状态',
           required: true,
           type: 'boolean',
-          description:
-              '选择器的状态，true为选中,false为不选中。'
+          description: '选择器的状态，true为选中,false为不选中。'
         },
         {
           name: 'warning',
@@ -1502,14 +1543,15 @@ export default {
           required: false,
           type: 'boolean',
           description:
-              '如果配置了该信息，在没设置成功时，进行提醒，设置成功则不提醒。提示信息示例：“在当前的列表范围内找不到要设置的记录”。'
+            '如果配置了该信息，在没设置成功时，进行提醒，设置成功则不提醒。提示信息示例：“在当前的列表范围内找不到要设置的记录”。'
         }
       ],
       returnInfo: {
         returnType: 'void',
-        description: '通过记录的ID值设置行选择器状态，可用配合fetchSuccess事件一起使用，在fetchSuccess之后，默认选择第一条记录。',
+        description:
+          '通过记录的ID值设置行选择器状态，可用配合fetchSuccess事件一起使用，在fetchSuccess之后，默认选择第一条记录。'
       }
-    },
+    }
   ],
   innerComponents: [
     { title: '查询条件', propPath: 'props.query' },

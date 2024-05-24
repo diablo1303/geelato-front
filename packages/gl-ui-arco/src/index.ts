@@ -1,6 +1,6 @@
-import type {App, Plugin} from 'vue'
-import GlInputPassword from "./components/gl-input/GlInputPassword.vue";
-import GlInputSearch from "./components/gl-input/GlInputSearch.vue";
+import type { App, Plugin } from 'vue'
+import GlInputPassword from './components/gl-input/GlInputPassword.vue'
+import GlInputSearch from './components/gl-input/GlInputSearch.vue'
 import GlPage from './components/gl-page/GlPage.vue'
 import GlPageTemplateFlow from './components/gl-page-template/GlPageTemplateFlow.vue'
 import GlEntityTablePlus from './components/gl-entity-table-plus/index.vue'
@@ -28,29 +28,39 @@ import GlButton from './components/gl-button/GlButton.vue'
 import GlEntityCascader from './components/gl-entity-cascader/GlEntityCascader.vue'
 import GlTimeline from './components/gl-timeline/GlTimeline.vue'
 import GlOpRecord from './components/gl-op-record/GlOpRecord.vue'
-import {getFormParams} from './components/gl-entity-form/GlEntityForm'
-import {getLabel} from './components/MetaHelper'
+import { getFormParams } from './components/gl-entity-form/GlEntityForm'
+import { getLabel } from './components/MetaHelper'
 import GlEmpty from './components/gl-empty/GlEmpty.vue'
 import GlSelect from './components/gl-select/GlSelect.vue'
 import GlImport from './components/gl-import/GlImport.vue'
-import GlLayoutPage from "./components/gl-layout-page/GlLayoutPage.vue";
+import GlLayoutPage from './components/gl-layout-page/GlLayoutPage.vue'
 import GlLayoutSite from './components/gl-layout-site/GlLayoutSite.vue'
-import GlBlocks from "./components/gl-blocks/GlBlocks.vue";
-import GlList from "./components/gl-list/GlList.vue";
-import GlTinymce from "./components/gl-tinymce/GlTinymce.vue";
-import GlPageHelp from "./components/gl-page-help/GlPageHelp.vue";
-import GlPagination from "./components/gl-pagination/GlPagination.vue";
-import GlSpace from "./components/gl-space/GlSpace.vue";
-import GlSlot from "./components/gl-slot/GlSlot.vue";
-import GlOrgSelect from "./components/gl-org-select/index.vue";
-import GlOrgUserSelect from "./components/gl-org-user-select/index.vue";
-import GlPageTemplateStateWF from "./components/gl-page-template/state-wf/GlPageTemplateStateWF.vue";
+import GlBlocks from './components/gl-blocks/GlBlocks.vue'
+import GlList from './components/gl-list/GlList.vue'
+import GlTinymce from './components/gl-tinymce/GlTinymce.vue'
+import GlPageHelp from './components/gl-page-help/GlPageHelp.vue'
+import GlPagination from './components/gl-pagination/GlPagination.vue'
+import GlSpace from './components/gl-space/GlSpace.vue'
+import GlSlot from './components/gl-slot/GlSlot.vue'
+import GlOrgSelect from './components/gl-org-select/index.vue'
+import GlOrgUserSelect from './components/gl-org-user-select/index.vue'
+import GlPageTemplateStateWF from './components/gl-page-template/state-wf/GlPageTemplateStateWF.vue'
+import type {
+  ExcelCellMeta,
+} from './components/gl-entity-table-plus/constants'
+import {
+  ExcelCellValueTypeOptions,
+  ExcelCellValueComputeModeOptions,
+  ExcelCellValueType,
+  ExcelCellValueComputeMode
+} from './components/gl-entity-table-plus/constants'
 import en from './locale/en-US'
 import cn from './locale/zh-CN'
-import {Drawer, Modal, RangePicker} from '@arco-design/web-vue'
-import {PluginUtil} from '@geelato/gl-ui'
+import { Drawer, Modal, RangePicker } from '@arco-design/web-vue'
+import { PluginUtil } from '@geelato/gl-ui'
 import './assets/style.css'
-const i18nMessage = {en, cn}
+
+const i18nMessage = { en, cn }
 
 const component: Plugin = {
   install: function (Vue: App) {
@@ -75,8 +85,8 @@ const component: Plugin = {
     Vue.component(GlLayoutPage.name, GlLayoutPage)
     Vue.component('GlEntityTablePlus', GlEntityTablePlus)
     Vue.component(GlBlocks.name, GlBlocks)
-    Vue.component(GlList.name, GlList);
-    Vue.component(GlTinymce.name, GlTinymce);
+    Vue.component(GlList.name, GlList)
+    Vue.component(GlTinymce.name, GlTinymce)
     // 表格注册多一个，作为子表单，在配置时减少一些不必要的配置项
     Vue.component('GlEntityTableSub', GlEntityTablePlus)
     Vue.component(GlRefPage.name, GlRefPage)
@@ -101,9 +111,9 @@ const component: Plugin = {
     Vue.component(GlPagination.name, GlPagination)
     Vue.component(GlSpace.name, GlSpace)
     Vue.component(GlSlot.name, GlSlot)
-    Vue.component(GlOrgSelect.name, GlOrgSelect);
-    Vue.component(GlOrgUserSelect.name, GlOrgUserSelect);
-    Vue.component(GlPageTemplateStateWF.name,GlPageTemplateStateWF)
+    Vue.component(GlOrgSelect.name, GlOrgSelect)
+    Vue.component(GlOrgUserSelect.name, GlOrgUserSelect)
+    Vue.component(GlPageTemplateStateWF.name, GlPageTemplateStateWF)
     Vue.component('GlRangePicker', RangePicker)
     Vue.component('GlModal', Modal)
     Vue.component('GlDrawer', Drawer)
@@ -120,6 +130,15 @@ const component: Plugin = {
   }
 }
 
-export {i18nMessage, getFormParams, getLabel}
+export {
+  i18nMessage,
+  getFormParams,
+  getLabel,
+  ExcelCellMeta,
+  ExcelCellValueType,
+  ExcelCellValueComputeMode,
+  ExcelCellValueTypeOptions,
+  ExcelCellValueComputeModeOptions
+}
 // 默认导出组件
 export default component

@@ -13,17 +13,18 @@ import GlToolbar from '../gl-toolbar/index.vue'
 import GlEntityTable from './GlEntityTable.vue'
 import GlEntityTableEditable from './GlEntityTableEdit.vue'
 import { computed, inject, onMounted, type PropType, ref, type Ref, toRaw } from 'vue'
-import type { EntityReaderParam } from '@geelato/gl-ui'
+import { type EntityReaderParam, fileApi } from '@geelato/gl-ui'
 import QueryItem, { QueryItemKv } from '../gl-query/query'
 import cloneDeep from 'lodash/cloneDeep'
 import {
   type SizeProps,
   type Column,
-  defaultTable,
   type GlTableColumn,
-  BaseInfo,
-  createExportColumns
-} from './table'
+  type FilterType,
+  type MyEntityTableConfig,
+  BaseInfo
+} from './constants'
+import { defaultTable, createExportColumns, createExportDataCellMetas } from './table'
 import Toolbar, { defaultToolbar } from '../gl-toolbar/toolbar'
 import { useI18n } from 'vue-i18n'
 import {
@@ -43,7 +44,6 @@ import {
 } from '@geelato/gl-ui'
 import type { Action } from '../../types/global'
 import type { TableData, TableColumnData, PaginationProps } from '@arco-design/web-vue'
-import type { FilterType, MyEntityTableConfig } from './types'
 import FilterManager from '../gl-query/FilterManager.vue'
 
 const global = useGlobal()
@@ -139,6 +139,12 @@ const props = defineProps({
         pageSizeOptions: [5, 10, 15, 20, 30, 40, 50]
       }
     }
+  },
+  /**
+   *  默认导出Excel的配置
+   */
+  export: {
+    enableExportCurrentPage: Boolean
   },
   readonly: Boolean,
   ...mixins.props
@@ -1167,10 +1173,6 @@ const getColumnGroupSum = (params: { groupDataIndex: string; sumDataIndex: strin
   return groupSum
 }
 
-const createExportColumns = () => {
-  return createExportColumns(tableRef.value.getRenderColumns)
-}
-
 const createEntityReader = (params: { pageSize: number; pageNo?: number }) => {
   const entityReaderParams: Array<EntityReaderParam> = queryRef.value.createEntityReaderParams()
   return tableRef.value.getEntityReader(entityReaderParams, params)
@@ -1304,6 +1306,41 @@ const selectRecordByKey = (params: {
   )
 }
 
+/**
+ *  导出所有页的数据
+ */
+const exportExcelAll = () => {
+  let fileName = props.base.label
+  let data = {
+    column: createExportColumns(tableRef.value.getRenderColumns()),
+    meta: createExportDataCellMetas(tableRef.value.getRenderColumns()),
+    valueMapList: { list: getRenderRecords() },
+    valueMap: {}
+  }
+  return fileApi.exportExcelByColumnMeta(fileName, data).then(
+    (res: any) => {
+      if (res?.data?.id) {
+        global.$notification.info({
+          content: '可请在“工作台>我导出的文档”查看已下载的文件',
+          showIcon: true,
+          duration: 8000,
+          id: 'msg_g8UGXiSAqoG9YF3X'
+        })
+        fileApi.downloadFileById(res.data.id, false)
+      }
+    },
+    (e: any) => {
+      global.$notification.error({
+        title: '',
+        content: '导出失败',
+        showIcon: true,
+        duration: 8000,
+        id: 'notif_jnYqitjpvWlJxF'
+      })
+    }
+  )
+}
+
 defineExpose({
   createEntityReaderAsMql,
   createEntityReader,
@@ -1361,7 +1398,7 @@ defineExpose({
     :bordered="base.bordered"
     :hoverable="base.hoverable"
     :size="base.size"
-    >
+  >
     <template #extra>
       <div class="gl-card-extra-items">
         <slot name="extra"></slot>
@@ -1424,8 +1461,13 @@ defineExpose({
           </template>
         </a-modal>
         <a-space v-if="!props.base?.enableEdit">
+          <!-- 默认的导出Excel功能 -->
+          <a-tooltip content="导出当前查询的所有数据，包括分页的数据，不只是当前页数据">
+            <a-button type="primary" @click="exportExcelAll">
+              <gl-iconfont type="gl-file-excel" text="导出"></gl-iconfont>
+            </a-button>
+          </a-tooltip>
           <!-- 过滤器 -->
-
           <a-button-group size="mini" class="action-icon" shape="round" v-if="myComponentCustom">
             <a-tooltip content="我的常用过滤，可以保存多组常用过滤">
               <a-button type="primary" shape="circle" @click="openEditFilterModal(null)">

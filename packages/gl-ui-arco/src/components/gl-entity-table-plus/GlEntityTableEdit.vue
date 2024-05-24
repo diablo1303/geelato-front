@@ -34,9 +34,8 @@ import {
   EntityReaderOrder
 } from '@geelato/gl-ui'
 import { Schema } from 'b-validate'
+import { type Column, type GlTableColumn, SlotNameSeq } from './constants'
 import {
-  type Column,
-  type GlTableColumn,
   evalColumnExpression,
   exchangeArray,
   logicDeleteFieldName,
@@ -46,7 +45,7 @@ import {
   statIsRowReadonly,
   genShowColumns,
   showSeqNoColumn,
-  SlotNameSeq, slotNameOperation,
+  slotNameOperation
 } from './table'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import type { ValidatedError } from '../gl-entity-form/GlEntityForm'
@@ -184,7 +183,6 @@ const renderColumns: Ref<GlTableColumn[]> = ref([])
 // 行是否只读
 const isRowReadonlyArray = ref([] as boolean[])
 
-
 /**
  *  统计行是否只读
  */
@@ -287,7 +285,6 @@ const genColumnTitleAndRequired = () => {
  *  重置所有的列
  */
 const resetColumns = () => {
-
   // 基于输入的props.columns，完善标题、必填验证等信息
   genColumnTitleAndRequired()
 
@@ -304,7 +301,7 @@ const resetColumns = () => {
     showRecordStatus: false
   })
   // 最终展示在列表中的列
-  renderColumns.value = genRenderColumns(showColumns,true)
+  renderColumns.value = genRenderColumns(showColumns, true)
 
   // 基于生成校验规则对象
   genRecordValidateSchema()
@@ -342,7 +339,7 @@ const resetDeleteDataWhenEnableEdit = () => {
 }
 const _pagination = reactive({
   ...props.pagination,
-  pageSize: props.pagination.defaultPageSize,
+  pageSize: props.pagination.defaultPageSize
 })
 
 /**
@@ -655,7 +652,7 @@ const insertRecords = (params: {
     params?.records?.forEach((record: Record<string, any>) => {
       // let isSameRecord = false
       // 判断是否与当前列表中的数据重复
-      const foundSameRecord =  renderData.value.find((item: Record<string, any>) => {
+      const foundSameRecord = renderData.value.find((item: Record<string, any>) => {
         let allUniqueDataIndexAreSame = true
         params.uniqueDataIndexes.forEach((uniqueDataIndex: string) => {
           if (item[uniqueDataIndex] != record[uniqueDataIndex]) {
@@ -671,13 +668,13 @@ const insertRecords = (params: {
         insertRecords.push(record)
       }
     })
-  }else{
-    insertRecords.push(...params.records||[])
+  } else {
+    insertRecords.push(...(params.records || []))
   }
 
   if (sameRecords.length > 0) {
     global.$notification.warning({
-      duration:5000,
+      duration: 5000,
       content: `插入的数据中，${sameRecords.length}条与当前列表的数据一致，不插入这部分数据。`
     })
   }
@@ -789,10 +786,9 @@ const tableRef = ref()
 const selectAll = (checked: boolean) => {
   return tableRef.value.selectAll(checked)
 }
-const select = (rowIndex:number,checked: boolean) => {
-  return tableRef.value.select(rowIndex,checked)
+const select = (rowIndex: number, checked: boolean) => {
+  return tableRef.value.select(rowIndex, checked)
 }
-
 
 const getRef = () => {
   return tableRef.value
@@ -882,7 +878,10 @@ defineExpose({
         </a-button>
       </a-space>
     </template>
-    <template v-for="slotColumn in slotColumnsWithNoOperation" v-slot:[slotColumn.slotName]="{ record, rowIndex,column }">
+    <template
+      v-for="slotColumn in slotColumnsWithNoOperation"
+      v-slot:[slotColumn.slotName]="{ record, rowIndex, column }"
+    >
       <template v-if="slotColumn.slotName === SlotNameSeq">
         {{ rowIndex + 1 }}
       </template>
@@ -890,7 +889,7 @@ defineExpose({
         class="gl-entity-table-cols-opt"
         :style="{
           'background-color': column._bgColor
-            ? evalColumnExpression('_bgColor',{ record, column, rowIndex }, pageProvideProxy)
+            ? evalColumnExpression('_bgColor', { record, column, rowIndex }, pageProvideProxy)
             : ''
         }"
         :class="{
@@ -898,7 +897,8 @@ defineExpose({
         }"
         :title="tableErrors[rowIndex]?.[column.dataIndex]?.message"
       >
-        <GlComponent v-if="column._component"
+        <GlComponent
+          v-if="column._component"
           v-model="renderData[rowIndex][column.dataIndex]"
           @update="updateRow(record, rowIndex, renderColumns, $event, this)"
           :glComponentInst="cloneDeepColumnComponent(column._component)"
@@ -930,9 +930,9 @@ defineExpose({
   height: 1.5em !important;
 }
 
- /* 隐藏分页器中的分页码部分，只显示当前这个列表最多展示多少行 */
+/* 隐藏分页器中的分页码部分，只显示当前这个列表最多展示多少行 */
 .gl-entity-table-edit span.arco-pagination-simple {
-    display: none;
+  display: none;
 }
 
 .gl-entity-table-edit .gl-validate-message {

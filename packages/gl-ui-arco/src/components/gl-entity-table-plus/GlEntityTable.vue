@@ -19,8 +19,14 @@ import {
 import {
   type Column,
   type EntityFetchDataProps,
-  evalColumnExpression,
   type GlTableColumn,
+  type EntityFetchDataInfo,
+  SlotNameSeq,
+  SlotNameRecordStatus,
+  RecordPushStatusNames
+} from './constants'
+import {
+  evalColumnExpression,
   showOptColumn,
   showRecordStatus,
   showSeqNoColumn,
@@ -28,13 +34,9 @@ import {
   genShowColumns,
   useFetchData,
   genQueryColumns,
-  SlotNameSeq,
-  SlotNameRecordStatus,
   getRecordPushStatus,
-  RecordPushStatusNames,
   slotNameOperation,
-  createEntityReader,
-  type EntityFetchDataInfo
+  createEntityReader
 } from './table'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import cloneDeep from 'lodash/cloneDeep'

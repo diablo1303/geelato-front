@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import { type PropType, ref, watch } from 'vue'
-import type { FilterType } from '../gl-entity-table-plus/types'
+import type { FilterType } from '../gl-entity-table-plus/constants'
 import type { QueryItemKv } from './query'
 
 const emits = defineEmits(['update:modelValue'])
