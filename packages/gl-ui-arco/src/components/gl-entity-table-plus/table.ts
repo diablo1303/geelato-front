@@ -33,7 +33,8 @@ import {
 export const createExportColumns = (renderColumns: GlTableColumn[]): ExcelColumnMeta[] => {
   let result: ExcelColumnMeta[] = []
   renderColumns.forEach((col) => {
-    if (col._show !== false) {
+    // 对于序号列、操作列 dataIndex 为空，需要去掉
+    if (col._show !== false&&col.dataIndex) {
       result.push({
         dataIndex: col.dataIndex,
         title: col.title,
@@ -54,7 +55,8 @@ export const createExportColumns = (renderColumns: GlTableColumn[]): ExcelColumn
 export const createExportDataCellMetas = (renderColumns: GlTableColumn[]): ExcelCellMeta[] => {
   let result: ExcelCellMeta[] = []
   renderColumns.forEach((col) => {
-    if (col._show !== false) {
+    // 对于序号列、操作列 dataIndex 为空，需要去掉
+    if (col._show !== false&&col.dataIndex) {
       let mode = col._cellMeta?.valueComputeMode
       if (!mode) {
         // 默认是变量
