@@ -56,6 +56,51 @@ export default {
           setterComponentName: 'GlEntitySelect'
         },
         {
+          name: 'bordered',
+          setterComponentProps: { defaultValue: true },
+          setterComponentVModelName: 'modelValue',
+          group: 'base',
+          type: 'props',
+          show: true,
+          expanded: true,
+          title: '带边框',
+          setterComponentName: 'ASwitch'
+        },
+        {
+          name: 'hoverable',
+          group: 'base',
+          type: 'props',
+          show: true,
+          expanded: true,
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          title: '悬浮样式',
+          setterComponentName: 'ASwitch'
+        },
+        {
+          name: 'size',
+          group: 'base',
+          type: 'props',
+          show: true,
+          expanded: true,
+          setterComponentProps: {
+            type: 'button',
+            defaultValue: 'medium',
+            options: [
+              { label: '一般', v_L0IeSNWMqjSZkU4L: 'medium', value: 'medium' },
+              {
+                label: '小',
+                v_L0IeSNWMqjSZkU4L: 'small',
+                value: 'small'
+              }
+            ]
+          },
+          setterComponentVModelName: 'modelValue',
+          title: '大小',
+          setterComponentName: 'ARadioGroup',
+          setterDefaultValue: 'small'
+        },
+        {
           name: 'isFormSubTable',
           group: 'base',
           type: 'props',
@@ -804,6 +849,21 @@ export default {
       ],
       setterComponentName: 'GlSimpleObjectSetter',
       title: '分页'
+    },
+    {
+      name: 'extra',
+      group: 'base',
+      type: 'slots',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      title: '右上插槽',
+      setterComponentName: 'GlSlotSetter',
+      slotComponentName: 'GlComponent',
+      slotComponentBindTarget: 'v-model',
+      slotComponentBindName: 'glComponentInst'
     },
     {
       name: 'readonly',

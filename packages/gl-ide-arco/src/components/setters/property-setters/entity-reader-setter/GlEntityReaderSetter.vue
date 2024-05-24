@@ -14,7 +14,7 @@
     </tr>
     <!--========================= 查询列 ===========================-->
     <tr>
-      <td class="gl-table-cell gl-label">数据列</td>
+      <td class="gl-table-cell gl-label">查询的数据列</td>
     </tr>
     <tr>
       <td class="gl-table-cell">

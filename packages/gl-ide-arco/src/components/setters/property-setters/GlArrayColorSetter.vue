@@ -1,4 +1,4 @@
-<template>{{items}}
+<template>
   <GlArrayBaseSetter v-slot:default="slotProps" v-model="items" :defaultItemForAdd="'#165DFF'" @addItem="update"
                      @removeItem="update">
     <a-color-picker defaultValue="#165DFF" showText disabledAlpha/>

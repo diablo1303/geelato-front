@@ -1,22 +1,24 @@
 <template>
   <div class="gl-entity-form" v-if="refreshFlag">
-    <a-form
-      ref="formRef"
-      :model="formData"
-      :layout="layout!"
-      :autoLabelWidth="autoLabelWidth"
-      :disabled="isRead && glIsRuntime"
-    >
-      <template v-if="glIsRuntime">
-        <slot></slot>
-      </template>
-      <template v-else>
-        <GlInsts :glComponentInst="glComponentInst"></GlInsts>
-      </template>
-    </a-form>
-    <div v-if="!isRead" class="formSubmit" style="text-align: center; padding: 2em 1em">
-      <a-button type="primary" @click="submitForm">保存</a-button>
-    </div>
+    <a-spin :loading="loading" tip="" style="width: 100%">
+      <a-form
+        ref="formRef"
+        :model="formData"
+        :layout="layout!"
+        :autoLabelWidth="autoLabelWidth"
+        :disabled="isRead && glIsRuntime"
+      >
+        <template v-if="glIsRuntime">
+          <slot></slot>
+        </template>
+        <template v-else>
+          <GlInsts :glComponentInst="glComponentInst"></GlInsts>
+        </template>
+      </a-form>
+      <div v-if="!isRead" class="formSubmit" style="text-align: center; padding: 2em 1em">
+        <a-button type="primary" @click="submitForm">保存</a-button>
+      </div>
+    </a-spin>
   </div>
 </template>
 <script lang="ts">
@@ -50,9 +52,13 @@ import {
   EntitySaver,
   GetEntitySaversResult,
   emitter,
-  SubmitFormResult, UiEventNames
+  SubmitFormResult,
+  UiEventNames,
+  type Param,
+  jsScriptExecutor,
+  utils
 } from '@geelato/gl-ui'
-import {getFormParams, type ValidatedError} from './GlEntityForm'
+import { getFormParams, type ValidatedError } from './GlEntityForm'
 
 // onLoadingData：从服务端加载数据，但未设置到表单中
 // onLoadedData：从服务端加载完数据并设置到表单中
@@ -82,13 +88,27 @@ class FormItem {
   isFormSubTable?: boolean = false
 }
 
-const form = ref({})
 const props = defineProps({
   title: String,
+  /**
+   *  绑定实体对象
+   *  {entityName:string}
+   */
   bindEntity: {
     type: Object,
     required: true
   },
+  /**
+   *  表单参数
+   *  表的的参数值来源，一般是从页面传参中获取
+   *  如果在此处配置了值，则以此的值为准，该值将覆盖从页面传参中获取的值
+   */
+  // params: {
+  //   type: Array as PropType<Array<Param>>,
+  //   default() {
+  //     return []
+  //   }
+  // },
   // 是否立即加载
   immediate: {
     type: Boolean,
@@ -114,9 +134,30 @@ const props = defineProps({
    *  默认为否，在开发调试阶段可以配置为true，便于及时发现问题（如漏了传表单id）
    */
   alarmWhenReadInRuntime: Boolean,
+  readonly: Boolean,
+  disabled: Boolean,
   ...mixins.props
 })
-const isRead = ref(!!pageProvideProxy?.isPageStatusRead())
+
+// 若参数有配置valueExpression，在开始就先计算表单参数值
+// 在getFormParams之前执行
+// if (props.params && props.params.length > 0) {
+//   for (const index in props.params) {
+//     const param: Param = props.params[index]
+//     if (param.valueExpression) {
+//       if (typeof param.valueExpression === 'string') {
+//         param.value = jsScriptExecutor.evalExpression(param.valueExpression, {
+//           pageProxy: pageProvideProxy
+//         })
+//       } else {
+//         // 不需要解析
+//         param.value = param.valueExpression
+//       }
+//     }
+//   }
+// }
+
+const isRead = ref(!!pageProvideProxy?.isPageStatusRead() || props.readonly || props.disabled)
 // 是否复制新增，如果是复制新增，则在打开页面加载数据时，用copyEntityRecordId加载
 const isCopyCreate = ref(pageProvideProxy.isPageStatusCopyCreate())
 // 通过默认通用关键字form获取的表单值，好处就是在配置打开页面传参时，不需要配置具体表单名，配置方便
@@ -368,11 +409,14 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
 
 /**
  *  加载表单数据
+ *  @param params 加载表单数据的参数，如：{id:xxx}，只
  */
-const loadForm = async () => {
+const fetchData = async (params?: { id: string,[key:string]:any }) => {
   // 如果是复制创建，则基于复制的id进行数据加载
-  const recordId = isCopyCreate.value ? copyEntityRecordId.value : entityRecordId.value
-  if (!recordId) {
+  let recordId = isCopyCreate.value ? copyEntityRecordId.value : entityRecordId.value
+
+  // @ts-ignore
+  if (!recordId && utils.isEmpty(params)) {
     // 1、不需要从服务端获取，没有id表示新增，不需要从服务端获取表单值
     if (isRead.value && props.glIsRuntime && props.alarmWhenReadInRuntime) {
       global.$notification.error({
@@ -402,30 +446,58 @@ const loadForm = async () => {
       }
     })
     if (checkBindEntity()) {
-      /**
-       *  默认在初始化时加载数据
-       */
-      if (loadDataImmediate()) {
-        entityApi
-          .query(props.bindEntity.entityName, fieldNames.join(','), { id: recordId })
-          .then((resp) => {
-            const items = resp?.data
-
-            if (items && items.length > 0) {
-              // console.log(
-              //   props.bindEntity.entityName,
-              //   '从服务端加载数据并设置到当前页面中',
-              //   items[0]
-              // )
-              emits('onLoadingData', { data: items[0] })
-              setFormItemValues(items[0])
-            } else {
-              emits('onLoadingData', { data: {} })
-            }
-          })
-      } else {
-        setFormItemValues(formParams)
+      setLoading(true)
+      // 表单实体查询参数
+      let queryParams: { [key: string]: any } = {}
+      if (params && typeof params === 'object') {
+        for (let key in params) {
+          if (params[key]) {
+            queryParams[key] = params[key]
+          }
+        }
       }
+      // 分页参数，默认第1页，每页1条
+      queryParams['@p'] = '1,1'
+      // 传入的查询参数中已有id值，则以该id值为准，如果没有id值，则以当前表单的id为准
+      if (!queryParams.id) {
+        queryParams.id = recordId
+      }
+      // 删除id参数，避免查询参数为:id:""
+      if (!queryParams.id) {
+        delete queryParams.id
+      }
+
+      entityApi
+        .query(
+          props.bindEntity.entityName,
+          fieldNames.join(','),
+          queryParams.id
+            ? {
+                id: recordId,
+                '@p': '1,1'
+              }
+            : queryParams
+        )
+        .then((resp) => {
+          const items = resp?.data
+
+          if (items && items.length > 0) {
+            // console.log(
+            //   props.bindEntity.entityName,
+            //   '从服务端加载数据并设置到当前页面中',
+            //   items[0]
+            // )
+            // 对于初始不加载表单，通过fetchData({id:xxx})加载表单数据的，需要将加载完成的id设置到表单中
+            entityRecordId.value = items[0].id
+            emits('onLoadingData', { data: items[0] })
+            setFormItemValues(items[0])
+          } else {
+            emits('onLoadingData', { data: {} })
+          }
+        })
+        .finally(() => {
+          setLoading(false)
+        })
     }
   }
 }
@@ -548,7 +620,7 @@ const submitForm = async () => {
   submitFormResult.id = props.glComponentInst.id
   submitFormResult.success = true
 
-  const notification = ()=>{
+  const notification = () => {
     const content: string[] = []
     Object.keys(entitySaversResult.validateResult!).forEach((key: string) => {
       // @ts-ignore
@@ -581,46 +653,54 @@ const submitForm = async () => {
       $reject: reject
     })
   })
-  return promise.then( () => {
-    // emitter.emit(UiEventNames.EntityForm.onCreatedEntitySavers, { result: entitySaversResult })
-    if(typeof pageProvideProxy.pageTemplate?.onBeforeSubmit === 'function'){
-      pageProvideProxy.pageTemplate?.onBeforeSubmit({id:props.glComponentInst.id, data: entitySaversResult })
-    }
-    // onCreatedEntitySavers 事件中，可能对entitySaversResult做了修改，如验证模板的
-    if (entitySaversResult.error) {
-      notification()
-      emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)
-      return false
-    }else{
-      setLoading(true)
-      // console.log('submitForm() > formData', formData)
-      return entityApi.saveEntity(entitySaversResult.values[0]).then((saveResult)=>{
-        entityRecordId.value = saveResult?.data
-        // 将表单值，注册到表单的子项中
-        formProvideProxy.setRecordId(entityRecordId.value)
-        if (hasSubFormTable()) {
-          // 保存之后刷新子表
-          subFormInstIds.value.forEach((instId: string) => {
-            const refreshFn = pageProvideProxy.getMethod(instId, 'refresh')
-            if (typeof refreshFn === 'function') {
-              refreshFn()
-            }
-          })
-        }
-        setLoading(false)
-        submitFormResult.success = true
-        submitFormResult.record = entitySaversResult.values[0].record
+  return promise
+    .then(() => {
+      // emitter.emit(UiEventNames.EntityForm.onCreatedEntitySavers, { result: entitySaversResult })
+      if (typeof pageProvideProxy.pageTemplate?.onBeforeSubmit === 'function') {
+        pageProvideProxy.pageTemplate?.onBeforeSubmit({
+          id: props.glComponentInst.id,
+          data: entitySaversResult
+        })
+      }
+      // onCreatedEntitySavers 事件中，可能对entitySaversResult做了修改，如验证模板的
+      if (entitySaversResult.error) {
+        notification()
         emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)
-        return true
-      }).catch((err)=>{
-        console.error("submitForm catch: ", err);
         return false
-      })
-    }
-  }).catch((err )=>{
-    console.error("submitForm catch: ", err);
-    return false
-  })
+      } else {
+        setLoading(true)
+        // console.log('submitForm() > formData', formData)
+        return entityApi
+          .saveEntity(entitySaversResult.values[0])
+          .then((saveResult) => {
+            entityRecordId.value = saveResult?.data
+            // 将表单值，注册到表单的子项中
+            formProvideProxy.setRecordId(entityRecordId.value)
+            if (hasSubFormTable()) {
+              // 保存之后刷新子表
+              subFormInstIds.value.forEach((instId: string) => {
+                const refreshFn = pageProvideProxy.getMethod(instId, 'refresh')
+                if (typeof refreshFn === 'function') {
+                  refreshFn()
+                }
+              })
+            }
+            setLoading(false)
+            submitFormResult.success = true
+            submitFormResult.record = entitySaversResult.values[0].record
+            emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)
+            return true
+          })
+          .catch((err) => {
+            console.error('submitForm catch: ', err)
+            return false
+          })
+      }
+    })
+    .catch((err) => {
+      console.error('submitForm catch: ', err)
+      return false
+    })
 }
 
 /**
@@ -667,9 +747,18 @@ const loadDataImmediate = () => {
   return props.immediate !== false
 }
 
-loadForm()
+/**
+ *  默认在初始化时加载数据
+ *  如果immediate为false，则不加载数据，以输传的数据列新表单
+ */
+if (loadDataImmediate()) {
+  fetchData()
+} else {
+  setFormItemValues(formParams)
+}
 
 defineExpose({
+  fetchData,
   submitForm,
   buildFieldItems,
   getEntitySavers,

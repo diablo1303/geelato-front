@@ -32,30 +32,6 @@ export default {
       setterComponentName: 'AInput'
     },
     {
-      name: 'pageMargin',
-      group: 'base',
-      type: 'props',
-      show: true,
-      expanded: true,
-      setterComponentProps: {},
-      setterComponentVModelName: 'modelValue',
-      title: '外边距',
-      setterComponentName: 'AInput',
-      placeholder: '如16px'
-    },
-    {
-      name: 'pagePadding',
-      group: 'base',
-      type: 'props',
-      show: true,
-      expanded: true,
-      setterComponentProps: {},
-      setterComponentVModelName: 'modelValue',
-      title: '内边距',
-      placeholder: '如：14px',
-      setterComponentName: 'AInput'
-    },
-    {
       name: 'paramsMeta',
       setterComponentProps: {},
       setterComponentVModelName: 'modelValue',

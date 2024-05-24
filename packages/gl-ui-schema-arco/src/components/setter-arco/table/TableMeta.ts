@@ -56,6 +56,51 @@ export default {
           setterComponentName: 'GlEntitySelect'
         },
         {
+          name: 'bordered',
+          setterComponentProps: { defaultValue: true },
+          setterComponentVModelName: 'modelValue',
+          group: 'base',
+          type: 'props',
+          show: true,
+          expanded: true,
+          title: '带边框',
+          setterComponentName: 'ASwitch'
+        },
+        {
+          name: 'hoverable',
+          group: 'base',
+          type: 'props',
+          show: true,
+          expanded: true,
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          title: '悬浮样式',
+          setterComponentName: 'ASwitch'
+        },
+        {
+          name: 'size',
+          group: 'base',
+          type: 'props',
+          show: true,
+          expanded: true,
+          setterComponentProps: {
+            type: 'button',
+            defaultValue: 'medium',
+            options: [
+              { label: '一般', v_L0IeSNWMqjSZkU4L: 'medium', value: 'medium' },
+              {
+                label: '小',
+                v_L0IeSNWMqjSZkU4L: 'small',
+                value: 'small'
+              }
+            ]
+          },
+          setterComponentVModelName: 'modelValue',
+          title: '大小',
+          setterComponentName: 'ARadioGroup',
+          setterDefaultValue: 'small'
+        },
+        {
           name: 'isFormSubTable',
           group: 'base',
           type: 'props',
@@ -133,6 +178,20 @@ export default {
           description: '在组件初始加载之后触发查询，可控制查询时机，减少不必要的查询',
           setterComponentName: 'ASwitch',
           setterDefaultValue: true
+        },
+        {
+          name: 'interdictExpression',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          displayMode: 'tile',
+          setterComponentProps: {showInput:true},
+          setterComponentVModelName: 'modelValue',
+          title: '阻断查询 ',
+          description: '阻断查询表达式，主要用于在查询条件为某些值时，中断触发查询操作。表达式执行结果为true时，触发的查询操作在发出查询事件(emits search)之前会被中断， 表达式执行结果为false或undefined时，不中断，表达式为空时不中断。',
+          setterComponentName: 'GlExpressionSetter'
         },
         {
           name: 'showToolbar',
@@ -485,6 +544,19 @@ export default {
           setterComponentName: 'ASwitch'
         },
         {
+          name: '_icon',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          setterComponentProps: {showInput: true,placeholder:"如：'gl-user'"},
+          setterComponentVModelName: 'modelValue',
+          title: '显示图标',
+          setterComponentName: 'GlExpressionSetter',
+          description:'显示图标表达式运行结果为图标名称字符串，如："gl-user"；如果配置了图标表达式，生成的图标将添加到列前。'
+        },
+        {
           name: '_renderScript',
           setterComponentProps: { showInput: true },
           setterComponentVModelName: 'modelValue',
@@ -493,7 +565,8 @@ export default {
           show: true,
           expanded: true,
           description:
-            "对字段值进行处理，示例：\"$gl.ctx.record.enableStatus == 1 ? '已启用' : '未启用'\"。",
+            "显示为自定义的文本，对字段值进行计算，值转换示例：\"$gl.ctx.record.enableStatus == 1 ? '已启用' : '未启用'\"。" +
+              "字段加颜色示例：`<span style='color:red'>${$gl.ctx.record.ecoNo}</span>`;",
           title: '显示脚本',
           setterComponentName: 'GlExpressionSetter',
           enableValueExpress: false
@@ -507,8 +580,8 @@ export default {
           expanded: true,
           setterComponentProps: {},
           setterComponentVModelName: 'modelValue',
-          title: '显示组件',
-          description: '一般不需选，显示为文本，若需显示为图片等格式时，需选择。',
+          title: '显示为组件',
+          description: '选择此项则显示脚本无效，可用于字典项、图片等格式显示。',
           setterComponentName: 'GlComponentSelect'
         },
         {
@@ -624,7 +697,8 @@ export default {
           setterComponentProps: {},
           setterComponentVModelName: 'modelValue',
           title: '文本省略',
-          setterComponentName: 'ASwitch'
+          setterComponentName: 'ASwitch',
+          description:'启用后，文本内容较多时，会展示为“...”'
         },
         {
           name: 'tooltip',
@@ -636,7 +710,8 @@ export default {
           setterComponentProps: {},
           setterComponentVModelName: 'modelValue',
           title: '文本提示',
-          setterComponentName: 'ASwitch'
+          setterComponentName: 'ASwitch',
+          description:'和文本省略一起使用，启用后，文本内容较多时，会展示为“...”，鼠标移到文本位置，可以看到隐藏的内容。'
         }
       ],
       setterComponentName: 'GlObjectArraySetter',
@@ -859,7 +934,22 @@ export default {
       ],
       setterComponentName: 'GlSimpleObjectSetter',
       title: '分页'
-    }
+    },
+    {
+      name: 'extra',
+      group: 'base',
+      type: 'slots',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      setterComponentProps: {},
+      setterComponentVModelName: 'modelValue',
+      title: '右上插槽',
+      setterComponentName: 'GlSlotSetter',
+      slotComponentName: 'GlComponent',
+      slotComponentBindTarget: 'v-model',
+      slotComponentBindName: 'glComponentInst'
+    },
   ],
   actions: [
     {
@@ -897,6 +987,36 @@ export default {
   ],
   methods: [
     { name: 'refresh', title: '刷新', description: '刷新表格', params: [] },
+    {
+      name: 'createEntityReaderAsMql',
+      title: '创建实体查询对象（Mql格式）',
+      description: '基于当前页面的查询、排序条件获取实体查询对象（Mql格式）',
+      params: [],
+      returnInfo: {
+        returnType: 'Mql',
+        description: '基于当前页面的查询、排序条件获取实体查询对象（Mql格式），可进一步的服务编排，如查询Mql，导出Excel数据。',
+        docId: ''
+      }
+    },
+    {
+      name: 'searchAndExportRecords',
+      title: '查询并导出数据',
+      description: '基于当前的查询条件，进行数据查询并返回数据结果集',
+      params: [
+        {
+          name: 'pageSize',
+          title: '记录数',
+          required: true,
+          type: 'number',
+          description: '导出的最大记录数，不分页'
+        }
+      ],
+      returnInfo: {
+        returnType: 'Promise<Mql>',
+        description: '基于当前的查询条件，进行数据查询并返回数据结果集，获取的数据不做分页，在一页中返回。',
+        docId: ''
+      }
+    },
     {
       name: 'getEntitySavers',
       title: '获取实体保存对象',
@@ -1317,7 +1437,79 @@ export default {
         returnType: 'Promise | undefined',
         description: '删除选择的记录（基于IDs）,带删除确认提醒',
       }
-    }
+    },
+    {
+      name: 'selectRecordByIndex',
+      title: '基于记录索引设置行选择器状态',
+      description:
+          '设置行选择器状态，标识为选中或非选中状态',
+      params: [
+        {
+          name: 'rowIndex',
+          title: '第几条记录',
+          required: true,
+          type: 'number|number[]',
+          description:
+              '第几条记录，0表示第1条，1表示第2条，以此类推，可以选择多条记录如：[0,1]选择第一和第二条。'
+        },
+        {
+          name: 'checked',
+          title: '选择器的状态',
+          required: true,
+          type: 'boolean',
+          description:
+              '选择器的状态，true为选中,false为不选中。'
+        },
+        {
+          name: 'warning',
+          title: '告警信息',
+          required: false,
+          type: 'boolean',
+          description:
+              '如果配置了该信息，在没设置成功时，进行提醒，设置成功则不提醒。提示信息示例：“在当前的列表范围内找不到要设置的记录”。'
+        }
+      ],
+      returnInfo: {
+        returnType: 'void',
+        description: '通过记录的索引值设置行选择器状态，可用配合fetchSuccess事件一起使用，在fetchSuccess之后，默认选择第一条记录。',
+      }
+    },
+    {
+      name: 'selectRecordByKey',
+      title: '基于记录ID设置行选择器状态',
+      description:
+          '设置行选择器状态，标识为选中或非选中状态',
+      params: [
+        {
+          name: 'rowKey',
+          title: '记录的ID值',
+          required: true,
+          type: 'string|string[]',
+          description:
+              '可以是一个或多个ID值，如“1234567890123456789”，或["1234567890123456789","1234567890123456781"]。'
+        },
+        {
+          name: 'checked',
+          title: '选择器的状态',
+          required: true,
+          type: 'boolean',
+          description:
+              '选择器的状态，true为选中,false为不选中。'
+        },
+        {
+          name: 'warning',
+          title: '告警信息',
+          required: false,
+          type: 'boolean',
+          description:
+              '如果配置了该信息，在没设置成功时，进行提醒，设置成功则不提醒。提示信息示例：“在当前的列表范围内找不到要设置的记录”。'
+        }
+      ],
+      returnInfo: {
+        returnType: 'void',
+        description: '通过记录的ID值设置行选择器状态，可用配合fetchSuccess事件一起使用，在fetchSuccess之后，默认选择第一条记录。',
+      }
+    },
   ],
   innerComponents: [
     { title: '查询条件', propPath: 'props.query' },

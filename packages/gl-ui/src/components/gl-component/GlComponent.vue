@@ -1,12 +1,7 @@
 <template>
   <component
-    v-if="
-      refreshFlag &&
-      glComponentInst &&
-      glComponentInst.componentName &&
-      unRender !== true &&
-      hasPermission()
-    "
+    :key="reRenderKey"
+    v-if="glComponentInst && glComponentInst.componentName && unRender !== true && hasPermission()"
     v-show="hidden !== true && glComponentInst.componentName !== 'GlHiddenArea'"
     :id="glComponentInst.id"
     :ref="glComponentInst.id"
@@ -32,6 +27,7 @@
     :pageCustom="pageCustom"
     :pagePermission="pagePermission"
     v-on="onActionsHandler"
+    :title="glComponentInst.props.description"
   >
     <template v-for="(slotItem, slotName) in glComponentInst.slots" v-slot:[slotName]>
       <component
@@ -81,15 +77,16 @@
 </template>
 
 <script lang="ts" setup>
-import {getCurrentInstance, inject, nextTick, onBeforeUnmount, onMounted, onUnmounted, ref, watch} from 'vue'
+import { getCurrentInstance, inject, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import mixins from '../mixins'
 import jsScriptExecutor from '../../m/actions/JsScriptExecutor'
 import type { Action } from '@geelato/gl-ui-schema'
 import PageProvideProxy, { PageProvideKey } from '../PageProvideProxy'
 import { executePropsExpressions } from './GlComponentSupport'
 import useLogger from '../../m/hooks/useLogger'
+import utils from '../../m/utils/Utils'
 
-const detachedElementRef = ref(null);
+const detachedElementRef = ref(null)
 let logger = useLogger('gl-component')
 defineOptions({ name: 'GlComponent' })
 
@@ -107,6 +104,32 @@ const props = defineProps({
   },
   ...mixins.props
 })
+
+/**
+ * 组件实例变量
+ * 用于外部通过脚本调用组件的setVar、getVar方法，设置和获取变量值
+ * 这样在脚本编排中，可以存储中间值，不需要去创建一个组件来存储值
+ * 可以替换隐藏表单域的一些功能
+ */
+const vars: Record<string, any> = ref({})
+const _setVar = (params:{name: string, value: any}) => {
+  console.log('_setVar', params, 'instId',props.glComponentInst.id)
+  vars.value[params.name] = params.value
+}
+const _getVar = (params:{name: string}) => {
+  console.log('_getVar', params,'instId', props.glComponentInst.id)
+  return vars.value[params.name]
+}
+
+const _getVars = () => {
+  return vars.value
+}
+/**
+ * 获取组件实例变量响应式引用
+ */
+const _getVarsRef = () => {
+  return vars
+}
 
 // logger.debug(props.glComponentInst.componentName,props.glComponentInst.id,props.glComponentInst.value,'modelValue:',props.modelValue)
 
@@ -143,7 +166,7 @@ const stopPropagation = (...args: any) => {
  */
 const doAction = (actionName: string, args: any) => {
   // logger.debug('GlComponent > doAction() > args:', actionName, args)
-  const promises:Promise<any>[] = []
+  const promises: Promise<any>[] = []
   if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
     props.glComponentInst.actions.forEach((action: Action) => {
       if (action.eventName === actionName) {
@@ -170,8 +193,6 @@ const doAction = (actionName: string, args: any) => {
   return Promise.all(promises)
 }
 
-
-
 const createActionHandler = (actionName: string) => {
   return (...args: any) => {
     stopPropagation(args)
@@ -180,12 +201,12 @@ const createActionHandler = (actionName: string) => {
       glComponentInst: props.glComponentInst,
       glCtx: props.glCtx
     })
-    if(args.length >0&&typeof args[0]?.$resolve === 'function') {
+    if (args.length > 0 && typeof args[0]?.$resolve === 'function') {
       // 表示侦听的事件需要同步执行
-      return doAction(actionName, args).then(()=>{
+      return doAction(actionName, args).then(() => {
         return args[0].$resolve()
       })
-    }else{
+    } else {
       // 否则正常异步调用
       return doAction(actionName, args)
     }
@@ -199,7 +220,7 @@ const defaultSyncActionHandler = (...args: any) => {
     glComponentInst: props.glComponentInst,
     glCtx: props.glCtx
   })
-  if(args.length >0&&typeof args[0]?.$resolve === 'function') {
+  if (args.length > 0 && typeof args[0]?.$resolve === 'function') {
     return args[0].$resolve()
   }
 }
@@ -212,12 +233,12 @@ props.glComponentInst?.actions?.forEach((action: Action) => {
 
 // TODO defaultSyncEvents需要在外部注册进来
 // 默认需要同步执行的事件，如果组件没有配置该事件，则会默认会侦听该事件，以实现回调
-const defaultSyncEvents:Record<string, Array<string>> = {}
+const defaultSyncEvents: Record<string, Array<string>> = {}
 defaultSyncEvents['GlEntityForm'] = ['onCreatedEntitySavers']
 // 注册默认的事件
-defaultSyncEvents[props.glComponentInst.componentName]?.forEach((eventName:string)=>{
+defaultSyncEvents[props.glComponentInst.componentName]?.forEach((eventName: string) => {
   // 如果没有配置该事件，则默认加上
-  if(!onActionsHandler[eventName]){
+  if (!onActionsHandler[eventName]) {
     onActionsHandler[eventName] = defaultSyncActionHandler
   }
 })
@@ -312,14 +333,18 @@ watch(
   },
   { immediate: true }
 )
+
+const reRenderKey = ref(utils.gid())
 const _reRender = (updatedProps?: object) => {
   // logger.debug('_reRender updatedProps',updatedProps)
   // logger.debug('_reRender props.glComponentInst', props.glComponentInst)
-  refreshFlag.value = false
-  nextTick(() => {
-    refreshFlag.value = true
-    // logger.debug('nextTick call back ...')
-  })
+  console.log('_reRender() > vars:', vars.value,'instId:',props.glComponentInst?.id)
+  reRenderKey.value = utils.gid()
+  // refreshFlag.value = false
+  // nextTick(() => {
+  //   refreshFlag.value = true
+  //   // logger.debug('nextTick call back ...')
+  // })
   // logger.debug('nextTick end')
 }
 
@@ -374,7 +399,6 @@ onMounted(() => {
   // logger.debug('onMounted', props.glComponentInst.props.label, props.glComponentInst.props._hidden)
 })
 
-
 onUnmounted(() => {
   /**
    * 释放资源
@@ -389,11 +413,11 @@ onUnmounted(() => {
   }
   // @ts-ignore
   onActionsHandler = null
-  if(detachedElementRef.value){
+  if (detachedElementRef.value) {
     detachedElementRef.value = null
   }
 })
-defineExpose({ onMouseLeave, onMouseOver, _reRender })
+defineExpose({ onMouseLeave, onMouseOver, _reRender, _setVar, _getVar, _getVars, _getVarsRef })
 </script>
 
 <style>

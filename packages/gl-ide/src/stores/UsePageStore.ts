@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { emitter, entityApi, EntitySaver, type PageType } from '@geelato/gl-ui'
+import {emitter, entityApi, EntitySaver, type PageType, utils} from '@geelato/gl-ui'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import { useComponentStore } from './UseComponentStore'
 import Page from '../entity/Page'
@@ -192,7 +192,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
 
       // console.log('copyContent:', copyContent)
 
-      function convertObj(obj: object) {
+      function convertObj(obj: Record<string, any>) {
         if (!obj) return
         // 检测当前的obj是否为组件实例，如果是，则压缩组件实例，则否按通用的对象进行处理
         // TODO const isComponentInst = true
@@ -220,10 +220,118 @@ export const usePageStore = defineStore('GlPageStore', () => {
         // @ts-ignore
         if (obj.children && obj.children.length > 0) {
           // @ts-ignore
-          obj.children.forEach((subInst) => {
-            convertObj(subInst)
+          obj.children.forEach((subInst,index) => {
+              // 设计用的清除占位符组件 componentName
+            // 注意 GlVirtual 不能删除
+              if(subInst.componentName === 'GlDndPlaceholder') {
+                  obj.children.splice(index, 1)
+              }else{
+                  convertObj(subInst)
+              }
           })
         }
+
+        // 对插槽进行处理
+        if(obj.slots && Object.keys(obj.slots).length > 0) {
+          // 处理空的插槽，如下：
+          // slots: {
+          //   "extra": {
+          //     "componentName": "GlComponent",
+          //      "props": {
+          //           "id": "",
+          //           "title": "",
+          //           "componentName": "",
+          //           "group": "",
+          //           "props": {
+          //       },
+          //       "propsExpressions": {
+          //       },
+          //       "slots": {
+          //       },
+          //       "slotsExpressions": {
+          //       },
+          //       "children": [
+          //       ],
+          //       "actions": [
+          //       ],
+          //       "style": {
+          //       },
+          //       "propsWrapper": "",
+          //           "i18n": [
+          //       ]
+          //     },
+          //     "propsTarget": "v-model",
+          //         "propsName": "glComponentInst"
+          //   },}
+
+          // @ts-ignore
+          Object.keys(obj.slots).forEach((slotName) => {
+              const slot = obj.slots[slotName]
+              // 空的slot，则删除
+              if(slot.componentName === 'GlComponent' && !slot.props?.id && !slot.props?.componentName) {
+                  delete obj.slots[slotName]
+              }
+          })
+      }
+
+        // 清除空对象
+          if(utils.isEmpty(obj.slots)) {
+              delete obj.slots
+          }
+          if(utils.isEmpty(obj.actions)) {
+              delete obj.actions
+          }
+          if(utils.isEmpty(obj.style)) {
+              delete obj.style
+          }
+          if(utils.isEmpty(obj.i18n)) {
+              delete obj.i18n
+          }
+          if(utils.isEmpty(obj.children)) {
+              delete obj.children
+          }
+          if(utils.isEmpty(obj.propsExpressions)) {
+              delete obj.propsExpressions
+          }
+          if(utils.isEmpty(obj.slotsExpressions)) {
+              delete obj.slotsExpressions
+          }
+          if(utils.isEmpty(obj.propsWrapper)) {
+              delete obj.propsWrapper
+          }
+
+          // 删除运行时无需用到的属性
+          // group，不能删除，用于检查是否表单等
+          // if(obj.hasOwnProperty('group')){
+          //     delete obj.group
+          // }
+          if(obj.hasOwnProperty('useBy')){
+              delete obj.useBy
+          }
+
+
+          // 专为GlEntityTablePlus组件处理
+          if(obj.componentName==='GlEntityTablePlus') {
+              // 值字段按需处理
+              if(obj.hasOwnProperty('value')) {
+                  obj.value = []
+              }
+              obj.props?.columns?.forEach((column:any) => {
+                  if(utils.isEmpty(column._propsExpressions)) {
+                      delete column._propsExpressions
+                  }
+                  if(utils.isEmpty(column.sortable)) {
+                      delete column.sortable
+                  }
+                  if(utils.isEmpty(column._renderScript)) {
+                      delete column._renderScript
+                  }
+                  if(utils.isEmpty(column._icon)) {
+                      delete column._icon
+                  }
+              })
+          }
+
       }
 
       convertObj(copyContent)

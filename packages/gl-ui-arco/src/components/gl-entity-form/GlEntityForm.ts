@@ -1,4 +1,4 @@
-import type { PageProvideProxy } from '@geelato/gl-ui'
+import type { PageProvideProxy, Param } from '@geelato/gl-ui'
 
 // export interface EntitySavingObject {
 //   key: string
@@ -9,15 +9,18 @@ import type { PageProvideProxy } from '@geelato/gl-ui'
  *
  * 取值方式A、通过默认通用关键字form获取的表单值，好处就是在配置打开页面传参时，不需要配置具体表单名，配置方便
  * 取值方式B、同时支持通过关键字$form来获取表单值
- * 取值方式C、同时支持通过当前表单绑定的对象实体名称来获取表单值
- * 取值方式C会覆盖B方式，会覆盖A方式
+ * 取值方式C、同时支持通过当前表单绑定的对象实体名称来获取表单值, 比如：il_eco.id,il_eco为实体名称
+ * 取值方式D、同时支持通过组件属性传参，比如：params=[{name: 'id', value: 1}]
+ * 取值方式D，会覆盖方式C、会覆盖B方式，会覆盖A方式
  * ！！！注意，该方式在同一页面多表单嵌套时，通过form或$form很可能会污染子级表单的值，没法做到精确控制表单传值
  * @param pageProvideProxy
  * @param bindEntity
+ * @param params
  */
 export const getFormParams = (
   pageProvideProxy: PageProvideProxy,
-  bindEntity?: Record<string, any>
+  bindEntity?: Record<string, any>,
+  params?: Array<Param>
 ) => {
   const formParams = pageProvideProxy.getParamsByPrefixAsObject('form')
   // 这种带$的关键字来替换上面的form，避免实休名为form时冲突
@@ -26,16 +29,26 @@ export const getFormParams = (
   const formParamsByEntityName = bindEntity
     ? pageProvideProxy.getParamsByPrefixAsObject(bindEntity.entityName)
     : {}
+  // 通过组件属性传参，获取参数值
+  const propsParams: Record<string, any> = {}
+  if (params) {
+    for (const param of params) {
+      propsParams[param.name] = param.value
+    }
+  }
+
   console.log(
     '获取的表单参数来源，form.xxx:',
     formParams,
     '$form.xxx:',
     formParamsByKeywordFlag,
     (bindEntity?.entityName || 'entityName') + '.xxx:',
-    formParamsByEntityName
+    formParamsByEntityName,
+    'props.params:',
+    propsParams
   )
-  // 合并三种模式下的传值
-  Object.assign(formParams, formParamsByKeywordFlag, formParamsByEntityName)
+  // 合并四种模式下的传值
+  Object.assign(formParams, formParamsByKeywordFlag, formParamsByEntityName, propsParams)
   console.log('获取的表单参数合并为：', formParams)
   return formParams || {}
 }
@@ -48,7 +61,7 @@ export interface ValidatedError {
   isRequiredError: boolean
   message: string
   // 列表时，附上列表记录
-  records?:any
+  records?: any
 }
 
 /**

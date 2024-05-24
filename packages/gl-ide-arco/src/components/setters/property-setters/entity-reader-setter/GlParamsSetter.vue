@@ -23,7 +23,7 @@
             <a-select size="small" v-model="element.name" allow-search
                       @change="onChangeElement($event,element,index)">
               <a-option v-for="item in entityFieldMetas" :value="item.name" :title="item.name">
-                {{ item.title }}
+                {{ item.title }} {{item.name}}
               </a-option>
             </a-select>
             <a-space :size="1" style="width: 100%;">

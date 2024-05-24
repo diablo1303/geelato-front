@@ -138,10 +138,9 @@
           @update="(val:any)=>{setInstance(val,'actions')}"
         />
       </a-tab-pane>
-      <!--      <a-tab-pane key="3" tab="样式" title="样式" force-render>-->
-      <!--        <GlComponentStyleSetter :componentMeta="componentMeta" :componentInstance="componentInstance"-->
-      <!--                                @update="(val:any)=>{setInstance(val,'style')}"/>-->
-      <!--      </a-tab-pane>-->
+      <a-tab-pane key="3" tab="样式" title="样式" force-render>
+        <GlComponentStyleSetter :componentMeta="componentMeta" :componentInstance="componentInstance"/>
+      </a-tab-pane>
       <a-tab-pane v-if="includePanel('permission')" key="permission" tab="权限" title="权限">
         <GlPermissionsSetter
           :componentMeta="componentMeta"

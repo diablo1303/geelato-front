@@ -23,6 +23,7 @@ export class ActionMeta {
 }
 
 export class MethodMeta {
+    // 是否为异步的方法，异步方法返回类型为Promise<any>
     async?: boolean = false
     name: string = '' //  "fetchSuccess"
     title: string = ' ' // "成功加载完数据"
@@ -30,6 +31,8 @@ export class MethodMeta {
     params?: ParamMeta[] = []
     defaultValue? = undefined
     returnInfo?:ReturnInfoMeta = undefined
+    // 是否动态参数，可用于控制配置页面，展示可添加参数的功能
+    isDynamicParams?: boolean = false
 }
 
 

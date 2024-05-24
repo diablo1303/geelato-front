@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // @ts-nocheck
-import { inject, nextTick, type PropType, type Ref, ref, watch } from 'vue'
+import { computed, h, inject, nextTick, type PropType, type Ref, ref, watch } from 'vue'
 import type { TableRowSelection, PaginationProps } from '@arco-design/web-vue'
 import useLoading from '../../hooks/loading'
 import Sortable from 'sortablejs'
@@ -19,29 +19,29 @@ import {
 import {
   type Column,
   type EntityFetchDataProps,
+  evalColumnExpression,
   type GlTableColumn,
   showOptColumn,
   showRecordStatus,
-  showSeqNoColumn
-} from './table'
-import {
-  evalExpression,
+  showSeqNoColumn,
   genRenderColumns,
   genShowColumns,
   useFetchData,
-  genSlotColumnsWithNoOperation,
   genQueryColumns,
   SlotNameSeq,
   SlotNameRecordStatus,
   getRecordPushStatus,
-  RecordPushStatusNames
+  RecordPushStatusNames,
+  slotNameOperation,
+  createEntityReader,
+  type EntityFetchDataInfo
 } from './table'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
-import cloneDeep from "lodash/cloneDeep";
+import cloneDeep from 'lodash/cloneDeep'
 // 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
 const $modal = useGlobal().$modal
 // fetch 加载完成数据之后
-const emits = defineEmits(['updateColumns', 'fetchSuccess','fetchFail'])
+const emits = defineEmits(['updateColumns', 'fetchSuccess', 'fetchFail'])
 const props = defineProps({
   /**
    *  绑定的实体名称
@@ -161,8 +161,6 @@ const reRender = () => {
   })
 }
 
-
-
 const optColumnKey = ref(utils.gid())
 /**
  *  更新操作列
@@ -172,8 +170,7 @@ const optColumnKey = ref(utils.gid())
 const refreshOptColumn = () => {
   optColumnKey.value = utils.gid()
 }
-
-
+// 如果作为子表单，需要注入主表，便于获取主表的记录ID
 const formProvideProxy: FormProvideProxy | undefined = props.isFormSubTable
   ? inject(FormProvideKey)
   : undefined
@@ -197,7 +194,7 @@ const showColumns: Ref<GlTableColumn[]> = ref(
     showRecordStatus: showRecordStatus(props)
   })
 )
-// 最终展示的列
+// 最终查询数据并进行展示的列，注意这些列中_show为false时不展示，但数据仍会查询加载
 const renderColumns: Ref<GlTableColumn[]> = ref(genRenderColumns(showColumns))
 
 /**
@@ -253,6 +250,34 @@ const pagination = ref({
 pagination.value.pageSize = props.pagination.defaultPageSize || 15
 
 /**
+ * 基于当前的列表查询设置，获取查询对象
+ * 该操作，不会更换当前的列表状态信息，如last查询条件、排序等，不会更新UI
+ * 该操作主要用于获取查询对象，传到服务端，做多页面的数据导出一起导出
+ * @param entityReaderParams 传入当前最新查询条件进行查询
+ * @param pageInfo 一般这里pageNo为1，pageSize为需要查询的最大记录数，如excel最多导出5000条，则pageSize为5000。
+ */
+const getEntityReader = (
+  entityReaderParams: Array<EntityReaderParam>,
+  pageInfo: {
+    pageNo?: number
+    pageSize: number
+  }
+) => {
+  const info: EntityFetchDataInfo = {}
+  info.pageSize = pageInfo?.pageSize
+  info.pageNo = pageInfo.pageNo || 1
+  info.order = lastOrder
+  info.params = entityReaderParams
+  info.pushedRecordKeys = lastPushedRecordKeys
+  info.unPushedRecordKeys = lastUnPushedRecordKeys
+  return createEntityReader(
+    props as EntityFetchDataProps,
+    queryColumns.value,
+    info,
+    formProvideProxy?.getRecordId
+  )!
+}
+/**
  * 加载数据的最终方法，在查询、切换分页等场景中调用
  * @param readerInfo
  */
@@ -267,10 +292,10 @@ const fetchData = useFetchData(
     refreshOptColumn()
     emits('fetchSuccess', result)
   },
-    (result: any) => {
-      emits('fetchFail', result)
-    },
-    loading
+  (result: any) => {
+    emits('fetchFail', result)
+  },
+  loading
 )
 
 const tableRef = ref()
@@ -278,10 +303,16 @@ const selectAll = (checked: boolean) => {
   return tableRef.value.selectAll(checked)
 }
 
+const select = (rowIndex: string | number | (string | number)[], checked: boolean) => {
+  return tableRef.value.select(rowIndex, checked)
+}
+
+// 记录上一次查询的参数、排序等信息，便于在分页等操作时，可以带上这些信息进行查询
 let lastEntityReaderParams: Array<EntityReaderParam>
 let lastOrder: EntityReaderOrder[] = []
 let lastPushedRecordKeys: string[]
 let lastUnPushedRecordKeys: string[]
+
 const search = (
   entityReaderParams: Array<EntityReaderParam>,
   pushedRecordKeys: string[],
@@ -319,14 +350,16 @@ const onPageSizeChange = (pageSize: number) => {
   })
 }
 
+/**
+ * @param dataIndex 排序字段
+ * @param direction 排序方向
+ */
 const onSorterChange = (dataIndex: string, direction: string) => {
-  // console.log(dataIndex, direction)
   if (!direction) {
     // 如果清空了当前字段的排序
     lastOrder = []
   } else {
-    const order: EntityReaderOrder[] = [new EntityReaderOrder(dataIndex, direction)]
-    lastOrder = order
+    lastOrder = [new EntityReaderOrder(dataIndex, direction)]
   }
   fetchData({
     order: lastOrder,
@@ -411,10 +444,21 @@ const getRecordStatus = (key: string) => {
   ]
 }
 
+/**
+ *  计算出带有插槽的列
+ *  这些列中，不包括操作列（即slotName为#的列）
+ */
+const slotColumnsWithNoOperation = computed(() => {
+  return renderColumns.value.filter((column) => {
+    return column.slotName && column.slotName !== slotNameOperation
+  })
+})
 
 defineExpose({
+  getEntityReader,
   resetColumns,
   search,
+  select,
   selectAll,
   popupVisibleChange,
   changeShowColumns,
@@ -449,7 +493,12 @@ defineExpose({
     @sorter-change="onSorterChange"
   >
     <template ##="{ rowIndex }">
-      <a-space :key="optColumnKey" v-if="renderData[rowIndex]" :size="0" class="gl-entity-table-cols-opt">
+      <a-space
+        :key="optColumnKey"
+        v-if="renderData[rowIndex]"
+        :size="0"
+        class="gl-entity-table-cols-opt"
+      >
         <template
           v-for="(columnAction, index) in copyColumnActions()"
           :key="rowIndex + '_' + index"
@@ -464,34 +513,61 @@ defineExpose({
         </template>
       </a-space>
     </template>
+    <!-- 带插槽的列，即自下定义列 -->
     <template
-      v-for="slotColumn in genSlotColumnsWithNoOperation(renderColumns)"
+      v-for="slotColumn in slotColumnsWithNoOperation"
       v-slot:[slotColumn.slotName]="{ column, rowIndex }"
     >
-      <template v-if="slotColumn.slotName === SlotNameSeq">
-        {{ rowIndex + 1 }}
+      <template v-if="column._icon">
+        <gl-iconfont
+          :type="
+            evalColumnExpression(
+              '_icon',
+              { record: renderData[rowIndex], column, rowIndex },
+              pageProvideProxy
+            )
+          "
+          style="margin-right: 4px"
+        />
       </template>
-      <template v-else-if="slotColumn.slotName === SlotNameRecordStatus">
-        {{ getRecordStatus(renderData[rowIndex][EntityDataSource.ConstObject.keyFiledName]) }}
+      <!-- 如果只是配置了图标，字段内容渲染未用自下定义渲染，则在此直接展示内容 -->
+      <template v-if="column._noCustomRender">
+        {{ renderData[rowIndex][column.dataIndex] }}
       </template>
-      <template v-else-if="column._component && renderData[rowIndex]">
-        <GlComponent
+      <template v-else>
+        <template v-if="slotColumn.slotName === SlotNameSeq">
+          {{ rowIndex + 1 }}
+        </template>
+        <template v-else-if="slotColumn.slotName === SlotNameRecordStatus">
+          {{ getRecordStatus(renderData[rowIndex][EntityDataSource.ConstObject.keyFiledName]) }}
+        </template>
+        <template v-else-if="column._component && renderData[rowIndex]">
+          <GlComponent
             v-model="renderData[rowIndex][column.dataIndex]"
             :glComponentInst="cloneDeep(column._component)"
             :glCtx="{
-            record:renderData[rowIndex],
-            rowIndex,
-            dataIndex: column.dataIndex,
-            cellLastValue: renderData[rowIndex][column.dataIndex]
-          }"
+              record: renderData[rowIndex],
+              rowIndex,
+              dataIndex: column.dataIndex,
+              cellLastValue: renderData[rowIndex][column.dataIndex]
+            }"
             :disabled="
-            isPageRead || column._component?.props?.readonly || column._component?.props?.disabled
-          "
-        ></GlComponent>
+              isPageRead || column._component?.props?.readonly || column._component?.props?.disabled
+            "
+          ></GlComponent>
+        </template>
+        <template v-else>
+          <span
+            v-html="
+              evalColumnExpression(
+                '_renderScript',
+                { record: renderData[rowIndex], column, rowIndex },
+                pageProvideProxy
+              )
+            "
+          />
+        </template>
       </template>
-      <span v-else>
-        {{ evalExpression({ record: renderData[rowIndex], column, rowIndex }, pageProvideProxy) }}
-      </span>
     </template>
   </a-table>
 </template>

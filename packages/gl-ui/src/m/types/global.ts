@@ -50,6 +50,8 @@ export interface ParamMeta {
 
 // 页面参数、方法调用参数
 export interface Param {
+  // 只用于展示不参与计算等
+  title?: string
   name: string
   value: any
   valueExpression?: string | object

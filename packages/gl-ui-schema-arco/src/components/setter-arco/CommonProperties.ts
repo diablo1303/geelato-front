@@ -191,7 +191,55 @@ export const commonMethods: MethodMeta[] = [
     defaultValue: undefined,
     returnInfo: {
       returnType: 'void',
-      description: '重新渲染组件，注意对于组件外部传入的参数并不会重新计算，因为它们不属于本组件的内容，若需重新计算，需重新渲染组件该组件的上一层组件。例如：本组件为页面组件A，在属性面板中设置了参数form.id值为另一个列表的当前选中值，若需要本组件的页面依据列表的当前当中值变化，则需要调用页面组件A的上一级组件进行重新渲染。',
+      description:
+        '重新渲染组件，注意对于组件外部传入的参数并不会重新计算，因为它们不属于本组件的内容，若需重新计算，需重新渲染组件该组件的上一层组件。例如：本组件为页面组件A，在属性面板中设置了参数form.id值为另一个列表的当前选中值，若需要本组件的页面依据列表的当前当中值变化，则需要调用页面组件A的上一级组件进行重新渲染。'
+    }
+  },
+  {
+    async: false,
+    name: '_setVar',
+    title: '设置组件变量',
+    description: '设置组件的临时变量，在组件刷新时或_reRender时会丢失',
+    params: [
+      {
+        name: 'name',
+        type: 'string',
+        title: '变量名',
+        required: true,
+        description: ''
+      },
+      {
+        name: 'value',
+        type: 'any',
+        title: '变量值',
+        required: true,
+        description: ''
+      }
+    ],
+    defaultValue: undefined,
+    returnInfo: {
+      returnType: 'void',
+      description: '设置组件的临时变量，在组件刷新时或_reRender时会丢失。'
+    }
+  },
+  {
+    async: false,
+    name: '_getVar',
+    title: '获取组件变量',
+    description: '获取通过_setVar设置的组件临时变量值',
+    params: [
+      {
+        name: 'name',
+        type: 'string',
+        title: '变量名',
+        required: true,
+        description: ''
+      }
+    ],
+    defaultValue: undefined,
+    returnInfo: {
+      returnType: 'any',
+      description: '获取通过_setVar设置的组件临时变量值。'
     }
   }
 ]

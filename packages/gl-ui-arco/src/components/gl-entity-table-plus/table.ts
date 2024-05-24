@@ -10,8 +10,7 @@ import {
 import { FieldMeta, jsScriptExecutor, PageProvideProxy } from '@geelato/gl-ui'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import cloneDeep from 'lodash/cloneDeep'
-import { type Ref, toRaw } from 'vue'
-import useLoading from '../../hooks/loading'
+import { type Ref, type RenderFunction, toRaw } from 'vue'
 import { EntityDataSource } from '@geelato/gl-ui'
 
 export type SizeProps = 'mini' | 'small' | 'medium' | 'large'
@@ -19,15 +18,88 @@ export type SizeProps = 'mini' | 'small' | 'medium' | 'large'
 export const SlotNameSeq: string = '__slot__seq'
 export const SlotNameRecordStatus: string = '__slot__record_status'
 
+/**
+ *  定义导出表格的列
+ */
+export interface ExcelColumnMeta {
+  // 数据key，对应导出excel中的var
+  dataIndex?: string
+  // 列标题，对应导出excel中的placeholder，不包括符号${}的部分
+  title?: string | RenderFunction
+  // 列单元格的宽度
+  width?: number
+  // 列标题的对齐，默认为center
+  align?: 'left' | 'center' | 'right'
+  // 导出excel列上的注释信息
+  description?: string
+  children?: ExcelColumnMeta[]
+}
+
+/**
+ *  定义导出的excel值单元格的格式
+ */
+export enum ExcelCellValueType {
+  // 字符串
+  STRING = 'STRING',
+  // 数值
+  NUMBER = 'NUMBER',
+  // 日期
+  DATE = 'DATE',
+  // 时间
+  DATETIME = 'DATETIME'
+}
+
+/**
+ *  定义导出的excel值的取值方式
+ */
+export enum ExcelCellValueComputeMode {
+  // 变量
+  VAR = 'VAR',
+  // 常量
+  CONST = 'CONST',
+  // 表达式
+  EXPRESSION = 'EXPRESSION'
+}
+
+/**
+ *  定义导出Excel的元数据
+ */
+export interface ExcelCellMeta {
+  // excel中的占位符，如${单号}
+  placeholder: string
+  // 单元格的数据类型
+  valueType: ExcelCellValueType
+  // 单元格的取计模式
+  valueComputeMode: ExcelCellValueComputeMode
+  // 单元格取值模式为变量时的变量名
+  var?: string
+  // 单元格取值模式为变量时，且是从列表中获取的，其列表变量名
+  listVar?: string
+  // 单元格取值模式为常量时的常量值
+  constValue?: any
+  // 单元格取值模式为表达式时的表达式内容
+  expression?: string
+}
+
+/**
+ *  定义GlTable的列
+ */
 export interface GlTableColumn extends TableColumnData {
-  // 对于展示表格，非编辑表格，为了便于操作，不使用_component的字段绑定功能，即显示隐藏的控制在此
-  // 是否显示，用于控制数据查询加载，但不展示，可用于前端列计算或record传值，恒等于false时才不显示
+  // 控制整列是否显示，而_component中的hidden是控制列内的组件是否显示，列标题还是会显示，
+  // 是否显示，有没有该字段数据都会加载，只是在页面不展示，可用于前端列计算或record传值，恒等于false时不显示
+  // 即renderColumns中的数据中有些例有可以_show为false
   _show?: boolean
+  // 列图标的名称，如:gl-api
+  _icon?: string
+  // 列图标的颜色
+  // _iconColor?: string
   // 数据显示的处理脚本
   _renderScript: string
   // 用于编辑表格时，作为编辑组件
   // 用于展示表格时，作为展示组件，展示特殊的数据
   _component?: ComponentInstance
+  // 如果_renderScript、_component都为空时，表示没有自定义渲染
+  _noCustomRender?: boolean
   // 是否必填，用于编辑状态
   _required?: boolean
   // 用于运行时表格配置时，设置是否在列表中展示该列
@@ -39,6 +111,69 @@ export interface GlTableColumn extends TableColumnData {
 
   // 脚本运算时动态加入的
   _propsExpressions?: object
+
+  // 描述信息
+  _description?: string
+
+  /********* 以下为导出到Excel中用到的属性  ***********/
+  // 数据若需导出到Excel中，且需要计算时，其计算脚本。
+  // 需注意，该脚本在服务端运行，需确保是服务端支持的脚本
+  _excelRenderScript: string
+  // 该列的数据类型
+  _valueType?: ExcelCellValueType
+}
+
+/**
+ * 将当前列表中展示的数据列，作为导出Excel的数据列
+ * @param renderColumns
+ */
+export const createExportColumns = (renderColumns: GlTableColumn[]): ExcelColumnMeta[] => {
+  let result: ExcelColumnMeta[] = []
+  renderColumns.forEach((col) => {
+    if (col._show !== false) {
+      result.push({
+        dataIndex: col.dataIndex,
+        title: col.title,
+        width: col.width,
+        align: col.align,
+        description: col._description,
+        children: col.children
+      })
+    }
+  })
+  return result
+}
+
+/**
+ * 基于当前列表中展示的数据列，生成导出Excel中单元格数据的元数据
+ * @param renderColumns
+ */
+export const createExportDataCellMetas = (renderColumns: GlTableColumn[]): ExcelCellMeta[] => {
+  let result: ExcelCellMeta[] = []
+  renderColumns.forEach((col) => {
+    if (col._show !== false) {
+      result.push({
+        // excel中的占位符，如${单号}
+        placeholder: `\${${col.title}}`,
+        // 单元格的数据类型  TODO 怎么进一步精细数据类型
+        valueType: col._valueType || ExcelCellValueType.STRING,
+        // 单元格的取计模式
+        valueComputeMode: col?._excelRenderScript
+          ? ExcelCellValueComputeMode.EXPRESSION
+          : ExcelCellValueComputeMode.VAR,
+        // 单元格取值模式为变量时的变量名
+        var: col.dataIndex,
+        // 单元格取值模式为变量时，且是从列表中获取的，其列表变量名
+        // 这里和服务端一起约定为list
+        listVar: 'list',
+        // 单元格取值模式为常量时的常量值
+        constValue: '',
+        // 单元格取值模式为表达式时的表达式内容
+        expression: col?._excelRenderScript || ''
+      })
+    }
+  })
+  return result
 }
 
 export type Column = GlTableColumn & { checked?: true }
@@ -126,7 +261,14 @@ export const exchangeArray = <T extends Array<any>>(
   return newArray
 }
 
-export const evalExpression = (
+/**
+ * 列属性的表达式计算
+ * @param columnPropName
+ * @param data
+ * @param pageProvideProxy
+ */
+export const evalColumnExpression = (
+  columnPropName: string,
   data: {
     record: TableData
     column: GlTableColumn
@@ -134,7 +276,8 @@ export const evalExpression = (
   },
   pageProvideProxy: PageProvideProxy
 ) => {
-  if (!data.column._renderScript) {
+  // @ts-ignore
+  if (!data.column[columnPropName]) {
     return data.record[data.rowIndex]
   }
   const ctx = {
@@ -143,29 +286,51 @@ export const evalExpression = (
     column: toRaw(data.column),
     rowIndex: toRaw(data.rowIndex)
   }
-  return jsScriptExecutor.evalExpression(data.column._renderScript, ctx)
+
+  // @ts-ignore
+  return jsScriptExecutor.evalExpression(data.column[columnPropName], ctx)
 }
 
-export const evalColorExpression = (
-  data: {
-    record: TableData
-    column: GlTableColumn
-    rowIndex: number
-  },
-  pageProvideProxy: PageProvideProxy
-) => {
-  if (!data.column._bgColor) {
-    return ''
-  }
-  const ctx = {
-    pageProxy: pageProvideProxy,
-    record: toRaw(data.record),
-    column: toRaw(data.column),
-    rowIndex: toRaw(data.rowIndex)
-  }
-  // console.log('evalExpression', data)
-  return jsScriptExecutor.evalExpression(data.column._bgColor, ctx)
-}
+// export const evalExpression = (
+//   data: {
+//     record: TableData
+//     column: GlTableColumn
+//     rowIndex: number
+//   },
+//   pageProvideProxy: PageProvideProxy,
+// ) => {
+//   if (!data.column._renderScript) {
+//     return data.record[data.rowIndex]
+//   }
+//   const ctx = {
+//     pageProxy: pageProvideProxy,
+//     record: toRaw(data.record),
+//     column: toRaw(data.column),
+//     rowIndex: toRaw(data.rowIndex)
+//   }
+//   return jsScriptExecutor.evalExpression(data.column._renderScript, ctx)
+// }
+
+// export const evalColorExpression = (
+//   data: {
+//     record: TableData
+//     column: GlTableColumn
+//     rowIndex: number
+//   },
+//   pageProvideProxy: PageProvideProxy
+// ) => {
+//   if (!data.column._bgColor) {
+//     return ''
+//   }
+//   const ctx = {
+//     pageProxy: pageProvideProxy,
+//     record: toRaw(data.record),
+//     column: toRaw(data.column),
+//     rowIndex: toRaw(data.rowIndex)
+//   }
+//   // console.log('evalExpression', data)
+//   return jsScriptExecutor.evalExpression(data.column._bgColor, ctx)
+// }
 
 /**
  * 执行行级别的表达式
@@ -202,12 +367,12 @@ export const statIsRowReadonly = (
   records: Array<TableData>,
   pageProvideProxy: PageProvideProxy
 ) => {
-  if(!isRowReadonlyExpression){
+  if (!isRowReadonlyExpression) {
     return []
   }
   // console.log('statIsRowReadonly', isRowReadonlyExpression,records)
   // key为rowIndex，value为true/false
-  let result:boolean[] = []
+  let result: boolean[] = []
   records.forEach((record, rowIndex) => {
     const ctx = {
       pageProxy: pageProvideProxy,
@@ -255,7 +420,7 @@ export const t = (str: any) => {
 }
 
 const slotNameFlag = '__slot'
-const slotNameOperation = '#'
+export const slotNameOperation = '#'
 
 /**
  * 设置列的插槽名称
@@ -268,6 +433,10 @@ export const setSlotNames = (queryColumns: GlTableColumn[]) => {
     // col.tooltip = true
     if (col._renderScript || col._component || col._bgColor) {
       col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
+    } else if (col._icon) {
+      // 只是图标渲染，没有字段内容的自定义渲染
+      col.slotName = col.slotName || utils.gid(slotNameFlag, 20)
+      col._noCustomRender = true
     } else {
       delete col.slotName
     }
@@ -353,7 +522,7 @@ type GenShowColumnOptions = {
  * 是否显示序号列
  * @param props
  */
-export const showSeqNoColumn = (props:any) => {
+export const showSeqNoColumn = (props: any) => {
   return props.showSeqNo
 }
 
@@ -361,7 +530,7 @@ export const showSeqNoColumn = (props:any) => {
  * 是否显示操作列
  * @param props
  */
-export const showOptColumn = (props:any) => {
+export const showOptColumn = (props: any) => {
   let showOpt = false
   props.columnActions?.forEach((action: ComponentInstance) => {
     if (!action.props._hidden) {
@@ -375,7 +544,7 @@ export const showOptColumn = (props:any) => {
  * 是否显示记录状态列
  * @param props
  */
-export const showRecordStatus = (props:any) => {
+export const showRecordStatus = (props: any) => {
   return props.isFormSubTable
 }
 
@@ -460,13 +629,13 @@ export const genShowColumns = (
  * @param showColumns 可选择的展示的列
  * @param keepClientSorter 保留客户端排序，默认为false，即关闭客户端排序
  */
-export const genRenderColumns = (showColumns: Ref<GlTableColumn[]>,keepClientSorter?:boolean) => {
+export const genRenderColumns = (showColumns: Ref<GlTableColumn[]>, keepClientSorter?: boolean) => {
   const cols: Array<GlTableColumn> = []
   showColumns?.value.forEach((column) => {
     if (column._checked !== false) {
       cols.push(column)
     }
-    if(!keepClientSorter){
+    if (!keepClientSorter) {
       if (column.sortable) {
         // 关闭表格组件内置的前端排序，采用服务端排序
         column.sortable.sorter = true
@@ -476,24 +645,27 @@ export const genRenderColumns = (showColumns: Ref<GlTableColumn[]>,keepClientSor
   return cols
 }
 
-/**
- *  计算出带有插槽的列
- *  这些列中，不包括操作列（即slotName为#的列）
- */
-export const genSlotColumnsWithNoOperation = (renderColumns: GlTableColumn[]) => {
-  return renderColumns.filter((column) => {
-    return column.slotName && column.slotName !== slotNameOperation
-  })
-}
+// /**
+//  *  计算出带有插槽的列
+//  *  这些列中，不包括操作列（即slotName为#的列）
+//  */
+// export const genSlotColumnsWithNoOperation = (renderColumns: GlTableColumn[]) => {
+//   return renderColumns.filter((column) => {
+//     return column.slotName && column.slotName !== slotNameOperation
+//   })
+// }
 
 /**
  *  在查询列表中，用于用户操作的查询信息，如查询条件、选择的页码信息
  */
 export type EntityFetchDataInfo = {
+  // 每页记录数
   pageSize?: number
+  // 第几页
   pageNo?: number
   // 排序字段
   order?: Array<EntityReaderOrder>
+  // 查询参数
   params?: Array<EntityReaderParam>
   // 额外的查询keys，需要作为params的or条件
   pushedRecordKeys?: string[]
@@ -516,7 +688,7 @@ export type EntityFetchDataProps = {
  * @param props
  * @param queryColumns 需要查询的列
  * @param simpleReaderInfo 简单的查询信息
- * @param getPid 获取父表单的id
+ * @param getPidFn 获取父表单的id
  */
 export const createEntityReader = (
   props: {
@@ -526,7 +698,7 @@ export const createEntityReader = (
   },
   queryColumns: GlTableColumn[],
   simpleReaderInfo?: EntityFetchDataInfo,
-  getPid?: Function
+  getPidFn?: Function
 ) => {
   const entityReader = new EntityReader()
   entityReader.entity = props.entityName
@@ -546,10 +718,10 @@ export const createEntityReader = (
   // 如果是子查询
   // 增加父表单主键，作为查询字段，若父表单无该主健id，则返回，不查询
   if (props.isSubForm) {
-    if (!getPid) {
+    if (!getPidFn) {
       return
     }
-    const pid = getPid()
+    const pid = getPidFn()
     if (!pid) {
       return
     }
@@ -627,7 +799,7 @@ export const createEntityReader = (
  * @param props
  * @param queryColumns
  * @param pagination
- * @param getPid 作为子表单时，需指定获取父亲表单id的方法
+ * @param getPidFn 作为子表单时，需指定获取父亲表单id的方法
  * @param success
  * @param fail
  * @param loading
@@ -636,7 +808,7 @@ export const useFetchData = (
   props: EntityFetchDataProps,
   queryColumns: Ref<GlTableColumn[]>,
   pagination: Ref<any>,
-  getPid?: Function,
+  getPidFn?: Function,
   success?: Function,
   fail?: Function,
   loading?: Ref<boolean>
@@ -648,12 +820,12 @@ export const useFetchData = (
     if (!props.entityName || (props.isSubForm && !props.subFormPidName)) {
       return
     }
-    loading!.value = true
+    loading ? (loading.value = true) : null
     if (simpleReaderInfo) {
       simpleReaderInfo.pageSize = simpleReaderInfo.pageSize || pagination.value.pageSize
     }
 
-    const entityReader = createEntityReader(props, queryColumns.value, simpleReaderInfo, getPid)!
+    const entityReader = createEntityReader(props, queryColumns.value, simpleReaderInfo, getPidFn)!
 
     // 由于查询默认有设置缓存，在列表的删除刷新查询、表单添加修改之后修改列表的场景中，不应缓存，否则查询的列表数据有可能还是老的
     // 这里需要强行指定该查询不缓存
@@ -673,13 +845,13 @@ export const useFetchData = (
         if (success && typeof success === 'function') {
           success({ data: res.data, pagination })
         }
-        loading!.value = false
+        loading ? (loading.value = false) : null
       },
       () => {
         if (fail && typeof fail === 'function') {
           fail({ data: undefined, pagination })
         }
-        loading!.value = false
+        loading ? (loading.value = false) : null
       }
     )
   }
@@ -700,6 +872,8 @@ export const RecordPushStatusNames = {
 /**
  * 获取记录状态
  * @param key
+ * @param pushedRecordKeys
+ * @param unPushedRecordKeys
  */
 export const getRecordPushStatus = (
   key: string,
@@ -717,6 +891,7 @@ export const getRecordPushStatus = (
 /**
  * 直接修改修改排序号，从1开始
  * @param records
+ * @param startWidth
  */
 export const resetRecordsSeqNo = (records: Record<string, any>[], startWidth?: number) => {
   let startNum = startWidth === undefined || startWidth <= 0 ? 1 : startWidth

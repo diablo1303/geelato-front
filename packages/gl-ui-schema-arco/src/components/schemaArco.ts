@@ -100,13 +100,16 @@ import SpaceMeta from './setter-arco/space/SpaceMeta'
 import SpaceInstance from './setter-arco/space/SpaceInstance'
 import OrgSelectMeta from './setter-arco/orgSelect/orgSelectMeta'
 import OrgUserSelectMeta from './setter-arco/orgUserSelect/orgUserSelectMeta'
-
+import InputPasswordMeta from './setter-arco/input/InputPasswordMeta'
+import InputSearchMeta from './setter-arco/input/InputSearchMeta'
 
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [
   InputMeta,
   TextAreaMeta,
   InputNumberMeta,
+  InputSearchMeta,
+  InputPasswordMeta,
   DictMeta,
   DynamicSelectMeta,
   SelectMeta,
@@ -277,5 +280,5 @@ for (const index in componentMetas) {
 const isDataEntry = (componentName: string) => {
   return !!dataEntryNameMap[componentName]
 }
-const schemaArco = {componentMetas, componentInstances}
-export {schemaArco, isDataEntry}
+const schemaArco = { componentMetas, componentInstances }
+export { schemaArco, isDataEntry }

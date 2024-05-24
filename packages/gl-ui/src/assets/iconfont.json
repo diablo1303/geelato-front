@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "11111000",
+      "name": "出库",
+      "font_class": "warehouse-out",
+      "unicode": "e67e",
+      "unicode_decimal": 59006
+    },
+    {
+      "icon_id": "11111014",
+      "name": "入库",
+      "font_class": "warehouse-in",
+      "unicode": "e680",
+      "unicode_decimal": 59008
+    },
+    {
+      "icon_id": "37161196",
+      "name": "卸船",
+      "font_class": "discharging",
+      "unicode": "e63b",
+      "unicode_decimal": 58939
+    },
+    {
+      "icon_id": "37161201",
+      "name": "装船",
+      "font_class": "lading",
+      "unicode": "e63c",
+      "unicode_decimal": 58940
+    },
+    {
       "icon_id": "2884500",
       "name": "version",
       "font_class": "version",
