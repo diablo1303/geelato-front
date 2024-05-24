@@ -22,7 +22,7 @@ import {
   type GlTableColumn,
   type FilterType,
   type MyEntityTableConfig,
-  BaseInfo
+  BaseInfo, TableExport
 } from './constants'
 import { defaultTable, createExportColumns, createExportDataCellMetas } from './table'
 import Toolbar, { defaultToolbar } from '../gl-toolbar/toolbar'
@@ -144,7 +144,10 @@ const props = defineProps({
    *  默认导出Excel的配置
    */
   export: {
-    enableExportCurrentPage: Boolean
+    type: Object as PropType<TableExport>,
+    default() {
+      return {}
+    }
   },
   readonly: Boolean,
   ...mixins.props
@@ -1314,7 +1317,7 @@ const exportExcelAll = () => {
   let data = {
     column: createExportColumns(tableRef.value.getRenderColumns()),
     meta: createExportDataCellMetas(tableRef.value.getRenderColumns()),
-    valueMapList: { list: getRenderRecords() },
+    valueMapList: [{ list: getRenderRecords() }],
     valueMap: {}
   }
   return fileApi.exportExcelByColumnMeta(fileName, data).then(
