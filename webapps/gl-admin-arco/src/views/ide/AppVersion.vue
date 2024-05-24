@@ -12,22 +12,14 @@ import {EventNames} from '@geelato/gl-ide';
 import {emitter, useGlobal} from '@geelato/gl-ui';
 import useUser from '@/hooks/user';
 import useLoading from "@/hooks/loading";
-import {deleteAppVersion, getApp, packetAppVersion, QueryAppForm, QueryAppVersionForm,} from "@/api/application";
-import {ListParams, PageSizeOptions, resetValueByOptions} from '@/api/base';
+import {deleteAppVersion, getApp, packetAppVersion, pageQueryAppVersions, QueryAppForm, QueryAppVersionForm,} from "@/api/application";
+import {PageQueryRequest, PageSizeOptions, resetValueByOptions} from '@/api/base';
 import {fetchFileById} from "@/api/attachment";
-import {QueryOrgForm} from "@/api/security";
 import ApplicationModel from "@/views/application/model.vue";
-import DictionaryList from "@/views/security/dictionary/list.vue";
-import RoleList from "@/views/security/role/list.vue";
-import EncodingList from "@/views/security/encoding/list.vue";
-import FileTemplateList from "@/views/security/file/list.vue";
-import SystemConfigList from "@/views/security/sysconfig/list.vue";
-import OrgTree from "@/components/org-choose-box/tree.vue";
-import UserPermissionList from "@/views/security/user/permission/list.vue";
-import cloneDeep from "lodash/cloneDeep";
 import AppVersionList from "@/views/version/list.vue";
 import AppVersionTabs from "@/views/version/tabsForm.vue";
 import AppVersionForm from "@/views/version/form.vue";
+import AppVersionCompareTabs from "@/views/compare/tabsForm.vue";
 import {generateRandom} from "@/utils/strings";
 import pinia, {useUserStore} from '../../store';
 
@@ -45,6 +37,9 @@ const showPage = ref(false);
 const tableFormRef = shallowRef(ApplicationModel);
 const {loading, setLoading} = useLoading(false);
 const tabsKey = ref<number>(1);
+const isCompare = ref<boolean>(false);
+const compareVersionId = ref<string>('');
+const appVersionData = ref<QueryAppVersionForm[]>([]);
 
 /**
  * 调整树形结构高度
@@ -124,6 +119,23 @@ const getAppData = async (id: string, successBack?: any, failBack?: any) => {
 };
 
 /**
+ * 查询版本列表
+ */
+const queryAppVersion = async (successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await pageQueryAppVersions({
+      current: 1, pageSize: 10000, order: "packetTime|desc",
+      appId: appData.value.id, tenantCode: appData.value.tenantCode
+    } as PageQueryRequest)
+    appVersionData.value = data.items as unknown as QueryAppVersionForm[];
+    if (successBack && typeof successBack === 'function') successBack(data);
+  } catch (err) {
+    appVersionData.value = [];
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+}
+
+/**
  * 打开链接
  * @param type
  */
@@ -150,6 +162,8 @@ const enterLink = (type: string) => {
 }
 
 const listSelected = (record: QueryAppVersionForm) => {
+  compareVersionId.value = "";
+  isCompare.value = false;
   console.log("listSelected", record);
   if (record.id) {
     Object.assign(listParams.value.selected, {
@@ -161,6 +175,17 @@ const listSelected = (record: QueryAppVersionForm) => {
     Object.assign(listParams.value.selected, {id: '', title: '', item: {}});
   }
   console.log(listParams.value);
+}
+
+const startCompare = () => {
+  queryAppVersion(() => {
+    compareVersionId.value = "";
+    isCompare.value = true;
+  });
+}
+const cancelCompare = () => {
+  compareVersionId.value = "";
+  isCompare.value = false;
 }
 
 const packAppVersion = async () => {
@@ -210,6 +235,9 @@ onMounted(() => {
   if (appData.value.id) {
     getAppData(appData.value.id, (data: QueryAppForm) => {
       appData.value = data;
+      // 查询版本列表
+      queryAppVersion();
+      compareVersionId.value = "";
       // 系统参数
       userStore.info(() => {
         getSysConfig(global, userStore && userStore.userInfo, {
@@ -301,30 +329,49 @@ onUnmounted(() => {
                     <div class="card-header-title">
                       {{ listParams.selected.title }}
                     </div>
-                    <div v-if="!!listParams.selected.id" class="card-header-extra">
-                      <a-button type="text" style="color: rgb(var(--primary-6))"
+                    <a-space v-if="!!listParams.selected.id" class="card-header-extra">
+                      <a-button v-if="!isCompare" type="text" style="color: rgb(var(--primary-6))"
                                 @click.stop="fetchFileById(listParams.selected.item.packagePath)">
                         <icon-download/>
                         下载
                       </a-button>
-                      <a-popconfirm position="br" content="是否部署该版本？" @ok="deployVersion(listParams.selected.item)">
+                      <a-popconfirm v-if="!isCompare" position="br" content="是否部署该版本？" @ok="deployVersion(listParams.selected.item)">
                         <a-button type="text" style="color: rgb(var(--success-6))">
                           <icon-star/>
                           部署
                         </a-button>
                       </a-popconfirm>
-                      <a-popconfirm position="br" content="是否删除该版本数据？" type="warning" @ok="deleteVersion(listParams.selected.item)">
+                      <a-popconfirm v-if="!isCompare" position="br" content="是否删除该版本数据？" type="warning" @ok="deleteVersion(listParams.selected.item)">
                         <a-button type="text" style="color: rgb(var(--danger-6))">
                           <icon-delete/>
                           删除
                         </a-button>
                       </a-popconfirm>
-                    </div>
+                      <div v-if="isCompare">
+                        <a-select v-model="compareVersionId" placeholder="选中比较版本"
+                                  :field-names="{'label':'version','value':'id'}"
+                                  :options="appVersionData.filter(item => item.id !== listParams.selected.id)"
+                                  :style="{width:'320px'}"
+                                  allow-clear allow-search
+                                  @clear.stop="()=>{isCompare=false;}">
+                          <template #prefix>对比版本</template>
+                        </a-select>
+                        <a-button type="dashed" style="padding: 0 8px;" @click.stop="cancelCompare">
+                          关闭
+                        </a-button>
+                      </div>
+                      <a-button v-if="!isCompare" type="text" style="color: rgb(var(--primary-6))" @click.stop="startCompare">
+                        <icon-common/>
+                        比较
+                      </a-button>
+                    </a-space>
                   </a-space>
                 </div>
                 <a-divider style="margin:0 0 5px 0"/>
                 <div v-if="!!listParams.selected.id" class="card-body2">
-                  <AppVersionTabs :visible="true" :model-value="listParams.selected.id" :height="listParams.height"/>
+                  <AppVersionCompareTabs v-if="!!compareVersionId" :visible="true" :compareId="compareVersionId"
+                                         :model-value="listParams.selected.id" :height="listParams.height"/>
+                  <AppVersionTabs v-else :visible="true" :model-value="listParams.selected.id" :height="listParams.height"/>
                 </div>
                 <a-empty v-else/>
               </div>
