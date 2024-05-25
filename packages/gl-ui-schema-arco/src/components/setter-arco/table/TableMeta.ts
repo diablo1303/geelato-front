@@ -207,6 +207,32 @@ export default {
           setterComponentName: 'ASwitch'
         },
         {
+          name: 'showDefaultExport',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          setterComponentProps: { },
+          setterComponentVModelName: 'modelValue',
+          title: '显示导出',
+          setterComponentName: 'ASwitch',
+          description: '是否在工具栏的右边显示默认的导出Excel按钮，默认不显示'
+        },
+        {
+          name: 'showFilter',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          setterComponentProps: { defaultChecked: true },
+          setterComponentVModelName: 'modelValue',
+          title: '显示过滤器',
+          setterComponentName: 'ASwitch',
+          description: '是否在工具栏的右边显示默认的自定义过滤器按钮，默认显示'
+        },
+        {
           name: 'showPagination',
           group: 'base',
           type: 'props',

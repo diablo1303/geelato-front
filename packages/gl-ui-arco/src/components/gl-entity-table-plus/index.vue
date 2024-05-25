@@ -1647,15 +1647,15 @@ defineExpose({
             </a-space>
           </template>
         </a-modal>
-        <a-space v-if="!props.base?.enableEdit">
+        <a-space v-if="!base?.enableEdit">
           <!-- 默认的导出Excel功能 -->
-          <a-tooltip content="导出当前查询的所有数据，包括分页的数据，不只是当前页数据">
+          <a-tooltip v-if="base.showDefaultExport" content="导出当前查询的所有数据，包括分页的数据，不只是当前页数据">
             <a-button type="primary" @click="exportExcelAll">
               <gl-iconfont type="gl-file-excel" text="导出"></gl-iconfont>
             </a-button>
           </a-tooltip>
           <!-- 过滤器 -->
-          <a-button-group size="mini" class="action-icon" shape="round" v-if="myComponentCustom">
+          <a-button-group v-if="base.showFilter !== false&&myComponentCustom" size="mini" class="action-icon" shape="round">
             <a-tooltip content="我的常用过滤，可以保存多组常用过滤">
               <a-button type="primary" shape="circle" @click="openEditFilterModal(null)">
                 <GlIconfont type="gl-filter"></GlIconfont>

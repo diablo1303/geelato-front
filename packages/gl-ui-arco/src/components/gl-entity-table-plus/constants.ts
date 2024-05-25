@@ -47,6 +47,10 @@ export class BaseInfo {
   subTablePidName?: string = ''
   // 显示序号
   showSeqNo?: boolean = false
+  // 显示自下定义过滤器
+  showFilter?: boolean = true
+  // 显示默认导出
+  showDefaultExport?: boolean
   // 左边固定数
   leftFixedCount: number = 0
 
