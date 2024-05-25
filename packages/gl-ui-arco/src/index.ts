@@ -45,6 +45,7 @@ import GlSlot from './components/gl-slot/GlSlot.vue'
 import GlOrgSelect from './components/gl-org-select/index.vue'
 import GlOrgUserSelect from './components/gl-org-user-select/index.vue'
 import GlPageTemplateStateWF from './components/gl-page-template/state-wf/GlPageTemplateStateWF.vue'
+import GlDescriptions from "./components/gl-descriptions/GlDescriptions.vue";
 import type {
   ExcelCellMeta,
 } from './components/gl-entity-table-plus/constants'
@@ -114,6 +115,7 @@ const component: Plugin = {
     Vue.component(GlOrgSelect.name, GlOrgSelect)
     Vue.component(GlOrgUserSelect.name, GlOrgUserSelect)
     Vue.component(GlPageTemplateStateWF.name, GlPageTemplateStateWF)
+    Vue.component(GlDescriptions.name, GlDescriptions)
     Vue.component('GlRangePicker', RangePicker)
     Vue.component('GlModal', Modal)
     Vue.component('GlDrawer', Drawer)

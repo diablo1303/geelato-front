@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // @ts-nocheck
-import { computed, h, inject, nextTick, type PropType, type Ref, ref, watch } from 'vue'
+import { computed, inject, nextTick, type PropType, type Ref, ref, watch } from 'vue'
 import type { TableRowSelection, PaginationProps } from '@arco-design/web-vue'
 import useLoading from '../../hooks/loading'
 import Sortable from 'sortablejs'

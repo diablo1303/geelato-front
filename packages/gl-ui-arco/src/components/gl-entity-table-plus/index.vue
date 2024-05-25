@@ -13,7 +13,7 @@ import GlToolbar from '../gl-toolbar/index.vue'
 import GlEntityTable from './GlEntityTable.vue'
 import GlEntityTableEditable from './GlEntityTableEdit.vue'
 import { computed, inject, onMounted, type PropType, ref, type Ref, toRaw } from 'vue'
-import { type EntityReaderParam, fileApi } from '@geelato/gl-ui'
+import { type EntityReaderParam, fileApi, jsScriptExecutor } from '@geelato/gl-ui'
 import QueryItem, { QueryItemKv } from '../gl-query/query'
 import cloneDeep from 'lodash/cloneDeep'
 import {
@@ -22,7 +22,8 @@ import {
   type GlTableColumn,
   type FilterType,
   type MyEntityTableConfig,
-  BaseInfo, TableExport
+  BaseInfo,
+  TableExport
 } from './constants'
 import { defaultTable, createExportColumns, createExportDataCellMetas } from './table'
 import Toolbar, { defaultToolbar } from '../gl-toolbar/toolbar'
@@ -720,7 +721,7 @@ const hasRenderRecords = () => {
   return getRenderRecords().length > 0
 }
 
-const getRenderColumns = () => {
+const getRenderColumns = (): GlTableColumn[] => {
   return tableRef.value.getRenderColumns()
 }
 /**
@@ -1193,11 +1194,154 @@ const createEntityReaderAsMql = (params: { pageSize: number; pageNo?: number }) 
  *  基于当前的查询条件，进行数据查询并返回数据结果集
  *  获取的数据不做分页，在一页中返回
  *  常用于导出数据到excel中
- *  ！！ 注意，该操作不会更新当前的页面呈现
+ *  ！！ 注意，该操作不会更新当前的页面UI
+ *  ！！ 注意，如果列配置了显示脚本，则会先按该显示脚本进行计算，再返回结果
+ *  ！！ 注意，如果列配置了字典组件，会自动按字典的配置进行取值转换
+ *  ！！注意，如果列配置了动态实体组件，会自动按动态实体的配置取值转换
  *  @params {pageSize}，pageSize为查询一页时，最大的记录数
  */
 const searchAndExportRecords = (params: { pageSize: number }) => {
-  return entityApi.queryByEntityReader(createEntityReader(params))
+  return entityApi.queryByEntityReader(createEntityReader(params)).then(async (res) => {
+    if (res.data?.length <= 0) {
+      return res
+    }
+
+    // 需要进行显示脚本转换的列
+    let renderScriptColAry = []
+    // 需进行字典转换的列
+    let dictComponentColAry = []
+    // 需进行字典转换的所有字典id
+    let dictIds = []
+    // 需进行动态实体转换的列
+    let dynamicSelectComponentColAry = []
+    // 需进行动态实体转换的实体信息
+    let dynamicEntities: Record<string, string>[] = []
+    // 找出配置了组件列、显示脚本，如果一列中，同时配置了显示脚本、组件，则组件优先
+    getRenderColumns()?.forEach((column: GlTableColumn) => {
+      if (column._component) {
+        if (column._component.componentName == 'GlDict') {
+          // 找出配置了字典的列，示例如下：
+          //     "componentName": "GlDict",
+          //     "props": {
+          //       "label": "费用项目",
+          //       "dictId": "3710386584743878416",
+          //       "displayType": "select",
+          //       "dictItemDisplayMode": "hideInEdit"
+          //     },
+          dictComponentColAry.push(column)
+          dictIds.push(column._component?.props?.dictId)
+        } else if (column._component.componentName == 'GlDynamicSelect') {
+          //     "componentName": "GlDynamicSelect",
+          //     "props": {
+          //        "entityName": "il_cooperating_org",
+          //        "labelFieldNames": ["", "name"],
+          //        "valueFiledName": "id",
+          //        "valueFilter": [],
+          //        "extraFieldAndBindIds": [],
+          //      },
+          dynamicSelectComponentColAry.push(column)
+          let labelFieldNames = column._component?.props?.labelFieldNames.filter((item) => item != '')
+          let fieldNames = [column._component?.props?.valueFiledName]
+          fieldNames.push(...labelFieldNames)
+          dynamicEntities.push({
+            dataIndex: column.dataIndex,
+            entityName: column._component?.props?.entityName,
+            fieldNames: fieldNames,
+            valueFiledName: column._component?.props?.valueFiledName,
+            // 获取展示的内容
+            getLabel: (record:Record<string,any>)=>{
+              // 如果只有一个字段，则直接返回即可
+              if(labelFieldNames.length === 1){
+                return record[labelFieldNames[0]]
+              }
+              // 多个字段，则拼接
+              let label = []
+              labelFieldNames.forEach((fieldName)=>{
+                label.push(record[fieldName])
+              })
+              return label.join(' ')
+            }
+          })
+        }
+      } else if (column._renderScript) {
+        // 找出配置了转换脚本的列
+        renderScriptColAry.push(column)
+      }
+    })
+
+    // 如果有字典列，则先从服务端获取这些字典数据，便于后续进行转换
+    let dictItems = []
+    if (dictIds.length > 0) {
+      await entityApi.queryMultiDictItems(dictIds, true).then((res) => {
+        dictItems = res.data
+      })
+    }
+
+    // 如果有动态实体列，则先从服务端获取这些实体数据，便于后续进行转换
+    let entityIdsMap: Record<string, []> = {}
+    res.data.forEach((record: Record<string, any>, rowIndex: number) => {
+      dynamicSelectComponentColAry.forEach((column: GlTableColumn) => {
+        entityIdsMap[column.dataIndex] = entityIdsMap[column.dataIndex] || []
+        entityIdsMap[column.dataIndex].push(record[column.dataIndex])
+      })
+    })
+
+    // 获取动态实体数据
+    let allEntityQueryPromise = []
+    // 获取动态实体数据，key为dataIndex，value为查询结果
+    let allEntityQueryResult = {}
+    dynamicEntities.forEach((entity: Record<string, any>) => {
+      allEntityQueryPromise.push(
+        entityApi
+          .query(entity.entityName, entity.fieldNames.join(','), {
+            'id|in': entityIdsMap[entity.dataIndex]
+          })
+          .then((res) => {
+            allEntityQueryResult[entity.dataIndex] = res.data
+          })
+      )
+    })
+    await Promise.all(allEntityQueryPromise)
+
+    // 对查出的数据集，进行转换
+    if (renderScriptColAry.length > 0) {
+      res.data.forEach((record: Record<string, any>, rowIndex: number) => {
+        // 遍历列，如果配置了显示脚本，则先计算出值
+        renderScriptColAry.forEach((col) => {
+          const ctx = {
+            pageProxy: pageProvideProxy,
+            record: record,
+            column: col,
+            rowIndex: rowIndex
+          }
+          record[col.dataIndex] = jsScriptExecutor.evalExpression(col._renderScript, ctx)
+        })
+        // 如果有字典列，则对数据集进行转换
+        dictComponentColAry.forEach((col: GlTableColumn) => {
+          // 找到对应的数据，如果找不到，则使用原始数据
+          record[col.dataIndex] =
+            dictItems.find((dictItem: any) => {
+              return (
+                dictItem.dictId == col._component?.props?.dictId &&
+                record[col.dataIndex] == dictItem.value
+              )
+            })?.label || record[col.dataIndex]
+        })
+        // 如果有动态实体列，则对数据集进行转换
+        dynamicSelectComponentColAry.forEach((col: GlTableColumn) => {
+          const queryEntityMeta = dynamicEntities.find((entity) => {
+            return entity.dataIndex == col.dataIndex
+          })
+          record[col.dataIndex] = queryEntityMeta.getLabel(allEntityQueryResult[col.dataIndex].find(
+            (dynamicEntityRecord: Record<string, any>) => {
+              return dynamicEntityRecord[queryEntityMeta.valueFiledName] == record[col.dataIndex]
+            }
+          ))
+        })
+      })
+    }
+    return res
+  })
 }
 
 /**
@@ -1313,35 +1457,75 @@ const selectRecordByKey = (params: {
  *  导出所有页的数据
  */
 const exportExcelAll = () => {
-  let fileName = props.base.label
-  let data = {
-    column: createExportColumns(tableRef.value.getRenderColumns()),
-    meta: createExportDataCellMetas(tableRef.value.getRenderColumns()),
-    valueMapList: [{ list: getRenderRecords() }],
-    valueMap: {}
-  }
-  return fileApi.exportExcelByColumnMeta(fileName, data).then(
-    (res: any) => {
-      if (res?.data?.id) {
-        global.$notification.info({
-          content: '可请在“工作台>我导出的文档”查看已下载的文件',
-          showIcon: true,
-          duration: 8000,
-          id: 'msg_g8UGXiSAqoG9YF3X'
-        })
-        fileApi.downloadFileById(res.data.id, false)
-      }
-    },
-    (e: any) => {
-      global.$notification.error({
-        title: '',
-        content: '导出失败',
+  const notificationId = utils.gid()
+  global.$notification.info({
+    content: '正在查询数据...',
+    showIcon: true,
+    duration: 8000,
+    id: notificationId,
+    closable: true
+  })
+
+  return searchAndExportRecords({ pageSize: 10000 }).then((res: any) => {
+    if (res.data?.length <= 0) {
+      global.$notification.warning({
+        content: '找不到可以导出的记录',
         showIcon: true,
         duration: 8000,
-        id: 'notif_jnYqitjpvWlJxF'
+        id: notificationId,
+        closable: true
       })
+      return
     }
-  )
+
+    let fileName = props.base.label
+    let data = {
+      column: createExportColumns(tableRef.value.getRenderColumns()),
+      meta: createExportDataCellMetas(tableRef.value.getRenderColumns()),
+      valueMapList: [{ list: res.data }],
+      valueMap: {}
+    }
+
+    global.$notification.info({
+      content: '正在导出数据...',
+      showIcon: true,
+      duration: 8000,
+      id: notificationId,
+      closable: true
+    })
+    return fileApi.exportExcelByColumnMeta(fileName, data).then(
+      (res: any) => {
+        if (res?.data?.id) {
+          global.$notification.info({
+            content: '导出成功，可请在“工作台>我导出的文档”查看已下载的文件',
+            showIcon: true,
+            duration: 8000,
+            id: notificationId,
+            closable: true
+          })
+          fileApi.downloadFileById(res.data.id, false)
+        }
+      },
+      (e: any) => {
+        global.$notification.error({
+          title: '',
+          content: '导出失败',
+          showIcon: true,
+          duration: 8000,
+          id: notificationId,
+          closable: true
+        })
+      }
+    )
+  },()=>{
+    global.$notification.error({
+      content: '查询数据失败...',
+      showIcon: true,
+      duration: 8000,
+      id: notificationId,
+      closable: true
+    })
+  })
 }
 
 defineExpose({

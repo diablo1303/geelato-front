@@ -14,6 +14,7 @@ import type { GlTimelineItem } from './type'
 import type { EntityReader } from '@geelato/gl-ui'
 import { entityApi, jsScriptExecutor, PageProvideKey, PageProvideProxy } from '@geelato/gl-ui'
 import useLoading from '../../hooks/loading'
+import type { LabelPositionType, ModeType } from '@arco-design/web-vue/es/timeline/interface'
 
 const props = defineProps({
   modelValue: {
@@ -22,12 +23,11 @@ const props = defineProps({
       return ''
     }
   },
-  // @ts-ignore
   reverse: Boolean,
-  direction: ['horizontal', 'vertical', String],
-  mode: String,
+  direction: String as PropType<'horizontal' | 'vertical'>,
+  mode: String as PropType<ModeType>,
   pending: [Boolean, String],
-  labelPosition: String,
+  labelPosition: String as PropType<LabelPositionType>,
   itemMode: {
     type: String as PropType<'static' | 'dynamic' | 'dynamicUpdateStatic'>,
     default() {
@@ -65,8 +65,8 @@ const mv = ref(props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
-const mode = ref('top')
-const onChange = (_mode: string) => {
+const mode = ref(props.mode || 'top')
+const onChange = (_mode: ModeType) => {
   mode.value = _mode
 }
 
@@ -125,7 +125,9 @@ const fetchData = () => {
       }
       return res
     })
-
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 if (props.itemMode === 'static') {
@@ -153,32 +155,31 @@ defineExpose({ fetchData })
   <div class="gl-timeline">
     <a-spin :loading="loading" style="width: 100%">
       <a-timeline
-          class="gl-timeline"
-          :reverse="reverse"
-          :direction="direction"
-          :mode="mode"
-          :pending="pending"
-          :labelPosition="labelPosition"
+        :reverse="reverse"
+        :direction="direction"
+        :mode="mode"
+        :pending="pending"
+        :labelPosition="labelPosition"
       >
         <template v-if="timelineItems && timelineItems.length > 0">
           <a-timeline-item
-              v-for="(item, index) in timelineItems"
-              :label="item.label"
-              :dotColor="item.dotColor"
-              :dotType="item.dotType"
-              :lineType="item.lineType"
-              :lineColor="item.lineColor"
-              style="padding-bottom: -12px"
+            v-for="(item, index) in timelineItems"
+            :label="item.label"
+            :dotColor="item.dotColor"
+            :dotType="item.dotType"
+            :lineType="item.lineType"
+            :lineColor="item.lineColor"
+            style="padding-bottom: -12px"
           >
             <div
-                v-if="item.iconType"
-                :style="{ display: 'inline-flex', alignItems: 'center' }"
-                @click="onItemClick(item, index)"
+              v-if="item.iconType"
+              :style="{ display: 'inline-flex', alignItems: 'center' }"
+              @click="onItemClick(item, index)"
             >
               <GlIconfont
-                  :type="item.iconType"
-                  style="margin: 0 16px 0 0"
-                  :style="{ 'font-size': iconSize, color: item.dotColor }"
+                :type="item.iconType"
+                style="margin: 0 16px 0 0"
+                :style="{ 'font-size': iconSize, color: item.dotColor }"
               />
               <div :style="{ marginBottom: '0' }">
                 {{ item.title }}

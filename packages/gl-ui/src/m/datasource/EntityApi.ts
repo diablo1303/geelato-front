@@ -11,13 +11,12 @@ import jsScriptExecutor from '../actions/JsScriptExecutor'
 import utils from '../utils/Utils'
 import useApiUrl from '../hooks/useApiUrl'
 import entityQueryCache from '../datasource/EntityQueryCache'
-import useLogger from "../hooks/useLogger";
+import useLogger from '../hooks/useLogger'
 
 export type MqlObject = { [key: string]: { [key: string]: any } }
 export type ParsedMqlResult = { key: string; mqlObj: Record<string, any> }
 
 const logger = useLogger('entityApi')
-
 
 // 保存对象示例
 const entitySaverInstTemplate = new EntitySaver('必填，如entityABC')
@@ -306,7 +305,7 @@ export class EntityApi {
       })
 
       Object.assign(mql[entityReader.entity], params)
-    }else{
+    } else {
       // 若无参数，默认添加数据未删除的条件
       mql[entityReader.entity]['delStatus|eq'] = '0'
     }
@@ -333,7 +332,7 @@ export class EntityApi {
   ): Promise<any> {
     const mql = this.convertEntityReaderToMql(entityReader)
     return new Promise((resolve, reject) => {
-      this.queryByMql(mql, entityReader.withMeta, disabledClientQueryCache,bizCode)
+      this.queryByMql(mql, entityReader.withMeta, disabledClientQueryCache, bizCode)
         .then((res) => {
           // 是否需要处理返回结果
           const foundLocalComputeField = entityReader.fields.find((field) => {
@@ -825,28 +824,54 @@ export class EntityApi {
 
   /**
    * 查询当前租户所有的字典
+   * @param allStatus 是否查询全部状态，默认为false，即只查询启用状态的字典
    */
-  queryAllDict() {
-    return this.query('platform_dict', 'id value,appId,dictCode,dictName label', {
-      enableStatus: 1,
+  queryAllDict(allStatus?: boolean) {
+    const params:Record<string,any> = {
       delStatus: 0,
-      '@p': '1,3000',
+      '@p': '1,10000',
       '@order': 'seqNo|+'
-    })
+    }
+    if (!allStatus) {
+      params.enableStatus = 1
+    }
+    return this.query('platform_dict', 'id value,appId,dictCode,dictName label,enableStatus', params)
   }
 
   /**
    *  查询某dictId下的字典项
    * @param dictId 字典ID
+   * @param allStatus 查询全部状态，默认为false，即只查询启用状态的字典项
    */
-  queryDictItems(dictId: string) {
-    return this.query('platform_dict_item', 'id,itemCode value,itemName label', {
+  queryDictItems(dictId: string, allStatus?: boolean) {
+    const params:Record<string,any> = {
       dictId: `${dictId}`,
-      enableStatus: 1,
       delStatus: 0,
-      '@p': '1,1000',
+      '@p': '1,10000',
       '@order': 'seqNo|+'
-    })
+    }
+    if (!allStatus) {
+      params.enableStatus = 1
+    }
+    return this.query('platform_dict_item', 'id,itemCode value,itemName label,enableStatus', params)
+  }
+
+  /**
+   *  查询多个dictId下的字典项
+   * @param dictIds
+   * @param allStatus 查询全部状态，默认为false，即只查询启用状态的字典项
+   */
+  queryMultiDictItems(dictIds: string[], allStatus?: boolean) {
+    const params:Record<string,any> = {
+      'dictId|in': dictIds.join(","),
+      delStatus: 0,
+      '@p': '1,10000',
+      '@order': 'seqNo|+'
+    }
+    if (!allStatus) {
+      params.enableStatus = 1
+    }
+    return this.query('platform_dict_item', 'id,dictId,itemCode value,itemName label,enableStatus', params)
   }
 
   /**
@@ -855,10 +880,9 @@ export class EntityApi {
    * @param dictItemCode 字典项编码
    */
   queryDictItem(dictId: string, dictItemCode: string) {
-    return this.query('platform_dict_item', 'id,itemCode value,itemName label', {
+    return this.query('platform_dict_item', 'id,itemCode value,itemName label,enableStatus', {
       dictId: `${dictId}`,
       itemCode: dictItemCode,
-      enableStatus: 1,
       delStatus: 0,
       '@p': '1,1'
     })

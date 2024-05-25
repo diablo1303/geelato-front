@@ -118,7 +118,7 @@ export const exchangeArray = <T extends Array<any>>(
 }
 
 /**
- * 列属性的表达式计算
+ * 基于列属性配置的表达式计算值
  * @param columnPropName
  * @param data
  * @param pageProvideProxy
