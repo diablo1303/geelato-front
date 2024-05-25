@@ -6,7 +6,6 @@ import {
   jsScriptExecutor,
   PageProvideKey,
   type PageProvideProxy,
-  useLogger,
   utils
 } from '@geelato/gl-ui'
 import { ConvertUtil } from '@geelato/gl-ui'
@@ -14,7 +13,6 @@ import QueryItem, { getQueryParams, type QueryItemKv } from './query'
 import { GlIconfont } from '@geelato/gl-ui'
 import { useDebounceFn } from '@vueuse/core'
 
-const logger = useLogger('gl-query')
 const emits = defineEmits(['search'])
 const props = defineProps({
   items: {
@@ -74,7 +72,7 @@ const generateFormModel = () => {
   const fModel: any = {}
   // 组件值
   props.items?.forEach((item: QueryItem) => {
-    // logger.debug('generateFormModel',item.component?.props.label,item.component!.value)
+    // console.log('generateFormModel',item.component?.props.label,item.component!.value)
     // 以字段名，或id从页面参数中获取值，一般地页面可以通过字段名传值
     // 但有时查询条件中多个组件都绑定了多个同名的字段时，有可能只是希望某个组件参接收到参数
     // 此时就可以通过组件的id，作为参数名进行传值如query.a234567890123456789=1，即值传了id为a234567890123456789的参数，值为1
@@ -85,7 +83,7 @@ const generateFormModel = () => {
     // 如果页面参数有传值
     if (fieldName && pageProvideProxy?.hasPageParam(`query.${fieldName}`)) {
       paramValue = pageQueryParams[fieldName]
-      logger.debug(`将参数：${fieldName}的值：${paramValue}，绑定到查询条件中。`)
+      // console.log(`将参数：${fieldName}的值：${paramValue}，绑定到查询条件中。`)
     } else if (item.id && pageProvideProxy?.hasPageParam(item.id)) {
       paramValue = pageQueryParams[item.id]
     } else {
@@ -97,7 +95,7 @@ const generateFormModel = () => {
     }
     fModel[item.id] = paramValue
   })
-  // logger.debug('GlQuery > generateFormModel() > fModel:', fModel)
+  // console.log('GlQuery > generateFormModel() > fModel:', fModel)
   return fModel
 }
 const defaultValue = JSON.parse(JSON.stringify(generateFormModel()))
@@ -170,7 +168,7 @@ const resetByQueryItemKvs = (queryItemKvs: Array<QueryItemKv>) => {
           item.component &&
           (item.component.props._hidden !== true || item.component.props.readonly === true)
         ) {
-          // logger.debug(item.component?.props.label,item.component.value,'=>',toRaw(kv.value),utils.isEmpty(toRaw(kv.value)))
+          // console.log(item.component?.props.label,item.component.value,'=>',toRaw(kv.value),utils.isEmpty(toRaw(kv.value)))
           item.component.value = utils.isEmpty(toRaw(kv.value)) ? undefined : toRaw(kv.value)
         }
       }

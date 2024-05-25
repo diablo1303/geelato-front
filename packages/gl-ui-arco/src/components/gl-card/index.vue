@@ -60,9 +60,6 @@ const switchHide = () => {
 </script>
 
 <style>
-.gl-card {
-  width: 100%;
-}
 
 .gl-card .arco-card-header .gl-icon-font {
   margin-right: 4px;

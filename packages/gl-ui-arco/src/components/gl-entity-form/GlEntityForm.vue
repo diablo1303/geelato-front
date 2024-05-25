@@ -1,23 +1,28 @@
 <template>
-  <div class="gl-entity-form" v-if="refreshFlag">
+  <div class="gl-entity-form">
     <a-spin :loading="loading" tip="" style="width: 100%">
-      <a-form
-        ref="formRef"
-        :model="formData"
-        :layout="layout!"
-        :autoLabelWidth="autoLabelWidth"
-        :disabled="isRead && glIsRuntime"
-      >
-        <template v-if="glIsRuntime">
-          <slot></slot>
-        </template>
-        <template v-else>
-          <GlInsts :glComponentInst="glComponentInst"></GlInsts>
-        </template>
-      </a-form>
-      <div v-if="!isRead" class="formSubmit" style="text-align: center; padding: 2em 1em">
-        <a-button type="primary" @click="submitForm">保存</a-button>
+      <div v-if="isLastFetchedDataEmpty" style="background-color: white; padding: 2em 0">
+        <a-empty></a-empty>
       </div>
+      <template v-else>
+        <a-form
+          ref="formRef"
+          :model="formData"
+          :layout="layout!"
+          :autoLabelWidth="autoLabelWidth"
+          :disabled="isRead && glIsRuntime"
+        >
+          <template v-if="glIsRuntime">
+            <slot></slot>
+          </template>
+          <template v-else>
+            <GlInsts :glComponentInst="glComponentInst"></GlInsts>
+          </template>
+        </a-form>
+        <div v-if="!isRead" class="formSubmit" style="text-align: center; padding: 2em 1em">
+          <a-button type="primary" @click="submitForm">保存</a-button>
+        </div>
+      </template>
     </a-spin>
   </div>
 </template>
@@ -36,7 +41,7 @@ export default {
  *  如果页面传的参数为复制创建，即isPageStatusCopyCreate为true
  *  则基于复制的id（formParams.id的值）进行数据加载
  */
-import { inject, onMounted, type PropType, provide, type Ref, ref, watch } from 'vue'
+import { inject, onMounted, onUpdated, type PropType, provide, type Ref, ref, watch } from 'vue'
 import type { FormInstance } from '@arco-design/web-vue/es/form'
 import useLoading from '../../hooks/loading'
 import { isDataEntry } from '@geelato/gl-ui-schema-arco'
@@ -54,11 +59,11 @@ import {
   emitter,
   SubmitFormResult,
   UiEventNames,
-  type Param,
-  jsScriptExecutor,
   utils
 } from '@geelato/gl-ui'
 import { getFormParams, type ValidatedError } from './GlEntityForm'
+
+console.log('GlEntityForm > init')
 
 // onLoadingData：从服务端加载数据，但未设置到表单中
 // onLoadedData：从服务端加载完数据并设置到表单中
@@ -71,13 +76,9 @@ const emits = defineEmits([
 ])
 const formProvideProxy = new FormProvideProxy()
 provide(FormProvideKey, formProvideProxy)
-
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
-// console.log('GlEntityForm > inject pageProvideProxy:', pageProvideProxy)
-
-const refreshFlag = ref(true)
 const global = useGlobal()
-
+const { loading, setLoading } = useLoading()
 type LayoutType = 'inline' | 'horizontal' | 'vertical'
 
 class FormItem {
@@ -168,9 +169,12 @@ const formParams = getFormParams(pageProvideProxy, props.bindEntity)
 const formData = ref<Record<string, any>>(JSON.parse(JSON.stringify(formParams)))
 
 const setFormData = (key: string, value: any, src?: string) => {
-  // console.log(src, props.bindEntity.entityName, 'setFormData', key, value)
   formData.value[key] = value
 }
+
+// 是否最近一次fetchData返回的数据为空，用于控制是否显示无数据提示，避免获取不到最新数据时表单展示旧的数据，引起用户困惑
+const isLastFetchedDataEmpty = ref(false)
+
 // id在此entityRecordId中记录
 let entityRecordId: Ref<string> = ref(isCopyCreate.value ? '' : formParams.id)
 let copyEntityRecordId: Ref<string> = ref(isCopyCreate.value ? formParams.id : '')
@@ -190,7 +194,6 @@ watch(
   }
 )
 
-// console.log('entityRecordId', entityRecordId.value)
 const formItems: Ref<Array<FormItem>> = ref([])
 const subFormInstIds: Ref<string[]> = ref([])
 const formRef = ref<FormInstance>()
@@ -409,15 +412,17 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
 
 /**
  *  加载表单数据
- *  @param params 加载表单数据的参数，如：{id:xxx}，只
+ *  @param params 加载表单数据的参数，如：{id:xxx};如果参数有值，则以参数为准，否则取当前表单的id进行查询。
  */
-const fetchData = async (params?: { id: string,[key:string]:any }) => {
-  // 如果是复制创建，则基于复制的id进行数据加载
-  let recordId = isCopyCreate.value ? copyEntityRecordId.value : entityRecordId.value
+const fetchData = async (params?: { id: string; [key: string]: any }) => {
+  let recordId
+  if (utils.isEmpty(params)) {
+    // 如果是复制创建，则基于复制的id进行数据加载
+    recordId = isCopyCreate.value ? copyEntityRecordId.value : entityRecordId.value
+  }
 
-  // @ts-ignore
   if (!recordId && utils.isEmpty(params)) {
-    // 1、不需要从服务端获取，没有id表示新增，不需要从服务端获取表单值
+    // 1、没有id同时双没有参数，此是为新增状态，不需要从服务端获取
     if (isRead.value && props.glIsRuntime && props.alarmWhenReadInRuntime) {
       global.$notification.error({
         duration: 8000,
@@ -433,11 +438,11 @@ const fetchData = async (params?: { id: string,[key:string]:any }) => {
       setFormItemValues(formData.value)
     })
   } else {
-    // 2、需要从服务端获取，有ID
+    // 2、需要从服务端获取，可能是基于ID查询，也可能是基于参数检查
     // 2.1 构建表单数据项
     buildFieldItems()
     // 2.2基于上面构建的表单项，构建数据加载字段
-    const fieldNames: Array<string> = []
+    const fieldNames: Array<string> = ['id']
     formItems.value.forEach((item) => {
       if (item.fieldName) {
         fieldNames.push(item.fieldName)
@@ -458,7 +463,7 @@ const fetchData = async (params?: { id: string,[key:string]:any }) => {
       }
       // 分页参数，默认第1页，每页1条
       queryParams['@p'] = '1,1'
-      // 传入的查询参数中已有id值，则以该id值为准，如果没有id值，则以当前表单的id为准
+      // 传入的查询参数中已有id值，则以该id值为准，如果没有id值，否则以当前表单的id为准
       if (!queryParams.id) {
         queryParams.id = recordId
       }
@@ -467,6 +472,8 @@ const fetchData = async (params?: { id: string,[key:string]:any }) => {
         delete queryParams.id
       }
 
+      console.log('GlEntityForm > fetchData() > queryParams:', queryParams)
+      console.log('GlEntityForm > fetchData() > glComponentInst.id:', props.glComponentInst.id)
       entityApi
         .query(
           props.bindEntity.entityName,
@@ -476,24 +483,34 @@ const fetchData = async (params?: { id: string,[key:string]:any }) => {
                 id: recordId,
                 '@p': '1,1'
               }
-            : queryParams
+            : queryParams,
+          false,
+          true,
+          props.glComponentInst.id + utils.gid('x', 6)
         )
         .then((resp) => {
           const items = resp?.data
 
-          if (items && items.length > 0) {
-            // console.log(
-            //   props.bindEntity.entityName,
-            //   '从服务端加载数据并设置到当前页面中',
-            //   items[0]
-            // )
+          if (items?.length > 0) {
+            isLastFetchedDataEmpty.value = false
+            console.log(
+              'GlEntityForm >',
+              props.bindEntity.entityName,
+              '从服务端加载数据并设置到当前页面中，数据：',
+              items[0]
+            )
             // 对于初始不加载表单，通过fetchData({id:xxx})加载表单数据的，需要将加载完成的id设置到表单中
             entityRecordId.value = items[0].id
             emits('onLoadingData', { data: items[0] })
+            delete items[0].id
             setFormItemValues(items[0])
           } else {
+            isLastFetchedDataEmpty.value = true
             emits('onLoadingData', { data: {} })
           }
+        })
+        .catch((err) => {
+          console.error(err)
         })
         .finally(() => {
           setLoading(false)
@@ -559,7 +576,6 @@ const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
   return null
 }
 
-const { loading, setLoading } = useLoading()
 const hasSubFormTable = () => {
   return subFormInstIds.value.length > 0
 }
@@ -685,7 +701,6 @@ const submitForm = async () => {
                 }
               })
             }
-            setLoading(false)
             submitFormResult.success = true
             submitFormResult.record = entitySaversResult.values[0].record
             emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)
@@ -700,6 +715,9 @@ const submitForm = async () => {
     .catch((err) => {
       console.error('submitForm catch: ', err)
       return false
+    })
+    .finally(() => {
+      setLoading(false)
     })
 }
 
@@ -743,7 +761,7 @@ onMounted(() => {
 })
 
 const loadDataImmediate = () => {
-  // console.log('props.immediate', props.immediate, props.bindEntity.entityName)
+  console.log('props.immediate', props.immediate, props.bindEntity.entityName)
   return props.immediate !== false
 }
 
@@ -756,6 +774,10 @@ if (loadDataImmediate()) {
 } else {
   setFormItemValues(formParams)
 }
+
+onUpdated(() => {
+  // console.log('onUpdated() > formData', formData)
+})
 
 defineExpose({
   fetchData,

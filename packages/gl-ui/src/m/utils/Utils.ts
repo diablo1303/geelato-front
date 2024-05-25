@@ -147,7 +147,7 @@ export class Utils {
     }
   }
 
-  isEmpty(target: string | object) {
+  isEmpty(target: string | object | undefined | null) {
     if (target === undefined || target === null) {
       return true
     }

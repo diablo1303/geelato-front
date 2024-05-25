@@ -1,7 +1,5 @@
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import type {PageProvideProxy} from "@geelato/gl-ui";
-import {useLogger} from "@geelato/gl-ui";
-const logger = useLogger('gl-query')
 
 export default class QueryItem {
   id: string = ''
@@ -54,16 +52,16 @@ export const getQueryParams = (
   const queryParamsByEntityName = entityName
       ? pageProvideProxy.getParamsByPrefixAsObject(entityName)
       : {}
-  logger.debug(
-      '获取的列表参数来源，query.xxx:',
-      queryParams,
-      '$query.xxx:',
-      queryParamsByKeywordFlag,
-      (entityName || 'entityName') + '.xxx:',
-      queryParamsByEntityName
-  )
+  // console.log(
+  //     '获取的列表参数来源，query.xxx:',
+  //     queryParams,
+  //     '$query.xxx:',
+  //     queryParamsByKeywordFlag,
+  //     (entityName || 'entityName') + '.xxx:',
+  //     queryParamsByEntityName
+  // )
   // 合并三种模式下的传值
   Object.assign(queryParams, queryParamsByKeywordFlag, queryParamsByEntityName)
-  logger.debug('获取的列表参数合并为：', queryParams)
+  // console.log('获取的列表参数合并为：', queryParams)
   return queryParams || {}
 }

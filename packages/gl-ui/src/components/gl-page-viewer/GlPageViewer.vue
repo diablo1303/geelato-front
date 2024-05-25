@@ -5,8 +5,6 @@ import {mixins, type PageCustomType, useGlobal, useLogger} from '../../index'
 import { entityApi } from '../../m/datasource/EntityApi'
 import { PagePermission } from '../PageProvideProxy'
 
-const logger = useLogger('gl-query')
-
 defineOptions({
   name: 'GlPageViewer'
 })
@@ -43,9 +41,6 @@ const props = defineProps({
   ...mixins.props
 })
 
-logger.debug('useGlobal:', useGlobal())
-// logger.debug('props.pageProps:', props.pageProps)
-logger.debug('props:', props)
 const loading = ref(true)
 const glComponentInst = ref(new ComponentInstance())
 // 用户对于某页面的个性化配置

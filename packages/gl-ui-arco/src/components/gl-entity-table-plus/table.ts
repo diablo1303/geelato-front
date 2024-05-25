@@ -402,7 +402,7 @@ export const genShowColumns = (
   queryColumns: Ref<GlTableColumn[]>,
   options?: GenShowColumnOptions
 ) => {
-  console.log('genShowColumns options:', options)
+  // console.log('genShowColumns options:', options)
   const cols: Array<GlTableColumn> = []
   // 默认需要展示序号列，但不默认展示
   // if (options?.showSeqColumn !== false) {
@@ -465,7 +465,6 @@ export const genShowColumns = (
     }
     cols.push(optColumn as Column)
   }
-  console.log('genShowColumns() > cols', cols)
   return cols
 }
 

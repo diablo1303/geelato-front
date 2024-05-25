@@ -126,6 +126,7 @@ export class EntityApi {
    * @param mql Object or mqlArray
    * @param withMeta 是否需同时查询出各列表字段的元数据信息
    * @param disabledClientQueryCache 禁止客户端本次从缓存中查询，且禁止客户端缓存本次查询结果，默认为否
+   * @param bizCode
    * @returns {*}
    */
   queryByMql(
@@ -419,8 +420,10 @@ export class EntityApi {
    * @param fieldNames 查询的列字段 e.g. id,name
    * @param params 查询要件键值对 e.g. {id:123456,name:'张三'} or {'@order':'name|+'}。不指定数据状态时，默认不查询已删除的数据
    * @param withMeta
+   * @param disabledClientQueryCache
+   * @param bizCode
    */
-  query(entityName: string, fieldNames: string, params: Record<string, any>, withMeta?: boolean) {
+  query(entityName: string, fieldNames: string, params: Record<string, any>, withMeta?: boolean,disabledClientQueryCache?: boolean, bizCode?: string) {
     // if (!fieldNames) {
     //     // eslint-disable-next-line no-throw-literal
     //     throw `查询${entityName},失败，列（fieldNames）不能为空。`;
@@ -442,7 +445,7 @@ export class EntityApi {
       copyParam['@p'] = '1,500'
     }
     Object.assign(mql[entityName], copyParam)
-    return this.queryByMql(mql, withMeta)
+    return this.queryByMql(mql, withMeta,disabledClientQueryCache,bizCode)
   }
 
   /**
@@ -551,7 +554,7 @@ export class EntityApi {
     const mqlObj = this.convertEntitySaverToMql(entitySaver, bizCode)
     // logger.debug('saveEntity > entitySaver:', entitySaver, 'mql:', mqlObj)
     return this.service({
-      url: `${this.url.apiMetaSave}/${bizCode}`,
+      url: `${this.url.apiMetaSave}/${bizCode}?mainId=${entitySaver.record.id||''}`,
       method: 'POST',
       data: mqlObj
     })

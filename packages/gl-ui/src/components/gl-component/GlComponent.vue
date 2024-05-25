@@ -83,11 +83,9 @@ import jsScriptExecutor from '../../m/actions/JsScriptExecutor'
 import type { Action } from '@geelato/gl-ui-schema'
 import PageProvideProxy, { PageProvideKey } from '../PageProvideProxy'
 import { executePropsExpressions } from './GlComponentSupport'
-import useLogger from '../../m/hooks/useLogger'
 import utils from '../../m/utils/Utils'
 
 const detachedElementRef = ref(null)
-let logger = useLogger('gl-component')
 defineOptions({ name: 'GlComponent' })
 
 const emits = defineEmits([
@@ -113,11 +111,11 @@ const props = defineProps({
  */
 const vars: Record<string, any> = ref({})
 const _setVar = (params:{name: string, value: any}) => {
-  console.log('_setVar', params, 'instId',props.glComponentInst.id)
+  // console.log('_setVar', params, 'instId',props.glComponentInst.id)
   vars.value[params.name] = params.value
 }
 const _getVar = (params:{name: string}) => {
-  console.log('_getVar', params,'instId', props.glComponentInst.id)
+  // console.log('_getVar', params,'instId', props.glComponentInst.id)
   return vars.value[params.name]
 }
 
@@ -131,7 +129,7 @@ const _getVarsRef = () => {
   return vars
 }
 
-// logger.debug(props.glComponentInst.componentName,props.glComponentInst.id,props.glComponentInst.value,'modelValue:',props.modelValue)
+// console.log(props.glComponentInst.componentName,props.glComponentInst.id,props.glComponentInst.value,'modelValue:',props.modelValue)
 
 // 由于在一些场景下更新props.glComponentInst.props._hidden的值，不能响应式更新UI,这里增加一个值来控制
 const hidden = ref(!!props.glComponentInst.props?._hidden)
@@ -140,7 +138,7 @@ let pageProvideProxy: PageProvideProxy | undefined = props.glIgnoreInjectPagePro
   ? undefined
   : inject(PageProvideKey)!
 
-// logger.debug('GlComponent > setVueRef >', props.glComponentInst.componentName, props.glComponentInst.id, getCurrentInstance(), pageProvideProxy)
+// console.log('GlComponent > setVueRef >', props.glComponentInst.componentName, props.glComponentInst.id, getCurrentInstance(), pageProvideProxy)
 // 在setup阶段先setVueRef，对于有些组件如GlTable
 pageProvideProxy?.setVueRef(props.glComponentInst.id, getCurrentInstance())
 
@@ -165,12 +163,12 @@ const stopPropagation = (...args: any) => {
  *  @actionName 执行的动作名称
  */
 const doAction = (actionName: string, args: any) => {
-  // logger.debug('GlComponent > doAction() > args:', actionName, args)
+  // console.log('GlComponent > doAction() > args:', actionName, args)
   const promises: Promise<any>[] = []
   if (props.glComponentInst.actions && props.glComponentInst.actions.length > 0) {
     props.glComponentInst.actions.forEach((action: Action) => {
       if (action.eventName === actionName) {
-        // logger.debug('GlComponent > doAction > action', action)
+        // console.log('GlComponent > doAction > action', action)
         // let ctx = inject('$ctx') as object || {}
         let ctx = {}
         Object.assign(
@@ -181,11 +179,11 @@ const doAction = (actionName: string, args: any) => {
             pageProxy: pageProvideProxy
           }
         )
-        logger.debug(
-          `GlComponent(${props.glComponentInst.componentName},${props.glComponentInst.id}) > doAction() > ctx:`,
-          actionName,
-          ctx
-        )
+        // console.log(
+        //   `GlComponent(${props.glComponentInst.componentName},${props.glComponentInst.id}) > doAction() > ctx:`,
+        //   actionName,
+        //   ctx
+        // )
         promises.push(jsScriptExecutor.doAction(action, ctx))
       }
     })
@@ -244,7 +242,7 @@ defaultSyncEvents[props.glComponentInst.componentName]?.forEach((eventName: stri
 })
 
 const onValueChange = (...args: any) => {
-  // logger.debug('gl-component > onValueChange() > arguments:', args, props.glComponentInst)
+  // console.log('gl-component > onValueChange() > arguments:', args, props.glComponentInst)
   // 对于一些组件，事件可能是优先触发了组件内的事件，第一个参数不一定是event，这里对所有参数做统一处理
   stopPropagation(args)
   emits('onValueChange', {
@@ -272,7 +270,7 @@ const onMouseLeave = (...args: any[]) => {
   }
 }
 
-// logger.debug('set mv as props.modelValue || props.glComponentInst.value:',props.modelValue || props.glComponentInst.value)
+// console.log('set mv as props.modelValue || props.glComponentInst.value:',props.modelValue || props.glComponentInst.value)
 const mv = ref(props.modelValue || props.glComponentInst.value)
 
 watch(
@@ -280,7 +278,7 @@ watch(
     return props.glComponentInst.value
   },
   () => {
-    // logger.debug('watch props.glComponentInst.value,and set mv.value:',props.glComponentInst.value)
+    // console.log('watch props.glComponentInst.value,and set mv.value:',props.glComponentInst.value)
     mv.value = props.glComponentInst.value
   }
 )
@@ -291,7 +289,7 @@ watch(
     return props.modelValue
   },
   () => {
-    // logger.debug('watch props.modelValue,and set mv.value:',props.modelValue)
+    // console.log('watch props.modelValue,and set mv.value:',props.modelValue)
     mv.value = props.modelValue
   }
 )
@@ -301,7 +299,7 @@ watch(
  * @param value
  */
 const onUpdateModelValue = (value: any) => {
-  // logger.debug('onUpdateModelValue and set mv.value:',props.modelValue)
+  // console.log('onUpdateModelValue and set mv.value:',props.modelValue)
   mv.value = value
   if (typeof mv.value === 'object') {
     // 如果组件值为对象时，触发值改变操作
@@ -323,7 +321,7 @@ watch(
       return
     }
     props.glComponentInst.value = value
-    // logger.debug('watch mv update > ',props.glComponentInst.componentName,value,oldValue)
+    // console.log('watch mv update > ',props.glComponentInst.componentName,value,oldValue)
     // 注意这两个事件的顺序不能调整，先更改modelValue的值，以便于父组件相关的值改变之后，再触发update事件
     emits('update:modelValue', value)
     emits('update', value)
@@ -336,16 +334,17 @@ watch(
 
 const reRenderKey = ref(utils.gid())
 const _reRender = (updatedProps?: object) => {
-  // logger.debug('_reRender updatedProps',updatedProps)
-  // logger.debug('_reRender props.glComponentInst', props.glComponentInst)
-  console.log('_reRender() > vars:', vars.value,'instId:',props.glComponentInst?.id)
+  // console.log('_reRender updatedProps',updatedProps)
+  // console.log('_reRender props.glComponentInst', props.glComponentInst)
   reRenderKey.value = utils.gid()
+  // console.log('_reRender() > vars:', vars.value,'instId:',props.glComponentInst?.id,reRenderKey.value )
+
   // refreshFlag.value = false
   // nextTick(() => {
   //   refreshFlag.value = true
-  //   // logger.debug('nextTick call back ...')
+  //   // console.log('nextTick call back ...')
   // })
-  // logger.debug('nextTick end')
+  // console.log('nextTick end')
 }
 
 const hasPermission = () => {
@@ -396,7 +395,7 @@ onMounted(() => {
   if (lastUnRenderValue != props.glComponentInst.props.unRender) {
     unRender.value = props.glComponentInst.props.unRender || false
   }
-  // logger.debug('onMounted', props.glComponentInst.props.label, props.glComponentInst.props._hidden)
+  // console.log('onMounted', props.glComponentInst.props.label, props.glComponentInst.props._hidden)
 })
 
 onUnmounted(() => {
@@ -404,7 +403,6 @@ onUnmounted(() => {
    * 释放资源
    */
   // @ts-ignore
-  logger = null
   pageProvideProxy?.removeVueInst(props.glComponentInst.id)
   if (typeof onActionsHandler === 'object') {
     Object.keys(onActionsHandler).forEach((key) => {

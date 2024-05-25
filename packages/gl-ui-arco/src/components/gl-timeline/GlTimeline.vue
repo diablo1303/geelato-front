@@ -125,8 +125,11 @@ const fetchData = () => {
       }
       return res
     })
+    .catch((err) => {
+      console.error(err)
+    })
     .finally(() => {
-      loading.value = false
+      setLoading(false)
     })
 }
 
@@ -175,6 +178,7 @@ defineExpose({ fetchData })
               v-if="item.iconType"
               :style="{ display: 'inline-flex', alignItems: 'center' }"
               @click="onItemClick(item, index)"
+              :title="item.content"
             >
               <GlIconfont
                 :type="item.iconType"
@@ -183,7 +187,7 @@ defineExpose({ fetchData })
               />
               <div :style="{ marginBottom: '0' }">
                 {{ item.title }}
-                <div :style="{ fontSize: '12px', color: '#4E5969' }">
+                <div class="gl-content">
                   {{ item.content }}
                 </div>
               </div>
@@ -191,7 +195,7 @@ defineExpose({ fetchData })
             <div v-else @click="onItemClick(item, index)">
               <div :style="{ marginBottom: '12px' }">
                 {{ item.title }}
-                <div :style="{ fontSize: '12px', color: '#4E5969' }">
+                <div class="gl-content" :title="item.content">
                   {{ item.content }}
                 </div>
               </div>
@@ -206,4 +210,13 @@ defineExpose({ fetchData })
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.gl-timeline .gl-content {
+  font-size: 12px;
+  color: #4e5969;
+  width: 100px; /* 或者指定宽度 */
+  white-space: nowrap; /* 内容不换行 */
+  overflow: hidden; /* 超出部分不显示 */
+  text-overflow: ellipsis; /* 超出部分显示省略号 */
+}
+</style>

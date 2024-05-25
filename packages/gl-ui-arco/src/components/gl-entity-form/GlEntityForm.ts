@@ -38,18 +38,18 @@ export const getFormParams = (
   }
 
   console.log(
-    '获取的表单参数来源，form.xxx:',
+    'GlEntityForm > 获取的表单参数，来源1，form.xxx:',
     formParams,
-    '$form.xxx:',
+    '来源2，$form.xxx:',
     formParamsByKeywordFlag,
-    (bindEntity?.entityName || 'entityName') + '.xxx:',
+    '来源3,' + (bindEntity?.entityName || 'entityName') + '.xxx:',
     formParamsByEntityName,
-    'props.params:',
+    '来源4，props.params:',
     propsParams
   )
   // 合并四种模式下的传值
   Object.assign(formParams, formParamsByKeywordFlag, formParamsByEntityName, propsParams)
-  console.log('获取的表单参数合并为：', formParams)
+  console.log('GlEntityForm > 获取的表单参数，4个来源合并为：', formParams)
   return formParams || {}
 }
 
