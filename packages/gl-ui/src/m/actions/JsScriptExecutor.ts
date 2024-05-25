@@ -97,7 +97,7 @@ export class JsScriptExecutor {
    * @param methodName
    */
   getComponentMethod(componentId: string, methodName: string) {
-    console.log('getComponentMethod() > pageProxyMap:', pageProxyMap)
+    // console.log('getComponentMethod() > pageProxyMap:', pageProxyMap)
     const ref = this.getRef(componentId)
     // 对于GlPage，ref?.exposed[methodName]
     // 对于一般的组件ref?.exposed取的是GlComponent上的公共方法
@@ -388,9 +388,9 @@ export class JsScriptExecutor {
             that.convertParamsToObject(that.evalParams(params, (gl || $gl).ctx, gl || $gl))
           )
         }
-        else {
-            console.error('调用组件方法失败，找到不方法。componentId:', componentId, 'methodName:', methodName)
-        }
+        // else {
+        //     console.error('调用组件方法失败，找到不方法。componentId:', componentId, 'methodName:', methodName)
+        // }
         return false
       },
       /**
