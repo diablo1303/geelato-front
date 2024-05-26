@@ -442,7 +442,10 @@ const fetchData = async (params?: { id: string; [key: string]: any }) => {
     // 2.1 构建表单数据项
     buildFieldItems()
     // 2.2基于上面构建的表单项，构建数据加载字段
-    const fieldNames: Array<string> = ['id']
+    const fieldNames: Array<string> = []
+    if (!fieldNames.value.includes('id')) {
+      fieldNames.push('id')
+    }
     formItems.value.forEach((item) => {
       if (item.fieldName) {
         fieldNames.push(item.fieldName)
