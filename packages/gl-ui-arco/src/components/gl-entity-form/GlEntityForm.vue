@@ -443,9 +443,6 @@ const fetchData = async (params?: { id: string; [key: string]: any }) => {
     buildFieldItems()
     // 2.2基于上面构建的表单项，构建数据加载字段
     const fieldNames: Array<string> = []
-    if (!fieldNames.value.includes('id')) {
-      fieldNames.push('id')
-    }
     formItems.value.forEach((item) => {
       if (item.fieldName) {
         fieldNames.push(item.fieldName)
@@ -453,6 +450,9 @@ const fetchData = async (params?: { id: string; [key: string]: any }) => {
         console.error('存在未绑定字段', item)
       }
     })
+    if (!fieldNames.includes('id')) {
+      fieldNames.unshift('id')
+    }
     if (checkBindEntity()) {
       setLoading(true)
       // 表单实体查询参数
