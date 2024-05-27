@@ -60,12 +60,15 @@ const switchHide = () => {
 </script>
 
 <style>
-
 .gl-card .arco-card-header .gl-icon-font {
   margin-right: 4px;
 }
 
-.gl-card.gl-hidden .arco-card-body {
+.gl-card > .arco-card-body {
+  overflow-y: auto;
+}
+
+.gl-card.gl-hidden > .arco-card-body {
   display: none;
 }
 
@@ -73,9 +76,10 @@ const switchHide = () => {
   display: none;
 }
 
-.gl-card-extra-items{
+.gl-card-extra-items {
   display: flex;
 }
+
 .gl-card-extra-items > * {
   margin-left: 8px;
 }
