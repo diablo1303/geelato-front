@@ -19,7 +19,8 @@
           <GlIconfont v-if="isHidden" type="gl-down-circle"></GlIconfont>
           <GlIconfont v-else type="gl-right-circle"></GlIconfont>
         </span>
-        <span>{{ label }}</span>
+        <span v-html="label">
+        </span>
       </span>
     </template>
     <component

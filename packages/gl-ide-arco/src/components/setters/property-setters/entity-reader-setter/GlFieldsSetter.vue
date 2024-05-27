@@ -32,6 +32,7 @@
                 </a-option>
               </a-select>
               <a-select size="small" v-model="element.alias" style="width: 100%"
+                        allow-create
                         allow-clear
                         allow-search
                         placeholder="字段重命名"

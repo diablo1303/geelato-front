@@ -54,6 +54,7 @@ const global = useGlobal()
  */
 const emits = defineEmits([
   'changeRecord',
+  'deleteRecord',
   'fetchSuccess',
   'select',
   'selectionChange',
@@ -310,7 +311,7 @@ const addRow = () => {
 }
 const selectedKeys: Ref<string[]> = ref([])
 
-const useFailFn = (message: string) => {
+const useDeleteFailFn = (message: string) => {
   return (e: any) => {
     console.error(message, e)
     global.$notification.error({ content: message })
@@ -332,14 +333,17 @@ const deleteRecord = (params: { id: string }) => {
     return key === params.id
   })
   if (foundIndex >= 0) {
+    let record = pushedRecordKeys.value[foundIndex]
     pushedRecordKeys.value.splice(foundIndex, 1)
+    emits('deleteSuccess')
     refresh()
     return params.id
   } else {
     return entityApi.deleteById(props.base.entityName, params.id).then(() => {
+      emits('deleteSuccess')
       refresh()
       return params.id
-    }, useFailFn('删除失败'))
+    }, useDeleteFailFn('删除失败'))
   }
 }
 
@@ -377,14 +381,14 @@ const deleteSelectedRecords = (params: { withConfirm?: boolean }) => {
         onOk: () => {
           entityApi.deleteByIds(props.base.entityName, selectedKeys.value).then(() => {
             refresh()
-          }, useFailFn('删除失败'))
+          }, useDeleteFailFn('删除失败'))
         },
         onCancel: () => {}
       })
     } else {
       return entityApi.deleteByIds(props.base.entityName, selectedKeys.value).then(() => {
         refresh()
-      }, useFailFn('删除失败'))
+      }, useDeleteFailFn('删除失败'))
     }
   } else {
     global.$notification.warning({ content: '请先选择记录' })
@@ -505,6 +509,13 @@ const change = (data: any) => {
 
 const copyRecord = (data: { record: any; rowIndex: any }) => {
   emits('copyRecord', data)
+}
+/**
+ * 编辑表格点行删除操作时触发
+ * @param data
+ */
+const deleteRecordByEdit = (data: { record: Record<string, any>; rowIndex: any }) => {
+  emits('deleteRecord')
 }
 
 const rowSelection = computed(() => {
@@ -1240,7 +1251,9 @@ const searchAndExportRecords = (params: { pageSize: number }) => {
           //        "extraFieldAndBindIds": [],
           //      },
           dynamicSelectComponentColAry.push(column)
-          let labelFieldNames = column._component?.props?.labelFieldNames.filter((item) => item != '')
+          let labelFieldNames = column._component?.props?.labelFieldNames.filter(
+            (item) => item != ''
+          )
           let fieldNames = [column._component?.props?.valueFiledName]
           fieldNames.push(...labelFieldNames)
           dynamicEntities.push({
@@ -1249,14 +1262,14 @@ const searchAndExportRecords = (params: { pageSize: number }) => {
             fieldNames: fieldNames,
             valueFiledName: column._component?.props?.valueFiledName,
             // 获取展示的内容
-            getLabel: (record:Record<string,any>)=>{
+            getLabel: (record: Record<string, any>) => {
               // 如果只有一个字段，则直接返回即可
-              if(labelFieldNames.length === 1){
+              if (labelFieldNames.length === 1) {
                 return record[labelFieldNames[0]]
               }
               // 多个字段，则拼接
               let label = []
-              labelFieldNames.forEach((fieldName)=>{
+              labelFieldNames.forEach((fieldName) => {
                 label.push(record[fieldName])
               })
               return label.join(' ')
@@ -1332,11 +1345,11 @@ const searchAndExportRecords = (params: { pageSize: number }) => {
           const queryEntityMeta = dynamicEntities.find((entity) => {
             return entity.dataIndex == col.dataIndex
           })
-          record[col.dataIndex] = queryEntityMeta.getLabel(allEntityQueryResult[col.dataIndex].find(
-            (dynamicEntityRecord: Record<string, any>) => {
+          record[col.dataIndex] = queryEntityMeta.getLabel(
+            allEntityQueryResult[col.dataIndex].find((dynamicEntityRecord: Record<string, any>) => {
               return dynamicEntityRecord[queryEntityMeta.valueFiledName] == record[col.dataIndex]
-            }
-          ))
+            })
+          )
         })
       })
     }
@@ -1466,66 +1479,69 @@ const exportExcelAll = () => {
     closable: true
   })
 
-  return searchAndExportRecords({ pageSize: 10000 }).then((res: any) => {
-    if (res.data?.length <= 0) {
-      global.$notification.warning({
-        content: '找不到可以导出的记录',
-        showIcon: true,
-        duration: 8000,
-        id: notificationId,
-        closable: true
-      })
-      return
-    }
-
-    let fileName = props.base.label
-    let data = {
-      column: createExportColumns(tableRef.value.getRenderColumns()),
-      meta: createExportDataCellMetas(tableRef.value.getRenderColumns()),
-      valueMapList: [{ list: res.data }],
-      valueMap: {}
-    }
-
-    global.$notification.info({
-      content: '正在导出数据...',
-      showIcon: true,
-      duration: 8000,
-      id: notificationId,
-      closable: true
-    })
-    return fileApi.exportExcelByColumnMeta(fileName, data).then(
-      (res: any) => {
-        if (res?.data?.id) {
-          global.$notification.info({
-            content: '导出成功，可请在“工作台>我导出的文档”查看已下载的文件',
-            showIcon: true,
-            duration: 8000,
-            id: notificationId,
-            closable: true
-          })
-          fileApi.downloadFileById(res.data.id, false)
-        }
-      },
-      (e: any) => {
-        global.$notification.error({
-          title: '',
-          content: '导出失败',
+  return searchAndExportRecords({ pageSize: 10000 }).then(
+    (res: any) => {
+      if (res.data?.length <= 0) {
+        global.$notification.warning({
+          content: '找不到可以导出的记录',
           showIcon: true,
           duration: 8000,
           id: notificationId,
           closable: true
         })
+        return
       }
-    )
-  },()=>{
-    global.$notification.error({
-      content: '查询数据失败...',
-      showIcon: true,
-      duration: 8000,
-      id: notificationId,
-      closable: true
-    })
-  })
+
+      let fileName = props.base.label
+      let data = {
+        column: createExportColumns(tableRef.value.getRenderColumns()),
+        meta: createExportDataCellMetas(tableRef.value.getRenderColumns()),
+        valueMapList: [{ list: res.data }],
+        valueMap: {}
+      }
+
+      global.$notification.info({
+        content: '正在导出数据...',
+        showIcon: true,
+        duration: 8000,
+        id: notificationId,
+        closable: true
+      })
+      return fileApi.exportExcelByColumnMeta(fileName, data).then(
+        (res: any) => {
+          if (res?.data?.id) {
+            global.$notification.info({
+              content: '导出成功，可请在“工作台>我导出的文档”查看已下载的文件',
+              showIcon: true,
+              duration: 8000,
+              id: notificationId,
+              closable: true
+            })
+            fileApi.downloadFileById(res.data.id, false)
+          }
+        },
+        (e: any) => {
+          global.$notification.error({
+            title: '',
+            content: '导出失败',
+            showIcon: true,
+            duration: 8000,
+            id: notificationId,
+            closable: true
+          })
+        }
+      )
+    },
+    () => {
+      global.$notification.error({
+        content: '查询数据失败...',
+        showIcon: true,
+        duration: 8000,
+        id: notificationId,
+        closable: true
+      })
+    }
+  )
 }
 
 defineExpose({
@@ -1649,13 +1665,21 @@ defineExpose({
         </a-modal>
         <a-space v-if="!base?.enableEdit">
           <!-- 默认的导出Excel功能 -->
-          <a-tooltip v-if="base.showDefaultExport" content="导出当前查询的所有数据，包括分页的数据，不只是当前页数据">
+          <a-tooltip
+            v-if="base.showDefaultExport"
+            content="导出当前查询的所有数据，包括分页的数据，不只是当前页数据"
+          >
             <a-button type="primary" @click="exportExcelAll">
               <gl-iconfont type="gl-file-excel" text="导出"></gl-iconfont>
             </a-button>
           </a-tooltip>
           <!-- 过滤器 -->
-          <a-button-group v-if="base.showFilter !== false&&myComponentCustom" size="mini" class="action-icon" shape="round">
+          <a-button-group
+            v-if="base.showFilter !== false && myComponentCustom"
+            size="mini"
+            class="action-icon"
+            shape="round"
+          >
             <a-tooltip content="我的常用过滤，可以保存多组常用过滤">
               <a-button type="primary" shape="circle" @click="openEditFilterModal(null)">
                 <GlIconfont type="gl-filter"></GlIconfont>
@@ -1780,6 +1804,7 @@ defineExpose({
       @cellDblclick="cellDblclick"
       @change="change"
       @copyRecord="copyRecord"
+      @deleteRecord="deleteRecordByEdit"
     ></component>
   </a-card>
 </template>

@@ -125,6 +125,24 @@ export default {
       title: '自动标签宽',
       setterComponentName: 'ASwitch',
       description: '设置 auto-label-width 开启自动标签宽度。仅在 layout="horizontal" 布局下生效。'
+    },{
+      name: 'dataEmptyShowMode',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      setterComponentProps: {
+        type: 'button',
+        options: [
+          { label: '默认显示表单组件', value: 'SHOW_ALWAYS' },
+          { label: '显示为“暂无数据”', value: 'SHOW_EMPTY' }
+        ],
+        defaultValue: 'horizontal'
+      },
+      setterComponentVModelName: 'modelValue',
+      title: '空时显示内容',
+      setterComponentName: 'ASelect',
+      description: '表单没有加载数据时的展示模式，默认是正常显示表单组件，也可以设置显示为："暂无数据"。'
     },
     {
       name: '_valueExpression',

@@ -916,6 +916,11 @@ export default {
       description: '在数据表的行内编辑模式下，当数据表的行记录信息更换时触发'
     },
     {
+      name: 'deleteRecord',
+      title: '行记录删除成功',
+      description: '从前端的列表中点了删除按钮，且前端已正常删除，则触发此事件。不管后续是否有进行服务端删除操作，无返回结果。'
+    },
+    {
       name: 'copyRecord',
       title: '复制记录',
       description: '当点击行的复制操作时触发，参数{record:Record<string,any>,rowIndex:number}'
