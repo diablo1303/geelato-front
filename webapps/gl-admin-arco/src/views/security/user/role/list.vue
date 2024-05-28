@@ -362,7 +362,7 @@ watch(() => props, (val) => {
                         placeholder="选择角色，关联当前用户" @change="selectChange">
                 <a-option v-for="(item,index) of roleSelectOptions" :key="index"
                           :disabled="!item.enableStatus"
-                          :label="`${item.weight} | ${item.name} [${item.code}]`"
+                          :label="`${item.weight} ${item.name} ${item.code}`"
                           :title="item.enableStatus?item.description:'已禁用，不可选'"
                           :value="item.id"/>
                 <template #header>
