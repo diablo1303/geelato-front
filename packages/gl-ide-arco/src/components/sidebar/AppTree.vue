@@ -258,7 +258,8 @@ const handleCancel = () => {
   visible.value = false
 }
 
-const openPage = (params: { extendId: string }) => {
+// { extendId: string }
+const openPage = (params: any) => {
   console.log('openPage', params, selectedKeys.value)
   if (params.extendId) {
     if (selectedKeys.value.includes(params.extendId)) {
