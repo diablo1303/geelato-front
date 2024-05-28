@@ -1,6 +1,8 @@
 <template>
   <div class="gl-app-tree">
+    <a-alert :show-icon="false"> 加粗显示为菜单项</a-alert>
     <GlEntityTree
+      v-model="selectedKeys"
       ref="glEntityTree"
       :treeId="appStore.currentApp.id"
       :treeName="appStore.currentApp.name"
@@ -31,11 +33,21 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { type Ref, ref } from 'vue'
-import { useIdeStore, useAppStore, Page, usePageStore } from '@geelato/gl-ide'
-import { entityApi, EntityReader, EntitySaver, FieldMeta } from '@geelato/gl-ui'
+import { onMounted, onUnmounted, type PropType, type Ref, ref } from 'vue'
+import { useIdeStore, useAppStore, Page, usePageStore, EventNames } from '@geelato/gl-ide'
+import { emitter, entityApi, EntityReader, EntitySaver, FieldMeta, useGlobal } from '@geelato/gl-ui'
 import CreatePageNav from './create-page/CreatePageNav.vue'
 import type { PageInfo } from './create-page/CreatePageNav'
+
+const props = defineProps({
+  modelValue: {
+    type: Array as PropType<string[]>,
+    default: () => []
+  }
+})
+
+const selectedKeys = ref(props.modelValue)
+const global = useGlobal()
 
 const glEntityTree = ref()
 const ideStore = useIdeStore()
@@ -245,6 +257,24 @@ const onBeforeOk = async () => {
 const handleCancel = () => {
   visible.value = false
 }
+
+const openPage = (params: { extendId: string }) => {
+  console.log('openPage', params, selectedKeys.value)
+  if (params.extendId) {
+    if (selectedKeys.value.includes(params.extendId)) {
+      global.$notification.info('拟打开的页面和当前页面是同一个')
+    } else {
+      glEntityTree.value.selectNodeByKey(params.extendId)
+    }
+  }
+}
+
+onMounted(() => {
+  emitter.on(EventNames.GlIdeOpenPage, openPage)
+})
+onUnmounted(() => {
+  emitter.off(EventNames.GlIdeOpenPage, openPage)
+})
 </script>
 <style>
 .gl-app-tree {

@@ -4,11 +4,11 @@
 <template>
   <div class="gl-base-tree">
     <ATree
+      v-model="selectedKeys"
       v-if="treeData && treeData.length > 0"
       blockNode
       :data="treeData"
       :draggable="draggable"
-      :selectedKeys="selectedKeys"
       :default-expand-all="false"
       :default-expanded-keys="defaultExpandedKeysMv"
       showLine
@@ -21,18 +21,19 @@
       <template #switcher-icon="node, { isLeaf }">
         <GlIconfont
           :type="node.iconType"
-          style="font-size: 1.2em; color: #3370ff"
+          style="font-size: 1.2em"
+          :style="{ color: isLeaf ? '#3370ff' : '' }"
           @mouseover="setCurrentHoverNode(node)"
         />
       </template>
-      <template #title="nodeData">
-        <span @mouseover="setCurrentHoverNode(nodeData)">
-          <GlIconfont
-            v-if="nodeData.flag"
-            :title="nodeData.flag"
-            type="gl-eye"
-            style="color: #3370ff"
-          ></GlIconfont>
+      <template #title="nodeData, { isLeaf }">
+        <span @mouseover="setCurrentHoverNode(nodeData)" :class="{ 'gl-bold': !!nodeData.flag }">
+          <!--          <GlIconfont-->
+          <!--            v-if="nodeData.flag"-->
+          <!--            :title="nodeData.flag"-->
+          <!--            type="gl-eye"-->
+          <!--            :style="{ color: isLeaf ? '#3370ff' : ''}"-->
+          <!--          ></GlIconfont>-->
           {{ nodeData.title }}
         </span>
       </template>
@@ -119,6 +120,10 @@ enum DragModeType {
 
 const global = useGlobal()
 const props = defineProps({
+  modelValue: {
+    type: Array as PropType<string[]>,
+    default: () => []
+  },
   // 展开的节点
   defaultExpandedKeys: {
     type: Array<String | Number>
@@ -171,6 +176,8 @@ const props = defineProps({
   updateNodeName: Function,
   updateNodeIcon: Function
 })
+const selectedKeys = ref(props.modelValue)
+
 // 注意，所有的contextMenuitem click都会触发clickContextMenuItem事件，若是内置的addNode等，还会先触发addNode等事件
 // selectNode:选择一个节点，和a-tree的select是有区别的
 const emits = defineEmits([
@@ -181,9 +188,21 @@ const emits = defineEmits([
   'updateNodeName',
   'updateNodeIcon',
   'deleteNode',
-  'clickContextMenuItem'
+  'clickContextMenuItem',
+  'update:modelValue'
 ])
-const selectedKeys = ref([])
+
+watch(
+    () => props.modelValue,
+    (newVal) => {
+      selectedKeys.value = newVal
+    },
+    { deep: true }
+)
+watch(selectedKeys, (newVal) => {
+  emits('update:modelValue', newVal)
+}, { deep: true })
+
 const defaultExpandedKeysMv = ref(props.defaultExpandedKeys || [props.treeId])
 const treeData = ref(new Array<any>())
 const contextMenu = ref()
@@ -354,30 +373,33 @@ const updateNode = (clickedNodeData: any, editNodeData: any) => {
 }
 
 /**
+ * 递归通过节点KEY查询节点
+ * @param nodeData
+ * @param key
+ */
+const findNode = (nodeData: any, key: string): any => {
+  if (nodeData.key === key) {
+    return nodeData
+  }
+  if (nodeData.children && nodeData.children.length > 0) {
+    for (const nodeDataKey in nodeData.children) {
+      const foundSubNode = findNode(nodeData.children[nodeDataKey], key)
+      if (foundSubNode) {
+        return foundSubNode
+      }
+    }
+  }
+  return undefined
+}
+
+/**
  * 更新某节点id下的所有节点排序，适用于小数据量的场景
  * @param pid
  */
 const updateNodeSeqNo = (pid: string) => {
   // console.log('updateNodeSeqNo,pid:', pid, treeData.value)
-
-  const findNode = (nodeData: any): any => {
-    if (nodeData.key === pid) {
-      return nodeData
-    }
-
-    if (nodeData.children && nodeData.children.length > 0) {
-      for (const nodeDataKey in nodeData.children) {
-        const foundSubNode = findNode(nodeData.children[nodeDataKey])
-        if (foundSubNode) {
-          return foundSubNode
-        }
-      }
-    }
-    return undefined
-  }
-
   if (treeData.value && treeData.value.length > 0) {
-    const foundNode = findNode(treeData.value[0])
+    const foundNode = findNode(treeData.value[0], pid)
     if (foundNode) {
       // TODO 需要提供一个批量修改多个的方法，暂时逐个执行
       foundNode.children.forEach((subNode: any, index: number) => {
@@ -435,6 +457,17 @@ const selectNode = (node: any) => {
   // @ts-ignore
   selectedKeys.value.push(node.key)
   emits('selectNode', { selectedNode: node })
+}
+/**
+ * 选中一个节点，通过nodeKey
+ * 便于外部通过获取到nodeKey，然后调用selectNodeByKey选中，效果同点选
+ * @param nodeKey
+ */
+const selectNodeByKey = (nodeKey: string) => {
+  selectedKeys.value = []
+  selectedKeys.value.push(nodeKey)
+  let foundNode = findNode(treeData.value[0], nodeKey)
+  emits('selectNode', { selectedNode: foundNode })
 }
 
 const onSelect = (selectedKeys: any, data: any) => {
@@ -581,7 +614,7 @@ const reloadTreeData = () => {
 // 初始化加载
 reloadTreeData()
 // 对外提供方法
-defineExpose({ refreshTree, selectNode })
+defineExpose({ refreshTree, selectNode, selectNodeByKey })
 </script>
 <style>
 .gl-base-tree .arco-tree-node-drag-icon {
@@ -607,6 +640,10 @@ defineExpose({ refreshTree, selectNode })
   /* background-color: #f2f6ff; */
   cursor: pointer;
   text-shadow: 0 0 5px #7caef6;
+}
+
+.gl-base-tree .gl-bold {
+  font-weight: 600;
 }
 
 .gl-context-menu-item {

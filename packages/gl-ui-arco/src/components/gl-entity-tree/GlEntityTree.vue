@@ -1,6 +1,7 @@
 <template>
   <div class="gl-entity-tree">
     <GlBaseTree
+      v-model="selectedKeys"
       ref="glBaseTree"
       :treeId="treeId"
       :expandedKeysCacheKey="expandedKeysCacheKey"
@@ -27,7 +28,7 @@ export default {
 </script>
 <script setup lang="ts">
 import { entityApi, type EntityReader } from '@geelato/gl-ui'
-import { type PropType, ref, toRaw } from 'vue'
+import {type PropType, ref, toRaw, watch} from 'vue'
 import GlBaseTree from './GlBaseTree.vue'
 import type { BindField } from '@geelato/gl-ui-schema'
 import type { ContextMenuDataType } from './types'
@@ -38,9 +39,14 @@ const emits = defineEmits([
   'updateNode',
   'updateNodeName',
   'deleteNode',
-  'clickContextMenuItem'
+  'clickContextMenuItem',
+  'update:modelValue'
 ])
 const props = defineProps({
+  modelValue: {
+    type: Array as PropType<string[]>,
+    default: () => []
+  },
   // 设置该值之后，展开的keys将会缓存到本地浏览器
   expandedKeysCacheKey: String,
   treeId: {
@@ -97,6 +103,13 @@ const props = defineProps({
   }
 })
 
+const selectedKeys = ref(props.modelValue)
+watch(() => props.modelValue, (newVal) => {
+  selectedKeys.value = newVal
+},{deep:true})
+watch(selectedKeys, (newVal) => {
+  emits('update:modelValue', newVal)
+}, { deep: true })
 const glBaseTree = ref()
 
 const loadTreeDataFn = () => {
@@ -197,11 +210,13 @@ const refresh = () => {
 const selectNode = (node: any) => {
   glBaseTree.value.selectNode(node)
 }
+const selectNodeByKey = (nodeKey: string) => {
+  glBaseTree.value.selectNodeByKey(nodeKey)
+}
 
-defineExpose({ refresh, selectNode })
+defineExpose({ refresh, selectNode,selectNodeByKey })
 </script>
 <style>
 .gl-entity-tree {
-  /*margin: 8px 0 0 8px;*/
 }
 </style>

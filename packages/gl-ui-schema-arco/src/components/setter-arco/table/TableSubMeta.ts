@@ -1090,7 +1090,7 @@ export default {
           title: '字段名',
           required: true,
           type: 'string',
-          description: '需要拼接的字段名称'
+          description: '需要拼接的字段名称，如："ecoNo"'
         },
         {
           name: 'separator',
@@ -1098,6 +1098,13 @@ export default {
           required: false,
           type: 'string',
           description: '字段值分隔符，默认为“,”'
+        },
+        {
+          name: 'onlySelected',
+          title: '只拼接选择的记录',
+          required: false,
+          type: 'boolean',
+          description: 'true时，只拼接选择的记录，false时，拼接当前展示的所有记录，默认为false'
         }
       ],
       returnInfo: {

@@ -752,7 +752,7 @@ const validate = () => {
 const reRender = () => {
   return tableRef.value.reRender()
 }
-const onFetchSuccess = (args: { data: []; pagination: object }) => {
+const onFetchSuccess = (args: { data: []}) => {
   // @ts-ignore
   props.glComponentInst.value = args.data
   emits('fetchSuccess', args)
@@ -1142,22 +1142,36 @@ const getRenderRecordsWithOutUnPushed = () => {
 /**
  *  获取单列内容数据组，并且去掉空值
  *  依据push和unPush的状态进行构建
+ *  onlySelected,如果为true，则只获取勾选的行数据
  */
-const getColumnAry = (params: { dataIndex: string }) => {
+const getColumnAry = (params: { dataIndex: string,onlySelected?:boolean }) => {
   if (!params || !params.dataIndex) {
     console.error('getColumnJoin的参数不正确,格式应为：{ dataIndex: string}，实为：', params)
     throw new Error('getColumnJoin的参数不正确,格式应为：{ dataIndex: string}')
   }
   let ary = new Set()
-  // 正值部分
-  getRenderRecordsWithOutUnPushed()?.forEach((record: Record<string, any>) => {
-    if (!utils.isEmpty(record[params.dataIndex])) {
-      ary.add(record[params.dataIndex])
-    }
-  })
+  if(params.onlySelected){
+    getSelectedRecords()?.forEach((record: Record<string, any>) => {
+      if (!utils.isEmpty(record[params.dataIndex])) {
+        ary.add(record[params.dataIndex])
+      }
+    })
+  }else{
+    // 正值部分
+    getRenderRecordsWithOutUnPushed()?.forEach((record: Record<string, any>) => {
+      if (!utils.isEmpty(record[params.dataIndex])) {
+        ary.add(record[params.dataIndex])
+      }
+    })
+  }
   return ary
 }
-const getColumnJoin = (params: { dataIndex: string; separator?: string }) => {
+/**
+ * 将单列内容拼接在一起形成字符串
+ * @param params dataIndex 字段名
+ *               onlySelected,如果为true，则只获取勾选的行数据
+ */
+const getColumnJoin = (params: { dataIndex: string; separator?: string,onlySelected?:boolean }) => {
   let ary = Array.from(getColumnAry(params))
   return ary.join(params?.separator || ',')
 }

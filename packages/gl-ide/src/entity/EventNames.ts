@@ -44,6 +44,8 @@ enum EventNames {
   GlIdeSetterComponentEventStateUpdate = 'GlIdeSetterComponentEventStateUpdate',
   // 打开动作编辑器
   GlIdeOpenActionEditor = 'GlIdeOpenActionEditor',
+  // 打开页面
+  GlIdeOpenPage = 'GlIdeOpenPage',
 
   // 舞台上选择组件
   GlIdeStageComponentSelected = 'GlIdeStageComponentSelected',

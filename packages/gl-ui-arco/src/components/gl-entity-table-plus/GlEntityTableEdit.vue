@@ -451,13 +451,13 @@ const fetchData = async (readerInfo?: {
     }
     entityReader.pageSize = readerInfo?.pageSize || _pagination.pageSize!
     const response: any = await entityApi.queryByEntityReader(entityReader, true)
-    // console.log('GlEntityTable > fetchData() > response:', response)
+    console.log('GlEntityTable > fetchData() > response:', response)
     renderData.value = response.data
     reStatIsRowReadonly(renderData.value)
     _pagination.pageSize = readerInfo?.pageSize || _pagination.pageSize
     _pagination.current = readerInfo?.pageNo || 1
     _pagination.total = response.data.total
-    emits('fetchSuccess', { data: renderData.value, _pagination })
+    emits('fetchSuccess', { data: renderData.value})
   } catch (err) {
     console.error(err)
     emits('fetchFail', { data: undefined, _pagination })

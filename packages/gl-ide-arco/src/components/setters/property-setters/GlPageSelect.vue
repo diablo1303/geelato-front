@@ -1,13 +1,27 @@
 <template>
-  <a-tree-select
-    :data="treeData"
-    v-model="selected"
-    placeholder="请选择"
-    :allow-search="true"
-    :allow-clear="true"
-    :filter-tree-node="filterTreeNode"
-    @click="onClick"
-  ></a-tree-select>
+  <div class="gl-page-select">
+    <a-tree-select
+      :data="treeData"
+      v-model="selected"
+      placeholder="请选择"
+      selectable="leaf"
+      :allow-search="true"
+      :allow-clear="true"
+      :filter-tree-node="filterTreeNode"
+      :dropdown-style="{ maxHeight: '50vh', overflow: 'auto' }"
+      @click="onClick"
+    >
+    </a-tree-select>
+<!--    <a-switch  checked-text="包括菜单页面" unchecked-text="不含菜单页面" type="round"></a-switch>-->
+    <a-popconfirm
+      content="将关闭本窗口（不保存），并打开新页面?"
+      position="lt"
+      type="warning"
+      @ok="openPage"
+    >
+      <a-button size="small" type="primary"> 打开</a-button>
+    </a-popconfirm>
+  </div>
 </template>
 
 <script lang="ts">
@@ -17,12 +31,13 @@ export default {
 </script>
 <script lang="ts" setup>
 import { inject, onMounted, ref, watch } from 'vue'
-import { entityApi, EntityReader, EntityReaderParam, Utils } from '@geelato/gl-ui'
+import { emitter, entityApi, EntityReader, EntityReaderParam, Utils } from '@geelato/gl-ui'
 import {
   useAppStore,
   ComponentSetterProvideKey,
   ComponentSetterProvideProxy,
-  usePageStore
+  usePageStore,
+  EventNames
 } from '@geelato/gl-ide'
 
 const emits = defineEmits(['update:modelValue'])
@@ -126,9 +141,26 @@ const setData = () => {
   // 默认为当前的应用id
   fetchData(appId.value || props.appId)
 }
+
+const openPage = () => {
+  if (!selected.value) return
+  console.log('openPage', selected.value)
+  emitter.emit(EventNames.GlIdeOpenPage, { extendId: selected.value })
+}
+
 onMounted(() => {
   setData()
 })
 </script>
 
-<style scoped></style>
+<style lang="less">
+.gl-page-select {
+  display: flex;
+
+  .arco-tree-select-popup {
+    .arco-tree-select-tree-wrapper {
+      max-height: none;
+    }
+  }
+}
+</style>
