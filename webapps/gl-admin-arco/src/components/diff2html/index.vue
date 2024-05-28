@@ -12,7 +12,7 @@ import "highlight.js/styles/googlecode.css";
 import "diff2html/bundles/css/diff2html.min.css";
 import {generateRandom} from "@/utils/strings";
 
-const emits = defineEmits(['update:modelValue']);
+const emits = defineEmits(['update:modelValue', 'update:loading']);
 const props = defineProps({
   modelValue: {type: String, default: ''},
   title: {type: String, default: ''},
@@ -32,7 +32,6 @@ const generateFormData = () => {
     oldHeader: props.oldHeader || 'RIGHT',
   };
 }
-
 const mv = ref(generateFormData());
 
 const createDiffData = () => {

@@ -46,27 +46,27 @@ watch(() => props, (val) => {
 }, {deep: true, immediate: true});
 </script>
 <template>
-  <a-form :model="renderData" :label-col-props="{ span: '2px' }" style="padding-left: 16px;" class="form">
-    <a-form-item label="应用主键：" field="appId">
+  <a-form :label-col-props="{ span: '2px' }" :model="renderData" class="form" style="padding-left: 16px;">
+    <a-form-item field="appId" label="应用主键：">
       <CopyToClipboard v-if="renderData.appId" :model-value="renderData.appId"/>
       <span>{{ renderData.appId }}{{ getAppOptionLabel(renderData.appId) }}</span>
     </a-form-item>
-    <a-form-item label="版本名称：" field="version">
+    <a-form-item field="version" label="版本名称：">
       <span>{{ renderData.version }}</span>
     </a-form-item>
-    <a-form-item label="版本来源：" field="packageSource">
+    <a-form-item field="packageSource" label="版本来源：">
       <span>{{ renderData.packageSource }}</span>
     </a-form-item>
-    <a-form-item label="打包时间：" field="packetTime">
+    <a-form-item field="packetTime" label="打包时间：">
       <span>{{ renderData.packetTime }}</span>
     </a-form-item>
-    <a-form-item label="打包人员：" field="creatorName">
+    <a-form-item field="creatorName" label="打包人员：">
       <span>{{ renderData.creatorName }}</span>
     </a-form-item>
-    <a-form-item label="应用包：" field="packagePath">
-      <UploadFile :disabled="true" v-model="renderData.packagePath"/>
+    <a-form-item field="packagePath" label="应用包：">
+      <UploadFile v-model="renderData.packagePath" :disabled="true"/>
     </a-form-item>
-    <a-form-item label="版本描述：" field="description">
+    <a-form-item field="description" label="版本描述：">
       <span :title="renderData.description">{{ renderData.description }}</span>
     </a-form-item>
   </a-form>

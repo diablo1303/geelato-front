@@ -1,22 +1,20 @@
 <script lang="ts">
 export default {
-  name: 'PlatformDictCompare'
+  name: 'PlatformExportTemplateCompare'
 };
 </script>
 <script lang="ts" setup>
 import {PropType, ref, watch} from 'vue';
-import {isBlank} from "@/utils/is";
 import cloneDeep from "lodash/cloneDeep";
 import {
   AppMeta,
   AppVersion,
   PageParams,
-  LayoutHeight,
   TreeNodeModel,
-  TreeLevelData,
+  parseJson,
   directions,
   queryCompareType,
-  generateLayoutHeight,
+  LayoutHeight, generateLayoutHeight, TreeLevelData,
 } from "@/views/compare/type";
 import VersionCompareIndex from "@/views/compare/index.vue";
 
@@ -29,55 +27,22 @@ const props = defineProps({
   height: {type: Number, default: 536}, // 列表 - 数据列表高度，滑动条高度
 });
 
-// 页面 layout-sider 宽度
+// 业务layout高度
 const layoutSiderWidth = ref<number>(250);
-// 页面 layout-sider,layout-content 高度
 const layoutHeight = ref<LayoutHeight>(generateLayoutHeight(props.height));
-// 树默认根节点
-const rootNode = {title: "数据字典管理", key: 'root', level: 0, data: {}, children: []};
-// 对比组件ID
-const diffId = ref<string>("diff-html-dict");
-// 解析的数据
+// 树参数
+const rootNode = {title: "文件管理", key: 'root', level: 0, data: {}, children: []};
+// 对比参数
+const diffId = ref<string>("diff-html-export-or-input-template");
+// 原始数据
 const renderData = ref<TreeLevelData>({} as TreeLevelData);
 const renderCompareData = ref<TreeLevelData>({} as TreeLevelData);
 
 /**
- * 构建树数据，第二层节点
- * @param direction
- * @param record
- * @param data
- * @param compare
- */
-const queryTreeSecondItems = (direction: string, record: TreeNodeModel, data: TreeLevelData, compare: TreeLevelData) => {
-  const items: TreeNodeModel[] = []; // 子节点集合
-  const typeArr: number[] = []; // 子节点类型集合
-  const isEditAtt: boolean[] = []; // 子节点下属是否修改了
-  if (data && data.second && data.second.length > 0) {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of data.second.filter(item => (item.dict_id === record.key && isBlank(item.pid)) || (item.dict_id === record?.data?.dict_id && item.pid === record.key))) {
-      const nodeData = {title: item.item_name, key: item.id, level: 2, mark: '项', type: 0, data: item, children: [], subChange: false,}
-      const {child, types, subsEdit} = queryTreeSecondItems(direction, nodeData, data, compare);
-      // 判断是否修改
-      const isEdit = types.includes(1) || types.includes(2) || types.includes(3) || subsEdit.includes(true);
-      isEditAtt.push(isEdit);
-      // 类型
-      const itemType = queryCompareType(item, compare.second || [], direction);
-      typeArr.push(itemType);
-      // 构建节点
-      Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit,});
-      items.push(nodeData);
-    }
-  }
-
-  return {child: items, types: typeArr, subsEdit: isEditAtt};
-}
-
-/**
- * 构建树数据，第一层节点
- * @param direction
- * @param record
- * @param data
- * @param compare
+ * 构建树数据
+ * @param direction 方向
+ * @param data 原始数据
+ * @param compare 对比数据
  */
 const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: TreeLevelData, compare: TreeLevelData) => {
   const items: TreeNodeModel[] = []; // 子节点集合
@@ -86,17 +51,11 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
   if (data && data.first && data.first.length > 0) {
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data.first) {
-      const nodeData = {title: item.dict_name, key: item.id, level: 1, mark: '字典', type: 0, data: item, children: [], subChange: false,}
-      const {child, types, subsEdit} = queryTreeSecondItems(direction, nodeData, data, compare);
-      // 判断是否修改
-      const isEdit = types.includes(1) || types.includes(2) || types.includes(3) || subsEdit.includes(true);
-      isEditAtt.push(isEdit);
       // 类型
       const itemType = queryCompareType(item, compare.first || [], direction);
       typeArr.push(itemType);
       // 构建节点
-      Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit,});
-      items.push(nodeData);
+      items.push({title: item.title, key: item.id, level: 1, type: itemType, data: item, children: [],});
     }
   }
 
@@ -104,7 +63,7 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
 }
 
 /**
- * 构建树数据，第零层节点（根节点）
+ * 构建树数据，根节点（第零级）
  * @param direction
  * @param data
  * @param compare
@@ -118,15 +77,20 @@ const queryTreeItems = (direction: string, data: TreeLevelData, compare: TreeLev
 }
 
 /**
- * 数据解析
+ * 来源数据处理
  * @param list
  * @param data
  */
 const queryRenderData = (list: AppMeta[], data: TreeLevelData) => {
-  data.first = list.find(item => item.metaName === "platform_dict")?.metaData || [];
+  data.first = list.find(item => item.metaName === "platform_export_template")?.metaData || [];
+  data.first.forEach(item => {
+    item.business_type_data = parseJson(item.business_type_data);
+    item.business_rule_data = parseJson(item.business_rule_data);
+    item.business_meta_data = parseJson(item.business_meta_data);
+    item.template = parseJson(item.template);
+    item.template_rule = parseJson(item.template_rule);
+  });
   data.first.sort((a, b) => new Date(b.update_at).getTime() - new Date(a.update_at).getTime());
-  data.second = list.find(item => item.metaName === "platform_dict_item")?.metaData || [];
-  data.second.sort((a, b) => a.seq_no - b.seq_no);
 
   return data;
 }

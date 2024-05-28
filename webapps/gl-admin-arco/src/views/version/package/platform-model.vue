@@ -274,7 +274,7 @@ watch(() => props, (val) => {
   <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
     <template #first>
 <span class="tree-layout">
-    <a-input-search v-model="searchKey" :placeholder="$t('orgChooseBox.tree.search')" allow-clear class="tree-search"/>
+    <a-input-search v-model="searchKey" placeholder="搜索" allow-clear class="tree-search"/>
     <a-scrollbar :style="{overflow:'auto',height:`${props.height-125}px`}">
       <a-tree
           v-model:selectedKeys="selectedKeys"

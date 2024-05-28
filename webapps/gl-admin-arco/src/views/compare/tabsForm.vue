@@ -9,10 +9,14 @@ import {ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {getAppSelectOptions, getAppVersion, QueryAppForm, queryAppPackage, QueryAppVersionForm} from "@/api/application";
 import CompareModel from "@/views/compare/model.vue";
-import PlatformSysConfigCompare from "@/views/compare/package/platform-sys-config.vue";
-import PlatformDictCompare from "@/views/compare/package/platform-dict.vue";
 import {AppVersion, PageParams} from "@/views/compare/type";
-
+import PlatformModelCompare from "@/views/compare/package/platform-model.vue";
+import PlatformDictCompare from "@/views/compare/package/platform-dict.vue";
+import PlatformPageCompare from "@/views/compare/package/platform-page.vue";
+import PlatformSysConfigCompare from "@/views/compare/package/platform-sys-config.vue";
+import PlatformExportTemplateCompare from "@/views/compare/package/platform-export-template.vue";
+import PlatformEncodingCompare from "@/views/compare/package/platform-encoding.vue";
+import PlatformResourcesCompare from "@/views/compare/package/platform-resources.vue";
 
 const emits = defineEmits(['update:modelValue', 'toModel', 'toTable']);
 const props = defineProps({
@@ -93,11 +97,11 @@ const tableFormat = async (successBack?: any) => {
   });
   await getPackData(props.modelValue, (data: Record<string, any>) => {
     console.log(`appVersionData : ${props.modelValue}`, data);
-    appVersionData.value = (data || []) as AppVersion;
+    appVersionData.value = (data || {}) as AppVersion;
   });
   await getPackData(props.compareId, (data: Record<string, any>) => {
     console.log(`appVersionCompareData : ${props.compareId}`, data);
-    appVersionCompareData.value = (data || []) as AppVersion;
+    appVersionCompareData.value = (data || {}) as AppVersion;
   });
 
   Object.assign(listParams.value, {visible: true});
@@ -118,66 +122,86 @@ watch(() => props, (val) => {
 
 <template>
   <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" position="top" type="line">
-    <a-tab-pane :key="1" title="版本信息" class="a-tabs-five">
+    <a-tab-pane :key="1" class="a-tabs-five" title="版本信息">
       <div style="width:100%;display: inline-flex;justify-content: center;">
-        <CompareModel :visible="true" :model-value="tableData" :app-value="appSelectOptions"/>
+        <CompareModel :app-value="appSelectOptions" :model-value="tableData" :visible="true"/>
         <a-divider direction="vertical"/>
-        <CompareModel :visible="true" :model-value="tableCompareData" :app-value="appSelectOptions"/>
+        <CompareModel :app-value="appSelectOptions" :model-value="tableCompareData" :visible="true"/>
       </div>
     </a-tab-pane>
-    <a-tab-pane :key="2" title="模型管理" class="a-tabs-five">
+    <a-tab-pane :key="2" class="a-tabs-five" title="模型管理">
       <a-card v-if="listParams.visible" class="general-card6">
-
+        <PlatformModelCompare :compare-value="appVersionCompareData"
+                              :height="listParams.height"
+                              :model-value="appVersionData"
+                              :parameter="listParams.parameter"
+                              :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="3" title="数据字典" class="a-tabs-five">
+    <a-tab-pane :key="3" class="a-tabs-five" title="数据字典">
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformDictCompare :model-value="appVersionData"
-                             :compare-value="appVersionCompareData"
-                             :visible="listParams.visible"
+        <PlatformDictCompare :compare-value="appVersionCompareData"
                              :height="listParams.height"
-                             :parameter="listParams.parameter"/>
+                             :model-value="appVersionData"
+                             :parameter="listParams.parameter"
+                             :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="4" title="角色管理" class="a-tabs-five">
+    <a-tab-pane :key="4" class="a-tabs-five" title="角色管理">
       <a-card v-if="listParams.visible" class="general-card6">
 
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="5" title="菜单管理" class="a-tabs-five">
+    <a-tab-pane :key="5" class="a-tabs-five" title="菜单管理">
       <a-card v-if="listParams.visible" class="general-card6">
-
+        <PlatformPageCompare :compare-value="appVersionCompareData"
+                             :height="listParams.height"
+                             :model-value="appVersionData"
+                             :parameter="listParams.parameter"
+                             :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="6" title="系统配置" class="a-tabs-five">
+    <a-tab-pane :key="6" class="a-tabs-five" title="系统配置">
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformSysConfigCompare :model-value="appVersionData"
-                                  :compare-value="appVersionCompareData"
-                                  :visible="listParams.visible"
+        <PlatformSysConfigCompare :compare-value="appVersionCompareData"
                                   :height="listParams.height"
-                                  :parameter="listParams.parameter"/>
+                                  :model-value="appVersionData"
+                                  :parameter="listParams.parameter"
+                                  :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="7" title="文件管理" class="a-tabs-five">
+    <a-tab-pane :key="7" class="a-tabs-five" title="文件管理">
       <a-card v-if="listParams.visible" class="general-card6">
-
+        <PlatformExportTemplateCompare :compare-value="appVersionCompareData"
+                                       :height="listParams.height"
+                                       :model-value="appVersionData"
+                                       :parameter="listParams.parameter"
+                                       :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="8" title="编码管理" class="a-tabs-five">
+    <a-tab-pane :key="8" class="a-tabs-five" title="编码管理">
       <a-card v-if="listParams.visible" class="general-card6">
-
+        <PlatformEncodingCompare :compare-value="appVersionCompareData"
+                                 :height="listParams.height"
+                                 :model-value="appVersionData"
+                                 :parameter="listParams.parameter"
+                                 :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="9" title="资源管理" class="a-tabs-five">
+    <a-tab-pane :key="9" class="a-tabs-five" title="资源管理">
       <a-card v-if="listParams.visible" class="general-card6">
-
+        <PlatformResourcesCompare :compare-value="appVersionCompareData"
+                                  :height="listParams.height"
+                                  :model-value="appVersionData"
+                                  :parameter="listParams.parameter"
+                                  :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>

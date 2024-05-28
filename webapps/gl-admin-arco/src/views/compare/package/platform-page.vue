@@ -1,19 +1,20 @@
 <script lang="ts">
 export default {
-  name: 'PlatformSysConfigCompare'
+  name: 'PlatformPageCompare'
 };
 </script>
 <script lang="ts" setup>
-import {PropType, ref, watch} from 'vue';
+import {computed, PropType, ref, watch} from 'vue';
 import cloneDeep from "lodash/cloneDeep";
 import {
   AppMeta,
-  type AppVersion,
+  AppVersion,
   PageParams,
   TreeNodeModel,
+  parseJson,
   directions,
   queryCompareType,
-  LayoutHeight, generateLayoutHeight, TreeLevelData,
+  generateLayoutHeight, TreeLevelData, LayoutHeight,
 } from "@/views/compare/type";
 import VersionCompareIndex from "@/views/compare/index.vue";
 
@@ -30,9 +31,9 @@ const props = defineProps({
 const layoutSiderWidth = ref<number>(250);
 const layoutHeight = ref<LayoutHeight>(generateLayoutHeight(props.height));
 // 树参数
-const rootNode = {title: "系统配置管理", key: 'root', level: 0, data: {}, children: []};
+const rootNode = {title: "菜单管理", key: 'root', level: 0, data: {}, children: []};
 // 对比参数
-const diffId = ref<string>("diff-html-sys-config");
+const diffId = ref<string>("diff-html-tree-node-page");
 // 原始数据
 const renderData = ref<TreeLevelData>({} as TreeLevelData);
 const renderCompareData = ref<TreeLevelData>({} as TreeLevelData);
@@ -50,12 +51,18 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
   const isEditAtt: boolean[] = []; // 子节点下属是否修改了
   if (data && data.first && data.first.length > 0) {
     // eslint-disable-next-line no-restricted-syntax
-    for (const item of data.first) {
+    for (const item of data.first.filter((item) => item.pid === record.key)) {
+      const nodeData = {title: item.text, key: item.id, level: 1, type: 0, data: item, children: [], subChange: false,}
+      const {child, types, subsEdit} = queryTreeFirstItems(direction, nodeData, data, compare);
+      // 判断是否修改
+      const isEdit = types.includes(1) || types.includes(2) || types.includes(3) || subsEdit.includes(true);
+      isEditAtt.push(isEdit);
       // 类型
       const itemType = queryCompareType(item, compare.first || [], direction);
       typeArr.push(itemType);
       // 构建节点
-      items.push({title: item.config_key, key: item.id, level: 1, type: itemType, data: item, children: [],});
+      Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit,});
+      items.push(nodeData);
     }
   }
 
@@ -63,15 +70,19 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
 }
 
 /**
- * 构建树数据，根节点（第零级）
+ * 构建树数据，根节点
  * @param direction
+ * @param meta
  * @param data
  * @param compare
  */
-const queryTreeItems = (direction: string, data: TreeLevelData, compare: TreeLevelData) => {
-  const parentNode = Object.assign(cloneDeep(rootNode), {title: `${directions(direction)} | ${rootNode.title}`});
-  const {child} = queryTreeFirstItems(direction, parentNode, data, compare);
-  Object.assign(parentNode, {children: child});
+const queryTreeItems = (direction: string, meta: AppVersion, data: TreeLevelData, compare: TreeLevelData) => {
+  const parentNode = Object.assign(cloneDeep(rootNode), {
+    title: `${directions(direction)} | ${rootNode.title}（${meta?.appCode}）`, key: `${meta?.sourceAppId}`
+  });
+  const {child, types, subsEdit} = queryTreeFirstItems('left', parentNode, data, compare);
+  const isEdit = types.includes(1) || types.includes(2) || types.includes(3) || subsEdit.includes(true);
+  Object.assign(parentNode, {children: child, subChange: isEdit});
 
   return [parentNode];
 }
@@ -82,9 +93,17 @@ const queryTreeItems = (direction: string, data: TreeLevelData, compare: TreeLev
  * @param data
  */
 const queryRenderData = (list: AppMeta[], data: TreeLevelData) => {
-  data.first = list.find(item => item.metaName === "platform_sys_config")?.metaData || [];
-  data.first.sort((a, b) => new Date(b.update_at).getTime() - new Date(a.update_at).getTime());
-
+  data.first = list.find(item => item.metaName === "platform_tree_node")?.metaData || [];
+  const pageData: Record<string, any>[] = list.find(item => item.metaName === "platform_app_page")?.metaData || [];
+  pageData.forEach(item => {
+    item.preview_content = parseJson(item.preview_content);
+    item.release_content = parseJson(item.release_content);
+    item.source_content = parseJson(item.source_content);
+  });
+  data.first.forEach(item => {
+    item.platformPage = pageData.filter(page => page.extend_id === item.id);
+  });
+  data.first.sort((a, b) => a.seq_no - b.seq_no);
   return data;
 }
 
@@ -97,8 +116,8 @@ watch(() => props, (val) => {
     const compareList = (cloneDeep(props.compareValue?.appMetaList) || []) as AppMeta[];
     queryRenderData(compareList, renderCompareData.value);
     // 渲染树
-    renderData.value.tree = queryTreeItems('left', renderData.value, renderCompareData.value);
-    renderCompareData.value.tree = queryTreeItems('right', renderCompareData.value, renderData.value);
+    renderData.value.tree = queryTreeItems('left', props.modelValue, renderData.value, renderCompareData.value);
+    renderCompareData.value.tree = queryTreeItems('right', props.compareValue, renderCompareData.value, renderData.value);
   }
   // 计算布局高度
   layoutHeight.value = generateLayoutHeight(props.height);
@@ -109,7 +128,7 @@ watch(() => props, (val) => {
                        :left-data="renderData"
                        :model-value="diffId"
                        :right-data="renderCompareData"
-                       :root-key="rootNode.key"
-                       :root-title="rootNode.title"
+                       :root-key="renderData?.tree[0].key"
+                       :root-title="renderData?.tree[0].title"
                        :sider-width="layoutSiderWidth"/>
 </template>
