@@ -35,6 +35,7 @@ const props = defineProps({
   parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
   visible: {type: Boolean, default: false},// 控制弹窗隐显
   hasRoot: {type: Boolean, default: true},// 显示根目录
+  rootOrgId: {type: String, default: ''},// 根节点id
   rootSelected: {type: Boolean, default: false},// 根目录是否可选
   checkStrictly: {type: Boolean, default: true},// 是否取消父子节点关联
   maxCount: {type: Number, default: 0},// 可选数量
@@ -156,14 +157,16 @@ const refreshTreeOne = (data: OrgTreeNode[]) => {
  */
 const loadedPage = () => {
   searchKey.value = '';
-  fetchOrgTree().then((data) => {
+  const params = props.rootOrgId ? {id: props.rootOrgId} : {pid: rootPid};
+  fetchOrgTree(params as unknown as QueryOrgForm).then((data) => {
     refreshTreeOne(data);
   });
 }
 
 const resetPage = () => {
   searchKey.value = '';
-  fetchOrgTree().then((data) => {
+  const params = props.rootOrgId ? {id: props.rootOrgId} : {pid: rootPid};
+  fetchOrgTree(params as unknown as QueryOrgForm).then((data) => {
     refreshTreeOne(data);
     // 选中、展开
     if (props.hasRoot && props.rootSelected) {

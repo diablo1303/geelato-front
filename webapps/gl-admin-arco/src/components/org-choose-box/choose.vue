@@ -18,6 +18,7 @@ const props = defineProps({
   visible: {type: Boolean, default: false},// 控制弹窗隐显
   disabled: {type: Boolean, default: false},// 是否禁用
   hasRoot: {type: Boolean, default: true},// 是否存在根节点
+  rootOrgId: {type: String, default: ''},// 根节点id
   checkStrictly: {type: Boolean, default: true},// 是否取消父子节点关联
   maxCount: {type: Number, default: 0},// 取值数量
   height: {type: Number, default: 420},// 显示高度
@@ -110,6 +111,7 @@ watch(() => rightData, () => {
         <OrgTree v-model="selectedKeys"
                  :check-strictly="props.checkStrictly"
                  :has-root="props.hasRoot"
+                 :root-org-id="rootOrgId"
                  :height="props.height"
                  :max-count="props.maxCount"
                  :parameter="props.parameter"

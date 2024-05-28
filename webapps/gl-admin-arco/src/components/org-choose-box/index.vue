@@ -33,6 +33,7 @@ const props = defineProps({
   disabled: {type: Boolean, default: false},// 是否禁用
   maxCount: {type: Number, default: 0},// 取值数量
   hasRoot: {type: Boolean, default: true},// 是否存在根节点
+  rootOrgId: {type: String, default: ''},// 根节点id
   checkStrictly: {type: Boolean, default: true},// 是否取消父子节点关联
   onlyModal: {type: Boolean, default: false},// 仅使用弹窗
   visible: {type: Boolean, default: false},// 控制弹窗隐显
@@ -295,6 +296,7 @@ watch(() => modalVisible, () => {
                v-model="modalData"
                :check-strictly="props.checkStrictly"
                :has-root="props.hasRoot"
+               :root-org-id="rootOrgId"
                :height="layoutHeight"
                :max-count="props.maxCount"
                :parameter="props.parameter"

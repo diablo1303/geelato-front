@@ -32,6 +32,7 @@ const props = defineProps({
   parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
   disabled: {type: Boolean, default: false},// 是否禁用
   maxCount: {type: Number, default: 0},// 取值数量
+  rootOrgId: {type: String, default: ''},// 根节点id
   onlyModal: {type: Boolean, default: false},// 仅使用弹窗
   visible: {type: Boolean, default: false},// 控制弹窗隐显
   onlySelect: {type: Boolean, default: true},// 仅选择，不可输入
@@ -288,6 +289,7 @@ watch(() => modalVisible, () => {
                 v-model="modalData"
                 :height="layoutHeight"
                 :max-count="props.maxCount"
+                :root-org-id="rootOrgId"
                 :visible="modalVisible"
                 :parameter="props.parameter"/>
   </a-modal>

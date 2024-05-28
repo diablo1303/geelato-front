@@ -19,6 +19,7 @@ const props = defineProps({
   visible: {type: Boolean, default: false},// 控制弹窗隐显
   disabled: {type: Boolean, default: false},// 是否禁用
   maxCount: {type: Number, default: 0},// 取值数量
+  rootOrgId: {type: String, default: ''},// 根节点id
   height: {type: Number, default: 420}
 });
 
@@ -29,7 +30,7 @@ const rightData = ref<QueryForm[]>([]);
 // 选中数据
 const selectedKeys = ref<Array<string | number>>([]);
 // 组织id
-const selectedOrgIds = ref<string>('');
+const selectedOrgIds = ref<string>(props.rootOrgId || '');
 
 /**
  * 删除选中的数据
@@ -44,7 +45,7 @@ const deleteClick = (data: QueryForm) => {
  * @param data
  */
 const selectChange = (isSelected: boolean, data: QueryOrgForm) => {
-  selectedOrgIds.value = data && data.id || '';
+  selectedOrgIds.value = data && data.id || props.rootOrgId || '';
 }
 
 /**
@@ -129,8 +130,9 @@ watch(() => rightData, () => {
         <OrgTree :has-root="true"
                  :height="props.height"
                  :max-count="1"
+                 :root-org-id="rootOrgId"
                  :parameter="props.parameter"
-                 :root-selected="true"
+                 :root-selected="!rootOrgId"
                  :visible="visible"
                  @change="selectChange"/>
       </a-layout-content>
