@@ -21,9 +21,12 @@ import {
   getRoleSelectOptions
 } from '@/api/security';
 import {enableStatusOptions, typeOptions} from "@/views/security/role/searchTable";
+import RoleForm from "@/views/security/role/form.vue";
+import UserSelectRoleForm from "@/views/security/user/role/form.vue";
 
 // 页面所需参数
 type PageParams = {
+  orgId?: string; // 组织主键
   userId?: string; // 用户主键
   roleId?: string; // 角色主键
   appId?: string; // 应用主键
@@ -271,6 +274,43 @@ watch(() => selectVisible, (val) => {
   }
 }, {deep: true, immediate: true});
 
+/* 表单参数 */
+const formParams = ref({
+  visible: false,
+  isModal: true,
+  title: '添加角色',
+  width: '',
+  height: '',
+  parameter: {orgId: '', appId: '', tenantCode: ''},
+  formState: 'add',
+  id: '',
+  formCol: 1,
+});
+/**
+ * 列表按钮 - 新增表单
+ * @param ev
+ */
+const addTable = (ev: MouseEvent) => {
+  formParams.value = Object.assign(formParams.value, {
+    id: '', visible: true, formState: 'add', parameter: props.parameter,
+  });
+};
+const saveSuccess = async (data: Record<string, any>) => {
+  const roleIds = data.roleIds || [];
+  if (roleIds.length > 0) {
+    try {
+      await insertRoleUser({
+        userId: props.parameter.userId || '',
+        roleId: roleIds.join(",") || ''
+      } as unknown as QueryForm);
+      reset();
+    } catch (err) {
+      console.log(err);
+    }
+  } else {
+    Message.warning('请至少选择一项！');
+  }
+}
 
 watch(() => props, (val) => {
   if (props.visible === true) {
@@ -293,6 +333,16 @@ watch(() => props, (val) => {
 </script>
 
 <template>
+  <UserSelectRoleForm v-model:visible="formParams.visible"
+                      :formCol="formParams.formCol"
+                      :formState="formParams.formState"
+                      :height="formParams.height"
+                      :modelValue="formParams.id"
+                      :parameter="formParams.parameter"
+                      :title="formParams.title"
+                      :width="formParams.width"
+                      @saveSuccess="saveSuccess"/>
+
   <a-row>
     <a-col :flex="1">
       <a-form :label-col-props="{ span: labelCol }" :model="filterData" :wrapper-col-props="{ span: wrapperCol }" label-align="left">
@@ -349,7 +399,13 @@ watch(() => props, (val) => {
           </template>
           {{ $t('searchTable.form.reset') }}
         </a-button>
-        <a-trigger v-model:popup-visible="selectVisible" :popup-translate="[0, -32]" position="br" trigger="click">
+        <a-button :disabled="formState==='view'" type="primary" status="success" @click="addTable">
+          <template #icon>
+            <icon-plus/>
+          </template>
+          {{ $t('searchTable.operation.create') }}
+        </a-button>
+        <a-trigger v-if="false" v-model:popup-visible="selectVisible" :popup-translate="[0, -32]" position="br" trigger="click">
           <a-button :disabled="formState==='view'" status="success" :type="selectVisible?'text':'primary'">
             <template #icon>
               <icon-plus/>

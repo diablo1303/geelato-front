@@ -54,7 +54,7 @@ const orgListParams = ref({
 // 关联角色
 const roleListParams = ref({
   visible: false,
-  parameter: {userId: '', appId: '', tenantCode: ''},
+  parameter: {orgId: '', userId: '', appId: '', tenantCode: ''},
   formState: 'edit',
   filterCol: 2,
   height: (props.height as number) - 300,
@@ -123,7 +123,7 @@ watch(() => props, () => {
         Object.assign(roleListParams.value, {
           visible: true, formState: props.formState,
           parameter: {
-            userId: props.modelValue,
+            userId: props.modelValue, orgId: data.orgId,
             appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
           }
         });
