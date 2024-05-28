@@ -405,13 +405,13 @@ watch(() => props.height, (val) => {
           </template>
           新增角色
         </a-button>
-        <a-button :disabled="formState==='view' || refApp" type="primary" @click="addTablePermission">
+        <a-button v-if="!refApp" :disabled="formState==='view'" type="primary" @click="addTablePermission">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
           查看权限（自定义）
         </a-button>
-        <a-button :disabled="formState==='view' || refApp" type="primary" @click="resetTableDefaultPermission">
+        <a-button v-if="!refApp" :disabled="formState==='view'" type="primary" @click="resetTableDefaultPermission">
           <template #icon>
             <gl-iconfont type="gl-reset"/>
           </template>

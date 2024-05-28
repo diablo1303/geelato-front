@@ -391,7 +391,7 @@ watch(() => props.height, (val) => {
       <a-table-column :sortable="sortable.seqNo" :width="100" data-index="seqNo" title="排序"/>
       <a-table-column :sortable="sortable.createAt" :width="180" data-index="createAt" title="创建时间"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="210" data-index="description" title="补充描述"/>
-      <a-table-column v-show="formState==='edit'" :width="240" align="center" data-index="operations" fixed="right" title="操作">
+      <a-table-column v-show="formState==='edit'" :width="formState==='view'?70:240" align="center" data-index="operations" fixed="right" title="操作">
         <template #cell="{ record,isDefault=record.viewType==='default'}">
           <a-button v-if="isDefault || formState==='view'" size="small" type="text" @click="viewTable(record.id)">
             查看
@@ -406,17 +406,17 @@ watch(() => props.height, (val) => {
             </a-button>
           </a-tooltip>
           <a-popconfirm v-else content="是否发布该条视图? 即将该视图在数据库中创建或更新。" position="tr" type="info" @ok="releaseTable(record)">
-            <a-button :disabled="formState==='view'" size="small" type="text" title="将该视图在数据库中创建或更新。">
+            <a-button v-if="formState!=='view'" size="small" type="text" title="将该视图在数据库中创建或更新。">
               发布
             </a-button>
           </a-popconfirm>
           <!--    权限      -->
-          <a-button size="small" type="text" @click="openViewPermission(record)">
+          <a-button v-if="formState!=='view'" size="small" type="text" @click="openViewPermission(record)">
             权限
           </a-button>
           <!--    删除      -->
           <a-popconfirm content="是否删除该条数据？" position="tr" type="warning" @ok="deleteTable(record)">
-            <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
+            <a-button v-if="formState!=='view'" size="small" status="danger" type="text">
               删除
             </a-button>
           </a-popconfirm>
