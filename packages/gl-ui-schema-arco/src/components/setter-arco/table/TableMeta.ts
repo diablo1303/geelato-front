@@ -1133,8 +1133,13 @@ export default {
     },
     {
       name: 'changeRecord',
-      title: '行记录(内容)更改',
+      title: '行记录更改',
       description: '在数据表的行内编辑模式下，当数据表的行记录信息更换时触发'
+    },
+    {
+      name: 'deleteRecord',
+      title: '行记录删除成功',
+      description: '行记录删除成功时回调，无返回结果。'
     },
     { name: 'select', title: '点击行选择器', description: '点击行选择器时触发' },
     { name: 'cellClick', title: '点击单元格', description: '点击单元格时触发' },

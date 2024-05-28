@@ -58,7 +58,9 @@ const emits = defineEmits([
   'fetchSuccess',
   'fetchFail',
   'change',
-  'copyRecord'
+  'copyRecord',
+  // 从前端的列表中点了删除按钮，且前端已正常删除，则触发此事件。不管后续是否有进行服务端删除操作
+  'deleteRecord'
 ])
 const props = defineProps({
   modelValue: {
@@ -761,10 +763,13 @@ const deleteRecord = (record: object, rowIndex: number) => {
   props.glComponentInst.value = renderData.value
   if (records && records.length > 0) {
     const record: { [key: string]: any } = records[0]
-    // 如可该记录没有id，即表示新添加且未保存的，在点删除时，直接删除，不需要再记录到待删除组数中
+    // 如该记录没有id，即表示新添加且未保存的，在点删除时，直接删除，不需要再记录到待删除组数中
     if (record.id) {
       deleteDataWhenEnableEdit.value.push({ id: record.id, [logicDeleteFieldName]: 1 })
     }
+    emits('deleteRecord', { record, rowIndex })
+    // 同时会触发表络级别的change事件
+    emits('change', renderData.value)
   }
   // console.log('deleteDataWhenEnableEdit:', deleteDataWhenEnableEdit)
 }

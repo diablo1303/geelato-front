@@ -8,6 +8,28 @@ export default {
   useBy: ['freePage'],
   properties: [
     {
+      name: 'type',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      setterComponentProps: {
+        options: [
+          { label: '柱状图', value: 'bar' },
+          { label: '折线图', value: 'line' },
+          { label: '饼图 ', value: 'pie' }
+        ]
+      },
+      setterComponentVModelName: 'modelValue',
+      title: '图类型',
+      setterComponentName: 'ASelect',
+      setterDefaultValue: 'bar',
+      enableValueExpress: true,
+      displayMode: 'tile',
+      _showSub: false,
+      properties: []
+    },
+    {
       name: 'label',
       group: 'base',
       type: 'props',
@@ -326,11 +348,27 @@ export default {
           displayMode: 'tile',
           title: '布局朝向',
           description: '图例列表的布局朝向',
-          setterComponentName: 'ARadioGroup',
+          setterComponentName: 'ARadioGroup'
         }
       ],
       setterComponentName: 'GlSimpleObjectSetter',
-      title: '图例'
+      title: '图例属性'
+    },
+    {
+      name: 'entityReader',
+      group: 'base',
+      type: 'props',
+      enableValueExpress: false,
+      show: true,
+      expanded: true,
+      displayMode: 'collapse',
+      setterComponentProps: {
+        alert: '数据的第一列作为维度，其它列作为指标，若有id列不作维度、指标'
+      },
+      setterComponentVModelName: 'modelValue',
+      title: '数据源',
+      setterComponentName: 'GlEntityReaderSetter',
+      description: '从服务端数据'
     }
   ],
   actions: [

@@ -1,7 +1,7 @@
 <template>
   <div class="gl-entity-form">
     <a-spin :loading="loading" tip="" style="width: 100%">
-      <div v-if="isLastFetchedDataEmpty" style="background-color: white; padding: 2em 0">
+      <div v-if="showEmpty" style="background-color: white; padding: 2em 0">
         <a-empty></a-empty>
       </div>
       <template v-else>
@@ -30,6 +30,13 @@
 export default {
   name: 'GlEntityForm'
 }
+
+enum DataEmptyShowMode {
+  // 没有数据时，仍显示表单组件，此为默认值
+  SHOW_ALWAYS = 'SHOW_ALWAYS',
+  // 没有数据时，不显示表单组件，显示“无数据”，但有数据时显示表单组件
+  SHOW_EMPTY = 'SHOW_EMPTY'
+}
 </script>
 <script lang="ts" setup>
 /**
@@ -41,7 +48,17 @@ export default {
  *  如果页面传的参数为复制创建，即isPageStatusCopyCreate为true
  *  则基于复制的id（formParams.id的值）进行数据加载
  */
-import { inject, onMounted, onUpdated, type PropType, provide, type Ref, ref, watch } from 'vue'
+import {
+  computed,
+  inject,
+  onMounted,
+  onUpdated,
+  type PropType,
+  provide,
+  type Ref,
+  ref,
+  watch
+} from 'vue'
 import type { FormInstance } from '@arco-design/web-vue/es/form'
 import useLoading from '../../hooks/loading'
 import { isDataEntry } from '@geelato/gl-ui-schema-arco'
@@ -135,6 +152,15 @@ const props = defineProps({
    *  默认为否，在开发调试阶段可以配置为true，便于及时发现问题（如漏了传表单id）
    */
   alarmWhenReadInRuntime: Boolean,
+  /**
+   *  表单没有数据时的显示模式
+   */
+  dataEmptyShowMode: {
+    type: String as PropType<DataEmptyShowMode>,
+    default() {
+      return DataEmptyShowMode.SHOW_ALWAYS
+    }
+  },
   readonly: Boolean,
   disabled: Boolean,
   ...mixins.props
@@ -173,7 +199,14 @@ const setFormData = (key: string, value: any, src?: string) => {
 }
 
 // 是否最近一次fetchData返回的数据为空，用于控制是否显示无数据提示，避免获取不到最新数据时表单展示旧的数据，引起用户困惑
-const isLastFetchedDataEmpty = ref(false)
+const isLastFetchedDataEmpty = ref(true)
+
+// 在运行时下状态下
+const showEmpty = computed(() => {
+  return (
+      props.glIsRuntime && props.dataEmptyShowMode === DataEmptyShowMode.SHOW_EMPTY && isLastFetchedDataEmpty.value
+  )
+})
 
 // id在此entityRecordId中记录
 let entityRecordId: Ref<string> = ref(isCopyCreate.value ? '' : formParams.id)
@@ -437,6 +470,7 @@ const fetchData = async (params?: { id: string; [key: string]: any }) => {
     pageProvideProxy.addPageMountedEvent(() => {
       setFormItemValues(formData.value)
     })
+    isLastFetchedDataEmpty.value = true
   } else {
     // 2、需要从服务端获取，可能是基于ID查询，也可能是基于参数检查
     // 2.1 构建表单数据项
@@ -513,6 +547,7 @@ const fetchData = async (params?: { id: string; [key: string]: any }) => {
           }
         })
         .catch((err) => {
+          isLastFetchedDataEmpty.value = true
           console.error(err)
         })
         .finally(() => {

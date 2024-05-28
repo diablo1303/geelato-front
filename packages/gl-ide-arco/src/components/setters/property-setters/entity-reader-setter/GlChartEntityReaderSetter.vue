@@ -1,12 +1,5 @@
 <template>
   <table class="gl-entity-reader-setter gl-table">
-    <tr v-if="alert">
-      <td>
-        <a-alert>
-          {{ alert }}
-        </a-alert>
-      </td>
-    </tr>
     <tr>
       <td class="gl-table-cell gl-label">绑定实体</td>
     </tr>
@@ -120,10 +113,6 @@ export default defineComponent({
         return new EntityReader()
       }
     },
-    /**
-     * 提示信息
-     */
-    alert: String,
     /**
      *  重命名选项，指定实体需要重命名的字段，便于页面操作
      */

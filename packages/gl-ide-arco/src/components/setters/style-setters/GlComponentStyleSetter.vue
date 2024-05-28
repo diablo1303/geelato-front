@@ -57,9 +57,21 @@ const activeKey = ref([1, 2, 3, 4])
             </div>
           </div>
           <div class="gl-table-row">
+            <div class="gl-table-cell gl-label">最小宽度</div>
+            <div class="gl-table-cell">
+              <a-input v-model="styleMv.minWidth" placeholder="例如：200px" allowClear></a-input>
+            </div>
+          </div>
+          <div class="gl-table-row">
             <div class="gl-table-cell gl-label">高度</div>
             <div class="gl-table-cell">
               <a-input v-model="styleMv.height" placeholder="例如：200px" allowClear></a-input>
+            </div>
+          </div>
+          <div class="gl-table-row">
+            <div class="gl-table-cell gl-label">最小高度</div>
+            <div class="gl-table-cell">
+              <a-input v-model="styleMv.minHeight" placeholder="例如：200px" allowClear></a-input>
             </div>
           </div>
         </div>

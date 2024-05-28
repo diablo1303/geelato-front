@@ -11,9 +11,9 @@ export default {
 </script>
 <script lang="ts" setup>
 import {type PropType, ref} from 'vue'
-import GlComponentSelect from "./GlComponentSelect.vue";
 import {ComponentInstance} from "@geelato/gl-ui-schema";
 import {utils} from "@geelato/gl-ui";
+import GlComponentSelect from "./GlComponentSelect.vue";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
