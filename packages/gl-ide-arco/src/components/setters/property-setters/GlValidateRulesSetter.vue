@@ -4,7 +4,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import {ref, watch} from "vue";
+import { ref, watch } from 'vue'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -28,7 +28,7 @@ const ruleOptions = [
     message: '长度不符合',
     type: 'string',
     setter: 'AInputNumber',
-    props: {placeholder: '长度值'}
+    props: { placeholder: '长度值' }
   },
   {
     label: '最大长度（字符串）',
@@ -36,7 +36,7 @@ const ruleOptions = [
     message: '最大长度不符合',
     type: 'string',
     setter: 'AInputNumber',
-    props: {placeholder: '长度值'}
+    props: { placeholder: '长度值' }
   },
   {
     label: '最小长度（字符串）',
@@ -44,7 +44,7 @@ const ruleOptions = [
     message: '最小长度不符合',
     type: 'string',
     setter: 'AInputNumber',
-    props: {placeholder: '长度值'}
+    props: { placeholder: '长度值' }
   },
   {
     label: '大写（字符串）',
@@ -52,7 +52,7 @@ const ruleOptions = [
     message: '需大写',
     type: 'string',
     setter: 'ASwitch',
-    props: {placeholder: ''},
+    props: { placeholder: '' },
     defaultValue: true,
     showSetter: false
   },
@@ -62,7 +62,7 @@ const ruleOptions = [
     message: '需小写',
     type: 'string',
     setter: 'ASwitch',
-    props: {placeholder: ''},
+    props: { placeholder: '' },
     defaultValue: true,
     showSetter: false
   },
@@ -72,7 +72,7 @@ const ruleOptions = [
     message: '不符合最小值要求',
     type: 'number',
     setter: 'AInputNumber',
-    props: {placeholder: '最小值'}
+    props: { placeholder: '最小值'}
   },
   {
     label: '最大值（数值）',
@@ -80,7 +80,7 @@ const ruleOptions = [
     message: '不符合最大值要求',
     type: 'number',
     setter: 'AInputNumber',
-    props: {placeholder: '最大值'}
+    props: { placeholder: '最大值' }
   },
   {
     label: '数值需等于',
@@ -88,7 +88,7 @@ const ruleOptions = [
     message: '数值需等于{0}',
     type: 'number',
     setter: 'AInputNumber',
-    props: {placeholder: '校验数值', title: '校验数值'}
+    props: { placeholder: '校验数值', title: '校验数值' }
   },
   {
     label: '正数（数值）',
@@ -96,7 +96,7 @@ const ruleOptions = [
     message: '需大于0',
     type: 'number',
     setter: 'ASwitch',
-    props: {placeholder: '数值', title: '数值'},
+    props: { placeholder: '数值', title: '数值' },
     defaultValue: true,
     showSetter: false
   },
@@ -106,7 +106,7 @@ const ruleOptions = [
     message: '需小于0',
     type: 'number',
     setter: 'ASwitch',
-    props: {placeholder: '数值', title: '数值'},
+    props: { placeholder: '数值', title: '数值' },
     defaultValue: true,
     showSetter: false
   },
@@ -116,7 +116,7 @@ const ruleOptions = [
     message: '值需为true',
     type: 'boolean',
     setter: 'ASwitch',
-    props: {placeholder: '', title: ''},
+    props: { placeholder: '', title: '' },
     defaultValue: true,
     showSetter: false
   },
@@ -126,7 +126,7 @@ const ruleOptions = [
     message: '值需为false',
     type: 'boolean',
     setter: 'ASwitch',
-    props: {placeholder: '', title: ''},
+    props: { placeholder: '', title: '' },
     defaultValue: true,
     showSetter: false
   },
@@ -136,7 +136,7 @@ const ruleOptions = [
     message: '不能为空/可以为空',
     type: 'boolean',
     setter: 'ASwitch',
-    props: {placeholder: '', title: '选中，表示不能为空，否则可以为空'},
+    props: { placeholder: '', title: '选中，表示不能为空，否则可以为空' },
     defaultValue: false,
     showSetter: true
   },
@@ -146,7 +146,7 @@ const ruleOptions = [
     message: 'XX校验不通过',
     type: 'string',
     setter: 'GlRegExpSetter',
-    props: {placeholder: '正则'},
+    props: { placeholder: '正则' },
     showSetter: true
   }
 ]
@@ -171,12 +171,16 @@ const ruleOptions = [
 // validator
 // 自定义校验规则
 
-
 const requiredRule = ref<Array<any>>([])
 const items = ref<Array<any>>([])
 
 if (props.modelValue.length === 0) {
-  requiredRule.value.push({required: false, message: '必填', ruleName: 'required', type: 'boolean'})
+  requiredRule.value.push({
+    required: false,
+    message: '必填',
+    ruleName: 'required',
+    type: 'boolean'
+  })
 } else {
   props.modelValue.forEach((rule: any) => {
     if (rule.ruleName === 'required') {
@@ -203,9 +207,7 @@ if (props.modelValue.length === 0) {
     }
   })
 }
-const update = () => {
-
-}
+const update = () => {}
 const emit = (val: any) => {
   let result = []
   result.push(...requiredRule.value)
@@ -220,8 +222,8 @@ const emit = (val: any) => {
   emits('update:modelValue', result)
 }
 
-watch(requiredRule, emit, {deep: true})
-watch(items, emit, {deep: true})
+watch(requiredRule, emit, { deep: true })
+watch(items, emit, { deep: true })
 
 const addRule = (ruleOption: any) => {
   // console.log('try to add rule:', ruleOption)
@@ -247,20 +249,18 @@ const selectedRule = ref()
 watch(selectedRule, (val) => {
   if (val.value) {
     addRule(val)
-    selectedRule.value = {label: '', value: ''}
+    selectedRule.value = { label: '', value: '' }
   }
 })
 
-const removeRule = (args: any) => {
-
-}
+const removeRule = (args: any) => {}
 </script>
 
 <template>
   <div>
     <div class="gl-table">
       <template v-for="item in requiredRule">
-        <div class="gl-table-row" v-if="item.required!==undefined">
+        <div class="gl-table-row" v-if="item.required !== undefined">
           <div class="gl-table-cell gl-label" style="width: 4em">必填</div>
           <div class="gl-table-cell">
             <a-switch v-model="item.required"></a-switch>
@@ -274,21 +274,32 @@ const removeRule = (args: any) => {
       </template>
     </div>
     <div>
-      <GlArrayBaseSetter v-slot:default="slotProps" v-model="items" :addAble="false" @addItem="update"
-                         @removeItem="removeRule">
+      <GlArrayBaseSetter
+        v-slot:default="slotProps"
+        v-model="items"
+        :addAble="false"
+        @addItem="update"
+        @removeItem="removeRule"
+      >
         <div style="margin-bottom: 4px">
           <span style="line-height: 2em">{{ items[slotProps.index].label }}</span>
-          <component v-if="items[slotProps.index].showSetter!==false" size="small"
-                     :is="items[slotProps.index].setter"
-                     v-model="items[slotProps.index].value"
-                     v-bind="items[slotProps.index].props"
+          <component
+            v-if="items[slotProps.index].showSetter !== false"
+            size="small"
+            :is="items[slotProps.index].setter"
+            v-model="items[slotProps.index].value"
+            v-bind="items[slotProps.index].props"
           >
             <template #prefix>
               <span title="验证比较的值">比值</span>
             </template>
           </component>
           <div style="margin-top: 8px">
-            <a-input size="small" v-model="items[slotProps.index].message" placeholder="验证失败时的提示信息">
+            <a-input
+              size="small"
+              v-model="items[slotProps.index].message"
+              placeholder="验证失败时的提示信息"
+            >
               <template #prepend>
                 <span title="验证失败时的提示信息">提醒</span>
               </template>
@@ -296,7 +307,11 @@ const removeRule = (args: any) => {
           </div>
         </div>
       </GlArrayBaseSetter>
-      <a-divider><span class="gl-tips" title="从下拉列表中选择添加规则，每种只能添加一次">添加规则</span></a-divider>
+      <a-divider
+        ><span class="gl-tips" title="从下拉列表中选择添加规则，每种只能添加一次"
+          >添加规则</span
+        ></a-divider
+      >
       <a-select v-model="selectedRule">
         <a-option v-for="ruleOption in ruleOptions" :value="ruleOption" :label="ruleOption.label" />
       </a-select>
@@ -304,6 +319,4 @@ const removeRule = (args: any) => {
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

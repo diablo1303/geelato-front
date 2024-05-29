@@ -25,7 +25,12 @@ const props = defineProps({
   },
   reverse: Boolean,
   direction: String as PropType<'horizontal' | 'vertical'>,
-  mode: String as PropType<ModeType>,
+  mode: {
+    type: String as PropType<ModeType>,
+    default() {
+      return 'top'
+    }
+  },
   pending: [Boolean, String],
   labelPosition: String as PropType<LabelPositionType>,
   itemMode: {
@@ -65,10 +70,10 @@ const mv = ref(props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
-const mode = ref(props.mode || 'top')
-const onChange = (_mode: ModeType) => {
-  mode.value = _mode
-}
+// const mode = ref(props.mode || 'top')
+// const onChange = (_mode: ModeType) => {
+//   mode.value = _mode
+// }
 
 const timelineItems: Ref<GlTimelineItem[]> = ref([])
 
@@ -165,42 +170,44 @@ defineExpose({ fetchData })
         :labelPosition="labelPosition"
       >
         <template v-if="timelineItems && timelineItems.length > 0">
-          <a-timeline-item
-            v-for="(item, index) in timelineItems"
-            :label="item.label"
-            :dotColor="item.dotColor"
-            :dotType="item.dotType"
-            :lineType="item.lineType"
-            :lineColor="item.lineColor"
-            style="padding-bottom: -12px"
-          >
-            <div
-              v-if="item.iconType"
-              :style="{ display: 'inline-flex', alignItems: 'center' }"
-              @click="onItemClick(item, index)"
-              :title="item.content"
+          <template v-for="(item, index) in timelineItems">
+            <a-timeline-item
+              v-if="!item.hide"
+              :label="item.label"
+              :dotColor="item.dotColor"
+              :dotType="item.dotType"
+              :lineType="item.lineType"
+              :lineColor="item.lineColor"
+              style="padding-bottom: -12px"
             >
-              <GlIconfont
-                :type="item.iconType"
-                style="margin: 0 16px 0 0"
-                :style="{ 'font-size': iconSize, color: item.dotColor }"
-              />
-              <div :style="{ marginBottom: '0' }">
-                {{ item.title }}
-                <div class="gl-content">
-                  {{ item.content }}
+              <div
+                v-if="item.iconType"
+                :style="{ display: 'inline-flex', alignItems: 'center' }"
+                @click="onItemClick(item, index)"
+                :title="item.content"
+              >
+                <GlIconfont
+                  :type="item.iconType"
+                  style="margin: 0 16px 0 0"
+                  :style="{ 'font-size': iconSize, color: item.dotColor }"
+                />
+                <div :style="{ marginBottom: '0' }">
+                  {{ item.title }}
+                  <div class="gl-content">
+                    {{ item.content }}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div v-else @click="onItemClick(item, index)">
-              <div :style="{ marginBottom: '12px' }">
-                {{ item.title }}
-                <div class="gl-content" :title="item.content">
-                  {{ item.content }}
+              <div v-else @click="onItemClick(item, index)">
+                <div :style="{ marginBottom: '12px' }">
+                  {{ item.title }}
+                  <div class="gl-content" :title="item.content">
+                    {{ item.content }}
+                  </div>
                 </div>
               </div>
-            </div>
-          </a-timeline-item>
+            </a-timeline-item>
+          </template>
         </template>
         <template v-else>
           <a-timeline-item> 无数据</a-timeline-item>

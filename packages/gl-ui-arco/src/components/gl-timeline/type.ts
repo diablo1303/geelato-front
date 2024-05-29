@@ -21,4 +21,6 @@ export type GlTimelineItem = {
     position: string,
     // 图标类型
     iconType: string,
+    // 是否隐藏
+    hide?: boolean
 }

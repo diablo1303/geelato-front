@@ -44,6 +44,9 @@ const addHistory = (visible: boolean, color: string) => {
     history.value.unshift(color)
   }
 }
+const clean = () => {
+  mv.value = ''
+}
 </script>
 
 <template>
@@ -53,5 +56,7 @@ const addHistory = (visible: boolean, color: string) => {
     :showHistory="showHistory"
     :showPreset="showPreset"
     @popup-visible-change="addHistory"
+    @click.ctrl="clean"
+    title="按住Ctrl点击时，清空为默认值"
   ></a-color-picker>
 </template>

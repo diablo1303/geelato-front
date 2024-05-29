@@ -84,10 +84,10 @@ export default {
       setterComponentVModelName: 'modelValue',
       group: 'base',
       type: 'props',
-      show: true,
+      show: false,
       expanded: true,
       title: '幽灵节点',
-      description: '是否展示幽灵节点，设置为 true 时候只展示幽灵节点。',
+      description: '是否展示幽灵节点，当任务状态正在发生，还在记录过程中，可用幽灵节点来表示当前的时间节点。',
       setterComponentName: 'ASwitch',
       enableValueExpress: false,
       displayMode: 'tile'
@@ -99,9 +99,8 @@ export default {
           {
             label: '相对',
             value: 'relative',
-            __sSW5yjSwfb5y17FOJI: 'relative'
           },
-          { label: '相同', value: 'same', __sSW5yjSwfb5y17FOJI: 'same' }
+          { label: '相同', value: 'same'}
         ]
       },
       setterComponentVModelName: 'modelValue',
@@ -351,6 +350,19 @@ export default {
           expanded: true,
           title: '时间轴颜色',
           setterComponentName: 'GlColor',
+          enableValueExpress: true,
+          displayMode: 'tile'
+        },
+        {
+          name: 'hide',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          group: 'base',
+          type: 'props',
+          show: true,
+          expanded: true,
+          title: '是否隐藏',
+          setterComponentName: 'ASwitch',
           enableValueExpress: true,
           displayMode: 'tile'
         }
