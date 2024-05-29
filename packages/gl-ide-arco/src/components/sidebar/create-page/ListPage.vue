@@ -105,7 +105,11 @@ defineExpose({ getPage, validate })
         label="关联的表单页面"
         :rules="[{ required: true, message: '必填' }]"
       >
-        <GlPageSelect v-model="form.pageExtendId" @change="changePageExtendId"></GlPageSelect>
+        <GlPageSelect
+          v-model="form.pageExtendId"
+          @change="changePageExtendId"
+          :allow-open="false"
+        ></GlPageSelect>
       </a-form-item>
       <a-form-item field="queryFields" label="查询条件字段">
         <a-select v-model="form.queryFields" multiple value-key="name" placeholder="请先选择模型">
