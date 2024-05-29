@@ -142,8 +142,16 @@ export function deleteAppVersion(id: string) {
  * 应用打包
  * @param appId
  */
-export function packetAppVersion(appId: string) {
-  return axios.get<QueryResult>(`/package/packet/${appId}`);
+export function packetAppVersion(appId: string, version?: string, description?: string) {
+  return axios.get<QueryResult>(`/package/packet/${appId}?version=${version || ''}&description=${description || ''}`);
+}
+
+/**
+ * 部署应用
+ * @param versionId
+ */
+export function deployAppVersion(versionId: string) {
+  return axios.get<QueryResult>(`/package/deploy/${versionId}`);
 }
 
 export function queryAppPackage(appVersionId: string) {

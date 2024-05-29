@@ -51,7 +51,7 @@ const mv = ref({
  */
 watch(() => mv.value.baseId, () => {
   emits('update:modelValue', mv.value.baseId);
-  emits('change', mv.value.baseId);
+  emits('change', mv.value);
 }, {deep: true});
 
 /**
@@ -136,6 +136,7 @@ const base64Upload = (ev?: MouseEvent) => {
 const base64Remove = (ev?: MouseEvent) => {
   mv.value.baseId = '';
   mv.value.baseName = '';
+  emits('change', mv.value);
 }
 </script>
 <template>

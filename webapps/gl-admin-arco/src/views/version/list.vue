@@ -12,6 +12,7 @@ import {deleteAppVersion, getAppSelectOptions, pageQueryAppVersions, QueryAppFor
 import {PageQueryFilter, PageQueryRequest} from "@/api/base";
 import {Pagination} from "@/types/global";
 import {fetchFileById} from "@/api/attachment";
+import {getPackageSourceMark} from "./searchTable";
 
 // 页面所需 参数
 type PageParams = {
@@ -151,7 +152,11 @@ watch(searchText, () => {
                    :class="item.active?'active':''">
         <a-list-item-meta style="cursor: pointer;" @click="selectItemMeta(item)">
           <template #title>
-            {{ `${item.sort}, ${item.version}` }}
+            {{ `${item.sort}` }}
+            <a-button class="list-action-button-default" type="outline">
+              {{ getPackageSourceMark(item.packageSource) }}
+            </a-button>
+            {{ `${item.version}` }}
           </template>
           <template #description>
             <div>{{ item.description }}</div>
@@ -166,6 +171,10 @@ watch(searchText, () => {
 <style lang="less">
 .version-list .arco-list-item {
   padding: 1px 14px 1px 0px !important;
+}
+
+.version-list .arco-list-item .arco-list-item-main {
+  margin-left: 8px !important;
 }
 
 .version-list .arco-list-item.active {
@@ -183,5 +192,17 @@ watch(searchText, () => {
 .version-list .arco-list-item-action {
   font-size: 13px;
   margin-top: 0px !important;
+}
+
+.version-list .list-action-button-default {
+  cursor: auto;
+  font-size: 11px;
+  height: 16px;
+  line-height: 16px;
+  padding: 0 3px;
+  margin-left: 2px;
+  border-radius: 5px;
+/*  color: var(--color-text-3) !important;
+  border-color: 1px solid var(--color-text-3) !important;*/
 }
 </style>

@@ -4,15 +4,17 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import {onMounted, onUnmounted, provide, ref, shallowRef} from 'vue';
+import {compile, h, onMounted, onUnmounted, provide, ref, shallowRef} from 'vue';
 import {getToken} from '@/utils/auth';
 import {getSysConfig} from '@/api/user';
-import {Message} from "@arco-design/web-vue";
+import {Message, Modal} from "@arco-design/web-vue";
+import cloneDeep from "lodash/cloneDeep";
 import {EventNames} from '@geelato/gl-ide';
 import {emitter, useGlobal} from '@geelato/gl-ui';
 import useUser from '@/hooks/user';
 import useLoading from "@/hooks/loading";
-import {deleteAppVersion, getApp, packetAppVersion, pageQueryAppVersions, QueryAppForm, QueryAppVersionForm,} from "@/api/application";
+import {deleteAppVersion, deployAppVersion, getApp, packetAppVersion, pageQueryAppVersions, QueryAppForm, QueryAppVersionForm,} from "@/api/application";
+import {initTables, initViews, QueryTableForm, queryTables} from "@/api/model";
 import {PageQueryRequest, PageSizeOptions, resetValueByOptions} from '@/api/base';
 import {fetchFileById} from "@/api/attachment";
 import ApplicationModel from "@/views/application/model.vue";
@@ -20,7 +22,7 @@ import AppVersionList from "@/views/version/list.vue";
 import AppVersionTabs from "@/views/version/tabsForm.vue";
 import AppVersionForm from "@/views/version/form.vue";
 import AppVersionCompareTabs from "@/views/compare/tabsForm.vue";
-import {generateRandom} from "@/utils/strings";
+import {formatTime, generateRandom} from "@/utils/strings";
 import pinia, {useUserStore} from '../../store';
 
 // 常量使用
@@ -40,6 +42,17 @@ const tabsKey = ref<number>(1);
 const isCompare = ref<boolean>(false);
 const compareVersionId = ref<string>('');
 const appVersionData = ref<QueryAppVersionForm[]>([]);
+const packLoading = ref(false);
+const deployLoading = ref(false);
+const syncTableLoading = ref(false);
+const syncViewLoading = ref(false);
+const packBusData = {
+  first: ['platform_app_page', 'platform_tree_node', 'platform_permission',
+    'platform_dev_db_connect', 'platform_dev_table', 'platform_dev_column', 'platform_dev_table_foreign', 'platform_dev_view',
+    'platform_role', 'platform_role_r_permission', 'platform_role_r_tree_node', 'platform_role_r_app',] as string[],// 增量
+  second: ['platform_dict', 'platform_dict_item',
+    'platform_sys_config', 'platform_export_template', 'platform_encoding', 'platform_resources',] as string[],// 全量
+};
 
 /**
  * 调整树形结构高度
@@ -188,15 +201,140 @@ const cancelCompare = () => {
   isCompare.value = false;
 }
 
-const packAppVersion = async () => {
+/**
+ * 同步表至数据库
+ */
+const syncTableToData = async () => {
+  syncTableLoading.value = true;
+  const msgLoading = Message.loading({content: `正在将 ${appData.value.name} 下的所有模型同步至数据库`, duration: 60 * 60 * 1000});
   try {
-    const {data} = await packetAppVersion(appData.value.id);
+    const tableResult = await initTables(appData.value.id);
+    console.log("init Table", tableResult);
+    Message.success(`${appData.value.name} 下的所有模型同步至数据库成功`);
+  } catch (err) {
+    Message.error(`${appData.value.name} 下的所有模型同步至数据库失败`);
+  } finally {
+    syncTableLoading.value = false;
+    msgLoading.close();
+  }
+}
+
+const initViewResult = (result: Record<string, any>) => {
+  const data: string[] = [];
+  if (result && typeof result === 'object') {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in result) {
+      if (result[key] !== true) {
+        data.push(`<p>${key} - ${result[key]}</p>`);
+      }
+    }
+  }
+  if (data.length > 0) {
+    Message.error(`${appData.value.name} 下的所有视图同步至数据库失败`);
+    Message.warning({content: () => h(compile(`${data.join('')}`)), duration: 15 * 1000});
+  } else {
+    Message.success(`${appData.value.name} 下的所有视图同步至数据库成功`);
+  }
+}
+
+const syncViewToData = async () => {
+  syncViewLoading.value = true;
+  const msgLoading = Message.loading({content: `正在将 ${appData.value.name} 下的所有视图同步至数据库`, duration: 60 * 60 * 1000});
+  try {
+    const viewResult = await initViews(appData.value.id);
+    console.log("init View", viewResult);
+    initViewResult(viewResult.data);
+  } catch (err) {
+    Message.error(`${appData.value.name} 下的所有视图同步至数据库失败`);
+  } finally {
+    syncViewLoading.value = false;
+    msgLoading.close();
+  }
+}
+
+const packAppVersion = async (version?: string, description?: string) => {
+  packLoading.value = true;
+  try {
+    const {data} = await packetAppVersion(appData.value.id, version, description);
     Message.success('打包成功!');
     // @ts-ignore
     listParams.value.selected.id = data.id || '';
   } catch (err) {
     console.log(err);
+  } finally {
+    packLoading.value = false;
   }
+}
+
+const queryAppTables = async (successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await queryTables({
+      order: 'entityName|asc', tenantCode: appData.value.tenantCode
+    } as unknown as PageQueryRequest);
+    if (successBack && typeof successBack === 'function') successBack(data);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack();
+  }
+}
+
+const setInputValue = (id: string, value: string) => {
+  const inputElement = document.getElementById(id);
+  // @ts-ignore
+  if (inputElement) inputElement.value = value;
+}
+const getInputValue = (id: string) => {
+  const inputElement = document.getElementById(id);
+  // @ts-ignore
+  return inputElement && inputElement.value ? inputElement.value : '';
+}
+
+const packetAppVersionClick = () => {
+  queryAppTables((data: QueryTableForm[]) => {
+    const packBus = {first: [] as string[], second: [] as string[]};
+    let version = `${appData.value.code}_version${formatTime(new Date(), 'yyyyMMddHHmmss')}`;
+    let description = '当前环境打包形成的应用包';
+    if (data && data.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of data) {
+        // 增量为：更新和插入打包数据；
+        if (packBusData.first.includes(item.entityName) || (item.appId === appData.value.id && item.packBusData === 1)) {
+          packBus.first.push(`${item.title} ${item.entityName}`);
+        }
+        // 全量为：先清空表再插入打包数据。
+        if (packBusData.second.includes(item.entityName) || (item.appId === appData.value.id && item.packBusData === 2)) {
+          packBus.second.push(`${item.title} ${item.entityName}`);
+        }
+      }
+      console.log(packBus);
+      Modal.open({
+        title: '版本打包', titleAlign: 'start', width: 800,
+        content: () => h(compile(`
+                      <div class="pack-version-title">是否打包 ${appData.value.name}？</div>
+                      <div class="pack-version-content">
+                        <p style="color:rgb(22, 93, 255);">版本名称：
+                          <input id="packVersionName" class="pack-version-input">
+                        </p>
+                        <p style="color:rgb(22, 93, 255);">版本描述：
+                          <input id="packVersionDescription" class="pack-version-input">
+                        </p>
+                        <p>增量（更新和插入打包数据）：${packBus.first.join("，")}。</p>
+                        <p>全量（先清空表再插入打包数据）：${packBus.second.join("，")}。</p>
+                      </div>`)),
+        onOpen: () => {
+          setInputValue('packVersionName', version);
+          setInputValue('packVersionDescription', description);
+        },
+        onOk: () => {
+          version = getInputValue('packVersionName');
+          description = getInputValue('packVersionDescription');
+          // 打包版本
+          packAppVersion(version, description);
+        },
+      });
+    } else {
+      Message.error('没有找到表');
+    }
+  });
 }
 
 const saveSuccess = (record: QueryAppVersionForm, action: string) => {
@@ -211,7 +349,18 @@ const openAppVersionForm = () => {
 }
 
 const deployVersion = async (item: QueryAppVersionForm) => {
-
+  deployLoading.value = true;
+  const msgLoading = Message.loading({content: `${appData.value.name} 正在部署版本 ${item.version}`, duration: 60 * 60 * 1000});
+  try {
+    const result = await deployAppVersion(item.id);
+    Message.success("应用部署成功！");
+    window.location.reload();
+  } catch (err) {
+    console.error(err);
+  } finally {
+    deployLoading.value = false;
+    msgLoading.close();
+  }
 }
 const deleteVersion = async (item: QueryAppVersionForm) => {
   try {
@@ -271,21 +420,42 @@ onUnmounted(() => {
         <a-page-header title="应用版本管理" :subtitle="appData.name" :show-back="false">
           <template #extra>
             <a-space>
-              <a-button type="text" class="app-button" @click="openAppVersionForm">
+              <a-button v-if="!deployLoading" type="text" class="app-button" @click="openAppVersionForm">
                 <template #icon>
                   <icon-import/>
                 </template>
                 上传版本
               </a-button>
-              <a-popconfirm content="是否将当前版本打包？" position="br" type="warning" @ok="packAppVersion">
-                <a-button type="text" class="app-button">
-                  <template #icon>
-                    <icon-export/>
-                  </template>
-                  应用打包
-                </a-button>
+              <a-button v-if="!deployLoading" type="text" class="app-button" :loading="packLoading" @click="packetAppVersionClick">
+                <template #icon>
+                  <icon-export/>
+                </template>
+                应用打包
+              </a-button>
+              <a-divider v-if="!deployLoading" direction="vertical" style="margin: 0px 1px;height: 16px;"/>
+              <a-popconfirm v-if="!syncViewLoading && !deployLoading" content="是否将应用下所有模型同步至数据库？" position="br" type="warning"
+                            @ok="syncTableToData">
+                <a-tooltip content="将模型同步至数据库（部署后使用）" position="right">
+                  <a-button type="text" class="app-button" :loading="syncTableLoading">
+                    <template #icon>
+                      <icon-storage/>
+                    </template>
+                    同步模型
+                  </a-button>
+                </a-tooltip>
               </a-popconfirm>
-              <a-divider direction="vertical" style="margin: 0px 1px;height: 16px;"/>
+              <a-popconfirm v-if="!syncTableLoading && !deployLoading" content="是否将应用下所有视图同步至数据库？" position="br" type="warning"
+                            @ok="syncViewToData">
+                <a-tooltip content="将视图同步至数据库（模型同步后使用）" position="right">
+                  <a-button type="text" class="app-button" :loading="syncViewLoading">
+                    <template #icon>
+                      <icon-storage/>
+                    </template>
+                    同步视图
+                  </a-button>
+                </a-tooltip>
+              </a-popconfirm>
+              <a-divider v-if="!deployLoading" direction="vertical" style="margin: 0px 1px;height: 16px;"/>
               <a-button type="text" class="app-button" @click="enterLink('index')">
                 <template #icon>
                   <icon-link/>
@@ -330,18 +500,24 @@ onUnmounted(() => {
                       {{ listParams.selected.title }}
                     </div>
                     <a-space v-if="!!listParams.selected.id" class="card-header-extra">
+                      <a-button v-if="!isCompare" type="text" style="color: rgb(var(--primary-6))" @click.stop="startCompare">
+                        <icon-common/>
+                        比较
+                      </a-button>
                       <a-button v-if="!isCompare" type="text" style="color: rgb(var(--primary-6))"
                                 @click.stop="fetchFileById(listParams.selected.item.packagePath)">
                         <icon-download/>
                         下载
                       </a-button>
-                      <a-popconfirm v-if="!isCompare" position="br" content="是否部署该版本？" @ok="deployVersion(listParams.selected.item)">
-                        <a-button type="text" style="color: rgb(var(--success-6))">
+                      <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading" position="br" content="确认部署当前版本？"
+                                    @ok="deployVersion(listParams.selected.item)">
+                        <a-button type="text" style="color: rgb(var(--success-6))" :loading="deployLoading">
                           <icon-star/>
                           部署
                         </a-button>
                       </a-popconfirm>
-                      <a-popconfirm v-if="!isCompare" position="br" content="是否删除该版本数据？" type="warning" @ok="deleteVersion(listParams.selected.item)">
+                      <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading && !deployLoading" position="br" content="是否删除该版本数据？"
+                                    type="warning" @ok="deleteVersion(listParams.selected.item)">
                         <a-button type="text" style="color: rgb(var(--danger-6))">
                           <icon-delete/>
                           删除
@@ -360,10 +536,6 @@ onUnmounted(() => {
                           关闭
                         </a-button>
                       </div>
-                      <a-button v-if="!isCompare" type="text" style="color: rgb(var(--primary-6))" @click.stop="startCompare">
-                        <icon-common/>
-                        比较
-                      </a-button>
                     </a-space>
                   </a-space>
                 </div>
@@ -429,5 +601,23 @@ onUnmounted(() => {
       line-height: 28px;
     }
   }
+}
+
+.pack-version-title {
+  font-weight: 600;
+}
+
+.pack-version-content {
+  margin-top: 5px;
+  border-top: 1px solid var(--color-neutral-6);
+}
+
+.pack-version-input {
+  outline: none;
+  width: 600px;
+  border-bottom: 1px solid rgb(22, 93, 255) !important;
+  border-top: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
 }
 </style>

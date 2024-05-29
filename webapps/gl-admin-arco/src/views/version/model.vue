@@ -14,6 +14,7 @@ import {
   getAppVersion as getForm,
 } from '@/api/application'
 import UploadFile from "@/components/upload-file/index.vue";
+import {packageSourceOptions} from "@/views/version/searchTable";
 
 // 页面所需 参数
 type PageParams = {
@@ -40,7 +41,7 @@ const generateFormData = (): QueryForm => {
     id: props.modelValue || '',
     version: '',
     packagePath: '',
-    packageSource: '',
+    packageSource: 'version pack upload',
     packetTime: '',
     status: '',
     description: '',
@@ -51,6 +52,7 @@ const generateFormData = (): QueryForm => {
 const formData = ref(generateFormData());
 const appSelectOptions = ref<SelectOptionData[]>([]);
 const appComplete = ref<SelectOptionData[]>([]);
+
 /**
  * 新增或更新接口
  * @param params
@@ -110,6 +112,15 @@ const saveOrUpdate = (successBack?: any, failBack?: any) => {
   });
 }
 
+const uploadFileChange = (record: Record<string, any>) => {
+  if (record.baseName) {
+    // 使用'.'作为分隔符将文件名和扩展名分开
+    const parts = record.baseName.split('.');
+    // 移除最后一个元素（即扩展名）
+    formData.value.version = parts.slice(0, -1).join('.');
+  }
+}
+
 /**
  * 页面加载方法，对外提供
  */
@@ -151,7 +162,8 @@ defineExpose({saveOrUpdate, loadPage});
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" label="应用包上传" field="packagePath">
           <UploadFile :disabled="formState==='view'" accept=".zgdp" v-model="formData.packagePath"
-                      genre="uploadVersion" :parameter="parameter" :object-id="formData.id"/>
+                      genre="uploadVersion" :parameter="parameter" :object-id="formData.id"
+                      @change="uploadFileChange"/>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -162,8 +174,7 @@ defineExpose({saveOrUpdate, loadPage});
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item :rules="[{required: true,message: '这是必填项'}]" label="版本来源" field="packageSource">
-          <a-input v-if="formState!=='view'" v-model.trim="formData.packageSource" :max-length="32"/>
-          <span v-else>{{ formData.name }}</span>
+          <a-select v-model="formData.packageSource" :disabled="true" :options="packageSourceOptions"/>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
