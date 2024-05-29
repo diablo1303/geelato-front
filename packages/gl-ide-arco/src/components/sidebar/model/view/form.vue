@@ -601,7 +601,7 @@ const cloneColumns = ref<Column[]>([]);
           <template #extra v-if="formState==='edit'">
             <a-popconfirm content="是否将该视图同步至数据库？" position="br" type="warning" @ok="syncViewToData">
               <a-tooltip content="将视图同步至数据库">
-                <a-button size="small" type="primary" status="primary" :loading="viewSync">
+                <a-button size="small" type="primary" :loading="viewSync">
                   <template #icon>
                     <gl-iconfont type="gl-transfer"/>
                   </template>
