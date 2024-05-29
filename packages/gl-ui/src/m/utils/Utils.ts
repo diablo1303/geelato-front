@@ -1,8 +1,9 @@
-import { RecordsUtil } from './RecordsUtil'
-import { toChineseCurrency } from './toChineseCurrency'
+import {RecordsUtil} from './RecordsUtil'
+import {toChineseCurrency} from './toChineseCurrency'
 
 export class Utils {
-  constructor() {}
+  constructor() {
+  }
 
   trim(str: string) {
     return str.replace(/(^\s*)|(\s*$)/g, '')
@@ -281,10 +282,10 @@ export class Utils {
     }
     let temp
     for (let i = 0; i < data.length; i++) {
-      console.log('pidValue', pidField, data[i][pidField], pidValue, data[i])
+      // console.log('pidValue', pidField, data[i][pidField], pidValue, data[i])
       if (data[i][pidField] == pidValue) {
         const obj = data[i]
-        temp = this.listToTree(data, data[i][idField])
+        temp = this.listToTree(data, data[i][idField], fieldsMapper)
         if (temp.length > 0) {
           // @ts-ignore
           obj.children = temp
@@ -652,7 +653,7 @@ export class Utils {
    *  @param separator 默认为：“;”
    *  @return  对象{CNY:18145.1,USD:176.48}，为空时{}
    */
-  convertStrToObj(str: string,separator?:string) {
+  convertStrToObj(str: string, separator?: string) {
     if (str) {
       let parsedAmount: Record<string, string | number> = {}
       str.split(separator || ';').forEach((segment) => {
@@ -670,7 +671,7 @@ export class Utils {
    * @param separator 默认为：“;”
    * @return 如 CNY:18145.1;USD:176.48
    */
-  convertObjToStr(obj: Record<string, string>,separator?:string) {
+  convertObjToStr(obj: Record<string, string>, separator?: string) {
     return Object.keys(obj)
       .map(key => `${key}:${obj[key]}`)
       .join(separator || ';')

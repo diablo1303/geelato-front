@@ -89,8 +89,10 @@ const loadAppRoles = (appId: string) => {
 
 const loadAppMenuItems = (appId: string) => {
   entityApi
-      .query('platform_tree_node', 'id key,pid,text name,iconType', {'@p': '1,2000', treeId: appId})
+      .query('platform_tree_node', 'id key,pid,text name,iconType,seqNo', {'@p': '1,2000', treeId: appId})
       .then((res) => {
+        // @ts-ignore
+        res.data.sort((a, b) => a.seqNo - b.seqNo);
         appMenuItems.value = utils.listToTree(res.data, appId, {id: 'key'})
       })
 }
@@ -178,6 +180,7 @@ const loadRoleGrantedMenuItem = (appId: string, roleId: string) => {
           console.log('从服务端获取已有权限', res.data)
           // 重置当前的角色菜单
           const appMenuItemsCopy: AppMenuItem[] = JSON.parse(JSON.stringify(appMenuItems.value))
+
           currentRoleGrantedMenuItems.value?.forEach((item: RoleGrantedMenuItem) => {
             setTreeItemChecked(appMenuItemsCopy, item.treeNodeId)
           })
