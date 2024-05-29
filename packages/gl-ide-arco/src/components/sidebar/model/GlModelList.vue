@@ -7,7 +7,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {type Ref, ref, watch} from 'vue'
+import {compile, h, type Ref, ref, watch} from 'vue'
 import {useAppStore} from '@geelato/gl-ide'
 import type {QueryAppTableForm, QueryTableForm, QueryViewForm} from '@geelato/gl-ui'
 import {modelApi, entityApi, EntityReader, EntityReaderParam, useGlobal, utils} from '@geelato/gl-ui'
@@ -222,19 +222,43 @@ const refreshMeta = async () => {
   }
 }
 
+const initViewResult = (result: Record<string, any>) => {
+  const data: string[] = [];
+  if (result && typeof result === 'object') {
+    for (const key in result) {
+      if (result[key] !== true) {
+        data.push(`<p>${key} - ${result[key]}</p>`);
+      }
+    }
+  }
+  if (data.length > 0) {
+    global.$message.error({content: '视图同步至数据库失败！'})
+    global.$message.info({content: () => h(compile(`${data.join('')}`)), duration: 15 * 1000})
+  } else {
+    global.$message.success({content: '视图同步至数据库成功！'})
+  }
+}
+
 const tableInit = async () => {
   if (!appStore.currentApp.id) {
     return
   }
   appStore.currentApp.initLoading = true;
-  const msgLoading = global.$message.loading({content: `正在将 ${appStore.currentApp.name} 下的所有模型同步至数据库`, duration: 100000 * 10000});
+  let msgLoading = global.$message.loading({content: `正在将 ${appStore.currentApp.name} 下的所有模型同步至数据库`, duration: 100000 * 10000});
   try {
-    const {data} = await modelApi.initTables(appStore.currentApp.id);
-    global.$message.success({content: '刷新缓存成功！'})
+    const tableResult = await modelApi.initTables(appStore.currentApp.id);
+    console.log("init Table", tableResult);
+    global.$message.success({content: '模型同步至数据库成功！'})
+    msgLoading.close();
+    msgLoading = global.$message.loading({content: `正在将 ${appStore.currentApp.name} 下的所有视图同步至数据库`, duration: 100000 * 10000});
+    const viewResult = await modelApi.initViews(appStore.currentApp.id);
+    console.log("init View", viewResult);
+    initViewResult(viewResult.data);
+    msgLoading.close();
     fetchData()
     fetchViewData()
   } catch (err) {
-    global.$message.error({content: '模型同步至数据库失败！'})
+    global.$message.error({content: '同步至数据库失败！'})
   } finally {
     appStore.currentApp.initLoading = false;
     msgLoading.close();
@@ -402,11 +426,11 @@ const editViewForm = (record: QueryViewForm) => {
     <div style="padding: 4px 5px 4px 5px;">
       <a-space style="justify-content: flex-start;">
         <a-input-search v-model="searchText" allow-clear placeholder="录入中、英文名查询" size="small"/>
-        <a-popconfirm content="是否将该应用下所有模型同步至数据库？" position="bottom" type="warning" @ok="tableInit">
+        <a-popconfirm content="是否将该应用下所有模型和视图同步至数据库？" position="bottom" type="warning" @ok="tableInit">
           <a-button size="small" type="outline" status="danger" style="height: 27px;" :loading="appStore.currentApp.initLoading">
             <template #icon>
-              <a-tooltip content="应用模型同步至数据库">
-                <gl-iconfont type="gl-sync"/>
+              <a-tooltip content="应用模型和视图同步至数据库">
+                <gl-iconfont type="gl-transfer"/>
               </a-tooltip>
             </template>
           </a-button>

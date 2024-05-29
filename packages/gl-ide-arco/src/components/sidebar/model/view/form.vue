@@ -508,6 +508,21 @@ const pFormParams = ref({
   }
 });
 
+const viewSync = ref(false);
+const syncViewToData = async () => {
+  if (formData.value.id) {
+    viewSync.value = true;
+    try {
+      await modelApi.initViewOne(formData.value.id)
+      global.$message.success({content: '同步成功！'})
+    } catch (err) {
+      global.$message.error({content: '同步失败！'})
+    } finally {
+      viewSync.value = false;
+    }
+  }
+}
+
 
 watch(() => props, () => {
   console.log('form', props);
@@ -583,6 +598,18 @@ const cloneColumns = ref<Column[]>([]);
     <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="left" type="line">
       <a-tab-pane :key="1" class="a-tabs-one" title="基础信息">
         <a-card class="general-card">
+          <template #extra v-if="formState==='edit'">
+            <a-popconfirm content="是否将该视图同步至数据库？" position="br" type="warning" @ok="syncViewToData">
+              <a-tooltip content="将视图同步至数据库">
+                <a-button size="small" type="primary" status="primary" :loading="viewSync">
+                  <template #icon>
+                    <gl-iconfont type="gl-transfer"/>
+                  </template>
+                  同步视图
+                </a-button>
+              </a-tooltip>
+            </a-popconfirm>
+          </template>
           <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
             <a-row :gutter="wrapperCol">
               <a-col :span="(labelCol+wrapperCol)/formCol">

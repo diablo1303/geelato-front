@@ -142,6 +142,14 @@ export function initTables(appId: string) {
   return axios.post<QueryResult>(`/api/meta/ddl/tables/${appId}`);
 }
 
+export function initViews(appId: string) {
+  return axios.post<QueryResult>(`/api/meta/ddl/views/${appId}`);
+}
+
+export function initViewOne(id: string) {
+  return axios.post<QueryResult>(`/api/meta/ddl/viewOne/${id}`);
+}
+
 /**
  * 重置实体模型（从数据库同步至模型）
  * @param tableId
