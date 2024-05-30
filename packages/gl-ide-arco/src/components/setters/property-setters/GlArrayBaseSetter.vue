@@ -40,7 +40,7 @@
         </div>
         <template v-else>
           <div
-            v-if="filter(element)"
+            v-show="filter(element)"
             style="width: 100%; display: flex; margin-bottom: 1px"
             :style="wrapperStyle"
           >
@@ -70,11 +70,7 @@
         </template>
       </template>
     </gl-draggable>
-    <a
-      v-if="addAble"
-      @click="addItem"
-      style="line-height: 2em; cursor: pointer; margin-left: 1em"
-    >
+    <a v-if="addAble" @click="addItem" style="line-height: 2em; cursor: pointer; margin-left: 1em">
       <GlIconfont type="gl-plus-circle"></GlIconfont>&nbsp;添加
     </a>
   </div>
@@ -175,17 +171,18 @@ export default defineComponent({
     }
   },
   data() {
+    // let dataItems = this.modelValue?.filter((item: any)=> {
+    //   console.log('filter() > item:', item)
+    //   if (this.filter) {
+    //     return this.filter(item)
+    //   }
+    //   return true
+    // }) || []
     return {
-      items: new Array<any>(),
+      items: this.modelValue,
       selectedItem: defaultItemType,
       selectedIndex: -1
     }
-  },
-  beforeMount() {
-    this.items = this.modelValue
-  },
-  beforeUpdate() {
-    this.items = this.modelValue
   },
   methods: {
     getElementTitle(element: any, titleField?: string, alarmIfNoTitle?: string) {

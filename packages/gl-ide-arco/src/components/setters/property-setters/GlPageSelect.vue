@@ -1,5 +1,5 @@
 <template>
-  <div class="gl-page-select">
+  <div class="gl-page-select" :style="{width:allowOpen?'':'100%'}">
     <a-tree-select
       :data="treeData"
       v-model="selected"
@@ -12,8 +12,9 @@
       @click="onClick"
     >
     </a-tree-select>
-<!--    <a-switch  checked-text="包括菜单页面" unchecked-text="不含菜单页面" type="round"></a-switch>-->
+    <!--    <a-switch  checked-text="包括菜单页面" unchecked-text="不含菜单页面" type="round"></a-switch>-->
     <a-popconfirm
+      v-if="allowOpen"
       content="将关闭本窗口（不保存），并打开新页面?"
       position="lt"
       type="warning"
@@ -67,6 +68,15 @@ const props = defineProps({
     type: String,
     default() {
       return 'appId'
+    }
+  },
+  /**
+   * 允许基于选择的项打开页面，默认为true
+   */
+  allowOpen: {
+    type: Boolean,
+    default() {
+      return true
     }
   }
 })

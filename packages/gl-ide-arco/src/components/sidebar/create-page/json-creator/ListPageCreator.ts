@@ -332,11 +332,6 @@ const useColumnActionsInst = (
                     id: paramFormId,
                     name: 'form.id',
                     valueExpression: '$gl.ctx.record.id'
-                  },
-                  {
-                    id: paramPageStatusId,
-                    name: 'page.status',
-                    valueExpression: '"read"'
                   }
                 ],
                 pageStatus: 'read',

@@ -14,6 +14,7 @@ import {type PropType, ref} from 'vue'
 import {ComponentInstance} from "@geelato/gl-ui-schema";
 import {utils} from "@geelato/gl-ui";
 import GlComponentSelect from "./GlComponentSelect.vue";
+import GlArrayBaseSetter from "./GlArrayBaseSetter.vue";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({

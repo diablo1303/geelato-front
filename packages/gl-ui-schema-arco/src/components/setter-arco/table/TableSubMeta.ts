@@ -255,7 +255,8 @@ export default {
           setterComponentProps: {},
           setterComponentVModelName: 'modelValue',
           title: '显示序号',
-          setterComponentName: 'ASwitch'
+          setterComponentName: 'ASwitch',
+          setterDefaultValue: true
         },
         {
           name: 'checkType',

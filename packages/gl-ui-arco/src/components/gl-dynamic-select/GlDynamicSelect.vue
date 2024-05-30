@@ -1,6 +1,6 @@
 <template>
   <div class="gl-dynamic-select">
-    <template v-if="glIsRuntime && isRead && !multiple">{{ getLabel||'无' }}</template>
+    <template v-if="glIsRuntime && isRead && !multiple">{{ getLabel || '无' }}</template>
     <template v-else>
       <a-select
         v-if="enableVirtualList"
@@ -69,9 +69,12 @@ const enum TriggerMode {
   onValueChanged = 'onValueChanged'
 }
 
+// 触发约束条件，以下条件必须同时满足
 const enum TriggerConstraint {
+  // 组件为空值时不触发
+  DoNoFetchWhenEmpty = 'DoNoFetchWhenEmpty'
   // 组件值从空转为非空
-  ValueChangeToNotEmpty = 'ValueChangeToNotEmpty'
+  // ValueChangeToNotEmpty = 'ValueChangeToNotEmpty'
   // // 查询条件的值都不为空
   // QueryConditionAllNotEmpty = 'QueryConditionAllNotEmpty'
 }
@@ -91,7 +94,6 @@ import {
   utils
 } from '@geelato/gl-ui'
 import { EntityReaderOrderEnum } from '@geelato/gl-ui'
-
 
 const emits = defineEmits(['update:modelValue'])
 
@@ -216,14 +218,19 @@ const props = defineProps({
    *  TODO 暂不支持
    *  目前只支持客户端查询过滤
    */
-  isSearchFormServer:{
-    type:Boolean,
-    default(){
+  isSearchFormServer: {
+    type: Boolean,
+    default() {
       return false
     }
   },
   ...mixins.props
 })
+
+// console.log('GlDynamicSelect props.triggerConstraint',props.triggerConstraint)
+// if (props.triggerConstraint?.includes(TriggerConstraint.ValueChangeToNotEmpty)) {
+//   props.triggerConstraint.push(TriggerConstraint)
+// }
 
 const global = useGlobal()
 // 加载的选项
@@ -239,10 +246,10 @@ const selectedOptions: Ref<Record<string, any>[]> = ref([])
  * 客户端模式，加载完成时，看是否有设置忽略搜索词，有则不触发（考虑到数据保密性，如业务员知道一些客户的名称，才能查询出这个客户）
  */
 const renderAfterLoad = () => {
-  if(props.isSearchFormServer){
+  if (props.isSearchFormServer) {
     return true
-  }else{
-    return !(props.ignoreSearchWords?.length>0)
+  } else {
+    return !(props.ignoreSearchWords?.length > 0)
   }
 }
 const isRead = !!(pageProvideProxy?.isPageStatusRead() || props.disabled || props.readonly)
@@ -330,24 +337,24 @@ watch(
  * @param val
  * @param oval
  */
-const triggerOnValueChanged = (val?: any, oval?: any) => {
-  // console.log(
-  //   'GlDynamicSelect > triggerOnValueChanged() > onValueChangeToNotEmpty > val',
-  //   val,
-  //   props,
-  //   props.triggerConstraint.includes(TriggerConstraint.ValueChangeToNotEmpty)
-  // )
-  if (TriggerMode.onValueChanged === props.triggerMode) {
-    if (props.triggerConstraint.includes(TriggerConstraint.ValueChangeToNotEmpty)) {
-      if ((oval === undefined || oval === '') && !utils.isEmpty(val)) {
-        loadData()
-      }
-    } else {
-      loadData()
-    }
-  }
-  return true
-}
+// const triggerOnValueChanged = (val?: any, oval?: any) => {
+//   // console.log(
+//   //   'GlDynamicSelect > triggerOnValueChanged() > onValueChangeToNotEmpty > val',
+//   //   val,
+//   //   props,
+//   //   props.triggerConstraint.includes(TriggerConstraint.ValueChangeToNotEmpty)
+//   // )
+//   if (TriggerMode.onValueChanged === props.triggerMode) {
+//     if (props.triggerConstraint.includes(TriggerConstraint.ValueChangeToNotEmpty)) {
+//       if ((oval === undefined || oval === '') && !utils.isEmpty(val)) {
+//         loadData()
+//       }
+//     } else {
+//       loadData()
+//     }
+//   }
+//   return true
+// }
 
 const selectOne = (value: any) => {
   // 将值设置到对应的组件中
@@ -400,8 +407,7 @@ const triggerOnCreated = () => {
   }
 }
 
-const onClear = () => {
-}
+const onClear = () => {}
 /**
  * 搜索框内容变化时
  * 1、客户端过滤模式，直接过滤
@@ -409,27 +415,47 @@ const onClear = () => {
  */
 const handleSearch = () => {
   // 启用了 忽略搜索词
-  if(props.ignoreSearchWords?.length>0){
+  if (props.ignoreSearchWords?.length > 0) {
     if (!inputMv.value || String(inputMv.value).trim() === '') {
       return false
     }
     const searchText = String(inputMv.value).trim()
-    if (props.ignoreSearchWords.indexOf(searchText)>=0) {
+    if (props.ignoreSearchWords.indexOf(searchText) >= 0) {
       global.$message.warning(`该词“${inputMv.value}”不可以查询。`)
       return false
     }
     renderOptions.value.length = 0
     renderOptions.value = loadedOptions.value.filter((option: any) => {
       // __label：已合并了多个label字段内容，不用再从labelFieldNames中取
-      return option.__label?.indexOf(searchText) > -1;
+      return option.__label?.indexOf(searchText) > -1
     })
-  }else{
+  } else {
     // 没有启用时展示所有
     renderOptions.value = loadedOptions.value
   }
 }
 
+/**
+ * 是否需要阻断加载数据
+ */
+const isStopLoadData = () => {
+  if (props.triggerConstraint?.length > 0) {
+    // 1、当值为空时，阻断加载数据
+    if (props.triggerConstraint.includes(TriggerConstraint.DoNoFetchWhenEmpty)) {
+      if (utils.isEmpty(mv.value)) {
+        return true
+      }
+    }
+    // 其它待支持
+  }
+  return false
+}
+
 const loadData = () => {
+  console.log('GlDynamicSelect > loadData() > isStopLoadData():', isStopLoadData(), 'props', props)
+  if (isStopLoadData()) {
+    return
+  }
   // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'extraFieldAndBindIds:', props.extraFieldAndBindIds,'props',props)
   if (props.entityName && props.valueFiledName && theLabelFieldNames) {
     const fieldSet = new Set<string>().add(props.valueFiledName)
@@ -516,7 +542,7 @@ const loadData = () => {
         loadedOptions.value = newItems
       }
       // 加载完成数据之后，如果需要马上展示，则执行客户端过滤查询
-      if(renderAfterLoad()){
+      if (renderAfterLoad()) {
         handleSearch()
       }
     })
@@ -527,7 +553,8 @@ watch(
   mv,
   (val: any, oval: any) => {
     emits('update:modelValue', val)
-    triggerOnValueChanged(val, oval)
+    loadData()
+    // triggerOnValueChanged(val, oval)
   },
   { deep: true, immediate: true }
 )

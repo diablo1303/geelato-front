@@ -1,13 +1,13 @@
 const useComponentSelectOption = () => {
   return [
     { componentName: 'GlButton', title: '按钮' },
+    { componentName: 'ASwitch', title: '开关' },
+    { componentName: 'GlDict', title: '数据字典' },
+    { componentName: 'GlDynamicSelect', title: '实体选择器' },
     { componentName: 'AInput', title: '单行字符输入' },
     { componentName: 'ATextarea', title: '多行字符输入' },
     { componentName: 'AInputNumber', title: '数字输入' },
-    { componentName: 'ASwitch', title: '开关' },
     { componentName: 'ASelect', title: '下拉选择' },
-    { componentName: 'GlDict', title: '数据字典' },
-    { componentName: 'GlDynamicSelect', title: '实体选择器' },
     { componentName: 'ADatePicker', title: '日期选择器' },
     { componentName: 'ATimePicker', title: '时间选择器' },
     { componentName: 'GlRangePicker', title: '日期范围选择器' },

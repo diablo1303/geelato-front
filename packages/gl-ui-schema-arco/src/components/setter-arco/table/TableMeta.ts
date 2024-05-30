@@ -281,7 +281,8 @@ export default {
           setterComponentProps: {},
           setterComponentVModelName: 'modelValue',
           title: '显示序号',
-          setterComponentName: 'ASwitch'
+          setterComponentName: 'ASwitch',
+          setterDefaultValue: true
         },
         {
           name: 'leftFixedCount',
@@ -388,8 +389,8 @@ export default {
               { label: '开头包括', value: 'sw', __sIGch6bIhRKB7cNZod: 'sw' },
               { label: '结尾包括', value: 'ew', __sIGch6bIhRKB7cNZod: 'ew' },
               { label: '包括', value: 'contains', __sIGch6bIhRKB7cNZod: 'contains' },
-              { label: '在数组范围(in)', value: 'in' },
-              { label: '不在数组范围(not in)', value: 'nin' },
+              { label: '在数组或字符串(s1,s2)范围(in)', value: 'in' },
+              { label: '不在数组或字符串(s1,s2)范围', value: 'nin' },
               { label: '在...两值之间(between)', value: 'bt' },
               { label: '是否空', value: 'nil' }
             ],

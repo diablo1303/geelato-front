@@ -26,8 +26,8 @@ const cops = [
   { text: '开头包括', value: 'sw' },
   { text: '结尾包括', value: 'ew' },
   { text: '包括', value: 'contains' },
-  { text: '在数组范围', value: 'in' },
-  { text: '不在数组范围', value: 'nin' },
+  { label: '在数组或字符串(s1,s2)范围(in)', value: 'in' },
+  { label: '不在数组或字符串(s1,s2)范围', value: 'nin' },
   { text: '是否空', value: 'nil' },
   { text: '在...两值之间', value: 'bt' }
 ]

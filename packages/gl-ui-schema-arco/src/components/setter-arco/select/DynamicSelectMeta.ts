@@ -58,16 +58,17 @@ export default {
       enableValueExpress: false,
       show: true,
       expanded: true,
-      title: '触发模式',
+      title: '数据加载时机',
       setterComponentName: 'ARadioGroup',
-      description: '不选择时，默认为组件创建时'
+      description: '不选择时，默认为组件创建时加载数据；“被调用时”，表示默认不加载数据，通过脚本来调用触发，如用于级联加载的场景。'
     },
     {
+      title: '数据加载约束',
       name: 'triggerConstraint',
       setterComponentProps: {
         multiple:true,
         options: [
-          { label: '组件值从空转为非空', value: 'ValueChangeToNotEmpty' }
+          { label: '组件值为空时不加载数据', value: 'DoNoFetchWhenEmpty' }
         ]
       },
       setterComponentVModelName: 'modelValue',
@@ -76,9 +77,8 @@ export default {
       enableValueExpress: false,
       show: true,
       expanded: true,
-      title: '触发约束',
       setterComponentName: 'ASelect',
-      description: '不选择时，默认为组件创建时'
+      description: '满足任一种条件，则不触发加载数据。'
     },
     {
       name: 'labelFieldNames',
@@ -221,8 +221,8 @@ export default {
                 value: 'contains',
                 __sfh6bOn4TZO1ya3MA3: 'contains'
               },
-              { label: '在数组范围(in)', value: 'in' },
-              { label: '不在数组范围(not in)', value: 'nin' },
+              { label: '在数组或字符串(s1,s2)范围(in)', value: 'in' },
+              { label: '不在数组或字符串(s1,s2)范围', value: 'nin' },
               { label: '在...两值之间(between)', value: 'bt' },
               { label: '是否空', value: 'nil' }
             ]
