@@ -47,12 +47,19 @@ const deployLoading = ref(false);
 const syncTableLoading = ref(false);
 const syncViewLoading = ref(false);
 const packBusData = {
-  first: ['platform_app_page', 'platform_tree_node', 'platform_permission',
+  second: ['platform_app_page', 'platform_tree_node', 'platform_permission',
     'platform_dev_db_connect', 'platform_dev_table', 'platform_dev_column', 'platform_dev_table_foreign', 'platform_dev_view',
     'platform_role', 'platform_role_r_permission', 'platform_role_r_tree_node', 'platform_role_r_app',] as string[],// 增量
-  second: ['platform_dict', 'platform_dict_item',
+  first: ['platform_dict', 'platform_dict_item',
     'platform_sys_config', 'platform_export_template', 'platform_encoding', 'platform_resources',] as string[],// 全量
 };
+const packData = ref<Record<string, any>>({
+  visible: false,
+  first: [] as QueryTableForm[],
+  second: [] as QueryTableForm[],
+  version: '',
+  description: '',
+});
 
 /**
  * 调整树形结构高度
@@ -75,6 +82,13 @@ const resetListHeight = () => {
 const resetTreeHeight = () => {
   return window.innerHeight - 180;
 }
+/**
+ * 调整包结构高度
+ */
+const resetPackModelHeight = () => {
+  return window.innerHeight * 0.7;
+}
+const packHeight = ref<number>(resetPackModelHeight());
 /**
  * 调整列表展示行数
  */
@@ -114,6 +128,8 @@ const handleLogout = () => {
  */
 const handleResize = () => {
   listParams.value.height = resetTreeHeight();
+  splitHeight.value = resetSplitHeight();
+  packHeight.value = resetPackModelHeight();
 }
 
 /**
@@ -252,10 +268,10 @@ const syncViewToData = async () => {
   }
 }
 
-const packAppVersion = async (version?: string, description?: string) => {
+const packAppVersion = async () => {
   packLoading.value = true;
   try {
-    const {data} = await packetAppVersion(appData.value.id, version, description);
+    const {data} = await packetAppVersion(appData.value.id, packData.value.version, packData.value.description);
     Message.success('打包成功!');
     // @ts-ignore
     listParams.value.selected.id = data.id || '';
@@ -277,60 +293,26 @@ const queryAppTables = async (successBack?: any, failBack?: any) => {
   }
 }
 
-const setInputValue = (id: string, value: string) => {
-  const inputElement = document.getElementById(id);
-  // @ts-ignore
-  if (inputElement) inputElement.value = value;
-}
-const getInputValue = (id: string) => {
-  const inputElement = document.getElementById(id);
-  // @ts-ignore
-  return inputElement && inputElement.value ? inputElement.value : '';
-}
-
 const packetAppVersionClick = () => {
   queryAppTables((data: QueryTableForm[]) => {
-    const packBus = {first: [] as string[], second: [] as string[]};
-    let version = `${appData.value.code}_version${formatTime(new Date(), 'yyyyMMddHHmmss')}`;
-    let description = '当前环境打包形成的应用包';
+    Object.assign(packData.value, {
+      visible: false, first: [] as QueryTableForm[], second: [] as QueryTableForm[],
+      version: `${appData.value.code}_version${formatTime(new Date(), 'yyyyMMddHHmmss')}`,
+      description: '当前环境打包形成的应用包',
+    });
     if (data && data.length > 0) {
       // eslint-disable-next-line no-restricted-syntax
       for (const item of data) {
         // 增量为：更新和插入打包数据；
         if (packBusData.first.includes(item.entityName) || (item.appId === appData.value.id && item.packBusData === 1)) {
-          packBus.first.push(`${item.title} ${item.entityName}`);
+          packData.value.first.push(item);
         }
         // 全量为：先清空表再插入打包数据。
         if (packBusData.second.includes(item.entityName) || (item.appId === appData.value.id && item.packBusData === 2)) {
-          packBus.second.push(`${item.title} ${item.entityName}`);
+          packData.value.second.push(item);
         }
       }
-      console.log(packBus);
-      Modal.open({
-        title: '版本打包', titleAlign: 'start', width: 800,
-        content: () => h(compile(`
-                      <div class="pack-version-title">是否打包 ${appData.value.name}？</div>
-                      <div class="pack-version-content">
-                        <p style="color:rgb(22, 93, 255);">版本名称：
-                          <input id="packVersionName" class="pack-version-input">
-                        </p>
-                        <p style="color:rgb(22, 93, 255);">版本描述：
-                          <input id="packVersionDescription" class="pack-version-input">
-                        </p>
-                        <p>增量（更新和插入打包数据）：${packBus.first.join("，")}。</p>
-                        <p>全量（先清空表再插入打包数据）：${packBus.second.join("，")}。</p>
-                      </div>`)),
-        onOpen: () => {
-          setInputValue('packVersionName', version);
-          setInputValue('packVersionDescription', description);
-        },
-        onOk: () => {
-          version = getInputValue('packVersionName');
-          description = getInputValue('packVersionDescription');
-          // 打包版本
-          packAppVersion(version, description);
-        },
-      });
+      Object.assign(packData.value, {visible: true});
     } else {
       Message.error('没有找到表');
     }
@@ -554,6 +536,38 @@ onUnmounted(() => {
     </div>
   </div>
 
+  <a-modal v-model:visible="packData.visible" title="版本打包" :width="1150" title-align="start" @ok="packAppVersion">
+    <a-scrollbar :style="{overflow:'auto',maxHeight:`${packHeight}px`}">
+      <a-descriptions size="medium" :column="1" layout="horizontal" :bordered="true">
+        <template #title>
+          <span style="font-weight: bold;">{{ `是否打包 ${appData.name}？` }}</span>
+        </template>
+        <a-descriptions-item label="版本名称">
+          <a-input v-model="packData.version" class="pack-version-input" placeholder="请输入版本名称"/>
+        </a-descriptions-item>
+        <a-descriptions-item label="版本描述">
+          <a-input v-model="packData.description" class="pack-version-input" placeholder="请输入版本描述"/>
+        </a-descriptions-item>
+      </a-descriptions>
+      <a-descriptions size="medium" :column="3" layout="horizontal" :bordered="true" style="margin-top: 12px;">
+        <template #title>
+          <span>增量更新（更新和插入打包数据）</span>
+        </template>
+        <a-descriptions-item v-for="(item,index) of packData.first" :key="index" :label="item.title">
+          {{ item.entityName }}
+        </a-descriptions-item>
+      </a-descriptions>
+      <a-descriptions size="medium" :column="3" layout="horizontal" :bordered="true" style="margin-top: 12px;">
+        <template #title>
+          <span>全量更新（先清空表再插入打包数据）</span>
+        </template>
+        <a-descriptions-item v-for="(item,index) of packData.second" :key="index" :label="item.title">
+          {{ item.entityName }}
+        </a-descriptions-item>
+      </a-descriptions>
+    </a-scrollbar>
+  </a-modal>
+
   <AppVersionForm v-model:visible="formParams.visible"
                   :formCol="formParams.formCol"
                   :formState="formParams.formState"
@@ -619,5 +633,10 @@ onUnmounted(() => {
   border-top: 0 !important;
   border-left: 0 !important;
   border-right: 0 !important;
+  background-color: #FFFFFF !important;
+}
+
+.pack-version-item {
+
 }
 </style>
