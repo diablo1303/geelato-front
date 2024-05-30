@@ -1,8 +1,8 @@
 <template>
   <component
     :key="reRenderKey"
-    v-if="glComponentInst && glComponentInst.componentName && unRender !== true && hasPermission()"
-    v-show="hidden !== true && glComponentInst.componentName !== 'GlHiddenArea'"
+    v-if="glComponentInst && glComponentInst.componentName && unRender !== true "
+    v-show="hidden !== true && glComponentInst.componentName !== 'GlHiddenArea' && hasPermission()"
     :id="glComponentInst.id"
     :ref="glComponentInst.id"
     class="gl-component"
