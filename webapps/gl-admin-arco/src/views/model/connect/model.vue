@@ -18,7 +18,7 @@ type PageParams = {
   tenantCode?: string; // 租户编码
 }
 
-const emits = defineEmits(['update:modelValue']);
+const emits = defineEmits(['update:modelValue', 'linkTestFinish']);
 const props = defineProps({
   modelValue: {type: String, default: ''},// id
   visible: {type: Boolean, default: false},// 显示
@@ -101,8 +101,13 @@ const connectionTest = async (params: QueryForm, successBack?: any, failBack?: a
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
       if (failBack && typeof failBack === 'function') failBack(err);
+    } finally {
+      emits('linkTestFinish', false);
     }
-  } else if (failBack && typeof failBack === 'function') failBack();
+  } else {
+    emits('linkTestFinish', false);
+    if (failBack && typeof failBack === 'function') failBack();
+  }
 };
 
 /**

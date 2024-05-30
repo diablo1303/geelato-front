@@ -31,6 +31,7 @@ const props = defineProps({
 
 const tableFormRef = shallowRef(ModelConnectModel);
 const visibleForm = ref<boolean>(false);
+const connectLoading = ref<boolean>(false);
 const modelParams = ref<ModelParams>({
   visible: false,
   parameter: props.parameter,
@@ -67,6 +68,7 @@ const handleModelCancel = (ev?: Event) => {
 const connectLinkTest = (ev?: Event) => {
   // @ts-ignore
   if (tableFormRef.value && typeof tableFormRef.value?.linkTest === 'function') {
+    connectLoading.value = true;
     // @ts-ignore
     tableFormRef.value?.linkTest();
   }
@@ -84,6 +86,7 @@ watch(() => props, () => {
   }
   // 显示页面
   visibleForm.value = props.visible === true;
+  connectLoading.value = false;
 }, {deep: true, immediate: true});
 
 watch(() => visibleForm, () => {
@@ -103,16 +106,17 @@ watch(() => visibleForm, () => {
                        :formState="modelParams.formState"
                        :modelValue="modelParams.id"
                        :parameter="modelParams.parameter"
-                       :visible="modelParams.visible"/>
+                       :visible="modelParams.visible"
+                       @linkTestFinish="args => {connectLoading=false;}"/>
     <template #footer>
       <a-space style="float: left;">
-        <a-button status="success" @click="connectLinkTest">
+        <a-button :loading="connectLoading" status="success" @click="connectLinkTest">
           {{ $t('model.connect.index.model.title.link') }}
         </a-button>
       </a-space>
       <a-space>
-        <a-button @click="handleModelCancel($event)">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
-        <a-button type="primary" @click="handleModelOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
+        <a-button :disabled="connectLoading" @click="handleModelCancel($event)">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
+        <a-button :disabled="connectLoading" type="primary" @click="handleModelOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
       </a-space>
     </template>
   </a-modal>
@@ -126,16 +130,17 @@ watch(() => visibleForm, () => {
                        :formState="modelParams.formState"
                        :modelValue="modelParams.id"
                        :parameter="modelParams.parameter"
-                       :visible="modelParams.visible"/>
+                       :visible="modelParams.visible"
+                       @linkTestFinish="args => {connectLoading=false;}"/>
     <template #footer>
       <a-space style="float: left;">
-        <a-button status="success" @click="connectLinkTest">
+        <a-button :loading="connectLoading" status="success" @click="connectLinkTest">
           {{ $t('model.connect.index.model.title.link') }}
         </a-button>
       </a-space>
       <a-space>
-        <a-button @click="handleModelCancel($event)">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
-        <a-button type="primary" @click="handleModelOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
+        <a-button :disabled="connectLoading" @click="handleModelCancel($event)">{{ $t('model.connect.index.model.cancel.text') }}</a-button>
+        <a-button :disabled="connectLoading" type="primary" @click="handleModelOk($event)">{{ $t('model.connect.index.model.ok.text') }}</a-button>
       </a-space>
     </template>
   </a-drawer>
