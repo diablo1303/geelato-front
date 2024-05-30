@@ -434,7 +434,7 @@ onUnmounted(() => {
             <a-tab-pane :key="6">
               <template #title>
                 <icon-settings/>
-                应用配置
+                应用参数
               </template>
               <a-card class="general-card">
                 <SystemConfigList :visible="configListParams.visible"
