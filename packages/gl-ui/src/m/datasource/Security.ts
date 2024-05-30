@@ -318,3 +318,11 @@ export function queryEncodings(params: Record<string, any>) {
   const records = utils.getUrlParams(params);
   return entityApi.getAxios().get<QueryEncodingForm[]>(`/api/encoding/query?${records.join('&')}`);
 }
+
+export function insertRoleTreeNode(params: Record<string, any>) {
+  return entityApi.getAxios().post<QueryResult>('/api/security/role/tree/insert', params);
+}
+
+export function deleteRoleTreeNode(params: Record<string, any>) {
+  return entityApi.getAxios().post<QueryResult>('/api/security/role/tree/delete', params);
+}

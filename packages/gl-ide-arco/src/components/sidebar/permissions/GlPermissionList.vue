@@ -68,6 +68,7 @@ const onRoleMenuItemsCancel = () => {
              @ok="onRoleMenuItemsOk" @cancel="onRoleMenuItemsCancel"
              ok-text="保存"
              :key="utils.gid('id')"
+             :footer="false"
              draggable>
       <template #title>
         角色可访问页面权限配置

@@ -29,6 +29,7 @@ interface Role {
   id: string
   name: string
   code: string
+  weight: number
 }
 
 interface Permission {
@@ -72,6 +73,7 @@ const currentRole: Ref<any> = ref({})
 const expandedKeys = ref([])
 const appRoles: Ref<Role[]> = ref([])
 // 应用菜单，加载之后不改变
+const appTreeNodes: Ref<AppMenuItem[]> = ref([])
 const appMenuItems: Ref<AppMenuItem[]> = ref([])
 // 当前选择角色已授权菜单信息
 const currentRoleGrantedMenuItems: Ref<RoleGrantedMenuItem[]> = ref([])
@@ -82,7 +84,9 @@ const currentMenuPermissions = ref<Record<string, TreePermission>>({});
 // 当前应用的角色
 const loadAppRoles = (appId: string) => {
   // TODO 待增加应用id条件
-  entityApi.query('platform_role', 'id,name,code', {'@p': '1,1000', '@order': 'name|+'}).then((res) => {
+  entityApi.query('platform_role', 'id,name,code,weight', {
+    '@p': '1,1000', '@order': 'weight|-', 'appId': appId
+  }).then((res) => {
     appRoles.value = res.data
   })
 }
@@ -93,6 +97,7 @@ const loadAppMenuItems = (appId: string) => {
       .then((res) => {
         // @ts-ignore
         res.data.sort((a, b) => a.seqNo - b.seqNo);
+        appTreeNodes.value = res.data || [];
         appMenuItems.value = utils.listToTree(res.data, appId, {id: 'key'})
       })
 }
@@ -347,6 +352,75 @@ const getTreePermission = (treeId: string) => {
   return {data: [], count: 0, checkedAll: false};
 }
 
+const getParentTreeNodeIds = (pid: string, ids: string[]) => {
+  if (pid !== appId) {
+    const parent = appTreeNodes.value.find((item) => item.key === pid);
+    if (parent) {
+      ids.push(parent?.key);
+      getParentTreeNodeIds(parent?.pid, ids);
+    }
+  }
+}
+
+const getChildrenTreeNodeIds = (pid: string, ids: string[]) => {
+  const parent = appTreeNodes.value.filter((item) => item.pid === pid);
+  if (parent && parent.length > 0) {
+    for (const item of parent) {
+      ids.push(item?.key);
+      getChildrenTreeNodeIds(item?.key, ids);
+    }
+  }
+}
+
+const cancelAppMenuItems = (record: AppMenuItem) => {
+  if (record.children && record.children.length > 0) {
+    for (const item of record.children) {
+      item.checked = false;
+    }
+  }
+}
+
+const checkedAppMenuItems = (records: AppMenuItem[], ids: string[]) => {
+  records?.forEach((item) => {
+    if (ids.includes(item.key)) {
+      item.checked = true;
+    }
+    checkedAppMenuItems(item.children, ids)
+  })
+}
+
+const switchBeforeChange = async (record: AppMenuItem) => {
+  let isSuccess = false;
+  try {
+    const treeNodeIds: string[] = [record.key];
+    if (record.checked) {// 取消授权，子节点也要取消授权
+      getChildrenTreeNodeIds(record.key, treeNodeIds);
+      securityApi.deleteRoleTreeNode({
+        appId: appId, treeId: appId, roleId: currentRole.value.id, treeNodeId: treeNodeIds.join(','),
+      })
+      cancelAppMenuItems(record);
+    } else {// 授权，父节点也要授权
+      getParentTreeNodeIds(record.pid, treeNodeIds);
+      securityApi.insertRoleTreeNode({
+        appId: appId, treeId: appId, roleId: currentRole.value.id, treeNodeId: treeNodeIds.join(','),
+      })
+      checkedAppMenuItems(currentRoleAppMenuItems.value, treeNodeIds);
+    }
+    isSuccess = true;
+  } catch (err) {
+    console.log(err);
+  }
+
+  return isSuccess;
+}
+
+const refreshClick = () => {
+  loadAppMenuItems(appId)
+  loadAppPagePermissions(appId);
+  loadRoleGrantedMenuItem(appId, currentRole.value.id)
+  loadAppPageRolePermission(appId, currentRole.value.id)
+}
+
 const reset = () => {
   loadAppRoles(appId)
   loadAppMenuItems(appId)
@@ -374,12 +448,20 @@ defineExpose({save})
             :class="{ 'gl-active': roleIndex === currentRoleIndex }"
             @click="selectRole(role, roleIndex)"
         >
-          <span>{{ role.name }}</span>
+          <span>{{ `${role.weight} ${role.name}` }}</span>
         </a-list-item>
       </a-list>
     </div>
     <div class="gl-layout-right">
       <a-tabs>
+        <template #extra>
+          <a-button type="outline" @click="refreshClick">
+            <template #icon>
+              <gl-iconfont type="gl-refresh"/>
+            </template>
+            刷新
+          </a-button>
+        </template>
         <a-tab-pane key="1">
           <template #title>
             <gl-iconfont type="gl-calendar"/>
@@ -394,13 +476,13 @@ defineExpose({save})
               :pagination="false"
           >
             <template #columns>
-              <a-table-column title="菜单项" data-index="name" :width="400">
+              <a-table-column title="菜单项" data-index="name" :width="300">
                 <template #cell="{ record }">
                   <GlIconfont :type="record.iconType"></GlIconfont>
                   {{ record.name }}
                 </template>
               </a-table-column>
-              <a-table-column data-index="checked">
+              <a-table-column data-index="checked" :width="240">
                 <template #title>
                   是否授权访问
                   <a-button-group type="primary" size="mini" shape="round">
@@ -409,7 +491,7 @@ defineExpose({save})
                   </a-button-group>
                 </template>
                 <template #cell="{ record }">
-                  <a-switch v-model="record.checked"/>
+                  <a-switch v-model="record.checked" :before-change="newValue => switchBeforeChange(record)"/>
                 </template>
               </a-table-column>
               <a-table-column title="该页面相关元素权限" data-index="entities">
