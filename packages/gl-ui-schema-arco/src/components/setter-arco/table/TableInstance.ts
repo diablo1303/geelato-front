@@ -29,6 +29,7 @@ export default {
                 "sortable": {},
                 "dataIndex": "id",
                 "title": "ID",
+                "_show": false,
                 "_propsExpressions": {}
             }
         ],

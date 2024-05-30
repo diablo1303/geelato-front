@@ -23,15 +23,23 @@ const zhMessages: MessageRule[] = [
     rule: "Data truncation: Data too long for column '(\\w+)' at row \\d+",
     msg: '实体{0}的字段{1}被截断，数据太长。',
     extractKeyRules: {
-      '{0}':["SQL\\s\\[(update|insert)\\s\\w+","\\w+$"],
+      '{0}':["SQL\\s\\[(update|insert into)\\s\\w+","\\w+$"],
       '{1}': ["'(\\w+)'","\\w+"],
     }
   },
   {
     rule: "Data truncation: Out of range value for column '(\\w+)' at row \\d+",
-    msg: '实体{0}的字段{0}被截断，可能是值太大或太小（如负数）、小数点、数据类型不匹配',
+    msg: '实体{0}的字段{1}被截断，可能是值太大或太小（如负数）、小数点、数据类型不匹配',
     extractKeyRules: {
-      '{0}':["SQL\\s\\[(update|insert)\\s\\w+","\\w+$"],
+      '{0}':["SQL\\s\\[(update|insert into)\\s\\w+","\\w+$"],
+      '{1}': ["'(\\w+)'","\\w+"],
+    }
+  },
+  {
+    rule: "Column '\\w+' cannot be null",
+    msg: '实体{0}的字段{1}不能为空',
+    extractKeyRules: {
+      '{0}':["SQL\\s\\[(update|insert into)\\s\\w+","\\w+$"],
       '{1}': ["'(\\w+)'","\\w+"],
     }
   }
@@ -70,7 +78,7 @@ export const getMessage = (data: string | Record<string, any>) => {
 
   for (let index in messages) {
     const message = messages[index]
-    console.log('message', message, index)
+    // console.log('message', message, index)
     if (new RegExp(message.rule, 'g').test(srcMsg)) {
       let hasMatchText = false
       let result = message.msg
