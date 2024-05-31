@@ -232,10 +232,10 @@ const initViewResult = (result: Record<string, any>) => {
     }
   }
   if (data.length > 0) {
-    global.$message.error({content: '视图同步至数据库失败！'})
+    global.$message.error({content: '【视图】同步至数据库失败！'})
     global.$message.info({content: () => h(compile(`${data.join('')}`)), duration: 15 * 1000})
   } else {
-    global.$message.success({content: '视图同步至数据库成功！'})
+    global.$message.success({content: '【视图】同步至数据库成功！'})
   }
 }
 
@@ -244,13 +244,13 @@ const tableInit = async () => {
     return
   }
   appStore.currentApp.initLoading = true;
-  let msgLoading = global.$message.loading({content: `正在将 ${appStore.currentApp.name} 下的所有模型同步至数据库`, duration: 100000 * 10000});
+  let msgLoading = global.$message.loading({content: `（1/2）正在将 ${appStore.currentApp.name} 下的所有【模型】同步至数据库`, duration: 100000 * 10000});
   try {
     const tableResult = await modelApi.initTables(appStore.currentApp.id);
     console.log("init Table", tableResult);
-    global.$message.success({content: '模型同步至数据库成功！'})
+    global.$message.success({content: '【模型】同步至数据库成功！'})
     msgLoading.close();
-    msgLoading = global.$message.loading({content: `正在将 ${appStore.currentApp.name} 下的所有视图同步至数据库`, duration: 100000 * 10000});
+    msgLoading = global.$message.loading({content: `（2/2）正在将 ${appStore.currentApp.name} 下的所有【视图】同步至数据库`, duration: 100000 * 10000});
     const viewResult = await modelApi.initViews(appStore.currentApp.id);
     console.log("init View", viewResult);
     initViewResult(viewResult.data);
@@ -426,10 +426,10 @@ const editViewForm = (record: QueryViewForm) => {
     <div style="padding: 4px 5px 4px 5px;">
       <a-space style="justify-content: flex-start;">
         <a-input-search v-model="searchText" allow-clear placeholder="录入中、英文名查询" size="small"/>
-        <a-popconfirm content="是否将该应用下所有模型和视图同步至数据库？" position="bottom" type="warning" @ok="tableInit">
+        <a-popconfirm content="是否将该应用下所有【模型】和【视图】同步至数据库？" position="bottom" type="warning" @ok="tableInit">
           <a-button size="small" type="outline" status="danger" style="height: 27px;" :loading="appStore.currentApp.initLoading">
             <template #icon>
-              <a-tooltip content="应用模型和视图同步至数据库">
+              <a-tooltip content="应用【模型】和【视图】同步至数据库">
                 <gl-iconfont type="gl-transfer"/>
               </a-tooltip>
             </template>
