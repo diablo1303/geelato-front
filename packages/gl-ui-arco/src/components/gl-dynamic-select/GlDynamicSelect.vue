@@ -452,7 +452,6 @@ const isStopLoadData = () => {
 }
 
 const loadData = () => {
-  console.log('GlDynamicSelect > loadData() > isStopLoadData():', isStopLoadData(), 'props', props)
   if (isStopLoadData()) {
     return
   }

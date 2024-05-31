@@ -574,9 +574,17 @@ export const usePageStore = defineStore('GlPageStore', () => {
     }
   }
 
+  function updatePageTitleByExtendId(extendId: string, title: string) {
+    const result = findPageByExtendId(extendId)
+    if (result?.page) {
+      result.page.title = title
+    }
+  }
+
   return {
     addPageTemplate,
     getPageTemplate,
+    updatePageTitleByExtendId,
     pages,
     currentPageIndex,
     currentPage,

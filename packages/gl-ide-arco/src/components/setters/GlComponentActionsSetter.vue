@@ -9,25 +9,28 @@
       >
         <div style="padding: 0 1em">
           <GlArrayBaseSetter
+            :key="actionMetaIndex"
             v-slot:default="slotProps"
-            v-model="componentInstance.actions"
-            :filter="(action:Action)=>{return action?.eventName===actionMeta.name}"
+            v-model="actionGroup[actionMeta.name]"
             :defaultItemForAdd="getDefaultItemForAdd(actionMeta)"
-            @addItem="update"
-            @removeItem="update"
+            @addItem="onAddAction"
+            @removeItem="onDeleteAction"
           >
             <div style="width: 100%; display: flex; margin-bottom: 1px">
               <div style="flex: 1">
                 <a-tooltip
-                  content="若该动作已被其它动作引用，修改此名称时，会导致对该动用的引用不正常"
+                  content="在同一事件下，如同在click事件下的动作不能全命名为click，名称需唯一。另外，若该动作已被其它动作引用，修改此名称时，会导致对该动用的引用不正常"
                 >
-                  <a-input v-model="componentInstance.actions[slotProps.index].name"></a-input>
+                  <a-input
+                    v-model="actionGroup[actionMeta.name][slotProps.index].name"
+                    placeholder="名称需唯一"
+                  ></a-input>
                 </a-tooltip>
               </div>
               <div style="flex: 1">
                 <a-tooltip content="可任意修改名称，不影响引用">
                   <a-input
-                    v-model="componentInstance.actions[slotProps.index].title"
+                    v-model="actionGroup[actionMeta.name][slotProps.index].title"
                     title="可任意修改名称，不影响引用"
                   ></a-input>
                 </a-tooltip>
@@ -37,7 +40,7 @@
                   type="gl-thunderbolt"
                   @click="
                     openActionSetter(
-                      componentInstance.actions[slotProps.index],
+                      actionGroup[actionMeta.name][slotProps.index],
                       slotProps.index,
                       actionMeta
                     )
@@ -71,8 +74,8 @@
           <a-space>
             <!--            <a-button @click="closeActionCodeEditor" title="取消即不保存更改"> 取消</a-button>-->
             <a-button type="primary" @click="saveCurrentPage" title="保存页面到服务端">
-              保存</a-button
-            >
+              保存
+            </a-button>
             <a-button
               type="primary"
               @click="saveAndCloseCurrentPage"
@@ -92,6 +95,14 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+/**
+ *  动作设置面板
+ *  将actions按事件名分组，并按事件名分面板进行配置
+ *  配置完成之后转换成actions，并保存到组件实例中
+ *  侦听事件EventNames.GlIdeOpenActionEditor，便于在IDE的其它地方打开动作配置面板
+ *  @author <geelato>
+ *
+ */
 // @ts-nocheck
 import { nextTick, onUnmounted, type PropType, ref } from 'vue'
 import { Action, ComponentInstance, ComponentMeta } from '@geelato/gl-ui-schema'
@@ -129,14 +140,36 @@ if (props.componentMeta.actions && props.componentMeta.actions.length > 0) {
   })
 }
 
-const update = () => {}
-// console.log('GlComponentActionsSetter > props:', props)
+// 将actions按事件名分组，便于按事件名分面板进行配置
+const actionGroup: Record<string, Action[]> = {}
+const convertActionsToGroup = () => {
+  props.componentInstance.actions?.forEach((action: Action) => {
+    actionGroup[action.eventName] = actionGroup[action.eventName] || []
+    actionGroup[action.eventName].push(action)
+  })
+}
+convertActionsToGroup()
+
+const convertGroupToActions = () => {
+  props.componentInstance.actions.length = 0
+  for (const eventName in actionGroup) {
+    actionGroup[eventName].forEach((action) => {
+      props.componentInstance.actions.push(action)
+    })
+  }
+}
+
 const refreshFlag = ref(true)
 
 const currentAction = ref(new Action())
 // const currentActionIndex = ref(-1)
 const actionCodeEditorVisible = ref(false)
-const openActionSetter = (action: Action, actionIndex?: number, actionMeta?: ActionMeta) => {
+/**
+ *
+ * @param action
+ * @param actionMeta
+ */
+const openActionSetter = (action: Action, actionMeta?: ActionMeta) => {
   // console.log('openActionSetter,action, actionIndex, actionMeta:', action, actionIndex, actionMeta)
   if (!action.title) {
     action.title = actionMeta?.title || ''
@@ -151,7 +184,6 @@ const openActionSetter = (action: Action, actionIndex?: number, actionMeta?: Act
     action.id = utils.gid('act', 20)
   }
   currentAction.value = action ? JSON.parse(JSON.stringify(action)) : new Action()
-  // currentActionIndex.value = actionIndex
   actionCodeEditorVisible.value = true
 
   refreshFlag.value = false
@@ -159,16 +191,31 @@ const openActionSetter = (action: Action, actionIndex?: number, actionMeta?: Act
     refreshFlag.value = true
   })
 }
+
+const onAddAction = (action: Action) => {
+  convertGroupToActions()
+  emitter.emit(EventNames.GlIdeSetterCreateAction, action)
+}
+
+const onDeleteAction = (params: { index: number; item: Action }) => {
+  convertGroupToActions()
+  emitter.emit(EventNames.GlIdeSetterDeleteAction, params)
+}
+
 const onUpdateAction = (action: Action) => {
-  for (const index in props.componentInstance.actions) {
-    if(!props.componentInstance.actions[index].id){
-      console.error('onUpdateAction时，发现id为空的action:',action,'需解决，确保action都有id。')
-    }
-    if(props.componentInstance.actions[index].id===action.id){
-      props.componentInstance.actions[index] = action
-      break
+  for (const key in actionGroup) {
+    for (const index in actionGroup[key]) {
+      if (!actionGroup[key][index].id) {
+        console.error('onUpdateAction时，发现id为空的action:', action, '需解决，确保action都有id。')
+      }
+      if (actionGroup[key][index].id === action.id) {
+        actionGroup[key][index] = action
+        break
+      }
     }
   }
+  convertGroupToActions()
+  emitter.emit(EventNames.GlIdeSetterUpdateAction, action)
 }
 
 const saveCurrentPage = () => {
@@ -178,7 +225,6 @@ const saveCurrentPage = () => {
 }
 const saveAndCloseCurrentPage = () => {
   saveCurrentPage().then((res) => {
-    console.log('saveCurrentPage res', res)
     closeActionCodeEditor()
   })
 }
@@ -191,7 +237,9 @@ const closeActionCodeEditor = () => {
  * 基于block生成脚本
  */
 const generateScript = () => {
-  const action = props.componentInstance?.actions?.find(action=>action.id === currentAction.value.id)
+  const action = props.componentInstance?.actions?.find(
+    (action) => action.id === currentAction.value.id
+  )
   // const action = props.componentInstance?.actions[currentActionIndex.value]
   // console.log('generateScript action:', action)
   if (action) {
@@ -199,14 +247,14 @@ const generateScript = () => {
   }
 }
 
-const openActionEditor = (args: any) => {
-  console.log('openActionSetter:', args)
-  openActionSetter(args.action, args.actionIndex)
+const openActionEditor = (args: { action: any }) => {
+  openActionSetter(args.action)
 }
 emitter.on(EventNames.GlIdeOpenActionEditor, openActionEditor)
 
 onUnmounted(() => {
-  // console.log('GlComponentSetter > onUnmounted ...', props.componentInstance?.componentName, props.componentInstance?.id)
+  // 将action group转成actions
+  convertGroupToActions()
   emitter.off(EventNames.GlIdeOpenActionEditor, openActionEditor)
 })
 </script>
