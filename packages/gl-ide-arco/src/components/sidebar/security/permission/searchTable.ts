@@ -14,4 +14,11 @@ const classifyOptions = computed<SelectOptionData[]>(() => [
   {label: '查看权限（自定义）', value: 'custom',},
 ]);
 
-export {typeOptions, classifyOptions}
+const ruleOptions = computed<SelectOptionData[]>(() => [
+  {label: '当前用户ID', value: '#currentUser.userId#',},
+  {label: '当前部门ID', value: '#currentUser.deptId#',},
+  {label: '当前组织ID', value: '#currentUser.buId#',},
+  {label: '当前合作单位ID', value: '#currentUser.cooperatingOrgId#',},
+]);
+
+export {typeOptions, classifyOptions, ruleOptions}

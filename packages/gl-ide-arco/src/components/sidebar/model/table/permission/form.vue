@@ -291,9 +291,9 @@ const permissionPage = ref({
   visible: false,
   parameter: {object: '', type: '', appId: '', tenantCode: ''},
   formState: 'add',
-  formCol: 1,
+  formCol: 2,
   title: '',
-  width: '',
+  width: '880px',
   autoCode: true
 });
 const addTablePermission = (ev?: MouseEvent) => {

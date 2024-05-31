@@ -253,12 +253,12 @@ const permissionFormParams = ref({
   visible: false,
   isModal: true,
   title: '',
-  width: '',
+  width: '880px',
   height: '',
   parameter: {object: '', type: 'mp', appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
-  formCol: 1,
+  formCol: 2,
   autoCode: true,
 });
 const addTablePermission = (ev: MouseEvent) => {

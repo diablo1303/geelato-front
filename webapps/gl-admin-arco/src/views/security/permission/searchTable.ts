@@ -11,4 +11,11 @@ const typeOptions = computed<SelectOptionData[]>(() => [
   {label: 'security.permission.index.form.type.cp', value: 'cp',},
 ]);
 
-export {columns, typeOptions}
+const ruleOptions = computed<SelectOptionData[]>(() => [
+  {label: '当前用户ID', value: '#currentUser.userId#',},
+  {label: '当前部门ID', value: '#currentUser.deptId#',},
+  {label: '当前组织ID', value: '#currentUser.buId#',},
+  {label: '当前合作单位ID', value: '#currentUser.cooperatingOrgId#',},
+]);
+
+export {columns, typeOptions, ruleOptions}

@@ -10,7 +10,7 @@ import type {FormInstance} from "@arco-design/web-vue";
 import {Modal} from "@arco-design/web-vue";
 import type {QueryAppForm, QueryPermissionForm} from '@geelato/gl-ui';
 import {applicationApi, securityApi, useGlobal, utils} from "@geelato/gl-ui";
-import {typeOptions} from "./searchTable";
+import {ruleOptions, typeOptions} from "./searchTable";
 
 type PageParams = {
   object: string; // 实体对象
@@ -168,35 +168,63 @@ watch(() => visibleForm, () => {
   <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title" :width="width"
            cancel-text="取消" ok-text="确认" title-align="start"
            @cancel="handleModelCancel" @before-ok="handleModelOk">
-    <a-form ref="validateForm" :model="formData">
-      <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="name" label="名称">
-        <a-input v-if="formState!=='view'" v-model="formData.name" :max-length="32"/>
-        <span v-else>{{ formData.name }}</span>
-      </a-form-item>
-      <a-form-item :rules="[{required: true,message: '这是必填项'},{validator:validateCode}]" field="code" label="编码">
-        <a-input v-if="formState!=='view'&&!formData.default&&!autoCode" v-model="formData.code" :max-length="32"/>
-        <span v-else>{{ formData.code }}</span>
-      </a-form-item>
-      <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="type" label="类型">
-        <a-select v-if="formState==='add'&&parameter.type===''" v-model="formData.type" :options="typeOptions"/>
-        <span v-else>{{ utils.getOptionLabel(formData.type, typeOptions) }}</span>
-      </a-form-item>
-      <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="object" label="对象">
-        <a-input v-if="formState==='add'&&parameter.object===''" v-model="formData.object" :max-length="32"/>
-        <span v-else>{{ formData.object }}</span>
-      </a-form-item>
-      <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="rule" label="规则">
-        <a-textarea v-if="formState!=='view'" v-model="formData.rule" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
-        <span v-else :title="formData.rule" class="textarea-span" @click="openModal(`${formData.rule}`)">{{ formData.rule }}</span>
-      </a-form-item>
-      <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="appId" label="所属应用">
-        <a-select v-model="formData.appId" :disabled="formState==='view'" :field-names="{value: 'id', label: 'name'}" :options="appSelectOptions"
-                  allow-search/>
-      </a-form-item>
-      <a-form-item field="description" label="描述">
-        <a-textarea v-if="formState!=='view'" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
-        <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
-      </a-form-item>
+    <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }">
+      <a-row :gutter="wrapperCol">
+        <a-col :span="(labelCol+wrapperCol)/formCol">
+          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="name" label="名称">
+            <a-input v-if="formState!=='view'" v-model="formData.name" :max-length="32"/>
+            <span v-else>{{ formData.name }}</span>
+          </a-form-item>
+        </a-col>
+        <a-col :span="(labelCol+wrapperCol)/formCol">
+          <a-form-item :rules="[{required: true,message: '这是必填项'},{validator:validateCode}]" field="code" label="编码">
+            <a-input v-if="formState!=='view'&&!formData.default&&!autoCode" v-model="formData.code" :max-length="32"/>
+            <span v-else>{{ formData.code }}</span>
+          </a-form-item>
+        </a-col>
+        <a-col :span="(labelCol+wrapperCol)/formCol">
+          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="type" label="类型">
+            <a-select v-if="formState==='add'&&parameter.type===''" v-model="formData.type" :options="typeOptions"/>
+            <span v-else>{{ utils.getOptionLabel(formData.type, typeOptions) }}</span>
+          </a-form-item>
+        </a-col>
+        <a-col :span="(labelCol+wrapperCol)/formCol">
+          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="object" label="对象">
+            <a-input v-if="formState==='add'&&parameter.object===''" v-model="formData.object" :max-length="32"/>
+            <span v-else>{{ formData.object }}</span>
+          </a-form-item>
+        </a-col>
+        <a-col :span="(labelCol+wrapperCol)/formCol">
+          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="appId" label="所属应用">
+            <a-select v-model="formData.appId" :disabled="formState==='view'" :field-names="{value: 'id', label: 'name'}" :options="appSelectOptions"
+                      allow-search/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="(labelCol+wrapperCol)">
+          <a-form-item :rules="[{required: true,message: '这是必填项'}]"
+                       :label-col-props="{ span: labelCol/formCol }"
+                       :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                       field="rule" label="规则">
+            <a-textarea v-if="formState!=='view'" v-model="formData.rule" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+            <span v-else :title="formData.rule" class="textarea-span" @click="openModal(`${formData.rule}`)">{{ formData.rule }}</span>
+            <template v-if="formState!=='view'" #extra>
+              <a-descriptions size="small" :column="formCol" layout="" bordered="true">
+                <a-descriptions-item v-for="(item,index) of ruleOptions" :key="index" :label="item.label">
+                  <GlCopyToClipboard v-if="item.value" :model-value="item.value"/>
+                  {{ item.value }}
+                </a-descriptions-item>
+              </a-descriptions>
+            </template>
+          </a-form-item>
+        </a-col>
+        <a-col :span="(labelCol+wrapperCol)">
+          <a-form-item :label-col-props="{ span: labelCol/formCol }" :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                       field="description" label="描述">
+            <a-textarea v-if="formState!=='view'" v-model="formData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
+            <span v-else :title="formData.description" class="textarea-span" @click="openModal(`${formData.description}`)">{{ formData.description }}</span>
+          </a-form-item>
+        </a-col>
+      </a-row>
     </a-form>
   </a-modal>
 </template>

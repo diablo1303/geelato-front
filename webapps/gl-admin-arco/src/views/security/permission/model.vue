@@ -15,8 +15,9 @@ import {
   validatePermissionCode
 } from '@/api/security';
 import {getAppSelectOptions} from "@/api/application";
-import {typeOptions} from "@/views/security/permission/searchTable";
+import {ruleOptions, typeOptions} from "@/views/security/permission/searchTable";
 import {utils} from "@geelato/gl-ui";
+import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 
 // 页面所需 参数
 type PageParams = {
@@ -214,12 +215,21 @@ defineExpose({saveOrUpdate, loadPage});
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)">
-        <a-form-item :label="$t('security.permission.index.form.rule')" :label-col-props="{ span: labelCol/formCol }"
+        <a-form-item :label="$t('security.permission.index.form.rule')"
                      :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+                     :label-col-props="{ span: labelCol/formCol }"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                      field="rule">
           <a-textarea v-if="formState!=='view'" v-model="formData.rule" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
           <span v-else :title="formData.rule" class="textarea-span" @click="openModal(`${formData.rule}`)">{{ formData.rule }}</span>
+          <template v-if="formState!=='view'" #extra>
+            <a-descriptions size="small" :column="formCol" layout="" bordered="true">
+              <a-descriptions-item v-for="(item,index) of ruleOptions" :key="index" :label="item.label">
+                <CopyToClipboard v-if="item.value" :model-value="item.value"/>
+                {{ item.value }}
+              </a-descriptions-item>
+            </a-descriptions>
+          </template>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)">
