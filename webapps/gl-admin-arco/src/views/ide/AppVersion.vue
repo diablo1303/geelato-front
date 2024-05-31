@@ -3,7 +3,7 @@ export default {
   name: 'AppVersion',
 };
 </script>
-<script setup lang="ts">
+<script lang="ts" setup>
 import {compile, h, onMounted, onUnmounted, provide, ref, shallowRef} from 'vue';
 import {getToken} from '@/utils/auth';
 import {getSysConfig} from '@/api/user';
@@ -23,6 +23,8 @@ import AppVersionTabs from "@/views/version/tabsForm.vue";
 import AppVersionForm from "@/views/version/form.vue";
 import AppVersionCompareTabs from "@/views/compare/tabsForm.vue";
 import {formatTime, generateRandom} from "@/utils/strings";
+import {getValueByKeys} from "@/api/sysconfig";
+import {isJSON} from "@/utils/is";
 import pinia, {useUserStore} from '../../store';
 
 // 常量使用
@@ -46,19 +48,14 @@ const packLoading = ref(false);
 const deployLoading = ref(false);
 const syncTableLoading = ref(false);
 const syncViewLoading = ref(false);
-const packBusData = {
-  second: ['platform_app_page', 'platform_tree_node', 'platform_permission',
-    'platform_dev_db_connect', 'platform_dev_table', 'platform_dev_column', 'platform_dev_table_foreign', 'platform_dev_view',
-    'platform_role', 'platform_role_r_permission', 'platform_role_r_tree_node', 'platform_role_r_app',] as string[],// 增量
-  first: ['platform_dict', 'platform_dict_item',
-    'platform_sys_config', 'platform_export_template', 'platform_encoding', 'platform_resources',] as string[],// 全量
-};
+const packDefaultData = ref<Record<string, any>>({});
 const packData = ref<Record<string, any>>({
   visible: false,
   first: [] as QueryTableForm[],
   second: [] as QueryTableForm[],
   version: '',
   description: '',
+  extra: [] as string[],
 });
 
 /**
@@ -282,6 +279,16 @@ const packAppVersion = async () => {
   }
 }
 
+const querySysConfigValueByKey = async (key: string) => {
+  packDefaultData.value = {};
+  try {
+    const {data} = await getValueByKeys(key);
+    // packDefaultData.value = isJSON(data) ? JSON.parse(data) : {};
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 const queryAppTables = async (successBack?: any, failBack?: any) => {
   try {
     const {data} = await queryTables({
@@ -293,22 +300,26 @@ const queryAppTables = async (successBack?: any, failBack?: any) => {
   }
 }
 
-const packetAppVersionClick = () => {
-  queryAppTables((data: QueryTableForm[]) => {
+const packetAppVersionClick = async () => {
+  await querySysConfigValueByKey('packetVersionExtra');
+  await queryAppTables((data: QueryTableForm[]) => {
     Object.assign(packData.value, {
       visible: false, first: [] as QueryTableForm[], second: [] as QueryTableForm[],
       version: `${appData.value.code}_version${formatTime(new Date(), 'yyyyMMddHHmmss')}`,
       description: '当前环境打包形成的应用包',
+      extra: packDefaultData.value.extra || [],
     });
     if (data && data.length > 0) {
       // eslint-disable-next-line no-restricted-syntax
       for (const item of data) {
         // 增量为：更新和插入打包数据；
-        if (packBusData.first.includes(item.entityName) || (item.appId === appData.value.id && item.packBusData === 1)) {
+        if ((packDefaultData.value.first && packDefaultData.value.first.includes(item.entityName))
+            || (item.appId === appData.value.id && item.packBusData === 1)) {
           packData.value.first.push(item);
         }
         // 全量为：先清空表再插入打包数据。
-        if (packBusData.second.includes(item.entityName) || (item.appId === appData.value.id && item.packBusData === 2)) {
+        if ((packDefaultData.value.second && packDefaultData.value.second.includes(item.entityName))
+            || (item.appId === appData.value.id && item.packBusData === 2)) {
           packData.value.second.push(item);
         }
       }
@@ -399,16 +410,16 @@ onUnmounted(() => {
     </div>
     <div v-else>
       <div :style="{ padding: '4px 14px' }" class="gl-page-header">
-        <a-page-header title="应用版本管理" :subtitle="appData.name" :show-back="false">
+        <a-page-header :show-back="false" :subtitle="appData.name" title="应用版本管理">
           <template #extra>
             <a-space>
-              <a-button v-if="!deployLoading" type="text" class="app-button" @click="openAppVersionForm">
+              <a-button v-if="!deployLoading" class="app-button" type="text" @click="openAppVersionForm">
                 <template #icon>
                   <icon-import/>
                 </template>
                 上传版本
               </a-button>
-              <a-button v-if="!deployLoading" type="text" class="app-button" :loading="packLoading" @click="packetAppVersionClick">
+              <a-button v-if="!deployLoading" :loading="packLoading" class="app-button" type="text" @click="packetAppVersionClick">
                 <template #icon>
                   <icon-export/>
                 </template>
@@ -418,7 +429,7 @@ onUnmounted(() => {
               <a-popconfirm v-if="!syncViewLoading && !deployLoading" content="是否将应用下所有模型同步至数据库？" position="br" type="warning"
                             @ok="syncTableToData">
                 <a-tooltip content="将模型同步至数据库（部署后使用）" position="right">
-                  <a-button type="text" class="app-button" :loading="syncTableLoading">
+                  <a-button :loading="syncTableLoading" class="app-button" type="text">
                     <template #icon>
                       <icon-storage/>
                     </template>
@@ -429,7 +440,7 @@ onUnmounted(() => {
               <a-popconfirm v-if="!syncTableLoading && !deployLoading" content="是否将应用下所有视图同步至数据库？" position="br" type="warning"
                             @ok="syncViewToData">
                 <a-tooltip content="将视图同步至数据库（模型同步后使用）" position="right">
-                  <a-button type="text" class="app-button" :loading="syncViewLoading">
+                  <a-button :loading="syncViewLoading" class="app-button" type="text">
                     <template #icon>
                       <icon-storage/>
                     </template>
@@ -438,19 +449,19 @@ onUnmounted(() => {
                 </a-tooltip>
               </a-popconfirm>
               <a-divider v-if="!deployLoading" direction="vertical" style="margin: 0px 1px;height: 16px;"/>
-              <a-button type="text" class="app-button" @click="enterLink('index')">
+              <a-button class="app-button" type="text" @click="enterLink('index')">
                 <template #icon>
                   <icon-link/>
                 </template>
                 应用站点
               </a-button>
-              <a-button type="text" class="app-button" @click="enterLink('design')">
+              <a-button class="app-button" type="text" @click="enterLink('design')">
                 <template #icon>
                   <icon-link/>
                 </template>
                 设计站点
               </a-button>
-              <a-button type="text" class="app-button" @click="enterLink('settings')">
+              <a-button class="app-button" type="text" @click="enterLink('settings')">
                 <template #icon>
                   <icon-link/>
                 </template>
@@ -466,12 +477,12 @@ onUnmounted(() => {
             <template #first>
               <AppVersionList v-if="listParams.visible"
                               :key="listParams.load"
-                              :model-value="listParams.selected.id"
-                              :visible="listParams.visible"
-                              :parameter="listParams.parameter"
                               :form-state="listParams.formState"
-                              :page-size="listParams.pageSize"
                               :height="listParams.height"
+                              :model-value="listParams.selected.id"
+                              :page-size="listParams.pageSize"
+                              :parameter="listParams.parameter"
+                              :visible="listParams.visible"
                               @listSelected="listSelected"/>
             </template>
             <template #second>
@@ -482,39 +493,39 @@ onUnmounted(() => {
                       {{ listParams.selected.title }}
                     </div>
                     <a-space v-if="!!listParams.selected.id" class="card-header-extra">
-                      <a-button v-if="!isCompare" type="text" style="color: rgb(var(--primary-6))" @click.stop="startCompare">
+                      <a-button v-if="!isCompare" style="color: rgb(var(--primary-6))" type="text" @click.stop="startCompare">
                         <icon-common/>
                         比较
                       </a-button>
-                      <a-button v-if="!isCompare" type="text" style="color: rgb(var(--primary-6))"
+                      <a-button v-if="!isCompare" style="color: rgb(var(--primary-6))" type="text"
                                 @click.stop="fetchFileById(listParams.selected.item.packagePath)">
                         <icon-download/>
                         下载
                       </a-button>
-                      <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading" position="br" content="确认部署当前版本？"
+                      <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading" content="确认部署当前版本？" position="br"
                                     @ok="deployVersion(listParams.selected.item)">
-                        <a-button type="text" style="color: rgb(var(--success-6))" :loading="deployLoading">
+                        <a-button :loading="deployLoading" style="color: rgb(var(--success-6))" type="text">
                           <icon-star/>
                           部署
                         </a-button>
                       </a-popconfirm>
-                      <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading && !deployLoading" position="br" content="是否删除该版本数据？"
+                      <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading && !deployLoading" content="是否删除该版本数据？" position="br"
                                     type="warning" @ok="deleteVersion(listParams.selected.item)">
-                        <a-button type="text" style="color: rgb(var(--danger-6))">
+                        <a-button style="color: rgb(var(--danger-6))" type="text">
                           <icon-delete/>
                           删除
                         </a-button>
                       </a-popconfirm>
                       <div v-if="isCompare">
-                        <a-select v-model="compareVersionId" placeholder="选中比较版本"
-                                  :field-names="{'label':'version','value':'id'}"
+                        <a-select v-model="compareVersionId" :field-names="{'label':'version','value':'id'}"
                                   :options="appVersionData.filter(item => item.id !== listParams.selected.id)"
                                   :style="{width:'320px'}"
-                                  allow-clear allow-search
+                                  allow-clear
+                                  allow-search placeholder="选中比较版本"
                                   @clear.stop="()=>{isCompare=false;}">
                           <template #prefix>对比版本</template>
                         </a-select>
-                        <a-button type="dashed" style="padding: 0 8px;" @click.stop="cancelCompare">
+                        <a-button style="padding: 0 8px;" type="dashed" @click.stop="cancelCompare">
                           关闭
                         </a-button>
                       </div>
@@ -523,9 +534,9 @@ onUnmounted(() => {
                 </div>
                 <a-divider style="margin:0 0 5px 0"/>
                 <div v-if="!!listParams.selected.id" class="card-body2">
-                  <AppVersionCompareTabs v-if="!!compareVersionId" :visible="true" :compareId="compareVersionId"
-                                         :model-value="listParams.selected.id" :height="listParams.height"/>
-                  <AppVersionTabs v-else :visible="true" :model-value="listParams.selected.id" :height="listParams.height"/>
+                  <AppVersionCompareTabs v-if="!!compareVersionId" :compareId="compareVersionId" :height="listParams.height"
+                                         :model-value="listParams.selected.id" :visible="true"/>
+                  <AppVersionTabs v-else :height="listParams.height" :model-value="listParams.selected.id" :visible="true"/>
                 </div>
                 <a-empty v-else/>
               </div>
@@ -536,9 +547,9 @@ onUnmounted(() => {
     </div>
   </div>
 
-  <a-modal v-model:visible="packData.visible" title="版本打包" :width="1150" title-align="start" @ok="packAppVersion">
+  <a-modal v-model:visible="packData.visible" :width="1150" title="版本打包" title-align="start" @ok="packAppVersion">
     <a-scrollbar :style="{overflow:'auto',maxHeight:`${packHeight}px`}">
-      <a-descriptions size="medium" :column="1" layout="horizontal" :bordered="true">
+      <a-descriptions :bordered="true" :column="1" layout="horizontal" size="medium">
         <template #title>
           <span style="font-weight: bold;">{{ `是否打包 ${appData.name}？` }}</span>
         </template>
@@ -549,7 +560,7 @@ onUnmounted(() => {
           <a-input v-model="packData.description" class="pack-version-input" placeholder="请输入版本描述"/>
         </a-descriptions-item>
       </a-descriptions>
-      <a-descriptions size="medium" :column="3" layout="horizontal" :bordered="true" style="margin-top: 12px;">
+      <a-descriptions :bordered="true" :column="3" layout="horizontal" size="medium" style="margin-top: 12px;">
         <template #title>
           <span>增量更新（更新和插入打包数据）</span>
         </template>
@@ -557,7 +568,7 @@ onUnmounted(() => {
           {{ item.entityName }}
         </a-descriptions-item>
       </a-descriptions>
-      <a-descriptions size="medium" :column="3" layout="horizontal" :bordered="true" style="margin-top: 12px;">
+      <a-descriptions :bordered="true" :column="3" layout="horizontal" size="medium" style="margin-top: 12px;">
         <template #title>
           <span>全量更新（先清空表再插入打包数据）</span>
         </template>
@@ -565,6 +576,16 @@ onUnmounted(() => {
           {{ item.entityName }}
         </a-descriptions-item>
       </a-descriptions>
+      <a-descriptions :bordered="true" :column="3" layout="horizontal" size="medium" style="margin-top: 12px;">
+        <template #title>
+          <span>其他提示</span>
+        </template>
+      </a-descriptions>
+      <a-list v-if="packData.extra.length>0" :bordered="true" :split="true" size="small">
+        <a-list-item v-for="(item,index) of packData.extra" :key="index" style="padding: 5px 20px;">
+          {{ item }}
+        </a-list-item>
+      </a-list>
     </a-scrollbar>
   </a-modal>
 
