@@ -4,9 +4,9 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {ref, watch} from 'vue';
+import {inject, ref, watch} from 'vue';
 import cloneDeep from 'lodash/cloneDeep';
-import type {QueryOrgForm} from "@geelato/gl-ui";
+import {PageProvideKey, PageProvideProxy, type QueryOrgForm} from "@geelato/gl-ui";
 import {securityApi, utils} from "@geelato/gl-ui";
 import OrgSelect from "./choose.vue";
 
@@ -30,6 +30,7 @@ const props = defineProps({
   orgNames: {type: String, default: ''},// 组织name
   data: {type: Array<QueryForm>, default: []},// {id:,name:}
   parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
+  readonly: {type: Boolean, default: false},// 是否只读
   disabled: {type: Boolean, default: false},// 是否禁用
   maxCount: {type: Number, default: 1},// 取值数量
   hasRoot: {type: Boolean, default: true},// 是否存在根节点
@@ -39,6 +40,9 @@ const props = defineProps({
   visible: {type: Boolean, default: false},// 控制弹窗隐显
   onlySelect: {type: Boolean, default: true},// 仅选择，不可输入
 });
+
+const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
+const isRead = !!(pageProvideProxy?.isPageStatusRead() || props.disabled || props.readonly)
 
 const selectKey = ref(utils.gid());
 const key = ref(utils.gid());
@@ -259,7 +263,7 @@ watch(() => modalVisible, () => {
     <span class="box-inner">
       <span v-for="(item,index) of tagData" :key="index" :title="item.name" class="box-data">
         {{ item.name }}
-        <GlIconfont v-if="!disabled" class="data-close" title="删除"
+        <GlIconfont v-if="!isRead" class="data-close" title="删除"
                     type="gl-wrong"
                     @click="deleteClick(item)"/>
       </span>
@@ -270,7 +274,7 @@ watch(() => modalVisible, () => {
                @change="tagInputChange"/>
     </span>
     <span class="box-mirror">{{ tagInput }}</span>
-    <span v-if="!disabled" class="box-button">
+    <span v-if="!isRead" class="box-button">
       <a-button class="button-primary"
                 title="选择" type="dashed"
                 @click="editClick">
