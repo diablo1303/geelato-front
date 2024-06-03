@@ -133,6 +133,7 @@ export default {
   'security.org.index.form.status.0': 'disabled',
   'security.org.index.form.status.1': 'enabled',
   'security.org.index.form.type': 'type',
+  'security.org.index.form.type.root': 'root',
   'security.org.index.form.type.company': 'company',
   'security.org.index.form.type.department': 'department',
   'security.org.index.form.category': 'category',

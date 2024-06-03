@@ -134,6 +134,7 @@ export default {
   'security.org.index.form.status.0': '禁用',
   'security.org.index.form.status.1': '启用',
   'security.org.index.form.type': '类型',
+  'security.org.index.form.type.root': '根组织',
   'security.org.index.form.type.company': '公司',
   'security.org.index.form.type.department': '部门',
   'security.org.index.form.category': '类别',
