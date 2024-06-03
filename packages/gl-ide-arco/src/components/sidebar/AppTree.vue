@@ -13,6 +13,7 @@
       :expandedKeysCacheKey="'expandedKeys_' + appStore.currentApp.id"
       @selectNode="onSelectNode"
       @deleteNode="onDeleteNode"
+      @updateNodeName="onUpdateNodeName"
       @clickContextMenuItem="clickContextMenuItem"
     />
     <a-modal
@@ -110,6 +111,10 @@ const onDeleteNode = (params: any) => {
       iconType: dataRef.iconType
     })
   }
+}
+
+const onUpdateNodeName = (params: any) => {
+  pageStore.updatePageTitleByExtendId(params.editNodeData.key, params.editNodeData.title)
 }
 // 树实体查询
 const entityReader = new EntityReader()

@@ -4,7 +4,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import {onMounted, ref, watch} from "vue";
+import { ref, watch} from "vue";
 import {EventNames, useComponentStore} from "@geelato/gl-ide";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import type {Action} from "@geelato/gl-ui-schema";

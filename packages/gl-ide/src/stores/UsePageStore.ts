@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import {emitter, entityApi, EntitySaver, type PageType, utils} from '@geelato/gl-ui'
+import { emitter, entityApi, EntitySaver, type PageType, utils } from '@geelato/gl-ui'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import { useComponentStore } from './UseComponentStore'
 import Page from '../entity/Page'
@@ -220,19 +220,19 @@ export const usePageStore = defineStore('GlPageStore', () => {
         // @ts-ignore
         if (obj.children && obj.children.length > 0) {
           // @ts-ignore
-          obj.children.forEach((subInst,index) => {
-              // 设计用的清除占位符组件 componentName
+          obj.children.forEach((subInst, index) => {
+            // 设计用的清除占位符组件 componentName
             // 注意 GlVirtual 不能删除
-              if(subInst.componentName === 'GlDndPlaceholder') {
-                  obj.children.splice(index, 1)
-              }else{
-                  convertObj(subInst)
-              }
+            if (subInst.componentName === 'GlDndPlaceholder') {
+              obj.children.splice(index, 1)
+            } else {
+              convertObj(subInst)
+            }
           })
         }
 
         // 对插槽进行处理
-        if(obj.slots && Object.keys(obj.slots).length > 0) {
+        if (obj.slots && Object.keys(obj.slots).length > 0) {
           // 处理空的插槽，如下：
           // slots: {
           //   "extra": {
@@ -266,72 +266,74 @@ export const usePageStore = defineStore('GlPageStore', () => {
 
           // @ts-ignore
           Object.keys(obj.slots).forEach((slotName) => {
-              const slot = obj.slots[slotName]
-              // 空的slot，则删除
-              if(slot.componentName === 'GlComponent' && !slot.props?.id && !slot.props?.componentName) {
-                  delete obj.slots[slotName]
-              }
+            const slot = obj.slots[slotName]
+            // 空的slot，则删除
+            if (
+              slot.componentName === 'GlComponent' &&
+              !slot.props?.id &&
+              !slot.props?.componentName
+            ) {
+              delete obj.slots[slotName]
+            }
           })
-      }
+        }
 
         // 清除空对象
-          if(utils.isEmpty(obj.slots)) {
-              delete obj.slots
-          }
-          if(utils.isEmpty(obj.actions)) {
-              delete obj.actions
-          }
-          if(utils.isEmpty(obj.style)) {
-              delete obj.style
-          }
-          if(utils.isEmpty(obj.i18n)) {
-              delete obj.i18n
-          }
-          if(utils.isEmpty(obj.children)) {
-              delete obj.children
-          }
-          if(utils.isEmpty(obj.propsExpressions)) {
-              delete obj.propsExpressions
-          }
-          if(utils.isEmpty(obj.slotsExpressions)) {
-              delete obj.slotsExpressions
-          }
-          if(utils.isEmpty(obj.propsWrapper)) {
-              delete obj.propsWrapper
-          }
+        if (utils.isEmpty(obj.slots)) {
+          delete obj.slots
+        }
+        if (utils.isEmpty(obj.actions)) {
+          delete obj.actions
+        }
+        if (utils.isEmpty(obj.style)) {
+          delete obj.style
+        }
+        if (utils.isEmpty(obj.i18n)) {
+          delete obj.i18n
+        }
+        if (utils.isEmpty(obj.children)) {
+          delete obj.children
+        }
+        if (utils.isEmpty(obj.propsExpressions)) {
+          delete obj.propsExpressions
+        }
+        if (utils.isEmpty(obj.slotsExpressions)) {
+          delete obj.slotsExpressions
+        }
+        if (utils.isEmpty(obj.propsWrapper)) {
+          delete obj.propsWrapper
+        }
 
-          // 删除运行时无需用到的属性
-          // group，不能删除，用于检查是否表单等
-          // if(obj.hasOwnProperty('group')){
-          //     delete obj.group
-          // }
-          if(obj.hasOwnProperty('useBy')){
-              delete obj.useBy
+        // 删除运行时无需用到的属性
+        // group，不能删除，用于检查是否表单等
+        // if(obj.hasOwnProperty('group')){
+        //     delete obj.group
+        // }
+        if (obj.hasOwnProperty('useBy')) {
+          delete obj.useBy
+        }
+
+        // 专为GlEntityTablePlus组件处理
+        if (obj.componentName === 'GlEntityTablePlus') {
+          // 值字段按需处理
+          if (obj.hasOwnProperty('value')) {
+            obj.value = []
           }
-
-
-          // 专为GlEntityTablePlus组件处理
-          if(obj.componentName==='GlEntityTablePlus') {
-              // 值字段按需处理
-              if(obj.hasOwnProperty('value')) {
-                  obj.value = []
-              }
-              obj.props?.columns?.forEach((column:any) => {
-                  if(utils.isEmpty(column._propsExpressions)) {
-                      delete column._propsExpressions
-                  }
-                  if(utils.isEmpty(column.sortable)) {
-                      delete column.sortable
-                  }
-                  if(utils.isEmpty(column._renderScript)) {
-                      delete column._renderScript
-                  }
-                  if(utils.isEmpty(column._icon)) {
-                      delete column._icon
-                  }
-              })
-          }
-
+          obj.props?.columns?.forEach((column: any) => {
+            if (utils.isEmpty(column._propsExpressions)) {
+              delete column._propsExpressions
+            }
+            if (utils.isEmpty(column.sortable)) {
+              delete column.sortable
+            }
+            if (utils.isEmpty(column._renderScript)) {
+              delete column._renderScript
+            }
+            if (utils.isEmpty(column._icon)) {
+              delete column._icon
+            }
+          })
+        }
       }
 
       convertObj(copyContent)
@@ -446,7 +448,8 @@ export const usePageStore = defineStore('GlPageStore', () => {
       type: page.type,
       sourceContent: JSON.stringify(convertedPageContent.source),
       releaseContent: JSON.stringify(convertedPageContent.release),
-      previewContent: JSON.stringify(convertedPageContent.preview),
+      // 不存该值，待删除该字段
+      // previewContent: JSON.stringify(convertedPageContent.preview),
       description: page.description
     }
 
@@ -460,7 +463,8 @@ export const usePageStore = defineStore('GlPageStore', () => {
       code: page.code,
       type: page.type,
       sourceContent: es.record.sourceContent,
-      releaseContent: es.record.releaseContent,
+      // 操作记录表不存该值
+      // releaseContent: es.record.releaseContent,
       // 操作记录表不存该值
       // previewContent: es.record.previewContent,
       description: page.description
@@ -574,9 +578,52 @@ export const usePageStore = defineStore('GlPageStore', () => {
     }
   }
 
+  /**
+   * 修改页面标题
+   * 1、页面在当前IDE打开
+   *   更新tab页中标题
+   *   更新页面第一个GlPage组件的标题label属性，并保存
+   * 2、页面不在当前IDE打开
+   *   加载页面，并更新标题，并保存
+   * @param extendId
+   * @param title
+   */
+  function updatePageTitleByExtendId(extendId: string, title: string) {
+    // 从已打开的页面中查找到对应的页面，并更新标题
+    const result = findPageByExtendId(extendId)
+    if (result?.page?.id) {
+      // 1、页面在当前IDE打开
+      result.page.title = title
+      // 同步更新页面中页面组件的标题
+      if (result.page.sourceContent?.props) {
+        result.page.sourceContent.props.label = title
+        savePage(result.page)
+      }
+    } else {
+      // 2、页面不在当前IDE打开
+      loadPage({ extendId }).then((res: any) => {
+        if (res.data?.length > 0) {
+          const page = res.data[0]
+          console.log('loadPage', page)
+          page.title = title
+          // 同步更新页面中页面组件的标题
+          if (page.sourceContent) {
+            const sourceContent = JSON.parse(page.sourceContent)
+            if (sourceContent.props) {
+              sourceContent.props.label = title
+              page.sourceContent = sourceContent
+              savePage(page)
+            }
+          }
+        }
+      })
+    }
+  }
+
   return {
     addPageTemplate,
     getPageTemplate,
+    updatePageTitleByExtendId,
     pages,
     currentPageIndex,
     currentPage,

@@ -752,7 +752,7 @@ const validate = () => {
 const reRender = () => {
   return tableRef.value.reRender()
 }
-const onFetchSuccess = (args: { data: []}) => {
+const onFetchSuccess = (args: { data: [] }) => {
   // @ts-ignore
   props.glComponentInst.value = args.data
   emits('fetchSuccess', args)
@@ -1054,8 +1054,70 @@ const queryByFilter = (filter: FilterType) => {
 }
 
 /**
+ *  获取单列中的最大值
+ *  适用于字符串、数字、日期列
+ */
+const getColumnMax = (params: { dataIndex: string }) => {
+  if (!params || !params.dataIndex) {
+    console.error('getColumnMax的参数不正确,格式应为：{ dataIndex: string}，实为：', params)
+    throw new Error('getColumnMax的参数不正确,格式应为：{ dataIndex: string}')
+  }
+  let renderRecords = getRenderRecords()
+  if (!renderRecords || renderRecords.length === 0) {
+    return undefined
+  }
+  let max = renderRecords[0][params.dataIndex]
+  renderRecords.forEach((record: Record<string, any>) => {
+    // 排除unPush部分
+    let isUnPush = false
+    for (const unPushRecord of getUnPushedRecords() || []) {
+      if (unPushRecord.id && unPushRecord.id === record.id) {
+        isUnPush = true
+        break
+      }
+    }
+    let value = record[params.dataIndex]
+    if (!isUnPush && value != null && value != undefined) {
+      max < value ? (max = value) : ''
+    }
+  })
+  return max
+}
+
+/**
+ *  获取单列中的最小值
+ *  适用于字符串、数字、日期列
+ */
+const getColumnMin = (params: { dataIndex: string }) => {
+  if (!params || !params.dataIndex) {
+    console.error('getColumnMin的参数不正确,格式应为：{ dataIndex: string}，实为：', params)
+    throw new Error('getColumnMin的参数不正确,格式应为：{ dataIndex: string}')
+  }
+  let renderRecords = getRenderRecords()
+  if (!renderRecords || renderRecords.length === 0) {
+    return undefined
+  }
+  let min = renderRecords[0][params.dataIndex]
+  renderRecords.forEach((record: Record<string, any>) => {
+    // 排除unPush部分
+    let isUnPush = false
+    for (const unPushRecord of getUnPushedRecords() || []) {
+      if (unPushRecord.id && unPushRecord.id === record.id) {
+        isUnPush = true
+        break
+      }
+    }
+    let value = record[params.dataIndex]
+    if (!isUnPush && value != null && value != undefined) {
+      min > value ? (min = value) : ''
+    }
+  })
+  return min
+}
+
+/**
  *  获取单列的汇总值
- *  依据push和unPush的状态进行计算，unpush的需要减掉push的需要增加
+ *  依据push和unPush的状态进行计算，unPush的需要减掉push的需要增加
  */
 const getColumnSum = (params: { dataIndex: string }) => {
   if (!params || !params.dataIndex) {
@@ -1078,7 +1140,7 @@ const getColumnSum = (params: { dataIndex: string }) => {
 
 /**
  *  获取列的汇总值，支持传多个列
- *  依据push和unPush的状态进行计算，unpush的需要减掉push的需要增加
+ *  依据push和unPush的状态进行计算，unPush的需要减掉push的需要增加
  */
 const getColumnsSum = (params: { dataIndexes: string[] }) => {
   if (!params || !params.dataIndexes || !utils.isArray(params.dataIndexes)) {
@@ -1144,19 +1206,19 @@ const getRenderRecordsWithOutUnPushed = () => {
  *  依据push和unPush的状态进行构建
  *  onlySelected,如果为true，则只获取勾选的行数据
  */
-const getColumnAry = (params: { dataIndex: string,onlySelected?:boolean }) => {
+const getColumnAry = (params: { dataIndex: string; onlySelected?: boolean }) => {
   if (!params || !params.dataIndex) {
     console.error('getColumnJoin的参数不正确,格式应为：{ dataIndex: string}，实为：', params)
     throw new Error('getColumnJoin的参数不正确,格式应为：{ dataIndex: string}')
   }
   let ary = new Set()
-  if(params.onlySelected){
+  if (params.onlySelected) {
     getSelectedRecords()?.forEach((record: Record<string, any>) => {
       if (!utils.isEmpty(record[params.dataIndex])) {
         ary.add(record[params.dataIndex])
       }
     })
-  }else{
+  } else {
     // 正值部分
     getRenderRecordsWithOutUnPushed()?.forEach((record: Record<string, any>) => {
       if (!utils.isEmpty(record[params.dataIndex])) {
@@ -1171,14 +1233,18 @@ const getColumnAry = (params: { dataIndex: string,onlySelected?:boolean }) => {
  * @param params dataIndex 字段名
  *               onlySelected,如果为true，则只获取勾选的行数据
  */
-const getColumnJoin = (params: { dataIndex: string; separator?: string,onlySelected?:boolean }) => {
+const getColumnJoin = (params: {
+  dataIndex: string
+  separator?: string
+  onlySelected?: boolean
+}) => {
   let ary = Array.from(getColumnAry(params))
   return ary.join(params?.separator || ',')
 }
 
 /**
  *  分组求和
- *  依据push和unPush的状态进行计算，unpush的需要减掉push的需要增加
+ *  依据push和unPush的状态进行计算，unPush的需要减掉push的需要增加
  */
 const getColumnGroupSum = (params: { groupDataIndex: string; sumDataIndex: string }) => {
   if (!params || !params.groupDataIndex || !params.sumDataIndex) {
@@ -1592,6 +1658,8 @@ defineExpose({
   getLastSelectedRecord,
   getRenderData,
   getRenderColumns,
+  getColumnMax,
+  getColumnMin,
   getColumnSum,
   getColumnsSum,
   getColumnJoin,

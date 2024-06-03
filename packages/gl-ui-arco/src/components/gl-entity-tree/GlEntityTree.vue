@@ -140,7 +140,10 @@ const updateNodeNameFn = (params: any) => {
     id: params.editNodeData.key,
     text: params.editNodeData.title
   }
-  return entityApi.save(props.treeEntityName, data)
+  return entityApi.save(props.treeEntityName, data).then((res) => {
+    emits('updateNodeName', params)
+    return res
+  })
 }
 
 const updateNodeIconFn = (params: any) => {

@@ -39,11 +39,7 @@
           </div>
         </div>
         <template v-else>
-          <div
-            v-show="filter(element)"
-            style="width: 100%; display: flex; margin-bottom: 1px"
-            :style="wrapperStyle"
-          >
+          <div style="width: 100%; display: flex; margin-bottom: 1px" :style="wrapperStyle">
             <div v-if="enableSort" style="flex: 0 0 2em; text-align: center; line-height: 2em">
               <GlIconfont
                 title="拖动"
@@ -77,7 +73,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, nextTick } from 'vue'
+import { utils } from '@geelato/gl-ui'
 
 const defaultItemType: any = ''
 export default defineComponent({
@@ -134,14 +131,6 @@ export default defineComponent({
         return {}
       }
     },
-    filter: {
-      type: Function,
-      default() {
-        return (item: any) => {
-          return true
-        }
-      }
-    },
     /**
      *  0 表示不限制，无限大
      */
@@ -170,14 +159,16 @@ export default defineComponent({
       }
     }
   },
+  watch: {
+    modelValue: {
+      handler(newVal, oldVal) {
+        this.items = this.modelValue
+      },
+      immediate: true,
+      deep: true
+    }
+  },
   data() {
-    // let dataItems = this.modelValue?.filter((item: any)=> {
-    //   console.log('filter() > item:', item)
-    //   if (this.filter) {
-    //     return this.filter(item)
-    //   }
-    //   return true
-    // }) || []
     return {
       items: this.modelValue,
       selectedItem: defaultItemType,
@@ -185,6 +176,9 @@ export default defineComponent({
     }
   },
   methods: {
+    utils() {
+      return utils
+    },
     getElementTitle(element: any, titleField?: string, alarmIfNoTitle?: string) {
       // console.log('getElementTitle() > label:', element._component.props.label, element._component.props.bindField.fieldName,'titleField:', titleField, 'alarmIfNoTitle:', alarmIfNoTitle)
       if (!titleField) return ''
@@ -228,7 +222,7 @@ export default defineComponent({
       let element = this.getDefaultItem()
       this.items.push(element)
       this.$emit('update:modelValue', this.items)
-      this.$emit('add', element)
+      this.$emit('addItem', element)
       // @ts-ignore
       this.selectedItem = element
       this.selectedIndex = this.items.length - 1
@@ -245,16 +239,16 @@ export default defineComponent({
       if (this.selectedIndex >= index) {
         this.selectedIndex -= 1
       }
-      this.items.splice(index, 1)
+      const removeItems = this.items.splice(index, 1)
       this.$emit('update:modelValue', this.items)
-      this.$emit('removeItem', { index: index })
+      this.$emit('removeItem', { index: index, item: removeItems[0] })
       this.emitSelectedItem()
     },
     onSelectItem(element: any, index: number) {
       if (this.selectedIndex === index) {
         this.selectedIndex = -1
         this.selectedItem = {}
-      }else{
+      } else {
         this.selectedIndex = index
         this.selectedItem = element
       }

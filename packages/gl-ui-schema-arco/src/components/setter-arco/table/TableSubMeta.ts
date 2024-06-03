@@ -1019,6 +1019,42 @@ export default {
       }
     },
     {
+      name: 'getColumnMax',
+      title: '获取单个列的最大值',
+      description: '获取当前列表单个列的最大值，可以是字符串、日期或数值',
+      params: [
+        {
+          name: 'dataIndex',
+          title: '字段名',
+          required: true,
+          type: 'string',
+          description: '需要求最大值的列字段名称'
+        }
+      ],
+      returnInfo: {
+        returnType: 'any',
+        description: '获取当前列表单个列的最大值，可以是字符串、日期或数值。'
+      }
+    },
+    {
+      name: 'getColumnMin',
+      title: '获取单个列的最小值',
+      description: '获取当前列表单个列的最小值，可以是字符串、日期或数值',
+      params: [
+        {
+          name: 'dataIndex',
+          title: '字段名',
+          required: true,
+          type: 'string',
+          description: '需要求最小值的列字段名称'
+        }
+      ],
+      returnInfo: {
+        returnType: 'any',
+        description: '获取当前列表单个列的最小值，可以是字符串、日期或数值。'
+      }
+    },
+    {
       name: 'getColumnSum',
       title: '获取单个列的求和',
       description: '获取单个列的求和，返回数值',
