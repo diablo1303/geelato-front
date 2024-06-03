@@ -13,7 +13,7 @@ import {createOrUpdateApp as createOrUpdateForm, getApp as getForm, QueryAppForm
 import {getRoleSelectOptions, QueryRoleForm} from "@/api/security";
 import {getConnectSelectOptions, QueryConnectForm} from "@/api/model";
 import UploadImageBase64 from '@/components/upload-base64/image.vue';
-import {appTypeOptions, statusOptions, watermarkOptions} from "./searchTable";
+import {appTypeOptions, purposeOptions, statusOptions, watermarkOptions} from "./searchTable";
 
 // 页面所需 参数
 type PageParams = {
@@ -47,6 +47,7 @@ const generateFormData = (): QueryForm => {
     code: '',// 应用编码
     type: 'normal',// 应用类型
     icon: '',// 图标
+    purpose: 'inside',
     appKey: '',
     token: '',
     tree: '',
@@ -335,6 +336,18 @@ defineExpose({saveOrUpdate, loadPage});
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('application.app.list.purpose')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            field="applyStatus">
+          <a-select v-if="formState!=='view'" v-model="formData.purpose">
+            <a-option v-for="item of purposeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
+          </a-select>
+          <span v-else>{{ $t(`application.app.list.purpose.${formData.purpose}`) }}</span>
+          <template #help>
+            {{ $t('application.app.list.purpose.extra') }}
+          </template>
+        </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
@@ -396,7 +409,7 @@ defineExpose({saveOrUpdate, loadPage});
               </div>
             </template>
           </a-select>
-          <template #extra>
+          <template #help>
             {{ $t('application.app.list.roles.extra') }}
           </template>
         </a-form-item>
@@ -418,7 +431,7 @@ defineExpose({saveOrUpdate, loadPage});
               </div>
             </template>
           </a-select>
-          <template #extra>
+          <template #help>
             {{ $t('application.app.list.connects.extra') }}
           </template>
         </a-form-item>

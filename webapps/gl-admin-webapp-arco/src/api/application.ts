@@ -9,8 +9,10 @@ const urlOrigin = useApiUrl().getApiBaseUrl()
 export interface QueryAppForm {
   id: string;
   name: string;// 应用名称
+  type: string;// 应用类型
   code: string;// 应用编码
   icon: string;// 图标
+  purpose: string;// 应用用途
   appKey: string;
   token: string;
   tree: string;
@@ -23,6 +25,8 @@ export interface QueryAppForm {
   versionInfo: string;
   description: string;// 描述
   seqNo: number;
+  applyStatus: number;
+  designStatus: number;
   appStorage: string;
   tenantCode?: string;
 }

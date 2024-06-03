@@ -9,6 +9,7 @@ export interface QueryAppForm {
   code: string;// 应用编码
   type: string;// 应用类型
   icon: string;// 图标
+  purpose: string;// 应用用途
   appKey: string;
   token: string;
   tree: string;

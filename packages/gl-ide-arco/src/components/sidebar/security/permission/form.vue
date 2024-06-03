@@ -208,7 +208,7 @@ watch(() => visibleForm, () => {
             <a-textarea v-if="formState!=='view'" v-model="formData.rule" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
             <span v-else :title="formData.rule" class="textarea-span" @click="openModal(`${formData.rule}`)">{{ formData.rule }}</span>
             <template v-if="formState!=='view'" #extra>
-              <a-descriptions size="small" :column="formCol" layout="" bordered="true">
+              <a-descriptions size="small" :column="formCol" layout="horizontal" :bordered="true">
                 <a-descriptions-item v-for="(item,index) of ruleOptions" :key="index" :label="item.label">
                   <GlCopyToClipboard v-if="item.value" :model-value="item.value"/>
                   {{ item.value }}

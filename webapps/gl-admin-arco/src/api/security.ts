@@ -562,11 +562,6 @@ export interface QueryRoleAppForm {
   appIds?: string;
 }
 
-export interface QueryAppForm {
-  id: string;
-  name: string;
-}
-
 export interface FilterRoleAppForm {
   id: string;
   roleId: string;
@@ -575,14 +570,6 @@ export interface FilterRoleAppForm {
   appName: string;
   tenantCode: string;
   createAt: string[]
-}
-
-export function queryApps(params: QueryAppForm) {
-  return axios.get<QueryAppForm[]>('/api/app/query', {
-    params, paramsSerializer: (obj) => {
-      return qs.stringify(obj);
-    },
-  });
 }
 
 export function getRoleApp(id: string) {

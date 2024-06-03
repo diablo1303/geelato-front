@@ -16,7 +16,7 @@ import {PageSizeOptions, PageQueryFilter, PageQueryRequest} from '@/api/base';
 // 页面所需 对象、方法
 import {deleteApp as deleteList, pageQueryApps as pageQueryList, QueryAppForm as QueryForm} from '@/api/application'
 import favicon from '@/assets/favicon.ico';
-import {appTypeOptions, watermarkOptions} from "./searchTable";
+import {appTypeOptions, purposeOptions, watermarkOptions} from "./searchTable";
 // 引入组件
 import ApplicationForm from './form.vue';
 
@@ -66,6 +66,7 @@ const generateFilterData = () => {
     name: '',
     type: '',
     code: '',
+    purpose: '',
     watermark: '',
     versionInfo: '',
     applyStatus: '',
@@ -308,6 +309,14 @@ watch(() => props, (val) => {
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
+            <a-form-item :label="$t('application.app.list.purpose')" field="purpose">
+              <a-select v-model="filterData.purpose" :placeholder="$t('searchTable.form.selectDefault')">
+                <a-option v-for="item of purposeOptions" :key="item.value as string" :label="$t(`${item.label}`)"
+                          :value="item.value"/>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('application.app.list.watermark')" field="watermark">
               <a-select v-model="filterData.watermark" :placeholder="$t('searchTable.form.selectDefault')">
                 <a-option v-for="item of watermarkOptions" :key="item.value as string" :label="$t(`${item.label}`)"
@@ -387,6 +396,11 @@ watch(() => props, (val) => {
       <a-table-column :ellipsis="true" :title="$t('application.app.list.type')" :tooltip="true" :width="100" data-index="type">
         <template #cell="{ record }">
           {{ record.type ? $t(`application.app.list.type.${record.type}`) : "" }}
+        </template>
+      </a-table-column>
+      <a-table-column :ellipsis="true" :title="$t('application.app.list.purpose')" :tooltip="true" :width="120" data-index="purpose">
+        <template #cell="{ record }">
+          {{ record.purpose ? $t(`application.app.list.purpose.${record.purpose}`) : "" }}
         </template>
       </a-table-column>
       <!-- <a-table-column :ellipsis="true" :title="$t('application.app.list.versionInfo')" :tooltip="true" :width="120" data-index="versionInfo"/>-->

@@ -17,4 +17,10 @@ const appTypeOptions = computed<SelectOptionData[]>(() => [
   {label: "application.app.list.type.normal", value: 'normal',},
 ]);
 
-export {columns, watermarkOptions, statusOptions, appTypeOptions};
+const purposeOptions = computed<SelectOptionData[]>(() => [
+  {label: 'application.app.list.purpose.inside', value: 'inside',},
+  {label: "application.app.list.purpose.outside", value: 'outside',},
+  {label: "application.app.list.purpose.side", value: 'side',},
+]);
+
+export {columns, watermarkOptions, statusOptions, appTypeOptions, purposeOptions};
