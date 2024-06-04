@@ -114,6 +114,22 @@ export default {
       enableValueExpress: false,
       displayMode: 'tile'
     },
+
+      {
+        name: 'labelMaxLen',
+        setterComponentProps: {},
+        setterComponentVModelName: 'modelValue',
+        group: 'base',
+        type: 'props',
+        show: true,
+        expanded: true,
+        title: '标签文本长度',
+        description: '设置标签文本的最大长度，超出的将被截断，默认不限制不截断。',
+        setterComponentName: 'AInputNumber',
+        enableValueExpress: false,
+        displayMode: 'tile'
+      },
+
     {
       name: 'iconSize',
       setterComponentProps: {},

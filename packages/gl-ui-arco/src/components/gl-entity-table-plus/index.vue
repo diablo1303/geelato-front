@@ -1066,7 +1066,16 @@ const getColumnMax = (params: { dataIndex: string }) => {
   if (!renderRecords || renderRecords.length === 0) {
     return undefined
   }
-  let max = renderRecords[0][params.dataIndex]
+
+  // 获取初始化值，第一个不为空的值
+  let max = renderRecords.find((record: Record<string, any>) => {
+    return record[params.dataIndex] != null && record[params.dataIndex] != undefined
+  })?.[params.dataIndex]
+
+  if (max === null || max === undefined) {
+    return undefined
+  }
+
   renderRecords.forEach((record: Record<string, any>) => {
     // 排除unPush部分
     let isUnPush = false
@@ -1077,8 +1086,9 @@ const getColumnMax = (params: { dataIndex: string }) => {
       }
     }
     let value = record[params.dataIndex]
-    if (!isUnPush && value != null && value != undefined) {
-      max < value ? (max = value) : ''
+    console.log('value:', value, 'max:', max)
+    if (!isUnPush && value != null && value != undefined && max < value) {
+      max = value
     }
   })
   return max
@@ -1097,7 +1107,16 @@ const getColumnMin = (params: { dataIndex: string }) => {
   if (!renderRecords || renderRecords.length === 0) {
     return undefined
   }
-  let min = renderRecords[0][params.dataIndex]
+
+  // 获取初始化值，第一个不为空的值
+  let min = renderRecords.find((record: Record<string, any>) => {
+    return record[params.dataIndex] != null && record[params.dataIndex] != undefined
+  })?.[params.dataIndex]
+
+  if (min === null || min === undefined) {
+    return undefined
+  }
+
   renderRecords.forEach((record: Record<string, any>) => {
     // 排除unPush部分
     let isUnPush = false
@@ -1108,8 +1127,8 @@ const getColumnMin = (params: { dataIndex: string }) => {
       }
     }
     let value = record[params.dataIndex]
-    if (!isUnPush && value != null && value != undefined) {
-      min > value ? (min = value) : ''
+    if (!isUnPush && value != null && value != undefined&&min > value) {
+      min = value
     }
   })
   return min

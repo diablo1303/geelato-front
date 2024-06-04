@@ -383,7 +383,7 @@ export class JsScriptExecutor {
       ) => {
         const method = this.getComponentMethod(componentId, methodName)
         if (method) {
-          console.log('invokeComponentMethod['+methodName+'] > gl',gl)
+          // console.log('invokeComponentMethod['+methodName+'] > gl',gl)
           return method(
             that.convertParamsToObject(that.evalParams(params, (gl || $gl).ctx, gl || $gl))
           )

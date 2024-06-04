@@ -50,7 +50,7 @@ export default {
         ]
       },
       setterComponentVModelName: 'modelValue',
-      title: '提示访求',
+      title: '提示方法',
       setterComponentName: 'ASelect'
     },
     {
