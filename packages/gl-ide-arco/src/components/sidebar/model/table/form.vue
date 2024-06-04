@@ -167,11 +167,14 @@ const appSelectChange = () => {
 
 const loadPage = async () => {
   entityIsEdit.value = props.formState === 'add';
+  // 表单数据重置
+  formData.value = generateFormData();
   // 应用信息
-  applicationApi.getAppSelectOptions({
+  await applicationApi.getAppSelectOptions({
     id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
   }, (data: QueryAppForm[]) => {
     appSelectOptions.value = data || [];
+    changePackBusData();
   }, () => {
     appSelectOptions.value = [];
   });
@@ -183,14 +186,11 @@ const loadPage = async () => {
   }, () => {
     connectSelectOptions.value = [];
   });
-  // 表单数据重置
-  formData.value = generateFormData();
   // 重置验证
   resetValidate();
-  changePackBusData();
   // 编辑、查看 状态 查询数据
   if (['edit', 'view'].includes(props.formState) && props.modelValue) {
-    getData(props.modelValue, (data: QueryTableForm) => {
+    await getData(props.modelValue, (data: QueryTableForm) => {
       data.seqNo = Number(data.seqNo);
       entityIsEdit.value = !data.tableName;
       formData.value = data;
