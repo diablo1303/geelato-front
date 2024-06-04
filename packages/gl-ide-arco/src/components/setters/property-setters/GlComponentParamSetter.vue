@@ -39,7 +39,7 @@
               <div style="width: 120px; text-align: right">
                 <a-tag color="blue"> {{ paramMeta.type }}</a-tag>
               </div>
-              <div>
+              <div v-if="methodMeta.isDynamicParams">
                 <a-button type="text" @click="removeParamMeta(index)" size="mini" status="danger"
                 >删除
                 </a-button>

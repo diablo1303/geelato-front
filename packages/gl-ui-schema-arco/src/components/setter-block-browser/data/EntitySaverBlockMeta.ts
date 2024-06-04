@@ -3,9 +3,9 @@ export default {
   displayMode: 'tile',
   iconType: 'gl-save',
   group: 'block_data',
-  title: '实体保存',
+  title: '已有实体保存',
   useBy: ['freePage'],
-  blockContent: '基于元数据的实体保存对象（EntitySaver）进行保存，并返回结果到变量：${resultVar}。',
+  blockContent: '基于已有的元数据的实体保存对象（EntitySaver）进行保存，并返回结果到变量：${resultVar}。',
   properties: [
     {
       name: 'entitySaverVar',

@@ -59,7 +59,17 @@ const props = defineProps({
     }
   },
   dotColor: String,
-  dotColorRule: String as PropType<DotColorRuleEnum>
+  dotColorRule: String as PropType<DotColorRuleEnum>,
+  /**
+   * 最大的label长度（字符数），超过该长度则隐藏
+   * 默认为-1，表示不截断
+   */
+  labelMaxLen: {
+    type: Number,
+    default() {
+      return -1
+    }
+  }
 })
 
 const emits = defineEmits(['update:modelValue', 'onItemClick'])
@@ -156,6 +166,13 @@ const onItemClick = (item: GlTimelineItem, index: number) => {
   editingItem.value = item
 }
 
+const getContent = (content?: string) => {
+  if (content && props.labelMaxLen > 0 && content.length > props.labelMaxLen) {
+    return content.substring(0, props.labelMaxLen) + '...'
+  }
+  return content
+}
+
 defineExpose({ fetchData })
 </script>
 
@@ -194,7 +211,7 @@ defineExpose({ fetchData })
                 <div :style="{ marginBottom: '0' }">
                   {{ item.title }}
                   <div class="gl-content">
-                    {{ item.content }}
+                    {{ getContent(item.content) }}
                   </div>
                 </div>
               </div>
@@ -202,7 +219,7 @@ defineExpose({ fetchData })
                 <div :style="{ marginBottom: '12px' }">
                   {{ item.title }}
                   <div class="gl-content" :title="item.content">
-                    {{ item.content }}
+                    {{ getContent(item.content) }}
                   </div>
                 </div>
               </div>
@@ -221,9 +238,9 @@ defineExpose({ fetchData })
 .gl-timeline .gl-content {
   font-size: 12px;
   color: #4e5969;
-  width: 100px; /* 或者指定宽度 */
-  white-space: nowrap; /* 内容不换行 */
-  overflow: hidden; /* 超出部分不显示 */
-  text-overflow: ellipsis; /* 超出部分显示省略号 */
+  /*width: 100px;  或者指定宽度 */
+  /* white-space: nowrap; 内容不换行 */
+  /* overflow: hidden; 超出部分不显示 */
+  /* text-overflow: ellipsis; /* 超出部分显示省略号 */
 }
 </style>
