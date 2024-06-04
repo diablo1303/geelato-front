@@ -11,14 +11,13 @@ import {
   AppMeta,
   AppVersion,
   PageParams,
-  LayoutHeight,
   TreeNodeModel,
   TreeLevelData,
   directions,
   queryCompareType,
-  generateLayoutHeight,
+  sortRenderData,
 } from "@/views/compare/type";
-import VersionCompareIndex from "@/views/compare/index.vue";
+import VersionCompareIndex from "@/views/compare/indet.vue";
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
@@ -30,9 +29,8 @@ const props = defineProps({
 });
 
 // 页面 layout-sider 宽度
-const layoutSiderWidth = ref<number>(250);
-// 页面 layout-sider,layout-content 高度
-const layoutHeight = ref<LayoutHeight>(generateLayoutHeight(props.height));
+const layoutWidth = ref<number>(260);
+const layoutHeight = ref<number>(props.height - 75);
 // 树默认根节点
 const rootNode = {title: "数据字典管理", key: 'root', level: 0, data: {}, children: []};
 // 对比组件ID
@@ -62,6 +60,8 @@ const queryTreeSecondItems = (direction: string, record: TreeNodeModel, data: Tr
       isEditAtt.push(isEdit);
       // 类型
       const itemType = queryCompareType(item, compare.second || [], direction);
+      // eslint-disable-next-line no-continue
+      if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
       Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit,});
@@ -93,6 +93,8 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
       isEditAtt.push(isEdit);
       // 类型
       const itemType = queryCompareType(item, compare.first || [], direction);
+      // eslint-disable-next-line no-continue
+      if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
       Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit,});
@@ -124,9 +126,9 @@ const queryTreeItems = (direction: string, data: TreeLevelData, compare: TreeLev
  */
 const queryRenderData = (list: AppMeta[], data: TreeLevelData) => {
   data.first = list.find(item => item.metaName === "platform_dict")?.metaData || [];
-  data.first.sort((a, b) => new Date(b.update_at).getTime() - new Date(a.update_at).getTime());
+  sortRenderData(data.first, 'update_at|desc,del_status|asc');
   data.second = list.find(item => item.metaName === "platform_dict_item")?.metaData || [];
-  data.second.sort((a, b) => a.seq_no - b.seq_no);
+  sortRenderData(data.second, 'seq_no|asc,del_status|asc');
 
   return data;
 }
@@ -141,18 +143,17 @@ watch(() => props, (val) => {
     queryRenderData(compareList, renderCompareData.value);
     // 渲染树
     renderData.value.tree = queryTreeItems('left', renderData.value, renderCompareData.value);
-    renderCompareData.value.tree = queryTreeItems('right', renderCompareData.value, renderData.value);
   }
   // 计算布局高度
-  layoutHeight.value = generateLayoutHeight(props.height);
+  layoutHeight.value = props.height - 75;
 }, {deep: true, immediate: true});
 </script>
 <template>
   <VersionCompareIndex :layout-height="layoutHeight"
+                       :layout-width="layoutWidth"
                        :left-data="renderData"
                        :model-value="diffId"
                        :right-data="renderCompareData"
                        :root-key="rootNode.key"
-                       :root-title="rootNode.title"
-                       :sider-width="layoutSiderWidth"/>
+                       :root-title="rootNode.title"/>
 </template>

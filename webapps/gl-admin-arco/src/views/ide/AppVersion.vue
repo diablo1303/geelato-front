@@ -283,7 +283,7 @@ const querySysConfigValueByKey = async (key: string) => {
   packDefaultData.value = {};
   try {
     const {data} = await getValueByKeys(key);
-    // packDefaultData.value = isJSON(data) ? JSON.parse(data) : {};
+    packDefaultData.value = isJSON(data) ? JSON.parse(data) : {};
   } catch (err) {
     console.log(err);
   }

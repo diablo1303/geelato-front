@@ -10,14 +10,14 @@ import {
   AppMeta,
   AppVersion,
   PageParams,
-  LayoutHeight,
   TreeNodeModel,
   parseJson,
   directions,
   queryCompareType,
-  generateLayoutHeight, TreeLevelData,
+  TreeLevelData,
+  sortRenderData,
 } from "@/views/compare/type";
-import VersionCompareIndex from "@/views/compare/index.vue";
+import VersionCompareIndex from "@/views/compare/indet.vue";
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
@@ -29,8 +29,8 @@ const props = defineProps({
 });
 
 // 业务layout高度
-const layoutSiderWidth = ref<number>(340);
-const layoutHeight = ref<LayoutHeight>(generateLayoutHeight(props.height));
+const layoutWidth = ref<number>(320);
+const layoutHeight = ref<number>(props.height - 75);
 // 树参数
 const rootNode = {title: "模型管理", key: 'root', level: 0, data: {}, children: []};
 // 对比参数
@@ -55,6 +55,8 @@ const queryTreeFifthItems = (direction: string, record: TreeNodeModel, data: Tre
     for (const item of data.fifth.filter(item => item.main_table === record.data?.table_name && item.main_table_col === record.data?.column_name)) {
       // 类型
       const itemType = queryCompareType(item, compare.fifth || [], direction);
+      // eslint-disable-next-line no-continue
+      if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
       items.push({
@@ -91,6 +93,8 @@ const queryTreeFourItems = (direction: string, record: TreeNodeModel, data: Tree
       isEditAtt.push(isEdit);
       // 类型
       const itemType = queryCompareType(item, compare.four || [], direction);
+      // eslint-disable-next-line no-continue
+      if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
       Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit,});
@@ -117,6 +121,8 @@ const queryTreeThirdItems = (direction: string, record: TreeNodeModel, data: Tre
     for (const item of data.third.filter(item => item.connect_id === record.data?.connect_id && item.entity_name === record.data?.entity_name)) {
       // 类型
       const itemType = queryCompareType(item, compare.third || [], direction);
+      // eslint-disable-next-line no-continue
+      if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
       items.push({
@@ -155,6 +161,8 @@ const queryTreeSecondItems = (direction: string, record: TreeNodeModel, data: Tr
       isEditAtt.push(...[viewIsEdit, columnIsEdit]);
       // 类型
       const itemType = queryCompareType(item, compare.second || [], direction);
+      // eslint-disable-next-line no-continue
+      if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
       Object.assign(nodeData, {type: itemType, children: [...viewBack.child, ...columnBack.child], subChange: viewIsEdit || columnIsEdit,});
@@ -189,6 +197,8 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
       isEditAtt.push(isEdit);
       // 类型
       const itemType = queryCompareType(item, compare.first || [], direction);
+      // eslint-disable-next-line no-continue
+      if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
       Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit,});
@@ -220,18 +230,18 @@ const queryTreeItems = (direction: string, data: TreeLevelData, compare: TreeLev
  */
 const queryRenderData = (list: AppMeta[], data: TreeLevelData) => {
   data.first = list.find(item => item.metaName === "platform_dev_db_connect")?.metaData || [];
-  data.first.sort((a, b) => new Date(a.createTime).getTime() - new Date(b.createTime).getTime());
+  sortRenderData(data.first, 'update_at|desc,del_status|asc');
   data.second = list.find(item => item.metaName === "platform_dev_table")?.metaData || [];
-  data.second.sort((a, b) => a.entity_name > b.entity_name ? 1 : -1);
+  sortRenderData(data.second, 'entity_name|asc,del_status|asc');
   data.third = list.find(item => item.metaName === "platform_dev_view")?.metaData || [];
   data.third.forEach(item => {
     item.view_column = parseJson(item.view_column);
   });
-  data.third.sort((a, b) => a.view_name > b.view_name ? 1 : -1);
+  sortRenderData(data.third, 'view_name|asc,del_status|asc');
   data.four = list.find(item => item.metaName === "platform_dev_column")?.metaData || [];
-  data.four.sort((a, b) => a.ordinal_position - b.ordinal_position);
+  sortRenderData(data.four, 'ordinal_position|asc,del_status|asc');
   data.fifth = list.find(item => item.metaName === "platform_dev_table_foreign")?.metaData || [];
-  data.fifth.sort((a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime());
+  sortRenderData(data.fifth, 'update_at|desc,del_status|asc');
 
   return data;
 }
@@ -246,18 +256,17 @@ watch(() => props, (val) => {
     queryRenderData(compareList, renderCompareData.value);
     // 渲染树
     renderData.value.tree = queryTreeItems('left', renderData.value, renderCompareData.value);
-    renderCompareData.value.tree = queryTreeItems('right', renderCompareData.value, renderData.value);
   }
   // 计算布局高度
-  layoutHeight.value = generateLayoutHeight(props.height);
+  layoutHeight.value = props.height - 75;
 }, {deep: true, immediate: true});
 </script>
 <template>
   <VersionCompareIndex :layout-height="layoutHeight"
+                       :layout-width="layoutWidth"
                        :left-data="renderData"
                        :model-value="diffId"
                        :right-data="renderCompareData"
                        :root-key="rootNode.key"
-                       :root-title="rootNode.title"
-                       :sider-width="layoutSiderWidth"/>
+                       :root-title="rootNode.title"/>
 </template>
