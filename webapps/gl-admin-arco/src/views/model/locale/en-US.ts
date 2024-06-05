@@ -304,7 +304,7 @@ export default {
 
   'model.table.permission.index.menu.list.searchTable': 'Table Permission',
   'model.table.permission.index.model.role.add': 'Add Role',
-  'model.table.permission.index.model.permission.add': 'Custom Permission',
+  'model.table.permission.index.model.permission.add': 'Add Custom Permission',
   'model.table.permission.index.model.permission.reset': 'Reset Default Permission',
   'model.table.permission.index.model.refresh': 'Refresh',
   'model.table.permission.index.list.role': 'Role',

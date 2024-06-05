@@ -401,7 +401,7 @@ const addViewForm = () => {
 }
 const editViewForm = (record: QueryViewForm) => {
   Object.assign(vFormParams.value, {
-    id: record.id, visible: true, formState: 'edit', title: '编辑模型视图',
+    id: record.id, visible: true, formState: 'edit', title: `编辑模型视图（${record.viewName}）`,
     parameter: {
       connectId: record.connectId, entityName: record.entityName,
       appId: appStore.currentApp.id,
