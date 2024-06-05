@@ -105,13 +105,13 @@ export const queryCompareType = (record: Record<string, any>, data: Record<strin
     if (isExist && typeof isExist === 'object') {
       const isCompare = diffJson(JSON.stringify(isExist), JSON.stringify(record));
       if (isCompare && isCompare.length >= 2) {
-        return 2;
+        return record.del_status === 1 ? 3 : 2;
       }
-      return 0;
+      return record.del_status === 1 ? 4 : 0;
     }
-    return direction === 'right' ? 3 : 1;// 不存在为：新增
+    return 1;// 不存在为：新增
   }
-  return direction === 'right' ? 3 : 1;// 不存在为：新增
+  return 1;// 不存在为：新增
 }
 
 /**
@@ -209,4 +209,56 @@ export const treeSearchLoop = (data: TreeNodeData[], keyword: string) => {
 export const getMatchIndex = (title: string, keyword: string) => {
   if (!keyword) return -1;
   return title.toLowerCase().indexOf(keyword.toLowerCase());
+}
+
+/**
+ * 排序数据处理,update_at|asc,del_status|asc
+ * @param sorter
+ */
+const sorterFormat = (sorter: string) => {
+  const sorterArr = [];
+  const arr = sorter.split(",");
+  if (arr.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of arr) {
+      const arr1 = item.split("|");
+      if (arr1.length === 1) {
+        sorterArr.push({key: arr1[0], dir: 'asc'});
+      } else if (arr1.length === 2) {
+        sorterArr.push({key: arr1[0], dir: arr1[0] === 'desc' ? 'desc' : 'asc'});
+      }
+    }
+  }
+  return sorterArr;
+}
+
+/**
+ * 排序渲染数据
+ * @param data
+ * @param sorter
+ */
+export const sortRenderData = (data: Record<string, any>[], sorter: string) => {
+  const sorterArr = sorterFormat(sorter);
+  if (sorterArr.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of sorterArr) {
+      if (['update_at', 'create_at'].includes(item.key)) {
+        data.sort((a, b) => {
+          if (item.dir === 'desc') {
+            return new Date(b[item.key]).getTime() - new Date(a[item.key]).getTime();
+          }
+          return new Date(a[item.key]).getTime() - new Date(b[item.key]).getTime();
+        });
+      } else if (typeof data[0][item.key] === 'number') {
+        data.sort((a, b) => {
+          return item.dir === 'desc' ? b[item.key] - a[item.key] : a[item.key] - b[item.key];
+        });
+      } else if (typeof data[0][item.key] === 'string') {
+        data.sort((a, b) => {
+          // eslint-disable-next-line no-nested-ternary
+          return a[item.key] > b[item.key] ? (item.dir === 'desc' ? -1 : 1) : (item.dir === 'desc' ? 1 : -1);
+        });
+      }
+    }
+  }
 }

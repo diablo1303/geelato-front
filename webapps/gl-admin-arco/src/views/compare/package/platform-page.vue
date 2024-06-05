@@ -14,9 +14,10 @@ import {
   parseJson,
   directions,
   queryCompareType,
-  generateLayoutHeight, TreeLevelData, LayoutHeight,
+  TreeLevelData,
+  sortRenderData,
 } from "@/views/compare/type";
-import VersionCompareIndex from "@/views/compare/index.vue";
+import VersionCompareIndex from "@/views/compare/indet.vue";
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
@@ -28,8 +29,8 @@ const props = defineProps({
 });
 
 // 业务layout高度
-const layoutSiderWidth = ref<number>(250);
-const layoutHeight = ref<LayoutHeight>(generateLayoutHeight(props.height));
+const layoutWidth = ref<number>(300);
+const layoutHeight = ref<number>(props.height - 75);
 // 树参数
 const rootNode = {title: "菜单管理", key: 'root', level: 0, data: {}, children: []};
 // 对比参数
@@ -59,6 +60,8 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
       isEditAtt.push(isEdit);
       // 类型
       const itemType = queryCompareType(item, compare.first || [], direction);
+      // eslint-disable-next-line no-continue
+      if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
       Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit,});
@@ -103,7 +106,8 @@ const queryRenderData = (list: AppMeta[], data: TreeLevelData) => {
   data.first.forEach(item => {
     item.platformPage = pageData.filter(page => page.extend_id === item.id);
   });
-  data.first.sort((a, b) => a.seq_no - b.seq_no);
+  sortRenderData(data.first, 'seq_no|asc,del_status|asc');
+
   return data;
 }
 
@@ -117,18 +121,17 @@ watch(() => props, (val) => {
     queryRenderData(compareList, renderCompareData.value);
     // 渲染树
     renderData.value.tree = queryTreeItems('left', props.modelValue, renderData.value, renderCompareData.value);
-    renderCompareData.value.tree = queryTreeItems('right', props.compareValue, renderCompareData.value, renderData.value);
   }
   // 计算布局高度
-  layoutHeight.value = generateLayoutHeight(props.height);
+  layoutHeight.value = props.height - 75;
 }, {deep: true, immediate: true});
 </script>
 <template>
   <VersionCompareIndex :layout-height="layoutHeight"
+                       :layout-width="layoutWidth"
                        :left-data="renderData"
                        :model-value="diffId"
                        :right-data="renderCompareData"
-                       :root-key="renderData?.tree[0].key"
-                       :root-title="renderData?.tree[0].title"
-                       :sider-width="layoutSiderWidth"/>
+                       :root-key="rootNode.key"
+                       :root-title="rootNode.title"/>
 </template>
