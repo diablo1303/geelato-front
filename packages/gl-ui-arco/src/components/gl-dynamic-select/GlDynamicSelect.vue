@@ -87,6 +87,7 @@ import {
   EntityReaderOrder,
   EntityReaderParam,
   executeObjectPropsExpressions,
+  jsScriptExecutor,
   mixins,
   PageProvideKey,
   PageProvideProxy,
@@ -479,7 +480,24 @@ const loadData = () => {
     // valueFilter
     const entityReaderParams: EntityReaderParam[] = []
     JSON.parse(JSON.stringify(props.valueFilter)).forEach((param: EntityReaderParam) => {
-      executeObjectPropsExpressions(param, {})
+      // 历史数据，存在_valueExpression中
+      // @ts-ignore
+      if (param._valueExpression?.value !== undefined) {
+        // @ts-ignore
+        param.valueExpression = param._valueExpression.value
+        // @ts-ignore
+        delete param._valueExpression
+      }
+      if (param.valueExpression) {
+        if (typeof param.valueExpression === 'string') {
+          param.value = jsScriptExecutor.evalExpression(param.valueExpression, {
+            pageProxy: pageProvideProxy
+          })
+        } else {
+          // 不需要解析
+          param.value = param.valueExpression
+        }
+      }
       const newEntityReaderParam = new EntityReaderParam(
         param.name,
         param.cop,

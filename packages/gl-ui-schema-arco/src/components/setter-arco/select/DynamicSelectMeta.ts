@@ -232,16 +232,18 @@ export default {
           setterComponentName: 'ASelect'
         },
         {
-          name: 'value',
+          name: 'valueExpression',
           group: 'base',
           type: 'props',
-          enableValueExpress: true,
+          enableValueExpress: false,
           show: true,
           expanded: true,
-          setterComponentProps: {},
+          setterComponentProps: {
+            showInput:true
+          },
           setterComponentVModelName: 'modelValue',
           title: '字段值',
-          setterComponentName: 'AInput',
+          setterComponentName: 'GlExpressionSetter',
           placeholder: ''
         }
       ],
