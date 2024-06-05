@@ -62,7 +62,7 @@ export default {
   'model.table.index.form.packBusData.0': '不打包',
   'model.table.index.form.packBusData.1': '增量打包',
   'model.table.index.form.packBusData.2': '全量打包',
-  'model.table.index.form.packBusData.extra': '打包业务数据时，增量为：更新和插入打包数据；全量为：先清空表再插入打包数据。',
+  'model.table.index.form.packBusData.extra': '打包业务数据时，增量为：仅插入打包数据，不修改不删除表数据；全量为：先清空表再插入打包数据。',
   'model.table.index.form.tableType': '表格类型',
   'model.table.index.form.tableType.table': '数据库表',
   'model.table.index.form.tableType.entity': '实体',
