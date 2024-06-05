@@ -68,7 +68,12 @@ export default {
       setterComponentProps: {
         multiple:true,
         options: [
-          { label: '组件值为空时不加载数据', value: 'DoNoFetchWhenEmpty' }
+          { label: '组件值为空时不加载数据', value: 'DoNoFetchWhenEmpty' },
+          { label: '第1个数据过滤参数值为空时不触发', value: 'Param1ValueEmpty' },
+          { label: '第2个数据过滤参数值为空时不触发', value: 'Param2ValueEmpty' },
+          { label: '第3个数据过滤参数值为空时不触发', value: 'Param3ValueEmpty' },
+          { label: '第4个数据过滤参数值为空时不触发', value: 'Param4ValueEmpty' },
+          { label: '第5个数据过滤参数值为空时不触发', value: 'Param5ValueEmpty' }
         ]
       },
       setterComponentVModelName: 'modelValue',
@@ -78,7 +83,7 @@ export default {
       show: true,
       expanded: true,
       setterComponentName: 'ASelect',
-      description: '满足任一种条件，则不触发加载数据。'
+      description: '满足任一种条件，则不触发加载数据。第N个数据过滤参数值为空时不触发，指存在该参数且参数值为空。'
     },
     {
       name: 'labelFieldNames',

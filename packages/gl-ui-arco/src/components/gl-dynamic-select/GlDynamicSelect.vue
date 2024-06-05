@@ -72,7 +72,18 @@ const enum TriggerMode {
 // 触发约束条件，以下条件必须同时满足
 const enum TriggerConstraint {
   // 组件为空值时不触发
-  DoNoFetchWhenEmpty = 'DoNoFetchWhenEmpty'
+  DoNoFetchWhenEmpty = 'DoNoFetchWhenEmpty',
+  // 第一个参数值为空时不触发
+  Param1ValueEmpty = 'Param1ValueEmpty',
+  // 第二个参数值为空时不触发
+  Param2ValueEmpty = 'Param2ValueEmpty',
+  // 第三个参数值为空时不触发
+  Param3ValueEmpty = 'Param3ValueEmpty',
+  // 第三个参数值为空时不触发
+  Param4ValueEmpty = 'Param4ValueEmpty',
+  // 第三个参数值为空时不触发
+  Param5ValueEmpty = 'Param5ValueEmpty'
+
   // 组件值从空转为非空
   // ValueChangeToNotEmpty = 'ValueChangeToNotEmpty'
   // // 查询条件的值都不为空
@@ -334,29 +345,9 @@ watch(
 )
 
 /**
- * 当值发生变化时，触发事件
- * @param val
- * @param oval
+ * 选择一项
+ * @param value
  */
-// const triggerOnValueChanged = (val?: any, oval?: any) => {
-//   // console.log(
-//   //   'GlDynamicSelect > triggerOnValueChanged() > onValueChangeToNotEmpty > val',
-//   //   val,
-//   //   props,
-//   //   props.triggerConstraint.includes(TriggerConstraint.ValueChangeToNotEmpty)
-//   // )
-//   if (TriggerMode.onValueChanged === props.triggerMode) {
-//     if (props.triggerConstraint.includes(TriggerConstraint.ValueChangeToNotEmpty)) {
-//       if ((oval === undefined || oval === '') && !utils.isEmpty(val)) {
-//         loadData()
-//       }
-//     } else {
-//       loadData()
-//     }
-//   }
-//   return true
-// }
-
 const selectOne = (value: any) => {
   // 将值设置到对应的组件中
   if (value && props.extraFieldAndBindIds.length > 0) {
@@ -451,6 +442,42 @@ const isStopLoadData = () => {
   }
   return false
 }
+/**
+ * 是否需要阻断加载数据，依据参数值条件
+ */
+const isStopLoadDataByParams = (params: EntityReaderParam[]) => {
+  if (props.triggerConstraint.includes(TriggerConstraint.Param1ValueEmpty)) {
+    // @ts-ignore
+    if (params.length >= 1 && utils.isEmpty(params[0].value)) {
+      return true
+    }
+  }
+  if (props.triggerConstraint.includes(TriggerConstraint.Param2ValueEmpty)) {
+    // @ts-ignore
+    if (params.length >= 2 && utils.isEmpty(params[1].value)) {
+      return true
+    }
+  }
+  if (props.triggerConstraint.includes(TriggerConstraint.Param3ValueEmpty)) {
+    // @ts-ignore
+    if (params.length >= 3 && utils.isEmpty(params[2].value)) {
+      return true
+    }
+  }
+  if (props.triggerConstraint.includes(TriggerConstraint.Param4ValueEmpty)) {
+    // @ts-ignore
+    if (params.length >= 4 && utils.isEmpty(params[3].value)) {
+      return true
+    }
+  }
+  if (props.triggerConstraint.includes(TriggerConstraint.Param5ValueEmpty)) {
+    // @ts-ignore
+    if (params.length >= 5 && utils.isEmpty(params[4].value)) {
+      return true
+    }
+  }
+  return false
+}
 
 const loadData = () => {
   if (isStopLoadData()) {
@@ -478,7 +505,7 @@ const loadData = () => {
     let fields = fieldAry.join(',')
 
     // valueFilter
-    const entityReaderParams: EntityReaderParam[] = []
+    const parsedParams: EntityReaderParam[] = []
     JSON.parse(JSON.stringify(props.valueFilter)).forEach((param: EntityReaderParam) => {
       // 历史数据，存在_valueExpression中
       // @ts-ignore
@@ -498,6 +525,15 @@ const loadData = () => {
           param.value = param.valueExpression
         }
       }
+      parsedParams.push(param)
+    })
+    // 依据参数值是否为空，决定是否加载数据
+    if (isStopLoadDataByParams(parsedParams)) {
+      return
+    }
+
+    const entityReaderParams: EntityReaderParam[] = []
+    parsedParams.forEach((param: EntityReaderParam) => {
       const newEntityReaderParam = new EntityReaderParam(
         param.name,
         param.cop,

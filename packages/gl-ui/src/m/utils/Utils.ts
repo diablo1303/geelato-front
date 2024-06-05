@@ -148,7 +148,7 @@ export class Utils {
     }
   }
 
-  isEmpty(target: string | object | undefined | null) {
+  isEmpty(target: string | object | number | undefined | null) {
     if (target === undefined || target === null) {
       return true
     }
@@ -164,6 +164,9 @@ export class Utils {
         if (Object.keys(target).length === 0) {
           return true
         }
+        break;
+      case 'number':
+        return isNaN(target)
     }
     return false
   }
