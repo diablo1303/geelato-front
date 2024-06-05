@@ -60,6 +60,7 @@ export class FieldMeta {
   valueExpression?: string = '';
 
   [key: string]: any
+
   // charMaxLength: '19'
   // charMaxLength: string
   // // comment: '所属流程定义'
@@ -92,6 +93,8 @@ export class FieldMeta {
 
 export class EntityLiteMeta {
   entityName: string = ''
+  // 分为视图或模型 Table View Class
+  entityType: string = ''
   entityTitle: string = ''
 }
 
@@ -364,8 +367,8 @@ export class EntityReader {
    * @param field 排序字段名
    * @param order 上降序 默认为升序 'ascend' | 'descend' | '+' | ‘-’
    */
-  public addOrder(field: string, order?: string){
-    this.order.push(new EntityReaderOrder(field,order))
+  public addOrder(field: string, order?: string) {
+    this.order.push(new EntityReaderOrder(field, order))
   }
 }
 
@@ -424,7 +427,7 @@ export class EntitySaver {
  */
 export class GetEntitySaversResult {
   // 可以保存表单组件的id，以便于表单事件中获取到GetEntitySaversResult时可以区分是哪个表单
-  id?:string
+  id?: string
   // 如果在获取时，组件对数据验证不通过，则为true
   error: boolean = true
   // 获取的结果
