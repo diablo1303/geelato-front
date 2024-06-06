@@ -3,19 +3,19 @@ const usePromise = (
   fulfilledVarName: string,
   rejectedVarName: string
 ) => {
-  let fulfilled = `(res)=>{return res}`
-  let rejected = '(e)=>{return e}'
+  let fulfilled = `async(res)=>{return res}`
+  let rejected = 'async(e)=>{return e}'
   let then = ''
   // 启用
   if (invokeBlocks?.includes('fulfilled')) {
-    fulfilled = `(res)=>{
+    fulfilled = `async(res)=>{
           $gl.vars.${fulfilledVarName} = res;
           #{fulfilled}
         }`
   }
   // 启用
   if (invokeBlocks?.includes('rejected')) {
-    rejected = `(e)=>{
+    rejected = `async(e)=>{
           $gl.vars.${rejectedVarName} = e;
           #{rejected}
         }`

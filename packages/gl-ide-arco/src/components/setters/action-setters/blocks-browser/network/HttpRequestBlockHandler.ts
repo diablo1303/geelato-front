@@ -14,7 +14,7 @@ export default class HttpRequestBlockHandler implements IBlockHandler {
   }
 
   parseToScript(props: Props, propsExpressions?: PropsExpressions): ParseResult {
-    console.log('OpenComponentPageBlockHandler > parseToScript > props:', props)
+    // console.log('OpenComponentPageBlockHandler > parseToScript > props:', props)
     const axiosName = utils.gid('axios', 15)
     const url = propsExpressions?.url || toStr(props.url)
     const method = propsExpressions?.method || toStr(props.method)

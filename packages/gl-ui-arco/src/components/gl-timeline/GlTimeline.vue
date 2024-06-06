@@ -209,7 +209,7 @@ defineExpose({ fetchData })
                   :style="{ 'font-size': iconSize, color: item.dotColor }"
                 />
                 <div :style="{ marginBottom: '0' }">
-                  {{ item.title }}
+                  <span class="gl-title">{{ item.title }}</span>
                   <div class="gl-content">
                     {{ getContent(item.content) }}
                   </div>
@@ -217,7 +217,7 @@ defineExpose({ fetchData })
               </div>
               <div v-else @click="onItemClick(item, index)">
                 <div :style="{ marginBottom: '12px' }">
-                  {{ item.title }}
+                  <span class="gl-title">{{ item.title }}</span>
                   <div class="gl-content" :title="item.content">
                     {{ getContent(item.content) }}
                   </div>
@@ -234,7 +234,10 @@ defineExpose({ fetchData })
   </div>
 </template>
 
-<style scoped>
+<style>
+.gl-timeline .gl-title {
+  font-weight: 600;
+}
 .gl-timeline .gl-content {
   font-size: 12px;
   color: #4e5969;
