@@ -799,7 +799,7 @@ onMounted(() => {
 })
 
 const loadDataImmediate = () => {
-  console.log('props.immediate', props.immediate, props.bindEntity.entityName)
+  // console.log('props.immediate', props.immediate, props.bindEntity.entityName)
   return props.immediate !== false
 }
 
