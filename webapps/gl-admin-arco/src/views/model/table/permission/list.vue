@@ -255,7 +255,7 @@ const permissionFormParams = ref({
   title: '',
   width: '880px',
   height: '',
-  parameter: {object: '', type: 'mp', appId: '', tenantCode: ''},
+  parameter: {object: '', type: 'dp', appId: '', tenantCode: ''},
   formState: 'add',
   id: '',
   formCol: 2,
@@ -329,7 +329,7 @@ watch(() => props, (val) => {
       appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
     }
     permissionFormParams.value.parameter = {
-      object: props.parameter.object, type: 'mp',
+      object: props.parameter.object, type: 'dp',
       appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
     }
     // 加载数据

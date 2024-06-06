@@ -298,7 +298,7 @@ const permissionPage = ref({
 });
 const addTablePermission = (ev?: MouseEvent) => {
   permissionPage.value.formState = 'add';
-  permissionPage.value.parameter.type = 'mp';
+  permissionPage.value.parameter.type = 'dp';
   permissionPage.value.title = '新增查看权限（自定义）';
   permissionPage.value.id = '';
   permissionPage.value.visible = true;
