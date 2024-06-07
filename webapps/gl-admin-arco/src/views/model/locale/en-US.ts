@@ -62,7 +62,7 @@ export default {
   'model.table.index.form.packBusData.0': 'unpack',
   'model.table.index.form.packBusData.1': 'Incremental packing',
   'model.table.index.form.packBusData.2': 'Full packing',
-  'model.table.index.form.packBusData.extra': 'When packaging business data, the incremental amount is: Update and insert the packaged data; The full amount is: first empty the table before inserting packed data.',
+  'model.table.index.form.packBusData.extra': 'When service data is packaged, the increment is as follows: Only the packaged data is inserted, and table data is not modified or deleted. The full value is: clear the table and then insert the packed data.',
   'model.table.index.form.tableType': 'tableType',
   'model.table.index.form.tableType.table': 'TABLE',
   'model.table.index.form.tableType.entity': 'ENTITY',
@@ -304,7 +304,7 @@ export default {
 
   'model.table.permission.index.menu.list.searchTable': 'Table Permission',
   'model.table.permission.index.model.role.add': 'Add Role',
-  'model.table.permission.index.model.permission.add': 'Custom Permission',
+  'model.table.permission.index.model.permission.add': 'Add Custom Permission',
   'model.table.permission.index.model.permission.reset': 'Reset Default Permission',
   'model.table.permission.index.model.refresh': 'Refresh',
   'model.table.permission.index.list.role': 'Role',

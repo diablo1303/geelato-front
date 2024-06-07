@@ -62,7 +62,7 @@ export default {
   'model.table.index.form.packBusData.0': '不打包',
   'model.table.index.form.packBusData.1': '增量打包',
   'model.table.index.form.packBusData.2': '全量打包',
-  'model.table.index.form.packBusData.extra': '打包业务数据时，增量为：更新和插入打包数据；全量为：先清空表再插入打包数据。',
+  'model.table.index.form.packBusData.extra': '打包业务数据时，增量为：仅插入打包数据，不修改不删除表数据；全量为：先清空表再插入打包数据。',
   'model.table.index.form.tableType': '表格类型',
   'model.table.index.form.tableType.table': '数据库表',
   'model.table.index.form.tableType.entity': '实体',
@@ -302,7 +302,7 @@ export default {
 
   'model.table.permission.index.menu.list.searchTable': '模型权限',
   'model.table.permission.index.model.role.add': '新增角色',
-  'model.table.permission.index.model.permission.add': '查看权限（自定义）',
+  'model.table.permission.index.model.permission.add': '新增自定义查看权限',
   'model.table.permission.index.model.permission.reset': '重置默认权限',
   'model.table.permission.index.model.refresh': '刷新',
   'model.table.permission.index.list.role': '角色',

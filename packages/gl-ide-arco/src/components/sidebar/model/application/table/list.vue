@@ -9,7 +9,7 @@ import {reactive, ref, watch, computed} from 'vue';
 import {modelApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
 import type {Pagination, QueryAppTableForm} from "@geelato/gl-ui";
-import {approvalNeedOptions, approvalStatusOptions, enableStatusOptions} from './searchTable';
+import {approvalNeedOptions, approvalStatusOptions, enableStatusOptions} from '../searchTable';
 import GlModelTableAppForm from "./form.vue";
 
 type PageParams = {

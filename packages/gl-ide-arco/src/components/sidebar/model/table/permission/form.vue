@@ -298,7 +298,7 @@ const permissionPage = ref({
 });
 const addTablePermission = (ev?: MouseEvent) => {
   permissionPage.value.formState = 'add';
-  permissionPage.value.parameter.type = 'mp';
+  permissionPage.value.parameter.type = 'dp';
   permissionPage.value.title = '新增查看权限（自定义）';
   permissionPage.value.id = '';
   permissionPage.value.visible = true;
@@ -409,7 +409,7 @@ watch(() => props.height, (val) => {
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
-          查看权限（自定义）
+          新增自定义查看权限
         </a-button>
         <a-button v-if="!refApp" :disabled="formState==='view'" type="primary" @click="resetTableDefaultPermission">
           <template #icon>
@@ -526,8 +526,8 @@ watch(() => props.height, (val) => {
                 <span :title="item.description" class="span-textarea">
                   <strong>描述：</strong>{{ item.description }}
                 </span>
-                <a-divider v-if="!item.default&&formState==='edit'&&!refApp" style="margin: 5px 0px"/>
-                <a-space v-if="!item.default&&formState==='edit'&&!refApp" style="display: flex;align-items: center;justify-content: end;">
+                <a-divider v-if="!item.default&&formState==='edit'" style="margin: 5px 0px"/>
+                <a-space v-if="!item.default&&formState==='edit'" style="display: flex;align-items: center;justify-content: end;">
                   <a-button size="mini" type="primary" @click="editTablePermission(item.id)">
                     编辑
                   </a-button>

@@ -10,9 +10,9 @@ import {Modal} from "@arco-design/web-vue";
 import type {TableColumnData, FormInstance, SelectOptionGroup, SelectOptionData} from "@arco-design/web-vue";
 import type {QueryAppForm, QueryPermissionForm, QueryAppTableForm, QueryTableForm} from '@geelato/gl-ui';
 import {modelApi, applicationApi, useGlobal, utils, securityApi} from "@geelato/gl-ui";
-import {enableStatusOptions, approvalNeedOptions, approvalStatusOptions} from "./searchTable";
-import {classifyOptions} from "../../security/permission/searchTable";
-import {sourceTypeOptions, tableSyncOptions} from "../table/searchTable";
+import {enableStatusOptions, approvalNeedOptions, approvalStatusOptions} from "../searchTable";
+import {classifyOptions} from "../../../security/permission/searchTable";
+import {sourceTypeOptions, tableSyncOptions} from "../../table/searchTable";
 
 type PageParams = {
   tableId: string; // 数据库链接id
@@ -228,10 +228,19 @@ const getTablePermission = (entityName: string) => {
   });
 }
 
-const tableIdChange = () => {
+const tableIdClear = () => {
   selectData.value = [];
   selectAll.value = false;
   permissionSelectOptions.value = [];
+}
+
+const tableAppIdClear = () => {
+  tableSelectOptions.value = [];
+  formData.value.tableId = '';
+}
+
+const tableIdChange = () => {
+  tableIdClear();
   for (const record of tableSelectOptions.value) {
     for (const item of record.options) {
       // @ts-ignore
@@ -245,7 +254,8 @@ const tableIdChange = () => {
 }
 
 const tableAppIdChange = () => {
-  tableSelectOptions.value = [];
+  tableIdClear();
+  tableAppIdClear();
   if (formData.value.tableAppId) {
     queryConnectSelectOptions({
       appId: formData.value.tableAppId, tenantCode: props.parameter?.tenantCode || ''
@@ -331,8 +341,9 @@ watch(() => props, () => {
     // 编辑、查看 状态 查询数据
     if (['edit', 'view'].includes(props.formState) && props.modelValue) {
       getData(props.modelValue, (data: QueryAppTableForm) => {
-        formData.value = data;
+        formData.value = JSON.parse(JSON.stringify(data));
         tableAppIdChange();
+        formData.value.tableId = data.tableId;
         getTablePermission(props.parameter.tableName);
         selectData.value = data.permissionId && data.permissionId.split(',') || [];
         selectChange()

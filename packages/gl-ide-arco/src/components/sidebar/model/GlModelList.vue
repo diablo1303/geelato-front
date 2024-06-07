@@ -9,13 +9,14 @@ export default {
 <script lang="ts" setup>
 import {compile, h, type Ref, ref, watch} from 'vue'
 import {useAppStore} from '@geelato/gl-ide'
-import type {QueryAppTableForm, QueryTableForm, QueryViewForm} from '@geelato/gl-ui'
+import type {QueryAppTableForm, QueryAppViewForm, QueryTableForm, QueryViewForm} from '@geelato/gl-ui'
 import {modelApi, entityApi, EntityReader, EntityReaderParam, useGlobal, utils} from '@geelato/gl-ui'
 import {approvalStatusOptions} from "./application/searchTable";
 import {viewTypeOptions} from "./view/searchTable";
 import GlModelTableModal from "./table/modal.vue";
 import GlModelTableTabs from "./table/tableTabs.vue";
-import GlModelTableAppForm from "./application/form.vue";
+import GlModelTableAppForm from "./application/table/form.vue";
+import GlModelViewAppForm from "./application/view/form.vue";
 import GlModelTableViewForm from "./view/form.vue";
 
 const props = defineProps({
@@ -33,6 +34,11 @@ const allTableAppItems: Ref<QueryAppTableForm[]> = ref([]);
 // 应用视图
 const allViewItems: Ref<QueryViewForm[]> = ref([])
 const renderViewItems: Ref<QueryViewForm[]> = ref([])
+// 视图授权
+const allAccreditViewItems: Ref<QueryAppViewForm[]> = ref([])
+const renderAccreditViewItems: Ref<QueryAppViewForm[]> = ref([])
+const allTableAppViewItems: Ref<QueryAppViewForm[]> = ref([]);
+
 const searchText = ref('')
 const orderBy = ref('updateAt')
 const activeKey = ref<number[]>([1, 2, 3]);
@@ -115,16 +121,44 @@ const generateRenderViewItems = () => {
     activeKey.value.push(3);
   }
 }
+const generateRenderAccreditViewItems = () => {
+  // 如果有排序值，则先对数据进行排序
+  if (orderBy.value === 'updateAt') {
+    // @ts-ignore 从最新到最老
+    allAccreditViewItems.value.sort((a, b) => b[orderBy.value].localeCompare(a[orderBy.value]))
+  } else if (orderBy.value === 'entityName') {
+    // @ts-ignore 从小到大
+    allAccreditViewItems.value.sort((a, b) => a['viewName'].localeCompare(b['viewName']))
+  }
+
+  if (!searchText.value) {
+    renderAccreditViewItems.value.length = 0
+    renderAccreditViewItems.value.push(...allAccreditViewItems.value)
+  } else {
+    renderAccreditViewItems.value = allAccreditViewItems.value.filter((item) => {
+      return (
+          item.viewName.indexOf(searchText.value) != -1 || item.viewTitle?.indexOf(searchText.value) != -1
+      )
+    })
+  }
+
+  activeKey.value = activeKey.value.filter(item => item !== 4);
+  if (renderAccreditViewItems.value.length > 0) {
+    activeKey.value.push(4);
+  }
+}
 
 watch(searchText, () => {
   generateRenderItems()
   generateRenderAccreditItems()
   generateRenderViewItems()
+  generateRenderAccreditViewItems()
 })
 watch(orderBy, () => {
   generateRenderItems()
   generateRenderAccreditItems()
   generateRenderViewItems()
+  generateRenderAccreditViewItems()
 })
 type Item = {
   id: string
@@ -178,7 +212,16 @@ const fetchAccreditData = async (successBack?: any, failBack?: any) => {
   }
   try {
     const {data} = await modelApi.queryAppTables({appId: appStore.currentApp.id});
+    // @ts-ignore
+    // data.sort((a, b) => new Date(b?.updateAt).getTime() - new Date(a?.updateAt).getTime());
     allAccreditItems.value = data;
+    /*   const tableNames: string[] = [];
+      data.forEach((item) => {
+        if (!tableNames.includes(item.tableName)) {
+          tableNames.push(item.tableName);
+          allAccreditItems.value.push(item);
+        }
+      }); */
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     allAccreditItems.value = [];
@@ -201,6 +244,22 @@ const fetchViewData = async (successBack?: any, failBack?: any) => {
     if (failBack && typeof failBack === 'function') failBack(err);
   } finally {
     generateRenderViewItems()
+  }
+}
+
+const fetchAccreditViewData = async (successBack?: any, failBack?: any) => {
+  if (!appStore.currentApp.id) {
+    return
+  }
+  try {
+    const {data} = await modelApi.queryAppViews({appId: appStore.currentApp.id});
+    allAccreditViewItems.value = data;
+    if (successBack && typeof successBack === 'function') successBack(data);
+  } catch (err) {
+    allAccreditViewItems.value = [];
+    if (failBack && typeof failBack === 'function') failBack(err);
+  } finally {
+    generateRenderAccreditViewItems()
   }
 }
 
@@ -282,12 +341,19 @@ const resetData = (type: string) => {
     }, () => {
       global.$message.error({content: '授权模型数据重置失败！'})
     })
+  } else if (type === 'accreditView') {
+    fetchAccreditViewData(() => {
+      global.$message.success({content: '授权视图数据重置成功！'})
+    }, () => {
+      global.$message.error({content: '授权视图数据重置失败！'})
+    })
   }
 }
 
 fetchData()
 fetchAccreditData()
 fetchViewData()
+fetchAccreditViewData()
 
 /* 模型tab页所需参数 */
 const formTabsParams = ref({
@@ -343,6 +409,11 @@ const aTableFormSaveSuccess = (data: QueryAppTableForm, action: string) => {
 const viewFormSaveSuccess = (data: QueryViewForm, action: string) => {
   // 刷新模型列表
   fetchViewData();
+}
+
+const aViewFormSaveSuccess = (data: QueryAppViewForm, action: string) => {
+  // 刷新视图授权列表
+  fetchAccreditViewData();
 }
 
 const atFormParams = ref({
@@ -401,13 +472,34 @@ const addViewForm = () => {
 }
 const editViewForm = (record: QueryViewForm) => {
   Object.assign(vFormParams.value, {
-    id: record.id, visible: true, formState: 'edit', title: '编辑模型视图',
+    id: record.id, visible: true, formState: 'edit', title: `编辑模型视图（${record.viewName}）`,
     parameter: {
       connectId: record.connectId, entityName: record.entityName,
       appId: appStore.currentApp.id,
       tenantCode: appStore.currentApp.tenantCode
     }
   });
+}
+
+const avFormParams = ref({
+  id: '', visible: false, formState: 'add', formCol: 1, width: '', title: '',
+  parameter: {
+    viewId: '', viewName: '', author: true,
+    appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode
+  }
+});
+
+const addAppViewForm = (ev?: MouseEvent) => {
+  if (!appStore.currentApp.id) {
+    return
+  }
+  avFormParams.value.id = '';
+  avFormParams.value.formState = 'add';
+  avFormParams.value.visible = true;
+}
+
+const appViewOpen = (record: QueryAppViewForm) => {
+
 }
 </script>
 
@@ -418,7 +510,7 @@ const editViewForm = (record: QueryViewForm) => {
       <a-tab-pane key="entityName" title="按名称排序"/>
       <template #extra>
         <a-tag color="arcoblue" size="small" style="margin-right: 8px" title="当前应用的模型总数量">
-          {{ allItems.length + allAccreditItems.length + allViewItems.length }}
+          {{ allItems.length + allAccreditItems.length + allViewItems.length + allAccreditViewItems.length }}
         </a-tag>
       </template>
     </a-tabs>
@@ -556,6 +648,34 @@ const editViewForm = (record: QueryViewForm) => {
           </template>
         </a-list>
       </a-collapse-item>
+      <a-collapse-item :key="4" :header="`授权视图（${renderAccreditViewItems.length}）`" class="colapse-list1">
+        <template #extra>
+          <a-space>
+            <a-tooltip content="新建">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addAppViewForm">
+                <gl-iconfont type="gl-plus-circle"/>
+              </a-button>
+            </a-tooltip>
+            <a-tooltip content="重置">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="resetData('accreditView')">
+                <gl-iconfont type="gl-reset"/>
+              </a-button>
+            </a-tooltip>
+          </a-space>
+        </template>
+        <a-list size="small">
+          <template v-for="item in renderAccreditViewItems" :key="item.id">
+            <a-list-item style="cursor: pointer;" @click="appViewOpen(item)">
+              <a-list-item-meta :description="item.viewTitle" :title="item.viewName"/>
+              <template #actions>
+            <span :title="`${item.updaterName || ''}更新@${item.updateAt}`" class="gl-actions-description">
+              {{ utils.timeAgo(item.updateAt || '') }}
+            </span>
+              </template>
+            </a-list-item>
+          </template>
+        </a-list>
+      </a-collapse-item>
     </a-collapse>
   </div>
 
@@ -567,6 +687,15 @@ const editViewForm = (record: QueryViewForm) => {
                        :title="atFormParams.title"
                        :width="atFormParams.width"
                        @saveSuccess="aTableFormSaveSuccess"/>
+
+  <GlModelViewAppForm v-model:visible="avFormParams.visible"
+                      :formCol="avFormParams.formCol"
+                      :formState="avFormParams.formState"
+                      :modelValue="avFormParams.id"
+                      :parameter="avFormParams.parameter"
+                      :title="avFormParams.title"
+                      :width="avFormParams.width"
+                      @saveSuccess="aViewFormSaveSuccess"/>
 
   <GlModelTableModal v-model:visible="formParams.visible" :formCol="formParams.formCol"
                      :formState="formParams.formState" :modelValue="formParams.id"

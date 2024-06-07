@@ -67,6 +67,7 @@ import {getUserCompany} from './m/datasource/Security'
 import type {
   ColumnSelectType,
   QueryAppTableForm,
+  QueryAppViewForm,
   QueryConnectForm,
   QueryMultiComponentForm,
   QueryTableColumnForm,
@@ -206,6 +207,7 @@ export {
   QueryTableForeignForm,
   QueryViewForm,
   QueryAppTableForm,
+  QueryAppViewForm,
   ColumnSelectType,
   encodingApi,
   executeObjectPropsExpressions,

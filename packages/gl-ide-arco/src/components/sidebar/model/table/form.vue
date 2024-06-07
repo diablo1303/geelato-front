@@ -275,7 +275,7 @@ defineExpose({saveOrUpdate, loadPage});
                     v-model="formData.packBusData" :options="packBusDataOptions"/>
           <span v-else>{{ utils.getOptionLabel(formData.packBusData, packBusDataOptions) }}</span>
           <template #extra>
-            打包业务数据时，增量为：更新和插入打包数据；全量为：先清空表再插入打包数据。
+            打包业务数据时，增量为：仅插入打包数据，不修改不删除表数据；全量为：先清空表再插入打包数据。
           </template>
         </a-form-item>
       </a-col>

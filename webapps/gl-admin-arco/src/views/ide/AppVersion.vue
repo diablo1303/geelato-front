@@ -312,7 +312,7 @@ const packetAppVersionClick = async () => {
     if (data && data.length > 0) {
       // eslint-disable-next-line no-restricted-syntax
       for (const item of data) {
-        // 增量为：更新和插入打包数据；
+        // 增量为：仅插入打包数据，不修改不删除表数据。
         if ((packDefaultData.value.first && packDefaultData.value.first.includes(item.entityName))
             || (item.appId === appData.value.id && item.packBusData === 1)) {
           packData.value.first.push(item);
@@ -562,7 +562,7 @@ onUnmounted(() => {
       </a-descriptions>
       <a-descriptions :bordered="true" :column="3" layout="horizontal" size="medium" style="margin-top: 12px;">
         <template #title>
-          <span>增量更新（更新和插入打包数据）</span>
+          <span>增量插入（仅插入打包数据，不修改不删除表数据）</span>
         </template>
         <a-descriptions-item v-for="(item,index) of packData.first" :key="index" :label="item.title">
           {{ item.entityName }}

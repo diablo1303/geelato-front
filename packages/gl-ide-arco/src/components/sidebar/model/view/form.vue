@@ -498,7 +498,7 @@ const tableSelectChange = (value: string) => {
 }
 
 const pFormParams = ref({
-  formState: props.modelValue, isModal: true, height: tableTabHeight.value + 35,
+  formState: props.formState, isModal: true, height: tableTabHeight.value + 35,
   parameter: {
     connectId: props.parameter?.connectId || '',
     object: props.parameter?.entityName || '',
@@ -683,7 +683,11 @@ const cloneColumns = ref<Column[]>([]);
               <a-col :span="(labelCol+wrapperCol)/formCol">
                 <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="entityName" label="所属模型">
                   <a-select v-model="formData.entityName" :disabled="!!parameter.entityName || formState==='view'"
-                            :options="tableSelectOptions" allow-search @change="tableSelectChange(formData.entityName)"/>
+                            :options="tableSelectOptions" allow-search @change="tableSelectChange(formData.entityName)">
+                    <template #prefix>
+                      <GlCopyToClipboard v-model="formData.entityName"/>
+                    </template>
+                  </a-select>
                 </a-form-item>
               </a-col>
               <a-col :span="(labelCol+wrapperCol)/formCol">
