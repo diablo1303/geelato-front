@@ -213,6 +213,11 @@ export interface QueryRoleForm {
   appName?: string;
 }
 
+export function pageQueryOfRole(params: Record<string, any>) {
+  const records = utils.getUrlParams(params);
+  return entityApi.getAxios().get<PageQueryResponse>(`/api/security/role/pageQueryOf?${records.join('&')}`);
+}
+
 export function getRole(id: string) {
   return entityApi.getAxios().get<QueryRoleForm>(`/api/security/role/get/${id}`);
 }

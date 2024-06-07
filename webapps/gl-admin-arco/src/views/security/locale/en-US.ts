@@ -393,6 +393,7 @@ export default {
   'security.role.index.model.title.view': 'View Role',
   'security.role.index.model.cancel.text': 'Cancel',
   'security.role.index.model.ok.text': 'Confirm',
+  'searchTable.columns.operations.role.editMsg': 'Please edit in [System - Role]',
 
   // webapps/gl-admin-arco/src/views/security/role/app
   'security.roleApp.index.menu.list': 'System',

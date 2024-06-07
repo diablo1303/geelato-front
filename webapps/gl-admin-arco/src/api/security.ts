@@ -85,6 +85,14 @@ export function pageQueryRole(params: PageQueryRequest) {
   });
 }
 
+export function pageQueryOfRole(params: PageQueryRequest) {
+  return axios.get<PageQueryResponse>('/api/security/role/pageQueryOf', {
+    params, paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 export function pageQueryRoleApp(params: PageQueryRequest) {
   return axios.get<PageQueryResponse>('/api/security/role/app/pageQuery', {
     params, paramsSerializer: (obj) => {
@@ -582,6 +590,10 @@ export function insertRoleApp(params: QueryRoleAppForm) {
 
 export function deleteRoleApp(id: string) {
   return axios.delete<QueryResult>(`/api/security/role/app/isDelete/${id}`);
+}
+
+export function deleteRoleOfApp(appId: string, roleId: string) {
+  return axios.delete<QueryResult>(`/api/security/role/app/isDelete/${appId}/${roleId}`);
 }
 
 /* -----------------------------role permission--------------------------- */

@@ -394,6 +394,7 @@ export default {
   'security.role.index.model.title.view': '查看角色',
   'security.role.index.model.cancel.text': '取消',
   'security.role.index.model.ok.text': '确认',
+  'searchTable.columns.operations.role.editMsg': '请在【应用管理 - 角色管理】中编辑',
 
   // webapps/gl-admin-arco/src/views/security/role/app
   'security.roleApp.index.menu.list': '应用管理',

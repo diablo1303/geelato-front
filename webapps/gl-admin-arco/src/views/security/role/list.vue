@@ -14,7 +14,13 @@ import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 import {PageSizeOptions, PageQueryFilter, PageQueryRequest, getOptionLabel} from '@/api/base';
 // 页面所需 对象、方法
 import {queryAppSelectOptions} from "@/api/application";
-import {deleteRole as deleteList, QueryRoleForm as QueryForm, pageQueryRole as pageQueryList} from '@/api/security';
+import {
+  deleteRole as deleteList,
+  deleteRoleOfApp as relieveList,
+  QueryRoleForm as QueryForm,
+  pageQueryRole as pageQueryList,
+  pageQueryOfRole as pageQueryOfList,
+} from '@/api/security';
 import {columns, enableStatusOptions, typeOptions} from './searchTable'
 // 引入组件
 import RoleForm from './form.vue';
@@ -84,7 +90,8 @@ const appSelectOptions = ref<SelectOptionData[]>([]);
 const fetchData = async (params: PageQueryRequest) => {
   setLoading(true);
   try {
-    const {data} = await pageQueryList(params);
+    // @ts-ignore
+    const {data} = params.appId ? await pageQueryOfList(params) : await pageQueryList(params);
     renderData.value = data.items;
     pagination.current = params.current;
     pagination.pageSize = basePagination.pageSize;
@@ -106,6 +113,21 @@ const fetchData = async (params: PageQueryRequest) => {
 const deleteData = async (id: string, successBack?: any, failBack?: any) => {
   try {
     await deleteList(id);
+    if (successBack && typeof successBack === 'function') successBack(id);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+};
+
+/**
+ * 单个数据删除接口
+ * @param id
+ * @param successBack
+ * @param failBack
+ */
+const relieveData = async (id: string, successBack?: any, failBack?: any) => {
+  try {
+    await relieveList(props.parameter.appId, id);
     if (successBack && typeof successBack === 'function') successBack(id);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -232,11 +254,18 @@ const editTable = (data: QueryForm) => {
  * 列表按钮 - 删除
  * @param data
  */
-const deleteTable = (data: QueryForm) => {
-  deleteData(data.id, (id: string) => {
-    condition();
-    emits('delete', data);
-  });
+const deleteTable = (data: QueryForm, type?: string) => {
+  if (type === 'of') {
+    relieveData(data.id, (id: string) => {
+      condition();
+      emits('delete', data);
+    });
+  } else {
+    deleteData(data.id, (id: string) => {
+      condition();
+      emits('delete', data);
+    });
+  }
 }
 
 /**
@@ -344,7 +373,7 @@ watch(() => props, (val) => {
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col v-if="!['app'].includes(filterData.type)" :span="(labelCol+wrapperCol)/filterCol">
+          <a-col v-if="!['app'].includes(filterData.type) && !parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.role.index.form.createAt')" field="createAt">
               <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
             </a-form-item>
@@ -437,10 +466,22 @@ watch(() => props, (val) => {
           <a-button size="small" type="text" @click="viewTable(record)">
             {{ $t('searchTable.columns.operations.view') }}
           </a-button>
-          <a-button :disabled="formState==='view'" size="small" type="text" @click="editTable(record)">
+          <a-tooltip v-if="parameter.appId&&['platform'].includes(record.type)" :content="$t('searchTable.columns.operations.role.editMsg')" position="top">
+            <a-button :disabled="true" size="small" type="text">
+              {{ $t('searchTable.columns.operations.edit') }}
+            </a-button>
+          </a-tooltip>
+          <a-button v-else :disabled="formState==='view'" size="small" type="text" @click="editTable(record)">
             {{ $t('searchTable.columns.operations.edit') }}
           </a-button>
-          <a-popconfirm :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record)">
+          <a-popconfirm v-if="parameter.appId&&['platform'].includes(record.type)"
+                        :content="$t('searchTable.columns.operations.relevance.deleteMsg')" position="tr" type="warning"
+                        @ok="deleteTable(record,'of')">
+            <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
+              {{ $t('searchTable.columns.operations.delete') }}
+            </a-button>
+          </a-popconfirm>
+          <a-popconfirm v-else :content="$t('searchTable.columns.operations.deleteMsg')" position="tr" type="warning" @ok="deleteTable(record)">
             <a-button :disabled="formState==='view'" size="small" status="danger" type="text">
               {{ $t('searchTable.columns.operations.delete') }}
             </a-button>

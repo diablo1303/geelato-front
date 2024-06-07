@@ -82,13 +82,17 @@ const currentRoleAppMenuItems: Ref<AppMenuItem[]> = ref([])
 const currentMenuPermissions = ref<Record<string, TreePermission>>({});
 
 // 当前应用的角色
-const loadAppRoles = (appId: string) => {
-  // TODO 待增加应用id条件
-  entityApi.query('platform_role', 'id,name,code,weight', {
-    '@p': '1,1000', '@order': 'weight|-', 'appId': appId
-  }).then((res) => {
-    appRoles.value = res.data
-  })
+const loadAppRoles = async (appId: string) => {
+  try {
+    const {data} = await securityApi.pageQueryOfRole({
+      'appId': appId, current: 1, pageSize: 10000, order: 'weight|desc'
+    });
+    // @ts-ignore
+    data.items.sort((a, b) => a.type >= b.type ? 1 : -1);
+    appRoles.value = (data.items || []) as unknown as Role[];
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 const loadAppMenuItems = (appId: string) => {
