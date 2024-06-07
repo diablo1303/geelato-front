@@ -718,7 +718,7 @@ const date = {
             _type: 'string',
             _brackets: '()',
             _description:
-                '无参数时默认为当前时间，格式为YYYY-MM-DD HH:mm:ss，也可以指定两个参数(Date.now(), "YYYY-MM-DD HH:mm:ss")。'
+                '无参数时默认为当前时间，格式为YYYY-MM-DD HH:mm:ss，也可以指定两个参数(Date.now(), "YYYY-MM-DD HH:mm:ss")，更多的日期格式参考Day.js。'
         }
     ]
 }
