@@ -275,6 +275,11 @@ export interface QueryViewForm {
   updateAt?: string;
 }
 
+export function pageQueryView(params: Record<string, any>) {
+  const records = utils.getUrlParams(params);
+  return entityApi.getAxios().get<PageQueryResponse>(`/api/model/view/pageQuery?${records.join('&')}`);
+}
+
 export function queryViews(params: Record<string, any>) {
   const records = utils.getUrlParams(params);
   return entityApi.getAxios().get<QueryViewForm[]>(`/api/model/view/query?${records.join('&')}`);
@@ -335,6 +340,44 @@ export function createOrUpdateAppTable(params: QueryAppTableForm) {
 
 export function deleteAppTable(id: string) {
   return entityApi.getAxios().delete<QueryResult>(`/api/app/table/isDelete/${id}`);
+}
+
+/* *************************** 应用模型授权信息 ****************************** */
+export interface QueryAppViewForm {
+  id: string;
+  appId: string;
+  appName: string;
+  tableName: string;
+  viewId: string;
+  viewName: string;
+  viewTitle: string;
+  viewAppId: string;
+  permissionId: string;
+  permissionName: string;
+  approvalStatus: string;
+  approvalNeed: boolean;
+  enableStatus: number;
+  tenantCode: string;
+  description: string;
+  updaterName?: string;
+  updateAt?: string;
+}
+
+export function queryAppViews(params: Record<string, any>) {
+  const records = utils.getUrlParams(params);
+  return entityApi.getAxios().get<QueryAppViewForm[]>(`/api/app/view/query?${records.join('&')}`);
+}
+
+export function getAppView(id: string) {
+  return entityApi.getAxios().get<QueryAppViewForm>(`/api/app/view/get/${id}`);
+}
+
+export function createOrUpdateAppView(params: QueryAppViewForm) {
+  return entityApi.getAxios().post<QueryResult>('/api/app/view/createOrUpdate', params);
+}
+
+export function deleteAppView(id: string) {
+  return entityApi.getAxios().delete<QueryResult>(`/api/app/view/isDelete/${id}`);
 }
 
 /* --------------------------- 其他方法 --------------------------------- */

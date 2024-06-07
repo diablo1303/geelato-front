@@ -9,7 +9,7 @@ import {ref, watch} from "vue";
 import {Modal} from "@arco-design/web-vue";
 import {modelApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryTableForm} from '@geelato/gl-ui';
-import {sourceTypeOptions, tableSyncOptions} from "./searchTable";
+import {packBusDataOptions, sourceTypeOptions, tableSyncOptions} from "./searchTable";
 import GlModelTableForm from "./form.vue";
 import GlModelTableCopy from "./copy.vue";
 import GlModelTableColumnList from '../column/list.vue';
@@ -17,7 +17,7 @@ import GlModelTableForeignList from '../foreign/list.vue';
 import GlModelTableViewList from '../view/list.vue';
 import GlModelTablePermissionForm from './permission/form.vue';
 import GlModelTableColumnPermissionForm from '../column/permission/form.vue';
-import GlModelTableAppList from '../application/list.vue';
+import GlModelTableAppList from '../application/table/list.vue';
 
 type PageParams = {
   refApp: string; // 引用应用
@@ -332,8 +332,8 @@ watch(() => visibleForm, () => {
         <a-button v-if="isSystem" class="list-action-button-default" status="warning" type="primary">
           <span>{{ utils.getOptionLabel(tableData.sourceType, sourceTypeOptions) }}</span>
         </a-button>
-        <a-button v-if="tableData.packBusData" class="list-action-button-default" status="danger" type="primary">
-          <span>打包业务数据</span>
+        <a-button v-if="tableData.packBusData>0" class="list-action-button-default" status="danger" type="primary">
+          <span>{{ utils.getOptionLabel(tableData.packBusData, packBusDataOptions) }}</span>
         </a-button>
         <a-button :disabled="isSync===0" class="list-action-button-default" type="primary">
           <span>{{ utils.getOptionLabel(isSync, tableSyncOptions) }}</span>
