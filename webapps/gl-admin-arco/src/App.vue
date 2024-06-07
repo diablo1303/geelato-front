@@ -1,17 +1,32 @@
 <template>
   <a-config-provider :locale="locale">
-    <router-view />
-    <global-setting />
+    <div v-if="hasPermission">
+      <router-view />
+      <global-setting />
+    </div>
+    <div v-else>
+      <a-alert type="error" :show-icon="false" style="text-align: center">
+        无权访问
+      </a-alert>
+    </div>
   </a-config-provider>
 </template>
 
 <script lang="ts" setup>
-  import { computed } from 'vue';
+  import { computed, ref } from 'vue';
   import enUS from '@arco-design/web-vue/es/locale/lang/en-us';
   import zhCN from '@arco-design/web-vue/es/locale/lang/zh-cn';
   import GlobalSetting from '@/components/global-setting/index.vue';
   import useLocale from '@/hooks/locale';
 
+  const hasPermission = ref(false);
+  const geelatoKey = localStorage.getItem('geelatoKey');
+  if (
+    geelatoKey ===
+    'ujoooojjadfasd.iaWQiOiIzNzUxNjE5NDA1MjYwODE2NDIxIiwiZXhwIjoxNzE4asdfasdfkKHIqNjp2IiwibG9naW5OYW1lIjoiaG9uZ3hxIiw.-Up93OfHapxJRYUxEHIlQ7cvc2kd7nKLM0U_8SWQ3CI'
+  ) {
+    hasPermission.value = true;
+  }
   const { currentLocale } = useLocale();
   const locale = computed(() => {
     switch (currentLocale.value) {
@@ -38,7 +53,6 @@
 
   body[gl-nav-style='leftBlue'] {
     .layout-navbar {
-
       .navbar {
         border-bottom: 0;
 
@@ -82,7 +96,7 @@
           color: var(--gl-color-text-2);
         }
 
-        .arco-menu-inline-content{
+        .arco-menu-inline-content {
           color: #8f8f8f;
         }
 
@@ -90,17 +104,18 @@
           background-color: var(--menu-item-selected-color);
         }
 
-        .arco-menu-inline-content .arco-menu-selected{
+        .arco-menu-inline-content .arco-menu-selected {
           background-color: var(--menu-sub-item-selected-color);
         }
 
-        .arco-menu-inline-header.arco-menu-selected:hover{
+        .arco-menu-inline-header.arco-menu-selected:hover {
           background-color: var(--menu-item-selected-color);
-          color: #FFFFFF;
+          color: #ffffff;
         }
+
         .arco-menu-item:not(.arco-menu-selected):hover {
           background-color: var(--gl-color-transparent);
-          color: #FFFFFF;
+          color: #ffffff;
         }
 
         .arco-menu-icon > svg,
