@@ -54,11 +54,11 @@ let pagePermission: Ref<PagePermission> = ref(new PagePermission())
 const load = () => {
   let loadedPage = undefined
   if (props.pageId) {
-    loadedPage = entityApi.queryPageAndCustomById('pageId', props.pageId).then((res) => {}, (err) => {
+    loadedPage = entityApi.queryPageAndCustomById('pageId', props.pageId).then((res) => {return res}, (err) => {
       loading.value = false
     })
   } else if (props.extendId) {
-    loadedPage = entityApi.queryPageAndCustomById('extendId', props.extendId).then((res) => {}, (err) => {
+    loadedPage = entityApi.queryPageAndCustomById('extendId', props.extendId).then((res) => {return res}, (err) => {
       loading.value = false
     })
   } else {
