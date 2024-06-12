@@ -19,7 +19,7 @@ import {
 } from "@/views/compare/type";
 import VersionCompareIndex from "@/views/compare/indet.vue";
 
-const emits = defineEmits(['update:modelValue']);
+const emits = defineEmits(['update:modelValue', 'difference']);
 const props = defineProps({
   modelValue: {type: Object as PropType<AppVersion>, default: () => ({} as AppVersion)},// 基准版本
   compareValue: {type: Object as PropType<AppVersion>, default: () => ({} as AppVersion)},// 对比版本
@@ -29,7 +29,7 @@ const props = defineProps({
 });
 
 // 业务layout高度
-const layoutWidth = ref<number>(300);
+const layoutWidth = ref<number>(320);
 const layoutHeight = ref<number>(props.height - 75);
 // 树参数
 const rootNode = {title: "菜单管理", key: 'root', level: 0, data: {}, children: []};
@@ -64,7 +64,7 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
       if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
-      Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit,});
+      Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit, isDel: false});
       items.push(nodeData);
     }
   }
@@ -84,7 +84,9 @@ const queryTreeItems = (direction: string, meta: AppVersion, data: TreeLevelData
     title: `${directions(direction)} | ${rootNode.title}（${meta?.appCode}）`, key: `${meta?.sourceAppId}`
   });
   const {child, types, subsEdit} = queryTreeFirstItems('left', parentNode, data, compare);
+  // 判断是否修改
   const isEdit = types.includes(1) || types.includes(2) || types.includes(3) || subsEdit.includes(true);
+  emits("difference", isEdit ? 1 : 2);
   Object.assign(parentNode, {children: child, subChange: isEdit});
 
   return [parentNode];
@@ -133,5 +135,6 @@ watch(() => props, (val) => {
                        :model-value="diffId"
                        :right-data="renderCompareData"
                        :root-key="rootNode.key"
-                       :root-title="rootNode.title"/>
+                       :root-title="rootNode.title"
+                       :tree-height="layoutHeight-35"/>
 </template>

@@ -10,12 +10,13 @@ import Diff2Html from "@/components/diff2html/index.vue";
 import {
   DiffModel, LayoutHeight, TreeNodeModel, TreeLevelData,
   treeSearchLoop, generateDiffParams,
-  treeClickFirstLevel, treeClickZerothLevel,
+  treeClickFirstLevel, treeClickZerothLevel, typeSelectOptions,
 } from "@/views/compare/type";
 import {fetchFileById} from "@/api/attachment";
 import AppVersionList from "@/views/version/list.vue";
 import AppVersionCompareTabs from "@/views/compare/tabsForm.vue";
 import AppVersionTabs from "@/views/version/tabsForm.vue";
+import type {SelectOptionData} from "@arco-design/web-vue";
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
@@ -26,6 +27,7 @@ const props = defineProps({
   rootKey: {type: String, default: "root"}, // 根节点key
   layoutWidth: {type: Number, default: 250},
   layoutHeight: {type: Number, default: 600},
+  treeHeight: {type: Number, default: 565},
 });
 
 const splitHeight = ref<number>(props.layoutHeight);
@@ -41,10 +43,11 @@ const expandedKeys = ref<string[]>([props.rootKey]);
 const treeLeftData = ref<TreeNodeModel[]>(props.leftData.tree || []);
 // 树搜索
 const searchKey = ref<string>('');
+const selectKey = ref<string>('');
 // 树搜索，结果集
 const originTreeLeftData = computed(() => {
-  if (!searchKey.value) return treeLeftData.value;
-  return treeSearchLoop(treeLeftData.value, searchKey.value);
+  if (!searchKey.value && !selectKey.value) return treeLeftData.value;
+  return treeSearchLoop(treeLeftData.value, searchKey.value, selectKey.value);
 });
 
 /**
@@ -55,6 +58,7 @@ const originTreeLeftData = computed(() => {
 const treeClickLevel = (direction: string, node: TreeNodeModel) => {
   Object.assign(diffParams.value, {title: node.title, newObject: {}, oldObject: {}});
   if (node?.level === 0) {
+    diffParams.value.title = props.rootTitle;
     treeClickZerothLevel(direction, selectedKeys.value, node);
   } else if (node?.level === 1) {
     treeClickFirstLevel(direction, selectedKeys.value, node, diffParams.value, props.leftData?.first || [], props.rightData?.first || []);
@@ -107,6 +111,40 @@ const unfoldTree = (isFlod: boolean) => {
   }
 }
 
+/**
+ * 树删除或还原
+ * @param nodeData
+ * @param isDel
+ */
+const treeDelLoop = (nodeData: TreeNodeModel, isDel: boolean) => {
+  nodeData.isDel = isDel;
+  if (nodeData.children && nodeData.children.length > 0) {
+    for (let i = 0; i < nodeData.children?.length; i += 1) {
+      treeDelLoop(nodeData.children[i], isDel);
+    }
+  }
+  console.log(treeLeftData.value)
+  console.log(originTreeLeftData.value)
+}
+
+/**
+ * 删除节点
+ * @param nodeData
+ */
+const deleteTree = (nodeData: TreeNodeModel) => {
+  treeDelLoop(nodeData, true);
+  selectedKeys.value = [nodeData.key as string];
+}
+
+/**
+ * 还原节点
+ * @param nodeData
+ */
+const resetTree = (nodeData: TreeNodeModel) => {
+  treeDelLoop(nodeData, false);
+  selectedKeys.value = [nodeData.key as string];
+}
+
 watch(() => props, (val) => {
   splitHeight.value = props.layoutHeight;
   splitMin.value = `${props.layoutWidth}px`;
@@ -124,8 +162,11 @@ watch(() => props, (val) => {
   <div class="layout-demo">
     <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
       <template #first>
-        <a-input-search v-model="searchKey" allow-clear class="tree-search" placeholder="搜索"/>
-        <a-scrollbar id="left-scrollbar" :style="{overflow:'auto',height:`${layoutHeight-35}px`}">
+        <a-space style="width:100%;justify-content: center;">
+          <a-input-search v-model="searchKey" allow-clear class="tree-search" placeholder="搜索" :style="{width:`${layoutWidth-94}px`}"/>
+          <a-select v-model="selectKey" placeholder="全部" style="width: 80px;" allow-clear :options="typeSelectOptions"/>
+        </a-space>
+        <a-scrollbar id="left-scrollbar" :style="{overflow:'auto',height:`${treeHeight}px`}">
           <a-tree v-model:expandedKeys="expandedKeys"
                   v-model:selectedKeys="selectedKeys"
                   :block-node="false"
@@ -135,22 +176,24 @@ watch(() => props, (val) => {
                   :show-line="false"
                   @select="treeLeftClickSelected">
             <template #title="nodeData">
-              <a-tooltip v-if="nodeData?.subChange===true" content="子项变更" position="left">
-                <icon-arrow-fall style="color: rgb(var(--primary-6))"/>
-              </a-tooltip>
-              <a-tooltip v-if="nodeData?.type===1" content="新增" position="left">
-                <icon-plus style="color: rgb(var(--success-6))"/>
-              </a-tooltip>
-              <a-tooltip v-if="nodeData?.type===2" content="修改" position="left">
-                <icon-edit style="color: rgb(var(--primary-6))"/>
-              </a-tooltip>
-              <a-tooltip v-if="nodeData?.type===3" content="删除" position="left">
-                <icon-minus style="color: rgb(var(--danger-6))"/>
-              </a-tooltip>
-              <a-button v-if="!!nodeData?.mark" class="list-action-button-default" :class="`mark-${nodeData?.type}`" type="outline">
-                {{ `${nodeData?.mark}` }}
-              </a-button>
-              {{ `${nodeData?.title}` }}
+              <span class="tree-title" :class="`delete-${nodeData?.isDel}`">
+                <a-tooltip v-if="nodeData?.subChange===true" content="子项变更" position="left">
+                  <icon-arrow-fall style="color: rgb(var(--primary-6))"/>
+                </a-tooltip>
+                <a-tooltip v-if="nodeData?.type===1" content="新增" position="left">
+                  <icon-plus style="color: rgb(var(--success-6))"/>
+                </a-tooltip>
+                <a-tooltip v-if="nodeData?.type===2" content="修改" position="left">
+                  <icon-edit style="color: rgb(var(--primary-6))"/>
+                </a-tooltip>
+                <a-tooltip v-if="nodeData?.type===3" content="删除" position="left">
+                  <icon-minus style="color: rgb(var(--danger-6))"/>
+                </a-tooltip>
+                <a-button v-if="!!nodeData?.mark" class="list-action-button-default" :class="`mark-${nodeData?.type}`" type="outline">
+                  {{ `${nodeData?.mark}` }}
+                </a-button>
+                {{ `${nodeData?.title}` }}
+              </span>
             </template>
             <template #extra="nodeData">
               <a-space v-if="nodeData.level===0">
@@ -160,6 +203,23 @@ watch(() => props, (val) => {
                 <a-tooltip v-else content="折叠" position="top">
                   &nbsp;<icon-double-down style="color: rgb(var(--primary-6))" @click.stop="unfoldTree(false)"/>
                 </a-tooltip>
+                <a-popconfirm content="是否还原所有删除的节点？" position="tr" type="warning" @ok="resetTree(nodeData)">
+                  <a-tooltip content="批量还原" position="top">
+                    &nbsp;<icon-clock-circle style="color: rgb(var(--success-6))"/>
+                  </a-tooltip>
+                </a-popconfirm>
+              </a-space>
+              <a-space v-if="nodeData.level>0">
+                <a-popconfirm v-if="nodeData?.isDel===false" content="是否取消本次变更？" position="tr" type="warning" @ok="deleteTree(nodeData)">
+                  <a-tooltip content="取消" position="right">
+                    &nbsp;<icon-delete style="color: rgb(var(--danger-6))"/>
+                  </a-tooltip>
+                </a-popconfirm>
+                <a-popconfirm v-if="nodeData?.isDel===true" content="是否还原该节点？" position="tr" type="warning" @ok="resetTree(nodeData)">
+                  <a-tooltip content="还原" position="right">
+                    &nbsp;<icon-clock-circle style="color: rgb(var(--color-text-4))"/>
+                  </a-tooltip>
+                </a-popconfirm>
               </a-space>
             </template>
           </a-tree>
@@ -180,6 +240,10 @@ watch(() => props, (val) => {
 </template>
 
 <style lang="less" scoped>
+.tree-title.delete-true {
+  color: var(--color-text-4);
+}
+
 .list-action-button-default.mark-3 {
   color: rgb(var(--danger-6)) !important;
 }

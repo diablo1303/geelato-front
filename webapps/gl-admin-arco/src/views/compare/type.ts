@@ -1,6 +1,7 @@
-import {TreeNodeData} from "@arco-design/web-vue";
+import {type SelectOptionData, TreeNodeData} from "@arco-design/web-vue";
 import {diffJson} from "diff";
 import {isJSON} from "@/utils/is";
+import {computed} from "vue";
 
 export type PageParams = {
   appId?: string; // 应用主键
@@ -31,6 +32,7 @@ export interface TreeNodeModel extends TreeNodeData {
   mark?: string;// 标记
   type?: number;// 0 相同,1 新增,2 删除,3 编辑
   subChange?: boolean;// 子项是否变更
+  isDel?: boolean;// 是否删除
   data?: Record<string, any>;
   children?: TreeNodeModel[];
 }
@@ -53,6 +55,13 @@ export interface DiffModel {
   oldObject: Record<string, any>;
   oldHeader: string;
 }
+
+export const typeSelectOptions = computed<SelectOptionData[]>(() => [
+  {label: '相同', value: '0',},
+  {label: '新增', value: '1',},
+  {label: '修改', value: '2',},
+  {label: '删除', value: '3',},
+]);
 
 
 /**
@@ -185,21 +194,44 @@ export const parseJson = (jsonText: string) => {
 
 /**
  * 树，循环对比
+ * @param item
+ * @param keyword
+ * @param selected
+ */
+const treeSearchCompare = (item: TreeNodeModel, keyword: string, selected: string) => {
+  if (!!keyword && selected === '') {
+    return item.title && item.title.toLowerCase().indexOf(keyword.toLowerCase()) > -1;
+  }
+  if (!keyword && selected !== '') {
+    return item.type === Number(selected);
+  }
+  if (!!keyword && selected !== '') {
+    return item.title && item.title.toLowerCase().indexOf(keyword.toLowerCase()) > -1 && item.type === Number(selected);
+  }
+  return false;
+}
+
+/**
+ * 树，循环对比
  * @param data
  * @param keyword
+ * @param selected
  */
-export const treeSearchLoop = (data: TreeNodeData[], keyword: string) => {
-  const result: TreeNodeData[] = [];
-  data.forEach(item => {
-    if (item.title && item.title.toLowerCase().indexOf(keyword.toLowerCase()) > -1) {
+export const treeSearchLoop = (data: TreeNodeModel[], keyword: string, selected: string) => {
+  const result: TreeNodeModel[] = [];
+  // eslint-disable-next-line no-restricted-syntax
+  for (const item of data) {
+    if (treeSearchCompare(item, keyword, selected)) {
       result.push({...item});
-    } else if (item.children) {
-      const filterData = treeSearchLoop(item.children, keyword);
+    } else if (item.children && item.children.length > 0) {
+      const filterData = treeSearchLoop(item.children, keyword, selected);
       if (filterData.length) result.push({...item, children: filterData})
     }
-  })
+  }
+
   return result;
 }
+
 
 /**
  * 树，搜索, 搜索结果高亮

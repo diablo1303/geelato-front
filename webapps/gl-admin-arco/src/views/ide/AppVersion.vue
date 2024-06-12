@@ -520,9 +520,7 @@ onUnmounted(() => {
                         <a-select v-model="compareVersionId" :field-names="{'label':'version','value':'id'}"
                                   :options="appVersionData.filter(item => item.id !== listParams.selected.id)"
                                   :style="{width:'320px'}"
-                                  allow-clear
-                                  allow-search placeholder="选中比较版本"
-                                  @clear.stop="()=>{isCompare=false;}">
+                                  allow-clear allow-search placeholder="选中比较版本">
                           <template #prefix>对比版本</template>
                         </a-select>
                         <a-button style="padding: 0 8px;" type="dashed" @click.stop="cancelCompare">

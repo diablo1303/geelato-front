@@ -19,7 +19,7 @@ import {
 } from "@/views/compare/type";
 import VersionCompareIndex from "@/views/compare/indet.vue";
 
-const emits = defineEmits(['update:modelValue']);
+const emits = defineEmits(['update:modelValue', 'difference']);
 const props = defineProps({
   modelValue: {type: Object as PropType<AppVersion>, default: () => ({} as AppVersion)},// 基准版本
   compareValue: {type: Object as PropType<AppVersion>, default: () => ({} as AppVersion)},// 对比版本
@@ -29,7 +29,7 @@ const props = defineProps({
 });
 
 // 页面 layout-sider 宽度
-const layoutWidth = ref<number>(260);
+const layoutWidth = ref<number>(320);
 const layoutHeight = ref<number>(props.height - 75);
 // 树默认根节点
 const rootNode = {title: "数据字典管理", key: 'root', level: 0, data: {}, children: []};
@@ -64,7 +64,7 @@ const queryTreeSecondItems = (direction: string, record: TreeNodeModel, data: Tr
       if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
-      Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit,});
+      Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit, isDel: false});
       items.push(nodeData);
     }
   }
@@ -97,7 +97,7 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
       if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
-      Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit,});
+      Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit, isDel: false});
       items.push(nodeData);
     }
   }
@@ -113,8 +113,11 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
  */
 const queryTreeItems = (direction: string, data: TreeLevelData, compare: TreeLevelData) => {
   const parentNode = Object.assign(cloneDeep(rootNode), {title: `${directions(direction)} | ${rootNode.title}`});
-  const {child} = queryTreeFirstItems(direction, parentNode, data, compare);
+  const {child, types, subsEdit} = queryTreeFirstItems(direction, parentNode, data, compare);
   Object.assign(parentNode, {children: child});
+  // 判断是否修改
+  const isEdit = types.includes(1) || types.includes(2) || types.includes(3) || subsEdit.includes(true);
+  emits("difference", isEdit ? 1 : 2);
 
   return [parentNode];
 }
@@ -155,5 +158,6 @@ watch(() => props, (val) => {
                        :model-value="diffId"
                        :right-data="renderCompareData"
                        :root-key="rootNode.key"
-                       :root-title="rootNode.title"/>
+                       :root-title="rootNode.title"
+                       :tree-height="layoutHeight-35"/>
 </template>
