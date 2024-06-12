@@ -146,7 +146,7 @@ export const getSysConfig = async (global: ComponentCustomProperties & Record<st
         userInfo.corpName = resp.data?.name
       }
     }
-    console.log(global);
+    // console.log(global);
   } catch (err) {
     console.log(err);
   }

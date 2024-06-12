@@ -54,11 +54,15 @@ let pagePermission: Ref<PagePermission> = ref(new PagePermission())
 const load = () => {
   let loadedPage = undefined
   if (props.pageId) {
-    loadedPage = entityApi.queryPageAndCustomById('pageId', props.pageId)
+    loadedPage = entityApi.queryPageAndCustomById('pageId', props.pageId).then((res) => {}, (err) => {
+      loading.value = false
+    })
   } else if (props.extendId) {
-    loadedPage = entityApi.queryPageAndCustomById('extendId', props.extendId)
+    loadedPage = entityApi.queryPageAndCustomById('extendId', props.extendId).then((res) => {}, (err) => {
+      loading.value = false
+    })
   } else {
-    global.$notification.error({
+    global.$message.error({
       title: '配置缺失',
       content: '未配置pageId或extendId。',
       duration: 6000,
@@ -79,7 +83,7 @@ const load = () => {
         }
       } else {
         // console.error('GlPageViewer > loadedPage > resp?.data:', resp?.data)
-        global.$notification.error({
+        global.$message.error({
           title: '加载页面失败',
           content: '可能页面不存在，或配置的页面加载参数不对。',
           duration: 6000,

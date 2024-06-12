@@ -177,8 +177,14 @@ const convertTitle = (componentInst: ComponentInstance, title?: string) => {
     // componentInst.title = componentInst.props.label || componentInst.title || componentInst.componentName
     if (componentInst.componentName === 'GlEntityForm') {
       componentInst.title += '【表单】'
+    } else if (componentInst.componentName === 'GlEntityTableSub'){
+      componentInst.title = componentInst.props.base?.label + '【列表】'
     } else {
       componentInst.title += '【表单字段】'
+    }
+  }else{
+    if (componentInst.componentName === 'GlEntityTablePlus'){
+      componentInst.title = componentInst.props.base?.label + '【列表】'
     }
   }
   if (componentInst.children) {

@@ -1127,7 +1127,7 @@ const getColumnMin = (params: { dataIndex: string }) => {
       }
     }
     let value = record[params.dataIndex]
-    if (!isUnPush && value != null && value != undefined&&min > value) {
+    if (!isUnPush && value != null && value != undefined && min > value) {
       min = value
     }
   })
@@ -1822,18 +1822,20 @@ defineExpose({
               <template #content>
                 <div :id="tableSettingId">
                   <div v-for="(item, index) in showColumns" :key="item.dataIndex" class="setting">
-                    <div style="margin-right: 4px; cursor: move">
-                      <GlIconfont type="gl-drag-arrow"></GlIconfont>
-                    </div>
-                    <div>
-                      <a-checkbox
-                        v-model="item._checked"
-                        @change="changeShowColumns($event, item, index)"
-                      />
-                    </div>
-                    <div class="title">
-                      {{ item.title === '#' ? '序号' : item.title }}
-                    </div>
+                    <a-space>
+                      <div style="margin-right: 4px; cursor: move">
+                        <GlIconfont type="gl-drag-arrow"></GlIconfont>
+                      </div>
+                      <div>
+                        <a-checkbox
+                            v-model="item._checked"
+                            @change="changeShowColumns($event, item, index)"
+                        />
+                      </div>
+                      <div class="title">
+                        {{ item.title === '#' ? '序号' : item.title }}
+                      </div>
+                    </a-space>
                   </div>
                 </div>
               </template>
@@ -1910,22 +1912,20 @@ defineExpose({
   </a-card>
 </template>
 
-<style lang="less">
-.gl-entity-table-plus {
-  .action-icon {
-    margin-left: 12px;
-    cursor: pointer;
-  }
+<style>
+.gl-entity-table-plus .action-icon {
+  margin-left: 12px;
+  cursor: pointer;
+}
 
-  .setting {
-    display: flex;
-    align-items: center;
-    width: 200px;
+.gl-entity-table-plus .setting {
+  display: flex;
+  align-items: center;
+  width: 200px;
+}
 
-    .title {
-      margin-left: 12px;
-      cursor: pointer;
-    }
-  }
+.gl-entity-table-plus .setting .title {
+  margin-left: 12px;
+  cursor: pointer;
 }
 </style>

@@ -42,6 +42,11 @@ const zhMessages: MessageRule[] = [
       '{0}':["SQL\\s\\[(update|insert into)\\s\\w+","\\w+$"],
       '{1}': ["'(\\w+)'","\\w+"],
     }
+  },
+  {
+    rule: "Incorrect result size: expected 1, actual 0",
+    msg: '期待获取到1条记录，实际获取的记录数为0',
+    extractKeyRules: {}
   }
 ]
 
@@ -56,6 +61,8 @@ export const getMessage = (data: string | Record<string, any>) => {
   let srcMsg = ''
   if (typeof data === 'object') {
     srcMsg = data.msg
+  } else {
+    srcMsg = data
   }
 
   /**
@@ -78,11 +85,13 @@ export const getMessage = (data: string | Record<string, any>) => {
 
   for (let index in messages) {
     const message = messages[index]
-    // console.log('message', message, index)
+    // console.log('message', srcMsg, message, index,message.rule == srcMsg)
     if (new RegExp(message.rule, 'g').test(srcMsg)) {
       let hasMatchText = false
       let result = message.msg
-      Object.keys(message.extractKeyRules).forEach((key) => {
+      const ruleKeys = Object.keys(message.extractKeyRules)
+      if (ruleKeys.length === 0) return message.msg
+      ruleKeys.forEach((key) => {
         const matchText = matchKeywords(srcMsg, message.extractKeyRules[key])
         if (matchText) hasMatchText = true
         result = result.replace(key, matchText)
