@@ -38,6 +38,7 @@ export interface TreeNodeModel extends TreeNodeData {
 }
 
 export type TreeLevelData = {
+  level?: Record<number, string>;
   tree?: TreeNodeModel[];
   first?: Record<string, any>[];
   second?: Record<string, any>[];
@@ -293,4 +294,40 @@ export const sortRenderData = (data: Record<string, any>[], sorter: string) => {
       }
     }
   }
+}
+
+/**
+ * 获取对比结果
+ * @param data
+ * @param level
+ * @param dep
+ */
+export const getDiffData = (data: TreeNodeModel[], level: Record<string, any>, dep: Record<string, any>) => {
+  if (data && data.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      // @ts-ignore
+      if (item.level > 0 && item.isDel === true) {
+        // @ts-ignore
+        dep[level[item.level]].push(item.key);
+      }
+      if (item.children) getDiffData(item.children, level, dep);
+    }
+  }
+}
+
+/**
+ * 对象转换
+ * @param record
+ */
+export const objValueToArray = (record: Record<number, string>) => {
+  const data: Record<string, any> = {};
+  if (data) {
+    // eslint-disable-next-line no-restricted-syntax,guard-for-in
+    for (const key in record) {
+      // @ts-ignore
+      data[record[key]] = [];
+    }
+  }
+  return data;
 }

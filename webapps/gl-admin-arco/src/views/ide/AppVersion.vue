@@ -32,13 +32,15 @@ const ListDefaultPageSize = 5;
 const ListUsedHeight = 425;
 const ListRowHeight = 49;
 
+const tableFormRef = shallowRef(ApplicationModel);
+const versionCompareTabs = shallowRef(AppVersionCompareTabs);
+
 provide('pinia', pinia);
 const userStore = useUserStore();
 const global = useGlobal();
 const {ideRedirect, ideLogout} = useUser();
 const appData = ref<QueryAppForm>({} as unknown as QueryAppForm);
 const showPage = ref(false);
-const tableFormRef = shallowRef(ApplicationModel);
 const {loading, setLoading} = useLoading(false);
 const tabsKey = ref<number>(1);
 const isCompare = ref<boolean>(false);
@@ -46,6 +48,8 @@ const compareVersionId = ref<string>('');
 const appVersionData = ref<QueryAppVersionForm[]>([]);
 const packLoading = ref(false);
 const deployLoading = ref(false);
+const deployCompareLoading = ref(false);
+const isCanPacket = ref(false);
 const syncTableLoading = ref(false);
 const syncViewLoading = ref(false);
 const packDefaultData = ref<Record<string, any>>({});
@@ -190,7 +194,6 @@ const enterLink = (type: string) => {
 const listSelected = (record: QueryAppVersionForm) => {
   compareVersionId.value = "";
   isCompare.value = false;
-  console.log("listSelected", record);
   if (record.id) {
     Object.assign(listParams.value.selected, {
       id: record.id,
@@ -200,7 +203,40 @@ const listSelected = (record: QueryAppVersionForm) => {
   } else {
     Object.assign(listParams.value.selected, {id: '', title: '', item: {}});
   }
-  console.log(listParams.value);
+}
+
+const packetCompare = async (record: QueryAppVersionForm, appointMetas: Record<string, string>) => {
+  deployCompareLoading.value = true;
+  try {
+    const version = `${appData.value.code}_version${formatTime(new Date(), 'yyyyMMddHHmmss')}`;
+    const description = record ? `当前环境基于版本【${record.version}】对比打包形成的应用包` : '当前环境打包形成的应用包';
+    const {data} = await packetAppVersion(appData.value.id, version, description, appointMetas);
+    Message.success('打包成功!');
+    // @ts-ignore
+    listParams.value.selected.id = data.id || '';
+  } catch (err) {
+    console.log(err);
+  } finally {
+    deployCompareLoading.value = false;
+  }
+}
+
+const deployCompareVersion = (item: QueryAppVersionForm) => {
+  // @ts-ignore
+  if (versionCompareTabs.value && typeof versionCompareTabs.value?.deploy === 'function') {
+    // @ts-ignore
+    versionCompareTabs.value?.deploy((result: Record<string, any>) => {
+      if (result) {
+        // eslint-disable-next-line guard-for-in,no-restricted-syntax
+        for (const key in result) {
+          result[key] = !result[key] || result[key].length === 0 ? '' : result[key].join(',');
+        }
+        packetCompare(item, result);
+      } else {
+        Message.warning('对比信息未加载完整，请稍等！');
+      }
+    });
+  }
 }
 
 const startCompare = () => {
@@ -222,7 +258,6 @@ const syncTableToData = async () => {
   const msgLoading = Message.loading({content: `正在将 ${appData.value.name} 下的所有模型同步至数据库`, duration: 60 * 60 * 1000});
   try {
     const tableResult = await initTables(appData.value.id);
-    console.log("init Table", tableResult);
     Message.success(`${appData.value.name} 下的所有模型同步至数据库成功`);
   } catch (err) {
     Message.error(`${appData.value.name} 下的所有模型同步至数据库失败`);
@@ -255,7 +290,6 @@ const syncViewToData = async () => {
   const msgLoading = Message.loading({content: `正在将 ${appData.value.name} 下的所有视图同步至数据库`, duration: 60 * 60 * 1000});
   try {
     const viewResult = await initViews(appData.value.id);
-    console.log("init View", viewResult);
     initViewResult(viewResult.data);
   } catch (err) {
     Message.error(`${appData.value.name} 下的所有视图同步至数据库失败`);
@@ -490,7 +524,13 @@ onUnmounted(() => {
                 <div class="card-header">
                   <a-space style="width: 100%;justify-content: space-between;">
                     <div class="card-header-title">
-                      {{ listParams.selected.title }}
+                      {{ listParams.selected.title }}&nbsp;
+                      <a-popconfirm v-if="isCanPacket&&isCompare&&!!compareVersionId" content="确定打包修正后的版本？" position="br"
+                                    @ok="deployCompareVersion(listParams.selected.item)">
+                        <a-button :loading="deployCompareLoading" style="color: rgb(var(--success-6))" type="text">
+                          <icon-export/>&nbsp;对比打包
+                        </a-button>
+                      </a-popconfirm>
                     </div>
                     <a-space v-if="!!listParams.selected.id" class="card-header-extra">
                       <a-button v-if="!isCompare" style="color: rgb(var(--primary-6))" type="text" @click.stop="startCompare">
@@ -532,8 +572,13 @@ onUnmounted(() => {
                 </div>
                 <a-divider style="margin:0 0 5px 0"/>
                 <div v-if="!!listParams.selected.id" class="card-body2">
-                  <AppVersionCompareTabs v-if="!!compareVersionId" :compareId="compareVersionId" :height="listParams.height"
-                                         :model-value="listParams.selected.id" :visible="true"/>
+                  <AppVersionCompareTabs ref="versionCompareTabs"
+                                         v-if="!!compareVersionId"
+                                         :compareId="compareVersionId"
+                                         :height="listParams.height"
+                                         :model-value="listParams.selected.id"
+                                         :visible="true"
+                                         @canPacket="(can)=>{isCanPacket = can}"/>
                   <AppVersionTabs v-else :height="listParams.height" :model-value="listParams.selected.id" :visible="true"/>
                 </div>
                 <a-empty v-else/>

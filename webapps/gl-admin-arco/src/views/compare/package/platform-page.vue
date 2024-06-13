@@ -15,7 +15,7 @@ import {
   directions,
   queryCompareType,
   TreeLevelData,
-  sortRenderData,
+  sortRenderData, objValueToArray, getDiffData,
 } from "@/views/compare/type";
 import VersionCompareIndex from "@/views/compare/indet.vue";
 
@@ -109,6 +109,8 @@ const queryRenderData = (list: AppMeta[], data: TreeLevelData) => {
     item.platformPage = pageData.filter(page => page.extend_id === item.id);
   });
   sortRenderData(data.first, 'seq_no|asc,del_status|asc');
+  // 层级和表对应
+  data.level = {1: "platform_tree_node"};
 
   return data;
 }
@@ -127,6 +129,35 @@ watch(() => props, (val) => {
   // 计算布局高度
   layoutHeight.value = props.height - 75;
 }, {deep: true, immediate: true});
+
+const getSpecialDiffData = (data: TreeNodeModel[], dep: Record<string, any>) => {
+  if (data && data.length > 0) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data) {
+      // @ts-ignore
+      if (item.isDel === true && item.level === 1) {
+        // @ts-ignore
+        dep.platform_tree_node.push(item.key);
+        // 页面
+        if (item?.data?.platformPage && item?.data?.platformPage.length > 0) {
+          // eslint-disable-next-line no-restricted-syntax
+          for (const page of item.data.platformPage) {
+            dep.platform_app_page.push(page.id);
+          }
+        }
+      }
+      if (item.children) getSpecialDiffData(item.children, dep);
+    }
+  }
+}
+
+const deploy = (successBack: any) => {
+  const data: Record<string, any> = {"platform_tree_node": [], "platform_app_page": []};
+  getSpecialDiffData(renderData.value.tree || [], data);
+  if (successBack && typeof successBack === 'function') successBack(data);
+}
+
+defineExpose({deploy});
 </script>
 <template>
   <VersionCompareIndex :layout-height="layoutHeight"

@@ -123,8 +123,6 @@ const treeDelLoop = (nodeData: TreeNodeModel, isDel: boolean) => {
       treeDelLoop(nodeData.children[i], isDel);
     }
   }
-  console.log(treeLeftData.value)
-  console.log(originTreeLeftData.value)
 }
 
 /**
@@ -163,8 +161,8 @@ watch(() => props, (val) => {
     <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
       <template #first>
         <a-space style="width:100%;justify-content: center;">
-          <a-input-search v-model="searchKey" allow-clear class="tree-search" placeholder="搜索" :style="{width:`${layoutWidth-94}px`}"/>
-          <a-select v-model="selectKey" placeholder="全部" style="width: 80px;" allow-clear :options="typeSelectOptions"/>
+          <a-input-search v-model="searchKey" :style="{width:`${layoutWidth-94}px`}" allow-clear class="tree-search" placeholder="搜索"/>
+          <a-select v-model="selectKey" :options="typeSelectOptions" allow-clear placeholder="全部" style="width: 80px;"/>
         </a-space>
         <a-scrollbar id="left-scrollbar" :style="{overflow:'auto',height:`${treeHeight}px`}">
           <a-tree v-model:expandedKeys="expandedKeys"
@@ -176,7 +174,7 @@ watch(() => props, (val) => {
                   :show-line="false"
                   @select="treeLeftClickSelected">
             <template #title="nodeData">
-              <span class="tree-title" :class="`delete-${nodeData?.isDel}`">
+              <span :class="`delete-${nodeData?.isDel}`" class="tree-title">
                 <a-tooltip v-if="nodeData?.subChange===true" content="子项变更" position="left">
                   <icon-arrow-fall style="color: rgb(var(--primary-6))"/>
                 </a-tooltip>
@@ -189,7 +187,7 @@ watch(() => props, (val) => {
                 <a-tooltip v-if="nodeData?.type===3" content="删除" position="left">
                   <icon-minus style="color: rgb(var(--danger-6))"/>
                 </a-tooltip>
-                <a-button v-if="!!nodeData?.mark" class="list-action-button-default" :class="`mark-${nodeData?.type}`" type="outline">
+                <a-button v-if="!!nodeData?.mark" :class="`mark-${nodeData?.type}`" class="list-action-button-default" type="outline">
                   {{ `${nodeData?.mark}` }}
                 </a-button>
                 {{ `${nodeData?.title}` }}

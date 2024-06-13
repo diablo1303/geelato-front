@@ -184,7 +184,6 @@ watch(() => props, (val) => {
     // @ts-ignore
     treeNodeData.value.sort((a, b) => a.seq_no - b.seq_no);
     appPageData.value = (appMetaList.value.find(item => item.metaName === "platform_app_page")?.metaData || []) as PageQueryFilter[];
-    console.log(appPageData.value);
     setTreeItemData();
     treeNodeFilterData.value = buildTreeNodeList(props.parameter.appId);
   }

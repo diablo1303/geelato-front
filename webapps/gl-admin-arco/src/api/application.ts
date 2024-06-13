@@ -143,8 +143,8 @@ export function deleteAppVersion(id: string) {
  * 应用打包
  * @param appId
  */
-export function packetAppVersion(appId: string, version?: string, description?: string) {
-  return axios.get<QueryResult>(`/package/packet/${appId}?version=${version || ''}&description=${description || ''}`);
+export function packetAppVersion(appId: string, version?: string, description?: string, appointMetas?: Record<string, string>) {
+  return axios.post<QueryResult>(`/package/packet/${appId}?version=${version || ''}&description=${description || ''}`, appointMetas || {});
 }
 
 /**

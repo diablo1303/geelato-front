@@ -5,11 +5,11 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import {ref, watch} from "vue";
+import {shallowRef, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {getAppSelectOptions, getAppVersion, QueryAppForm, queryAppPackage, QueryAppVersionForm} from "@/api/application";
 import CompareModel from "@/views/compare/model.vue";
-import {AppVersion, PageParams} from "@/views/compare/type";
+import {AppMeta, AppVersion, PageParams} from "@/views/compare/type";
 import PlatformModelCompare from "@/views/compare/package/platform-model.vue";
 import PlatformDictCompare from "@/views/compare/package/platform-dict.vue";
 import PlatformPageCompare from "@/views/compare/package/platform-page.vue";
@@ -17,8 +17,9 @@ import PlatformSysConfigCompare from "@/views/compare/package/platform-sys-confi
 import PlatformExportTemplateCompare from "@/views/compare/package/platform-export-template.vue";
 import PlatformEncodingCompare from "@/views/compare/package/platform-encoding.vue";
 import PlatformResourcesCompare from "@/views/compare/package/platform-resources.vue";
+import cloneDeep from "lodash/cloneDeep";
 
-const emits = defineEmits(['update:modelValue', 'toModel', 'toTable']);
+const emits = defineEmits(['update:modelValue', 'canPacket']);
 const props = defineProps({
   modelValue: {type: String, default: ''},// id
   compareId: {type: String, default: ''},// 对比id
@@ -27,6 +28,14 @@ const props = defineProps({
   formState: {type: String, default: 'edit'},// 表单状态
   height: {type: Number, default: 0},// 表单宽度
 });
+
+const modelRef = shallowRef(PlatformModelCompare);
+const dictRef = shallowRef(PlatformDictCompare);
+const pageRef = shallowRef(PlatformPageCompare);
+const configRef = shallowRef(PlatformSysConfigCompare);
+const templateRef = shallowRef(PlatformExportTemplateCompare);
+const encodingRef = shallowRef(PlatformEncodingCompare);
+const resourcesRef = shallowRef(PlatformResourcesCompare);
 
 const {t} = useI18n();// 国际化
 const tabsKey = ref<number>(1);// 定位tabs页面
@@ -38,8 +47,9 @@ const appVersionCompareData = ref<AppVersion>({} as AppVersion);
 
 const generateDiffResult = () => {
   return {
-    model: 0, dict: 0, role: 0,
-    permission: 0, page: 0, config: 0,
+    model: 0, dict: 0,
+    //  role: 0, permission: 0,
+    page: 0, config: 0,
     template: 0, encoding: 0, resources: 0,
   }
 }
@@ -105,11 +115,9 @@ const tableFormat = async (successBack?: any) => {
     tableCompareData.value = data;
   });
   await getPackData(props.modelValue, (data: Record<string, any>) => {
-    console.log(`appVersionData : ${props.modelValue}`, data);
     appVersionData.value = (data || {}) as AppVersion;
   });
   await getPackData(props.compareId, (data: Record<string, any>) => {
-    console.log(`appVersionCompareData : ${props.compareId}`, data);
     appVersionCompareData.value = (data || {}) as AppVersion;
   });
 
@@ -128,6 +136,88 @@ watch(() => props, (val) => {
     }
   }
 }, {deep: true, immediate: true});
+
+watch(() => diffResult, (val) => {
+  const total: number[] = [];
+  // eslint-disable-next-line guard-for-in,no-restricted-syntax
+  for (const key in diffResult.value) {
+    // @ts-ignore
+    total.push(diffResult.value[key]);
+  }
+  emits("canPacket", !(total.includes(0)));
+}, {deep: true, immediate: true});
+
+const deploy = (successBack: any) => {
+  const data = {};
+  // @ts-ignore
+  if (modelRef.value && typeof modelRef.value?.deploy === 'function') {
+    // @ts-ignore
+    modelRef.value?.deploy((result: Record<string, any>) => {
+      Object.assign(data, result);
+    });
+  }
+  // @ts-ignore
+  if (dictRef.value && typeof dictRef.value?.deploy === 'function') {
+    // @ts-ignore
+    dictRef.value?.deploy((result: Record<string, any>) => {
+      Object.assign(data, result);
+    });
+  }
+  // @ts-ignore
+  if (pageRef.value && typeof pageRef.value?.deploy === 'function') {
+    // @ts-ignore
+    pageRef.value?.deploy((result: Record<string, any>) => {
+      Object.assign(data, result);
+    });
+  }
+  // @ts-ignore
+  if (configRef.value && typeof configRef.value?.deploy === 'function') {
+    // @ts-ignore
+    configRef.value?.deploy((result: Record<string, any>) => {
+      Object.assign(data, result);
+    });
+  }
+  // @ts-ignore
+  if (templateRef.value && typeof templateRef.value?.deploy === 'function') {
+    // @ts-ignore
+    templateRef.value?.deploy((result: Record<string, any>) => {
+      Object.assign(data, result);
+    });
+  }
+  // @ts-ignore
+  if (encodingRef.value && typeof encodingRef.value?.deploy === 'function') {
+    // @ts-ignore
+    encodingRef.value?.deploy((result: Record<string, any>) => {
+      Object.assign(data, result);
+    });
+  }
+  // @ts-ignore
+  if (resourcesRef.value && typeof resourcesRef.value?.deploy === 'function') {
+    // @ts-ignore
+    resourcesRef.value?.deploy((result: Record<string, any>) => {
+      Object.assign(data, result);
+    });
+  }
+  const result = {};
+  // @ts-ignore
+  const list = (cloneDeep(appVersionData.value?.appMetaList) || []) as AppMeta[];
+  if (list && list.length > 0) {
+    for (let i = 0; i < list.length; i += 1) {
+      const key = list[i].metaName;
+      const form = list[i].metaData;
+      // @ts-ignore
+      result[key] = form.map(item => item.id);
+      // @ts-ignore
+      const value = data[key] || [];
+      // @ts-ignore
+      result[key] = result[key].filter(val => !value.includes(val));
+    }
+  }
+
+  if (successBack && typeof successBack === 'function') successBack(result);
+}
+
+defineExpose({deploy});
 </script>
 
 <template>
@@ -153,7 +243,7 @@ watch(() => props, (val) => {
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformModelCompare :compare-value="appVersionCompareData"
+        <PlatformModelCompare ref="modelRef" :compare-value="appVersionCompareData"
                               :height="listParams.height"
                               :model-value="appVersionData"
                               :parameter="listParams.parameter"
@@ -176,18 +266,12 @@ watch(() => props, (val) => {
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformDictCompare :compare-value="appVersionCompareData"
+        <PlatformDictCompare ref="dictRef" :compare-value="appVersionCompareData"
                              :height="listParams.height"
                              :model-value="appVersionData"
                              :parameter="listParams.parameter"
                              :visible="listParams.visible"
                              @difference="(diff)=>{diffResult.dict = diff}"/>
-      </a-card>
-      <a-empty v-else/>
-    </a-tab-pane>
-    <a-tab-pane :key="4" class="a-tabs-five" title="角色管理">
-      <a-card v-if="listParams.visible" class="general-card6">
-
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
@@ -205,7 +289,7 @@ watch(() => props, (val) => {
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformPageCompare :compare-value="appVersionCompareData"
+        <PlatformPageCompare ref="pageRef" :compare-value="appVersionCompareData"
                              :height="listParams.height"
                              :model-value="appVersionData"
                              :parameter="listParams.parameter"
@@ -228,7 +312,7 @@ watch(() => props, (val) => {
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformSysConfigCompare :compare-value="appVersionCompareData"
+        <PlatformSysConfigCompare ref="configRef" :compare-value="appVersionCompareData"
                                   :height="listParams.height"
                                   :model-value="appVersionData"
                                   :parameter="listParams.parameter"
@@ -251,7 +335,7 @@ watch(() => props, (val) => {
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformExportTemplateCompare :compare-value="appVersionCompareData"
+        <PlatformExportTemplateCompare ref="templateRef" :compare-value="appVersionCompareData"
                                        :height="listParams.height"
                                        :model-value="appVersionData"
                                        :parameter="listParams.parameter"
@@ -274,7 +358,7 @@ watch(() => props, (val) => {
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformEncodingCompare :compare-value="appVersionCompareData"
+        <PlatformEncodingCompare ref="encodingRef" :compare-value="appVersionCompareData"
                                  :height="listParams.height"
                                  :model-value="appVersionData"
                                  :parameter="listParams.parameter"
@@ -297,7 +381,7 @@ watch(() => props, (val) => {
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformResourcesCompare :compare-value="appVersionCompareData"
+        <PlatformResourcesCompare ref="resourcesRef" :compare-value="appVersionCompareData"
                                   :height="listParams.height"
                                   :model-value="appVersionData"
                                   :parameter="listParams.parameter"

@@ -63,7 +63,6 @@ watch(() => props, (val) => {
     // 加载数据
     appMetaList.value = cloneDeep(props.modelValue) || [];
     renderData.value = (appMetaList.value.find(item => item.metaName === "platform_encoding")?.metaData || []) as PageQueryFilter[];
-    console.log(renderData.value);
     templateData.value = [];
   }
 }, {deep: true, immediate: true});

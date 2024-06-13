@@ -14,7 +14,7 @@ import {
   directions,
   queryCompareType,
   TreeLevelData,
-  sortRenderData,
+  sortRenderData, objValueToArray, getDiffData,
 } from "@/views/compare/type";
 import VersionCompareIndex from "@/views/compare/indet.vue";
 
@@ -91,6 +91,8 @@ const queryTreeItems = (direction: string, data: TreeLevelData, compare: TreeLev
 const queryRenderData = (list: AppMeta[], data: TreeLevelData) => {
   data.first = list.find(item => item.metaName === "platform_sys_config")?.metaData || [];
   sortRenderData(data.first, 'update_at|desc,del_status|asc');
+  // 层级和表对应
+  data.level = {1: "platform_sys_config"};
 
   return data;
 }
@@ -109,6 +111,14 @@ watch(() => props, (val) => {
   // 计算布局高度
   layoutHeight.value = props.height - 75;
 }, {deep: true, immediate: true});
+
+const deploy = (successBack: any) => {
+  const data: Record<string, any> = objValueToArray(renderData.value.level || {});
+  getDiffData(renderData.value.tree || [], renderData.value.level || {}, data);
+  if (successBack && typeof successBack === 'function') successBack(data);
+}
+
+defineExpose({deploy});
 </script>
 <template>
   <VersionCompareIndex :layout-height="layoutHeight"
