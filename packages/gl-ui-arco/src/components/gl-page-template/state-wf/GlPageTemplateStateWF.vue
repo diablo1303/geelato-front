@@ -439,16 +439,16 @@ const pageParams = computed(() => {
               <!--                              </a-popconfirm>-->
               <!--                            </a-button>-->
               <!--                          </a-button-group>-->
-              <a-button
-                size="small"
-                shape="circle"
-                title="切换页面布局"
-                @click="changeLayout"
-                style="margin-left: 5px"
-              >
-                <!--<GlIconfont :type="'gl-' + layout"></GlIconfont>-->
-                <GlIconfont type="gl-transfer"></GlIconfont>
-              </a-button>
+<!--              <a-button-->
+<!--                size="small"-->
+<!--                shape="circle"-->
+<!--                title="切换页面布局"-->
+<!--                @click="changeLayout"-->
+<!--                style="margin-left: 5px"-->
+<!--              >-->
+<!--                &lt;!&ndash;<GlIconfont :type="'gl-' + layout"></GlIconfont>&ndash;&gt;-->
+<!--                <GlIconfont type="gl-transfer"></GlIconfont>-->
+<!--              </a-button>-->
             </template>
           </a-page-header>
         </div>

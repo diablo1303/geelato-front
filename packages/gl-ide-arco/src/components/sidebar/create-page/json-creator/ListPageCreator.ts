@@ -34,10 +34,11 @@ const useToolbarInst = (
             name: 'click',
             title: '点击',
             body: `const content = $gl.fn.loadPage("","${options.pageInfo.pageExtendId}",[],"create");
-            $gl.fn.openDrawer({
+            $gl.fn.open${options.pageInfo.openPageMode}({
                 title:"${options.pageInfo.label}",
                 content: content,
-                width:"80%",
+                width:"${options.pageInfo.openPageWidth}",
+                mode: "${options.pageInfo.openPageMode}",
                 okText:"保存",
                 onBeforeOk: async ()=>{
                     try{
@@ -89,7 +90,8 @@ const useToolbarInst = (
                     okText: '保存',
                     hideCancel: true,
                     invokeBlocks: ['onBeforeOk', 'onClose'],
-                    width: '80%',
+                    width: `${options.pageInfo.openPageWidth}`,
+                    mode: `${options.pageInfo.openPageMode}`,
                     pageStatus: 'create'
                   },
                   slots: {},
@@ -276,10 +278,11 @@ const useColumnActionsInst = (
         name: 'click',
         title: '点击',
         body: `const content = $gl.fn.loadPage("","${formPageId}",[{"id":"${paramFormId}","name":"form.id","valueExpression":"$gl.ctx.record.id"},{"id":"${paramPageStatusId}","name":"page.status","valueExpression":"\\"read\\""}],"read");
-            $gl.fn.openDrawer({
+            $gl.fn.open${options.pageInfo.openPageMode}({
                 title:"详细信息",
                 content: content,
-                width:"80%",
+                width:"${options.pageInfo.openPageWidth}",
+                mode: "${options.pageInfo.openPageMode}",
                 okText:"关闭",
                 onBeforeOk: async ()=>{
                     try{
@@ -336,7 +339,9 @@ const useColumnActionsInst = (
                 ],
                 pageStatus: 'read',
                 okText: '关闭',
-                hideCancel: true
+                hideCancel: true,
+                width: `${options.pageInfo.openPageWidth}`,
+                mode: `${options.pageInfo.openPageMode}`
               },
               propsExpressions: {},
               slots: {},
@@ -374,10 +379,11 @@ const useColumnActionsInst = (
         name: 'click',
         title: '点击',
         body: `const content = $gl.fn.loadPage("","${formPageId}",[{"id":"${paramFormId}","name":"form.id","valueExpression":"$gl.ctx.record.id"}],"update");
-            $gl.fn.openDrawer({
+            $gl.fn.open${options.pageInfo.openPageMode}({
                 title:"修改信息",
                 content: content,
-                width:"80%",
+                width:"${options.pageInfo.openPageWidth}",
+                mode: "${options.pageInfo.openPageMode}",
                 okText:"保存",
                 onBeforeOk: async ()=>{
                     try{
@@ -436,7 +442,8 @@ const useColumnActionsInst = (
                 okText: '保存',
                 hideCancel: true,
                 invokeBlocks: ['onBeforeOk', 'onClose'],
-                width: '80%'
+                width: `${options.pageInfo.openPageWidth}`,
+                mode: `${options.pageInfo.openPageMode}`
               },
               propsExpressions: {},
               slots: {},
@@ -636,6 +643,7 @@ export class ListPageCreator extends PageCreator {
     // 获取字段信息
     const tableInst = useTableInst(options)
     const pageInst: ComponentInstance = options.pageInfo.pageExtendContent
+
     //
     const findFormInst = (inst: ComponentInstance): ComponentInstance | null => {
       console.log('findFormInst', inst)

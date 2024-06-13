@@ -73,7 +73,7 @@ axios.interceptors.response.use(
         }
         // 12.6 File Content Validate Failed Exception：For more information, see the error file.
       } else {
-        Message.error({content: res.msg || 'Error', duration: 8 * 1000});
+        Message.error({content: messageManger.getMessage(res.msg) || 'Error', duration: 8 * 1000});
       }
       return Promise.reject(new Error(res.msg || 'Error'));
     }

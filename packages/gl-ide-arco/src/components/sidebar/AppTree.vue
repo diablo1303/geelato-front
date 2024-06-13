@@ -24,7 +24,7 @@
       @cancel="handleCancel"
     >
       <template #title> 创建页面向导</template>
-      <CreatePageNav v-if="visible" ref="createPageNav" />
+      <CreatePageNav v-if="visible" ref="createPageNav" :key="createPageNavKey" />
     </a-modal>
   </div>
 </template>
@@ -36,7 +36,7 @@ export default {
 <script setup lang="ts">
 import { onMounted, onUnmounted, type PropType, type Ref, ref } from 'vue'
 import { useIdeStore, useAppStore, Page, usePageStore, EventNames } from '@geelato/gl-ide'
-import { emitter, entityApi, EntityReader, EntitySaver, FieldMeta, useGlobal } from '@geelato/gl-ui'
+import {emitter, entityApi, EntityReader, EntitySaver, FieldMeta, useGlobal, utils} from '@geelato/gl-ui'
 import CreatePageNav from './create-page/CreatePageNav.vue'
 import type { PageInfo } from './create-page/CreatePageNav'
 
@@ -69,6 +69,7 @@ const currentClickContextMenuItem: Ref<ClickContextMenuItemType> = ref({
   contextMenuItemData: {}
 })
 const createPageNav = ref()
+const createPageNavKey = ref(utils.gid('key'))
 
 const onSelectNode = (params: any) => {
   // console.log('onSelectNode() > params:', params)
@@ -91,9 +92,9 @@ const onSelectNode = (params: any) => {
  * @param params
  */
 const clickContextMenuItem = (params: ClickContextMenuItemType) => {
-  console.log('clickContextMenuItem() > params:', params)
   if (params.contextMenuItemData._nodeType === 'templatePage') {
     currentClickContextMenuItem.value = params
+    createPageNavKey.value = utils.gid('key')
     visible.value = true
   }
 }

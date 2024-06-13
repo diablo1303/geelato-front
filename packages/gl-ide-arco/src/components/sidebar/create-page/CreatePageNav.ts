@@ -4,6 +4,10 @@ import { PageType } from '@geelato/gl-ui'
 export class PageInfo {
   // 页面标题
   label: string = ''
+  // 打开页面时页面宽度，默认为80%，也可以是1024px等
+  openPageWidth: string = '80%'
+  // 打开页面时页面的模式
+  openPageMode = 'Drawer'
   // 页面图标
   iconType: string = ''
   // 页面类型

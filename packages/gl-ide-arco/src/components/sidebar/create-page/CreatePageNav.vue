@@ -99,7 +99,11 @@ defineExpose({ getPages })
             <img :style="{ width: '100%' }" src="../../../assets/pages/form.jpg" />
           </div>
         </template>
-        <a-card-meta title="表单" description="只创建表单页面"></a-card-meta>
+        <template #title>
+          <a-tag color="#165dff" >表单</a-tag>
+          <span style="font-weight: normal;font-size: 0.9em"> 创建表单页面</span>
+        </template>
+        <a-card-meta description="基于业务模型创建，需请在模型管理中创建模型。若需创建表单的子表，可以在创建本表单之后，从组件输库中拖入列表组件。"></a-card-meta>
       </a-card>
       <a-card
         class="gl-item"
@@ -111,7 +115,11 @@ defineExpose({ getPages })
             <img :style="{ width: '100%' }" src="../../../assets/pages/table.jpg" />
           </div>
         </template>
-        <a-card-meta title="列表" description="只创列表页面"></a-card-meta>
+        <template #title>
+          <a-tag color="#165dff">列表</a-tag>
+          <span style="font-weight: normal;font-size: 0.9em"> 创建查询列表页面</span>
+        </template>
+        <a-card-meta description="基于业务模型创建查询列表页面，需请在模型管理中创建模型。"></a-card-meta>
       </a-card>
     </div>
     <div class="gl-right">
