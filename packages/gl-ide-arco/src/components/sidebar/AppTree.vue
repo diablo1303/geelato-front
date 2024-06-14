@@ -1,6 +1,6 @@
 <template>
   <div class="gl-app-tree">
-    <a-alert :show-icon="false"> 加粗显示为菜单项</a-alert>
+<!--    <a-alert :show-icon="false"> 加粗显示为菜单项</a-alert>-->
     <GlEntityTree
       v-model="selectedKeys"
       ref="glEntityTree"

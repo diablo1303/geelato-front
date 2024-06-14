@@ -10,10 +10,12 @@
             @tabClick="tabClick">
       <a-tab-pane v-for="(page,index) in pageStore.pages" :key="index">
         <template #[slotName]>
-        <span>
-          <GlIconfont :type="page.iconType"></GlIconfont>
+        <div class="gl-title">
+          <GlIconfont class="gl-first" :type="page.iconType"></GlIconfont>
           {{ page.title }}
-        </span>
+          <GlIconfont type="gl-wrong" @click.stop="onDelete(index)"></GlIconfont>
+          <GlIconfont type="gl-none"></GlIconfont>
+        </div>
         </template>
         <keep-alive>
           <component :is="page.ideStageComponentName" style="overflow-y: auto"></component>
@@ -45,4 +47,49 @@ const onDelete = (index: number) => {
 </script>
 
 <style>
+
+
+.gl-designer-stage > .arco-tabs > .arco-tabs-nav{
+  box-shadow: 0 0 10px rgba(200, 200, 200, 0.53);
+}
+
+.gl-designer-stage > .arco-tabs > .arco-tabs-nav .arco-tabs-nav-ink{
+  top: 0;
+  color: rgba(248, 248, 248, 0.53);
+  height: 0;
+}
+
+.gl-designer-stage > .arco-tabs > .arco-tabs-nav .arco-tabs-tab{
+  margin:0 0 0 8px;
+}
+
+.gl-designer-stage > .arco-tabs > .arco-tabs-nav .arco-tabs-tab-close-btn{
+  display: none;
+}
+
+.gl-designer-stage > .arco-tabs > .arco-tabs-nav .gl-title .gl-wrong-icon{
+  display: none;
+}
+
+.gl-designer-stage > .arco-tabs > .arco-tabs-nav .gl-title{
+  padding:0 4px;
+}
+
+.gl-designer-stage > .arco-tabs > .arco-tabs-nav .arco-tabs-tab-active .gl-title{
+  border: 1px solid #165dff;
+  border-radius: 2px;
+}
+
+
+.gl-designer-stage > .arco-tabs > .arco-tabs-nav .gl-title:hover{
+  font-weight: bold;
+}
+
+.gl-designer-stage > .arco-tabs > .arco-tabs-nav .gl-title:hover .gl-wrong-icon{
+  display: inline-block;
+}
+
+.gl-designer-stage > .arco-tabs > .arco-tabs-nav .gl-title:hover .gl-none-icon{
+  display: none;
+}
 </style>

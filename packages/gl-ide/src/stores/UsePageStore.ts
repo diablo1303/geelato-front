@@ -450,6 +450,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
       releaseContent: JSON.stringify(convertedPageContent.release),
       // 不存该值，待删除该字段
       // previewContent: JSON.stringify(convertedPageContent.preview),
+      title:page.sourceContent?.props?.label,
       description: page.description
     }
 
@@ -467,6 +468,7 @@ export const usePageStore = defineStore('GlPageStore', () => {
       // releaseContent: es.record.releaseContent,
       // 操作记录表不存该值
       // previewContent: es.record.previewContent,
+      // title:page.title,
       description: page.description
     }
     es.children = [esSub]
