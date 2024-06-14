@@ -51,6 +51,7 @@ export default defineComponent({
   overflow: hidden;
 }
 
-.gl-icon-font > span {
+.gl-icon-font:hover > svg{
+  background-color: #e5e5e5;
 }
 </style>

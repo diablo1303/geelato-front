@@ -47,7 +47,17 @@ const zhMessages: MessageRule[] = [
     rule: "Incorrect result size: expected 1, actual 0",
     msg: '期待获取到1条记录，实际获取的记录数为0',
     extractKeyRules: {}
+  },
+  {
+    // 验证实体platform_app_page_log：[字段]不存在title；
+    rule: "验证实体.*：",
+    msg: '验证失败，{0}',
+    extractKeyRules: {
+      '{0}': ["验证实体.*"]
+    }
   }
+
+
 ]
 
 export const messages = zhMessages
@@ -90,7 +100,7 @@ export const getMessage = (data: string | Record<string, any>) => {
       let hasMatchText = false
       let result = message.msg
       const ruleKeys = Object.keys(message.extractKeyRules)
-      if (ruleKeys.length === 0) return message.msg
+      if (ruleKeys.length === 0) return message.msg || srcMsg
       ruleKeys.forEach((key) => {
         const matchText = matchKeywords(srcMsg, message.extractKeyRules[key])
         if (matchText) hasMatchText = true
