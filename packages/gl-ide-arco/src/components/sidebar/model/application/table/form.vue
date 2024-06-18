@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'GlModelTableViewForm'
+  name: 'GlModelTableAppForm'
 };
 </script>
 
@@ -10,13 +10,13 @@ import {Modal} from "@arco-design/web-vue";
 import type {TableColumnData, FormInstance, SelectOptionGroup, SelectOptionData} from "@arco-design/web-vue";
 import type {QueryAppForm, QueryPermissionForm, QueryAppTableForm, QueryTableForm} from '@geelato/gl-ui';
 import {modelApi, applicationApi, useGlobal, utils, securityApi} from "@geelato/gl-ui";
-import {enableStatusOptions, approvalNeedOptions, approvalStatusOptions} from "../searchTable";
+import {approvalStatusOptions} from "../searchTable";
 import {classifyOptions} from "../../../security/permission/searchTable";
-import {sourceTypeOptions, tableSyncOptions} from "../../table/searchTable";
 
 type PageParams = {
   tableId: string; // 数据库链接id
   tableName: string; // 模型名称
+  tableAppId: string; // 应用id
   author: boolean; // 创建人
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
@@ -50,10 +50,10 @@ const generateFormData = (): QueryAppTableForm => {
   return {
     id: props.modelValue || '',
     appName: '',
-    tableId: '',
-    tableName: '',
+    tableId: props.parameter.tableId || '',
+    tableName: props.parameter.tableName || '',
     tableTitle: '',
-    tableAppId: '',
+    tableAppId: props.parameter.tableAppId || '',
     permissionId: '',
     permissionName: '',
     approvalStatus: 'draft',
@@ -332,10 +332,12 @@ watch(() => props, () => {
     }, () => {
       appSelectOptions.value = [];
     });
+    tableAppIdChange();
     // 表单数据重置
     selectAll.value = false;
     selectData.value = [];
     formData.value = generateFormData();
+    getTablePermission(props.parameter.tableName);
     // 重置验证
     resetValidate();
     // 编辑、查看 状态 查询数据
@@ -399,7 +401,8 @@ const cloneColumns = ref<Column[]>([]);
         </a-col>
         <a-col v-else :span="(labelCol+wrapperCol)/formCol">
           <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="tableAppId" label="所属应用">
-            <a-select v-if="formState!=='view'&&!!parameter.author" allow-search v-model="formData.tableAppId" @change="tableAppIdChange">
+            <a-select v-if="formState!=='view'&&!!parameter.author" allow-search :disabled="!!parameter.tableAppId"
+                      v-model="formData.tableAppId" @change="tableAppIdChange">
               <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
             </a-select>
             <span v-else>{{ formData.appName }}</span>

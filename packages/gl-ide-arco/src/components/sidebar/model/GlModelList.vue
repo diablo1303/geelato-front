@@ -16,7 +16,9 @@ import {viewTypeOptions} from "./view/searchTable";
 import GlModelTableModal from "./table/modal.vue";
 import GlModelTableTabs from "./table/tableTabs.vue";
 import GlModelTableAppForm from "./application/table/form.vue";
+import GlModelTableAppTabs from "./application/table/tableTabs.vue";
 import GlModelViewAppForm from "./application/view/form.vue";
+import GlModelViewAppTabs from "./application/view/tableTabs.vue";
 import GlModelTableViewForm from "./view/form.vue";
 
 const props = defineProps({
@@ -213,15 +215,15 @@ const fetchAccreditData = async (successBack?: any, failBack?: any) => {
   try {
     const {data} = await modelApi.queryAppTables({appId: appStore.currentApp.id});
     // @ts-ignore
-    // data.sort((a, b) => new Date(b?.updateAt).getTime() - new Date(a?.updateAt).getTime());
-    allAccreditItems.value = data;
-    /*   const tableNames: string[] = [];
-      data.forEach((item) => {
-        if (!tableNames.includes(item.tableName)) {
-          tableNames.push(item.tableName);
-          allAccreditItems.value.push(item);
-        }
-      }); */
+    data.sort((a, b) => new Date(b?.updateAt).getTime() - new Date(a?.updateAt).getTime());
+    allAccreditItems.value = [];
+    const tableNames: string[] = [];
+    data.forEach((item) => {
+      if (!tableNames.includes(item.tableName)) {
+        tableNames.push(item.tableName);
+        allAccreditItems.value.push(item);
+      }
+    });
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     allAccreditItems.value = [];
@@ -416,6 +418,20 @@ const aViewFormSaveSuccess = (data: QueryAppViewForm, action: string) => {
   fetchAccreditViewData();
 }
 
+const atFormTabsParams = ref({
+  id: '', visible: false, formState: 'edit', formCol: 2, width: '80%', refApp: true,
+  parameter: {author: true, appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
+});
+
+
+const appTableOpen = (record: QueryAppTableForm) => {
+  if (!appStore.currentApp.id) {
+    return
+  }
+  atFormTabsParams.value.id = record.tableId;
+  atFormTabsParams.value.visible = true;
+}
+
 const atFormParams = ref({
   id: '', visible: false, formState: 'add', formCol: 1, width: '', title: '',
   parameter: {
@@ -423,22 +439,6 @@ const atFormParams = ref({
     appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode
   }
 });
-
-const appTableOpen = (record: QueryAppTableForm) => {
-  if (!appStore.currentApp.id) {
-    return
-  }
-  if (['agree'].includes(record.approvalStatus)) {
-    formTabsParams.value.id = record.tableId;
-    formTabsParams.value.refApp = true;
-    formTabsParams.value.visible = true;
-  } else {
-    atFormParams.value.id = record.id;
-    atFormParams.value.formState = ['draft', 'reject'].includes(record.approvalStatus) ? 'edit' : 'view';
-    atFormParams.value.visible = true;
-    atFormParams.value.parameter.tableName = record.tableName;
-  }
-}
 /**
  * 新增模型，打开模型表单
  * @param ev
@@ -481,6 +481,19 @@ const editViewForm = (record: QueryViewForm) => {
   });
 }
 
+const avFormTabsParams = ref({
+  id: '', visible: false, formState: 'edit', formCol: 2, width: '80%', refApp: true,
+  parameter: {author: true, appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
+});
+
+const appViewOpen = (record: QueryAppViewForm) => {
+  if (!appStore.currentApp.id) {
+    return
+  }
+  avFormTabsParams.value.id = record.viewId;
+  avFormTabsParams.value.visible = true;
+}
+
 const avFormParams = ref({
   id: '', visible: false, formState: 'add', formCol: 1, width: '', title: '',
   parameter: {
@@ -496,10 +509,6 @@ const addAppViewForm = (ev?: MouseEvent) => {
   avFormParams.value.id = '';
   avFormParams.value.formState = 'add';
   avFormParams.value.visible = true;
-}
-
-const appViewOpen = (record: QueryAppViewForm) => {
-
 }
 </script>
 
@@ -630,14 +639,7 @@ const appViewOpen = (record: QueryAppViewForm) => {
         <a-list size="small">
           <template v-for="item in renderAccreditItems" :key="item.id">
             <a-list-item style="cursor: pointer;" @click="appTableOpen(item)">
-              <a-list-item-meta :title="item.tableName">
-                <template #description>
-                  <span v-for="option of approvalStatusOptions.filter((option)=> option.value===item.approvalStatus)"
-                        :style="option.other">
-                    {{ option.label }}
-                  </span>
-                  {{ `| ${item.tableTitle}` }}
-                </template>
+              <a-list-item-meta :description="item.tableTitle" :title="item.tableName">
               </a-list-item-meta>
               <template #actions>
             <span :title="`${item.updaterName || ''}更新@${item.updateAt}`" class="gl-actions-description">
@@ -688,6 +690,12 @@ const appViewOpen = (record: QueryAppViewForm) => {
                        :width="atFormParams.width"
                        @saveSuccess="aTableFormSaveSuccess"/>
 
+  <GlModelTableAppTabs v-model:visible="atFormTabsParams.visible" :formState="atFormTabsParams.formState"
+                       :modelValue="atFormTabsParams.id" :parameter="atFormTabsParams.parameter"
+                       :refApp="atFormTabsParams.refApp" :width="atFormTabsParams.width"
+                       @deleteSuccess="aTableFormSaveSuccess" @updateSuccess="aTableFormSaveSuccess"/>
+
+
   <GlModelViewAppForm v-model:visible="avFormParams.visible"
                       :formCol="avFormParams.formCol"
                       :formState="avFormParams.formState"
@@ -696,6 +704,11 @@ const appViewOpen = (record: QueryAppViewForm) => {
                       :title="avFormParams.title"
                       :width="avFormParams.width"
                       @saveSuccess="aViewFormSaveSuccess"/>
+
+  <GlModelViewAppTabs v-model:visible="avFormTabsParams.visible" :formState="avFormTabsParams.formState"
+                      :modelValue="avFormTabsParams.id" :parameter="avFormTabsParams.parameter"
+                      :refApp="avFormTabsParams.refApp" :width="avFormTabsParams.width"
+                      @deleteSuccess="aViewFormSaveSuccess" @updateSuccess="aViewFormSaveSuccess"/>
 
   <GlModelTableModal v-model:visible="formParams.visible" :formCol="formParams.formCol"
                      :formState="formParams.formState" :modelValue="formParams.id"

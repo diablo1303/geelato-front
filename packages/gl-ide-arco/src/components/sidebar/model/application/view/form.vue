@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'GlModelViewViewForm'
+  name: 'GlModelViewAppForm'
 };
 </script>
 
@@ -18,6 +18,7 @@ import {pageQueryView} from "@geelato/gl-ui/src/m/datasource/Model";
 type PageParams = {
   viewId: string; // 数据库链接id
   viewName: string; // 模型名称
+  viewAppId: string; // 应用id
   author: boolean; // 创建人
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
@@ -52,10 +53,10 @@ const generateFormData = (): QueryAppViewForm => {
     id: props.modelValue || '',
     appName: '',
     tableName: '',
-    viewId: '',
-    viewName: '',
+    viewId: props.parameter.viewId || '',
+    viewName: props.parameter.viewName || '',
     viewTitle: '',
-    viewAppId: '',
+    viewAppId: props.parameter.viewAppId || '',
     permissionId: '',
     permissionName: '',
     approvalStatus: 'draft',
@@ -335,10 +336,12 @@ watch(() => props, () => {
     }, () => {
       appSelectOptions.value = [];
     });
+    tableAppIdChange();
     // 表单数据重置
     selectAll.value = false;
     selectData.value = [];
     formData.value = generateFormData();
+    getTablePermission(props.parameter.viewName);
     // 重置验证
     resetValidate();
     // 编辑、查看 状态 查询数据
@@ -347,7 +350,7 @@ watch(() => props, () => {
         formData.value = JSON.parse(JSON.stringify(data));
         tableAppIdChange();
         formData.value.viewId = data.viewId;
-        getTablePermission(props.parameter.tableName);
+        getTablePermission(props.parameter.viewName);
         selectData.value = data.permissionId && data.permissionId.split(',') || [];
         selectChange()
       });
@@ -402,7 +405,8 @@ const cloneColumns = ref<Column[]>([]);
         </a-col>
         <a-col v-else :span="(labelCol+wrapperCol)/formCol">
           <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="viewAppId" label="所属应用">
-            <a-select v-if="formState!=='view'&&!!parameter.author" allow-search v-model="formData.viewAppId" @change="tableAppIdChange">
+            <a-select v-if="formState!=='view'&&!!parameter.author" allow-search :disabled="!!parameter.viewAppId"
+                      v-model="formData.viewAppId" @change="tableAppIdChange">
               <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
             </a-select>
             <span v-else>{{ formData.appName }}</span>

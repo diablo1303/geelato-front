@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'GlModelTableAppList'
+  name: 'GlModelViewAppList'
 };
 </script>
 
@@ -10,13 +10,13 @@ import {modelApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
 import type {Pagination, QueryAppTableForm} from "@geelato/gl-ui";
 import {approvalNeedOptions, approvalStatusOptions, enableStatusOptions} from '../searchTable';
-import GlModelTableAppForm from "./form.vue";
+import GlModelViewAppForm from "./form.vue";
 
 type PageParams = {
   connectId: string; // 数据库连接主键
-  tableId: string; // 模型主键
-  tableName: string; // 模型名称
-  tableAppId: string; // 应用主键
+  viewId: string; // 模型主键
+  viewName: string; // 模型名称
+  viewAppId: string; // 应用主键
   isSync: boolean; // 是否同步
   isSystem: boolean; // 是否系统表
   author: boolean; // 是否应用表
@@ -55,8 +55,8 @@ const generateFilterData = () => {
     id: '',
     appId: '',
     appName: '',
-    tableId: props.parameter.tableId || '',
-    tableName: props.parameter.tableName || '',
+    viewId: props.parameter.viewId || '',
+    viewName: props.parameter.viewName || '',
     permissionName: '',
     approvalNeed: '',
     approvalStatus: '',
@@ -73,7 +73,7 @@ const filterData = ref(generateFilterData());
 const fetchData = async (params: Record<string, any>) => {
   loading.value = true;
   try {
-    const {data} = await modelApi.queryAppTables(params);
+    const {data} = await modelApi.queryAppViews(params);
     renderData.value = data;
     pagination.current = params.current;
     pagination.pageSize = basePagination.pageSize;
@@ -94,7 +94,7 @@ const fetchData = async (params: Record<string, any>) => {
  */
 const deleteData = async (id: string, successBack?: any, failBack?: any) => {
   try {
-    await modelApi.deleteAppTable(id);
+    await modelApi.deleteAppView(id);
     if (successBack && typeof successBack === 'function') successBack(id);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -122,7 +122,7 @@ const condition = (ev?: Event) => {
 const reset = (ev?: Event) => {
   basePagination.current = 1;
   filterData.value = generateFilterData();
-  if (filterData.value.tableId && filterData.value.tableName) {
+  if (filterData.value.viewId && filterData.value.viewName) {
     search();
   }
 };
@@ -165,7 +165,7 @@ const onSorterChange = (dataIndex: string, direction: string) => {
 const formPage = ref({
   id: '',// 主键
   visible: false,
-  parameter: {author: true, tableId: '', tableName: '', tableAppId: '', appId: '', tenantCode: ''},// 是否可编辑模型名称
+  parameter: {author: true, viewId: '', viewName: '', viewAppId: '', appId: '', tenantCode: ''},// 是否可编辑模型名称
   formState: 'add',
   formCol: 1,
   title: '',
@@ -217,9 +217,9 @@ const approvalRecord = async (record: QueryAppTableForm, status: string) => {
 
 watch(() => props.parameter, (val) => {
   formPage.value.parameter = {
-    tableId: props.parameter.tableId || '',
-    tableName: props.parameter.tableName,
-    tableAppId: props.parameter?.tableAppId || '',
+    viewId: props.parameter.viewId || '',
+    viewName: props.parameter.viewName,
+    viewAppId: props.parameter?.viewAppId || '',
     author: props.parameter?.author || false,
     appId: !!props.parameter.author ? props.parameter?.appId : '',
     tenantCode: props.parameter?.tenantCode || '',
@@ -233,14 +233,14 @@ watch(() => props.height, (val) => {
 </script>
 
 <template>
-  <GlModelTableAppForm v-model:visible="formPage.visible"
-                       :formCol="formPage.formCol"
-                       :formState="formPage.formState"
-                       :modelValue="formPage.id"
-                       :parameter="formPage.parameter"
-                       :title="formPage.title"
-                       :width="formPage.width"
-                       @saveSuccess="saveSuccess"/>
+  <GlModelViewAppForm v-model:visible="formPage.visible"
+                      :formCol="formPage.formCol"
+                      :formState="formPage.formState"
+                      :modelValue="formPage.id"
+                      :parameter="formPage.parameter"
+                      :title="formPage.title"
+                      :width="formPage.width"
+                      @saveSuccess="saveSuccess"/>
 
   <a-row>
     <a-col :flex="1">
@@ -320,9 +320,9 @@ watch(() => props.height, (val) => {
         </template>
       </a-table-column>
       <a-table-column :width="180" data-index="appName" fixed="left" title="应用名称"/>
-      <a-table-column :width="180" data-index="tableName" title="模型名称">
+      <a-table-column :width="180" data-index="viewName" title="模型名称">
         <template #cell="{ record }">
-          {{ `${record.tableTitle}[${record.tableName}]` }}
+          {{ `${record.viewTitle}[${record.viewName}]` }}
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :tooltip="true" :width="300" data-index="permissionName" title="权限名称">
