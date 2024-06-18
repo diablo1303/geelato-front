@@ -6,6 +6,7 @@
       </div>
       <template v-else>
         <a-form
+          :key="formKey"
           ref="formRef"
           :model="formData"
           :layout="layout!"
@@ -184,6 +185,7 @@ const props = defineProps({
 //   }
 // }
 
+const formKey = ref(utils.gid('formKey'))
 const isRead = ref(!!pageProvideProxy?.isPageStatusRead() || props.readonly || props.disabled)
 // 是否复制新增，如果是复制新增，则在打开页面加载数据时，用copyEntityRecordId加载
 const isCopyCreate = ref(pageProvideProxy.isPageStatusCopyCreate())
@@ -204,7 +206,9 @@ const isLastFetchedDataEmpty = ref(true)
 // 在运行时下状态下
 const showEmpty = computed(() => {
   return (
-      props.glIsRuntime && props.dataEmptyShowMode === DataEmptyShowMode.SHOW_EMPTY && isLastFetchedDataEmpty.value
+    props.glIsRuntime &&
+    props.dataEmptyShowMode === DataEmptyShowMode.SHOW_EMPTY &&
+    isLastFetchedDataEmpty.value
   )
 })
 
@@ -446,8 +450,12 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
 /**
  *  加载表单数据
  *  @param params 加载表单数据的参数，如：{id:xxx};如果参数有值，则以参数为准，否则取当前表单的id进行查询。
+ *  @param reRender 重新渲染表单，默认true,一般在组件外部在调用时，不需要设置该值，即需要重新渲染；在表单首次加载时，需要设置该值为false，避免重复渲染
  */
-const fetchData = async (params?: { id: string; [key: string]: any }) => {
+const fetchData = async (
+  params?: { id: string; [key: string]: any },
+  reRender?: boolean = true
+) => {
   let recordId
   if (utils.isEmpty(params)) {
     // 如果是复制创建，则基于复制的id进行数据加载
@@ -455,7 +463,7 @@ const fetchData = async (params?: { id: string; [key: string]: any }) => {
   }
 
   if (!recordId && utils.isEmpty(params)) {
-    // 1、没有id同时双没有参数，此是为新增状态，不需要从服务端获取
+    // 1、没有id同时又没有参数，此时为新增状态，不需要从服务端获取
     if (isRead.value && props.glIsRuntime && props.alarmWhenReadInRuntime) {
       global.$notification.error({
         duration: 8000,
@@ -538,12 +546,17 @@ const fetchData = async (params?: { id: string; [key: string]: any }) => {
             )
             // 对于初始不加载表单，通过fetchData({id:xxx})加载表单数据的，需要将加载完成的id设置到表单中
             entityRecordId.value = items[0].id
+            formProvideProxy.setRecordId(items[0].id)
             emits('onLoadingData', { data: items[0] })
             delete items[0].id
             setFormItemValues(items[0])
           } else {
             isLastFetchedDataEmpty.value = true
             emits('onLoadingData', { data: {} })
+          }
+          console.log('GlEntityForm > fetchData() > reRender:', reRender,'formData',formData.value)
+          if(reRender){
+            formKey.value = utils.gid('formKey')
           }
         })
         .catch((err) => {
@@ -808,7 +821,7 @@ const loadDataImmediate = () => {
  *  如果immediate为false，则不加载数据，以输传的数据列新表单
  */
 if (loadDataImmediate()) {
-  fetchData()
+  fetchData(undefined, false)
 } else {
   setFormItemValues(formParams)
 }

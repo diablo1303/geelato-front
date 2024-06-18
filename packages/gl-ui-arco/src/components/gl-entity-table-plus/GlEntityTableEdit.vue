@@ -440,10 +440,10 @@ const fetchData = async (readerInfo?: {
     // 增加父表单主键，作为查询字段，若父表单无该主健id，则返回，不查询
     if (props.isFormSubTable) {
       const pid = formProvideProxy?.getRecordId()
-      console.log('GlEntityTable > fetchData() > formProvideProxy is',formProvideProxy)
+      console.log('GlEntityTableEdit > fetchData() > formProvideProxy is',formProvideProxy)
       if (!pid) {
         setLoading(false)
-        console.error('GlEntityTable > fetchData() > formProvideProxy is',formProvideProxy,' and getRecordId() is '+formProvideProxy?.getRecordId()+'.作为子表时，父ID不能为空。')
+        console.error('GlEntityTableEdit > fetchData() > formProvideProxy is',formProvideProxy,' and getRecordId() is '+formProvideProxy?.getRecordId()+'.作为子表时，父ID不能为空。')
         return
       }
       entityReader.params.push(new EntityReaderParam(props.subTablePidName, 'eq', pid))
@@ -455,7 +455,7 @@ const fetchData = async (readerInfo?: {
     }
     entityReader.pageSize = readerInfo?.pageSize || _pagination.pageSize!
     const response: any = await entityApi.queryByEntityReader(entityReader, true)
-    console.log('GlEntityTable > fetchData() > response:', response)
+    console.log('GlEntityTableEdit > fetchData() > response:', response)
     renderData.value = response.data
     reStatIsRowReadonly(renderData.value)
     _pagination.pageSize = readerInfo?.pageSize || _pagination.pageSize
@@ -570,7 +570,7 @@ const scroll = {
 //     })
 //     renderColumns.value.push(optColumn as Column)
 //     showColumns.value = cloneDeep(renderColumns.value)
-//     // console.log('GlEntityTable > update renderColumns:', renderColumns)
+//     // console.log('GlEntityTableEdit > update renderColumns:', renderColumns)
 //     emits('updateColumns', showColumns.value)
 //   },
 //   { deep: true, immediate: true }
