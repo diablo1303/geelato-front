@@ -16,6 +16,7 @@ import {
   toRaw,
   watch
 } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
 import type { TableRowSelection, PaginationProps } from '@arco-design/web-vue'
 import useLoading from '../../hooks/loading'
 import cloneDeep from 'lodash/cloneDeep'
@@ -427,6 +428,7 @@ const fetchData = async (readerInfo?: {
   // 作为子表时，必须指定子表外键，即对应主表ID的字段
   if (!props.entityName || (props.isFormSubTable && !props.subTablePidName)) {
     setLoading(false)
+    console.error('GlEntityTable > fetchData() > entityName or subTablePidName is null. 作为子表时，必须指定子表外键，即对应主表ID的字段')
     return
   }
 
@@ -438,8 +440,10 @@ const fetchData = async (readerInfo?: {
     // 增加父表单主键，作为查询字段，若父表单无该主健id，则返回，不查询
     if (props.isFormSubTable) {
       const pid = formProvideProxy?.getRecordId()
+      console.log('GlEntityTable > fetchData() > formProvideProxy is',formProvideProxy)
       if (!pid) {
         setLoading(false)
+        console.error('GlEntityTable > fetchData() > formProvideProxy is',formProvideProxy,' and getRecordId() is '+formProvideProxy?.getRecordId()+'.作为子表时，父ID不能为空。')
         return
       }
       entityReader.params.push(new EntityReaderParam(props.subTablePidName, 'eq', pid))
@@ -466,6 +470,18 @@ const fetchData = async (readerInfo?: {
   }
 }
 
+const onChangeValue = (value:any,oldValue:any)=>{
+
+  console.log('change renderData,label:',props.glComponentInst.props.base?.label,'entity:',props.glComponentInst.props.base?.entityName,'id',props.glComponentInst.id,'isPageRead:',isPageRead,'renderData:', props.glComponentInst.value)
+  // 这里不能使用 reRender()，reRender会导致用户每录入一个字符都会重绘整个列表
+  renderData.value = []
+  // @ts-ignore
+  renderData.value = [...props.glComponentInst.value]
+  // 值有变化时，重新统计一下是否只读
+  // reStatIsRowReadonly(renderData.value)
+  emits('change', renderData.value)
+}
+
 /**
  *  编辑页面的数据量不会太大，这里直接Watch数据的变化，不用在页面中配置值改变之后刷新列表
  */
@@ -473,16 +489,7 @@ watch(
   () => {
     return props.glComponentInst.value
   },
-  () => {
-    // console.log('update value:', props.glComponentInst.value)
-    // 这里不能使用 reRender()，reRender会导致用户每录入一个字符都会重绘整个列表
-    renderData.value = []
-    // @ts-ignore
-    renderData.value = [...props.glComponentInst.value]
-    // 值有变化时，重新统计一下是否只读
-    reStatIsRowReadonly(renderData.value)
-    emits('change', renderData.value)
-  },
+    onChangeValue,
   { deep: true }
 )
 

@@ -526,12 +526,27 @@ export default class PageProvideProxy {
     this.pageParamsMeta = null
     // @ts-ignore
     this.pageCtx = null
+
+    Object.keys(this.vueRefMap).forEach((key) => {
+      // @ts-ignore
+      this.vueRefMap[key] = null
+    })
     // @ts-ignore
     this.vueRefMap = null
+
+    Object.keys(this.componentInstMap).forEach((key) => {
+      // @ts-ignore
+      this.componentInstMap[key] = null
+    })
     // @ts-ignore
     this.componentInstMap = null
     // @ts-ignore
     this.unMountedIds = null
+
+    Object.keys(this.onPageMountedEvents).forEach((key) => {
+      // @ts-ignore
+      this.onPageMountedEvents[key] = null
+    })
     this.onPageMountedEvents.length = 0
     // @ts-ignore
     this.onPageMountedEvents = null

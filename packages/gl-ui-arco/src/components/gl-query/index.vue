@@ -191,7 +191,7 @@ const onSearch = useDebounceFn(() => {
       pageProxy: pageProvideProxy
     })
   }
-  // console.log(`查询阻断表达式：${props.interdictExpression}，执行结果为：`,stop,'，当前查询参数为：entityReaderParams:',entityReaderParams)
+  // console.log(`是否阻断查询表达式：${props.interdictExpression}，执行结果为：`,stop,'，当前查询参数为：entityReaderParams:',entityReaderParams)
   if (!stop) {
     emits('search', entityReaderParams)
   }

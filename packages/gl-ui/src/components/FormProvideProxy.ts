@@ -2,11 +2,13 @@
  *  在GlEntityForm组件的所有子组件中注入的对象，每个组件new一个FormProvideProxy对象
  */
 import {ref} from "vue";
+import utils from "../m/utils/Utils";
 
 export type FormParamType = { pName: string, pValue: any, pType: string }
 export const FormProvideKey = 'FormProvideKey'
 export const FormProvideKeyNotBlockForm = 'FormProvideKeyNotBlockForm'
 export default class FormProvideProxy {
+    id = utils.gid()
 
     state = ref<{ [key: string]: any }>({})
     recordId = ref('')

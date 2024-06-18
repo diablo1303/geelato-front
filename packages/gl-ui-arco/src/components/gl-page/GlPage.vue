@@ -265,10 +265,10 @@ onUnmounted(() => {
   if (pageIntervalId) {
     clearInterval(pageIntervalId)
   }
-  // jsScriptExecutor.removePageProxy(props.glComponentInst.id)
   // console.log('GlPage > onUnmounted() > pageInstId:', props.glComponentInst.id)
-  // pageProvideProxy?.destroy()
-  // pageProvideProxy = null
+  pageProvideProxy?.destroy()
+  pageProvideProxy = null
+  jsScriptExecutor.removePageProxy(props.glComponentInst.id)
   // @ts-ignore
   // props.glComponentInst = null
 })

@@ -14,7 +14,7 @@ import {
   PageProvideProxy,
   PageProvideKey,
   EntityReaderOrder,
-  EntityDataSource
+  EntityDataSource, jsScriptExecutor
 } from '@geelato/gl-ui'
 import {
   type Column,
@@ -40,8 +40,7 @@ import {
 } from './table'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import cloneDeep from 'lodash/cloneDeep'
-// 直接在template使用$modal，build时会报错，找不到类型，这里进行重新引用定义
-const $modal = useGlobal().$modal
+const global = useGlobal()
 // fetch 加载完成数据之后
 const emits = defineEmits(['updateColumns', 'fetchSuccess', 'fetchFail'])
 const props = defineProps({
@@ -100,15 +99,16 @@ const props = defineProps({
       return false
     }
   },
+  /**
+   *  阻断查询表达式
+   *  表达式执行结果为true时，触发的查询操作在发出查询事件(emits search)之前会被中断
+   *  表达式执行结果为false或undefined时，不中断
+   *  表达式为空时不中断
+   */
+  interdictExpression: String,
   pushedRecordKeys: Array as PropType<string[]>,
   unPushedRecordKeys: Array as PropType<string[]>,
-  ...mixins.subFormProps,
-  // isLogicDeleteMode: {
-  //   type: Boolean,
-  //   default() {
-  //     return true
-  //   }
-  // },
+
   subTablePidName: {
     type: String
   },
@@ -151,6 +151,7 @@ const props = defineProps({
     type: String,
     required: true
   },
+  ...mixins.subFormProps,
   ...mixins.props
 })
 
@@ -315,11 +316,31 @@ let lastOrder: EntityReaderOrder[] = []
 let lastPushedRecordKeys: string[]
 let lastUnPushedRecordKeys: string[]
 
+/**
+ * 是否需要阻断查询
+ * 依据props.interdictExpression检查
+ */
+const isNeedStopSearch = ()=>{
+  let stop = false
+  if (props.interdictExpression) {
+    stop = jsScriptExecutor.evalExpression(props.interdictExpression, {
+      pageProxy: pageProvideProxy
+    })
+  }
+  if(stop){
+    // global.$message.warning('查询条件不符合要求，查询被阻断')
+  }
+  return stop
+}
+
 const search = (
   entityReaderParams: Array<EntityReaderParam>,
   pushedRecordKeys: string[],
   unPushedRecordKeys: string[]
 ) => {
+  if (isNeedStopSearch()) {
+    return
+  }
   // console.log('search entityReaderParams:', entityReaderParams)
   lastEntityReaderParams = entityReaderParams
   lastPushedRecordKeys = pushedRecordKeys
@@ -332,6 +353,9 @@ const search = (
   })
 }
 const onPageChange = (pageNo: number) => {
+  if (isNeedStopSearch()) {
+    return
+  }
   fetchData({
     pageNo,
     order: lastOrder,
@@ -342,6 +366,9 @@ const onPageChange = (pageNo: number) => {
 }
 
 const onPageSizeChange = (pageSize: number) => {
+  if (isNeedStopSearch()) {
+    return
+  }
   pagination.value.pageSize = pageSize
   fetchData({
     pageSize,
@@ -357,6 +384,9 @@ const onPageSizeChange = (pageSize: number) => {
  * @param direction 排序方向
  */
 const onSorterChange = (dataIndex: string, direction: string) => {
+  if (isNeedStopSearch()) {
+    return
+  }
   if (!direction) {
     // 如果清空了当前字段的排序
     lastOrder = []

@@ -272,9 +272,11 @@ const selectByIndex = (params: { index: number }) => {
 }
 
 const fixedClass = computed(() => {
-  const className = `gl-fixed-${props.position || 'top'}`
-  if (props.enableFixedTitle && ['left', 'top'].includes(props.position || '')) {
-    return { 'gl-fixed': true, [className]: true }
+  if(props.glIsRuntime){
+    const className = `gl-fixed-${props.position || 'top'}`
+    if (props.enableFixedTitle && ['left', 'top'].includes(props.position || '')) {
+      return { 'gl-fixed': true, [className]: true }
+    }
   }
   return {}
 })

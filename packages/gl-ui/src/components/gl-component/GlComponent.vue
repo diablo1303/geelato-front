@@ -77,7 +77,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getCurrentInstance, inject, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { getCurrentInstance, inject, onMounted, onUnmounted, ref, watch } from 'vue'
 import mixins from '../mixins'
 import jsScriptExecutor from '../../m/actions/JsScriptExecutor'
 import type { Action } from '@geelato/gl-ui-schema'
@@ -402,8 +402,6 @@ onUnmounted(() => {
   /**
    * 释放资源
    */
-  // @ts-ignore
-  pageProvideProxy?.removeVueInst(props.glComponentInst.id)
   if (typeof onActionsHandler === 'object') {
     Object.keys(onActionsHandler).forEach((key) => {
       delete onActionsHandler[key]
@@ -414,11 +412,13 @@ onUnmounted(() => {
   if (detachedElementRef.value) {
     detachedElementRef.value = null
   }
+
+  // @ts-ignore
+  pageProvideProxy?.removeVueInst(props.glComponentInst.id)
+  // @ts-ignore
+  pageProvideProxy = null
+
+  // console.log('onUnmounted', props.glComponentInst?.componentName,props.glComponentInst?.id)
 })
 defineExpose({ onMouseLeave, onMouseOver, _reRender, _setVar, _getVar, _getVars, _getVarsRef })
 </script>
-
-<style>
-.gl-component {
-}
-</style>
