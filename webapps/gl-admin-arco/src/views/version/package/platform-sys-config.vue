@@ -73,7 +73,7 @@ watch(() => props, (val) => {
       <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="purpose" title="使用范围"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="encrypted" title="是否加密"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="enable_status" title="状态"/>
-      <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+      <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="remark" title="备注"/>
     </template>
   </a-table>

@@ -89,7 +89,7 @@ watch(() => props, (val) => {
       <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="example" title="示例"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="template" title="规则">
         <template #cell="{ record }">
-          <a-button type="text" style="width: 18px;height: 18px;" @click="viewTemplate(record.template)">
+          <a-button style="width: 18px;height: 18px;" type="text" @click="viewTemplate(record.template)">
             <template #icon>
               <IconEye/>
             </template>
@@ -98,7 +98,7 @@ watch(() => props, (val) => {
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="enable_status" title="状态"/>
-      <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+      <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="description" title="备注"/>
     </template>
   </a-table>
@@ -116,9 +116,9 @@ watch(() => props, (val) => {
             row-key="id"
             size="small">
           <template #columns>
-            <a-table-column :ellipsis="true" title="排序" :tooltip="true" :width="70" align="center" data-index="seqNo"/>
-            <a-table-column :ellipsis="true" title="类型" :tooltip="true" :width="120" data-index="itemType"/>
-            <a-table-column :ellipsis="true" title="内容" :tooltip="true" :width="240" data-index="itemContent">
+            <a-table-column :ellipsis="true" :tooltip="true" :width="70" align="center" data-index="seqNo" title="排序"/>
+            <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="itemType" title="类型"/>
+            <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="itemContent" title="内容">
               <template #cell="{record}">
                 <!--        固定字符          -->
                 <span v-if="record.itemType==='constant'">{{ record.constantValue }}</span>

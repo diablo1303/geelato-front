@@ -160,32 +160,32 @@ defineExpose({saveOrUpdate, loadPage});
   <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
     <a-row :gutter="wrapperCol">
       <a-col :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item :rules="[{required: true,message: '这是必填项'}]" label="应用包上传" field="packagePath">
-          <UploadFile :disabled="formState==='view'" accept=".zgdp" v-model="formData.packagePath"
-                      genre="uploadVersion" :parameter="parameter" :object-id="formData.id"
+        <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="packagePath" label="应用包上传">
+          <UploadFile v-model="formData.packagePath" :disabled="formState==='view'" :object-id="formData.id"
+                      :parameter="parameter" accept=".zgdp" genre="uploadVersion"
                       @change="uploadFileChange"/>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item :rules="[{required: true,message: '这是必填项'}]" label="版本名称" field="version">
+        <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="version" label="版本名称">
           <a-input v-if="formState!=='view'" v-model.trim="formData.version" :max-length="32"/>
           <span v-else>{{ formData.name }}</span>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item :rules="[{required: true,message: '这是必填项'}]" label="版本来源" field="packageSource">
+        <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="packageSource" label="版本来源">
           <a-select v-model="formData.packageSource" :disabled="true" :options="packageSourceOptions"/>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item :rules="[{required: true,message: '这是必填项'}]" label="应用主键" field="appId">
+        <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="appId" label="应用主键">
           <a-auto-complete v-model="formData.appId" :data="appComplete" allow-clear placeholder="please enter something"/>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)">
         <a-form-item :label-col-props="{ span: labelCol/formCol }"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
-                     label="版本描述" field="description">
+                     field="description" label="版本描述">
           <a-textarea v-if="formState!=='view'"
                       v-model="formData.description"
                       :auto-size="{minRows:2,maxRows:4}"

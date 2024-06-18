@@ -164,7 +164,7 @@ watch(() => props, (val) => {
   <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
     <template #first>
 <span class="tree-layout">
-    <a-input-search v-model="searchKey" placeholder="搜索" allow-clear class="tree-search"/>
+    <a-input-search v-model="searchKey" allow-clear class="tree-search" placeholder="搜索"/>
     <a-scrollbar :style="{overflow:'auto',height:`${props.height-110}px`}">
       <a-tree
           v-model:selectedKeys="selectedKeys"
@@ -212,7 +212,7 @@ watch(() => props, (val) => {
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="file_code" title="分组编码"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="210" data-index="template" title="模板文件">
             <template #cell="{ record,item = record.template?JSON.parse(record.template):{} }">
-              <a-button type="text" style="width: 18px;height: 18px;" @click="downloadFileByBase64String(record.template)">
+              <a-button style="width: 18px;height: 18px;" type="text" @click="downloadFileByBase64String(record.template)">
                 <template #icon>
                   <IconDownload/>
                 </template>
@@ -222,7 +222,7 @@ watch(() => props, (val) => {
           </a-table-column>
           <a-table-column :ellipsis="true" :tooltip="true" :width="210" data-index="template_rule" title="模板文件源数据">
             <template #cell="{ record,item = record.template_rule?JSON.parse(record.template_rule):{} }">
-              <a-button type="text" style="width: 18px;height: 18px;" @click="downloadFileByBase64String(record.template_rule)">
+              <a-button style="width: 18px;height: 18px;" type="text" @click="downloadFileByBase64String(record.template_rule)">
                 <template #icon>
                   <IconDownload/>
                 </template>
@@ -231,12 +231,12 @@ watch(() => props, (val) => {
             </template>
           </a-table-column>
           <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="enable_status" title="状态"/>
-          <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+          <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="description" title="描述"/>
         </template>
       </a-table>
       <a-tabs v-if="selectedData.level===1" v-model:active-key="activeKey" :default-active-tab="1" :lazy-load="true" position="top" type="line">
-        <a-tab-pane v-if="selectedData.data?.use_type==='export'" :key="1" title="数据配置" class="a-tabs-one">
+        <a-tab-pane v-if="selectedData.data?.use_type==='export'" :key="1" class="a-tabs-one" title="数据配置">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"
@@ -279,7 +279,7 @@ watch(() => props, (val) => {
             </a-table>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane v-if="selectedData.data?.use_type==='import'" :key="2" title="模板字段定义" class="a-tabs-one">
+        <a-tab-pane v-if="selectedData.data?.use_type==='import'" :key="2" class="a-tabs-one" title="模板字段定义">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"
@@ -308,7 +308,7 @@ watch(() => props, (val) => {
             </a-table>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane v-if="selectedData.data?.use_type==='import'" :key="3" title="数据处理规则" class="a-tabs-one">
+        <a-tab-pane v-if="selectedData.data?.use_type==='import'" :key="3" class="a-tabs-one" title="数据处理规则">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"
@@ -339,7 +339,7 @@ watch(() => props, (val) => {
             </a-table>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane v-if="selectedData.data?.use_type==='import'" :key="4" title="数据保存配置" class="a-tabs-one">
+        <a-tab-pane v-if="selectedData.data?.use_type==='import'" :key="4" class="a-tabs-one" title="数据保存配置">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"

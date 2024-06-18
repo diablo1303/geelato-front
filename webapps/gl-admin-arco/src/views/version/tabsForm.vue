@@ -136,105 +136,105 @@ watch(() => props, (val) => {
 
 <template>
   <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" position="top" type="line">
-    <a-tab-pane :key="1" title="版本信息" class="a-tabs-five">
-      <a-form :model="tableData" :label-col-props="{ span: '2px' }" style="padding-left: 16px;" class="form">
-        <a-form-item label="应用主键：" field="appId">
+    <a-tab-pane :key="1" class="a-tabs-five" title="版本信息">
+      <a-form :label-col-props="{ span: '2px' }" :model="tableData" class="form" style="padding-left: 16px;">
+        <a-form-item field="appId" label="应用主键：">
           <CopyToClipboard v-if="tableData.appId" :model-value="tableData.appId"/>
           <span>{{ tableData.appId }}{{ getAppOptionLabel(tableData.appId) }}</span>
         </a-form-item>
-        <a-form-item label="版本名称：" field="version">
+        <a-form-item field="version" label="版本名称：">
           <CopyToClipboard v-if="tableData.version" :model-value="tableData.version"/>
           <span>{{ tableData.version }}</span>
         </a-form-item>
-        <a-form-item label="版本来源：" field="packageSource">
+        <a-form-item field="packageSource" label="版本来源：">
           <span>{{ getOptionLabel(tableData.packageSource, packageSourceOptions) }}</span>
         </a-form-item>
-        <a-form-item label="版本状态：" field="status">
+        <a-form-item field="status" label="版本状态：">
           <span>{{ getOptionLabel(tableData.status, packageStatusOptions) }}</span>
         </a-form-item>
-        <a-form-item label="打包时间：" field="packetTime">
+        <a-form-item field="packetTime" label="打包时间：">
           <span>{{ tableData.packetTime }}</span>
         </a-form-item>
-        <a-form-item label="打包人员：" field="creatorName">
+        <a-form-item field="creatorName" label="打包人员：">
           <span>{{ tableData.creatorName }}</span>
         </a-form-item>
-        <a-form-item v-if="!['draft'].includes(tableData.status)" label="应用包：" field="packagePath">
-          <UploadFile :disabled="true" v-model="tableData.packagePath"/>
+        <a-form-item v-if="!['draft'].includes(tableData.status)" field="packagePath" label="应用包：">
+          <UploadFile v-model="tableData.packagePath" :disabled="true"/>
         </a-form-item>
-        <a-form-item label="版本描述：" field="description">
+        <a-form-item field="description" label="版本描述：">
           <span :title="tableData.description">{{ tableData.description }}</span>
         </a-form-item>
       </a-form>
     </a-tab-pane>
-    <a-tab-pane :key="2" title="模型管理" class="a-tabs-five">
+    <a-tab-pane :key="2" class="a-tabs-five" title="模型管理">
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformModelList :model-value="appMetaList"
-                           :visible="listParams.visible"
-                           :height="listParams.height"
-                           :parameter="listParams.parameter"/>
+        <PlatformModelList :height="listParams.height"
+                           :model-value="appMetaList"
+                           :parameter="listParams.parameter"
+                           :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="3" title="数据字典" class="a-tabs-five">
+    <a-tab-pane :key="3" class="a-tabs-five" title="数据字典">
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformDictList :model-value="appMetaList"
-                          :visible="listParams.visible"
-                          :height="listParams.height"
-                          :parameter="listParams.parameter"/>
+        <PlatformDictList :height="listParams.height"
+                          :model-value="appMetaList"
+                          :parameter="listParams.parameter"
+                          :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="4" title="角色管理" class="a-tabs-five">
+    <a-tab-pane :key="4" class="a-tabs-five" title="角色管理">
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformRoleList :model-value="appMetaList"
-                          :visible="listParams.visible"
-                          :height="listParams.height"
-                          :parameter="listParams.parameter"/>
+        <PlatformRoleList :height="listParams.height"
+                          :model-value="appMetaList"
+                          :parameter="listParams.parameter"
+                          :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="5" title="菜单管理" class="a-tabs-five">
+    <a-tab-pane :key="5" class="a-tabs-five" title="菜单管理">
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformPageList :model-value="appMetaList"
-                          :visible="listParams.visible"
-                          :height="listParams.height"
-                          :parameter="listParams.parameter"/>
+        <PlatformPageList :height="listParams.height"
+                          :model-value="appMetaList"
+                          :parameter="listParams.parameter"
+                          :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="6" title="系统配置" class="a-tabs-five">
+    <a-tab-pane :key="6" class="a-tabs-five" title="系统配置">
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformSysConfigList :model-value="appMetaList"
-                               :visible="listParams.visible"
-                               :height="listParams.height"
-                               :parameter="listParams.parameter"/>
+        <PlatformSysConfigList :height="listParams.height"
+                               :model-value="appMetaList"
+                               :parameter="listParams.parameter"
+                               :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="7" title="文件管理" class="a-tabs-five">
+    <a-tab-pane :key="7" class="a-tabs-five" title="文件管理">
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformExportTemplateList :model-value="appMetaList"
-                                    :visible="listParams.visible"
-                                    :height="listParams.height"
-                                    :parameter="listParams.parameter"/>
+        <PlatformExportTemplateList :height="listParams.height"
+                                    :model-value="appMetaList"
+                                    :parameter="listParams.parameter"
+                                    :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="8" title="编码管理" class="a-tabs-five">
+    <a-tab-pane :key="8" class="a-tabs-five" title="编码管理">
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformEncodingList :model-value="appMetaList"
-                              :visible="listParams.visible"
-                              :height="listParams.height"
-                              :parameter="listParams.parameter"/>
+        <PlatformEncodingList :height="listParams.height"
+                              :model-value="appMetaList"
+                              :parameter="listParams.parameter"
+                              :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
-    <a-tab-pane :key="9" title="资源管理" class="a-tabs-five">
+    <a-tab-pane :key="9" class="a-tabs-five" title="资源管理">
       <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformResourcesList :model-value="appMetaList"
-                               :visible="listParams.visible"
-                               :height="listParams.height"
-                               :parameter="listParams.parameter"/>
+        <PlatformResourcesList :height="listParams.height"
+                               :model-value="appMetaList"
+                               :parameter="listParams.parameter"
+                               :visible="listParams.visible"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>

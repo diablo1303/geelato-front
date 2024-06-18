@@ -193,7 +193,7 @@ watch(() => props, (val) => {
   <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
     <template #first>
 <span class="tree-layout">
-    <a-input-search v-model="searchKey" placeholder="搜索" allow-clear class="tree-search"/>
+    <a-input-search v-model="searchKey" allow-clear class="tree-search" placeholder="搜索"/>
     <a-scrollbar :style="{overflow:'auto',height:`${props.height-110}px`}">
       <a-tree
           v-model:selectedKeys="selectedKeys"
@@ -248,7 +248,7 @@ watch(() => props, (val) => {
               {{ getOptionLabel(record.type, typeOptions) }}
             </template>
           </a-table-column>
-          <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+          <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
         </template>
       </a-table>
       <a-table v-if="selectedData.level===1"
@@ -288,7 +288,7 @@ watch(() => props, (val) => {
               {{ record.source_content }}
             </template>
           </a-table-column>
-          <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+          <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="description" title="说明"/>
         </template>
       </a-table>

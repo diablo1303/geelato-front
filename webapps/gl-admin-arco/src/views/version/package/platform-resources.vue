@@ -70,7 +70,7 @@ watch(() => props, (val) => {
       </a-table-column>
       <a-table-column :ellipsis="true" :tooltip="true" :width="210" data-index="name" title="名称">
         <template #cell="{ record }">
-          <a-button type="text" style="width: 18px;height: 18px;" @click="fetchFileById(record.id)">
+          <a-button style="width: 18px;height: 18px;" type="text" @click="fetchFileById(record.id)">
             <template #icon>
               <IconDownload/>
             </template>
@@ -88,7 +88,7 @@ watch(() => props, (val) => {
       <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="size" title="大小"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="genre" title="标记"/>
       <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="object_id" title="所属业务ID"/>
-      <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+      <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
     </template>
   </a-table>
 </template>

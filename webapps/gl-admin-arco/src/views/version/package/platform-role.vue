@@ -232,7 +232,7 @@ watch(() => props, (val) => {
   <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
     <template #first>
 <span class="tree-layout">
-    <a-input-search v-model="searchKey" placeholder="搜索" allow-clear class="tree-search"/>
+    <a-input-search v-model="searchKey" allow-clear class="tree-search" placeholder="搜索"/>
     <a-scrollbar :style="{overflow:'auto',height:`${props.height-110}px`}">
       <a-tree
           v-model:selectedKeys="selectedKeys"
@@ -277,17 +277,17 @@ watch(() => props, (val) => {
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="name" title="名称"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="code" title="编码"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="type" title="类型"/>
-          <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.weight" :width="90" data-index="weight" title="权重"/>
+          <a-table-column :ellipsis="true" :sortable="sortable.weight" :tooltip="true" :width="90" data-index="weight" title="权重"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="app_id" title="所属应用"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="use_app" title="用于应用"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="enable_status" title="状态"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="seq_no" title="排序"/>
-          <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+          <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="description" title="描述"/>
         </template>
       </a-table>
       <a-tabs v-if="selectedData.level===1" :default-active-tab="1" :lazy-load="true" position="top" type="line">
-        <a-tab-pane :key="1" title="应用关联" class="a-tabs-one">
+        <a-tab-pane :key="1" class="a-tabs-one" title="应用关联">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"
@@ -306,12 +306,12 @@ watch(() => props, (val) => {
                 </a-table-column>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="app_id" title="应用主键"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="app_name" title="应用名称"/>
-                <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+                <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
               </template>
             </a-table>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane :key="2" title="权限关联" class="a-tabs-one">
+        <a-tab-pane :key="2" class="a-tabs-one" title="权限关联">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"
@@ -334,12 +334,12 @@ watch(() => props, (val) => {
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="object" title="对象"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="rule" title="规则"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="description" title="描述"/>
-                <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+                <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
               </template>
             </a-table>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane :key="3" title="菜单关联" class="a-tabs-one">
+        <a-tab-pane :key="3" class="a-tabs-one" title="菜单关联">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"

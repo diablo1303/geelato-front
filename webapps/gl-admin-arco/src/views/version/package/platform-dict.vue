@@ -170,7 +170,7 @@ watch(() => props, (val) => {
   <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
     <template #first>
 <span class="tree-layout">
-    <a-input-search v-model="searchKey" placeholder="搜索" allow-clear class="tree-search"/>
+    <a-input-search v-model="searchKey" allow-clear class="tree-search" placeholder="搜索"/>
     <a-scrollbar :style="{overflow:'auto',height:`${props.height-110}px`}">
       <a-tree
           v-model:selectedKeys="selectedKeys"
@@ -214,7 +214,7 @@ watch(() => props, (val) => {
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="dict_name" title="字典名称"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="dict_code" title="字典编码"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="enable_status" title="状态"/>
-          <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+          <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="210" data-index="dict_remark" title="备注"/>
         </template>
       </a-table>
@@ -232,8 +232,8 @@ watch(() => props, (val) => {
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="item_name" title="字典项名称"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="item_code" title="字典项编码"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="enable_status" title="状态"/>
-          <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.seqNo" :width="90" align="right" data-index="seq_no" title="排序"/>
-          <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+          <a-table-column :ellipsis="true" :sortable="sortable.seqNo" :tooltip="true" :width="90" align="right" data-index="seq_no" title="排序"/>
+          <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="210" data-index="item_remark" title="备注"/>
         </template>
       </a-table>

@@ -133,7 +133,7 @@ watch(searchText, () => {
 <template>
   <a-space style="justify-content: flex-start;min-width: 295px;">
     <a-input-search v-model="searchText" allow-clear placeholder="版本查询" style="min-width: 250px;"/>
-    <a-button type="outline" style="height: 27px;" @click="resetVersion">
+    <a-button style="height: 27px;" type="outline" @click="resetVersion">
       <template #icon>
         <a-tooltip content="重置">
           <icon-refresh/>
@@ -143,14 +143,14 @@ watch(searchText, () => {
   </a-space>
   <a-divider style="margin: 5px 0px;"/>
   <a-scrollbar :style="{overflow:'auto',height:`${props.height}px`}">
-    <a-list class="version-list" :bordered="false"
-            @reach-bottom="fetchData" :loading="loading" size="small">
+    <a-list :bordered="false" :loading="loading"
+            class="version-list" size="small" @reach-bottom="fetchData">
       <template #scroll-loading>
         <div v-if="noMoreData">~ 没有更多的数据 ~</div>
         <a-spin v-else/>
       </template>
-      <a-list-item v-for="(item,index) of renderData" :key="index" action-layout="vertical"
-                   :class="item.active?'active':''">
+      <a-list-item v-for="(item,index) of renderData" :key="index" :class="item.active?'active':''"
+                   action-layout="vertical">
         <a-list-item-meta style="cursor: pointer;" @click="selectItemMeta(item)">
           <template #title>
             {{ `${item.sort}` }}

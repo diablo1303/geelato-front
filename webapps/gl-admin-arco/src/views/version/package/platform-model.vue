@@ -274,7 +274,7 @@ watch(() => props, (val) => {
   <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
     <template #first>
 <span class="tree-layout">
-    <a-input-search v-model="searchKey" placeholder="搜索" allow-clear class="tree-search"/>
+    <a-input-search v-model="searchKey" allow-clear class="tree-search" placeholder="搜索"/>
     <a-scrollbar :style="{overflow:'auto',height:`${props.height-125}px`}">
       <a-tree
           v-model:selectedKeys="selectedKeys"
@@ -324,7 +324,7 @@ watch(() => props, (val) => {
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="db_port" title="连接端口"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="db_user_name" title="用户名"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="enable_status" title="状态"/>
-          <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+          <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
         </template>
       </a-table>
       <a-table v-if="selectedData.level===1"
@@ -343,7 +343,7 @@ watch(() => props, (val) => {
               {{ rowIndex + 1 }}
             </template>
           </a-table-column>
-          <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.entityName" :width="180" data-index="entity_name" title="实体名称"/>
+          <a-table-column :ellipsis="true" :sortable="sortable.entityName" :tooltip="true" :width="180" data-index="entity_name" title="实体名称"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="title" title="名称(中文)"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="table_type" title="表格类型"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="app_id" title="所属应用"/>
@@ -351,13 +351,13 @@ watch(() => props, (val) => {
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="pack_bus_data" title="打包业务数据"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="enable_status" title="状态"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="seq_no" title="排序"/>
-          <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+          <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="description" title="补充描述"/>
           <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="table_comment" title="数据库注释"/>
         </template>
       </a-table>
       <a-tabs v-if="selectedData.level===2" :default-active-tab="1" :lazy-load="true" position="top" type="line">
-        <a-tab-pane :key="1" title="模型字段" class="a-tabs-one">
+        <a-tab-pane :key="1" class="a-tabs-one" title="模型字段">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"
@@ -374,7 +374,7 @@ watch(() => props, (val) => {
                     {{ rowIndex + 1 }}
                   </template>
                 </a-table-column>
-                <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.columnName" :width="180" data-index="column_name" title="字段标识"/>
+                <a-table-column :ellipsis="true" :sortable="sortable.columnName" :tooltip="true" :width="180" data-index="column_name" title="字段标识"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="title" title="名称(中文)"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="enable_status" title="状态"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="field_name" title="名称(英文)"/>
@@ -391,13 +391,13 @@ watch(() => props, (val) => {
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="default_value" title="默认值"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="extraValue" title="默认字段"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="ordinal_position" title="次序"/>
-                <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+                <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="column_comment" title="注释(中文)"/>
               </template>
             </a-table>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane :key="2" title="模型外键" class="a-tabs-one">
+        <a-tab-pane :key="2" class="a-tabs-one" title="模型外键">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"
@@ -420,13 +420,13 @@ watch(() => props, (val) => {
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="foreign_table_col" title="外表字段"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="enable_status" title="状态"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="seq_no" title="排序"/>
-                <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+                <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="description" title="主表表名"/>
               </template>
             </a-table>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane :key="3" title="模型视图" class="a-tabs-one">
+        <a-tab-pane :key="3" class="a-tabs-one" title="模型视图">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"
@@ -448,13 +448,13 @@ watch(() => props, (val) => {
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="view_type" title="视图类型"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="enable_status" title="状态"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="90" data-index="seq_no" title="排序"/>
-                <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.createAt" :width="180" data-index="create_at" title="创建时间"/>
+                <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="description" title="补充描述"/>
               </template>
             </a-table>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane :key="4" title="模型权限" class="a-tabs-one">
+        <a-tab-pane :key="4" class="a-tabs-one" title="模型权限">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"
@@ -468,8 +468,8 @@ watch(() => props, (val) => {
               <template #columns>
                 <a-table-column :ellipsis="true" :tooltip="false" :width="180" data-index="name" fixed="left" title="角色名称"/>
                 <a-table-column :ellipsis="true" :tooltip="false" :width="90" align="center" data-index="weight" title="角色权重"/>
-                <a-table-column v-for="(item,index) of tPermissionFilterData" :key="index" :data-index="item.id" :ellipsis="true" :tooltip="true" :width="120"
-                                :title="item.name" align="center">
+                <a-table-column v-for="(item,index) of tPermissionFilterData" :key="index" :data-index="item.id" :ellipsis="true" :title="item.name" :tooltip="true"
+                                :width="120" align="center">
                   <template #cell="{record}">
                     <a-switch v-model="record[item.id]" :disabled="true">
                       <template #checked>
@@ -485,7 +485,7 @@ watch(() => props, (val) => {
             </a-table>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane :key="5" title="字段权限" class="a-tabs-one">
+        <a-tab-pane :key="5" class="a-tabs-one" title="字段权限">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"
@@ -499,8 +499,8 @@ watch(() => props, (val) => {
               <template #columns>
                 <a-table-column :ellipsis="true" :tooltip="false" :width="180" data-index="name" fixed="left" title="角色名称"/>
                 <a-table-column :ellipsis="true" :tooltip="false" :width="90" align="center" data-index="weight" title="角色权重"/>
-                <a-table-column v-for="(item,index) of columnFilterData" :key="index" :data-index="item.id" :ellipsis="true" :tooltip="true" :width="120"
-                                :title="item.title" align="center">
+                <a-table-column v-for="(item,index) of columnFilterData" :key="index" :data-index="item.id" :ellipsis="true" :title="item.title" :tooltip="true"
+                                :width="120" align="center">
                   <template #cell="{record}">
                     <span v-if="record[item.id]==0" style="color: #86909c;">可编辑</span>
                     <span v-if="record[item.id]==1" style="color: #00b42a;">不可编辑</span>
@@ -513,12 +513,12 @@ watch(() => props, (val) => {
         </a-tab-pane>
       </a-tabs>
       <a-tabs v-if="selectedData.level===3" :default-active-tab="1" :lazy-load="true" position="top" type="line">
-        <a-tab-pane :key="1" title="视图语句" class="a-tabs-one">
+        <a-tab-pane :key="1" class="a-tabs-one" title="视图语句">
           <div style="word-wrap: break-word;overflow-wrap: break-word;box-sizing: border-box;padding: 5px 16px;border: 1px solid var(--color-neutral-3);">
             {{ selectedData.data?.view_construct || '' }}
           </div>
         </a-tab-pane>
-        <a-tab-pane :key="2" title="视图字段" class="a-tabs-one">
+        <a-tab-pane :key="2" class="a-tabs-one" title="视图字段">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"
@@ -536,7 +536,7 @@ watch(() => props, (val) => {
                   </template>
                 </a-table-column>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="title" title="名称(中文)"/>
-                <a-table-column :ellipsis="true" :tooltip="true" :sortable="sortable.columnName" :width="180" data-index="column_name" title="字段标识"/>
+                <a-table-column :ellipsis="true" :sortable="sortable.columnName" :tooltip="true" :width="180" data-index="column_name" title="字段标识"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="field_name" title="名称(英文)"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="select_type" title="数据类型"/>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="table_name" title="模型名称"/>
@@ -544,7 +544,7 @@ watch(() => props, (val) => {
             </a-table>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane :key="3" title="视图权限" class="a-tabs-one">
+        <a-tab-pane :key="3" class="a-tabs-one" title="视图权限">
           <a-card class="general-card6">
             <a-table :bordered="{cell:true}"
                      :columns="([] as TableColumnData[])"
@@ -558,8 +558,8 @@ watch(() => props, (val) => {
               <template #columns>
                 <a-table-column :ellipsis="true" :tooltip="false" :width="120" data-index="name" fixed="left" title="角色名称"/>
                 <a-table-column :ellipsis="true" :tooltip="false" :width="60" align="center" data-index="weight" title="角色权重"/>
-                <a-table-column v-for="(item,index) of tPermissionFilterData" :key="index" :data-index="item.id" :ellipsis="true" :tooltip="true" :width="120"
-                                :title="item.name" align="center">
+                <a-table-column v-for="(item,index) of tPermissionFilterData" :key="index" :data-index="item.id" :ellipsis="true" :title="item.name" :tooltip="true"
+                                :width="120" align="center">
                   <template #cell="{record}">
                     <a-switch v-model="record[item.id]" :disabled="true">
                       <template #checked>
