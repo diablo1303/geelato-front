@@ -9,6 +9,8 @@ import {QueryAppForm, QueryAppVersionForm} from "@/api/application";
 import UploadFile from "@/components/upload-file/index.vue";
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 import {PageParams} from "@/views/compare/type";
+import {getOptionLabel} from "../../api/base";
+import {packageSourceOptions, packageStatusOptions} from "../version/searchTable";
 
 const emits = defineEmits(['update:modelValue', 'fetch', 'add', 'edit', 'delete']);
 const props = defineProps({
@@ -52,10 +54,14 @@ watch(() => props, (val) => {
       <span>{{ renderData.appId }}{{ getAppOptionLabel(renderData.appId) }}</span>
     </a-form-item>
     <a-form-item field="version" label="版本名称：">
+      <CopyToClipboard v-if="renderData.version" :model-value="renderData.version"/>
       <span>{{ renderData.version }}</span>
     </a-form-item>
     <a-form-item field="packageSource" label="版本来源：">
-      <span>{{ renderData.packageSource }}</span>
+      <span>{{ getOptionLabel(renderData.packageSource, packageSourceOptions) }}</span>
+    </a-form-item>
+    <a-form-item field="status" label="版本状态：">
+      <span>{{ getOptionLabel(renderData.status, packageStatusOptions) }}</span>
     </a-form-item>
     <a-form-item field="packetTime" label="打包时间：">
       <span>{{ renderData.packetTime }}</span>
@@ -63,7 +69,7 @@ watch(() => props, (val) => {
     <a-form-item field="creatorName" label="打包人员：">
       <span>{{ renderData.creatorName }}</span>
     </a-form-item>
-    <a-form-item field="packagePath" label="应用包：">
+    <a-form-item v-if="!['draft'].includes(renderData.status)" field="packagePath" label="应用包：">
       <UploadFile v-model="renderData.packagePath" :disabled="true"/>
     </a-form-item>
     <a-form-item field="description" label="版本描述：">

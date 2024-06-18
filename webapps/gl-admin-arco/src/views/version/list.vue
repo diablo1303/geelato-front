@@ -9,13 +9,14 @@ import {useI18n} from 'vue-i18n';
 import useLoading from '@/hooks/loading';
 import {FormInstance, Message, Modal} from "@arco-design/web-vue";
 import {deleteAppVersion, getAppSelectOptions, pageQueryAppVersions, QueryAppForm, QueryAppVersionForm} from "@/api/application";
-import {PageQueryFilter, PageQueryRequest} from "@/api/base";
+import {getOptionLabel, PageQueryFilter, PageQueryRequest} from "@/api/base";
 import {Pagination} from "@/types/global";
 import {fetchFileById} from "@/api/attachment";
-import {getPackageSourceMark} from "./searchTable";
+import {getPackageSourceMark, packageStatusOptions} from "./searchTable";
 
 // 页面所需 参数
 type PageParams = {
+  versionInfo?: string; // 版本信息
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -156,11 +157,19 @@ watch(searchText, () => {
             <a-button class="list-action-button-default" type="outline">
               {{ getPackageSourceMark(item.packageSource) }}
             </a-button>
-            {{ `${item.version}` }}
+            <span v-if="item.version===parameter.versionInfo" style="font-weight: bold;">{{ ` ${item.version}` }}</span>
+            <span v-else>{{ ` ${item.version}` }}</span>
           </template>
           <template #description>
             <div>{{ item.description }}</div>
-            <div>{{ item.packetTime || item.createAt }}</div>
+            <div>
+              <span v-if="item.version===parameter.versionInfo" style="color: #165DFF;font-weight: bold;">当前版本</span>
+              <span v-else :style="{color:`${['draft','unused'].includes(item.status)?'#FF7D00':'#165DFF'}`}">
+                {{ getOptionLabel(item.status, packageStatusOptions) }}
+              </span>
+              <span> | </span>
+              <span>{{ item.packetTime || item.createAt }}</span>
+            </div>
           </template>
         </a-list-item-meta>
       </a-list-item>
@@ -202,7 +211,7 @@ watch(searchText, () => {
   padding: 0 3px;
   margin-left: 2px;
   border-radius: 5px;
-/*  color: var(--color-text-3) !important;
-  border-color: 1px solid var(--color-text-3) !important;*/
+  /*  color: var(--color-text-3) !important;
+    border-color: 1px solid var(--color-text-3) !important;*/
 }
 </style>

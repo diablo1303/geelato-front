@@ -13,7 +13,17 @@ import {EventNames} from '@geelato/gl-ide';
 import {emitter, useGlobal} from '@geelato/gl-ui';
 import useUser from '@/hooks/user';
 import useLoading from "@/hooks/loading";
-import {deleteAppVersion, deployAppVersion, getApp, packetAppVersion, pageQueryAppVersions, QueryAppForm, QueryAppVersionForm,} from "@/api/application";
+import {
+  createOrUpdateAppVersion,
+  deleteAppVersion,
+  deployAppVersion,
+  getApp,
+  packetAppVersion,
+  pageQueryAppVersions,
+  QueryAppForm,
+  QueryAppVersionForm,
+  validateAppVersion,
+} from "@/api/application";
 import {initTables, initViews, QueryTableForm, queryTables} from "@/api/model";
 import {PageQueryRequest, PageSizeOptions, resetValueByOptions} from '@/api/base';
 import {fetchFileById} from "@/api/attachment";
@@ -100,11 +110,11 @@ const resetListPageSize = () => {
 const listParams = ref({
   load: generateRandom(),
   visible: false,
-  parameter: {appId: '', tenantCode: ''},
+  parameter: {versionInfo: '', appId: '', tenantCode: ''},
   formState: 'edit',
   pageSize: 10000,
   height: resetTreeHeight(),
-  selected: {id: '', title: '', item: {}},
+  selected: {id: '', title: '', status: '', item: {}},
 });
 const formParams = ref({
   visible: false,
@@ -198,10 +208,11 @@ const listSelected = (record: QueryAppVersionForm) => {
     Object.assign(listParams.value.selected, {
       id: record.id,
       title: `${record.version} | ${record.packetTime || record.createAt}`,
+      status: record.status,
       item: record
     });
   } else {
-    Object.assign(listParams.value.selected, {id: '', title: '', item: {}});
+    Object.assign(listParams.value.selected, {id: '', title: '', status: '', item: {}});
   }
 }
 
@@ -304,15 +315,29 @@ const syncViewToData = async () => {
   }
 }
 
-const packAppVersion = async () => {
+const packAppVersion = async (done: any) => {
   packLoading.value = true;
   try {
+    if (!packData.value.version || !packData.value.description) {
+      Message.warning('打包版本号和描述不能为空！');
+      done(false);
+      return;
+    }
+    const valid = await validateAppVersion({
+      version: packData.value.version, description: packData.value.description, appId: appData.value.id,
+    } as unknown as QueryAppVersionForm);
+    if (!valid.data) {
+      Message.warning('打包版本号已存在！');
+      done(false);
+      return;
+    }
     const {data} = await packetAppVersion(appData.value.id, packData.value.version, packData.value.description);
     Message.success('打包成功!');
     // @ts-ignore
     listParams.value.selected.id = data.id || '';
+    done(true);
   } catch (err) {
-    console.log(err);
+    done(false);
   } finally {
     packLoading.value = false;
   }
@@ -394,6 +419,23 @@ const deployVersion = async (item: QueryAppVersionForm) => {
     msgLoading.close();
   }
 }
+
+const releaseVersion = async (item: QueryAppVersionForm) => {
+  try {
+    const params = cloneDeep(item);
+    params.status = 'release';
+    // @ts-ignore
+    delete params.active;
+    // @ts-ignore
+    delete params.sort;
+    await createOrUpdateAppVersion(params);
+    Message.success("发布成功");
+    listParams.value.load = generateRandom();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 const deleteVersion = async (item: QueryAppVersionForm) => {
   try {
     await deleteAppVersion(item.id);
@@ -427,7 +469,7 @@ onMounted(() => {
       });
       document.title = `应用版本管理 | ${data.name}`;
       // 列表
-      const listRecord = {visible: true, parameter: {appId: data.id, tenantCode: data.tenantCode || ''}}
+      const listRecord = {visible: true, parameter: {versionInfo: data.versionInfo, appId: data.id, tenantCode: data.tenantCode || ''}}
       Object.assign(listParams.value, listRecord);
     });
   }
@@ -551,20 +593,28 @@ onUnmounted(() => {
                           <icon-common/>
                           比较
                         </a-button>
-                        <a-button v-if="!isCompare" style="color: rgb(var(--primary-6))" type="text"
+                        <a-button v-if="!isCompare&&!['draft'].includes(listParams.selected.status)" style="color: rgb(var(--primary-6))" type="text"
                                   @click.stop="fetchFileById(listParams.selected.item.packagePath)">
                           <icon-download/>
                           下载
                         </a-button>
-                        <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading" content="确认部署当前版本？" position="br"
-                                      @ok="deployVersion(listParams.selected.item)">
+                        <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading && !['draft'].includes(listParams.selected.status)"
+                                      content="确认部署当前版本？" position="br" @ok="deployVersion(listParams.selected.item)">
                           <a-button :loading="deployLoading" style="color: rgb(var(--success-6))" type="text">
                             <icon-star/>
                             部署
                           </a-button>
                         </a-popconfirm>
-                        <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading && !deployLoading" content="是否删除该版本数据？" position="br"
-                                      type="warning" @ok="deleteVersion(listParams.selected.item)">
+                        <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading && ['draft'].includes(listParams.selected.status)"
+                                      content="确认发布当前版本？" position="br" @ok="releaseVersion(listParams.selected.item)">
+                          <a-button style="color: rgb(var(--success-6))" type="text">
+                            <icon-send/>
+                            发布
+                          </a-button>
+                        </a-popconfirm>
+                        <a-popconfirm
+                            v-if="!isCompare && !syncTableLoading && !syncViewLoading && !deployLoading && !['deployed'].includes(listParams.selected.status)"
+                            content="是否删除该版本数据？" position="br" type="warning" @ok="deleteVersion(listParams.selected.item)">
                           <a-button style="color: rgb(var(--danger-6))" type="text">
                             <icon-delete/>
                             删除
@@ -593,7 +643,7 @@ onUnmounted(() => {
                                            :model-value="listParams.selected.id"
                                            :visible="true"
                                            @canPacket="(can)=>{isCanPacket = can}"/>
-                    <AppVersionTabs v-else :height="listParams.height" :model-value="listParams.selected.id" :visible="true"/>
+                    <AppVersionTabs v-else :key="listParams.load" :height="listParams.height" :model-value="listParams.selected.id" :visible="true"/>
                   </div>
                 </div>
               </template>
@@ -604,7 +654,7 @@ onUnmounted(() => {
     </div>
   </div>
 
-  <a-modal v-model:visible="packData.visible" :width="1150" title="版本打包" title-align="start" @ok="packAppVersion">
+  <a-modal v-model:visible="packData.visible" :width="1150" title="版本打包" title-align="start" :on-before-ok="packAppVersion">
     <a-scrollbar :style="{overflow:'auto',maxHeight:`${packHeight}px`}">
       <a-descriptions :bordered="true" :column="1" layout="horizontal" size="medium">
         <template #title>

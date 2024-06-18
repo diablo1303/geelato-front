@@ -18,6 +18,8 @@ import PlatformExportTemplateList from "@/views/version/package/platform-export-
 import PlatformEncodingList from "@/views/version/package/platform-encoding.vue";
 import PlatformResourcesList from "@/views/version/package/platform-resources.vue";
 import PlatformPageList from "@/views/version/package/platform-page.vue";
+import {getOptionLabel} from "../../api/base";
+import {packageSourceOptions, packageStatusOptions} from "./searchTable";
 
 type PageParams = {
   appId?: string; // 应用主键
@@ -141,10 +143,14 @@ watch(() => props, (val) => {
           <span>{{ tableData.appId }}{{ getAppOptionLabel(tableData.appId) }}</span>
         </a-form-item>
         <a-form-item label="版本名称：" field="version">
+          <CopyToClipboard v-if="tableData.version" :model-value="tableData.version"/>
           <span>{{ tableData.version }}</span>
         </a-form-item>
         <a-form-item label="版本来源：" field="packageSource">
-          <span>{{ tableData.packageSource }}</span>
+          <span>{{ getOptionLabel(tableData.packageSource, packageSourceOptions) }}</span>
+        </a-form-item>
+        <a-form-item label="版本状态：" field="status">
+          <span>{{ getOptionLabel(tableData.status, packageStatusOptions) }}</span>
         </a-form-item>
         <a-form-item label="打包时间：" field="packetTime">
           <span>{{ tableData.packetTime }}</span>
@@ -152,7 +158,7 @@ watch(() => props, (val) => {
         <a-form-item label="打包人员：" field="creatorName">
           <span>{{ tableData.creatorName }}</span>
         </a-form-item>
-        <a-form-item label="应用包：" field="packagePath">
+        <a-form-item v-if="!['draft'].includes(tableData.status)" label="应用包：" field="packagePath">
           <UploadFile :disabled="true" v-model="tableData.packagePath"/>
         </a-form-item>
         <a-form-item label="版本描述：" field="description">

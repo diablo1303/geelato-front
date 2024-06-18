@@ -148,6 +148,14 @@ export function packetAppVersion(appId: string, version?: string, description?: 
 }
 
 /**
+ * 验证应用版本
+ * @param params
+ */
+export function validateAppVersion(params: QueryAppVersionForm) {
+  return axios.post<QueryResult>('/api/app/version/validate', params);
+}
+
+/**
  * 部署应用
  * @param versionId
  */
