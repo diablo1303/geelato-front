@@ -32,8 +32,6 @@ export interface QueryAppForm {
   tenantCode?: string;
   roles?: string;
   connects?: string;
-  currentVersionId?: string;
-  currentVersionName?: string;
 }
 
 export interface FilterAppForm {

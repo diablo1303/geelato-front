@@ -458,12 +458,12 @@ defineExpose({saveOrUpdate, loadPage});
           </span>
         </a-form-item>
       </a-col>
-      <a-col v-if="!!formData.currentVersionName" :span="(labelCol+wrapperCol)">
+      <a-col v-if="!!formData.versionInfo" :span="(labelCol+wrapperCol)">
         <a-form-item :label="$t('application.app.list.versionInfo')"
                      :label-col-props="{ span: labelCol/formCol }"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                      field="versionInfo">
-          <span>{{ formData.currentVersionName }}</span>
+          <span>{{ formData.versionInfo }}</span>
         </a-form-item>
       </a-col>
     </a-row>

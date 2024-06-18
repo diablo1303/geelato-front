@@ -113,7 +113,7 @@ export const queryCompareType = (record: Record<string, any>, data: Record<strin
   if (data && data.length > 0) {
     const isExist = data.find(item => item.id === record.id);
     if (isExist && typeof isExist === 'object') {
-      const isCompare = diffJson(JSON.stringify(isExist), JSON.stringify(record));
+      const isCompare = diffJson(isExist, record);
       if (isCompare && isCompare.length >= 2) {
         return record.del_status === 1 ? 3 : 2;
       }
@@ -309,7 +309,7 @@ export const getDiffData = (data: TreeNodeModel[], level: Record<string, any>, d
       // @ts-ignore
       if (item.level > 0 && item.isDel === true) {
         // @ts-ignore
-        dep[level[item.level]].push(item.key);
+        dep[level[item.level]].push({"key": item.key, "type": item.type});
       }
       if (item.children) getDiffData(item.children, level, dep);
     }

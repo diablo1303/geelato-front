@@ -200,20 +200,36 @@ const deploy = (successBack: any) => {
   }
   const result = {};
   // @ts-ignore
-  const list = (cloneDeep(appVersionData.value?.appMetaList) || []) as AppMeta[];
-  if (list && list.length > 0) {
-    for (let i = 0; i < list.length; i += 1) {
-      const key = list[i].metaName;
-      const form = list[i].metaData;
+  const sourceList = (cloneDeep(appVersionData.value?.appMetaList) || []) as AppMeta[];
+  // @ts-ignore
+  result[props.modelValue] = {};
+  if (sourceList && sourceList.length > 0) {
+    for (let i = 0; i < sourceList.length; i += 1) {
+      const key = sourceList[i].metaName;
       // @ts-ignore
-      result[key] = form.map(item => item.id);
+      result[props.modelValue][key] = [];
+      const form = sourceList[i].metaData;
       // @ts-ignore
-      const value = data[key] || [];
+      const keys = (data[key] || []).map(item => item.key);
       // @ts-ignore
-      result[key] = result[key].filter(val => !value.includes(val));
+      result[props.modelValue][key] = form.map(item => item.id).filter(val => !keys.includes(val));
     }
   }
-
+  // @ts-ignore
+  result[props.compareId] = {};
+  // eslint-disable-next-line no-restricted-syntax,guard-for-in
+  for (const key in data) {
+    // @ts-ignore
+    result[props.compareId][key] = [];
+    // @ts-ignore
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of data[key]) {
+      if ([2, 3].includes(item.type)) {
+        // @ts-ignore
+        result[props.compareId][key].push(item.key);
+      }
+    }
+  }
   if (successBack && typeof successBack === 'function') successBack(result);
 }
 
@@ -232,14 +248,8 @@ defineExpose({deploy});
     <a-tab-pane :key="2" class="a-tabs-five" title="模型管理">
       <template #title>
         模型管理
-        <a-tooltip v-if="diffResult.model===0" content="比较中..." position="top">
-          <IconLoading style="color: rgb(var(--primary-6))"/>
-        </a-tooltip>
         <a-tooltip v-if="diffResult.model===1" content="存在差异" position="top">
-          <IconStar style="color: rgb(var(--danger-6))"/>
-        </a-tooltip>
-        <a-tooltip v-if="diffResult.model===2" content="完全相同" position="top">
-          <IconStarFill style="color: rgb(var(--success-6))"/>
+          <IconExclamationCircle style="color: rgb(var(--warning-6))"/>
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
@@ -255,14 +265,8 @@ defineExpose({deploy});
     <a-tab-pane :key="3" class="a-tabs-five" title="数据字典">
       <template #title>
         数据字典
-        <a-tooltip v-if="diffResult.dict===0" content="比较中..." position="top">
-          <IconLoading style="color: rgb(var(--primary-6))"/>
-        </a-tooltip>
         <a-tooltip v-if="diffResult.dict===1" content="存在差异" position="top">
-          <IconStar style="color: rgb(var(--danger-6))"/>
-        </a-tooltip>
-        <a-tooltip v-if="diffResult.dict===2" content="完全相同" position="top">
-          <IconStarFill style="color: rgb(var(--success-6))"/>
+          <IconExclamationCircle style="color: rgb(var(--warning-6))"/>
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
@@ -278,14 +282,8 @@ defineExpose({deploy});
     <a-tab-pane :key="5" class="a-tabs-five" title="菜单管理">
       <template #title>
         菜单管理
-        <a-tooltip v-if="diffResult.page===0" content="比较中..." position="top">
-          <IconLoading style="color: rgb(var(--primary-6))"/>
-        </a-tooltip>
         <a-tooltip v-if="diffResult.page===1" content="存在差异" position="top">
-          <IconStar style="color: rgb(var(--danger-6))"/>
-        </a-tooltip>
-        <a-tooltip v-if="diffResult.page===2" content="完全相同" position="top">
-          <IconStarFill style="color: rgb(var(--success-6))"/>
+          <IconExclamationCircle style="color: rgb(var(--warning-6))"/>
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
@@ -301,14 +299,8 @@ defineExpose({deploy});
     <a-tab-pane :key="6" class="a-tabs-five" title="系统配置">
       <template #title>
         系统配置
-        <a-tooltip v-if="diffResult.config===0" content="比较中..." position="top">
-          <IconLoading style="color: rgb(var(--primary-6))"/>
-        </a-tooltip>
         <a-tooltip v-if="diffResult.config===1" content="存在差异" position="top">
-          <IconStar style="color: rgb(var(--danger-6))"/>
-        </a-tooltip>
-        <a-tooltip v-if="diffResult.config===2" content="完全相同" position="top">
-          <IconStarFill style="color: rgb(var(--success-6))"/>
+          <IconExclamationCircle style="color: rgb(var(--warning-6))"/>
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
@@ -324,14 +316,8 @@ defineExpose({deploy});
     <a-tab-pane :key="7" class="a-tabs-five" title="文件管理">
       <template #title>
         文件管理
-        <a-tooltip v-if="diffResult.template===0" content="比较中..." position="top">
-          <IconLoading style="color: rgb(var(--primary-6))"/>
-        </a-tooltip>
         <a-tooltip v-if="diffResult.template===1" content="存在差异" position="top">
-          <IconStar style="color: rgb(var(--danger-6))"/>
-        </a-tooltip>
-        <a-tooltip v-if="diffResult.template===2" content="完全相同" position="top">
-          <IconStarFill style="color: rgb(var(--success-6))"/>
+          <IconExclamationCircle style="color: rgb(var(--warning-6))"/>
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
@@ -347,14 +333,8 @@ defineExpose({deploy});
     <a-tab-pane :key="8" class="a-tabs-five" title="编码管理">
       <template #title>
         编码管理
-        <a-tooltip v-if="diffResult.encoding===0" content="比较中..." position="top">
-          <IconLoading style="color: rgb(var(--primary-6))"/>
-        </a-tooltip>
         <a-tooltip v-if="diffResult.encoding===1" content="存在差异" position="top">
-          <IconStar style="color: rgb(var(--danger-6))"/>
-        </a-tooltip>
-        <a-tooltip v-if="diffResult.encoding===2" content="完全相同" position="top">
-          <IconStarFill style="color: rgb(var(--success-6))"/>
+          <IconExclamationCircle style="color: rgb(var(--warning-6))"/>
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">
@@ -370,14 +350,8 @@ defineExpose({deploy});
     <a-tab-pane :key="9" class="a-tabs-five" title="资源管理">
       <template #title>
         资源管理
-        <a-tooltip v-if="diffResult.resources===0" content="比较中..." position="top">
-          <IconLoading style="color: rgb(var(--primary-6))"/>
-        </a-tooltip>
         <a-tooltip v-if="diffResult.resources===1" content="存在差异" position="top">
-          <IconStar style="color: rgb(var(--danger-6))"/>
-        </a-tooltip>
-        <a-tooltip v-if="diffResult.resources===2" content="完全相同" position="top">
-          <IconStarFill style="color: rgb(var(--success-6))"/>
+          <IconExclamationCircle style="color: rgb(var(--warning-6))"/>
         </a-tooltip>
       </template>
       <a-card v-if="listParams.visible" class="general-card6">

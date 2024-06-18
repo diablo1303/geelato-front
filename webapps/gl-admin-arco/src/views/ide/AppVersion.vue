@@ -228,10 +228,15 @@ const deployCompareVersion = (item: QueryAppVersionForm) => {
     versionCompareTabs.value?.deploy((result: Record<string, any>) => {
       if (result) {
         // eslint-disable-next-line guard-for-in,no-restricted-syntax
-        for (const key in result) {
-          result[key] = !result[key] || result[key].length === 0 ? '' : result[key].join(',');
+        for (const versionId in result) {// 版本id => {}
+          // eslint-disable-next-line guard-for-in,no-restricted-syntax
+          for (const entityName in result[versionId]) {// 实体名称 => []
+            const value = result[versionId][entityName];
+            result[versionId][entityName] = !value || value.length === 0 ? '' : value.join(',');
+          }
         }
-        packetCompare(item, result);
+        console.log(result);
+        // packetCompare(item, result);
       } else {
         Message.warning('对比信息未加载完整，请稍等！');
       }
@@ -444,7 +449,7 @@ onUnmounted(() => {
     </div>
     <div v-else>
       <div :style="{ padding: '4px 14px' }" class="gl-page-header">
-        <a-page-header :show-back="false" :subtitle="appData.name" title="应用版本管理">
+        <a-page-header :show-back="false" :subtitle="`${appData.name} ${appData.versionInfo}`" title="应用版本管理">
           <template #extra>
             <a-space>
               <a-button v-if="!deployLoading" class="app-button" type="text" @click="openAppVersionForm">
@@ -506,86 +511,95 @@ onUnmounted(() => {
         </a-page-header>
       </div>
       <div :style="{ padding: '14px' }">
-        <a-card>
-          <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
-            <template #first>
-              <AppVersionList v-if="listParams.visible"
-                              :key="listParams.load"
-                              :form-state="listParams.formState"
-                              :height="listParams.height"
-                              :model-value="listParams.selected.id"
-                              :page-size="listParams.pageSize"
-                              :parameter="listParams.parameter"
-                              :visible="listParams.visible"
-                              @listSelected="listSelected"/>
-            </template>
-            <template #second>
-              <div class="general-card3">
-                <div class="card-header">
-                  <a-space style="width: 100%;justify-content: space-between;">
-                    <div class="card-header-title">
-                      {{ listParams.selected.title }}&nbsp;
-                      <a-popconfirm v-if="isCanPacket&&isCompare&&!!compareVersionId" content="确定打包修正后的版本？" position="br"
-                                    @ok="deployCompareVersion(listParams.selected.item)">
-                        <a-button :loading="deployCompareLoading" style="color: rgb(var(--success-6))" type="text">
-                          <icon-export/>&nbsp;对比打包
-                        </a-button>
-                      </a-popconfirm>
-                    </div>
-                    <a-space v-if="!!listParams.selected.id" class="card-header-extra">
-                      <a-button v-if="!isCompare" style="color: rgb(var(--primary-6))" type="text" @click.stop="startCompare">
-                        <icon-common/>
-                        比较
-                      </a-button>
-                      <a-button v-if="!isCompare" style="color: rgb(var(--primary-6))" type="text"
-                                @click.stop="fetchFileById(listParams.selected.item.packagePath)">
-                        <icon-download/>
-                        下载
-                      </a-button>
-                      <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading" content="确认部署当前版本？" position="br"
-                                    @ok="deployVersion(listParams.selected.item)">
-                        <a-button :loading="deployLoading" style="color: rgb(var(--success-6))" type="text">
-                          <icon-star/>
-                          部署
-                        </a-button>
-                      </a-popconfirm>
-                      <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading && !deployLoading" content="是否删除该版本数据？" position="br"
-                                    type="warning" @ok="deleteVersion(listParams.selected.item)">
-                        <a-button style="color: rgb(var(--danger-6))" type="text">
-                          <icon-delete/>
-                          删除
-                        </a-button>
-                      </a-popconfirm>
-                      <div v-if="isCompare">
-                        <a-select v-model="compareVersionId" :field-names="{'label':'version','value':'id'}"
-                                  :options="appVersionData.filter(item => item.id !== listParams.selected.id)"
-                                  :style="{width:'320px'}"
-                                  allow-clear allow-search placeholder="选中比较版本">
-                          <template #prefix>对比版本</template>
-                        </a-select>
-                        <a-button style="padding: 0 8px;" type="dashed" @click.stop="cancelCompare">
-                          关闭
-                        </a-button>
+        <a-spin :loading="!isCanPacket&&isCompare&&!!compareVersionId" dot style="width: 100%" tip="">
+          <template #tip>
+            <p>正在进行版本比对，请耐心等待...</p>
+            <p style="color: rgb(var(--warning-6))">
+              说明：标签带有
+              <IconExclamationCircle/>
+              表示存在差异；若没有，则表示完全相同。
+            </p>
+          </template>
+          <a-card>
+            <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
+              <template #first>
+                <AppVersionList v-if="listParams.visible"
+                                :key="listParams.load"
+                                :form-state="listParams.formState"
+                                :height="listParams.height"
+                                :model-value="listParams.selected.id"
+                                :page-size="listParams.pageSize"
+                                :parameter="listParams.parameter"
+                                :visible="listParams.visible"
+                                @listSelected="listSelected"/>
+              </template>
+              <template #second>
+                <div class="general-card3">
+                  <div class="card-header">
+                    <a-space style="width: 100%;justify-content: space-between;">
+                      <div class="card-header-title">
+                        {{ listParams.selected.title }}&nbsp;
+                        <a-popconfirm v-if="isCanPacket&&isCompare&&!!compareVersionId" content="确定打包修正后的版本？" position="br"
+                                      @ok="deployCompareVersion(listParams.selected.item)">
+                          <a-button :loading="deployCompareLoading" style="color: rgb(var(--success-6))" type="text">
+                            <icon-export/>&nbsp;对比打包
+                          </a-button>
+                        </a-popconfirm>
                       </div>
+                      <a-space v-if="!!listParams.selected.id" class="card-header-extra">
+                        <a-button v-if="!isCompare" style="color: rgb(var(--primary-6))" type="text" @click.stop="startCompare">
+                          <icon-common/>
+                          比较
+                        </a-button>
+                        <a-button v-if="!isCompare" style="color: rgb(var(--primary-6))" type="text"
+                                  @click.stop="fetchFileById(listParams.selected.item.packagePath)">
+                          <icon-download/>
+                          下载
+                        </a-button>
+                        <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading" content="确认部署当前版本？" position="br"
+                                      @ok="deployVersion(listParams.selected.item)">
+                          <a-button :loading="deployLoading" style="color: rgb(var(--success-6))" type="text">
+                            <icon-star/>
+                            部署
+                          </a-button>
+                        </a-popconfirm>
+                        <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading && !deployLoading" content="是否删除该版本数据？" position="br"
+                                      type="warning" @ok="deleteVersion(listParams.selected.item)">
+                          <a-button style="color: rgb(var(--danger-6))" type="text">
+                            <icon-delete/>
+                            删除
+                          </a-button>
+                        </a-popconfirm>
+                        <div v-if="isCompare">
+                          <a-select v-model="compareVersionId" :field-names="{'label':'version','value':'id'}"
+                                    :options="appVersionData.filter(item => item.id !== listParams.selected.id)"
+                                    :style="{width:'320px'}"
+                                    allow-clear allow-search placeholder="选中比较版本">
+                            <template #prefix>对比版本</template>
+                          </a-select>
+                          <a-button style="padding: 0 8px;" type="dashed" @click.stop="cancelCompare">
+                            关闭
+                          </a-button>
+                        </div>
+                      </a-space>
                     </a-space>
-                  </a-space>
+                  </div>
+                  <a-divider style="margin:0 0 5px 0"/>
+                  <div v-if="!!listParams.selected.id" class="card-body2">
+                    <AppVersionCompareTabs v-if="!!compareVersionId"
+                                           ref="versionCompareTabs"
+                                           :compareId="compareVersionId"
+                                           :height="listParams.height"
+                                           :model-value="listParams.selected.id"
+                                           :visible="true"
+                                           @canPacket="(can)=>{isCanPacket = can}"/>
+                    <AppVersionTabs v-else :height="listParams.height" :model-value="listParams.selected.id" :visible="true"/>
+                  </div>
                 </div>
-                <a-divider style="margin:0 0 5px 0"/>
-                <div v-if="!!listParams.selected.id" class="card-body2">
-                  <AppVersionCompareTabs ref="versionCompareTabs"
-                                         v-if="!!compareVersionId"
-                                         :compareId="compareVersionId"
-                                         :height="listParams.height"
-                                         :model-value="listParams.selected.id"
-                                         :visible="true"
-                                         @canPacket="(can)=>{isCanPacket = can}"/>
-                  <AppVersionTabs v-else :height="listParams.height" :model-value="listParams.selected.id" :visible="true"/>
-                </div>
-                <a-empty v-else/>
-              </div>
-            </template>
-          </a-split>
-        </a-card>
+              </template>
+            </a-split>
+          </a-card>
+        </a-spin>
       </div>
     </div>
   </div>
@@ -600,7 +614,8 @@ onUnmounted(() => {
           <a-input v-model="packData.version" class="pack-version-input" placeholder="请输入版本名称"/>
         </a-descriptions-item>
         <a-descriptions-item label="版本描述">
-          <a-input v-model="packData.description" class="pack-version-input" placeholder="请输入版本描述"/>
+          <a-textarea v-model="packData.description" :auto-size="{minRows:1,maxRows:4}" :max-length="125"
+                      class="pack-version-input" placeholder="请输入版本描述" show-word-limit/>
         </a-descriptions-item>
       </a-descriptions>
       <a-descriptions :bordered="true" :column="3" layout="horizontal" size="medium" style="margin-top: 12px;">

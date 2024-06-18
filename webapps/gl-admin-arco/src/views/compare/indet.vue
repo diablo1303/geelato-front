@@ -134,6 +134,22 @@ const deleteTree = (nodeData: TreeNodeModel) => {
   selectedKeys.value = [nodeData.key as string];
 }
 
+const deleteTooltip = (nodeData: TreeNodeModel) => {
+  if (nodeData?.type === 0) {
+    return '在基准版本中删除该记录';
+  }
+  if (nodeData?.type === 1) {
+    return '在基准版本中删除该记录';
+  }
+  if (nodeData?.type === 2) {
+    return "对比版本记录覆盖基准版本"
+  }
+  if (nodeData?.type === 3) {
+    return "对比版本记录覆盖基准版本"
+  }
+  return '取消';
+}
+
 /**
  * 还原节点
  * @param nodeData
@@ -208,8 +224,8 @@ watch(() => props, (val) => {
                 </a-popconfirm>
               </a-space>
               <a-space v-if="nodeData.level>0">
-                <a-popconfirm v-if="nodeData?.isDel===false" content="是否取消本次变更？" position="tr" type="warning" @ok="deleteTree(nodeData)">
-                  <a-tooltip content="取消" position="right">
+                <a-popconfirm v-if="nodeData?.isDel===false" content="是否取消本次变更" position="tr" type="warning" @ok="deleteTree(nodeData)">
+                  <a-tooltip :content="deleteTooltip(nodeData)" position="right">
                     &nbsp;<icon-delete style="color: rgb(var(--danger-6))"/>
                   </a-tooltip>
                 </a-popconfirm>

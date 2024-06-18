@@ -137,12 +137,12 @@ const getSpecialDiffData = (data: TreeNodeModel[], dep: Record<string, any>) => 
       // @ts-ignore
       if (item.isDel === true && item.level === 1) {
         // @ts-ignore
-        dep.platform_tree_node.push(item.key);
+        dep.platform_tree_node.push({"key": item.key, "type": item.type});
         // 页面
         if (item?.data?.platformPage && item?.data?.platformPage.length > 0) {
           // eslint-disable-next-line no-restricted-syntax
           for (const page of item.data.platformPage) {
-            dep.platform_app_page.push(page.id);
+            dep.platform_app_page.push({"key": page.id, "type": item.type});
           }
         }
       }
