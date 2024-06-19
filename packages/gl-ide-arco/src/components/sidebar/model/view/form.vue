@@ -12,6 +12,7 @@ import {modelApi, applicationApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryViewForm, QueryTableColumnForm, QueryTableForm, QueryAppForm} from '@geelato/gl-ui';
 import {enableStatusOptions, linkedOptions, viewTypeOptions} from "./searchTable";
 import GlModelTablePermissionForm from "../table/permission/form.vue";
+import GlModelViewAppList from "../application/view/list.vue";
 
 type PageParams = {
   connectId: string; // 数据库链接id
@@ -29,7 +30,8 @@ const props = defineProps({
   formCol: {type: Number, default: 1},// 表单列数
   title: {type: String, default: '模型视图'},// 表达标题
   width: {type: String, default: ''},// 表单宽度
-  isPermission: {type: Boolean, default: false}
+  isPermission: {type: Boolean, default: false},
+  isApproval: {type: Boolean, default: false},
 });
 
 const global = useGlobal();
@@ -67,7 +69,12 @@ const generateFormData = (): QueryViewForm => {
   };
 }
 const formData = ref(generateFormData());
-
+const appListParams = ref({
+  formState: props.formState, isModal: true, height: tableTabHeight.value - 300,
+  parameter: {
+    connectId: '', viewId: '', viewName: '', author: false, appId: '', tenantCode: ''
+  }
+});
 
 // 表单
 const columnData = ref<Record<string, any>[]>([]);
@@ -532,6 +539,7 @@ watch(() => props, () => {
     tableTabHeight.value = window.innerHeight * 0.6;
     tableTabStyle.value.height = `${tableTabHeight.value}px`;
     scroll.value.y = tableTabHeight.value - 118;
+    appListParams.value.height = tableTabHeight.value - 195;
     // 应用信息
     applicationApi.getAppSelectOptions({
       id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
@@ -575,6 +583,10 @@ watch(() => props, () => {
           connectId: data.connectId, object: data.viewName,
           type: 'dp,mp', appId: data.appId, tenantCode: data.tenantCode
         };
+        appListParams.value.parameter = {
+          connectId: data.connectId, viewId: data.id, viewName: data.viewName,
+          author: false, appId: data.appId, tenantCode: data.tenantCode
+        }
       });
     }
   }
@@ -843,6 +855,14 @@ const cloneColumns = ref<Column[]>([]);
                                       :height="pFormParams.height"
                                       :isModal="pFormParams.isModal"
                                       :parameter="pFormParams.parameter"/>
+        </a-card>
+      </a-tab-pane>
+      <a-tab-pane v-if="isApproval===true" :key="5" class="a-tabs-two" title="授权应用">
+        <a-card class="general-card">
+          <GlModelViewAppList v-if="visibleForm" :formState="appListParams.formState"
+                              :height="appListParams.height"
+                              :isModal="appListParams.isModal"
+                              :parameter="appListParams.parameter"/>
         </a-card>
       </a-tab-pane>
     </a-tabs>

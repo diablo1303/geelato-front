@@ -21,6 +21,10 @@ import GlModelViewAppForm from "./application/view/form.vue";
 import GlModelViewAppTabs from "./application/view/tableTabs.vue";
 import GlModelTableViewForm from "./view/form.vue";
 
+interface ViewItem extends QueryViewForm {
+  approval: QueryAppViewForm[]
+}
+
 const props = defineProps({
   recordId: String
 })
@@ -34,8 +38,8 @@ const allAccreditItems: Ref<QueryAppTableForm[]> = ref([])
 const renderAccreditItems: Ref<QueryAppTableForm[]> = ref([])
 const allTableAppItems: Ref<QueryAppTableForm[]> = ref([]);
 // 应用视图
-const allViewItems: Ref<QueryViewForm[]> = ref([])
-const renderViewItems: Ref<QueryViewForm[]> = ref([])
+const allViewItems: Ref<ViewItem[]> = ref([])
+const renderViewItems: Ref<ViewItem[]> = ref([])
 // 视图授权
 const allAccreditViewItems: Ref<QueryAppViewForm[]> = ref([])
 const renderAccreditViewItems: Ref<QueryAppViewForm[]> = ref([])
@@ -173,6 +177,7 @@ type Item = {
   title?: string
   tableComment?: string
 }
+
 /**
  * 加载记录
  */
@@ -239,7 +244,17 @@ const fetchViewData = async (successBack?: any, failBack?: any) => {
   }
   try {
     const {data} = await modelApi.queryViews({appId: appStore.currentApp.id});
-    allViewItems.value = data;
+    const result = await modelApi.queryAppViews({viewAppId: appStore.currentApp.id, approvalStatus: "draft"});
+    allTableAppViewItems.value = result.data.filter((item) => item.approvalStatus === "draft") as QueryAppViewForm[];
+    for (const item of data as unknown as ViewItem[]) {
+      item.approval = [];
+      for (const node of allTableAppViewItems.value) {
+        if (node.viewName === item.viewName) {
+          item.approval.push(node);
+        }
+      }
+    }
+    allViewItems.value = data as unknown as ViewItem[];
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     allViewItems.value = [];
@@ -408,7 +423,7 @@ const aTableFormSaveSuccess = (data: QueryAppTableForm, action: string) => {
   fetchAccreditData();
 }
 
-const viewFormSaveSuccess = (data: QueryViewForm, action: string) => {
+const viewFormSaveSuccess = (data: ViewItem, action: string) => {
   // 刷新模型列表
   fetchViewData();
 }
@@ -470,7 +485,7 @@ const addViewForm = () => {
     }
   });
 }
-const editViewForm = (record: QueryViewForm) => {
+const editViewForm = (record: ViewItem) => {
   Object.assign(vFormParams.value, {
     id: record.id, visible: true, formState: 'edit', title: `编辑模型视图（${record.viewName}）`,
     parameter: {
@@ -591,6 +606,9 @@ const addAppViewForm = (ev?: MouseEvent) => {
         </a-list>
       </a-collapse-item>
       <a-collapse-item :key="3" :header="`应用视图（${renderViewItems.length}）`" class="colapse-list1">
+        <template #header>
+          {{ `应用视图（${renderViewItems.length}${allTableAppViewItems.length > 0 ? '，' + allTableAppViewItems.length : ''}）` }}
+        </template>
         <template #extra>
           <a-space>
             <a-tooltip content="新建">
@@ -610,7 +628,14 @@ const addAppViewForm = (ev?: MouseEvent) => {
             <a-list-item style="cursor: pointer;" @click="editViewForm(item)">
               <a-tooltip position="right"
                          :content="`${utils.getOptionLabel(item.viewType, viewTypeOptions)} ${item.entityName || ''} ${item.description || ''}`">
-                <a-list-item-meta :description="item.title" :title="item.viewName"/>
+                <a-list-item-meta :description="item.title" :title="item.viewName">
+                  <template #title>
+                    <a-tooltip v-if="item.approval.length>0" :content="`视图权限申请（${item.approval.length}）`">
+                      <gl-iconfont style="color: rgb(245,63,63)" type="gl-warning-circle"/>
+                    </a-tooltip>
+                    {{ item.viewName }}
+                  </template>
+                </a-list-item-meta>
               </a-tooltip>
               <template #actions>
             <span :title="`${item.updaterName || ''}更新@${item.updateAt}`" class="gl-actions-description">
@@ -728,6 +753,7 @@ const addAppViewForm = (ev?: MouseEvent) => {
                         :title="vFormParams.title"
                         :width="vFormParams.width"
                         :isPermission="vFormParams.formState==='add'?false:true"
+                        :isApproval="vFormParams.formState==='add'?false:true"
                         @saveSuccess="viewFormSaveSuccess"/>
 </template>
 <style>
