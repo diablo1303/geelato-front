@@ -12,6 +12,8 @@ const typeOptions = computed<SelectOptionData[]>(() => [
   {label: 'security.org.index.form.type.root', value: 'root',},
   {label: 'security.org.index.form.type.company', value: 'company',},
   {label: 'security.org.index.form.type.department', value: 'department',},
+  {label: 'security.org.index.form.type.factory', value: 'factory',},
+  {label: 'security.org.index.form.type.office', value: 'office',},
 ]);
 
 const categoryOptions = computed<SelectOptionData[]>(() => [

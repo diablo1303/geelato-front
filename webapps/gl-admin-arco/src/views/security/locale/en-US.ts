@@ -136,6 +136,8 @@ export default {
   'security.org.index.form.type.root': 'root',
   'security.org.index.form.type.company': 'company',
   'security.org.index.form.type.department': 'department',
+  'security.org.index.form.type.factory': 'factory',
+  'security.org.index.form.type.office': 'office',
   'security.org.index.form.category': 'category',
   'security.org.index.form.category.inside': 'inside',
   'security.org.index.form.category.outside': 'outside',
