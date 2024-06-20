@@ -282,11 +282,11 @@ export const sortRenderData = (data: Record<string, any>[], sorter: string) => {
           }
           return new Date(a[item.key]).getTime() - new Date(b[item.key]).getTime();
         });
-      } else if (typeof data[0][item.key] === 'number') {
+      } else if (data[0] && data[0][item.key] && typeof data[0][item.key] === 'number') {
         data.sort((a, b) => {
           return item.dir === 'desc' ? b[item.key] - a[item.key] : a[item.key] - b[item.key];
         });
-      } else if (typeof data[0][item.key] === 'string') {
+      } else if (data[0] && data[0][item.key] && typeof data[0][item.key] === 'string') {
         data.sort((a, b) => {
           // eslint-disable-next-line no-nested-ternary
           return a[item.key] > b[item.key] ? (item.dir === 'desc' ? -1 : 1) : (item.dir === 'desc' ? 1 : -1);

@@ -201,32 +201,34 @@ const deploy = (successBack: any) => {
   const result = {};
   // @ts-ignore
   const sourceList = (cloneDeep(appVersionData.value?.appMetaList) || []) as AppMeta[];
+  const {version} = tableData.value;
   // @ts-ignore
-  result[props.modelValue] = {};
+  result[version] = {};
   if (sourceList && sourceList.length > 0) {
     for (let i = 0; i < sourceList.length; i += 1) {
       const key = sourceList[i].metaName;
       // @ts-ignore
-      result[props.modelValue][key] = [];
+      result[version][key] = [];
       const form = sourceList[i].metaData;
       // @ts-ignore
       const keys = (data[key] || []).map(item => item.key);
       // @ts-ignore
-      result[props.modelValue][key] = form.map(item => item.id).filter(val => !keys.includes(val));
+      result[version][key] = form.map(item => item.id).filter(val => !keys.includes(val));
     }
   }
+  const versionC = tableCompareData.value.version;
   // @ts-ignore
-  result[props.compareId] = {};
+  result[versionC] = {};
   // eslint-disable-next-line no-restricted-syntax,guard-for-in
   for (const key in data) {
     // @ts-ignore
-    result[props.compareId][key] = [];
+    result[versionC][key] = [];
     // @ts-ignore
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data[key]) {
       if ([2, 3].includes(item.type)) {
         // @ts-ignore
-        result[props.compareId][key].push(item.key);
+        result[versionC][key].push(item.key);
       }
     }
   }

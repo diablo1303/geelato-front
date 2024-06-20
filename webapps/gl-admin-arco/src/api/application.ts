@@ -144,7 +144,18 @@ export function deleteAppVersion(id: string) {
  * @param appId
  */
 export function packetAppVersion(appId: string, version?: string, description?: string, appointMetas?: Record<string, string>) {
-  return axios.post<QueryResult>(`/package/packet/${appId}?version=${version || ''}&description=${description || ''}`, appointMetas || {});
+  return axios.post<QueryResult>(`/package/packet/${appId}?version=${version || ''}&description=${description || ''}`);
+}
+
+/**
+ * 应用对比打包
+ * @param appId
+ * @param version
+ * @param description
+ * @param appointMetas
+ */
+export function packetMergeAppVersion(appId: string, version?: string, description?: string, appointMetas?: Record<string, string>) {
+  return axios.post<QueryResult>(`/package/packet/merge?appId=${appId}&version=${version || ''}&description=${description || ''}`, appointMetas || {});
 }
 
 /**

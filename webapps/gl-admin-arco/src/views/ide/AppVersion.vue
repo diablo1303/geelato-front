@@ -18,7 +18,7 @@ import {
   deleteAppVersion,
   deployAppVersion,
   getApp,
-  packetAppVersion,
+  packetAppVersion, packetMergeAppVersion,
   pageQueryAppVersions,
   QueryAppForm,
   QueryAppVersionForm,
@@ -221,7 +221,7 @@ const packetCompare = async (record: QueryAppVersionForm, appointMetas: Record<s
   try {
     const version = `${appData.value.code}_version${formatTime(new Date(), 'yyyyMMddHHmmss')}`;
     const description = record ? `当前环境基于版本【${record.version}】对比打包形成的应用包` : '当前环境打包形成的应用包';
-    const {data} = await packetAppVersion(appData.value.id, version, description, appointMetas);
+    const {data} = await packetMergeAppVersion(appData.value.id, version, description, appointMetas);
     Message.success('打包成功!');
     // @ts-ignore
     listParams.value.selected.id = data.id || '';
@@ -246,8 +246,7 @@ const deployCompareVersion = (item: QueryAppVersionForm) => {
             result[versionId][entityName] = !value || value.length === 0 ? '' : value.join(',');
           }
         }
-        console.log(result);
-        // packetCompare(item, result);
+        packetCompare(item, result);
       } else {
         Message.warning('对比信息未加载完整，请稍等！');
       }
