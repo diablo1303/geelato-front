@@ -49,6 +49,7 @@ export default defineConfig({
         ide: resolve(__dirname, '../ide.html'),
         idePagePreview: resolve(__dirname, '../idePagePreview.html'),
         appSettings: resolve(__dirname, '../appSettings.html'),
+        appVersion: resolve(__dirname, '../appVersion.html')
       },
       // 确保外部化处理那些你不想打包进库的依赖
       external: [],
