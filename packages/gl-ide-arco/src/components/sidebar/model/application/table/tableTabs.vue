@@ -90,7 +90,6 @@ const tableFormat = (id: string) => {
 }
 
 watch(() => props.visible, () => {
-  console.log('props', props);
   if (props.visible === true) {
     tabsKey.value = 1;
     tableTabHeight.value = window.innerHeight * 0.8;
@@ -99,20 +98,17 @@ watch(() => props.visible, () => {
     if (props.modelValue) {
       tableFormat(props.modelValue);
     }
-    // 显示页面
-    visibleForm.value = props.visible === true;
   }
+  // 显示页面
+  visibleForm.value = props.visible === true;
 }, {deep: true, immediate: true});
 
 watch(() => visibleForm, () => {
-  if (visibleForm.value === false) {
-    console.log('visibleForm', visibleForm);
-    emits('update:visible', visibleForm.value);
-  }
+  emits('update:visible', visibleForm.value);
 }, {deep: true, immediate: true});
 </script>
 <template>
-  <a-modal :key="utils.gid()" v-model:visible="visibleForm" :footer="false" :title="tabsTitle" :width="width || ''" title-align="start">
+  <a-modal v-model:visible="visibleForm" :footer="false" :title="tabsTitle" :width="width || ''" title-align="start">
     <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="left" type="line">
       <a-tab-pane :key="1" class="a-tabs-three" title="授权申请">
         <a-card class="general-card">

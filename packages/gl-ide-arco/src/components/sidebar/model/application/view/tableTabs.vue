@@ -66,8 +66,8 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
  * 获取模型数据，并处理
  * @param id
  */
-const tableFormat = (id: string) => {
-  getData(id, (data: QueryViewForm) => {
+const tableFormat = async (id: string) => {
+  await getData(id, (data: QueryViewForm) => {
     tabsTitle.value = `${data.title}（${data.viewName}）`;
     tableData.value = data;
     // 加载模型权限
@@ -112,7 +112,7 @@ watch(() => visibleForm, () => {
 }, {deep: true, immediate: true});
 </script>
 <template>
-  <a-modal :key="utils.gid()" v-model:visible="visibleForm" :footer="false" :title="tabsTitle" :width="width || ''" title-align="start">
+  <a-modal v-model:visible="visibleForm" :footer="false" :title="tabsTitle" :width="width || ''" title-align="start">
     <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="left" type="line">
       <a-tab-pane :key="1" class="a-tabs-three" title="授权申请">
         <a-card class="general-card">

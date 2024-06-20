@@ -270,7 +270,16 @@ const fetchAccreditViewData = async (successBack?: any, failBack?: any) => {
   }
   try {
     const {data} = await modelApi.queryAppViews({appId: appStore.currentApp.id});
-    allAccreditViewItems.value = data;
+    // @ts-ignore
+    data.sort((a, b) => new Date(b?.updateAt).getTime() - new Date(a?.updateAt).getTime());
+    allAccreditViewItems.value = [];
+    const viewNames: string[] = [];
+    data.forEach((item) => {
+      if (!viewNames.includes(item.viewName)) {
+        viewNames.push(item.viewName);
+        allAccreditViewItems.value.push(item);
+      }
+    });
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     allAccreditViewItems.value = [];
