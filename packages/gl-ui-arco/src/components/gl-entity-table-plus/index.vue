@@ -8,6 +8,7 @@ export default {
 </script>
 <script setup lang="ts">
 // @ts-nocheck
+import {Big} from '@geelato/gl-ui'
 import GlQuery from '../gl-query/index.vue'
 import GlToolbar from '../gl-toolbar/index.vue'
 import GlEntityTable from './GlEntityTable.vue'
@@ -1143,18 +1144,18 @@ const getColumnSum = (params: { dataIndex: string }) => {
     console.error('getColumnSum的参数不正确,格式应为：{ dataIndex: string}，实为：', params)
     throw new Error('getColumnSum的参数不正确,格式应为：{ dataIndex: string}')
   }
-  let sum = 0
+  let sum = new Big(0)
   // 正值部分
   getRenderRecords()?.forEach((record: Record<string, any>) => {
     // 排除push部分，避免重复计算
-    sum += record[params.dataIndex] || 0
+    sum = sum.plus(record[params.dataIndex] || 0)
   })
   // 负值部分
   getUnPushedRecords()?.forEach((record: Record<string, any>) => {
-    sum -= record[params.dataIndex] || 0
+    sum = sum.minus(record[params.dataIndex] || 0)
   })
   // console.log('getPushedRecords:',getPushedRecords(),'getUnPushedRecords:',getUnPushedRecords())
-  return sum
+  return sum.toNumber()
 }
 
 /**
@@ -1172,15 +1173,26 @@ const getColumnsSum = (params: { dataIndexes: string[] }) => {
   getRenderRecords()?.forEach((record: Record<string, any>) => {
     // 排除push部分，避免重复计算
     params.dataIndexes.forEach((key: string) => {
-      sum[key] += record[key] || 0
+      if(!sum[key]){
+        sum[key] = new Big(0)
+      }
+      sum[key] = sum[key].plus(record[key] || 0)
     })
   })
   // 负值部分
   getUnPushedRecords()?.forEach((record: Record<string, any>) => {
     params.dataIndexes.forEach((key: string) => {
-      sum[key] -= record[key] || 0
+      if(!sum[key]){
+        sum[key] = new Big(0)
+      }
+      sum[key] = sum[key].minus(record[key] || 0)
     })
   })
+
+  Object.keys(sum).forEach((key: string) => {
+    sum[key] = sum[key].toNumber()
+  })
+
   return sum
 }
 
@@ -1276,14 +1288,19 @@ const getColumnGroupSum = (params: { groupDataIndex: string; sumDataIndex: strin
     )
   }
   // {groupName1:value1,groupName2:value2}
-  let groupSum: { [key: string]: number } = {}
+  let groupSum: { [key: string]: Big } = {}
   getRenderRecordsWithOutUnPushed()?.forEach((record: Record<string, any>) => {
     const groupName = record[params.groupDataIndex]
-    if (groupSum[groupName] == undefined) {
-      groupSum[groupName] = 0
+    if (!groupSum[groupName]) {
+      groupSum[groupName] = new Big(0)
     }
-    groupSum[groupName] += record[params.sumDataIndex] || 0
+    groupSum[groupName] = groupSum[groupName].plus(record[params.sumDataIndex] || 0)
   })
+
+  Object.keys(groupSum).forEach((key) => {
+    groupSum[key] = groupSum[key].toNumber()
+  })
+
   return groupSum
 }
 

@@ -23,6 +23,7 @@
     "@tinymce/tinymce-vue": "^5.1.1",
     "@vueuse/core": "^9.3.0",
     "b-validate": "^1.4.6",
+    "big.js": "^6.2.1",
     "lodash": "^4.17.21",
     "pinia": "^2.1.4",
     "sortablejs": "^1.15.0",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",
+    "@types/big.js": "^6.2.2",
     "@types/jsdom": "^21.1.0",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.14.0",

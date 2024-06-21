@@ -454,7 +454,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
  */
 const fetchData = async (
   params?: { id: string; [key: string]: any },
-  reRender?: boolean = true
+  reRender: boolean = true
 ) => {
   let recordId
   if (utils.isEmpty(params)) {

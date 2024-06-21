@@ -24,7 +24,7 @@ export default defineConfig({
         },
         rollupOptions: {
             // 确保外部化处理那些你不想打包进库的依赖
-            external: ['vue', 'pinia', '@arco-design/web-vue', 'lodash', 'b-validate',
+            external: ['vue', 'pinia', '@arco-design/web-vue', 'lodash', 'b-validate','big.js','dayjs',
                 'sortablejs', 'vue-i18n', 'vue-router','@ctrl/tinycolor',
                 '@geelato/gl-ui','@geelato/gl-ui-schema','@geelato/gl-ui-schema-arco'],
             output: {

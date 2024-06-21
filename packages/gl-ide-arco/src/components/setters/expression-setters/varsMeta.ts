@@ -1,5 +1,5 @@
 import type {ComponentCustomProperties} from 'vue'
-import {entityApi, jsScriptExecutor} from '@geelato/gl-ui'
+import {jsScriptExecutor} from '@geelato/gl-ui'
 import {useComponentStore, useActionStore, type VarMeta, usePageStore} from '@geelato/gl-ide'
 import {getLabel} from '@geelato/gl-ui-arco'
 import type {MethodMeta, ParamMeta, ComponentInstance} from '@geelato/gl-ui-schema'
@@ -723,6 +723,57 @@ const date = {
     ]
 }
 
+const math = {
+    title: '数学',
+    _code: 'math',
+    _type: 'object',
+    // 在构建path时的内容
+    _pathName: 'fn',
+    children: [
+        // _brackets 对于方法，需要同时生成参数内容
+        {
+            title: '求和',
+            _code: 'plus',
+            _type: 'string',
+            _brackets: '(value1,value2).toNumber()',
+            _description:
+              '两个数相加，格式为number|string，如123，或"123"，返回结果x为Big对象，需再调用x.toNumber()转成数字，参考https://mikemcl.github.io/big.js/#plus。'
+        },
+        {
+            title: '相减',
+            _code: 'minus',
+            _type: 'string',
+            _brackets: '(value1,value2).toNumber()',
+            _description:
+              '两个数相减，格式为number|string，如123，或"123"，返回结果x为Big对象，需再调用x.toNumber()转成数字，参考https://mikemcl.github.io/big.js/#minus。'
+        },
+        {
+            title: '相乘',
+            _code: 'times',
+            _type: 'string',
+            _brackets: '(value1,value2).toNumber()',
+            _description:
+              '两个数相减，格式为number|string，如123，或"123"，返回结果x为Big对象，需再调用x.toNumber()转成数字，参考https://mikemcl.github.io/big.js/#times。'
+        },
+        {
+            title: '相除',
+            _code: 'div',
+            _type: 'string',
+            _brackets: '(value1,value2).toNumber()',
+            _description:
+              '两个数相减，格式为number|string，如123，或"123"，返回结果x为Big对象，需再调用x.toNumber()转成数字，参考https://mikemcl.github.io/big.js/#div。'
+        },
+        {
+            title: '保留小数位',
+            _code: 'toFixed',
+            _type: 'string',
+            _brackets: '(num,n)',
+            _description:
+              '将数字值（num）四舍五入为指定的小数位数（n）,并返回字符串，如果小数位数高于数字，则添加零，如toFixed(5.56789,10)，返回"5.5678900000"。参考https://mikemcl.github.io/big.js/#toFixed。'
+        }
+    ]
+}
+
 const text = {
     title: '文本',
     _code: 'text',
@@ -799,4 +850,4 @@ const logic = {
     ]
 }
 
-export const functionalFormulaTreeData = [date, text, logic]
+export const functionalFormulaTreeData = [date, text, math, logic]
