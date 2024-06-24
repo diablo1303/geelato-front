@@ -3,7 +3,7 @@ export default {
   displayMode: 'tile',
   iconType: 'gl-file',
   group: 'layout',
-  title: '引用页面',
+  title: '嵌入引用页面',
   alias: 'refPage',
   useBy: ['freePage'],
   properties: [

@@ -67,6 +67,19 @@ export default {
           setterComponentName: 'ASwitch'
         },
         {
+          name: 'tablePadding',
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: false,
+          show: true,
+          expanded: true,
+          title: '外框间距',
+          setterComponentName: 'AInput',
+          placeholder: '如：0px、8px'
+        },
+        {
           name: 'hoverable',
           group: 'base',
           type: 'props',
@@ -201,11 +214,10 @@ export default {
           enableValueExpress: false,
           show: true,
           expanded: true,
-          setterComponentProps: {},
+          setterComponentProps:  { defaultChecked: true },
           setterComponentVModelName: 'modelValue',
           title: '显示分页',
-          setterComponentName: 'ASwitch',
-          setterDefaultValue: false
+          setterComponentName: 'ASwitch'
         },
         {
           name: 'showAddRowBtn',
@@ -218,19 +230,6 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '显示添加一行',
           setterComponentName: 'ASwitch'
-        },
-        {
-          name: 'tablePadding',
-          setterComponentProps: {},
-          setterComponentVModelName: 'modelValue',
-          group: 'base',
-          type: 'props',
-          enableValueExpress: false,
-          show: true,
-          expanded: true,
-          title: '外框间距',
-          setterComponentName: 'AInput',
-          placeholder: '如：0px、8px'
         },
         {
           name: 'enableEdit',
@@ -657,7 +656,7 @@ export default {
       type: 'props',
       enableValueExpress: false,
       show: true,
-      expanded: false,
+      expanded: true,
       displayMode: 'collapse',
       setterComponentProps: {},
       setterComponentVModelName: '',
@@ -668,7 +667,7 @@ export default {
           group: 'base',
           type: 'props',
           enableValueExpress: false,
-          show: true,
+          show: false,
           expanded: true,
           displayMode: 'tile',
           setterComponentProps: {},
@@ -691,14 +690,14 @@ export default {
           description: '默认每页展示的数据条数',
           title: '每页记录数',
           setterComponentName: 'AInputNumber',
-          setterDefaultValue: 15
+          setterDefaultValue: 1000
         },
         {
           name: 'hideOnSinglePage',
           group: 'base',
           type: 'props',
           enableValueExpress: false,
-          show: true,
+          show: false,
           expanded: true,
           displayMode: 'tile',
           setterComponentProps: {},
@@ -712,7 +711,7 @@ export default {
           group: 'base',
           type: 'props',
           enableValueExpress: false,
-          show: true,
+          show: false,
           expanded: true,
           displayMode: 'tile',
           setterComponentProps: {},
@@ -726,7 +725,7 @@ export default {
           group: 'base',
           type: 'props',
           enableValueExpress: false,
-          show: true,
+          show: false,
           expanded: true,
           displayMode: 'tile',
           setterComponentProps: {},
@@ -734,14 +733,14 @@ export default {
           description: '是否显示数据总数',
           title: '显示总数',
           setterComponentName: 'ASwitch',
-          setterDefaultValue: true
+          setterDefaultValue: false
         },
         {
           name: 'showMore',
           group: 'base',
           type: 'props',
           enableValueExpress: false,
-          show: true,
+          show: false,
           expanded: true,
           displayMode: 'tile',
           setterComponentProps: {},
@@ -755,7 +754,7 @@ export default {
           group: 'base',
           type: 'props',
           enableValueExpress: false,
-          show: true,
+          show: false,
           expanded: true,
           displayMode: 'tile',
           setterComponentProps: {},
@@ -763,14 +762,14 @@ export default {
           description: '是否显示跳转',
           title: '显示跳转',
           setterComponentName: 'ASwitch',
-          setterDefaultValue: true
+          setterDefaultValue: false
         },
         {
           name: 'showPageSize',
           group: 'base',
           type: 'props',
           enableValueExpress: false,
-          show: true,
+          show: false,
           expanded: true,
           displayMode: 'tile',
           setterComponentProps: {
@@ -795,7 +794,7 @@ export default {
           setterComponentVModelName: 'modelValue',
           description: '数据条数选择器的选项列表',
           setterComponentName: 'GlArrayNumberSetter',
-          setterDefaultValue: [5, 10, 15, 20, 30, 40, 50, 100],
+          setterDefaultValue: [1000],
           title: '可选分页数'
         },
         {
@@ -824,7 +823,7 @@ export default {
           group: 'base',
           type: 'props',
           enableValueExpress: false,
-          show: true,
+          show: false,
           expanded: true,
           displayMode: 'tile',
           setterComponentProps: {},
@@ -838,7 +837,7 @@ export default {
           group: 'base',
           type: 'props',
           enableValueExpress: false,
-          show: true,
+          show: false,
           expanded: true,
           displayMode: 'tile',
           setterComponentProps: {},
@@ -873,7 +872,7 @@ export default {
       group: 'base',
       type: 'props',
       show: true,
-      expanded: true,
+      expanded: false,
       title: '只读',
       setterComponentName: 'ASwitch',
       enableValueExpress: true
@@ -885,7 +884,7 @@ export default {
       group: 'base',
       type: 'props',
       show: true,
-      expanded: true,
+      expanded: false,
       title: '隐藏',
       description: '页面中存在该组件，只是不可见',
       setterComponentName: 'ASwitch',
@@ -898,7 +897,7 @@ export default {
       group: 'base',
       type: 'props',
       show: true,
-      expanded: true,
+      expanded: false,
       title: '不渲染',
       description: '页面中不存在该组件，不渲染，不可见，一般是为了提高性能在一些场景下不渲染。',
       setterComponentName: 'ASwitch',
