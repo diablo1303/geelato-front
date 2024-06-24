@@ -7,43 +7,30 @@ export default {
 import {ref, watch} from 'vue';
 import {TableColumnData, TableData, TableSortable} from '@arco-design/web-vue';
 import {PageQueryFilter} from '@/api/base';
-import cloneDeep from "lodash/cloneDeep";
-import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
-import {dateTypeOptions, enableStatusOptions, separatorsOptions, serialTypeOptions} from "@/views/security/encoding/searchTable";
-import EncodingModel from "@/views/security/encoding/model.vue";
-import {fetchFileById} from "@/api/attachment";
 import {isJSON} from "@/utils/is";
+import {AppMeta, PageParams} from "@/views/compare/type";
+import cloneDeep from "lodash/cloneDeep";
 
-// 页面所需 参数
-type PageParams = {
-  appId?: string; // 应用主键
-  tenantCode?: string; // 租户编码
-}
-
-type AppMeta = {
-  metaName: string;
-  metaData: Record<string, any>[]
-}
-
-const emits = defineEmits(['update:modelValue', 'fetch', 'add', 'edit', 'delete']);
+const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
   modelValue: {type: Array<AppMeta>, default: []},
   visible: {type: Boolean, default: false},// 页面是否显示
   parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
   formState: {type: String, default: 'view'}, // 页面状态
   height: {type: Number, default: 245}, // 列表 - 数据列表高度，滑动条高度
+  data: {type: Array<PageQueryFilter>, default: () => []}
 });
 
 // 列表 - 滑动条
 const scrollbar = ref(true);
 const scroll = ref({x: 1600, y: props.height});
+// 列表 - 数据
+const renderData = ref<PageQueryFilter[]>([]);
 // 列表 - 排序
 const sortable = ref<Record<string, TableSortable>>({
   createAt: {sortDirections: ['descend', 'ascend'], sorter: false}
 });
-const appMetaList = ref<AppMeta[]>([]);
-const renderData = ref<PageQueryFilter[]>([]);
-
+// 列表 - 数据列表
 const visibleForm = ref<boolean>(false);
 const templateData = ref<PageQueryFilter[]>([]);
 
@@ -61,8 +48,7 @@ watch(() => props, (val) => {
     // 页面设置
     scroll.value.y = props.height - 115;
     // 加载数据
-    appMetaList.value = cloneDeep(props.modelValue) || [];
-    renderData.value = (appMetaList.value.find(item => item.metaName === "platform_encoding")?.metaData || []) as PageQueryFilter[];
+    renderData.value = cloneDeep(props.data);
     templateData.value = [];
   }
 }, {deep: true, immediate: true});

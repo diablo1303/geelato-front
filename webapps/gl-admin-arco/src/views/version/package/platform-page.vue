@@ -5,30 +5,12 @@ export default {
 </script>
 <script lang="ts" setup>
 import {computed, h, ref, watch} from 'vue';
-import {type SelectOptionData, TableColumnData, TableData, TableSortable, TreeNodeData} from '@arco-design/web-vue';
+import {TableColumnData, TableData, TableSortable} from '@arco-design/web-vue';
 import {getOptionLabel, PageQueryFilter} from '@/api/base';
 import {QueryTreeNodeForm} from "@/api/security";
 import cloneDeep from "lodash/cloneDeep";
-import {IconFolder} from "@arco-design/web-vue/es/icon";
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
-
-// 页面所需 参数
-type PageParams = {
-  appCode?: string; // 应用编码
-  appId?: string; // 应用主键
-  tenantCode?: string; // 租户编码
-}
-
-type AppMeta = {
-  metaName: string;
-  metaData: Record<string, any>[]
-}
-
-interface TreeNodeModel extends TreeNodeData {
-  data?: Record<string, any>;
-  level?: number;
-  children?: TreeNodeModel[];
-}
+import {AppMeta, PageParams, TreeNodeModel, treeNodeTypeOptions} from "@/views/compare/type";
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
@@ -37,6 +19,8 @@ const props = defineProps({
   parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
   formState: {type: String, default: 'view'}, // 页面状态
   height: {type: Number, default: 245}, // 列表 - 数据列表高度，滑动条高度
+  treeNode: {type: Array<PageQueryFilter>, default: () => []},
+  appPage: {type: Array<PageQueryFilter>, default: () => []}
 });
 
 // 列表 - 滑动条
@@ -46,11 +30,11 @@ const scroll = ref({x: 1000, y: props.height});
 const sortable = ref<Record<string, TableSortable>>({
   createAt: {sortDirections: ['descend', 'ascend'], sorter: false}
 });
-const appMetaList = ref<AppMeta[]>([]);
 const rootPid = 'root';
 const treeData = ref<TreeNodeModel[]>([]);
 const selectedKeys = ref<string[]>([]);
 const selectedData = ref<TreeNodeModel>({});
+
 const treeNodeData = ref<QueryTreeNodeForm[]>([]);
 const treeNodeFilterData = ref<QueryTreeNodeForm[]>([]);
 const appPageData = ref<PageQueryFilter[]>([]);
@@ -65,15 +49,6 @@ const resetSplitHeight = () => {
 const splitHeight = ref<number>(resetSplitHeight());
 const splitMin = ref<number | string>('230px');
 const splitSize = ref<number | string>(splitMin.value);
-
-const typeOptions = computed<SelectOptionData[]>(() => [
-  {value: 'folder', label: '目录'},
-  {value: 'listPage', label: '列表页面'},
-  {value: 'freePage', label: '自定义页面'},
-  {value: 'formPage', label: '表单页面'},
-  {value: 'flowPage', label: '工作流页面'},
-  {value: 'templatePage', label: '模型页面'},
-]);
 
 const getTreeNode = (parentId: string) => {
   const nodes: TreeNodeModel[] = [];
@@ -179,11 +154,10 @@ watch(() => props, (val) => {
     splitHeight.value = resetSplitHeight();
     scroll.value.y = props.height - 135;
     // 加载数据
-    appMetaList.value = cloneDeep(props.modelValue) || [];
-    treeNodeData.value = (appMetaList.value.find(item => item.metaName === "platform_tree_node")?.metaData || []) as QueryTreeNodeForm[];
+    treeNodeData.value = cloneDeep(props.treeNode) as unknown as QueryTreeNodeForm[];
     // @ts-ignore
     treeNodeData.value.sort((a, b) => a.seq_no - b.seq_no);
-    appPageData.value = (appMetaList.value.find(item => item.metaName === "platform_app_page")?.metaData || []) as PageQueryFilter[];
+    appPageData.value = cloneDeep(props.appPage);
     setTreeItemData();
     treeNodeFilterData.value = buildTreeNodeList(props.parameter.appId);
   }
@@ -245,7 +219,7 @@ watch(() => props, (val) => {
           </a-table-column>
           <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="type" title="类型">
             <template #cell="{ record }">
-              {{ getOptionLabel(record.type, typeOptions) }}
+              {{ getOptionLabel(record.type, treeNodeTypeOptions) }}
             </template>
           </a-table-column>
           <a-table-column :ellipsis="true" :sortable="sortable.createAt" :tooltip="true" :width="180" data-index="create_at" title="创建时间"/>

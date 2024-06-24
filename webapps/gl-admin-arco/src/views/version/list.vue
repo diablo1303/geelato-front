@@ -153,20 +153,26 @@ watch(searchText, () => {
                    action-layout="vertical">
         <a-list-item-meta style="cursor: pointer;" @click="selectItemMeta(item)">
           <template #title>
-            {{ `${item.sort}` }}
-            <a-button class="list-action-button-default" type="outline">
-              {{ getPackageSourceMark(item.packageSource) }}
-            </a-button>
+            {{ `${item.sort},` }}
             <span v-if="item.version===parameter.versionInfo" style="font-weight: bold;">{{ ` ${item.version}` }}</span>
             <span v-else>{{ ` ${item.version}` }}</span>
           </template>
           <template #description>
-            <div>{{ item.description }}</div>
+            <div :title="item.description"
+                 style="display: -webkit-box;overflow: hidden;text-overflow: ellipsis;-webkit-line-clamp: 2;-webkit-box-orient: vertical;">
+              {{ item.description }}
+            </div>
             <div>
-              <span v-if="item.version===parameter.versionInfo" style="color: #165DFF;font-weight: bold;">当前版本</span>
-              <span v-else :style="{color:`${['draft','unused'].includes(item.status)?'#FF7D00':'#165DFF'}`}">
+              <a-tooltip content="版本来源">
+                <span :style="{color:'#165DFF'}">{{ getPackageSourceMark(item.packageSource) }}</span>
+              </a-tooltip>
+              <span> | </span>
+              <a-tooltip content="版本状态">
+                <span v-if="item.version===parameter.versionInfo" style="color: #165DFF;font-weight: bold;">当前版本</span>
+                <span v-else :style="{color:`${['draft','unused'].includes(item.status)?'#FF7D00':'#165DFF'}`}">
                 {{ getOptionLabel(item.status, packageStatusOptions) }}
               </span>
+              </a-tooltip>
               <span> | </span>
               <span>{{ item.packetTime || item.createAt }}</span>
             </div>

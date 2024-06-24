@@ -5,10 +5,9 @@ export default {
 </script>
 <script lang="ts" setup>
 import {computed, h, ref, watch} from 'vue';
-import {type SelectOptionData, TableColumnData, TableData, TableSortable, TreeNodeData} from '@arco-design/web-vue';
-import {getOptionLabel, PageQueryFilter, PageQueryRequest} from '@/api/base';
+import {TableColumnData, TableData, TableSortable} from '@arco-design/web-vue';
+import {getOptionLabel, PageQueryFilter} from '@/api/base';
 import {
-  QueryDictItemForm,
   QueryPermissionForm,
   QueryRoleAppForm,
   QueryRoleForm,
@@ -18,23 +17,7 @@ import {
 } from "@/api/security";
 import cloneDeep from "lodash/cloneDeep";
 import {IconFolder} from "@arco-design/web-vue/es/icon";
-
-// 页面所需 参数
-type PageParams = {
-  appId?: string; // 应用主键
-  tenantCode?: string; // 租户编码
-}
-
-type AppMeta = {
-  metaName: string;
-  metaData: Record<string, any>[]
-}
-
-interface TreeNodeModel extends TreeNodeData {
-  data?: Record<string, any>;
-  level?: number;
-  children?: TreeNodeModel[];
-}
+import {AppMeta, PageParams, TreeNodeModel, treeNodeTypeOptions} from "@/views/compare/type";
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
@@ -43,6 +26,12 @@ const props = defineProps({
   parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
   formState: {type: String, default: 'view'}, // 页面状态
   height: {type: Number, default: 245}, // 列表 - 数据列表高度，滑动条高度
+  permission: {type: Array<PageQueryFilter>, default: () => []},
+  role: {type: Array<PageQueryFilter>, default: () => []},
+  roleApp: {type: Array<PageQueryFilter>, default: () => []},
+  rolePermission: {type: Array<PageQueryFilter>, default: () => []},
+  roleTreeNode: {type: Array<PageQueryFilter>, default: () => []},
+  treeNode: {type: Array<PageQueryFilter>, default: () => []},
 });
 
 // 列表 - 滑动条
@@ -60,14 +49,13 @@ const roleTree = ref<TreeNodeModel[]>([]);
 const selectedKeys = ref<string[]>([]);
 const selectedData = ref<TreeNodeModel>({});
 const roleData = ref<QueryRoleForm[]>([]);
-const roleAppData = ref<QueryRoleAppForm[]>([]);
-const rolePermissionData = ref<QueryRolePermissionForm[]>([]);
-const permissionData = ref<QueryPermissionForm[]>([]);
+const roleAppData = ref<Map<string, PageQueryFilter[]>>(new Map());
+const rolePermissionData = ref<Map<string, PageQueryFilter[]>>(new Map());
 const roleNodeData = ref<QueryRoleTreeNodeForm[]>([]);
 const treeNodeData = ref<QueryTreeNodeForm[]>([]);
 
-const appFilterData = ref<QueryRoleAppForm[]>([]);
-const permissionFilterData = ref<QueryPermissionForm[]>([]);
+const appFilterData = ref<PageQueryFilter[]>([]);
+const permissionFilterData = ref<PageQueryFilter[]>([]);
 const roleTreeNodeFilterData = ref<QueryRoleTreeNodeForm[]>([]);
 const treeNodeFilterData = ref<PageQueryFilter[]>([]);
 /**
@@ -93,15 +81,6 @@ const setRoleItemData = () => {
   roleTree.value = [parentDict];
   selectedKeys.value = [rootPid];
 }
-
-const typeOptions = computed<SelectOptionData[]>(() => [
-  {value: 'folder', label: '目录'},
-  {value: 'listPage', label: '列表页面'},
-  {value: 'freePage', label: '自定义页面'},
-  {value: 'formPage', label: '表单页面'},
-  {value: 'flowPage', label: '工作流页面'},
-  {value: 'templatePage', label: '模型页面'},
-]);
 
 const searchKey = ref('');
 const searchData = (keyword: string) => {
@@ -197,11 +176,8 @@ const treeClickSelected = (selectedKey: (string | number)[], data: {
     scroll.value.y = props.height - 135;
   } else if (selectedData.value?.level === 1) {
     scroll.value.y = props.height - 200;
-    // @ts-ignore
-    appFilterData.value = roleAppData.value.filter(item => item.role_id === selectedData.value?.data?.id);
-    // @ts-ignore
-    const permissionIds = rolePermissionData.value.filter(item => item.role_id === selectedData.value?.data?.id).map(item => item.permission_id);
-    permissionFilterData.value = permissionData.value.filter(item => permissionIds.includes(item.id));
+    appFilterData.value = roleAppData.value.get(selectedData.value?.data?.id) || [];
+    permissionFilterData.value = rolePermissionData.value.get(selectedData.value?.data?.id) || [];
     // @ts-ignore
     roleTreeNodeFilterData.value = roleNodeData.value.filter(item => item.role_id === selectedData.value?.data?.id);
     buildGroundFloor(selectedData.value?.data?.app_id);
@@ -215,14 +191,31 @@ watch(() => props, (val) => {
     scroll.value.y = props.height - 135;
     // 加载数据
     appMetaList.value = cloneDeep(props.modelValue) || [];
-    roleData.value = (appMetaList.value.find(item => item.metaName === "platform_role")?.metaData || []) as QueryRoleForm[];
+    roleData.value = cloneDeep(props.role) as unknown as QueryRoleForm[];
     roleData.value.sort((a, b) => b.weight - a.weight);
     setRoleItemData();
-    roleAppData.value = (appMetaList.value.find(item => item.metaName === "platform_role_r_app")?.metaData || []) as QueryRoleAppForm[];
-    rolePermissionData.value = (appMetaList.value.find(item => item.metaName === "platform_role_r_permission")?.metaData || []) as QueryRolePermissionForm[];
-    permissionData.value = (appMetaList.value.find(item => item.metaName === "platform_permission")?.metaData || []) as QueryPermissionForm[];
-    roleNodeData.value = (appMetaList.value.find(item => item.metaName === "platform_role_r_tree_node")?.metaData || []) as QueryRoleTreeNodeForm[];
-    treeNodeData.value = (appMetaList.value.find(item => item.metaName === "platform_tree_node")?.metaData || []) as QueryTreeNodeForm[];
+    // @ts-ignore
+    roleAppData.value = new Map();
+    const roleAppList = cloneDeep(props.roleApp);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of roleData.value) {
+      // @ts-ignore
+      roleAppData.value.set(item.id, roleAppList.filter(appItem => appItem.role_id === item.id));
+    }
+    // @ts-ignore
+    rolePermissionData.value = new Map();
+    const rolePermissionList = cloneDeep(props.rolePermission);
+    const permissionList = cloneDeep(props.permission);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of roleData.value) {
+      // @ts-ignore
+      const permissionIds = rolePermissionList.filter(pItem => pItem.role_id === item.id).map(pItem => pItem.permission_id);
+      // @ts-ignore
+      rolePermissionData.value.set(item.id, permissionList.filter(pItem => permissionIds.includes(pItem.id)));
+    }
+
+    roleNodeData.value = cloneDeep(props.roleTreeNode) as unknown as QueryRoleTreeNodeForm[];
+    treeNodeData.value = cloneDeep(props.treeNode) as unknown as QueryTreeNodeForm[];
     // @ts-ignore
     treeNodeData.value.sort((a, b) => a.seq_no - b.seq_no);
   }
@@ -365,7 +358,7 @@ watch(() => props, (val) => {
                 </a-table-column>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="type" title="类型">
                   <template #cell="{ record }">
-                    {{ getOptionLabel(record.type, typeOptions) }}
+                    {{ getOptionLabel(record.type, treeNodeTypeOptions) }}
                   </template>
                 </a-table-column>
                 <a-table-column :ellipsis="true" :tooltip="true" :width="180" data-index="updateAt" title="更新时间"/>

@@ -10,17 +10,7 @@ import {PageQueryFilter} from '@/api/base';
 import {QueryDictItemForm} from "@/api/security";
 import cloneDeep from "lodash/cloneDeep";
 import {IconFolder} from "@arco-design/web-vue/es/icon";
-
-// 页面所需 参数
-type PageParams = {
-  appId?: string; // 应用主键
-  tenantCode?: string; // 租户编码
-}
-
-type AppMeta = {
-  metaName: string;
-  metaData: Record<string, any>[]
-}
+import {AppMeta, PageParams} from "@/views/compare/type";
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
@@ -29,6 +19,8 @@ const props = defineProps({
   parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
   formState: {type: String, default: 'view'}, // 页面状态
   height: {type: Number, default: 245}, // 列表 - 数据列表高度，滑动条高度
+  dict: {type: Array<PageQueryFilter>, default: () => []},
+  dictItem: {type: Array<PageQueryFilter>, default: () => []}
 });
 
 // 列表 - 滑动条
@@ -39,7 +31,6 @@ const sortable = ref<Record<string, TableSortable>>({
   seqNo: {sortDirections: ['descend', 'ascend'], sorter: false},
   createAt: {sortDirections: ['descend', 'ascend'], sorter: false}
 });
-const appMetaList = ref<AppMeta[]>([]);
 const rootPid = 'root';
 const dictTree = ref<TreeNodeData[]>([]);
 const selectedKeys = ref<string[]>([]);
@@ -53,7 +44,7 @@ const resetSplitHeight = () => {
   return props.height - 75;
 }
 const splitHeight = ref<number>(resetSplitHeight());
-const splitMin = ref<number | string>('200px');
+const splitMin = ref<number | string>('280px');
 const splitSize = ref<number | string>(splitMin.value);
 
 const setDictItemData = () => {
@@ -158,9 +149,8 @@ watch(() => props, (val) => {
     splitHeight.value = resetSplitHeight();
     scroll.value.y = props.height - 135;
     // 加载数据
-    appMetaList.value = cloneDeep(props.modelValue) || [];
-    dictData.value = (appMetaList.value.find(item => item.metaName === "platform_dict")?.metaData || []) as PageQueryFilter[];
-    const itemTreeData = (appMetaList.value.find(item => item.metaName === "platform_dict_item")?.metaData || []) as QueryDictItemForm[];
+    dictData.value = cloneDeep(props.dict) || [];
+    const itemTreeData = (cloneDeep(props.dictItem) || []) as unknown as QueryDictItemForm[];
     itemData.value = setTree(itemTreeData);
     setDictItemData();
   }

@@ -5,40 +5,15 @@ export default {
 </script>
 <script lang="ts" setup>
 import {computed, h, ref, watch} from 'vue';
-import {TableColumnData, TableSortable, TreeNodeData} from '@arco-design/web-vue';
+import {TableColumnData, TableSortable} from '@arco-design/web-vue';
 import {getOptionLabel, PageQueryFilter} from '@/api/base';
-import {
-  QueryDictItemForm,
-  QueryPermissionForm,
-  QueryRoleAppForm,
-  QueryRoleForm,
-  QueryRolePermissionForm,
-  QueryRoleTreeNodeForm,
-  QueryTreeNodeForm
-} from "@/api/security";
-import cloneDeep from "lodash/cloneDeep";
 import {IconExport, IconFolder, IconImport} from "@arco-design/web-vue/es/icon";
 import {QueryFileTemplateForm} from "@/api/template";
 import {businessMetaDataValueComputeModeOptions, businessMetaDataValueTypeOptions} from "@/views/security/file/export/template";
 import {businessMetaEvaluationOptions, businessRuleDataTypeOptions, businessTypeDataTypeOptions} from "@/views/security/file/import/template";
-import {downloadFileByBase64String, fetchFileById} from "@/api/attachment";
-
-// 页面所需 参数
-type PageParams = {
-  appId?: string; // 应用主键
-  tenantCode?: string; // 租户编码
-}
-
-type AppMeta = {
-  metaName: string;
-  metaData: Record<string, any>[]
-}
-
-interface TreeNodeModel extends TreeNodeData {
-  data?: Record<string, any>;
-  level?: number;
-  children?: TreeNodeModel[];
-}
+import {downloadFileByBase64String} from "@/api/attachment";
+import {AppMeta, PageParams, TreeNodeModel} from "@/views/compare/type";
+import cloneDeep from "lodash/cloneDeep";
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
@@ -47,6 +22,7 @@ const props = defineProps({
   parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
   formState: {type: String, default: 'view'}, // 页面状态
   height: {type: Number, default: 245}, // 列表 - 数据列表高度，滑动条高度
+  data: {type: Array<PageQueryFilter>, default: () => []}
 });
 
 // 列表 - 滑动条
@@ -56,12 +32,11 @@ const scroll = ref({x: 1000, y: props.height});
 const sortable = ref<Record<string, TableSortable>>({
   createAt: {sortDirections: ['descend', 'ascend'], sorter: false}
 });
-const appMetaList = ref<AppMeta[]>([]);
 const rootPid = 'root';
 const roleTree = ref<TreeNodeModel[]>([]);
 const selectedKeys = ref<string[]>([]);
 const selectedData = ref<TreeNodeModel>({});
-const fileTemplateData = ref<QueryFileTemplateForm[]>([]);
+const renderData = ref<QueryFileTemplateForm[]>([]);
 const activeKey = ref<number>(1);
 const businessMetaData = ref<PageQueryFilter[]>([]);
 const businessRuleData = ref<PageQueryFilter[]>([]);
@@ -73,14 +48,14 @@ const resetSplitHeight = () => {
   return props.height - 75;
 }
 const splitHeight = ref<number>(resetSplitHeight());
-const splitMin = ref<number | string>('230px');
+const splitMin = ref<number | string>('300px');
 const splitSize = ref<number | string>(splitMin.value);
 
 const setTreeItemData = () => {
   const roles = [];
-  if (fileTemplateData.value.length > 0) {
+  if (renderData.value.length > 0) {
     // eslint-disable-next-line no-restricted-syntax
-    for (const item of fileTemplateData.value) {
+    for (const item of renderData.value) {
       roles.push({
         title: item.title, key: item.id,
         // @ts-ignore
@@ -152,10 +127,8 @@ watch(() => props, (val) => {
     splitHeight.value = resetSplitHeight();
     scroll.value.y = props.height - 135;
     // 加载数据
-    appMetaList.value = cloneDeep(props.modelValue) || [];
-    fileTemplateData.value = (appMetaList.value.find(item => item.metaName === "platform_export_template")?.metaData || []) as QueryFileTemplateForm[];
-    // @ts-ignore
-    fileTemplateData.value = fileTemplateData.value.filter(item => item.del_status === 0);
+    renderData.value = cloneDeep(props.data) as unknown as QueryFileTemplateForm[];
+    // 树形数据
     setTreeItemData();
   }
 }, {deep: true, immediate: true});
@@ -193,7 +166,7 @@ watch(() => props, (val) => {
       <a-table v-if="!selectedKeys || (selectedKeys.length > 0 && selectedKeys[0] === rootPid)"
                :bordered="{cell:true}"
                :columns="([] as TableColumnData[])"
-               :data="fileTemplateData"
+               :data="renderData"
                :pagination="false"
                :scroll="{x: 70+180*8, y: scroll.y}"
                :scrollbar="scrollbar"

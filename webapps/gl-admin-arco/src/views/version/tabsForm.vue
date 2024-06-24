@@ -18,7 +18,9 @@ import PlatformExportTemplateList from "@/views/version/package/platform-export-
 import PlatformEncodingList from "@/views/version/package/platform-encoding.vue";
 import PlatformResourcesList from "@/views/version/package/platform-resources.vue";
 import PlatformPageList from "@/views/version/package/platform-page.vue";
-import {getOptionLabel} from "../../api/base";
+import {Message} from "@arco-design/web-vue";
+import {exclusionary} from "@/views/compare/type";
+import {getOptionLabel, PageQueryFilter} from "../../api/base";
 import {packageSourceOptions, packageStatusOptions} from "./searchTable";
 
 type PageParams = {
@@ -44,6 +46,8 @@ const tabsKey = ref<number>(1);// 定位tabs页面
 const tableData = ref<QueryAppVersionForm>({} as QueryAppVersionForm);
 const appSelectOptions = ref<QueryAppForm[]>([]);
 const appMetaList = ref<AppMeta[]>([]);
+const tabsVisible = ref(false);
+const openTabsLoading = ref(false);
 
 const generateListParams = () => {
   return {
@@ -76,11 +80,14 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
  * @param failBack
  */
 const getPackData = async (id: string, successBack?: any, failBack?: any) => {
+  openTabsLoading.value = true;
   try {
     const {data} = await queryAppPackage(id);
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
+  } finally {
+    openTabsLoading.value = false;
   }
 };
 
@@ -112,20 +119,74 @@ const tableFormat = (id: string, successBack?: any) => {
   getData(id, (data: QueryAppVersionForm) => {
     tableData.value = data;
   });
-  getPackData(id, (data: Record<string, any>) => {
-    appMetaList.value = data?.appMetaList || [];
-    Object.assign(listParams.value, {
-      visible: true, parameter: {
-        appCode: data?.appCode || '', appId: data?.sourceAppId || '', tenantCode: ''
-      },
+}
+
+const generateRenderData = () => {
+  return {
+    appPage: {code: "platform_app_page", data: []},
+    devColumn: {code: "platform_dev_column", data: []},
+    devDbConnect: {code: "platform_dev_db_connect", data: []},
+    devTable: {code: "platform_dev_table", data: []},
+    devTableForeign: {code: "platform_dev_table_foreign", data: []},
+    devView: {code: "platform_dev_view", data: []},
+    dict: {code: "platform_dict", data: []},
+    dictItem: {code: "platform_dict_item", data: []},
+    encoding: {code: "platform_encoding", data: []},
+    exportTemplate: {code: "platform_export_template", data: []},
+    permission: {code: "platform_permission", data: []},
+    resources: {code: "platform_resources", data: []},
+    role: {code: "platform_role", data: []},
+    roleApp: {code: "platform_role_r_app", data: []},
+    rolePermission: {code: "platform_role_r_permission", data: []},
+    roleTreeNode: {code: "platform_role_r_tree_node", data: []},
+    sysConfig: {code: "platform_sys_config", data: []},
+    treeNode: {code: "platform_tree_node", data: []},
+  }
+}
+const renderData = ref(generateRenderData());
+
+const generateListModels = () => {
+  // eslint-disable-next-line no-restricted-syntax,guard-for-in
+  for (const key in renderData.value) {
+    // @ts-ignore
+    renderData.value[key].data = appMetaList.value.find(item => item.metaName === renderData.value[key].code)?.metaData || [];
+    // @ts-ignore
+    // eslint-disable-next-line eqeqeq
+    renderData.value[key].data = renderData.value[key].data.filter(item => item.del_status == 0);
+  }
+}
+
+const openTabs = () => {
+  if (props.modelValue) {
+    tabsKey.value = 1;
+    tabsVisible.value = true;
+    appMetaList.value = [];
+    renderData.value = generateRenderData();
+    getPackData(props.modelValue, (data: Record<string, any>) => {
+      appMetaList.value = data?.appMetaList || [];
+      console.log("getPackData", appMetaList.value);
+      generateListModels();
+      Object.assign(listParams.value, {
+        visible: true, parameter: {
+          "appCode": data?.appCode || '', "appId": data?.sourceAppId, tenantCode: ''
+        },
+      });
     });
-  });
+  } else {
+    Message.warning('版本数据缺失！');
+  }
 }
 
 watch(() => props, (val) => {
   if (props.visible === true) {
     tabsKey.value = 1;
-    listParams.value.height = props.height;
+    tabsVisible.value = false;
+    openTabsLoading.value = false;
+    listParams.value.height = props.height + 75;
+    appSelectOptions.value = [];
+    tableData.value = {} as unknown as QueryAppVersionForm;
+    appMetaList.value = [];
+    renderData.value = generateRenderData();
     // 编辑、查看 状态 查询数据
     if (props.modelValue) {
       tableFormat(props.modelValue);
@@ -135,110 +196,139 @@ watch(() => props, (val) => {
 </script>
 
 <template>
-  <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" position="top" type="line">
-    <a-tab-pane :key="1" class="a-tabs-five" title="版本信息">
-      <a-form :label-col-props="{ span: '2px' }" :model="tableData" class="form" style="padding-left: 16px;">
-        <a-form-item field="appId" label="应用主键：">
-          <CopyToClipboard v-if="tableData.appId" :model-value="tableData.appId"/>
-          <span>{{ tableData.appId }}{{ getAppOptionLabel(tableData.appId) }}</span>
-        </a-form-item>
-        <a-form-item field="version" label="版本名称：">
-          <CopyToClipboard v-if="tableData.version" :model-value="tableData.version"/>
-          <span>{{ tableData.version }}</span>
-        </a-form-item>
-        <a-form-item field="packageSource" label="版本来源：">
-          <span>{{ getOptionLabel(tableData.packageSource, packageSourceOptions) }}</span>
-        </a-form-item>
-        <a-form-item field="status" label="版本状态：">
-          <span>{{ getOptionLabel(tableData.status, packageStatusOptions) }}</span>
-        </a-form-item>
-        <a-form-item field="packetTime" label="打包时间：">
-          <span>{{ tableData.packetTime }}</span>
-        </a-form-item>
-        <a-form-item field="creatorName" label="打包人员：">
-          <span>{{ tableData.creatorName }}</span>
-        </a-form-item>
-        <a-form-item v-if="!['draft'].includes(tableData.status)" field="packagePath" label="应用包：">
-          <UploadFile v-model="tableData.packagePath" :disabled="true"/>
-        </a-form-item>
-        <a-form-item field="description" label="版本描述：">
-          <span :title="tableData.description">{{ tableData.description }}</span>
-        </a-form-item>
-      </a-form>
-    </a-tab-pane>
-    <a-tab-pane :key="2" class="a-tabs-five" title="模型管理">
-      <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformModelList :height="listParams.height"
-                           :model-value="appMetaList"
-                           :parameter="listParams.parameter"
-                           :visible="listParams.visible"/>
-      </a-card>
-      <a-empty v-else/>
-    </a-tab-pane>
-    <a-tab-pane :key="3" class="a-tabs-five" title="数据字典">
-      <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformDictList :height="listParams.height"
-                          :model-value="appMetaList"
-                          :parameter="listParams.parameter"
-                          :visible="listParams.visible"/>
-      </a-card>
-      <a-empty v-else/>
-    </a-tab-pane>
-    <a-tab-pane :key="4" class="a-tabs-five" title="角色管理">
-      <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformRoleList :height="listParams.height"
-                          :model-value="appMetaList"
-                          :parameter="listParams.parameter"
-                          :visible="listParams.visible"/>
-      </a-card>
-      <a-empty v-else/>
-    </a-tab-pane>
-    <a-tab-pane :key="5" class="a-tabs-five" title="菜单管理">
-      <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformPageList :height="listParams.height"
-                          :model-value="appMetaList"
-                          :parameter="listParams.parameter"
-                          :visible="listParams.visible"/>
-      </a-card>
-      <a-empty v-else/>
-    </a-tab-pane>
-    <a-tab-pane :key="6" class="a-tabs-five" title="系统配置">
-      <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformSysConfigList :height="listParams.height"
-                               :model-value="appMetaList"
+  <a-card class="general-card" title="基本信息">
+    <template #extra>
+      <a-space>
+        <a-button :loading="openTabsLoading" type="primary" @click="openTabs">
+          <template #icon>
+            <icon-unordered-list/>
+          </template>
+          包详细信息
+        </a-button>
+      </a-space>
+    </template>
+    <a-form :label-col-props="{ span: '2px' }" :model="tableData" class="form" style="padding-left: 16px;">
+      <a-form-item field="appId" label="应用主键：">
+        <CopyToClipboard v-if="tableData.appId" :model-value="tableData.appId"/>
+        <span>{{ tableData.appId }}{{ getAppOptionLabel(tableData.appId) }}</span>
+      </a-form-item>
+      <a-form-item field="version" label="版本名称：">
+        <CopyToClipboard v-if="tableData.version" :model-value="tableData.version"/>
+        <span>{{ tableData.version }}</span>
+      </a-form-item>
+      <a-form-item field="packageSource" label="版本来源：">
+        <span>{{ getOptionLabel(tableData.packageSource, packageSourceOptions) }}</span>
+      </a-form-item>
+      <a-form-item field="status" label="版本状态：">
+        <span>{{ getOptionLabel(tableData.status, packageStatusOptions) }}</span>
+      </a-form-item>
+      <a-form-item field="packetTime" label="打包时间：">
+        <span>{{ tableData.packetTime }}</span>
+      </a-form-item>
+      <a-form-item field="creatorName" label="打包人员：">
+        <span>{{ tableData.creatorName }}</span>
+      </a-form-item>
+      <a-form-item v-if="!['draft'].includes(tableData.status)" field="packagePath" label="应用包：">
+        <UploadFile v-model="tableData.packagePath" :disabled="true"/>
+      </a-form-item>
+      <a-form-item field="description" label="版本描述：">
+        <span :title="tableData.description">{{ tableData.description }}</span>
+      </a-form-item>
+    </a-form>
+  </a-card>
+
+  <a-modal v-model:visible="tabsVisible" :footer="false" :title="`包详细信息 ${tableData.version}`" fullscreen title-align="start">
+    <a-spin :loading="openTabsLoading" dot style="width: 100%" tip="正在获取版本包详细信息...">
+      <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" position="top" type="line">
+        <a-tab-pane :key="1" class="a-tabs-five" title="模型管理">
+          <a-card v-if="listParams.visible" class="general-card6">
+            <PlatformModelList :dev-column="renderData.devColumn.data"
+                               :dev-db-connect="renderData.devDbConnect.data"
+                               :dev-table="renderData.devTable.data"
+                               :dev-table-foreign="renderData.devTableForeign.data"
+                               :dev-view="renderData.devView.data"
+                               :height="listParams.height"
                                :parameter="listParams.parameter"
+                               :permission="renderData.permission.data"
+                               :role="renderData.role.data"
+                               :role-permission="renderData.rolePermission.data"
                                :visible="listParams.visible"/>
-      </a-card>
-      <a-empty v-else/>
-    </a-tab-pane>
-    <a-tab-pane :key="7" class="a-tabs-five" title="文件管理">
-      <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformExportTemplateList :height="listParams.height"
-                                    :model-value="appMetaList"
-                                    :parameter="listParams.parameter"
-                                    :visible="listParams.visible"/>
-      </a-card>
-      <a-empty v-else/>
-    </a-tab-pane>
-    <a-tab-pane :key="8" class="a-tabs-five" title="编码管理">
-      <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformEncodingList :height="listParams.height"
-                              :model-value="appMetaList"
+          </a-card>
+          <a-empty v-else/>
+        </a-tab-pane>
+        <a-tab-pane :key="2" class="a-tabs-five" title="数据字典">
+          <a-card v-if="listParams.visible" class="general-card6">
+            <PlatformDictList :dict="renderData.dict.data"
+                              :dictItem="renderData.dictItem.data"
+                              :height="listParams.height"
                               :parameter="listParams.parameter"
                               :visible="listParams.visible"/>
-      </a-card>
-      <a-empty v-else/>
-    </a-tab-pane>
-    <a-tab-pane :key="9" class="a-tabs-five" title="资源管理">
-      <a-card v-if="listParams.visible" class="general-card6">
-        <PlatformResourcesList :height="listParams.height"
-                               :model-value="appMetaList"
-                               :parameter="listParams.parameter"
-                               :visible="listParams.visible"/>
-      </a-card>
-      <a-empty v-else/>
-    </a-tab-pane>
-  </a-tabs>
+          </a-card>
+          <a-empty v-else/>
+        </a-tab-pane>
+        <a-tab-pane :key="3" class="a-tabs-five" title="角色管理">
+          <a-card v-if="listParams.visible" class="general-card6">
+            <PlatformRoleList :height="listParams.height"
+                              :parameter="listParams.parameter"
+                              :permission="renderData.permission.data"
+                              :role="renderData.role.data"
+                              :role-app="renderData.roleApp.data"
+                              :role-permission="renderData.rolePermission.data"
+                              :role-tree-node="renderData.roleTreeNode.data"
+                              :tree-node="renderData.treeNode.data"
+                              :visible="listParams.visible"/>
+          </a-card>
+          <a-empty v-else/>
+        </a-tab-pane>
+        <a-tab-pane :key="4" class="a-tabs-five" title="菜单管理">
+          <a-card v-if="listParams.visible" class="general-card6">
+            <PlatformPageList :appPage="renderData.appPage.data"
+                              :height="listParams.height"
+                              :parameter="listParams.parameter"
+                              :treeNode="renderData.treeNode.data"
+                              :visible="listParams.visible"/>
+          </a-card>
+          <a-empty v-else/>
+        </a-tab-pane>
+        <a-tab-pane :key="5" class="a-tabs-five" title="系统配置">
+          <a-card v-if="listParams.visible" class="general-card6">
+            <PlatformSysConfigList :data="renderData.sysConfig.data"
+                                   :height="listParams.height"
+                                   :parameter="listParams.parameter"
+                                   :visible="listParams.visible"/>
+          </a-card>
+          <a-empty v-else/>
+        </a-tab-pane>
+        <a-tab-pane :key="6" class="a-tabs-five" title="文件管理">
+          <a-card v-if="listParams.visible" class="general-card6">
+            <PlatformExportTemplateList :data="renderData.exportTemplate.data"
+                                        :height="listParams.height"
+                                        :parameter="listParams.parameter"
+                                        :visible="listParams.visible"/>
+          </a-card>
+          <a-empty v-else/>
+        </a-tab-pane>
+        <a-tab-pane :key="7" class="a-tabs-five" title="编码管理">
+          <a-card v-if="listParams.visible" class="general-card6">
+            <PlatformEncodingList :data="renderData.encoding.data"
+                                  :height="listParams.height"
+                                  :parameter="listParams.parameter"
+                                  :visible="listParams.visible"/>
+          </a-card>
+          <a-empty v-else/>
+        </a-tab-pane>
+        <a-tab-pane :key="8" class="a-tabs-five" title="资源管理">
+          <a-card v-if="listParams.visible" class="general-card6">
+            <PlatformResourcesList :data="renderData.resources.data"
+                                   :height="listParams.height"
+                                   :parameter="listParams.parameter"
+                                   :visible="listParams.visible"/>
+          </a-card>
+          <a-empty v-else/>
+        </a-tab-pane>
+      </a-tabs>
+    </a-spin>
+  </a-modal>
 </template>
 
 <style lang="less">

@@ -4,35 +4,14 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {computed, h, ref, VNode, watch} from 'vue';
-import {TableColumnData, TableSortable, TreeNodeData} from '@arco-design/web-vue';
-import {IconCalendar, IconFolder, IconLink, IconTags} from '@arco-design/web-vue/es/icon';
+import {computed, h, ref, watch} from 'vue';
 import cloneDeep from "lodash/cloneDeep";
+import {TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {IconCalendar, IconFolder, IconLink, IconTags} from '@arco-design/web-vue/es/icon';
 import {QueryConnectForm, QueryTableColumnForm, QueryTableForeignForm, QueryTableForm, QueryViewForm} from "@/api/model";
-import ModelTableColumnList from "@/views/model/column/list.vue";
-import ModelTableViewList from "@/views/model/view/list.vue";
-import ModelTablePermissionList from "@/views/model/table/permission/list.vue";
-import ModelTableForeignList from "@/views/model/foreign/list.vue";
-import ModelTableColumnPermissionList from "@/views/model/column/permission/list.vue";
-import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 import {QueryPermissionForm, QueryRoleForm, QueryRolePermissionForm} from "@/api/security";
-
-// 页面所需 参数
-type PageParams = {
-  appId?: string; // 应用主键
-  tenantCode?: string; // 租户编码
-}
-
-type AppMeta = {
-  metaName: string;
-  metaData: Record<string, any>[]
-}
-
-interface TreeNodeModel extends TreeNodeData {
-  data?: Record<string, any>;
-  level?: number;
-  children?: TreeNodeModel[];
-}
+import {AppMeta, PageParams, TreeNodeModel} from "@/views/compare/type";
+import {PageQueryFilter} from "@/api/base";
 
 const emits = defineEmits(['update:modelValue']);
 const props = defineProps({
@@ -41,6 +20,14 @@ const props = defineProps({
   parameter: {type: Object, default: () => ({} as PageParams)}, // 页面需要的参数
   formState: {type: String, default: 'view'}, // 页面状态
   height: {type: Number, default: 245}, // 列表 - 数据列表高度，滑动条高度
+  devColumn: {type: Array<PageQueryFilter>, default: () => []},
+  devDbConnect: {type: Array<PageQueryFilter>, default: () => []},
+  devTable: {type: Array<PageQueryFilter>, default: () => []},
+  devTableForeign: {type: Array<PageQueryFilter>, default: () => []},
+  devView: {type: Array<PageQueryFilter>, default: () => []},
+  permission: {type: Array<PageQueryFilter>, default: () => []},
+  role: {type: Array<PageQueryFilter>, default: () => []},
+  rolePermission: {type: Array<PageQueryFilter>, default: () => []},
 });
 
 // 列表 - 滑动条
@@ -83,7 +70,7 @@ const resetSplitHeight = () => {
   return props.height - 75;
 }
 const splitHeight = ref<number>(resetSplitHeight());
-const splitMin = ref<number | string>('300px');
+const splitMin = ref<number | string>('400px');
 const splitSize = ref<number | string>(splitMin.value);
 
 const setModelTreeData = () => {
@@ -256,17 +243,17 @@ watch(() => props, (val) => {
     splitHeight.value = resetSplitHeight();
     scroll.value.y = props.height - 135;
     // 加载数据
-    appMetaList.value = cloneDeep(props.modelValue) || [];
-    connectData.value = (appMetaList.value.find(item => item.metaName === "platform_dev_db_connect")?.metaData || []) as QueryConnectForm[];
-    tableData.value = (appMetaList.value.find(item => item.metaName === "platform_dev_table")?.metaData || []) as QueryTableForm[];
-    columnData.value = (appMetaList.value.find(item => item.metaName === "platform_dev_column")?.metaData || []) as QueryTableColumnForm[];
-    viewData.value = (appMetaList.value.find(item => item.metaName === "platform_dev_view")?.metaData || []) as QueryViewForm[];
-    foreignData.value = (appMetaList.value.find(item => item.metaName === "platform_dev_table_foreign")?.metaData || []) as QueryTableForeignForm[];
+    connectData.value = cloneDeep(props.devDbConnect) as unknown as QueryConnectForm[];
+    tableData.value = cloneDeep(props.devTable) as unknown as QueryTableForm[];
+    columnData.value = cloneDeep(props.devColumn) as unknown as QueryTableColumnForm[];
+    viewData.value = cloneDeep(props.devView) as unknown as QueryViewForm[];
+    foreignData.value = cloneDeep(props.devTableForeign) as unknown as QueryTableForeignForm[];
     setModelTreeData();
-    roleData.value = (appMetaList.value.find(item => item.metaName === "platform_role")?.metaData || []) as QueryRoleForm[];
+
+    roleData.value = cloneDeep(props.role) as unknown as QueryRoleForm[];
     roleData.value.sort((a, b) => b.weight - a.weight);
-    permissionData.value = (appMetaList.value.find(item => item.metaName === "platform_permission")?.metaData || []) as QueryPermissionForm[];
-    rolePermissionData.value = (appMetaList.value.find(item => item.metaName === "platform_role_r_permission")?.metaData || []) as QueryRolePermissionForm[];
+    permissionData.value = cloneDeep(props.permission) as unknown as QueryPermissionForm[];
+    rolePermissionData.value = cloneDeep(props.rolePermission) as unknown as QueryRolePermissionForm[];
   }
 }, {deep: true, immediate: true});
 </script>
@@ -468,7 +455,8 @@ watch(() => props, (val) => {
               <template #columns>
                 <a-table-column :ellipsis="true" :tooltip="false" :width="180" data-index="name" fixed="left" title="角色名称"/>
                 <a-table-column :ellipsis="true" :tooltip="false" :width="90" align="center" data-index="weight" title="角色权重"/>
-                <a-table-column v-for="(item,index) of tPermissionFilterData" :key="index" :data-index="item.id" :ellipsis="true" :title="item.name" :tooltip="true"
+                <a-table-column v-for="(item,index) of tPermissionFilterData" :key="index" :data-index="item.id" :ellipsis="true" :title="item.name"
+                                :tooltip="true"
                                 :width="120" align="center">
                   <template #cell="{record}">
                     <a-switch v-model="record[item.id]" :disabled="true">
@@ -558,7 +546,8 @@ watch(() => props, (val) => {
               <template #columns>
                 <a-table-column :ellipsis="true" :tooltip="false" :width="120" data-index="name" fixed="left" title="角色名称"/>
                 <a-table-column :ellipsis="true" :tooltip="false" :width="60" align="center" data-index="weight" title="角色权重"/>
-                <a-table-column v-for="(item,index) of tPermissionFilterData" :key="index" :data-index="item.id" :ellipsis="true" :title="item.name" :tooltip="true"
+                <a-table-column v-for="(item,index) of tPermissionFilterData" :key="index" :data-index="item.id" :ellipsis="true" :title="item.name"
+                                :tooltip="true"
                                 :width="120" align="center">
                   <template #cell="{record}">
                     <a-switch v-model="record[item.id]" :disabled="true">

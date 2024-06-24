@@ -4,6 +4,7 @@ import {isJSON} from "@/utils/is";
 import {computed} from "vue";
 
 export type PageParams = {
+  appCode?: string; // 应用编码
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
 }
@@ -62,6 +63,15 @@ export const typeSelectOptions = computed<SelectOptionData[]>(() => [
   {label: '新增', value: '1',},
   {label: '修改', value: '2',},
   {label: '删除', value: '3',},
+]);
+
+export const treeNodeTypeOptions = computed<SelectOptionData[]>(() => [
+  {value: 'folder', label: '目录'},
+  {value: 'listPage', label: '列表页面'},
+  {value: 'freePage', label: '自定义页面'},
+  {value: 'formPage', label: '表单页面'},
+  {value: 'flowPage', label: '工作流页面'},
+  {value: 'templatePage', label: '模型页面'},
 ]);
 
 
