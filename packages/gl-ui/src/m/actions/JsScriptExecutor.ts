@@ -11,7 +11,8 @@ import * as fileApi from '../datasource/FileApi'
 import { getUserCompany } from '../datasource/Security'
 import type { EntityReader, EntityReaderParam } from '../datasource/EntityDataSource'
 import dayjs from 'dayjs'
-import { getDateTimeFns } from './fns/datetime'
+import { useDateTimeFns } from './fns/datetime'
+import { useMathFns } from './fns/math'
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 type OptionsType = { [key: string]: any }
@@ -824,7 +825,9 @@ export class JsScriptExecutor {
       vars: {}
     }
     // set datetime fns
-    Object.assign($gl.fn, getDateTimeFns($gl))
+    Object.assign($gl.fn, useDateTimeFns())
+    // set math fns
+    Object.assign($gl.fn, useMathFns())
     // set logic fns
     Object.assign($gl.fn, this.getLogicFns($gl))
     // set components fns

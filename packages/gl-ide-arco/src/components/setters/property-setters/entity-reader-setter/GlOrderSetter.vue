@@ -3,7 +3,7 @@
     <tr v-if="mv&&mv.length>0">
       <td></td>
       <td>数据字段</td>
-      <td>比较操作</td>
+      <td>排序方向</td>
       <td></td>
     </tr>
     <gl-draggable

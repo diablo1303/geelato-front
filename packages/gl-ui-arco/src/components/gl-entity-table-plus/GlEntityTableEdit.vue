@@ -32,7 +32,7 @@ import {
   PageProvideProxy,
   PageProvideKey,
   mixins,
-  EntityReaderOrder
+  EntityReaderOrder, PageStatus
 } from '@geelato/gl-ui'
 import { Schema } from 'b-validate'
 import { type Column, type GlTableColumn, SlotNameSeq } from './constants'
@@ -443,7 +443,9 @@ const fetchData = async (readerInfo?: {
       console.log('GlEntityTableEdit > fetchData() > formProvideProxy is',formProvideProxy)
       if (!pid) {
         setLoading(false)
-        console.error('GlEntityTableEdit > fetchData() > formProvideProxy is',formProvideProxy,' and getRecordId() is '+formProvideProxy?.getRecordId()+'.作为子表时，父ID不能为空。')
+        if(pageProvideProxy?.pageStatus!==PageStatus.create&&pageProvideProxy?.pageStatus!==PageStatus.copyCreate){
+          console.error('GlEntityTableEdit > fetchData() > formProvideProxy is',formProvideProxy,' and getRecordId() is '+formProvideProxy?.getRecordId()+'.作为子表时，父ID不能为空，当前页面状态：',pageProvideProxy?.pageStatus)
+        }
         return
       }
       entityReader.params.push(new EntityReaderParam(props.subTablePidName, 'eq', pid))

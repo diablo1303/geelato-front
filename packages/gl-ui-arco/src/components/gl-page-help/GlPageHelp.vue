@@ -71,11 +71,11 @@ const handleCancel = () => {
           }}</a-button>
         </span>
       </template>
-      <div style="min-height: 800px">
+      <div style="min-height: 800px;padding: 0 1em;">
         <div v-if="loading" style="padding-top: 380px; text-align: center">
           <a-spin dot />
         </div>
-        <div v-else-if="!loading && pageHelp.content" v-html="pageHelp.content"></div>
+        <div v-else-if="!loading && pageHelp.content" v-html="pageHelp.content" style="padding: 1em 1em;"></div>
       </div>
       <template #footer>
         <a-space>

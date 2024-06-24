@@ -1,4 +1,5 @@
 import {type App, type Plugin, reactive} from 'vue'
+import Big from 'big.js'
 import emitter from './m/mix/emitter'
 import type {PageParamConfigType, PageTemplate} from './components/PageProvideProxy'
 import PageProvideProxy, {type PageCustomType, PageParamsKey, PageProvideKey, paramStringify} from './components/PageProvideProxy'
@@ -125,6 +126,7 @@ const component: Plugin = {
 }
 
 export {
+  Big,
   AppProvideKey,
   AppProvideProxy,
   PageParamsKey,
