@@ -716,6 +716,7 @@ export interface QueryTreeNodeForm {
   extendEntity: string;
   extendId: string;
   meta: string;
+  url: string;// 外部链接
   flag: string;
   description: string;
   appId: string;

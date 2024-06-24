@@ -642,7 +642,11 @@ onUnmounted(() => {
                                            :model-value="listParams.selected.id"
                                            :visible="true"
                                            @canPacket="(can)=>{isCanPacket = can}"/>
-                    <AppVersionTabs v-else :key="listParams.load" :height="listParams.height" :model-value="listParams.selected.id" :visible="true"/>
+                    <AppVersionTabs v-else :key="listParams.load"
+                                    :height="listParams.height"
+                                    :model-value="listParams.selected.id"
+                                    :parameter="listParams.parameter"
+                                    :visible="true"/>
                   </div>
                 </div>
               </template>

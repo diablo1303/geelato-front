@@ -47,7 +47,7 @@ const resetSplitHeight = () => {
   return props.height - 75;
 }
 const splitHeight = ref<number>(resetSplitHeight());
-const splitMin = ref<number | string>('230px');
+const splitMin = ref<number | string>('320px');
 const splitSize = ref<number | string>(splitMin.value);
 
 const getTreeNode = (parentId: string) => {
@@ -194,7 +194,7 @@ watch(() => props, (val) => {
   </span>
     </template>
     <template #second>
-      <a-table v-if="selectedData.level===0"
+      <a-table v-if="!selectedKeys || (selectedKeys.length > 0 && selectedKeys[0] === parameter.appId)"
                :bordered="{cell:true}"
                :columns="([] as TableColumnData[])"
                :data="treeNodeFilterData"

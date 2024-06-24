@@ -56,6 +56,7 @@ export interface QueryMenuForm {
   iconType: string;
   type: string;// folder formPage listPage freePage
   meta: string;// 路径
+  url: string;// 外部链接
   treeEntity: string;
   extendEntity: string;
   text: string;

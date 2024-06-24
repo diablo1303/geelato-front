@@ -4,7 +4,12 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  bin-wrapper: npm:bin-wrapper-china
+
 importers:
+
+  .: {}
 
   packages/gl-ide:
     dependencies:
@@ -344,9 +349,6 @@ importers:
       '@tinymce/tinymce-vue':
         specifier: ^5.1.1
         version: 5.1.1(vue@3.3.11(typescript@4.7.4))
-      '@types/big.js':
-        specifier: ^6.2.2
-        version: 6.2.2
       '@vueuse/core':
         specifier: ^9.3.0
         version: 9.13.0(vue@3.3.11(typescript@4.7.4))
@@ -381,6 +383,9 @@ importers:
       '@rushstack/eslint-patch':
         specifier: ^1.2.0
         version: 1.2.0
+      '@types/big.js':
+        specifier: ^6.2.2
+        version: 6.2.2
       '@types/jsdom':
         specifier: ^21.1.0
         version: 21.1.0
@@ -626,9 +631,6 @@ importers:
       '@logicflow/extension':
         specifier: ^1.2.19
         version: 1.2.19(ts-node@10.9.1(@swc/core@1.3.68)(@types/node@18.14.1)(typescript@4.9.5))
-      '@types/big.js':
-        specifier: ^6.2.2
-        version: 6.2.2
       '@vueuse/core':
         specifier: ^9.3.0
         version: 9.13.0(vue@3.3.11(typescript@4.9.5))
@@ -729,6 +731,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^17.1.0
         version: 17.4.4
+      '@types/big.js':
+        specifier: ^6.2.2
+        version: 6.2.2
       '@types/diff':
         specifier: ^5.2.1
         version: 5.2.1
@@ -876,9 +881,6 @@ importers:
       '@geelato/gl-ui-schema-arco':
         specifier: workspace:^0.0.1
         version: link:../../packages/gl-ui-schema-arco
-      '@types/big.js':
-        specifier: ^6.2.2
-        version: 6.2.2
       '@vueuse/core':
         specifier: ^9.3.0
         version: 9.13.0(vue@3.3.11(typescript@4.9.5))
@@ -937,6 +939,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^17.1.0
         version: 17.4.4
+      '@types/big.js':
+        specifier: ^6.2.2
+        version: 6.2.2
       '@types/lodash':
         specifier: ^4.14.186
         version: 4.14.191
@@ -2794,13 +2799,17 @@ packages:
     resolution: {integrity: sha512-Mkfm4iE1VFt4xd4vH+gx+0/71esbfus2LsnCGe8Pi4mndSPyT+NGES/Eg99jx8/lUGWfu3z2yuB/bt5UB+iVbQ==}
     engines: {node: '>=6'}
 
-  bin-wrapper@4.1.0:
-    resolution: {integrity: sha512-hfRmo7hWIXPkbpi0ZltboCMVrU+0ClXR/JgbCKKjlDjQf6igXa7OwdqNcFWQZPZTgiY7ZpzE3+LjjkLiTN2T7Q==}
-    engines: {node: '>=6'}
+  bin-wrapper-china@0.1.0:
+    resolution: {integrity: sha512-1UCm17WYEbgry50tup+AQN+JGVEVzoW4f8HMl899k1lvuFxWKGZXl/G2fgxQxAckRjnloO3ijLVVEsv8zescUg==}
+    engines: {node: '>=8.3'}
+    hasBin: true
 
   binary-extensions@2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
     engines: {node: '>=8'}
+
+  binary-mirror-config@1.41.0:
+    resolution: {integrity: sha512-ZiIhR1s6Sv1Fv6qCQqfPjx0Cj86BgFlhqNxZgHkQOWcxJcMbO3mj1iqsuVjowYqJqeZL8e52+IEv7IRnSX6T6w==}
 
   bl@1.2.3:
     resolution: {integrity: sha512-pvcNpa0UU69UT341rO6AYy4FVAIkUHuZXRIWbq+zHnsVcRzDDjIAhGuuYoi0d//cwIwtt4pkpKycWEfjdV+vww==}
@@ -9890,16 +9899,19 @@ snapshots:
       execa: 1.0.0
       find-versions: 3.2.0
 
-  bin-wrapper@4.1.0:
+  bin-wrapper-china@0.1.0:
     dependencies:
       bin-check: 4.1.0
       bin-version-check: 4.0.0
+      binary-mirror-config: 1.41.0
       download: 7.1.0
-      import-lazy: 3.1.0
+      import-lazy: 4.0.0
       os-filter-obj: 2.0.0
       pify: 4.0.1
 
   binary-extensions@2.2.0: {}
+
+  binary-mirror-config@1.41.0: {}
 
   bl@1.2.3:
     dependencies:
@@ -10401,7 +10413,7 @@ snapshots:
   cwebp-bin@6.1.2:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
 
   dargs@7.0.0: {}
 
@@ -11502,7 +11514,7 @@ snapshots:
   gifsicle@5.2.0:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
       execa: 5.1.1
       logalot: 2.1.0
 
@@ -12646,13 +12658,13 @@ snapshots:
   jpegtran-bin@5.0.2:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
       logalot: 2.1.0
 
   jpegtran-bin@6.0.1:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
 
   js-beautify@1.14.6:
     dependencies:
@@ -13258,7 +13270,7 @@ snapshots:
   mozjpeg@7.1.1:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
 
   ms@2.0.0: {}
 
@@ -13473,7 +13485,7 @@ snapshots:
   optipng-bin@7.0.1:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
 
   os-filter-obj@2.0.0:
     dependencies:
@@ -13717,7 +13729,7 @@ snapshots:
   pngquant-bin@6.0.1:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
       execa: 4.1.0
 
   posix-character-classes@0.1.1: {}

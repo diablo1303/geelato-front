@@ -45,6 +45,7 @@ const {t} = useI18n();// 国际化
 const tabsKey = ref<number>(1);// 定位tabs页面
 const tableData = ref<QueryAppVersionForm>({} as QueryAppVersionForm);
 const appSelectOptions = ref<QueryAppForm[]>([]);
+const appVersion = ref<Record<string, any>>({});
 const appMetaList = ref<AppMeta[]>([]);
 const tabsVisible = ref(false);
 const openTabsLoading = ref(false);
@@ -156,22 +157,31 @@ const generateListModels = () => {
   }
 }
 
+const loadTabs = (data: Record<string, any>) => {
+  appMetaList.value = data?.appMetaList || [];
+  console.log("getPackData", appMetaList.value);
+  generateListModels();
+  Object.assign(listParams.value, {
+    visible: true, parameter: {
+      "appCode": data?.appCode || '', "appId": data?.sourceAppId, tenantCode: ''
+    },
+  });
+}
+
 const openTabs = () => {
   if (props.modelValue) {
     tabsKey.value = 1;
     tabsVisible.value = true;
     appMetaList.value = [];
     renderData.value = generateRenderData();
-    getPackData(props.modelValue, (data: Record<string, any>) => {
-      appMetaList.value = data?.appMetaList || [];
-      console.log("getPackData", appMetaList.value);
-      generateListModels();
-      Object.assign(listParams.value, {
-        visible: true, parameter: {
-          "appCode": data?.appCode || '', "appId": data?.sourceAppId, tenantCode: ''
-        },
+    if (appVersion.value && appVersion.value.appCode) {
+      loadTabs(appVersion.value);
+    } else {
+      getPackData(props.modelValue, (data: Record<string, any>) => {
+        appVersion.value = data;
+        loadTabs(data);
       });
-    });
+    }
   } else {
     Message.warning('版本数据缺失！');
   }
@@ -185,6 +195,7 @@ watch(() => props, (val) => {
     listParams.value.height = props.height + 75;
     appSelectOptions.value = [];
     tableData.value = {} as unknown as QueryAppVersionForm;
+    appVersion.value = {};
     appMetaList.value = [];
     renderData.value = generateRenderData();
     // 编辑、查看 状态 查询数据

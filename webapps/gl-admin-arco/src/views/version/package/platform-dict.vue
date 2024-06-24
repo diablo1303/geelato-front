@@ -44,7 +44,7 @@ const resetSplitHeight = () => {
   return props.height - 75;
 }
 const splitHeight = ref<number>(resetSplitHeight());
-const splitMin = ref<number | string>('280px');
+const splitMin = ref<number | string>('320px');
 const splitSize = ref<number | string>(splitMin.value);
 
 const setDictItemData = () => {
