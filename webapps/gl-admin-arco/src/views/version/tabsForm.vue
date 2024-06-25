@@ -10,6 +10,7 @@ import {useI18n} from "vue-i18n";
 import {getAppSelectOptions, getAppVersion, QueryAppForm, queryAppPackage, QueryAppVersionForm} from "@/api/application";
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
 import UploadFile from "@/components/upload-file/index.vue";
+import PlatformApiList from "@/views/version/package/platform-api.vue";
 import PlatformDictList from "@/views/version/package/platform-dict.vue";
 import PlatformModelList from "@/views/version/package/platform-model.vue";
 import PlatformRoleList from "@/views/version/package/platform-role.vue";
@@ -19,18 +20,9 @@ import PlatformEncodingList from "@/views/version/package/platform-encoding.vue"
 import PlatformResourcesList from "@/views/version/package/platform-resources.vue";
 import PlatformPageList from "@/views/version/package/platform-page.vue";
 import {Message} from "@arco-design/web-vue";
-import {exclusionary} from "@/views/compare/type";
-import {getOptionLabel, PageQueryFilter} from "../../api/base";
+import {AppMeta, PageParams} from "@/views/compare/type";
+import {getOptionLabel} from "../../api/base";
 import {packageSourceOptions, packageStatusOptions} from "./searchTable";
-
-type PageParams = {
-  appId?: string; // 应用主键
-  tenantCode?: string; // 租户编码
-}
-type AppMeta = {
-  metaName: string;
-  metaData: Record<string, any>[]
-}
 
 const emits = defineEmits(['update:modelValue', 'toModel', 'toTable']);
 const props = defineProps({
@@ -124,6 +116,8 @@ const tableFormat = (id: string, successBack?: any) => {
 
 const generateRenderData = () => {
   return {
+    api: {code: "platform_api", data: []},
+    apiParam: {code: "platform_api_param", data: []},
     appPage: {code: "platform_app_page", data: []},
     devColumn: {code: "platform_dev_column", data: []},
     devDbConnect: {code: "platform_dev_db_connect", data: []},
@@ -334,6 +328,16 @@ watch(() => props, (val) => {
                                    :height="listParams.height"
                                    :parameter="listParams.parameter"
                                    :visible="listParams.visible"/>
+          </a-card>
+          <a-empty v-else/>
+        </a-tab-pane>
+        <a-tab-pane :key="9" class="a-tabs-five" title="接口管理">
+          <a-card v-if="listParams.visible" class="general-card6">
+            <PlatformApiList :api="renderData.api.data"
+                             :api-param="renderData.apiParam.data"
+                             :height="listParams.height"
+                             :parameter="listParams.parameter"
+                             :visible="listParams.visible"/>
           </a-card>
           <a-empty v-else/>
         </a-tab-pane>

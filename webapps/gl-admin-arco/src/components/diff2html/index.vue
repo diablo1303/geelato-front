@@ -78,14 +78,11 @@ watch(() => props, () => {
 </script>
 <template>
   <div v-show="isCompare" :id="mv.id" class="diff-html-layout"/>
-  <a-result v-show="!isCompare" :status="null" title="不存在差异">
+  <a-result v-show="!isCompare" status="success" title="不存在差异">
     <template #subtitle>
       {{ `${mv.title} ${mv.newHeader} ` }}
       <icon-arrow-right/>
       {{ `${mv.title} ${mv.oldHeader} ` }}
-    </template>
-    <template #icon>
-      <icon-face-smile-fill/>
     </template>
   </a-result>
 </template>

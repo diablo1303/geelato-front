@@ -7,9 +7,10 @@ export default {
 <script lang="ts" setup>
 import {shallowRef, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
+import cloneDeep from "lodash/cloneDeep";
 import {getAppSelectOptions, getAppVersion, QueryAppForm, queryAppPackage, QueryAppVersionForm} from "@/api/application";
-import CompareModel from "@/views/compare/model.vue";
 import {AppMeta, AppVersion, PageParams} from "@/views/compare/type";
+import CompareModel from "@/views/compare/model.vue";
 import PlatformModelCompare from "@/views/compare/package/platform-model.vue";
 import PlatformDictCompare from "@/views/compare/package/platform-dict.vue";
 import PlatformPageCompare from "@/views/compare/package/platform-page.vue";
@@ -17,7 +18,7 @@ import PlatformSysConfigCompare from "@/views/compare/package/platform-sys-confi
 import PlatformExportTemplateCompare from "@/views/compare/package/platform-export-template.vue";
 import PlatformEncodingCompare from "@/views/compare/package/platform-encoding.vue";
 import PlatformResourcesCompare from "@/views/compare/package/platform-resources.vue";
-import cloneDeep from "lodash/cloneDeep";
+import PlatformApiCompare from "@/views/compare/package/platform-api.vue";
 
 const emits = defineEmits(['update:modelValue', 'canPacket']);
 const props = defineProps({
@@ -36,6 +37,7 @@ const configRef = shallowRef(PlatformSysConfigCompare);
 const templateRef = shallowRef(PlatformExportTemplateCompare);
 const encodingRef = shallowRef(PlatformEncodingCompare);
 const resourcesRef = shallowRef(PlatformResourcesCompare);
+const apiRef = shallowRef(PlatformApiCompare);
 
 const {t} = useI18n();// 国际化
 const tabsKey = ref<number>(1);// 定位tabs页面
@@ -47,6 +49,7 @@ const appVersionCompareData = ref<AppVersion>({} as AppVersion);
 
 const generateDiffResult = () => {
   return {
+    api: 0,
     model: 0, dict: 0,
     //  role: 0, permission: 0,
     page: 0, config: 0,
@@ -198,6 +201,14 @@ const deploy = (successBack: any) => {
       Object.assign(data, result);
     });
   }
+  // @ts-ignore
+  if (apiRef.value && typeof apiRef.value?.deploy === 'function') {
+    // @ts-ignore
+    apiRef.value?.deploy((result: Record<string, any>) => {
+      Object.assign(data, result);
+    });
+  }
+
   const result = {};
   // @ts-ignore
   const sourceList = (cloneDeep(appVersionData.value?.appMetaList) || []) as AppMeta[];
@@ -363,6 +374,23 @@ defineExpose({deploy});
                                   :parameter="listParams.parameter"
                                   :visible="listParams.visible"
                                   @difference="(diff)=>{diffResult.resources = diff}"/>
+      </a-card>
+      <a-empty v-else/>
+    </a-tab-pane>
+    <a-tab-pane :key="10" class="a-tabs-five" title="接口管理">
+      <template #title>
+        接口管理
+        <a-tooltip v-if="diffResult.resources===1" content="存在差异" position="top">
+          <IconExclamationCircle style="color: rgb(var(--warning-6))"/>
+        </a-tooltip>
+      </template>
+      <a-card v-if="listParams.visible" class="general-card6">
+        <PlatformApiCompare ref="apiRef" :compare-value="appVersionCompareData"
+                            :height="listParams.height"
+                            :model-value="appVersionData"
+                            :parameter="listParams.parameter"
+                            :visible="listParams.visible"
+                            @difference="(diff)=>{diffResult.api = diff}"/>
       </a-card>
       <a-empty v-else/>
     </a-tab-pane>
