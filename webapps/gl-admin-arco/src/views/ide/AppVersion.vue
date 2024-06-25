@@ -4,7 +4,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {compile, h, onMounted, onUnmounted, provide, ref, shallowRef} from 'vue';
+import {compile, computed, h, onMounted, onUnmounted, provide, ref, shallowRef} from 'vue';
 import {getToken} from '@/utils/auth';
 import {getSysConfig} from '@/api/user';
 import {Message, Modal} from "@arco-design/web-vue";
@@ -25,7 +25,7 @@ import {
   validateAppVersion,
 } from "@/api/application";
 import {initTables, initViews, QueryTableForm, queryTables} from "@/api/model";
-import {PageQueryRequest, PageSizeOptions, resetValueByOptions} from '@/api/base';
+import {getOptionLabel, PageQueryRequest, PageSizeOptions, resetValueByOptions} from '@/api/base';
 import {fetchFileById} from "@/api/attachment";
 import ApplicationModel from "@/views/application/model.vue";
 import AppVersionList from "@/views/version/list.vue";
@@ -35,6 +35,7 @@ import AppVersionCompareTabs from "@/views/compare/tabsForm.vue";
 import {formatTime, generateRandom} from "@/utils/strings";
 import {getValueByKeys} from "@/api/sysconfig";
 import {isJSON} from "@/utils/is";
+import {packageStatusOptions} from "@/views/version/searchTable";
 import pinia, {useUserStore} from '../../store';
 
 // 常量使用
@@ -174,6 +175,19 @@ const queryAppVersion = async (successBack?: any, failBack?: any) => {
     if (failBack && typeof failBack === 'function') failBack(err);
   }
 }
+
+const originAppVersionData = computed(() => {
+  const data = [];
+  for (let i = 0; i < appVersionData.value.length; i += 1) {
+    const item = appVersionData.value[i];
+    data.push({
+      label: `${i + 1}, ${item.version} ${getOptionLabel(item.status, packageStatusOptions.value)}`,
+      value: item.id,
+      disabled: item.id === listParams.value.selected.id
+    });
+  }
+  return data;
+});
 
 /**
  * 打开链接
@@ -620,9 +634,7 @@ onUnmounted(() => {
                           </a-button>
                         </a-popconfirm>
                         <div v-if="isCompare">
-                          <a-select v-model="compareVersionId" :field-names="{'label':'version','value':'id'}"
-                                    :options="appVersionData.filter(item => item.id !== listParams.selected.id)"
-                                    :style="{width:'320px'}"
+                          <a-select v-model="compareVersionId" :options="originAppVersionData" :style="{width:'320px'}"
                                     allow-clear allow-search placeholder="选中比较版本">
                             <template #prefix>对比版本</template>
                           </a-select>
@@ -667,7 +679,7 @@ onUnmounted(() => {
           <a-input v-model="packData.version" class="pack-version-input" placeholder="请输入版本名称"/>
         </a-descriptions-item>
         <a-descriptions-item label="版本描述">
-          <a-textarea v-model="packData.description" :auto-size="{minRows:1,maxRows:4}" :max-length="125"
+          <a-textarea v-model="packData.description" :auto-size="{minRows:2,maxRows:4}" :max-length="125"
                       class="pack-version-input" placeholder="请输入版本描述" show-word-limit/>
         </a-descriptions-item>
       </a-descriptions>
@@ -760,7 +772,8 @@ onUnmounted(() => {
 
 .pack-version-input {
   outline: none;
-  width: 600px;
+  min-width: 600px;
+  width: 100%;
   border-bottom: 1px solid rgb(22, 93, 255) !important;
   border-top: 0 !important;
   border-left: 0 !important;
