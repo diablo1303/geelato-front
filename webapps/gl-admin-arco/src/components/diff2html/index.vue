@@ -33,13 +33,18 @@ const generateFormData = () => {
   };
 }
 const mv = ref(generateFormData());
+const isCompare = ref(false);
 
 const createDiffData = () => {
   const diffJsonList = [];
   // 对比差异
-  const diffStr = createPatch(mv.value.title, mv.value.oldString, mv.value.newString, mv.value.oldHeader, mv.value.newHeader, {context: 99999});
+  const diffStr = createPatch(mv.value.title, mv.value.newString, mv.value.oldString, mv.value.newHeader, mv.value.oldHeader, {context: 99999});
   // 差异json化
   const diffJson = parse(diffStr);
+  diffJson.forEach((item) => {
+    item.language = 'json';
+    isCompare.value = item.blocks.length > 0;
+  });
   diffJsonList.push(diffJson[0]);
   // 使用diff2html-ui
   const targetElement = document.getElementById(mv.value.id);
@@ -66,13 +71,32 @@ const createDiffData = () => {
  */
 watch(() => props, () => {
   mv.value = generateFormData();
+  isCompare.value = false;
   createDiffData();
 }, {deep: true, immediate: true});
 
 </script>
 <template>
-  <div :id="mv.id"/>
+  <div v-show="isCompare" :id="mv.id" class="diff-html-layout"/>
+  <a-result v-show="!isCompare" :status="null" title="不存在差异">
+    <template #subtitle>
+      {{ `${mv.title} ${mv.newHeader} ` }}
+      <icon-arrow-right/>
+      {{ `${mv.title} ${mv.oldHeader} ` }}
+    </template>
+    <template #icon>
+      <icon-face-smile-fill/>
+    </template>
+  </a-result>
 </template>
-<style lang="less" scoped>
+<style lang="less">
+.diff-html-layout {
+  .d2h-file-list-wrapper.d2h-light-color-scheme {
+    display: none !important;
+  }
 
+  .d2h-moved-tag {
+    display: none !important;
+  }
+}
 </style>

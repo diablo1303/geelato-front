@@ -32,7 +32,7 @@ const props = defineProps({
 const layoutWidth = ref<number>(320);
 const layoutHeight = ref<number>(props.height - 75);
 // 树参数
-const rootNode = {title: "菜单管理", key: 'root', level: 0, data: {}, children: []};
+const rootNode = {title: "菜单管理", key: 'root', level: 0, data: {}, children: [], retain: true};
 // 对比参数
 const diffId = ref<string>("diff-html-tree-node-page");
 // 原始数据
@@ -64,7 +64,7 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
       if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
-      Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit, isDel: false});
+      Object.assign(nodeData, {type: itemType, children: child, subChange: isEdit, retain: true});
       items.push(nodeData);
     }
   }
@@ -135,7 +135,7 @@ const getSpecialDiffData = (data: TreeNodeModel[], dep: Record<string, any>) => 
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {
       // @ts-ignore
-      if (item.isDel === true && item.level === 1) {
+      if (item.retain === false && item.level === 1) {
         // @ts-ignore
         dep.platform_tree_node.push({"key": item.key, "type": item.type});
         // 页面

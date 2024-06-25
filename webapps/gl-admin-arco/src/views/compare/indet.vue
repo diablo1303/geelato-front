@@ -43,10 +43,10 @@ const expandedKeys = ref<string[]>([props.rootKey]);
 const treeLeftData = ref<TreeNodeModel[]>(props.leftData.tree || []);
 // 树搜索
 const searchKey = ref<string>('');
-const selectKey = ref<string>('');
+const selectKey = ref<string[]>([]);
 // 树搜索，结果集
 const originTreeLeftData = computed(() => {
-  if (!searchKey.value && !selectKey.value) return treeLeftData.value;
+  if (!searchKey.value && selectKey.value.length === 0) return treeLeftData.value;
   return treeSearchLoop(treeLeftData.value, searchKey.value, selectKey.value);
 });
 
@@ -114,24 +114,21 @@ const unfoldTree = (isFlod: boolean) => {
 /**
  * 树删除或还原
  * @param nodeData
- * @param isDel
+ * @param retain
  */
-const treeDelLoop = (nodeData: TreeNodeModel, isDel: boolean) => {
-  nodeData.isDel = isDel;
+const treeDelLoop = (nodeData: TreeNodeModel, retain: boolean) => {
+  nodeData.retain = retain;
   if (nodeData.children && nodeData.children.length > 0) {
     for (let i = 0; i < nodeData.children?.length; i += 1) {
-      treeDelLoop(nodeData.children[i], isDel);
+      treeDelLoop(nodeData.children[i], retain);
     }
   }
 }
 
-/**
- * 删除节点
- * @param nodeData
- */
-const deleteTree = (nodeData: TreeNodeModel) => {
-  treeDelLoop(nodeData, true);
+const retainChange = (nodeData: TreeNodeModel) => {
+  treeDelLoop(nodeData, nodeData.retain === true);
   selectedKeys.value = [nodeData.key as string];
+  treeClickLevel('left', nodeData);
 }
 
 const deleteTooltip = (nodeData: TreeNodeModel) => {
@@ -177,20 +174,20 @@ watch(() => props, (val) => {
     <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
       <template #first>
         <a-space style="width:100%;justify-content: center;">
-          <a-input-search v-model="searchKey" :style="{width:`${layoutWidth-94}px`}" allow-clear class="tree-search" placeholder="搜索"/>
-          <a-select v-model="selectKey" :options="typeSelectOptions" allow-clear placeholder="全部" style="width: 80px;"/>
+          <a-input-search v-model="searchKey" :style="{width:`${layoutWidth-180}px`}" allow-clear class="tree-search" placeholder="搜索"/>
+          <a-select v-model="selectKey" :max-tag-count="1" :options="typeSelectOptions" allow-clear multiple placeholder="全部" style="width: 165px;"/>
         </a-space>
         <a-scrollbar id="left-scrollbar" :style="{overflow:'auto',height:`${treeHeight}px`}">
           <a-tree v-model:expandedKeys="expandedKeys"
                   v-model:selectedKeys="selectedKeys"
-                  :block-node="false"
+                  :block-node="true"
                   :data="originTreeLeftData"
                   :default-expand-all="false"
                   :multiple="false"
                   :show-line="false"
-                  @select="treeLeftClickSelected">
+                  style="margin-right: 8px;" @select="treeLeftClickSelected">
             <template #title="nodeData">
-              <span :class="`delete-${nodeData?.isDel}`" class="tree-title">
+              <span :class="`delete-${nodeData?.retain}`" class="tree-title">
                 <a-tooltip v-if="nodeData?.subChange===true" content="子项变更" position="left">
                   <icon-arrow-fall style="color: rgb(var(--primary-6))"/>
                 </a-tooltip>
@@ -210,30 +207,15 @@ watch(() => props, (val) => {
               </span>
             </template>
             <template #extra="nodeData">
-              <a-space v-if="nodeData.level===0">
-                <a-tooltip v-if="isUnfold" content="展开" position="top">
-                  &nbsp;<icon-double-left style="color: rgb(var(--primary-6))" @click.stop="unfoldTree(true)"/>
+              <a-space v-if="nodeData.level===0&&nodeData?.subChange===true">
+                <a-tooltip :content="nodeData.retain===false?'批量覆盖':'批量保留'" position="top">
+                  <a-checkbox v-model="nodeData.retain" @change="retainChange(nodeData)"/>
                 </a-tooltip>
-                <a-tooltip v-else content="折叠" position="top">
-                  &nbsp;<icon-double-down style="color: rgb(var(--primary-6))" @click.stop="unfoldTree(false)"/>
-                </a-tooltip>
-                <a-popconfirm content="是否还原所有删除的节点？" position="tr" type="warning" @ok="resetTree(nodeData)">
-                  <a-tooltip content="批量还原" position="top">
-                    &nbsp;<icon-clock-circle style="color: rgb(var(--success-6))"/>
-                  </a-tooltip>
-                </a-popconfirm>
               </a-space>
-              <a-space v-if="nodeData.level>0">
-                <a-popconfirm v-if="nodeData?.isDel===false" content="是否取消本次变更" position="tr" type="warning" @ok="deleteTree(nodeData)">
-                  <a-tooltip :content="deleteTooltip(nodeData)" position="right">
-                    &nbsp;<icon-delete style="color: rgb(var(--danger-6))"/>
-                  </a-tooltip>
-                </a-popconfirm>
-                <a-popconfirm v-if="nodeData?.isDel===true" content="是否还原该节点？" position="tr" type="warning" @ok="resetTree(nodeData)">
-                  <a-tooltip content="还原" position="right">
-                    &nbsp;<icon-clock-circle style="color: rgb(var(--color-text-4))"/>
-                  </a-tooltip>
-                </a-popconfirm>
+              <a-space v-if="nodeData.level>0&&[1,2,3,4,5].includes(nodeData.type)">
+                <a-tooltip :content="nodeData?.retain===false?deleteTooltip(nodeData):'保留'" position="right">
+                  <a-checkbox v-model="nodeData.retain" @change="retainChange(nodeData)"/>
+                </a-tooltip>
               </a-space>
             </template>
           </a-tree>
@@ -254,7 +236,7 @@ watch(() => props, (val) => {
 </template>
 
 <style lang="less" scoped>
-.tree-title.delete-true {
+.tree-title.delete-false {
   color: var(--color-text-4);
 }
 

@@ -31,7 +31,7 @@ const props = defineProps({
 const layoutWidth = ref<number>(320);
 const layoutHeight = ref<number>(props.height - 75);
 // 树参数
-const rootNode = {title: "资源管理", key: 'root', level: 0, data: {}, children: []};
+const rootNode = {title: "资源管理", key: 'root', level: 0, data: {}, children: [], retain: true};
 // 对比参数
 const diffId = ref<string>("diff-html-resources");
 // 原始数据
@@ -57,7 +57,7 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
       if (itemType === 4) continue;
       typeArr.push(itemType);
       // 构建节点
-      items.push({title: item.name, key: item.id, level: 1, type: itemType, data: item, children: [], isDel: false});
+      items.push({title: item.name, key: item.id, level: 1, type: itemType, data: item, children: [], retain: true});
     }
   }
 
@@ -73,10 +73,10 @@ const queryTreeFirstItems = (direction: string, record: TreeNodeModel, data: Tre
 const queryTreeItems = (direction: string, data: TreeLevelData, compare: TreeLevelData) => {
   const parentNode = Object.assign(cloneDeep(rootNode), {title: `${directions(direction)} | ${rootNode.title}`});
   const {child, types, subsEdit} = queryTreeFirstItems(direction, parentNode, data, compare);
-  Object.assign(parentNode, {children: child});
   // 判断是否修改
   const isEdit = types.includes(1) || types.includes(2) || types.includes(3) || subsEdit.includes(true);
   emits("difference", isEdit ? 1 : 2);
+  Object.assign(parentNode, {children: child, subChange: isEdit});
 
   return [parentNode];
 }

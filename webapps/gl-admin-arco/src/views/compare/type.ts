@@ -33,7 +33,7 @@ export interface TreeNodeModel extends TreeNodeData {
   mark?: string;// 标记
   type?: number;// 0 相同,1 新增,2 删除,3 编辑
   subChange?: boolean;// 子项是否变更
-  isDel?: boolean;// 是否删除
+  retain?: boolean;// 是否保留
   data?: Record<string, any>;
   children?: TreeNodeModel[];
 }
@@ -59,7 +59,6 @@ export interface DiffModel {
 }
 
 export const typeSelectOptions = computed<SelectOptionData[]>(() => [
-  {label: '相同', value: '0',},
   {label: '新增', value: '1',},
   {label: '修改', value: '2',},
   {label: '删除', value: '3',},
@@ -209,15 +208,15 @@ export const parseJson = (jsonText: string) => {
  * @param keyword
  * @param selected
  */
-const treeSearchCompare = (item: TreeNodeModel, keyword: string, selected: string) => {
-  if (!!keyword && selected === '') {
+const treeSearchCompare = (item: TreeNodeModel, keyword: string, selected: string[]) => {
+  if (!!keyword && selected.length === 0) {
     return item.title && item.title.toLowerCase().indexOf(keyword.toLowerCase()) > -1;
   }
-  if (!keyword && selected !== '') {
-    return item.type === Number(selected);
+  if (!keyword && selected.length > 0) {
+    return selected.includes(`${item.type}`);
   }
-  if (!!keyword && selected !== '') {
-    return item.title && item.title.toLowerCase().indexOf(keyword.toLowerCase()) > -1 && item.type === Number(selected);
+  if (!!keyword && selected.length > 0) {
+    return item.title && item.title.toLowerCase().indexOf(keyword.toLowerCase()) > -1 && selected.includes(`${item.type}`);
   }
   return false;
 }
@@ -228,7 +227,7 @@ const treeSearchCompare = (item: TreeNodeModel, keyword: string, selected: strin
  * @param keyword
  * @param selected
  */
-export const treeSearchLoop = (data: TreeNodeModel[], keyword: string, selected: string) => {
+export const treeSearchLoop = (data: TreeNodeModel[], keyword: string, selected: string[]) => {
   const result: TreeNodeModel[] = [];
   // eslint-disable-next-line no-restricted-syntax
   for (const item of data) {
@@ -317,7 +316,7 @@ export const getDiffData = (data: TreeNodeModel[], level: Record<string, any>, d
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {
       // @ts-ignore
-      if (item.level > 0 && item.isDel === true) {
+      if (item.level > 0 && item.retain === false) {
         // @ts-ignore
         dep[level[item.level]].push({"key": item.key, "type": item.type});
       }
