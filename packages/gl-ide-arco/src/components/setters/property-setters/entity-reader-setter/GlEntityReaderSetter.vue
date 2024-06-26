@@ -94,7 +94,7 @@
     </tr>
     <tr>
       <td class="gl-table-cell">
-        <a-input-number v-model="mv.pageSize" :min="1" :max="1000" :precision="0"></a-input-number>
+        <a-input-number v-model="mv.pageSize" :min="1" :max="10000" :precision="0" title="最大只能配置10000"></a-input-number>
       </td>
     </tr>
   </table>

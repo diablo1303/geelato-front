@@ -941,6 +941,44 @@ export default {
   methods: [
     { name: 'refresh', title: '刷新', description: '刷新表格', params: [] },
     {
+      name: 'addRecordsByTitle',
+      title: '添加记录（基于列标题）',
+      description: '添加记录，常用于excel复制数据插入',
+      params: [
+        {
+          name: 'records',
+          title: '记录集',
+          required: true,
+          type: 'Record<string,any>[]',
+          description: '每条记录的属性为title，如：[{\'名称\': \'张三\', \'年龄\': 18}]'
+        }
+      ],
+      returnInfo: {
+        returnType: 'void',
+        description: '添加一到多条记录到当前的列表中，常用于excel复制数据插入',
+        docId: ''
+      }
+    },
+    {
+      name: 'addRecordsByDataIndex',
+      title: '添加记录（基于列字段名）',
+      description: '添加记录',
+      params: [
+        {
+          name: 'records',
+          title: '记录集',
+          required: true,
+          type: 'Record<string,any>[]',
+          description: '每条记录的属性为dataIndex，如：[{\'name\': \'张三\', \'age\': 18}]'
+        }
+      ],
+      returnInfo: {
+        returnType: 'void',
+        description: '可添加一到多条记录到当前的列表中',
+        docId: ''
+      }
+    },
+    {
       name: 'getEntitySavers',
       title: '获取实体保存对象',
       description: '获取当前表格页面实体保存对象',

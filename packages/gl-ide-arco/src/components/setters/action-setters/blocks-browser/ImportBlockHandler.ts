@@ -33,6 +33,7 @@ import EntitySaverBlockHandler from './data/EntitySaverBlockHandler'
 import IfEmptyBlockHandler from './logic/IfEmptyBlockHandler'
 import IfExpressionBlockHandler from './logic/IfExpressionBlockHandler'
 import MessageBlockHandler from './feedback/MessageBlockHandler'
+import ReadClipboardTableBlockHandler from './other/ReadClipboardTableBlockHandler'
 
 export {
   OpenThirdPageBlockHandler,
@@ -66,5 +67,6 @@ export {
   SetRulesBlockHandler,
   EntitySaverBlockHandler,
   IfEmptyBlockHandler,
-  MessageBlockHandler
+  MessageBlockHandler,
+  ReadClipboardTableBlockHandler
 }

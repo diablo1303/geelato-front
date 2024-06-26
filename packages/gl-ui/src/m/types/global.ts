@@ -92,3 +92,23 @@ export interface InstPermission {
   // r | w
   rule: string
 }
+
+export enum CellValueType {
+  STRING = 'STRING',
+  NUMBER =  'NUMBER',
+  DATE = 'DATE',
+  DATETIME = 'DATETIME'
+}
+
+export const CellValueTypeOptions = [
+  { label: '字符串', value: 'STRING' },
+  { label: '数值', value: 'NUMBER' },
+  { label: '日期', value: 'DATE' },
+  { label: '时间', value: 'DATETIME' }
+]
+
+export interface CellMeta {
+  name: string
+  valueType: CellValueType
+}
+

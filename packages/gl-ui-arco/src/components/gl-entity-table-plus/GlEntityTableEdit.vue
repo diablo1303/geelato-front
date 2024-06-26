@@ -32,7 +32,8 @@ import {
   PageProvideProxy,
   PageProvideKey,
   mixins,
-  EntityReaderOrder, PageStatus
+  EntityReaderOrder,
+  PageStatus
 } from '@geelato/gl-ui'
 import { Schema } from 'b-validate'
 import { type Column, type GlTableColumn, SlotNameSeq } from './constants'
@@ -428,7 +429,9 @@ const fetchData = async (readerInfo?: {
   // 作为子表时，必须指定子表外键，即对应主表ID的字段
   if (!props.entityName || (props.isFormSubTable && !props.subTablePidName)) {
     setLoading(false)
-    console.error('GlEntityTable > fetchData() > entityName or subTablePidName is null. 作为子表时，必须指定子表外键，即对应主表ID的字段')
+    console.error(
+      'GlEntityTable > fetchData() > entityName or subTablePidName is null. 作为子表时，必须指定子表外键，即对应主表ID的字段'
+    )
     return
   }
 
@@ -440,11 +443,22 @@ const fetchData = async (readerInfo?: {
     // 增加父表单主键，作为查询字段，若父表单无该主健id，则返回，不查询
     if (props.isFormSubTable) {
       const pid = formProvideProxy?.getRecordId()
-      console.log('GlEntityTableEdit > fetchData() > formProvideProxy is',formProvideProxy)
+      console.log('GlEntityTableEdit > fetchData() > formProvideProxy is', formProvideProxy)
       if (!pid) {
         setLoading(false)
-        if(pageProvideProxy?.pageStatus!==PageStatus.create&&pageProvideProxy?.pageStatus!==PageStatus.copyCreate){
-          console.error('GlEntityTableEdit > fetchData() > formProvideProxy is',formProvideProxy,' and getRecordId() is '+formProvideProxy?.getRecordId()+'.作为子表时，父ID不能为空，当前页面状态：',pageProvideProxy?.pageStatus)
+        if (
+          pageProvideProxy?.pageStatus !== PageStatus.create &&
+          pageProvideProxy?.pageStatus !== PageStatus.copyCreate &&
+          pageProvideProxy?.pageStatus !== PageStatus.none
+        ) {
+          console.error(
+            'GlEntityTableEdit > fetchData() > formProvideProxy is',
+            formProvideProxy,
+            ' and getRecordId() is ' +
+              formProvideProxy?.getRecordId() +
+              '.作为子表时，父ID不能为空，当前页面状态：',
+            pageProvideProxy?.pageStatus
+          )
         }
         return
       }
@@ -463,7 +477,7 @@ const fetchData = async (readerInfo?: {
     _pagination.pageSize = readerInfo?.pageSize || _pagination.pageSize
     _pagination.current = readerInfo?.pageNo || 1
     _pagination.total = response.data.total
-    emits('fetchSuccess', { data: renderData.value})
+    emits('fetchSuccess', { data: renderData.value })
   } catch (err) {
     console.error(err)
     emits('fetchFail', { data: undefined, _pagination })
@@ -472,9 +486,19 @@ const fetchData = async (readerInfo?: {
   }
 }
 
-const onChangeValue = (value:any,oldValue:any)=>{
-
-  console.log('change renderData,label:',props.glComponentInst.props.base?.label,'entity:',props.glComponentInst.props.base?.entityName,'id',props.glComponentInst.id,'isPageRead:',isPageRead,'renderData:', props.glComponentInst.value)
+const onChangeValue = (value: any, oldValue: any) => {
+  console.log(
+    'change renderData,label:',
+    props.glComponentInst.props.base?.label,
+    'entity:',
+    props.glComponentInst.props.base?.entityName,
+    'id',
+    props.glComponentInst.id,
+    'isPageRead:',
+    isPageRead,
+    'renderData:',
+    props.glComponentInst.value
+  )
   // 这里不能使用 reRender()，reRender会导致用户每录入一个字符都会重绘整个列表
   renderData.value = []
   // @ts-ignore
@@ -491,7 +515,7 @@ watch(
   () => {
     return props.glComponentInst.value
   },
-    onChangeValue,
+  onChangeValue,
   { deep: true }
 )
 
@@ -633,7 +657,7 @@ const setError = (record: object, rowIndex: number, err: { [key: string]: any })
 }
 
 /**
- *  表格在编辑模式下，添加行
+ *  表格在编辑模式下，添加空行
  *  设置列的dataIndex让其与绑定的组件一致
  */
 const addRow = () => {
@@ -643,6 +667,37 @@ const addRow = () => {
     newRow[col.dataIndex] = col._component?.value
   })
   renderData.value.push(newRow)
+  props.glComponentInst.value = renderData.value
+}
+
+/**
+ *  表格在编辑模式下，添加一到多行记录
+ *  常用于excel导入数据
+ *  每行的数据以列title作为key
+ */
+const addRecordsByTitle = (records: Record<string, any>[]) => {
+  addRecords(records, 'title')
+}
+
+/**
+ *  表格在编辑模式下，添加一到多行记录
+ *  每行的数据以列dataIndex作为key
+ */
+const addRecordsByDataIndex = (records: Record<string, any>[]) => {
+  addRecords(records, 'dataIndex')
+}
+
+const addRecords = (records: Record<string, any>[],keyField:string='dataIndex') => {
+  records?.forEach((record: Record<string, any>) => {
+    const newRow = {}
+    props.columns.forEach((col: Column) => {
+      console.log('col', col,'record',record,keyField,col[keyField],record[col[keyField]],record[`"${col[keyField]}"`])
+      //@ts-ignore
+      newRow[col.dataIndex] = record[`"${col[keyField]}"`] || col._component?.value
+    })
+    console.log('newRow', newRow)
+    renderData.value.push(newRow)
+  })
   props.glComponentInst.value = renderData.value
 }
 
@@ -839,6 +894,8 @@ defineExpose({
   validate,
   validateRecord,
   addRow,
+  addRecordsByTitle,
+  addRecordsByDataIndex,
   insertRecords,
   reRender,
   getRenderData,

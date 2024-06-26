@@ -41,8 +41,8 @@ import jsScriptExecutor from './m/actions/JsScriptExecutor'
 import AppProvideProxy, {AppProvideKey} from './components/AppProvideProxy'
 import FormProvideProxy, {FormProvideKey, SubmitFormResult} from './components/FormProvideProxy'
 import {Schema} from 'b-validate'
-import type {ApiPagedResult, ApiResult, ApiResultStatus, PageConfig, Param} from './m/types/global'
-import {PageStatus, PageType} from './m/types/global'
+import type {ApiPagedResult, ApiResult, ApiResultStatus, PageConfig, Param,CellMeta,CellValueType} from './m/types/global'
+import {PageStatus, PageType,CellValueTypeOptions} from './m/types/global'
 import {executeArrayExpressions, executeObjectPropsExpressions} from './components/gl-component/GlComponentSupport'
 import type {UploadFileParams} from './m/datasource/FileApi'
 import * as dictApi from './m/datasource/FileApi'
@@ -146,6 +146,9 @@ export {
   ApiResultStatus,
   ApiResult,
   ApiPagedResult,
+  CellMeta,
+  CellValueType,
+  CellValueTypeOptions,
   Param,
   GlIconfont,
   EntityApi,

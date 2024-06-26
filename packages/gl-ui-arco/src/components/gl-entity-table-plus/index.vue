@@ -736,6 +736,23 @@ const hasRenderRecords = () => {
 const getRenderColumns = (): GlTableColumn[] => {
   return tableRef.value.getRenderColumns()
 }
+
+/**
+ * 给可编辑表格添加记录，常用于excel导入
+ * @param params 每条记录的属性为title，如：[{'名称': '张三', '年龄': 18}]
+ */
+const addRecordsByTitle = (params:{records:Record<string,any>[]}) => {
+  return tableRef.value.addRecordsByTitle(params.records)
+}
+
+/**
+ * 给可编辑表格添加记录
+ * @param params 每条记录的属性为dataIndex，如：[{'name': '张三', 'age': 18}]
+ */
+const addRecordsByDataIndex = (params:{records:Record<string,any>[]}) => {
+  return tableRef.value.addRecordsByDataIndex(params.records)
+}
+
 /**
  *  @deprecated
  */
@@ -1668,6 +1685,8 @@ defineExpose({
   pushSelectedRecords,
   unPushRecordsByKeys,
   unPushSelectedRecords,
+  addRecordsByTitle,
+  addRecordsByDataIndex,
   createEntitySavers,
   changeColumnsVisible,
   batchUpdate,

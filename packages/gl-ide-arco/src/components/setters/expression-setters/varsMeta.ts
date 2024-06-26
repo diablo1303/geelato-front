@@ -832,6 +832,24 @@ const text = {
     ]
 }
 
+const clipboard = {
+    title: '粘贴板',
+    _code: 'clipboard',
+    _type: 'object',
+    // 在构建path时的内容
+    _pathName: 'fn',
+    children: [
+        {
+            title: '',
+            _code: 'await readClipboardTable',
+            _type: 'object',
+            _brackets: '()',
+            _description:
+              '读取剪贴板上的文本，并解析为表格数据\n   * @param splitChar 单元格分割符，默认为制表符"\t"，如果是读取cvs的数据，可以传入逗号","\n   * @returns 返回一个包含header和data的对象，如果读取失败则返回null'
+        }
+    ]
+}
+
 const logic = {
     title: '逻辑',
     _code: 'logic',
@@ -850,4 +868,29 @@ const logic = {
     ]
 }
 
-export const functionalFormulaTreeData = [date, text, math, logic]
+const ary = {
+    title: '数组',
+    _code: 'array',
+    _type: 'object',
+    // 在构建path时的内容
+    _pathName: 'fn',
+    children: [
+        // _brackets 对于方法，需要同时生成参数内容
+        {
+            title: '分组之间进行排序',
+            _code: 'sortGroupsByField',
+            _type: 'array',
+            _brackets: '([],"groupNameField","sortField")',
+            _description: '对分组的数据，按某一字段对分组进行排序\n   * 注意是对分组进行排序，不对分组内的数据进行排序\n   * @param items 需要分组的数组对象\n   * @param groupNameField 用于分组的数据字段\n   * @param sortField 该字段在分组件的值是一致的，否则排序结果不可预料'
+        },
+        // {
+        //     title: '按指定字段生成新的数组',
+        //     _code: 'newArrayByFields',
+        //     _type: 'array',
+        //     _brackets: '([],["field1","field2","field3"])',
+        //     _description: '过滤数据列表，根据指字的字段形成新的数组，如newArrayByFields([{a:1,b:2},{a:3,b:4}]，["a"])，返回[{a:1},{a:3}]'
+        // }
+    ]
+}
+
+export const functionalFormulaTreeData = [date, text, clipboard, math, logic,ary]
