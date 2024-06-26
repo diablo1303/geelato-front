@@ -1,16 +1,16 @@
-import {jsScriptExecutor} from "@geelato/gl-ui";
+import { jsScriptExecutor, utils } from '@geelato/gl-ui'
 import type {Param} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 
 export interface Params {
     [key: string]: string;
 }
-
+const regex = /\${(\w+)}/g;
 export default class BlockUtils {
 
     static highlightVariables = (str: string | undefined) => {
         if (!str) return ''
-        const regex = /\${(\w+)}/g;
+
         // title='$t$&' 这里用于后续替换展示完整的代码信息
         return str.replace(regex, "<span class='gl-var' title='$t$&'>$&</span>");
     }
@@ -42,20 +42,22 @@ export default class BlockUtils {
                 simpleParamExpression = propExpression.toString().substring(0, maxLength) + moreInfo
             }
             // 脚本优先
-            let propValue = simpleParamExpression || props[propKey]
-            let titleValue = propExpression || props[propKey] || ''
+            let propValue = simpleParamExpression || utils.getNestedProperty(props,propKey)
+            let titleValue = propExpression || utils.getNestedProperty(props,propKey) || ''
+            console.log('BlockUtils > replaceVariables:', propKey, 'propValue:', propValue,'titleValue:',titleValue)
             result = result.replace(new RegExp('\\$t\\${' + propKey + '}', 'g'), titleValue);
-            if (propValue !== undefined) {
+            if (propValue !== undefined && typeof propValue != 'object') {
                 // 尝试看是不是组件，如果是否组件，取组件label进行展示
                 const componentInst: ComponentInstance = jsScriptExecutor.getComponentInst(propValue)
                 // console.log('BlockUtils > try to find inst by propKey:', propKey, ' propValue:', propValue, ',and get', componentInst)
                 if (componentInst) {
-                    if (componentInst.componentName === 'GlEntityTablePlus') {
+                    if (componentInst.componentName === 'GlEntityTablePlus' || componentInst.componentName === 'GlEntityTableEdit') {
                         propValue = componentInst.props.base.label || componentInst.id;
                     } else {
                         propValue = componentInst.props.label || componentInst.id
                     }
                 }
+                // @ts-ignore
                 result = result.replace(new RegExp('\\${' + propKey + '}', 'g'), propValue);
                 result = result.replace(new RegExp('{' + propKey + '}', 'g'), `"${propValue}"`);
             }

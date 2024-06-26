@@ -1,5 +1,6 @@
 import {RecordsUtil} from './RecordsUtil'
 import {toChineseCurrency} from './toChineseCurrency'
+import { type CellMeta, CellValueType } from '../types/global'
 
 export class Utils {
   constructor() {
@@ -679,6 +680,204 @@ export class Utils {
       .map(key => `${key}:${obj[key]}`)
       .join(separator || ';')
   }
+
+  /**
+   * 获取嵌套对象属性值
+   * const obj = {
+   *   a: {
+   *     b: {
+   *       c: 'hello world'
+   *     }
+   *   }
+   * };
+   * const value = getNestedProperty(obj, 'a.b.c');
+   * console.log(value); // 输出: 'hello world'
+   * @param obj
+   * @param propString
+   */
+  getNestedProperty(obj:Object, propString:string) {
+    // 如果传入的对象或属性链为空，则返回undefined
+    if (!obj || !propString) return undefined;
+
+    // 将属性链按点号分割成数组
+    const props = propString.split('.');
+
+    // 递归遍历属性链
+    let property = obj;
+    for (let i = 0; i < props.length; i++) {
+      if (property && typeof property === 'object') {
+        // @ts-ignore
+        property = property[props[i]];
+      } else {
+        // 如果当前属性不是对象或不存在，则返回undefined
+        return undefined;
+      }
+    }
+    // 返回属性链末尾的值
+    return property;
+  }
+
+  /**
+   * 对分组的数据，按某一字段对分组进行排序
+   * 注意是对分组进行排序，不对分组内的数据进行排序
+   * @param items 需要分组的数组对象
+   * @param groupNameField 用于分组的数据字段
+   * @param sortField 该字段在分组件的值是一致的，否则排序结果不可预料
+   */
+  sortGroupsByField(items:[], groupNameField:string, sortField:string) {
+    // 假设 items 是一个包含对象的数组，groupNameField 是组名的字段名，sortField 是排序的字段名
+    if (!Array.isArray(items)) {
+      throw new Error("items must be an array.");
+    }
+
+    if (typeof groupNameField !== "string" || typeof sortField !== "string") {
+      throw new Error("groupNameField and sortField must be strings.");
+    }
+
+    // 创建一个映射，将 groupName 映射到具有相同 groupName 的对象数组
+    const groupedByGroupName:Record<string, any> = {};
+    for (const item of items) {
+      const groupName = item[groupNameField];
+      if (!groupedByGroupName[groupName]) {
+        groupedByGroupName[groupName] = [];
+      }
+      groupedByGroupName[groupName].push(item);
+    }
+
+    // 将映射转换为一个数组，每个元素是一个包含 groupName、sortValue 和 items 的对象
+    const groupsArray = Object.keys(groupedByGroupName).map(groupName => {
+      // 获取当前组的所有项
+      const groupItems = groupedByGroupName[groupName];
+      // 假设所有 groupItems 中的 sortField 都是相同的，取第一个作为代表
+      const sortValue = groupItems[0][sortField] || '';
+      return {
+        groupName,
+        sortValue,
+        items: groupItems // 保留该组的所有项
+      };
+    });
+
+    // 根据 sortValue 对 groupsArray 进行排序
+    groupsArray.sort((a, b) => {
+      // 这里可以根据 sortValue 的类型来选择合适的比较方法，比如数字、字符串或日期等
+      if (typeof a.sortValue === "number" && typeof b.sortValue === "number") {
+        return a.sortValue - b.sortValue;
+      } else if (
+        typeof a.sortValue === "string" &&
+        typeof b.sortValue === "string"
+      ) {
+        return a.sortValue.localeCompare(b.sortValue);
+      }
+      // 其他类型可以添加额外的比较逻辑
+      throw new Error("Unsupported sortValue type.");
+    });
+
+    // 扁平化数组以恢复原始结构（但分组顺序已更改）
+    const flattenedArray = [];
+    for (const group of groupsArray) {
+      flattenedArray.push(...group.items);
+    }
+    return flattenedArray;
+  }
+
+  // /**
+  //  * 过滤数据列表，根据指字的字段形成新的数组
+  //  * @param items
+  //  * @param fields
+  //  */
+  // newArrayByFields(items:[], fields:string[]) {
+  //   if (!Array.isArray(items)) {
+  //     throw new Error("items must be an array.");
+  //   }
+  //   if (!Array.isArray(fields)) {
+  //     throw new Error("fields must be an array.");
+  //   }
+  //   const filteredItems = [];
+  //   for (const item of items) {
+  //
+  //     const newItem:Record<string, any> = {};
+  //     for (const field of fields) {
+  //       const fieldStr = `"${field}"`
+  //       console.log('item',item,item[field],item[fieldStr]);
+  //       newItem[fieldStr] = item[fieldStr];
+  //     }
+  //     filteredItems.push(newItem);
+  //   }
+  //   return filteredItems
+  // }
+
+  /**
+   * 读取剪贴板上的文本，并解析为表格数据
+   * @param splitChar 单元格分割符，默认为制表符"\t"，如果是读取cvs的数据，可以传入逗号","
+   * @param cellMetas 单元格元数据，用于处理特殊情况，比如日、数字等；同时也限定了需要读取的列，如果为空则读取所有列
+   * @returns 返回一个包含header和data的对象，如果读取失败则返回null
+   */
+  async readClipboardTable(splitChar:string = "\t",cellMetas:CellMeta[]) {
+    try {
+      const cellMap:Record<string,CellMeta> = {}
+      cellMetas?.forEach(meta => {
+        cellMap[meta.name] = meta;
+      })
+      // 读取剪贴板上的文本
+      const text = await navigator.clipboard.readText();
+
+      // 去除可能的BOM（Byte Order Mark）
+      const cleanedText = text.replace(/^\uFEFF/, '')
+
+      // 分割行为数组
+      const rows = cleanedText?.trim().split(/\r\n|\n/) || []
+
+      // 假设第一行是表头
+      const headers = rows.shift()?.split(splitChar) || [];
+
+      // 初始化数据数组
+      const data:any[] = [];
+
+      // 遍历剩余行
+      rows.forEach((row) => {
+        // 分割单元格为数组
+        const cells = row.split(splitChar);
+
+        // 创建一个对象，键为表头，值为单元格数据
+        const item:Record<string, any> = {};
+        headers.forEach((header, index) => {
+          // 去除单元格数据的首尾空格
+          const trimmedHeader:string = header?.trim();
+          // 单元格数据键为字符串，如果表头是无双引号则加上双引号
+
+          const key = trimmedHeader.indexOf("\"")===0?trimmedHeader:`"${trimmedHeader}"`;
+          console.log('trimmedHeader', typeof trimmedHeader,'key:',key)
+          const cellMeta = cellMap[trimmedHeader]
+          // 表头有效，且定义了元数据的数据列者需要记录，如果一个列都没有定义，则记录所有列
+          if(trimmedHeader&&(cellMeta||!cellMetas||cellMetas.length===0)){
+            let value:any = cells[index]?.trim();
+            if(cellMeta){
+              switch (cellMeta.valueType) {
+                case CellValueType.NUMBER:
+                  value = parseFloat(value);
+                  break;
+               // 其他类型可以直接返回字符串
+              }
+            }
+            item[key] = value;
+          }
+        });
+
+        // 将对象添加到数据数组中
+        data.push(item);
+      });
+
+      // 返回结果对象，包含header和data
+      return {
+        header: headers,
+        data: data,
+      };
+    } catch (err) {
+      console.error("Failed to read clipboard contents:", err);
+      return null;
+    }
+  }
+
 }
 
 const utils = new Utils()

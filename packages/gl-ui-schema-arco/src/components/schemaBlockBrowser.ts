@@ -41,10 +41,12 @@ import SetRulesMeta from "./setter-block-browser/page/SetRulesMeta";
 import EntitySaverBlockMeta from './setter-block-browser/data/EntitySaverBlockMeta'
 import AnnotationBlockMeta from "./setter-block-browser/other/AnnotationBlockMeta";
 import MessageBlock from "./setter-block-browser/feedback/MessageBlockMeta"
+import ReadClipboardTableBlockMeta from './setter-block-browser/other/ReadClipboardTableBlockMeta'
+
 // @ts-ignore
 const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, JsCodeBlockMeta,GenerateEntityReaderBlockMeta, GroupSumBlockMeta, BlockNotificationMeta,MessageBlock, BlockOpenComponentPageMeta,BlockComponentInvokeMeta, TriggerComponentActionMeta, BlockSetVisibleMeta, SetValueBlockMeta,SetRulesMeta, BlockOpenThirdPageMeta, IfComponentValueBlockMeta, IfExpressionBlockMeta,BlockIfMeta, BlockElseMeta,IfEmptyBlockMeta,
     BlockConfirmMeta,  ReturnBlockMeta,
-    LogBlockMeta, ExportExcelBlockMeta,ExportWordBlockMeta,ExportPdfBlockMeta,ImportExcelBlockMeta,DownloadBlockMeta,AnnotationBlockMeta,ForListBlockMeta,ForTimesBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta,HttpRequestBlockMeta,EntitySaverBlockMeta]
+    LogBlockMeta, ExportExcelBlockMeta,ExportWordBlockMeta,ExportPdfBlockMeta,ImportExcelBlockMeta,DownloadBlockMeta,AnnotationBlockMeta,ForListBlockMeta,ForTimesBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta,HttpRequestBlockMeta,EntitySaverBlockMeta,ReadClipboardTableBlockMeta]
 
 // @ts-ignore
 const customInstances: Array<ComponentInstance> = [IfExpressionBlockInstance,BlockIfInstance, BlockElseInstance, IfComponentValueBlockInstance,IfEmptyBlockInstance,ForListBlockInstance,ForTimesBlockInstance]
