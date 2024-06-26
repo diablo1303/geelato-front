@@ -36,6 +36,7 @@ import {formatTime, generateRandom} from "@/utils/strings";
 import {getValueByKeys} from "@/api/sysconfig";
 import {isJSON} from "@/utils/is";
 import {packageStatusOptions} from "@/views/version/searchTable";
+import {generateEncoding} from "@/api/encoding";
 import pinia, {useUserStore} from '../../store';
 
 // 常量使用
@@ -357,10 +358,21 @@ const packAppVersion = async (done: any) => {
 }
 
 const querySysConfigValueByKey = async (key: string) => {
-  packDefaultData.value = {};
+  packDefaultData.value = packDefaultData.value || {};
   try {
     const {data} = await getValueByKeys(key);
     packDefaultData.value = isJSON(data) ? JSON.parse(data) : {};
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+const generateEncodingById = async (key: string) => {
+  packDefaultData.value = packDefaultData.value || {};
+  packDefaultData.value.encoding = '';
+  try {
+    const {data} = await generateEncoding(key);
+    packDefaultData.value.encoding = data as unknown as string;
   } catch (err) {
     console.log(err);
   }
@@ -379,6 +391,7 @@ const queryAppTables = async (successBack?: any, failBack?: any) => {
 
 const packetAppVersionClick = async () => {
   await querySysConfigValueByKey('packetVersionExtra');
+  await generateEncodingById("5283664243797921792");
   await queryAppTables((data: QueryTableForm[]) => {
     Object.assign(packData.value, {
       visible: false, first: [] as QueryTableForm[], second: [] as QueryTableForm[],
@@ -386,17 +399,29 @@ const packetAppVersionClick = async () => {
       description: '当前环境打包形成的应用包',
       extra: packDefaultData.value.extra || [],
     });
+    if (packDefaultData.value.encoding) {
+      packData.value.version = `${appData.value.code}_${packDefaultData.value.encoding}.${formatTime(new Date(), 'yyyyMMddHHmmss')}`;
+    }
     if (data && data.length > 0) {
       // eslint-disable-next-line no-restricted-syntax
       for (const item of data) {
         // 增量为：仅插入打包数据，不修改不删除表数据。
-        if ((packDefaultData.value.first && packDefaultData.value.first.includes(item.entityName))
-            || (item.appId === appData.value.id && item.packBusData === 1)) {
+        if (packDefaultData.value.first && packDefaultData.value.first.includes(item.entityName)) {
           packData.value.first.push(item);
         }
         // 全量为：先清空表再插入打包数据。
-        if ((packDefaultData.value.second && packDefaultData.value.second.includes(item.entityName))
-            || (item.appId === appData.value.id && item.packBusData === 2)) {
+        if (packDefaultData.value.second && packDefaultData.value.second.includes(item.entityName)) {
+          packData.value.second.push(item);
+        }
+      }
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of data) {
+        // 增量为：仅插入打包数据，不修改不删除表数据。
+        if (item.packBusData === 1) {
+          packData.value.first.push(item);
+        }
+        // 全量为：先清空表再插入打包数据。
+        if (item.packBusData === 2) {
           packData.value.second.push(item);
         }
       }
@@ -669,7 +694,7 @@ onUnmounted(() => {
     </div>
   </div>
 
-  <a-modal v-model:visible="packData.visible" :width="1150" title="版本打包" title-align="start" :on-before-ok="packAppVersion">
+  <a-modal v-model:visible="packData.visible" :width="1250" title="版本打包" title-align="start" :on-before-ok="packAppVersion">
     <a-scrollbar :style="{overflow:'auto',maxHeight:`${packHeight}px`}">
       <a-descriptions :bordered="true" :column="1" layout="horizontal" size="medium">
         <template #title>
