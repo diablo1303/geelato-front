@@ -430,8 +430,12 @@ export class Utils {
       return `${hours}小时前`
     } else if (days < 7) {
       return `${days}天前`
-    } else if (weeks < 4) {
-      return '一周前'
+    }else if (weeks < 2) {
+      return '1周前'
+    }else if (weeks < 3) {
+      return '2周前'
+    }else if (weeks < 4) {
+      return '3周前'
     } else {
       // 计算月份差异，需要考虑不同月份的天数差异
       const nowMonth = now.getMonth()
@@ -443,7 +447,9 @@ export class Utils {
         // 如果当前日期小于给定日期，那么月份差异需要减1
         monthDifference -= 1
       }
-      if (monthDifference === 1) {
+      if (monthDifference === 0) {
+        return '1个月前'
+      }else if (monthDifference === 1) {
         return '1个月前'
       } else if (monthDifference < 12) {
         return `${monthDifference}个月前`

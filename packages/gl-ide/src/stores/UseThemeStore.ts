@@ -14,7 +14,7 @@ export const useThemeStore = defineStore({
         toolbarHeight: 34,
         toolbarWidth: 0,
         // sidebarHeight: 0,
-        sidebarWidth: 280,
+        sidebarWidth: 300,
         sidebarTabWidth: sidebarTabWidthDefault * 2,
         // stageHeight: 0,
         stageWidth: 0,
