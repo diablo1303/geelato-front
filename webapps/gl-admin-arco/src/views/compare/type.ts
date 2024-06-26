@@ -73,6 +73,30 @@ export const treeNodeTypeOptions = computed<SelectOptionData[]>(() => [
   {value: 'templatePage', label: '模型页面'},
 ]);
 
+export const generateRenderData = () => {
+  return {
+    api: {code: "platform_api", data: []},
+    apiParam: {code: "platform_api_param", data: []},
+    appPage: {code: "platform_app_page", data: []},
+    devColumn: {code: "platform_dev_column", data: []},
+    devDbConnect: {code: "platform_dev_db_connect", data: []},
+    devTable: {code: "platform_dev_table", data: []},
+    devTableForeign: {code: "platform_dev_table_foreign", data: []},
+    devView: {code: "platform_dev_view", data: []},
+    dict: {code: "platform_dict", data: []},
+    dictItem: {code: "platform_dict_item", data: []},
+    encoding: {code: "platform_encoding", data: []},
+    exportTemplate: {code: "platform_export_template", data: []},
+    permission: {code: "platform_permission", data: []},
+    resources: {code: "platform_resources", data: []},
+    role: {code: "platform_role", data: []},
+    roleApp: {code: "platform_role_r_app", data: []},
+    rolePermission: {code: "platform_role_r_permission", data: []},
+    roleTreeNode: {code: "platform_role_r_tree_node", data: []},
+    sysConfig: {code: "platform_sys_config", data: []},
+    treeNode: {code: "platform_tree_node", data: []},
+  }
+}
 
 /**
  * left 基准,right 对比

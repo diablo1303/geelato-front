@@ -38,7 +38,7 @@ const isCompare = ref(false);
 const createDiffData = () => {
   const diffJsonList = [];
   // 对比差异
-  const diffStr = createPatch(mv.value.title, mv.value.newString, mv.value.oldString, mv.value.newHeader, mv.value.oldHeader, {context: 99999});
+  const diffStr = createPatch(mv.value.title, mv.value.oldString, mv.value.newString, mv.value.oldHeader, mv.value.newHeader, {context: 99999});
   // 差异json化
   const diffJson = parse(diffStr);
   diffJson.forEach((item) => {
@@ -53,7 +53,7 @@ const createDiffData = () => {
       drawFileList: true,
       matching: "lines",
       highlight: true,
-      outputFormat: 'side-by-side',// line-by-line
+      outputFormat: 'line-by-line',// line-by-line
       fileListToggle: false,
       fileListStartVisible: false,
       fileContentToggle: false,
@@ -80,9 +80,9 @@ watch(() => props, () => {
   <div v-show="isCompare" :id="mv.id" class="diff-html-layout"/>
   <a-result v-show="!isCompare" status="success" title="不存在差异">
     <template #subtitle>
-      {{ `${mv.title} ${mv.newHeader} ` }}
-      <icon-arrow-right/>
       {{ `${mv.title} ${mv.oldHeader} ` }}
+      <icon-arrow-right/>
+      {{ `${mv.title} ${mv.newHeader} ` }}
     </template>
   </a-result>
 </template>

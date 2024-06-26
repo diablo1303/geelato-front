@@ -19,8 +19,9 @@ import PlatformExportTemplateList from "@/views/version/package/platform-export-
 import PlatformEncodingList from "@/views/version/package/platform-encoding.vue";
 import PlatformResourcesList from "@/views/version/package/platform-resources.vue";
 import PlatformPageList from "@/views/version/package/platform-page.vue";
+import PlatformPacketList from "@/views/version/package/platform-packet.vue";
 import {Message} from "@arco-design/web-vue";
-import {AppMeta, PageParams} from "@/views/compare/type";
+import {AppMeta, generateRenderData, PageParams} from "@/views/compare/type";
 import {getOptionLabel} from "../../api/base";
 import {packageSourceOptions, packageStatusOptions} from "./searchTable";
 
@@ -41,6 +42,7 @@ const appVersion = ref<Record<string, any>>({});
 const appMetaList = ref<AppMeta[]>([]);
 const tabsVisible = ref(false);
 const openTabsLoading = ref(false);
+const renderData = ref(generateRenderData());
 
 const generateListParams = () => {
   return {
@@ -113,32 +115,6 @@ const tableFormat = (id: string, successBack?: any) => {
     tableData.value = data;
   });
 }
-
-const generateRenderData = () => {
-  return {
-    api: {code: "platform_api", data: []},
-    apiParam: {code: "platform_api_param", data: []},
-    appPage: {code: "platform_app_page", data: []},
-    devColumn: {code: "platform_dev_column", data: []},
-    devDbConnect: {code: "platform_dev_db_connect", data: []},
-    devTable: {code: "platform_dev_table", data: []},
-    devTableForeign: {code: "platform_dev_table_foreign", data: []},
-    devView: {code: "platform_dev_view", data: []},
-    dict: {code: "platform_dict", data: []},
-    dictItem: {code: "platform_dict_item", data: []},
-    encoding: {code: "platform_encoding", data: []},
-    exportTemplate: {code: "platform_export_template", data: []},
-    permission: {code: "platform_permission", data: []},
-    resources: {code: "platform_resources", data: []},
-    role: {code: "platform_role", data: []},
-    roleApp: {code: "platform_role_r_app", data: []},
-    rolePermission: {code: "platform_role_r_permission", data: []},
-    roleTreeNode: {code: "platform_role_r_tree_node", data: []},
-    sysConfig: {code: "platform_sys_config", data: []},
-    treeNode: {code: "platform_tree_node", data: []},
-  }
-}
-const renderData = ref(generateRenderData());
 
 const generateListModels = () => {
   // eslint-disable-next-line no-restricted-syntax,guard-for-in
@@ -338,6 +314,15 @@ watch(() => props, (val) => {
                              :height="listParams.height"
                              :parameter="listParams.parameter"
                              :visible="listParams.visible"/>
+          </a-card>
+          <a-empty v-else/>
+        </a-tab-pane>
+        <a-tab-pane :key="10" class="a-tabs-five" title="业务数据">
+          <a-card v-if="listParams.visible" class="general-card6">
+            <PlatformPacketList :model-value="appMetaList"
+                                :height="listParams.height"
+                                :parameter="listParams.parameter"
+                                :visible="listParams.visible"/>
           </a-card>
           <a-empty v-else/>
         </a-tab-pane>
