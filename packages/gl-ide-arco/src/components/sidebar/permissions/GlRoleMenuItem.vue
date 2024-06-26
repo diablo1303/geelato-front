@@ -199,29 +199,50 @@ const loadRoleGrantedMenuItem = (appId: string, roleId: string) => {
 }
 
 const selectAllMenuItem = () => {
-  const selectAll = (treeItems: any[]) => {
+  const selectAll = (treeItems: any[], ids: string[]) => {
     if (!treeItems || treeItems.length === 0) {
       return
     }
     treeItems.forEach((record: any) => {
+      if (!record.checked && !ids.includes(record.key)) ids.push(record.key);
       record.checked = true
-      selectAll(record.children)
+      selectAll(record.children, ids)
     })
   }
-  selectAll(currentRoleAppMenuItems.value)
+  const treeNodeIds: string[] = [];
+  selectAll(currentRoleAppMenuItems.value, treeNodeIds);
+  if (treeNodeIds.length > 0) {
+    securityApi.insertRoleTreeNode({
+      appId: appId, treeId: appId, roleId: currentRole.value.id, treeNodeId: treeNodeIds.join(','),
+    })
+  }
 }
 
 const reverseSelectAllMenuItem = () => {
-  const selectAll = (treeItems: any[]) => {
+  const selectAll = (treeItems: any[], tIds: string[], fIds: string[]) => {
     if (!treeItems || treeItems.length === 0) {
       return
     }
     treeItems.forEach((record: any) => {
+      if (record.checked && !tIds.includes(record.key)) tIds.push(record.key);
+      if (!record.checked && !fIds.includes(record.key)) fIds.push(record.key);
       record.checked = !record.checked
-      selectAll(record.children)
+      selectAll(record.children, tIds, fIds);
     })
   }
-  selectAll(currentRoleAppMenuItems.value)
+  const tIds: string[] = [];
+  const fIds: string[] = [];
+  selectAll(currentRoleAppMenuItems.value, tIds, fIds);
+  if (tIds.length > 0) {
+    securityApi.deleteRoleTreeNode({
+      appId: appId, treeId: appId, roleId: currentRole.value.id, treeNodeId: tIds.join(','),
+    })
+  }
+  if (fIds.length > 0) {
+    securityApi.insertRoleTreeNode({
+      appId: appId, treeId: appId, roleId: currentRole.value.id, treeNodeId: fIds.join(','),
+    })
+  }
 }
 
 const selectRole = (role: any, roleIndex: number) => {
