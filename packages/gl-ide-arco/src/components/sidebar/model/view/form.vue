@@ -149,7 +149,7 @@ const viewNameBlur = (ev?: FocusEvent) => {
   const entity = formData.value.entityName.toLowerCase();
   const view = formData.value.viewName ? formData.value.viewName.toLowerCase() : "";
   if (formData.value.viewType === "custom" && entity === view) {
-    global.$message.warning({content: `[v_${entity}] 这是’默认视图‘的名称`});
+    // global.$message.warning({content: `[v_${entity}] 这是’默认视图‘的名称`});
   }
   formData.value.viewName = view;
 }
@@ -530,6 +530,20 @@ const syncViewToData = async () => {
   }
 }
 
+/**
+ * 删除模型信息
+ */
+const deleteTableView = async () => {
+  try {
+    await modelApi.deleteView(formData.value.id);
+    global.$message.success({content: '删除成功！'});
+    emits('saveSuccess', formData.value, props.formState);
+    visibleForm.value = false;
+  } catch (err) {
+    global.$message.error({content: '删除失败！'})
+  }
+}
+
 
 watch(() => props, () => {
   console.log('form', props);
@@ -611,16 +625,28 @@ const cloneColumns = ref<Column[]>([]);
       <a-tab-pane :key="1" class="a-tabs-one" title="基础信息">
         <a-card class="general-card">
           <template #extra v-if="formState==='edit'">
-            <a-popconfirm content="是否将该视图同步至数据库？" position="br" type="warning" @ok="syncViewToData">
-              <a-tooltip content="将视图同步至数据库">
-                <a-button size="small" type="primary" :loading="viewSync">
-                  <template #icon>
-                    <gl-iconfont type="gl-transfer"/>
-                  </template>
-                  同步视图
-                </a-button>
-              </a-tooltip>
-            </a-popconfirm>
+            <a-space>
+              <a-popconfirm content="是否将该视图同步至数据库？" position="br" type="warning" @ok="syncViewToData">
+                <a-tooltip content="将视图同步至数据库">
+                  <a-button size="small" type="outline" :loading="viewSync">
+                    <template #icon>
+                      <gl-iconfont type="gl-transfer"/>
+                    </template>
+                    同步视图
+                  </a-button>
+                </a-tooltip>
+              </a-popconfirm>
+              <a-popconfirm content="是否删除该条视图数据？" position="br" type="warning" @ok="deleteTableView">
+                <a-tooltip content="删除视图信息">
+                  <a-button size="small" status="danger" type="outline">
+                    <template #icon>
+                      <gl-iconfont type="gl-delete"/>
+                    </template>
+                    删除
+                  </a-button>
+                </a-tooltip>
+              </a-popconfirm>
+            </a-space>
           </template>
           <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
             <a-row :gutter="wrapperCol">

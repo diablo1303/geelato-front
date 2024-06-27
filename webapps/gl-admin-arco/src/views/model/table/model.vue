@@ -180,11 +180,11 @@ const appSelectChange = () => {
 /**
  * 页面加载方法，对外提供
  */
-const loadPage = () => {
+const loadPage = async () => {
   entityIsEdit.value = props.formState === 'add';
   isShowPackBusData.value = false;
   // 应用信息
-  getAppSelectOptions({
+  await getAppSelectOptions({
     connectId: props.parameter?.connectId || '',
     appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
   }, (data: QueryAppForm[]) => {
@@ -200,7 +200,7 @@ const loadPage = () => {
   // 其他初始化
   // 编辑、查看 状态 查询数据
   if (['edit', 'view'].includes(props.formState) && props.modelValue) {
-    getData(props.modelValue, (data: QueryForm) => {
+    await getData(props.modelValue, (data: QueryForm) => {
       // 表格数据处理
       data.seqNo = Number(data.seqNo);
       entityIsEdit.value = !data.tableName;

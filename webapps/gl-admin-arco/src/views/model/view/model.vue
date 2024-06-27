@@ -176,7 +176,7 @@ const viewNameBlur = (ev?: FocusEvent) => {
   const entity = formData.value.entityName.toLowerCase();
   const view = formData.value.viewName ? formData.value.viewName.toLowerCase() : "";
   if (formData.value.viewType === "custom" && entity === view) {
-    Message.warning(`[v_${entity}] 这是’默认视图‘的名称`);
+    // Message.warning(`[v_${entity}] 这是’默认视图‘的名称`);
   }
   formData.value.viewName = view;
 }
