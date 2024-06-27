@@ -59,6 +59,7 @@ import en from './locale/en-US'
 import cn from './locale/zh-CN'
 import { Drawer, Modal, RangePicker } from '@arco-design/web-vue'
 import { PluginUtil } from '@geelato/gl-ui'
+import {NO_BIND_FLAG} from './types/global'
 import './assets/style.css'
 
 const i18nMessage = { en, cn }
@@ -140,7 +141,8 @@ export {
   ExcelCellValueType,
   ExcelCellValueComputeMode,
   ExcelCellValueTypeOptions,
-  ExcelCellValueComputeModeOptions
+  ExcelCellValueComputeModeOptions,
+  NO_BIND_FLAG
 }
 // 默认导出组件
 export default component

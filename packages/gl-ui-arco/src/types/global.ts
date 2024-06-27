@@ -50,3 +50,5 @@ export interface GeneralChart {
     xAxis: string[];
     data: Array<{ name: string; value: number[] }>;
 }
+
+export const NO_BIND_FLAG = "不绑定"

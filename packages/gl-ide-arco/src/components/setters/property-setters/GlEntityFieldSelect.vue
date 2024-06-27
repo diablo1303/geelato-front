@@ -1,6 +1,11 @@
 <template>
   <div class="gl-entity-field-select">
+    <a-radio-group v-model="isEnableBind" type="button" size="mini">
+      <a-radio :value="true">启用绑定</a-radio>
+      <a-radio :value="false">停用绑定</a-radio>
+    </a-radio-group>
     <a-select
+      v-if="isEnableBind"
       size="small"
       v-model="mv.entityName"
       @change="onEntityChange"
@@ -10,10 +15,7 @@
       placeholder="选择实体"
     >
       <template #prefix>
-        <span
-          title="点击复制"
-          @click="copyEntity"
-          style="cursor: pointer"
+        <span title="点击复制" @click="copyEntity" style="cursor: pointer"
           ><gl-iconfont type="gl-copy" text="实体"
         /></span>
       </template>
@@ -27,6 +29,7 @@
       </a-option>
     </a-select>
     <a-select
+      v-if="isEnableBind"
       size="small"
       v-model="mv.fieldName"
       @change="onFieldChange"
@@ -70,6 +73,7 @@ import { type FieldMeta, type EntityLiteMeta, useGlobal } from '@geelato/gl-ui'
 import { useEntityStore } from '@geelato/gl-ide'
 import { BindField } from '@geelato/gl-ui-schema'
 import ClipboardJS from 'clipboard'
+import { NO_BIND_FLAG } from '@geelato/gl-ui-arco'
 
 const global = useGlobal()
 const emits = defineEmits(['update:modelValue'])
@@ -87,6 +91,7 @@ const props = defineProps({
     }
   }
 })
+const isEnableBind = ref(props.modelValue.fieldName!=NO_BIND_FLAG)
 // 实体信息
 const entityStore = useEntityStore()
 const entityLiteMetas: Ref<EntityLiteMeta[]> = ref([])
@@ -156,33 +161,49 @@ if (!props.modelValue.entityName) {
   setEntityAndLoadFieldMetas(props.modelValue.entityName)
 }
 
+/**
+ * mv:{
+ *   appCode?:""
+ *   entityName:"v_il_eco_fee_detail"
+ *   fieldName:"id"
+ * }
+ */
 watch(
   mv,
   (val) => {
-    console.log('mv', val)
     emits('update:modelValue', val)
   },
   { deep: true }
 )
 
+watch(
+  isEnableBind,
+  (val) => {
+    if (!isEnableBind.value) {
+      mv.value.fieldName = NO_BIND_FLAG
+    }
+  },
+  {}
+)
+
 const copyEntity = ($event: any) => {
-  $event.stopPropagation();
-  $event.preventDefault();
-  if(mv.value?.entityName){
+  $event.stopPropagation()
+  $event.preventDefault()
+  if (mv.value?.entityName) {
     ClipboardJS.copy(mv.value.entityName)
     global.$message.success('复制成功：' + mv.value.entityName)
-  }else{
+  } else {
     global.$message.error('复制失败，实体为空')
   }
 }
 
 const copyField = ($event: any) => {
-  $event.stopPropagation();
-  $event.preventDefault();
-  if(mv.value?.fieldName){
+  $event.stopPropagation()
+  $event.preventDefault()
+  if (mv.value?.fieldName) {
     ClipboardJS.copy(mv.value.fieldName)
     global.$message.success('复制成功：' + mv.value.fieldName)
-  }else{
+  } else {
     global.$message.error('复制失败，字段为空')
   }
 }
