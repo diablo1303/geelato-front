@@ -43,7 +43,7 @@ const visibleForm = ref<boolean>(false);
 const tableTabHeight = ref<number>(555);
 const tableTabStyle = ref({height: `${tableTabHeight.value}px`});
 const scrollbar = ref(true);
-const scroll = ref({x: 1000, y: tableTabHeight.value - 118});
+const scroll = ref({x: 1240, y: tableTabHeight.value - 118});
 const appSelectOptions = ref<QueryAppForm[]>([]);
 const connectSelectOptions = ref<SelectOptionData[]>([]);
 const tableSelectOptions = ref<SelectOptionData[]>([]);
@@ -856,6 +856,12 @@ const cloneColumns = ref<Column[]>([]);
                 <template #cell="{record}">
                   <a-select v-if="formState!=='view'" v-model="record.selectType" :options="selectTypeOptions" allow-search/>
                   <span v-else>{{ utils.getOptionLabel(record.selectType, selectTypeOptions) }}</span>
+                </template>
+              </a-table-column>
+              <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="comment" title="备注">
+                <template #cell="{record}">
+                  <a-textarea v-if="formState!=='view'" v-model="record.comment" :auto-size="{minRows:1,maxRows:4}" :max-length="512" show-word-limit/>
+                  <span v-else>{{ record.comment }}</span>
                 </template>
               </a-table-column>
               <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="tableName" title="模型名称"/>
