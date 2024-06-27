@@ -645,7 +645,7 @@ onUnmounted(() => {
                         </a-popconfirm>
                         <a-popconfirm v-if="!isCompare && !syncTableLoading && !syncViewLoading && ['draft'].includes(listParams.selected.status)"
                                       content="确认发布当前版本（将状态变更为‘已发布’）？" position="br" @ok="releaseVersion(listParams.selected.item)">
-                          <a-tooltip content="将版本状态变更为‘已发布’，发布后才能‘下载’、‘部署’">
+                          <a-tooltip content="将版本状态变更为‘已发布’，发布后才能‘下载’、‘部署’" position="tr">
                             <a-button style="color: rgb(var(--success-6))" type="text">
                               <icon-send/>
                               发布

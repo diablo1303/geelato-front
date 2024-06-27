@@ -7,7 +7,7 @@ export default {
 import {ref, watch} from "vue";
 import {useI18n} from 'vue-i18n';
 import {FormInstance, Modal, SelectOptionData} from "@arco-design/web-vue";
-import {queryAppSelectOptions} from "@/api/application";
+import {queryAppSelectOptions, validateAppVersion} from "@/api/application";
 import {
   QueryAppVersionForm as QueryForm,
   createOrUpdateAppVersion as saveForm,
@@ -84,6 +84,20 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
     if (failBack && typeof failBack === 'function') failBack(err);
   }
 };
+/**
+ * 唯一性校验
+ * @param value
+ * @param callback
+ */
+const validateVersion = async (value: any, callback: any) => {
+  try {
+    const {data} = await validateAppVersion(formData.value);
+    if (!data) callback("打包版本号已存在");
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 /**
  * 文本域查看
  * @param content
@@ -167,7 +181,7 @@ defineExpose({saveOrUpdate, loadPage});
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="version" label="版本名称">
+        <a-form-item :rules="[{required: true,message: '这是必填项'},{validator:validateVersion}]" field="version" label="版本名称">
           <a-input v-if="formState!=='view'" v-model.trim="formData.version" :max-length="32"/>
           <span v-else>{{ formData.name }}</span>
         </a-form-item>
