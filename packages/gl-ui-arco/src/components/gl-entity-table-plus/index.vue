@@ -8,7 +8,7 @@ export default {
 </script>
 <script setup lang="ts">
 // @ts-nocheck
-import {Big} from '@geelato/gl-ui'
+import { Big } from '@geelato/gl-ui'
 import GlQuery from '../gl-query/index.vue'
 import GlToolbar from '../gl-toolbar/index.vue'
 import GlEntityTable from './GlEntityTable.vue'
@@ -741,7 +741,7 @@ const getRenderColumns = (): GlTableColumn[] => {
  * 给可编辑表格添加记录，常用于excel导入
  * @param params 每条记录的属性为title，如：[{'名称': '张三', '年龄': 18}]
  */
-const addRecordsByTitle = (params:{records:Record<string,any>[]}) => {
+const addRecordsByTitle = (params: { records: Record<string, any>[] }) => {
   return tableRef.value.addRecordsByTitle(params.records)
 }
 
@@ -749,7 +749,7 @@ const addRecordsByTitle = (params:{records:Record<string,any>[]}) => {
  * 给可编辑表格添加记录
  * @param params 每条记录的属性为dataIndex，如：[{'name': '张三', 'age': 18}]
  */
-const addRecordsByDataIndex = (params:{records:Record<string,any>[]}) => {
+const addRecordsByDataIndex = (params: { records: Record<string, any>[] }) => {
   return tableRef.value.addRecordsByDataIndex(params.records)
 }
 
@@ -1190,7 +1190,7 @@ const getColumnsSum = (params: { dataIndexes: string[] }) => {
   getRenderRecords()?.forEach((record: Record<string, any>) => {
     // 排除push部分，避免重复计算
     params.dataIndexes.forEach((key: string) => {
-      if(!sum[key]){
+      if (!sum[key]) {
         sum[key] = new Big(0)
       }
       sum[key] = sum[key].plus(record[key] || 0)
@@ -1199,7 +1199,7 @@ const getColumnsSum = (params: { dataIndexes: string[] }) => {
   // 负值部分
   getUnPushedRecords()?.forEach((record: Record<string, any>) => {
     params.dataIndexes.forEach((key: string) => {
-      if(!sum[key]){
+      if (!sum[key]) {
         sum[key] = new Big(0)
       }
       sum[key] = sum[key].minus(record[key] || 0)
@@ -1450,7 +1450,7 @@ const searchAndExportRecords = (params: { pageSize: number }) => {
     await Promise.all(allEntityQueryPromise)
 
     // 对查出的数据集，进行转换
-    if (renderScriptColAry.length > 0) {
+    if (renderScriptColAry.length > 0||dictComponentColAry.length > 0 || dynamicSelectComponentColAry.length>0) {
       res.data.forEach((record: Record<string, any>, rowIndex: number) => {
         // 遍历列，如果配置了显示脚本，则先计算出值
         renderScriptColAry.forEach((col) => {
@@ -1461,6 +1461,10 @@ const searchAndExportRecords = (params: { pageSize: number }) => {
             rowIndex: rowIndex
           }
           record[col.dataIndex] = jsScriptExecutor.evalExpression(col._renderScript, ctx)
+          ctx.pageProxy = null
+          ctx.record = null
+          ctx.column = null
+          ctx.rowIndex = null
         })
         // 如果有字典列，则对数据集进行转换
         dictComponentColAry.forEach((col: GlTableColumn) => {
@@ -1863,8 +1867,8 @@ defineExpose({
                       </div>
                       <div>
                         <a-checkbox
-                            v-model="item._checked"
-                            @change="changeShowColumns($event, item, index)"
+                          v-model="item._checked"
+                          @change="changeShowColumns($event, item, index)"
                         />
                       </div>
                       <div class="title">
