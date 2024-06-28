@@ -710,13 +710,15 @@ export class EntityApi {
     if (!items) {
       return
     }
-    let result = undefined
-    let that = this
     // TODO 需后台服务提供批量删除的方法，暂无事务单个删除
-    items.forEach((item) => {
-      result = that.delete(item.entityName, item.keyValues, biz)
-    })
-    return result
+    // items.forEach((item) => {
+    //   result = that.delete(item.entityName, item.keyValues, biz)
+    // })
+    const promises: Promise<any>[] = []
+    for (const item of items) {
+      promises.push(this.delete(item.entityName, item.keyValues, biz))
+    }
+    return Promise.all(promises)
   }
 
   /**

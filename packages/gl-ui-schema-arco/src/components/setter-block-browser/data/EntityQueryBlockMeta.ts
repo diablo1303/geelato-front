@@ -5,7 +5,7 @@ export default {
   group: 'block_data',
   title: '实体查询',
   useBy: ['freePage'],
-  blockContent: '基于元数据的实体查询对象（EntityReader）进行查询，并返回结果到变量：${dataVarName}。',
+  blockContent: '基于元数据的实体查询对象（EntityReader）查询${entityReader.entity}，并返回结果到变量：${dataVarName}。',
   properties: [
     {
       name: 'entityReader',

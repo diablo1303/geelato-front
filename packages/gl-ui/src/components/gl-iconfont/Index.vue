@@ -52,6 +52,6 @@ export default defineComponent({
 }
 
 .gl-icon-font:hover > svg{
-  background-color: #e5e5e5;
+  background-color: rgba(229, 229, 229, 0.15);
 }
 </style>

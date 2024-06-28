@@ -3,11 +3,18 @@
 -->
 <template>
   <div class="gl-base-tree">
+    <a-input v-if="searchable" v-model="searchKey">
+      <template #suffix>
+        <gl-iconfont type="gl-refresh" @click="reloadTreeData" style="cursor: pointer" title="重新加载"
+          >刷新
+        </gl-iconfont>
+      </template>
+    </a-input>
     <ATree
       v-model="selectedKeys"
       v-if="treeData && treeData.length > 0"
       blockNode
-      :data="treeData"
+      :data="renderData"
       :draggable="draggable"
       :default-expand-all="false"
       :default-expanded-keys="defaultExpandedKeysMv"
@@ -28,13 +35,11 @@
       </template>
       <template #title="nodeData, { isLeaf }">
         <span @mouseover="setCurrentHoverNode(nodeData)" :class="{ 'gl-bold': !!nodeData.flag }">
-          <!--          <GlIconfont-->
-          <!--            v-if="nodeData.flag"-->
-          <!--            :title="nodeData.flag"-->
-          <!--            type="gl-eye"-->
-          <!--            :style="{ color: isLeaf ? '#3370ff' : ''}"-->
-          <!--          ></GlIconfont>-->
-          {{ nodeData.title }}
+          <template v-if="index = getMatchIndex(nodeData?.title), index < 0">{{ nodeData?.title }}</template>
+          <span v-else>
+            {{ nodeData?.title?.substring(0, index)}}<span style="color: var(--color-primary-light-4);">{{ nodeData?.title?.substring(index, index + searchKey.length)}}
+</span>{{ nodeData?.title?.substring(index + searchKey.length) }}
+          </span>
         </span>
       </template>
       <template #extra="nodeData">
@@ -81,6 +86,7 @@
           </template>
         </a-trigger>
       </template>
+
     </ATree>
     <a-modal
       :visible="currentAction && ['addNode', 'updateNodeName'].includes(currentAction.action)"
@@ -109,7 +115,7 @@ export default {
 <script setup lang="ts">
 // @ts-nocheck
 import { useGlobal, utils, Utils } from '@geelato/gl-ui'
-import { type PropType, ref, watch } from 'vue'
+import { computed, type PropType, ref, watch } from 'vue'
 import type { TreeNodeData } from '@arco-design/web-vue'
 import type { ContextMenuDataType } from './types'
 
@@ -174,8 +180,12 @@ const props = defineProps({
   updateNodeSeqNo: Function,
   //  服务端重命名node的方法
   updateNodeName: Function,
-  updateNodeIcon: Function
+  updateNodeIcon: Function,
+  searchable: Boolean
 })
+// 查询输入
+const searchKey = ref('')
+
 const selectedKeys = ref(props.modelValue)
 
 // 注意，所有的contextMenuitem click都会触发clickContextMenuItem事件，若是内置的addNode等，还会先触发addNode等事件
@@ -193,15 +203,19 @@ const emits = defineEmits([
 ])
 
 watch(
-    () => props.modelValue,
-    (newVal) => {
-      selectedKeys.value = newVal
-    },
-    { deep: true }
+  () => props.modelValue,
+  (newVal) => {
+    selectedKeys.value = newVal
+  },
+  { deep: true }
 )
-watch(selectedKeys, (newVal) => {
-  emits('update:modelValue', newVal)
-}, { deep: true })
+watch(
+  selectedKeys,
+  (newVal) => {
+    emits('update:modelValue', newVal)
+  },
+  { deep: true }
+)
 
 const defaultExpandedKeysMv = ref(props.defaultExpandedKeys || [props.treeId])
 const treeData = ref(new Array<any>())
@@ -227,10 +241,49 @@ enum NodeType {
   root = 'root'
 }
 
-const refreshTree = () => {
+/**
+ *  重新渲染
+ */
+const reRender = () => {
   treeData.value = [...treeData.value]
-  console.log('refreshTree', treeData.value)
+  // console.log('reRender', treeData.value)
 }
+
+function searchData(tree,keyword) {
+  const loop = (data) => {
+    const result = [];
+    data.forEach(item => {
+      if (item.title.toLowerCase().indexOf(keyword.toLowerCase()) > -1) {
+        result.push({...item});
+      } else if (item.children) {
+        const filterData = loop(item.children);
+        if (filterData.length) {
+          result.push({
+            ...item,
+            children: filterData
+          })
+        }
+      }
+    })
+    return result;
+  }
+
+  return loop(tree);
+}
+
+function getMatchIndex(title) {
+  if (!searchKey.value) return -1;
+  return title.toLowerCase().indexOf(searchKey.value.toLowerCase());
+}
+
+// 计算属性，返回匹配的树形结构
+const renderData = computed(() => {
+  if(searchKey.value?.trim().length === 0){
+    return treeData.value
+  }
+  return searchData(treeData.value,searchKey.value)
+})
+
 
 const filterContextMenuData = ref(new Array<ContextMenuDataType>())
 
@@ -329,7 +382,7 @@ const updateNodeName = (clickedNodeData: any, editNodeData: any) => {
   if (props.updateNodeName) {
     props.updateNodeName(params).then((res: any) => {
       clickedNodeData.title = editNodeData.title
-      refreshTree()
+      reRender()
       emits('updateNodeName', params)
     })
   } else {
@@ -348,7 +401,7 @@ const updateNodeIcon = (clickedNodeData: any, editNodeData: any) => {
   if (props.updateNodeIcon) {
     props.updateNodeIcon(params).then((res: any) => {
       clickedNodeData.iconType = editNodeData.iconType
-      refreshTree()
+      reRender()
       emits('updateNodeIcon', params)
     })
   } else {
@@ -364,7 +417,7 @@ const updateNode = (clickedNodeData: any, editNodeData: any) => {
   if (props.updateNode) {
     props.updateNode(params).then((res: any) => {
       //  TODO 待结合实际应用情况，参考updateNodeName，在保存成功之后，更新前端的信息
-      refreshTree()
+      reRender()
       emits('updateNode', params)
     })
   } else {
@@ -427,7 +480,7 @@ const addNode = (clickedNodeData: any, addNodeData: any) => {
       node.key = res.data
       children.push(node)
       clickedNodeData.children = children
-      refreshTree()
+      reRender()
       selectNode(node)
       emits('addNode', params)
     })
@@ -441,7 +494,7 @@ const deleteNode = (clickedNodeData: any) => {
   if (props.deleteNode) {
     props.deleteNode(params).then((res: any) => {
       console.log('delete node from remote and return res:', res)
-      reloadTreeData()
+      fetchData()
     })
   }
   emits('deleteNode', params)
@@ -577,8 +630,12 @@ const closeModal = () => {
   currentAction.value = { action: '', title: '' }
 }
 
-const reloadTreeData = () => {
-  if (props.loadTreeData) {
+/**
+ * 从服务端加载数据
+ */
+const fetchData = () => {
+  // 是否配置了加载数据方法
+  if (props.loadTreeData && typeof props.loadTreeData === 'function') {
     const treeDataPromise = props.loadTreeData()
     if (treeDataPromise) {
       props.loadTreeData().then((res: any) => {
@@ -607,37 +664,32 @@ const reloadTreeData = () => {
             }
           })
         )
+        global.$message.success('加载树数据成功')
       })
     }
   }
 }
 // 初始化加载
-reloadTreeData()
+fetchData()
+
+
 // 对外提供方法
-defineExpose({ refreshTree, selectNode, selectNodeByKey })
+defineExpose({ fetchData, reRender, selectNode, selectNodeByKey })
 </script>
 <style>
 .gl-base-tree .arco-tree-node-drag-icon {
   display: none !important;
 }
-
-.gl-base-tree .gl-more {
-  /*display: none;*/
-}
-
 .gl-base-tree:hover .gl-more {
   display: inline-block;
 }
 
 .gl-base-tree .arco-tree-node-title-block:hover {
-  /* background-color: rgba(239, 239, 239, 0.99); background-color: #ffffff; */
   cursor: default;
 }
 
 .gl-base-tree .arco-tree-node-title-text:hover {
-  /* color: #073f6e; */
   font-weight: 600;
-  /* background-color: #f2f6ff; */
   cursor: pointer;
   text-shadow: 0 0 5px #7caef6;
 }
@@ -648,14 +700,5 @@ defineExpose({ refreshTree, selectNode, selectNodeByKey })
 
 .gl-context-menu-item {
   line-height: 2em !important;
-  /*padding: 0 !important;*/
-  /*margin: 0 !important;*/
 }
-
-/*.arco-tree-node .gl-more{*/
-/*  display: none;*/
-/*}*/
-/*.arco-tree-node:hover .gl-more{*/
-/*  display: inline-block;*/
-/*}*/
 </style>

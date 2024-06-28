@@ -7,6 +7,7 @@
       :expandedKeysCacheKey="expandedKeysCacheKey"
       :treeName="treeName"
       :draggable="draggable"
+      :searchable="searchable"
       :loadTreeData="loadTreeDataFn"
       :addNode="addNodeFn"
       :updateNodeName="updateNodeNameFn"
@@ -68,6 +69,7 @@ const props = defineProps({
       return false
     }
   },
+  searchable:Boolean,
   /**
    *  树实体名称，默认是平台内置的树
    */
@@ -207,17 +209,35 @@ const clickContextMenuItem = (params: any) => {
   emits('clickContextMenuItem', params)
 }
 
-const refresh = () => {
-  glBaseTree.value.refreshTree()
+/**
+ * 从服务端获取树数据，并渲染树
+ */
+const fetchData = ()=>{
+  return glBaseTree.value.fetchData()
 }
+
+/**
+ * 基于当前的数据重新渲染树
+ */
+const reRender = () => {
+  glBaseTree.value.reRender()
+}
+/**
+ * 选中传入的节点
+ * @param node
+ */
 const selectNode = (node: any) => {
   glBaseTree.value.selectNode(node)
 }
+/**
+ * 基于key选中节点
+ * @param nodeKey
+ */
 const selectNodeByKey = (nodeKey: string) => {
   glBaseTree.value.selectNodeByKey(nodeKey)
 }
 
-defineExpose({ refresh, selectNode,selectNodeByKey })
+defineExpose({ fetchData,reRender, selectNode,selectNodeByKey })
 </script>
 <style>
 .gl-entity-tree {

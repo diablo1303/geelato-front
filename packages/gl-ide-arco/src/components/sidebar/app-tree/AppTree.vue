@@ -1,12 +1,13 @@
 <template>
   <div class="gl-app-tree">
-<!--    <a-alert :show-icon="false"> 加粗显示为菜单项</a-alert>-->
+    <!--    <a-alert :show-icon="false"> 加粗显示为菜单项</a-alert>-->
     <GlEntityTree
       v-model="selectedKeys"
       ref="glEntityTree"
       :treeId="appStore.currentApp.id"
       :treeName="appStore.currentApp.name"
       :draggable="true"
+      :searchable="true"
       :entityReader="entityReader"
       :contextMenuData="contextMenuData"
       :extendEntityField="{ entityName: 'platform_app_page', fieldName: 'extendId' }"
@@ -26,6 +27,16 @@
       <template #title> 创建页面向导</template>
       <CreatePageNav v-if="visible" ref="createPageNav" :key="createPageNavKey" />
     </a-modal>
+    <!-- 创建页面链接，内置弹窗 -->
+    <LinkPageFormModal
+      v-if="linkPageVisible"
+      :key="currentClickLink.id"
+      v-model="currentClickLink"
+      v-model:visible="linkPageVisible"
+      ref="linkPageFormModal"
+      :treeId="appStore?.currentApp?.id"
+      @saveNode="onSaveLinkNode"
+    />
   </div>
 </template>
 <script lang="ts">
@@ -36,9 +47,18 @@ export default {
 <script setup lang="ts">
 import { onMounted, onUnmounted, type PropType, type Ref, ref } from 'vue'
 import { useIdeStore, useAppStore, Page, usePageStore, EventNames } from '@geelato/gl-ide'
-import {emitter, entityApi, EntityReader, EntitySaver, FieldMeta, useGlobal, utils} from '@geelato/gl-ui'
-import CreatePageNav from './create-page/CreatePageNav.vue'
-import type { PageInfo } from './create-page/CreatePageNav'
+import {
+  emitter,
+  entityApi,
+  EntityReader,
+  EntitySaver,
+  FieldMeta,
+  useGlobal,
+  utils
+} from '@geelato/gl-ui'
+import CreatePageNav from '../create-page/CreatePageNav.vue'
+import type { PageInfo } from '../create-page/CreatePageNav'
+import LinkPageFormModal from './LinkPageFormModal.vue'
 
 const props = defineProps({
   modelValue: {
@@ -47,6 +67,8 @@ const props = defineProps({
   }
 })
 
+// 不是页面的节点，如根节点、文件夹节点、外链节点，点击这些节点不需要在右边打开页面
+const notPageNodeTypes = ['root', 'folder', 'link']
 const selectedKeys = ref(props.modelValue)
 const global = useGlobal()
 
@@ -54,10 +76,10 @@ const glEntityTree = ref()
 const ideStore = useIdeStore()
 const appStore = useAppStore()
 const pageStore = usePageStore()
-pageStore.addPageTemplate('formPage', import('../stage/formPageTemplate.json'))
-pageStore.addPageTemplate('freePage', import('../stage/freePageTemplate.json'))
-pageStore.addPageTemplate('listPage', import('../stage/listPageTemplate.json'))
-pageStore.addPageTemplate('flowPage', import('../stage/flowPageTemplate.json'))
+pageStore.addPageTemplate('formPage', import('../../stage/formPageTemplate.json'))
+pageStore.addPageTemplate('freePage', import('../../stage/freePageTemplate.json'))
+pageStore.addPageTemplate('listPage', import('../../stage/listPageTemplate.json'))
+pageStore.addPageTemplate('flowPage', import('../../stage/flowPageTemplate.json'))
 
 type ClickContextMenuItemType = {
   clickedNodeData: Record<string, any>
@@ -68,15 +90,22 @@ const currentClickContextMenuItem: Ref<ClickContextMenuItemType> = ref({
   clickedNodeData: {},
   contextMenuItemData: {}
 })
+
+// 当前右键菜单点击的链接信息内容
+const currentClickLink = ref({id:'',pid:'', title: '', url: '' })
+
 const createPageNav = ref()
 const createPageNavKey = ref(utils.gid('key'))
 
+/**
+ * 选择节点时，控制哪些需要打开页面
+ * @param params
+ */
 const onSelectNode = (params: any) => {
-  // console.log('onSelectNode() > params:', params)
-  if (['root', 'folder'].indexOf(params._nodeType) >= 0) {
-    // 根节点或目录节点
+  if (notPageNodeTypes.indexOf(params._nodeType) >= 0) {
+    // 点击不加载页面的节点，如根节点或目录节点、外链节点
   } else {
-    // 子节点
+    // 点击加载页面的子节点
     const dataRef = params
     ideStore.openPage(<Page>{
       type: dataRef._nodeType,
@@ -88,20 +117,60 @@ const onSelectNode = (params: any) => {
 }
 
 /**
- *
+ * 点击右键菜单时，根据菜单类型，打开相应的页面
  * @param params
  */
 const clickContextMenuItem = (params: ClickContextMenuItemType) => {
+  console.log('clickContextMenuItem() > params:', params)
+  currentClickContextMenuItem.value = params
   if (params.contextMenuItemData._nodeType === 'templatePage') {
-    currentClickContextMenuItem.value = params
     createPageNavKey.value = utils.gid('key')
     visible.value = true
+  } else if (params.contextMenuItemData._nodeType === 'link') {
+    currentClickLink.value = {
+      id: '',
+      pid: '',
+      url: '',
+      title: ''
+    }
+    if(params.contextMenuItemData.action === 'createLinkPage'){
+      currentClickLink.value.pid = params.clickedNodeData.key
+      linkPageVisible.value = true
+    }else if(params.contextMenuItemData.action === 'updateLinkPage'){
+      currentClickLink.value.id = params.clickedNodeData.key
+      // 新创建或修改
+      const entityReader = new EntityReader()
+      entityReader.entity = 'platform_tree_node'
+      entityReader.setFields("id,text,pid,url")
+      entityReader.addParam('id', 'eq', currentClickLink.value.id)
+      entityApi.queryByEntityReader(entityReader).then((res: any) => {
+        console.log('查询节点数据', res)
+        if(res.data?.length > 0) {
+          currentClickLink.value = {
+            id: res.data[0].id,
+            pid: res.data[0].pid,
+            url: res.data[0].url,
+            title: res.data[0].text,
+          }
+        }
+        linkPageVisible.value = true
+      },(res:any)=>{
+        global.$message.error('查询节点数据失败')
+        console.error('查询节点数据失败', res)
+      })
+    }
+
   }
 }
 
+/**
+ * 删除节点操作
+ * 如果不是根节点时，需要同步状态相应的页面
+ * @param params
+ */
 const onDeleteNode = (params: any) => {
-  if (['root'].indexOf(params._nodeType) >= 0) {
-    // 根节点
+  if (notPageNodeTypes.indexOf(params._nodeType) >= 0) {
+    // 根节点等
   } else {
     // 子节点
     const dataRef = params
@@ -129,13 +198,15 @@ entityReader.fields.push(new FieldMeta('iconType'))
 entityReader.fields.push(new FieldMeta('type', '_nodeType'))
 entityReader.fields.push(new FieldMeta('flag'))
 entityReader.fields.push(new FieldMeta('seqNo'))
-entityReader.pageSize = 2000
+entityReader.pageSize = 3000
 entityReader.addParam('treeId', 'eq', appStore.currentApp.id)
 entityReader.addOrder('seqNo', '+')
+// 右键菜单数据，每一项依据useFor属性，判断是否显示
 const contextMenuData = [
   {
     title: '新建目录',
     iconType: 'gl-folder',
+    iconColor: '#0467c2',
     _nodeType: 'folder',
     useFor: ['root', 'folder'],
     action: 'addNode'
@@ -143,6 +214,7 @@ const contextMenuData = [
   {
     title: '从模板新建页面',
     iconType: 'gl-file',
+    iconColor: '#0467c2',
     _nodeType: 'templatePage',
     useFor: ['folder'],
     action: 'createPageNav'
@@ -150,9 +222,26 @@ const contextMenuData = [
   {
     title: '新建空白页面',
     iconType: 'gl-file',
+    iconColor: '#0467c2',
     _nodeType: 'freePage',
     useFor: ['folder'],
     action: 'addNode'
+  },
+  {
+    title: '新建外部链接',
+    iconType: 'gl-link',
+    iconColor: '#0467c2',
+    _nodeType: 'link',
+    useFor: ['folder'],
+    action: 'createLinkPage'
+  },
+  {
+    title: '编辑外部链接',
+    iconType: 'gl-link',
+    iconColor: '#0467c2',
+    _nodeType: 'link',
+    useFor: ['link'],
+    action: 'updateLinkPage'
   },
   {
     title: '新建工作流程',
@@ -198,7 +287,7 @@ const contextMenuData = [
     iconType: 'gl-delete',
     iconColor: '#cc3636',
     _nodeType: 'freePage',
-    useFor: ['folder', 'freePage', 'formPage', 'listPage', 'templatePage', 'flowPage'],
+    useFor: ['folder', 'link', 'freePage', 'formPage', 'listPage', 'templatePage', 'flowPage'],
     action: 'deleteNode'
   }
 ]
@@ -218,6 +307,7 @@ const createAddNodeEntitySaver = (page: PageInfo) => {
 }
 
 const visible = ref(false)
+const linkPageVisible = ref(false)
 const onBeforeOk = async () => {
   const pageInfos: PageInfo[] = await createPageNav.value?.getPages()
   if (pageInfos.length === 0) {
@@ -251,7 +341,7 @@ const onBeforeOk = async () => {
           currentClickContextMenuItem.value.clickedNodeData.children = []
         }
         currentClickContextMenuItem.value.clickedNodeData.children.push(node)
-        glEntityTree.value.refresh()
+        glEntityTree.value.reRender()
         glEntityTree.value.selectNode(node)
       })
     })
@@ -262,6 +352,12 @@ const onBeforeOk = async () => {
 }
 const handleCancel = () => {
   visible.value = false
+  linkPageVisible.value = false
+}
+
+const onSaveLinkNode = (node: any) => {
+  console.log('onSaveLinkNode', node)
+  glEntityTree.value.fetchData()
 }
 
 // { extendId: string }
