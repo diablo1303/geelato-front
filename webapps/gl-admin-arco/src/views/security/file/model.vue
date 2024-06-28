@@ -16,8 +16,7 @@ import ImportBusinessType from "@/views/security/file/import/type.vue";
 import ImportBusinessRule from "@/views/security/file/import/rule.vue";
 import ImportBusinessMeta from "@/views/security/file/import/meta.vue";
 import ExportBusinessMeta from "@/views/security/file/export/meta.vue";
-import {QueryAppForm} from "@/api/security";
-import {getAppSelectOptions} from "@/api/application";
+import {getAppSelectOptions, QueryAppForm} from "@/api/application";
 import cloneDeep from "lodash/cloneDeep";
 
 // 页面所需 参数

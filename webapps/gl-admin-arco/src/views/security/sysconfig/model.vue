@@ -241,7 +241,7 @@ const loadPage = () => {
       }
       formData.value = data;
       Object.assign(uploadParams.value, {
-        objectId: formData.value.id,
+        objectId: "",
         appId: formData.value.appId || '', tenantCode: formData.value.tenantCode || ''
       });
       if (['UPLOAD'].includes(formData.value.valueType)) {
