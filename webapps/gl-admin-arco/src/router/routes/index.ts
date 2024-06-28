@@ -188,7 +188,7 @@ const formatModules = (_modules: any, result: RouteRecordNormalized[]) => {
   }
   if (IS_ACCOUNT.value) Object.assign(DEFAULT_ROUTE, DEFAULT_ROUTE_ACCOUNT);
 
-  console.log(DEFAULT_ROUTE);
+  // console.log(DEFAULT_ROUTE);
   return result;
 }
 
@@ -318,7 +318,7 @@ export const formatAppModules = async (result: RouteRecordNormalized[]) => {
         window.location.assign(window.location.origin + url);
       }
     }
-    console.log(result)
+    // console.log(result)
   } catch (err) {
     console.log(err);
     result = [];

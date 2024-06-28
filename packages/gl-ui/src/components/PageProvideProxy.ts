@@ -46,7 +46,6 @@ export class PagePermission {
     const found = this.perms?.find((permission: InstPermission) => {
       return permission.code === instId && permission.rule === 'r'
     })
-    console.log('found', found)
     return !!found
   }
 
@@ -201,7 +200,7 @@ export default class PageProvideProxy {
       this.componentInstMap[componentId] = vueRef.props.glComponentInst as ComponentInstance
       if (!this.componentInstMap[componentId].componentName) {
         console.error(
-          '在setVueRef时，存在组件名为空的组件',
+          '在setVueRef时，存在组件名为空的组件',componentId,
           this.componentInstMap[componentId],
           vueRef
         )

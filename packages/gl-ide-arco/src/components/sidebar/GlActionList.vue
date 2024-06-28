@@ -59,7 +59,7 @@ const openRefActionSetter = (beRefAction:{componentId:string,action:Action})=>{
     <a-collapse :default-active-key="['1']" :bordered="false">
       <a-collapse-item
         v-for="(inst, index) in componentStore.getActionList()"
-        :header="inst.props.label || inst.componentName"
+        :header="inst.props.label|| inst.props.base?.label || inst.componentName"
         :key="index"
       >
         <template #extra>
