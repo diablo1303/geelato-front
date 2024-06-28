@@ -375,7 +375,7 @@ watch(() => props, (val) => {
           </a-col>
           <a-col v-if="!['app'].includes(filterData.type) && !parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.role.index.form.createAt')" field="createAt">
-              <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
+              <a-range-picker v-model="filterData.createAt" style="width: 100%" @clear="condition($event)" @change="condition"/>
             </a-form-item>
           </a-col>
         </a-row>

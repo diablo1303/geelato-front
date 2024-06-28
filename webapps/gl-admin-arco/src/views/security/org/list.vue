@@ -285,28 +285,31 @@ watch(() => props, (val) => {
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.org.index.form.type')" field="type">
-              <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.org.index.form.category')" field="category">
-              <a-select v-model="filterData.category" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.category" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of categoryOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.org.index.form.status')" field="status">
-              <a-select v-model="filterData.status" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.status" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of statusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.org.index.form.createAt')" field="createAt">
-              <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
+              <a-range-picker v-model="filterData.createAt" style="width: 100%" @clear="condition($event)" @change="condition"/>
             </a-form-item>
           </a-col>
         </a-row>

@@ -412,7 +412,7 @@ defineExpose({openLocker, openModel});
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.dictItem.index.form.createAt')" field="createAt">
-              <a-range-picker v-model="filterData.createAt" style="width: 100%"/>
+              <a-range-picker v-model="filterData.createAt" style="width: 100%" @clear="condition($event)" @change="condition"/>
             </a-form-item>
           </a-col>
         </a-row>
