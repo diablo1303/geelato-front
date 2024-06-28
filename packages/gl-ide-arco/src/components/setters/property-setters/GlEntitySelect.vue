@@ -1,17 +1,23 @@
 <template>
   <div class="gl-entity-select">
-    <a-select @change="onEntityChange" v-model="mv" allow-search allow-clear>
+    <a-select v-model="mv" allow-clear allow-search style="width: 240px" @change="onEntityChange">
       <a-option
-        v-for="item in entityLiteMetas"
-        :value="item.entityName"
-        :title="item.entityName"
-        :class="{ 'gl-selected': mv === item.entityName }"
-      >
+          v-for="(item,index) in entityLiteMetas"
+          :key="index"
+          :class="{ 'gl-selected': mv === item.entityName }"
+          :title="item.entityName"
+          :value="item.entityName">
         {{ item.entityTitle + ' ' + item.entityName }}
       </a-option>
     </a-select>
-    <a-button v-if="allowOpen" size="small" type="primary" @click="openEntity" style="padding: 0 4px">打开</a-button>
+    <a-button v-if="allowOpen" size="small" style="padding: 0 4px" type="primary" @click="openEntity">打开</a-button>
   </div>
+  <GlModelTableTabs v-model:visible="formTabsParams.visible"
+                    :formState="formTabsParams.formState"
+                    :modelValue="formTabsParams.id"
+                    :parameter="formTabsParams.parameter"
+                    :refApp="formTabsParams.refApp"
+                    :width="formTabsParams.width"/>
 </template>
 <script lang="ts">
 export default {
@@ -20,10 +26,11 @@ export default {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import { inject, type Ref, ref, watch } from 'vue'
-import { useEntityStore } from '@geelato/gl-ide'
-import { type EntityLiteMeta, EntityMeta } from '@geelato/gl-ui'
-import { ComponentSetterProvideKey, ComponentSetterProvideProxy } from '@geelato/gl-ide'
+import {inject, type Ref, ref, watch} from 'vue'
+import {useAppStore, useEntityStore} from '@geelato/gl-ide'
+import {entityApi, type EntityLiteMeta, EntityMeta, EntityReader, EntityReaderParam, modelApi, useGlobal} from '@geelato/gl-ui'
+import {ComponentSetterProvideKey, ComponentSetterProvideProxy} from '@geelato/gl-ide'
+import GlModelTableTabs from "../../sidebar/model/table/tableTabs.vue";
 
 const props = defineProps({
   modelValue: {
@@ -52,6 +59,8 @@ const props = defineProps({
   }
 })
 const emits = defineEmits(['update:modelValue'])
+const global = useGlobal()
+const appStore = useAppStore()
 const entityStore = useEntityStore()
 const entityLiteMetas: Ref<EntityLiteMeta[]> = ref([])
 
@@ -60,7 +69,7 @@ const res = entityStore.loadEntityLiteMetas('')
 res.then((data: Array<EntityLiteMeta>) => {
   entityLiteMetas.value = data
 })
-const ds = ref({ entityMeta: new EntityMeta() })
+const ds = ref({entityMeta: new EntityMeta()})
 // 模型或视图英文名
 const mv = ref('')
 mv.value = props.modelValue
@@ -73,7 +82,7 @@ const setEntityAndLoadFieldMetas = (entityName: string) => {
   entityStore.loadFieldMetas('', entityName)
 }
 const onEntityChange = (entityName: string) => {
-  let entityLiteMeta = entityLiteMetas.value.find((item) => item.entityName === entityName) || {entityName,entityTitle:'',entityType:''}
+  let entityLiteMeta = entityLiteMetas.value.find((item) => item.entityName === entityName) || {entityName, entityTitle: '', entityType: ''}
   entityStore.loadFieldMetas('', entityName).then((fieldMetas) => {
     ds.value.entityMeta = {
       entityName: entityName,
@@ -93,12 +102,44 @@ if (props.modelValue) {
   onEntityChange(props.modelValue)
 }
 
+
+const fetchData = (entityName: string, successBack?: any, failBack?: any) => {
+  if (!appStore.currentApp.id) {
+    return
+  }
+  const entityReader = new EntityReader()
+  entityReader.entity = 'platform_dev_table'
+  entityReader.setFields('id,creator,creatorName,updateAt,updaterName,entityName,title,tableComment')
+  entityReader.params = []
+  // entityReader.params.push(new EntityReaderParam('appId', 'eq', appStore.currentApp.id))
+  entityReader.params.push(new EntityReaderParam('entityName', 'eq', entityName))
+  entityApi.queryByEntityReader(entityReader).then(
+      async (res: any) => {
+        if (res.data && res.data.length > 0) {
+          if (successBack && typeof successBack === 'function') successBack(res.data[0]);
+        } else {
+          global.$message.error({content: '数据源不存在'})
+        }
+      }, () => {
+        global.$message.error({content: '数据源查询失败'})
+      }
+  )
+}
+
+const formTabsParams = ref({
+  id: '', visible: false, formState: 'view', formCol: 2, width: '76%', refApp: false,
+  parameter: {appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
+});
 const openEntity = () => {
-  if(!mv.value) return
+  if (!mv.value) return
+  if (!appStore.currentApp.id) return
   let entityLiteMeta = entityLiteMetas.value.find((item) => item.entityName === mv.value)
-  // entityLiteMeta 示例1：{entityName: 'v_il_payment_info', entityTitle: '付款通知单视图', entityType: 'View'}
-  // entityLiteMeta 示例2：{entityName: 'il_cooperating_org', entityTitle: '合作单位', entityType: 'Table'}
-  console.log('openEntity entityLiteMeta',entityLiteMeta)
+  console.log('openEntity entityLiteMeta', entityLiteMeta)
+  fetchData(mv.value, (data: Record<string, any>) => {
+    formTabsParams.value.id = data.id;
+    formTabsParams.value.refApp = false;
+    formTabsParams.value.visible = true;
+  });
 }
 </script>
 
