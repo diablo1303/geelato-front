@@ -134,6 +134,9 @@ const condition = (ev?: Event) => {
   basePagination.current = 1;
   search();
 }
+const conditionChange = (value: string | number | boolean | Record<string, any> | (string | number | boolean | Record<string, any>)[]) => {
+  condition();
+}
 /**
  * 条件查询 - 重置
  */
@@ -498,19 +501,19 @@ watch(() => props, (val) => {
           </a-col>
           <!--          <a-col :span="isModal?12:8">
                       <a-form-item label="数据类型" field="selectType">
-                        <a-select v-model="filterData.selectType" :options="selectTypeOptions" placeholder="全部"/>
+                        <a-select v-model="filterData.selectType" :options="selectTypeOptions" placeholder="全部" allow-clear @clear="condition"/>
                       </a-form-item>
                     </a-col>-->
           <a-col :span="isModal?12:8">
             <a-form-item field="nullable" label="是否可空">
-              <a-select v-model="filterData.nullable" placeholder="全部">
+              <a-select v-model="filterData.nullable" placeholder="全部" allow-clear @clear="condition" @change="conditionChange">
                 <a-option v-for="item of nullableOptions" :key="item.value as string" :label="item.label as string" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="uniqued" label="唯一约束">
-              <a-select v-model="filterData.uniqued" placeholder="全部">
+              <a-select v-model="filterData.uniqued" placeholder="全部" allow-clear @clear="condition" @change="conditionChange">
                 <a-option v-for="item of uniquedOptions" :key="item.value as string" :label="item.label as string" :value="item.value"/>
               </a-select>
             </a-form-item>

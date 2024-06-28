@@ -170,6 +170,18 @@ const search = (ev?: Event) => {
   fetchData({order: lastSort.value, ...basePagination, ...filterData.value,});
 };
 /**
+ * 条件查询 - 搜索
+ * 排序，页数（1），条数，过滤（√）
+ * @param ev
+ */
+const condition = (ev?: Event) => {
+  basePagination.current = 1;
+  search();
+}
+const conditionChange = (value: string | number | boolean | Record<string, any> | (string | number | boolean | Record<string, any>)[]) => {
+  condition();
+}
+/**
  * 条件查询 - 重置
  */
 const reset = (ev?: Event) => {
@@ -278,22 +290,22 @@ watch(() => props.orgId, () => {
           </a-col>
           <a-col :span="12">
             <a-form-item field="name" label="名称">
-              <a-input v-model="filterData.name" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.name" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item field="loginName" label="登录名">
-              <a-input v-model="filterData.loginName" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.loginName" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item field="jobNumber" label="工号">
-              <a-input v-model="filterData.jobNumber" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.jobNumber" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item field="sex" label="性别">
-              <a-select v-model="filterData.sex" placeholder="全部">
+              <a-select v-model="filterData.sex" placeholder="全部" allow-clear @clear="condition" @change="conditionChange">
                 <a-option v-for="item of sexOptions" :key="item.value as string" :label="item.label" :value="item.value"/>
               </a-select>
             </a-form-item>
@@ -304,7 +316,7 @@ watch(() => props.orgId, () => {
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
       <a-space :size="18" direction="vertical">
-        <a-button type="primary" @click="search($event)">
+        <a-button type="primary" @click="condition($event)">
           <template #icon>
             <GlIconfont type='gl-search'/>
           </template>

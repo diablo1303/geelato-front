@@ -363,7 +363,8 @@ watch(() => props, (val) => {
           </a-col>
           <a-col v-if="!parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.file.index.form.appId')" field="appId">
-              <a-select v-model="filterData.appId" :options="appSelectOptions" :placeholder="$t('searchTable.form.selectDefault')" allow-search/>
+              <a-select v-model="filterData.appId" :options="appSelectOptions" :placeholder="$t('searchTable.form.selectDefault')" allow-search
+                        allow-clear @clear="condition($event)" @change="condition"/>
             </a-form-item>
           </a-col>
           <a-col v-if="!!parameter.appId" :span="(labelCol+wrapperCol)/filterCol">

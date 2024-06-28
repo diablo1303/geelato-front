@@ -168,6 +168,9 @@ const condition = (ev?: Event) => {
   basePagination.current = 1;
   search();
 }
+const conditionChange = (value: string | number | boolean | Record<string, any> | (string | number | boolean | Record<string, any>)[]) => {
+  condition();
+}
 /**
  * 条件查询 - 重置
  * 排序，页数（1），条数，过滤（×）
@@ -393,7 +396,8 @@ defineExpose({openLocker, openModel});
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item field="enableStatus" label="状态">
-              <a-select v-model="filterData.enableStatus" :options="enableStatusOptions" placeholder="全部"/>
+              <a-select v-model="filterData.enableStatus" :options="enableStatusOptions" placeholder="全部"
+                        allow-clear @clear="condition" @change="conditionChange"/>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">

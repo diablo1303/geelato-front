@@ -116,6 +116,9 @@ const condition = (ev?: Event) => {
   basePagination.current = 1;
   search();
 }
+const conditionChange = (value: string | number | boolean | Record<string, any> | (string | number | boolean | Record<string, any>)[]) => {
+  condition();
+}
 /**
  * 条件查询 - 重置
  */
@@ -258,12 +261,14 @@ watch(() => props.height, (val) => {
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="approvalNeed" label="是否审批">
-              <a-select v-model="filterData.approvalNeed" :options="approvalNeedOptions" placeholder="全部"/>
+              <a-select v-model="filterData.approvalNeed" :options="approvalNeedOptions" placeholder="全部"
+                        allow-clear @clear="condition" @change="conditionChange"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="approvalStatus" label="审批状态">
-              <a-select v-model="filterData.approvalStatus" :options="approvalStatusOptions" placeholder="全部"/>
+              <a-select v-model="filterData.approvalStatus" :options="approvalStatusOptions" placeholder="全部"
+                        allow-clear @clear="condition" @change="conditionChange"/>
             </a-form-item>
           </a-col>
         </a-row>

@@ -133,6 +133,9 @@ const condition = (ev?: Event) => {
   basePagination.current = 1;
   search();
 }
+const conditionChange = (value: string | number | boolean | Record<string, any> | (string | number | boolean | Record<string, any>)[]) => {
+  condition();
+}
 /**
  * 条件查询 - 重置
  */
@@ -304,12 +307,14 @@ watch(() => props.height, (val) => {
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="viewType" label="视图类型">
-              <a-select v-model="filterData.viewType" :options="viewTypeOptions" placeholder="全部"/>
+              <a-select v-model="filterData.viewType" :options="viewTypeOptions" placeholder="全部"
+                        allow-clear @clear="condition" @change="conditionChange"/>
             </a-form-item>
           </a-col>
           <a-col :span="isModal?12:8">
             <a-form-item field="enableStatus" label="状态">
-              <a-select v-model="filterData.enableStatus" :options="enableStatusOptions" placeholder="全部"/>
+              <a-select v-model="filterData.enableStatus" :options="enableStatusOptions" placeholder="全部"
+                        allow-clear @clear="condition" @change="conditionChange"/>
             </a-form-item>
           </a-col>
         </a-row>
