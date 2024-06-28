@@ -21,8 +21,8 @@ const routeParams = ref({
   tenantCode: (route && route.params && route.params.tenantCode as string) || ''
 });
 const back = (ev: MouseEvent) => {
-  console.log(DEFAULT_ROUTE);
-  console.log(`${routeParams.value.tenantCode}/${routeParams.value.appId}`);
+  // console.log(DEFAULT_ROUTE);
+  // console.log(`${routeParams.value.tenantCode}/${routeParams.value.appId}`);
   if (routeParams.value.tenantCode && routeParams.value.appId) {
     pageBaseRoute(router, routeParams.value);
   } else {

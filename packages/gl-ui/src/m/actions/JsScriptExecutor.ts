@@ -613,7 +613,7 @@ export class JsScriptExecutor {
         }
       }
     }
-    console.log('evalProps ctx:', ctx, 'newProps:', props)
+    // console.log('evalProps ctx:', ctx, 'newProps:', props)
     return props
   }
 
@@ -896,18 +896,18 @@ export class JsScriptExecutor {
     pageTemplateProps?: object
   ) {
     const pageProps = { params: params, pageTemplateProps: pageTemplateProps }
-    console.log(
-      'JsScriptExecutor > loadPage > pageId:',
-      pageId,
-      ',extendId:',
-      extendId,
-      ',pageStatus:',
-      pageStatus,
-      ',pageProps:',
-      pageProps,
-      'pageTemplateName',
-      pageTemplateName
-    )
+    // console.log(
+    //   'JsScriptExecutor > loadPage > pageId:',
+    //   pageId,
+    //   ',extendId:',
+    //   extendId,
+    //   ',pageStatus:',
+    //   pageStatus,
+    //   ',pageProps:',
+    //   pageProps,
+    //   'pageTemplateName',
+    //   pageTemplateName
+    // )
     return h(GlPageViewer, { pageId, extendId, pageStatus, pageTemplateName, pageProps })
   }
 

@@ -153,10 +153,10 @@ export class EntityApi {
       platform_user: minutes * 5
     }
     if (!disabledClientQueryCache && cachePromise) {
-      logger.debug(`查询实体：${Object.keys(mql)[0]}，从缓存中获取数据`)
+      // logger.debug(`查询实体：${Object.keys(mql)[0]}，从缓存中获取数据`)
       return cachePromise
     } else {
-      logger.debug(`查询实体：${Object.keys(mql)[0]}，从服务端获取数据`)
+      // logger.debug(`查询实体：${Object.keys(mql)[0]}，从服务端获取数据`)
       const entityName = Object.keys(mql)[0]
       const promiseResult = this.service({
         url: `${path}?withMeta=${!!withMeta}&biz=${bizCode}&e=${

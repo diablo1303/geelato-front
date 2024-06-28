@@ -51,9 +51,8 @@ enum DataEmptyShowMode {
  */
 import {
   computed,
-  inject,
-  onMounted,
-  onUpdated,
+  inject, onBeforeUnmount,
+  onMounted, onUnmounted,
   type PropType,
   provide,
   type Ref,
@@ -82,7 +81,8 @@ import {
 import { getFormParams, type ValidatedError } from './GlEntityForm'
 import { NO_BIND_FLAG } from '../../types/global'
 
-console.log('GlEntityForm > init')
+const __id = utils.gid('__form')
+console.log('GlEntityForm > init',__id)
 
 // onLoadingData：从服务端加载数据，但未设置到表单中
 // onLoadedData：从服务端加载完数据并设置到表单中
@@ -518,8 +518,8 @@ const fetchData = async (params?: { id: string; [key: string]: any }, reRender: 
         delete queryParams.id
       }
 
-      console.log('GlEntityForm > fetchData() > queryParams:', queryParams)
-      console.log('GlEntityForm > fetchData() > glComponentInst.id:', props.glComponentInst.id)
+      // console.log('GlEntityForm > fetchData() > queryParams:', queryParams)
+      // console.log('GlEntityForm > fetchData() > glComponentInst.id:', props.glComponentInst.id)
       entityApi
         .query(
           props.bindEntity.entityName,
@@ -827,8 +827,8 @@ if (loadDataImmediate()) {
   setFormItemValues(formParams)
 }
 
-onUpdated(() => {
-  // console.log('onUpdated() > formData', formData)
+onUnmounted(async () => {
+  console.log('GlEntityForm > onUnmounted',__id)
 })
 
 defineExpose({

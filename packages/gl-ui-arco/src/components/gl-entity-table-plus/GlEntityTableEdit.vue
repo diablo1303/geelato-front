@@ -443,7 +443,7 @@ const fetchData = async (readerInfo?: {
     // 增加父表单主键，作为查询字段，若父表单无该主健id，则返回，不查询
     if (props.isFormSubTable) {
       const pid = formProvideProxy?.getRecordId()
-      console.log('GlEntityTableEdit > fetchData() > formProvideProxy is', formProvideProxy)
+      // console.log('GlEntityTableEdit > fetchData() > formProvideProxy is', formProvideProxy)
       if (!pid) {
         setLoading(false)
         if (
@@ -471,7 +471,7 @@ const fetchData = async (readerInfo?: {
     }
     entityReader.pageSize = readerInfo?.pageSize || _pagination.pageSize!
     const response: any = await entityApi.queryByEntityReader(entityReader, true)
-    console.log('GlEntityTableEdit > fetchData() > response:', response)
+    // console.log('GlEntityTableEdit > fetchData() > response:', response)
     renderData.value = response.data
     reStatIsRowReadonly(renderData.value)
     _pagination.pageSize = readerInfo?.pageSize || _pagination.pageSize
@@ -487,18 +487,18 @@ const fetchData = async (readerInfo?: {
 }
 
 const onChangeValue = (value: any, oldValue: any) => {
-  console.log(
-    'change renderData,label:',
-    props.glComponentInst.props.base?.label,
-    'entity:',
-    props.glComponentInst.props.base?.entityName,
-    'id',
-    props.glComponentInst.id,
-    'isPageRead:',
-    isPageRead,
-    'renderData:',
-    props.glComponentInst.value
-  )
+  // console.log(
+  //   'change renderData,label:',
+  //   props.glComponentInst.props.base?.label,
+  //   'entity:',
+  //   props.glComponentInst.props.base?.entityName,
+  //   'id',
+  //   props.glComponentInst.id,
+  //   'isPageRead:',
+  //   isPageRead,
+  //   'renderData:',
+  //   props.glComponentInst.value
+  // )
   // 这里不能使用 reRender()，reRender会导致用户每录入一个字符都会重绘整个列表
   renderData.value = []
   // @ts-ignore
@@ -691,11 +691,11 @@ const addRecords = (records: Record<string, any>[],keyField:string='dataIndex') 
   records?.forEach((record: Record<string, any>) => {
     const newRow = {}
     props.columns.forEach((col: Column) => {
-      console.log('col', col,'record',record,keyField,col[keyField],record[col[keyField]],record[`"${col[keyField]}"`])
+      // console.log('col', col,'record',record,keyField,col[keyField],record[col[keyField]],record[`"${col[keyField]}"`])
       //@ts-ignore
       newRow[col.dataIndex] = record[`"${col[keyField]}"`] || col._component?.value
     })
-    console.log('newRow', newRow)
+    // console.log('newRow', newRow)
     renderData.value.push(newRow)
   })
   props.glComponentInst.value = renderData.value

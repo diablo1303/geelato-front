@@ -173,7 +173,7 @@ const formatModules = (_modules: any, result: RouteRecordNormalized[]) => {
   });
   if (IS_ACCOUNT.value) Object.assign(DEFAULT_ROUTE, DEFAULT_ROUTE_ACCOUNT);
 
-  console.log(DEFAULT_ROUTE);
+  // console.log(DEFAULT_ROUTE);
   return result;
 }
 

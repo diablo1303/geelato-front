@@ -78,6 +78,10 @@ const itemMv: Ref<TabItem | { hideRightTopSlot: false; [Key: string]: any }> = r
   hideRightTopSlot: false
 })
 const tabItems: Ref<TabItem[]> = ref(props.items || [])
+// 初始时，设置为未加载
+tabItems.value.forEach((item: any) => {
+  item.hasBeenLoad = false
+})
 if (tabItems.value.length === 0) {
   tabItems.value.push(
     ...[
@@ -112,6 +116,12 @@ const clearNullChild = () => {
 }
 clearNullChild()
 
+const setHasBeenLoad = (tabItem: TabItem) => {
+  // console.log('GlTabs > setHasBeenLoad() > tabItem:', tabItem)
+  if(tabItem){
+    tabItem.hasBeenLoad = true
+  }
+}
 /**
  *  设置当前tabs的默认值，是选中哪一个
  *  若无选中值，初始化选中第一个
@@ -123,16 +133,16 @@ const setSelectTab = () => {
   // console.log('setSelectTab() > val:', mv.value, 'foundTabItem:', foundTabItem)
 
   if (foundTabItem) {
-    foundTabItem.hasBeenLoad = true
+    setHasBeenLoad(foundTabItem)
     itemMv.value = foundTabItem
   } else {
     // 若无选中值，初始化选中第一个
     if (tabItems.value.length > 0) {
       // (mv.value == undefined || mv.value == '') &&
-      tabItems.value[0].hasBeenLoad = true
+      setHasBeenLoad(tabItems.value[0])
       mv.value = tabItems.value[0].value
       itemMv.value = tabItems.value[0]
-      console.log('setSelectTab() :无选中值，或值无效，初始化选中第一个，第一个值为：', mv.value)
+      console.log('GlTabs > setSelectTab() :无选中值，或值无效，初始化选中第一个，第一个值为：', mv.value)
     } else {
       itemMv.value = { hideRightTopSlot: false }
     }
@@ -224,7 +234,7 @@ const onTabClick = (key: string | number) => {
     return item.value == key
   })
   if (foundItem && !foundItem.disabled) {
-    foundItem.hasBeenLoad = true
+    setHasBeenLoad(foundItem)
     mv.value = key
     setSelectTab()
   }
