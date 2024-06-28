@@ -236,7 +236,7 @@ defineExpose({saveOrUpdate, loadPage, linkTest});
       <a-col :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
             :label="$t('model.connect.index.form.dbSchema')"
-            :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
+            :rules="[{required: false,message: $t('model.form.rules.match.required')}]"
             field="dbSchema">
           <a-input v-if="formState!=='view'" v-model.trim="formData.dbSchema" :max-length="125"/>
           <span v-else>{{ formData.dbSchema }}</span>
@@ -289,7 +289,7 @@ defineExpose({saveOrUpdate, loadPage, linkTest});
             :label="$t('model.connect.index.form.dbUserName')"
             :rules="[{required: true,message: $t('model.form.rules.match.required')}]"
             field="dbUserName">
-          <a-input v-if="formState!=='view'" v-model="formData.dbUserName" :max-length="10"/>
+          <a-input v-if="formState!=='view'" v-model="formData.dbUserName" :max-length="50"/>
           <span v-else>{{ formData.dbUserName }}</span>
         </a-form-item>
       </a-col>
@@ -302,7 +302,7 @@ defineExpose({saveOrUpdate, loadPage, linkTest});
               v-if="formState!=='view'"
               v-model="formData.dbPassword"
               :invisible-button="false"
-              :max-length="25" allow-clear/>
+              :max-length="50" allow-clear/>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
