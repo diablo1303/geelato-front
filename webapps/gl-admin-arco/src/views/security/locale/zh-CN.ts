@@ -466,6 +466,7 @@ export default {
   'security.form.rules.match.required': '这是必填项',
   'security.form.rules.match.uniqueness': '不能重复',
   'security.form.rules.match.length.title': '长度',
+  'security.form.rules.match.permission.rule': '井号内参数书写错误',
 
   'security.encoding.index.menu.list': '应用管理',
   'security.encoding.index.menu.list.searchTable': '编码管理',

@@ -465,6 +465,7 @@ export default {
   'security.form.rules.match.required': 'this is required',
   'security.form.rules.match.uniqueness': 'non-repeatability',
   'security.form.rules.match.length.title': 'length',
+  'security.form.rules.match.permission.rule': 'Parameters in the pound sign are incorrectly written',
 
   'security.encoding.index.menu.list': 'System',
   'security.encoding.index.menu.list.searchTable': 'Encoding',
