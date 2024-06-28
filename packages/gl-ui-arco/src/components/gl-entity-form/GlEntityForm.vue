@@ -80,6 +80,7 @@ import {
   utils
 } from '@geelato/gl-ui'
 import { getFormParams, type ValidatedError } from './GlEntityForm'
+import { NO_BIND_FLAG } from '../../types/global'
 
 console.log('GlEntityForm > init')
 
@@ -321,6 +322,9 @@ const buildFieldItems = () => {
           // console.error('GlEntityForm > ', content)
           continue
         }
+        if (subInst.props.bindField?.fieldName === NO_BIND_FLAG) {
+          continue
+        }
         let formItem = {
           componentName: subInst.componentName,
           label: subInst.props.label || '',
@@ -452,10 +456,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
  *  @param params 加载表单数据的参数，如：{id:xxx};如果参数有值，则以参数为准，否则取当前表单的id进行查询。
  *  @param reRender 重新渲染表单，默认true,一般在组件外部在调用时，不需要设置该值，即需要重新渲染；在表单首次加载时，需要设置该值为false，避免重复渲染
  */
-const fetchData = async (
-  params?: { id: string; [key: string]: any },
-  reRender: boolean = true
-) => {
+const fetchData = async (params?: { id: string; [key: string]: any }, reRender: boolean = true) => {
   let recordId
   if (utils.isEmpty(params)) {
     // 如果是复制创建，则基于复制的id进行数据加载
@@ -554,7 +555,7 @@ const fetchData = async (
             isLastFetchedDataEmpty.value = true
             emits('onLoadingData', { data: {} })
           }
-          console.log('GlEntityForm > fetchData() > reRender:', reRender,'formData',formData.value)
+          // console.log('GlEntityForm > fetchData() > reRender:', reRender,'formData',formData.value)
           if(reRender){
             formKey.value = utils.gid('formKey')
           }
