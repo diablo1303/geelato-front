@@ -267,14 +267,16 @@ watch(() => props, (val) => {
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.user.index.form.type')" field="userType">
-              <a-select v-model="filterData.userType" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.userType" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.user.index.form.enableStatus')" field="userEnableStatus">
-              <a-select v-model="filterData.userEnableStatus" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.userEnableStatus" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>

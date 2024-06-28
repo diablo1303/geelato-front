@@ -298,7 +298,8 @@ watch(() => props, (val) => {
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.sysConfig.index.form.purpose')" field="purpose">
-              <a-select v-model="filterData.purpose" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.purpose" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="(item,index) of purposeOptions" :key="index" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
@@ -310,7 +311,8 @@ watch(() => props, (val) => {
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.sysConfig.index.form.enableStatus')" field="enableStatus">
-              <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="(item,index) of enableStatusOptions" :key="index" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>

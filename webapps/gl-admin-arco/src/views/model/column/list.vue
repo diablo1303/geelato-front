@@ -550,13 +550,15 @@ watch(() => props, async (val) => {
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('model.column.index.form.dataType')" field="selectType">
-              <a-select v-model="filterData.selectType" :options="columnSelectType" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.selectType" :options="columnSelectType" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('model.column.index.form.enableStatus')" field="enableStatus">
-              <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option
                     v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>

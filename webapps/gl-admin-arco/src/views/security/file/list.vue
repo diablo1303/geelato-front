@@ -342,14 +342,16 @@ watch(() => props, (val) => {
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.file.index.form.useType')" field="useType">
-              <a-select v-model="filterData.useType" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.useType" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of useTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.file.index.form.fileType')" field="fileType">
-              <a-select v-model="filterData.fileType" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.fileType" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of fileTypeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
@@ -366,7 +368,8 @@ watch(() => props, (val) => {
           </a-col>
           <a-col v-if="!!parameter.appId" :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.file.index.form.enableStatus')" field="enableStatus">
-              <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.enableStatus" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of enableStatusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>

@@ -271,21 +271,24 @@ watch(() => props, (val) => {
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.org.index.form.type')" field="orgType">
-              <a-select v-model="filterData.orgType" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.orgType" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.org.index.form.category')" field="orgCategory">
-              <a-select v-model="filterData.orgCategory" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.orgCategory" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of categoryOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.org.index.form.status')" field="orgStatus">
-              <a-select v-model="filterData.orgStatus" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.orgStatus" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of statusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>

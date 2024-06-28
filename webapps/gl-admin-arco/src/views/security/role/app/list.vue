@@ -290,21 +290,24 @@ watch(() => props, (val) => {
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('application.app.list.applyStatus')" field="appApplyStatus">
-              <a-select v-model="filterData.appApplyStatus" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.appApplyStatus" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of statusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('application.app.list.designStatus')" field="appDesignStatus">
-              <a-select v-model="filterData.appDesignStatus" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.appDesignStatus" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of statusOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('application.app.list.watermark')" field="appWaterMark">
-              <a-select v-model="filterData.appWaterMark" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.appWaterMark" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of watermarkOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>

@@ -315,7 +315,8 @@ watch(() => props, (val) => {
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('model.table.index.form.tableType')" field="tableType">
-              <a-select v-model="filterData.tableType" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.tableType" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="(item,index) of tableTypeOptions" :key="index" :disabled="item.disabled"
                           :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
@@ -324,7 +325,8 @@ watch(() => props, (val) => {
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('model.table.index.form.enableStatus')" field="enableStatus">
               <a-select v-model="filterData.enableStatus"
-                        :placeholder="$t('searchTable.form.selectDefault')">
+                        :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="(item,index) of enableStatusOptions" :key="index"
                           :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
@@ -337,7 +339,8 @@ watch(() => props, (val) => {
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('model.table.index.form.sourceType')" field="sourceType">
-              <a-select v-model="filterData.sourceType" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.sourceType" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="(item,index) of sourceTypeOptions" :key="index"
                           :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>

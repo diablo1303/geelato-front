@@ -145,6 +145,15 @@ const search = (ev?: Event) => {
   fetchData({order: lastSort.value, ...basePagination, ...filterData.value,} as unknown as PageQueryRequest);
 };
 /**
+ * 条件查询 - 搜索
+ * 排序，页数（1），条数，过滤（√）
+ * @param ev
+ */
+const condition = (ev?: Event) => {
+  basePagination.current = 1;
+  search();
+}
+/**
  * 条件查询 - 重置
  */
 const reset = (ev?: Event) => {
@@ -248,36 +257,39 @@ watch(() => props.orgId, () => {
           </a-col>
           <a-col :span="12">
             <a-form-item :label="$t('security.user.index.form.name')" field="name">
-              <a-input v-model="filterData.name" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.name" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label="$t('security.user.index.form.loginName')" field="loginName">
-              <a-input v-model="filterData.loginName" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.loginName" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label="$t('security.user.index.form.jobNumber')" field="jobNumber">
-              <a-input v-model="filterData.jobNumber" allow-clear @clear="search($event)" @press-enter="search($event)"/>
+              <a-input v-model="filterData.jobNumber" allow-clear @clear="condition($event)" @press-enter="condition($event)"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item :label="$t('security.user.index.form.sex')" field="sex">
-              <a-select v-model="filterData.sex" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.sex" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of sexOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value as string"/>
               </a-select>
             </a-form-item>
           </a-col>
           <!--          <a-col :span="12">
                       <a-form-item :label="$t('security.user.index.form.type')" field="type">
-                        <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
+                        <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                           <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value as string"/>
                         </a-select>
                       </a-form-item>
                     </a-col>-->
           <!--          <a-col :span="12">
                       <a-form-item :label="$t('security.user.index.form.source')" field="source">
-                        <a-select v-model="filterData.source" :placeholder="$t('searchTable.form.selectDefault')">
+                        <a-select v-model="filterData.source" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                           <a-option v-for="item of sourceOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value as string"/>
                         </a-select>
                       </a-form-item>
@@ -288,7 +300,7 @@ watch(() => props.orgId, () => {
     <a-divider direction="vertical" style="height: 84px"/>
     <a-col :flex="'86px'" style="text-align: right">
       <a-space :size="18" direction="vertical" style="align-items: flex-start;">
-        <a-button type="primary" @click="search($event)">
+        <a-button type="primary" @click="condition($event)">
           <template #icon>
             <icon-search/>
           </template>

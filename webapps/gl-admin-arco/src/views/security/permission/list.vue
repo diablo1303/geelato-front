@@ -287,7 +287,8 @@ watch(() => props, (val) => {
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item :label="$t('security.permission.index.form.type')" field="type">
-              <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')">
+              <a-select v-model="filterData.type" :placeholder="$t('searchTable.form.selectDefault')"
+                        allow-clear @clear="condition($event)" @change="condition">
                 <a-option v-for="item of typeOptions" :key="item.value as string" :label="$t(`${item.label}`)" :value="item.value"/>
               </a-select>
             </a-form-item>
