@@ -114,6 +114,44 @@ const validateCode = async (value: any, callback: any) => {
   }
 }
 
+
+function extractBetweenHashes(str: string) {
+  // 使用正则表达式匹配 # 之间的内容
+  // 这里使用了非贪婪匹配（?:），这样如果字符串中有多个 # 对，它只会匹配到最近的那一对
+  const regex = /#(.*?)#/g;
+  let matches;
+  const result = [];
+  // 使用 exec 方法在字符串中查找所有匹配项
+  // 注意：exec 方法在每次调用后都会更新 lastIndex 属性，所以我们需要在一个循环中使用它
+  // eslint-disable-next-line no-cond-assign
+  while ((matches = regex.exec(str)) !== null) {
+    // 第一个匹配项（整个匹配）在索引 0，我们想要的是捕获组（括号内的部分），它在索引 1
+    result.push(matches[1]);
+  }
+
+  return result;
+}
+
+const validateRule = async (value: any, callback: any) => {
+  const regex = ruleOptions.value.map(item => item.value);
+  try {
+    let isRegex = true;
+    const data: string[] = extractBetweenHashes(formData.value.rule);
+    if (data && data.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const datum of data) {
+        if (!datum || !regex.includes(`#${datum}#`)) {
+          isRegex = false;
+          break;
+        }
+      }
+    }
+    if (!isRegex) callback("井号内参数书写错误");
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 /**
  * 保存按钮
  * @param ev
@@ -201,14 +239,14 @@ watch(() => visibleForm, () => {
           </a-form-item>
         </a-col>
         <a-col :span="(labelCol+wrapperCol)">
-          <a-form-item :rules="[{required: true,message: '这是必填项'}]"
-                       :label-col-props="{ span: labelCol/formCol }"
+          <a-form-item :label-col-props="{ span: labelCol/formCol }"
+                       :rules="[{required: true,message: '这是必填项'},{validator:validateRule}]"
                        :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                        field="rule" label="规则">
             <a-textarea v-if="formState!=='view'" v-model="formData.rule" :auto-size="{minRows:2,maxRows:4}" :max-length="512" show-word-limit/>
             <span v-else :title="formData.rule" class="textarea-span" @click="openModal(`${formData.rule}`)">{{ formData.rule }}</span>
             <template v-if="formState!=='view'" #extra>
-              <a-descriptions size="small" :column="formCol" layout="horizontal" :bordered="true">
+              <a-descriptions :bordered="true" :column="formCol" layout="horizontal" size="small">
                 <a-descriptions-item v-for="(item,index) of ruleOptions" :key="index" :label="item.label">
                   <GlCopyToClipboard v-if="item.value" :model-value="item.value"/>
                   {{ item.value }}
