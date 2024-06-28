@@ -12,12 +12,21 @@
     </a-select>
     <a-button v-if="allowOpen" size="small" style="padding: 0 4px" type="primary" @click="openEntity">打开</a-button>
   </div>
-  <GlModelTableTabs v-model:visible="formTabsParams.visible"
-                    :formState="formTabsParams.formState"
-                    :modelValue="formTabsParams.id"
-                    :parameter="formTabsParams.parameter"
-                    :refApp="formTabsParams.refApp"
-                    :width="formTabsParams.width"/>
+  <GlModelTableTabs v-model:visible="tableTabsParams.visible"
+                    :formState="tableTabsParams.formState"
+                    :modelValue="tableTabsParams.id"
+                    :parameter="tableTabsParams.parameter"
+                    :refApp="tableTabsParams.refApp"
+                    :width="tableTabsParams.width"/>
+  <GlModelTableViewForm v-model:visible="viewTabsParams.visible"
+                        :formCol="viewTabsParams.formCol"
+                        :formState="viewTabsParams.formState"
+                        :modelValue="viewTabsParams.id"
+                        :parameter="viewTabsParams.parameter"
+                        :title="viewTabsParams.title"
+                        :width="viewTabsParams.width"
+                        :isPermission="viewTabsParams.formState==='add'?false:true"
+                        :isApproval="viewTabsParams.formState==='add'?false:true"/>
 </template>
 <script lang="ts">
 export default {
@@ -31,6 +40,7 @@ import {useAppStore, useEntityStore} from '@geelato/gl-ide'
 import {entityApi, type EntityLiteMeta, EntityMeta, EntityReader, EntityReaderParam, modelApi, useGlobal} from '@geelato/gl-ui'
 import {ComponentSetterProvideKey, ComponentSetterProvideProxy} from '@geelato/gl-ide'
 import GlModelTableTabs from "../../sidebar/model/table/tableTabs.vue";
+import GlModelTableViewForm from "../../sidebar/model/view/form.vue";
 
 const props = defineProps({
   modelValue: {
@@ -103,16 +113,21 @@ if (props.modelValue) {
 }
 
 
-const fetchData = (entityName: string, successBack?: any, failBack?: any) => {
-  if (!appStore.currentApp.id) {
+const fetchData = (entityName: string, type: string, successBack?: any, failBack?: any) => {
+  if (!appStore.currentApp.id || !entityName || !type) {
     return
   }
   const entityReader = new EntityReader()
-  entityReader.entity = 'platform_dev_table'
-  entityReader.setFields('id,creator,creatorName,updateAt,updaterName,entityName,title,tableComment')
   entityReader.params = []
-  // entityReader.params.push(new EntityReaderParam('appId', 'eq', appStore.currentApp.id))
-  entityReader.params.push(new EntityReaderParam('entityName', 'eq', entityName))
+  if (['View'].includes(type)) {
+    entityReader.entity = 'platform_dev_view'
+    entityReader.setFields('id,title,viewName,viewType,description,entityName,connectId,appId,tenantCode')
+    entityReader.params.push(new EntityReaderParam('viewName', 'eq', entityName))
+  } else if (['Class', 'Table'].includes(type)) {
+    entityReader.entity = 'platform_dev_table'
+    entityReader.setFields('id,title,entityName,tableComment,description,tableType,synced,sourceType,packBusData,connectId,appId,tenantCode')
+    entityReader.params.push(new EntityReaderParam('entityName', 'eq', entityName))
+  }
   entityApi.queryByEntityReader(entityReader).then(
       async (res: any) => {
         if (res.data && res.data.length > 0) {
@@ -126,19 +141,40 @@ const fetchData = (entityName: string, successBack?: any, failBack?: any) => {
   )
 }
 
-const formTabsParams = ref({
+const tableTabsParams = ref({
   id: '', visible: false, formState: 'view', formCol: 2, width: '76%', refApp: false,
   parameter: {appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
+});
+const viewTabsParams = ref({
+  id: '', visible: false, formState: 'view', formCol: 2, title: '', width: '76%',
+  parameter: {
+    connectId: '', entityName: '',
+    appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode
+  },
 });
 const openEntity = () => {
   if (!mv.value) return
   if (!appStore.currentApp.id) return
-  let entityLiteMeta = entityLiteMetas.value.find((item) => item.entityName === mv.value)
+  const entityLiteMeta = entityLiteMetas.value.find((item) => item.entityName === mv.value)
   console.log('openEntity entityLiteMeta', entityLiteMeta)
-  fetchData(mv.value, (data: Record<string, any>) => {
-    formTabsParams.value.id = data.id;
-    formTabsParams.value.refApp = false;
-    formTabsParams.value.visible = true;
+  if (!entityLiteMeta) return
+  fetchData(mv.value, entityLiteMeta.entityType, (data: Record<string, any>) => {
+    if (['View'].includes(entityLiteMeta.entityType)) {
+      Object.assign(viewTabsParams.value, {
+        id: data.id, visible: true, title: `编辑模型视图（${data.viewName}）`, parameter: {
+          connectId: data.connectId, entityName: data.entityName,
+          appId: data.appId || appStore.currentApp.id,
+          tenantCode: data.tenantCode || appStore.currentApp.tenantCode
+        }
+      });
+    } else if (['Class', 'Table'].includes(entityLiteMeta.entityType)) {
+      Object.assign(tableTabsParams.value, {
+        id: data.id, visible: true, parameter: {
+          appId: data.appId || appStore.currentApp.id,
+          tenantCode: data.tenantCode || appStore.currentApp.tenantCode
+        }
+      });
+    }
   });
 }
 </script>
