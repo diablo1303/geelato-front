@@ -398,7 +398,7 @@ defineExpose({openLocker, openModel});
           </a-col>
           <a-col :span="(labelCol+wrapperCol)/filterCol">
             <a-form-item field="createAt" label="创建时间">
-              <a-range-picker v-model="filterData.createAt" style="width: 100%" @clear="condition($event)" @change="condition"/>
+              <a-range-picker v-model="filterData.createAt" style="width: 100%" @clear="condition($event)"/>
             </a-form-item>
           </a-col>
         </a-row>
