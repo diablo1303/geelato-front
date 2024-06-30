@@ -40,7 +40,6 @@ const savedPageIgnore = (data: any) => {
 
 const modalVisible = ref(false)
 const showPageReplaceModal = () => {
-  console.log('showPageReplaceModal')
   modalVisible.value = true
 }
 const handleOk = () => {
@@ -62,8 +61,7 @@ onUnmounted(() => {
 <template>
   <DndProvider :backend="HTML5Backend">
     <GlIde />
-    <a-modal v-if="modalVisible"></a-modal>
-    <a-modal v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel" fullscreen>
+    <a-modal v-if="modalVisible" v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel" fullscreen>
       <template #title> 页面重构（危险操作）</template>
       <PageReplaceEditor></PageReplaceEditor>
     </a-modal>

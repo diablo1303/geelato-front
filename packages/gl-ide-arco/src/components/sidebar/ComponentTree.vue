@@ -49,7 +49,6 @@ const treeData = computed(() => {
 })
 
 const searchData = (keyword: String) => {
-  console.log('searchData', keyword)
   const loop = (data: Array<any>) => {
     const result: Array<Node> = [];
     data.forEach(item => {

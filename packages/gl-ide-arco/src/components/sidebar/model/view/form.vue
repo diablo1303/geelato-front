@@ -546,7 +546,6 @@ const deleteTableView = async () => {
 
 
 watch(() => props, () => {
-  console.log('form', props);
   if (props.visible === true) {
     tabsKey.value = 1;
     // 调整高度

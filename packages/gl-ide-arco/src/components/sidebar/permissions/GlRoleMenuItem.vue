@@ -97,7 +97,7 @@ const loadAppRoles = async (appId: string) => {
 
 const loadAppMenuItems = (appId: string) => {
   entityApi
-      .query('platform_tree_node', 'id key,pid,text name,iconType,seqNo', {'@p': '1,2000', treeId: appId})
+      .query('platform_tree_node', 'id key,pid,text name,iconType,seqNo', {'@p': '1,2000', treeId: appId},false,false,undefined,'seqNo|+')
       .then((res) => {
         // @ts-ignore
         res.data.sort((a, b) => a.seqNo - b.seqNo);

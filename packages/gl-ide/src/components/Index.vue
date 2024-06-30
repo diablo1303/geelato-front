@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import {provide, defineComponent, ref, nextTick} from 'vue'
+import {defineComponent, ref} from 'vue'
 import {Splitpanes, Pane} from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import IdeToolbarPanel from './ToolbarPanel.vue'

@@ -246,7 +246,6 @@ enum NodeType {
  */
 const reRender = () => {
   treeData.value = [...treeData.value]
-  // console.log('reRender', treeData.value)
 }
 
 function searchData(tree,keyword) {
@@ -633,13 +632,12 @@ const closeModal = () => {
 /**
  * 从服务端加载数据
  */
-const fetchData = () => {
+const fetchData = (isInit:boolean=false) => {
   // 是否配置了加载数据方法
   if (props.loadTreeData && typeof props.loadTreeData === 'function') {
     const treeDataPromise = props.loadTreeData()
     if (treeDataPromise) {
-      props.loadTreeData().then((res: any) => {
-        // console.log('loadTreeData:', res)
+      treeDataPromise.then((res: any) => {
         treeData.value = [
           {
             treeId: props.treeId,
@@ -664,13 +662,14 @@ const fetchData = () => {
             }
           })
         )
-        global.$message.success('加载树数据成功')
+        global.$message.success(`加载【${props.treeName}】树数据成功`)
       })
     }
   }
 }
+
 // 初始化加载
-fetchData()
+fetchData(true)
 
 
 // 对外提供方法

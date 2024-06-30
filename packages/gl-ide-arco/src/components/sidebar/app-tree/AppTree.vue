@@ -81,6 +81,22 @@ pageStore.addPageTemplate('freePage', import('../../stage/freePageTemplate.json'
 pageStore.addPageTemplate('listPage', import('../../stage/listPageTemplate.json'))
 pageStore.addPageTemplate('flowPage', import('../../stage/flowPageTemplate.json'))
 
+// 树实体查询
+const entityReader = new EntityReader()
+entityReader.entity = 'platform_tree_node'
+entityReader.fields = []
+entityReader.fields.push(new FieldMeta('treeId'))
+entityReader.fields.push(new FieldMeta('id', 'key'))
+entityReader.fields.push(new FieldMeta('text', 'title'))
+entityReader.fields.push(new FieldMeta('pid'))
+entityReader.fields.push(new FieldMeta('iconType'))
+entityReader.fields.push(new FieldMeta('type', '_nodeType'))
+entityReader.fields.push(new FieldMeta('flag'))
+entityReader.fields.push(new FieldMeta('seqNo'))
+entityReader.pageSize = 3000
+entityReader.addParam('treeId', 'eq', appStore.currentApp.id)
+entityReader.addOrder('seqNo', '+')
+
 type ClickContextMenuItemType = {
   clickedNodeData: Record<string, any>
   contextMenuItemData: Record<string, any>
@@ -92,7 +108,7 @@ const currentClickContextMenuItem: Ref<ClickContextMenuItemType> = ref({
 })
 
 // 当前右键菜单点击的链接信息内容
-const currentClickLink = ref({id:'',pid:'', title: '', url: '' })
+const currentClickLink = ref({ id: '', pid: '', title: '', url: '' })
 
 const createPageNav = ref()
 const createPageNavKey = ref(utils.gid('key'))
@@ -121,7 +137,7 @@ const onSelectNode = (params: any) => {
  * @param params
  */
 const clickContextMenuItem = (params: ClickContextMenuItemType) => {
-  console.log('clickContextMenuItem() > params:', params)
+  // console.log('clickContextMenuItem() > params:', params)
   currentClickContextMenuItem.value = params
   if (params.contextMenuItemData._nodeType === 'templatePage') {
     createPageNavKey.value = utils.gid('key')
@@ -133,33 +149,34 @@ const clickContextMenuItem = (params: ClickContextMenuItemType) => {
       url: '',
       title: ''
     }
-    if(params.contextMenuItemData.action === 'createLinkPage'){
+    if (params.contextMenuItemData.action === 'createLinkPage') {
       currentClickLink.value.pid = params.clickedNodeData.key
       linkPageVisible.value = true
-    }else if(params.contextMenuItemData.action === 'updateLinkPage'){
+    } else if (params.contextMenuItemData.action === 'updateLinkPage') {
       currentClickLink.value.id = params.clickedNodeData.key
       // 新创建或修改
-      const entityReader = new EntityReader()
-      entityReader.entity = 'platform_tree_node'
-      entityReader.setFields("id,text,pid,url")
-      entityReader.addParam('id', 'eq', currentClickLink.value.id)
-      entityApi.queryByEntityReader(entityReader).then((res: any) => {
-        console.log('查询节点数据', res)
-        if(res.data?.length > 0) {
-          currentClickLink.value = {
-            id: res.data[0].id,
-            pid: res.data[0].pid,
-            url: res.data[0].url,
-            title: res.data[0].text,
+      const reader = new EntityReader()
+      reader.entity = 'platform_tree_node'
+      reader.setFields('id,text,pid,url')
+      reader.addParam('id', 'eq', currentClickLink.value.id)
+      entityApi.queryByEntityReader(reader).then(
+        (res: any) => {
+          if (res.data?.length > 0) {
+            currentClickLink.value = {
+              id: res.data[0].id,
+              pid: res.data[0].pid,
+              url: res.data[0].url,
+              title: res.data[0].text
+            }
           }
+          linkPageVisible.value = true
+        },
+        (res: any) => {
+          global.$message.error('查询节点数据失败')
+          console.error('查询节点数据失败', res)
         }
-        linkPageVisible.value = true
-      },(res:any)=>{
-        global.$message.error('查询节点数据失败')
-        console.error('查询节点数据失败', res)
-      })
+      )
     }
-
   }
 }
 
@@ -186,21 +203,7 @@ const onDeleteNode = (params: any) => {
 const onUpdateNodeName = (params: any) => {
   pageStore.updatePageTitleByExtendId(params.editNodeData.key, params.editNodeData.title)
 }
-// 树实体查询
-const entityReader = new EntityReader()
-entityReader.entity = 'platform_tree_node'
-entityReader.fields = []
-entityReader.fields.push(new FieldMeta('treeId'))
-entityReader.fields.push(new FieldMeta('id', 'key'))
-entityReader.fields.push(new FieldMeta('text', 'title'))
-entityReader.fields.push(new FieldMeta('pid'))
-entityReader.fields.push(new FieldMeta('iconType'))
-entityReader.fields.push(new FieldMeta('type', '_nodeType'))
-entityReader.fields.push(new FieldMeta('flag'))
-entityReader.fields.push(new FieldMeta('seqNo'))
-entityReader.pageSize = 3000
-entityReader.addParam('treeId', 'eq', appStore.currentApp.id)
-entityReader.addOrder('seqNo', '+')
+
 // 右键菜单数据，每一项依据useFor属性，判断是否显示
 const contextMenuData = [
   {
@@ -356,7 +359,6 @@ const handleCancel = () => {
 }
 
 const onSaveLinkNode = (node: any) => {
-  console.log('onSaveLinkNode', node)
   glEntityTree.value.fetchData()
 }
 

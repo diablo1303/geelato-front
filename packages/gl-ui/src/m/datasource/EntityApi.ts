@@ -324,6 +324,7 @@ export class EntityApi {
    * 如果没有传删除状态，默认会带上删除訚为0，即delStatus='0'
    * @param entityReader
    * @param disabledClientQueryCache 禁止客户端本次从缓存中查询，且禁止客户端缓存本次查询结果，默认为否
+   * @param bizCode 业务代码，用于区分不同业务
    * @returns {*}
    */
   queryByEntityReader(
@@ -422,8 +423,9 @@ export class EntityApi {
    * @param withMeta
    * @param disabledClientQueryCache
    * @param bizCode
+   * @param order 排序，例如：'name|+'、'updateAt|-'
    */
-  query(entityName: string, fieldNames: string, params: Record<string, any>, withMeta?: boolean,disabledClientQueryCache?: boolean, bizCode?: string) {
+  query(entityName: string, fieldNames: string, params: Record<string, any>, withMeta?: boolean,disabledClientQueryCache?: boolean, bizCode?: string,order?:string) {
     // if (!fieldNames) {
     //     // eslint-disable-next-line no-throw-literal
     //     throw `查询${entityName},失败，列（fieldNames）不能为空。`;
@@ -443,6 +445,9 @@ export class EntityApi {
     }
     if (!copyParam['@p']) {
       copyParam['@p'] = '1,500'
+    }
+    if(order){
+      mql[entityName]['@order'] = order
     }
     Object.assign(mql[entityName], copyParam)
     return this.queryByMql(mql, withMeta,disabledClientQueryCache,bizCode)

@@ -28,11 +28,11 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { entityApi, type EntityReader } from '@geelato/gl-ui'
 import {type PropType, ref, toRaw, watch} from 'vue'
-import GlBaseTree from './GlBaseTree.vue'
+import { entityApi, type EntityReader, utils } from '@geelato/gl-ui'
 import type { BindField } from '@geelato/gl-ui-schema'
 import type { ContextMenuDataType } from './types'
+import GlBaseTree from './GlBaseTree.vue'
 
 const emits = defineEmits([
   'selectNode',
@@ -114,9 +114,10 @@ watch(selectedKeys, (newVal) => {
 }, { deep: true })
 const glBaseTree = ref()
 
+const key = utils.gid('entityTree')
 const loadTreeDataFn = () => {
   if (props.entityReader) {
-    return entityApi.queryByEntityReader(props.entityReader)
+    return entityApi.queryByEntityReader(props.entityReader,false,key)
   }
 }
 

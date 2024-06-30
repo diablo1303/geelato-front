@@ -45,7 +45,7 @@ entityReader.fields.push(new FieldMeta('flag'))
 entityReader.fields.push(new FieldMeta('seqNo'))
 entityReader.params = []
 entityReader.params.push(new EntityReaderParam('treeId', 'eq', appId))
-entityReader.pageSize = 1000
+entityReader.pageSize = 2000
 
 const currentPage: any = ref({})
 const json = ref('')

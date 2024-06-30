@@ -42,7 +42,6 @@ watch(
 
 const onBeforeOk = () => {
   return formRef.value?.validate().then((values: any) => {
-    console.log('onBeforeOk', values)
     // values为空，表示验证成功
     if (!values) {
 
