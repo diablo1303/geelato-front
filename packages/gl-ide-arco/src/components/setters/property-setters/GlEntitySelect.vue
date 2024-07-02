@@ -142,11 +142,11 @@ const fetchData = (entityName: string, type: string, successBack?: any, failBack
 }
 
 const tableTabsParams = ref({
-  id: '', visible: false, formState: 'view', formCol: 2, width: '76%', refApp: false,
+  id: '', visible: false, formState: 'edit', formCol: 2, width: '76%', refApp: false,
   parameter: {appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
 });
 const viewTabsParams = ref({
-  id: '', visible: false, formState: 'view', formCol: 2, title: '', width: '76%',
+  id: '', visible: false, formState: 'edit', formCol: 2, title: '', width: '76%',
   parameter: {
     connectId: '', entityName: '',
     appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode
