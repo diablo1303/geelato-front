@@ -9,6 +9,7 @@
 <script lang="ts">
 import {defineComponent, onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import * as monaco from 'monaco-editor'
+import {format} from 'sql-formatter'
 // @ts-ignore
 // eslint-disable-next-line import/extensions
 import {language as sqlLanguage} from 'monaco-editor/esm/vs/basic-languages/sql/sql.js';
@@ -128,6 +129,29 @@ export default defineComponent({
         ...props.options,
       })
 
+      // 用于控制切换该菜单键的显示
+      const shouldShowSqlRunnerAction = editor.createContextKey("shouldShowSqlRunnerAction", false);
+      // 前面已经定义了 editor
+      // 添加 action
+      editor.addAction({
+        // id
+        id: "sql-format",
+        // 该菜单键显示文本
+        label: "Format SQL",
+        // 控制该菜单键显示
+        precondition: "shouldShowSqlRunnerAction",
+        // 该菜单键位置
+        contextMenuGroupId: "navigation",
+        contextMenuOrder: 1.5,
+        // 点击该菜单键后运行
+        run: () => {
+          // 格式化代码
+          editor.setValue(format(editor.getValue()));
+        },
+      });
+      // 显示
+      shouldShowSqlRunnerAction.set(true);
+
       // 监听值的变化
       editor.onDidChangeModelContent(() => {
         const value = editor.getValue() // 给父组件实时返回最新文本
@@ -138,44 +162,50 @@ export default defineComponent({
       emit('editor-mounted', editor)
     }
     watch(
-      () => props.modelValue,
-      (newValue) => {
-        if (editor) {
-          const value = editor.getValue()
-          if (newValue !== value) {
-            editor.setValue(newValue)
+        () => props.modelValue,
+        (newValue) => {
+          if (editor) {
+            const value = editor.getValue()
+            if (newValue !== value) {
+              editor.setValue(newValue)
+            }
           }
+        },
+    )
+    watch(
+        () => props.options,
+        (newValue) => {
+          editor.updateOptions(newValue)
+        },
+        {deep: true},
+    )
+    watch(
+        () => props.formatter,
+        (newValue) => {
+          editor.setValue(format(editor.getValue()));
+        },
+        {deep: true},
+    )
+    watch(
+        () => props.readOnly,
+        () => {
+          // eslint-disable-next-line no-console
+          console.log('props.readOnly', props.readOnly)
+          editor.updateOptions({readOnly: props.readOnly})
+        },
+        {deep: true},
+    )
+    watch(
+        () => props.theme,
+        () => {
+          monaco.editor.setTheme(props.theme)
         }
-      },
-    )
-
-    watch(
-      () => props.options,
-      (newValue) => {
-        editor.updateOptions(newValue)
-      },
-      {deep: true},
     )
     watch(
-      () => props.readOnly,
-      () => {
-        // eslint-disable-next-line no-console
-        console.log('props.readOnly', props.readOnly)
-        editor.updateOptions({readOnly: props.readOnly})
-      },
-      {deep: true},
-    )
-    watch(
-      () => props.theme,
-      () => {
-        monaco.editor.setTheme(props.theme)
-      }
-    )
-    watch(
-      () => props.language,
-      (newValue) => {
-        monaco.editor.setModelLanguage(editor.getModel()!, newValue)
-      },
+        () => props.language,
+        (newValue) => {
+          monaco.editor.setModelLanguage(editor.getModel()!, newValue)
+        },
     )
 
     onBeforeUnmount(() => {

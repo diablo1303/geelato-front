@@ -49,6 +49,7 @@ const connectSelectOptions = ref<SelectOptionData[]>([]);
 const tableSelectOptions = ref<SelectOptionData[]>([]);
 const selectTypeOptions = ref<SelectOptionGroup[]>([]);
 const defaultColumnMetas = ref<string[]>([]);
+const formatSql = ref(0);
 
 const generateFormData = (): QueryViewForm => {
   return {
@@ -182,7 +183,7 @@ const validateCode = async (value: any, callback: any) => {
 const matchViewConstruct = (value: any, callback: any) => {
   const regex = /^select .* from .*$/i;
   if (formData.value.viewConstruct) {
-    const str = formData.value.viewConstruct.replace(/\r\n/g, ' ').replace(/\r\n\t/g, ' ');
+    const str = formData.value.viewConstruct.replace(/\n/g, ' ').replace(/\r\n/g, ' ').replace(/\r\n\t/g, ' ');
     console.log(str)
     if (!str.match(regex)) callback('匹配：‘select * from table_name ...’');
   }
@@ -548,6 +549,7 @@ const deleteTableView = async () => {
 watch(() => props, () => {
   if (props.visible === true) {
     tabsKey.value = 1;
+    formatSql.value = 0;
     // 调整高度
     tableTabHeight.value = window.innerHeight * 0.6;
     tableTabStyle.value.height = `${tableTabHeight.value}px`;
@@ -623,11 +625,11 @@ const cloneColumns = ref<Column[]>([]);
     <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="left" type="line">
       <a-tab-pane :key="1" class="a-tabs-one" title="基础信息">
         <a-card class="general-card">
-          <template #extra v-if="formState==='edit'">
+          <template v-if="formState==='edit'" #extra>
             <a-space>
               <a-popconfirm content="是否将该视图同步至数据库？" position="br" type="warning" @ok="syncViewToData">
                 <a-tooltip content="将视图同步至数据库">
-                  <a-button size="small" type="outline" :loading="viewSync">
+                  <a-button :loading="viewSync" size="small" type="outline">
                     <template #icon>
                       <gl-iconfont type="gl-transfer"/>
                     </template>
@@ -761,8 +763,17 @@ const cloneColumns = ref<Column[]>([]);
       </a-tab-pane>
       <a-tab-pane :key="2" class="a-tabs-one" title="视图语句">
         <a-card class="general-card">
+          <template #extra>
+            <a-button status="success" type="outline" @click="ev => {formatSql=Number(utils.generateRandom(4))}">
+              <template #icon>
+                <icon-palette/>
+              </template>
+              美化SQL
+            </a-button>
+          </template>
           <div class="trigger-demo-translate">
-            <GlMonacoEditor v-model="formData.viewConstruct" :height="tableTabHeight-34" language="sql" style="width: 100%;"/>
+            <GlMonacoEditor v-model="formData.viewConstruct" :formatter="formatSql" :height="tableTabHeight-80"
+                            language="sql" style="width: 100%;"/>
           </div>
         </a-card>
       </a-tab-pane>

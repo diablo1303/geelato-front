@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  bin-wrapper: npm:bin-wrapper-china
+
 importers:
 
   .: {}
@@ -52,6 +55,9 @@ importers:
       splitpanes:
         specifier: ^3.1.5
         version: 3.1.5
+      sql-formatter:
+        specifier: ^15.3.2
+        version: 15.3.2
       vue:
         specifier: ^3.3.11
         version: 3.3.11(typescript@4.7.4)
@@ -700,6 +706,9 @@ importers:
       splitpanes:
         specifier: ^3.1.5
         version: 3.1.5
+      sql-formatter:
+        specifier: ^15.3.2
+        version: 15.3.2
       vue:
         specifier: 3.3.11
         version: 3.3.11(typescript@4.9.5)
@@ -2814,13 +2823,17 @@ packages:
     resolution: {integrity: sha512-Mkfm4iE1VFt4xd4vH+gx+0/71esbfus2LsnCGe8Pi4mndSPyT+NGES/Eg99jx8/lUGWfu3z2yuB/bt5UB+iVbQ==}
     engines: {node: '>=6'}
 
-  bin-wrapper@4.1.0:
-    resolution: {integrity: sha512-hfRmo7hWIXPkbpi0ZltboCMVrU+0ClXR/JgbCKKjlDjQf6igXa7OwdqNcFWQZPZTgiY7ZpzE3+LjjkLiTN2T7Q==}
-    engines: {node: '>=6'}
+  bin-wrapper-china@0.1.0:
+    resolution: {integrity: sha512-1UCm17WYEbgry50tup+AQN+JGVEVzoW4f8HMl899k1lvuFxWKGZXl/G2fgxQxAckRjnloO3ijLVVEsv8zescUg==}
+    engines: {node: '>=8.3'}
+    hasBin: true
 
   binary-extensions@2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
     engines: {node: '>=8'}
+
+  binary-mirror-config@1.41.0:
+    resolution: {integrity: sha512-ZiIhR1s6Sv1Fv6qCQqfPjx0Cj86BgFlhqNxZgHkQOWcxJcMbO3mj1iqsuVjowYqJqeZL8e52+IEv7IRnSX6T6w==}
 
   bl@1.2.3:
     resolution: {integrity: sha512-pvcNpa0UU69UT341rO6AYy4FVAIkUHuZXRIWbq+zHnsVcRzDDjIAhGuuYoi0d//cwIwtt4pkpKycWEfjdV+vww==}
@@ -3432,6 +3445,9 @@ packages:
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
+
+  discontinuous-range@1.0.0:
+    resolution: {integrity: sha512-c68LpLbO+7kP/b1Hr1qs8/BJ09F5khZGTxqxZuhzxpmwJKOgRFHJWIb9/KmqnqHhLdO55aOxFH/EGBvUQbL/RQ==}
 
   dnd-core@15.1.2:
     resolution: {integrity: sha512-EOec1LyJUuGRFg0LDa55rSRAUe97uNVKVkUo8iyvzQlcECYTuPblVQfRWXWj1OyPseFIeebWpNmKFy0h6BcF1A==}
@@ -4183,6 +4199,10 @@ packages:
   get-stdin@6.0.0:
     resolution: {integrity: sha512-jp4tHawyV7+fkkSKyvjuLZswblUtz+SQKzSWnBbii16BuZksJlU1wuBYXY75r+duh/llF1ur6oNwi+2ZzjKZ7g==}
     engines: {node: '>=4'}
+
+  get-stdin@8.0.0:
+    resolution: {integrity: sha512-sY22aA6xchAzprjyqmSEQv4UbAAzRN0L2dQB0NlN5acTTK9Don6nhoc3eAbUnpZiCANAMfd/+40kVdKfFygohg==}
+    engines: {node: '>=10'}
 
   get-stream@2.3.1:
     resolution: {integrity: sha512-AUGhbbemXxrZJRD5cDvKtQxLuYaIbNtDTK8YqupCI393Q2KSTreEsLUN3ZxAWFGiKTzL6nKuzfcIvieflUX9qA==}
@@ -5542,6 +5562,9 @@ packages:
   monaco-editor@0.43.0:
     resolution: {integrity: sha512-cnoqwQi/9fml2Szamv1XbSJieGJ1Dc8tENVMD26Kcfl7xGQWp7OBKMjlwKVGYFJ3/AXJjSOGvcqK7Ry/j9BM1Q==}
 
+  moo@0.5.2:
+    resolution: {integrity: sha512-iSAJLHYKnX41mKcJKjqvnAN9sf0LMDTXDEvFv+ffuRR9a1MIuXLjMNL6EsnDHSkKLTWNqQQ5uo61P4EbU4NU+Q==}
+
   mousetrap@1.6.5:
     resolution: {integrity: sha512-QNo4kEepaIBwiT8CDhP98umTetp+JNfQYBWvC1pc6/OAibuXtRcxZ58Qz8skvEHYvURne/7R8T5VoOI7rDsEUA==}
 
@@ -5585,6 +5608,10 @@ packages:
 
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
+
+  nearley@2.20.1:
+    resolution: {integrity: sha512-+Mc8UaAebFzgV+KpI5n7DasuuQCHA89dmwm7JXw3TV43ukfNQ9DnBH3Mdb2g/I4Fdxc26pwimBWvjIw0UAILSQ==}
+    hasBin: true
 
   needle@3.2.0:
     resolution: {integrity: sha512-oUvzXnyLiVyVGoianLijF9O/RecZUf7TkBfimjGrLM4eQhXyeJwM6GeAWccwfQ9aa4gMCZKqhAOuLaMIcQxajQ==}
@@ -6243,6 +6270,13 @@ packages:
     resolution: {integrity: sha512-ARhCpm70fzdcvNQfPoy49IaanKkTlRWF2JMzqhcJbhSFRZv7nPTvZJdcY7301IPmvW+/p0RgIWnQDLJxifsQ7g==}
     engines: {node: '>=8'}
 
+  railroad-diagrams@1.0.0:
+    resolution: {integrity: sha512-cz93DjNeLY0idrCNOH6PviZGRN9GJhsdm9hpn1YCS879fj4W+x5IFJhhkRZcwVgMmFF7R82UA/7Oh+R8lLZg6A==}
+
+  randexp@0.4.6:
+    resolution: {integrity: sha512-80WNmd9DA0tmZrw9qQa62GPPWfuXJknrmVmLcxvq4uZBdYqb1wYoKTmnlGUchvVWe0XiLupYkBoXVOxz3C8DYQ==}
+    engines: {node: '>=0.12'}
+
   react-dnd-html5-backend@16.0.1:
     resolution: {integrity: sha512-Wu3dw5aDJmOGw8WjH1I1/yTH+vlXEL4vmjk5p+MHxP8HuHJS1lAGeIdG/hze1AvNeXWo/JgULV87LyQOr+r5jw==}
 
@@ -6703,6 +6737,10 @@ packages:
 
   sprintf-js@1.0.3:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
+
+  sql-formatter@15.3.2:
+    resolution: {integrity: sha512-pNxSMf5DtwhpZ8gUcOGCGZIWtCcyAUx9oLgAtlO4ag7DvlfnETL0BGqXaISc84pNrXvTWmt8Wal1FWKxdTsL3Q==}
+    hasBin: true
 
   squeak@1.3.0:
     resolution: {integrity: sha512-YQL1ulInM+ev8nXX7vfXsCsDh6IqXlrremc1hzi77776BtpWgYJUMto3UM05GSAaGzJgWekszjoKDrVNB5XG+A==}
@@ -9982,16 +10020,19 @@ snapshots:
       execa: 1.0.0
       find-versions: 3.2.0
 
-  bin-wrapper@4.1.0:
+  bin-wrapper-china@0.1.0:
     dependencies:
       bin-check: 4.1.0
       bin-version-check: 4.0.0
+      binary-mirror-config: 1.41.0
       download: 7.1.0
-      import-lazy: 3.1.0
+      import-lazy: 4.0.0
       os-filter-obj: 2.0.0
       pify: 4.0.1
 
   binary-extensions@2.2.0: {}
+
+  binary-mirror-config@1.41.0: {}
 
   bl@1.2.3:
     dependencies:
@@ -10493,7 +10534,7 @@ snapshots:
   cwebp-bin@6.1.2:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
 
   dargs@7.0.0: {}
 
@@ -10651,6 +10692,8 @@ snapshots:
   dir-glob@3.0.1:
     dependencies:
       path-type: 4.0.0
+
+  discontinuous-range@1.0.0: {}
 
   dnd-core@15.1.2:
     dependencies:
@@ -11582,6 +11625,8 @@ snapshots:
 
   get-stdin@6.0.0: {}
 
+  get-stdin@8.0.0: {}
+
   get-stream@2.3.1:
     dependencies:
       object-assign: 4.1.1
@@ -11611,7 +11656,7 @@ snapshots:
   gifsicle@5.2.0:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
       execa: 5.1.1
       logalot: 2.1.0
 
@@ -12755,13 +12800,13 @@ snapshots:
   jpegtran-bin@5.0.2:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
       logalot: 2.1.0
 
   jpegtran-bin@6.0.1:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
 
   js-beautify@1.14.6:
     dependencies:
@@ -13367,12 +13412,14 @@ snapshots:
 
   monaco-editor@0.43.0: {}
 
+  moo@0.5.2: {}
+
   mousetrap@1.6.5: {}
 
   mozjpeg@7.1.1:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
 
   mrmime@2.0.0:
     optional: true
@@ -13408,6 +13455,13 @@ snapshots:
   natural-compare-lite@1.4.0: {}
 
   natural-compare@1.4.0: {}
+
+  nearley@2.20.1:
+    dependencies:
+      commander: 2.20.3
+      moo: 0.5.2
+      railroad-diagrams: 1.0.0
+      randexp: 0.4.6
 
   needle@3.2.0:
     dependencies:
@@ -13590,7 +13644,7 @@ snapshots:
   optipng-bin@7.0.1:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
 
   os-filter-obj@2.0.0:
     dependencies:
@@ -13837,7 +13891,7 @@ snapshots:
   pngquant-bin@6.0.1:
     dependencies:
       bin-build: 3.0.0
-      bin-wrapper: 4.1.0
+      bin-wrapper: bin-wrapper-china@0.1.0
       execa: 4.1.0
 
   posix-character-classes@0.1.1: {}
@@ -14042,6 +14096,13 @@ snapshots:
   quick-lru@1.1.0: {}
 
   quick-lru@4.0.1: {}
+
+  railroad-diagrams@1.0.0: {}
+
+  randexp@0.4.6:
+    dependencies:
+      discontinuous-range: 1.0.0
+      ret: 0.1.15
 
   react-dnd-html5-backend@16.0.1:
     dependencies:
@@ -14531,6 +14592,12 @@ snapshots:
   splitpanes@3.1.5: {}
 
   sprintf-js@1.0.3: {}
+
+  sql-formatter@15.3.2:
+    dependencies:
+      argparse: 2.0.1
+      get-stdin: 8.0.0
+      nearley: 2.20.1
 
   squeak@1.3.0:
     dependencies:

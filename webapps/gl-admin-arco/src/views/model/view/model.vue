@@ -22,6 +22,7 @@ import {
 import {isJSON} from "@/utils/is";
 import {getAppSelectOptions, QueryAppForm} from "@/api/application";
 import MonacoEditor from "@/components/monaco/index.vue";
+import {generateRandom} from "@/utils/strings";
 import {enableStatusOptions, linkedOptions} from "./searchTable";
 
 // 页面所需 参数
@@ -51,6 +52,7 @@ const tableTabHeight = ref<number>(555);
 const tableTabStyle = ref({height: `${tableTabHeight.value}px`});
 const scrollbar = ref(true);
 const scroll = ref({x: 1240, y: tableTabHeight.value - 118});
+const formatSql = ref(0);
 
 /* 表单 */
 const generateFormData = (): QueryForm => {
@@ -184,11 +186,13 @@ const viewNameBlur = (ev?: FocusEvent) => {
 const matchViewConstruct = (value: any, callback: any) => {
   const regex = /^select .* from .*$/i;
   if (formData.value.viewConstruct) {
-    const str = formData.value.viewConstruct.replace(/\r\n/g, ' ').replace(/\r\n\t/g, ' ');
+    const str = formData.value.viewConstruct
+        .replace(/\n/g, ' ')
+        .replace(/\r\n/g, ' ')
+        .replace(/\r\n\t/g, ' ');
     if (!str.match(regex)) callback('匹配：‘select * from table_name ...’');
   }
 }
-
 
 /**
  * 必填校验
@@ -425,6 +429,7 @@ const saveOrUpdate = (successBack?: any, failBack?: any) => {
  */
 const loadPage = () => {
   tabsKey.value = 1;
+  formatSql.value = 0;
   // 调整高度
   tableTabHeight.value = window.innerHeight * 0.6;
   tableTabStyle.value.height = `${tableTabHeight.value}px`;
@@ -610,9 +615,17 @@ defineExpose({saveOrUpdate, loadPage});
       </a-card>
     </a-tab-pane>
     <a-tab-pane :key="2" class="a-tabs-one" title="视图语句">
-      <a-card class="general-card">
-        <div :style="{width:'100%',height:`${tableTabHeight-1}px`}" class="trigger-demo-translate">
-          <MonacoEditor v-model="formData.viewConstruct" :read-only="false" language="sql"/>
+      <a-card class="general-card1">
+        <template #extra>
+          <a-button status="success" type="outline" @click="ev => {formatSql=Number(generateRandom(4))}">
+            <template #icon>
+              <icon-palette/>
+            </template>
+            美化SQL
+          </a-button>
+        </template>
+        <div :style="{width:'100%',height:`${tableTabHeight-80}px`}" class="trigger-demo-translate">
+          <MonacoEditor v-model="formData.viewConstruct" :formatter="formatSql" :read-only="false" language="sql"/>
         </div>
       </a-card>
     </a-tab-pane>

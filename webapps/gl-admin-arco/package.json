@@ -65,6 +65,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "sortablejs": "^1.15.0",
     "splitpanes": "^3.1.5",
+    "sql-formatter": "^15.3.2",
     "vue": "3.3.11",
     "vue-cropper": "^1.0.9",
     "vue-echarts": "^6.2.3",

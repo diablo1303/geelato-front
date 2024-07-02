@@ -1,34 +1,34 @@
 <template>
   <div :style="{ height: height + 'px' }">
     <div
-      style="height: 100%"
-      ref="codeEditBox"
-      class="codeEditBox"
-      :class="heightChange && 'codeEditBox1'"
+        ref="codeEditBox"
+        :class="heightChange && 'codeEditBox1'"
+        class="codeEditBox"
+        style="height: 100%"
     />
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
+import {defineComponent} from 'vue'
 
 export default defineComponent({
   name: 'GlMonacoEditor'
 })
 </script>
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, ref, watch, defineExpose } from 'vue'
-
+import {onBeforeUnmount, onMounted, ref, watch, defineExpose} from 'vue'
 import * as monaco from 'monaco-editor'
+import {format} from 'sql-formatter'
 // @ts-ignore
 // eslint-disable-next-line import/extensions
-import { language as sqlLanguage } from 'monaco-editor/esm/vs/basic-languages/sql/sql.js'
+import {language as sqlLanguage} from 'monaco-editor/esm/vs/basic-languages/sql/sql.js'
 // @ts-ignore
 // eslint-disable-next-line import/extensions
-import { language as yamlLanguage } from 'monaco-editor/esm/vs/basic-languages/yaml/yaml.js'
+import {language as yamlLanguage} from 'monaco-editor/esm/vs/basic-languages/yaml/yaml.js'
 import 'monaco-editor/esm/vs/basic-languages/sql/sql.contribution'
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution'
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution'
-import { editorProps } from './type'
+import {editorProps} from './type'
 
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker.js?worker'
 import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker.js?worker'
@@ -158,44 +158,51 @@ const init = () => {
   // editor.focus()
 
   watch(
-    () => props.modelValue,
-    (newValue) => {
-      if (editor) {
-        const value = editor.getValue()
-        if (newValue !== value) {
-          editor.setValue(codePrettier.format(newValue, props.language))
+      () => props.modelValue,
+      (newValue) => {
+        if (editor) {
+          const value = editor.getValue()
+          if (newValue !== value) {
+            editor.setValue(codePrettier.format(newValue, props.language))
+          }
         }
       }
-    }
   )
 
   watch(
-    () => props.options,
-    (newValue) => {
-      editor.updateOptions(newValue)
-    },
-    { deep: true }
+      () => props.options,
+      (newValue) => {
+        editor.updateOptions(newValue)
+      },
+      {deep: true}
   )
   watch(
-    () => props.readOnly,
-    () => {
-      // eslint-disable-next-line no-console
-      // console.log('props.readOnly', props.readOnly)
-      editor.updateOptions({ readOnly: props.readOnly })
-    },
-    { deep: true }
+      () => props.formatter,
+      (newValue) => {
+        editor.setValue(format(editor.getValue()));
+      },
+      {deep: true},
   )
   watch(
-    () => props.theme,
-    () => {
-      monaco.editor.setTheme(props.theme)
-    }
+      () => props.readOnly,
+      () => {
+        // eslint-disable-next-line no-console
+        // console.log('props.readOnly', props.readOnly)
+        editor.updateOptions({readOnly: props.readOnly})
+      },
+      {deep: true}
   )
   watch(
-    () => props.language,
-    (newValue) => {
-      monaco.editor.setModelLanguage(editor.getModel()!, newValue)
-    }
+      () => props.theme,
+      () => {
+        monaco.editor.setTheme(props.theme)
+      }
+  )
+  watch(
+      () => props.language,
+      (newValue) => {
+        monaco.editor.setModelLanguage(editor.getModel()!, newValue)
+      }
   )
 }
 onBeforeUnmount(() => {
@@ -208,7 +215,7 @@ onMounted(() => {
 
 const onInsetText = (text: string) => {
   const curSelection = editor.getSelection() // 选择的文本范围或光标的当前位置
-  const { startLineNumber, startColumn, endLineNumber, endColumn } = curSelection
+  const {startLineNumber, startColumn, endLineNumber, endColumn} = curSelection
   // 在光标位置插入文本
   editor.executeEdits('', [
     {
@@ -218,7 +225,7 @@ const onInsetText = (text: string) => {
     }
   ])
   // 核心 设置光标的位置
-  editor.setPosition({ column: startColumn + text.length - 1, lineNumber: startLineNumber })
+  editor.setPosition({column: startColumn + text.length - 1, lineNumber: startLineNumber})
 }
 
 /**
@@ -230,7 +237,7 @@ const replaceSelectOrInsert = (text: string) => {
   editor.focus()
   // console.log('editor', text, editor.getSelection(), editor.getPosition())
   const curSelection = editor.getSelection() // 获取光标的信息
-  const { startLineNumber, startColumn, endLineNumber, endColumn } = curSelection
+  const {startLineNumber, startColumn, endLineNumber, endColumn} = curSelection
   // 在光标位置插入文本
   editor.executeEdits('', [
     {
@@ -251,7 +258,7 @@ const replaceSelectOrInsert = (text: string) => {
   // 插入完文本 需要聚焦下光标
   // editor.focus()
 }
-defineExpose({ replaceSelectOrInsert })
+defineExpose({replaceSelectOrInsert})
 </script>
 
 <style lang="less" scoped>
