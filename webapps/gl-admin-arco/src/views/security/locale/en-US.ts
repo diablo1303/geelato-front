@@ -524,6 +524,7 @@ export default {
   'security.encoding.index.form.serialType': 'SerialType',
   'security.encoding.index.form.serialType.order': 'Order',
   'security.encoding.index.form.serialType.random': 'Random',
+  'security.encoding.index.form.coverPos': 'Complement (0)',
   'security.encoding.index.form.validate.warning': 'The template entry cannot be empty！',
   'security.encoding.index.model.title.add': 'Add Encoding',
   'security.encoding.index.model.title.edit': 'Edit Encoding',

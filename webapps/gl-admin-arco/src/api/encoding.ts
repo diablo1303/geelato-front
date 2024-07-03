@@ -17,6 +17,8 @@ export interface EncodingItem {
   // 序列号 serial
   serialDigit: number;
   serialType: string;
+  // 顺序时，是否补位0
+  coverPos: boolean;
   // 参数 argument
   validate: boolean;
   errorMsg: string;

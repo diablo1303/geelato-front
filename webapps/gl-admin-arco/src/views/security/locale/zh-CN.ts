@@ -526,6 +526,7 @@ export default {
   'security.encoding.index.form.serialType': '序列类型',
   'security.encoding.index.form.serialType.order': '顺序',
   'security.encoding.index.form.serialType.random': '随机',
+  'security.encoding.index.form.coverPos': '补位（0）',
   'security.encoding.index.form.validate.warning': '模板项不能为空！',
   'security.encoding.index.model.title.add': '新建编码',
   'security.encoding.index.model.title.edit': '编辑编码',
