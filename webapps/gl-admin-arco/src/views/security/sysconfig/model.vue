@@ -131,6 +131,9 @@ const resetValidate = async () => {
 const selectTypeChange = (value: string) => {
   formData.value.configValue = '';
   formData.value.configAssist = '';
+  if (['UPLOAD', 'BASE64'].includes(formData.value.valueType)) {
+    formData.value.encrypted = 0;
+  }
 }
 
 const deleteFileItem = (fileList: FileItem[], delUid: string) => {
@@ -313,16 +316,6 @@ defineExpose({saveOrUpdate, loadPage});
                     @change="selectTypeChange(formData.valueType)"/>
         </a-form-item>
       </a-col>
-      <a-col :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item
-            :label="$t('security.sysConfig.index.form.encrypted')"
-            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-            field="encrypted">
-          <a-radio-group v-model="formData.encrypted" :disabled="formState==='view'" :options="encryptedOptions">
-            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
-          </a-radio-group>
-        </a-form-item>
-      </a-col>
       <a-col v-if="['UPLOAD'].includes(formData.valueType)" :span="(labelCol+wrapperCol)">
         <a-form-item :label="$t('security.sysConfig.index.form.configValue')" :label-col-props="{ span: labelCol/formCol }"
                      :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
@@ -350,8 +343,20 @@ defineExpose({saveOrUpdate, loadPage});
                      :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                      field="configValue">
-          <a-textarea v-if="formState!=='view'" v-model="formData.configValue" :auto-size="{minRows:1,maxRows:4}" :max-length="2000" show-word-limit/>
+          <a-textarea v-if="formData.encrypted===0&&formState!=='view'" v-model="formData.configValue" :auto-size="{minRows:1,maxRows:4}" :max-length="2000"
+                      show-word-limit/>
           <span v-else :title="formData.configValue" class="textarea-span" @click="openModal(`${formData.configValue}`)">{{ formData.configValue }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('security.sysConfig.index.form.encrypted')"
+            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
+            field="encrypted">
+          <a-radio-group v-model="formData.encrypted" :disabled="['UPLOAD','BASE64'].includes(formData.valueType) || formState==='view'"
+                         :options="encryptedOptions">
+            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
+          </a-radio-group>
         </a-form-item>
       </a-col>
       <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -384,5 +389,7 @@ div.arco-form-item-content > span.textarea-span {
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+  white-space: normal;
+  word-wrap: break-word;
 }
 </style>
