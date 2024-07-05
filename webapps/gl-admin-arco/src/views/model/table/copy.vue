@@ -202,5 +202,7 @@ div.arco-form-item-content > span.textarea-span {
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+  white-space: normal;
+  word-wrap: break-word;
 }
 </style>
