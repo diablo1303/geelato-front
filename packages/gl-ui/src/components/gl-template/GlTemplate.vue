@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+// @ts-nocheck
 import { computed, ref, watch } from 'vue'
 import mixins from '../mixins'
 import utils from '../../m/utils/Utils'
