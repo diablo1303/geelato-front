@@ -1,6 +1,6 @@
 <template>
   <div class="gl-entity-select">
-    <a-select v-model="mv" allow-clear allow-search style="width: 240px" @change="onEntityChange">
+    <a-select v-model="mv" allow-clear allow-search  @change="onEntityChange">
       <a-option
           v-for="(item,index) in entityLiteMetas"
           :key="index"

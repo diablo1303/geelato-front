@@ -1342,7 +1342,7 @@ const createEntityReaderAsMql = (params: { pageSize: number; pageNo?: number }) 
  *  ！！ 注意，如果列配置了显示脚本，则会先按该显示脚本进行计算，再返回结果
  *  ！！ 注意，如果列配置了字典组件，会自动按字典的配置进行取值转换
  *  ！！注意，如果列配置了动态实体组件，会自动按动态实体的配置取值转换
- *  @params {pageSize}，pageSize为查询一页时，最大的记录数
+ *  @params {pageSize}，pageSize为一页的记录数，如：10000
  */
 const searchAndExportRecords = (params: { pageSize: number }) => {
   return entityApi.queryByEntityReader(createEntityReader(params)).then(async (res) => {

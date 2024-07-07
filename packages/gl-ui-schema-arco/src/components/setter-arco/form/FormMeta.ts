@@ -137,7 +137,7 @@ export default {
           { label: '默认显示表单组件', value: 'SHOW_ALWAYS' },
           { label: '显示为“暂无数据”', value: 'SHOW_EMPTY' }
         ],
-        defaultValue: 'horizontal'
+        allowClear:true
       },
       setterComponentVModelName: 'modelValue',
       title: '空时显示内容',

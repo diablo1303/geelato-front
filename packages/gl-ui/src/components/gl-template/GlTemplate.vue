@@ -59,7 +59,6 @@ const onClick = () => {
     params: props.params
   })
 }
-console.log('create template ...', props.glLoopIndex)
 </script>
 
 <template>

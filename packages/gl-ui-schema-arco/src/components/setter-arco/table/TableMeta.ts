@@ -1188,7 +1188,7 @@ export default {
         }
       ],
       returnInfo: {
-        returnType: 'Promise<Mql>',
+        returnType: 'Promise<Response>',
         description:
           '基于当前的查询条件，进行数据查询并返回数据结果集，获取的数据不做分页，在一页中返回。',
         docId: ''

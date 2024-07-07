@@ -19,7 +19,7 @@ export const useEntityFormConfig = (options: PageCreatorOptions): ComponentInsta
   inst.props = {
     label: `${options.entityMeta.entityTitle || '实体'}表单`,
     bindEntity: { appCode: '', entityName: options.entityMeta.entityName },
-    layout: 'vertical',
+    layout: 'horizontal',
     autoLabelWidth: true
   }
   inst.children = []
