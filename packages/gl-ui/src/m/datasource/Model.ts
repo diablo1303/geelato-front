@@ -131,6 +131,7 @@ export interface QueryTableColumnForm {
   selectType: string;// 数据类型
   typeExtra: string | string[];// 类型额外信息
   extraValue: string; // 额外值
+  extraMap: string; // 额外映射
   extra: string; // 特别 auto_increment
   autoIncrement: number | boolean; // auto_increment
   charMaxLength: number; // 长度
@@ -152,6 +153,7 @@ export interface QueryTableColumnForm {
   tenantCode: string;
   synced: boolean | number;
   encrypted: boolean | number;
+  drawed: boolean | number;
   marker: string;
   delStatus: number;
   deptId?: string;

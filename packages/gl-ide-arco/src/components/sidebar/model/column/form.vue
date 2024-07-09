@@ -26,7 +26,7 @@ import {
   keyOptions, markerOptions,
   nullableOptions,
   numericSignedOptions,
-  uniquedOptions
+  uniquedOptions, extraMapOptions, drawedOptions
 } from "./searchTable";
 import GlDictionaryLayout from '../../security/dictionary/layout.vue';
 import {it} from "vitest";
@@ -84,6 +84,7 @@ const generateFormData = (): QueryTableColumnForm => {
     selectType: 'VARCHAR',
     typeExtra: '',
     extraValue: '',
+    extraMap: '',
     extra: '', // 特别 auto_increment
     autoIncrement: 0, // auto_increment
     uniqued: 0, // 唯一约束
@@ -104,6 +105,7 @@ const generateFormData = (): QueryTableColumnForm => {
     autoName: '',
     synced: false,
     encrypted: 0,
+    drawed: 0,
     marker: '',
     seqNo: 1,
     appId: props.parameter?.appId || '',
@@ -337,6 +339,7 @@ const getSelectEntityColumnOptions = async (value: string, params?: Record<strin
 
 const entityChange = (value?: string) => {
   formData.value.extraValue = '';
+  formData.value.extraMap = '';
   selectEntityColumnOptions.value = [];
   getSelectEntityColumnOptions(value || "");
 }
@@ -442,10 +445,12 @@ const selectTypeChange = (value: string) => {
   formData.value.defaultValue = '';
   formData.value.typeExtra = '';
   formData.value.extraValue = '';
+  formData.value.extraMap = '';
   formData.value.numericPrecision = 0;
   formData.value.numericScale = 0;
   formData.value.numericSigned = 0;
   formData.value.autoIncrement = 0;
+  formData.value.drawed = 0;
   // 数据类型
   formData.value.dataType = cst.mysql && cst.mysql.toUpperCase();
   // 字符串 默认长度
@@ -497,7 +502,10 @@ const selectTypeChange = (value: string) => {
 
   if (['DICTIONARY'].includes(formData.value.selectType)) getSelectDictionaryOptions();
   if (['CODE'].includes(formData.value.selectType)) getSelectCodeOptions();
-  if (['ENTITY'].includes(formData.value.selectType)) getSelectEntityOptions();
+  if (['ENTITY'].includes(formData.value.selectType)) {
+    getSelectEntityOptions();
+    formData.value.drawed = 1;
+  }
 }
 
 const numericPrecisionBlur = (ev?: FocusEvent) => {
@@ -629,9 +637,11 @@ const validateCode = async (value: any, callback: any) => {
 
 const keyChange = () => {
   formData.value.marker = formData.value.key === 1 ? 'id' : '';
+  formData.value.drawed = formData.value.key === 1 ? 1 : 0;
 }
 const markerChange = () => {
   formData.value.key = formData.value.marker === 'id' ? 1 : 0;
+  formData.value.drawed = formData.value.marker === 'id' ? 1 : 0;
 }
 
 /**
@@ -700,6 +710,7 @@ watch(() => props, async () => {
         data.key = data.key === true ? 1 : 0;
         data.uniqued = data.uniqued === true ? 1 : 0;
         data.encrypted = data.encrypted === true ? 1 : 0;
+        data.drawed = data.drawed === true ? 1 : 0;
         data.autoIncrement = data.autoIncrement === true ? 1 : 0;
         data.isRefColumn = data.isRefColumn === true ? 1 : 0;
         data.autoAdd = [(data.autoAdd === true ? 1 : 0).toString()];
@@ -878,6 +889,16 @@ watch(() => visibleForm, () => {
             <a-select v-if="formState!=='view'" v-model="formData.extraValue" allow-clear allow-search>
               <a-option v-for="item of selectEntityColumnOptions" :key="item.id" :label="`${item.title}[${item.fieldName}]`" :value="item.id"/>
             </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col v-if="['ENTITY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+          <a-form-item
+              label="映射关系"
+              field="extraMap">
+            <a-select v-if="formState!=='view'" v-model="formData.extraMap" allow-clear allow-search>
+              <a-option v-for="(item,index) of extraMapOptions" :key="index" :label="item.label" :value="item.value"/>
+            </a-select>
+            <template #help>模型字段 对 默认实体字段 的映射关系</template>
           </a-form-item>
         </a-col>
         <!--  数据字典    -->
@@ -1078,6 +1099,14 @@ watch(() => visibleForm, () => {
             <a-radio-group v-model="formData.encrypted" :options="encryptedOptions" :rules="[{required: true,message: '这是必填项'}]">
               <template #label="{ data }">{{ data.label }}</template>
             </a-radio-group>
+          </a-form-item>
+        </a-col>
+        <a-col :span="(labelCol+wrapperCol)/formCol">
+          <a-form-item field="drawed" label="是否展示">
+            <a-radio-group v-model="formData.drawed" :options="drawedOptions" :rules="[{required: true,message: '这是必填项'}]">
+              <template #label="{ data }">{{ data.label }}</template>
+            </a-radio-group>
+            <template #help>DrawDB 是否展示该字段</template>
           </a-form-item>
         </a-col>
 

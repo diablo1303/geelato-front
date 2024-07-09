@@ -25,9 +25,9 @@ import {isBlank, isNotBlank} from "@/utils/is";
 import {getAppSelectOptions, QueryAppForm} from "@/api/application";
 import DictionaryLayout from "@/views/security/dictionary/layout.vue";
 import {
-  autoIncrementOptions,
+  autoIncrementOptions, drawedOptions,
   enableStatusOptions,
-  encryptedOptions,
+  encryptedOptions, extraMapOptions,
   keyOptions, markerOptions,
   nullableOptions,
   numericSignedOptions,
@@ -80,6 +80,7 @@ const generateFormData = (): QueryForm => {
     selectType: 'VARCHAR',
     typeExtra: '',
     extraValue: '',
+    extraMap: '',
     extra: '', // 特别 auto_increment
     autoIncrement: 0, // auto_increment
     uniqued: 0, // 唯一约束
@@ -100,6 +101,7 @@ const generateFormData = (): QueryForm => {
     autoName: '',
     synced: false,
     encrypted: 0,
+    drawed: 0,
     marker: '',
     seqNo: 1,
     appId: props.parameter?.appId || '',
@@ -460,10 +462,12 @@ const selectTypeChange = (value: string) => {
   formData.value.defaultValue = '';
   formData.value.typeExtra = '';
   formData.value.extraValue = '';
+  formData.value.extraMap = '';
   formData.value.numericPrecision = 0;
   formData.value.numericScale = 0;
   formData.value.numericSigned = 0;
   formData.value.autoIncrement = 0;
+  formData.value.drawed = 0;
   // 数据类型
   formData.value.dataType = cst.mysql && cst.mysql.toUpperCase();
   // 字符串 默认长度
@@ -515,7 +519,10 @@ const selectTypeChange = (value: string) => {
 
   if (['DICTIONARY'].includes(formData.value.selectType)) getSelectDictionaryOptions();
   if (['CODE'].includes(formData.value.selectType)) getSelectCodeOptions();
-  if (['ENTITY'].includes(formData.value.selectType)) getSelectEntityOptions();
+  if (['ENTITY'].includes(formData.value.selectType)) {
+    getSelectEntityOptions();
+    formData.value.drawed = 1;
+  }
 }
 
 const numericPrecisionBlur = (ev?: FocusEvent) => {
@@ -624,9 +631,11 @@ const dictItemChange = (dictId: string) => {
 
 const keyChange = () => {
   formData.value.marker = formData.value.key === 1 ? 'id' : '';
+  formData.value.drawed = formData.value.key === 1 ? 1 : 0;
 }
 const markerChange = () => {
   formData.value.key = formData.value.marker === 'id' ? 1 : 0;
+  formData.value.drawed = formData.value.marker === 'id' ? 1 : 0;
 }
 /**
  * 文本域查看
@@ -706,6 +715,7 @@ const loadPage = async () => {
       data.key = data.key === true ? 1 : 0;
       data.uniqued = data.uniqued === true ? 1 : 0;
       data.encrypted = data.encrypted === true ? 1 : 0;
+      data.drawed = data.drawed === true ? 1 : 0;
       data.autoIncrement = data.autoIncrement === true ? 1 : 0;
       data.isRefColumn = data.isRefColumn === true ? 1 : 0;
       data.autoAdd = [(data.autoAdd === true ? 1 : 0).toString()];
@@ -951,6 +961,16 @@ defineExpose({saveOrUpdate, loadPage});
           </a-select>
         </a-form-item>
       </a-col>
+      <a-col v-if="['ENTITY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item
+            :label="$t('model.column.index.form.extraMap')"
+            field="extraMap">
+          <a-select v-if="formState!=='view'" v-model="formData.extraMap" allow-clear allow-search>
+            <a-option v-for="(item,index) of extraMapOptions" :key="index" :label="$t(`${item.label}`)" :value="item.value"/>
+          </a-select>
+          <template #help>模型字段 对 默认实体字段 的映射关系</template>
+        </a-form-item>
+      </a-col>
       <!--  数据字典    -->
       <a-col v-if="['DICTIONARY'].includes(formData.selectType)" :span="(labelCol+wrapperCol)/formCol">
         <a-form-item
@@ -1171,6 +1191,16 @@ defineExpose({saveOrUpdate, loadPage});
                          :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
             <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
           </a-radio-group>
+        </a-form-item>
+      </a-col>
+      <a-col :span="(labelCol+wrapperCol)/formCol">
+        <a-form-item :label="$t('model.column.index.form.drawed')" field="key">
+          <a-radio-group v-model="formData.drawed"
+                         :options="drawedOptions"
+                         :rules="[{required: true,message: $t('model.form.rules.match.required')}]">
+            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
+          </a-radio-group>
+          <template #help>{{ $t('model.column.index.form.drawed.tip') }}</template>
         </a-form-item>
       </a-col>
       <a-divider style="margin: 5px 0;"/>
