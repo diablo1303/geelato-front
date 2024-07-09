@@ -15,10 +15,22 @@ const encryptedOptions = computed<RadioOption[]>(() => [
 ]);
 
 const purposeOptions = computed<SelectOptionData[]>(() => [
+  {label: 'security.sysConfig.index.form.purpose.all', value: 'all',},
   {label: 'security.sysConfig.index.form.purpose.webapp', value: 'webapp',},
   {label: "security.sysConfig.index.form.purpose.endpoint", value: 'endpoint',},
   {label: 'security.sysConfig.index.form.purpose.workflow', value: 'workflow',},
   {label: "security.sysConfig.index.form.purpose.schedule", value: 'schedule',},
 ]);
 
-export {columns, enableStatusOptions, encryptedOptions, purposeOptions};
+const valueTypeOptions = computed<SelectOptionData[]>(() => [
+  {label: 'security.sysConfig.index.form.valueType.string', value: 'string',},
+  {label: 'security.sysConfig.index.form.valueType.number', value: 'number',},
+  {label: "security.sysConfig.index.form.valueType.boolean", value: 'boolean',},
+  {label: 'security.sysConfig.index.form.valueType.datetime', value: 'datetime',},
+  {label: "security.sysConfig.index.form.valueType.json", value: 'json',},
+  {label: 'security.sysConfig.index.form.valueType.encrypt', value: 'encrypt',},
+  {label: "security.sysConfig.index.form.valueType.base64", value: 'base64',},
+  {label: 'security.sysConfig.index.form.valueType.upload', value: 'upload',},
+]);
+
+export {columns, enableStatusOptions, encryptedOptions, purposeOptions, valueTypeOptions};

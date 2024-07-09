@@ -8,7 +8,7 @@ export interface QuerySysConfigForm {
   keyType: string | string[];
   configKey: string;
   valueType: string;
-  configValue: string;
+  configValue: string | number | boolean;
   configAssist?: string;
   remark: string;
   purpose: string;
@@ -49,8 +49,8 @@ export function querySysConfigs(params: QuerySysConfigForm) {
   });
 }
 
-export function getSysConfig(id: string) {
-  return axios.get<QuerySysConfigForm>(`/api/sys/config/get/${id}`);
+export function getSysConfig(id: string, encrypt?: boolean) {
+  return axios.get<QuerySysConfigForm>(`/api/sys/config/get/${id}?encrypt=${encrypt === true}`);
 }
 
 export function createOrUpdateSysConfig(params: QuerySysConfigForm) {
