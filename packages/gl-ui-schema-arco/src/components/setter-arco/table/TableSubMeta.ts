@@ -208,6 +208,30 @@ export default {
           setterComponentName: 'ASwitch'
         },
         {
+          name: 'showActionCopy',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: true,
+          show: true,
+          expanded: true,
+          setterComponentProps: { defaultChecked: true },
+          setterComponentVModelName: 'modelValue',
+          title: '显示复制操作',
+          setterComponentName: 'ASwitch'
+        },
+        {
+          name: 'showActionDelete',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: true,
+          show: true,
+          expanded: true,
+          setterComponentProps: { defaultChecked: true },
+          setterComponentVModelName: 'modelValue',
+          title: '显示删除操作',
+          setterComponentName: 'ASwitch'
+        },
+        {
           name: 'showPagination',
           group: 'base',
           type: 'props',

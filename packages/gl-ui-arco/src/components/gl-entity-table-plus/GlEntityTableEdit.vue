@@ -16,7 +16,6 @@ import {
   toRaw,
   watch
 } from 'vue'
-import { useDebounceFn } from '@vueuse/core'
 import type { TableRowSelection, PaginationProps } from '@arco-design/web-vue'
 import useLoading from '../../hooks/loading'
 import cloneDeep from 'lodash/cloneDeep'
@@ -155,6 +154,24 @@ const props = defineProps({
    *  是否显示序列号
    */
   showSeqNo: Boolean,
+  /**
+   *  显示删除操作
+   */
+  showActionDelete: {
+    type: Boolean,
+    default() {
+      return true
+    }
+  },
+  /**
+   *  显示复制操作
+   */
+  showActionCopy: {
+    type: Boolean,
+    default() {
+      return true
+    }
+  },
   /**
    *  行是否只读的表达式
    */
@@ -687,7 +704,7 @@ const addRecordsByDataIndex = (records: Record<string, any>[]) => {
   addRecords(records, 'dataIndex')
 }
 
-const addRecords = (records: Record<string, any>[],keyField:string='dataIndex') => {
+const addRecords = (records: Record<string, any>[], keyField: string = 'dataIndex') => {
   records?.forEach((record: Record<string, any>) => {
     const newRow = {}
     props.columns.forEach((col: Column) => {
@@ -932,6 +949,7 @@ defineExpose({
     <template ##="{ record, rowIndex }">
       <a-space :size="0" class="gl-entity-table-cols-opt">
         <a-button
+          v-if="showActionCopy"
           type="text"
           size="small"
           @click="copyRecord(record, rowIndex)"
@@ -939,6 +957,7 @@ defineExpose({
           >复制
         </a-button>
         <a-button
+          v-if="showActionDelete"
           type="text"
           status="danger"
           size="small"

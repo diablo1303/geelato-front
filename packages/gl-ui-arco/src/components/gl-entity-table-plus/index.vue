@@ -1914,6 +1914,8 @@ defineExpose({
       :size="base.size"
       :showPagination="base.showPagination"
       :showSeqNo="base.showSeqNo"
+      :showActionCopy="base.showActionCopy"
+      :showActionDelete="base.showActionDelete"
       :pagination="pagination"
       :enableEdit="base.enableEdit"
       :isFormSubTable="base.isFormSubTable"
