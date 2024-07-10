@@ -109,7 +109,8 @@ watch(() => visibleForm, () => {
 </script>
 <template>
   <a-modal v-model:visible="visibleForm" :footer="false" :title="tabsTitle" :width="width || ''" title-align="start">
-    <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="left" type="line">
+    <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle"
+            position="left" type="line" :destroy-on-hide="true">
       <a-tab-pane :key="1" class="a-tabs-three" title="授权申请">
         <a-card class="general-card">
           <GlModelTableAppList v-if="visibleForm" :formState="appListParams.formState"

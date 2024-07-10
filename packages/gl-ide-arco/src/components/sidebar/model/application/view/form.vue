@@ -221,14 +221,16 @@ const selectAllChange = () => {
 }
 
 const getTablePermission = (viewName: string) => {
-  queryTablePermission({
-    object: viewName, order: 'updateAt|desc',
-    appId: '', tenantCode: props.parameter?.tenantCode || '',
-  }, (data: SelectOptionGroup[]) => {
-    permissionSelectOptions.value = data || [];
-  }, () => {
-    permissionSelectOptions.value = [];
-  });
+  if (viewName) {
+    queryTablePermission({
+      object: viewName, order: 'updateAt|desc',
+      appId: '', tenantCode: props.parameter?.tenantCode || '',
+    }, (data: SelectOptionGroup[]) => {
+      permissionSelectOptions.value = data || [];
+    }, () => {
+      permissionSelectOptions.value = [];
+    });
+  }
 }
 
 const tableIdClear = () => {

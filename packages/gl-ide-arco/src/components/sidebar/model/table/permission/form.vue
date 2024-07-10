@@ -32,6 +32,7 @@ const props = defineProps({
   pageSize: {type: Number, default: 10000},
   height: {type: Number, default: 0},
   refApp: {type: Boolean, default: false},
+  refType: {type: String, default: 'table'},
 });
 
 const global = useGlobal();
@@ -237,19 +238,42 @@ const queryAppTablePermissions = async (params: Record<string, any>, successBack
   }
 }
 
+const queryAppViewPermissions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await modelApi.queryAppViews(params);
+    if (successBack && typeof successBack === 'function') successBack(data);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+}
+
 const tableRefresh = (ev?: Event) => {
   if (props.refApp) {
-    queryAppTablePermissions({
-      enableStatus: 1, approvalStatus: 'agree',
-      tableId: props.parameter?.tableId || '',
-      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
-    }, (data: QueryAppTableForm[]) => {
-      appTablePermissionIds.value = getAppTablePermissionIds(data);
-      console.log(appTablePermissionIds.value);
-      fetchData();
-    }, () => {
-      appTablePermissionIds.value = [];
-    });
+    if (props.refType === 'view') {
+      queryAppViewPermissions({
+        enableStatus: 1, approvalStatus: 'agree',
+        viewId: props.parameter?.tableId || '',
+        appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+      }, (data: QueryAppTableForm[]) => {
+        appTablePermissionIds.value = getAppTablePermissionIds(data);
+        console.log(appTablePermissionIds.value);
+        fetchData();
+      }, () => {
+        appTablePermissionIds.value = [];
+      });
+    } else {
+      queryAppTablePermissions({
+        enableStatus: 1, approvalStatus: 'agree',
+        tableId: props.parameter?.tableId || '',
+        appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+      }, (data: QueryAppTableForm[]) => {
+        appTablePermissionIds.value = getAppTablePermissionIds(data);
+        console.log(appTablePermissionIds.value);
+        fetchData();
+      }, () => {
+        appTablePermissionIds.value = [];
+      });
+    }
   } else {
     fetchData();
   }

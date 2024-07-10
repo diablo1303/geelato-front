@@ -218,14 +218,16 @@ const selectAllChange = () => {
 }
 
 const getTablePermission = (entityName: string) => {
-  queryTablePermission({
-    object: entityName, order: 'updateAt|desc',
-    appId: '', tenantCode: props.parameter?.tenantCode || '',
-  }, (data: SelectOptionGroup[]) => {
-    permissionSelectOptions.value = data || [];
-  }, () => {
-    permissionSelectOptions.value = [];
-  });
+  if (entityName) {
+    queryTablePermission({
+      object: entityName, order: 'updateAt|desc',
+      appId: '', tenantCode: props.parameter?.tenantCode || '',
+    }, (data: SelectOptionGroup[]) => {
+      permissionSelectOptions.value = data || [];
+    }, () => {
+      permissionSelectOptions.value = [];
+    });
+  }
 }
 
 const tableIdClear = () => {
