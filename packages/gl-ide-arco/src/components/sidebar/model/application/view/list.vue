@@ -8,7 +8,7 @@ export default {
 import {reactive, ref, watch, computed} from 'vue';
 import {modelApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
-import type {Pagination, QueryAppTableForm} from "@geelato/gl-ui";
+import type {Pagination, QueryAppViewForm} from "@geelato/gl-ui";
 import {approvalNeedOptions, approvalStatusOptions, enableStatusOptions} from '../searchTable';
 import GlModelViewAppForm from "./form.vue";
 
@@ -185,13 +185,13 @@ const addTable = (ev?: MouseEvent) => {
   formPage.value.id = '';
   formPage.value.visible = true;
 };
-const editTable = (data: QueryAppTableForm) => {
+const editTable = (data: QueryAppViewForm) => {
   formPage.value.formState = ['draft'].includes(data.approvalStatus) ? 'edit' : 'view';
   formPage.value.id = data.id;
   formPage.value.visible = true;
 }
 
-const saveSuccess = (data: QueryAppTableForm, type: string) => {
+const saveSuccess = (data: QueryAppViewForm, type: string) => {
   if (type === 'add') {
     reset();
     emits('add', data);
@@ -200,18 +200,18 @@ const saveSuccess = (data: QueryAppTableForm, type: string) => {
     emits('edit', data);
   }
 }
-const deleteTable = (data: QueryAppTableForm) => {
+const deleteTable = (data: QueryAppViewForm) => {
   deleteData(data.id, (id: string) => {
     condition();
     emits('delete', data);
   });
 }
 
-const approvalRecord = async (record: QueryAppTableForm, status: string) => {
+const approvalRecord = async (record: QueryAppViewForm, status: string) => {
   try {
     const params = {...record};
     params.approvalStatus = status;
-    await modelApi.createOrUpdateAppTable(params);
+    await modelApi.createOrUpdateAppView(params);
     condition();
   } catch (err) {
     condition();
