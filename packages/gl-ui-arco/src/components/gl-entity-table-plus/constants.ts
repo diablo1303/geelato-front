@@ -51,6 +51,10 @@ export class BaseInfo {
   showFilter?: boolean = true
   // 显示默认导出
   showDefaultExport?: boolean
+  // 展示复制
+  showActionCopy?: boolean = true
+  // 展示删除
+  showActionDelete?: boolean = true
   // 左边固定数
   leftFixedCount: number = 0
 
