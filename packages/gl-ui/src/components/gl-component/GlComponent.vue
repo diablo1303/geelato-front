@@ -226,7 +226,15 @@ const defaultSyncActionHandler = (...args: any) => {
 // 所有的action处理器，依据组件实体配置的action形成action事件响应对象，匹配不同的事件
 let onActionsHandler: { [key: string]: any } = {}
 props.glComponentInst?.actions?.forEach((action: Action) => {
-  onActionsHandler[action.eventName] = createActionHandler(action.eventName)
+  if(props.glIsRuntime){
+    // 运行时组件，需要动态注册事件，设计时不注册事件
+    onActionsHandler[action.eventName] = createActionHandler(action.eventName)
+  }else{
+    onActionsHandler[action.eventName] = ()=>{
+      stopPropagation()
+      console.log('GlComponent > 设计时不触发动作（事件），运行时才触发。');
+    }
+  }
 })
 
 // TODO defaultSyncEvents需要在外部注册进来
