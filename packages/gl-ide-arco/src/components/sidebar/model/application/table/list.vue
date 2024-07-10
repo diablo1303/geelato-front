@@ -212,6 +212,7 @@ const approvalRecord = async (record: QueryAppTableForm, status: string) => {
     const params = {...record};
     params.approvalStatus = status;
     await modelApi.createOrUpdateAppTable(params);
+    global.$message.success({content: `授权审批 -> ${status === 'agree' ? '同意' : '拒绝'}！`})
     condition();
   } catch (err) {
     condition();
