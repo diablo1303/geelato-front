@@ -532,14 +532,21 @@ const viewSync = ref(false);
 const syncViewToData = async () => {
   if (formData.value.id) {
     viewSync.value = true;
-    try {
-      await modelApi.initViewOne(formData.value.id)
-      global.$message.success({content: '同步成功！'})
-    } catch (err) {
-      global.$message.error({content: '同步失败！'})
-    } finally {
+    createOrUpdateData(formData.value, async (data: QueryViewForm) => {
+      emits('saveSuccess', data, props.formState);
+      global.$message.success({content: '保存成功！'})
+      try {
+        await modelApi.initViewOne(formData.value.id)
+        global.$message.success({content: '同步成功！'})
+      } catch (err) {
+        global.$message.error({content: '同步失败！'})
+      } finally {
+        viewSync.value = false;
+      }
+    }, () => {
+      global.$message.error({content: '保存失败！'})
       viewSync.value = false;
-    }
+    });
   }
 }
 
@@ -639,13 +646,13 @@ const cloneColumns = ref<Column[]>([]);
         <a-card class="general-card">
           <template v-if="formState==='edit'" #extra>
             <a-space>
-              <a-popconfirm content="是否将该视图同步至数据库？" position="br" type="warning" @ok="syncViewToData">
-                <a-tooltip content="将视图同步至数据库">
+              <a-popconfirm content="是否将该视图保存并同步至数据库？" position="br" type="warning" @ok="syncViewToData">
+                <a-tooltip content="将视图保存并同步至数据库">
                   <a-button :loading="viewSync" size="small" type="outline">
                     <template #icon>
                       <gl-iconfont type="gl-transfer"/>
                     </template>
-                    同步视图
+                    保存并同步视图
                   </a-button>
                 </a-tooltip>
               </a-popconfirm>
