@@ -56,9 +56,12 @@ const zhMessages: MessageRule[] = [
     extractKeyRules: {
       '{0}': ["验证实体.*"]
     }
+  },
+  {
+    rule: "视图语句验证失败",
+    msg: '视图语句验证失败',
+    extractKeyRules: {}
   }
-
-
 ]
 
 export const messages = zhMessages
