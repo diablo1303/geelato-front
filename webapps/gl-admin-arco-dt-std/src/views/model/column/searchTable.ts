@@ -39,6 +39,11 @@ const numericSignedOptions = computed<RadioOption[]>(() => [
   {label: 'model.column.index.form.numericSigned.0', value: 0,},
 ]);
 
+const drawedOptions = computed<RadioOption[]>(() => [
+  {label: 'model.column.index.form.drawed.1', value: 1,},
+  {label: 'model.column.index.form.drawed.0', value: 0,},
+]);
+
 const markerOptions = computed<RadioOption[]>(() => [
   {label: 'model.column.index.form.marker.nothing', value: '',},
   {label: 'model.column.index.form.marker.id', value: 'id',},
@@ -56,6 +61,13 @@ const columnPermissionOptions = computed<SelectOptionData[]>(() => [
   {label: 'model.column.permission.columnPermission.2', value: "2",},
 ]);
 
+const extraMapOptions = computed<SelectOptionData[]>(() => [
+  {label: 'model.column.index.form.extraMap.0', value: "0",},
+  {label: 'model.column.index.form.extraMap.1', value: "1",},
+  {label: 'model.column.index.form.extraMap.2', value: "2",},
+  {label: 'model.column.index.form.extraMap.3', value: "3",},
+]);
+
 export {
   columns,
   enableStatusOptions,
@@ -67,4 +79,6 @@ export {
   numericSignedOptions,
   markerOptions,
   columnPermissionOptions,
+  extraMapOptions,
+  drawedOptions,
 };

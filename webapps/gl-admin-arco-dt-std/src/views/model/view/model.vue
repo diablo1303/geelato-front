@@ -22,6 +22,7 @@ import {
 import {isJSON} from "@/utils/is";
 import {getAppSelectOptions, QueryAppForm} from "@/api/application";
 import MonacoEditor from "@/components/monaco/index.vue";
+import {generateRandom} from "@/utils/strings";
 import {enableStatusOptions, linkedOptions} from "./searchTable";
 
 // 页面所需 参数
@@ -50,7 +51,8 @@ const visibleForm = ref<boolean>(false);
 const tableTabHeight = ref<number>(555);
 const tableTabStyle = ref({height: `${tableTabHeight.value}px`});
 const scrollbar = ref(true);
-const scroll = ref({x: 1240, y: tableTabHeight.value - 118});
+const scroll = ref({x: 1300, y: tableTabHeight.value - 118});
+const formatSql = ref(0);
 
 /* 表单 */
 const generateFormData = (): QueryForm => {
@@ -184,11 +186,13 @@ const viewNameBlur = (ev?: FocusEvent) => {
 const matchViewConstruct = (value: any, callback: any) => {
   const regex = /^select .* from .*$/i;
   if (formData.value.viewConstruct) {
-    const str = formData.value.viewConstruct.replace(/\r\n/g, ' ').replace(/\r\n\t/g, ' ');
+    const str = formData.value.viewConstruct
+        .replace(/\n/g, ' ')
+        .replace(/\r\n/g, ' ')
+        .replace(/\r\n\t/g, ' ');
     if (!str.match(regex)) callback('匹配：‘select * from table_name ...’');
   }
 }
-
 
 /**
  * 必填校验
@@ -276,6 +280,18 @@ const customAddEntityClick = (ev?: MouseEvent) => {
     creatorName: '',
     deleteAt: '',
   } as QueryTableColumnForm);
+}
+
+const orderEntityClick = () => {
+  if (columnData.value.length > 0) {
+    columnData.value.sort((a, b) => {
+      if (a.tableName.localeCompare(b.tableName) < 0) return -1;
+      if (a.tableName.localeCompare(b.tableName) > 0) return 1;
+      if (a.name.localeCompare(b.name) < 0) return -1;
+      if (a.name.localeCompare(b.name) > 0) return 1;
+      return 0;
+    });
+  }
 }
 
 /* 模型、字段选择 */
@@ -425,6 +441,7 @@ const saveOrUpdate = (successBack?: any, failBack?: any) => {
  */
 const loadPage = () => {
   tabsKey.value = 1;
+  formatSql.value = 0;
   // 调整高度
   tableTabHeight.value = window.innerHeight * 0.6;
   tableTabStyle.value.height = `${tableTabHeight.value}px`;
@@ -610,9 +627,17 @@ defineExpose({saveOrUpdate, loadPage});
       </a-card>
     </a-tab-pane>
     <a-tab-pane :key="2" class="a-tabs-one" title="视图语句">
-      <a-card class="general-card">
-        <div :style="{width:'100%',height:`${tableTabHeight-1}px`}" class="trigger-demo-translate">
-          <MonacoEditor v-model="formData.viewConstruct" :read-only="false" language="sql"/>
+      <a-card class="general-card1">
+        <template #extra>
+          <a-button status="success" type="outline" @click="ev => {formatSql=Number(generateRandom(4))}">
+            <template #icon>
+              <icon-palette/>
+            </template>
+            美化SQL
+          </a-button>
+        </template>
+        <div :style="{width:'100%',height:`${tableTabHeight-80}px`}" class="trigger-demo-translate">
+          <MonacoEditor v-model="formData.viewConstruct" :formatter="formatSql" :read-only="false" language="sql"/>
         </div>
       </a-card>
     </a-tab-pane>
@@ -669,6 +694,12 @@ defineExpose({saveOrUpdate, loadPage});
               </a-space>
             </template>
           </a-popover>
+          <a-button size="medium" type="primary" @click="orderEntityClick">
+            <template #icon>
+              <gl-iconfont type="gl-menu"/>
+            </template>
+            排序（模型+标识）
+          </a-button>
         </a-space>
         <a-table
             :key="tableTabHeight"
@@ -689,9 +720,9 @@ defineExpose({saveOrUpdate, loadPage});
                 <span v-else>{{ record.title }}</span>
               </template>
             </a-table-column>
-            <a-table-column :ellipsis="true" :tooltip="true" :width="120" data-index="name" title="字段标识">
+            <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="name" title="字段标识">
               <template #cell="{record}">
-                <a-input v-if="formState!=='view'&&!record.tableName" v-model.trim="record.name" :max-length="32"/>
+                <a-input v-if="formState!=='view'" v-model.trim="record.name" :max-length="32"/>
                 <span v-else>{{ record.name }}</span>
               </template>
             </a-table-column>
@@ -741,6 +772,8 @@ div.arco-form-item-content > span.textarea-span {
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .trigger-demo-translate {

@@ -8,15 +8,17 @@ import {reactive, ref, watch} from 'vue';
 import {useI18n} from "vue-i18n";
 import useLoading from '@/hooks/loading';
 import {Pagination} from '@/types/global';
-import {SelectOptionData, TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {PageSizeOptions, PageQueryFilter, PageQueryRequest, FormParams, getOptionLabel} from '@/api/base';
+import {Modal, SelectOptionData, TableColumnData, TableSortable} from '@arco-design/web-vue';
+import {PageSizeOptions, PageQueryFilter, PageQueryRequest, getOptionLabel} from '@/api/base';
 // 引用其他对象、方法
 import {queryAppSelectOptions} from "@/api/application";
 import {Base64FileParams, downloadFileByBase64Data, fetchFileById} from "@/api/attachment";
-import {deleteSysConfig as deleteList, pageQuerySysConfig as pageQueryList, QuerySysConfigForm as QueryForm} from '@/api/sysconfig';
-import {columns, enableStatusOptions, purposeOptions} from "@/views/security/sysconfig/searchTable";
+import {deleteSysConfig as deleteList, getSysConfig, pageQuerySysConfig as pageQueryList, QuerySysConfigForm as QueryForm} from '@/api/sysconfig';
+import {enableStatusOptions, purposeOptions} from "@/views/security/sysconfig/searchTable";
 // 引用其他页面
 import CopyToClipboard from "@/components/copy-to-clipboard/index.vue";
+import {isValidUser} from "@/utils/auth";
+import AccountValid from "@/views/account/components/account-valid.vue";
 import SystemConfigForm from './form.vue';
 
 // 页面所需 参数
@@ -107,6 +109,20 @@ const deleteData = async (id: string, successBack?: any, failBack?: any) => {
   try {
     await deleteList(id);
     if (successBack && typeof successBack === 'function') successBack(id);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+};
+/**
+ * 获取单条数据接口
+ * @param id
+ * @param successBack
+ * @param failBack
+ */
+const getData = async (id: string, encrypt?: boolean, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await getSysConfig(id, encrypt);
+    if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
   }
@@ -241,8 +257,24 @@ const saveSuccess = (data: QueryForm, type: string) => {
   }
 }
 
+const visibleData = ref({visible: false, id: ''});
+const getEncryptValue = () => {
+  getData(visibleData.value.id, true, (data: QueryForm) => {
+    Modal.open({'content': data.configValue as string, 'footer': false, 'simple': true});
+  });
+}
+const editEncryptValue = (record: QueryForm) => {
+  visibleData.value.id = record.id;
+  if (isValidUser()) {
+    getEncryptValue();
+  } else {
+    visibleData.value.visible = true;
+  }
+}
+
 watch(() => props, (val) => {
   if (props.visible === true) {
+    visibleData.value = {visible: false, id: ''};
     // 应用信息
     if (!props.parameter.appId) {
       queryAppSelectOptions({
@@ -266,6 +298,8 @@ watch(() => props, (val) => {
 }, {deep: true, immediate: true});
 </script>
 <template>
+  <AccountValid v-model="visibleData" @validEvent="getEncryptValue"/>
+
   <SystemConfigForm v-model:visible="formParams.visible"
                     :formCol="formParams.formCol"
                     :formState="formParams.formState"
@@ -384,7 +418,7 @@ watch(() => props, (val) => {
       <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.keyType')" :tooltip="true" :width="120" data-index="keyType"/>
       <a-table-column :ellipsis="true" :title="$t('security.sysConfig.index.form.configValue')" :tooltip="true" :width="240" data-index="configValue">
         <template #cell="{ record }">
-          <span v-if="['UPLOAD'].includes(record.valueType)&&record.configValue">
+          <span v-if="['upload'].includes(record.valueType)&&record.configValue">
             <a-button type="text" @click="fetchFileById(record.configValue)">
             <template #icon>
               <IconDownload/>
@@ -392,7 +426,7 @@ watch(() => props, (val) => {
           </a-button>
             {{ record.configAssist }}
           </span>
-          <span v-else-if="['BASE64'].includes(record.valueType)&&record.configValue">
+          <span v-else-if="['base64'].includes(record.valueType)&&record.configValue">
             <a-button type="text" @click="downloadFileByBase64Data(JSON.parse(record.configValue) as Base64FileParams)">
             <template #icon>
               <IconDownload/>
@@ -400,17 +434,25 @@ watch(() => props, (val) => {
           </a-button>
             {{ (JSON.parse(record.configValue) as Base64FileParams).name }}
           </span>
+          <span v-else-if="['encrypt'].includes(record.valueType)&&record.configValue">
+            <a-button type="text" @click="editEncryptValue(record)">
+            <template #icon>
+              <IconEye/>
+            </template>
+          </a-button>
+            {{ record.configValue }}
+          </span>
           <span v-else>{{ record.configValue }}</span>
+        </template>
+      </a-table-column>
+      <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.sysConfig.index.form.valueType')" :width="120" data-index="valueType">
+        <template #cell="{ record }">
+          {{ record.valueType ? $t(`security.sysConfig.index.form.valueType.${record.valueType}`) : '' }}
         </template>
       </a-table-column>
       <a-table-column :ellipsis="true" :tooltip="true" :title="$t('security.sysConfig.index.form.purpose')" :width="120" data-index="purpose">
         <template #cell="{ record }">
           {{ record.purpose ? $t(`security.sysConfig.index.form.purpose.${record.purpose}`) : '' }}
-        </template>
-      </a-table-column>
-      <a-table-column :title="$t('security.sysConfig.index.form.encrypted')" :width="90" data-index="encrypted">
-        <template #cell="{ record }">
-          {{ $t(`security.sysConfig.index.form.encrypted.${record.encrypted}`) }}
         </template>
       </a-table-column>
       <a-table-column v-if="!parameter.appId" :ellipsis="true" :title="$t('security.sysConfig.index.form.appId')" :tooltip="true" :width="180"

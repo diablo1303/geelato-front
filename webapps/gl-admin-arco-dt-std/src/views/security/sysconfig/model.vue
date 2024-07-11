@@ -10,10 +10,11 @@ import {FileItem, FormInstance, Message, Modal, SelectOptionGroup} from "@arco-d
 import {createOrUpdateSysConfig as createOrUpdateForm, getSysConfig as getForm, QuerySysConfigForm as QueryForm, validateSysConfigKey} from '@/api/sysconfig'
 import {AttachmentForm, Base64FileParams, getAttachmentByIds, getDownloadUrlById, getUploadUrl, UploadFileParams, uploadHeader} from "@/api/attachment";
 import {getAppSelectOptions, QueryAppForm} from "@/api/application";
-import {getTypeSelectOptionGroup} from "@/api/model";
 import UploadBase64 from "@/components/upload-base64/index.vue";
 import {isJSON} from "@/utils/is";
-import {enableStatusOptions, encryptedOptions, purposeOptions} from "./searchTable";
+import {isValidUser} from "@/utils/auth";
+import AccountValid from "@/views/account/components/account-valid.vue";
+import {enableStatusOptions, purposeOptions, valueTypeOptions} from "./searchTable";
 
 // 页面所需 参数
 type PageParams = {
@@ -48,7 +49,7 @@ const generateFormData = (): QueryForm => {
     id: props.modelValue || '',
     keyType: [],
     configKey: '',
-    valueType: 'VARCHAR',
+    valueType: 'string',
     configValue: '',
     configAssist: '',
     remark: '',
@@ -62,7 +63,6 @@ const generateFormData = (): QueryForm => {
 const formData = ref(generateFormData());
 const templateFile = ref<FileItem[]>([]);
 const appSelectOptions = ref<QueryAppForm[]>([]);
-const selectTypeOptions = ref<SelectOptionGroup[]>([]);
 
 /**
  * 新增或更新接口
@@ -90,9 +90,9 @@ const createOrUpdateData = async (params: QueryForm, successBack?: any, failBack
  * @param successBack
  * @param failBack
  */
-const getData = async (id: string, successBack?: any, failBack?: any) => {
+const getData = async (id: string, encrypt?: boolean, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await getForm(id);
+    const {data} = await getForm(id, encrypt);
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -127,10 +127,33 @@ const resetValidate = async () => {
   await validateForm.value?.resetFields();
 };
 
+const visibleData = ref(false);
+const editEncrypt = ref(false);
+const getEncryptValue = () => {
+  getData(props.modelValue, true, (data: QueryForm) => {
+    editEncrypt.value = true;
+    if (props.formState === 'view') {
+      openModal(data.configValue as string);
+    } else {
+      formData.value.configValue = data.configValue;
+    }
+  }, () => {
+    editEncrypt.value = true;
+  });
+}
+const editEncryptValue = () => {
+  if (isValidUser()) {
+    getEncryptValue();
+  } else {
+    visibleData.value = true;
+  }
+}
 
 const selectTypeChange = (value: string) => {
   formData.value.configValue = '';
   formData.value.configAssist = '';
+  if (['boolean'].includes(formData.value.valueType)) formData.value.configValue = false;
+  if (['number'].includes(formData.value.valueType)) formData.value.configValue = 0;
 }
 
 const deleteFileItem = (fileList: FileItem[], delUid: string) => {
@@ -208,12 +231,8 @@ const appSelectChange = () => {
  * 页面加载方法，对外提供
  */
 const loadPage = () => {
-  // 模型字段选择类型
-  getTypeSelectOptionGroup((data: SelectOptionGroup[]) => {
-    selectTypeOptions.value = data || [];
-  }, () => {
-    selectTypeOptions.value = [];
-  });
+  visibleData.value = false;
+  editEncrypt.value = false;
   // 应用信息
   getAppSelectOptions({
     id: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
@@ -233,7 +252,7 @@ const loadPage = () => {
   templateFile.value = [];
   // 编辑、查看 状态 查询数据
   if (['edit', 'view'].includes(props.formState) && props.modelValue) {
-    getData(props.modelValue, (data: QueryForm) => {
+    getData(props.modelValue, false, (data: QueryForm) => {
       // 表格数据处理
       data.encrypted = data.encrypted === true ? 1 : 0;
       if (data.keyType) {
@@ -244,11 +263,15 @@ const loadPage = () => {
         objectId: "",
         appId: formData.value.appId || '', tenantCode: formData.value.tenantCode || ''
       });
-      if (['UPLOAD'].includes(formData.value.valueType)) {
-        loadFiles(formData.value.configValue);
-      } else if (['BASE64'].includes(formData.value.valueType) && isJSON(formData.value.configValue)) {
-        const baseData: Base64FileParams = JSON.parse(formData.value.configValue);
+      if (['upload'].includes(formData.value.valueType)) {
+        loadFiles(formData.value.configValue as string);
+      } else if (['base64'].includes(formData.value.valueType) && isJSON(formData.value.configValue as string)) {
+        const baseData: Base64FileParams = JSON.parse(formData.value.configValue as string);
         formData.value.configAssist = baseData && baseData.name || '';
+      } else if (['number'].includes(formData.value.valueType)) {
+        formData.value.configValue = Number(formData.value.configValue);
+      } else if (['boolean'].includes(formData.value.valueType)) {
+        formData.value.configValue = formData.value.configValue === 'true';
       }
     });
   }
@@ -263,6 +286,7 @@ defineExpose({saveOrUpdate, loadPage});
 </script>
 
 <template>
+  <AccountValid v-model="visibleData" @validEvent="getEncryptValue"/>
   <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
     <a-row :gutter="wrapperCol">
       <a-col :span="(labelCol+wrapperCol)/formCol">
@@ -309,21 +333,12 @@ defineExpose({saveOrUpdate, loadPage});
             :label="$t('security.sysConfig.index.form.valueType')"
             :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
             field="valueType">
-          <a-select v-model="formData.valueType" :disabled="formState==='view'" :options="selectTypeOptions" allow-search
-                    @change="selectTypeChange(formData.valueType)"/>
+          <a-select v-model="formData.valueType" :disabled="formState==='view'" allow-search @change="selectTypeChange(formData.valueType)">
+            <a-option v-for="(item,index) of valueTypeOptions" :key="index" :value="item.value" :label="$t(`${item.label}`)"/>
+          </a-select>
         </a-form-item>
       </a-col>
-      <a-col :span="(labelCol+wrapperCol)/formCol">
-        <a-form-item
-            :label="$t('security.sysConfig.index.form.encrypted')"
-            :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
-            field="encrypted">
-          <a-radio-group v-model="formData.encrypted" :disabled="formState==='view'" :options="encryptedOptions">
-            <template #label="{ data }">{{ $t(`${data.label}`) }}</template>
-          </a-radio-group>
-        </a-form-item>
-      </a-col>
-      <a-col v-if="['UPLOAD'].includes(formData.valueType)" :span="(labelCol+wrapperCol)">
+      <a-col v-if="['upload'].includes(formData.valueType)" :span="(labelCol+wrapperCol)">
         <a-form-item :label="$t('security.sysConfig.index.form.configValue')" :label-col-props="{ span: labelCol/formCol }"
                      :rules="[{required: true,message: $t('security.form.rules.match.required')}]"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
@@ -337,7 +352,7 @@ defineExpose({saveOrUpdate, loadPage});
                     @error="uploadError" @success="uploadTSuccess" @before-remove="beforeRemoveT"/>
         </a-form-item>
       </a-col>
-      <a-col v-else-if="['BASE64'].includes(formData.valueType)" :span="(labelCol+wrapperCol)">
+      <a-col v-else-if="['base64'].includes(formData.valueType)" :span="(labelCol+wrapperCol)">
         <a-form-item :label="$t('security.sysConfig.index.form.configValue')" :label-col-props="{ span: labelCol/formCol }"
                      :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
@@ -345,12 +360,76 @@ defineExpose({saveOrUpdate, loadPage});
           <UploadBase64 v-model="formData.configValue" :disabled="formState==='view'"/>
         </a-form-item>
       </a-col>
+      <a-col v-else-if="['encrypt'].includes(formData.valueType)" :span="(labelCol+wrapperCol)">
+        <a-form-item :label-col-props="{ span: labelCol/formCol }"
+                     :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                     field="configValue">
+          <template #label>
+            {{ $t('security.sysConfig.index.form.configValue') }}
+            <a-tooltip :content="$t('security.sysConfig.index.form.configValue.encrypt.edit')">
+              <icon-edit v-if="formState==='edit'&&!editEncrypt&&formData.configValue" style="color: rgb(var(--primary-6));cursor: pointer;"
+                         @click.stop="editEncryptValue"/>
+            </a-tooltip>
+            <a-tooltip :content="$t('security.sysConfig.index.form.configValue.encrypt.view')">
+              <icon-eye v-if="formState==='view'" :size="16" style="color: rgb(var(--primary-6));cursor: pointer;" @click.stop="editEncryptValue"/>
+            </a-tooltip>
+          </template>
+          <a-textarea v-if="formState==='add'||((editEncrypt || !formData.configValue)&&formState==='edit')" v-model="formData.configValue"
+                      :auto-size="{minRows:1,maxRows:4}" :max-length="4000" allow-clear show-word-limit/>
+          <span v-else :title="formData.configValue" class="textarea-span">{{ formData.configValue }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col v-else-if="['json'].includes(formData.valueType)" :span="(labelCol+wrapperCol)">
+        <a-form-item :label="$t('security.sysConfig.index.form.configValue')" :label-col-props="{ span: labelCol/formCol }"
+                     :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                     field="configValue">
+          <a-textarea v-if="formState!=='view'" v-model="formData.configValue" :auto-size="{minRows:4,maxRows:6}" :max-length="4000" allow-clear
+                      show-word-limit/>
+          <span v-else :title="formData.configValue" class="textarea-span" @click="openModal(`${formData.configValue}`)">{{ formData.configValue }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col v-else-if="['datetime'].includes(formData.valueType)" :span="(labelCol+wrapperCol)">
+        <a-form-item :label="$t('security.sysConfig.index.form.configValue')" :label-col-props="{ span: labelCol/formCol }"
+                     :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                     field="configValue">
+          <a-date-picker v-if="formState!=='view'" v-model="formData.configValue" showTime allow-clear/>
+          <span v-else>{{ formData.configValue }}</span>
+        </a-form-item>
+      </a-col>
+      <a-col v-else-if="['boolean'].includes(formData.valueType)" :span="(labelCol+wrapperCol)">
+        <a-form-item :label="$t('security.sysConfig.index.form.configValue')" :label-col-props="{ span: labelCol/formCol }"
+                     :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                     field="configValue">
+          <a-switch :disabled="formState==='view'" type="round" v-model="formData.configValue">
+            <template #checked>
+              ON
+            </template>
+            <template #unchecked>
+              OFF
+            </template>
+          </a-switch>
+        </a-form-item>
+      </a-col>
+      <a-col v-else-if="['number'].includes(formData.valueType)" :span="(labelCol+wrapperCol)">
+        <a-form-item :label="$t('security.sysConfig.index.form.configValue')" :label-col-props="{ span: labelCol/formCol }"
+                     :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
+                     :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                     field="configValue">
+          <a-input-number v-if="formState!=='view'" v-model="formData.configValue" allow-clear/>
+          <span v-else>{{ formData.configValue }}</span>
+        </a-form-item>
+      </a-col>
       <a-col v-else :span="(labelCol+wrapperCol)">
         <a-form-item :label="$t('security.sysConfig.index.form.configValue')" :label-col-props="{ span: labelCol/formCol }"
                      :rules="[{required: false,message: $t('security.form.rules.match.required')}]"
                      :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
                      field="configValue">
-          <a-textarea v-if="formState!=='view'" v-model="formData.configValue" :auto-size="{minRows:1,maxRows:4}" :max-length="2000" show-word-limit/>
+          <a-textarea v-if="formState!=='view'" v-model="formData.configValue" :auto-size="{minRows:1,maxRows:4}" :max-length="4000" allow-clear
+                      show-word-limit/>
           <span v-else :title="formData.configValue" class="textarea-span" @click="openModal(`${formData.configValue}`)">{{ formData.configValue }}</span>
         </a-form-item>
       </a-col>
@@ -384,5 +463,7 @@ div.arco-form-item-content > span.textarea-span {
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+  white-space: normal;
+  word-wrap: break-word;
 }
 </style>

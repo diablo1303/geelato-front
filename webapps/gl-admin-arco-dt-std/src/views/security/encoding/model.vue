@@ -216,8 +216,17 @@ const exampleChange = () => {
           break;
         case 'serial':
           // eslint-disable-next-line no-nested-ternary
-          if (serialDigitOptions.value.includes(serialDigit) && item.serialType)
-            example.push(item.serialType === 'order' ? '1'.padStart(item.serialDigit, '0') : generateRandom(serialDigit));
+          if (serialDigitOptions.value.includes(serialDigit) && item.serialType) {
+            if (item.serialType === 'order') {
+              if (item.coverPos === false) {
+                example.push(1);
+              } else {
+                example.push('1'.padStart(item.serialDigit, '0'));
+              }
+            } else {
+              example.push(generateRandom(serialDigit));
+            }
+          }
           break;
         case 'date':
           if (item.dateType)
@@ -261,6 +270,9 @@ const argumentInputValueBlur = (record: EncodingItem) => {
   }
   exampleChange();
 }
+const coverPosCheckBoxChange = (record: EncodingItem) => {
+  exampleChange();
+}
 /**
  * 日期类型变更
  */
@@ -290,6 +302,7 @@ const serialDropdownClick = (id: string, type: string, value: number | string) =
       if (item.id === id) {
         // @ts-ignore
         item[type] = value;
+        item.coverPos = true;
         exampleChange();
       }
     }
@@ -521,6 +534,10 @@ defineExpose({saveOrUpdate, loadPage});
                         </a-doption>
                       </template>
                     </a-dropdown-button>
+                    <a-checkbox v-if="record.serialType==='order'" v-model="record.coverPos" :disabled="formState==='view'"
+                                @change="coverPosCheckBoxChange(record)">
+                      {{ $t(`security.encoding.index.form.coverPos`) }}
+                    </a-checkbox>
                   </a-space>
                   <!--        日期          -->
                   <a-select v-if="record.itemType==='date'&&formState!=='view'" v-model="record.dateType"
@@ -590,5 +607,7 @@ div.arco-form-item-content > span.textarea-span {
   text-overflow: ellipsis;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
+  white-space: normal;
+  word-wrap: break-word;
 }
 </style>

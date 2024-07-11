@@ -35,6 +35,10 @@ export const editorProps = {
     type: Boolean,
     default: false,
   },
+  formatter: {
+    type: String,
+    default: 0,
+  },
   width: {
     type: [String, Number] as PropType<string | number>,
     default: '100%',
@@ -62,6 +66,7 @@ export const editorProps = {
     type: Object as PropType<Options>,
     default() {
       return {
+        autoIndex: true,
         automaticLayout: true,
         foldingStrategy: 'indentation', // 折叠方式  auto | indentation
         renderLineHighlight: 'all' || 'line' || 'none' || 'gutter', // 行亮
@@ -77,6 +82,9 @@ export const editorProps = {
         },
         contextmenu: false, // 禁用右键菜单
         acceptSuggestionOnCommitCharacter: true,
+        wordWrap: 'on',
+        wordWrapColumn: 120,
+        wrappingIndent: 'indent',
       }
     },
   },
