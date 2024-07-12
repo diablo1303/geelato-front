@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
+import { selectComponent } from '@geelato/gl-ui'
 
 const props = defineProps({
   leftColSpan: Number,
@@ -24,8 +25,10 @@ const props = defineProps({
       return []
     }
   },
-  disabled: Boolean
+  disabled: Boolean,
+  glIsRuntime: Boolean
 })
+
 
 // const leftItemsCompute = computed(() => {
 //   return props.leftItems.filter((inst) => {
@@ -57,7 +60,13 @@ const props = defineProps({
       <div class="gl-toolbar-items">
         <slot name="leftItems"></slot>
         <template v-for="(inst, index) in leftItems" :key="index">
-          <GlComponent v-if="inst" v-show="inst?.props?._hidden!==true" :glComponentInst="inst"></GlComponent>
+          <GlComponent
+            v-if="inst"
+            v-show="inst?.props?._hidden !== true"
+            :glComponentInst="inst"
+            :glIsRuntime="glIsRuntime"
+            @click="selectComponent($event,inst)"
+          ></GlComponent>
         </template>
       </div>
     </a-col>
@@ -65,7 +74,13 @@ const props = defineProps({
       <div class="gl-toolbar-items">
         <span></span>
         <template v-for="(inst, index) in centerItems" :key="index">
-          <GlComponent v-if="inst" v-show="inst?.props?._hidden!==true" :glComponentInst="inst"></GlComponent>
+          <GlComponent
+            v-if="inst"
+            v-show="inst?.props?._hidden !== true"
+            :glComponentInst="inst"
+            :glIsRuntime="glIsRuntime"
+            @click="selectComponent($event,inst)"
+          ></GlComponent>
         </template>
       </div>
     </a-col>
@@ -75,7 +90,13 @@ const props = defineProps({
     >
       <div class="gl-toolbar-items">
         <template v-for="(inst, index) in rightItems" :key="index">
-          <GlComponent v-if="inst" v-show="inst?.props?._hidden!==true" :glComponentInst="inst"></GlComponent>
+          <GlComponent
+            v-if="inst"
+            v-show="inst?.props?._hidden !== true"
+            :glComponentInst="inst"
+            :glIsRuntime="glIsRuntime"
+            @click="selectComponent($event,inst)"
+          ></GlComponent>
         </template>
         <slot name="rightItems"></slot>
         <span></span>
@@ -84,10 +105,11 @@ const props = defineProps({
   </a-row>
 </template>
 <style>
-  .gl-toolbar-items{
-    display: flex
-  }
-  .gl-toolbar-items > *{
-    margin-right: 8px
-  }
+.gl-toolbar-items {
+  display: flex;
+}
+
+.gl-toolbar-items > * {
+  margin-right: 8px;
+}
 </style>

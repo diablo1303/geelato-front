@@ -34,8 +34,10 @@ import IfEmptyBlockHandler from './logic/IfEmptyBlockHandler'
 import IfExpressionBlockHandler from './logic/IfExpressionBlockHandler'
 import MessageBlockHandler from './feedback/MessageBlockHandler'
 import ReadClipboardTableBlockHandler from './other/ReadClipboardTableBlockHandler'
+import GetArgeBlockHandler from './var/GetArgeBlockHandler'
 
 export {
+  GetArgeBlockHandler,
   OpenThirdPageBlockHandler,
   NotificationBlockHandler,
   IfExpressionBlockHandler,

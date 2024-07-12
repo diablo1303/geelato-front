@@ -176,6 +176,38 @@ export const commonActions = [
 export const commonMethods: MethodMeta[] = [
   {
     async: false,
+    name: '_getValue',
+    title: '获取组件值',
+    description: '获取通过_getValue获取组件的值',
+    params: [],
+    defaultValue: undefined,
+    returnInfo: {
+      returnType: 'any',
+      description: '获取通过_getValue获取组件的值。'
+    }
+  },
+  {
+    async: false,
+    name: '_setValue',
+    title: '设置组件值',
+    description: '设置组件值',
+    params: [
+      {
+        name: 'value',
+        type: 'string',
+        title: '变量名',
+        required: true,
+        description: ''
+      }
+    ],
+    defaultValue: undefined,
+    returnInfo: {
+      returnType: 'void',
+      description: '设置组件值。'
+    }
+  },
+  {
+    async: false,
     name: '_reRender',
     title: '重新渲染组件',
     description: '重新渲染组件，基于nextTick。',

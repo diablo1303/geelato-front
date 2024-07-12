@@ -14,7 +14,7 @@ import {
   PageProvideProxy,
   PageProvideKey,
   EntityReaderOrder,
-  EntityDataSource, jsScriptExecutor
+  EntityDataSource, jsScriptExecutor, selectComponent
 } from '@geelato/gl-ui'
 import {
   type Column,
@@ -540,7 +540,10 @@ defineExpose({
               columnAction.props?._hidden !== true && columnAction.componentName !== 'GlHiddenArea'
             "
             :glComponentInst="columnAction"
+            :glIsRuntime=glIsRuntime
+            @click="selectComponent($event, columnAction)"
             :glCtx="{ record: renderData[rowIndex], rowIndex }"
+
           ></GlComponent>
         </template>
       </a-space>

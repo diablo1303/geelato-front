@@ -838,8 +838,14 @@ const copyRecord = (record: object, rowIndex: number) => {
   // eslint-disable-next-line vue/no-mutating-props
   props.glComponentInst.value = renderData.value
 }
-const deleteRecord = (record: object, rowIndex: number) => {
-  const records = renderData.value.splice(rowIndex, 1)
+/**
+ * 删除指定索引的记录
+ * 删除成功时，返回删除的记录，否则返回null
+ * @param params
+ */
+const deleteRecordByIndex = (params:{index: number}) => {
+  const { index } = params
+  const records = renderData.value.splice(index, 1)
   // eslint-disable-next-line vue/no-mutating-props
   props.glComponentInst.value = renderData.value
   if (records && records.length > 0) {
@@ -848,11 +854,12 @@ const deleteRecord = (record: object, rowIndex: number) => {
     if (record.id) {
       deleteDataWhenEnableEdit.value.push({ id: record.id, [logicDeleteFieldName]: 1 })
     }
-    emits('deleteRecord', { record, rowIndex })
+    emits('deleteRecord', { record, rowIndex:index })
     // 同时会触发表络级别的change事件
     emits('change', renderData.value)
+    return record
   }
-  // console.log('deleteDataWhenEnableEdit:', deleteDataWhenEnableEdit)
+  return null
 }
 
 const getRenderData = () => {
@@ -917,6 +924,7 @@ defineExpose({
   reRender,
   getRenderData,
   getRenderColumns,
+  deleteRecordByIndex,
   getDeleteRecords,
   getRef
 })
@@ -961,7 +969,7 @@ defineExpose({
           type="text"
           status="danger"
           size="small"
-          @click="deleteRecord(record, rowIndex)"
+          @click="deleteRecordByIndex({index:rowIndex})"
           :disabled="isPageRead || readonly || isRowReadonly(rowIndex)"
         >
           删除

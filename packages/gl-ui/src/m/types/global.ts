@@ -111,4 +111,3 @@ export interface CellMeta {
   name: string
   valueType: CellValueType
 }
-

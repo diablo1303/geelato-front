@@ -1,7 +1,7 @@
 <template>
   <component
     :key="reRenderKey"
-    v-if="glComponentInst && glComponentInst.componentName && unRender !== true "
+    v-if="glComponentInst && glComponentInst.componentName && unRender !== true"
     v-show="hidden !== true && glComponentInst.componentName !== 'GlHiddenArea' && hasPermission()"
     :id="glComponentInst.id"
     :ref="glComponentInst.id"
@@ -104,17 +104,30 @@ const props = defineProps({
 })
 
 /**
+ *  获取组件值
+ */
+const _getValue = () => {
+  return props.glComponentInst.value
+}
+/**
+ *  设置组件值
+ * @param params
+ */
+const _setValue = (params: { value: any }) => {
+  return (props.glComponentInst.value = params?.value)
+}
+/**
  * 组件实例变量
  * 用于外部通过脚本调用组件的setVar、getVar方法，设置和获取变量值
  * 这样在脚本编排中，可以存储中间值，不需要去创建一个组件来存储值
  * 可以替换隐藏表单域的一些功能
  */
 const vars: Record<string, any> = ref({})
-const _setVar = (params:{name: string, value: any}) => {
+const _setVar = (params: { name: string; value: any }) => {
   // console.log('_setVar', params, 'instId',props.glComponentInst.id)
   vars.value[params.name] = params.value
 }
-const _getVar = (params:{name: string}) => {
+const _getVar = (params: { name: string }) => {
   // console.log('_getVar', params,'instId', props.glComponentInst.id)
   return vars.value[params.name]
 }
@@ -226,13 +239,13 @@ const defaultSyncActionHandler = (...args: any) => {
 // 所有的action处理器，依据组件实体配置的action形成action事件响应对象，匹配不同的事件
 let onActionsHandler: { [key: string]: any } = {}
 props.glComponentInst?.actions?.forEach((action: Action) => {
-  if(props.glIsRuntime){
+  if (props.glIsRuntime) {
     // 运行时组件，需要动态注册事件，设计时不注册事件
     onActionsHandler[action.eventName] = createActionHandler(action.eventName)
-  }else{
-    onActionsHandler[action.eventName] = ()=>{
+  } else {
+    onActionsHandler[action.eventName] = () => {
       stopPropagation()
-      console.log('GlComponent > 设计时不触发动作（事件），运行时才触发。');
+      console.log('GlComponent > 设计时不触发动作（事件），运行时才触发。')
     }
   }
 })
@@ -428,5 +441,15 @@ onUnmounted(() => {
 
   // console.log('onUnmounted', props.glComponentInst?.componentName,props.glComponentInst?.id)
 })
-defineExpose({ onMouseLeave, onMouseOver, _reRender, _setVar, _getVar, _getVars, _getVarsRef })
+defineExpose({
+  onMouseLeave,
+  onMouseOver,
+  _getValue,
+  _setValue,
+  _reRender,
+  _setVar,
+  _getVar,
+  _getVars,
+  _getVarsRef
+})
 </script>

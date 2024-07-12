@@ -5,7 +5,7 @@ import {
   EntityReaderParam,
   jsScriptExecutor,
   PageProvideKey,
-  type PageProvideProxy,
+  type PageProvideProxy, selectComponent,
   utils
 } from '@geelato/gl-ui'
 import { ConvertUtil } from '@geelato/gl-ui'
@@ -59,7 +59,8 @@ const props = defineProps({
     default() {
       return false
     }
-  }
+  },
+  glIsRuntime:Boolean
 })
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
@@ -281,6 +282,8 @@ defineExpose({
                 v-if="item.component"
                 :glComponentInst="item.component"
                 @update="changeValue"
+                :glIsRuntime="glIsRuntime"
+                @click="selectComponent($event,item.component)"
               ></GlComponent>
               <template #help>
                 {{ item.component?.props.description }}
@@ -296,6 +299,8 @@ defineExpose({
                 v-if="item.component"
                 :glComponentInst="item.component"
                 @update="changeValue"
+                :glIsRuntime="glIsRuntime"
+                @click="selectComponent($event,item.component)"
               ></GlComponent>
               <template #help>
                 {{ item.component?.props.description }}

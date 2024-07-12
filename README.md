@@ -13,22 +13,22 @@ Geelato Admin是基于Arco Pro Vue的扩展，提供企业后台应用中常用�
 
 ## 工程结构
 
-packages                               打包成组件库的工程
-  gl-ide                                 IDE的核心框架
-  gl-ide-arco                        采用arco-design库，基于gl-ide扩展
-  gl-ui                                   核心ui库
-  gl-ui-arco                          arco-design版的组件库
-  gl-ui-arco-admin              所有webapps中的gl-admin-arco-xxx工程共用的组件库
-  gl-ui-schema                    对应gl-ui的组件配置器定义
-  gl-ui-schema-arco           对应gl-ui-arco的组件配置器定义
+├─ packages                               打包成组件库的工程
+    ├─ gl-ide                                 IDE的核心框架
+    ├─ gl-ide-arco                        采用arco-design库，基于gl-ide扩展
+    ├─ gl-ui                                   核心ui库
+    ├─ gl-ui-arco                          arco-design版的组件库
+    ├─ gl-ui-arco-admin              所有webapps中的gl-admin-arco-xxx工程共用的组件库
+    ├─ gl-ui-schema                    对应gl-ui的组件配置器定义
+    ├─ gl-ui-schema-arco           对应gl-ui-arco的组件配置器定义
 
-webapps
-  //  面向开发者，设计时（design-time）
-  gl-admin-arco-dt-std       standard 标准版，用于开源
-  gl-admin-arco-dt-pro      Professional 专业版
-  gl-admin-arco-dt-ent      enterprise 企业版
-  // 面向最终用户，运行时（runtime）
-  gl-admin-arco-rt-std       standard 标准版，用于开源
-  gl-admin-arco-rt-pro      Professional 专业版
-  gl-admin-arco-rt-ent       enterprise 企业版
+├─ webapps
+           //  面向开发者，设计时（design-time）
+    ├─ gl-admin-arco-dt-std       standard 标准版，用于开源
+    ├─ gl-admin-arco-dt-pro      Professional 专业版
+    ├─ gl-admin-arco-dt-ent      enterprise 企业版
+           // 面向最终用户，运行时（runtime）
+    ├─ gl-admin-arco-rt-std       standard 标准版，用于开源
+    ├─ gl-admin-arco-rt-pro      Professional 专业版
+    ├─ gl-admin-arco-rt-ent       enterprise 企业版
 

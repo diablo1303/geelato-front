@@ -1260,20 +1260,20 @@ export default {
       }
     },
     {
-      name: 'deleteRecord',
-      title: '删除一行记录（基于ID）',
+      name: 'deleteRecordByIndex',
+      title: '删除一行记录（基于Index）',
       params: [
         {
-          name: 'id',
-          type: 'string',
-          description: '在表格行操作中，值示例：$gl.ctx.record.id',
-          title: '记录ID',
+          name: 'index',
+          type: 'number',
+          description: '删除操作只限于前端，并未同步到后端。',
+          title: '行索引',
           defaultValue: ''
         }
       ],
       returnInfo: {
-        returnType: 'Promise | string | boolean',
-        description: '删除一行记录（基于ID）,如果未传入需要删除的记录id，则返回false，若删除了push进来（即标记删除）的记录，则返回该记录id，若是删除服务端的记录则返回promise。',
+        returnType: 'Record<string, any> | null',
+        description: '删除成功时，返回删除的记录，否则返回null，该删除操作只限于前端，并未同步到后端；删除第几行的记录，0表示第一行，1表示第二行。',
       }
     },
     { name: 'getRenderData', title: '获取表数据' }

@@ -16,7 +16,12 @@ const props = defineProps({
       return ''
     }
   },
-  options: Array,
+  options: {
+    type: Array,
+    default() {
+      return []
+    }
+  },
   readonly: Boolean,
   size: String as PropType<'medium' | 'small' | 'mini' | 'large' | undefined>,
   placeholder: String,
@@ -39,8 +44,6 @@ const props = defineProps({
     }
   }
 })
-// eslint-disable-next-line vue/no-setup-props-destructure
-let options = props.options || []
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
@@ -63,7 +66,7 @@ watch(
   mv,
   () => {
     // 回写名称
-    const foundOption: any = options.find((option: any) => {
+    const foundOption: any = props.options.find((option: any) => {
       return option.value === mv.value
     })
     const label = foundOption?.label || ''

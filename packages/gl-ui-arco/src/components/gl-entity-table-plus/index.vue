@@ -318,8 +318,18 @@ const useDeleteFailFn = (message: string) => {
     global.$notification.error({ content: message })
   }
 }
+
+/**
+ * 基于索引值，删除行，用于编辑表格
+ * @param params
+ */
+const deleteRecordByIndex = (params: { index: number }) => {
+ return  tableRef.value.deleteRecordByIndex(params)
+}
+
 /**
  * 基于记录id，删除行，并刷新
+ * 用于查询表格
  * @param params
  */
 const deleteRecord = (params: { id: string }) => {
@@ -1700,6 +1710,8 @@ defineExpose({
   insertRecords,
   deleteRecord,
   deleteRecordWithConfirm,
+  // 用于编辑表格
+  deleteRecordByIndex,
   deleteSelectedRecords,
   deleteSelectedRecordsWithConfirm,
   getRenderRecord,
@@ -1765,6 +1777,7 @@ defineExpose({
       :triggerByInit="base.triggerByInit"
       :triggerByValueChange="base.triggerByValueChange"
       :hideReset="base.hideReset"
+      :glIsRuntime="glIsRuntime"
       @search="onSearch"
       style="margin-top: 12px"
     ></GlQuery>
@@ -1774,6 +1787,7 @@ defineExpose({
       v-bind="toolbar"
       style="margin-bottom: 8px"
       :disabled="isRead || readonly"
+      :glIsRuntime="glIsRuntime"
     >
       <template #leftItems>
         <div v-if="base.enableEdit && base.showAddRowBtn !== false" class="action-icon">

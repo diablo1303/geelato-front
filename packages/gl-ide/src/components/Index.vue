@@ -42,7 +42,10 @@ import IdeSetterPanel from './SetterPanel.vue'
 import IdeStatusPanel from './StatusPanel.vue'
 import IdeStageBreadcrumb from "./StageBreadcrumb.vue";
 import {useThemeStore} from "../stores/UseThemeStore";
-import {Utils} from "@geelato/gl-ui";
+import { useComponentStore } from '../stores/UseComponentStore'
+import { emitter, Utils } from '@geelato/gl-ui'
+import type { ComponentInstance } from '@geelato/gl-ui-schema'
+import UiEventNames from '@geelato/gl-ui/src/components/UiEventNames'
 
 export default defineComponent({
   name: "GlIde",
@@ -60,6 +63,7 @@ export default defineComponent({
   setup(props, context) {
     const stagePanels = ref([])
     const themeStore = useThemeStore()
+    const componentStore = useComponentStore()
     if (Utils.CheckUtil.isBrowser()) {
       if (typeof window !== 'undefined') {
         window.onresize = () => {
@@ -77,16 +81,26 @@ export default defineComponent({
       }
     }
 
+
+
     return {
       stagePanels,
       themeStore,
+      componentStore,
       onSwitchSidebarPanel
     }
   },
   created() {
     this.themeStore.resize()
+    emitter.on(UiEventNames.Base.SelectComponent,this.selectComponent)
+  },
+  beforeUnmount() {
+    emitter.off(UiEventNames.Base.SelectComponent,this.selectComponent)
   },
   methods: {
+    selectComponent(inst: any) {
+      this.componentStore.setCurrentSelectedComponent(inst)
+    },
     updateSetter(data: any) {
       console.log('updateSetter:', data)
     }

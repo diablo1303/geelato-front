@@ -30,7 +30,7 @@
     </div>
     <!-- 这里需用 v-show，确保各属性都初始化，属性之间的数据依赖才能正常   -->
     <div class="gl-content" v-show="propertySetterMeta.expanded!==false">
-      <div style="display: flex;align-items: center;">
+      <div style="display: flex;align-items: start;">
         <div style="flex: 1" >
           <!--  通过displayValueExpress来优化展示的内容  -->
           <a-input readonly v-if="propertySetterMeta.enableValueExpress&&displayValueExpress" :default-value="displayValueExpress" :input-attrs="{style:{color: 'royalblue'}}"></a-input>
