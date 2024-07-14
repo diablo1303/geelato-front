@@ -276,7 +276,7 @@ defineExpose({ getSelectedOption })
           @clear="onClear"
           :disabled="disabled || readonly"
           :readonly="readonly"
-          :style="{minWidth:'140px'}"
+          :style="{minWidth:'90px'}"
           :max-tag-count="3"
         >
           <a-option v-for="opt in renderOptions" :value="opt.value" :disabled="!isForbiddenItemCanSelect&&opt.enableStatus == '0'">
