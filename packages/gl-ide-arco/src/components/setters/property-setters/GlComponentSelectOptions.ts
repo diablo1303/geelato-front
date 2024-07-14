@@ -7,7 +7,7 @@ const useComponentSelectOption = () => {
     { componentName: 'AInput', title: '单行字符输入' },
     { componentName: 'ATextarea', title: '多行字符输入' },
     { componentName: 'AInputNumber', title: '数字输入' },
-    { componentName: 'ASelect', title: '下拉选择' },
+    { componentName: 'GlSelect', title: '下拉选择' },
     { componentName: 'ADatePicker', title: '日期选择器' },
     { componentName: 'ATimePicker', title: '时间选择器' },
     { componentName: 'GlRangePicker', title: '日期范围选择器' },
