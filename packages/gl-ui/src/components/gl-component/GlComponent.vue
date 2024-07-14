@@ -132,6 +132,19 @@ const _getVar = (params: { name: string }) => {
   return vars.value[params.name]
 }
 
+/**
+ *  设置组件只读和禁用
+ * @param params readonly或disabled未设置为true和false时设置无效，不做调整
+ */
+const _setReadonlyAndDisabled = (params: { readonly? : boolean,disabled? : boolean }) => {
+  if(params.readonly ===true || params.readonly === false){
+    props.glComponentInst.props.readonly = params.readonly
+  }
+  if(params.disabled ===true || params.disabled === false){
+    props.glComponentInst.props.disabled = params.disabled
+  }
+}
+
 const _getVars = () => {
   return vars.value
 }
@@ -154,8 +167,6 @@ let pageProvideProxy: PageProvideProxy | undefined = props.glIgnoreInjectPagePro
 // console.log('GlComponent > setVueRef >', props.glComponentInst.componentName, props.glComponentInst.id, getCurrentInstance(), pageProvideProxy)
 // 在setup阶段先setVueRef，对于有些组件如GlTable
 pageProvideProxy?.setVueRef(props.glComponentInst.id, getCurrentInstance())
-
-const refreshFlag = ref(true)
 
 /**
  * 对于一些组件，点击事件可能是优先触发了组件内的点击事件，第一个参数不一定是event，这里对所有参数做统一处理
@@ -359,13 +370,6 @@ const _reRender = (updatedProps?: object) => {
   // console.log('_reRender props.glComponentInst', props.glComponentInst)
   reRenderKey.value = utils.gid()
   // console.log('_reRender() > vars:', vars.value,'instId:',props.glComponentInst?.id,reRenderKey.value )
-
-  // refreshFlag.value = false
-  // nextTick(() => {
-  //   refreshFlag.value = true
-  //   // console.log('nextTick call back ...')
-  // })
-  // console.log('nextTick end')
 }
 
 const hasPermission = () => {
@@ -450,6 +454,7 @@ defineExpose({
   _setVar,
   _getVar,
   _getVars,
-  _getVarsRef
+  _getVarsRef,
+  _setReadonlyAndDisabled
 })
 </script>

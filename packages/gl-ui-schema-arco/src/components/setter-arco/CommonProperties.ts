@@ -273,5 +273,32 @@ export const commonMethods: MethodMeta[] = [
       returnType: 'any',
       description: '获取通过_setVar设置的组件临时变量值。'
     }
+  },
+  {
+    async: false,
+    name: '_setReadonlyAndDisabled',
+    title: '设置组件只读和禁用',
+    description: '设置组件只读和禁用',
+    params: [
+      {
+        name: 'readonly',
+        type: 'boolean',
+        title: '只读',
+        required: false,
+        description: '只能填写布尔值true或false，其它值无效'
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        title: '禁用',
+        required: false,
+        description: '只能填写布尔值true或false，其它值无效'
+      }
+    ],
+    defaultValue: undefined,
+    returnInfo: {
+      returnType: 'void',
+      description: '设置组件只读和禁用，可以只设置只读为true，不设置禁用，也可以只读和禁用一起设置。'
+    }
   }
 ]

@@ -1275,7 +1275,6 @@ export default {
         returnType: 'Record<string, any> | null',
         description: '删除成功时，返回删除的记录，否则返回null，该删除操作只限于前端，并未同步到后端；删除第几行的记录，0表示第一行，1表示第二行。',
       }
-    },
-    { name: 'getRenderData', title: '获取表数据' }
+    }
   ]
 }

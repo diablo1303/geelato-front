@@ -249,7 +249,7 @@ const insertAfterCurrentSelectedComponent = async () => {
 
 const copyAll = () => {
   const result = componentStore.copyCurrentComponentTreeToClipboard(false)
-  console.log('copyAll', result)
+  // console.log('copyAll', result)
 }
 
 const pasteAll = () => {

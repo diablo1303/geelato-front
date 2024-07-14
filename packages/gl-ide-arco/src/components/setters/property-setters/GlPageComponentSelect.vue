@@ -1,5 +1,6 @@
 <template>
   <a-tree-select
+    class="gl-page-component-select"
     title="该组件树为当前后台服务中已保存的组件树"
     :data="treeData"
     v-model="selected"
@@ -14,6 +15,7 @@
     }"
     @click="loadPage"
     @change="onChange"
+    dropdownClassName="gl-page-component-select-dropdown"
   ></a-tree-select>
 </template>
 <script lang="ts">
@@ -171,19 +173,20 @@ const loadPage = () => {
 }
 
 const convertTitle = (componentInst: ComponentInstance, title?: string) => {
-  componentInst.title = title || componentInst.props?.label || componentInst.title || componentInst.componentName
+  componentInst.title =
+    title || componentInst.props?.label || componentInst.title || componentInst.componentName
 
   if (componentInst.group === 'dataEntry') {
     // componentInst.title = componentInst.props.label || componentInst.title || componentInst.componentName
     if (componentInst.componentName === 'GlEntityForm') {
       componentInst.title += '【表单】'
-    } else if (componentInst.componentName === 'GlEntityTableSub'){
+    } else if (componentInst.componentName === 'GlEntityTableSub') {
       componentInst.title = componentInst.props.base?.label + '【列表】'
     } else {
       componentInst.title += '【表单字段】'
     }
-  }else{
-    if (componentInst.componentName === 'GlEntityTablePlus'){
+  } else {
+    if (componentInst.componentName === 'GlEntityTablePlus') {
       componentInst.title = componentInst.props.base?.label + '【列表】'
     }
   }
@@ -206,4 +209,10 @@ loadPage()
 // })
 </script>
 
-<style scoped></style>
+<style>
+.gl-page-component-select-dropdown .arco-select-dropdown-list-wrapper,
+.gl-page-component-select-dropdown .arco-tree-select-tree-wrapper {
+  /** 取消默认的200px最大高度限制，方便选择 **/
+  max-height: 600px;
+}
+</style>

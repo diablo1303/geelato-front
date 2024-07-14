@@ -44,7 +44,7 @@ export default class BlockUtils {
             // 脚本优先
             let propValue = simpleParamExpression || utils.getNestedProperty(props,propKey)
             let titleValue = propExpression || utils.getNestedProperty(props,propKey) || ''
-            console.log('BlockUtils > replaceVariables:', propKey, 'propValue:', propValue,'titleValue:',titleValue)
+            // console.log('BlockUtils > replaceVariables:', propKey, 'propValue:', propValue,'titleValue:',titleValue)
             result = result.replace(new RegExp('\\$t\\${' + propKey + '}', 'g'), titleValue);
             if (propValue !== undefined && typeof propValue != 'object') {
                 // 尝试看是不是组件，如果是否组件，取组件label进行展示
