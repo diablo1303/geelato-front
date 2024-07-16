@@ -4,7 +4,7 @@ export default {
   "iconType": "gl-user",
   "group": "dataEntry",
   "title": "组织人员选择",
-  "alias": "org-user-select",
+  "alias": "orgUserSelect",
   "useBy": [
     "freePage"
   ],

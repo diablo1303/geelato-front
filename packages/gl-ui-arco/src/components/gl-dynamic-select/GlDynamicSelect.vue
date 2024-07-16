@@ -431,6 +431,7 @@ const handleSearch = () => {
  * 是否需要阻断加载数据
  */
 const isStopLoadData = () => {
+
   if (props.triggerConstraint?.length > 0) {
     // 1、当值为空时，阻断加载数据
     if (props.triggerConstraint.includes(TriggerConstraint.DoNoFetchWhenEmpty)) {

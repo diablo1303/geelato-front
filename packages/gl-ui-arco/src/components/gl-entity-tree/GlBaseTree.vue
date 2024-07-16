@@ -676,6 +676,11 @@ fetchData(true)
 defineExpose({ fetchData, reRender, selectNode, selectNodeByKey })
 </script>
 <style>
+
+.gl-base-tree .arco-tree-node-switcher-icon svg {
+  transform:rotate(0)
+}
+
 .gl-base-tree .arco-tree-node-drag-icon {
   display: none !important;
 }

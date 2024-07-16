@@ -3,6 +3,9 @@
  *  基于状态机实现的审批模板
  *
  *  打开时，若页面参数中传入了业务表单id，则基于业务表单id加载流程实例及流程处理过程数据
+ *
+ *  对内嵌入的组件，可以调和如下方法：
+ *  pageProvideProxy.pageTemplate?.onBeforeSubmit
  */
 export default {
   name: 'GlPageTemplateStateWF'
@@ -33,6 +36,7 @@ import {
 import StateWFApprove from './StateWFApprove.vue'
 import type { PageTemplate } from '@geelato/gl-ui'
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
+import type { WorkflowPageTemplate } from '@geelato/gl-ui/src/components/PageProvideProxy'
 
 const LayoutMode = {
   collapse: 'collapse',
@@ -105,7 +109,7 @@ const props = defineProps({
   ...mixins.props
 })
 
-console.log('打开基于状态机的流程模板，传入props：',props)
+// console.log('打开基于状态机的流程模板，传入props：',props)
 
 // 检查输入的参数
 const hasReady = computed(() => {
@@ -238,7 +242,7 @@ const showApproveModal = () => {
  */
 const getApprovalStatus = (stateId: string) => {
   return (
-    procDef.value.states.find((state) => {
+      procDef.value.states.find((state) => {
       return state.id === stateId
     })?.approvalStatus || '0'
   )
@@ -356,17 +360,21 @@ const onCreatedEntitySavers = (args: {id:string, data:GetEntitySaversResult }) =
   result.values[0].record.wfExtInfo = procTask.value.targetStateId
 }
 
+
 // 模板数据，用于注入到表单等组件中，如可在提交表单时，表单获取到该template对象，清楚下一步是审批通过还是审批不通过
-const pageTemplate: Ref<PageTemplate> = ref({ type: 'GlPageTemplateStateWF' })
-pageTemplate.value.onBeforeSubmit = onCreatedEntitySavers
+const pageTemplate: Ref<WorkflowPageTemplate> = ref({ type: 'GlPageTemplateStateWF',onBeforeSubmit: onCreatedEntitySavers,isReject:false })
 pageProvideProxy.setPateTemplate(pageTemplate.value)
 
 watch(
     [selectedTran, remark, attachIds],
     () => {
+      // 是否为退回步骤
+      pageTemplate.value.isReject = selectedTran.value?.isReject == 1
       pageTemplate.value.selectedTran = selectedTran.value
       pageTemplate.value.remark = remark.value
       pageTemplate.value.attachIds = attachIds.value
+      console.log('watch selectedTran, remark, attachIds isReject', pageTemplate.value.isReject)
+
     },
     { deep: true, immediate: true }
 )

@@ -276,6 +276,12 @@ export default {
       },
       isDynamicParams:true
     },
+    { name: 'validate', title: '验证表单', description: '', params: [],returnInfo: {
+        returnType: 'Promise<undefined | Record<string, ValidatedError>>',
+        description:
+          '验证表单，返回错误信息对象，如果为空则表示验证通过，用于只作验证表单，不保存数据用。提交表单submitForm时，会自动验证表单。',
+        docId: ''
+      }, },
     {
       name: 'getValue',
       title: '获取表单值',
