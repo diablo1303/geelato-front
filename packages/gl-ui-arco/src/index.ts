@@ -45,10 +45,8 @@ import GlSlot from './components/gl-slot/GlSlot.vue'
 import GlOrgSelect from './components/gl-org-select/index.vue'
 import GlOrgUserSelect from './components/gl-org-user-select/index.vue'
 import GlPageTemplateStateWF from './components/gl-page-template/state-wf/GlPageTemplateStateWF.vue'
-import GlDescriptions from "./components/gl-descriptions/GlDescriptions.vue";
-import type {
-  ExcelCellMeta,
-} from './components/gl-entity-table-plus/constants'
+import GlDescriptions from './components/gl-descriptions/GlDescriptions.vue'
+import type { ExcelCellMeta } from './components/gl-entity-table-plus/constants'
 import {
   ExcelCellValueTypeOptions,
   ExcelCellValueComputeModeOptions,
@@ -58,13 +56,13 @@ import {
 import en from './locale/en-US'
 import cn from './locale/zh-CN'
 import { Drawer, Modal, RangePicker } from '@arco-design/web-vue'
-import { PluginUtil } from '@geelato/gl-ui'
-import {NO_BIND_FLAG} from './types/global'
+import { type GeelatoPlugin, type GeelatoPluginOptions,PluginUtil } from '@geelato/gl-ui'
+import { NO_BIND_FLAG } from './types/global'
 import './assets/style.css'
 
 const i18nMessage = { en, cn }
 
-const component: Plugin = {
+const component: GeelatoPlugin = {
   install: function (Vue: App) {
     // @ts-ignore
     if (PluginUtil.markInstalledPlugin(Vue, 'gl-ui-arco')) {
@@ -130,6 +128,8 @@ const component: Plugin = {
     //   },
     // });
     // Vue.use(i18n);
+  },
+  setupGeelato: function (options?: GeelatoPluginOptions) {
   }
 }
 

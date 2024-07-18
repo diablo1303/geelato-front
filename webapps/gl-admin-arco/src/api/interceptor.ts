@@ -1,10 +1,10 @@
-import type {AxiosRequestConfig, AxiosResponse} from 'axios';
+import { AxiosHeaders, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios';
 import {Message, Modal} from '@arco-design/web-vue';
 import {useUserStore} from '@/store';
 import globalConfig from '@/config/globalConfig';
 import {getToken} from '@/utils/auth';
-import {entityApi, useApiUrl, useMessages} from "@geelato/gl-ui";
+import {useApiUrl, useMessages} from "@geelato/gl-ui";
 import {fetchFileById} from "@/api/attachment";
 
 export interface HttpResponse<T = unknown> {
@@ -18,7 +18,7 @@ const messageManger = useMessages()
 axios.defaults.baseURL = useApiUrl().getApiBaseUrl()
 
 axios.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config: InternalAxiosRequestConfig) => {
     // let each request carry token
     // this example using the JWT token
     // Authorization is a custom headers key
@@ -26,7 +26,7 @@ axios.interceptors.request.use(
     const token = getToken();
     if (token) {
       if (!config.headers) {
-        config.headers = {};
+        config.headers = new AxiosHeaders();
       }
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -39,7 +39,7 @@ axios.interceptors.request.use(
 );
 // add response interceptors
 axios.interceptors.response.use(
-  (response: AxiosResponse<HttpResponse>) => {
+  (response: AxiosResponse<any, any>) => {
     const res = response.data;
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== globalConfig.interceptorCode) {
@@ -85,6 +85,3 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// @ts-ignore
-entityApi.setup(axios)

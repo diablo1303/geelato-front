@@ -1,5 +1,20 @@
 // 页面类型
 // export type PageType = 'freePage' | 'formPage' | 'listPage' | 'blockPage' | ''
+import type { AxiosInstance, AxiosStatic } from 'axios'
+import type { App } from 'vue'
+
+export type GeelatoPluginOptions = {
+  axios: AxiosStatic | AxiosInstance
+  ctx?: Record<string, any>
+  router?: any
+}
+
+export type GeelatoPlugin = {
+  // vue插件安装
+  install: (app: App) => any
+  // 初始化Geelato，需要在vue install之后执行
+  setupGeelato: (options?: GeelatoPluginOptions) => any
+}
 
 export enum PageType {
   freePage = 'freePage',
@@ -41,11 +56,11 @@ export type PageConfig = {
  *  便于其它页面在调用时，清楚应传入的参数
  */
 export interface ParamMeta {
-  name:string
-  title?:string
-  required?:boolean
-  type?:any
-  description?:string
+  name: string
+  title?: string
+  required?: boolean
+  type?: any
+  description?: string
 }
 
 // 页面参数、方法调用参数
@@ -95,7 +110,7 @@ export interface InstPermission {
 
 export enum CellValueType {
   STRING = 'STRING',
-  NUMBER =  'NUMBER',
+  NUMBER = 'NUMBER',
   DATE = 'DATE',
   DATETIME = 'DATETIME'
 }

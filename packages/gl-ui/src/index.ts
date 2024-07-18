@@ -53,7 +53,7 @@ import type {
   PageConfig,
   Param,
   CellMeta,
-  CellValueType
+  CellValueType, GeelatoPlugin, GeelatoPluginOptions
 } from './m/types/global'
 import { PageStatus, PageType, CellValueTypeOptions } from './m/types/global'
 import {
@@ -112,7 +112,7 @@ import { loadPageContent } from './components/PageLoader'
 
 const Utils = AllUtils
 
-const component: Plugin = {
+const component: GeelatoPlugin = {
   install: function (app: App): any {
     if (PluginUtil.markInstalledPlugin(app, 'gl-ui')) {
       return
@@ -144,7 +144,13 @@ const component: Plugin = {
     app.config.globalProperties.$gl.alias[GlHtml.name] = 'html'
     app.config.globalProperties.$gl.alias['GlComponent'] = 'c'
     app.config.globalProperties.$gl.alias[GlDndPlaceholder.name] = 'dndph'
-  }
+  },
+  setupGeelato: function (options?: GeelatoPluginOptions) {
+    // 初始Geelato依赖库
+    if(options?.axios){
+      entityApi.setup(options.axios)
+    }
+  },
 }
 
 /**
@@ -157,7 +163,10 @@ const selectComponent = (event: any, inst: any) => {
   event.preventDefault()
   emitter.emit(UiEventNames.Base.SelectComponent, inst)
 }
+
 export {
+  GeelatoPlugin,
+  GeelatoPluginOptions,
   selectComponent,
   Big,
   AppProvideKey,
