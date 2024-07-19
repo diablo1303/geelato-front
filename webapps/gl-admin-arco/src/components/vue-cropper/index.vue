@@ -178,7 +178,7 @@ const okModalClick = async (ev?: MouseEvent) => {
     try {
       const formData = new FormData();
       formData.append('file', dataURLtoFile(data, 'images.png'));
-      await uploadAvatar(userStore.userInfo.id as string, formData);
+      await uploadAvatar(userStore.id as string, formData);
       emits('update:modelValue', false);
       emits('completeEvent');
     } catch (err) {

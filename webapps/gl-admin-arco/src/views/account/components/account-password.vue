@@ -50,7 +50,7 @@ const buttonLoading = ref(false);
 const errorMessage = ref('');
 const formatValidData = (): AuthCodeForm => {
   return {
-    action: 'updatePassword', validType: '3', prefix: '', validBox: '', userId: userStore.userInfo.id as string, authCode: ''
+    action: 'updatePassword', validType: '3', prefix: '', validBox: '', userId: userStore.id as string, authCode: ''
   };
 }
 const formData = ref(formatValidData());

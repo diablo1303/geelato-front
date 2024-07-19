@@ -23,7 +23,7 @@ watch(mv, () => {
 
 const tenantStore = useTenantStore();
 const tenantData = computed(() => {
-  return {slogan: tenantStore.getTenant.slogan, features: tenantStore.getTenant.features};
+  return {slogan: tenantStore.slogan, features: tenantStore.features};
 });
 </script>
 

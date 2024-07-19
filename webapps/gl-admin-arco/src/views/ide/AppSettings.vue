@@ -239,7 +239,7 @@ onMounted(() => {
       appData.value = data;
       // 系统参数
       userStore.info(() => {
-        getSysConfig(global, userStore && userStore.userInfo, {
+        getSysConfig(global, userStore && userStore, {
           appId: data.id, tenantCode: data.tenantCode || '',
         });
       });

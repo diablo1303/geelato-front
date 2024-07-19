@@ -1,12 +1,12 @@
 <template>
-  <div class="navbar" :class="{'gl-menu-collapse':appStore.appCurrentSetting.menuCollapse}">
+  <div class="navbar" :class="{'gl-menu-collapse':appStore.menuCollapse}">
     <!--  头部菜单，左侧菜单，应用图标、应用名称  -->
     <div class="left-side" :style="{'max-width':leftSideWidth+'px','min-width':leftSideWidth+'px'}">
       <a-space>
         <span v-if="appInfo.appLogo" style="text-align: center;width: 32px;height: 32px;">
             <img :src="appInfo.appLogo" alt="logo" style="width: 100%;height: 100%"/>
         </span>
-        <template v-if="!appStore.appCurrentSetting.menuCollapse">
+        <template v-if="!appStore.menuCollapse">
           <a-typography-title :heading="5" :style="{ margin: 0, fontSize: appInfo.appName.length<14?'17px':'16px' }">
             {{ appInfo.appName }}
           </a-typography-title>
@@ -284,11 +284,11 @@ const {changeLocale, currentLocale} = useLocale();
 const {isFullscreen, toggle: toggleFullScreen} = useFullscreen();
 const locales = [...LOCALE_OPTIONS];
 const avatar = computed(() => {
-  const userAvatar = userStore.userInfo.avatar;
+  const userAvatar = userStore.avatar;
   return userAvatar || defaultAvatar;
 });
 const userName = computed(() => {
-  return {name: userStore.userInfo.name, loginName: userStore.userInfo.loginName};
+  return {name: userStore.name, loginName: userStore.loginName};
 });
 const theme = computed(() => {
   return appStore.theme;
@@ -303,7 +303,7 @@ const handleToggleNavStyle = (nStyle: string) => {
 };
 handleToggleNavStyle(localNavStyle)
 const leftSideWidth = computed(() => {
-  return appStore.appCurrentSetting.menuCollapse ? appStore.appCurrentSetting.menuCollapseWidth : appStore.appCurrentSetting.menuWidth
+  return appStore.menuCollapse ? appStore.menuCollapseWidth : appStore.menuWidth
 })
 const topMenu = computed(() => appStore.topMenu && appStore.menu);
 const isDark = useDark({
@@ -377,10 +377,10 @@ const getTenantSite = async () => {
   try {
     await tenantStore.queryTenant();
     appInfo.value = {
-      appLogo: tenantStore.getTenant.logoIcon || '',
-      appName: tenantStore.getTenant.name || '',
-      slogan: tenantStore.getTenant.slogan || '',
-      lang: tenantStore.getTenant.enableMutilLang || false
+      appLogo: tenantStore.logoIcon || '',
+      appName: tenantStore.name || '',
+      slogan: tenantStore.slogan || '',
+      lang: tenantStore.enableMutilLang || false
     }
     loadTag();
   } catch (err) {
@@ -394,7 +394,7 @@ const getAppInfo = async () => {
       appLogo: data.logo || favicon,
       appName: data.name,
       slogan: data.name,
-      lang: tenantStore.getTenant.enableMutilLang || false
+      lang: tenantStore.enableMutilLang || false
     }
     loadTag();
   } catch (err) {

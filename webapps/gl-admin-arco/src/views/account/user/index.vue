@@ -82,13 +82,13 @@ const vueCropperImg = ref<string>("");
 const buttonLoading = ref(false);
 // 头像
 const avatarData = computed(() => {
-  const data = userStore.userInfo.avatar;
+  const data = userStore.avatar;
   return data || defaultAvatar;
 });
 // 账户信息
 const formData = ref<AccountUserInfo>({
-  description: userStore.userInfo.description || '',
-  address: userStore.userInfo.address || ''
+  description: userStore.description || '',
+  address: userStore.address || ''
 } as unknown as AccountUserInfo);
 
 const updateAvatarClick = (ev?: MouseEvent) => {
@@ -105,7 +105,7 @@ const vueCropperCompleteEvent = () => {
 const updateUserInfoClick = async (ev?: MouseEvent) => {
   buttonLoading.value = true;
   try {
-    await updateUserInfo(userStore.userInfo.id as string, formData.value);
+    await updateUserInfo(userStore.id as string, formData.value);
     userStore.info();
     Notification.success(t('account.user.form.msg.success'));
   } catch (err) {

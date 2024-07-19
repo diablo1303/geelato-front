@@ -501,7 +501,7 @@ onMounted(() => {
       compareVersionId.value = "";
       // 系统参数
       userStore.info(() => {
-        getSysConfig(global, userStore && userStore.userInfo, {
+        getSysConfig(global, userStore && userStore, {
           appId: data.id, tenantCode: data.tenantCode || '',
         });
       });
