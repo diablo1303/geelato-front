@@ -13,6 +13,8 @@ export class ParamMeta {
     type: string = 'string'
     // 需要求和的字段名称
     description?: string
+    // 详细介绍的文章id
+    docId?: string
 }
 
 export class ActionMeta {

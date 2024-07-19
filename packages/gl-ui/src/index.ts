@@ -146,7 +146,7 @@ const component: GeelatoPlugin = {
     app.config.globalProperties.$gl.alias[GlDndPlaceholder.name] = 'dndph'
   },
   setupGeelato: function (options?: GeelatoPluginOptions) {
-    // 初始Geelato依赖库
+    // 设置entityApi的依赖库
     if(options?.axios){
       entityApi.setup(options.axios)
     }

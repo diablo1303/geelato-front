@@ -1,4 +1,4 @@
-import type { ComponentInstance } from '@geelato/gl-ui-schema'
+import type { ActionMeta, ComponentInstance } from '@geelato/gl-ui-schema'
 import GlCommandBlockOne from './CommandBlockOne.vue'
 import GlCommandBlockTwo from './CommandBlockTwo.vue'
 import ParseResult from './ParseResult'
@@ -16,7 +16,8 @@ export default interface IBlockHandler {
     propsExpressions?: {
       [key: string]: any
     },
-    componentInst?: ComponentInstance
+    componentInst?: ComponentInstance,
+    actionMeta?: ActionMeta
   ): ParseResult
 }
 
@@ -50,13 +51,18 @@ export class BlocksHandler {
     // endLine 有值时，表示启用componentTwo
   }
 
-  parseToScript(block: ComponentInstance | undefined): string {
+  /**
+   * 解析为脚本
+   * @param block 当前解析的指令块
+   * @param actionMeta  当前指令块所在动作的元数据
+   */
+  parseToScript(block: ComponentInstance | undefined, actionMeta: ActionMeta): string {
     // console.log('BlocksHandler > parseToScript() > block:', block)
     if (!block) return ''
     const commandLines: Array<string> = []
     // 未停用的代码块才生成
     if (!block._disabled) {
-      const line = this.parseOne(block).toString()
+      const line = this.parseOne(block, actionMeta).toString()
       if (line) {
         commandLines.push(line)
       }
@@ -74,6 +80,7 @@ export class BlocksHandler {
 
   parseOne(
     block: ComponentInstance,
+    actionMeta: ActionMeta,
     parentBlock?: ComponentInstance,
     parentParseResult?: ParseResult
   ): ParseResult {
@@ -90,8 +97,12 @@ export class BlocksHandler {
       // )
       const parseResult =
         handler
-          ?.parseToScript(block.props, block.propsExpressions, block)
+          ?.parseToScript(block.props, block.propsExpressions, block, actionMeta)
           .setBlockName(block.componentName) || new ParseResult().setBlockName(block.componentName)
+      if (parseResult.isError()) {
+        console.error('parseResult is error:', parseResult.blockHandlerName,parseResult.errorMessage)
+      }
+
       // 如有有invokeBlocks属性，且长度为0时，忽列children
       if (block?.props.invokeBlocks?.length === 0) {
         parseResult!.invokeBlockNames = []
@@ -101,7 +112,7 @@ export class BlocksHandler {
           const subBlock = block.children[index]
           // 禁用的指令块不处理
           if (!subBlock._disabled) {
-            parseResult.children.push(this.parseOne(subBlock, block, parseResult))
+            parseResult.children.push(this.parseOne(subBlock, actionMeta, block, parseResult))
           }
         }
       }

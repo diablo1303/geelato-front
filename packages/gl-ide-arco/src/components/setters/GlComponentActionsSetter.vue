@@ -41,7 +41,6 @@
                   @click="
                     openActionSetter(
                       actionGroup[actionMeta.name][slotProps.index],
-                      slotProps.index,
                       actionMeta
                     )
                   "
@@ -68,6 +67,7 @@
         v-if="refreshFlag && currentAction"
         :key="currentAction.id"
         v-model:action="currentAction"
+        :actionMeta="currentActionMeta"
       ></GlCommandEditor>
       <template #footer>
         <a-button-group>
@@ -106,14 +106,15 @@ export default {
 // @ts-nocheck
 import { nextTick, onUnmounted, type PropType, ref } from 'vue'
 import { Action, ComponentInstance, ComponentMeta } from '@geelato/gl-ui-schema'
-import type { ActionMeta } from '@geelato/gl-ui-schema'
+import { ActionMeta } from '@geelato/gl-ui-schema'
 import { emitter, utils } from '@geelato/gl-ui'
-import { EventNames, useIdeStore } from '@geelato/gl-ide'
+import { EventNames, useActionStore, useIdeStore } from '@geelato/gl-ide'
 import { blocksHandler } from './action-setters/BlockHandler'
 import GlArrayBaseSetter from './property-setters/GlArrayBaseSetter.vue'
 import GlCommandEditor from './action-setters/GlCommandEditor.vue'
 
 const ideStore = useIdeStore()
+const actionStore = useActionStore()
 const props = defineProps({
   componentMeta: {
     type: Object as PropType<ComponentMeta>,
@@ -162,15 +163,17 @@ const convertGroupToActions = () => {
 const refreshFlag = ref(true)
 
 const currentAction = ref(new Action())
+const currentActionMeta = ref(new ActionMeta())
 // const currentActionIndex = ref(-1)
 const actionCodeEditorVisible = ref(false)
 /**
  *
  * @param action
+ * @param actionIndex
  * @param actionMeta
  */
-const openActionSetter = (action: Action, actionMeta?: ActionMeta) => {
-  // console.log('openActionSetter,action, actionIndex, actionMeta:', action, actionIndex, actionMeta)
+const openActionSetter = (action: Action,actionIndex?:number, actionMeta?: ActionMeta) => {
+  console.log('openActionSetter,action, actionIndex, actionMeta:', action, actionMeta)
   if (!action.title) {
     action.title = actionMeta?.title || ''
   }
@@ -184,6 +187,8 @@ const openActionSetter = (action: Action, actionMeta?: ActionMeta) => {
     action.id = utils.gid('act', 20)
   }
   currentAction.value = action ? JSON.parse(JSON.stringify(action)) : new Action()
+  currentActionMeta.value = actionMeta || new ActionMeta()
+
   actionCodeEditorVisible.value = true
 
   refreshFlag.value = false
@@ -247,8 +252,8 @@ const generateScript = () => {
   }
 }
 
-const openActionEditor = (args: { action: any }) => {
-  openActionSetter(args.action)
+const openActionEditor = (args: { action: any,actionIndex:number,actionMeta:ActionMeta }) => {
+  openActionSetter(args.action,args.actionIndex,args.actionMeta)
 }
 emitter.on(EventNames.GlIdeOpenActionEditor, openActionEditor)
 

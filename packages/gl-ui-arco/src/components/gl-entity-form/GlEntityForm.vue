@@ -92,7 +92,7 @@ const emits = defineEmits([
   'onLoadingData',
   'onLoadedData',
   'creatingEntitySavers',
-  'onCreatedEntitySavers'
+  'createdEntitySavers'
 ])
 const formProvideProxy = new FormProvideProxy()
 provide(FormProvideKey, formProvideProxy)
@@ -623,7 +623,7 @@ const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
     })
     entitySaver.record = record
     const entitySavers = [entitySaver]
-    emits('creatingEntitySavers', { entitySavers: entitySavers })
+    emits('creatingEntitySavers', entitySavers)
     return entitySavers
   }
   return null
@@ -738,13 +738,13 @@ const submitForm = async () => {
     return false
   }
 
-  // 是否需要OnCreatedEntitySaversEvent事件同步执行，用于需要在该事件中对提交的表单数据进行处理的场景
-  // if(params.isOnCreatedEntitySaversEventSync){
+  // 是否需要createdEntitySaversEvent事件同步执行，用于需要在该事件中对提交的表单数据进行处理的场景
+  // if(params.iscreatedEntitySaversEventSync){
   //   //
   // }
 
   const promise = new Promise((resolve, reject) => {
-    emits('onCreatedEntitySavers', {
+    emits('createdEntitySavers', {
       result: entitySaversResult,
       $resolve: resolve,
       $reject: reject
@@ -752,7 +752,6 @@ const submitForm = async () => {
   })
   return promise
     .then(() => {
-      // emitter.emit(UiEventNames.EntityForm.onCreatedEntitySavers, { result: entitySaversResult })
       if (typeof pageProvideProxy.pageTemplate?.onBeforeSubmit === 'function') {
         // 传入entitySaversResult给页面模板，用于页面模板将需要保存的信息，合并在一起，最终在表单中一起保存
         pageProvideProxy.pageTemplate?.onBeforeSubmit({
@@ -760,7 +759,7 @@ const submitForm = async () => {
           data: entitySaversResult
         })
       }
-      // onCreatedEntitySavers 事件中，可能对entitySaversResult做了修改，如验证模板的
+      // createdEntitySavers 事件中，可能对entitySaversResult做了修改，如验证模板的
       if (entitySaversResult.error) {
         notification(entitySaversResult)
         emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)

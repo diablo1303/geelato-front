@@ -15,3 +15,7 @@ export type MenuItemMeta = {
   // 该页面样式ID来源于平台，平台提供多种页面样式
   theme: ''
 }
+
+export const SETTERS_PROVIDE_KEYS = {
+  ACTION_META: 'ACTION_META',
+}

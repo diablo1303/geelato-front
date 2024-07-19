@@ -325,8 +325,8 @@ const masterEntityForm = findMasterEntityForm()
  * 注意：这个方法不能是异步的，否则该模板内嵌的表单提交事件不会等模板自身的表单验证结果
  * @param args {id:来源的组件标识，如表单组件id;data: GetEntitySaversResult}
  */
-const onCreatedEntitySavers = (args: {id:string, data:GetEntitySaversResult }) => {
-  console.log('onCreatedEntitySavers args:', args,'masterEntityForm:',masterEntityForm)
+const createdEntitySavers = (args: {id:string, data:GetEntitySaversResult }) => {
+  console.log('createdEntitySavers args:', args,'masterEntityForm:',masterEntityForm)
   // 检查是否为工作流的主表单，主表单才触发工作流
   if(masterEntityForm.id !== args.id){
     return;
@@ -362,7 +362,7 @@ const onCreatedEntitySavers = (args: {id:string, data:GetEntitySaversResult }) =
 
 
 // 模板数据，用于注入到表单等组件中，如可在提交表单时，表单获取到该template对象，清楚下一步是审批通过还是审批不通过
-const pageTemplate: Ref<WorkflowPageTemplate> = ref({ type: 'GlPageTemplateStateWF',onBeforeSubmit: onCreatedEntitySavers,isReject:false })
+const pageTemplate: Ref<WorkflowPageTemplate> = ref({ type: 'GlPageTemplateStateWF',onBeforeSubmit: createdEntitySavers,isReject:false })
 pageProvideProxy.setPateTemplate(pageTemplate.value)
 
 watch(
@@ -400,10 +400,10 @@ const pageParams = computed(() => {
   ]
 })
 
-// // emitter.on(UiEventNames.EntityForm.onCreatedEntitySavers, onCreatedEntitySavers)
+// // emitter.on(UiEventNames.EntityForm.createdEntitySavers, createdEntitySavers)
 // emitter.on(UiEventNames.EntityForm.onSubmitted, onSubmitForm)
 // onUnmounted(() => {
-//   // emitter.off(UiEventNames.EntityForm.onCreatedEntitySavers, onCreatedEntitySavers)
+//   // emitter.off(UiEventNames.EntityForm.createdEntitySavers, createdEntitySavers)
 //   emitter.off(UiEventNames.EntityForm.onSubmitted, onSubmitForm)
 // })
 </script>

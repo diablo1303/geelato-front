@@ -83,7 +83,8 @@
           "
         >
           <div style="border-bottom: 1px solid #f2f2f2; padding: 0.5em">
-            <span style="font-weight: 600">
+            <span style="font-weight: 600"
+              >【指令】
               {{ componentStore.currentSelectedComponentMeta?.title }}
             </span>
             <a-button-group style="float: right" type="primary" size="mini" shape="round">
@@ -137,14 +138,13 @@ export type GenerateScriptConfig = {
 </script>
 <script lang="ts" setup>
 import { onMounted, type PropType, ref, watch } from 'vue'
-import { Action, ComponentInstance } from '@geelato/gl-ui-schema'
+import { Action, ActionMeta, ComponentInstance } from '@geelato/gl-ui-schema'
 import { useGlobal } from '@geelato/gl-ui'
 import { componentStoreFactory, useThemeStore, useActionStore } from '@geelato/gl-ide'
 import GlCommandEditorSidebar from './GlCommandEditorSidebar.vue'
 import { blocksHandler } from './BlockHandler'
 import BlockPage from '../../../components/stage/BlockPage.vue'
 import './style.css'
-
 
 const props = defineProps({
   componentStoreId: {
@@ -153,6 +153,9 @@ const props = defineProps({
       return 'useComponentBrowserBlockStore'
     }
   },
+  /**
+   * 动作实例，v-model
+   */
   action: {
     type: Object as PropType<Action>,
     default() {
@@ -160,19 +163,27 @@ const props = defineProps({
     }
   },
   /**
+   * 动作元数据，如：title、description
+   */
+  actionMeta: {
+    type: Object as PropType<ActionMeta>,
+    required: true
+  },
+  /**
    * 生成脚本配置
    * 添加脚本头和脚本尾
    */
   generateScriptConfig: {
-    type:Object as PropType<GenerateScriptConfig>,
+    type: Object as PropType<GenerateScriptConfig>,
     default() {
       return {
-        header:'',
-        footer:''
+        header: '',
+        footer: ''
       }
     }
   }
 })
+
 const global = useGlobal()
 const themeStore = useThemeStore()
 const actionStore = useActionStore()
@@ -194,13 +205,15 @@ const settingStyle = ref({
   'max-height': mainHeight
 })
 
-// const componentMaterialStore = useComponentMaterialStore()
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
+console.log('props.componentStoreId',props.componentStoreId)
+
 const emits = defineEmits(['update:action', 'updateAction'])
 
 const mv = ref(props.action)
 actionStore.setAction(props.action)
-
+actionStore.setActionMeta(props.actionMeta)
+console.log('actionStore.setActionMeta(props.actionMeta)', props.actionMeta)
 const mvStr = ref(JSON.stringify(mv.value))
 const mvBodyStr = ref('')
 watch(mv, () => {
@@ -211,6 +224,7 @@ const refreshFlag = ref(true)
 const reset = () => {
   mv.value = props.action
   actionStore.setAction(props.action)
+  actionStore.setActionMeta(props.actionMeta)
 }
 
 /**
@@ -232,7 +246,10 @@ const updateInstance = (instance: ComponentInstance) => {
 }
 
 const generateScript = () => {
-  mv.value.body = `${props.generateScriptConfig.header}${blocksHandler.parseToScript(componentStore.currentComponentTree[0])}${props.generateScriptConfig.footer}`
+  mv.value.body = `${props.generateScriptConfig.header}${blocksHandler.parseToScript(
+    componentStore.currentComponentTree[0],
+    props.actionMeta
+  )}${props.generateScriptConfig.footer}`
   mvStr.value = JSON.stringify(mv.value)
   mvBodyStr.value = mv.value.body
 }

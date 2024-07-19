@@ -25,13 +25,14 @@
               class="gl-m-sub-title"
               v-html="getElementTitle(element, subTitleField, alarmIfNoSubTitle)"
             ></span>
-            <span class="gl-m-action" v-if="enableDelete"
-              ><GlIconfont
-                type="gl-delete"
-                @click="removeItem(index)"
-                style="color: red; cursor: pointer"
-              ></GlIconfont
-            ></span>
+            <span class="gl-m-action" v-if="enableDelete">
+              <a-popconfirm type="warning" content="是否删除?" @ok="removeItem(index)">
+                <GlIconfont
+                  type="gl-delete"
+                  style="color: red; cursor: pointer"
+                ></GlIconfont>
+              </a-popconfirm>
+            </span>
             <!--            <span class="gl-m-action" v-if="enableEdit"><FormOutlined /></span>-->
           </div>
           <div class="gl-m-body" v-if="selectedIndex === index" style="border: 1px solid #ccc">
@@ -53,11 +54,12 @@
             </div>
             <div style="flex: 0 0 2em; text-align: center; line-height: 2em">
               <a-button type="text" style="padding: 0 5px 4px">
+                <a-popconfirm type="warning" content="是否删除?" @ok="removeItem(index)">
                 <GlIconfont
                   type="gl-delete"
-                  @click="removeItem(index)"
                   style="cursor: pointer; color: red"
                 ></GlIconfont>
+                </a-popconfirm>
               </a-button>
               <!--            <GlIconfont type="gl-delete" @click="removeItem(index)"-->
               <!--                        style="cursor: pointer;color: red"></GlIconfont>-->

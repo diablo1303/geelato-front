@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { Action, ComponentInstance, type IPropertySetterMeta } from '@geelato/gl-ui-schema'
+import { Action, ActionMeta, ComponentInstance, type IPropertySetterMeta } from '@geelato/gl-ui-schema'
 import { useComponentBrowserBlockStore } from './UseComponentStore'
 
 export type VarMeta = {
@@ -19,6 +19,7 @@ export const useActionStore = defineStore({
   id: 'GlActionStore',
   state: () => ({
     action: new Action(),
+    actionMeta:new ActionMeta(),
     // varMeta
     vars: new Array<VarMeta>(),
     componentBlockStore: useComponentBrowserBlockStore()
@@ -26,10 +27,17 @@ export const useActionStore = defineStore({
   getters: {},
   actions: {
     /**
-     *  window 窗口调整
+     *  设置当前动作
      */
     setAction(action: Action) {
       this.action = action
+    },
+    /**
+     * 更新当前动作的meta
+     * @param actionMeta
+     */
+    setActionMeta(actionMeta: ActionMeta) {
+      this.actionMeta = actionMeta
     },
     /**
      *  基于当前的action，重置变量
