@@ -66,11 +66,11 @@
     "sortablejs": "^1.15.2",
     "splitpanes": "^3.1.5",
     "sql-formatter": "^15.3.2",
-    "vue": "3.4.31",
+    "vue": "3.4.32",
     "vue-cropper": "^1.1.4",
     "vue-echarts": "^6.7.3",
     "vue-i18n": "^9.13.1",
-    "vue-router": "^4.4.0",
+    "vue-router": "4.4.0",
     "vue3-dnd": "^2.1.0",
     "vuedraggable": "^4.1.0"
   },
