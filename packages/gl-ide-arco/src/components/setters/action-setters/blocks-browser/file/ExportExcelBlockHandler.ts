@@ -3,7 +3,7 @@ import { type PropsExpressions, blocksHandler, CommandBlocks } from '../../Block
 import ParseResult from '../../ParseResult'
 import usePromise from '../../hooks/usePromise'
 import useVars from '../../hooks/vars'
-import { utils } from '@geelato/gl-ui'
+import { jsScriptExecutor, type Param, utils } from '@geelato/gl-ui'
 
 const { getVarStr } = useVars()
 export default class ExportExcelBlockHandler implements IBlockHandler {
@@ -27,8 +27,23 @@ export default class ExportExcelBlockHandler implements IBlockHandler {
     )
     const varName = propsExpressions?.varName ? getVarStr(propsExpressions.varName ): `"${getVarStr(props.varName)}"`
 
+    const valueMapList:Record<string,any> = []
+    props.subRecordsArray?.forEach((record:Param)=>{
+      console.log('record', record)
+      // 此record的key只有一个，如aList
+      valueMapList.push(`{
+          ${[record.name]}: ${record.valueExpression}
+        }`)
+    })
+
+    const data = `
+    {
+      valueMap:${props.mainRecordExp || '{}'},
+      valueMapList:[${valueMapList.join('],')}]
+    }`
+
     return new ParseResult(
-      `$gl.vars.${respVarName} = ${awaitStr} $gl.fileApi.exportExcel(${fileName},"${props.fileTemplate?.templateId}","${props.dataType}",${varName}).then(${fulfilled},${rejected})
+      `$gl.vars.${respVarName} = ${awaitStr} $gl.fileApi.exportExcel(${fileName},"${props.fileTemplate?.templateId}","${props.dataType}",${data}).then(${fulfilled},${rejected})
             `
     )
   }
@@ -39,7 +54,14 @@ interface Props {
   fileTemplate: any
   // mql | data，数据类型有可能是最新的数据结果（data），也有可能是用于后端查询获取数据结果的（gql）
   dataType: string
+  // 数据源主表记录表达式，格式为：Record<string, any>，如{id,name,age}，使用mainRecord和subRecordsArray替代varName，配置时更直观
+  // 值可为变量名，如mainRecord: $gl.vars.user
+  mainRecordExp:string
+  // 数据源从表记录集表达式，格式为：Array<Record<string, Array<Record<string, any>>>>，如{aList: [{id,name,age},bList: [{id,name,age}]
+  // 值可为变量名，如subRecordsArray: $gl.vars.subRecordsArray
+  subRecordsArray: Array<Param>
   // 从上下文中的数据变量名
+  // TODO 待删除
   varName?: string
   // 是否同步执行
   enableAwait?: boolean
