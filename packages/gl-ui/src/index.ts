@@ -1,4 +1,4 @@
-import {type App, type Plugin, reactive} from 'vue'
+import {type App, reactive} from 'vue'
 import Big from 'big.js'
 import emitter from './m/mix/emitter'
 import * as authUtil from "./m/utils/Auth";
@@ -46,11 +46,21 @@ import jsScriptExecutor from './m/actions/JsScriptExecutor'
 import AppProvideProxy, {AppProvideKey} from './components/AppProvideProxy'
 import FormProvideProxy, {FormProvideKey, SubmitFormResult} from './components/FormProvideProxy'
 import {Schema} from 'b-validate'
-import type {ApiPagedResult, ApiResult, ApiResultStatus, CellMeta, CellValueType, PageConfig, Param} from './m/types/global'
+import type {
+  ApiPagedResult,
+  ApiResult,
+  ApiResultStatus,
+  CellMeta,
+  CellValueType,
+  GeelatoPlugin,
+  GeelatoPluginOptions,
+  PageConfig,
+  Param
+} from './m/types/global'
 import {CellValueTypeOptions, PageStatus, PageType} from './m/types/global'
 import {executeArrayExpressions, executeObjectPropsExpressions} from './components/gl-component/GlComponentSupport'
-import type {AppState, QueryAppForm, QueryMenuForm} from './m/datasource/ApplicationApi'
 /* 接口 */
+import type {AppState, QueryAppForm, QueryMenuForm} from './m/datasource/ApplicationApi'
 import * as applicationApi from './m/datasource/ApplicationApi'
 import type {
   FormParams,
@@ -126,7 +136,7 @@ import {loadPageContent} from './components/PageLoader'
 
 const Utils = AllUtils
 
-const component: Plugin = {
+const component: GeelatoPlugin = {
   install: function (app: App): any {
     if (PluginUtil.markInstalledPlugin(app, 'gl-ui')) {
       return
@@ -158,7 +168,13 @@ const component: Plugin = {
     app.config.globalProperties.$gl.alias[GlHtml.name] = 'html'
     app.config.globalProperties.$gl.alias['GlComponent'] = 'c'
     app.config.globalProperties.$gl.alias[GlDndPlaceholder.name] = 'dndph'
-  }
+  },
+  setupGeelato: function (options?: GeelatoPluginOptions) {
+    // 设置entityApi的依赖库
+    if (options?.axios) {
+      entityApi.setup(options.axios)
+    }
+  },
 }
 
 /**
@@ -172,6 +188,8 @@ const selectComponent = (event: any, inst: any) => {
   emitter.emit(UiEventNames.Base.SelectComponent, inst)
 }
 export {
+  GeelatoPlugin,
+  GeelatoPluginOptions,
   selectComponent,
   Big,
   AppProvideKey,

@@ -1,4 +1,4 @@
-import type {App, Plugin} from 'vue'
+import type {App} from 'vue'
 import GlInputPassword from './components/gl-input/GlInputPassword.vue'
 import GlInputSearch from './components/gl-input/GlInputSearch.vue'
 import GlPage from './components/gl-page/GlPage.vue'
@@ -57,14 +57,14 @@ import {
 import en from './locale/en-US'
 import cn from './locale/zh-CN'
 import {Drawer, Modal, RangePicker} from '@arco-design/web-vue'
-import {PluginUtil} from '@geelato/gl-ui'
+import {type GeelatoPlugin, type GeelatoPluginOptions, PluginUtil} from '@geelato/gl-ui'
 import {NO_BIND_FLAG} from './types/global'
 import './assets/style.css'
 import * as selectOptions from './api/SelectOptions'
 
 const i18nMessage = {en, cn}
 
-const component: Plugin = {
+const component: GeelatoPlugin = {
   install: function (Vue: App) {
     // @ts-ignore
     if (PluginUtil.markInstalledPlugin(Vue, 'gl-ui-arco')) {
@@ -131,6 +131,8 @@ const component: Plugin = {
     //   },
     // });
     // Vue.use(i18n);
+  },
+  setupGeelato: function (options?: GeelatoPluginOptions) {
   }
 }
 
