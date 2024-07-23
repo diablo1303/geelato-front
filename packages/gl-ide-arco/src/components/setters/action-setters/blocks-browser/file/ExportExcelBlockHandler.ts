@@ -3,7 +3,7 @@ import { type PropsExpressions, blocksHandler, CommandBlocks } from '../../Block
 import ParseResult from '../../ParseResult'
 import usePromise from '../../hooks/usePromise'
 import useVars from '../../hooks/vars'
-import { jsScriptExecutor, type Param, utils } from '@geelato/gl-ui'
+import { type Param, utils } from '@geelato/gl-ui'
 
 const { getVarStr } = useVars()
 export default class ExportExcelBlockHandler implements IBlockHandler {

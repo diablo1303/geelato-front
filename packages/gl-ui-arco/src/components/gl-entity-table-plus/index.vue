@@ -1617,6 +1617,10 @@ const selectRecordByKey = (params: {
  *  导出所有页的数据
  */
 const exportExcelAll = () => {
+  if(!props.glIsRuntime){
+    global.$message.info('在运行时环境中使用，点击导出符合当前查询条件的所有数据，最多10000条记录。')
+    return
+  }
   const notificationId = utils.gid()
   global.$notification.info({
     content: '正在查询数据...',
