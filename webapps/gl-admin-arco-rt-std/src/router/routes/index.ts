@@ -1,15 +1,14 @@
 import {ref} from "vue";
 import type {RouteParamsRaw, RouteRecordNormalized} from 'vue-router';
 import {Router} from "vue-router";
+import type {QueryMenuForm} from "@geelato/gl-ui";
+import {applicationApi, authUtil} from "@geelato/gl-ui";
+import {ROUTER_IS_ACCOUNT,globalConfig} from "@geelato/gl-ui-arco-admin";
 import {DEFAULT_LAYOUT} from "@/router/routes/base";
-import {getMenus, QueryMenuForm} from "@/api/application";
-/* eslint-disable-next-line */
-import globalConfig from '@/config/globalConfig';
 import {DEFAULT_ROUTE, DEFAULT_ROUTE_ACCOUNT, URL_PREFIX} from "@/router/constants";
-import {getToken} from "@/utils/auth";
 
-const token = getToken();
-export const IS_ACCOUNT = ref<boolean>(false);
+const token = authUtil.getToken();
+export const IS_ACCOUNT = ref<boolean>(ROUTER_IS_ACCOUNT.value);
 export const IS_DATA_PAGE = ref<boolean>(false);
 const IS_DATA_END_PAGE = ref<boolean>(false);
 const IS_DATA_REDIRECT_PAGE = ref<boolean>(false);
@@ -262,7 +261,7 @@ const setRoute = (fullPath: string, result: RouteRecordNormalized) => {
 export const formatAppModules = async (result: RouteRecordNormalized[]) => {
   try {
     if (!token) return result;
-    const {data} = await getMenus({flag: "menuItem", ...urlParams} as unknown as QueryMenuForm);
+    const {data} = await applicationApi.getMenus({flag: "menuItem", ...urlParams} as unknown as QueryMenuForm);
     // @ts-ignore
     const menuForms = data.code === globalConfig.interceptorCode ? data.data : data;
     const folderOptions: RouteRecordNormalized[] = [];

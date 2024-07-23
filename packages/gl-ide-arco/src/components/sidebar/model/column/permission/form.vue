@@ -7,8 +7,9 @@ export default {
 <script lang="ts" setup>
 import {reactive, ref, watch, computed} from 'vue';
 import type {SelectOptionGroup, TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {applicationApi, modelApi, type QueryAppForm, securityApi, useGlobal, utils} from "@geelato/gl-ui";
-import type {Pagination, QueryRoleForm, QueryTableColumnForm} from "@geelato/gl-ui";
+import {applicationApi, modelApi, securityApi, useGlobal, utils} from "@geelato/gl-ui";
+import type {Pagination, QueryRoleForm, QueryAppForm, QueryTableColumnForm} from "@geelato/gl-ui";
+import {selectOptions} from "@geelato/gl-ui-arco";
 import {columnPermissionOptions} from "../searchTable";
 import {typeOptions as roleTypeOptions} from "../../../security/role/searchTable";
 import GlModelTableColumnForm from "../form.vue";
@@ -213,7 +214,7 @@ const isDefaultColumn = (value: string) => {
 
 watch(() => props.parameter, () => {
   // 模型字段类型
-  modelApi.getTypeSelectOptionGroup((data: SelectOptionGroup[]) => {
+  selectOptions.getTypeSelectOptionGroup((data: SelectOptionGroup[]) => {
     selectTypeOptions.value = data || [];
   }, () => {
     selectTypeOptions.value = [];

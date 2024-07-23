@@ -3,17 +3,16 @@ export default {
   name: "GlMain"
 }
 </script>
-<script setup lang="ts">
+<script lang="ts" setup>
 import {onMounted, provide} from "vue";
-import {getToken} from "@/utils/auth";
-import {getMenuList} from "@/api/user";
+import {authUtil, userApi} from "@geelato/gl-ui";
 import pinia from '../../store';
 
 provide('pinia', pinia)
 
 const menuItems = []
 onMounted(async () => {
-  if (!getToken()) {
+  if (!authUtil.getToken()) {
     const urlParams = new URL(window.location.href).searchParams;
     const tenantCode = urlParams.get("tenantCode") || "";
     const appId = urlParams.get("appId") || "";
@@ -21,8 +20,8 @@ onMounted(async () => {
     window.location.assign(`${window.location.origin}/${tenantCode}/${appId}/login?redirect=${currentUrl}`);
   } else {
     // 加载菜单
-    const {data} = await getMenuList();
-    console.log('menu',data)
+    const {data} = await userApi.getMenuList();
+    console.log('menu', data)
   }
 });
 </script>

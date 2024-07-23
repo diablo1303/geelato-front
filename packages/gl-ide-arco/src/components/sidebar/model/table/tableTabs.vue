@@ -325,7 +325,7 @@ watch(() => visibleForm, () => {
 }, {deep: true, immediate: true});
 </script>
 <template>
-  <a-modal :key="utils.gid()" v-model:visible="visibleForm" :footer="false" :width="width || ''" title-align="start">
+  <a-modal draggable :key="utils.gid()" v-model:visible="visibleForm" :footer="false" :width="width || ''" title-align="start">
     <template #title>
       <a-space>
         {{ tabsTitle }}

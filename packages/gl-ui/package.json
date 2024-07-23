@@ -21,8 +21,8 @@
     "dayjs": "^1.11.5",
     "echarts": "^5.4.0",
     "mitt": "^3.0.0",
-    "pinia": "^2.1.4",
-    "vue": "^3.3.11"
+    "vue": "^3.3.11",
+    "vue-router": "^4.1.6"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",

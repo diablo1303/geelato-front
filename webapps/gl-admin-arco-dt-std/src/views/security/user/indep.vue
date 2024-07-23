@@ -9,14 +9,11 @@ import {ref, onMounted, onUnmounted} from 'vue';
 // 系统对象，路由、用户、国际
 import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
-import {useUserStore} from "@/store";
-import {EventNames} from "@geelato/gl-ide";
 // 公共方法
-import {ListParams, PageSizeOptions, resetValueByOptions} from '@/api/base';
-import {QueryOrgForm} from "@/api/security";
-// 引入组件
-import OrgTree from "@/components/org-choose-box/tree.vue";
-import UserPermissionList from "@/views/security/user/permission/list.vue";
+import {utils} from '@geelato/gl-ui';
+import type {ListParams, QueryOrgForm} from '@geelato/gl-ui';
+import {EventNames} from "@geelato/gl-ide";
+import {useUserStore, PageSizeOptions} from "@geelato/gl-ui-arco-admin";
 
 // 常量使用
 const ListDefaultPageSize = 5;
@@ -53,7 +50,7 @@ const resetTreeHeight = () => {
  * 调整列表展示行数
  */
 const resetListPageSize = () => {
-  return resetValueByOptions(PageSizeOptions, (resetListHeight() / ListRowHeight), ListDefaultPageSize);
+  return utils.resetValueByOptions(PageSizeOptions, (resetListHeight() / ListRowHeight), ListDefaultPageSize);
 }
 
 // 引用页面所需参数
@@ -126,29 +123,30 @@ onUnmounted(() => {
 
 <template>
   <div class="container">
-    <Breadcrumb :items="['security.user.index.menu.list', 'security.user.index.menu.list.searchTable']"/>
+    <GlBreadcrumb :items="['security.user.index.menu.list', 'security.user.index.menu.list.searchTable']"/>
     <a-card class="general-card" style="padding-top: 20px;">
       <a-split v-model:size="splitSize" :min="splitMin"
                :style="{height: `${splitHeight}px`,width: '100%'}">
         <template #first>
           <div class="general-card1" style="padding-right: 10px;">
-            <OrgTree :has-root="true" :root-selected="false"
-                     :check-strictly="false"
-                     :height="treeParams.height"
-                     :max-count="1"
-                     :parameter="treeParams.parameter"
-                     :visible="true"
-                     @change="selectChange"/>
+            <GlOrgSelectTree :check-strictly="false"
+                             :has-root="true"
+                             :height="treeParams.height"
+                             :max-count="1"
+                             :parameter="treeParams.parameter"
+                             :root-selected="false"
+                             :visible="true"
+                             @change="selectChange"/>
           </div>
         </template>
         <template #second>
           <div class="general-card1" style="padding-left: 10px;">
-            <UserPermissionList :visible="listParams.visible"
-                                :parameter="listParams.parameter"
-                                :formState="listParams.formState"
-                                :filterCol="listParams.filterCol"
-                                :pageSize="listParams.pageSize"
-                                :height="listParams.height"/>
+            <GlUserPermissionList :filterCol="listParams.filterCol"
+                                  :formState="listParams.formState"
+                                  :height="listParams.height"
+                                  :pageSize="listParams.pageSize"
+                                  :parameter="listParams.parameter"
+                                  :visible="listParams.visible"/>
           </div>
         </template>
       </a-split>

@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import NProgress from 'nprogress'; // progress bar
+import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import {APP_PAGE_MAIN, NOT_FOUND_ROUTE, REDIRECT_MAIN, RESET_PWD_MAIN} from "@/router/routes/base";
 import {appLoginRoutes, appRoutes} from './routes';

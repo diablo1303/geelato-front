@@ -66,7 +66,7 @@ const configBtnType = computed(() => {
         <gl-iconfont type="gl-delete"></gl-iconfont>
       </a-button>
     </a-space>
-    <a-modal
+    <a-modal draggable
       :visible="visible"
       :title="modalTitle || '配置导出单元格'"
       @ok="onOk"

@@ -70,7 +70,7 @@ watch(() => visibleForm, () => {
 </script>
 
 <template>
-  <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title"
+  <a-modal draggable v-model:visible="visibleForm" :footer="formState!=='view'" :title="title"
            :width="width || ''" cancel-text="取消" ok-text="确定"
            @cancel="handleModelCancel" @before-ok="handleModelOk">
     <GlModelTableForm ref="tableFormRef" v-model="formParams.id"

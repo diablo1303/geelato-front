@@ -407,7 +407,7 @@ const selectDictId = (key:any) => {
         </a-space>
       </template>
     </a-modal>
-    <a-modal
+    <a-modal draggable
       title="选择字典项值"
       v-model:visible="visibleDictItemModal"
       :footer="false"

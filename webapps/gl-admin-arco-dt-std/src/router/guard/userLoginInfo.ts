@@ -1,13 +1,13 @@
 import type {LocationQueryRaw, Router} from 'vue-router';
 import NProgress from 'nprogress'; // progress bar
-import {useUserStore} from '@/store';
-import {isLogin} from '@/utils/auth';
+import {useUserStore} from '@geelato/gl-ui-arco-admin';
+import {authUtil} from '@geelato/gl-ui';
 
 export default function setupUserLoginInfoGuard(router: Router) {
   router.beforeEach(async (to, from, next) => {
     NProgress.start();
     const userStore = useUserStore();
-    if (isLogin()) {
+    if (authUtil.isLogin()) {
       if (userStore.role) {
         next();
       } else {

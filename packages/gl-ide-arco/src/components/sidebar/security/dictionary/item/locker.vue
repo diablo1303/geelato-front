@@ -7,7 +7,7 @@ export default {
 <script lang="ts" setup>
 import {reactive, ref, watch} from "vue";
 import type {TableData, TableRowSelection} from "@arco-design/web-vue";
-import {securityApi, useGlobal, utils} from "@geelato/gl-ui";
+import {dictApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryDictItemForm} from "@geelato/gl-ui";
 import {enableStatusOptions} from "../searchTable";
 
@@ -56,7 +56,7 @@ const scroll = ref({x: 1140, y: resetListHeight()});
 const fetchData = async (params: Record<string, any>) => {
   loading.value = true;
   try {
-    const {data} = await securityApi.queryDictItems(params);
+    const {data} = await dictApi.queryDictItems(params);
     columnData.value = [];
     if (data.length > 0 && !props.parameter.pid) {
       for (let i = 0; i < data.length; i += 1) {
@@ -80,7 +80,7 @@ const fetchData = async (params: Record<string, any>) => {
 const validateForm = async (): Promise<boolean> => {
   let isValid = true;
   if (columnData.value && columnData.value.length > 0) {
-    const {data} = await securityApi.queryDictItems({
+    const {data} = await dictApi.queryDictItems({
       dictId: props.parameter.dictId, current: 1, pageSize: 10000
     });
     const dictItemCodes: string[] = [];
@@ -243,7 +243,7 @@ const handleModelOk = async (done: any) => {
       }
       await validateForm().then(async (valid: boolean) => {
         if (valid) {
-          await securityApi.batchCreateOrUpdateDictItem(props.parameter.dictId, props.parameter.pid, columnData.value);
+          await dictApi.batchCreateOrUpdateDictItem(props.parameter.dictId, props.parameter.pid, columnData.value);
           visibleForm.value = false;
           emits('saveSuccess', {}, props.formState);
           done(true);
@@ -312,7 +312,7 @@ watch(() => visibleForm, () => {
 </script>
 
 <template>
-  <a-modal v-if="isModal"
+  <a-modal draggable v-if="isModal"
            v-model:visible="visibleForm"
            :footer="formState!=='view'"
            :title="title || ''"

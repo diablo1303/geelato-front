@@ -1,7 +1,6 @@
 import type {Router, RouteRecordNormalized} from 'vue-router';
 import NProgress from 'nprogress'; // progress bar
-import usePermission from '@/hooks/permission';
-import {useAppStore, useUserStore} from '@/store';
+import {useAppStore, usePermission, useUserStore} from '@geelato/gl-ui-arco-admin';
 import {appRoutes} from '../routes';
 import {NOT_FOUND, WHITE_LIST} from '../constants';
 

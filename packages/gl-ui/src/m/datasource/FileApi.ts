@@ -1,15 +1,22 @@
-import type {ApiResult} from '../types/global'
 import {entityApi} from './EntityApi'
+import type {PageQueryResponse, QueryResult} from './Base';
+import type {ApiResult} from '../types/global'
 import utils from '../utils/Utils'
+import isUtil from "../utils/IsUtil";
+import {getToken} from '../utils/Auth';
 
 export interface AttachmentForm {
-  id: string
-  name: string
-  path: string
-  size: string
-  type: string
-  url: string
-  delStatus: number
+  id: string;
+  objectId: string;
+  name: string;
+  path: string;
+  size: string;
+  type: string;
+  url: string;
+  delStatus: number;
+  appId: string;
+  tenantCode: string;
+  genre: string;
 }
 
 export interface Base64FileParams {
@@ -29,6 +36,22 @@ export interface UploadFileParams {
   tenantCode?: string;// 所属租户
 }
 
+/**
+ * 上传插件添加，请求表头
+ */
+export const uploadHeader = (): Record<string, string> => {
+  const token = getToken();
+  if (token) {
+    return {Authorization: `Bearer ${token}`};
+  }
+  return {Authorization: ''};
+}
+
+export function exportFileList(params: Record<string, any>) {
+  const records = utils.getUrlParams(params);
+  return entityApi.getAxios().get<PageQueryResponse>(`/api/export/file/list?${records.join('&')}`);
+}
+
 export function getAttachment(id: string) {
   return entityApi.getAxios().get<AttachmentForm>(`/api/attach/get/${id}`)
 }
@@ -37,7 +60,7 @@ export function getAttachment(id: string) {
  * 批量获取附件信息
  * @param ids
  */
-export function getAttachmentByIds(ids: string) {
+export function getAttachments(ids: string) {
   return entityApi.getAxios().post<AttachmentForm[]>(`/api/attach/list`, {ids: ids})
 }
 
@@ -64,6 +87,18 @@ export function getUploadUrl(params?: Record<string, any>) {
 }
 
 /**
+ * 上传附件
+ * @param formData
+ * @param params
+ */
+export const updateFile = (formData: FormData, params?: Record<string, any>) => {
+  params = params || {};
+  params.isRename = params.isRename !== false;
+  const records = utils.getUrlParams(params);
+  return entityApi.getAxios().post<QueryResult>(`/api/upload/file?${records.join('&')}`, formData);
+};
+
+/**
  * 下载附件
  * @param id 附件id
  */
@@ -77,13 +112,16 @@ export function getDownloadUrlById(id: string, isPdf?: boolean, isPreview?: bool
  * @param path 附件相对地址
  */
 export function getDownloadUrlByPath(name: string, path: string) {
-  return name && path
-    ? `${
-      entityApi.getAxios().defaults.baseURL
-    }/api/resources/file?rstk=download&name=${name}&path=${path}`
-    : ''
+  return name && path ? `${entityApi.getAxios().defaults.baseURL}/api/resources/file?rstk=download&name=${name}&path=${path}` : ''
 }
 
+/**
+ * 获取文件内容
+ * @param fileName 文件名称
+ */
+export function formDataFromFile(fileName: string) {
+  return entityApi.getAxios().get<string>(`/api/resources/json?fileName=${fileName}`);
+}
 
 /**
  * 导出excel、word
@@ -145,6 +183,57 @@ export function importFile(templateId: string, attachId: string, importType?: st
     .post(`/api/import/attach/${importType || 'part'}/${templateId}/${attachId}`)
 }
 
+/**
+ * 校验文件是否存在
+ * @param url
+ * @param success
+ * @param failed
+ */
+export const checkFileExists = async (url: string, success: any, failed: any) => {
+  try {
+    const response = await fetch(url);
+    if (response.status === 200) {
+      if (typeof success === 'function') success();
+    } else if (typeof failed === 'function') failed();
+  } catch (error) {
+    if (typeof failed === 'function') failed();
+  }
+};
+
+/**
+ * 检验文件是否存在，下载文件
+ * @param id 文件id
+ */
+export const fetchFileById = (id: string, fetchFailed?: any) => {
+  const url = getDownloadUrlById(id, false);
+  fetch(url).then((response) => {
+    if (!response.ok) {
+      if (fetchFailed != null && typeof fetchFailed === 'function') {
+        fetchFailed();
+      } else {
+        throw new Error('文件查询失败');
+      }
+    }
+    return response.blob();
+  }).then((blob) => {
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.style.height = '0';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    // 等待iframe加载完成
+    iframe.onload = () => {
+      document.body.removeChild(iframe);
+    };
+    // 等待iframe加载失败
+    iframe.onerror = () => {
+      document.body.removeChild(iframe);
+    }
+  }).catch((err) => {
+    console.log('fetchFileById', err);
+    throw new Error('文件下载失败');
+  });
+}
 
 /**
  * 文件下载
@@ -184,7 +273,7 @@ export function getImportTemplateInfo(templateId: string) {
 export function downloadImportTemplateFile(templateId: string) {
   getImportTemplateInfo(templateId).then((res) => {
     const templateIdOrBase64 = res.data.template
-    if (templateIdOrBase64 && templateIdOrBase64.length > 64 && utils.isJSON(templateIdOrBase64)) {
+    if (templateIdOrBase64 && templateIdOrBase64.length > 64 && isUtil.isJSON(templateIdOrBase64)) {
       downloadFileByBase64String(templateIdOrBase64);
     } else {
       downloadFileById(res.data.template)
@@ -234,7 +323,7 @@ export const downloadFileByBase64Data = (base64Data: Base64FileParams) => {
  * @param base64String base64编码字符串
  */
 export const downloadFileByBase64String = (base64String: string) => {
-  if (base64String && utils.isJSON(base64String)) {
+  if (base64String && isUtil.isJSON(base64String)) {
     // 解码Base64字符串
     const data: Base64FileParams = JSON.parse(base64String);
     // 下载文件
@@ -243,9 +332,61 @@ export const downloadFileByBase64String = (base64String: string) => {
 }
 
 /**
- * 获取系统配置
- * @param configKey
+ * 检查文件是否存在，将文件转为base64编码字符串
+ * @param id
+ * @param callBack
  */
-export function getValueByKeys(configKey: string) {
-  return entityApi.getAxios().get(`/api/sys/config/getValue/${configKey}`);
+export const fetchFileToBase64 = async (id: string, callBack?: any) => {
+  const url = getDownloadUrlById(id, false);
+  try {
+    const response = await fetch(url);
+    if (response.ok) {
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        if (callBack != null && typeof callBack === 'function') {
+          callBack(reader.result);
+        }
+      };
+      reader.readAsDataURL(await response.blob());
+    } else {
+      throw new Error('文件查询失败');
+    }
+  } catch (err) {
+    throw new Error("文件转Base64失败");
+  }
+}
+
+/**
+ * 批量获取附件信息
+ * @param ids
+ * @param successBack
+ * @param failBack
+ */
+export const getAttachmentByIds = async (ids: string, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await getAttachments(ids);
+    successBack(data);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err);
+    failBack(err);
+  }
+};
+
+/**
+ * 导出文件
+ * @param dataType
+ * @param templateId
+ * @param fileName
+ * @param markText
+ * @param markKey
+ * @param readonly
+ * @param data
+ */
+export function exportWps(dataType: string, templateId: string, data: Record<string, any>, fileName: string,
+                          markText?: string, markKey?: string, readonly?: boolean) {
+  markText = markText || '';
+  markKey = markKey || '';
+  readonly = readonly === true;
+  return entityApi.getAxios().post<AttachmentForm>(`/api/export/file/${dataType}/${templateId}?fileName=${fileName}&markText=${markText}&markKey=${markKey}&readonly=${readonly}`, data);
 }

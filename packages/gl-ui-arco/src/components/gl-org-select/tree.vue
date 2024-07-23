@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'OrgTree'
+  name: 'GlOrgSelectTree'
 }
 </script>
 <script lang="ts" setup>
@@ -10,7 +10,6 @@ import {Message} from "@arco-design/web-vue";
 import type {TreeNodeData} from "@arco-design/web-vue";
 import type {QueryOrgForm} from "@geelato/gl-ui";
 import {securityApi} from "@geelato/gl-ui";
-import {queryTree} from "@geelato/gl-ui/src/m/datasource/Security";
 
 class OrgTreeNode implements TreeNodeData {
   key?: string | number;
@@ -87,7 +86,7 @@ const fetchOrgTree = async (params: Record<string, any>): Promise<OrgTreeNode[]>
   try {
     params.tenantCode = props.parameter?.tenantCode || '';
     params.status = 1;
-    const {data} = await securityApi.queryTree(params);
+    const {data} = await securityApi.queryTrees(params);
     // eslint-disable-next-line no-restricted-syntax
     for (const item of data) {
       treeOptions.push({

@@ -1,7 +1,70 @@
+<script lang="ts" setup>
+import {computed, onMounted, provide, ref, watch} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
+import Menu from '@/components/menu/index.vue';
+import {useGlobal, userApi} from "@geelato/gl-ui";
+import {useAppStore, usePermission, useResponsive, useUserStore} from '@geelato/gl-ui-arco-admin';
+import PageLayout from './page-layout.vue';
+
+const global = useGlobal();
+const isInit = ref(false);
+const appStore = useAppStore();
+const userStore = useUserStore();
+const router = useRouter();
+const route = useRoute();
+const permission = usePermission();
+useResponsive(true);
+const navbarHeight = `60px`;
+const navbar = computed(() => appStore.navbar);
+const renderMenu = computed(() => appStore.menu && !appStore.topMenu);
+const hideMenu = computed(() => appStore.hideMenu);
+const footer = computed(() => appStore.footer);
+const menuWidth = computed(() => {
+  return appStore.menuCollapse ? 48 : appStore.menuWidth;
+});
+const collapsed = computed(() => {
+  return appStore.menuCollapse;
+});
+const paddingStyle = computed(() => {
+  const paddingLeft =
+      renderMenu.value && !hideMenu.value
+          ? {paddingLeft: `${menuWidth.value}px`}
+          : {};
+  const paddingTop = navbar.value ? {paddingTop: navbarHeight} : {};
+  return {...paddingLeft, ...paddingTop};
+});
+const setCollapsed = (val: boolean) => {
+  if (!isInit.value) return; // for page initialization menu state problem
+  appStore.updateSettings({menuCollapse: val});
+};
+watch(
+    () => userStore.role,
+    (roleValue) => {
+      if (roleValue && !permission.accessRouter(route))
+        router.push({name: 'notFound'});
+    }
+);
+const drawerVisible = ref(false);
+const drawerCancel = (e: Event) => {
+  drawerVisible.value = false;
+};
+provide('toggleDrawerMenu', () => {
+  drawerVisible.value = !drawerVisible.value;
+});
+
+onMounted(() => {
+  isInit.value = true;
+  userApi.getSysConfig(global, userStore, {
+    tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore && userStore.tenantCode) || '',
+    appId: (route && route.params && route.params.appId) as string || ''
+  });
+});
+</script>
+
 <template>
   <a-layout :class="{ mobile: appStore.hideMenu }" class="layout">
     <div v-if="navbar" class="layout-navbar">
-      <NavBar/>
+      <GlNavBar/>
     </div>
     <a-layout>
       <a-layout>
@@ -33,85 +96,16 @@
           <Menu/>
         </a-drawer>
         <a-layout :style="paddingStyle" class="layout-content">
-          <TabBar v-if="appStore.tabBar"/>
+          <GlTabBar v-if="appStore.tabBar"/>
           <a-layout-content>
             <PageLayout/>
           </a-layout-content>
-          <Footer v-if="footer"/>
+          <GlFooter v-if="footer"/>
         </a-layout>
       </a-layout>
     </a-layout>
   </a-layout>
 </template>
-
-<script lang="ts" setup>
-import {computed, onMounted, provide, ref, watch} from 'vue';
-import {useRoute, useRouter} from 'vue-router';
-import {useAppStore, useUserStore} from '@/store';
-import NavBar from '@/components/navbar/index.vue';
-import Menu from '@/components/menu/index.vue';
-import Footer from '@/components/footer/index.vue';
-import TabBar from '@/components/tab-bar/index.vue';
-import usePermission from '@/hooks/permission';
-import useResponsive from '@/hooks/responsive';
-import {getSysConfig} from "@/api/user";
-import {useGlobal} from "@geelato/gl-ui";
-import PageLayout from './page-layout.vue';
-
-const global = useGlobal();
-const isInit = ref(false);
-const appStore = useAppStore();
-const userStore = useUserStore();
-const router = useRouter();
-const route = useRoute();
-const permission = usePermission();
-useResponsive(true);
-const navbarHeight = `60px`;
-const navbar = computed(() => appStore.navbar);
-const renderMenu = computed(() => appStore.menu && !appStore.topMenu);
-const hideMenu = computed(() => appStore.hideMenu);
-const footer = computed(() => appStore.footer);
-const menuWidth = computed(() => {
-  return appStore.menuCollapse ? 48 : appStore.menuWidth;
-});
-const collapsed = computed(() => {
-  return appStore.menuCollapse;
-});
-const paddingStyle = computed(() => {
-  const paddingLeft =
-    renderMenu.value && !hideMenu.value
-      ? {paddingLeft: `${menuWidth.value}px`}
-      : {};
-  const paddingTop = navbar.value ? {paddingTop: navbarHeight} : {};
-  return {...paddingLeft, ...paddingTop};
-});
-const setCollapsed = (val: boolean) => {
-  if (!isInit.value) return; // for page initialization menu state problem
-  appStore.updateSettings({menuCollapse: val});
-};
-watch(
-  () => userStore.role,
-  (roleValue) => {
-    if (roleValue && !permission.accessRouter(route))
-      router.push({name: 'notFound'});
-  }
-);
-const drawerVisible = ref(false);
-const drawerCancel = (e: Event) => {
-  drawerVisible.value = false;
-};
-provide('toggleDrawerMenu', () => {
-  drawerVisible.value = !drawerVisible.value;
-});
-
-onMounted(() => {
-  isInit.value = true;
-  getSysConfig(global, userStore && userStore.userInfo, {
-    tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore.userInfo && userStore.userInfo.tenantCode) || '',
-    appId: (route && route.params && route.params.appId) as string || ''
-  });
-});
-</script>
 
 <style lang="less" scoped>
 @nav-size-height: 60px;

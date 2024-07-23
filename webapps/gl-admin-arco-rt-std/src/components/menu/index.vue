@@ -1,12 +1,10 @@
 <script lang="tsx">
 import {compile, computed, defineComponent, h, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
-import type {RouteMeta} from 'vue-router';
-import {RouteRecordRaw, useRoute, useRouter} from 'vue-router';
-import {useAppStore} from '@/store';
-import {listenerRouteChange} from '@/utils/route-listener';
-import {openWindow, regexUrl} from '@/utils';
-import {iconsJson} from "@geelato/gl-ui";
+import type {RouteMeta, RouteRecordRaw} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
+import {useAppStore} from "@geelato/gl-ui-arco-admin";
+import {authUtil, iconsJson, routeUtil} from '@geelato/gl-ui';
 import useMenuTree from './use-menu-tree';
 
 export default defineComponent({
@@ -33,8 +31,8 @@ export default defineComponent({
 
     const goto = (item: RouteRecordRaw) => {
       // Open external link
-      if (regexUrl.test(item.path)) {
-        openWindow(item.path);
+      if (authUtil.regexUrl.test(item.path)) {
+        authUtil.openWindow(item.path);
         selectedKey.value = [item.name as string];
         return;
       }
@@ -68,19 +66,17 @@ export default defineComponent({
       });
       return result;
     };
-    listenerRouteChange((newRoute) => {
+    routeUtil.listenerRouteChange((newRoute) => {
       const {requiresAuth, activeMenu, hideInMenu} = newRoute.meta;
       if (requiresAuth && (!hideInMenu || activeMenu)) {
         const menuOpenKeys = findMenuOpenKeys(
-          (activeMenu || newRoute.name) as string
+            (activeMenu || newRoute.name) as string
         );
 
         const keySet = new Set([...menuOpenKeys, ...openKeys.value]);
         openKeys.value = [...keySet];
-
-        selectedKey.value = [
-          activeMenu || menuOpenKeys[menuOpenKeys.length - 1],
-        ];
+        // @ts-ignore
+        selectedKey.value = [activeMenu || menuOpenKeys[menuOpenKeys.length - 1],];
       }
     }, true);
     const setCollapse = (val: boolean) => {
@@ -108,15 +104,15 @@ export default defineComponent({
               icon = () => h(compile(isAli ? `<GlIconfont type='${element?.meta?.icon}'/>` : `<${element?.meta?.icon}/>`));
             }
             const node =
-              element?.children && element?.children.length !== 0 ? (
-                <a-sub-menu key={element?.name} v-slots={{icon, title: () => h(compile(t(element?.meta?.locale || ''))),}}>
-                  {travel(element?.children)}
-                </a-sub-menu>
-              ) : (
-                <a-menu-item key={element?.name} v-slots={{icon}} onClick={() => goto(element)}>
-                  {t(element?.meta?.locale || '')}
-                </a-menu-item>
-              );
+                element?.children && element?.children.length !== 0 ? (
+                    <a-sub-menu key={element?.name} v-slots={{icon, title: () => h(compile(t(element?.meta?.locale || ''))),}}>
+                      {travel(element?.children)}
+                    </a-sub-menu>
+                ) : (
+                    <a-menu-item key={element?.name} v-slots={{icon}} onClick={() => goto(element)}>
+                      {t(element?.meta?.locale || '')}
+                    </a-menu-item>
+                );
             nodes.push(node as never);
           });
         }
@@ -127,20 +123,20 @@ export default defineComponent({
     };
 
     return () => (
-      <a-menu
-        mode={topMenu.value ? 'horizontal' : 'vertical'}
-        v-model:collapsed={collapsed.value}
-        v-model:open-keys={openKeys.value}
-        show-collapse-button={appStore.device !== 'mobile'}
-        auto-open={false}
-        selected-keys={selectedKey.value}
-        auto-open-selected={true}
-        level-indent={34}
-        style="height: 100%;width:100%;"
-        onCollapse={setCollapse}
-      >
-        {renderSubMenu()}
-      </a-menu>
+        <a-menu
+            mode={topMenu.value ? 'horizontal' : 'vertical'}
+            v-model:collapsed={collapsed.value}
+            v-model:open-keys={openKeys.value}
+            show-collapse-button={appStore.device !== 'mobile'}
+            auto-open={false}
+            selected-keys={selectedKey.value}
+            auto-open-selected={true}
+            level-indent={34}
+            style="height: 100%;width:100%;"
+            onCollapse={setCollapse}
+        >
+          {renderSubMenu()}
+        </a-menu>
     );
   },
 });

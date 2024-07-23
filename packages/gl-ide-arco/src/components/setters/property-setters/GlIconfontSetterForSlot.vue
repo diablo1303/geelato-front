@@ -14,7 +14,7 @@
       <a-input style="width: 50%" v-model="modelValue.props.text" placeholder="附加文本"
                @change="onChangeText"></a-input>
     </span>
-    <a-modal v-model:visible="visible" title="选择图标" @ok="()=>{visible=false}" :width="1024" style="top: 20px">
+    <a-modal draggable v-model:visible="visible" title="选择图标" @ok="()=>{visible=false}" :width="1024" style="top: 20px">
       <div style="height:640px;overflow-y: scroll;padding:1em;margin:-24px">
         <div v-for="item in json.glyphs" class="gl-setting-icon-item" @click="onSelected(item)">
           <div style="font-size: 2em;">

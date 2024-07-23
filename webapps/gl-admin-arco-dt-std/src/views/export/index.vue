@@ -2,19 +2,16 @@
   <div class="container">
     <div class="content">
       <div class="content-inner">
-        <ExportList/>
+        <GlExportList/>
       </div>
       <div class="footer">
-        <Footer/>
+        <GlFooter/>
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts" setup>
-import Footer from '@/components/footer/index.vue';
-import ExportList from "@/views/export/list.vue";
-</script>
+<script lang="ts" setup></script>
 
 <style lang="less" scoped>
 .container {

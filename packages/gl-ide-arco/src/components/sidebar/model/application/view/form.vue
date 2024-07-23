@@ -8,12 +8,10 @@ export default {
 import {computed, ref, watch} from "vue";
 import {Modal} from "@arco-design/web-vue";
 import type {TableColumnData, FormInstance, SelectOptionGroup, SelectOptionData} from "@arco-design/web-vue";
-import type {QueryAppForm, QueryPermissionForm, QueryAppViewForm, QueryTableForm, QueryViewForm} from '@geelato/gl-ui';
+import type {QueryAppForm, QueryPermissionForm, QueryAppViewForm, QueryViewForm} from '@geelato/gl-ui';
 import {modelApi, applicationApi, useGlobal, utils, securityApi} from "@geelato/gl-ui";
-import {enableStatusOptions, approvalNeedOptions, approvalStatusOptions} from "../searchTable";
+import {approvalStatusOptions} from "../searchTable";
 import {classifyOptions} from "../../../security/permission/searchTable";
-import {sourceTypeOptions, tableSyncOptions} from "../../table/searchTable";
-import {pageQueryView} from "@geelato/gl-ui/src/m/datasource/Model";
 
 type PageParams = {
   viewId: string; // 数据库链接id
@@ -139,7 +137,7 @@ const queryTablePermission = async (params: Record<string, any>, successBack?: a
 
 const queryTableSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await modelApi.pageQueryView(params);
+    const {data} = await modelApi.pageQueryViews(params);
     if (successBack && typeof successBack === 'function') successBack(data.items || []);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -370,7 +368,7 @@ const cloneColumns = ref<Column[]>([]);
 </script>
 
 <template>
-  <a-modal v-model:visible="visibleForm" :footer="formState!=='view'&&['draft','reject'].includes(formData.approvalStatus)" :width="width"
+  <a-modal draggable v-model:visible="visibleForm" :footer="formState!=='view'&&['draft','reject'].includes(formData.approvalStatus)" :width="width"
            cancel-text="取消" ok-text="确认" title-align="start"
            @cancel="handleModelCancel" @before-ok="handleModelOk">
     <template #title>

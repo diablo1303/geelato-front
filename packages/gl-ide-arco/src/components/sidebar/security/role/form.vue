@@ -46,6 +46,7 @@ const generateFormData = (): QueryRoleForm => {
     enableStatus: 1,
     seqNo: 999,
     description: '',
+    usedApp: 0,
     appName: '',
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
@@ -169,7 +170,7 @@ watch(() => visibleForm, () => {
 </script>
 
 <template>
-  <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title" :width="width"
+  <a-modal draggable v-model:visible="visibleForm" :footer="formState!=='view'" :title="title" :width="width"
            cancel-text="取消" ok-text="确认" title-align="start"
            @cancel="handleModelCancel" @before-ok="handleModelOk">
     <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }">

@@ -70,14 +70,11 @@ import {RouteParamsRaw, useRoute, useRouter} from 'vue-router';
 import {Message, ValidatedError} from '@arco-design/web-vue';
 import {useI18n} from 'vue-i18n';
 import {useStorage} from '@vueuse/core';
-import {useTenantStore, useUserStore} from '@/store';
-import useLoading from '@/hooks/loading';
-import type {LoginData} from '@/api/user';
-import {getSysConfig} from "@/api/user";
 import {DEFAULT_ROUTE} from "@/router/constants";
 import {appDataBaseRoutes, formatAppModules, IS_DATA_PAGE, pageParamsIsFull} from "@/router/routes";
-import {getToken} from "@/utils/auth";
-import {useGlobal} from "@geelato/gl-ui";
+import type {LoginData} from "@geelato/gl-ui";
+import {authUtil, useGlobal, userApi} from "@geelato/gl-ui";
+import {useLoading, useTenantStore, useUserStore} from '@geelato/gl-ui-arco-admin';
 
 const router = useRouter();
 const route = useRoute();
@@ -88,7 +85,7 @@ const userStore = useUserStore();
 const global = useGlobal();
 const tenantStore = useTenantStore();
 const tenantData = computed(() => {
-  return {welcome: tenantStore.getTenant.welcome};
+  return {welcome: tenantStore.welcome};
 });
 
 const loginConfig = useStorage('login-config', {
@@ -143,11 +140,11 @@ const enterApp = () => {
   }
 }
 onMounted(() => {
-  getSysConfig(global, userStore && userStore.userInfo, {
-    tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore.userInfo && userStore.userInfo.tenantCode) || '',
+  userApi.getSysConfig(global, userStore, {
+    tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore && userStore.tenantCode) || '',
     appId: (route && route.params && route.params.appId) as string || ''
   });
-  if (getToken()) enterApp();
+  if (authUtil.getToken()) enterApp();
 });
 
 const handleSubmit = async ({errors, values,}: {

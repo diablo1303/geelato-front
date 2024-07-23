@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import {type Ref, ref, watch} from 'vue'
 import {ComponentInstance} from '@geelato/gl-ui-schema'
-import {mixins, type PageCustomType, useGlobal} from '../../index'
+import useGlobal from '../../m/hooks/useGlobal'
+import mixins from '../mixins'
 import {entityApi} from '../../m/datasource/EntityApi'
-import {PagePermission} from '../PageProvideProxy'
+import {type PageCustomType, PagePermission} from '../PageProvideProxy'
 
 defineOptions({
   name: 'GlPageViewer'

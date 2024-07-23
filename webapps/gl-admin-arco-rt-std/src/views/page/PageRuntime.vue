@@ -1,3 +1,9 @@
+<script lang="ts">
+export default {
+  name: "PageRuntime"
+}
+</script>
+
 <script lang="ts" setup>
 import {ref} from "vue";
 import {useRoute} from 'vue-router';
@@ -16,11 +22,7 @@ if (pageId.value) {
   pageId.value = (pageId.value === null || pageId.value.toUpperCase() === 'null'.toUpperCase()) ? '' : pageId.value;
 }
 </script>
-<script lang="ts">
-export default {
-  name: "PageRuntime"
-}
-</script>
+
 <template>
   <div>
     <div v-if="!pageId">
@@ -31,6 +33,5 @@ export default {
     <GlPageViewer v-if="pageId" :pageId="pageId" :glIsRuntime="true" glRuntimeFlag="Runtime"></GlPageViewer>
   </div>
 </template>
-<style scoped>
 
-</style>
+<style scoped></style>

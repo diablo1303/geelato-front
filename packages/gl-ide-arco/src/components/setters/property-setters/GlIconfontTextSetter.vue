@@ -17,7 +17,7 @@
                  @change="onChangeText"></a-input>
       </div>
     </div>
-    <a-modal v-model:visible="visible"  @ok="showIconSelect" :width="1124" style="top: 20px">
+    <a-modal draggable v-model:visible="visible"  @ok="showIconSelect" :width="1124" style="top: 20px">
       <template #title>
         选择图标
         <a-input-search v-model="searchText" style="width: 18em;margin-left: 0.5em"

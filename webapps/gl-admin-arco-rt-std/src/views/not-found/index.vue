@@ -1,18 +1,14 @@
-<template>
-  <div class="content">
-    <a-result :subtitle="'not found'" class="result" status="404"></a-result>
-    <div class="operation-row">
-      <a-button key="back" type="primary" @click="back($event)"> back</a-button>
-    </div>
-  </div>
-</template>
+<script lang="ts">
+export default {
+  name: "NotFound",
+}
+</script>
 
 <script lang="ts" setup>
+import {ref} from "vue";
 import {useRoute, useRouter} from 'vue-router';
-import {DEFAULT_ROUTE} from "@/router/constants";
 // eslint-disable-next-line import/no-cycle
 import {pageBaseRoute} from "@/router/routes";
-import {ref} from "vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -30,6 +26,15 @@ const back = (ev: MouseEvent) => {
   }
 };
 </script>
+
+<template>
+  <div class="content">
+    <a-result :subtitle="'not found'" class="result" status="404"></a-result>
+    <div class="operation-row">
+      <a-button key="back" type="primary" @click="back($event)"> back</a-button>
+    </div>
+  </div>
+</template>
 
 <style lang="less" scoped>
 .content {

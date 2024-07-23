@@ -7,7 +7,7 @@ export default {
 import {ref, watch} from "vue";
 import type {FormInstance} from "@arco-design/web-vue";
 import {Modal} from "@arco-design/web-vue";
-import {securityApi, useGlobal, utils} from "@geelato/gl-ui";
+import {dictApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryDictItemForm} from "@geelato/gl-ui";
 import {enableStatusOptions} from "../searchTable";
 
@@ -58,7 +58,7 @@ const createOrUpdateData = async (params: QueryDictItemForm, successBack?: any, 
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
-      const {data} = await securityApi.createOrUpdateDictItem(params);
+      const {data} = await dictApi.createOrUpdateDictItem(params);
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
       if (failBack && typeof failBack === 'function') failBack(err);
@@ -73,7 +73,7 @@ const createOrUpdateData = async (params: QueryDictItemForm, successBack?: any, 
  */
 const getData = async (id: string, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await securityApi.getDictItem(id);
+    const {data} = await dictApi.getDictItem(id);
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -86,7 +86,7 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
  */
 const validateCode = async (value: any, callback: any) => {
   try {
-    const {data} = await securityApi.validateDictItemCode(formData.value);
+    const {data} = await dictApi.validateDictItemCode(formData.value);
     if (!data) callback('不能重复');
   } catch (err) {
     console.log(err);

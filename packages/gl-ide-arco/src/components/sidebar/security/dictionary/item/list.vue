@@ -7,7 +7,7 @@ export default {
 <script lang="ts" setup>
 import {reactive, ref, watch} from 'vue';
 import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
-import {securityApi, utils} from "@geelato/gl-ui";
+import {dictApi, utils} from "@geelato/gl-ui";
 import type {QueryDictItemForm, Pagination, QueryDictForm} from "@geelato/gl-ui";
 import {enableStatusOptions} from "../searchTable";
 // 引入组件
@@ -126,7 +126,7 @@ const setTree = (totalData: QueryDictItemForm[]) => {
 const fetchData = async (params: Record<string, any>) => {
   loading.value = true;
   try {
-    const {data} = await securityApi.queryDictItems(params);
+    const {data} = await dictApi.queryDictItems(params);
     emits('fetch', 'success', data);
     renderData.value = setTree(data);
   } catch (err) {
@@ -144,7 +144,7 @@ const fetchData = async (params: Record<string, any>) => {
  */
 const deleteData = async (id: string, successBack?: any, failBack?: any) => {
   try {
-    await securityApi.deleteDictItem(id);
+    await dictApi.deleteDictItem(id);
     if (successBack && typeof successBack === 'function') successBack(id);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);

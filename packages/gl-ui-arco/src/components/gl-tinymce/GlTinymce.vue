@@ -5,7 +5,18 @@ export default {
 </script>
 <script lang="ts" setup>
 import {type PropType, type Ref, ref, reactive, watch, onMounted, computed} from 'vue'
-import {entityApi, EntityReader, fileApi, PageProvideKey, PageProvideProxy, type UploadFileParams, useApiUrl, useGlobal, utils} from '@geelato/gl-ui'
+import {
+  entityApi,
+  EntityReader,
+  fileApi,
+  sysConfigApi,
+  PageProvideKey,
+  PageProvideProxy,
+  type UploadFileParams,
+  useApiUrl,
+  useGlobal,
+  utils
+} from '@geelato/gl-ui'
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
 import Editor from '@tinymce/tinymce-vue'
 import {TINY_FONT_FAMILY_FORMATS, TINY_FONT_SIZE_FORMATS, TINY_PLUGINS, TINY_TOOLBAR} from './type'
@@ -185,7 +196,7 @@ const updateEmits = (type: number) => {
 
 const updateM = (type: number) => {
   if (!isGetKey.value) {
-    fileApi.getValueByKeys(replaceStr).then((value) => {
+    sysConfigApi.getValueByKeys(replaceStr).then((value) => {
       console.log(value);
       isGetKey.value = true;
       if (value && value.data) baseUrl.value = value.data as unknown as string;
