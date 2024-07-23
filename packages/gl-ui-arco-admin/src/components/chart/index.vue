@@ -1,16 +1,12 @@
-<template>
-  <VCharts
-      v-if="renderChart"
-      :autoresize="autoResize"
-      :option="options"
-      :style="{ width, height }"
-  />
-</template>
+<script lang="ts">
+export default {
+  name: 'GlEcharts',
+}
+</script>
 
 <script lang="ts" setup>
 import {nextTick, ref} from 'vue';
 import VCharts from 'vue-echarts';
-// import { useAppStore } from '@/store';
 
 defineProps({
   options: {
@@ -32,16 +28,16 @@ defineProps({
     default: '100%',
   },
 });
-// const appStore = useAppStore();
-// const theme = computed(() => {
-//   if (appStore.theme === 'dark') return 'dark';
-//   return '';
-// });
+
 const renderChart = ref(false);
 // wait container expand
 nextTick(() => {
   renderChart.value = true;
 });
 </script>
+
+<template>
+  <VCharts v-if="renderChart" :autoresize="autoResize" :option="options" :style="{ width, height }"/>
+</template>
 
 <style lang="less" scoped></style>

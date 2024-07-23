@@ -1,67 +1,15 @@
-<template>
-  <a-dropdown
-      :popup-max-height="false"
-      trigger="contextMenu"
-      @select="actionSelect"
-  >
-    <span
-        :class="{ 'link-activated': itemData.fullPath === $route.fullPath }"
-        class="arco-tag arco-tag-size-medium arco-tag-checked"
-        @click="goto(itemData)"
-    >
-      <span class="tag-link">
-        {{ $t(itemData.title) }}
-      </span>
-      <span
-          class="arco-icon-hover arco-tag-icon-hover arco-icon-hover-size-medium arco-tag-close-btn"
-          @click.stop="tagClose(itemData, index)"
-      >
-        <icon-close/>
-      </span>
-    </span>
-    <template #content>
-      <a-doption :disabled="disabledReload" :value="Eaction.reload">
-        <icon-refresh/>
-        <span>重新加载</span>
-      </a-doption>
-      <a-doption
-          :disabled="disabledCurrent"
-          :value="Eaction.current"
-          class="sperate-line"
-      >
-        <icon-close/>
-        <span>关闭当前标签页</span>
-      </a-doption>
-      <a-doption :disabled="disabledLeft" :value="Eaction.left">
-        <icon-to-left/>
-        <span>关闭左侧标签页</span>
-      </a-doption>
-      <a-doption
-          :disabled="disabledRight"
-          :value="Eaction.right"
-          class="sperate-line"
-      >
-        <icon-to-right/>
-        <span>关闭右侧标签页</span>
-      </a-doption>
-      <a-doption :value="Eaction.others">
-        <icon-swap/>
-        <span>关闭其它标签页</span>
-      </a-doption>
-      <a-doption :value="Eaction.all">
-        <icon-folder-delete/>
-        <span>关闭全部标签页</span>
-      </a-doption>
-    </template>
-  </a-dropdown>
-</template>
+<script lang="ts">
+export default {
+  name: 'tabItem',
+}
+</script>
 
 <script lang="ts" setup>
-import {computed, PropType} from 'vue';
+import {computed, type PropType} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
-import {useTabBarStore} from '@/store';
-import type {TagProps} from '@/store/modules/tab-bar/types';
-import {DEFAULT_ROUTE, REDIRECT_ROUTE_NAME} from '@/router/constants';
+import {ROUTER_DEFAULT_ROUTE, ROUTER_REDIRECT_ROUTE_NAME} from '@/router/constants';
+import {useTabBarStore} from '../../store';
+import type {TagProps} from '../../store/modules/tab-bar/types';
 
 // eslint-disable-next-line no-shadow
 enum Eaction {
@@ -154,7 +102,7 @@ const actionSelect = async (value: any) => {
   } else if (value === Eaction.reload) {
     tabBarStore.deleteCache(itemData);
     await router.push({
-      name: REDIRECT_ROUTE_NAME,
+      name: ROUTER_REDIRECT_ROUTE_NAME.value,
       params: {
         path: route.fullPath,
       },
@@ -162,10 +110,68 @@ const actionSelect = async (value: any) => {
     tabBarStore.addCache(itemData.name);
   } else {
     tabBarStore.resetTabList();
-    router.push({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params});
+    router.push({name: ROUTER_DEFAULT_ROUTE.value.name, params: ROUTER_DEFAULT_ROUTE.value.params});
   }
 };
 </script>
+
+<template>
+  <a-dropdown
+      :popup-max-height="false"
+      trigger="contextMenu"
+      @select="actionSelect"
+  >
+    <span
+        :class="{ 'link-activated': itemData.fullPath === $route.fullPath }"
+        class="arco-tag arco-tag-size-medium arco-tag-checked"
+        @click="goto(itemData)"
+    >
+      <span class="tag-link">
+        {{ $t(itemData.title) }}
+      </span>
+      <span
+          class="arco-icon-hover arco-tag-icon-hover arco-icon-hover-size-medium arco-tag-close-btn"
+          @click.stop="tagClose(itemData, index)"
+      >
+        <icon-close/>
+      </span>
+    </span>
+    <template #content>
+      <a-doption :disabled="disabledReload" :value="Eaction.reload">
+        <icon-refresh/>
+        <span>重新加载</span>
+      </a-doption>
+      <a-doption
+          :disabled="disabledCurrent"
+          :value="Eaction.current"
+          class="sperate-line"
+      >
+        <icon-close/>
+        <span>关闭当前标签页</span>
+      </a-doption>
+      <a-doption :disabled="disabledLeft" :value="Eaction.left">
+        <icon-to-left/>
+        <span>关闭左侧标签页</span>
+      </a-doption>
+      <a-doption
+          :disabled="disabledRight"
+          :value="Eaction.right"
+          class="sperate-line"
+      >
+        <icon-to-right/>
+        <span>关闭右侧标签页</span>
+      </a-doption>
+      <a-doption :value="Eaction.others">
+        <icon-swap/>
+        <span>关闭其它标签页</span>
+      </a-doption>
+      <a-doption :value="Eaction.all">
+        <icon-folder-delete/>
+        <span>关闭全部标签页</span>
+      </a-doption>
+    </template>
+  </a-dropdown>
+</template>
 
 <style lang="less" scoped>
 .tag-link {

@@ -1,5 +1,5 @@
-import {App, ComponentPublicInstance} from 'vue';
-import axios from 'axios';
+import type {App, ComponentPublicInstance} from 'vue';
+import {entityApi} from "../datasource/EntityApi";
 
 export default function handleError(Vue: App, baseUrl: string) {
   if (!baseUrl) {
@@ -11,7 +11,7 @@ export default function handleError(Vue: App, baseUrl: string) {
     info: string
   ) => {
     // send error info
-    axios.post(`${baseUrl}/report-error`, {
+    entityApi.getAxios().post(`${baseUrl}/report-error`, {
       err,
       instance,
       info,

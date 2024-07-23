@@ -1,11 +1,12 @@
 <script lang="ts">
 export default {
-  name: 'index'
+  name: 'GlBanner',
 }
 </script>
+
 <script lang="ts" setup>
 import {ref, watch, computed} from "vue";
-import {useTenantStore} from "@/store";
+import {useTenantStore} from "../../store";
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -23,7 +24,7 @@ watch(mv, () => {
 
 const tenantStore = useTenantStore();
 const tenantData = computed(() => {
-  return {slogan: tenantStore.getTenant.slogan, features: tenantStore.getTenant.features};
+  return {slogan: tenantStore.slogan, features: tenantStore.features};
 });
 </script>
 
@@ -33,12 +34,11 @@ const tenantData = computed(() => {
       <div class="gl-banner-slogan-title">
         {{ tenantData.slogan }}
       </div>
-      <!--        <div class="banner-slogan-sub-title">-->
-      <!--          自主可控数智化服务平台-->
-      <!--        </div>-->
       <div class="gl-banner-slogan-keys">
-        <div v-for="(item,index) in tenantData.features" :key="index">
-          &nbsp;{{ item[0].value }}
+        <div v-for="(features,i) in tenantData.features" :key="i">
+          <span v-for="(feature,j) in features" :key="j">
+          &nbsp;{{ feature.value }}
+          </span>
         </div>
       </div>
     </div>
@@ -49,7 +49,7 @@ const tenantData = computed(() => {
 .gl-banner {
   width: 500px;
   background-color: #002a49;
-  background-image: url("@/assets/images/banner-bg.png");
+  background-image: url("../../assets/images/banner-bg.png");
   /* 让背景图基于容器大小伸缩 */
   background-size: cover;
 

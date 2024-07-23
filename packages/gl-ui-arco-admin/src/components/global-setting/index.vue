@@ -1,33 +1,15 @@
-<template>
-  <div v-if="!appStore.navbar" class="fixed-settings" @click="setVisible">
-    <a-button type="primary">
-      <template #icon>
-        <icon-settings/>
-      </template>
-    </a-button>
-  </div>
-  <a-drawer
-      :cancel-text="$t('settings.close')"
-      :ok-text="$t('settings.copySettings')"
-      :visible="visible"
-      :width="300"
-      unmount-on-close
-      @cancel="cancel"
-      @ok="copySettings"
-  >
-    <template #title> {{ $t('settings.title') }}</template>
-    <Block :options="contentOpts" :title="$t('settings.content')"/>
-    <Block :options="othersOpts" :title="$t('settings.otherSettings')"/>
-    <a-alert>{{ $t('settings.alertContent') }}</a-alert>
-  </a-drawer>
-</template>
+<script lang="ts">
+export default {
+  name: 'GlGlobalSetting',
+}
+</script>
 
 <script lang="ts" setup>
 import {computed} from 'vue';
 import {Message} from '@arco-design/web-vue';
 import {useI18n} from 'vue-i18n';
 import {useClipboard} from '@vueuse/core';
-import {useAppStore} from '@/store';
+import {useAppStore} from '../../store';
 import Block from './block.vue';
 
 const emit = defineEmits(['cancel']);
@@ -83,6 +65,30 @@ const setVisible = () => {
   appStore.updateSettings({globalSettings: true});
 };
 </script>
+
+<template>
+  <div v-if="!appStore.navbar" class="fixed-settings" @click="setVisible">
+    <a-button type="primary">
+      <template #icon>
+        <icon-settings/>
+      </template>
+    </a-button>
+  </div>
+  <a-drawer
+      :cancel-text="$t('settings.close')"
+      :ok-text="$t('settings.copySettings')"
+      :visible="visible"
+      :width="300"
+      unmount-on-close
+      @cancel="cancel"
+      @ok="copySettings"
+  >
+    <template #title> {{ $t('settings.title') }}</template>
+    <Block :options="contentOpts" :title="$t('settings.content')"/>
+    <Block :options="othersOpts" :title="$t('settings.otherSettings')"/>
+    <a-alert>{{ $t('settings.alertContent') }}</a-alert>
+  </a-drawer>
+</template>
 
 <style lang="less" scoped>
 .fixed-settings {
