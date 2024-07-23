@@ -74,7 +74,7 @@ const emits = defineEmits(['onComponentClick'])
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
 
 const onClick = (...args: any[]) => {
-  console.log('gl-component-dnd > onClick() > arguments:', args, props.glComponentInst.componentName)
+  // console.log('gl-component-dnd > onClick() > arguments:', args, props.glComponentInst.componentName)
   // 特殊处理，点击组件GlDndPlaceholder，不做响应
   // if (props.glComponentInst.componentName === 'GlDndPlaceholder') {
   //   return

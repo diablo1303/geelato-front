@@ -35,7 +35,7 @@ onMounted(() => {
   // 加载配置变量
   const urlParams = new URL(window.location.href).searchParams;
   userStore.info(() => {
-    getSysConfig(global, userStore && userStore.userInfo,
+    getSysConfig(global, userStore,
       {tenantCode: urlParams.get("tenantCode") || '', appId: urlParams.get("appId") || ''});
   });
   showPage.value = true

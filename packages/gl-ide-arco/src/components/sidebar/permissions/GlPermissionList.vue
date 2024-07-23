@@ -80,23 +80,23 @@ const onRoleMenuItemsCancel = () => {
       <GlRoleMenuItem ref="roleMenuItem"/>
     </a-modal>
     <a-alert :show-icon="false" banner center>以下配置本页面组件查看、编辑权限</a-alert>
-    <a-collapse :default-active-key="['1']" :bordered="false">
-      <a-collapse-item v-for="(inst,index) in componentStore.getActionList()"
-                       :header="inst.props.label||inst.componentName" :key="index">
-        <template #extra>
-          <a-tag size="small" color="blue" @click.stop="selectComponent(inst)">选择组件</a-tag>
-        </template>
-        <div v-for="(action,actionIndex) in inst.actions" class="gl-action-item"
-             @click="openActionSetter(inst,action,actionIndex)">
-          <div class="gl-title">
-            {{ action.title }}：{{ action.name }}
-          </div>
-          <div style="flex: 0 0 2em;text-align: center;line-height: 2em">
-            <GlIconfont type="gl-thunderbolt" class="gl-active" style="cursor: pointer"/>
-          </div>
-        </div>
-      </a-collapse-item>
-    </a-collapse>
+<!--    <a-collapse :default-active-key="['1']" :bordered="false">-->
+<!--      <a-collapse-item v-for="(inst,index) in componentStore.getActionList()"-->
+<!--                       :header="inst.props.label||inst.componentName" :key="index">-->
+<!--        <template #extra>-->
+<!--          <a-tag size="small" color="blue" @click.stop="selectComponent(inst)">选择组件</a-tag>-->
+<!--        </template>-->
+<!--        <div v-for="(action,actionIndex) in inst.actions" class="gl-action-item"-->
+<!--             @click="openActionSetter(inst,action,actionIndex)">-->
+<!--          <div class="gl-title">-->
+<!--            {{ action.title }}：{{ action.name }}-->
+<!--          </div>-->
+<!--          <div style="flex: 0 0 2em;text-align: center;line-height: 2em">-->
+<!--            <GlIconfont type="gl-thunderbolt" class="gl-active" style="cursor: pointer"/>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </a-collapse-item>-->
+<!--    </a-collapse>-->
   </div>
 </template>
 

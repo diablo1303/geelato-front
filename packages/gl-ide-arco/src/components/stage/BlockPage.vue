@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {type PropType, watch} from "vue";
-import {useGlobal, utils} from "@geelato/gl-ui";
+import {utils} from "@geelato/gl-ui";
 import type {ComponentInstance} from "@geelato/gl-ui-schema";
 import {componentStoreFactory} from "@geelato/gl-ide";
 import GlBasePage from "./BasePage.vue";

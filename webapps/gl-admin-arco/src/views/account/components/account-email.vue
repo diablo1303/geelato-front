@@ -53,7 +53,7 @@ const buttonLoading = ref(false);
 const authCodeData = ref({disabled: false, content: ''});
 const formatValidData = (): AuthCodeForm => {
   return {
-    action: 'updateEmail', validType: '2', prefix: '+86', validBox: '', userId: userStore.userInfo.id as string, authCode: ''
+    action: 'updateEmail', validType: '2', prefix: '+86', validBox: '', userId: userStore.id as string, authCode: ''
   };
 }
 const formData = ref(formatValidData());

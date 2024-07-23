@@ -17,15 +17,31 @@ export type PageCustomType = {
 
 /**
  *  页面模板数据对象
- *  如作为工作流模板时，用于注入到表单等组件中，如可在提交表单时，表单获取到该template对象，清楚下一步是审批通过还是审批不通过
  */
 export interface PageTemplate {
   // 如GlPageTemplateStateWF，基于状态机的工作流模板
   type: string
-  // 可用于表单在保存之前调用该模板的回调方法
-  onBeforeSubmit?: Function
 
   [key: string]: any
+}
+
+/**
+ *  如作为工作流模板时，用于注入到表单等组件中，如可在提交表单时，表单获取到该template对象，清楚下一步是审批通过还是审批不通过
+ */
+export interface WorkflowPageTemplate extends PageTemplate {
+  // 可用于表单提交之前调用该模板的回调方法
+  onBeforeSubmit: Function
+  // 是否为退回操作，可用于表单提交之前检测，是否需要继续提交
+  isReject: boolean
+}
+
+export const isImplementsWorkflowPageTemplate = (obj: any) => {
+  // 检查对象是否具有接口中定义的所有属性
+  return (
+    typeof obj.onBeforeSubmit === 'function' &&
+    typeof obj.reject === 'function' &&
+    typeof obj.isReject === 'boolean'
+  )
 }
 
 /**
@@ -200,7 +216,8 @@ export default class PageProvideProxy {
       this.componentInstMap[componentId] = vueRef.props.glComponentInst as ComponentInstance
       if (!this.componentInstMap[componentId].componentName) {
         console.error(
-          '在setVueRef时，存在组件名为空的组件',componentId,
+          '在setVueRef时，存在组件名为空的组件',
+          componentId,
           this.componentInstMap[componentId],
           vueRef
         )

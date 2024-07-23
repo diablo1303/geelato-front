@@ -36,7 +36,7 @@ const route = useRoute();// 路由
 const labelCol = ref<number>(6);// 表单-标题宽度
 const wrapperCol = ref<number>(18); // 表单-内容宽度
 const validateForm = ref<FormInstance>();// 表单-校验
-const visible = ref(false);
+const visibleIcon = ref(false);
 const searchText = ref('');
 const logoFile = ref<FileItem[]>([]);
 /* 表单 */
@@ -147,10 +147,10 @@ const glIconItems = computed(() => {
 })
 const onSelected = (iconItem: any) => {
   formData.value.icon = iconsJson.css_prefix_text + iconItem.font_class;
-  visible.value = false
+  visibleIcon.value = false
 }
 const showIconSelect = (ev: Event) => {
-  visible.value = true
+  visibleIcon.value = true
 }
 const deleteIconClick = (ev?: MouseEvent) => {
   formData.value.icon = ''
@@ -469,7 +469,7 @@ defineExpose({saveOrUpdate, loadPage});
     </a-row>
   </a-form>
 
-  <a-modal v-model:visible="visible" :footer="false" style="top: 20px" width="930px">
+  <a-modal v-model:visible="visibleIcon" :footer="false" style="top: 20px" width="930px">
     <template #title>
       {{ $t('application.app.model.icon.title') }}：
       <a-input-search v-model="searchText" :placeholder="$t('application.app.model.icon.placeholder')" allow-clear

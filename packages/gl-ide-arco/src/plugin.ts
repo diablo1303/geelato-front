@@ -73,6 +73,7 @@ import GlApiList from './components/sidebar/api/GlApiList.vue'
 import GlStateWorkFlowList from './components/sidebar/workflow/GlStateWorkFlowList.vue'
 import GlPageParamsSetter from './components/setters/property-setters/GlPageParamsSetter.vue'
 import GlExcelCellSetter from './components/setters/property-setters/excel-setter/GlExcelCellSetter.vue'
+import GlActionArgumentSetter from './components/setters/property-setters/action-setter/GlActionArgumentSetter.vue'
 import './assets/style.css'
 
 const plugin = new GlPlugin('gl-plugin-arco')
@@ -272,6 +273,7 @@ const component: Plugin = {
     app.component(GlInsts.name, GlInsts)
     app.component(GlInst.name, GlInst)
     app.component(ComponentDnd.name, ComponentDnd)
+    app.component(GlActionArgumentSetter.name, GlActionArgumentSetter)
 
     // 注册组件构建器
     app.component(GlComponentBuilder.name, GlComponentBuilder)

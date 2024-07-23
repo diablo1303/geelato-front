@@ -31,7 +31,7 @@ import {
   ComponentSetterProvideProxy,
   useAppStore
 } from '@geelato/gl-ide'
-import { Action } from '@geelato/gl-ui-schema'
+import { Action, ActionMeta } from '@geelato/gl-ui-schema'
 import GlCommandEditor from '../../setters/action-setters/GlCommandEditor.vue'
 import type { GenerateScriptConfig } from '@/components/setters/action-setters/GlCommandEditor.vue'
 
@@ -58,6 +58,8 @@ watch(mv, () => {
 const currentAction = ref(new Action())
 // 初始id
 currentAction.value.id = utils.gid('api')
+// TODO 待获取到当前的action的meta信息，便于传给GlCommandEditor
+const currentActionMeta = ref(new ActionMeta())
 const api: Ref<GlApi | undefined> = ref()
 
 const fetchData = async () => {
@@ -129,6 +131,7 @@ defineExpose({ save })
       :generateScriptConfig="generateScriptConfig"
       v-model:action="currentAction"
       component-store-id="useComponentApiBlockStore"
+      :actionMeta="currentActionMeta"
     ></GlCommandEditor>
   </div>
 </template>

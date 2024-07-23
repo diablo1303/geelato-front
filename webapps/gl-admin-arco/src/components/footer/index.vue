@@ -14,7 +14,7 @@ const router = useRouter();
 const route = useRoute();
 const tenantStore = useTenantStore();
 const tenantData = computed(() => {
-  return {copyright: tenantStore.getTenant.copyright, icpFilingNo: tenantStore.getTenant.icpFilingNo};
+  return {copyright: tenantStore.copyright, icpFilingNo: tenantStore.icpFilingNo};
 });
 </script>
 

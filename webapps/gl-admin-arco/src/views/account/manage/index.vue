@@ -102,12 +102,12 @@ const validEvent = () => {
 }
 const completeEvent = () => {
   userStore.info(() => {
-    buildAccountForm(userStore.userInfo);
+    buildAccountForm(userStore);
   });
 }
 
 onMounted(() => {
-  buildAccountForm(userStore.userInfo);
+  buildAccountForm(userStore);
 });
 </script>
 

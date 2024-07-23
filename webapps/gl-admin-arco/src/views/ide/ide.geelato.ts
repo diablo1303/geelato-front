@@ -6,10 +6,14 @@ import GlUiSchemaArco from '@geelato/gl-ui-schema-arco'
 import GlIde from '@geelato/gl-ide'
 import GlIdeArco from '@geelato/gl-ide-arco'
 import draggable from "vuedraggable";
+import axios from 'axios'
 
 const geelatoMain = {
     install(app: App) {
-
+        GlUi.setupGeelato({axios})
+        GlUiArco.setupGeelato({axios})
+        GlIde.setupGeelato({axios})
+        GlIdeArco.setupGeelato({axios})
         app.component('GlDraggable', draggable)
         app.use(GlUi)
         app.use(GlUiArco)

@@ -20,9 +20,9 @@
             <GlInsts :glComponentInst="glComponentInst"></GlInsts>
           </template>
         </a-form>
-        <div v-if="!isRead" class="formSubmit" style="text-align: center; padding: 2em 1em">
-          <a-button type="primary" @click="submitForm">保存</a-button>
-        </div>
+<!--        <div v-if="!isRead" class="formSubmit" style="text-align: center; padding: 2em 1em">-->
+<!--          <a-button type="primary" @click="submitForm">保存</a-button>-->
+<!--        </div>-->
       </template>
     </a-spin>
   </div>
@@ -80,6 +80,7 @@ import {
 } from '@geelato/gl-ui'
 import { getFormParams, type ValidatedError } from './GlEntityForm'
 import { NO_BIND_FLAG } from '../../types/global'
+import type { WorkflowPageTemplate } from '@geelato/gl-ui/src/components/PageProvideProxy'
 
 const __id = utils.gid('__form')
 console.log('GlEntityForm > init',__id)
@@ -91,7 +92,7 @@ const emits = defineEmits([
   'onLoadingData',
   'onLoadedData',
   'creatingEntitySavers',
-  'onCreatedEntitySavers'
+  'createdEntitySavers'
 ])
 const formProvideProxy = new FormProvideProxy()
 provide(FormProvideKey, formProvideProxy)
@@ -622,7 +623,7 @@ const createEntitySavers = (subFormPidValue: string): EntitySaver[] | null => {
     })
     entitySaver.record = record
     const entitySavers = [entitySaver]
-    emits('creatingEntitySavers', { entitySavers: entitySavers })
+    emits('creatingEntitySavers', entitySavers)
     return entitySavers
   }
   return null
@@ -682,13 +683,12 @@ const getEntitySavers = async (): Promise<GetEntitySaversResult> => {
  *  submitForm() --> saveForm()
  */
 const submitForm = async () => {
-  const entitySaversResult: GetEntitySaversResult = await getEntitySavers()
   const submitFormResult: SubmitFormResult = new SubmitFormResult()
   submitFormResult.entity = props.bindEntity.entityName
   submitFormResult.id = props.glComponentInst.id
   submitFormResult.success = true
 
-  const notification = () => {
+  const notification = (entitySaversResult:GetEntitySaversResult) => {
     const content: string[] = []
     Object.keys(entitySaversResult.validateResult!).forEach((key: string) => {
       // @ts-ignore
@@ -701,21 +701,50 @@ const submitForm = async () => {
     })
     submitFormResult.success = false
   }
+
+  // 1、如果页面模板中，有isReject属性，则表示为退回操作，不进行表单保存，只调用模板的保存方法
+  if(pageProvideProxy.pageTemplate?.isReject===true){
+    if (typeof pageProvideProxy.pageTemplate?.onBeforeSubmit === 'function') {
+      let workflowEntitySaversResult = new GetEntitySaversResult()
+      let workflowEntitySaver = new EntitySaver()
+      workflowEntitySaver.entity = props.bindEntity?.entityName
+      workflowEntitySaver.record = {id: entityRecordId.value}
+      workflowEntitySaversResult.error = false
+      workflowEntitySaversResult.values.push(workflowEntitySaver)
+      // 传入entitySaversResult给页面模板，用于页面模板将需要保存的信息，合并在一起，最终在表单中一起保存
+      pageProvideProxy.pageTemplate?.onBeforeSubmit({
+        id: props.glComponentInst.id,
+        data: workflowEntitySaversResult
+      })
+      if (workflowEntitySaversResult.error) {
+        notification(workflowEntitySaversResult)
+        return false
+      }
+      setLoading(true)
+      return entityApi.saveEntity(workflowEntitySaversResult.values[0]).then(response => {
+        setLoading(false)
+      })
+    }
+    return true
+  }
+  // 2、不是工作流的回退场景，即普通表单保存场景或工作流正向提交场景
+  const entitySaversResult: GetEntitySaversResult = await getEntitySavers()
+
   // console.log('submitForm > entitySaversResult', entitySaversResult)
   // 先对表单验证结果进行通知处理
   if (entitySaversResult.error) {
-    notification()
+    notification(entitySaversResult)
     emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)
     return false
   }
 
-  // 是否需要OnCreatedEntitySaversEvent事件同步执行，用于需要在该事件中对提交的表单数据进行处理的场景
-  // if(params.isOnCreatedEntitySaversEventSync){
+  // 是否需要createdEntitySaversEvent事件同步执行，用于需要在该事件中对提交的表单数据进行处理的场景
+  // if(params.iscreatedEntitySaversEventSync){
   //   //
   // }
 
   const promise = new Promise((resolve, reject) => {
-    emits('onCreatedEntitySavers', {
+    emits('createdEntitySavers', {
       result: entitySaversResult,
       $resolve: resolve,
       $reject: reject
@@ -723,16 +752,16 @@ const submitForm = async () => {
   })
   return promise
     .then(() => {
-      // emitter.emit(UiEventNames.EntityForm.onCreatedEntitySavers, { result: entitySaversResult })
       if (typeof pageProvideProxy.pageTemplate?.onBeforeSubmit === 'function') {
+        // 传入entitySaversResult给页面模板，用于页面模板将需要保存的信息，合并在一起，最终在表单中一起保存
         pageProvideProxy.pageTemplate?.onBeforeSubmit({
           id: props.glComponentInst.id,
           data: entitySaversResult
         })
       }
-      // onCreatedEntitySavers 事件中，可能对entitySaversResult做了修改，如验证模板的
+      // createdEntitySavers 事件中，可能对entitySaversResult做了修改，如验证模板的
       if (entitySaversResult.error) {
-        notification()
+        notification(entitySaversResult)
         emitter.emit(UiEventNames.EntityForm.onSubmitted, submitFormResult)
         return false
       } else {

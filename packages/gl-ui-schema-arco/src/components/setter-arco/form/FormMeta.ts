@@ -233,16 +233,19 @@ export default {
     {
       name: 'creatingEntitySavers',
       description:
-        '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
+        '完成实体保存对象创建之后（表单验证已通过），结束创建实体保存对象方法（createEntitySavers）前调用，例如可用于对实体保存对象进行处理追加子保存对像，或对实体保存对象的记录进行修改。',
       title: '保存对象完成前',
-      returnInfo: {
-        returnType: '{data:Record<string,any>}',
-        description: '在脚本编辑器中通过$gl.ctx.args[0].data获取到该条记录值',
-        docId: ''
-      }
+      params: [{
+        name: 'entitySavers',
+        title: '实体保存对象',
+        required: true,
+        type: 'EntitySaver[]',
+        description: '用于保存表单数据到服务端，且entitySavers中只有一个EntitySaver对象。',
+        docId: '4919301630853255168'
+      }]
     },
     {
-      name: 'onCreatedEntitySavers',
+      name: 'createdEntitySavers',
       description:
         '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
       title: '保存对象完成前',
@@ -276,6 +279,12 @@ export default {
       },
       isDynamicParams:true
     },
+    { name: 'validate', title: '验证表单', description: '', params: [],returnInfo: {
+        returnType: 'Promise<undefined | Record<string, ValidatedError>>',
+        description:
+          '验证表单，返回错误信息对象，如果为空则表示验证通过，用于只作验证表单，不保存数据用。提交表单submitForm时，会自动验证表单。',
+        docId: ''
+      }, },
     {
       name: 'getValue',
       title: '获取表单值',

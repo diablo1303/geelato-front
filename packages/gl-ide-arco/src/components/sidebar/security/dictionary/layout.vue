@@ -146,7 +146,7 @@ const addDictItem = () => {
 
 /**
  * 导出数据字典
- * @param data
+ * @param dictId
  */
 const exportDictAndItems = async (dictId: string) => {
   if (dictId) {

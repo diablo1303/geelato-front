@@ -264,7 +264,7 @@ props.glComponentInst?.actions?.forEach((action: Action) => {
 // TODO defaultSyncEvents需要在外部注册进来
 // 默认需要同步执行的事件，如果组件没有配置该事件，则会默认会侦听该事件，以实现回调
 const defaultSyncEvents: Record<string, Array<string>> = {}
-defaultSyncEvents['GlEntityForm'] = ['onCreatedEntitySavers']
+defaultSyncEvents['GlEntityForm'] = ['createdEntitySavers']
 // 注册默认的事件
 defaultSyncEvents[props.glComponentInst.componentName]?.forEach((eventName: string) => {
   // 如果没有配置该事件，则默认加上

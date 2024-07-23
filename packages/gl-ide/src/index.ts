@@ -1,8 +1,8 @@
 /*
  *  打包引用的入口
  */
-import {type App, type Plugin, ref} from 'vue'
-import {PluginUtil} from '@geelato/gl-ui'
+import {type App, ref} from 'vue'
+import { type GeelatoPlugin, type GeelatoPluginOptions, PluginUtil } from '@geelato/gl-ui'
 import GlPlugin from './entity/GlPlugin'
 import Panel from './entity/Panel'
 import EventNames from './entity/EventNames'
@@ -29,7 +29,7 @@ import './assets/gl-table-form.css'
 import useCodePrettier from './hooks/codePrettier'
 
 const ide = ref(new Ide())
-const component: Plugin = {
+const component: GeelatoPlugin = {
   install: function (app: App) {
     // @ts-ignore
     if (PluginUtil.markInstalledPlugin(app, 'gl-ide')) {
@@ -43,7 +43,8 @@ const component: Plugin = {
     app.component(GlMonacoEditor.name, GlMonacoEditor)
     app.component(GlCopyToClipboard.name, GlCopyToClipboard)
     app.component(GlBpmnEditor.name, GlBpmnEditor)
-  }
+  },
+  setupGeelato: function (options?: GeelatoPluginOptions) {}
 }
 export {
   EventNames,

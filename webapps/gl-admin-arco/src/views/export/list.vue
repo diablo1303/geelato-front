@@ -114,7 +114,7 @@ const pageData = ref({
   current: 1,
   pageSize: 10,
   tenantCode: (route.params && route.params.tenantCode as string) || '',
-  creator: userStore.userInfo.id || '',
+  creator: userStore.id || '',
   formState: 'edit'
 });
 // 国际化

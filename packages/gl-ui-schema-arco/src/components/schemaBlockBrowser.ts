@@ -42,9 +42,10 @@ import EntitySaverBlockMeta from './setter-block-browser/data/EntitySaverBlockMe
 import AnnotationBlockMeta from "./setter-block-browser/other/AnnotationBlockMeta";
 import MessageBlock from "./setter-block-browser/feedback/MessageBlockMeta"
 import ReadClipboardTableBlockMeta from './setter-block-browser/other/ReadClipboardTableBlockMeta'
+import GetArgBlockMeta from './setter-block-browser/set-var/GetArgBlockMeta'
 
 // @ts-ignore
-const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, JsCodeBlockMeta,GenerateEntityReaderBlockMeta, GroupSumBlockMeta, BlockNotificationMeta,MessageBlock, BlockOpenComponentPageMeta,BlockComponentInvokeMeta, TriggerComponentActionMeta, BlockSetVisibleMeta, SetValueBlockMeta,SetRulesMeta, BlockOpenThirdPageMeta, IfComponentValueBlockMeta, IfExpressionBlockMeta,BlockIfMeta, BlockElseMeta,IfEmptyBlockMeta,
+const componentMetas: Array<ComponentMeta> = [BlockRootMeta, SetVarBlockMeta, GetArgBlockMeta,JsCodeBlockMeta,GenerateEntityReaderBlockMeta, GroupSumBlockMeta, BlockNotificationMeta,MessageBlock, BlockOpenComponentPageMeta,BlockComponentInvokeMeta, TriggerComponentActionMeta, BlockSetVisibleMeta, SetValueBlockMeta,SetRulesMeta, BlockOpenThirdPageMeta, IfComponentValueBlockMeta, IfExpressionBlockMeta,BlockIfMeta, BlockElseMeta,IfEmptyBlockMeta,
     BlockConfirmMeta,  ReturnBlockMeta,
     LogBlockMeta, ExportExcelBlockMeta,ExportWordBlockMeta,ExportPdfBlockMeta,ImportExcelBlockMeta,DownloadBlockMeta,AnnotationBlockMeta,ForListBlockMeta,ForTimesBlockMeta,EntityQueryBlockMeta,DictQueryBlockMeta,HttpRequestBlockMeta,EntitySaverBlockMeta,ReadClipboardTableBlockMeta]
 

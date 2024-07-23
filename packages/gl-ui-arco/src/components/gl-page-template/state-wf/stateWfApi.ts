@@ -84,6 +84,8 @@ export class ProcTranDef {
   targetStateId: string = ''
   srcStateId: string = ''
   name: string = ''
+  // 是否退回，0 否，1 是
+  isReject: number = 0
 }
 
 export class ProcInst {
@@ -133,6 +135,7 @@ export const loadProcDefById = (id: string) => {
         return entityApi.getRecordsFromRes(tranRes)
       })
     }
+    console.log('procDef', procDef)
     return procDef
   })
 }
@@ -144,7 +147,7 @@ export const loadProcDefById = (id: string) => {
 export const loadProcTranDefById = (procDefId: string) => {
   const entityReader = new EntityReader()
   entityReader.entity = 'platform_swf_proc_tran_def'
-  entityReader.setFields('id,name,procDefId,tranCondition,appId,remark,targetStateId,srcStateId')
+  entityReader.setFields('id,name,procDefId,tranCondition,appId,remark,targetStateId,srcStateId,isReject')
   entityReader.addParam('procDefId', 'eq', procDefId)
   return entityApi.queryByEntityReader(entityReader)
 }

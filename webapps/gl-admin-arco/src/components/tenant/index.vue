@@ -111,7 +111,7 @@ const route = useRoute();
 const userStore = useUserStore();
 const routeParams = ref({
   appId: (route && route.params && route.params.appId as string) || '',
-  tenantCode: (route && route.params && route.params.tenantCode as string) || userStore.userInfo.tenantCode as string
+  tenantCode: (route && route.params && route.params.tenantCode as string) || userStore.tenantCode as string
 });
 /* 基础表单 */
 const generateBaseData = (): TenantBaseForm => {
