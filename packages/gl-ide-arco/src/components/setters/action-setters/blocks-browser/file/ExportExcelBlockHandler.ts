@@ -3,7 +3,7 @@ import { type PropsExpressions, blocksHandler, CommandBlocks } from '../../Block
 import ParseResult from '../../ParseResult'
 import usePromise from '../../hooks/usePromise'
 import useVars from '../../hooks/vars'
-import { jsScriptExecutor, type Param, utils } from '@geelato/gl-ui'
+import { type Param, utils } from '@geelato/gl-ui'
 
 const { getVarStr } = useVars()
 export default class ExportExcelBlockHandler implements IBlockHandler {
@@ -27,19 +27,18 @@ export default class ExportExcelBlockHandler implements IBlockHandler {
     )
     const varName = propsExpressions?.varName ? getVarStr(propsExpressions.varName ): `"${getVarStr(props.varName)}"`
 
-    const valueMapList:Record<string,any> = []
+    const keyValues:any[] = []
     props.subRecordsArray?.forEach((record:Param)=>{
-      console.log('record', record)
       // 此record的key只有一个，如aList
-      valueMapList.push(`{
+      keyValues.push(`
           ${[record.name]}: ${record.valueExpression}
-        }`)
+        `)
     })
 
     const data = `
     {
       valueMap:${props.mainRecordExp || '{}'},
-      valueMapList:[${valueMapList.join('],')}]
+      valueMapList:[{${keyValues.join(',')}}]
     }`
 
     return new ParseResult(

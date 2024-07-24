@@ -60,6 +60,61 @@ export default {
       setterDefaultValue: 'data'
     },
     {
+      name: 'mainRecordExp',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      setterComponentProps: { showInput: true},
+      setterComponentVModelName: 'modelValue',
+      setterComponentName: 'GlExpressionSetter',
+      title: '主表数据源',
+      description: '主表数据源，用于生成Word的标题、汇总值等信息，格式为Record<string,any>，如：{name: "张三", age: 18}',
+      enableValueExpress: false,
+      displayMode: 'tile'
+    },
+    {
+      name: 'subRecordsArray',
+      setterComponentProps: {},
+      setterComponentVModelName: '',
+      group: 'base',
+      type: 'props',
+      show: true,
+      expanded: true,
+      title: '列表数据源',
+      _showSub: false,
+      properties: [
+        {
+          name: 'name',
+          group: 'base',
+          type: 'props',
+          show: true,
+          expanded: true,
+          setterComponentProps: {},
+          setterComponentVModelName: 'modelValue',
+          title: '列表名称',
+          setterComponentName: 'AInput'
+        },
+        {
+          name: 'valueExpression',
+          group: 'base',
+          type: 'props',
+          show: true,
+          expanded: true,
+          setterComponentProps: { showInput: true },
+          setterComponentVModelName: 'modelValue',
+          setterComponentName: 'GlExpressionSetter',
+          title: '列表值'
+        }
+      ],
+      setterComponentName: 'GlObjectArraySetter',
+      titleField: 'name',
+      enableValueExpress: false,
+      displayMode: 'tile',
+      subTitleField: '',
+      alarmIfNoSubTitle: ''
+    },
+    {
       name: 'varName',
       group: 'base',
       type: 'props',
