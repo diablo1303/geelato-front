@@ -6,9 +6,8 @@ export default {
 <script lang="ts" setup>
 import {type Ref, ref, watch} from 'vue'
 import {useAppStore} from '@geelato/gl-ide'
-import {applicationApi, entityApi, type QueryRoleTreeNodeForm, securityApi, useGlobal, utils} from '@geelato/gl-ui'
-import type {QueryRolePermissionForm} from '@geelato/gl-ui'
-import {deleteRoleTreeNodes} from "@geelato/gl-ui/src/m/datasource/SecurityApi";
+import {applicationApi, entityApi, securityApi, useGlobal, utils} from '@geelato/gl-ui'
+import type {QueryRolePermissionForm, QueryRoleTreeNodeForm} from '@geelato/gl-ui'
 
 interface RoleGrantedMenuItem {
   id: string
@@ -22,6 +21,7 @@ interface AppMenuItem {
   pid: string
   name: string
   iconType: string
+  flag: string
   checked: boolean
   children: AppMenuItem[]
 }
@@ -98,7 +98,7 @@ const loadAppRoles = async (appId: string) => {
 
 const loadAppMenuItems = (appId: string) => {
   entityApi
-      .query('platform_tree_node', 'id key,pid,text name,iconType,seqNo', {'@p': '1,2000', treeId: appId}, false, false, undefined, 'seqNo|+')
+      .query('platform_tree_node', 'id key,pid,text name,iconType,flag,seqNo', {'@p': '1,2000', treeId: appId}, false, false, undefined, 'seqNo|+')
       .then((res) => {
         // @ts-ignore
         res.data.sort((a, b) => a.seqNo - b.seqNo);
@@ -504,8 +504,8 @@ defineExpose({save})
             <template #columns>
               <a-table-column title="菜单项" data-index="name" :width="300">
                 <template #cell="{ record }">
-                  <GlIconfont :type="record.iconType"></GlIconfont>
-                  {{ record.name }}
+                  <GlIconfont :type="record.iconType"/>
+                  <span :class="{ 'gl-bold': !!record.flag }">{{ ` ${record.name}` }}</span>
                 </template>
               </a-table-column>
               <a-table-column data-index="checked" :width="240">
@@ -574,5 +574,9 @@ defineExpose({save})
 .gl-role-menuitem .gl-layout-right {
   min-width: 800px;
   flex: auto;
+}
+
+.gl-layout-right .gl-bold {
+  font-weight: 600;
 }
 </style>
