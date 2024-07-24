@@ -35,7 +35,7 @@ const expandedKeys = ref<string[]>([props.rootKey]);
 const treeLeftData = ref<TreeNodeModel[]>(props.leftData.tree || []);
 // 树搜索
 const searchKey = ref<string>('');
-const selectKey = ref<string[]>([]);
+const selectKey = ref<string[]>(['1', '2', '3']);
 // 树搜索，结果集
 const originTreeLeftData = computed(() => {
   if (!searchKey.value && selectKey.value.length === 0) return treeLeftData.value;
