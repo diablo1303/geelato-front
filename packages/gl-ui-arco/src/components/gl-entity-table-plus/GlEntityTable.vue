@@ -541,7 +541,7 @@ defineExpose({
             "
             :glComponentInst="columnAction"
             :glIsRuntime=glIsRuntime
-            @click="selectComponent($event, columnAction)"
+            @click="selectComponent($event, columnActions[index])"
             :glCtx="{ record: renderData[rowIndex], rowIndex }"
 
           ></GlComponent>
