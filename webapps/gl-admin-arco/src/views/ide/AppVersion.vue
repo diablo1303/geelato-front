@@ -61,6 +61,7 @@ const appVersionData = ref<QueryAppVersionForm[]>([]);
 const packLoading = ref(false);
 const deployLoading = ref(false);
 const deployCompareLoading = ref(false);
+const downloadLoading = ref(false);
 const isCanPacket = ref(false);
 const syncTableLoading = ref(false);
 const syncViewLoading = ref(false);
@@ -219,6 +220,7 @@ const enterLink = (type: string) => {
 const listSelected = (record: QueryAppVersionForm) => {
   compareVersionId.value = "";
   isCompare.value = false;
+  downloadLoading.value = false;
   if (record.id) {
     Object.assign(listParams.value.selected, {
       id: record.id,
@@ -278,6 +280,15 @@ const startCompare = () => {
 const cancelCompare = () => {
   compareVersionId.value = "";
   isCompare.value = false;
+}
+
+const downloadPacket = async (id: string) => {
+  downloadLoading.value = true;
+  await fetchFileById(id, null, () => {
+    downloadLoading.value = false;
+  }, () => {
+    downloadLoading.value = false;
+  });
 }
 
 /**
@@ -389,6 +400,22 @@ const queryAppTables = async (successBack?: any, failBack?: any) => {
   }
 }
 
+const duplicateArray = (data: QueryTableForm[]) => {
+  const names: string[] = [];
+  const indexs: number[] = [];
+  if (data && data.length > 0) {
+    for (let i = 0; i < data.length; i += 1) {
+      if (!names.includes(data[i].entityName)) {
+        names.push(data[i].entityName);
+      } else {
+        indexs.push(i);
+      }
+    }
+    for (let i = 0; i < indexs.length; i += 1) data.splice(indexs[i], 1);
+  }
+}
+
+
 const packetAppVersionClick = async () => {
   await querySysConfigValueByKey('packetVersionExtra');
   await generateEncodingById("5283664243797921792");
@@ -403,28 +430,26 @@ const packetAppVersionClick = async () => {
       packData.value.version = `${appData.value.code}_${packDefaultData.value.encoding}.${formatTime(new Date(), 'yyyyMMddHHmmss')}`;
     }
     if (data && data.length > 0) {
+      const firstEntityNames = packDefaultData.value.first || [];
+      const secondEntityNames = packDefaultData.value.second || [];
       // eslint-disable-next-line no-restricted-syntax
       for (const item of data) {
         // 增量为：仅插入打包数据，不修改不删除表数据。
-        if (packDefaultData.value.first && packDefaultData.value.first.includes(item.entityName)) {
-          packData.value.first.push(item);
-        }
+        if (firstEntityNames.includes(item.entityName)) packData.value.first.push(item);
         // 全量为：先清空表再插入打包数据。
-        if (packDefaultData.value.second && packDefaultData.value.second.includes(item.entityName)) {
-          packData.value.second.push(item);
-        }
+        if (secondEntityNames.includes(item.entityName)) packData.value.second.push(item);
       }
       // eslint-disable-next-line no-restricted-syntax
       for (const item of data) {
         // 增量为：仅插入打包数据，不修改不删除表数据。
-        if (item.packBusData === 1) {
-          packData.value.first.push(item);
-        }
+        if (item.packBusData === 1) packData.value.first.push(item);
         // 全量为：先清空表再插入打包数据。
-        if (item.packBusData === 2) {
-          packData.value.second.push(item);
-        }
+        if (item.packBusData === 2) packData.value.second.push(item);
       }
+      // 去除重复的表
+      duplicateArray(packData.value.first || []);
+      duplicateArray(packData.value.second || []);
+      // 渲染
       Object.assign(packData.value, {visible: true});
     } else {
       Message.error('没有找到表');
@@ -632,7 +657,7 @@ onUnmounted(() => {
                           比较
                         </a-button>
                         <a-button v-if="!isCompare&&!['draft'].includes(listParams.selected.status)" style="color: rgb(var(--primary-6))" type="text"
-                                  @click.stop="fetchFileById(listParams.selected.item.packagePath)">
+                                  @click.stop="downloadPacket(listParams.selected.item.packagePath)" :loading="downloadLoading">
                           <icon-download/>
                           下载
                         </a-button>
@@ -712,7 +737,7 @@ onUnmounted(() => {
       </a-descriptions>
       <a-descriptions :bordered="true" :column="3" layout="horizontal" size="medium" style="margin-top: 12px;">
         <template #title>
-          <span>增量插入（仅插入打包数据，不修改不删除表数据）</span>
+          <span>打包增量插入N项（用于部署时，只插入本次打包的数据，不修改不删除目标表数据。）</span>
         </template>
         <a-descriptions-item v-for="(item,index) of packData.first" :key="index" :label="item.title">
           {{ item.entityName }}
@@ -720,7 +745,7 @@ onUnmounted(() => {
       </a-descriptions>
       <a-descriptions :bordered="true" :column="3" layout="horizontal" size="medium" style="margin-top: 12px;">
         <template #title>
-          <span>全量更新（先清空表再插入打包数据）</span>
+          <span>打包全量更新M项（用于部署时，清空目标表之后插入本次打包的数据；一般为需要在生产环境并行维护的数据，如系统的参数。）</span>
         </template>
         <a-descriptions-item v-for="(item,index) of packData.second" :key="index" :label="item.title">
           {{ item.entityName }}

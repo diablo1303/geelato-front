@@ -159,7 +159,7 @@ export const checkFileExists = async (url: string, success: any, failed: any) =>
  * 检验文件是否存在，下载文件
  * @param id 文件id
  */
-export const fetchFileById = (id: string, fetchFailed?: any) => {
+export const fetchFileById = (id: string, fetchFailed?: any, successBack?: any, failBack?: any) => {
   const url = getDownloadUrlById(id, false);
   fetch(url).then((response) => {
     if (!response.ok) {
@@ -168,6 +168,7 @@ export const fetchFileById = (id: string, fetchFailed?: any) => {
       } else {
         throw new Error('文件查询失败');
       }
+      if (failBack != null && typeof failBack === 'function') failBack();
     }
     return response.blob();
   }).then((blob) => {
@@ -184,7 +185,9 @@ export const fetchFileById = (id: string, fetchFailed?: any) => {
     iframe.onerror = () => {
       document.body.removeChild(iframe);
     }
+    if (successBack != null && typeof successBack === 'function') successBack();
   }).catch((err) => {
+    if (failBack != null && typeof failBack === 'function') failBack();
     Message.error({content: (err && err.message) || "文件下载失败", duration: 5 * 1000});
   });
 }
