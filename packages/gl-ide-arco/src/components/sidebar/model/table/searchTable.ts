@@ -29,8 +29,8 @@ const tableSyncOptions = computed<SelectOptionData[]>(() => [
 
 const packBusDataOptions = computed<SelectOptionData[]>(() => [
   {label: '不打包', value: 0,},
-  {label: "增量打包", value: 1,},
-  {label: "全量打包", value: 2,},
+  {label: "增量打包", value: 1, other: '用于部署时，只插入本次打包的数据，不修改不删除目标表数据。'},
+  {label: "全量打包", value: 2, other: '用于部署时，清空目标表之后插入本次打包的数据；一般为需要在生产环境并行维护的数据，如系统的参数。'},
 ]);
 
 export {tableTypeOptions, enableStatusOptions, linkedOptions, sourceTypeOptions, tableSyncOptions, packBusDataOptions};

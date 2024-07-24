@@ -80,7 +80,7 @@ const resetListPageSize = () => {
 const pageData = ref({
   isSync: 0,
   isSystem: false,
-  isPack: false,
+  isPack: 0,
   application: {},
   tree: { // 选中节点：id，层级，标题，数据
     key: '0', level: 0, title: '', data: {}
@@ -144,7 +144,7 @@ const swapTableTitle = (item: QueryTableForm): string => {
   // eslint-disable-next-line no-nested-ternary
   pageData.value.isSync = (item.tableName != null && item.tableName.length > 0) ? (item.synced ? 2 : 1) : 0;
   pageData.value.isSystem = ['system', 'platform'].includes(item.sourceType);
-  pageData.value.isPack = item.packBusData === true;
+  pageData.value.isPack = item.packBusData;
   pageData.value.application = appSelectOptions.value.find(v => v.id === item.appId) || {};
   return `${item.title}（${item.entityName || item.tableName}）`;
 }
@@ -277,11 +277,13 @@ onUnmounted(() => {
                     <span>{{ pageData.application.name }}</span>
                   </a-button>
               </span>
-                <span v-if="pageData.isPack" style="padding-right: 5px;">
-                  <a-button v-show="pageData.tree.level===2" class="list-action-button-default" status="danger" type="primary">
-                    <span>{{ $t('model.table.index.form.tablePack.yes') }}</span>
+                <span v-if="[1,2].includes(pageData.isPack)" style="padding-right: 5px;">
+                  <a-tooltip :content="$t(`model.table.index.form.packBusData.tip.${pageData.isPack}`)">
+                    <a-button v-show="pageData.tree.level===2" class="list-action-button-default" status="danger" type="primary">
+                    <span>{{ $t(`model.table.index.form.packBusData.${pageData.isPack}`) }}</span>
                   </a-button>
-              </span>
+                  </a-tooltip>
+                </span>
                 <span>
                 <a-button v-show="pageData.tree.level===2" :disabled="pageData.isSync===0" class="list-action-button-default" type="primary">
                   <span v-if="pageData.isSync===2">{{ $t('model.table.index.form.tableName.yes') }}</span>

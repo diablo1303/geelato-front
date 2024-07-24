@@ -305,6 +305,15 @@ const syncFromModelToTable = (ev?: MouseEvent) => {
   });
 }
 
+const getPackBusData = (value: number) => {
+  for (const item of packBusDataOptions.value) {
+    if (item.value === value) {
+      return item;
+    }
+  }
+  return {label: '', value: '', other: ''};
+}
+
 watch(() => props, () => {
   if (props.visible === true) {
     tabsKey.value = 1;
@@ -332,8 +341,10 @@ watch(() => visibleForm, () => {
         <a-button v-if="isSystem" class="list-action-button-default" status="warning" type="primary">
           <span>{{ utils.getOptionLabel(tableData.sourceType, sourceTypeOptions) }}</span>
         </a-button>
-        <a-button v-if="tableData.packBusData>0" class="list-action-button-default" status="danger" type="primary">
-          <span>{{ utils.getOptionLabel(tableData.packBusData, packBusDataOptions) }}</span>
+        <a-button v-if="[1,2].includes(tableData.packBusData)" class="list-action-button-default" status="danger" type="primary">
+          <a-tooltip :content="getPackBusData(tableData.packBusData).other">
+            <span>{{ getPackBusData(tableData.packBusData).label }}</span>
+          </a-tooltip>
         </a-button>
         <a-button :disabled="isSync===0" class="list-action-button-default" type="primary">
           <span>{{ utils.getOptionLabel(isSync, tableSyncOptions) }}</span>
