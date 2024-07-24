@@ -1,12 +1,12 @@
 import {ref} from "vue";
 import type {RouteParamsRaw, Router, RouteRecordNormalized} from 'vue-router';
 import {DEFAULT_LAYOUT} from "@/router/routes/base";
-import globalConfig from '@/config/globalConfig';
 import {DEFAULT_ROUTE, DEFAULT_ROUTE_ACCOUNT, URL_PREFIX} from "@/router/constants";
-import {getMenus, QueryMenuForm} from "@/api/application";
-import {getToken} from "@/utils/auth";
+import type {QueryMenuForm} from "@geelato/gl-ui";
+import {applicationApi, authUtil} from "@geelato/gl-ui";
+import {globalConfig} from "@geelato/gl-ui-arco-admin";
 
-const token = getToken();
+const token = authUtil.getToken();
 export const IS_ACCOUNT = ref<boolean>(false);
 export const IS_DATA_PAGE = ref<boolean>(false);
 const IS_DATA_END_PAGE = ref<boolean>(false);
@@ -277,7 +277,7 @@ const setRoute = (fullPath: string, result: RouteRecordNormalized) => {
 export const formatAppModules = async (result: RouteRecordNormalized[]) => {
   try {
     if (!token || !IS_DATA_PAGE.value) return result;
-    const {data} = await getMenus({flag: "menuItem", ...urlParams} as unknown as QueryMenuForm);
+    const {data} = await applicationApi.getMenus({flag: "menuItem", ...urlParams} as unknown as QueryMenuForm);
     // @ts-ignore
     const menuForms = data.code === globalConfig.interceptorCode ? data.data : data;
     const folderOptions: RouteRecordNormalized[] = [];

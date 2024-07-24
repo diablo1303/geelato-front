@@ -84,7 +84,7 @@ const handleCancel = () => {
 </script>
 
 <template>
-  <a-modal
+  <a-modal draggable
     width="800px"
     v-model:visible="visibleMv"
     :onBeforeOk="onBeforeOk"

@@ -136,7 +136,7 @@ const queryTablePermission = async (params: Record<string, any>, successBack?: a
 
 const queryTableSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await modelApi.pageQueryTable(params);
+    const {data} = await modelApi.pageQueryTables(params);
     if (successBack && typeof successBack === 'function') successBack(data.items || []);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -366,7 +366,7 @@ const cloneColumns = ref<Column[]>([]);
 </script>
 
 <template>
-  <a-modal v-model:visible="visibleForm" :footer="formState!=='view'&&['draft','reject'].includes(formData.approvalStatus)" :width="width"
+  <a-modal draggable v-model:visible="visibleForm" :footer="formState!=='view'&&['draft','reject'].includes(formData.approvalStatus)" :width="width"
            cancel-text="取消" ok-text="确认" title-align="start"
            @cancel="handleModelCancel" @before-ok="handleModelOk">
     <template #title>

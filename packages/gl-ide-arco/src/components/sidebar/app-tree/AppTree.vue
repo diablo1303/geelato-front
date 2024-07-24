@@ -17,7 +17,7 @@
       @updateNodeName="onUpdateNodeName"
       @clickContextMenuItem="clickContextMenuItem"
     />
-    <a-modal
+    <a-modal draggable
       width="1200px"
       :body-style="{ height: '800px', padding: 0, margin: 0 }"
       v-model:visible="visible"

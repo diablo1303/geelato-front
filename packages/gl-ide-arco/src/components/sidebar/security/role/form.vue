@@ -46,6 +46,7 @@ const generateFormData = (): QueryRoleForm => {
     enableStatus: 1,
     seqNo: 999,
     description: '',
+    usedApp: 0,
     appName: '',
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
@@ -169,7 +170,7 @@ watch(() => visibleForm, () => {
 </script>
 
 <template>
-  <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title" :width="width"
+  <a-modal draggable v-model:visible="visibleForm" :footer="formState!=='view'" :title="title" :width="width"
            cancel-text="取消" ok-text="确认" title-align="start"
            @cancel="handleModelCancel" @before-ok="handleModelOk">
     <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }">
@@ -203,7 +204,7 @@ watch(() => visibleForm, () => {
             <a-input-number v-if="formState!=='view'" v-model="formData.weight" :max="999" :min="0" :precision="0" :step="1" placeholder="长度 [0,999]"/>
             <span v-else>{{ formData.weight }}</span>
             <a-tooltip v-if="formState!=='view'&&formData.weight!==5" content="重置为默认权重">
-              <a-button class="select-button button-primary" @click="ev => {formData.weight=5;}">
+              <a-button class="select-button button-primary" @click="() => {formData.weight=5;}">
                 <gl-iconfont type="gl-reset"/>
               </a-button>
             </a-tooltip>

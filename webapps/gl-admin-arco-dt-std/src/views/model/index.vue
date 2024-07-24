@@ -8,17 +8,11 @@ export default {
 import {onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
-import {useUserStore} from "@/store";
-import {EventNames} from "@geelato/gl-ide";
 import {emitter} from "@geelato/gl-ui";
-import {SelectOptionData} from "@arco-design/web-vue";
-import {getOptionLabel, ListParams, PageSizeOptions, resetValueByOptions} from '@/api/base';
-import {QueryConnectForm, QueryTableForm} from "@/api/model";
-import {getAppSelectOptions, QueryAppForm} from "@/api/application";
-import ModelTableTabs from "./table/tableTabs.vue";
-import ModelTree from "./tree.vue";
-import ModelConnectList from "./connect/list.vue";
-import ModelTableList from "./table/list.vue";
+import {EventNames} from "@geelato/gl-ide";
+import {utils, modelApi, applicationApi} from '@geelato/gl-ui';
+import type {QueryConnectForm, QueryTableForm, QueryAppForm} from '@geelato/gl-ui';
+import {useUserStore, PageSizeOptions} from "@geelato/gl-ui-arco-admin";
 
 // 常量使用
 const ListDefaultPageSize = 20;
@@ -73,7 +67,7 @@ const resetTabsHeight = () => {
  * 调整列表展示行数
  */
 const resetListPageSize = () => {
-  return resetValueByOptions(PageSizeOptions, (resetListHeight() / ListRowHeight), ListDefaultPageSize);
+  return utils.resetValueByOptions(PageSizeOptions, (resetListHeight() / ListRowHeight), ListDefaultPageSize);
 }
 
 // 页面数据
@@ -144,7 +138,7 @@ const swapTableTitle = (item: QueryTableForm): string => {
   // eslint-disable-next-line no-nested-ternary
   pageData.value.isSync = (item.tableName != null && item.tableName.length > 0) ? (item.synced ? 2 : 1) : 0;
   pageData.value.isSystem = ['system', 'platform'].includes(item.sourceType);
-  pageData.value.isPack = item.packBusData === true;
+  pageData.value.isPack = [1, 2].includes(item.packBusData);
   pageData.value.application = appSelectOptions.value.find(v => v.id === item.appId) || {};
   return `${item.title}（${item.entityName || item.tableName}）`;
 }
@@ -226,7 +220,7 @@ const handleResize = () => {
 onMounted(() => {
   window.addEventListener(EventNames.WindowResize, handleResize);
   // 应用信息
-  getAppSelectOptions({
+  applicationApi.getAppSelectOptions({
     id: '', tenantCode: routeParams.value.tenantCode || ''
   }, (data: QueryAppForm[]) => {
     appSelectOptions.value = data || [];
@@ -241,7 +235,7 @@ onUnmounted(() => {
 
 <template>
   <div class="container">
-    <Breadcrumb :items="['model.connect.index.menu.list', 'model.dataBase.index.menu.list']"/>
+    <GlBreadcrumb :items="['model.connect.index.menu.list', 'model.dataBase.index.menu.list']"/>
     <div class="general-card2">
       <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
         <template #first>
@@ -253,10 +247,10 @@ onUnmounted(() => {
             </div>
             <a-divider style="margin:0 0 5px 0"/>
             <div class="card-body1">
-              <ModelTree :height="treeParams.height"
-                         :parameter="treeParams.parameter"
-                         :visible="treeParams.visible"
-                         @tree-selected="treeSelected"/>
+              <GlModelTree :height="treeParams.height"
+                           :parameter="treeParams.parameter"
+                           :visible="treeParams.visible"
+                           @tree-selected="treeSelected"/>
             </div>
           </div>
         </template>
@@ -294,35 +288,35 @@ onUnmounted(() => {
             <a-divider style="margin:0 0 5px 0"/>
             <div class="card-body2">
               <div v-if="pageData.tree.level===0" style="padding-left: 10px;">
-                <ModelConnectList :filterCol="connectListParams.filterCol"
-                                  :formState="connectListParams.formState"
-                                  :height="connectListParams.height"
-                                  :pageSize="connectListParams.pageSize"
-                                  :parameter="connectListParams.parameter"
-                                  :visible="connectListParams.visible"
-                                  @add="modelConnectListAdd"
-                                  @delete="modelConnectListDelete"
-                                  @edit="modelConnectListEdit"/>
+                <GlModelConnectList :filterCol="connectListParams.filterCol"
+                                    :formState="connectListParams.formState"
+                                    :height="connectListParams.height"
+                                    :pageSize="connectListParams.pageSize"
+                                    :parameter="connectListParams.parameter"
+                                    :visible="connectListParams.visible"
+                                    @add="modelConnectListAdd"
+                                    @delete="modelConnectListDelete"
+                                    @edit="modelConnectListEdit"/>
               </div>
               <div v-if="pageData.tree.level===1" style="padding-left: 10px;">
-                <ModelTableList :filterCol="tableListParams.filterCol"
-                                :formState="tableListParams.formState"
-                                :height="tableListParams.height"
-                                :pageSize="tableListParams.pageSize"
-                                :parameter="tableListParams.parameter"
-                                :visible="tableListParams.visible"
-                                @add="modelTableListAdd"
-                                @delete="modelTableListDelete"
-                                @edit="modelTableListEdit"/>
+                <GlModelTableList :filterCol="tableListParams.filterCol"
+                                  :formState="tableListParams.formState"
+                                  :height="tableListParams.height"
+                                  :pageSize="tableListParams.pageSize"
+                                  :parameter="tableListParams.parameter"
+                                  :visible="tableListParams.visible"
+                                  @add="modelTableListAdd"
+                                  @delete="modelTableListDelete"
+                                  @edit="modelTableListEdit"/>
               </div>
               <div v-if="pageData.tree.level===2" style="padding-left: 10px;">
-                <ModelTableTabs :formState="tableTabsParams.formState"
-                                :height="tableTabsParams.height"
-                                :model-value="tableTabsParams.id"
-                                :parameter="tableTabsParams.parameter"
-                                :visible="tableTabsParams.visible"
-                                @toModel="modelTableTabsToModel"
-                                @toTable="modelTableTabsToTable"/>
+                <GlModelTableTabs :formState="tableTabsParams.formState"
+                                  :height="tableTabsParams.height"
+                                  :model-value="tableTabsParams.id"
+                                  :parameter="tableTabsParams.parameter"
+                                  :visible="tableTabsParams.visible"
+                                  @toModel="modelTableTabsToModel"
+                                  @toTable="modelTableTabsToTable"/>
               </div>
             </div>
           </div>

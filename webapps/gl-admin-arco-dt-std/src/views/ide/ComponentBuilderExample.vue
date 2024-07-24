@@ -16,7 +16,7 @@
       :body-style="{ padding: '0 20px' }"
       title="注册组件"
       class="gl-component-register-modal"
-      fullscreen
+      fullscreen draggable
     >
       <GlComponentBuilder ref="builder"
         :componentMeta="componentMeta"

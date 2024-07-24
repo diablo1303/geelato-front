@@ -282,7 +282,7 @@ watch(() => modalVisible, () => {
       title="组织用户选择"
       title-align="start"
       @cancel="modalCancelClick"
-      @ok="modalOkClick">
+      @ok="modalOkClick" draggable>
     <UserSelect :key="key"
                 v-model="modalData"
                 :height="layoutHeight"

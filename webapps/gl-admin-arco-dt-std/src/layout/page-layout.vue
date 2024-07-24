@@ -15,7 +15,7 @@
 
 <script lang="ts" setup>
 import {computed} from 'vue';
-import {useTabBarStore} from '@/store';
+import {useTabBarStore} from '@geelato/gl-ui-arco-admin';
 
 const tabBarStore = useTabBarStore();
 

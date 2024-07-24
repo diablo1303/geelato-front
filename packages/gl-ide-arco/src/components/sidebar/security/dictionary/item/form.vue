@@ -85,7 +85,7 @@ watch(() => visibleForm, () => {
 </script>
 
 <template>
-  <a-modal v-if="isModal" v-model:visible="visibleForm"
+  <a-modal draggable v-if="isModal" v-model:visible="visibleForm"
            :footer="formState!=='view'" :title="title || ''" :width="width || ''"
            cancel-text="取消" ok-text="确认" title-align="start"
            @cancel="handleModelCancel($event)" @before-ok="handleModelOk">

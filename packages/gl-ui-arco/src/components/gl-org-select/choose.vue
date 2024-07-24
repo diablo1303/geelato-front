@@ -123,7 +123,7 @@ watch(() => rightData, () => {
         <div style="width:100%;display: inline-flex;flex-direction: column;">
           <div style="width:100%;display: inline-flex;align-items: center;justify-content: space-between;">
             <span>已选择 {{ rightData.length }}</span>
-            <a-button style="padding: 0px;" type="text" @click="ev => {rightData = []}">
+            <a-button style="padding: 0px;" type="text" @click="() => {rightData = []}">
               <gl-iconfont type="gl-delete"/>&nbsp;清空
             </a-button>
           </div>

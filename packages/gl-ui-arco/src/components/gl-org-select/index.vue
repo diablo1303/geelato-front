@@ -293,7 +293,7 @@ watch(() => modalVisible, () => {
       title="组织选择"
       title-align="start"
       @cancel="modalCancelClick"
-      @ok="modalOkClick">
+      @ok="modalOkClick" draggable>
     <OrgSelect :key="key"
                v-model="modalData"
                :check-strictly="checkStrictly"

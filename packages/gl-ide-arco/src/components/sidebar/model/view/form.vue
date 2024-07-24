@@ -7,9 +7,10 @@ export default {
 <script lang="ts" setup>
 import {computed, ref, watch} from "vue";
 import {Modal, type SelectOptionData} from "@arco-design/web-vue";
-import type {TableColumnData, FormInstance, SelectOptionGroup, TableData} from "@arco-design/web-vue";
-import {modelApi, applicationApi, useGlobal, utils} from "@geelato/gl-ui";
+import type {TableColumnData, FormInstance, SelectOptionGroup} from "@arco-design/web-vue";
+import {modelApi, applicationApi, useGlobal, utils, isUtil} from "@geelato/gl-ui";
 import type {QueryViewForm, QueryTableColumnForm, QueryTableForm, QueryAppForm} from '@geelato/gl-ui';
+import {selectOptions} from "@geelato/gl-ui-arco";
 import {enableStatusOptions, linkedOptions, viewTypeOptions} from "./searchTable";
 import GlModelTablePermissionForm from "../table/permission/form.vue";
 import GlModelViewAppList from "../application/view/list.vue";
@@ -453,7 +454,7 @@ const bodyObserver = new MutationObserver(function (mutations, instance) {
 
 const queryTableSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await modelApi.pageQueryTable(params);
+    const {data} = await modelApi.pageQueryTables(params);
     if (successBack && typeof successBack === 'function') successBack(data.items || []);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -583,7 +584,7 @@ watch(() => props, () => {
       appSelectOptions.value = [];
     });
     // 模型字段类型
-    modelApi.getTypeSelectOptionGroup((data: SelectOptionGroup[]) => {
+    selectOptions.getTypeSelectOptionGroup((data: SelectOptionGroup[]) => {
       selectTypeOptions.value = data || [];
     }, () => {
       selectTypeOptions.value = [];
@@ -612,7 +613,7 @@ watch(() => props, () => {
         appSelectChange(data.appId || '');
         connectSelectChange(data.connectId || '');
         formData.value = data;
-        columnData.value = utils.isJSON(data.viewColumn) ? JSON.parse(data.viewColumn) : [];
+        columnData.value = isUtil.isJSON(data.viewColumn) ? JSON.parse(data.viewColumn) : [];
         pFormParams.value.parameter = {
           connectId: data.connectId, object: data.viewName,
           type: 'dp,mp', appId: data.appId, tenantCode: data.tenantCode
@@ -638,7 +639,7 @@ const cloneColumns = ref<Column[]>([]);
 </script>
 
 <template>
-  <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title" :width="width"
+  <a-modal draggable v-model:visible="visibleForm" :footer="formState!=='view'" :title="title" :width="width"
            cancel-text="取消" ok-text="确认" title-align="start"
            @cancel="handleModelCancel" @before-ok="handleModelOk">
     <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :lazy-load="true" :style="tableTabStyle" position="left" type="line">
@@ -783,7 +784,7 @@ const cloneColumns = ref<Column[]>([]);
       <a-tab-pane :key="2" class="a-tabs-one" title="视图语句">
         <a-card class="general-card">
           <template #extra>
-            <a-button status="success" type="outline" @click="ev => {formatSql=Number(utils.generateRandom(4))}">
+            <a-button status="success" type="outline" @click="() => {formatSql=Number(utils.generateRandom(4))}">
               <template #icon>
                 <icon-palette/>
               </template>

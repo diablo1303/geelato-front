@@ -1,3 +1,142 @@
+<script lang="ts">
+export default {
+  name: "LoginForm",
+}
+</script>
+
+<script lang="ts" setup>
+import {computed, onMounted, reactive, ref} from 'vue';
+import {RouteParamsRaw, useRoute, useRouter} from 'vue-router';
+import {Message, ValidatedError} from '@arco-design/web-vue';
+import {useI18n} from 'vue-i18n';
+import {useStorage} from '@vueuse/core';
+import {useTenantStore, useUserStore, useLoading} from '@geelato/gl-ui-arco-admin';
+import type {LoginData} from '@geelato/gl-ui';
+import {applicationApi, authUtil, useGlobal, userApi} from "@geelato/gl-ui";
+import {DEFAULT_ROUTE} from "@/router/constants";
+import {appDataBaseRoutes, formatAppModules, IS_ACCOUNT, pageBaseRoute, pageParamsIsFull} from "@/router/routes";
+
+const router = useRouter();
+const route = useRoute();
+const {t} = useI18n();
+const errorMessage = ref('');
+const {loading, setLoading} = useLoading();
+const userStore = useUserStore();
+const global = useGlobal();
+const tenantStore = useTenantStore();
+const tenantData = computed(() => {
+  return {welcome: tenantStore.welcome};
+});
+
+const loginConfig = useStorage('login-config', {
+  rememberPassword: false,
+  username: '', // 演示默认值
+  password: '', // demo default value
+});
+const userInfo = reactive({
+  username: loginConfig.value.username,
+  password: loginConfig.value.password,
+});
+const getDataBaseRouters = async () => {
+  if (!(appDataBaseRoutes && appDataBaseRoutes.length > 0)) {
+    const dataBaseRoutes = await formatAppModules([]);
+    if (dataBaseRoutes && dataBaseRoutes.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of dataBaseRoutes) {
+        router.addRoute(item);
+      }
+    }
+  }
+}
+
+/**
+ *
+ */
+const enterApp = async () => {
+  // http://localhost:5173/:tenantCode/:appId/login
+  if (route && route.params && route.params.tenantCode && route.params.appId) {// 路径完整
+    await getDataBaseRouters();// 获取当前用户个人菜单（所有菜单、首页）
+    const baseParams = {tenantCode: route.params.tenantCode, appId: route.params.appId};
+    // ?redirect=3821943302748938008&tenantCode=geelato&appId=1976169388038462609&pageId=3821943418964713243
+    const {redirect, ...othersQuery} = router.currentRoute.value.query;
+    // 填充，tenantCode、appId
+    Object.assign(othersQuery, baseParams);// 重定向
+    Object.assign(DEFAULT_ROUTE.params, baseParams);// 个人菜单首页
+    if (redirect) {// 重定向
+      if (redirect.toString().toLowerCase().startsWith("http")) {// 用于将当前窗口的URL更改为指定的URL
+        window.location.assign(redirect as string);
+      } else if (router.hasRoute(redirect as string) && pageParamsIsFull(othersQuery)) {// 存在路由，且参数完整
+        window.open(router.resolve({name: redirect as string, params: {...othersQuery} as RouteParamsRaw}).href, "_self");
+      } else {// page功能页面
+        pageBaseRoute(router, baseParams);
+      }
+    } else {// page功能页面
+      pageBaseRoute(router, baseParams);
+    }
+  } else if (IS_ACCOUNT.value) {
+    const {redirect, ...othersQuery} = router.currentRoute.value.query;
+    if (router.hasRoute(redirect as string)) {
+      window.open(router.resolve({name: redirect as string, params: {...othersQuery} as RouteParamsRaw}).href, "_self");
+    }
+  } else {
+    // http://localhost:5173/login => http://localhost:5173/:tenantCode/:appId/page
+    const {tenantCode} = userStore;
+    if (tenantCode) {
+      const {data} = await applicationApi.queryAppsByUser(userStore.tenantCode || '', userStore.id);
+      if (data && data.length > 0) {
+        const appIds = [...new Set(data.map((item) => item.id).filter((id) => !!id))];
+        console.log(appIds);
+        pageBaseRoute(router, {'tenantCode': tenantCode, 'appId': appIds[0]});
+      } else {
+        Message.warning('租户下当前用户没有应用权限，请先添加！');
+      }
+    } else {
+      Message.warning('当前用户缺失租户编码，请联系管理员！');
+    }
+  }
+}
+onMounted(() => {
+  userApi.getSysConfig(global, userStore, {
+    tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore && userStore.tenantCode) || '',
+    appId: (route && route.params && route.params.appId) as string || ''
+  });
+  if (authUtil.getToken()) enterApp();
+});
+
+const handleSubmit = async ({errors, values,}: {
+  errors: Record<string, ValidatedError> | undefined;
+  values: Record<string, any>;
+}) => {
+  if (loading.value) return;
+  if (!errors) {
+    setLoading(true);
+    try {
+      await userStore.login(values as LoginData);
+      await userStore.info();
+      await enterApp();
+      Message.success(t('login.form.login.success'));
+      const {rememberPassword} = loginConfig.value;
+      const {username, password} = values;
+      // 实际生产环境需要进行加密存储。
+      // The actual production environment requires encrypted storage.
+      loginConfig.value.username = rememberPassword ? username : '';
+      loginConfig.value.password = rememberPassword ? password : '';
+    } catch (err) {
+      errorMessage.value = (err as Error).message;
+    } finally {
+      setLoading(false);
+    }
+  }
+};
+const setRememberPassword = (value: boolean) => {
+  loginConfig.value.rememberPassword = value;
+};
+const forgetPassword = (ev?: MouseEvent) => {
+  const currentUrl = encodeURIComponent(window.location.href);
+  window.open(`${window.location.origin}/forget?redirect=${currentUrl}`, "_blank");
+}
+</script>
+
 <template>
   <div class="login-form-wrapper">
     <div class="login-form-title">{{ $t('login.form.title1') }}</div>
@@ -63,143 +202,6 @@
   </div>
 
 </template>
-
-<script lang="ts" setup>
-import {computed, onMounted, reactive, ref} from 'vue';
-import {RouteParamsRaw, useRoute, useRouter} from 'vue-router';
-import {Message, ValidatedError} from '@arco-design/web-vue';
-import {useI18n} from 'vue-i18n';
-import {useStorage} from '@vueuse/core';
-import {useTenantStore, useUserStore} from '@/store';
-import useLoading from '@/hooks/loading';
-import type {LoginData} from '@/api/user';
-import {getSysConfig} from "@/api/user";
-import {DEFAULT_ROUTE} from "@/router/constants";
-import {appDataBaseRoutes, formatAppModules, IS_ACCOUNT, pageBaseRoute, pageParamsIsFull} from "@/router/routes";
-import {getToken} from "@/utils/auth";
-import {queryAppsByUser} from "@/api/application";
-import {useGlobal} from "@geelato/gl-ui";
-
-const router = useRouter();
-const route = useRoute();
-const {t} = useI18n();
-const errorMessage = ref('');
-const {loading, setLoading} = useLoading();
-const userStore = useUserStore();
-const global = useGlobal();
-const tenantStore = useTenantStore();
-const tenantData = computed(() => {
-  return {welcome: tenantStore.getTenant.welcome};
-});
-
-const loginConfig = useStorage('login-config', {
-  rememberPassword: false,
-  username: '', // 演示默认值
-  password: '', // demo default value
-});
-const userInfo = reactive({
-  username: loginConfig.value.username,
-  password: loginConfig.value.password,
-});
-const getDataBaseRouters = async () => {
-  if (!(appDataBaseRoutes && appDataBaseRoutes.length > 0)) {
-    const dataBaseRoutes = await formatAppModules([]);
-    if (dataBaseRoutes && dataBaseRoutes.length > 0) {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const item of dataBaseRoutes) {
-        router.addRoute(item);
-      }
-    }
-  }
-}
-
-/**
- *
- */
-const enterApp = async () => {
-  // http://localhost:5173/:tenantCode/:appId/login
-  if (route && route.params && route.params.tenantCode && route.params.appId) {// 路径完整
-    await getDataBaseRouters();// 获取当前用户个人菜单（所有菜单、首页）
-    const baseParams = {tenantCode: route.params.tenantCode, appId: route.params.appId};
-    // ?redirect=3821943302748938008&tenantCode=geelato&appId=1976169388038462609&pageId=3821943418964713243
-    const {redirect, ...othersQuery} = router.currentRoute.value.query;
-    // 填充，tenantCode、appId
-    Object.assign(othersQuery, baseParams);// 重定向
-    Object.assign(DEFAULT_ROUTE.params, baseParams);// 个人菜单首页
-    if (redirect) {// 重定向
-      if (redirect.toString().toLowerCase().startsWith("http")) {// 用于将当前窗口的URL更改为指定的URL
-        window.location.assign(redirect as string);
-      } else if (router.hasRoute(redirect as string) && pageParamsIsFull(othersQuery)) {// 存在路由，且参数完整
-        window.open(router.resolve({name: redirect as string, params: {...othersQuery} as RouteParamsRaw}).href, "_self");
-      } else {// page功能页面
-        pageBaseRoute(router, baseParams);
-      }
-    } else {// page功能页面
-      pageBaseRoute(router, baseParams);
-    }
-  } else if (IS_ACCOUNT.value) {
-    const {redirect, ...othersQuery} = router.currentRoute.value.query;
-    if (router.hasRoute(redirect as string)) {
-      window.open(router.resolve({name: redirect as string, params: {...othersQuery} as RouteParamsRaw}).href, "_self");
-    }
-  } else {
-    // http://localhost:5173/login => http://localhost:5173/:tenantCode/:appId/page
-    const {tenantCode} = userStore.userInfo;
-    if (tenantCode) {
-      const {data} = await queryAppsByUser(userStore.userInfo.tenantCode || '', userStore.userInfo.id);
-      if (data && data.length > 0) {
-        const appIds = [...new Set(data.map((item) => item.id).filter((id) => !!id))];
-        console.log(appIds);
-        pageBaseRoute(router, {'tenantCode': tenantCode, 'appId': appIds[0]});
-      } else {
-        Message.warning('租户下当前用户没有应用权限，请先添加！');
-      }
-    } else {
-      Message.warning('当前用户缺失租户编码，请联系管理员！');
-    }
-  }
-}
-onMounted(() => {
-  getSysConfig(global, userStore && userStore.userInfo, {
-    tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore.userInfo && userStore.userInfo.tenantCode) || '',
-    appId: (route && route.params && route.params.appId) as string || ''
-  });
-  if (getToken()) enterApp();
-});
-
-const handleSubmit = async ({errors, values,}: {
-  errors: Record<string, ValidatedError> | undefined;
-  values: Record<string, any>;
-}) => {
-  if (loading.value) return;
-  if (!errors) {
-    setLoading(true);
-    try {
-      await userStore.login(values as LoginData);
-      await userStore.info();
-      await enterApp();
-      Message.success(t('login.form.login.success'));
-      const {rememberPassword} = loginConfig.value;
-      const {username, password} = values;
-      // 实际生产环境需要进行加密存储。
-      // The actual production environment requires encrypted storage.
-      loginConfig.value.username = rememberPassword ? username : '';
-      loginConfig.value.password = rememberPassword ? password : '';
-    } catch (err) {
-      errorMessage.value = (err as Error).message;
-    } finally {
-      setLoading(false);
-    }
-  }
-};
-const setRememberPassword = (value: boolean) => {
-  loginConfig.value.rememberPassword = value;
-};
-const forgetPassword = (ev?: MouseEvent) => {
-  const currentUrl = encodeURIComponent(window.location.href);
-  window.open(`${window.location.origin}/forget?redirect=${currentUrl}`, "_blank");
-}
-</script>
 
 <style lang="less" scoped>
 .login-form {

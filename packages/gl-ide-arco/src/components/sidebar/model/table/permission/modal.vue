@@ -56,7 +56,7 @@ watch(() => visibleForm, () => {
 </script>
 
 <template>
-  <a-modal v-model:visible="visibleForm" :footer="false" :title="title" :width="width"
+  <a-modal draggable v-model:visible="visibleForm" :footer="false" :title="title" :width="width"
            cancel-text="取消" ok-text="确认" title-align="start">
     <GlModelTablePermissionForm :formState="tablePermissionFormParams.formState"
                                 :height="tablePermissionFormParams.height"

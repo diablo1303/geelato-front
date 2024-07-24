@@ -1,6 +1,6 @@
 import {RecordsUtil} from './RecordsUtil'
 import {toChineseCurrency} from './toChineseCurrency'
-import { type CellMeta, CellValueType } from '../types/global'
+import {type CellMeta, CellValueType} from '../types/global'
 
 export class Utils {
   constructor() {
@@ -430,11 +430,11 @@ export class Utils {
       return `${hours}小时前`
     } else if (days < 7) {
       return `${days}天前`
-    }else if (weeks < 2) {
+    } else if (weeks < 2) {
       return '1周前'
-    }else if (weeks < 3) {
+    } else if (weeks < 3) {
       return '2周前'
-    }else if (weeks < 4) {
+    } else if (weeks < 4) {
       return '3周前'
     } else {
       // 计算月份差异，需要考虑不同月份的天数差异
@@ -449,7 +449,7 @@ export class Utils {
       }
       if (monthDifference === 0) {
         return '1个月前'
-      }else if (monthDifference === 1) {
+      } else if (monthDifference === 1) {
         return '1个月前'
       } else if (monthDifference < 12) {
         return `${monthDifference}个月前`
@@ -472,6 +472,7 @@ export class Utils {
     }
     // 递归访问属性
     return propPaths.reduce((acc: Record<string, any>, part: string) => {
+      // eslint-disable-next-line no-prototype-builtins
       if (acc && acc.hasOwnProperty(part)) {
         return acc[part]
       }
@@ -543,6 +544,18 @@ export class Utils {
     return
   }
 
+  /**
+   * 将map构建成url参数
+   * @param params
+   */
+  getUrlParams(params: Record<string, any>) {
+    const parameters = []
+    for (const key in params) {
+      parameters.push(`${key}=${encodeURIComponent(params[key])}`)
+    }
+    return parameters
+  }
+
   groupSum(data: { [key: string]: any }[], groupField: string, sumFields: string[]) {
     return RecordsUtil.groupSum(data, groupField, sumFields)
   }
@@ -575,25 +588,6 @@ export class Utils {
   }
 
   /**
-   * 字符串是否是json字符串
-   * @param val
-   */
-  isJSON(val: string) {
-    let isJ = false
-    try {
-      if (typeof val === 'string' && val) {
-        const obj = JSON.parse(val)
-        if (typeof obj === 'object' && obj) {
-          isJ = true
-        }
-      }
-    } catch (e) {
-      isJ = false
-    }
-    return isJ
-  }
-
-  /**
    * 查询选项值对应标题
    * @param optionValue 选项值
    * @param data 选项集合
@@ -608,18 +602,6 @@ export class Utils {
       }
     }
     return ''
-  }
-
-  /**
-   * 将map构建成url参数
-   * @param params
-   */
-  getUrlParams(params: Record<string, any>) {
-    const parameters = []
-    for (const key in params) {
-      parameters.push(`${key}=${encodeURIComponent(params[key])}`)
-    }
-    return parameters
   }
 
   /**
@@ -653,6 +635,25 @@ export class Utils {
     return result
   }
 
+  /**
+   * 值处于数值的那个区间
+   * @param options 数组
+   * @param value 值
+   * @param defaultValue 默认值
+   */
+  resetValueByOptions(options: number[], value: number, defaultValue: number) {
+    const arr = [];
+    for (let i = 0; i < options.length - 1; i += 1) {
+      if (i === 0) arr.push({s: 0, e: options[i]})
+      arr.push({s: options[i], e: options[i + 1]})
+    }
+    for (let i = 0; i < arr.length; i += 1) {
+      if (value > arr[i].s && value <= arr[i].e) return arr[i].e;
+    }
+
+    return defaultValue;
+  }
+
   toChineseCurrency(num: number | string) {
     return toChineseCurrency(num)
   }
@@ -665,9 +666,9 @@ export class Utils {
    */
   convertStrToObj(str: string, separator?: string) {
     if (str) {
-      let parsedAmount: Record<string, string | number> = {}
+      const parsedAmount: Record<string, string | number> = {}
       str.split(separator || ';').forEach((segment) => {
-        let kvs = segment.split(':')
+        const kvs = segment.split(':')
         parsedAmount[kvs[0]] = kvs[1]
       })
       return parsedAmount
@@ -701,7 +702,7 @@ export class Utils {
    * @param obj
    * @param propString
    */
-  getNestedProperty(obj:Object, propString:string) {
+  getNestedProperty(obj: Object, propString: string) {
     // 如果传入的对象或属性链为空，则返回undefined
     if (!obj || !propString) return undefined;
 
@@ -730,7 +731,7 @@ export class Utils {
    * @param groupNameField 用于分组的数据字段
    * @param sortField 该字段在分组件的值是一致的，否则排序结果不可预料
    */
-  sortGroupsByField(items:[], groupNameField:string, sortField:string) {
+  sortGroupsByField(items: [], groupNameField: string, sortField: string) {
     // 假设 items 是一个包含对象的数组，groupNameField 是组名的字段名，sortField 是排序的字段名
     if (!Array.isArray(items)) {
       throw new Error("items must be an array.");
@@ -741,7 +742,7 @@ export class Utils {
     }
 
     // 创建一个映射，将 groupName 映射到具有相同 groupName 的对象数组
-    const groupedByGroupName:Record<string, any> = {};
+    const groupedByGroupName: Record<string, any> = {};
     for (const item of items) {
       const groupName = item[groupNameField];
       if (!groupedByGroupName[groupName]) {
@@ -818,9 +819,9 @@ export class Utils {
    * @param cellMetas 单元格元数据，用于处理特殊情况，比如日、数字等；同时也限定了需要读取的列，如果为空则读取所有列
    * @returns 返回一个包含header和data的对象，如果读取失败则返回null
    */
-  async readClipboardTable(splitChar:string = "\t",cellMetas:CellMeta[]) {
+  async readClipboardTable(splitChar: string = "\t", cellMetas: CellMeta[]) {
     try {
-      const cellMap:Record<string,CellMeta> = {}
+      const cellMap: Record<string, CellMeta> = {}
       cellMetas?.forEach(meta => {
         cellMap[meta.name] = meta;
       })
@@ -837,7 +838,7 @@ export class Utils {
       const headers = rows.shift()?.split(splitChar) || [];
 
       // 初始化数据数组
-      const data:any[] = [];
+      const data: any[] = [];
 
       // 遍历剩余行
       rows.forEach((row) => {
@@ -845,24 +846,24 @@ export class Utils {
         const cells = row.split(splitChar);
 
         // 创建一个对象，键为表头，值为单元格数据
-        const item:Record<string, any> = {};
+        const item: Record<string, any> = {};
         headers.forEach((header, index) => {
           // 去除单元格数据的首尾空格
-          const trimmedHeader:string = header?.trim();
+          const trimmedHeader: string = header?.trim();
           // 单元格数据键为字符串，如果表头是无双引号则加上双引号
 
-          const key = trimmedHeader.indexOf("\"")===0?trimmedHeader:`"${trimmedHeader}"`;
-          console.log('trimmedHeader', typeof trimmedHeader,'key:',key)
+          const key = trimmedHeader.indexOf("\"") === 0 ? trimmedHeader : `"${trimmedHeader}"`;
+          console.log('trimmedHeader', typeof trimmedHeader, 'key:', key)
           const cellMeta = cellMap[trimmedHeader]
           // 表头有效，且定义了元数据的数据列者需要记录，如果一个列都没有定义，则记录所有列
-          if(trimmedHeader&&(cellMeta||!cellMetas||cellMetas.length===0)){
-            let value:any = cells[index]?.trim();
-            if(cellMeta){
+          if (trimmedHeader && (cellMeta || !cellMetas || cellMetas.length === 0)) {
+            let value: any = cells[index]?.trim();
+            if (cellMeta) {
               switch (cellMeta.valueType) {
                 case CellValueType.NUMBER:
                   value = parseFloat(value);
                   break;
-               // 其他类型可以直接返回字符串
+                // 其他类型可以直接返回字符串
               }
             }
             item[key] = value;

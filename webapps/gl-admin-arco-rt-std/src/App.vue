@@ -1,7 +1,7 @@
 <template>
   <a-config-provider :locale="locale">
     <router-view/>
-    <global-setting/>
+    <GlGlobalSetting/>
   </a-config-provider>
 </template>
 
@@ -9,8 +9,7 @@
 import {computed} from 'vue';
 import enUS from '@arco-design/web-vue/es/locale/lang/en-us';
 import zhCN from '@arco-design/web-vue/es/locale/lang/zh-cn';
-import GlobalSetting from '@/components/global-setting/index.vue';
-import useLocale from '@/hooks/locale';
+import {useLocale} from '@geelato/gl-ui-arco-admin';
 
 const {currentLocale} = useLocale();
 const locale = computed(() => {
@@ -25,7 +24,7 @@ const locale = computed(() => {
 });
 </script>
 
-+<style lang="less">
+<style lang="less">
 :root {
   --sider-bg-color: #002a49;
   --gl-color-transparent: rgba(255, 255, 255, 0);
@@ -82,7 +81,7 @@ body[gl-nav-style='leftBlue'] {
         color: var(--gl-color-text-2);
       }
 
-      .arco-menu-inline-content{
+      .arco-menu-inline-content {
         color: #8f8f8f;
       }
 
@@ -90,14 +89,15 @@ body[gl-nav-style='leftBlue'] {
         background-color: var(--menu-item-selected-color);
       }
 
-      .arco-menu-inline-content .arco-menu-selected{
+      .arco-menu-inline-content .arco-menu-selected {
         background-color: var(--menu-sub-item-selected-color);
       }
 
-      .arco-menu-inline-header.arco-menu-selected:hover{
+      .arco-menu-inline-header.arco-menu-selected:hover {
         background-color: var(--menu-item-selected-color);
         color: #FFFFFF;
       }
+
       .arco-menu-item:not(.arco-menu-selected):hover {
         background-color: var(--gl-color-transparent);
         color: #FFFFFF;

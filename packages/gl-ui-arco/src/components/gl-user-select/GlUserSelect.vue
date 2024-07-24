@@ -232,6 +232,7 @@ watch(
       @ok="handleOk"
       @cancel="handleCancel"
       @beforeOpen="onBeforeOpen"
+      draggable
     >
       <template #title> 选择人员</template>
       <div style="display: flex; min-height: 500px; overflow-y: hidden; margin: -14px">

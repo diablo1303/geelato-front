@@ -1,18 +1,18 @@
-import type { App } from 'vue'
-import { h } from 'vue'
-import axios, { type CreateAxiosDefaults } from 'axios'
-import type { Action } from '@geelato/gl-ui-schema'
+import type {App} from 'vue'
+import {h} from 'vue'
+import axios, {type CreateAxiosDefaults} from 'axios'
+import type {Action} from '@geelato/gl-ui-schema'
 import utils from '../utils/Utils'
 import GlPageViewer from '../../components/gl-page-viewer/GlPageViewer.vue'
 import type PageProvideProxy from '../../components/PageProvideProxy'
-import type { Param } from '../types/global'
-import { entityApi } from '../datasource/EntityApi'
+import type {Param} from '../types/global'
+import {entityApi} from '../datasource/EntityApi'
 import * as fileApi from '../datasource/FileApi'
-import { getUserCompany } from '../datasource/Security'
-import type { EntityReader, EntityReaderParam } from '../datasource/EntityDataSource'
+import {getUserCompany} from '../datasource/SecurityApi'
+import type {EntityReader, EntityReaderParam} from '../datasource/EntityDataSource'
 import dayjs from 'dayjs'
-import { useDateTimeFns } from './fns/datetime'
-import { useMathFns } from './fns/math'
+import {useDateTimeFns} from './fns/datetime'
+import {useMathFns} from './fns/math'
 
 const pageProxyMap: { [key: string]: PageProvideProxy | undefined } = {}
 type OptionsType = { [key: string]: any }
@@ -37,7 +37,8 @@ export class JsScriptExecutor {
   pageIds: string[] = []
   $gl = {}
 
-  constructor() {}
+  constructor() {
+  }
 
   /**
    * 设置整个vue的应用信息，一般在组件库插件初始化时调用
@@ -111,7 +112,7 @@ export class JsScriptExecutor {
       return fn
     }
     // 如果在具体组件中都找不到方法时，从包装的组件GlComponent上的公共方法上获取
-    if(ref?.exposed){
+    if (ref?.exposed) {
       fn = ref?.exposed[methodName]
     }
     if (fn) {
@@ -192,8 +193,8 @@ export class JsScriptExecutor {
     }
     console.error(
       '在获取页面参数（' +
-        paramName +
-        '）的值时，获取不到当前页面代理对象（pageProxy）,返回参数值null'
+      paramName +
+      '）的值时，获取不到当前页面代理对象（pageProxy）,返回参数值null'
     )
     return null
   }
@@ -210,8 +211,8 @@ export class JsScriptExecutor {
     }
     console.error(
       '在获取页面参数（' +
-        paramName +
-        '）的值时，获取不到当前页面代理对象（pageProxy）,返回参数值false'
+      paramName +
+      '）的值时，获取不到当前页面代理对象（pageProxy）,返回参数值false'
     )
     return false
   }
@@ -236,7 +237,7 @@ export class JsScriptExecutor {
             const action = actions[actionsKey]
             // 按actionName进行触发
             if (action.name === actionName) {
-              return jsScriptExecutor.doAction(action, (ctx = { pageProxy }), callback)
+              return jsScriptExecutor.doAction(action, (ctx = {pageProxy}), callback)
             }
           }
         }
@@ -404,9 +405,9 @@ export class JsScriptExecutor {
         keyValues: {
           [key: string]:
             | {
-                en?: [string | number | boolean]
-                cn: [string | number | boolean]
-              }
+            en?: [string | number | boolean]
+            cn: [string | number | boolean]
+          }
             | [string | number | boolean]
         }
       ) {
@@ -493,7 +494,7 @@ export class JsScriptExecutor {
    * @param callback
    * @param gl 如果多个表达式需要用同一下$gl时，可以传进来，不在本方法内创建
    */
-  doAction(action: Action, ctx: Ctx, callback?: Function, gl?: any):Promise<any> {
+  doAction(action: Action, ctx: Ctx, callback?: Function, gl?: any): Promise<any> {
     // console.log('JsScriptExecutor > doAction(),action:', action, 'ctx:', ctx)
     return this.evalFn(action.body!, ctx, callback, gl, true)
   }
@@ -735,7 +736,7 @@ export class JsScriptExecutor {
         }
       }
     }
-    return { ref, refs }
+    return {ref, refs}
   }
 
   /**
@@ -788,7 +789,7 @@ export class JsScriptExecutor {
       }
     }
     // console.log('{inst, insts}', {inst, insts})
-    return { inst, insts }
+    return {inst, insts}
   }
 
   /**
@@ -814,7 +815,7 @@ export class JsScriptExecutor {
       // 多页面嵌套场景
       insts: <{ [key: string]: any }>{},
       refs: <{ [key: string]: any }>{},
-      ctx: { record: {} },
+      ctx: {record: {}},
       fn: utils,
       entityApi,
       fileApi,
@@ -895,7 +896,7 @@ export class JsScriptExecutor {
     pageTemplateName?: string,
     pageTemplateProps?: object
   ) {
-    const pageProps = { params: params, pageTemplateProps: pageTemplateProps }
+    const pageProps = {params: params, pageTemplateProps: pageTemplateProps}
     // console.log(
     //   'JsScriptExecutor > loadPage > pageId:',
     //   pageId,
@@ -908,7 +909,7 @@ export class JsScriptExecutor {
     //   'pageTemplateName',
     //   pageTemplateName
     // )
-    return h(GlPageViewer, { pageId, extendId, pageStatus, pageTemplateName, pageProps })
+    return h(GlPageViewer, {pageId, extendId, pageStatus, pageTemplateName, pageProps})
   }
 
   /**

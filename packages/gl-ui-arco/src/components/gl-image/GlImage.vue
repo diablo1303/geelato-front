@@ -10,6 +10,7 @@ export default {
 <script lang="ts" setup>
 import {computed, inject, type Ref, ref, watch} from 'vue'
 import {
+  type AttachmentForm,
   entityApi,
   fileApi,
   PageProvideKey,
@@ -154,7 +155,7 @@ const loadFiles = () => {
   // mv.value like id1,id2,id3,id4...
   if (!isIDMode.value || !fileId.value) return
   fileApi.getAttachmentByIds(fileId.value).then((value) => {
-    const attaches = value.data
+    const attaches = value as unknown as AttachmentForm[];
     if (attaches && attaches.length > 0) {
       setFileItem({
         uid: attaches[0].id,

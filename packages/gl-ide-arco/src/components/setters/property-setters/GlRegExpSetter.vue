@@ -28,7 +28,7 @@ watch(mv, () => {
       <template #suffix>
         <GlIconfont type="gl-select"></GlIconfont>
       </template>
-      <a-modal>
+      <a-modal draggable>
 
       </a-modal>
     </a-input>

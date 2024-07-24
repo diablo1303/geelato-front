@@ -1,39 +1,21 @@
-<template>
-  <div class="container">
-    <div class="logo">
-      <img v-if="tenantData.logoIcon" alt="logo" :src="tenantData.logoIcon" style="width: 14%"/>
-      <div class="logo-text">{{ tenantData.name }}</div>
-    </div>
-    <ResetPasswordBanner/>
-    <div class="content">
-      <div class="top">
-        <LoginNavTop v-if="tenantData.lang" @change-language="changeLanguage"/>
-      </div>
-      <div class="content-inner">
-        <ResetPasswordForm/>
-      </div>
-      <div class="footer">
-        <Footer/>
-      </div>
-    </div>
-  </div>
-</template>
+<script lang="ts">
+export default {
+  name: "Reset",
+}
+</script>
 
 <script lang="ts" setup>
 import {computed, onMounted} from "vue";
-import {useTenantStore} from "@/store";
-import ResetPasswordBanner from '@/components/banner/index.vue';
-import ResetPasswordForm from "@/views/reset/password/reset-password.vue";
-import Footer from '@/components/footer/index.vue';
-import LoginNavTop from "@/components/navtop/index.vue";
+import {useTenantStore} from "@geelato/gl-ui-arco-admin";
+
 
 const tenantStore = useTenantStore();
 const tenantData = computed(() => {
   return {
-    logoIcon: tenantStore.getTenant.logoIcon || '',
-    name: tenantStore.getTenant.name || '',
-    slogan: tenantStore.getTenant.slogan || '',
-    lang: tenantStore.getTenant.enableMutilLang || false,
+    logoIcon: tenantStore.logoIcon || '',
+    name: tenantStore.name || '',
+    slogan: tenantStore.slogan || '',
+    lang: tenantStore.enableMutilLang || false,
   };
 });
 
@@ -68,6 +50,27 @@ onMounted(async () => {
   loadTag();
 });
 </script>
+
+<template>
+  <div class="container">
+    <div class="logo">
+      <img v-if="tenantData.logoIcon" :src="tenantData.logoIcon" alt="logo" style="width: 14%"/>
+      <div class="logo-text">{{ tenantData.name }}</div>
+    </div>
+    <GlBanner/>
+    <div class="content">
+      <div class="top">
+        <GlNavTop v-if="tenantData.lang" @change-language="changeLanguage"/>
+      </div>
+      <div class="content-inner">
+        <GlResetPassword/>
+      </div>
+      <div class="footer">
+        <GlFooter/>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style lang="less" scoped>
 .container {

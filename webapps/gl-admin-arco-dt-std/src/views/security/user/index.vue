@@ -9,12 +9,11 @@ import {ref, onMounted, onUnmounted} from 'vue';
 // 系统对象，路由、用户、国际
 import {useI18n} from "vue-i18n";
 import {useRoute} from "vue-router";
-import {useUserStore} from "@/store";
-import {EventNames} from "@geelato/gl-ide";
 // 公共方法
-import {ListParams, PageSizeOptions, resetValueByOptions} from '@/api/base';
-// 引入组件
-import UserList from "./list.vue";
+import {utils} from '@geelato/gl-ui';
+import type {ListParams} from '@geelato/gl-ui';
+import {EventNames} from "@geelato/gl-ide";
+import {useUserStore, PageSizeOptions} from "@geelato/gl-ui-arco-admin";
 
 // 常量使用
 const ListDefaultPageSize = 5;
@@ -39,7 +38,7 @@ const resetListHeight = () => {
  * 调整列表展示行数
  */
 const resetListPageSize = () => {
-  return resetValueByOptions(PageSizeOptions, (resetListHeight() / ListRowHeight), ListDefaultPageSize);
+  return utils.resetValueByOptions(PageSizeOptions, (resetListHeight() / ListRowHeight), ListDefaultPageSize);
 }
 
 // 引用页面所需参数
@@ -74,14 +73,14 @@ onUnmounted(() => {
 
 <template>
   <div class="container">
-    <Breadcrumb :items="['security.user.index.menu.list', 'security.user.index.menu.list.searchTable']"/>
+    <GlBreadcrumb :items="['security.user.index.menu.list', 'security.user.index.menu.list.searchTable']"/>
     <a-card class="general-card" style="padding-top: 20px;">
-      <UserList :visible="listParams.visible"
-                :parameter="listParams.parameter"
-                :formState="listParams.formState"
-                :filterCol="listParams.filterCol"
-                :pageSize="listParams.pageSize"
-                :height="listParams.height"/>
+      <GlUserList :filterCol="listParams.filterCol"
+                  :formState="listParams.formState"
+                  :height="listParams.height"
+                  :pageSize="listParams.pageSize"
+                  :parameter="listParams.parameter"
+                  :visible="listParams.visible"/>
     </a-card>
   </div>
 </template>

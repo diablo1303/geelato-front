@@ -1,9 +1,8 @@
 import {computed} from 'vue';
-import {RouteRecordNormalized, RouteRecordRaw} from 'vue-router';
-import usePermission from '@/hooks/permission';
-import {useAppStore} from '@/store';
-import appClientMenus from '@/router/app-menus';
+import type {RouteRecordNormalized, RouteRecordRaw} from 'vue-router';
 import {cloneDeep} from 'lodash';
+import appClientMenus from '@/router/app-menus';
+import {useAppStore, usePermission} from "@geelato/gl-ui-arco-admin";
 
 export default function useMenuTree() {
   const permission = usePermission();

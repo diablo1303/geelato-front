@@ -1,17 +1,12 @@
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosStatic } from 'axios'
+import type {AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosStatic} from 'axios'
 import MixUtil from '../utils/MixUtil'
-import {
-  type EntityReader,
-  EntitySaver,
-  EntityReaderParam,
-  EntityReaderParamGroup
-} from './EntityDataSource'
-import { getToken } from '../utils/auth'
+import {type EntityReader, EntityReaderParam, EntityReaderParamGroup, EntitySaver} from './EntityDataSource'
 import jsScriptExecutor from '../actions/JsScriptExecutor'
 import utils from '../utils/Utils'
 import useApiUrl from '../hooks/useApiUrl'
 import entityQueryCache from '../datasource/EntityQueryCache'
 import useLogger from '../hooks/useLogger'
+import {getToken} from '../utils/Auth'
 
 export type MqlObject = { [key: string]: { [key: string]: any } }
 export type ParsedMqlResult = { key: string; mqlObj: Record<string, any> }
@@ -20,7 +15,7 @@ const logger = useLogger('entityApi')
 
 // 保存对象示例
 const entitySaverInstTemplate = new EntitySaver('必填，如entityABC')
-entitySaverInstTemplate.record = { id: 'ID示例，为空表示新增', otherProp: '其它属性示例' }
+entitySaverInstTemplate.record = {id: 'ID示例，为空表示新增', otherProp: '其它属性示例'}
 delete entitySaverInstTemplate.id
 delete entitySaverInstTemplate.pidName
 delete entitySaverInstTemplate.recordStatus
@@ -102,7 +97,8 @@ export class EntityApi {
 
   options?: AxiosRequestConfig
 
-  constructor() {}
+  constructor() {
+  }
 
   getAuthorization() {
     const token = getToken()
@@ -196,7 +192,7 @@ export class EntityApi {
       })
       mql[entityReader.entity]['@fs'] = fieldNames.join(',')
     } else {
-      mql[entityReader.entity] = { '@fs': '*' }
+      mql[entityReader.entity] = {'@fs': '*'}
     }
     // 2-order
     if (entityReader.order && entityReader.order.length > 0) {
@@ -272,13 +268,13 @@ export class EntityApi {
         paramGroup.children.forEach((item) => {
           if (typeof item.isGroup === 'function' && item.isGroup()) {
             const group = item as EntityReaderParamGroup
-            paramArray.push({ [group.logic]: handleGroup(group) })
+            paramArray.push({[group.logic]: handleGroup(group)})
           } else {
             const param = item as EntityReaderParam
             // 去掉参数值为null或undefined的无效条件
             const paramValue = EntityReaderParam.getMqlParamValue(param)
             if (paramValue !== null && paramValue !== undefined) {
-              paramArray.push({ [EntityReaderParam.getMqlParamName(param)]: paramValue })
+              paramArray.push({[EntityReaderParam.getMqlParamName(param)]: paramValue})
             }
           }
         })
@@ -294,7 +290,7 @@ export class EntityApi {
           // @b brackets的简写，用于通过括号来组合条件
           params['@b'] = params['@b'] || []
           // 递归处理分组
-          params['@b'].push({ [paramsGroups[key].logic]: handleGroup(paramsGroups[key]) })
+          params['@b'].push({[paramsGroups[key].logic]: handleGroup(paramsGroups[key])})
         } else {
           // 默认无分组参数部分归到了默认分组defaultGroupName
           if (paramsGroups[defaultGroupName]) {
@@ -425,7 +421,7 @@ export class EntityApi {
    * @param bizCode
    * @param order 排序，例如：'name|+'、'updateAt|-'
    */
-  query(entityName: string, fieldNames: string, params: Record<string, any>, withMeta?: boolean,disabledClientQueryCache?: boolean, bizCode?: string,order?:string) {
+  query(entityName: string, fieldNames: string, params: Record<string, any>, withMeta?: boolean, disabledClientQueryCache?: boolean, bizCode?: string, order?: string) {
     // if (!fieldNames) {
     //     // eslint-disable-next-line no-throw-literal
     //     throw `查询${entityName},失败，列（fieldNames）不能为空。`;
@@ -446,11 +442,11 @@ export class EntityApi {
     if (!copyParam['@p']) {
       copyParam['@p'] = '1,500'
     }
-    if(order){
+    if (order) {
       mql[entityName]['@order'] = order
     }
     Object.assign(mql[entityName], copyParam)
-    return this.queryByMql(mql, withMeta,disabledClientQueryCache,bizCode)
+    return this.queryByMql(mql, withMeta, disabledClientQueryCache, bizCode)
   }
 
   /**
@@ -537,11 +533,11 @@ export class EntityApi {
           // logger.debug('convertEntitySaverToMql() > parent mqlObj',mqlObj,entityName)
         }
       })
-      return { key: entityName, mqlObj: mqlObj }
+      return {key: entityName, mqlObj: mqlObj}
     }
     const bizCode = biz || '0'
     const entitySaverCopy = JSON.parse(JSON.stringify(entitySaver))
-    return Object.assign(toMql(entitySaverCopy, false).mqlObj, { '@biz': bizCode }, undefined)
+    return Object.assign(toMql(entitySaverCopy, false).mqlObj, {'@biz': bizCode}, undefined)
   }
 
   /**
@@ -559,7 +555,7 @@ export class EntityApi {
     const mqlObj = this.convertEntitySaverToMql(entitySaver, bizCode)
     // logger.debug('saveEntity > entitySaver:', entitySaver, 'mql:', mqlObj)
     return this.service({
-      url: `${this.url.apiMetaSave}/${bizCode}?mainId=${entitySaver.record.id||''}`,
+      url: `${this.url.apiMetaSave}/${bizCode}?mainId=${entitySaver.record.id || ''}`,
       method: 'POST',
       data: mqlObj
     })
@@ -837,7 +833,7 @@ export class EntityApi {
    * @param allStatus 是否查询全部状态，默认为false，即只查询启用状态的字典
    */
   queryAllDict(allStatus?: boolean) {
-    const params:Record<string,any> = {
+    const params: Record<string, any> = {
       delStatus: 0,
       '@p': '1,10000',
       '@order': 'seqNo|+'
@@ -854,7 +850,7 @@ export class EntityApi {
    * @param allStatus 查询全部状态，默认为false，即只查询启用状态的字典项
    */
   queryDictItems(dictId: string, allStatus?: boolean) {
-    const params:Record<string,any> = {
+    const params: Record<string, any> = {
       dictId: `${dictId}`,
       delStatus: 0,
       '@p': '1,10000',
@@ -872,7 +868,7 @@ export class EntityApi {
    * @param allStatus 查询全部状态，默认为false，即只查询启用状态的字典项
    */
   queryMultiDictItems(dictIds: string[], allStatus?: boolean) {
-    const params:Record<string,any> = {
+    const params: Record<string, any> = {
       'dictId|in': dictIds.join(","),
       delStatus: 0,
       '@p': '1,10000',
@@ -983,5 +979,5 @@ export class EntityApi {
 }
 
 const entityApi = new EntityApi()
-export { entityApi }
+export {entityApi}
 export default EntityApi

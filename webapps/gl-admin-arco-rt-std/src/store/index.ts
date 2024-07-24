@@ -1,10 +1,7 @@
 import {createPinia} from 'pinia';
-import useAppStore from './modules/app';
-import useUserStore from './modules/user';
-import useTenantStore from "./modules/tenant";
-import useTabBarStore from './modules/tab-bar';
+import {setPinia} from "@geelato/gl-ui-arco-admin";
 
 const pinia = createPinia();
+setPinia(pinia);
 
-export {useAppStore, useUserStore, useTabBarStore, useTenantStore};
 export default pinia;

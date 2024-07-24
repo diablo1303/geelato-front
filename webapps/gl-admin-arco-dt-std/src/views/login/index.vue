@@ -1,19 +1,19 @@
 <template>
   <div class="container">
     <div class="logo">
-      <img v-if="tenantData.logoIcon" alt="logo" :src="tenantData.logoIcon" style="width: 14%"/>
+      <img v-if="tenantData.logoIcon" :src="tenantData.logoIcon" alt="logo" style="width: 14%"/>
       <div class="logo-text">{{ tenantData.name }}</div>
     </div>
-    <LoginBanner/>
+    <GlBanner/>
     <div class="content">
       <div class="top">
-        <LoginNavTop v-if="tenantData.lang" @change-language="changeLanguage"/>
+        <GlNavTop v-if="tenantData.lang" @change-language="changeLanguage"/>
       </div>
       <div class="content-inner">
         <LoginForm/>
       </div>
       <div class="footer">
-        <Footer/>
+        <GlFooter/>
       </div>
     </div>
   </div>
@@ -21,19 +21,16 @@
 
 <script lang="ts" setup>
 import {computed, onMounted} from "vue";
-import Footer from '@/components/footer/index.vue';
-import LoginBanner from '@/components/banner/index.vue';
-import LoginNavTop from '@/components/navtop/index.vue';
-import {useTenantStore} from '@/store';
+import {useTenantStore} from '@geelato/gl-ui-arco-admin';
 import LoginForm from './components/login-form.vue';
 
 const tenantStore = useTenantStore();
 const tenantData = computed(() => {
   return {
-    logoIcon: tenantStore.getTenant.logoIcon || '',
-    name: tenantStore.getTenant.name || '',
-    slogan: tenantStore.getTenant.slogan || '',
-    lang: tenantStore.getTenant.enableMutilLang || false,
+    logoIcon: tenantStore.logoIcon || '',
+    name: tenantStore.name || '',
+    slogan: tenantStore.slogan || '',
+    lang: tenantStore.enableMutilLang || false,
   };
 });
 

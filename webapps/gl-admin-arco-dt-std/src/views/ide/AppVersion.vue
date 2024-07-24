@@ -5,47 +5,34 @@ export default {
 </script>
 <script lang="ts" setup>
 import {compile, computed, h, onMounted, onUnmounted, provide, ref, shallowRef} from 'vue';
-import {getToken} from '@/utils/auth';
-import {getSysConfig} from '@/api/user';
-import {Message, Modal} from "@arco-design/web-vue";
+import {Message} from "@arco-design/web-vue";
 import cloneDeep from "lodash/cloneDeep";
 import {EventNames} from '@geelato/gl-ide';
-import {emitter, useGlobal} from '@geelato/gl-ui';
-import useUser from '@/hooks/user';
-import useLoading from "@/hooks/loading";
 import {
-  createOrUpdateAppVersion,
-  deleteAppVersion,
-  deployAppVersion,
-  getApp,
-  packetAppVersion, packetMergeAppVersion,
-  pageQueryAppVersions,
-  QueryAppForm,
-  QueryAppVersionForm,
-  validateAppVersion,
-} from "@/api/application";
-import {initTables, initViews, QueryTableForm, queryTables} from "@/api/model";
-import {getOptionLabel, PageQueryRequest, PageSizeOptions, resetValueByOptions} from '@/api/base';
-import {fetchFileById} from "@/api/attachment";
-import ApplicationModel from "@/views/application/model.vue";
-import AppVersionList from "@/views/version/list.vue";
-import AppVersionTabs from "@/views/version/tabsForm.vue";
-import AppVersionForm from "@/views/version/form.vue";
-import AppVersionCompareTabs from "@/views/compare/tabsForm.vue";
-import {formatTime, generateRandom} from "@/utils/strings";
-import {getValueByKeys} from "@/api/sysconfig";
-import {isJSON} from "@/utils/is";
-import {packageStatusOptions} from "@/views/version/searchTable";
-import {generateEncoding} from "@/api/encoding";
-import pinia, {useUserStore} from '../../store';
+  emitter,
+  useGlobal,
+  authUtil,
+  isUtil,
+  stringUtil,
+  utils,
+  userApi,
+  applicationApi,
+  fileApi,
+  versionApi,
+  modelApi,
+  sysConfigApi,
+  encodingApi
+} from "@geelato/gl-ui";
+import type {QueryAppForm, QueryAppVersionForm, QueryTableForm, PageQueryRequest} from "@geelato/gl-ui";
+import {useUser, useLoading, useUserStore, packageStatusOptions, PageSizeOptions} from "@geelato/gl-ui-arco-admin";
+import pinia from '../../store';
 
 // 常量使用
 const ListDefaultPageSize = 5;
 const ListUsedHeight = 425;
 const ListRowHeight = 49;
 
-const tableFormRef = shallowRef(ApplicationModel);
-const versionCompareTabs = shallowRef(AppVersionCompareTabs);
+const versionCompareTabs = ref(null);
 
 provide('pinia', pinia);
 const userStore = useUserStore();
@@ -106,11 +93,11 @@ const packHeight = ref<number>(resetPackModelHeight());
  * 调整列表展示行数
  */
 const resetListPageSize = () => {
-  return resetValueByOptions(PageSizeOptions, (resetListHeight() / ListRowHeight), ListDefaultPageSize);
+  return utils.resetValueByOptions(PageSizeOptions, (resetListHeight() / ListRowHeight), ListDefaultPageSize);
 }
 
 const listParams = ref({
-  load: generateRandom(),
+  load: utils.generateRandom(),
   visible: false,
   parameter: {versionInfo: '', appId: '', tenantCode: ''},
   formState: 'edit',
@@ -153,7 +140,7 @@ const handleResize = () => {
  */
 const getAppData = async (id: string, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await getApp(id);
+    const {data} = await applicationApi.getApp(id);
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -165,7 +152,7 @@ const getAppData = async (id: string, successBack?: any, failBack?: any) => {
  */
 const queryAppVersion = async (successBack?: any, failBack?: any) => {
   try {
-    const {data} = await pageQueryAppVersions({
+    const {data} = await versionApi.pageQueryAppVersions({
       current: 1, pageSize: 10000, order: "packetTime|desc",
       appId: appData.value.id, tenantCode: appData.value.tenantCode
     } as PageQueryRequest)
@@ -182,7 +169,7 @@ const originAppVersionData = computed(() => {
   for (let i = 0; i < appVersionData.value.length; i += 1) {
     const item = appVersionData.value[i];
     data.push({
-      label: `${i + 1}, ${item.version} ${getOptionLabel(item.status, packageStatusOptions.value)}`,
+      label: `${i + 1}, ${item.version} ${utils.getOptionLabel(item.status, packageStatusOptions.value)}`,
       value: item.id,
       disabled: item.id === listParams.value.selected.id
     });
@@ -234,9 +221,9 @@ const listSelected = (record: QueryAppVersionForm) => {
 const packetCompare = async (record: QueryAppVersionForm, appointMetas: Record<string, string>) => {
   deployCompareLoading.value = true;
   try {
-    const version = `${appData.value.code}_version${formatTime(new Date(), 'yyyyMMddHHmmss')}`;
+    const version = `${appData.value.code}_version${stringUtil.formatTime(new Date(), 'yyyyMMddHHmmss')}`;
     const description = record ? `当前环境基于版本【${record.version}】对比打包形成的应用包` : '当前环境打包形成的应用包';
-    const {data} = await packetMergeAppVersion(appData.value.id, version, description, appointMetas);
+    const {data} = await versionApi.packetMergeAppVersion(appData.value.id, version, description, appointMetas);
     Message.success('打包成功!');
     // @ts-ignore
     listParams.value.selected.id = data.id || '';
@@ -287,7 +274,7 @@ const syncTableToData = async () => {
   syncTableLoading.value = true;
   const msgLoading = Message.loading({content: `正在将 ${appData.value.name} 下的所有模型同步至数据库`, duration: 60 * 60 * 1000});
   try {
-    const tableResult = await initTables(appData.value.id);
+    const tableResult = await modelApi.initTables(appData.value.id);
     Message.success(`${appData.value.name} 下的所有模型同步至数据库成功`);
   } catch (err) {
     Message.error(`${appData.value.name} 下的所有模型同步至数据库失败`);
@@ -319,7 +306,7 @@ const syncViewToData = async () => {
   syncViewLoading.value = true;
   const msgLoading = Message.loading({content: `正在将 ${appData.value.name} 下的所有视图同步至数据库`, duration: 60 * 60 * 1000});
   try {
-    const viewResult = await initViews(appData.value.id);
+    const viewResult = await modelApi.initViews(appData.value.id);
     initViewResult(viewResult.data);
   } catch (err) {
     Message.error(`${appData.value.name} 下的所有视图同步至数据库失败`);
@@ -337,7 +324,7 @@ const packAppVersion = async (done: any) => {
       done(false);
       return;
     }
-    const valid = await validateAppVersion({
+    const valid = await versionApi.validateAppVersion({
       version: packData.value.version, description: packData.value.description, appId: appData.value.id,
     } as unknown as QueryAppVersionForm);
     if (!valid.data) {
@@ -345,7 +332,7 @@ const packAppVersion = async (done: any) => {
       done(false);
       return;
     }
-    const {data} = await packetAppVersion(appData.value.id, packData.value.version, packData.value.description);
+    const {data} = await versionApi.packetAppVersion(appData.value.id, packData.value.version, packData.value.description);
     Message.success('打包成功!');
     // @ts-ignore
     listParams.value.selected.id = data.id || '';
@@ -360,8 +347,8 @@ const packAppVersion = async (done: any) => {
 const querySysConfigValueByKey = async (key: string) => {
   packDefaultData.value = packDefaultData.value || {};
   try {
-    const {data} = await getValueByKeys(key);
-    packDefaultData.value = isJSON(data) ? JSON.parse(data) : {};
+    const {data} = await sysConfigApi.getValueByKeys(key);
+    packDefaultData.value = isUtil.isJSON(data) ? JSON.parse(data) : {};
   } catch (err) {
     console.log(err);
   }
@@ -371,7 +358,7 @@ const generateEncodingById = async (key: string) => {
   packDefaultData.value = packDefaultData.value || {};
   packDefaultData.value.encoding = '';
   try {
-    const {data} = await generateEncoding(key);
+    const {data} = await encodingApi.generateCode(key);
     packDefaultData.value.encoding = data as unknown as string;
   } catch (err) {
     console.log(err);
@@ -380,7 +367,7 @@ const generateEncodingById = async (key: string) => {
 
 const queryAppTables = async (successBack?: any, failBack?: any) => {
   try {
-    const {data} = await queryTables({
+    const {data} = await modelApi.queryTables({
       order: 'entityName|asc', tenantCode: appData.value.tenantCode
     } as unknown as PageQueryRequest);
     if (successBack && typeof successBack === 'function') successBack(data);
@@ -395,12 +382,12 @@ const packetAppVersionClick = async () => {
   await queryAppTables((data: QueryTableForm[]) => {
     Object.assign(packData.value, {
       visible: false, first: [] as QueryTableForm[], second: [] as QueryTableForm[],
-      version: `${appData.value.code}_version${formatTime(new Date(), 'yyyyMMddHHmmss')}`,
+      version: `${appData.value.code}_version${stringUtil.formatTime(new Date(), 'yyyyMMddHHmmss')}`,
       description: '当前环境打包形成的应用包',
       extra: packDefaultData.value.extra || [],
     });
     if (packDefaultData.value.encoding) {
-      packData.value.version = `${appData.value.code}_${packDefaultData.value.encoding}.${formatTime(new Date(), 'yyyyMMddHHmmss')}`;
+      packData.value.version = `${appData.value.code}_${packDefaultData.value.encoding}.${stringUtil.formatTime(new Date(), 'yyyyMMddHHmmss')}`;
     }
     if (data && data.length > 0) {
       // eslint-disable-next-line no-restricted-syntax
@@ -447,7 +434,7 @@ const deployVersion = async (item: QueryAppVersionForm) => {
   deployLoading.value = true;
   const msgLoading = Message.loading({content: `${appData.value.name} 正在部署版本 ${item.version}`, duration: 60 * 60 * 1000});
   try {
-    const result = await deployAppVersion(item.id);
+    const result = await versionApi.deployAppVersion(item.id);
     Message.success("应用部署成功！");
     window.location.reload();
   } catch (err) {
@@ -466,9 +453,9 @@ const releaseVersion = async (item: QueryAppVersionForm) => {
     delete params.active;
     // @ts-ignore
     delete params.sort;
-    await createOrUpdateAppVersion(params);
+    await versionApi.createOrUpdateAppVersion(params);
     Message.success("发布成功");
-    listParams.value.load = generateRandom();
+    listParams.value.load = utils.generateRandom();
   } catch (err) {
     console.error(err);
   }
@@ -476,7 +463,7 @@ const releaseVersion = async (item: QueryAppVersionForm) => {
 
 const deleteVersion = async (item: QueryAppVersionForm) => {
   try {
-    await deleteAppVersion(item.id);
+    await versionApi.deleteAppVersion(item.id);
     Message.success("删除成功");
     listParams.value.selected.id = '';
   } catch (err) {
@@ -486,7 +473,7 @@ const deleteVersion = async (item: QueryAppVersionForm) => {
 
 onMounted(() => {
   // 未登录重定向
-  if (!getToken()) ideRedirect();
+  if (!authUtil.getToken()) ideRedirect();
   // 注册 登出 事件监听器的函数
   emitter.on(EventNames.GlIdeLogout, handleLogout);
   window.addEventListener(EventNames.WindowResize, handleResize);
@@ -501,7 +488,7 @@ onMounted(() => {
       compareVersionId.value = "";
       // 系统参数
       userStore.info(() => {
-        getSysConfig(global, userStore && userStore.userInfo, {
+        userApi.getSysConfig(global, userStore, {
           appId: data.id, tenantCode: data.tenantCode || '',
         });
       });
@@ -603,15 +590,15 @@ onUnmounted(() => {
           <a-card>
             <a-split v-model:size="splitSize" :min="splitMin" :style="{height: `${splitHeight}px`,width: '100%'}">
               <template #first>
-                <AppVersionList v-if="listParams.visible"
-                                :key="listParams.load"
-                                :form-state="listParams.formState"
-                                :height="listParams.height"
-                                :model-value="listParams.selected.id"
-                                :page-size="listParams.pageSize"
-                                :parameter="listParams.parameter"
-                                :visible="listParams.visible"
-                                @listSelected="listSelected"/>
+                <GlAppVersionList v-if="listParams.visible"
+                                  :key="listParams.load"
+                                  :form-state="listParams.formState"
+                                  :height="listParams.height"
+                                  :model-value="listParams.selected.id"
+                                  :page-size="listParams.pageSize"
+                                  :parameter="listParams.parameter"
+                                  :visible="listParams.visible"
+                                  @listSelected="listSelected"/>
               </template>
               <template #second>
                 <div class="general-card3">
@@ -632,7 +619,7 @@ onUnmounted(() => {
                           比较
                         </a-button>
                         <a-button v-if="!isCompare&&!['draft'].includes(listParams.selected.status)" style="color: rgb(var(--primary-6))" type="text"
-                                  @click.stop="fetchFileById(listParams.selected.item.packagePath)">
+                                  @click.stop="fileApi.fetchFileById(listParams.selected.item.packagePath)">
                           <icon-download/>
                           下载
                         </a-button>
@@ -674,18 +661,18 @@ onUnmounted(() => {
                   </div>
                   <a-divider style="margin:0 0 5px 0"/>
                   <div v-if="!!listParams.selected.id" class="card-body2">
-                    <AppVersionCompareTabs v-if="!!compareVersionId"
-                                           ref="versionCompareTabs"
-                                           :compareId="compareVersionId"
-                                           :height="listParams.height"
-                                           :model-value="listParams.selected.id"
-                                           :visible="true"
-                                           @canPacket="(can)=>{isCanPacket = can}"/>
-                    <AppVersionTabs v-else :key="listParams.load"
-                                    :height="listParams.height"
-                                    :model-value="listParams.selected.id"
-                                    :parameter="listParams.parameter"
-                                    :visible="true"/>
+                    <GlAppVersionCompareTabs v-if="!!compareVersionId"
+                                             ref="versionCompareTabs"
+                                             :compareId="compareVersionId"
+                                             :height="listParams.height"
+                                             :model-value="listParams.selected.id"
+                                             :visible="true"
+                                             @canPacket="(can)=>{isCanPacket = can}"/>
+                    <GlAppVersionTabs v-else :key="listParams.load"
+                                      :height="listParams.height"
+                                      :model-value="listParams.selected.id"
+                                      :parameter="listParams.parameter"
+                                      :visible="true"/>
                   </div>
                 </div>
               </template>
@@ -696,7 +683,7 @@ onUnmounted(() => {
     </div>
   </div>
 
-  <a-modal v-model:visible="packData.visible" :width="1250" title="版本打包" title-align="start" :on-before-ok="packAppVersion">
+  <a-modal v-model:visible="packData.visible" :width="1250" title="版本打包" title-align="start" :on-before-ok="packAppVersion" draggable>
     <a-scrollbar :style="{overflow:'auto',maxHeight:`${packHeight}px`}">
       <a-descriptions :bordered="true" :column="1" layout="horizontal" size="medium">
         <template #title>
@@ -739,16 +726,16 @@ onUnmounted(() => {
     </a-scrollbar>
   </a-modal>
 
-  <AppVersionForm v-model:visible="formParams.visible"
-                  :formCol="formParams.formCol"
-                  :formState="formParams.formState"
-                  :height="formParams.height"
-                  :isModal="formParams.isModal"
-                  :modelValue="formParams.id"
-                  :parameter="formParams.parameter"
-                  :title="formParams.title"
-                  :width="formParams.width"
-                  @saveSuccess="saveSuccess"/>
+  <GlAppVersionForm v-model:visible="formParams.visible"
+                    :formCol="formParams.formCol"
+                    :formState="formParams.formState"
+                    :height="formParams.height"
+                    :isModal="formParams.isModal"
+                    :modelValue="formParams.id"
+                    :parameter="formParams.parameter"
+                    :title="formParams.title"
+                    :width="formParams.width"
+                    @saveSuccess="saveSuccess"/>
 </template>
 <style lang="less">
 .gl-app-settings .gl-page-header {

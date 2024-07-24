@@ -1,11 +1,11 @@
 import {createApp} from 'vue';
-import '@/api/interceptor';
 import ArcoVue from '@arco-design/web-vue';
+import '@arco-design/web-vue/dist/arco.css';
+import '@/api/interceptor';
 import store from '../../store';
 import i18n from '../../locale';
-import IdeComponents from "./IdeComponents.vue";
-import '@arco-design/web-vue/dist/arco.css';
 import geelatoMain from "./ide.geelato";
+import IdeComponents from "./IdeComponents.vue";
 
 const app = createApp(IdeComponents);
 

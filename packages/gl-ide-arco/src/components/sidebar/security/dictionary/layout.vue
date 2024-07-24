@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 import {ref, shallowRef, watch} from "vue";
-import {fileApi, securityApi, useGlobal} from "@geelato/gl-ui";
+import {fileApi, dictApi, useGlobal} from "@geelato/gl-ui";
 import type {QueryDictForm, QueryDictItemForm} from "@geelato/gl-ui";
 import GlDictionaryModel from "./model.vue";
 import GlDictionaryEntryList from "./item/list.vue";
@@ -73,7 +73,7 @@ const listParams = ref(generateListParams());
  */
 const fetchDict = async (id: string, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await securityApi.getDict(id);
+    const {data} = await dictApi.getDict(id);
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -152,11 +152,11 @@ const exportDictAndItems = async (dictId: string) => {
   if (dictId) {
     try {
       // 字典
-      const dictData = await securityApi.getDict(dictId);
+      const dictData = await dictApi.getDict(dictId);
       // @ts-ignore
       dictData.data.enableStatus = dictData.data.enableStatus === 1 ? '启用' : '禁用';
       // 字典项
-      const itemData = await securityApi.queryDictItems({dictId: dictData.data.id});
+      const itemData = await dictApi.queryDictItems({dictId: dictData.data.id});
       itemData.data.forEach((item: QueryDictItemForm) => {
         // @ts-ignore
         item.enableStatus = item.enableStatus === 1 ? '启用' : '禁用';
@@ -215,7 +215,7 @@ watch(() => visibleForm, () => {
 </script>
 
 <template>
-  <a-modal v-model:visible="visibleForm" :footer="false" :title="title || '数据字典'" :width="width || ''" title-align="start">
+  <a-modal draggable v-model:visible="visibleForm" :footer="false" :title="title || '数据字典'" :width="width || ''" title-align="start">
     <a-layout :style="{height: `${height}px`}">
       <a-layout style="flex-direction: row;">
         <a-layout-content style="width: 30%;">

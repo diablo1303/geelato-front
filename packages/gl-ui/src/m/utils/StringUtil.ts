@@ -1,51 +1,15 @@
+import isUtil from './IsUtil'
+
 export class StringUtil {
   constructor() {
-  }
-
-  /**
-   * 字符串是为空[null，'']
-   * @param s
-   * @returns {boolean}
-   */
-   isEmpty(s: string) {
-    return s == null || s.length === 0;
-  }
-
-  /**
-   * 字符串不为空
-   * @param s
-   * @returns {boolean}
-   */
-   isNotEmpty(s: string) {
-    return !this.isEmpty(s);
-  }
-
-  /**
-   * 字符串是空白的
-   * @param s
-   */
-   isBlank(s: string) {
-    if (this.isNotEmpty(s)) {
-      return s.trim().length === 0;
-    }
-    return true;
-  }
-
-  /**
-   * 字符串不是空白的
-   * @param s
-   * @returns {boolean}
-   */
-   isNotBlank(s: string) {
-    return !this.isBlank(s);
   }
 
   /**
    * 将特定字符串转为驼峰字符串
    * @param s
    */
-   toCamelCase(s: string) {
-    if (this.isNotBlank(s) && s.match(/^[a-zA-Z][a-zA-Z0-9_]*$/)) {
+  toCamelCase(s: string) {
+    if (isUtil.isNotBlank(s) && s.match(/^[a-zA-Z][a-zA-Z0-9_]*$/)) {
       return s.replace(/_([a-zA-Z])/g, (match, c) => c.toUpperCase());
     }
     return '';
@@ -56,20 +20,60 @@ export class StringUtil {
    * @param s1 字符串
    * @param s2 分隔符
    */
-   formatSeparator(s1: string, s2: string) {
-    const cs = this.isBlank(s1) ? '' : s1;
+  formatSeparator(s1: string, s2: string) {
+    const cs = isUtil.isBlank(s1) ? '' : s1;
     const csArr: string[] = [];
     const sArr = cs.trim().split(s2);
     for (let i = 0; i < sArr.length; i += 1) {
-      if (this.isNotBlank(sArr[i])) {
+      if (isUtil.isNotBlank(sArr[i])) {
         csArr.push(sArr[i]);
       }
     }
 
     return csArr;
   }
+
+  /**
+   * 日期格式化
+   * @param date
+   * @param format
+   */
+  formatTime(date: Date, format?: string) {
+    const year = date.getFullYear();
+    // @ts-ignore
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    // @ts-ignore
+    const day = date.getDate().toString().padStart(2, '0');
+    // @ts-ignore
+    const hours = date.getHours().toString().padStart(2, '0');
+    // @ts-ignore
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    // @ts-ignore
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    if (format) {
+      return format.replace('yyyy', String(year)).replace('yy', String(year).substring(2, 4))
+        .replace('MM', month).replace('dd', day).replace('HH', hours)
+        .replace('mm', minutes).replace('ss', seconds);
+    }
+    return `${year}${month}${day}${hours}${minutes}${seconds}`;
+  }
+
+  /**
+   * 特殊字符串缩略处理
+   * @param value
+   * @param type 1: 电话，2：邮箱
+   */
+  abbreviateValue(value: string, type: string) {
+    if (value) {
+      if (type === '1') {
+        value = `${value.substring(0, 3)}******${value.substring(value.length - 3)}`
+      } else if (type === '2') {
+        value = `${value.substring(0, 3)}****${value.substring(value.lastIndexOf('@'))}`;
+      }
+    }
+    return value;
+  }
 }
 
 const stringUtil = new StringUtil()
 export default stringUtil
-

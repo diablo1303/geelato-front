@@ -8,7 +8,7 @@ export default {
 import {ref, watch} from "vue";
 import {Modal} from "@arco-design/web-vue";
 import type {FormInstance, SelectOptionGroup} from "@arco-design/web-vue";
-import {applicationApi, modelApi, useGlobal, securityApi, utils, stringUtil} from "@geelato/gl-ui";
+import {applicationApi, modelApi, useGlobal, securityApi, dictApi, utils, stringUtil, isUtil, encodingApi} from "@geelato/gl-ui";
 import type {
   ColumnSelectType,
   QueryMultiComponentForm,
@@ -30,6 +30,7 @@ import {
 } from "./searchTable";
 import GlDictionaryLayout from '../../security/dictionary/layout.vue';
 import {it} from "vitest";
+import {selectOptions} from "@geelato/gl-ui-arco";
 
 interface PageParams {
   connectId: string; // 数据库链接id
@@ -242,7 +243,7 @@ const loadMultiData = (list: QueryMultiComponentForm[]) => {
 const selectDictionaryOptions = ref<QueryDictForm[]>([]);
 const getSelectDictionaryOptions = async () => {
   try {
-    const {data} = await securityApi.queryDicts({
+    const {data} = await dictApi.queryDicts({
       enableStatus: 1,
       appId: '', tenantCode: props.parameter?.tenantCode || ''
     });
@@ -255,7 +256,7 @@ const selectDictItemOptions = ref<QueryDictItemForm[]>([]);
 const getSelectDictItemOptions = async (value?: string) => {
   try {
     if (formData.value.typeExtra) {
-      const {data} = await securityApi.queryItemByDictCode(formData.value.typeExtra as string);
+      const {data} = await dictApi.queryItemByDictCode(formData.value.typeExtra as string);
       selectDictItemOptions.value = data || [];
       formData.value.defaultValue = value || '';
     } else {
@@ -285,7 +286,7 @@ const dictionaryChange1 = () => {
 const selectCodeOptions = ref<QueryEncodingForm[]>([]);
 const getSelectCodeOptions = async () => {
   try {
-    const {data} = await securityApi.queryEncodings({
+    const {data} = await encodingApi.queryEncodings({
       enableStatus: 1,
       appId: '', tenantCode: props.parameter?.tenantCode || ''
     });
@@ -540,8 +541,8 @@ const autoNameBlur = (ev?: FocusEvent) => {
   if (formData.value.name === formData.value.autoName) {
     formData.value.autoName = '';
   }
-  if (formData.value.autoAdd.toString() === '1' && stringUtil.isNotBlank(formData.value.name)) {
-    if (stringUtil.isBlank(formData.value.autoName)) {
+  if (formData.value.autoAdd.toString() === '1' && isUtil.isNotBlank(formData.value.name)) {
+    if (isUtil.isBlank(formData.value.autoName)) {
       if (formData.value.name.endsWith('id')) {
         formData.value.autoName = formData.value.name.replace('id', 'name');
       } else if (formData.value.name.endsWith('name')) {
@@ -683,7 +684,7 @@ watch(() => props, async () => {
     // 模型字段类型
     await modelApi.getTypeSelectOptions((data: ColumnSelectType[]) => {
       columnSelectType.value = data || [];
-      selectTypeOptions.value = modelApi.handleSelectType(columnSelectType.value);
+      selectTypeOptions.value = selectOptions.handleSelectType(columnSelectType.value);
     }, () => {
       columnSelectType.value = [];
       selectTypeOptions.value = [];
@@ -760,7 +761,7 @@ watch(() => visibleForm, () => {
                       @listChange="dictItemChange"/>
 
 
-  <a-modal v-model:visible="visibleForm" :footer="formState!=='view'" :title="title"
+  <a-modal draggable v-model:visible="visibleForm" :footer="formState!=='view'" :title="title"
            :width="width || ''" cancel-text="取消" ok-text="确定" title-align="start"
            @cancel="handleModelCancel" @before-ok="handleModelOk">
     <a-form ref="validateForm" :label-col-props="{ span: labelCol }" :model="formData" :wrapper-col-props="{ span: wrapperCol }" class="form">
@@ -778,7 +779,7 @@ watch(() => visibleForm, () => {
                      @blur="columnNameBlur"/>
             <span v-else>{{ formData.name }}</span>
             <a-tooltip v-if="!entityIsEdit" content="变更“字段标识”，更新后会同步至数据库">
-              <a-button size="medium" type="text" @click="ev => {entityIsEdit=true}">
+              <a-button size="medium" type="text" @click="() => {entityIsEdit=true}">
                 <gl-iconfont type="gl-edit-square"/>
               </a-button>
             </a-tooltip>

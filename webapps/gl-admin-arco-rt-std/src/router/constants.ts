@@ -1,18 +1,25 @@
+import {
+  ROUTER_ACCOUNT_ROUTE_PATH,
+  ROUTER_DEFAULT_ROUTE,
+  ROUTER_DEFAULT_ROUTE_ACCOUNT,
+  ROUTER_IS_ACCOUNT,
+  ROUTER_NOT_FOUND,
+  ROUTER_REDIRECT_ROUTE_NAME,
+  ROUTER_WHITE_LIST,
+} from '@geelato/gl-ui-arco-admin';
+
 export const URL_PREFIX = import.meta.env.VITE_WEB_PREFIX_URL;
 
-export const WHITE_LIST = [
-  {name: 'notFound', children: []},
-  {name: 'login', children: []},
-];
+export const WHITE_LIST = ROUTER_WHITE_LIST.value;
 
-export const NOT_FOUND = {
-  name: 'notFound',
-};
+export const NOT_FOUND = ROUTER_NOT_FOUND.value;
 
-export const REDIRECT_ROUTE_NAME = 'Redirect';
+export const REDIRECT_ROUTE_NAME = ROUTER_REDIRECT_ROUTE_NAME.value;
 
-export const DEFAULT_ROUTE = {title: '默认页面', name: '', fullPath: '', params: {}};
+export const DEFAULT_ROUTE = ROUTER_DEFAULT_ROUTE.value;
 
-export const ACCOUNT_ROUTE_PATH = '/account/user';
+export const ACCOUNT_ROUTE_PATH = ROUTER_ACCOUNT_ROUTE_PATH.value;
 
-export const DEFAULT_ROUTE_ACCOUNT = {title: 'model.application.index.menu.list', name: 'userAccount', fullPath: ACCOUNT_ROUTE_PATH, params: {}};
+export const DEFAULT_ROUTE_ACCOUNT = ROUTER_DEFAULT_ROUTE_ACCOUNT.value;
+
+export const IS_ACCOUNT = ROUTER_IS_ACCOUNT.value;

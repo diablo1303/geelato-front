@@ -6,8 +6,9 @@ export default {
 <script lang="ts" setup>
 import {type Ref, ref, watch} from 'vue'
 import {useAppStore} from '@geelato/gl-ide'
-import {applicationApi, entityApi, securityApi, useGlobal, utils} from '@geelato/gl-ui'
+import {applicationApi, entityApi, type QueryRoleTreeNodeForm, securityApi, useGlobal, utils} from '@geelato/gl-ui'
 import type {QueryRolePermissionForm} from '@geelato/gl-ui'
+import {deleteRoleTreeNodes} from "@geelato/gl-ui/src/m/datasource/SecurityApi";
 
 interface RoleGrantedMenuItem {
   id: string
@@ -97,7 +98,7 @@ const loadAppRoles = async (appId: string) => {
 
 const loadAppMenuItems = (appId: string) => {
   entityApi
-      .query('platform_tree_node', 'id key,pid,text name,iconType,seqNo', {'@p': '1,5000', treeId: appId},false,false,undefined,'seqNo|+')
+      .query('platform_tree_node', 'id key,pid,text name,iconType,seqNo', {'@p': '1,2000', treeId: appId}, false, false, undefined, 'seqNo|+')
       .then((res) => {
         // @ts-ignore
         res.data.sort((a, b) => a.seqNo - b.seqNo);
@@ -214,7 +215,7 @@ const selectAllMenuItem = () => {
   if (treeNodeIds.length > 0) {
     securityApi.insertRoleTreeNode({
       appId: appId, treeId: appId, roleId: currentRole.value.id, treeNodeId: treeNodeIds.join(','),
-    })
+    } as unknown as QueryRoleTreeNodeForm)
   }
 }
 
@@ -234,14 +235,14 @@ const reverseSelectAllMenuItem = () => {
   const fIds: string[] = [];
   selectAll(currentRoleAppMenuItems.value, tIds, fIds);
   if (tIds.length > 0) {
-    securityApi.deleteRoleTreeNode({
+    securityApi.deleteRoleTreeNodes({
       appId: appId, treeId: appId, roleId: currentRole.value.id, treeNodeId: tIds.join(','),
     })
   }
   if (fIds.length > 0) {
     securityApi.insertRoleTreeNode({
       appId: appId, treeId: appId, roleId: currentRole.value.id, treeNodeId: fIds.join(','),
-    })
+    } as unknown as QueryRoleTreeNodeForm)
   }
 }
 
@@ -420,15 +421,15 @@ const switchBeforeChange = async (record: AppMenuItem) => {
     const treeNodeIds: string[] = [record.key];
     if (record.checked) {// 取消授权，子节点也要取消授权
       getChildrenTreeNodeIds(record.key, treeNodeIds);
-      securityApi.deleteRoleTreeNode({
+      securityApi.deleteRoleTreeNodes({
         appId: appId, treeId: appId, roleId: currentRole.value.id, treeNodeId: treeNodeIds.join(','),
       })
       cancelAppMenuItems(record);
     } else {// 授权，父节点也要授权
       getParentTreeNodeIds(record.pid, treeNodeIds);
       securityApi.insertRoleTreeNode({
-        appId: appId, treeId: appId, roleId: currentRole.value.id, treeNodeId: treeNodeIds.join(','),
-      })
+        appId: appId, treeId: appId, roleId: currentRole.value.id as string, treeNodeId: treeNodeIds.join(','),
+      } as unknown as QueryRoleTreeNodeForm)
       checkedAppMenuItems(currentRoleAppMenuItems.value, treeNodeIds);
     }
     isSuccess = true;
@@ -516,7 +517,7 @@ defineExpose({save})
                   </a-button-group>
                 </template>
                 <template #cell="{ record }">
-                  <a-switch v-model="record.checked" :before-change="newValue => switchBeforeChange(record)"/>
+                  <a-switch v-model="record.checked" :before-change="() => switchBeforeChange(record)"/>
                 </template>
               </a-table-column>
               <a-table-column title="该页面相关元素权限" data-index="entities">

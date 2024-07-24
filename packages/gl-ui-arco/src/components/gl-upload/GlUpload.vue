@@ -6,8 +6,9 @@ export default {
 <script lang="ts" setup>
 import {inject, type Ref, ref, watch} from 'vue'
 import type {FileItem} from '@arco-design/web-vue'
-import {Notification} from '@arco-design/web-vue'
-import {entityApi, fileApi, PageProvideKey, PageProvideProxy, type UploadFileParams, useGlobal} from '@geelato/gl-ui'
+import {Message} from '@arco-design/web-vue'
+import {entityApi, fileApi, PageProvideKey, PageProvideProxy, useGlobal} from '@geelato/gl-ui'
+import type {AttachmentForm, UploadFileParams} from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -79,11 +80,11 @@ const beforeRemove = (fileItem: FileItem): Promise<boolean> => {
         .deleteAttachment(fileItem.uid)
         .then(() => {
           clearLocalFileItem(fileList.value, fileItem.uid)
-          Notification.success('删除成功')
+          Message.success('删除成功')
           resolve(true)
         })
         .catch((e) => {
-          Notification.success('删除失败')
+          Message.success('删除失败')
           console.error('删除失败', e)
           reject(false)
         })
@@ -92,14 +93,14 @@ const beforeRemove = (fileItem: FileItem): Promise<boolean> => {
 
 const uploadError = (fileItem: FileItem) => {
   console.error('上传失败', fileItem)
-  Notification.error('上传失败，请重试！')
+  Message.error('上传失败，请重试！')
 }
 
 const uploadSuccess = (fileItem: FileItem) => {
   fileItem.uid = fileItem.response.data.id
   fileList.value.push(fileItem)
   resetMv()
-  Notification.success('上传成功')
+  Message.success('上传成功')
 }
 
 const resetMv = () => {
@@ -122,7 +123,7 @@ const loadFiles = () => {
   if (!mv.value) return
   // console.log('loadFiles() > mv.value:', mv.value)
   fileApi.getAttachmentByIds(mv.value).then((value) => {
-    const attaches = value.data
+    const attaches = value as unknown as AttachmentForm[];
     if (attaches && attaches.length > 0) {
       attaches.forEach((value, index, array) => {
         if (value.delStatus === 0) {

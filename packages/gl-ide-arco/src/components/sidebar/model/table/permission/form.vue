@@ -566,7 +566,7 @@ watch(() => props.height, (val) => {
           </template>
           <template #cell="{record}">
             <a-switch v-model="record[item.id]" :disabled="formState==='view'"
-                      :before-change="newValue => switchBeforeChange(item.id,record.id)"
+                      :before-change="() => switchBeforeChange(item.id,record.id)"
                       :checked-color="nape.type==='custom'?'rgb(0,180,42)':nape.type==='view'?'rgb(20,201,201)':''">
               <template #checked>
                 YES
