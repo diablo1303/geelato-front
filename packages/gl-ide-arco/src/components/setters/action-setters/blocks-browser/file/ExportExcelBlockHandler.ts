@@ -27,19 +27,18 @@ export default class ExportExcelBlockHandler implements IBlockHandler {
     )
     const varName = propsExpressions?.varName ? getVarStr(propsExpressions.varName ): `"${getVarStr(props.varName)}"`
 
-    const valueMapList:Record<string,any> = []
+    const keyValues:any[] = []
     props.subRecordsArray?.forEach((record:Param)=>{
-      console.log('record', record)
       // 此record的key只有一个，如aList
-      valueMapList.push(`{
+      keyValues.push(`
           ${[record.name]}: ${record.valueExpression}
-        }`)
+        `)
     })
 
     const data = `
     {
       valueMap:${props.mainRecordExp || '{}'},
-      valueMapList:[${valueMapList.join('],')}]
+      valueMapList:[{${keyValues.join(',')}}]
     }`
 
     return new ParseResult(
