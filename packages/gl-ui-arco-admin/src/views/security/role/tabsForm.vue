@@ -227,7 +227,7 @@ watch(() => visibleForm, () => {
         <a-card class="">
           <template #extra>
             <a-space>
-              <a-button class="app-button" type="text" @click="ev => {nodeKey = utils.generateRandom()}">
+              <a-button class="app-button" type="text" @click="() => {nodeKey = utils.generateRandom()}">
                 <template #icon>
                   <icon-refresh/>
                 </template>

@@ -204,7 +204,7 @@ watch(() => visibleForm, () => {
             <a-input-number v-if="formState!=='view'" v-model="formData.weight" :max="999" :min="0" :precision="0" :step="1" placeholder="长度 [0,999]"/>
             <span v-else>{{ formData.weight }}</span>
             <a-tooltip v-if="formState!=='view'&&formData.weight!==5" content="重置为默认权重">
-              <a-button class="select-button button-primary" @click="ev => {formData.weight=5;}">
+              <a-button class="select-button button-primary" @click="() => {formData.weight=5;}">
                 <gl-iconfont type="gl-reset"/>
               </a-button>
             </a-tooltip>

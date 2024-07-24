@@ -266,7 +266,7 @@ defineExpose({saveOrUpdate, loadPage});
           <span v-else>{{ formData.weight }}</span>
           <ButtonTooltipIndex v-if="formData.weight!==5&&formState!=='view'"
                               :content="$t('security.role.index.form.weight.reset.tip')"
-                              @click="ev => {formData.weight=5;}">
+                              @click="() => {formData.weight=5;}">
             <icon-undo/>
           </ButtonTooltipIndex>
         </a-form-item>

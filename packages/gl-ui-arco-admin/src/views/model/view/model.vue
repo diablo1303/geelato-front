@@ -618,7 +618,7 @@ defineExpose({saveOrUpdate, loadPage});
     <a-tab-pane :key="2" class="a-tabs-one" title="视图语句">
       <a-card class="general-card1">
         <template #extra>
-          <a-button status="success" type="outline" @click="ev => {formatSql=Number(utils.generateRandom(4))}">
+          <a-button status="success" type="outline" @click="() => {formatSql=Number(utils.generateRandom(4))}">
             <template #icon>
               <icon-palette/>
             </template>

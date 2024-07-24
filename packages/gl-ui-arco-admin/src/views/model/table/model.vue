@@ -234,7 +234,7 @@ defineExpose({saveOrUpdate, loadPage});
           <a-input v-if="entityIsEdit" v-model.trim="formData.entityName" :max-length="30"/>
           <span v-else>{{ formData.entityName }}</span>
           <a-tooltip :content="$t('searchTable.columns.operations.alter.warning')">
-            <a-button v-if="!entityIsEdit" size="medium" type="text" @click="ev => {entityIsEdit=true}">
+            <a-button v-if="!entityIsEdit" size="medium" type="text" @click="() => {entityIsEdit=true}">
               <icon-edit/>
             </a-button>
           </a-tooltip>

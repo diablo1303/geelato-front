@@ -517,7 +517,7 @@ defineExpose({save})
                   </a-button-group>
                 </template>
                 <template #cell="{ record }">
-                  <a-switch v-model="record.checked" :before-change="newValue => switchBeforeChange(record)"/>
+                  <a-switch v-model="record.checked" :before-change="() => switchBeforeChange(record)"/>
                 </template>
               </a-table-column>
               <a-table-column title="该页面相关元素权限" data-index="entities">

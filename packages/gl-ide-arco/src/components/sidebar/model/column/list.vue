@@ -670,7 +670,7 @@ watch(() => props, (val) => {
             </a-tooltip>
             <span v-else>{{ record.name }}</span>
             <a-button v-if="record.key===true" class="list-action-button-default" type="outline">
-              {{ $t('model.column.index.form.name.key') }}
+              主键
             </a-button>
             <a-button v-if="record.key===false&&record.marker&&record.marker.indexOf('id')==-1" class="list-action-button-default" type="outline">
               {{ utils.getOptionLabel(record.marker, markerOptions) }}

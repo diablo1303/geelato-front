@@ -538,7 +538,7 @@ watch(() => props, (val) => {
           </template>
           <template #cell="{record}">
             <a-switch :disabled="formState==='view'"
-                      v-model="record[item.id]" :before-change="newValue => switchBeforeChange(item.id,record.id)">
+                      v-model="record[item.id]" :before-change="() => switchBeforeChange(item.id,record.id)">
               <template #checked>
                 YES
               </template>

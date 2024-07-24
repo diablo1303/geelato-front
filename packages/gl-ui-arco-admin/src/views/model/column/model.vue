@@ -798,7 +798,7 @@ defineExpose({saveOrUpdate, loadPage});
                    @blur="columnNameBlur($event)"/>
           <span v-else>{{ formData.name }}</span>
           <a-tooltip content="变更“字段标识”，更新后会同步至数据库">
-            <a-button v-if="!entityIsEdit" size="medium" type="text" @click="ev => {entityIsEdit=true}">
+            <a-button v-if="!entityIsEdit" size="medium" type="text" @click="() => {entityIsEdit=true}">
               <icon-edit/>
             </a-button>
           </a-tooltip>

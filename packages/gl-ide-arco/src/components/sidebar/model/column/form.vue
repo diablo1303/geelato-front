@@ -779,7 +779,7 @@ watch(() => visibleForm, () => {
                      @blur="columnNameBlur"/>
             <span v-else>{{ formData.name }}</span>
             <a-tooltip v-if="!entityIsEdit" content="变更“字段标识”，更新后会同步至数据库">
-              <a-button size="medium" type="text" @click="ev => {entityIsEdit=true}">
+              <a-button size="medium" type="text" @click="() => {entityIsEdit=true}">
                 <gl-iconfont type="gl-edit-square"/>
               </a-button>
             </a-tooltip>

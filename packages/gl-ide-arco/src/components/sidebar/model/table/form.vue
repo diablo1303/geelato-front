@@ -232,7 +232,7 @@ defineExpose({saveOrUpdate, loadPage});
           <a-input v-if="entityIsEdit&&formState!=='view'" v-model.trim="formData.entityName" :max-length="30"/>
           <span v-else>{{ formData.entityName }}</span>
           <a-tooltip v-if="formState!=='view'" content="变更“实体名称”，更新后会同步至数据库">
-            <a-button v-if="!entityIsEdit" size="medium" type="text" @click="ev => {entityIsEdit=true}">
+            <a-button v-if="!entityIsEdit" size="medium" type="text" @click="() => {entityIsEdit=true}">
               <gl-iconfont type="gl-edit-square"/>
             </a-button>
           </a-tooltip>

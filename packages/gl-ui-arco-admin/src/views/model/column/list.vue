@@ -672,7 +672,7 @@ watch(() => props, async (val) => {
     <a-col :span="12" style="display: flex; align-items: center; justify-content: end">
       <a-tooltip :content="$t('searchTable.columns.operations.switch.tip')" :popup-visible="visible" position="tr"
                  @mouseenter="()=>{visible=true}" @mouseleave="()=>{visible=false}">
-        <a-switch v-model="checked" :before-change="beforeChange"/>
+        <a-switch v-model="checked" :before-change="() => beforeChange"/>
       </a-tooltip>
     </a-col>
   </a-row>
