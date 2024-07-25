@@ -1,4 +1,7 @@
 export default {
+  'menu.account': 'Account Settings',
+  'menu.account.user': 'User Account',
+  'menu.account.manage': 'Manage Account',
   /* 个人信息 */
   'account.user.avatar.button': 'Update Avatar',
   'account.user.avatar.button.description': 'Click the button to complete the upload',

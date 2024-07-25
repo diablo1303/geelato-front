@@ -1,7 +1,7 @@
 import type {RouteLocationNormalized} from 'vue-router';
 import {defineStore} from 'pinia';
-import {ROUTER_DEFAULT_ROUTE, ROUTER_REDIRECT_ROUTE_NAME} from '../../../router/constants';
 import {isUtil} from '@geelato/gl-ui';
+import {DEFAULT_ROUTE, REDIRECT_ROUTE_NAME} from '../../../router/constants';
 import type {TabBarState, TagProps} from './types';
 
 const formatTag = (route: RouteLocationNormalized): TagProps => {
@@ -17,12 +17,13 @@ const formatTag = (route: RouteLocationNormalized): TagProps => {
   };
 };
 
-const BAN_LIST = [ROUTER_REDIRECT_ROUTE_NAME.value];
+const BAN_LIST = [REDIRECT_ROUTE_NAME];
 
 const useTabBarStore = defineStore('tabBar', {
   state: (): TabBarState => ({
-    cacheTabList: new Set([ROUTER_DEFAULT_ROUTE.value.name]),
-    tagList: [ROUTER_DEFAULT_ROUTE.value],
+    cacheTabList: new Set([DEFAULT_ROUTE.value.name]),
+    // @ts-ignore
+    tagList: [DEFAULT_ROUTE.value],
   }),
 
   getters: {
@@ -62,9 +63,10 @@ const useTabBarStore = defineStore('tabBar', {
         .forEach((x) => this.cacheTabList.add(x));
     },
     resetTabList() {
-      this.tagList = [ROUTER_DEFAULT_ROUTE.value];
+      // @ts-ignore
+      this.tagList = [DEFAULT_ROUTE.value];
       this.cacheTabList.clear();
-      this.cacheTabList.add(ROUTER_DEFAULT_ROUTE.value.name);
+      this.cacheTabList.add(DEFAULT_ROUTE.value.name);
     },
   },
 });

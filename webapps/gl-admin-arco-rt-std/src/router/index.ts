@@ -1,28 +1,25 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import NProgress from 'nprogress';
+import NProgress from 'nprogress'; // progress bar
 import 'nprogress/nprogress.css';
-import {APP_PAGE_MAIN, NOT_FOUND_ROUTE, REDIRECT_MAIN, RESET_PWD_MAIN} from "@/router/routes/base";
-import {appLoginRoutes, appRoutes} from './routes';
-import createRouteGuard from './guard';
+import {analyzeCurrentPath, appLoginRoutes, URL_PREFIX} from "@geelato/gl-ui-arco-admin";
 
 NProgress.configure({showSpinner: false}); // NProgress Configuration
+
+const modules = import.meta.glob('./routes/modules/*.ts', {eager: true});
+const externalModules = import.meta.glob('./routes/externalModules/*.ts', {eager: true});
+
+URL_PREFIX.value = import.meta.env.VITE_WEB_PREFIX_URL;
+// 解析地址
+analyzeCurrentPath(modules);
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    ...appRoutes,
-    ...appLoginRoutes([]),
-    REDIRECT_MAIN,
-    NOT_FOUND_ROUTE,
-    APP_PAGE_MAIN,
-    RESET_PWD_MAIN
+    ...appLoginRoutes([], () => import('@/views/login/index.vue'))
   ],
   scrollBehavior() {
     return {top: 0};
   },
 });
 
-createRouteGuard(router);
-console.log(router);
-
-export default router;
+export {modules, externalModules, router}

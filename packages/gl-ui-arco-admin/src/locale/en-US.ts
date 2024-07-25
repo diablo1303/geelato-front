@@ -5,6 +5,7 @@ import localeResets from '../components/reset-password/locale/en-US';
 import localeApplications from '../views/application/locale/en-US';
 import localeExports from '../views/export/locale/en-US';
 import localeModels from '../views/model/locale/en-US';
+import localePages from '../views/page/locale/en-US';
 import localeSecuritys from '../views/security/locale/en-US';
 
 export default {
@@ -15,5 +16,6 @@ export default {
   ...localeApplications,
   ...localeExports,
   ...localeModels,
+  ...localePages,
   ...localeSecuritys,
 };

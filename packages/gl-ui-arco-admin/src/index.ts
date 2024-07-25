@@ -1,5 +1,5 @@
-import type {App, Plugin} from 'vue'
-import {PluginUtil} from '@geelato/gl-ui'
+import type {App} from 'vue'
+import {entityApi, type GeelatoPlugin, type GeelatoPluginOptions, PluginUtil} from '@geelato/gl-ui'
 import {use} from 'echarts/core';
 import {CanvasRenderer} from 'echarts/renderers';
 import {BarChart, LineChart, PieChart, RadarChart} from 'echarts/charts';
@@ -39,15 +39,19 @@ import useUser from "./hooks/user";
 import useVisible from "./hooks/visible";
 import {PageSizeOptions} from "./types/global";
 import {setPinia, useAppStore, useTabBarStore, useTenantStore, useUserStore} from "./store/index";
+import {appDataBaseRoutes, appExternalRoutes, appRoutes, DEFAULT_ROUTE, IS_ACCOUNT, IS_DATA_PAGE, URL_PREFIX} from "./router/constants";
+import createRouteGuard from "./router/guard/index";
+import {APP_PAGE_MAIN, DEFAULT_LAYOUT, NOT_FOUND_ROUTE, REDIRECT_MAIN, RESET_PWD_MAIN} from "./router/routes/base";
 import {
-  ROUTER_ACCOUNT_ROUTE_PATH,
-  ROUTER_DEFAULT_ROUTE,
-  ROUTER_DEFAULT_ROUTE_ACCOUNT,
-  ROUTER_IS_ACCOUNT,
-  ROUTER_NOT_FOUND,
-  ROUTER_REDIRECT_ROUTE_NAME,
-  ROUTER_WHITE_LIST,
-} from "./router/constants";
+  analyzeCurrentPath,
+  appLoginRoutes,
+  formatAppModules,
+  formatExternalModules,
+  formatModules,
+  pageBaseRoute,
+  pageParamsIsFull
+} from "./router/routes/index";
+import type {AppRouteRecordRaw} from "./router/routes/types";
 import localeEnUs from "./locale/en-US";
 import localeZhCn from "./locale/zh-CN";
 import {packageStatusOptions} from "./views/version/searchTable";
@@ -88,7 +92,7 @@ use([
   GraphicComponent,
 ]);
 
-const component: Plugin = {
+const component: GeelatoPlugin = {
   install: function (Vue: App) {
     // @ts-ignore
     if (PluginUtil.markInstalledPlugin(Vue, 'gl-ui-arco-admin')) {
@@ -150,7 +154,34 @@ const component: Plugin = {
     //   },
     // });
     // Vue.use(i18n);
-  }
+  },
+  setupGeelato: async function (options?: GeelatoPluginOptions) {
+    // 设置entityApi的依赖库
+    if (options?.axios) {
+      entityApi.setup(options.axios)
+    }
+    if (options?.router) {
+      appDataBaseRoutes.value = await formatAppModules([]);
+      appRoutes.value = formatModules(options?.params?.modules, appDataBaseRoutes.value);
+      appRoutes.value.forEach((item) => {
+        options.router.addRoute(item);
+      })
+      appExternalRoutes.value = formatExternalModules(options?.params?.externalModules, []);
+      appExternalRoutes.value.forEach((item) => {
+        options.router.addRoute(item);
+      })
+      // 添加
+      options.router.addRoute(REDIRECT_MAIN);// 页面重定向
+      options.router.addRoute(NOT_FOUND_ROUTE);// 页面找不到
+      options.router.addRoute(RESET_PWD_MAIN);// 忘记密码，重置密码
+      options.router.addRoute(APP_PAGE_MAIN);// 低代码页面
+      // 创建
+      console.log("IS_ACCOUNT：" + IS_ACCOUNT.value, "IS_DATA_PAGE：" + IS_DATA_PAGE.value)
+      console.log('首页路由', DEFAULT_ROUTE.value)
+      console.log('创建路由守卫', options.router)
+      createRouteGuard(options.router);
+    }
+  },
 }
 
 export {
@@ -177,13 +208,19 @@ export {
   useUser,
   useVisible,
   // 自定义 router
-  ROUTER_ACCOUNT_ROUTE_PATH,
-  ROUTER_DEFAULT_ROUTE,
-  ROUTER_DEFAULT_ROUTE_ACCOUNT,
-  ROUTER_IS_ACCOUNT,
-  ROUTER_NOT_FOUND,
-  ROUTER_REDIRECT_ROUTE_NAME,
-  ROUTER_WHITE_LIST,
+  URL_PREFIX,
+  IS_DATA_PAGE,
+  IS_ACCOUNT,
+  appDataBaseRoutes,
+  appRoutes,
+  DEFAULT_ROUTE,
+  DEFAULT_LAYOUT,
+  analyzeCurrentPath,
+  formatAppModules,
+  appLoginRoutes,
+  pageBaseRoute,
+  pageParamsIsFull,
+  AppRouteRecordRaw,
   // 自定义 options
   packageStatusOptions,
   PageSizeOptions

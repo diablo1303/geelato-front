@@ -1,5 +1,4 @@
-import {DEFAULT_LAYOUT} from '../base';
-import {AppRouteRecordRaw} from '../types';
+import {type AppRouteRecordRaw, DEFAULT_LAYOUT} from '@geelato/gl-ui-arco-admin';
 
 const APPLICATION: AppRouteRecordRaw = {
   path: `/dev`,

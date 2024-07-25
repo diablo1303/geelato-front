@@ -16,7 +16,7 @@ import useUser from '../../hooks/user';
 import {applicationApi, authUtil} from "@geelato/gl-ui";
 import defaultAvatar from '../../assets/images/default-avatar.png';
 import favicon from '../../assets/favicon.ico'
-import {ROUTER_ACCOUNT_ROUTE_PATH, ROUTER_IS_ACCOUNT} from "../../router/constants";
+import {ACCOUNT_ROUTE_PATH, IS_ACCOUNT} from "../../router/constants";
 import AccountValid from "../account/components/account-valid.vue";
 import AccountPassword from "../account/components/account-password.vue";
 
@@ -151,10 +151,10 @@ const getAppInfo = async () => {
 }
 
 const accountSettingsClick = (ev?: MouseEvent) => {
-  if (ROUTER_IS_ACCOUNT.value) {
-    router.push({path: ROUTER_ACCOUNT_ROUTE_PATH.value});
+  if (IS_ACCOUNT.value) {
+    router.push({path: ACCOUNT_ROUTE_PATH});
   } else {
-    window.open(router.resolve({path: ROUTER_ACCOUNT_ROUTE_PATH.value}).href, "_blank");
+    window.open(router.resolve({path: ACCOUNT_ROUTE_PATH}).href, "_blank");
   }
 }
 /**

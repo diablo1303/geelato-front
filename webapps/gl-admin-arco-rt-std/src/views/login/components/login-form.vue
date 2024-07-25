@@ -10,11 +10,19 @@ import {RouteParamsRaw, useRoute, useRouter} from 'vue-router';
 import {Message, ValidatedError} from '@arco-design/web-vue';
 import {useI18n} from 'vue-i18n';
 import {useStorage} from '@vueuse/core';
-import {useTenantStore, useUserStore, useLoading} from '@geelato/gl-ui-arco-admin';
 import type {LoginData} from '@geelato/gl-ui';
 import {applicationApi, authUtil, useGlobal, userApi} from "@geelato/gl-ui";
-import {DEFAULT_ROUTE} from "@/router/constants";
-import {appDataBaseRoutes, formatAppModules, IS_ACCOUNT, pageBaseRoute, pageParamsIsFull} from "@/router/routes";
+import {
+  appDataBaseRoutes,
+  DEFAULT_ROUTE,
+  formatAppModules,
+  IS_ACCOUNT,
+  pageBaseRoute,
+  pageParamsIsFull,
+  useTenantStore,
+  useUserStore,
+  useLoading
+} from '@geelato/gl-ui-arco-admin';
 
 const router = useRouter();
 const route = useRoute();
@@ -38,7 +46,7 @@ const userInfo = reactive({
   password: loginConfig.value.password,
 });
 const getDataBaseRouters = async () => {
-  if (!(appDataBaseRoutes && appDataBaseRoutes.length > 0)) {
+  if (!(appDataBaseRoutes.value && appDataBaseRoutes.value.length > 0)) {
     const dataBaseRoutes = await formatAppModules([]);
     if (dataBaseRoutes && dataBaseRoutes.length > 0) {
       // eslint-disable-next-line no-restricted-syntax
@@ -61,7 +69,7 @@ const enterApp = async () => {
     const {redirect, ...othersQuery} = router.currentRoute.value.query;
     // 填充，tenantCode、appId
     Object.assign(othersQuery, baseParams);// 重定向
-    Object.assign(DEFAULT_ROUTE.params, baseParams);// 个人菜单首页
+    Object.assign(DEFAULT_ROUTE.value.params, baseParams);// 个人菜单首页
     if (redirect) {// 重定向
       if (redirect.toString().toLowerCase().startsWith("http")) {// 用于将当前窗口的URL更改为指定的URL
         window.location.assign(redirect as string);

@@ -7,7 +7,7 @@ export default {
 <script lang="ts" setup>
 import {computed, type PropType} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
-import {ROUTER_DEFAULT_ROUTE, ROUTER_REDIRECT_ROUTE_NAME} from '@/router/constants';
+import {DEFAULT_ROUTE, REDIRECT_ROUTE_NAME} from '@/router/constants';
 import {useTabBarStore} from '../../store';
 import type {TagProps} from '../../store/modules/tab-bar/types';
 
@@ -102,7 +102,7 @@ const actionSelect = async (value: any) => {
   } else if (value === Eaction.reload) {
     tabBarStore.deleteCache(itemData);
     await router.push({
-      name: ROUTER_REDIRECT_ROUTE_NAME.value,
+      name: REDIRECT_ROUTE_NAME,
       params: {
         path: route.fullPath,
       },
@@ -110,7 +110,7 @@ const actionSelect = async (value: any) => {
     tabBarStore.addCache(itemData.name);
   } else {
     tabBarStore.resetTabList();
-    router.push({name: ROUTER_DEFAULT_ROUTE.value.name, params: ROUTER_DEFAULT_ROUTE.value.params});
+    router.push({name: DEFAULT_ROUTE.value.name, params: DEFAULT_ROUTE.value.params});
   }
 };
 </script>

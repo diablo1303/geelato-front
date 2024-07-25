@@ -7,6 +7,7 @@ export type GeelatoPluginOptions = {
   axios: AxiosStatic | AxiosInstance
   ctx?: Record<string, any>
   router?: any
+  params?: Record<string, any>
 }
 
 export type GeelatoPlugin = {
