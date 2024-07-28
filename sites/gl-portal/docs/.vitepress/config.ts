@@ -1,60 +1,70 @@
-import { defineConfig } from 'vitepress'
-import { version } from '../../package.json'
+import { DefaultTheme, defineConfig } from "vitepress";
 
+// https://vitepress.dev/reference/site-config
 export default defineConfig({
   // lang: 'en-US',
-  siteTitle: '',
-  title: 'Geelato',
-  description: 'A low-code engine.',
+  title: "Geelato",
+  description: "A low-code engine.",
 
   lastUpdated: true,
   themeConfig: {
-    logo: '/logo.svg',
+    logo: "/logo.svg",
     nav: nav(),
 
     sidebar: {
-      '/guide/': sidebarGuide(),
-      '/component/': sidebarComponent(),
-      '/config/': sidebarConfig(),
-      '/api/':sidebarApi()
+      "/guide/": sidebarGuide(),
+      "/component/": sidebarComponent(),
+      "/config/": sidebarConfig(),
+      "/api/": sidebarApi(),
     },
 
     editLink: {
-      pattern: 'https://github.com/vuejs/vitepress/edit/main/docs/:path',
-      text: 'Edit this page on GitHub'
+      pattern: "https://github.com/vuejs/vitepress/edit/main/docs/:path",
+      text: "Edit this page on GitHub",
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/geelato-projects' }
+      { icon: "github", link: "https://github.com/geelato-projects" },
     ],
 
     footer: {
-      message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2022-present Geelato'
+      message: "Released under the MIT License.",
+      copyright: "Copyright © 2022-present Geelato",
     },
 
     algolia: {
-      appId: '8J64VVRP8K',
-      apiKey: 'a18e2f4cc5665f6602c5631fd868adfd',
-      indexName: 'vitepress'
+      appId: "8J64VVRP8K",
+      apiKey: "a18e2f4cc5665f6602c5631fd868adfd",
+      indexName: "vitepress",
     },
 
     // carbonAds: {
     //   code: 'CEBDT27Y',
     //   placement: 'vuejsorg'
     // }
-  }
-})
+  },
+});
 
-function nav() {
+function nav(): DefaultTheme.NavItem[] {
   return [
-    { text: '指南', link: '/guide/what-is-geelato', activeMatch: '/guide/' },
-    { text: '组件', link: '/component/introduction', activeMatch: '/component/' },
-    { text: '演示', items: [
-        {text: 'IDE', link: '/showcase/ide', activeMatch: '/showcase/'},
-        {text: 'Admin', link: '/showcase/admin', activeMatch: '/showcase/'},
-        {text: 'PagePreview', link: '/showcase/preview', activeMatch: '/showcase/'}
-      ] },
+    { text: "指南", link: "/guide/what-is-geelato", activeMatch: "/guide/" },
+    {
+      text: "组件",
+      link: "/component/introduction",
+      activeMatch: "/component/",
+    },
+    {
+      text: "演示",
+      items: [
+        { text: "IDE", link: "/showcase/ide", activeMatch: "/showcase/" },
+        { text: "Admin", link: "/showcase/admin", activeMatch: "/showcase/" },
+        {
+          text: "PagePreview",
+          link: "/showcase/preview",
+          activeMatch: "/showcase/",
+        },
+      ],
+    },
     // {
     //   text: version,
     //   items: [
@@ -68,66 +78,65 @@ function nav() {
     //     },
     //   ],
     // },
-  ]
+  ];
 }
 
 function sidebarGuide() {
   return [
     {
-      text: '介绍',
+      text: "介绍",
       collapsible: true,
-      items: [
-        { text: '什么是Geelato?', link: '/guide/what-is-geelato' }
-      ]
+      items: [{ text: "什么是Geelato?", link: "/guide/what-is-geelato" }],
     },
     {
-      text: '前端工程',
+      text: "前端工程",
       collapsible: true,
       items: [
-        { text: '快速开始', link: '/guide/frontend/getting-started' },
-        { text: '变量', link: '/guide/frontend/vars' },
+        { text: "快速开始", link: "/guide/frontend/getting-started" },
+        { text: "变量", link: "/guide/frontend/vars" },
         // { text: '工程部署', link: '/guide/frontend/configuration' },
-      ]
+      ],
     },
     {
-      text: '后台工程',
+      text: "后台工程",
       collapsible: true,
       items: [
-        { text: '快速开始', link: '/guide/backend/getting-started' },
+        { text: "快速开始", link: "/guide/backend/getting-started" },
         // { text: '工程配置', link: '/guide/backend/configuration' },
         // { text: '工程部署', link: '/guide/backend/deploying' },
-        { text: '数据库约定', link: '/guide/backend/db-standard-guide' }
-      ]
+        { text: "数据库约定", link: "/guide/backend/db-standard-guide" },
+      ],
     },
     {
-      text: '前后端接口',
+      text: "前后端接口",
       collapsible: true,
       items: [
-        { text: 'Entity增删改查', link: '/guide/api/entity-api' },
-        { text: 'SqlKey增删改查', link: '/guide/api/sql-key' },
-        { text: 'Mql', link: '/guide/api/mql' },
-      ]
+        { text: "Entity增删改查", link: "/guide/api/entity-api" },
+        { text: "SqlKey增删改查", link: "/guide/api/sql-key" },
+        { text: "Mql", link: "/guide/api/mql" },
+      ],
     },
     {
-      text: '低代码协议',
+      text: "低代码协议",
       collapsible: true,
       items: [
-        { text: '低代码引擎协议', link: '/guide/schema/introduction' },
-        { text: '属性设置器Meta', link: '/guide/schema/setters-property-meta' },
-        { text: '组件设置器Meta', link: '/guide/schema/setters-component-meta' },
-        { text: '属性设置器', link: '/guide/schema/setters-property' },
-      ]
-    }
-  ]
+        { text: "低代码引擎协议", link: "/guide/schema/introduction" },
+        { text: "属性设置器Meta", link: "/guide/schema/setters-property-meta" },
+        {
+          text: "组件设置器Meta",
+          link: "/guide/schema/setters-component-meta",
+        },
+        { text: "属性设置器", link: "/guide/schema/setters-property" },
+      ],
+    },
+  ];
 }
 
-function sidebarComponent(){
+function sidebarComponent() {
   return [
     {
       collapsible: true,
-      items: [
-        { text: '介绍', link: '/component/introduction' },
-      ]
+      items: [{ text: "介绍", link: "/component/introduction" }],
     },
     // {
     //   text: '通用',
@@ -227,18 +236,16 @@ function sidebarComponent(){
     //   ]
     // },
     {
-      text: '页面组件',
+      text: "页面组件",
       collapsible: true,
       items: [
-        { text: '所有页面组件', link: '/component/script/all_components' }
-      ]
+        { text: "所有页面组件", link: "/component/script/all_components" },
+      ],
     },
     {
-      text: '脚本组件',
+      text: "脚本组件",
       collapsible: true,
-      items: [
-        { text: '所有脚本组件', link: '/component/script/all_blocks' }
-      ]
+      items: [{ text: "所有脚本组件", link: "/component/script/all_blocks" }],
     },
     // {
     //   text: '自定义组件',
@@ -250,37 +257,35 @@ function sidebarComponent(){
     //     { text: '人员选取', link: '/component/gl-user-selector' }
     //   ]
     // }
-  ]
+  ];
 }
 
-function sidebarSchema(){
-  return [
-
-  ]
+function sidebarSchema() {
+  return [];
 }
 
 function sidebarConfig() {
   return [
     {
-      text: 'Config',
+      text: "Config",
       items: [
-        { text: 'Introduction', link: '/config/introduction' },
-        { text: 'App Configs', link: '/config/app-configs' },
-        { text: 'Theme Configs', link: '/config/theme-configs' },
-        { text: 'Frontmatter Configs', link: '/config/frontmatter-configs' }
-      ]
-    }
-  ]
+        { text: "Introduction", link: "/config/introduction" },
+        { text: "App Configs", link: "/config/app-configs" },
+        { text: "Theme Configs", link: "/config/theme-configs" },
+        { text: "Frontmatter Configs", link: "/config/frontmatter-configs" },
+      ],
+    },
+  ];
 }
 
 function sidebarApi() {
   return [
     {
-      text: '',
+      text: "",
       items: [
-        { text: '平台服务接口', link: '/api/platform-api' },
-        { text: '元数据查询接口', link: '/api/mql' }
-      ]
-    }
-  ]
+        { text: "平台服务接口", link: "/api/platform-api" },
+        { text: "元数据查询接口", link: "/api/mql" },
+      ],
+    },
+  ];
 }
