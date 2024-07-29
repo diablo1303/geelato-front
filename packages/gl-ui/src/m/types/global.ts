@@ -1,13 +1,12 @@
 // 页面类型
 // export type PageType = 'freePage' | 'formPage' | 'listPage' | 'blockPage' | ''
-import type { AxiosInstance, AxiosStatic } from 'axios'
-import type { App } from 'vue'
+import type {AxiosInstance, AxiosStatic} from 'axios'
+import type {App} from 'vue'
 
 export type GeelatoPluginOptions = {
   axios: AxiosStatic | AxiosInstance
   ctx?: Record<string, any>
   router?: any
-  params?: Record<string, any>
 }
 
 export type GeelatoPlugin = {
@@ -117,10 +116,10 @@ export enum CellValueType {
 }
 
 export const CellValueTypeOptions = [
-  { label: '字符串', value: 'STRING' },
-  { label: '数值', value: 'NUMBER' },
-  { label: '日期', value: 'DATE' },
-  { label: '时间', value: 'DATETIME' }
+  {label: '字符串', value: 'STRING'},
+  {label: '数值', value: 'NUMBER'},
+  {label: '日期', value: 'DATE'},
+  {label: '时间', value: 'DATETIME'}
 ]
 
 export interface CellMeta {

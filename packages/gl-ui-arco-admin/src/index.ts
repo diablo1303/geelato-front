@@ -160,26 +160,42 @@ const component: GeelatoPlugin = {
     if (options?.axios) {
       entityApi.setup(options.axios)
     }
-    if (options?.router) {
+    // 设置路由
+    if (options?.router && options?.router?.router) {
+      console.log('设置路由参数', options.router)
+      // 路由前缀
+      URL_PREFIX.value = options.router?.prefixUrl || "";
+      // 默认路由
+      DEFAULT_ROUTE.value = options.router?.defaultRoute || {};
+      // 解析地址
+      analyzeCurrentPath(options.router?.modules);
+      // 登录路由
+      const loginRoutes = appLoginRoutes([], options.router?.loginComponent);
+      loginRoutes.forEach((item) => {
+        options.router.router.addRoute(item);
+      })
+      // 来自低代码的菜单路由
       appDataBaseRoutes.value = await formatAppModules([]);
-      appRoutes.value = formatModules(options?.params?.modules, appDataBaseRoutes.value);
+      // 菜单路由
+      appRoutes.value = formatModules(options.router?.modules, appDataBaseRoutes.value);
       appRoutes.value.forEach((item) => {
-        options.router.addRoute(item);
+        options.router.router.addRoute(item);
       })
-      appExternalRoutes.value = formatExternalModules(options?.params?.externalModules, []);
+      // 外部路由
+      appExternalRoutes.value = formatExternalModules(options.router?.externalModules, []);
       appExternalRoutes.value.forEach((item) => {
-        options.router.addRoute(item);
+        options.router.router.addRoute(item);
       })
-      // 添加
-      options.router.addRoute(REDIRECT_MAIN);// 页面重定向
-      options.router.addRoute(NOT_FOUND_ROUTE);// 页面找不到
-      options.router.addRoute(RESET_PWD_MAIN);// 忘记密码，重置密码
-      options.router.addRoute(APP_PAGE_MAIN);// 低代码页面
+      // 添加固定路由
+      options.router.router.addRoute(REDIRECT_MAIN);// 页面重定向
+      options.router.router.addRoute(NOT_FOUND_ROUTE);// 页面找不到
+      options.router.router.addRoute(RESET_PWD_MAIN);// 忘记密码，重置密码
+      options.router.router.addRoute(APP_PAGE_MAIN);// 低代码页面
       // 创建
       console.log("IS_ACCOUNT：" + IS_ACCOUNT.value, "IS_DATA_PAGE：" + IS_DATA_PAGE.value)
       console.log('首页路由', DEFAULT_ROUTE.value)
-      console.log('创建路由守卫', options.router)
-      createRouteGuard(options.router);
+      console.log('创建路由守卫', options.router.router)
+      createRouteGuard(options.router.router);
     }
   },
 }
@@ -208,7 +224,6 @@ export {
   useUser,
   useVisible,
   // 自定义 router
-  URL_PREFIX,
   IS_DATA_PAGE,
   IS_ACCOUNT,
   appDataBaseRoutes,
