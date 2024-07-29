@@ -38,7 +38,7 @@ import useThemes from "./hooks/themes";
 import useUser from "./hooks/user";
 import useVisible from "./hooks/visible";
 import {PageSizeOptions} from "./types/global";
-import {setPinia, useAppStore, useTabBarStore, useTenantStore, useUserStore} from "./store/index";
+import {getPinia, setPinia, useAppStore, useTabBarStore, useTenantStore, useUserStore} from "./store/index";
 import {appDataBaseRoutes, appExternalRoutes, appRoutes, DEFAULT_ROUTE, IS_ACCOUNT, IS_DATA_PAGE, URL_PREFIX} from "./router/constants";
 import createRouteGuard from "./router/guard/index";
 import {APP_PAGE_MAIN, DEFAULT_LAYOUT, NOT_FOUND_ROUTE, REDIRECT_MAIN, RESET_PWD_MAIN} from "./router/routes/base";
@@ -160,6 +160,10 @@ const component: GeelatoPlugin = {
     if (options?.axios) {
       entityApi.setup(options.axios)
     }
+    // 设置 pinia
+    if (options?.pinia) {
+      setPinia(options.pinia)
+    }
     // 设置路由
     if (options?.router && options?.router?.router) {
       console.log('设置路由参数', options.router)
@@ -213,6 +217,7 @@ export {
   useUserStore,
   useTabBarStore,
   setPinia,
+  getPinia,
   // 自定义 hooks
   useChartOption,
   useLoading,

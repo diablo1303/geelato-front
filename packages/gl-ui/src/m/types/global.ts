@@ -2,11 +2,13 @@
 // export type PageType = 'freePage' | 'formPage' | 'listPage' | 'blockPage' | ''
 import type {AxiosInstance, AxiosStatic} from 'axios'
 import type {App} from 'vue'
+import type {Pinia} from "pinia";
 
 export type GeelatoPluginOptions = {
   axios: AxiosStatic | AxiosInstance
   ctx?: Record<string, any>
   router?: any
+  pinia?: Pinia
 }
 
 export type GeelatoPlugin = {

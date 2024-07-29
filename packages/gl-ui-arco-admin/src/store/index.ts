@@ -4,10 +4,13 @@ import useUserStore from './modules/user';
 import useTenantStore from "./modules/tenant";
 import useTabBarStore from './modules/tab-bar';
 
-let pinia
+let pinia: Pinia
 const setPinia = (piniaInst: Pinia) => {
   pinia = piniaInst
 }
 
-export {useAppStore, useUserStore, useTenantStore, useTabBarStore, setPinia};
-export default pinia;
+const getPinia = () => {
+  return pinia
+}
+
+export {useAppStore, useUserStore, useTenantStore, useTabBarStore, setPinia, getPinia};

@@ -3,22 +3,21 @@ export default {
   name: 'AppSettings',
 };
 </script>
-<script setup lang="ts">
-import {onMounted, onUnmounted, provide, ref, shallowRef} from 'vue';
+<script lang="ts" setup>
+import {onMounted, onUnmounted, provide, ref} from 'vue';
 import cloneDeep from "lodash/cloneDeep";
 import {Message} from "@arco-design/web-vue";
 import {EventNames} from '@geelato/gl-ide';
 import {emitter, useGlobal, authUtil, utils, userApi, applicationApi} from '@geelato/gl-ui';
 import type {QueryAppForm, QueryOrgForm} from "@geelato/gl-ui";
-import {useUser, useLoading, useUserStore, PageSizeOptions} from "@geelato/gl-ui-arco-admin";
-import pinia from '../../store';
+import {useUser, useLoading, useUserStore, getPinia, PageSizeOptions} from "@geelato/gl-ui-arco-admin";
 
 // 常量使用
 const ListDefaultPageSize = 5;
 const ListUsedHeight = 428;
 const ListRowHeight = 49;
 
-provide('pinia', pinia);
+provide('pinia', getPinia());
 const userStore = useUserStore();
 const global = useGlobal();
 const {ideRedirect, ideLogout} = useUser();
@@ -272,22 +271,22 @@ onUnmounted(() => {
     </div>
     <div v-else>
       <div :style="{ padding: '4px 14px' }" class="gl-page-header">
-        <a-page-header title="应用设置" :subtitle="appData.name" :show-back="false">
+        <a-page-header :show-back="false" :subtitle="appData.name" title="应用设置">
           <template #extra>
             <a-space>
-              <a-button type="text" class="app-button" @click="enterLink('index')">
+              <a-button class="app-button" type="text" @click="enterLink('index')">
                 <template #icon>
                   <icon-link/>
                 </template>
                 应用站点
               </a-button>
-              <a-button type="text" class="app-button" @click="enterLink('design')">
+              <a-button class="app-button" type="text" @click="enterLink('design')">
                 <template #icon>
                   <icon-link/>
                 </template>
                 设计站点
               </a-button>
-              <a-button type="text" class="app-button" @click="enterLink('version')">
+              <a-button class="app-button" type="text" @click="enterLink('version')">
                 <template #icon>
                   <icon-link/>
                 </template>
@@ -299,7 +298,7 @@ onUnmounted(() => {
       </div>
       <div :style="{ padding: '14px' }">
         <a-card>
-          <a-tabs v-model:active-key="tabsKey" :default-active-key="1" direction="vertical" :lazy-load="true">
+          <a-tabs v-model:active-key="tabsKey" :default-active-key="1" :lazy-load="true" direction="vertical">
             <a-tab-pane :key="1">
               <template #title>
                 <icon-calendar/>
@@ -309,7 +308,7 @@ onUnmounted(() => {
                 <template #extra>
                   <a-space>
                     <a-popconfirm content="是否更新该应用的基本信息？" position="br" type="info" @ok="updateApp">
-                      <a-button :disabled="!appModelParams.id" type="text" :loading="loading">
+                      <a-button :disabled="!appModelParams.id" :loading="loading" type="text">
                         <template #icon>
                           <icon-save/>
                         </template>
@@ -321,11 +320,11 @@ onUnmounted(() => {
                 <a-scrollbar :style="{overflow:'auto',height:`${appModelParams.height}px`}">
                   <div style="width: 98.6%;">
                     <GlApplicationModel ref="tableFormRef"
-                                        :visible="appModelParams.visible"
-                                        :parameter="appModelParams.parameter"
+                                        :formCol="appModelParams.formCol"
                                         :formState="appModelParams.formState"
                                         :modelValue="appModelParams.id"
-                                        :formCol="appModelParams.formCol"/>
+                                        :parameter="appModelParams.parameter"
+                                        :visible="appModelParams.visible"/>
                   </div>
                 </a-scrollbar>
               </a-card>
@@ -336,12 +335,12 @@ onUnmounted(() => {
                 应用字典
               </template>
               <a-card class="general-card">
-                <GlDictionaryList :visible="dictListParams.visible"
-                                  :parameter="dictListParams.parameter"
+                <GlDictionaryList :filterCol="dictListParams.filterCol"
                                   :formState="dictListParams.formState"
-                                  :filterCol="dictListParams.filterCol"
+                                  :height="dictListParams.height"
                                   :pageSize="dictListParams.pageSize"
-                                  :height="dictListParams.height"/>
+                                  :parameter="dictListParams.parameter"
+                                  :visible="dictListParams.visible"/>
               </a-card>
             </a-tab-pane>
             <a-tab-pane :key="3">
@@ -350,12 +349,12 @@ onUnmounted(() => {
                 应用角色
               </template>
               <a-card class="general-card">
-                <GlRoleList :visible="roleListParams.visible"
-                            :parameter="roleListParams.parameter"
+                <GlRoleList :filterCol="roleListParams.filterCol"
                             :formState="roleListParams.formState"
-                            :filterCol="roleListParams.filterCol"
+                            :height="roleListParams.height"
                             :pageSize="roleListParams.pageSize"
-                            :height="roleListParams.height"/>
+                            :parameter="roleListParams.parameter"
+                            :visible="roleListParams.visible"/>
               </a-card>
             </a-tab-pane>
             <a-tab-pane :key="7">
@@ -368,24 +367,24 @@ onUnmounted(() => {
                          :style="{height: `${splitHeight}px`,width: '100%'}">
                   <template #first>
                     <div class="general-card1" style="padding-right: 10px;">
-                      <GlOrgSelectTree :has-root="true"
-                                       :root-selected="false"
-                                       :check-strictly="false"
+                      <GlOrgSelectTree :check-strictly="false"
+                                       :has-root="true"
                                        :height="userTreeParams.height"
                                        :max-count="1"
                                        :parameter="userTreeParams.parameter"
+                                       :root-selected="false"
                                        :visible="true"
                                        @change="selectChange"/>
                     </div>
                   </template>
                   <template #second>
                     <div class="general-card1" style="padding-left: 10px;">
-                      <GlUserPermissionList :visible="userPerListParams.visible"
-                                            :parameter="userPerListParams.parameter"
+                      <GlUserPermissionList :filterCol="userPerListParams.filterCol"
                                             :formState="userPerListParams.formState"
-                                            :filterCol="userPerListParams.filterCol"
+                                            :height="userPerListParams.height"
                                             :pageSize="userPerListParams.pageSize"
-                                            :height="userPerListParams.height"/>
+                                            :parameter="userPerListParams.parameter"
+                                            :visible="userPerListParams.visible"/>
                     </div>
                   </template>
                 </a-split>
@@ -397,12 +396,12 @@ onUnmounted(() => {
                 字段编码
               </template>
               <a-card class="general-card">
-                <GlEncodingList :visible="encodingListParams.visible"
-                                :parameter="encodingListParams.parameter"
+                <GlEncodingList :filterCol="encodingListParams.filterCol"
                                 :formState="encodingListParams.formState"
-                                :filterCol="encodingListParams.filterCol"
+                                :height="encodingListParams.height"
                                 :pageSize="encodingListParams.pageSize"
-                                :height="encodingListParams.height"/>
+                                :parameter="encodingListParams.parameter"
+                                :visible="encodingListParams.visible"/>
               </a-card>
             </a-tab-pane>
             <a-tab-pane :key="5">
@@ -411,12 +410,12 @@ onUnmounted(() => {
                 应用文件
               </template>
               <a-card class="general-card">
-                <GlFileTemplateList :visible="fileListParams.visible"
-                                    :parameter="fileListParams.parameter"
+                <GlFileTemplateList :filterCol="fileListParams.filterCol"
                                     :formState="fileListParams.formState"
-                                    :filterCol="fileListParams.filterCol"
+                                    :height="fileListParams.height"
                                     :pageSize="fileListParams.pageSize"
-                                    :height="fileListParams.height"/>
+                                    :parameter="fileListParams.parameter"
+                                    :visible="fileListParams.visible"/>
               </a-card>
             </a-tab-pane>
             <a-tab-pane :key="6">
@@ -425,12 +424,12 @@ onUnmounted(() => {
                 应用参数
               </template>
               <a-card class="general-card">
-                <GlSystemConfigList :visible="configListParams.visible"
-                                    :parameter="configListParams.parameter"
+                <GlSystemConfigList :filterCol="configListParams.filterCol"
                                     :formState="configListParams.formState"
-                                    :filterCol="configListParams.filterCol"
+                                    :height="configListParams.height"
                                     :pageSize="configListParams.pageSize"
-                                    :height="configListParams.height"/>
+                                    :parameter="configListParams.parameter"
+                                    :visible="configListParams.visible"/>
               </a-card>
             </a-tab-pane>
           </a-tabs>

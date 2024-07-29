@@ -4,7 +4,7 @@ export default {
 };
 </script>
 <script lang="ts" setup>
-import {compile, computed, h, onMounted, onUnmounted, provide, ref, shallowRef} from 'vue';
+import {compile, computed, h, onMounted, onUnmounted, provide, ref} from 'vue';
 import {Message} from "@arco-design/web-vue";
 import cloneDeep from "lodash/cloneDeep";
 import {EventNames} from '@geelato/gl-ide';
@@ -24,8 +24,7 @@ import {
   encodingApi
 } from "@geelato/gl-ui";
 import type {QueryAppForm, QueryAppVersionForm, QueryTableForm, PageQueryRequest} from "@geelato/gl-ui";
-import {useUser, useLoading, useUserStore, packageStatusOptions, PageSizeOptions} from "@geelato/gl-ui-arco-admin";
-import pinia from '../../store';
+import {useUser, useLoading, useUserStore, getPinia, packageStatusOptions, PageSizeOptions} from "@geelato/gl-ui-arco-admin";
 
 // 常量使用
 const ListDefaultPageSize = 5;
@@ -34,7 +33,7 @@ const ListRowHeight = 49;
 
 const versionCompareTabs = ref(null);
 
-provide('pinia', pinia);
+provide('pinia', getPinia());
 const userStore = useUserStore();
 const global = useGlobal();
 const {ideRedirect, ideLogout} = useUser();
@@ -642,8 +641,8 @@ onUnmounted(() => {
                           <icon-common/>
                           比较
                         </a-button>
-                        <a-button v-if="!isCompare&&!['draft'].includes(listParams.selected.status)" style="color: rgb(var(--primary-6))" type="text"
-                                  @click.stop="downloadPacket(listParams.selected.item.packagePath)" :loading="downloadLoading">
+                        <a-button v-if="!isCompare&&!['draft'].includes(listParams.selected.status)" :loading="downloadLoading" style="color: rgb(var(--primary-6))"
+                                  type="text" @click.stop="downloadPacket(listParams.selected.item.packagePath)">
                           <icon-download/>
                           下载
                         </a-button>
@@ -707,7 +706,7 @@ onUnmounted(() => {
     </div>
   </div>
 
-  <a-modal v-model:visible="packData.visible" :width="1250" title="版本打包" title-align="start" :on-before-ok="packAppVersion" draggable>
+  <a-modal v-model:visible="packData.visible" :on-before-ok="packAppVersion" :width="1250" draggable title="版本打包" title-align="start">
     <a-scrollbar :style="{overflow:'auto',maxHeight:`${packHeight}px`}">
       <a-descriptions :bordered="true" :column="1" layout="horizontal" size="medium">
         <template #title>

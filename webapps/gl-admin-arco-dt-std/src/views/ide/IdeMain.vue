@@ -3,14 +3,13 @@ export default {
   name: 'IdeMain',
 };
 </script>
-<script setup lang="ts">
+<script lang="ts" setup>
 import {onMounted, onUnmounted, provide} from 'vue';
 import {EventNames} from "@geelato/gl-ide";
 import {emitter, useGlobal, authUtil, userApi} from "@geelato/gl-ui";
-import {useUser, useUserStore} from '@geelato/gl-ui-arco-admin';
-import pinia from '../../store';
+import {useUser, useUserStore, getPinia} from '@geelato/gl-ui-arco-admin';
 
-provide('pinia', pinia);
+provide('pinia', getPinia());
 const userStore = useUserStore();
 const global = useGlobal();
 const {ideRedirect, ideLogout} = useUser();
