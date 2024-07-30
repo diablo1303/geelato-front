@@ -24,4 +24,4 @@ const router = createRouter({
   },
 });
 
-export {modules, externalModules, prefixUrl, defaultRoute, loginComponent, router}
+export default {modules, externalModules, prefixUrl, defaultRoute, loginComponent, router}

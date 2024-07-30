@@ -6,7 +6,7 @@ import '@arco-design/web-vue/dist/arco.css';
 import '@/assets/style/global.less';
 import GlUi, {GeelatoPluginOptions} from "@geelato/gl-ui";
 import GlUiArcoAdmin, {axios} from "@geelato/gl-ui-arco-admin";
-import {defaultRoute, externalModules, loginComponent, modules, prefixUrl, router} from "@/router";
+import routerOptions from "@/router";
 import GlUiArco from "@geelato/gl-ui-arco";
 import i18n from './locale';
 import App from './App.vue';
@@ -18,14 +18,7 @@ const pinia = createPinia();
 await GlUiArcoAdmin.setupGeelato({
   "axios": axios,
   "pinia": pinia,
-  "router": {
-    "router": router,
-    "modules": modules,
-    "externalModules": externalModules,
-    "prefixUrl": prefixUrl,
-    "defaultRoute": defaultRoute,
-    "loginComponent": loginComponent
-  },
+  "router": routerOptions,
 } as unknown as GeelatoPluginOptions);
 
 app.use(ArcoVue, {});
@@ -35,6 +28,6 @@ app.use(i18n);
 app.use(GlUi)
 app.use(GlUiArco)
 app.use(GlUiArcoAdmin)
-app.use(router)
+app.use(routerOptions.router)
 
 app.mount('#app');
