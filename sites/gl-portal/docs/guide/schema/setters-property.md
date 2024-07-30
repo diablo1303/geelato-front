@@ -6,7 +6,7 @@ import PropertySetterExample from '../../.vitepress/components/setter/PropertySe
 # 1 setters
 
 ## schema
-<<< @/.vitepress/components/Setter/propertySetterMetasData.ts
+<<< @/.vitepress/components/setter/propertySetterMetasData.ts
 
 ##
 <PropertySetterExample /> 

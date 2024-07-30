@@ -5,8 +5,7 @@ export default defineConfig({
   // lang: 'en-US',
   title: "Geelato",
   description: "A low-code engine.",
-
-  lastUpdated: true,
+  // lastUpdated: true,
   themeConfig: {
     logo: "/logo.svg",
     nav: nav(),
@@ -18,66 +17,62 @@ export default defineConfig({
       "/api/": sidebarApi(),
     },
 
-    editLink: {
-      pattern: "https://github.com/vuejs/vitepress/edit/main/docs/:path",
-      text: "Edit this page on GitHub",
-    },
-
     socialLinks: [
       { icon: "github", link: "https://github.com/geelato-projects" },
+      // { icon: "gitee", link: "https://gitee.com/geelato-projects" },
     ],
 
     footer: {
-      message: "Released under the MIT License.",
-      copyright: "Copyright © 2022-present Geelato",
+      message: "Released under the GPL3 License.",
+      copyright: "Copyright © 2023-present Geelato",
+    },
+    docFooter: {
+      prev: false,
+      next: false
+    },
+    search: {
+      provider: 'local'
     },
 
-    algolia: {
-      appId: "8J64VVRP8K",
-      apiKey: "a18e2f4cc5665f6602c5631fd868adfd",
-      indexName: "vitepress",
-    },
+
 
     // carbonAds: {
     //   code: 'CEBDT27Y',
     //   placement: 'vuejsorg'
     // }
+
+    externalLinkIcon:true
   },
 });
 
 function nav(): DefaultTheme.NavItem[] {
   return [
-    { text: "指南", link: "/guide/what-is-geelato", activeMatch: "/guide/" },
+    { text: "指南", link: "/guide/introduction", activeMatch: "/guide/" },
     {
       text: "组件",
       link: "/component/introduction",
       activeMatch: "/component/",
     },
     {
-      text: "演示",
+      text: "插件",
+      link: "/plugin/list",
+      activeMatch: "/plugin/",
+    },
+    { text: "登录",link: "/showcase/login", activeMatch: "/showcase/" },
+    { text: "试用", link: "/showcase/apply-trial", activeMatch: "/showcase/" },
+    {
+      text: "关于",
       items: [
-        { text: "IDE", link: "/showcase/ide", activeMatch: "/showcase/" },
-        { text: "Admin", link: "/showcase/admin", activeMatch: "/showcase/" },
         {
-          text: "PagePreview",
-          link: "/showcase/preview",
-          activeMatch: "/showcase/",
+          text: "关于Geelato",
+          link: "/about/about-geelato",
+        },
+        {
+          text: "许可协议",
+          link: "/about/agreement",
         },
       ],
     },
-    // {
-    //   text: version,
-    //   items: [
-    //     {
-    //       text: 'Changelog',
-    //       link: 'https://github.com/vuejs/vitepress/blob/main/CHANGELOG.md'
-    //     },
-    //     {
-    //       text: 'Contributing',
-    //       link: 'https://github.com/vuejs/vitepress/blob/main/.github/contributing.md'
-    //     },
-    //   ],
-    // },
   ];
 }
 
@@ -239,13 +234,19 @@ function sidebarComponent() {
       text: "页面组件",
       collapsible: true,
       items: [
-        { text: "所有页面组件", link: "/component/script/all_components" },
+        { text: "前端页面组件", link: "/component/script/all_components" },
       ],
     },
     {
       text: "脚本组件",
       collapsible: true,
-      items: [{ text: "所有脚本组件", link: "/component/script/all_blocks" }],
+      items: [
+        { text: "前端脚本组件", link: "/component/script/browser_blocks" },
+        {
+          text: "后端脚本组件",
+          link: "/component/script/api_blocks",
+        },
+      ],
     },
     // {
     //   text: '自定义组件',

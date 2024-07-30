@@ -1,10 +1,9 @@
 import {inBrowser} from 'vitepress';
 import DefaultTheme from 'vitepress/theme'
-import ArcoVue, {Modal,Drawer} from '@arco-design/web-vue';
+import ArcoVue, { Modal, Drawer } from '@arco-design/web-vue'
 import '@arco-design/web-vue/dist/arco.css';
 import draggable from 'vuedraggable'
 import GlUi from '@geelato/gl-ui'
-import {entityApi} from "@geelato/gl-ui";
 import GlUiArco from '@geelato/gl-ui-arco'
 import GlUiSchemaCore from '@geelato/gl-ui-schema'
 import GlUiSchemaArco from '@geelato/gl-ui-schema-arco'
@@ -12,8 +11,11 @@ import GlIde from '@geelato/gl-ide'
 import GlIdeArco from '@geelato/gl-ide-arco'
 import ComponentBuilderExample from '../components/setter/ComponentBuilderExample.vue'
 import SetterExample from '../components/setter/SetterExample.vue'
-import AllBlocks from '../components/setter-block/AllBlocks.vue'
+import ApiBlocks from '../components/setter-block/ApiBlocks.vue'
+import BrowserBlocks from '../components/setter-block/BrowserBlocks.vue'
 import AllComponents from '../components/setter-component/AllComponents.vue'
+import PluginList from '../components/plugin/PluginList.vue'
+// import MyLayout from './MyLayout.vue'
 
 // import i18n from '../locale/index';
 import {createPinia} from "pinia";
@@ -26,7 +28,7 @@ import cn from "../locale/zh-CN";
 export default {
     ...DefaultTheme,
     // root component to wrap each page
-    // Layout,
+    // MyLayout,
 
     // this is a Vue 3 functional component
     NotFound: () => 'custom 404',
@@ -36,8 +38,10 @@ export default {
         app.component('gl-draggable', draggable)
         app.component('ComponentBuilderExample', ComponentBuilderExample)
         app.component('SetterExample', SetterExample)
-        app.component(AllBlocks.name, AllBlocks)
+        app.component(BrowserBlocks.name, BrowserBlocks)
+        app.component(ApiBlocks.name, ApiBlocks)
         app.component(AllComponents.name, AllComponents)
+        app.component(PluginList.name, PluginList)
         const pinia = createPinia()
         app.use(pinia)
         // app is the Vue 3 app instance from `createApp()`.
