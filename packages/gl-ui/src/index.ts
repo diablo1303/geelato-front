@@ -98,6 +98,8 @@ import type {
   QueryViewForm
 } from './m/datasource/ModelApi'
 import * as modelApi from './m/datasource/ModelApi'
+import type {QueryAppRestfulForm, QueryRestfulForm, RestfulParams, RestfulRequest} from './m/datasource/RestfulApi'
+import * as restfulApi from './m/datasource/RestfulApi'
 import type {
   QueryColumnRolePermissionForm,
   QueryOrgForm,
@@ -298,6 +300,11 @@ export {
   QueryTableForeignForm,
   QueryTableForm,
   QueryViewForm,
+  restfulApi,
+  QueryRestfulForm,
+  QueryAppRestfulForm,
+  RestfulParams,
+  RestfulRequest,
   securityApi,
   QueryOrgForm,
   QueryUserForm,
