@@ -1,7 +1,7 @@
 <template>
   <h1>Custom Layout!</h1>
   <!-- this is where markdown content will be rendered -->
-  dddd  <Content />
+  <Content />
 </template>
 
 <script lang="ts">
