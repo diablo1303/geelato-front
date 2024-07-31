@@ -135,6 +135,7 @@ import GlLoader from './components/gl-loader/GlLoader.vue'
 import './assets/style.css'
 import useLogger from './m/hooks/useLogger'
 import {loadPageContent} from './components/PageLoader'
+import {isLogin} from './m/utils/Auth'
 
 const Utils = AllUtils
 
@@ -190,6 +191,7 @@ const selectComponent = (event: any, inst: any) => {
   emitter.emit(UiEventNames.Base.SelectComponent, inst)
 }
 export {
+  isLogin,
   GeelatoPlugin,
   GeelatoPluginOptions,
   selectComponent,

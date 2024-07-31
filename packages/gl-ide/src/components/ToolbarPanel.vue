@@ -166,7 +166,7 @@ import { useAppStore } from '../stores/UseAppStore'
 import EventNames from '../entity/EventNames'
 import ClipboardJS from 'clipboard'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
-import { isLogin } from '@geelato/gl-ui/src/m/utils/auth'
+import { isLogin } from '@geelato/gl-ui'
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()

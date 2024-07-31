@@ -105,8 +105,7 @@ export default {
  */
 // @ts-nocheck
 import { nextTick, onUnmounted, type PropType, ref } from 'vue'
-import { Action, ComponentInstance, ComponentMeta } from '@geelato/gl-ui-schema'
-import { ActionMeta } from '@geelato/gl-ui-schema'
+import { Action, ActionMeta,ComponentInstance, ComponentMeta } from '@geelato/gl-ui-schema'
 import { emitter, utils } from '@geelato/gl-ui'
 import { EventNames, useActionStore, useIdeStore } from '@geelato/gl-ide'
 import { blocksHandler } from './action-setters/BlockHandler'
