@@ -122,8 +122,8 @@ const loadFiles = () => {
   // mv.value like id1,id2,id3,id4...
   if (!mv.value) return
   // console.log('loadFiles() > mv.value:', mv.value)
-  fileApi.getAttachmentByIds(mv.value).then((value) => {
-    const attaches = value as unknown as AttachmentForm[];
+  fileApi.getAttachments(mv.value).then((value) => {
+    const attaches = value.data as unknown as AttachmentForm[];
     if (attaches && attaches.length > 0) {
       attaches.forEach((value, index, array) => {
         if (value.delStatus === 0) {

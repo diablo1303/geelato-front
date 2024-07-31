@@ -368,11 +368,10 @@ export const fetchFileToBase64 = async (id: string, callBack?: any) => {
 export const getAttachmentByIds = async (ids: string, successBack?: any, failBack?: any) => {
   try {
     const {data} = await getAttachments(ids);
-    successBack(data);
+    if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err);
-    failBack(err);
+    if (failBack && typeof failBack === 'function') failBack(err);
   }
 };
 
