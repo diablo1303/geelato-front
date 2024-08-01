@@ -83,6 +83,8 @@ import type {AttachmentForm, Base64FileParams, UploadFileParams} from './m/datas
 import * as fileApi from './m/datasource/FileApi'
 import type {BusinessMetaData, BusinessRuleData, BusinessTypeData, QueryFileTemplateForm} from './m/datasource/FileTemplateApi'
 import * as fileTemplateApi from './m/datasource/FileTemplateApi'
+import type {QueryApiForm, QueryApiParamForm} from './m/datasource/InterApi'
+import * as interApi from './m/datasource/InterApi'
 import type {ChatRecord, MessageListType, MessageRecord} from './m/datasource/MessageApi'
 import * as messageApi from './m/datasource/MessageApi'
 import type {
@@ -285,6 +287,9 @@ export {
   BusinessRuleData,
   BusinessMetaData,
   QueryFileTemplateForm,
+  interApi,
+  QueryApiParamForm,
+  QueryApiForm,
   messageApi,
   ChatRecord,
   MessageListType,

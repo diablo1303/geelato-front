@@ -7,10 +7,11 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { type Ref, ref, watch } from 'vue'
-import {entityApi, EntityReader, EntityReaderParam, useGlobal, utils} from '@geelato/gl-ui'
-import {  useAppStore } from '@geelato/gl-ide'
+import {type Ref, ref, watch} from 'vue'
+import {entityApi, EntityReader, EntityReaderParam, interApi, useGlobal, utils} from '@geelato/gl-ui'
+import {useAppStore} from '@geelato/gl-ide'
 import GlApiModal from "./GlApiModal.vue";
+import ApiForm from "./ApiForm.vue";
 
 const props = defineProps({
   recordId: String
@@ -39,7 +40,7 @@ const generateRenderItems = () => {
   }
   renderItems.value = allItems.value.filter((item) => {
     return (
-      item.name.indexOf(searchText.value) != -1 || item.name?.indexOf(searchText.value) != -1
+        item.name.indexOf(searchText.value) != -1 || item.name?.indexOf(searchText.value) != -1
     )
   })
 }
@@ -51,35 +52,37 @@ watch(orderBy, () => {
 })
 type Item = {
   id: string
+  name: string
+  code: string
+  remark?: string
   creator: string
   updateAt: string
-  updaterName:string
+  updaterName: string
   creatorName: string
-  name: string
-  enableStatus:boolean
-  remark?: string
+  enableStatus: boolean
 }
 /**
  * 加载记录
  */
-const fetchData = () => {
+const fetchData = (successBack?: any) => {
   if (!appStore.currentApp.id) {
     return
   }
   const entityReader = new EntityReader()
   entityReader.entity = 'platform_api'
-  entityReader.setFields('id,creator,creatorName,updateAt,updaterName,name,enableStatus,remark')
+  entityReader.setFields('id,creator,creatorName,updateAt,updaterName,name,code,enableStatus,remark')
   entityReader.params = []
   entityReader.params.push(new EntityReaderParam('appId', 'eq', appStore.currentApp.id))
 
   entityApi.queryByEntityReader(entityReader).then(
-    (res: any) => {
-      allItems.value = res.data
-      generateRenderItems()
-    },
-    () => {
-      global.$message.error({ content: '获取应用的接口数据失败' })
-    }
+      (res: any) => {
+        allItems.value = res.data
+        generateRenderItems()
+        if (successBack && typeof successBack === 'function') successBack();
+      },
+      () => {
+        global.$message.error({content: '获取应用的接口数据失败'})
+      }
   )
 }
 
@@ -91,7 +94,7 @@ const visible = ref(false)
 const saving = ref(false)
 const apiModal = ref()
 const currentApiId = ref('')
-const currentApi= ref<Item>()
+const currentApi = ref<Item>()
 // 用于刷新modal，确保每新都是重新创建modal
 const openModal = (item?: Item) => {
   if (item) {
@@ -114,6 +117,45 @@ const handleCancel = () => {
   visible.value = false
 }
 
+const formParams = ref({
+  id: '', visible: false, formState: 'add', formCol: 2, width: '76%', title: '',
+  parameter: {appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode}
+});
+/**
+ * 点击打开tab页面
+ * @param id
+ */
+const addApiForm = () => {
+  if (!appStore.currentApp.id) {
+    return
+  }
+  Object.assign(formParams.value, {
+    id: '', visible: true, formState: 'add'
+  });
+}
+const editApiModel = (item: Item) => {
+  Object.assign(formParams.value, {
+    id: item.id, visible: true, formState: 'edit'
+  });
+}
+
+const deleteApiModel = async (item: Item) => {
+  try {
+    await interApi.deleteApi(item.id);
+    global.$message.success({content: '删除成功'});
+  } catch (e) {
+    global.$message.error({content: '删除失败'});
+  } finally {
+    fetchData();
+  }
+}
+
+const resetApiData = () => {
+  fetchData(() => {
+    global.$message.success({content: '刷新成功'});
+  });
+}
+
 fetchData()
 </script>
 
@@ -124,35 +166,58 @@ fetchData()
       <a-tab-pane key="name" title="按名称排序"></a-tab-pane>
       <template #extra>
         <a-tag style="margin-right: 8px" color="arcoblue" size="small" title="当前应用的接口总数量"
-          >{{ allItems.length }}
+        >{{ allItems.length }}
         </a-tag>
       </template>
     </a-tabs>
 
     <a-space size="mini" style="padding: 4px 0">
-      <a-button size="small" type="primary" @click="openModal(undefined)">
-        <gl-iconfont type="gl-plus-circle"></gl-iconfont>
-      </a-button>
-      <a-input-search
-        v-model="searchText"
-        size="small"
-        placeholder="录入中、英文名查询"
-        style="width: 100%"
-      ></a-input-search>
+      <a-tooltip content="添加接口" position="top">
+        <a-button size="small" type="primary" style="padding: 0 7px;" @click="addApiForm">
+          <gl-iconfont type="gl-plus-circle"/>
+        </a-button>
+      </a-tooltip>
+      <a-tooltip content="刷新" position="top">
+        <a-button size="small" type="outline" style="padding: 0 7px;" @click="resetApiData">
+          <gl-iconfont type="gl-reset"/>
+        </a-button>
+      </a-tooltip>
+      <a-input-search v-model="searchText" size="small" placeholder="录入中、英文名查询" style="width: 100%"/>
     </a-space>
     <a-list size="small">
-      <!--      utils.timeAgo(item.updateAt)-->
-      <template v-for="item in renderItems">
-        <a-list-item @click="openModal(item)">
-          <a-list-item-meta :title="item.name" :description="item.remark"></a-list-item-meta>
+      <template v-for="(item,index) in renderItems" :key="index">
+        <a-list-item style="cursor: pointer;" @click="openModal(item)" action-layout="vertical">
+          <a-list-item-meta>
+            <template #title>
+              <span :title="item.name">{{ item.name }}</span>
+            </template>
+            <template #description>
+              <span :title="item.remark || item.code">{{ item.remark || item.code }}</span>
+            </template>
+          </a-list-item-meta>
+          <template #extra>
+            <span class="gl-actions-description" :title="`${item.updaterName||''}更新@${item.updateAt}`">
+              {{ utils.timeAgo(item.updateAt) }}
+            </span>
+          </template>
           <template #actions>
-            <span class="gl-actions-description" :title="`${item.updaterName||''}更新@${item.updateAt}`">{{
-              utils.timeAgo(item.updateAt)
-            }}</span>
+            <a-tooltip content="编辑接口" position="top">
+              <a-button size="small" type="text" style="height: 16px;padding: 0;" @click.stop="editApiModel(item)">
+                <gl-iconfont type="gl-edit-square"/>
+              </a-button>
+            </a-tooltip>
+            <a-popconfirm content="是否删除该条数据？" position="bl" type="warning" @ok="deleteApiModel(item)">
+              <a-tooltip content="删除接口" position="top">
+                <a-button size="small" type="text" style="height: 16px;padding: 0;" @click.stop>
+                  <gl-iconfont type="gl-delete"/>
+                </a-button>
+              </a-tooltip>
+            </a-popconfirm>
           </template>
         </a-list-item>
       </template>
     </a-list>
+
     <a-modal
         draggable
         ok-text="保存"
@@ -164,11 +229,20 @@ fetchData()
         @ok="handleOk"
         fullscreen>
       <template #title>
-        <GlIconfont type="gl-api" style="margin-right: 4px"></GlIconfont>
-        <span>{{`接口编排-${currentApi?.name}`}}</span>
+        <GlIconfont type="gl-api" style="margin-right: 4px"/>
+        <span>{{ `接口编排-${currentApi?.name}` }}</span>
       </template>
-      <GlApiModal :key="currentApiId" ref="apiModal" :apiId="currentApiId"></GlApiModal>
+      <GlApiModal :key="currentApiId" ref="apiModal" :apiId="currentApiId"/>
     </a-modal>
+
+    <ApiForm v-model:visible="formParams.visible"
+             :model-value="formParams.id"
+             :form-state="formParams.formState"
+             :form-col="formParams.formCol"
+             :parameter="formParams.parameter"
+             :title="formParams.id ? '编辑接口' : '新增接口'"
+             :width="formParams.width"
+             @saveSuccess="fetchData"/>
   </div>
 </template>
 <style>
@@ -180,8 +254,34 @@ fetchData()
   padding: 1px 14px !important;
 }
 
+.gl-service-list .arco-list-item-extra {
+  display: flex;
+  align-items: center;
+}
+
+.gl-service-list .arco-list-item-action {
+  margin-top: 0 !important;
+}
+
+.gl-service-list .arco-list-item-meta-title {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
 .gl-service-list .arco-list-item-meta-description {
   font-size: 11px;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .gl-service-list .gl-actions-description {
