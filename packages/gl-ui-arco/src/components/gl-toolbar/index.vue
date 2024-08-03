@@ -2,6 +2,7 @@
 import type { PropType } from 'vue'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
 import { selectComponent } from '@geelato/gl-ui'
+import type { PagePermission } from '@geelato/gl-ui'
 
 const props = defineProps({
   leftColSpan: Number,
@@ -26,7 +27,8 @@ const props = defineProps({
     }
   },
   disabled: Boolean,
-  glIsRuntime: Boolean
+  glIsRuntime: Boolean,
+  pagePermissions:Object as PropType<PagePermission>
 })
 
 
@@ -61,10 +63,9 @@ const props = defineProps({
         <slot name="leftItems"></slot>
         <template v-for="(inst, index) in leftItems" :key="index">
           <GlComponent
-            v-if="inst"
-            v-show="inst?.props?._hidden !== true"
             :glComponentInst="inst"
             :glIsRuntime="glIsRuntime"
+            :pagePermissions="pagePermissions"
             @click="selectComponent($event,inst)"
           ></GlComponent>
         </template>

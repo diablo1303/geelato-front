@@ -458,9 +458,18 @@ const validate = async () => {
   return null
 }
 
-const getDeleteRecords = () => {
-  return []
-}
+// /**
+//  *  与编辑表格保持相同的方法，这里返回空数组
+//  */
+// const getDeleteRecords = () => {
+//   return []
+// }
+// /**
+//  *  与编辑表格保持相同的方法，这里返回空数组
+//  */
+// const getReleaseRecords = () => {
+//   return []
+// }
 
 const getRef = () => {
   return tableRef.value
@@ -486,6 +495,15 @@ const slotColumnsWithNoOperation = computed(() => {
   })
 })
 
+const hasPermission = (componentInst:ComponentInstance) => {
+  // 是否需要检查查看权限
+  if (componentInst?.perms?.r) {
+    // 检查是否分配了权限
+    return !!props.pagePermission?.hasReadPermission(componentInst.id)
+  }
+  return true
+}
+
 defineExpose({
   getEntityReader,
   resetColumns,
@@ -495,7 +513,8 @@ defineExpose({
   popupVisibleChange,
   changeShowColumns,
   validate,
-  getDeleteRecords,
+  // getDeleteRecords,
+  // getReleaseRecords,
   getQueryData,
   getRenderData,
   getRenderColumns,
@@ -535,12 +554,14 @@ defineExpose({
           v-for="(columnAction, index) in copyColumnActions()"
           :key="rowIndex + '_' + index"
         >
+          <!-- 注意，这里的v-show会覆盖GlComponent内的v-show -->
           <GlComponent
             v-show="
-              columnAction.props?._hidden !== true && columnAction.componentName !== 'GlHiddenArea'
+              columnAction.props?._hidden !== true && columnAction.componentName !== 'GlHiddenArea' && hasPermission(columnAction)
             "
             :glComponentInst="columnAction"
-            :glIsRuntime=glIsRuntime
+            :glIsRuntime="glIsRuntime"
+            :pagePermission="pagePermission"
             @click="selectComponent($event, columnActions[index])"
             :glCtx="{ record: renderData[rowIndex], rowIndex }"
 

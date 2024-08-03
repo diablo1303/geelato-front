@@ -127,7 +127,7 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '是否为子表',
           setterComponentName: 'ASwitch',
-          description: '表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容',
+          description: '表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容，并会依据“关联主表字段”的配置，自动设置关联字段值等于主表Id的值',
           setterDefaultValue: true
         },
         {
@@ -208,6 +208,18 @@ export default {
           setterComponentName: 'ASwitch'
         },
         {
+          name: 'showAddRowBtn',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: true,
+          show: true,
+          expanded: true,
+          setterComponentProps: { defaultChecked: true },
+          setterComponentVModelName: 'modelValue',
+          title: '显示添加一行',
+          setterComponentName: 'ASwitch'
+        },
+        {
           name: 'showActionCopy',
           group: 'base',
           type: 'props',
@@ -217,7 +229,8 @@ export default {
           setterComponentProps: { defaultChecked: true },
           setterComponentVModelName: 'modelValue',
           title: '显示复制操作',
-          setterComponentName: 'ASwitch'
+          setterComponentName: 'ASwitch',
+          description: '复制一行数据，并插入，若需在插入前对复制的数据进行修改，可以在动作中添加脚本指令'
         },
         {
           name: 'showActionDelete',
@@ -229,7 +242,21 @@ export default {
           setterComponentProps: { defaultChecked: true },
           setterComponentVModelName: 'modelValue',
           title: '显示删除操作',
-          setterComponentName: 'ASwitch'
+          setterComponentName: 'ASwitch',
+          description: '点该删除操作，将标记删除该记录，并从前端列表中删除，在整个主表单保存到服务端时，才从数据库中删除该记录，注意不同于解除操作，如果显示删除操作，不需要显示解除操作。'
+        },
+        {
+          name: 'showActionRelease',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: true,
+          show: true,
+          expanded: true,
+          setterComponentProps: { defaultChecked: false },
+          setterComponentVModelName: 'modelValue',
+          title: '显示解除操作',
+          setterComponentName: 'ASwitch',
+          description: '点该解除操作，将标记解除该记录，并从前端列表中删除，在整个主表单保存到服务端时，才从数据库中解除该记录与主表单的关系，但本记录不会删除；常用于管理与主表的引用关系，但不能删除数据的场景。'
         },
         {
           name: 'showPagination',
@@ -241,18 +268,6 @@ export default {
           setterComponentProps:  { defaultChecked: true },
           setterComponentVModelName: 'modelValue',
           title: '显示分页',
-          setterComponentName: 'ASwitch'
-        },
-        {
-          name: 'showAddRowBtn',
-          group: 'base',
-          type: 'props',
-          enableValueExpress: true,
-          show: true,
-          expanded: true,
-          setterComponentProps: { defaultChecked: true },
-          setterComponentVModelName: 'modelValue',
-          title: '显示添加一行',
           setterComponentName: 'ASwitch'
         },
         {
@@ -951,9 +966,9 @@ export default {
     },
     {
       name: 'change',
-      title: '表格数据变更（行调整顺序）',
+      title: '表格行增删移动时变更',
       description:
-        '表格数据发生变化时触发，如在可编辑表格下，行数据数据拖动时出发（表格内置表单字段输入控件值改变时，不会触发）'
+        '添加行、删除行、拖动行时触发发（表格内置表单字段输入控件值改变时，不会触发）'
     },
     {
       name: 'creatingEntitySavers',

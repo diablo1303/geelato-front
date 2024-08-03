@@ -194,7 +194,10 @@ const doAction = (actionName: string, args: any) => {
       if (action.eventName === actionName) {
         // console.log('GlComponent > doAction > action', action)
         // let ctx = inject('$ctx') as object || {}
-        let ctx = {}
+        let ctx = {
+          glLoopItem: props.glLoopItem,
+          glLoopIndex: props.glLoopIndex
+        }
         Object.assign(
           ctx,
           props.glCtx,
@@ -376,7 +379,7 @@ const hasPermission = () => {
   // 是否需要检查查看权限
   if (props.glComponentInst?.perms?.r) {
     // 检查是否分配了权限
-    return props.pagePermission?.hasReadPermission(props.glComponentInst.id)
+    return !!props.pagePermission?.hasReadPermission(props.glComponentInst.id)
   }
   return true
 }
