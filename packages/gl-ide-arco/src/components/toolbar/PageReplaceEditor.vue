@@ -88,7 +88,7 @@ const openInTree = (extendId: string, title: string) => {
   entityTreeRef.value?.search(title)
 }
 
-const pageList = ref([])
+const pageList = ref<{title:string,extendId:string}>([])
 const searchPageContent = ref('')
 const searchPage = (content: string) => {
   const searchEntityReader = new EntityReader()
