@@ -1124,7 +1124,7 @@ export default {
     {
       name: 'fetchSuccess',
       title: '成功加载完数据',
-      description: '从服务端成功加数据（0到多条）后触发。'
+      description: '从服务端成功加数据（0到多条）后触发，本组件在表单组件内，且表单组件存在主键（id）值时才会触发加载子表数据。'
     },
     {
       name: 'creatingEntitySavers',
@@ -1540,6 +1540,40 @@ export default {
       returnInfo: {
         returnType: 'boolean，值为：true | false',
         description: '当前列表页面是否有数据。'
+      }
+    },
+    {
+      name: 'isColumnHasValue',
+      description:
+        '检查表格列是否包含某值',
+      title: '列是否包含某值',
+      params: [
+        {
+          name: 'dataIndex',
+          title: '字段名',
+          required: true,
+          type: 'string',
+          description: '列名'
+        },
+        {
+          name: 'value',
+          title: '字段名',
+          required: true,
+          type: 'any',
+          description: '列值'
+        },
+        {
+          name: 'onlySelected',
+          title: '数据范围',
+          required: false,
+          type: 'string',
+          description: '默认为false，表示检查当前列表展示的数据；true表示仅检查已选择的数据。'
+        }
+      ],
+      returnInfo: {
+        returnType: 'boolean，值为：true | false',
+        description:
+          '检查表格列是否包含某值，如果存在，返回true，否则返回false。'
       }
     },
     {

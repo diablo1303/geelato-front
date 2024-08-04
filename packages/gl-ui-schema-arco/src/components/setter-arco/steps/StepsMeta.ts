@@ -7,5 +7,5 @@ export default {
     "alias": "steps",
     "useBy": ["freePage"],
     "properties": [],
-    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}]
+    "actions": [{"name": "valueChange", "description": "", "title": "值改变"}]
 }

@@ -238,7 +238,15 @@ const selectNodeByKey = (nodeKey: string) => {
   glBaseTree.value.selectNodeByKey(nodeKey)
 }
 
-defineExpose({ fetchData,reRender, selectNode,selectNodeByKey })
+/**
+ * 搜索树标题，并录入到输入框中
+ * @param keywords
+ */
+const search = (keywords: string) => {
+  glBaseTree.value.search(keywords)
+}
+
+defineExpose({ fetchData,reRender, selectNode,selectNodeByKey,search })
 </script>
 <style>
 .gl-entity-tree {

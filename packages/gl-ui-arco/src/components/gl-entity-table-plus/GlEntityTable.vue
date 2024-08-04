@@ -295,7 +295,7 @@ const fetchData = useFetchData(
     refreshOptColumn()
     emits('fetchSuccess', result)
   },
-  (result: any) => {
+  (result: {data:[],pagination:any}) => {
     emits('fetchFail', result)
   },
   loading

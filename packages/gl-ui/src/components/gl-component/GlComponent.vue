@@ -93,7 +93,7 @@ const emits = defineEmits([
   'update',
   'onAction',
   'onComponentClick',
-  'onValueChange'
+  'valueChange'
 ])
 
 const props = defineProps({
@@ -276,16 +276,16 @@ defaultSyncEvents[props.glComponentInst.componentName]?.forEach((eventName: stri
   }
 })
 
-const onValueChange = (...args: any) => {
-  // console.log('gl-component > onValueChange() > arguments:', args, props.glComponentInst)
+const valueChange = (...args: any) => {
+  // console.log('gl-component > valueChange() > arguments:', args, props.glComponentInst)
   // 对于一些组件，事件可能是优先触发了组件内的事件，第一个参数不一定是event，这里对所有参数做统一处理
   stopPropagation(args)
-  emits('onValueChange', {
+  emits('valueChange', {
     arguments: args,
     glComponentInst: props.glComponentInst,
     glCtx: props.glCtx
   })
-  doAction('onValueChange', args)
+  doAction('valueChange', args)
 }
 
 const onMouseOver = (...args: any[]) => {
@@ -343,7 +343,7 @@ const onUpdateModelValue = (value: any) => {
     emits('update:modelValue', value)
     emits('update', value)
     // 这个需放在 'update:modelValue' 事件之后，确保组件的值已更新
-    onValueChange(value)
+    valueChange(value)
   }
 }
 
@@ -361,7 +361,7 @@ watch(
     emits('update:modelValue', value)
     emits('update', value)
     // 这个需放在 'update:modelValue' 事件之后，确保组件的值已更新
-    onValueChange(value)
+    valueChange(value)
     // 由于考虑到多层组件嵌套，watch的mv可能是个组合的组件，不是最原子级的组件，这里没有用deep属性
   },
   { immediate: true }

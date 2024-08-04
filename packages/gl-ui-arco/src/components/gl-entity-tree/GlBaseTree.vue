@@ -3,7 +3,7 @@
 -->
 <template>
   <div class="gl-base-tree">
-    <a-input v-if="searchable" v-model="searchKey">
+    <a-input v-if="searchable" v-model="searchKeywords">
       <template #suffix>
         <gl-iconfont type="gl-refresh" @click="reloadTreeData" style="cursor: pointer" title="重新加载"
           >刷新
@@ -37,8 +37,8 @@
         <span @mouseover="setCurrentHoverNode(nodeData)" :class="{ 'gl-bold': !!nodeData.flag }">
           <template v-if="index = getMatchIndex(nodeData?.title), index < 0">{{ nodeData?.title }}</template>
           <span v-else>
-            {{ nodeData?.title?.substring(0, index)}}<span style="color: var(--color-primary-light-4);">{{ nodeData?.title?.substring(index, index + searchKey.length)}}
-</span>{{ nodeData?.title?.substring(index + searchKey.length) }}
+            {{ nodeData?.title?.substring(0, index)}}<span style="color: var(--color-primary-light-4);">{{ nodeData?.title?.substring(index, index + searchKeywords.length)}}
+</span>{{ nodeData?.title?.substring(index + searchKeywords.length) }}
           </span>
         </span>
       </template>
@@ -184,7 +184,14 @@ const props = defineProps({
   searchable: Boolean
 })
 // 查询输入
-const searchKey = ref('')
+const searchKeywords = ref('')
+/**
+ * 搜索树标题，并录入到输入框中
+ * @param title
+ */
+const search = (title: string) => {
+  searchKeywords.value = title
+}
 
 const selectedKeys = ref(props.modelValue)
 
@@ -271,16 +278,16 @@ function searchData(tree,keyword) {
 }
 
 function getMatchIndex(title) {
-  if (!searchKey.value) return -1;
-  return title.toLowerCase().indexOf(searchKey.value.toLowerCase());
+  if (!searchKeywords.value) return -1;
+  return title.toLowerCase().indexOf(searchKeywords.value.toLowerCase());
 }
 
 // 计算属性，返回匹配的树形结构
 const renderData = computed(() => {
-  if(searchKey.value?.trim().length === 0){
+  if(searchKeywords.value?.trim().length === 0){
     return treeData.value
   }
-  return searchData(treeData.value,searchKey.value)
+  return searchData(treeData.value,searchKeywords.value)
 })
 
 
@@ -672,8 +679,9 @@ const fetchData = (isInit:boolean=false) => {
 fetchData(true)
 
 
+
 // 对外提供方法
-defineExpose({ fetchData, reRender, selectNode, selectNodeByKey })
+defineExpose({ fetchData, reRender, selectNode, selectNodeByKey,search })
 </script>
 <style>
 

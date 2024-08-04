@@ -49,7 +49,7 @@ export default {
         options: [
           { label: '组件创建时', value: 'onCreated' },
           { label: '被调用时', value: 'onInvoked' },
-          { label: '值改变时', value: 'onValueChanged' }
+          { label: '值改变时', value: 'valueChanged' }
         ]
       },
       setterComponentVModelName: 'modelValue',
@@ -427,7 +427,7 @@ export default {
       enableValueExpress: true
     }
   ],
-  actions: [{ name: 'onValueChange', description: '', title: '值改变' }],
+  actions: [{ name: 'valueChange', description: '', title: '值改变' }],
   displayOnStage: 'inline-block',
   methods: [{ name: 'fetchData', title: '获取数据' }]
 }

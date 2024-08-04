@@ -39,5 +39,5 @@ export default {
         "description": "人员选择时，人员id绑定到本组件，人员名称需绑定到另一个组件，在此设置目标组件的唯一标识。",
         "placeholder": "名称组件的唯一标识"
     }],
-    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}]
+    "actions": [{"name": "valueChange", "description": "", "title": "值改变"}]
 }

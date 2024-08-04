@@ -166,6 +166,6 @@ export default {
         "enableValueExpress": false,
         "description": "跟随在后面的组件，如可以为一个按钮，用于配置点击事件"
     }],
-    "actions": [{"name": "onValueChange", "description": "仅在输入框失焦或按下回车时触发", "title": "值改变"}],
+    "actions": [{"name": "valueChange", "description": "仅在输入框失焦或按下回车时触发", "title": "值改变"}],
     "displayOnStage": "inline-block"
 }

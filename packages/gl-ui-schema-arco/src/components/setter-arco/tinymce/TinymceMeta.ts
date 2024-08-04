@@ -225,62 +225,14 @@ export default {
   "actions": [
     {"name": "click", "title": "点击"},
     {
-      "eventName": "onMounted",
-      "name": "onMounted",
+      "eventName": "mounted",
+      "name": "mounted",
       "description": "组件加载完时触发，和Vue的onMounted一致",
       "title": "加载完"
     },
     {
-      "eventName": "onUpdated",
-      "name": "onUpdated",
-      "description": "组件更新时触发，和Vue的onUpdated一致",
-      "title": "更新完"
-    },
-    {
-      "eventName": "onMounted",
-      "name": "onMounted",
-      "description": "组件加载完时触发，和Vue的onMounted一致",
-      "title": "加载完"
-    },
-    {
-      "eventName": "onUpdated",
-      "name": "onUpdated",
-      "description": "组件更新时触发，和Vue的onUpdated一致",
-      "title": "更新完"
-    },
-    {
-      "eventName": "onMounted",
-      "name": "onMounted",
-      "description": "组件加载完时触发，和Vue的onMounted一致",
-      "title": "加载完"
-    },
-    {
-      "eventName": "onUpdated",
-      "name": "onUpdated",
-      "description": "组件更新时触发，和Vue的onUpdated一致",
-      "title": "更新完"
-    },
-    {
-      "eventName": "onMounted",
-      "name": "onMounted",
-      "description": "组件加载完时触发，和Vue的onMounted一致",
-      "title": "加载完"
-    },
-    {
-      "eventName": "onUpdated",
-      "name": "onUpdated",
-      "description": "组件更新时触发，和Vue的onUpdated一致",
-      "title": "更新完"
-    },
-    {
-      "eventName": "onMounted",
-      "name": "onMounted",
-      "description": "组件加载完时触发，和Vue的onMounted一致",
-      "title": "加载完"
-    },
-    {
-      "eventName": "onUpdated",
-      "name": "onUpdated",
+      "eventName": "updated",
+      "name": "updated",
       "description": "组件更新时触发，和Vue的onUpdated一致",
       "title": "更新完"
     }

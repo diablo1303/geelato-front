@@ -666,7 +666,7 @@ export const useFetchData = (
       },
       () => {
         if (fail && typeof fail === 'function') {
-          fail({ data: undefined, pagination })
+          fail({ data: [], pagination })
         }
         loading ? (loading.value = false) : null
       }

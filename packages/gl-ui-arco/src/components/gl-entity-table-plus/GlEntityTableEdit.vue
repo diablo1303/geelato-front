@@ -56,8 +56,12 @@ const global = useGlobal()
 const emits = defineEmits([
   'updateColumns',
   'updateRow',
+  // 查询成功
   'fetchSuccess',
+  // 查询失败
   'fetchFail',
+  // 阻断查询，如作为子表时，若无主表ID则会阻断查询
+  'fetchInterdict',
   'change',
   'copyRecord',
   // 从前端的列表中点了删除按钮，且前端已正常删除，则触发此事件。不管后续是否有进行服务端删除操作
@@ -461,6 +465,7 @@ const fetchData = async (readerInfo?: {
     console.error(
       'GlEntityTable > fetchData() > entityName or subTablePidName is null. 作为子表时，必须指定子表外键，即对应主表ID的字段'
     )
+    emits('fetchSuccess', { data: []})
     return
   }
 
@@ -485,10 +490,11 @@ const fetchData = async (readerInfo?: {
             formProvideProxy,
             ' and getRecordId() is ' +
               formProvideProxy?.getRecordId() +
-              '.作为子表时，父ID不能为空，当前页面状态：',
+              '.列表作为子表时，若页面的状态为非新增、非复制、非none状态时（如修改、查看状态），主表的ID不能为空，当前页面状态：',
             pageProvideProxy?.pageStatus
           )
         }
+        emits('fetchInterdict', { data: [],message: '为作子表单，但获取不到父表单的ID，停止查询，查询页面状态为：'+pageProvideProxy?.pageStatus })
         return
       }
       entityReader.params.push(new EntityReaderParam(props.subTablePidName, 'eq', pid))
@@ -509,7 +515,7 @@ const fetchData = async (readerInfo?: {
     emits('fetchSuccess', { data: renderData.value })
   } catch (err) {
     console.error(err)
-    emits('fetchFail', { data: undefined, _pagination })
+    emits('fetchFail', { data: [], pagination:_pagination })
   } finally {
     setLoading(false)
   }

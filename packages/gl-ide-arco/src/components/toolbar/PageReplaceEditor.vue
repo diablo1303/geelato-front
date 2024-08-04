@@ -30,7 +30,8 @@ const mv = ref(props.modelValue)
 watch(mv, () => {
   emits('update:modelValue', mv.value)
 })
-const tree = ref()
+const tabKey = ref('1')
+const entityTreeRef = ref()
 const entityReader = new EntityReader()
 entityReader.entity = 'platform_tree_node'
 entityReader.fields = []
@@ -80,8 +81,11 @@ const onSelectNode = (params: any) => {
 
 const onClickPage = (extendId: string, title: string) => {
   loadPageByExtendId(extendId, title)
-  // 定位到树节点
-  // tree.value && tree.value.selectNode({key: extendId})
+}
+
+const openInTree = (extendId: string, title: string) => {
+  tabKey.value = '1'
+  entityTreeRef.value?.search(title)
 }
 
 const pageList = ref([])
@@ -101,7 +105,7 @@ const searchPage = (content: string) => {
     pageList.value = res.data
     if (res.data && res.data.length === 0) {
       global.$message.info('未找到包含此内容的页面')
-    }else{
+    } else {
     }
   })
 }
@@ -140,12 +144,14 @@ const saveReplaceResult = () => {
     console.log('未保存')
   }
 }
+
+
 </script>
 
 <template>
   <div class="gl-page-replace-editor" style="display: flex">
     <div style="flex: 0 0 15%; max-width: 250px">
-      <a-tabs default-active-key="2">
+      <a-tabs v-model:active-key="tabKey">
         <a-tab-pane
           key="1"
           title="应用树结构"
@@ -153,10 +159,11 @@ const saveReplaceResult = () => {
           :style="{ height: themeStore.modalBodyHeight - 97 + 'px' }"
         >
           <GlEntityTree
-            ref="tree"
+            ref="entityTreeRef"
             :treeId="appStore.currentApp.id"
             :treeName="appStore.currentApp.name"
             :draggable="true"
+            :searchable="true"
             :entityReader="entityReader"
             :extendEntityField="{ entityName: 'platform_app_page', fieldName: 'extendId' }"
             @selectNode="onSelectNode"
@@ -172,7 +179,7 @@ const saveReplaceResult = () => {
             <template #header>
               <a-input-search
                 style=""
-                placeholder="请输入搜索内容"
+                placeholder="搜索页面内容"
                 v-model="searchPageContent"
                 @search="searchPage(searchPageContent)"
                 @keyup.enter="searchPage(searchPageContent)"
@@ -185,7 +192,13 @@ const saveReplaceResult = () => {
               @click="onClickPage(page.extendId, page.title)"
               :class="{ 'gl-active': page.extendId === currentPage?.extendId }"
             >
-              {{ page.title }}
+              <a-list-item-meta
+                :title="page.title"
+              >
+              </a-list-item-meta>
+              <template #actions>
+                <GlIconfont type="gl-tree" @click="openInTree(page.extendId, page.title)" title="在树结构中打开" />
+              </template>
             </a-list-item>
           </a-list>
         </a-tab-pane>
@@ -199,35 +212,36 @@ const saveReplaceResult = () => {
       ></GlMonacoEditor>
     </div>
     <div style="flex: 0 0 15%; max-width: 250px">
-      <div>
-        <a-alert :show-icon="false">
-          <template #action>
-            <a-button size="small" type="primary" @click="addReplaceItem">添加替换值</a-button>
-          </template>
-        </a-alert>
-      </div>
-      <div class="gl-item" v-for="(item, index) in replaceItems">
-        <div>
-          <a-input v-model="item.value">
-            <template #prepend> 原始值</template>
-          </a-input>
-          <a-input v-model="item.replaceValue">
-            <template #prepend> 替换值</template>
-          </a-input>
+      <a-card>
+        <template #title>
+          <a-button size="small" type="primary" @click="addReplaceItem" title="添加替换值，用于查询替换当前页面">添加</a-button>
+        </template>
+        <div style="overflow-y: auto"
+             :style="{ height: themeStore.modalBodyHeight - 125 + 'px' }">
+          <div class="gl-item" v-for="(item, index) in replaceItems">
+            <div>
+              <a-input v-model="item.value">
+                <template #prepend> 原始值</template>
+              </a-input>
+              <a-input v-model="item.replaceValue">
+                <template #prepend> 替换值</template>
+              </a-input>
+            </div>
+            <div class="gl-action">
+              <!--          <gl-iconfont type="gl-delete"></gl-iconfont>-->
+              <a-button type="outline" status="danger" size="mini" @click="deleteReplaceItem(index)">
+                <gl-iconfont type="gl-delete" text="删除"></gl-iconfont>
+              </a-button>
+            </div>
+          </div>
+          <div class="gl-item" v-if="replaceItems.length > 0">
+            <a-button type="outline" long @click="replaceAll">替换所有值</a-button>
+          </div>
+          <div class="gl-item" v-if="replaceItems.length > 0">
+            <a-button type="outline" long @click="saveReplaceResult">保存页面</a-button>
+          </div>
         </div>
-        <div class="gl-action">
-          <!--          <gl-iconfont type="gl-delete"></gl-iconfont>-->
-          <a-button type="outline" status="danger" size="mini" @click="deleteReplaceItem(index)">
-            <gl-iconfont type="gl-delete" text="删除"></gl-iconfont>
-          </a-button>
-        </div>
-      </div>
-      <div class="gl-item" v-if="replaceItems.length > 0">
-        <a-button type="outline" long @click="replaceAll">替换所有值</a-button>
-      </div>
-      <div class="gl-item" v-if="replaceItems.length > 0">
-        <a-button type="outline" long @click="saveReplaceResult">保存</a-button>
-      </div>
+      </a-card>
     </div>
   </div>
 </template>

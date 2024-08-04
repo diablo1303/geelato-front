@@ -96,7 +96,7 @@
       <span class="gl-item" v-if="isLogin()">
         <GlIconfont
           type="gl-refresh"
-          text="页面查询替换"
+          text="页面重构"
           @click="showPageReplaceEditor"
         ></GlIconfont>
       </span>

@@ -82,10 +82,10 @@ const isRead = !!pageProvideProxy?.isPageStatusRead()
 const { t } = CheckUtil.isBrowser()
   ? useI18n()
   : {
-      t: (str: any) => {
-        return str
-      }
+    t: (str: any) => {
+      return str
     }
+  }
 // const t = (str: any) => {
 //   return str
 // }
@@ -375,7 +375,8 @@ const deleteRecordWithConfirm = (params: { id: string }) => {
     onOk: () => {
       deleteRecord(params)
     },
-    onCancel: () => {}
+    onCancel: () => {
+    }
   })
 }
 
@@ -395,7 +396,8 @@ const deleteSelectedRecords = (params: { withConfirm?: boolean }) => {
             refresh()
           }, useDeleteFailFn('删除失败'))
         },
-        onCancel: () => {}
+        onCancel: () => {
+        }
       })
     } else {
       return entityApi.deleteByIds(props.base.entityName, selectedKeys.value).then(() => {
@@ -533,9 +535,9 @@ const deleteRecordByEdit = (data: { record: Record<string, any>; rowIndex: any }
 const rowSelection = computed(() => {
   return props.base.checkType === 'checkbox' || props.base.checkType === 'radio'
     ? {
-        type: props.base.checkType,
-        showCheckedAll: props.base.showCheckAll && props.base.checkType === 'checkbox'
-      }
+      type: props.base.checkType,
+      showCheckedAll: props.base.showCheckAll && props.base.checkType === 'checkbox'
+    }
     : undefined
 })
 
@@ -801,6 +803,9 @@ const onFetchSuccess = (args: { data: [] }) => {
 const onFetchFail = (args: { data: undefined; pagination: object }) => {
   emits('fetchFail', args)
 }
+const onFetchInterdict = (args: { data: []; message: string }) => {
+  emits('fetchInterdict', args)
+}
 
 const entityTable = computed(() => {
   return props.base?.enableEdit ? GlEntityTableEditable : GlEntityTable
@@ -881,7 +886,7 @@ const createEntitySavers = (
             (item) =>
               item[EntityDataSource.ConstObject.keyFiledName] &&
               item[EntityDataSource.ConstObject.keyFiledName] ===
-                record[EntityDataSource.ConstObject.keyFiledName]
+              record[EntityDataSource.ConstObject.keyFiledName]
           )
         ) {
           record[subTablePidName] = undefined
@@ -1282,6 +1287,28 @@ const isSelectedRecordsSameColumn = (params: { dataIndex: string }) => {
     colSet.add(record[params.dataIndex])
   })
   return colSet.size === 1
+}
+
+/**
+ * 列是否包含某值
+ * @param params
+ */
+const isColumnHasValue = (params: { dataIndex: string, value: any, onlySelected?: boolean }) => {
+  if (!params || !params.dataIndex || !params.value) {
+    console.error('isColumnHasValue的参数不正确,格式应为：{ dataIndex: string, value: any, onlySelected?: boolean }，实为：', params)
+    throw new Error('isColumnHasValue的参数不正确,格式应为：{ dataIndex: string, value: any, onlySelected?: boolean }')
+  }
+  let foundRecord
+  if(params.onlySelected) {
+    foundRecord = getSelectedRecords()?.find((record: Record<string, any>) => {
+      return record[params.dataIndex] === params.value
+    })
+  }else{
+    foundRecord = getRenderRecords()?.find((record: Record<string, any>) => {
+      return record[params.dataIndex] === params.value
+    })
+  }
+  return !!foundRecord
 }
 
 /**
@@ -1803,6 +1830,7 @@ defineExpose({
   hasSelectedRecords,
   hasUnSaveRecords,
   isSelectedRecordsSameColumn,
+  isColumnHasValue,
   validate,
   reRender,
   refresh,
@@ -2022,6 +2050,7 @@ defineExpose({
       @updateRow="onUpdateRow"
       @fetchSuccess="onFetchSuccess"
       @fetchFail="onFetchFail"
+      @fetchInterdict="onFetchInterdict"
       @rowClick="rowClick"
       @rowContextmenu="rowContextmenu"
       @rowDblclick="rowDblclick"
