@@ -984,7 +984,15 @@ export default {
       name: 'creatingEntitySavers',
       description:
         '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
-      title: '保存对象完成前'
+      title: '保存对象完成前',
+      params: [{
+        name: 'entitySavers',
+        title: '实体保存对象',
+        required: true,
+        type: 'EntitySaver[]',
+        description: '用于为作子表单时保存表单数据到服务端。',
+        docId: '4919301630853255168'
+      }]
     }
   ],
   methods: [

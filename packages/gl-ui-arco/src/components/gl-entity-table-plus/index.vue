@@ -937,7 +937,7 @@ const createEntitySavers = (
   }
 
   // console.log('GlEntityTablePlus > creatingEntitySavers:', entitySavers)
-  emits('creatingEntitySavers', { entitySavers })
+  emits('creatingEntitySavers', entitySavers)
   return entitySavers
 }
 
