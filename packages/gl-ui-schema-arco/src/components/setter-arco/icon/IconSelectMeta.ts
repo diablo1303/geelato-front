@@ -44,5 +44,5 @@ export default {
       enableValueExpress: false
     }
   ],
-  actions: [{ name: 'onValueChange', description: '', title: '值改变' }]
+  actions: [{ name: 'valueChange', description: '', title: '值改变' }]
 }

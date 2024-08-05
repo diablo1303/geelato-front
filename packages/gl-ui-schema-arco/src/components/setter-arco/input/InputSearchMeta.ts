@@ -162,7 +162,7 @@ export default {
     }
   ],
   actions: [
-    { name: 'onValueChange', description: '仅在输入框失焦或按下回车时触发', title: '值改变' },
+    { name: 'valueChange', description: '仅在输入框失焦或按下回车时触发', title: '值改变' },
     { name: 'search', description: '点击查询按钮时触发', title: '搜索' }
   ],
   displayOnStage: 'inline-block'

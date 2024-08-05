@@ -128,6 +128,6 @@ export default {
         "title": "可复制",
         "setterComponentName": "ASwitch"
     }],
-    "actions": [{"name": "onValueChange", "description": "", "title": "值改变"}],
+    "actions": [{"name": "valueChange", "description": "", "title": "值改变"}],
     "displayOnStage": "inline-block"
 }

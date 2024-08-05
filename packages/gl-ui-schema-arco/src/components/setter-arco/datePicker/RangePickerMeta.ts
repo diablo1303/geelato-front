@@ -75,16 +75,16 @@ export default {
     }
   ],
   actions: [
-    { name: 'onValueChange', description: '', title: '值改变' },
+    { name: 'valueChange', description: '', title: '值改变' },
     {
-      eventName: 'onMounted',
-      name: 'onMounted',
+      eventName: 'mounted',
+      name: 'mounted',
       description: '组件加载完时触发，和Vue的onMounted一致',
       title: '加载完'
     },
     {
-      eventName: 'onUpdated',
-      name: 'onUpdated',
+      eventName: 'updated',
+      name: 'updated',
       description: '组件更新时触发，和Vue的onUpdated一致',
       title: '更新完'
     }

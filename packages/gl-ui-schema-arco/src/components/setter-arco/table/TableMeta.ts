@@ -115,7 +115,7 @@ export default {
           title: '是否为子表',
           setterComponentName: 'ASwitch',
           description:
-            '表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容，常用于主表关联已存在的子表记录；选是时，会出一列：记录状态，用于标记数据行的状态。',
+            '表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容，常用于主表关联已存在的子表记录；同时列出会多出列记录状态，用于标记数据行的状态。！！注意，组件本身不知哪个字段是两表的关联字段，不会自动设置关联字段（外键）值，需要通过脚本编排设置，',
           setterDefaultValue: false
         },
         {
@@ -1124,13 +1124,21 @@ export default {
     {
       name: 'fetchSuccess',
       title: '成功加载完数据',
-      description: '从服务端成功加数据（0到多条）后触发。'
+      description: '从服务端成功加数据（0到多条）后触发，本组件在表单组件内，且表单组件存在主键（id）值时才会触发加载子表数据。'
     },
     {
       name: 'creatingEntitySavers',
       description:
         '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
-      title: '保存对象完成前'
+      title: '保存对象完成前',
+      params: [{
+        name: 'entitySavers',
+        title: '实体保存对象',
+        required: true,
+        type: 'EntitySaver[]',
+        description: '用于为作子表单时保存表单数据到服务端。',
+        docId: '4919301630853255168'
+      }]
     },
     {
       name: 'changeRecord',
@@ -1540,6 +1548,40 @@ export default {
       returnInfo: {
         returnType: 'boolean，值为：true | false',
         description: '当前列表页面是否有数据。'
+      }
+    },
+    {
+      name: 'isColumnHasValue',
+      description:
+        '检查表格列是否包含某值',
+      title: '列是否包含某值',
+      params: [
+        {
+          name: 'dataIndex',
+          title: '字段名',
+          required: true,
+          type: 'string',
+          description: '列名'
+        },
+        {
+          name: 'value',
+          title: '字段名',
+          required: true,
+          type: 'any',
+          description: '列值'
+        },
+        {
+          name: 'onlySelected',
+          title: '数据范围',
+          required: false,
+          type: 'string',
+          description: '默认为false，表示检查当前列表展示的数据；true表示仅检查已选择的数据。'
+        }
+      ],
+      returnInfo: {
+        returnType: 'boolean，值为：true | false',
+        description:
+          '检查表格列是否包含某值，如果存在，返回true，否则返回false。'
       }
     },
     {

@@ -32,7 +32,7 @@ import {
   PageProvideKey,
   mixins,
   EntityReaderOrder,
-  PageStatus
+  PageStatus, EntityDataSource
 } from '@geelato/gl-ui'
 import { Schema } from 'b-validate'
 import { type Column, type GlTableColumn, SlotNameSeq } from './constants'
@@ -56,12 +56,18 @@ const global = useGlobal()
 const emits = defineEmits([
   'updateColumns',
   'updateRow',
+  // 查询成功
   'fetchSuccess',
+  // 查询失败
   'fetchFail',
+  // 阻断查询，如作为子表时，若无主表ID则会阻断查询
+  'fetchInterdict',
   'change',
   'copyRecord',
   // 从前端的列表中点了删除按钮，且前端已正常删除，则触发此事件。不管后续是否有进行服务端删除操作
-  'deleteRecord'
+  'deleteRecord',
+  // 从前端的列表中点了解除按钮，且前端已正常解除，则触发此事件。不管后续是否有进行服务端解除操作
+  'releaseRecord'
 ])
 const props = defineProps({
   modelValue: {
@@ -161,6 +167,15 @@ const props = defineProps({
     type: Boolean,
     default() {
       return true
+    }
+  },
+  /**
+   *  显示解除操作
+   */
+  showActionRelease: {
+    type: Boolean,
+    default() {
+      return false
     }
   },
   /**
@@ -352,11 +367,12 @@ if (!props.glIsRuntime) {
     { deep: true }
   )
 }
-
-// 编辑状态时删除的数据，
-const deleteDataWhenEnableEdit = ref<Array<{ id: string; [logicDeleteFieldName]: number }>>([])
+// 需和主表解除关系的记录，即需要更新外键字段为空的记录
+const toReleaseRecords = ref<Array<{ id: string; [logicDeleteFieldName]: number }>>([])
+// 需删除的记录，需要逻辑删除
+const toDeleteRecords = ref<Array<{ id: string; [logicDeleteFieldName]: number }>>([])
 const resetDeleteDataWhenEnableEdit = () => {
-  deleteDataWhenEnableEdit.value = []
+  toDeleteRecords.value = []
 }
 const _pagination = reactive({
   ...props.pagination,
@@ -449,6 +465,7 @@ const fetchData = async (readerInfo?: {
     console.error(
       'GlEntityTable > fetchData() > entityName or subTablePidName is null. 作为子表时，必须指定子表外键，即对应主表ID的字段'
     )
+    emits('fetchSuccess', { data: []})
     return
   }
 
@@ -473,10 +490,11 @@ const fetchData = async (readerInfo?: {
             formProvideProxy,
             ' and getRecordId() is ' +
               formProvideProxy?.getRecordId() +
-              '.作为子表时，父ID不能为空，当前页面状态：',
+              '.列表作为子表时，若页面的状态为非新增、非复制、非none状态时（如修改、查看状态），主表的ID不能为空，当前页面状态：',
             pageProvideProxy?.pageStatus
           )
         }
+        emits('fetchInterdict', { data: [],message: '为作子表单，但获取不到父表单的ID，停止查询，查询页面状态为：'+pageProvideProxy?.pageStatus })
         return
       }
       entityReader.params.push(new EntityReaderParam(props.subTablePidName, 'eq', pid))
@@ -497,7 +515,7 @@ const fetchData = async (readerInfo?: {
     emits('fetchSuccess', { data: renderData.value })
   } catch (err) {
     console.error(err)
-    emits('fetchFail', { data: undefined, _pagination })
+    emits('fetchFail', { data: [], pagination:_pagination })
   } finally {
     setLoading(false)
   }
@@ -719,25 +737,22 @@ const addRecords = (records: Record<string, any>[], keyField: string = 'dataInde
 }
 
 /**
- * 表格在编辑模式下，基于外部的数据记录，插入新记录到当前组件
- * @param params ignoreDataIndexes 忽列掉的字段
- *               uniqueDataIndexes 唯一字段，多个字段时，表示联合唯一
+ * 获取重复的数据和不重复的数据
+ * 创建新的数组返回
+ * @param records 当前列表的数据
+ * @param insertRecords 插入的数据
+ * @param uniqueDataIndexes 唯一字段，多个字段时，表示联合唯一
  */
-const insertRecords = (params: {
-  records: Record<string, any>[]
-  ignoreDataIndexes?: string[]
-  uniqueDataIndexes?: string[]
-}) => {
-  // 先做唯一性检查，如果有重复，则不插入，并记录重复的记录数
+const findRecords = (records: Record<string, any>[],insertRecords:Record<string, any>[],uniqueDataIndexes: string[]) => {
   const sameRecords: Array<Record<string, any>> = []
-  const insertRecords: Array<Record<string, any>> = []
-  if (params.uniqueDataIndexes && params.uniqueDataIndexes.length > 0) {
-    params?.records?.forEach((record: Record<string, any>) => {
+  const notSameRecords: Array<Record<string, any>> = []
+  if (uniqueDataIndexes && uniqueDataIndexes.length > 0) {
+    insertRecords.forEach((record: Record<string, any>) => {
       // let isSameRecord = false
       // 判断是否与当前列表中的数据重复
-      const foundSameRecord = renderData.value.find((item: Record<string, any>) => {
+      const foundSameRecord = records.find((item: Record<string, any>) => {
         let allUniqueDataIndexAreSame = true
-        params.uniqueDataIndexes.forEach((uniqueDataIndex: string) => {
+        uniqueDataIndexes.forEach((uniqueDataIndex: string) => {
           if (item[uniqueDataIndex] != record[uniqueDataIndex]) {
             allUniqueDataIndexAreSame = false
           }
@@ -748,12 +763,28 @@ const insertRecords = (params: {
       if (foundSameRecord) {
         sameRecords.push(record)
       } else {
-        insertRecords.push(record)
+        notSameRecords.push(record)
       }
     })
   } else {
-    insertRecords.push(...(params.records || []))
+    notSameRecords.push(...(params.records || []))
   }
+  return {sameRecords, notSameRecords}
+}
+
+/**
+ * 表格在编辑模式下，基于外部的数据记录，插入新记录到当前组件
+ * @param params ignoreDataIndexes 忽列掉的字段
+ *               uniqueDataIndexes 唯一字段，多个字段时，表示联合唯一，默认为模型的主键字段“id”
+ */
+const insertRecords = (params: {
+  records: Record<string, any>[]
+  ignoreDataIndexes?: string[]
+  uniqueDataIndexes?: string[]
+}) => {
+  const uniqueDataIndexes = params.uniqueDataIndexes || [EntityDataSource.ConstObject.keyFiledName]
+  // 先做唯一性检查，如果有重复，则不插入，并记录重复的记录数
+  const {sameRecords, notSameRecords} = findRecords(renderData.value, params.records, uniqueDataIndexes)
 
   if (sameRecords.length > 0) {
     global.$notification.warning({
@@ -762,7 +793,8 @@ const insertRecords = (params: {
     })
   }
 
-  insertRecords.forEach((record: Record<string, any>) => {
+  // 插入经过滤不重复的记录
+  notSameRecords.forEach((record: Record<string, any>) => {
     const newRow: Record<string, any> = {}
     props.columns.forEach((col: Column) => {
       let dataIndex: string = col.dataIndex!
@@ -773,6 +805,14 @@ const insertRecords = (params: {
     })
     renderData.value.push(newRow)
   })
+
+  // 如果有删除的记录，需要去掉相应的记录
+  const toDeleteRecordsFindResult =  findRecords(renderData.value, toDeleteRecords.value, uniqueDataIndexes)
+  toDeleteRecords.value = [...toDeleteRecordsFindResult.notSameRecords]
+  // 如果有移除的记录，需要去掉相应的记录
+  const toReleaseRecordsFindResult =  findRecords(renderData.value, toReleaseRecords.value, uniqueDataIndexes)
+  toReleaseRecords.value = [...toReleaseRecordsFindResult.notSameRecords]
+
   props.glComponentInst.value = renderData.value
 }
 
@@ -838,6 +878,38 @@ const copyRecord = (record: object, rowIndex: number) => {
   // eslint-disable-next-line vue/no-mutating-props
   props.glComponentInst.value = renderData.value
 }
+
+/**
+ * 解除与主表的引用关系（即删除外键 Delete foreign key）
+ * 解除成功时，返回解除的记录，否则返回null
+ * @param params
+ */
+const releaseRecordByIndex = (params:{index: number}) => {
+  const { index } = params
+  const records = renderData.value.splice(index, 1)
+  // eslint-disable-next-line vue/no-mutating-props
+  props.glComponentInst.value = renderData.value
+  if (records && records.length > 0) {
+    const record: { [key: string]: any } = records[0]
+    // 如该记录没有id，即表示新添加且未保存的，在点解除时，直接解除，不需要再记录到待解除组数中
+    if (record.id) {
+      toReleaseRecords.value.push({ id: record.id, [props.subTablePidName]: 1 })
+    }
+    emits('releaseRecord', { record, rowIndex:index })
+    // 同时会触发表络级别的change事件
+    emits('change', renderData.value)
+    return record
+  }
+  return null
+}
+
+/**
+ * 获取标记待解除的记录
+ * 是否有解除，由外部决定
+ */
+const getReleaseRecords = () => {
+  return toReleaseRecords.value
+}
 /**
  * 删除指定索引的记录
  * 删除成功时，返回删除的记录，否则返回null
@@ -852,7 +924,7 @@ const deleteRecordByIndex = (params:{index: number}) => {
     const record: { [key: string]: any } = records[0]
     // 如该记录没有id，即表示新添加且未保存的，在点删除时，直接删除，不需要再记录到待删除组数中
     if (record.id) {
-      deleteDataWhenEnableEdit.value.push({ id: record.id, [logicDeleteFieldName]: 1 })
+      toDeleteRecords.value.push({ id: record.id, [logicDeleteFieldName]: 1 })
     }
     emits('deleteRecord', { record, rowIndex:index })
     // 同时会触发表络级别的change事件
@@ -866,8 +938,12 @@ const getRenderData = () => {
   return renderData.value
 }
 
+/**
+ * 获取标记待删除的记录
+ * 是否有删除，由外部决定
+ */
 const getDeleteRecords = () => {
-  return deleteDataWhenEnableEdit.value
+  return toDeleteRecords.value
 }
 const getRenderColumns = () => {
   return renderColumns.value
@@ -915,6 +991,8 @@ defineExpose({
   search,
   popupVisibleChange,
   changeShowColumns,
+  deleteRecordByIndex,
+  releaseRecordByIndex,
   validate,
   validateRecord,
   addRow,
@@ -924,8 +1002,8 @@ defineExpose({
   reRender,
   getRenderData,
   getRenderColumns,
-  deleteRecordByIndex,
   getDeleteRecords,
+  getReleaseRecords,
   getRef
 })
 </script>
@@ -964,16 +1042,36 @@ defineExpose({
           :disabled="isPageRead || readonly"
           >复制
         </a-button>
-        <a-button
-          v-if="showActionDelete"
-          type="text"
-          status="danger"
-          size="small"
-          @click="deleteRecordByIndex({index:rowIndex})"
-          :disabled="isPageRead || readonly || isRowReadonly(rowIndex)"
+        <a-popconfirm
+          content="是否删除"
+          type="error"
+          @ok="deleteRecordByIndex({ index: rowIndex })"
         >
-          删除
-        </a-button>
+          <a-button
+            v-if="showActionDelete"
+            type="text"
+            status="danger"
+            size="small"
+            :disabled="isPageRead || readonly || isRowReadonly(rowIndex)"
+          >
+            删除
+          </a-button>
+        </a-popconfirm>
+        <a-popconfirm
+          content="是否解除"
+          type="error"
+          @ok="releaseRecordByIndex({ index: rowIndex })"
+        >
+          <a-button
+            v-if="showActionRelease"
+            type="text"
+            status="danger"
+            size="small"
+            :disabled="isPageRead || readonly || isRowReadonly(rowIndex)"
+          >
+            解除关联
+          </a-button>
+        </a-popconfirm>
       </a-space>
     </template>
     <template

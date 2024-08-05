@@ -216,12 +216,12 @@ export default {
   ],
   actions: [
     {
-      name: 'onLoadedData',
+      name: 'loadedData',
       description: '表单加载完成数据并设置到各表单项之后触发,可以在此事件之后进一步设置组件的值。',
       title: '加载完数据并更新到页面之后'
     },
     {
-      name: 'onLoadingData',
+      name: 'loadingData',
       description: '加载完数据并更新到页面之前，在些事件中可以对返回的数据进行加工处理。',
       title: '加载完数据并更新到页面之前',
       returnInfo: {

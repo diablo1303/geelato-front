@@ -188,6 +188,8 @@ const convertTitle = (componentInst: ComponentInstance, title?: string) => {
   } else {
     if (componentInst.componentName === 'GlEntityTablePlus') {
       componentInst.title = componentInst.props.base?.label + '【列表】'
+    }else if (componentInst.componentName === 'GlAlert' && componentInst.title=== 'GlAlert') {
+      componentInst.title = '警告提示'
     }
   }
   if (componentInst.children) {

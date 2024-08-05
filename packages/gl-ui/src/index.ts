@@ -5,7 +5,7 @@ import * as authUtil from "./m/utils/Auth";
 import * as routeUtil from "./m/utils/RouteListener"
 import * as eventUtil from "./m/utils/Event"
 import * as monitorUtil from "./m/utils/Monitor"
-import type {PageParamConfigType, PageTemplate} from './components/PageProvideProxy'
+import type {PageParamConfigType, PageTemplate,PagePermission} from './components/PageProvideProxy'
 import PageProvideProxy, {type PageCustomType, PageParamsKey, PageProvideKey, paramStringify} from './components/PageProvideProxy'
 import GlHtml from './components/gl-html/Index.vue'
 import GlIconfont from './components/gl-iconfont/Index.vue'
@@ -137,6 +137,7 @@ import GlLoader from './components/gl-loader/GlLoader.vue'
 import './assets/style.css'
 import useLogger from './m/hooks/useLogger'
 import {loadPageContent} from './components/PageLoader'
+import {isLogin} from './m/utils/Auth'
 
 const Utils = AllUtils
 
@@ -192,6 +193,8 @@ const selectComponent = (event: any, inst: any) => {
   emitter.emit(UiEventNames.Base.SelectComponent, inst)
 }
 export {
+  PagePermission,
+  isLogin,
   GeelatoPlugin,
   GeelatoPluginOptions,
   selectComponent,

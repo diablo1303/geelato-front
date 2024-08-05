@@ -238,7 +238,7 @@ export default {
     }
   ],
   actions: [
-    { name: 'onValueChange', description: '此时选项值不一定已加载完成', title: '值改变' },
+    { name: 'valueChange', description: '此时选项值不一定已加载完成', title: '值改变' },
     { name: 'onOptionChange', description: '此时选项值已加载完成', title: '选项改变' }
   ],
   displayOnStage: 'inline-block'

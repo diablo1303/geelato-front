@@ -66,7 +66,7 @@ export default {
 const enum TriggerMode {
   onCreated = 'onCreated',
   // onInvoked = 'onInvoked',
-  onValueChanged = 'onValueChanged'
+  // onValueChanged = 'onValueChanged'
 }
 
 // 触发约束条件，以下条件必须同时满足
@@ -608,7 +608,6 @@ watch(
   (val: any, oval: any) => {
     emits('update:modelValue', val)
     loadData()
-    // triggerOnValueChanged(val, oval)
   },
   { deep: true, immediate: true }
 )

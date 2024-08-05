@@ -41,5 +41,5 @@ export default {
         "enableValueExpress": false,
         "description": "选择应用配置中定义的字段编码规则",
     }],
-    "actions": [{"name": "onValueChange", "description": "值改变时触发", "title": "值改变"}]
+    "actions": [{"name": "valueChange", "description": "值改变时触发", "title": "值改变"}]
 }

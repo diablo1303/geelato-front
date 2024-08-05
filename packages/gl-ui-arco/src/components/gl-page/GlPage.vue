@@ -192,7 +192,7 @@ const onPageMounted = () => {
   if (props.glIsRuntime) {
     props.glComponentInst.actions?.forEach((action: Action) => {
       // console.log('onPageMounted() > action:', action)
-      if (action.eventName === 'onMounted') {
+      if (action.eventName === 'mounted') {
         jsScriptExecutor.doAction(action, {
           pageProxy: pageProvideProxy!
         })

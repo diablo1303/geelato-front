@@ -127,7 +127,7 @@ export default {
           setterComponentVModelName: 'modelValue',
           title: '是否为子表',
           setterComponentName: 'ASwitch',
-          description: '表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容',
+          description: '表格类型是否为子表，若是，在保存表单时，需会同构建保存该表的内容，并会依据“关联主表字段”的配置，自动设置关联字段值等于主表Id的值',
           setterDefaultValue: true
         },
         {
@@ -208,6 +208,18 @@ export default {
           setterComponentName: 'ASwitch'
         },
         {
+          name: 'showAddRowBtn',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: true,
+          show: true,
+          expanded: true,
+          setterComponentProps: { defaultChecked: true },
+          setterComponentVModelName: 'modelValue',
+          title: '显示添加一行',
+          setterComponentName: 'ASwitch'
+        },
+        {
           name: 'showActionCopy',
           group: 'base',
           type: 'props',
@@ -217,7 +229,8 @@ export default {
           setterComponentProps: { defaultChecked: true },
           setterComponentVModelName: 'modelValue',
           title: '显示复制操作',
-          setterComponentName: 'ASwitch'
+          setterComponentName: 'ASwitch',
+          description: '复制一行数据，并插入，若需在插入前对复制的数据进行修改，可以在动作中添加脚本指令'
         },
         {
           name: 'showActionDelete',
@@ -229,7 +242,21 @@ export default {
           setterComponentProps: { defaultChecked: true },
           setterComponentVModelName: 'modelValue',
           title: '显示删除操作',
-          setterComponentName: 'ASwitch'
+          setterComponentName: 'ASwitch',
+          description: '点该删除操作，将标记删除该记录，并从前端列表中删除，在整个主表单保存到服务端时，才从数据库中删除该记录，注意不同于解除操作，如果显示删除操作，不需要显示解除操作。'
+        },
+        {
+          name: 'showActionRelease',
+          group: 'base',
+          type: 'props',
+          enableValueExpress: true,
+          show: true,
+          expanded: true,
+          setterComponentProps: { defaultChecked: false },
+          setterComponentVModelName: 'modelValue',
+          title: '显示解除操作',
+          setterComponentName: 'ASwitch',
+          description: '点该解除操作，将标记解除该记录，并从前端列表中删除，在整个主表单保存到服务端时，才从数据库中解除该记录与主表单的关系，但本记录不会删除；常用于管理与主表的引用关系，但不能删除数据的场景。'
         },
         {
           name: 'showPagination',
@@ -241,18 +268,6 @@ export default {
           setterComponentProps:  { defaultChecked: true },
           setterComponentVModelName: 'modelValue',
           title: '显示分页',
-          setterComponentName: 'ASwitch'
-        },
-        {
-          name: 'showAddRowBtn',
-          group: 'base',
-          type: 'props',
-          enableValueExpress: true,
-          show: true,
-          expanded: true,
-          setterComponentProps: { defaultChecked: true },
-          setterComponentVModelName: 'modelValue',
-          title: '显示添加一行',
           setterComponentName: 'ASwitch'
         },
         {
@@ -932,7 +947,17 @@ export default {
     {
       name: 'fetchSuccess',
       title: '成功加载完数据',
-      description: '从服务端成功加数据（0到多条）后触发。'
+      description: '从服务端成功加数据（0到多条）后触发，本组件在表单组件内，且表单组件存在主键（id）值时才会触发加载子表数据'
+    },
+    {
+      name: 'fetchFails',
+      title: '加载数据失败',
+      description: '从服务端加数据出错。'
+    },
+    {
+      name: 'fetchInterdict',
+      title: '加载数据被阻断',
+      description: '因某此原因加载数据请求被阻断，此时未向服务端发起数据请求，如本组件作为子表时，若无主表ID则会阻断查询。'
     },
     {
       name: 'changeRecord',
@@ -951,15 +976,23 @@ export default {
     },
     {
       name: 'change',
-      title: '表格数据变更（行调整顺序）',
+      title: '表格行增删移动时变更',
       description:
-        '表格数据发生变化时触发，如在可编辑表格下，行数据数据拖动时出发（表格内置表单字段输入控件值改变时，不会触发）'
+        '添加行、删除行、拖动行时触发发（表格内置表单字段输入控件值改变时，不会触发）'
     },
     {
       name: 'creatingEntitySavers',
       description:
         '完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理。',
-      title: '保存对象完成前'
+      title: '保存对象完成前',
+      params: [{
+        name: 'entitySavers',
+        title: '实体保存对象',
+        required: true,
+        type: 'EntitySaver[]',
+        description: '用于为作子表单时保存表单数据到服务端。',
+        docId: '4919301630853255168'
+      }]
     }
   ],
   methods: [
@@ -1077,6 +1110,40 @@ export default {
       returnInfo: {
         returnType: 'boolean，值为：true | false',
         description: '是否选择了记录。',
+      }
+    },
+    {
+      name: 'isColumnHasValue',
+      description:
+        '检查表格列是否包含某值',
+      title: '列是否包含某值',
+      params: [
+        {
+          name: 'dataIndex',
+          title: '字段名',
+          required: true,
+          type: 'string',
+          description: '列名'
+        },
+        {
+          name: 'value',
+          title: '字段名',
+          required: true,
+          type: 'any',
+          description: '列值'
+        },
+        {
+          name: 'recordsScope',
+          title: '数据范围',
+          required: false,
+          type: 'string',
+          description: 'All：当前展示的所有数据，Selected：当前已选中的数据，默认为当前所选的数据'
+        }
+      ],
+      returnInfo: {
+        returnType: 'boolean，值为：true | false',
+        description:
+          '检查表格列是否包含某值，如果存在，返回true，否则返回false。'
       }
     },
     {
@@ -1214,7 +1281,7 @@ export default {
     {
       name: 'insertRecords',
       title: '插入记录',
-      description: '向表格插入记录，纯客户端操作，未保存到服务器',
+      description: '向表格插入记录，纯客户端操作，未保存到服务器，目标列表组件中有的字段才会插入，如目标列表有ID、name字段，则插入的记录中，只有ID和name字段会被插入。',
       params: [
         {
           name: 'records',
@@ -1226,7 +1293,7 @@ export default {
         {
           name: 'ignoreDataIndexes',
           type: 'string[]',
-          description: '需要插入的记录集中，忽略掉的字段，如：["id"]',
+          description: '需要插入的记录集中，忽略掉的字段，如：["id"]，只插入需要的字段（可插入的字段范围，以目标表中的字段为准，包括隐藏字段）。',
           title: '忽略的字段',
           defaultValue: []
         },

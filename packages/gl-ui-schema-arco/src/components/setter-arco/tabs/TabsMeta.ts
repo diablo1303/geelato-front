@@ -193,7 +193,7 @@ export default {
       displayMode: 'tile'
     }
   ],
-  actions: [{ name: 'onValueChange', description: '切换选项卡', title: '切换选项卡' }],
+  actions: [{ name: 'valueChange', description: '切换选项卡', title: '切换选项卡' }],
   methods: [
     { name: 'getValue', title: '获取当前选中的标签页值', description: '', params: [] },
     {

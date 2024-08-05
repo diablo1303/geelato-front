@@ -85,12 +85,12 @@ import type { WorkflowPageTemplate } from '@geelato/gl-ui/src/components/PagePro
 const __id = utils.gid('__form')
 console.log('GlEntityForm > init',__id)
 
-// onLoadingData：从服务端加载数据，但未设置到表单中
-// onLoadedData：从服务端加载完数据并设置到表单中
+// loadingData：从服务端加载数据，但未设置到表单中
+// loadedData：从服务端加载完数据并设置到表单中
 // creatingEntitySavers 完成实体保存对象创建之后（表单验证已通过），关闭创建方法前调用，例于对实体保存对象进行处理
 const emits = defineEmits([
-  'onLoadingData',
-  'onLoadedData',
+  'loadingData',
+  'loadedData',
   'creatingEntitySavers',
   'createdEntitySavers'
 ])
@@ -449,7 +449,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
   // })
 
   // console.log('GlEntityForm > setFormItemValues() > formData:', formData.value)
-  emits('onLoadedData', { data: formData.value })
+  emits('loadedData', { data: formData.value })
 }
 
 /**
@@ -549,12 +549,12 @@ const fetchData = async (params?: { id: string; [key: string]: any }, reRender: 
             // 对于初始不加载表单，通过fetchData({id:xxx})加载表单数据的，需要将加载完成的id设置到表单中
             entityRecordId.value = items[0].id
             formProvideProxy.setRecordId(items[0].id)
-            emits('onLoadingData', { data: items[0] })
+            emits('loadingData', { data: items[0] })
             delete items[0].id
             setFormItemValues(items[0])
           } else {
             isLastFetchedDataEmpty.value = true
-            emits('onLoadingData', { data: {} })
+            emits('loadingData', { data: {} })
           }
           // console.log('GlEntityForm > fetchData() > reRender:', reRender,'formData',formData.value)
           if(reRender){

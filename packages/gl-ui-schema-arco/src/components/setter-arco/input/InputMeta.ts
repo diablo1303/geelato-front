@@ -136,7 +136,7 @@ export default {
     }
   ],
   actions: [
-    { name: 'onValueChange', description: '仅在输入框失焦或按下回车时触发', title: '值改变' }
+    { name: 'valueChange', description: '仅在输入框失焦或按下回车时触发', title: '值改变' }
   ],
   displayOnStage: 'inline-block'
 }

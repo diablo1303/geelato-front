@@ -96,7 +96,7 @@
       <span class="gl-item" v-if="isLogin()">
         <GlIconfont
           type="gl-refresh"
-          text="页面查询替换"
+          text="页面重构"
           @click="showPageReplaceEditor"
         ></GlIconfont>
       </span>
@@ -166,7 +166,7 @@ import { useAppStore } from '../stores/UseAppStore'
 import EventNames from '../entity/EventNames'
 import ClipboardJS from 'clipboard'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
-import { isLogin } from '@geelato/gl-ui/src/m/utils/auth'
+import { isLogin } from '@geelato/gl-ui'
 
 const ideStore = useIdeStore()
 const appStore = useAppStore()

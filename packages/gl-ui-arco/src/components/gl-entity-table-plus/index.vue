@@ -47,6 +47,7 @@ import {
 import type { Action } from '../../types/global'
 import type { TableData, TableColumnData, PaginationProps } from '@arco-design/web-vue'
 import FilterManager from '../gl-query/FilterManager.vue'
+import type { ComponentInstance } from '@geelato/gl-ui-schema'
 
 const global = useGlobal()
 
@@ -81,10 +82,10 @@ const isRead = !!pageProvideProxy?.isPageStatusRead()
 const { t } = CheckUtil.isBrowser()
   ? useI18n()
   : {
-      t: (str: any) => {
-        return str
-      }
+    t: (str: any) => {
+      return str
     }
+  }
 // const t = (str: any) => {
 //   return str
 // }
@@ -324,7 +325,7 @@ const useDeleteFailFn = (message: string) => {
  * @param params
  */
 const deleteRecordByIndex = (params: { index: number }) => {
- return  tableRef.value.deleteRecordByIndex(params)
+  return tableRef.value.deleteRecordByIndex(params)
 }
 
 /**
@@ -374,7 +375,8 @@ const deleteRecordWithConfirm = (params: { id: string }) => {
     onOk: () => {
       deleteRecord(params)
     },
-    onCancel: () => {}
+    onCancel: () => {
+    }
   })
 }
 
@@ -394,7 +396,8 @@ const deleteSelectedRecords = (params: { withConfirm?: boolean }) => {
             refresh()
           }, useDeleteFailFn('删除失败'))
         },
-        onCancel: () => {}
+        onCancel: () => {
+        }
       })
     } else {
       return entityApi.deleteByIds(props.base.entityName, selectedKeys.value).then(() => {
@@ -532,9 +535,9 @@ const deleteRecordByEdit = (data: { record: Record<string, any>; rowIndex: any }
 const rowSelection = computed(() => {
   return props.base.checkType === 'checkbox' || props.base.checkType === 'radio'
     ? {
-        type: props.base.checkType,
-        showCheckedAll: props.base.showCheckAll && props.base.checkType === 'checkbox'
-      }
+      type: props.base.checkType,
+      showCheckedAll: props.base.showCheckAll && props.base.checkType === 'checkbox'
+    }
     : undefined
 })
 
@@ -763,14 +766,26 @@ const addRecordsByDataIndex = (params: { records: Record<string, any>[] }) => {
   return tableRef.value.addRecordsByDataIndex(params.records)
 }
 
+const getDeleteRecords = () => {
+  if (typeof tableRef.value.getDeleteRecords === 'function') {
+    return tableRef.value.getDeleteRecords()
+  }
+  return []
+}
+
 /**
+ *  由getDeleteRecords代替
  *  @deprecated
  */
 const getDeleteData = () => {
-  return tableRef.value.getDeleteRecords()
+  return getDeleteRecords()
 }
-const getDeleteRecords = () => {
-  return tableRef.value.getDeleteRecords()
+
+const getReleaseRecords = () => {
+  if (typeof tableRef.value.getReleaseRecords === 'function') {
+    return tableRef.value.getReleaseRecords()
+  }
+  return []
 }
 
 const validate = () => {
@@ -787,6 +802,9 @@ const onFetchSuccess = (args: { data: [] }) => {
 }
 const onFetchFail = (args: { data: undefined; pagination: object }) => {
   emits('fetchFail', args)
+}
+const onFetchInterdict = (args: { data: []; message: string }) => {
+  emits('fetchInterdict', args)
 }
 
 const entityTable = computed(() => {
@@ -815,6 +833,8 @@ const createEntitySavers = (
   // 处理需保存的子表单数据
   // const renderColumns = getRenderColumns()
   let subFormTableData
+  // 在编辑表中，需要移除的数据
+  const releaseRecords = getReleaseRecords()
   switch (recordsScope) {
     case RecordsScope.Selected:
       subFormTableData = getSelectedRecords()
@@ -860,7 +880,19 @@ const createEntitySavers = (
       // 如果是新增，则采用变量，在后台保存主表单后，更换该值 $parent.id
       // 如果是修改，则直接获取当前的entityRecordId
       if (subTablePidName) {
-        record[subTablePidName] = subFormPidValue
+        // 如果是解除的数据记录，则设置为空，主键存在有的效记录，才需要设置外键为空
+        if (
+          releaseRecords.find(
+            (item) =>
+              item[EntityDataSource.ConstObject.keyFiledName] &&
+              item[EntityDataSource.ConstObject.keyFiledName] ===
+              record[EntityDataSource.ConstObject.keyFiledName]
+          )
+        ) {
+          record[subTablePidName] = undefined
+        } else {
+          record[subTablePidName] = subFormPidValue
+        }
       }
       const entitySaver = new EntitySaver(props.base.entityName)
       entitySaver.id = props.glComponentInst.id
@@ -875,7 +907,6 @@ const createEntitySavers = (
   }
   // 处理需删除子表单数据
   // 当前为逻辑删除，可依据子表的isLogicDeleteMode来区分
-  // console.log('GlEntityForm > saveForm() > getDeleteDataFn', getDeleteDataFn)
   const deleteData = getDeleteRecords()
   // console.log('GlEntityTablePlus > createEntitySavers() > deleteData:', deleteData)
   if (deleteData && deleteData.length > 0) {
@@ -890,8 +921,23 @@ const createEntitySavers = (
       entitySavers.push(entitySaver)
     })
   }
+  // 处理需解除子表单数据
+  if (releaseRecords && releaseRecords.length > 0) {
+    releaseRecords.forEach((record: Record<any, any>) => {
+      if (subTablePidName) {
+        record[subTablePidName] = ''
+      }
+      const entitySaver = new EntitySaver(props.base.entityName)
+      entitySaver.id = props.glComponentInst.id
+      entitySaver.pidName = undefined
+      entitySaver.record = record
+      entitySavers.push(entitySaver)
+      console.log('GlEntityTablePlus > createEntitySavers() > releaseRecords:', record, entitySaver)
+    })
+  }
+
   // console.log('GlEntityTablePlus > creatingEntitySavers:', entitySavers)
-  emits('creatingEntitySavers', { entitySavers })
+  emits('creatingEntitySavers', entitySavers)
   return entitySavers
 }
 
@@ -1025,7 +1071,10 @@ const insertRecords = (params: {
   records: Record<string, any>[]
   ignoreDataIndexes?: string[]
 }) => {
-  return tableRef.value.insertRecords(params)
+  if (typeof tableRef.value.insertRecords === 'function') {
+    return tableRef.value.insertRecords(params)
+  }
+  return undefined
 }
 
 // 获取组件所在页面的自定义配置
@@ -1238,6 +1287,28 @@ const isSelectedRecordsSameColumn = (params: { dataIndex: string }) => {
     colSet.add(record[params.dataIndex])
   })
   return colSet.size === 1
+}
+
+/**
+ * 列是否包含某值
+ * @param params
+ */
+const isColumnHasValue = (params: { dataIndex: string, value: any, onlySelected?: boolean }) => {
+  if (!params || !params.dataIndex || !params.value) {
+    console.error('isColumnHasValue的参数不正确,格式应为：{ dataIndex: string, value: any, onlySelected?: boolean }，实为：', params)
+    throw new Error('isColumnHasValue的参数不正确,格式应为：{ dataIndex: string, value: any, onlySelected?: boolean }')
+  }
+  let foundRecord
+  if(params.onlySelected) {
+    foundRecord = getSelectedRecords()?.find((record: Record<string, any>) => {
+      return record[params.dataIndex] === params.value
+    })
+  }else{
+    foundRecord = getRenderRecords()?.find((record: Record<string, any>) => {
+      return record[params.dataIndex] === params.value
+    })
+  }
+  return !!foundRecord
 }
 
 /**
@@ -1460,7 +1531,11 @@ const searchAndExportRecords = (params: { pageSize: number }) => {
     await Promise.all(allEntityQueryPromise)
 
     // 对查出的数据集，进行转换
-    if (renderScriptColAry.length > 0||dictComponentColAry.length > 0 || dynamicSelectComponentColAry.length>0) {
+    if (
+      renderScriptColAry.length > 0 ||
+      dictComponentColAry.length > 0 ||
+      dynamicSelectComponentColAry.length > 0
+    ) {
       res.data.forEach((record: Record<string, any>, rowIndex: number) => {
         // 遍历列，如果配置了显示脚本，则先计算出值
         renderScriptColAry.forEach((col) => {
@@ -1617,8 +1692,10 @@ const selectRecordByKey = (params: {
  *  导出所有页的数据
  */
 const exportExcelAll = () => {
-  if(!props.glIsRuntime){
-    global.$message.info('在运行时环境中使用，点击导出符合当前查询条件的所有数据，最多10000条记录。')
+  if (!props.glIsRuntime) {
+    global.$message.info(
+      '在运行时环境中使用，点击导出符合当前查询条件的所有数据，最多10000条记录。'
+    )
     return
   }
   const notificationId = utils.gid()
@@ -1695,6 +1772,15 @@ const exportExcelAll = () => {
   )
 }
 
+const hasPermission = (componentInst: ComponentInstance) => {
+  // 是否需要检查查看权限
+  if (componentInst?.perms?.r) {
+    // 检查是否分配了权限
+    return !!props.pagePermission?.hasReadPermission(componentInst.id)
+  }
+  return true
+}
+
 defineExpose({
   createEntityReaderAsMql,
   createEntityReader,
@@ -1720,6 +1806,7 @@ defineExpose({
   deleteSelectedRecordsWithConfirm,
   getRenderRecord,
   getRenderRecords,
+  getReleaseRecords,
   getDeleteRecords,
   getDeleteData,
   getSelectedRecords,
@@ -1743,6 +1830,7 @@ defineExpose({
   hasSelectedRecords,
   hasUnSaveRecords,
   isSelectedRecordsSameColumn,
+  isColumnHasValue,
   validate,
   reRender,
   refresh,
@@ -1792,6 +1880,7 @@ defineExpose({
       style="margin-bottom: 8px"
       :disabled="isRead || readonly"
       :glIsRuntime="glIsRuntime"
+      :pagePermission="pagePermission"
     >
       <template #leftItems>
         <div v-if="base.enableEdit && base.showAddRowBtn !== false" class="action-icon">
@@ -1934,6 +2023,7 @@ defineExpose({
       :showSeqNo="base.showSeqNo"
       :showActionCopy="base.showActionCopy"
       :showActionDelete="base.showActionDelete"
+      :showActionRelease="base.showActionRelease"
       :pagination="pagination"
       :enableEdit="base.enableEdit"
       :isFormSubTable="base.isFormSubTable"
@@ -1951,6 +2041,7 @@ defineExpose({
       :autoResetSeqNoAfterDrag="base.autoResetSeqNoAfterDrag"
       :readonly="readonly"
       :interdictExpression="base.interdictExpression"
+      :pagePermission="pagePermission"
       @select="select"
       @selectionChange="selectionChange"
       @headerClick="headerClick"
@@ -1959,6 +2050,7 @@ defineExpose({
       @updateRow="onUpdateRow"
       @fetchSuccess="onFetchSuccess"
       @fetchFail="onFetchFail"
+      @fetchInterdict="onFetchInterdict"
       @rowClick="rowClick"
       @rowContextmenu="rowContextmenu"
       @rowDblclick="rowDblclick"
