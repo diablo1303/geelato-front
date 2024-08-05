@@ -75,8 +75,9 @@ import useLoading from '@/hooks/loading';
 import type {LoginData} from '@/api/user';
 import {getSysConfig} from "@/api/user";
 import {DEFAULT_ROUTE} from "@/router/constants";
-import {appDataBaseRoutes, formatAppModules, IS_DATA_PAGE, pageParamsIsFull} from "@/router/routes";
+import {appDataBaseRoutes, formatAppModules, IS_ACCOUNT, pageBaseRoute, pageParamsIsFull} from "@/router/routes";
 import {getToken} from "@/utils/auth";
+import {queryAppsByUser} from "@/api/application";
 import {useGlobal} from "@geelato/gl-ui";
 
 const router = useRouter();
@@ -112,33 +113,49 @@ const getDataBaseRouters = async () => {
   }
 }
 
-const enterApp = () => {
-  if (IS_DATA_PAGE.value) getDataBaseRouters();// 获取当前用户个人菜单（所有菜单、首页）
-  const baseParams = {
-    tenantCode: (route && route.params && route.params.tenantCode) as string || '',
-    appId: (route && route.params && route.params.appId) as string || ''
-  };
-  const {redirect, ...othersQuery} = router.currentRoute.value.query;
-  if (redirect) {// 重定向
-    if (redirect.toString().toLowerCase().startsWith("http")) {// 用于将当前窗口的URL更改为指定的URL
-      window.location.assign(redirect as string);
-    } else if (router.hasRoute(redirect as string)) {
+/**
+ *
+ */
+const enterApp = async () => {
+  // http://localhost:5173/:tenantCode/:appId/login
+  if (route && route.params && route.params.tenantCode && route.params.appId) {// 路径完整
+    await getDataBaseRouters();// 获取当前用户个人菜单（所有菜单、首页）
+    const baseParams = {tenantCode: route.params.tenantCode, appId: route.params.appId};
+    // ?redirect=3821943302748938008&tenantCode=geelato&appId=1976169388038462609&pageId=3821943418964713243
+    const {redirect, ...othersQuery} = router.currentRoute.value.query;
+    // 填充，tenantCode、appId
+    Object.assign(othersQuery, baseParams);// 重定向
+    Object.assign(DEFAULT_ROUTE.params, baseParams);// 个人菜单首页
+    if (redirect) {// 重定向
+      if (redirect.toString().toLowerCase().startsWith("http")) {// 用于将当前窗口的URL更改为指定的URL
+        window.location.assign(redirect as string);
+      } else if (router.hasRoute(redirect as string) && pageParamsIsFull(othersQuery)) {// 存在路由，且参数完整
+        window.open(router.resolve({name: redirect as string, params: {...othersQuery} as RouteParamsRaw}).href, "_self");
+      } else {// page功能页面
+        pageBaseRoute(router, baseParams);
+      }
+    } else {// page功能页面
+      pageBaseRoute(router, baseParams);
+    }
+  } else if (IS_ACCOUNT.value) {
+    const {redirect, ...othersQuery} = router.currentRoute.value.query;
+    if (router.hasRoute(redirect as string)) {
       window.open(router.resolve({name: redirect as string, params: {...othersQuery} as RouteParamsRaw}).href, "_self");
-    } else if (DEFAULT_ROUTE.name) {// 不存在路由，指向默认首页
-      window.open(router.resolve({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params}).href, "_self");
-    } else if (IS_DATA_PAGE.value && pageParamsIsFull(baseParams, 1)) {// 不存在路由，page功能
-      window.open(router.resolve({name: 'pageWrapper', params: baseParams}).href, "_self");
-    } else {
-      Message.warning("无法进入页面，请检查路由是否正确！");
     }
   } else {
-    Object.assign(DEFAULT_ROUTE.params, baseParams);// 个人菜单首页
-    if (DEFAULT_ROUTE.name) {
-      window.open(router.resolve({name: DEFAULT_ROUTE.name, params: DEFAULT_ROUTE.params}).href, "_self");
-    } else if (IS_DATA_PAGE.value && pageParamsIsFull(baseParams, 1)) {
-      window.open(router.resolve({name: 'pageWrapper', params: baseParams}).href, "_self");
+    // http://localhost:5173/login => http://localhost:5173/:tenantCode/:appId/page
+    const {tenantCode} = userStore;
+    if (tenantCode) {
+      const {data} = await queryAppsByUser(userStore.tenantCode || '', userStore.id);
+      if (data && data.length > 0) {
+        const appIds = [...new Set(data.map((item) => item.id).filter((id) => !!id))];
+        console.log(appIds);
+        pageBaseRoute(router, {'tenantCode': tenantCode, 'appId': appIds[0]});
+      } else {
+        Message.warning('租户下当前用户没有应用权限，请先添加！');
+      }
     } else {
-      Message.warning("无法进入页面，请检查路由是否正确！");
+      Message.warning('当前用户缺失租户编码，请联系管理员！');
     }
   }
 }
@@ -159,8 +176,8 @@ const handleSubmit = async ({errors, values,}: {
     setLoading(true);
     try {
       await userStore.login(values as LoginData);
-      // getDataBaseRouters();
-      enterApp();
+      await userStore.info();
+      await enterApp();
       Message.success(t('login.form.login.success'));
       const {rememberPassword} = loginConfig.value;
       const {username, password} = values;

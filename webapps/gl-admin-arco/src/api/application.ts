@@ -85,6 +85,10 @@ export function queryAppsByParams(params: Record<string, any>) {
   });
 }
 
+export function queryAppsByUser(tenantCode: string, userId?: string) {
+  return axios.get<QueryAppForm[]>(`/api/app/queryByUser?tenantCode=${tenantCode}&userId=${userId}`);
+}
+
 export function getApp(id: string) {
   return axios.get<QueryAppForm>(`/api/app/get/${id}`);
 }
