@@ -210,6 +210,13 @@ const expRule = ref({
 })
 
 props.modelValue.forEach((rule: any) => {
+
+  if(rule.required===true) {
+    requiredRule.value = rule
+  } else if (rule[RuleExpression]) {
+    expRule.value[RuleExpression] = rule[RuleExpression]
+  }
+
   let ruleOption = ruleOptions.find((option: any) => {
     console.log(option.value, rule.ruleName, option.value === rule.ruleName)
     return option.value === rule.ruleName
