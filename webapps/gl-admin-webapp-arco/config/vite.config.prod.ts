@@ -26,10 +26,10 @@ export default mergeConfig(
                 output: {
                     manualChunks: {
                         vue: ['vue', 'vue-router', 'pinia', '@vueuse/core', 'vue-i18n'],
-                        arco: ['@arco-design/web-vue'],
-                        chart: ['echarts', 'vue-echarts'],
-                        geelato: ['@geelato/gl-ui','@geelato/gl-ui-arco','@geelato/gl-ui-schema','@geelato/gl-ui-schema-arco'],
                         mix: ['axios','dayjs','lodash','mitt','nprogress','query-string','b-validate'],
+                        chart: ['echarts', 'vue-echarts'],
+                        arco: ['@arco-design/web-vue'],
+                        geelato: ['@geelato/gl-ui','@geelato/gl-ui-arco','@geelato/gl-ui-schema','@geelato/gl-ui-schema-arco'],
                     },
                 },
             },

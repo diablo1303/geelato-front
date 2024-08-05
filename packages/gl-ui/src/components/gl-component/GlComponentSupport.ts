@@ -1,5 +1,47 @@
 import jsScriptExecutor, { Ctx } from '../../m/actions/JsScriptExecutor'
 import type { ComponentInstance } from '@geelato/gl-ui-schema'
+import { RuleExpression } from '../../index'
+
+/**
+ * 创建正则表达式校验器
+ * @param expression js表达式
+ */
+const createValidator = (expression: string, message: string) => {
+  return (value: string, callback: (error?: string) => void) => {
+    // 失败时返回异常的信息
+    const message = jsScriptExecutor.evalExpression(expression, {value})
+    if (message) {
+      callback(message)
+    }
+  }
+}
+
+/**
+ * 要求只在运行时执该方法
+ * 尝试解析规则，构建自定校验规则器
+ * @param inst
+ */
+export function tryParsePropsRulesInRuntime(inst: ComponentInstance) {
+  // 对于表单输入组件设置有规则的，检查是否有自定义的校验规则，如果进行转换
+  if (inst.group === 'dataEntry' && inst.props?.rules) {
+    // {
+    //   "type": "_exp",
+    //   "message": "类型不符合",
+    //   "ruleName": "type"
+    // }
+    // @ts-ignore 在此平台中rules是数组
+    inst.props.rules.forEach((rule: {[RuleExpression]?: string, message?: string }) => {
+      // @ts-ignore
+      if (rule[RuleExpression]) {
+        // @ts-ignore
+        inst.props.rules.push({
+          // @ts-ignore
+          validator: createValidator(rule[RuleExpression], rule.message || '输入不符合规则')
+        })
+      }
+    })
+  }
+}
 
 /**
  * 一级属性为非对象、非数据组的场景

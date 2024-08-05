@@ -5,6 +5,8 @@ export default {
 </script>
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { RuleExpression } from '@geelato/gl-ui'
+import GlExpressionSetter from '../expression-setters/GlExpressionSetter.vue'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -22,6 +24,26 @@ const props = defineProps({
 type ruleType = 'string' | 'number' | 'boolean' | 'array' | 'object' | 'email' | 'url' | 'ip'
 // ruleOption中，将name改成了value，是为了在下拉选择时，能选择中ruleOption对象的值，取的是ruleOption对象的value字段
 const ruleOptions = [
+  {
+    label: '验证类型',
+    value: 'type',
+    message: '类型不符合',
+    type: 'any',
+    setter: 'ASelect',
+    props: {
+      placeholder: '类型',
+      options: [
+        { label: '字符串', value: 'string' },
+        { label: '数值', value: 'number' },
+        { label: '布尔', value: 'boolean' },
+        { label: '数组', value: 'array' },
+        { label: '对象', value: 'object' },
+        { label: '邮箱', value: 'email' },
+        { label: '网址', value: 'url' },
+        { label: 'IP地址', value: 'ip' }
+      ]
+    }
+  },
   {
     label: '验证长度（字符串）',
     value: 'length',
@@ -72,7 +94,7 @@ const ruleOptions = [
     message: '不符合最小值要求',
     type: 'number',
     setter: 'AInputNumber',
-    props: { placeholder: '最小值'}
+    props: { placeholder: '最小值' }
   },
   {
     label: '最大值（数值）',
@@ -139,16 +161,16 @@ const ruleOptions = [
     props: { placeholder: '', title: '选中，表示不能为空，否则可以为空' },
     defaultValue: false,
     showSetter: true
-  },
-  {
-    label: '正则校验（字符串）',
-    value: 'match',
-    message: 'XX校验不通过',
-    type: 'string',
-    setter: 'GlRegExpSetter',
-    props: { placeholder: '正则' },
-    showSetter: true
   }
+  // {
+  //   label: '正则校验（字符串）',
+  //   value: 'match',
+  //   message: 'XX校验不通过',
+  //   type: 'string',
+  //   setter: 'GlRegExpSetter',
+  //   props: { placeholder: '正则' },
+  //   showSetter: true
+  // }
 ]
 
 // TODO 数组等规则
@@ -171,46 +193,57 @@ const ruleOptions = [
 // validator
 // 自定义校验规则
 
-const requiredRule = ref<Array<any>>([])
+// 其它规则
 const items = ref<Array<any>>([])
 
-if (props.modelValue.length === 0) {
-  requiredRule.value.push({
-    required: false,
-    message: '必填',
-    ruleName: 'required',
-    type: 'boolean'
+const requiredRule = ref({
+  required: false,
+  message: '必填',
+  ruleName: 'required',
+  type: 'boolean'
+})
+const expRule = ref({
+  message: '自定义',
+  ruleName: RuleExpression,
+  type: 'string',
+  [RuleExpression]: ''
+})
+
+props.modelValue.forEach((rule: any) => {
+  let ruleOption = ruleOptions.find((option: any) => {
+    console.log(option.value, rule.ruleName, option.value === rule.ruleName)
+    return option.value === rule.ruleName
   })
-} else {
-  props.modelValue.forEach((rule: any) => {
-    if (rule.ruleName === 'required') {
-      // required 规则
-      requiredRule.value.push(rule)
-    } else {
-      // 非required规则
-      let ruleOption = ruleOptions.find((option: any) => {
-        console.log(option.value, rule.ruleName, option.value === rule.ruleName)
-        return option.value === rule.ruleName
-      })
-      if (ruleOption) {
-        items.value.push({
-          label: ruleOption!.label,
-          name: ruleOption!.value,
-          setter: ruleOption!.setter,
-          showSetter: ruleOption.showSetter,
-          props: ruleOption!.props,
-          type: ruleOption!.type,
-          message: rule.message,
-          value: rule[ruleOption!.value] || ruleOption.defaultValue
-        })
-      }
-    }
-  })
-}
+  if (ruleOption) {
+    items.value.push({
+      label: ruleOption!.label,
+      name: ruleOption!.value,
+      setter: ruleOption!.setter,
+      showSetter: ruleOption.showSetter,
+      props: ruleOption!.props,
+      type: ruleOption!.type,
+      message: rule.message,
+      value: rule[ruleOption!.value] || ruleOption.defaultValue
+    })
+  }
+})
+
 const update = () => {}
 const emit = (val: any) => {
   let result = []
-  result.push(...requiredRule.value)
+  if(requiredRule.value.required===true) result.push({
+    type: 'boolean',
+    required: true,
+    ruleName: 'required',
+    message: requiredRule.value.message
+  })
+  // @ts-ignore
+  if(expRule.value[RuleExpression]) result.push({
+    [RuleExpression]:expRule.value[RuleExpression],
+    ruleName: expRule.value.ruleName,
+
+  })
+
   items.value.forEach((item: any) => {
     result.push({
       type: item.type,
@@ -223,6 +256,7 @@ const emit = (val: any) => {
 }
 
 watch(requiredRule, emit, { deep: true })
+watch(expRule, emit, { deep: true })
 watch(items, emit, { deep: true })
 
 const addRule = (ruleOption: any) => {
@@ -259,19 +293,28 @@ const removeRule = (args: any) => {}
 <template>
   <div>
     <div class="gl-table">
-      <template v-for="item in requiredRule">
-        <div class="gl-table-row" v-if="item.required !== undefined">
+        <div class="gl-table-row">
           <div class="gl-table-cell gl-label" style="width: 4em">必填</div>
           <div class="gl-table-cell">
-            <a-switch v-model="item.required"></a-switch>
-            <a-input v-model="item.message">
+            <a-input v-model="requiredRule.message">
               <template #prepend>
-                <span title="验证失败时的提示信息">提醒</span>
+                <span title="验证失败时的提示信息"
+                  ><a-switch
+                    v-model="requiredRule.required"
+                    checked-text="提醒"
+                    unchecked-text="不提醒"
+                  ></a-switch
+                ></span>
               </template>
             </a-input>
           </div>
         </div>
-      </template>
+        <div class="gl-table-row">
+          <div class="gl-table-cell gl-label" style="width: 4em" title="自定义脚本中可通过$gl.ctx.value获取当前输入组件的值，若验证如果为不通过，需要返回一个字符串提醒内容（如return '不能等于0'），若验证通过，则不需要返回">自定义</div>
+          <div class="gl-table-cell">
+            <GlExpressionSetter :show-input="true" v-model="expRule[RuleExpression]"></GlExpressionSetter>
+          </div>
+        </div>
     </div>
     <div>
       <GlArrayBaseSetter

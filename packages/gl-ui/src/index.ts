@@ -139,6 +139,7 @@ import useLogger from './m/hooks/useLogger'
 import {loadPageContent} from './components/PageLoader'
 import {isLogin} from './m/utils/Auth'
 
+const RuleExpression = '_RuleExpression'
 const Utils = AllUtils
 
 const component: GeelatoPlugin = {
@@ -193,6 +194,7 @@ const selectComponent = (event: any, inst: any) => {
   emitter.emit(UiEventNames.Base.SelectComponent, inst)
 }
 export {
+  RuleExpression,
   PagePermission,
   isLogin,
   GeelatoPlugin,
