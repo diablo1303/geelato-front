@@ -19,15 +19,14 @@
   import GlobalSetting from '@/components/global-setting/index.vue';
   import useLocale from '@/hooks/locale';
 
-  const hasPermission = ref(true);
-  // const hasPermission = ref(false);
-  // const geelatoKey = localStorage.getItem('geelatoKey');
-  // if (
-  //   geelatoKey ===
-  //   'ujoooojjadfasd.iaWQiOiIzNzUxNjE5NDA1MjYwODE2NDIxIiwiZXhwIjoxNzE4asdfasdfkKHIqNjp2IiwibG9naW5OYW1lIjoiaG9uZ3hxIiw.-Up93OfHapxJRYUxEHIlQ7cvc2kd7nKLM0U_8SWQ3CI'
-  // ) {
-  //   hasPermission.value = true;
-  // }
+  const hasPermission = ref(false);
+  const geelatoKey = localStorage.getItem('geelatoKey');
+  if (
+    geelatoKey ===
+    'ujoooojjadfasd.iaWQiOiIzNzUxNjE5NDA1MjYwODE2NDIxIiwiZXhwIjoxNzE4asdfasdfkKHIqNjp2IiwibG9naW5OYW1lIjoiaG9uZ3hxIiw.-Up93OfHapxJRYUxEHIlQ7cvc2kd7nKLM0U_8SWQ3CI'
+  ) {
+    hasPermission.value = true;
+  }
   const { currentLocale } = useLocale();
   const locale = computed(() => {
     switch (currentLocale.value) {
