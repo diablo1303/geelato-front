@@ -31,10 +31,10 @@ import LoginNavTop from "@/components/navtop/index.vue";
 const tenantStore = useTenantStore();
 const tenantData = computed(() => {
   return {
-    logoIcon: tenantStore.getTenant.logoIcon || '',
-    name: tenantStore.getTenant.name || '',
-    slogan: tenantStore.getTenant.slogan || '',
-    lang: tenantStore.getTenant.enableMutilLang || false,
+    logoIcon: tenantStore.logoIcon || '',
+    name: tenantStore.name || '',
+    slogan: tenantStore.slogan || '',
+    lang: tenantStore.enableMutilLang || false,
   };
 });
 

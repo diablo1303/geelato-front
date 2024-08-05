@@ -89,7 +89,7 @@ const userStore = useUserStore();
 const global = useGlobal();
 const tenantStore = useTenantStore();
 const tenantData = computed(() => {
-  return {welcome: tenantStore.getTenant.welcome};
+  return {welcome: tenantStore.welcome};
 });
 
 const loginConfig = useStorage('login-config', {
@@ -144,9 +144,9 @@ const enterApp = async () => {
     }
   } else {
     // http://localhost:5173/login => http://localhost:5173/:tenantCode/:appId/page
-    const {tenantCode} = userStore.userInfo;
+    const {tenantCode} = userStore;
     if (tenantCode) {
-      const {data} = await queryAppsByUser(userStore.userInfo.tenantCode || '', userStore.userInfo.id);
+      const {data} = await queryAppsByUser(userStore.tenantCode || '', userStore.id);
       if (data && data.length > 0) {
         const appIds = [...new Set(data.map((item) => item.id).filter((id) => !!id))];
         console.log(appIds);
@@ -160,8 +160,8 @@ const enterApp = async () => {
   }
 }
 onMounted(() => {
-  getSysConfig(global, userStore && userStore.userInfo, {
-    tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore.userInfo && userStore.userInfo.tenantCode) || '',
+  getSysConfig(global, userStore, {
+    tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore && userStore.tenantCode) || '',
     appId: (route && route.params && route.params.appId) as string || ''
   });
   if (getToken()) enterApp();

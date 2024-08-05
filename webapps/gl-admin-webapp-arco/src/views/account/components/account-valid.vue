@@ -65,7 +65,7 @@ const authCodeData = ref({disabled: false, content: ''});
 const formatValidData = (): AuthCodeForm => {
   return {
     action: 'validateUser', validType: '3', prefix: '', validBox: '',
-    userId: userStore.userInfo.id as string,
+    userId: userStore.id as string,
     authCode: ''
   };
 }
@@ -74,16 +74,16 @@ const formData = ref(formatValidData());
 let validTypeOptions = computed<SelectOptionData[]>(() => []);
 const validTypeData = () => {
   const options: SelectOptionData[] = [];
-  if (userStore.userInfo.mobilePhone) {
+  if (userStore.mobilePhone) {
     options.push({
       value: '1',
-      label: `${t('account.manage.valid.validType.mobile.prefix')} ${userStore.userInfo.mobilePrefix} ${abbreviateValue(userStore.userInfo.mobilePhone, '1')} ${t('account.manage.valid.validType.suffix')}`
+      label: `${t('account.manage.valid.validType.mobile.prefix')} ${userStore.mobilePrefix} ${abbreviateValue(userStore.mobilePhone, '1')} ${t('account.manage.valid.validType.suffix')}`
     });
   }
-  if (userStore.userInfo.email) {
+  if (userStore.email) {
     options.push({
       value: '2',
-      label: `${t('account.manage.valid.validType.email.prefix')} ${abbreviateValue(userStore.userInfo.email, '2')} ${t('account.manage.valid.validType.suffix')}`
+      label: `${t('account.manage.valid.validType.email.prefix')} ${abbreviateValue(userStore.email, '2')} ${t('account.manage.valid.validType.suffix')}`
     });
   }
   options.push({value: '3', label: `${t('account.manage.valid.validType.password.prefix')}${t('account.manage.valid.validType.suffix')}`});
