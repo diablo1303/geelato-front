@@ -41,6 +41,7 @@
                   @click="
                     openActionSetter(
                       actionGroup[actionMeta.name][slotProps.index],
+                      actionMetaIndex,
                       actionMeta
                     )
                   "
