@@ -17,22 +17,6 @@ export interface QueryRestfulForm {
   updateAt?: string;
 }
 
-export interface RestfulParams {
-  name: string;
-  type: string;
-  required: boolean;
-  explain: string;
-}
-
-export interface RestfulRequest {
-  params?: RestfulParams[];
-  bodyType?: string;
-  formData?: RestfulParams[];
-  jsonData?: string;
-  headers?: RestfulParams[];
-}
-
-
 export function pageQueryRestfuls(params: Record<string, any>) {
   const records = utils.getUrlParams(params);
   return entityApi.getAxios().get<PageQueryResponse>(`/api/restful/pageQuery?${records.join('&')}`);

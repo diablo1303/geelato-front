@@ -2,10 +2,11 @@ import {type App, reactive} from 'vue'
 import Big from 'big.js'
 import emitter from './m/mix/emitter'
 import * as authUtil from "./m/utils/Auth";
+import {isLogin} from "./m/utils/Auth";
 import * as routeUtil from "./m/utils/RouteListener"
 import * as eventUtil from "./m/utils/Event"
 import * as monitorUtil from "./m/utils/Monitor"
-import type {PageParamConfigType, PageTemplate,PagePermission} from './components/PageProvideProxy'
+import type {PageParamConfigType, PagePermission, PageTemplate} from './components/PageProvideProxy'
 import PageProvideProxy, {type PageCustomType, PageParamsKey, PageProvideKey, paramStringify} from './components/PageProvideProxy'
 import GlHtml from './components/gl-html/Index.vue'
 import GlIconfont from './components/gl-iconfont/Index.vue'
@@ -100,7 +101,7 @@ import type {
   QueryViewForm
 } from './m/datasource/ModelApi'
 import * as modelApi from './m/datasource/ModelApi'
-import type {QueryAppRestfulForm, QueryRestfulForm, RestfulParams, RestfulRequest} from './m/datasource/RestfulApi'
+import type {QueryAppRestfulForm, QueryRestfulForm} from './m/datasource/RestfulApi'
 import * as restfulApi from './m/datasource/RestfulApi'
 import type {
   QueryColumnRolePermissionForm,
@@ -137,7 +138,6 @@ import GlLoader from './components/gl-loader/GlLoader.vue'
 import './assets/style.css'
 import useLogger from './m/hooks/useLogger'
 import {loadPageContent} from './components/PageLoader'
-import {isLogin} from './m/utils/Auth'
 
 const Utils = AllUtils
 
@@ -311,8 +311,6 @@ export {
   restfulApi,
   QueryRestfulForm,
   QueryAppRestfulForm,
-  RestfulParams,
-  RestfulRequest,
   securityApi,
   QueryOrgForm,
   QueryUserForm,

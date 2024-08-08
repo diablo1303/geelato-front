@@ -4,8 +4,10 @@ import utils from '../utils/Utils'
 
 export interface QueryApiParamForm {
   id: string;
+  pid: string;
   apiId: string;
   paramType: string;
+  bodyType: string;
   name: string;
   dataType: string;
   required: boolean;
@@ -16,6 +18,7 @@ export interface QueryApiParamForm {
   tenantCode: string;
   updateAt?: string;
   updaterName?: string;
+  children?: QueryApiParamForm[];
 }
 
 export function pageQueryApiParams(params: Record<string, any>) {
