@@ -82,7 +82,7 @@ import mixins from '../mixins'
 import jsScriptExecutor from '../../m/actions/JsScriptExecutor'
 import type { Action } from '@geelato/gl-ui-schema'
 import PageProvideProxy, { PageProvideKey } from '../PageProvideProxy'
-import { executePropsExpressions } from './GlComponentSupport'
+import { executePropsExpressions, tryParsePropsRulesInRuntime } from './GlComponentSupport'
 import utils from '../../m/utils/Utils'
 
 const detachedElementRef = ref(null)
@@ -414,6 +414,9 @@ onMounted(() => {
     pageProxy: pageProvideProxy,
     ...props.glCtx
   })
+  if(props.glIsRuntime){
+    tryParsePropsRulesInRuntime(props.glComponentInst)
+  }
 
   // 解决列表组件，操作列中的按钮等组件的_hidden属性没有生效的问题
   // 调用_reRender也无效，未来更新UI,需要在component动态组件页面之后增加其它元素，如<template></template>一起使用才能刷新

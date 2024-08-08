@@ -285,7 +285,7 @@ const fixedClass = computed(() => {
   if(props.glIsRuntime){
     const className = `gl-fixed-${props.position || 'top'}`
     if (props.enableFixedTitle && ['left', 'top'].includes(props.position || '')) {
-      return { 'gl-fixed': true, [className]: true }
+      return { 'gl-fixed': true, [className]: true, 'gl-runtime': true }
     }
   }
   return {}
@@ -359,8 +359,9 @@ body[arco-theme='dark'] .gl-tabs {
   height: auto;
 }
 
-.gl-tab-pane{
+.gl-tabs.gl-runtime .gl-tab-pane{
   padding: 0 14px;
 }
+
 
 </style>

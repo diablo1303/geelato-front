@@ -366,7 +366,7 @@ const onSaveLinkNode = (node: any) => {
 const openPage = (params: any) => {
   console.log('openPage', params, selectedKeys.value)
   if (params.extendId) {
-    if (selectedKeys.value.includes(params.extendId)) {
+    if (pageStore.currentPage.extendId === params.extendId) {
       global.$notification.info('拟打开的页面和当前页面是同一个')
     } else {
       glEntityTree.value.selectNodeByKey(params.extendId)
