@@ -47,7 +47,7 @@ export interface QueryApiForm {
   id: string;
   name: string;
   code: string;
-  version: string;
+  version: number;
   remark: string;
   groupName: string;
   sourceContent: string;

@@ -47,7 +47,7 @@ const generateFormData = (): QueryApiForm => {
     id: props.modelValue || '',
     name: '',
     code: '',
-    version: '',
+    version: 0,
     remark: '',
     groupName: '',
     sourceContent: '',
