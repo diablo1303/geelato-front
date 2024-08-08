@@ -71,7 +71,7 @@ import {Message, ValidatedError} from '@arco-design/web-vue';
 import {useI18n} from 'vue-i18n';
 import {useStorage} from '@vueuse/core';
 import type {LoginData} from "@geelato/gl-ui";
-import {authUtil, useGlobal, userApi} from "@geelato/gl-ui";
+import {authUtil, useGlobal} from "@geelato/gl-ui";
 import {
   appDataBaseRoutes,
   DEFAULT_ROUTE,
@@ -116,8 +116,8 @@ const getDataBaseRouters = async () => {
   }
 }
 
-const enterApp = () => {
-  if (IS_DATA_PAGE.value) getDataBaseRouters();// 获取当前用户个人菜单（所有菜单、首页）
+const enterApp = async () => {
+  if (IS_DATA_PAGE.value) await getDataBaseRouters();// 获取当前用户个人菜单（所有菜单、首页）
   const baseParams = {
     tenantCode: (route && route.params && route.params.tenantCode) as string || '',
     appId: (route && route.params && route.params.appId) as string || ''
@@ -147,10 +147,6 @@ const enterApp = () => {
   }
 }
 onMounted(() => {
-  userApi.getSysConfig(global, userStore, {
-    tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore && userStore.tenantCode) || '',
-    appId: (route && route.params && route.params.appId) as string || ''
-  });
   if (authUtil.getToken()) enterApp();
 });
 
@@ -163,8 +159,7 @@ const handleSubmit = async ({errors, values,}: {
     setLoading(true);
     try {
       await userStore.login(values as LoginData);
-      // getDataBaseRouters();
-      enterApp();
+      await enterApp();
       Message.success(t('login.form.login.success'));
       const {rememberPassword} = loginConfig.value;
       const {username, password} = values;

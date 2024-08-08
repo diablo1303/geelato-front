@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {computed, onMounted, provide, ref, watch} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
-import {useGlobal, userApi} from "@geelato/gl-ui";
+import {useGlobal} from "@geelato/gl-ui";
 import useResponsive from '../hooks/responsive';
 import usePermission from '../hooks/permission';
 import {useAppStore, useUserStore} from '../store';
@@ -59,10 +59,6 @@ provide('toggleDrawerMenu', () => {
 
 onMounted(() => {
   isInit.value = true;
-  userApi.getSysConfig(global, userStore, {
-    tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore && userStore.tenantCode) || '',
-    appId: (route && route.params && route.params.appId) as string || ''
-  });
 });
 </script>
 

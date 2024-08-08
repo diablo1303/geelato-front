@@ -11,7 +11,7 @@ import {Message, ValidatedError} from '@arco-design/web-vue';
 import {useI18n} from 'vue-i18n';
 import {useStorage} from '@vueuse/core';
 import type {LoginData} from '@geelato/gl-ui';
-import {applicationApi, authUtil, useGlobal, userApi} from "@geelato/gl-ui";
+import {applicationApi, authUtil, useGlobal} from "@geelato/gl-ui";
 import {
   appDataBaseRoutes,
   DEFAULT_ROUTE,
@@ -104,10 +104,6 @@ const enterApp = async () => {
   }
 }
 onMounted(() => {
-  userApi.getSysConfig(global, userStore, {
-    tenantCode: (route && route.params && route.params.tenantCode) as string || (userStore && userStore.tenantCode) || '',
-    appId: (route && route.params && route.params.appId) as string || ''
-  });
   if (authUtil.getToken()) enterApp();
 });
 

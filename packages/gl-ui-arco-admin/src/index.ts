@@ -39,7 +39,7 @@ import useUser from "./hooks/user";
 import useVisible from "./hooks/visible";
 import {PageSizeOptions} from "./types/global";
 import {getPinia, setPinia, useAppStore, useTabBarStore, useTenantStore, useUserStore} from "./store/index";
-import {appDataBaseRoutes, appExternalRoutes, appRoutes, DEFAULT_ROUTE, IS_ACCOUNT, IS_DATA_PAGE, URL_PREFIX} from "./router/constants";
+import {appDataBaseRoutes, appExternalRoutes, appRoutes, currentParams, DEFAULT_ROUTE, IS_ACCOUNT, IS_DATA_PAGE, URL_PREFIX} from "./router/constants";
 import createRouteGuard from "./router/guard/index";
 import {APP_PAGE_MAIN, DEFAULT_LAYOUT, NOT_FOUND_ROUTE, REDIRECT_MAIN, RESET_PWD_MAIN} from "./router/routes/base";
 import {
@@ -233,6 +233,7 @@ export {
   IS_ACCOUNT,
   appDataBaseRoutes,
   appRoutes,
+  currentParams,
   DEFAULT_ROUTE,
   DEFAULT_LAYOUT,
   analyzeCurrentPath,

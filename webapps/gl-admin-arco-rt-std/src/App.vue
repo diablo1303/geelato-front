@@ -6,11 +6,14 @@
 </template>
 
 <script lang="ts" setup>
-import {computed} from 'vue';
+import {computed, onMounted} from 'vue';
 import enUS from '@arco-design/web-vue/es/locale/lang/en-us';
 import zhCN from '@arco-design/web-vue/es/locale/lang/zh-cn';
-import {useLocale} from '@geelato/gl-ui-arco-admin';
+import {authUtil, useGlobal, userApi} from "@geelato/gl-ui";
+import {currentParams, useLocale, useUserStore} from '@geelato/gl-ui-arco-admin';
 
+const global = useGlobal();
+const userStore = useUserStore(); // 用户
 const {currentLocale} = useLocale();
 const locale = computed(() => {
   switch (currentLocale.value) {
@@ -21,6 +24,14 @@ const locale = computed(() => {
     default:
       return enUS;
   }
+});
+
+onMounted(async () => {
+  if (authUtil.getToken() && !userStore.id) await userStore.info();
+  await userApi.getSysConfig(global, userStore, {
+    appId: currentParams.value.appId || '',
+    tenantCode: currentParams.value.tenantCode || userStore.tenantCode || ''
+  });
 });
 </script>
 

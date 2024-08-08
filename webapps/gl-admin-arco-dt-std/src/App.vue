@@ -13,13 +13,17 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import enUS from '@arco-design/web-vue/es/locale/lang/en-us';
 import zhCN from '@arco-design/web-vue/es/locale/lang/zh-cn';
-import {useLocale} from '@geelato/gl-ui-arco-admin';
+import {authUtil, useGlobal, userApi} from "@geelato/gl-ui";
+import {currentParams, useLocale, useUserStore} from '@geelato/gl-ui-arco-admin';
 
+const global = useGlobal();
+const userStore = useUserStore(); // 用户
 const hasPermission = ref(false);
 const geelatoKey = localStorage.getItem('geelatoKey');
+
 if (
     geelatoKey ===
     'ujoooojjadfasd.iaWQiOiIzNzUxNjE5NDA1MjYwODE2NDIxIiwiZXhwIjoxNzE4asdfasdfkKHIqNjp2IiwibG9naW5OYW1lIjoiaG9uZ3hxIiw.-Up93OfHapxJRYUxEHIlQ7cvc2kd7nKLM0U_8SWQ3CI'
@@ -36,6 +40,14 @@ const locale = computed(() => {
     default:
       return enUS;
   }
+});
+
+onMounted(async () => {
+  if (authUtil.getToken() && !userStore.id) await userStore.info();
+  await userApi.getSysConfig(global, userStore, {
+    appId: currentParams.value.appId || '',
+    tenantCode: currentParams.value.tenantCode || userStore.tenantCode || ''
+  });
 });
 </script>
 

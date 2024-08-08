@@ -7,8 +7,6 @@ import {DEFAULT_LAYOUT, DEFAULT_PAGE_RUNTIME} from "./base";
 import {currentParams, DEFAULT_ROUTE, DEFAULT_ROUTE_ACCOUNT, IS_ACCOUNT, IS_DATA_PAGE, URL_PREFIX} from "../constants";
 import type {Component} from "./types";
 
-const token = authUtil.getToken();
-
 const IS_DATA_END_PAGE = ref<boolean>(false);
 const IS_DATA_REDIRECT_PAGE = ref<boolean>(false);
 
@@ -93,7 +91,7 @@ const isPageApp = (url: URL, curParams: Record<string, string>) => {
     // http://localhost:5173/:prefix/:tenantCode/:appId/page/xx/xx/:pageId
     if (url.pathname.startsWith(`${pagePathValue}/`) || url.pathname.startsWith(`${pagePathValue}`)) {
       IS_DATA_PAGE.value = true;
-      if (!token) {
+      if (!authUtil.getToken()) {
         window.location.assign(`${url.origin}${URL_PREFIX.value}${loginPathValue}?redirect=${url.href}`);
       }
     }
@@ -326,7 +324,7 @@ const formatAppModules = async (result: RouteRecordNormalized[], formatApp?: any
     // 自定义 格式化
     if (formatApp && typeof formatApp === 'function') return formatApp(result);
     // 默认 格式化
-    if (!token || !IS_DATA_PAGE.value) return result;
+    if (!authUtil.getToken() || !IS_DATA_PAGE.value) return result;
     // 获取菜单
     const {path, pathValue, ...urlParams} = currentParams.value;
     const {data} = await applicationApi.getMenus({flag: "menuItem", ...urlParams} as unknown as QueryMenuForm);
