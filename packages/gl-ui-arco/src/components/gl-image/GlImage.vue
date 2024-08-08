@@ -39,6 +39,9 @@ const props = defineProps({
       }
     }
   },
+  tableType: String,
+  objectId: String,
+  genre: String,
   readonly: Boolean
 })
 
@@ -50,14 +53,17 @@ const isRead = computed(() => {
   return isPageRead.value || props.readonly === true
 })
 
-const uploadParams = ref<UploadFileParams>({
-  tableType: '',// 类型
-  isRename: true,// 文件重命名，默认：true
-  objectId: '',// 文件所属对象id
-  genre: '',// 类型
-  appId: global.$gl.app.appId || '',// 所属应用
-  tenantCode: global.$gl.app.tenantCode || '',// 所属租户
-});// 上传参数
+const generateUploadParams = (): UploadFileParams => {
+  return {
+    tableType: props.tableType || '',// 类型
+    isRename: true,// 文件重命名，默认：true
+    objectId: props.objectId || '',// 文件所属对象id
+    genre: props.genre || '',// 类型
+    appId: global.$gl.app.id || '',// 所属应用
+    tenantCode: global.$gl.app.tenantCode || '',// 所属租户
+  }
+};
+const actionUrl = ref<string>(fileApi.getUploadUrl(generateUploadParams()));// 上传的url
 
 const mv = ref(props.modelValue)
 const isIDMode = ref(props.srcType === 'ID')
@@ -165,6 +171,11 @@ const loadFiles = () => {
     }
   })
 }
+
+// 初始化，加载文件
+watch(() => props, () => {
+  actionUrl.value = fileApi.getUploadUrl(generateUploadParams());
+}, {deep: true, immediate: true});
 </script>
 
 <template>
@@ -185,7 +196,7 @@ const loadFiles = () => {
         :limit="1"
         image-preview
         :file-list="fileList"
-        :action="fileApi.getUploadUrl(uploadParams)"
+        :action="actionUrl"
         :headers="entityApi.getHeader()"
         @error="uploadError"
         @success="uploadSuccess"

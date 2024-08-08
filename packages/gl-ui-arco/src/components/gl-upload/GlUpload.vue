@@ -22,20 +22,26 @@ const props = defineProps({
     }
   },
   acceptArray: Array,
+  tableType: String,
+  objectId: String,
+  genre: String,
   readonly: Boolean,
   disabled: Boolean
 })
-const mv = ref(props.modelValue)
 const global = useGlobal()
+const mv = ref(props.modelValue)
 
-const uploadParams = ref<UploadFileParams>({
-  tableType: '',// 类型
-  isRename: true,// 文件重命名，默认：true
-  objectId: '',// 文件所属对象id
-  genre: '',// 类型
-  appId: global.$gl.app.appId || '',// 所属应用
-  tenantCode: global.$gl.app.tenantCode || '',// 所属租户
-});// 上传参数
+const generateUploadParams = (): UploadFileParams => {
+  return {
+    tableType: props.tableType || '',// 类型
+    isRename: true,// 文件重命名，默认：true
+    objectId: props.objectId || '',// 文件所属对象id
+    genre: props.genre || '',// 类型
+    appId: global.$gl.app.id || '',// 所属应用
+    tenantCode: global.$gl.app.tenantCode || '',// 所属租户
+  }
+};
+const actionUrl = ref<string>(fileApi.getUploadUrl(generateUploadParams()));// 上传的url
 
 watch(mv, () => {
   emits('update:modelValue', mv.value)
@@ -150,6 +156,10 @@ const loadFiles = () => {
 }
 
 // 初始化，加载文件
+watch(() => props, () => {
+  actionUrl.value = fileApi.getUploadUrl(generateUploadParams());
+}, {deep: true, immediate: true});
+
 watch(
     () => {
       return props.modelValue
@@ -169,7 +179,7 @@ const isRead = pageProvideProxy?.isPageStatusRead() || props.readonly || props.d
 <template>
   <a-upload
       class="gl-upload"
-      :action="fileApi.getUploadUrl(uploadParams)"
+      :action="actionUrl"
       :file-list="fileList"
       :accept="accept"
       :headers="entityApi.getHeader()"

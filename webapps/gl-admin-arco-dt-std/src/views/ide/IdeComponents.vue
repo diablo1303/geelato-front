@@ -8,7 +8,6 @@ import {ref, watch} from 'vue';
 import {HTML5Backend} from 'react-dnd-html5-backend';
 import {
   schemaArco,
-  schemaBlock,
   schemaBpmn,
   schemaChart
 } from '@geelato/gl-ui-schema-arco';
@@ -27,7 +26,7 @@ const change = () => {
       componentMetas.value = schemaArco.componentMetas;
       break;
     case 'schemaBlock':
-      componentMetas.value = schemaBlock.componentMetas;
+      // componentMetas.value = schemaBlock.componentMetas;
       break;
     case 'schemaBpmn':
       componentMetas.value = schemaBpmn.componentMetas;
