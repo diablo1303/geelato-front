@@ -309,7 +309,9 @@ const changeColumnsVisible = (hideDataIndexes: string[], showDataIndexes: string
 }
 
 const addRow = () => {
-  tableRef.value.addRow()
+  if(props.glIsRuntime){
+    tableRef.value.addRow()
+  }
 }
 const selectedKeys: Ref<string[]> = ref([])
 
