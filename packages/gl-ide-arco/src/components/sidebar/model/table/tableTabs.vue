@@ -287,21 +287,12 @@ const syncFromTableToModel = (ev?: MouseEvent) => {
  *
  * @param ev
  */
-const syncFromModelToTable = (ev?: MouseEvent) => {
-  Modal.open({
-    title: '提示',
-    titleAlign: 'start',
-    content: `${tableData.value.entityName}，是否将模型同步至数据库中？`,
-    cancelText: '取消',
-    okText: '提交',
-    onOk() {
-      createOrUpdateTable(tableData.value.entityName, () => {
-        global.$message.success({content: '更新成功！'})
-        tableFormat(tableData.value.id);
-      }, () => {
-        global.$message.error({content: '更新失败！'})
-      });
-    }
+const syncFromModelToTable = () => {
+  createOrUpdateTable(tableData.value.entityName, () => {
+    global.$message.success({content: '更新成功！'})
+    tableFormat(tableData.value.id);
+  }, () => {
+    global.$message.error({content: '更新失败！'})
   });
 }
 
@@ -456,13 +447,14 @@ watch(() => visibleForm, () => {
               刷新模型缓存
             </a-button>
           </a-popconfirm>
-          <a-button :disabled="isSystem||formState==='view'" size="small" type="outline"
-                    title="将模型信息，模型字段在数据库中创建或更新。" @click="syncFromModelToTable">
-            <template #icon>
-              <gl-iconfont type="gl-sync"/>
-            </template>
-            模型同步至数据库
-          </a-button>
+          <a-popconfirm :content="`${tableData.entityName}，是否将模型同步至数据库中？`" position="br" type="warning" @ok="syncFromModelToTable">
+            <a-button :disabled="isSystem||formState==='view'" size="small" type="outline" title="将模型信息，模型字段在数据库中创建或更新。">
+              <template #icon>
+                <gl-iconfont type="gl-sync"/>
+              </template>
+              模型同步至数据库
+            </a-button>
+          </a-popconfirm>
           <a-dropdown position="br">
             <a-button :disabled="formState==='view'" size="small" type="outline">
               更多&nbsp;

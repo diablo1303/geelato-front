@@ -135,23 +135,14 @@ const syncFromTableToModel = (ev?: MouseEvent) => {
  *
  * @param ev
  */
-const syncFromModelToTable = (ev?: MouseEvent) => {
-  Modal.open({
-    title: t('security.dict.index.modal.title'),
-    titleAlign: 'start',
-    content: `${tableData.value.entityName}，${t('model.table.index.modal.model.content')}`,
-    cancelText: t('model.connect.index.model.cancel.text'),
-    okText: t('security.dict.index.modal.ok.text'),
-    onOk() {
-      createOrUpdateTable(tableData.value.entityName, () => {
-        Message.success(t('model.table.index.notice.update.success'));
-        tableFormat(tableData.value.id, () => {
-          emits('toTable', tableData.value);
-        });
-      }, () => {
-        Message.error(t('model.table.index.notice.update.fail'));
-      });
-    }
+const syncFromModelToTable = () => {
+  createOrUpdateTable(tableData.value.entityName, () => {
+    Message.success(t('model.table.index.notice.update.success'));
+    tableFormat(tableData.value.id, () => {
+      emits('toTable', tableData.value);
+    });
+  }, () => {
+    Message.error(t('model.table.index.notice.update.fail'));
   });
 }
 
@@ -333,14 +324,16 @@ watch(() => props, (val) => {
             {{ $t('searchTable.columns.operations.refresh.table') }}
           </a-button>
         </a-popconfirm>
-        <a-button :disabled="isSystem || formState==='view'" type="outline"
-                  :title="$t('model.connect.index.model.sync.table.title')"
-                  @click="syncFromModelToTable($event)">
-          <template #icon>
-            <icon-sync/>
-          </template>
-          {{ $t('model.connect.index.model.sync.table') }}
-        </a-button>
+        <a-popconfirm :content="`${tableData.entityName}，${t('model.table.index.modal.model.content')}`"
+                      position="br" type="warning" @ok="syncFromModelToTable">
+          <a-button :disabled="isSystem || formState==='view'" type="outline"
+                    :title="$t('model.connect.index.model.sync.table.title')">
+            <template #icon>
+              <icon-sync/>
+            </template>
+            {{ $t('model.connect.index.model.sync.table') }}
+          </a-button>
+        </a-popconfirm>
         <a-dropdown position="br">
           <a-button :disabled="formState==='view'" type="outline">
             {{ $t('model.connect.index.model.sync.more') }}&nbsp;
