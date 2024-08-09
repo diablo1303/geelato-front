@@ -32,7 +32,7 @@
     "sortablejs": "^1.15.0",
     "sql-formatter": "^15.3.2",
     "nprogress": "^0.2.0",
-    "vue": "^3.3.11",
+    "vue": "^3.4.36",
     "vue-cropper": "^1.0.9",
     "vue-echarts": "^6.2.3",
     "vue-i18n": "^9.2.2",
