@@ -58,21 +58,33 @@ const dataTypeChange = (record: QueryApiParamForm) => {
            :columns="([] as TableColumnData[])"
            :data="modelValue"
            :pagination="false"
-           :scroll="{x:1200,y:height}"
+           :scroll="{x:1000,y:height}"
            :scrollbar="true"
            :stripe="true"
            column-resizable
            row-key="id">
     <template #columns>
-      <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="name" title="参数名">
+      <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="name">
+        <template #title>
+          <a-tooltip content="必填项" position="right">
+            <div>参数名 <span style="color: rgb(var(--danger-6));">*</span></div>
+          </a-tooltip>
+        </template>
         <template #cell="{record}">
-          <a-input v-if="formState!=='view'" v-model="record.name" :max-length="32"/>
+          <a-input v-if="formState!=='view'" v-model="record.name" :error="!record.name" allow-clear
+                   :max-length="32"/>
           <span v-else>{{ record.name }}</span>
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :tooltip="true" :width="120" align="center" data-index="dataType" title="类型">
+      <a-table-column :ellipsis="true" :tooltip="true" :width="120" align="center" data-index="dataType">
+        <template #title>
+          <a-tooltip content="必选项" position="right">
+            <div>类型 <span style="color: rgb(var(--danger-6));">*</span></div>
+          </a-tooltip>
+        </template>
         <template #cell="{record}">
-          <a-select v-if="formState!=='view'" v-model="record.dataType" :options="parameter.paramType==='body'?dataTypeFormOptions:dataTypeOptions"
+          <a-select v-if="formState!=='view'" v-model="record.dataType" :error="!record.dataType"
+                    :options="parameter.paramType==='body'?dataTypeFormOptions:dataTypeOptions"
                     @change="dataTypeChange(record)"/>
           <span v-else>{{ record.dataType }}</span>
         </template>
@@ -107,7 +119,7 @@ const dataTypeChange = (record: QueryApiParamForm) => {
           <span v-else>{{ record.remark }}</span>
         </template>
       </a-table-column>
-      <a-table-column v-show="formState==='edit'" :width="60" align="center" data-index="operations" fixed="right" title="操作">
+      <a-table-column v-if="formState!=='view'" :width="60" align="center" data-index="operations" fixed="right" title="操作">
         <template #cell="{ record }">
           <a-button status="danger" type="text" @click="delApiParam(record)">
             <gl-iconfont type="gl-delete"/>

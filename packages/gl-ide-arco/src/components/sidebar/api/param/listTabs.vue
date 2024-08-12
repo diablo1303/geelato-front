@@ -8,6 +8,7 @@ export default {
 import {computed, ref, watch} from "vue";
 import {utils, useGlobal} from "@geelato/gl-ui";
 import type {QueryApiParamForm} from "@geelato/gl-ui";
+import {bodyTypeOptions, paramTypeOptions} from "../searchTable";
 import GlApiParamList from './list.vue';
 import GlApiParamLisp from './lisp.vue';
 
@@ -61,6 +62,12 @@ const headersData = ref<QueryApiParamForm[]>([]);
 const cookiesData = ref<QueryApiParamForm[]>([]);
 
 const showAddBotton = computed<boolean>(() => {
+  if ([2].includes(tabsKey.value)) {
+    return false;
+  }
+  return true;
+});
+const showBodyAddBotton = computed<boolean>(() => {
   if ([2].includes(tabsKey.value)) {
     if ([1].includes(bodyTabsKey.value)) {
       return false;
@@ -121,35 +128,37 @@ const addApiParam = () => {
       break;
   }
 }
-
+const emptyApiParamBody = () => {
+  switch (bodyTabsKey.value) {
+    case 2:
+      mv.value = mv.value.filter(item => item.bodyType !== 'form-data');
+      break;
+    case 3:
+      mv.value = mv.value.filter(item => item.bodyType !== 'x-www-form-urlencoded');
+      break;
+    case 4:
+      mv.value = mv.value.filter(item => item.bodyType !== 'json');
+      break;
+    case 5:
+      mv.value = mv.value.filter(item => item.bodyType !== 'xml');
+      break;
+    case 6:
+      mv.value = mv.value.filter(item => item.bodyType !== 'raw');
+      break;
+    case 7:
+      mv.value = mv.value.filter(item => item.bodyType !== 'binary');
+      break;
+    default:
+      break;
+  }
+}
 const emptyApiParam = () => {
   switch (tabsKey.value) {
     case 1:
       mv.value = mv.value.filter(item => item.paramType !== 'params');
       break;
     case 2:
-      switch (bodyTabsKey.value) {
-        case 2:
-          mv.value = mv.value.filter(item => item.paramType !== 'body' && item.bodyType !== 'form-data');
-          break;
-        case 3:
-          mv.value = mv.value.filter(item => item.paramType !== 'body' && item.bodyType !== 'x-www-form-urlencoded');
-          break;
-        case 4:
-          mv.value = mv.value.filter(item => item.paramType !== 'body' && item.bodyType !== 'json');
-          break;
-        case 5:
-          mv.value = mv.value.filter(item => item.paramType !== 'body' && item.bodyType !== 'xml');
-          break;
-        case 6:
-          mv.value = mv.value.filter(item => item.paramType !== 'body' && item.bodyType !== 'raw');
-          break;
-        case 7:
-          mv.value = mv.value.filter(item => item.paramType !== 'body' && item.bodyType !== 'binary');
-          break;
-        default:
-          break;
-      }
+      mv.value = mv.value.filter(item => item.paramType !== 'body');
       break;
     case 3:
       mv.value = mv.value.filter(item => item.paramType !== 'headers');
@@ -164,6 +173,32 @@ const emptyApiParam = () => {
 
 const paramListDelete = (record: QueryApiParamForm) => {
   mv.value = mv.value.filter(item => item.id !== record.id);
+}
+
+const validateForm = (form: QueryApiParamForm) => {
+  let isValid = true;
+  if (!['raw', 'binary'].includes(form.bodyType) && (!form.name || !form.dataType)) {
+    return false;
+  }
+  return isValid;
+}
+
+const validateData = (isValid: boolean, data: QueryApiParamForm[]) => {
+  if (data && data.length > 0) {
+    for (const item of data) {
+      if (!validateForm(item)) {
+        isValid = false;
+        break;
+      } else if (item.children && item.children.length > 0) {
+        validateData(isValid, item.children);
+      }
+    }
+  }
+  return isValid;
+}
+
+const validate = () => {
+  return validateData(true, mv.value);
 }
 
 watch(() => mv.value, () => {
@@ -190,27 +225,32 @@ watch(() => mv.value, () => {
 watch(() => props.modelValue, () => {
   mv.value = props.modelValue || [];
 }, {deep: true, immediate: true});
+
+/* 提供外部调用方法 */
+defineExpose({validate});
 </script>
 
 <template>
   <a-tabs v-model:active-key="tabsKey" :default-active-tab="1" :destroy-on-hide="true" class="api-param-list-tabs" position="top" type="line">
     <template #extra>
       <a-space v-if="formState!=='view'">
-        <a-button v-if="showAddBotton" type="primary" @click="addApiParam">
+        <a-button v-if="showAddBotton" class="tabs-extra-btn" type="text" @click="addApiParam">
           <template #icon>
             <gl-iconfont type="gl-plus-circle"/>
           </template>
-          添加
+          {{ `添加 ${paramTypeOptions[tabsKey - 1]?.label}` }}
         </a-button>
-        <a-button status="danger" type="primary" @click="emptyApiParam">
-          <template #icon>
-            <gl-iconfont type="gl-delete"/>
-          </template>
-          清除
-        </a-button>
+        <a-popconfirm :content="`是否清空“${paramTypeOptions[tabsKey - 1]?.label}”模块数据？`" position="br" type="warning" @ok="emptyApiParam">
+          <a-button class="tabs-extra-btn" status="danger" type="text">
+            <template #icon>
+              <gl-iconfont type="gl-delete"/>
+            </template>
+            {{ `清空 ${paramTypeOptions[tabsKey - 1]?.label}` }}
+          </a-button>
+        </a-popconfirm>
       </a-space>
     </template>
-    <a-tab-pane :key="1">
+    <a-tab-pane class="list-tabs-pane" :key="1">
       <template #title>
         Params
         <span class="title-mark">
@@ -233,9 +273,29 @@ watch(() => props.modelValue, () => {
         </span>
       </template>
       <a-card class="general-card general-card13">
-        <a-tabs v-model:active-key="bodyTabsKey" :default-active-tab="1" :destroy-on-hide="true" position="top" type="text">
+        <a-tabs v-model:active-key="bodyTabsKey" :default-active-tab="1" :destroy-on-hide="true" position="top" type="text"
+                class="api-param-list-tabs-2">
+          <template #extra>
+            <a-space v-if="formState!=='view'">
+              <a-button v-if="showBodyAddBotton" class="tabs-extra-btn" type="text" @click="addApiParam">
+                <template #icon>
+                  <gl-iconfont type="gl-plus-circle"/>
+                </template>
+                {{ `添加 ${bodyTypeOptions[bodyTabsKey - 1]?.value}` }}
+              </a-button>
+              <a-popconfirm v-if="![1].includes(bodyTabsKey)" :content="`是否清空“Body -> ${bodyTypeOptions[bodyTabsKey-1]?.label}”模块数据？`"
+                            position="br" type="warning" @ok="emptyApiParamBody">
+                <a-button class="tabs-extra-btn" status="danger" type="text">
+                  <template #icon>
+                    <gl-iconfont type="gl-delete"/>
+                  </template>
+                  {{ `清空 ${bodyTypeOptions[bodyTabsKey - 1]?.value}` }}
+                </a-button>
+              </a-popconfirm>
+            </a-space>
+          </template>
           <a-tab-pane :key="1" title="none">
-            <a-card class="general-card">
+            <a-card class="general-card general-card15">
               <a-empty>该请求没有 Body 体</a-empty>
             </a-card>
           </a-tab-pane>
@@ -246,7 +306,7 @@ watch(() => props.modelValue, () => {
             {{ `${bodyFormData.length > 0 ? bodyFormData.length : ''}` }}
         </span>
             </template>
-            <a-card class="general-card">
+            <a-card class="general-card general-card14">
               <GlApiParamList :form-state="formState"
                               :height="height-48"
                               :model-value="bodyFormData"
@@ -261,7 +321,7 @@ watch(() => props.modelValue, () => {
             {{ `${bodyFormUrlData.length > 0 ? bodyFormUrlData.length : ''}` }}
         </span>
             </template>
-            <a-card class="general-card">
+            <a-card class="general-card general-card14">
               <GlApiParamList :form-state="formState"
                               :height="height-48"
                               :model-value="bodyFormUrlData"
@@ -276,10 +336,11 @@ watch(() => props.modelValue, () => {
                 {{ `${bodyJsonData.length > 0 ? '*' : ''}` }}
               </span>
             </template>
-            <a-card class="general-card">
+            <a-card class="general-card general-card14">
               <GlApiParamLisp :form-state="formState"
                               :height="height-48"
-                              :model-value="bodyJsonData" :parameter="{'paramType':'body','bodyType':'json','apiId':parameter.apiId,'appId':parameter.appId,'tenantCode':parameter.tenantCode}"/>
+                              :model-value="bodyJsonData"
+                              :parameter="{'paramType':'body','bodyType':'json','apiId':parameter.apiId,'appId':parameter.appId,'tenantCode':parameter.tenantCode}"/>
             </a-card>
           </a-tab-pane>
           <a-tab-pane :key="5">
@@ -289,10 +350,11 @@ watch(() => props.modelValue, () => {
                 {{ `${bodyXmlData.length > 0 ? '*' : ''}` }}
               </span>
             </template>
-            <a-card class="general-card">
+            <a-card class="general-card general-card14">
               <GlApiParamLisp :form-state="formState"
                               :height="height-48"
-                              :model-value="bodyXmlData" :parameter="{'paramType':'body','bodyType':'xml','apiId':parameter.apiId,'appId':parameter.appId,'tenantCode':parameter.tenantCode}"/>
+                              :model-value="bodyXmlData"
+                              :parameter="{'paramType':'body','bodyType':'xml','apiId':parameter.apiId,'appId':parameter.appId,'tenantCode':parameter.tenantCode}"/>
             </a-card>
           </a-tab-pane>
           <a-tab-pane :key="6">
@@ -302,8 +364,8 @@ watch(() => props.modelValue, () => {
                 {{ `${bodyRawData?.id ? '*' : ''}` }}
               </span>
             </template>
-            <a-card class="general-card">
-              <a-empty v-if="!bodyRawData?.id">请点击“添加”按钮</a-empty>
+            <a-card class="general-card general-card15">
+              <a-empty v-if="!bodyRawData?.id">{{ formState === 'view' ? '暂无数据' : '请点击“添加”按钮' }}</a-empty>
               <a-form v-else :label-col-props="{ span: 4 }" :model="bodyRawData" :wrapper-col-props="{ span: 18 }" class="form">
                 <a-row :gutter="18">
                   <a-col :span="24">
@@ -337,8 +399,8 @@ watch(() => props.modelValue, () => {
             {{ `${bodyBinaryData?.id ? '*' : ''}` }}
         </span>
             </template>
-            <a-card class="general-card">
-              <a-empty v-if="!bodyBinaryData?.id">请点击“添加”按钮</a-empty>
+            <a-card class="general-card general-card15">
+              <a-empty v-if="!bodyBinaryData?.id">{{ formState === 'view' ? '暂无数据' : '请点击“添加”按钮' }}</a-empty>
               <a-form v-else :label-col-props="{ span: 4 }" :model="bodyBinaryData" :wrapper-col-props="{ span: 18 }" class="form">
                 <a-row :gutter="18">
                   <a-col :span="24">
@@ -401,30 +463,67 @@ watch(() => props.modelValue, () => {
   </a-tabs>
 </template>
 
-<style lang="less" scoped>
-div.arco-form-item-content > span.textarea-span {
-  cursor: pointer;
-  display: -webkit-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  white-space: normal;
-  word-wrap: break-word;
-}
+<style lang="less">
+.api-param-list-tabs {
+  margin-bottom: -16px;
 
-.api-param-list-tabs .general-card13 {
-  margin-top: 16px;
-}
+  .arco-tabs-content {
+    padding-left: 0px !important;
+  }
 
-.api-param-list-tabs .title-mark {
-  color: rgb(var(--success-6));
-}
+  .general-card13 {
+    margin-top: 16px;
+    border: 0px solid var(--color-neutral-3) !important;
+  }
 
-.api-param-list-tabs .form-wrapper-div {
-  width: 100%;
-  text-align: center;
-  background-color: var(--color-fill-2);
-  padding: 5px 0px;
+  .api-param-list-tabs-2 {
+    margin-bottom: -16px;
+
+    .general-card14 {
+      border: 0px solid var(--color-neutral-3) !important;
+    }
+
+    .general-card14 .arco-card-body {
+      padding: 0px 0px 16px 0px !important;
+    }
+
+    .general-card15 {
+      margin-bottom: 16px !important;
+    }
+
+    .general-card15 .arco-card-body {
+      padding: 16px 0px 0px 0px !important;
+    }
+  }
+
+  .general-card13 .arco-card-body {
+    padding: 0px 0px 16px 0px !important;
+  }
+
+  .title-mark {
+    color: rgb(var(--success-6));
+  }
+
+  .form-wrapper-div {
+    width: 100%;
+    text-align: center;
+    background-color: var(--color-fill-2);
+    padding: 5px 0px;
+  }
+
+  .tabs-extra-btn {
+    padding: 5px 5px !important;
+  }
+
+  div.arco-form-item-content > span.textarea-span {
+    cursor: pointer;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    word-wrap: break-word;
+  }
 }
 </style>

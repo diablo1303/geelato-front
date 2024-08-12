@@ -51,11 +51,11 @@ const generateFormData = (pid?: string, name?: string): QueryApiParamForm => {
 const global = useGlobal();
 const expandedKeys = ref<string[]>([]);
 
-const nodeExpand = (rowKey: string, record: TableData) => {
-  if (expandedKeys.value.includes(rowKey)) {
+const nodeExpand = (rowKey: string | number, record: TableData) => {
+  if (expandedKeys.value.includes(rowKey as string)) {
     expandedKeys.value = expandedKeys.value.filter(item => item !== rowKey);
   } else {
-    expandedKeys.value.push(rowKey);
+    expandedKeys.value.push(rowKey as string);
   }
 }
 
@@ -151,6 +151,16 @@ const expandAll = (data: QueryApiParamForm[]) => {
   }
 }
 
+const nameInput = (record: QueryApiParamForm) => {
+  if (["ROOT"].includes(record.name)) {
+    global.$message.error("参数名不能为“ROOT”");
+    record.name = '';
+  } else if (["ITEMS"].includes(record.name)) {
+    global.$message.error("参数名不能为“ITEMS”");
+    record.name = '';
+  }
+}
+
 watch(() => props, (val) => {
   expandedKeys.value = [];
   expandAll(props.modelValue);
@@ -169,15 +179,27 @@ watch(() => props, (val) => {
            column-resizable
            row-key="id" @expand="nodeExpand">
     <template #columns>
-      <a-table-column :ellipsis="true" :tooltip="true" :width="150" data-index="name" title="参数名">
+      <a-table-column :ellipsis="true" :tooltip="true" :width="240" data-index="name">
+        <template #title>
+          <a-tooltip content="必填项" position="right">
+            <div>参数名 <span style="color: rgb(var(--danger-6));">*</span></div>
+          </a-tooltip>
+        </template>
         <template #cell="{record}">
-          <a-input v-if="formState!=='view'&&!['ROOT','ITEMS'].includes(record.name)" v-model="record.name" :max-length="32"/>
+          <a-input v-if="formState!=='view'&&!['ROOT','ITEMS'].includes(record.name)" v-model="record.name" allow-clear
+                   :error="!record.name" :max-length="32" placeholder="禁填“ROOT”“ITEMS”" @change="nameInput(record)"/>
           <span v-else>{{ record.name }}</span>
         </template>
       </a-table-column>
-      <a-table-column :ellipsis="true" :tooltip="true" :width="120" align="center" data-index="dataType" title="类型">
+      <a-table-column :ellipsis="true" :tooltip="true" :width="120" align="center" data-index="dataType">
+        <template #title>
+          <a-tooltip content="必选项" position="right">
+            <div>类型 <span style="color: rgb(var(--danger-6));">*</span></div>
+          </a-tooltip>
+        </template>
         <template #cell="{record}">
-          <a-select v-if="formState!=='view'" v-model="record.dataType" :options="['ROOT'].includes(record.name)?dataTypeRootOptions:dataTypeJsonOptions"
+          <a-select v-if="formState!=='view'" v-model="record.dataType" :error="!record.dataType"
+                    :options="['ROOT'].includes(record.name)?dataTypeRootOptions:dataTypeJsonOptions"
                     @change="dataTypeChange(record)"/>
           <span v-else>{{ record.dataType }}</span>
         </template>
@@ -211,14 +233,14 @@ watch(() => props, (val) => {
           <span v-else>{{ record.remark }}</span>
         </template>
       </a-table-column>
-      <a-table-column v-show="formState==='edit'" :width="120" align="center" data-index="operations" fixed="right" title="操作">
+      <a-table-column v-if="formState!=='view'" :width="120" align="center" data-index="operations" fixed="right" title="操作">
         <template #cell="{ record }">
-          <a-tooltip v-if="['ROOT'].includes(record.name)&&['object'].includes(record.dataType)" content="添加子节点" position="top">
+          <a-tooltip v-if="['ROOT','ITEMS'].includes(record.name)&&['object'].includes(record.dataType)" content="添加子节点" position="top">
             <a-button type="text" @click="addChildNode(record)">
               <gl-iconfont type="gl-plus-circle"/>
             </a-button>
           </a-tooltip>
-          <a-dropdown v-if="!['ROOT'].includes(record.name)&&['object'].includes(record.dataType)" position="br" trigger="hover">
+          <a-dropdown v-if="!['ROOT','ITEMS'].includes(record.name)&&['object'].includes(record.dataType)" position="br" trigger="hover">
             <a-button type="text">
               <gl-iconfont type="gl-plus-circle"/>
             </a-button>

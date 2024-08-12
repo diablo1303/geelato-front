@@ -186,7 +186,7 @@ fetchData()
     </a-space>
     <a-list size="small">
       <template v-for="(item,index) in renderItems" :key="index">
-        <a-list-item style="cursor: pointer;" @click="openModal(item)" action-layout="vertical">
+        <a-list-item style="cursor: pointer;" @click="openModal(item)" action-layout="vertical" title="编辑接口脚本">
           <a-list-item-meta>
             <template #title>
               <span :title="item.name">{{ item.name }}</span>
@@ -201,14 +201,14 @@ fetchData()
             </span>
           </template>
           <template #actions>
-            <a-tooltip content="编辑接口" position="top">
+            <a-tooltip content="编辑接口信息" position="top">
               <a-button size="small" type="text" style="height: 16px;padding: 0;" @click.stop="editApiModel(item)">
                 <gl-iconfont type="gl-edit-square"/>
               </a-button>
             </a-tooltip>
             <a-popconfirm content="是否删除该条数据？" position="bl" type="warning" @ok="deleteApiModel(item)">
               <a-tooltip content="删除接口" position="top">
-                <a-button size="small" type="text" style="height: 16px;padding: 0;" @click.stop>
+                <a-button size="small" type="text" status="danger" style="height: 16px;padding: 0;" @click.stop>
                   <gl-iconfont type="gl-delete"/>
                 </a-button>
               </a-tooltip>

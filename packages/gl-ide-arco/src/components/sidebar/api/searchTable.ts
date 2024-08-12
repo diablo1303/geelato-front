@@ -13,6 +13,16 @@ const paramTypeOptions = computed<SelectOptionData[]>(() => [
   {label: "Cookies", value: 'cookies'},
 ]);
 
+const bodyTypeOptions = computed<SelectOptionData[]>(() => [
+  {label: 'none', value: 'none'},
+  {label: "form-data", value: 'form-data'},
+  {label: 'x-www-form-urlencoded', value: '...urlencoded'},
+  {label: "json", value: 'json'},
+  {label: 'xml', value: 'xml'},
+  {label: "raw", value: 'raw'},
+  {label: 'binary', value: 'binary'},
+]);
+
 const dataTypeOptions = computed<SelectOptionData[]>(() => [
   {label: 'String', value: 'string'},
   {label: "Integer", value: 'integer'},
@@ -51,4 +61,13 @@ const dataTypeBooleanOptions = computed<SelectOptionData[]>(() => [
   {label: "False", value: 'false',},
 ]);
 
-export {enableStatusOptions, paramTypeOptions, dataTypeOptions, dataTypeFormOptions, dataTypeRootOptions, dataTypeJsonOptions, dataTypeBooleanOptions};
+export {
+  enableStatusOptions,
+  paramTypeOptions,
+  bodyTypeOptions,
+  dataTypeOptions,
+  dataTypeFormOptions,
+  dataTypeRootOptions,
+  dataTypeJsonOptions,
+  dataTypeBooleanOptions
+};

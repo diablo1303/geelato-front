@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import {ref, watch} from "vue";
+import {ref, shallowRef, watch} from "vue";
 import {Modal} from "@arco-design/web-vue";
 import type {FormInstance} from "@arco-design/web-vue";
 import {applicationApi, interApi, useGlobal} from "@geelato/gl-ui";
@@ -40,6 +40,7 @@ const validateForm = ref<FormInstance>();// 表单-校验
 const visibleForm = ref<boolean>(false);// 弹层-是否显示
 const tabsKey = ref<number>(1);// 定位tabs页面
 const parameterDefinition = ref<QueryApiParamForm[]>([])
+const listTabsRef = shallowRef(GlApiParamListTabs);
 
 /* 表单 */
 const generateFormData = (): QueryApiForm => {
@@ -68,6 +69,14 @@ const appSelectOptions = ref<QueryAppForm[]>([]);
  * @param failBack
  */
 const createOrUpdateData = async (params: QueryApiForm, successBack?: any, failBack?: any) => {
+  // @ts-ignore
+  if (!(listTabsRef?.value?.validate())) {
+    global.$message.warning("请补全参数定义！！");
+    tabsKey.value = 2;
+    if (failBack && typeof failBack === 'function') failBack();
+    return;
+  }
+
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
@@ -245,9 +254,10 @@ watch(() => visibleForm, () => {
       <a-tab-pane :key="2" title="参数定义">
         <a-card class="general-card">
           <GlApiParamListTabs v-if="visibleForm"
+                              ref="listTabsRef"
                               v-model="parameterDefinition"
                               :form-state="formState"
-                              :height="tableTabHeight-170"
+                              :height="tableTabHeight-134"
                               :is-modal="true"
                               :parameter="{'apiId':formData.id,'appId':formData.appId,'tenantCode':formData.tenantCode}"/>
         </a-card>

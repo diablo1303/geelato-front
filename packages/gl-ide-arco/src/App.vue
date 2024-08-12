@@ -61,7 +61,7 @@ onUnmounted(() => {
 <template>
   <DndProvider :backend="HTML5Backend">
     <GlIde />
-    <a-modal draggable v-if="modalVisible" v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel" ok-text="关闭" hide-cancel="true" fullscreen>
+    <a-modal draggable v-if="modalVisible" v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel" ok-text="关闭" :hide-cancel="true" fullscreen>
       <template #title> 页面重构（危险操作）</template>
       <PageReplaceEditor></PageReplaceEditor>
     </a-modal>
