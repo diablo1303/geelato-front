@@ -240,9 +240,8 @@ const updateColumns = (showColumnsValue: GlTableColumn[]) => {
  * 更新行数据
  * @param data
  */
-const onUpdateRow = (data: { record: object; rowIndex: number; columns: GlTableColumn }) => {
-  // console.log('GlEntityTablePlus > onUpdateRow() > data:', data)
-  emits('changeRecord', data)
+const onChangeRecord = (record: object,rowIndex: number,columns: GlTableColumn) => {
+  emits('changeRecord', record,rowIndex,columns)
 }
 
 let lastEntityReaderParams: Array<EntityReaderParam>
@@ -2049,7 +2048,7 @@ defineExpose({
       @headerClick="headerClick"
       @columnResize="columnResize"
       @updateColumns="updateColumns"
-      @updateRow="onUpdateRow"
+      @changeRecord="onChangeRecord"
       @fetchSuccess="onFetchSuccess"
       @fetchFail="onFetchFail"
       @fetchInterdict="onFetchInterdict"

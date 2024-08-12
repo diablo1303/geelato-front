@@ -55,7 +55,7 @@ const global = useGlobal()
 // fetch 加载完成数据之后
 const emits = defineEmits([
   'updateColumns',
-  'updateRow',
+  'changeRecord',
   // 查询成功
   'fetchSuccess',
   // 查询失败
@@ -722,7 +722,11 @@ const addRecordsByDataIndex = (records: Record<string, any>[]) => {
   addRecords(records, 'dataIndex')
 }
 
-const addRecords = (records: Record<string, any>[], keyField: string = 'dataIndex') => {
+const addRecords = (records: Record<string, any>[], keyField: string = 'dataIndex',withAlarm:boolean) => {
+  if (!records || records.length === undefined) {
+    $message.error('加入列表的数据为空或不是有效的数组')
+    return
+  }
   records?.forEach((record: Record<string, any>) => {
     const newRow = {}
     props.columns.forEach((col: Column) => {
@@ -852,7 +856,7 @@ const validate = async () => {
   return null
 }
 
-const updateRow = async (
+const changeRecord = async (
   record: object,
   rowIndex: number,
   columns: GlTableColumn[],
@@ -864,7 +868,7 @@ const updateRow = async (
     // 有异常
   } else {
     // 无异常
-    emits('updateRow', { record, rowIndex, columns, newValue, objRef })
+    emits('changeRecord', record, rowIndex, columns, newValue, objRef)
   }
 }
 
@@ -895,7 +899,7 @@ const releaseRecordByIndex = (params:{index: number}) => {
     if (record.id) {
       toReleaseRecords.value.push({ id: record.id, [props.subTablePidName]: 1 })
     }
-    emits('releaseRecord', { record, rowIndex:index })
+    emits('releaseRecord',  record, index )
     // 同时会触发表络级别的change事件
     emits('change', renderData.value)
     return record
@@ -1096,7 +1100,7 @@ defineExpose({
         <GlComponent
           v-if="column._component"
           v-model="renderData[rowIndex][column.dataIndex]"
-          @update="updateRow(record, rowIndex, renderColumns, $event, this)"
+          @update="changeRecord(record, rowIndex, renderColumns, $event, this)"
           :glComponentInst="cloneDeepColumnComponent(column._component)"
           :glCtx="{
             record,
