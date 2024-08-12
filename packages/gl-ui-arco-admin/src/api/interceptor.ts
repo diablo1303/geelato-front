@@ -5,9 +5,28 @@ import type {HttpResponse} from '@geelato/gl-ui';
 import {authUtil, fileApi, useApiUrl, useMessages} from "@geelato/gl-ui";
 import {useUserStore} from '../store';
 import globalConfig from '../assets/globalConfig';
+import {currentParams} from '../router/constants';
 
 const messageManger = useMessages()
 axios.defaults.baseURL = useApiUrl().getApiBaseUrl()
+
+const handleUrl = () => {
+  let urlParams: Record<string, string> = {};
+  const {searchParams, pathname} = new URL(window.location.href);
+  if (pathname && /^\/[a-zA-Z]+\.html$/.test(pathname)) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [key, value] of searchParams.entries()) {
+      urlParams[key] = value;
+    }
+  } else {
+    urlParams = {appId: currentParams.value.appId, tenantCode: currentParams.value.tenantCode};
+  }
+  if (!urlParams.tenantCode) {
+    const userStore = useUserStore();
+    urlParams.tenantCode = userStore.tenantCode as string || '';
+  }
+  return urlParams;
+}
 
 axios.interceptors.request.use(
   (config: AxiosRequestConfig) => {
@@ -16,11 +35,12 @@ axios.interceptors.request.use(
     // Authorization is a custom headers key
     // please modify it according to the actual situation
     const token = authUtil.getToken();
+    const urlParams = handleUrl();
     if (token) {
-      if (!config.headers) {
-        config.headers = {};
-      }
+      if (!config.headers) config.headers = {};
       config.headers.Authorization = `Bearer ${token}`;
+      config.headers['App-Id'] = urlParams.appId || '';
+      config.headers['Tenant-Code'] = urlParams.tenantCode || '';
     }
     return config;
   },
@@ -72,7 +92,7 @@ axios.interceptors.response.use(
     return res;
   },
   (error) => {
-    const msg = messageManger.getMessage(error.response.data)
+    const msg = messageManger.getMessage(error.response?.data)
     Message.error({content: msg || error.msg || 'Request Error', duration: 8 * 1000});
     return Promise.reject(error);
   }
