@@ -57,7 +57,7 @@ export default {
         },
         {
           name: 'bordered',
-          setterComponentProps: { defaultValue: true },
+          setterComponentProps: { defaultChecked: true },
           setterComponentVModelName: 'modelValue',
           group: 'base',
           type: 'props',

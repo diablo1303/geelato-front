@@ -57,7 +57,7 @@ export default {
         },
         {
           name: 'bordered',
-          setterComponentProps: { defaultValue: true },
+          setterComponentProps: { defaultChecked: true },
           setterComponentVModelName: 'modelValue',
           group: 'base',
           type: 'props',
@@ -962,7 +962,26 @@ export default {
     {
       name: 'changeRecord',
       title: '行记录更改',
-      description: '在数据表的行内编辑模式下，当数据表的行记录信息更换时触发'
+      description: '在数据表的行内编辑模式下，当数据表的行记录信息更换时触发',
+      params: [{
+        name: 'record',
+        title: '修改的记录',
+        required: true,
+        type: 'Record<string,any>',
+        description: '当前修改的记录对象。'
+      },{
+        name: 'rowIndex',
+        title: '修改的记录索引',
+        required: true,
+        type: 'number',
+        description: '修改的记录索引，第一行值为0。'
+      },{
+        name: 'columns',
+        title: '修改的记录列元数据',
+        required: true,
+        type: 'Array<GlTableColumn>',
+        description: '修改的记录对象所有列的元数据。'
+      }]
     },
     {
       name: 'deleteRecord',

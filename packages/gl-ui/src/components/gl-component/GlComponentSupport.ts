@@ -26,7 +26,7 @@ export function tryParsePropsRulesInRuntime(inst: ComponentInstance) {
   if (inst.group === 'dataEntry' && inst.props?.rules) {
     // {
     //   "type": "_exp",
-    //   "message": "类型不符合",
+    //   "message": "格式不符合",
     //   "ruleName": "type"
     // }
     // @ts-ignore 在此平台中rules是数组
