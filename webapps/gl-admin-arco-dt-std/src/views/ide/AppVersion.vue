@@ -25,6 +25,7 @@ import {
 } from "@geelato/gl-ui";
 import type {QueryAppForm, QueryAppVersionForm, QueryTableForm, PageQueryRequest} from "@geelato/gl-ui";
 import {useUser, useLoading, useUserStore, getPinia, packageStatusOptions, PageSizeOptions} from "@geelato/gl-ui-arco-admin";
+import {handleUrlParams, validateIde, validateIdeUrl} from "./utils";
 
 // 常量使用
 const ListDefaultPageSize = 5;
@@ -37,8 +38,12 @@ provide('pinia', getPinia());
 const userStore = useUserStore();
 const global = useGlobal();
 const {ideRedirect, ideLogout} = useUser();
+// 获取url参数
+const urlParams = ref<Record<string, string>>({});
+// 页面显示状态, 0:错误，1：正常，2：待校验
+const showPage = ref<Record<string, any>>({valid: 2, message: ''});
+
 const appData = ref<QueryAppForm>({} as unknown as QueryAppForm);
-const showPage = ref(false);
 const {loading, setLoading} = useLoading(false);
 const tabsKey = ref<number>(1);
 const isCompare = ref<boolean>(false);
@@ -494,35 +499,37 @@ const deleteVersion = async (item: QueryAppVersionForm) => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   // 未登录重定向
   if (!authUtil.getToken()) ideRedirect();
   // 注册 登出 事件监听器的函数
   emitter.on(EventNames.GlIdeLogout, handleLogout);
   window.addEventListener(EventNames.WindowResize, handleResize);
-  // 加载配置变量
-  const urlParams = new URL(window.location.href).searchParams;
-  appData.value.id = urlParams.get('appId') || '';
-  if (appData.value.id) {
-    getAppData(appData.value.id, (data: QueryAppForm) => {
-      appData.value = data;
-      // 查询版本列表
-      queryAppVersion();
-      compareVersionId.value = "";
-      // 系统参数
-      userStore.info(() => {
-        userApi.getSysConfig(global, userStore, {
-          appId: data.id, tenantCode: data.tenantCode || '',
-        });
-      });
-      document.title = `应用版本管理 | ${data.name}`;
-      // 列表
-      const listRecord = {visible: true, parameter: {versionInfo: data.versionInfo, appId: data.id, tenantCode: data.tenantCode || ''}}
-      Object.assign(listParams.value, listRecord);
-    });
+  // 获取url参数
+  urlParams.value = handleUrlParams();
+  // 校验url参数
+  showPage.value = validateIdeUrl(urlParams.value, "appVersion");
+  if (showPage.value.valid !== 1) return;
+  // 数据校验
+  const {valid, message} = await validateIde(urlParams.value);
+  showPage.value = {valid, message};
+  if (valid !== 1) return;
+  // 更新标题
+  document.title = `应用版本管理 | ${urlParams.value.appName}`;
+  // 应用信息
+  appData.value = global.$gl.app || {};
+  // 查询版本列表
+  await queryAppVersion();
+  compareVersionId.value = "";
+  // 列表
+  const listRecord = {
+    visible: true, parameter: {
+      versionInfo: appData.value.versionInfo || '',
+      appId: appData.value.id || '',
+      tenantCode: appData.value.tenantCode || ''
+    }
   }
-
-  showPage.value = true;
+  Object.assign(listParams.value, listRecord);
 });
 
 onUnmounted(() => {
@@ -532,12 +539,10 @@ onUnmounted(() => {
 </script>
 <template>
   <div class="gl-app-settings">
-    <div v-if="!appData.id">
-      <a-alert>
-        请在url中传入appId参数，如：https://域名:端口/appSettings.html?tenantCode=?&appId=?&appName=?。
-      </a-alert>
+    <div v-if="showPage.valid===0">
+      <a-alert>{{ showPage.message }}</a-alert>
     </div>
-    <div v-else>
+    <div v-else-if="showPage.valid===1">
       <div :style="{ padding: '4px 14px' }" class="gl-page-header">
         <a-page-header :show-back="false" :subtitle="`${appData.name} ${appData.versionInfo}`" title="应用版本管理">
           <template #extra>
@@ -641,7 +646,8 @@ onUnmounted(() => {
                           <icon-common/>
                           比较
                         </a-button>
-                        <a-button v-if="!isCompare&&!['draft'].includes(listParams.selected.status)" :loading="downloadLoading" style="color: rgb(var(--primary-6))"
+                        <a-button v-if="!isCompare&&!['draft'].includes(listParams.selected.status)" :loading="downloadLoading"
+                                  style="color: rgb(var(--primary-6))"
                                   type="text" @click.stop="downloadPacket(listParams.selected.item.packagePath)">
                           <icon-download/>
                           下载

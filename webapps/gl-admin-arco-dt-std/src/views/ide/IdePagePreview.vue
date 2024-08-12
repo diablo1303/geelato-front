@@ -6,39 +6,37 @@ export default {
 <script lang="ts" setup>
 import {onMounted, onUnmounted, provide, ref} from "vue";
 import {EventNames} from "@geelato/gl-ide";
-import {emitter, useGlobal, authUtil, userApi} from "@geelato/gl-ui";
-import {useUser, useUserStore, getPinia} from '@geelato/gl-ui-arco-admin';
-
-const pageId = ref('')
-
-pageId.value = new URL(window.location.href).searchParams.get("pageId") || "";
+import {emitter, authUtil} from "@geelato/gl-ui";
+import {useUser, getPinia} from '@geelato/gl-ui-arco-admin';
+import {handleUrlParams, validateIde, validateIdePagePreviewUrl} from "./utils";
 
 provide('pinia', getPinia())
-const userStore = useUserStore();
-const global = useGlobal();
 const {ideRedirect, ideLogout} = useUser();
+// 获取url参数
+const urlParams = ref<Record<string, string>>({});
+// 页面显示状态, 0:错误，1：正常，2：待校验
+const showPage = ref<Record<string, any>>({valid: 2, message: ''});
 
 const handleLogout = () => {
   ideLogout();
 };
 
-const showPage = ref(false)
-
-onMounted(() => {
+onMounted(async () => {
   // 未登录重定向
   if (!authUtil.getToken()) ideRedirect();
   // 注册 登出 事件监听器的函数
   emitter.on(EventNames.GlIdeLogout, handleLogout);
-  // 加载配置变量
-  const urlParams = new URL(window.location.href).searchParams;
-  userStore.info(() => {
-    userApi.getSysConfig(global, userStore, {
-      appId: urlParams.get("appId") || '', tenantCode: urlParams.get("tenantCode") || '',
-    });
-  });
-  showPage.value = true
-
-  console.log('useGlobal()', useGlobal())
+  // 获取url参数
+  urlParams.value = handleUrlParams();
+  // 校验url参数
+  showPage.value = validateIdePagePreviewUrl(urlParams.value);
+  if (showPage.value.valid !== 1) return;
+  // 数据校验
+  const {valid, message} = await validateIde(urlParams.value);
+  showPage.value = {valid, message};
+  if (valid !== 1) return;
+  // 更新标题
+  document.title = `预览页面 | ${urlParams.value.appName}`;
 });
 
 onUnmounted(() => {
@@ -48,14 +46,10 @@ onUnmounted(() => {
 </script>
 <template>
   <div>
-    <div v-if="!pageId">
-      <a-alert>
-        请在url中传入pageId参数，如：http://localhost:8000/idePagePreview.html?pageId=xxxxxxxxxxxxxxxxxxx.
-      </a-alert>
+    <div v-if="showPage.valid===0">
+      <a-alert>{{ showPage.message }}</a-alert>
     </div>
-    <GlPageViewer v-if="pageId&&showPage" :pageId="pageId"></GlPageViewer>
+    <GlPageViewer v-else-if="showPage.valid===1" :pageId="urlParams.pageId"/>
   </div>
 </template>
-<style scoped>
-
-</style>
+<style scoped></style>

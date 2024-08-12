@@ -64,7 +64,7 @@ watch(searchText, change);
       >
         <a-radio value="schemaArco">UI组件、页面模板库</a-radio>
         <a-radio value="schemaChart">图形板库</a-radio>
-        <a-radio value="schemaBlock">脚本组件库</a-radio>
+        <!--        <a-radio value="schemaBlock">脚本组件库</a-radio>-->
         <a-radio value="schemaBpmn">BPMN组件库</a-radio>
       </a-radio-group>
       <a-input-search v-model="searchText" style="width: 20em; float: right"/>
