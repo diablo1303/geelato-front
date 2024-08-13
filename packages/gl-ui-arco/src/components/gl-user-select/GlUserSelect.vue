@@ -138,13 +138,15 @@ const loadUserDataItems = (ids?: Array<any>) => {
       reader.params.push(new EntityReaderParam('id', 'in', ids))
     }
   }
-  // 去掉空值，因存在[""]的情况
+  // 去掉空值，因存在[""]的情况，同时默认为['0']，即查看内部的账号
   const types = props.userTypes.filter((item: any) => {
     return !utils.isEmpty(item)
-  })
-  if(types&&types.length > 0) {
-    reader.params.push(new EntityReaderParam('type', 'in', types))
+  }) || []
+  if(types.length===0){
+    types.push('0')
   }
+  reader.params.push(new EntityReaderParam('type', 'in', types))
+
   return entityApi.queryByEntityReader(reader)
 }
 
