@@ -737,7 +737,7 @@ onUnmounted(() => {
       </a-descriptions>
       <a-descriptions :bordered="true" :column="3" layout="horizontal" size="medium" style="margin-top: 12px;">
         <template #title>
-          <span>打包增量插入N项（用于部署时，只插入本次打包的数据，不修改不删除目标表数据。）</span>
+          <span>打包增量插入N项（用于部署时，只插入本次打包的数据，不修改不删除目标表数据；一般为需要在生产环境并行维护的数据，如系统的参数。）</span>
         </template>
         <a-descriptions-item v-for="(item,index) of packData.first" :key="index" :label="item.title">
           {{ item.entityName }}
@@ -745,7 +745,7 @@ onUnmounted(() => {
       </a-descriptions>
       <a-descriptions :bordered="true" :column="3" layout="horizontal" size="medium" style="margin-top: 12px;">
         <template #title>
-          <span>打包全量更新M项（用于部署时，清空目标表之后插入本次打包的数据；一般为需要在生产环境并行维护的数据，如系统的参数。）</span>
+          <span>打包全量更新M项（用于部署时，清空目标表之后插入本次打包的数据。）</span>
         </template>
         <a-descriptions-item v-for="(item,index) of packData.second" :key="index" :label="item.title">
           {{ item.entityName }}
