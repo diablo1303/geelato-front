@@ -86,10 +86,10 @@ watch(() => visibleForm, () => {
 </script>
 
 <template>
-  <a-modal v-model:visible="visibleForm" draggable title="粘贴板文件" title-align="start">
+  <a-modal v-model:visible="visibleForm" draggable title="从粘贴板中识别到图片，是否上传？" title-align="start">
     <template #footer>
-      <a-button @click="handleModelCancel">不上传粘贴板文件</a-button>
-      <a-button type="primary" @click="handleModelOk">上传粘贴板文件</a-button>
+      <a-button @click="handleModelCancel">从本地选择上传</a-button>
+      <a-button type="primary" @click="handleModelOk">上传当前图片</a-button>
     </template>
     <a-form :label-col-props="{ span: labelCol }" :model="mv" :wrapper-col-props="{ span: wrapperCol }" class="form">
       <a-row :gutter="wrapperCol">
@@ -123,7 +123,7 @@ watch(() => visibleForm, () => {
             </a-input>
           </a-form-item>
           <a-form-item field="clean">
-            <a-checkbox v-model="mv.clean">上传成功后清理粘贴板。</a-checkbox>
+            <a-checkbox v-model="mv.clean">上传成功后清空粘贴板</a-checkbox>
           </a-form-item>
         </a-col>
       </a-row>
