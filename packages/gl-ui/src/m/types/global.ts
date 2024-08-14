@@ -128,3 +128,41 @@ export interface CellMeta {
   name: string
   valueType: CellValueType
 }
+
+export const IMAGE_MIME = [
+  "image/pict",
+  "image/x-pict",
+  "image/bmp",
+  "image/x-bmp",
+  "image/ico",
+  "image/x-icon",
+  "image/jpeg",
+  "image/jpg",
+  "image/tiff",
+  "image/x-tiff",
+  "image/xbm",
+  "image/x-xbm",
+  "image/gif",
+  "image/png",
+  "image/webp",
+  "image/svg+xml"
+]
+
+export const FILE_MIME = [
+  {"label": ".pict", "value": "image/pict"},
+  {"label": ".pict", "value": "image/x-pict"},
+  {"label": ".bmp", "value": "image/bmp"},
+  {"label": ".bmp", "value": "image/x-bmp"},
+  {"label": ".ico", "value": "image/ico"},
+  {"label": ".ico", "value": "image/x-icon"},
+  {"label": ".jpeg", "value": "image/jpeg"},
+  {"label": ".jpg", "value": "image/jpg"},
+  {"label": ".tiff", "value": "image/tiff"},
+  {"label": ".tiff", "value": "image/x-tiff"},
+  {"label": ".xbm", "value": "image/xbm"},
+  {"label": ".xbm", "value": "image/x-xbm"},
+  {"label": ".gif", "value": "image/gif"},
+  {"label": ".png", "value": "image/png"},
+  {"label": ".webp", "value": "image/webp"},
+  {"label": ".svg", "value": "image/svg+xml"}
+]

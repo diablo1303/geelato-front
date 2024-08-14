@@ -6,9 +6,10 @@ export default {
 <script lang="ts" setup>
 import {inject, type Ref, ref, watch} from 'vue'
 import type {FileItem} from '@arco-design/web-vue'
-import {Message} from '@arco-design/web-vue'
-import {entityApi, fileApi, PageProvideKey, PageProvideProxy, useGlobal} from '@geelato/gl-ui'
+import {Modal, Message} from '@arco-design/web-vue'
+import {entityApi, fileApi, PageProvideKey, PageProvideProxy, useGlobal, utils} from '@geelato/gl-ui'
 import type {AttachmentForm, UploadFileParams} from '@geelato/gl-ui'
+import GlUploadClipboard from './clipboard.vue'
 
 const emits = defineEmits(['update:modelValue'])
 const props = defineProps({
@@ -22,14 +23,17 @@ const props = defineProps({
     }
   },
   acceptArray: Array,
+  limit: Number,
   tableType: String,
   objectId: String,
   genre: String,
+  clipboard: Boolean,
   readonly: Boolean,
   disabled: Boolean
 })
 const global = useGlobal()
 const mv = ref(props.modelValue)
+const uploadRef = ref();
 
 const generateUploadParams = (): UploadFileParams => {
   return {
@@ -82,8 +86,7 @@ const clearLocalFileItem = (fileList: FileItem[], delUid: string) => {
  */
 const beforeRemove = (fileItem: FileItem): Promise<boolean> => {
   return new Promise((resolve, reject) => {
-    fileApi
-        .deleteAttachment(fileItem.uid)
+    fileApi.deleteAttachment(fileItem.uid)
         .then(() => {
           clearLocalFileItem(fileList.value, fileItem.uid)
           Message.success('删除成功')
@@ -155,6 +158,43 @@ const loadFiles = () => {
   })
 }
 
+const formParams = ref<Record<string, any>>({visible: false, id: ''});
+
+const clipboardSuccess = (fileItem: FileItem) => {
+  mv.value = fileItem.uid;
+  fileList.value.push(fileItem)
+}
+
+const customUploadFile = () => {
+  utils.uploadFile().then((result) => {
+    const file = result as File;
+    uploadRef.value.upload([file]);
+    uploadRef.value.submit();
+  }, (errorMessage) => {
+    Message.error(errorMessage)
+  });
+}
+
+const buttonClick = async (event: Event, ok?: any, cancel?: any) => {
+  const result = await utils.readClipboardImage();
+  if (result && result.length > 0) {
+    formParams.value.id = result[0]
+    formParams.value.visible = true;
+  } else {
+    customUploadFile();
+  }
+}
+
+const uploadButtonClick = (event: Event) => {
+  event.stopPropagation();
+  if (props.clipboard) {
+    return new Promise((resolve, reject) => {
+      buttonClick(event);
+    });
+  }
+  return;
+}
+
 // 初始化，加载文件
 watch(() => props, () => {
   actionUrl.value = fileApi.getUploadUrl(generateUploadParams());
@@ -178,17 +218,27 @@ const isRead = pageProvideProxy?.isPageStatusRead() || props.readonly || props.d
 
 <template>
   <a-upload
-      class="gl-upload"
-      :action="actionUrl"
-      :file-list="fileList"
+      ref="uploadRef"
       :accept="accept"
-      :headers="entityApi.getHeader()"
-      :show-remove-button="!isRead"
-      :readonly="readonly"
+      :action="actionUrl"
       :disabled="disabled"
+      :file-list="fileList"
+      :headers="entityApi.getHeader()"
+      :limit="limit"
+      :on-button-click="uploadButtonClick"
+      :readonly="readonly"
+      :show-remove-button="!isRead"
+      class="gl-upload"
       @error="uploadError"
       @success="uploadSuccess"
       @before-remove="beforeRemove"
   >
   </a-upload>
+
+  <GlUploadClipboard v-if="formParams.visible"
+                     v-model:visible="formParams.visible"
+                     :action="actionUrl"
+                     :model-value="formParams.id"
+                     @cancel="customUploadFile"
+                     @success="clipboardSuccess"/>
 </template>

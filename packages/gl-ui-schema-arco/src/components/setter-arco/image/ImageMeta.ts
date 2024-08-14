@@ -107,6 +107,21 @@ export default {
       "placeholder": "用于分类、查询"
     },
     {
+      "name": "clipboard",
+      "setterComponentProps": {"checkedText": "是", "uncheckedText": "否"},
+      "setterComponentVModelName": "modelValue",
+      "group": "base",
+      "type": "props",
+      "enableValueExpress": false,
+      "show": true,
+      "expanded": true,
+      "displayMode": "tile",
+      "title": "粘贴板",
+      "description": "上传存在于粘贴板的图片",
+      "setterComponentName": "ASwitch",
+      "setterDefaultValue": false
+    },
+    {
       "name": "width",
       "setterComponentProps": {},
       "setterComponentVModelName": "modelValue",

@@ -1,6 +1,6 @@
 import {RecordsUtil} from './RecordsUtil'
 import {toChineseCurrency} from './toChineseCurrency'
-import {type CellMeta, CellValueType} from '../types/global'
+import {type CellMeta, CellValueType, FILE_MIME, IMAGE_MIME} from '../types/global'
 
 export class Utils {
   constructor() {
@@ -827,6 +827,7 @@ export class Utils {
       })
       // 读取剪贴板上的文本
       const text = await navigator.clipboard.readText();
+      console.log('navigator.clipboard.readText', text)
 
       // 去除可能的BOM（Byte Order Mark）
       const cleanedText = text.replace(/^\uFEFF/, '')
@@ -883,6 +884,65 @@ export class Utils {
       console.error("Failed to read clipboard contents:", err);
       return null;
     }
+  }
+
+  async readClipboardImage() {
+    try {
+      const result: File[] = [];
+      const clipboardItems = await navigator.clipboard.read();
+      for (const item of clipboardItems) {
+        // 检查是否包含文件类型
+        let isImage = false;
+        for (const type of IMAGE_MIME) {
+          if (item.types.includes(type)) {
+            isImage = true;
+            break;
+          }
+        }
+        if (isImage) {
+          // 获取Blob对象，这里以'image/png'为例
+          const blob = await item.getType(item.types[0]); // 或者使用实际的MIME类型
+          // 可选：如果你需要File对象
+          const file = new File([blob], `粘贴板图片${this.getOptionLabel(item.types[0], FILE_MIME)}`, {type: item.types[0]});
+          result.push(file);
+        }
+      }
+      return result;
+    } catch (err) {
+      console.error("Failed to read clipboard contents:", err);
+      return null;
+    }
+  }
+
+  getFileParts(filename: string): { name: string, suffix: string } {
+    // 使用lastIndexOf查找最后一个'.'的位置
+    const lastIndex = filename.lastIndexOf('.');
+    // 如果没有找到'.'，则认为整个字符串都是文件名（无扩展名）
+    if (lastIndex === -1) return {name: filename, suffix: ''};
+    // 如果找到了'.'，则分别获取文件名（不带后缀）和文件后缀
+    const name = filename.slice(0, lastIndex);
+    const suffix = filename.slice(lastIndex);
+
+    return {name, suffix};
+  }
+
+  uploadFile() {
+    return new Promise((resolve, reject) => {
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      // 限制上传文件类型
+      fileInput.accept = IMAGE_MIME.join(',');
+      fileInput.onchange = (event) => {
+        // @ts-ignore
+        const files = event && event.target && event.target.files;
+        if (files && files.length > 0) {
+          resolve(files[0]);
+        } else {
+          reject(`仅支持${IMAGE_MIME.join('、')}格式的图片`);
+        }
+      };
+      fileInput.click();
+    });
   }
 
 }

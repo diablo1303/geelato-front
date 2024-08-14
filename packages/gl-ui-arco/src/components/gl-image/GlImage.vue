@@ -16,9 +16,10 @@ import {
   PageProvideKey,
   type PageProvideProxy,
   type UploadFileParams,
-  useGlobal
+  useGlobal, utils
 } from '@geelato/gl-ui'
-import type {FileItem} from '@arco-design/web-vue'
+import {type FileItem, Message, Modal} from '@arco-design/web-vue'
+import GlUploadClipboard from '../gl-upload/clipboard.vue';
 
 const props = defineProps({
   modelValue: {
@@ -39,6 +40,8 @@ const props = defineProps({
       }
     }
   },
+  limit: Number,
+  clipboard: Boolean,
   tableType: String,
   objectId: String,
   genre: String,
@@ -52,6 +55,7 @@ const isPageRead = ref(pageProvideProxy?.isPageStatusRead())
 const isRead = computed(() => {
   return isPageRead.value || props.readonly === true
 })
+const uploadRef = ref();
 
 const generateUploadParams = (): UploadFileParams => {
   return {
@@ -107,6 +111,7 @@ const setFileItem = (fileItem?: FileItem) => {
     fileList.value = []
     fileId.value = ''
     fileBase64.value = ''
+    mv.value = ''
   }
 }
 
@@ -116,8 +121,7 @@ const setFileItem = (fileItem?: FileItem) => {
  */
 const beforeRemove = (fileItem: FileItem): Promise<boolean> => {
   return new Promise((resolve, reject) => {
-    fileApi
-        .deleteAttachment(fileItem.uid)
+    fileApi.deleteAttachment(fileItem.uid)
         .then(() => {
           setFileItem()
           global.$notification.success('删除成功')
@@ -172,6 +176,69 @@ const loadFiles = () => {
   })
 }
 
+const formParams = ref<Record<string, any>>({visible: false, id: ''});
+
+const clipboardSuccess = (fileItem: FileItem) => {
+  mv.value = fileItem.uid;
+  fileList.value.push(fileItem)
+}
+
+const customUploadFile = () => {
+  utils.uploadFile().then((result) => {
+    const file = result as File;
+    uploadRef.value.upload([file]);
+    uploadRef.value.submit();
+  }, (errorMessage) => {
+    Message.error(errorMessage)
+  });
+}
+
+const buttonClick = async (event: Event, ok?: any, cancel?: any) => {
+  const result = await utils.readClipboardImage();
+  if (result && result.length > 0) {
+    if (isBase64Mode.value) {
+      Modal.open({
+        title: '粘贴板文件',
+        content: `是否使用存在于粘贴板上的图片？`,
+        titleAlign: 'start',
+        onOk: () => {
+          fileList.value = [{
+            uid: utils.generateRandom(),
+            name: result[0].name,
+            url: URL.createObjectURL(result[0]),
+            file: result[0],
+            status: 'init',
+          }];
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            mv.value = '';
+            fileBase64.value = e.target?.result as string;
+          };
+          reader.readAsDataURL(result[0]);
+        },
+        onCancel: () => {
+          customUploadFile();
+        },
+      });
+    } else {
+      formParams.value.id = result[0]
+      formParams.value.visible = true;
+    }
+  } else {
+    customUploadFile();
+  }
+}
+
+const uploadButtonClick = (event: Event) => {
+  event.stopPropagation();
+  if (props.clipboard) {
+    return new Promise((resolve, reject) => {
+      buttonClick(event);
+    });
+  }
+  return;
+}
+
 // 初始化，加载文件
 watch(() => props, () => {
   actionUrl.value = fileApi.getUploadUrl(generateUploadParams());
@@ -190,6 +257,7 @@ watch(() => props, () => {
     >
     </a-image>
     <a-upload
+        ref="uploadRef"
         v-if="!isRead"
         list-type="picture-card"
         accept="image/*"
@@ -198,6 +266,7 @@ watch(() => props, () => {
         :file-list="fileList"
         :action="actionUrl"
         :headers="entityApi.getHeader()"
+        :on-button-click="uploadButtonClick"
         @error="uploadError"
         @success="uploadSuccess"
         @before-remove="beforeRemove"
@@ -205,6 +274,13 @@ watch(() => props, () => {
     >
     </a-upload>
   </a-space>
+
+  <GlUploadClipboard v-if="formParams.visible"
+                     v-model:visible="formParams.visible"
+                     :action="actionUrl"
+                     :model-value="formParams.id"
+                     @cancel="customUploadFile"
+                     @success="clipboardSuccess"/>
 </template>
 
 <style scoped></style>
