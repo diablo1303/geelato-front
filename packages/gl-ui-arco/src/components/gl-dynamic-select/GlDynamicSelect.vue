@@ -13,7 +13,7 @@
         :disabled="disabled"
         :multiple="multiple"
         :placeholder="placeholder"
-        @change="selectOne"
+        @change="select"
         @search="handleSearch"
         @clear="onClear"
         :valueKey="valueFiledName"
@@ -36,7 +36,7 @@
         :disabled="disabled"
         :multiple="multiple"
         :placeholder="placeholder"
-        @change="selectOne"
+        @change="select"
         @search="handleSearch"
         @clear="onClear"
         :valueKey="valueFiledName"
@@ -64,7 +64,7 @@ export default {
 }
 
 const enum TriggerMode {
-  onCreated = 'onCreated',
+  onCreated = 'onCreated'
   // onInvoked = 'onInvoked',
   // onValueChanged = 'onValueChanged'
 }
@@ -91,7 +91,7 @@ const enum TriggerConstraint {
 }
 </script>
 <script lang="ts" setup>
-import { computed, inject, type PropType, type Ref, ref, watch } from 'vue'
+import { computed, inject, type PropType, type Ref, ref, toRaw, watch } from 'vue'
 import {
   entityApi,
   EntityReader,
@@ -107,7 +107,17 @@ import {
 } from '@geelato/gl-ui'
 import { EntityReaderOrderEnum } from '@geelato/gl-ui'
 
-const emits = defineEmits(['update:modelValue'])
+const emits = defineEmits([
+  'update:modelValue',
+  // 查询成功
+  'fetchSuccess',
+  // 查询失败
+  'fetchFail',
+  // 阻断查询
+  'fetchInterdict',
+  // select
+  'select'
+])
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
@@ -332,6 +342,20 @@ const getMvItem = (value: any) => {
 }
 const mvItem = ref(getMvItem(initValue))
 
+// /**
+//  * 依据选中的值，获取原始行记录值
+//  * 如果是单选，则返回的数组为0到1项
+//  * 如果是多选，则返回的数组为0到N项
+//  * @param value string | string[]
+//  */
+// const getSelectedRecords = (value: any) => {
+//   console.log('getSelectedRecords', value)
+//   if (utils.isEmpty(value)) {
+//     return []
+//   }
+//   return props.multiple ? findCheckedOptions(value) : findCheckedOptions([value])
+// }
+
 watch(
   () => {
     return props.modelValue
@@ -346,9 +370,9 @@ watch(
 
 /**
  * 选择一项
- * @param value
+ * @param value Record<string, any> | Array<Record<string, any>>
  */
-const selectOne = (value: any) => {
+const select = (value: any) => {
   // 将值设置到对应的组件中
   if (value && props.extraFieldAndBindIds.length > 0) {
     props.extraFieldAndBindIds.forEach((extraFieldAndBindId) => {
@@ -366,15 +390,30 @@ const selectOne = (value: any) => {
       // @ts-ignore
       mv.value.push(vItem[props.valueFiledName])
     })
+    utils.sleep(100).then(()=>{
+      // console.log('emits select')
+      emits('select', value)
+    })
   } else {
     mv.value = value ? value[props.valueFiledName] : ''
+    utils.sleep(100).then(()=>{
+      // console.log('emits select')
+      emits('select', [value])
+    })
   }
-
-  // const foundOption = options.value.find((option: OptionType) => {
-  //   return option.value === mv.value
-  // })
-  // const label = foundOption?.label || ''
 }
+
+/**
+ *  组合需要侦听的属性
+ */
+const watchProps = computed(()=>{
+  return {
+    entityName: props.entityName,
+    valueFiledName: props.valueFiledName,
+    labelFieldNames: [...props.labelFieldNames], // 浅拷贝以触发依赖跟踪
+    extraFieldAndBindIds: props.extraFieldAndBindIds
+  };
+})
 
 /**
  * TriggerMode.onCreated 或未设置时，默认直接加载数据
@@ -382,17 +421,9 @@ const selectOne = (value: any) => {
 const triggerOnCreated = () => {
   if (TriggerMode.onCreated === props.triggerMode || props.triggerMode === undefined) {
     // console.log('GlDynamicSelect > triggerOnCreated() > props', props)
-    watch(
+    watch(watchProps,
       () => {
-        return (
-          props.entityName +
-          props.valueFiledName +
-          props.labelFieldNames?.join(' ') +
-          props.extraFieldAndBindIds
-        )
-      },
-      () => {
-        loadData()
+        loadData('watch props entityName valueFiledName labelFieldNames extraFieldAndBindIds')
       },
       { immediate: true, deep: true }
     )
@@ -431,7 +462,6 @@ const handleSearch = () => {
  * 是否需要阻断加载数据
  */
 const isStopLoadData = () => {
-
   if (props.triggerConstraint?.length > 0) {
     // 1、当值为空时，阻断加载数据
     if (props.triggerConstraint.includes(TriggerConstraint.DoNoFetchWhenEmpty)) {
@@ -480,8 +510,11 @@ const isStopLoadDataByParams = (params: EntityReaderParam[]) => {
   return false
 }
 
-const loadData = () => {
+const loadData = (message?:string) => {
+  // console.log('loadData',message)
   if (isStopLoadData()) {
+    // const message =  '当值为空时，阻断加载数据'
+    emits('fetchInterdict', '当值为空时，阻断加载数据')
     return
   }
   // console.log('GlDynamicSelect > loadData() > entityName:', props.entityName, 'extraFieldAndBindIds:', props.extraFieldAndBindIds,'props',props)
@@ -530,6 +563,7 @@ const loadData = () => {
     })
     // 依据参数值是否为空，决定是否加载数据
     if (isStopLoadDataByParams(parsedParams)) {
+      emits('fetchInterdict', '参数为空，阻断加载数据')
       return
     }
 
@@ -554,60 +588,69 @@ const loadData = () => {
     if (props.orderFiledName) {
       entityReader.order.push(new EntityReaderOrder(props.orderFiledName, props.ascOrDesc))
     }
-    return entityApi.queryByEntityReader(entityReader, false, props.id).then((resp: any) => {
-      const items = resp.data || []
-      // console.log('loadedOptions.value', loadedOptions.value, loadedOptions.value.length)
-      if (items.length === 0) {
-        inputMv.value = undefined
-        if (props.multiple) {
-          mv.value.slice(0)
+    return entityApi.queryByEntityReader(entityReader, false, props.id).then(
+      (resp: any) => {
+        const items = resp.data || []
+        // console.log('loadedOptions.value', loadedOptions.value, loadedOptions.value.length)
+        if (items.length === 0) {
+          inputMv.value = undefined
+          if (props.multiple) {
+            mv.value.slice(0)
+          } else {
+            mv.value = ''
+          }
+          loadedOptions.value = []
+          enableVirtualList.value = false
         } else {
-          mv.value = ''
+          enableVirtualList.value = items.length > autoEnableVirtualListWhenRecordCount
+          // 数据加工
+          const newItems: Record<string, any>[] = []
+          if (isMultiLabelFieldName.value) {
+            items.forEach((item: Record<string, any>) => {
+              const labels: string[] = []
+              theLabelFieldNames.forEach((fieldName) => {
+                // @ts-ignore
+                labels.push(item[fieldName])
+              })
+              newItems.push({
+                __label: labels.join(' '),
+                [props.valueFiledName]: item[props.valueFiledName],
+                __record: item
+              })
+            })
+          } else {
+            items.forEach((item: Record<string, any>) => {
+              newItems.push({
+                // @ts-ignore
+                __label: item[theLabelFieldNames[0]],
+                [props.valueFiledName]: item[props.valueFiledName],
+                __record: item
+              })
+            })
+          }
+          loadedOptions.value = newItems
         }
-        loadedOptions.value = []
-        enableVirtualList.value = false
-      } else {
-        enableVirtualList.value = items.length > autoEnableVirtualListWhenRecordCount
-        // 数据加工
-        const newItems: Record<string, any>[] = []
-        if (isMultiLabelFieldName.value) {
-          items.forEach((item: Record<string, any>) => {
-            const labels: string[] = []
-            theLabelFieldNames.forEach((fieldName) => {
-              // @ts-ignore
-              labels.push(item[fieldName])
-            })
-            newItems.push({
-              __label: labels.join(' '),
-              [props.valueFiledName]: item[props.valueFiledName],
-              __record: item
-            })
-          })
-        } else {
-          items.forEach((item: Record<string, any>) => {
-            newItems.push({
-              // @ts-ignore
-              __label: item[theLabelFieldNames[0]],
-              [props.valueFiledName]: item[props.valueFiledName],
-              __record: item
-            })
-          })
+        // 加载完成数据之后，如果需要马上展示，则执行客户端过滤查询
+        if (renderAfterLoad()) {
+          handleSearch()
         }
-        loadedOptions.value = newItems
+        // data 从服务端加载的数据
+        // loadedOptions 加载的
+        emits('fetchSuccess', resp.data, loadedOptions.value)
+      },
+      (err) => {
+        emits('fetchFail', '加载失败')
       }
-      // 加载完成数据之后，如果需要马上展示，则执行客户端过滤查询
-      if (renderAfterLoad()) {
-        handleSearch()
-      }
-    })
+    )
   }
 }
 
 watch(
   mv,
   (val: any, oval: any) => {
+    // console.log('watch mv',toRaw(mv.value))
     emits('update:modelValue', val)
-    loadData()
+    loadData('watch mv')
   },
   { deep: true, immediate: true }
 )

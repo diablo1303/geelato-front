@@ -465,7 +465,7 @@ const fetchData = async (readerInfo?: {
     console.error(
       'GlEntityTable > fetchData() > entityName or subTablePidName is null. 作为子表时，必须指定子表外键，即对应主表ID的字段'
     )
-    emits('fetchSuccess', { data: []})
+    emits('fetchFail', { data: [],pagination:_pagination,message: 'entityName or subTablePidName is null. 作为子表时，必须指定子表外键，即对应主表ID的字段' })
     return
   }
 
@@ -494,7 +494,7 @@ const fetchData = async (readerInfo?: {
             pageProvideProxy?.pageStatus
           )
         }
-        emits('fetchInterdict', { data: [],message: '为作子表单，但获取不到父表单的ID，停止查询，查询页面状态为：'+pageProvideProxy?.pageStatus })
+        emits('fetchInterdict', { data: [],message: '为作子表单，但获取不到父表单的ID，停止查询，查询页面状态为：'+pageProvideProxy?.pageStatus,pagination:_pagination })
         return
       }
       entityReader.params.push(new EntityReaderParam(props.subTablePidName, 'eq', pid))
@@ -512,10 +512,10 @@ const fetchData = async (readerInfo?: {
     _pagination.pageSize = readerInfo?.pageSize || _pagination.pageSize
     _pagination.current = readerInfo?.pageNo || 1
     _pagination.total = response.data.total
-    emits('fetchSuccess', { data: renderData.value })
+    emits('fetchSuccess', { data: renderData.value,message:'', pagination:_pagination })
   } catch (err) {
     console.error(err)
-    emits('fetchFail', { data: [], pagination:_pagination })
+    emits('fetchFail', { data: [],message:'加载失败'+err.message, pagination:_pagination })
   } finally {
     setLoading(false)
   }

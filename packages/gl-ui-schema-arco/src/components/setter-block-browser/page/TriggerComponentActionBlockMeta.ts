@@ -4,6 +4,7 @@ export default {
   iconType: 'gl-thunderbolt',
   group: 'block_page',
   title: '触发组件动作',
+  description: '触发组件动作（组件动作是基于脚本配置的，组件方法是组件原生），解发的目标组件动作内可以通过$gl.ctx可以获取当前动作的上下文$gl.ctx。',
   useBy: ['freePage'],
   blockContent: '触发组件${componentId}的动作事件${actionName}',
   properties: [

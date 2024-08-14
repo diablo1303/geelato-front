@@ -74,10 +74,11 @@
         <a-button-group>
           <a-space>
             <!--            <a-button @click="closeActionCodeEditor" title="取消即不保存更改"> 取消</a-button>-->
-            <a-button type="primary" @click="saveCurrentPage" title="保存页面到服务端">
+            <a-button :loading="loading" type="primary" @click="saveCurrentPage" title="保存页面到服务端">
               保存
             </a-button>
             <a-button
+              :loading="loading"
               type="primary"
               @click="saveAndCloseCurrentPage"
               title="保存页面到服务端，并关闭本窗口"
@@ -113,6 +114,7 @@ import { blocksHandler } from './action-setters/BlockHandler'
 import GlArrayBaseSetter from './property-setters/GlArrayBaseSetter.vue'
 import GlCommandEditor from './action-setters/GlCommandEditor.vue'
 
+const loading = ref(false)
 const ideStore = useIdeStore()
 const actionStore = useActionStore()
 const props = defineProps({
@@ -224,11 +226,18 @@ const onUpdateAction = (action: Action) => {
 }
 
 const saveCurrentPage = () => {
+  loading.value = true
   onUpdateAction(JSON.parse(JSON.stringify(currentAction.value)))
   generateScript()
-  return ideStore.savePage()
+  return ideStore.savePage().then(()=>{
+    loading.value = false
+  },()=>{
+    loading.value = false
+  }).catch((err) => {
+    loading.value = false
+  })
 }
-const saveAndCloseCurrentPage = () => {
+const saveAndCloseCurrentPage = (close:boolean) => {
   saveCurrentPage().then((res) => {
     closeActionCodeEditor()
   })

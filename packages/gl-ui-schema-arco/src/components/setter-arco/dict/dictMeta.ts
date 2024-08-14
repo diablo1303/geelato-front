@@ -238,7 +238,22 @@ export default {
     }
   ],
   actions: [
-    { name: 'valueChange', description: '此时选项值不一定已加载完成', title: '值改变' },
+    { name: 'valueChange', description: '此时选项值不一定已加载完成', title: '值改变',params: [
+        {
+          name: 'value',
+          title: '修改后的值',
+          required: true,
+          type: 'any',
+          description: '修改后的值。'
+        },
+        {
+          name: 'oldValue',
+          title: '修改前的值',
+          required: true,
+          type: 'any',
+          description: '修改前的值，如是值是对象引用，修改后和修改前的是同一个，值相同。'
+        }
+      ] },
     { name: 'onOptionChange', description: '此时选项值已加载完成', title: '选项改变' }
   ],
   displayOnStage: 'inline-block'

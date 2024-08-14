@@ -257,10 +257,10 @@ export const useComponentInstTreeData = () => {
 
     const useCtxRecord = () => {
         const record = {
-            title: '当前记录',
+            title: '当前表格行记录',
             _code: 'record',
-            _type: 'object',
-            _description: '表格的行数据记录，只有表格操作栏上的组件配置动作时，才能拿到该值。',
+            _type: 'Record<string, any>',
+            _description: '表格的行数据记录，只有表格的列中配置的动作，才能拿到该值。',
             children: <any>[]
         }
 
@@ -281,6 +281,27 @@ export const useComponentInstTreeData = () => {
         }
         return record
     }
+    // 在列表的行事件中才有该正下文环境
+    const useCtxRowIndex = () => {
+        return  {
+            title: '当前表格行索引',
+            _code: 'rowIndex',
+            _type: 'number',
+            _description: '表格的行数据索引值，只有表格的列中配置的动作，才能拿到该值。',
+            children: <any>[]
+        }
+    }
+
+    // 在列表的行事件中才有该正下文环境
+    const useCtxDataIndex = () => {
+        return  {
+            title: '当前表格列名',
+            _code: 'dataIndex',
+            _type: 'string',
+            _description: '表格的列名，如：name，只有表格的列中配置的动作，才能拿到该值。',
+            children: <any>[]
+        }
+    }
 
     const useCtxArgs = () => {
         return {
@@ -288,15 +309,32 @@ export const useComponentInstTreeData = () => {
             _code: 'args',
             _type: 'array',
             _description:
-                '事件参数，假设onItemClick事件传了两个参数一个item，一个index，则可通过args[0]来获取item，通过args[1]来获取index。',
+                '事件参数，假设click事件传了两个参数一个item，一个index，则可通过args[0]来获取item，通过args[1]来获取index，建议可以通过获取参数指令来配置，替换此方式。',
             children: <any>[]
         }
+    }
+
+    // 在循环组件中，才有该正下文环境
+    const useCtxLoop = () => {
+        const loop = [
+            {
+                title: '当前索引',
+                _code: 'glLoopIndex',
+                _description: '当前循环的索引，从0开始，只有在循环组件中才能获取到该值。'
+            },
+            {
+                title: '当前值',
+                _code: 'glLoopItem',
+                _description: '当前循环的值，只有在循环组件中才能获取到该值。'
+            }
+        ]
+        return loop
     }
     const ctx = {
         title: '当前组件上下文',
         _code: 'ctx',
         _type: 'object',
-        children: [useCtxRecord(), useCtxArgs()],
+        children: [useCtxRecord(),useCtxRowIndex(),useCtxDataIndex(), useCtxArgs(),...useCtxLoop()],
         _description: '表格、表单等组件的正下文环境'
     }
 

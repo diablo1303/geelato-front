@@ -224,10 +224,13 @@ export class JsScriptExecutor {
    * @param ctx
    * @param callback
    */
-  triggerComponentAction(componentId: string, actionName: string, ctx?: {}, callback?: Function) {
+  triggerComponentAction(componentId: string, actionName: string, ctx?: {}, callback?: Function,gl?:any) {
     for (const pageComponentId in pageProxyMap) {
       const pageProxy = pageProxyMap[pageComponentId]
       if (pageProxy) {
+        const _ctx = ctx || {}
+        console.log('triggerComponentAction',componentId,actionName,ctx,gl)
+        Object.assign(_ctx,pageProxy)
         const ref = pageProxy.getRef(componentId)
         // console.log('triggerComponentAction() > componentId:', componentId, 'ref:', ref, 'pageProxy:', pageProxy)
         if (ref) {
@@ -237,7 +240,7 @@ export class JsScriptExecutor {
             const action = actions[actionsKey]
             // 按actionName进行触发
             if (action.name === actionName) {
-              return jsScriptExecutor.doAction(action, (ctx = {pageProxy}), callback)
+              return jsScriptExecutor.doAction(action, _ctx , callback,gl)
             }
           }
         }

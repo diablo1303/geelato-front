@@ -15,11 +15,11 @@ export default class TriggerComponentActionBlockHandler implements IBlockHandler
     const returnStr = props.enableReturn? `return ${varStr};` : ''
     if(props.resultVar){
       return new ParseResult(
-          `${varStr} = ${awaitStr}$gl.fn.triggerComponentAction("${props.componentId}","${props.actionName}");${returnStr}`
+          `${varStr} = ${awaitStr}$gl.fn.triggerComponentAction("${props.componentId}","${props.actionName}",undefined,$gl.ctx,$gl);${returnStr}`
       )
     }else{
       return new ParseResult(
-          `${awaitStr}$gl.fn.triggerComponentAction("${props.componentId}","${props.actionName}");${returnStr}`
+          `${awaitStr}$gl.fn.triggerComponentAction("${props.componentId}","${props.actionName}",undefined,$gl.ctx,$gl);${returnStr}`
       )
     }
   }
