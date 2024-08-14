@@ -5,14 +5,14 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed, inject, ref, watch } from 'vue'
+import { computed, inject, type PropType, ref, watch } from 'vue'
 import {
   entityApi,
   EntityReader,
   EntityReaderParam,
   FieldMeta,
   PageProvideKey,
-  PageProvideProxy
+  PageProvideProxy, utils
 } from '@geelato/gl-ui'
 
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
@@ -59,6 +59,18 @@ const props = defineProps({
     type: String,
     default() {
       return ''
+    }
+  },
+  /**
+   *  0；内部账号
+   *  1、外部账号
+   *  2、系统账号
+   *  默认为内部账号
+   */
+  userTypes:{
+    type: Array as PropType<Array<string>>,
+    default(){
+      return ['0']
     }
   }
 })
@@ -126,6 +138,15 @@ const loadUserDataItems = (ids?: Array<any>) => {
       reader.params.push(new EntityReaderParam('id', 'in', ids))
     }
   }
+  // 去掉空值，因存在[""]的情况，同时默认为['0']，即查看内部的账号
+  const types = props.userTypes.filter((item: any) => {
+    return !utils.isEmpty(item)
+  }) || []
+  if(types.length===0){
+    types.push('0')
+  }
+  reader.params.push(new EntityReaderParam('type', 'in', types))
+
   return entityApi.queryByEntityReader(reader)
 }
 

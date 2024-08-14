@@ -449,7 +449,7 @@ const setFormItemValues = (dataItem: { [key: string]: any }) => {
   // })
 
   // console.log('GlEntityForm > setFormItemValues() > formData:', formData.value)
-  emits('loadedData', { data: formData.value })
+  emits('loadedData', formData.value)
 }
 
 /**
@@ -549,12 +549,12 @@ const fetchData = async (params?: { id: string; [key: string]: any }, reRender: 
             // 对于初始不加载表单，通过fetchData({id:xxx})加载表单数据的，需要将加载完成的id设置到表单中
             entityRecordId.value = items[0].id
             formProvideProxy.setRecordId(items[0].id)
-            emits('loadingData', { data: items[0] })
+            emits('loadingData', items[0])
             delete items[0].id
             setFormItemValues(items[0])
           } else {
             isLastFetchedDataEmpty.value = true
-            emits('loadingData', { data: {} })
+            emits('loadingData', {})
           }
           // console.log('GlEntityForm > fetchData() > reRender:', reRender,'formData',formData.value)
           if(reRender){

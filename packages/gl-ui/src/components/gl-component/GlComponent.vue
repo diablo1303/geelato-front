@@ -276,15 +276,12 @@ defaultSyncEvents[props.glComponentInst.componentName]?.forEach((eventName: stri
   }
 })
 
-const valueChange = (...args: any) => {
-  // console.log('gl-component > valueChange() > arguments:', args, props.glComponentInst)
+const valueChange = (newValue:any,oldValue:any) => {
+  const args = [newValue,oldValue]
+  console.log('gl-component > valueChange() > arguments:', args, props.glComponentInst)
   // 对于一些组件，事件可能是优先触发了组件内的事件，第一个参数不一定是event，这里对所有参数做统一处理
   stopPropagation(args)
-  emits('valueChange', {
-    arguments: args,
-    glComponentInst: props.glComponentInst,
-    glCtx: props.glCtx
-  })
+  emits('valueChange', newValue,oldValue)
   doAction('valueChange', args)
 }
 
@@ -334,7 +331,7 @@ watch(
  * @param value
  */
 const onUpdateModelValue = (value: any) => {
-  // console.log('onUpdateModelValue and set mv.value:',props.modelValue)
+  const oldValue = mv.value
   mv.value = value
   if (typeof mv.value === 'object') {
     // 如果组件值为对象时，触发值改变操作
@@ -343,7 +340,7 @@ const onUpdateModelValue = (value: any) => {
     emits('update:modelValue', value)
     emits('update', value)
     // 这个需放在 'update:modelValue' 事件之后，确保组件的值已更新
-    valueChange(value)
+    valueChange(value,oldValue)
   }
 }
 
@@ -361,7 +358,7 @@ watch(
     emits('update:modelValue', value)
     emits('update', value)
     // 这个需放在 'update:modelValue' 事件之后，确保组件的值已更新
-    valueChange(value)
+    valueChange(value,oldValue)
     // 由于考虑到多层组件嵌套，watch的mv可能是个组合的组件，不是最原子级的组件，这里没有用deep属性
   },
   { immediate: true }

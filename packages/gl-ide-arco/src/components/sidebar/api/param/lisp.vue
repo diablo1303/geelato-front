@@ -51,7 +51,7 @@ const generateFormData = (pid?: string, name?: string): QueryApiParamForm => {
 const global = useGlobal();
 const expandedKeys = ref<string[]>([]);
 
-const nodeExpand = (rowKey: string | number, record: TableData) => {
+const nodeExpand = (rowKey: string | number, record: TableData):any => {
   if (expandedKeys.value.includes(rowKey as string)) {
     expandedKeys.value = expandedKeys.value.filter(item => item !== rowKey);
   } else {

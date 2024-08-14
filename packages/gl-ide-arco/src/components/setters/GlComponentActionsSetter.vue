@@ -106,7 +106,7 @@ export default {
  */
 // @ts-nocheck
 import { nextTick, onUnmounted, type PropType, ref } from 'vue'
-import { Action, ActionMeta,ComponentInstance, ComponentMeta } from '@geelato/gl-ui-schema'
+import { Action, ActionMeta, ComponentInstance, ComponentMeta } from '@geelato/gl-ui-schema'
 import { emitter, utils } from '@geelato/gl-ui'
 import { EventNames, useActionStore, useIdeStore } from '@geelato/gl-ide'
 import { blocksHandler } from './action-setters/BlockHandler'
@@ -172,8 +172,8 @@ const actionCodeEditorVisible = ref(false)
  * @param actionIndex
  * @param actionMeta
  */
-const openActionSetter = (action: Action,actionIndex?:number, actionMeta?: ActionMeta) => {
-  console.log('openActionSetter,action, actionIndex, actionMeta:', action, actionMeta)
+const openActionSetter = (action: Action, actionIndex?: number, actionMeta?: ActionMeta) => {
+  console.log('openActionSetter,action, actionIndex, actionMeta:', action, actionIndex, actionMeta)
   if (!action.title) {
     action.title = actionMeta?.title || ''
   }
@@ -248,12 +248,12 @@ const generateScript = () => {
   // const action = props.componentInstance?.actions[currentActionIndex.value]
   // console.log('generateScript action:', action)
   if (action) {
-    action.body = blocksHandler.parseToScript(action.__commandBlock)
+    action.body = blocksHandler.parseToScript(action.__commandBlock,currentActionMeta.value)
   }
 }
 
-const openActionEditor = (args: { action: any,actionIndex:number,actionMeta:ActionMeta }) => {
-  openActionSetter(args.action,args.actionIndex,args.actionMeta)
+const openActionEditor = (args: { action: any; actionIndex: number; actionMeta: ActionMeta }) => {
+  openActionSetter(args.action, args.actionIndex, args.actionMeta)
 }
 emitter.on(EventNames.GlIdeOpenActionEditor, openActionEditor)
 

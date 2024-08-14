@@ -57,7 +57,7 @@ export default {
         },
         {
           name: 'bordered',
-          setterComponentProps: { defaultValue: true },
+          setterComponentProps: { defaultChecked: true },
           setterComponentVModelName: 'modelValue',
           group: 'base',
           type: 'props',
@@ -947,22 +947,62 @@ export default {
     {
       name: 'fetchSuccess',
       title: '成功加载完数据',
-      description: '从服务端成功加数据（0到多条）后触发，本组件在表单组件内，且表单组件存在主键（id）值时才会触发加载子表数据'
+      description: '从服务端成功加数据（0到多条）后触发，本组件在表单组件内，且表单组件存在主键（id）值时才会触发加载子表数据',
+      params: [{
+        name: 'data',
+        title: '加载的数据',
+        required: true,
+        type: 'Array<Record<string,any>>',
+        description: '加载成功的数据。'
+      }]
     },
     {
-      name: 'fetchFails',
+      name: 'fetchFail',
       title: '加载数据失败',
-      description: '从服务端加数据出错。'
+      description: '从服务端加数据出错。',
+      params: [{
+        name: 'message',
+        title: '加载失败说明',
+        required: true,
+        type: 'string',
+        description: '加载数据失败的原因。'
+      }]
     },
     {
       name: 'fetchInterdict',
       title: '加载数据被阻断',
-      description: '因某此原因加载数据请求被阻断，此时未向服务端发起数据请求，如本组件作为子表时，若无主表ID则会阻断查询。'
+      description: '因某此原因加载数据请求被阻断，此时未向服务端发起数据请求，如本组件作为子表时，若无主表ID则会阻断查询。',
+      params: [{
+        name: 'message',
+        title: '被阻断的说明',
+        required: true,
+        type: 'string',
+        description: '加载数据被阻断的原因说明。'
+      }]
     },
     {
       name: 'changeRecord',
       title: '行记录更改',
-      description: '在数据表的行内编辑模式下，当数据表的行记录信息更换时触发'
+      description: '在数据表的行内编辑模式下，当数据表的行记录信息更换时触发',
+      params: [{
+        name: 'record',
+        title: '修改的记录',
+        required: true,
+        type: 'Record<string,any>',
+        description: '当前修改的记录对象。'
+      },{
+        name: 'rowIndex',
+        title: '修改的记录索引',
+        required: true,
+        type: 'number',
+        description: '修改的记录索引，第一行值为0。'
+      },{
+        name: 'columns',
+        title: '修改的记录列元数据',
+        required: true,
+        type: 'Array<GlTableColumn>',
+        description: '修改的记录对象所有列的元数据。'
+      }]
     },
     {
       name: 'deleteRecord',

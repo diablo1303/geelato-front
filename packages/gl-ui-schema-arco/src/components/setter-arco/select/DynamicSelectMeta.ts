@@ -60,13 +60,14 @@ export default {
       expanded: true,
       title: '数据加载时机',
       setterComponentName: 'ARadioGroup',
-      description: '不选择时，默认为组件创建时加载数据；“被调用时”，表示默认不加载数据，通过脚本来调用触发，如用于级联加载的场景。'
+      description:
+        '不选择时，默认为组件创建时加载数据；“被调用时”，表示默认不加载数据，通过脚本来调用触发，如用于级联加载的场景。'
     },
     {
       title: '数据加载约束',
       name: 'triggerConstraint',
       setterComponentProps: {
-        multiple:true,
+        multiple: true,
         options: [
           { label: '组件值为空时不加载数据', value: 'DoNoFetchWhenEmpty' },
           { label: '第1个数据过滤参数值为空时不触发', value: 'Param1ValueEmpty' },
@@ -83,7 +84,8 @@ export default {
       show: true,
       expanded: true,
       setterComponentName: 'ASelect',
-      description: '满足任一种条件，则不触发加载数据。第N个数据过滤参数值为空时不触发，指存在该参数且参数值为空。'
+      description:
+        '满足任一种条件，则不触发加载数据。第N个数据过滤参数值为空时不触发，指存在该参数且参数值为空。'
     },
     {
       name: 'labelFieldNames',
@@ -113,7 +115,7 @@ export default {
       description: '实体中，用于作为值的字段名',
       placeholder: '实体值字段名',
       setterComponentName: 'GlFieldSelect',
-      setterDefaultValue:'id'
+      setterDefaultValue: 'id'
     },
     {
       name: 'orderFiledName',
@@ -141,9 +143,9 @@ export default {
         options: [
           {
             label: '升序（小到大）',
-            value: '+',
+            value: '+'
           },
-          { label: '降序（大到小）', value: '-'}
+          { label: '降序（大到小）', value: '-' }
         ]
       },
       setterComponentVModelName: 'modelValue',
@@ -244,7 +246,7 @@ export default {
           show: true,
           expanded: true,
           setterComponentProps: {
-            showInput:true
+            showInput: true
           },
           setterComponentVModelName: 'modelValue',
           title: '字段值',
@@ -427,7 +429,79 @@ export default {
       enableValueExpress: true
     }
   ],
-  actions: [{ name: 'valueChange', description: '', title: '值改变' }],
+  actions: [
+    {
+      name: 'valueChange',
+      description: '',
+      title: '值改变',
+      params: [
+        {
+          name: 'value',
+          title: '修改后的值',
+          required: true,
+          type: 'any',
+          description: '修改后的值。'
+        },
+        {
+          name: 'oldValue',
+          title: '修改前的值',
+          required: true,
+          type: 'any',
+          description: '修改前的值，如是值是对象引用，修改后和修改前的是同一个，值相同。'
+        }
+      ]
+    },
+    {
+      name: 'select',
+      description: '',
+      title: '选择后触发',
+      params: [
+        {
+          name: 'records',
+          title: '选择的数据记录',
+          required: true,
+          type: 'Array<Record<string,any>>',
+          description: '选择的数据记录，在选择后触发，单选模式时，数组为1条记录，多选模式时，数组为1到多条记录，Record的属性为组件配置的值字段和名称字段，名称字段可以有多个。'
+        }
+      ]
+    },
+    {
+      name: 'fetchSuccess',
+      title: '成功加载完数据',
+      description: '从服务端成功加数据（0到多条）后触发',
+      params: [{
+        name: 'data',
+        title: '加载的数据',
+        required: true,
+        type: 'Array<Record<string,any>>',
+        description: '加载成功的数据。'
+      }]
+    },
+    {
+      name: 'fetchFail',
+      title: '加载数据失败',
+      description: '从服务端加数据出错。',
+      params: [{
+        name: 'message',
+        title: '加载失败说明',
+        required: true,
+        type: 'string',
+        description: '加载数据失败的原因。'
+      }]
+    },
+    {
+      name: 'fetchInterdict',
+      title: '加载数据被阻断',
+      description: '因某此原因加载数据请求被阻断，此时未向服务端发起数据请求。',
+      params: [{
+        name: 'message',
+        title: '被阻断的说明',
+        required: true,
+        type: 'string',
+        description: '加载数据被阻断的原因说明。'
+      }]
+    },
+  ],
   displayOnStage: 'inline-block',
   methods: [{ name: 'fetchData', title: '获取数据' }]
 }
