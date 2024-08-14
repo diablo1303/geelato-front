@@ -1124,7 +1124,26 @@ export default {
     {
       name: 'fetchSuccess',
       title: '成功加载完数据',
-      description: '从服务端成功加数据（0到多条）后触发，本组件在表单组件内，且表单组件存在主键（id）值时才会触发加载子表数据。'
+      description: '从服务端成功加数据（0到多条）后触发，本组件在表单组件内，且表单组件存在主键（id）值时才会触发加载子表数据。',
+      params: [{
+        name: 'data',
+        title: '加载的数据',
+        required: true,
+        type: 'Array<Record<string,any>>',
+        description: '加载成功的数据。'
+      }]
+    },
+    {
+      name: 'fetchFail',
+      title: '加载数据失败',
+      description: '从服务端加数据出错。',
+      params: [{
+        name: 'message',
+        title: '加载失败说明',
+        required: true,
+        type: 'string',
+        description: '加载数据失败的原因。'
+      }]
     },
     {
       name: 'creatingEntitySavers',

@@ -193,7 +193,22 @@ export default {
       displayMode: 'tile'
     }
   ],
-  actions: [{ name: 'valueChange', description: '切换选项卡', title: '切换选项卡' }],
+  actions: [{ name: 'valueChange', description: '切换选项卡', title: '切换选项卡' ,params: [
+      {
+        name: 'value',
+        title: '修改后的值',
+        required: true,
+        type: 'any',
+        description: '修改后的值。'
+      },
+      {
+        name: 'oldValue',
+        title: '修改前的值',
+        required: true,
+        type: 'any',
+        description: '修改前的值，如是值是对象引用，修改后和修改前的是同一个，值相同。'
+      }
+    ]}],
   methods: [
     { name: 'getValue', title: '获取当前选中的标签页值', description: '', params: [] },
     {
