@@ -796,16 +796,16 @@ const validate = () => {
 const reRender = () => {
   return tableRef.value.reRender()
 }
-const onFetchSuccess = (args: { data: [] }) => {
+const onFetchSuccess = (args: { data: []; pagination: object;message?:string }) => {
   // @ts-ignore
   props.glComponentInst.value = args.data
-  emits('fetchSuccess', args)
+  emits('fetchSuccess', args.data,args.message,args.pagination)
 }
-const onFetchFail = (args: { data: undefined; pagination: object }) => {
-  emits('fetchFail', args)
+const onFetchFail = (args: { data: []; pagination: object;message?:string }) => {
+  emits('fetchFail', args.message,args.pagination)
 }
-const onFetchInterdict = (args: { data: []; message: string }) => {
-  emits('fetchInterdict', args)
+const onFetchInterdict = (args: { data: []; pagination: object;message?: string }) => {
+  emits('fetchInterdict', args.message,args.pagination)
 }
 
 const entityTable = computed(() => {
@@ -1164,7 +1164,7 @@ const getColumnMax = (params: { dataIndex: string }) => {
       }
     }
     let value = record[params.dataIndex]
-    console.log('value:', value, 'max:', max)
+    // console.log('value:', value, 'max:', max)
     if (!isUnPush && value != null && value != undefined && max < value) {
       max = value
     }

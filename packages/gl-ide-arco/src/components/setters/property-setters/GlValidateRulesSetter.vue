@@ -27,7 +27,7 @@ const ruleOptions = [
   {
     label: '验证类型',
     value: 'type',
-    message: '类型不符合',
+    message: '格式不符合',
     type: 'any',
     setter: 'ASelect',
     props: {
@@ -246,9 +246,9 @@ const emit = (val: any) => {
   })
   // @ts-ignore
   if(expRule.value[RuleExpression]) result.push({
+    type:'string',
     [RuleExpression]:expRule.value[RuleExpression],
     ruleName: expRule.value.ruleName,
-
   })
 
   items.value.forEach((item: any) => {
@@ -301,7 +301,7 @@ const removeRule = (args: any) => {}
   <div>
     <div class="gl-table">
         <div class="gl-table-row">
-          <div class="gl-table-cell gl-label" style="width: 4em">必填</div>
+          <div class="gl-table-cell gl-label" style="width: 4em;text-align: right">必填</div>
           <div class="gl-table-cell">
             <a-input v-model="requiredRule.message">
               <template #prepend>
@@ -317,9 +317,9 @@ const removeRule = (args: any) => {}
           </div>
         </div>
         <div class="gl-table-row">
-          <div class="gl-table-cell gl-label" style="width: 4em" title="自定义脚本中可通过$gl.ctx.value获取当前输入组件的值，若验证如果为不通过，需要返回一个字符串提醒内容（如return '不能等于0'），若验证通过，则不需要返回">自定义</div>
+          <div class="gl-table-cell gl-label" style="width: 4em;text-align: right" title="自定义脚本中可通过$gl.ctx.value获取当前输入组件的值，若验证如果为不通过，需要返回一个字符串提醒内容（如“return '不能等于0'”或省列“return”直接写“'不能等于0'”），若验证通过，则不需要返回，或返回空字符串"><span class="gl-tips">自定义</span></div>
           <div class="gl-table-cell">
-            <GlExpressionSetter :show-input="true" v-model="expRule[RuleExpression]"></GlExpressionSetter>
+            <GlExpressionSetter :show-input="true" placeholder="点此配置自定义规则" v-model="expRule[RuleExpression]"></GlExpressionSetter>
           </div>
         </div>
     </div>
@@ -358,8 +358,9 @@ const removeRule = (args: any) => {}
         </div>
       </GlArrayBaseSetter>
       <a-divider
-        ><span class="gl-tips" title="从下拉列表中选择添加规则，每种只能添加一次"
-          >添加规则</span
+        >
+        <span class="gl-tips" title="从下方的下拉列表中选择添加规则，每种只能添加一次"
+          >选择添加规则</span
         ></a-divider
       >
       <a-select v-model="selectedRule">

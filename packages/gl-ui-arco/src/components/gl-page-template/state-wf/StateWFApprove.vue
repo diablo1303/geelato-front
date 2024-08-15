@@ -88,7 +88,7 @@ defineExpose({ validate })
       <!--      style="background-color: rgba(145, 203, 253, 0.23)"-->
     </a-form-item>
     <a-form-item field="attachIds" label="附件">
-      <gl-upload v-model="form.attachIds"></gl-upload>
+      <gl-upload v-model="form.attachIds" :clipboard="true"></gl-upload>
     </a-form-item>
   </a-form>
 </template>

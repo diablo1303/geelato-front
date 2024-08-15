@@ -82,40 +82,49 @@
             !['GlDndPlaceholder', 'GlPage'].includes(componentStore.currentSelectedComponentName)
           "
         >
-          <div style="border-bottom: 1px solid #f2f2f2; padding: 0.5em">
-            <span style="font-weight: 600"
-              >【指令】
-              {{ componentStore.currentSelectedComponentMeta?.title }}
-            </span>
-            <a-button-group style="float: right" type="primary" size="mini" shape="round">
-              <a-button
-                @click="componentStore.switchCurrentSelectedComponentStatus"
-                title="点击启用或停用该指令块"
-              >
-                {{
-                  componentStore.currentSelectedComponentInstance?._disabled === true
-                    ? '点击启用'
-                    : '点击停用'
-                }}
-              </a-button>
-              <!--              <a-button @click="componentStore.copyCurrentSelectedComponent"> 复制插入</a-button>-->
-              <a-button @click="componentStore.copyCurrentSelectedComponentToClipboard">
-                复制
-              </a-button>
-              <a-button
-                @click="insertAfterCurrentSelectedComponent"
-                title="将粘贴板的组件插入到当前选中的组件之后"
-              >
-                插入
-              </a-button>
-              <a-button
-                status="danger"
-                @click="componentStore.deleteCurrentSelectedComponentInst('')"
-                >删除
-              </a-button>
-            </a-button-group>
-          </div>
+          <a-collapse :bordered="false">
+            <a-collapse-item key="1">
+              <template #header>
+                <span style="font-weight: 600" title="点击查看指令介绍">【指令】
+                  {{ componentStore.currentSelectedComponentMeta?.title }}
+                </span>
+              </template>
+              <template #extra>
+                <a-button-group style="float: right" type="primary" size="mini" shape="round">
+                  <a-button
+                    @click="stopPropagationAndExecute($event,componentStore.switchCurrentSelectedComponentStatus)"
+                    title="点击启用或停用该指令块"
+                  >
+                    {{
+                      componentStore.currentSelectedComponentInstance?._disabled === true
+                        ? '点击启用'
+                        : '点击停用'
+                    }}
+                  </a-button>
+                  <!--              <a-button @click="componentStore.copyCurrentSelectedComponent"> 复制插入</a-button>-->
+                  <a-button @click="stopPropagationAndExecute($event,componentStore.copyCurrentSelectedComponentToClipboard)">
+                    复制
+                  </a-button>
+                  <a-button
+                    @click="stopPropagationAndExecute($event,insertAfterCurrentSelectedComponent)"
+                    title="将粘贴板的组件插入到当前选中的组件之后"
+                  >
+                    插入
+                  </a-button>
+                  <a-button
+                    status="danger"
+                    @click="stopPropagationAndExecute($event,()=>componentStore.deleteCurrentSelectedComponentInst(''))"
+                    >删除
+                  </a-button>
+                </a-button-group>
+              </template>
+              <div>
+                {{ componentStore.currentSelectedComponentMeta?.description || '该指令无描述信息' }}
+              </div>
+            </a-collapse-item>
+          </a-collapse>
           <GlComponentPropertiesSetter
+            style="border: 1px solid var(--color-border-2)"
             :key="componentStore.currentSelectedComponentId"
             :componentMeta="componentStore.currentSelectedComponentMeta"
             :componentInstance="componentStore.currentSelectedComponentInstance"
@@ -206,7 +215,7 @@ const settingStyle = ref({
 })
 
 const componentStore = componentStoreFactory.useComponentStore(props.componentStoreId)
-console.log('props.componentStoreId',props.componentStoreId)
+console.log('props.componentStoreId', props.componentStoreId)
 
 const emits = defineEmits(['update:action', 'updateAction'])
 
@@ -288,6 +297,11 @@ const pasteAll = () => {
   }
 }
 
+const stopPropagationAndExecute = (e: any, fn: Function) => {
+  e.stopPropagation()
+  fn()
+}
+
 reset()
 
 onMounted(() => {
@@ -295,4 +309,7 @@ onMounted(() => {
 })
 </script>
 
-<style></style>
+<style>
+.gl-command-editor .arco-collapse-item-content{
+}
+</style>

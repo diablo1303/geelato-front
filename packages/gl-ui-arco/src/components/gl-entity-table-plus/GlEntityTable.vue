@@ -289,13 +289,13 @@ const fetchData = useFetchData(
   queryColumns,
   pagination,
   formProvideProxy?.getRecordId,
-  (result: any) => {
+  (result: {data:[],pagination:any,message?:''}) => {
     renderData.value = result.data
     // 刷新操作列
     refreshOptColumn()
     emits('fetchSuccess', result)
   },
-  (result: {data:[],pagination:any}) => {
+  (result: {data:[],pagination:any,message?:''}) => {
     emits('fetchFail', result)
   },
   loading

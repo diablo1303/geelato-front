@@ -1,5 +1,5 @@
 // 页面类型
-// export type PageType = 'freePage' | 'formPage' | 'listPage' | 'blockPage' | ''
+// export type PageType = 'freePage' | 'formPage' | 'listPage' | 'blockPage' | 'tableEditPage'
 import type {AxiosInstance, AxiosStatic} from 'axios'
 import type {App} from 'vue'
 import type {Pinia} from "pinia";
@@ -22,6 +22,7 @@ export enum PageType {
   freePage = 'freePage',
   formPage = 'formPage',
   listPage = 'listPage',
+  tableEditPage = 'tableEditPage',
   blockPage = 'blockPage',
   emptyPage = 'emptyPage',
   // 流程页面

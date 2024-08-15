@@ -167,7 +167,7 @@ export default {
       setterComponentName: 'AInput',
       slotComponentName: 'GlText',
       slotComponentBindTarget: 'v-model',
-      enableValueExpress: false
+      enableValueExpress: true
     },
     {
       name: 'prefix',
@@ -181,7 +181,7 @@ export default {
       setterComponentName: 'AInput',
       slotComponentName: 'GlText',
       slotComponentBindTarget: 'v-model',
-      enableValueExpress: false
+      enableValueExpress: true
     },
     {
       name: 'allowClear',

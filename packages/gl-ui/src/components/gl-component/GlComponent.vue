@@ -278,7 +278,7 @@ defaultSyncEvents[props.glComponentInst.componentName]?.forEach((eventName: stri
 
 const valueChange = (newValue:any,oldValue:any) => {
   const args = [newValue,oldValue]
-  console.log('gl-component > valueChange() > arguments:', args, props.glComponentInst)
+  // console.log('gl-component > valueChange() > arguments:', args, props.glComponentInst)
   // 对于一些组件，事件可能是优先触发了组件内的事件，第一个参数不一定是event，这里对所有参数做统一处理
   stopPropagation(args)
   emits('valueChange', newValue,oldValue)
