@@ -854,7 +854,7 @@ export class Utils {
           // 单元格数据键为字符串，如果表头是无双引号则加上双引号
 
           const key = trimmedHeader.indexOf("\"") === 0 ? trimmedHeader : `"${trimmedHeader}"`;
-          console.log('trimmedHeader', typeof trimmedHeader, 'key:', key)
+          // console.log('trimmedHeader', typeof trimmedHeader, 'key:', key)
           const cellMeta = cellMap[trimmedHeader]
           // 表头有效，且定义了元数据的数据列者需要记录，如果一个列都没有定义，则记录所有列
           if (trimmedHeader && (cellMeta || !cellMetas || cellMetas.length === 0)) {
