@@ -8,7 +8,7 @@ import { PageStatus } from '../m/types/global'
 import utils from '../m/utils/Utils'
 
 export type PageParamConfigType = { pName: string; pValue: any; pType: string }
-export type PageCustomType = {
+export interface PageCustomType  {
   id: string
   pageId: string
   // key为页面中的组件的id,值为该组件的个性化配置

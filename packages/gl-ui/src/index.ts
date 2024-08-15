@@ -6,8 +6,8 @@ import {isLogin} from "./m/utils/Auth";
 import * as routeUtil from "./m/utils/RouteListener"
 import * as eventUtil from "./m/utils/Event"
 import * as monitorUtil from "./m/utils/Monitor"
-import type {PageParamConfigType, PagePermission, PageTemplate} from './components/PageProvideProxy'
-import PageProvideProxy, {type PageCustomType, PageParamsKey, PageProvideKey, paramStringify} from './components/PageProvideProxy'
+import type {PageParamConfigType, PagePermission, PageTemplate,PageCustomType} from './components/PageProvideProxy'
+import PageProvideProxy, {PageParamsKey, PageProvideKey, paramStringify} from './components/PageProvideProxy'
 import GlHtml from './components/gl-html/Index.vue'
 import GlIconfont from './components/gl-iconfont/Index.vue'
 import GlVirtual from './components/gl-virtual/Index.vue'

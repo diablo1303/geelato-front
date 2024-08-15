@@ -14,7 +14,7 @@
     "preview": "npm run build && vite preview --host",
     "type:check": "vue-tsc --noEmit --skipLibCheck",
     "lint-staged": "npx lint-staged",
-    "fix-memory-limit": "cross-env LIMIT=4096 pnpm increase-memory-limit"
+    "fix-memory-limit": "cross-env LIMIT=8192 pnpm increase-memory-limit"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [
