@@ -229,14 +229,13 @@ const buttonClick = async (event: Event, ok?: any, cancel?: any) => {
   }
 }
 
-const uploadButtonClick = (event: Event) => {
+const uploadButtonClick = (event: Event): void | Promise<FileList> => {
   event.stopPropagation();
   if (props.clipboard) {
     return new Promise((resolve, reject) => {
       buttonClick(event);
     });
   }
-  return;
 }
 
 // 初始化，加载文件

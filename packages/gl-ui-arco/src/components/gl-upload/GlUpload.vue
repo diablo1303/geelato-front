@@ -86,17 +86,28 @@ const clearLocalFileItem = (fileList: FileItem[], delUid: string) => {
  */
 const beforeRemove = (fileItem: FileItem): Promise<boolean> => {
   return new Promise((resolve, reject) => {
-    fileApi.deleteAttachment(fileItem.uid)
-        .then(() => {
-          clearLocalFileItem(fileList.value, fileItem.uid)
-          Message.success('删除成功')
-          resolve(true)
-        })
-        .catch((e) => {
-          Message.success('删除失败')
-          console.error('删除失败', e)
-          reject(false)
-        })
+    if (fileItem.uid.length < 19) {
+      let index = -1;
+      for (let i = 0; i < fileList.value.length; i++) {
+        if (fileItem.uid === fileList.value[i].uid) {
+          index = i;
+          break;
+        }
+      }
+      if (index > -1) fileList.value.splice(index, 1);
+      resolve(true)
+    } else {
+      fileApi.deleteAttachment(fileItem.uid)
+          .then(() => {
+            clearLocalFileItem(fileList.value, fileItem.uid)
+            Message.success('删除成功')
+            resolve(true)
+          })
+          .catch((e) => {
+            Message.error('删除失败')
+            reject(false)
+          })
+    }
   })
 }
 
@@ -185,14 +196,13 @@ const buttonClick = async (event: Event, ok?: any, cancel?: any) => {
   }
 }
 
-const uploadButtonClick = (event: Event) => {
-  event.stopPropagation();
+const uploadButtonClick = (event: Event): void | Promise<FileList> => {
   if (props.clipboard) {
+    event.stopPropagation();
     return new Promise((resolve, reject) => {
       buttonClick(event);
     });
   }
-  return;
 }
 
 // 初始化，加载文件
