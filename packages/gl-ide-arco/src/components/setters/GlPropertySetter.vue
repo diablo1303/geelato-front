@@ -296,7 +296,7 @@ initialized = true
   height: 40px;
   line-height: 40px;
   font-weight: 500;
-  //border-bottom: solid 1px #e7e7e7;
+  /* border-bottom: solid 1px #e7e7e7; */
 }
 
 .gl-property-setter .gl-icon-font {
