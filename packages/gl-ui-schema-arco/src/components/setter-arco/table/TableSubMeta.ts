@@ -981,6 +981,27 @@ export default {
       }]
     },
     {
+      name: 'addRow',
+      title: '添加一行后',
+      description: '向表格插入一空记录（纯客户端操作，未保存到服务器）之后触发。',
+      params: [{
+        name: 'record',
+        title: '新加入的行',
+        type: 'Record<string, any>',
+        description: '新插入空行对象的引用，便于修改一些值。'
+      }]
+    }, {
+      name: 'insertRecords',
+      title: '插入多条记录后',
+      description: '向表格插入多条记录（纯客户端操作，未保存到服务器）之后触发。',
+      params: [{
+        name: 'records',
+        title: '插入的多条记录',
+        type: 'Record<string, any>',
+        description: '新插入空行对象的引用，便于在设置一些初始值等。'
+      }]
+    },
+    {
       name: 'changeRecord',
       title: '行记录更改',
       description: '在数据表的行内编辑模式下，当数据表的行记录信息更换时触发',
@@ -1037,44 +1058,6 @@ export default {
   ],
   methods: [
     { name: 'refresh', title: '刷新', description: '刷新表格', params: [] },
-    {
-      name: 'addRecordsByTitle',
-      title: '添加记录（基于列标题）',
-      description: '添加记录，常用于excel复制数据插入',
-      params: [
-        {
-          name: 'records',
-          title: '记录集',
-          required: true,
-          type: 'Record<string,any>[]',
-          description: '每条记录的属性为title，如：[{\'名称\': \'张三\', \'年龄\': 18}]'
-        }
-      ],
-      returnInfo: {
-        returnType: 'void',
-        description: '添加一到多条记录到当前的列表中，常用于excel复制数据插入',
-        docId: ''
-      }
-    },
-    {
-      name: 'addRecordsByDataIndex',
-      title: '添加记录（基于列字段名）',
-      description: '添加记录',
-      params: [
-        {
-          name: 'records',
-          title: '记录集',
-          required: true,
-          type: 'Record<string,any>[]',
-          description: '每条记录的属性为dataIndex，如：[{\'name\': \'张三\', \'age\': 18}]'
-        }
-      ],
-      returnInfo: {
-        returnType: 'void',
-        description: '可添加一到多条记录到当前的列表中',
-        docId: ''
-      }
-    },
     {
       name: 'getEntitySavers',
       title: '获取实体保存对象',
@@ -1325,13 +1308,15 @@ export default {
       params: [
         {
           name: 'records',
+          required: true,
           type: 'Record<string, any>',
-          description: '需要插入的记录集',
+          description: '需要插入的记录集数组[]，如果需插入空行，则在数组中设置一个空对象[{}]，如需插入一行数据，则在数组中设置一个对象，如[{name:"张三",age:18}]，',
           title: '记录数组',
           defaultValue: []
         },
         {
           name: 'ignoreDataIndexes',
+          required: false,
           type: 'string[]',
           description: '需要插入的记录集中，忽略掉的字段，如：["id"]，只插入需要的字段（可插入的字段范围，以目标表中的字段为准，包括隐藏字段）。',
           title: '忽略的字段',
@@ -1339,10 +1324,19 @@ export default {
         },
         {
           name: 'uniqueDataIndexes',
+          required: false,
           type: 'string[]',
           description: '需要插入的记录集中，唯一约束的字段，多个字段时，表示联合唯一，如：["aId","bId"]，不是不能插入字段aId值相同,字段bId也相同的记录。',
           title: '唯一约束字段',
           defaultValue: []
+        },
+        {
+          name: 'isColTitleAsKeyField',
+          required: false,
+          type: 'boolean',
+          description: '是否将列的title为作record的key，默认值为false，即采用列的dataIndex作为record的key。例如，值为true，且列的title为“名称”，则通过record["名称"]来获取值，每条记录示例：[{\'名称\': \'张三\', \'年龄\': 18}]；值为false或不填，则通过record.name来获取值，每条记录示例：[{\'name\': \'张三\', \'age\': 18}]。',
+          title: '是否列title作key',
+          defaultValue: false
         }
       ]
     },

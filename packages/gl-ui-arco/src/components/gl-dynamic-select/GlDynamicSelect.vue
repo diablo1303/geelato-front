@@ -13,6 +13,7 @@
         :disabled="disabled"
         :multiple="multiple"
         :placeholder="placeholder"
+        :loading="loading"
         @change="select"
         @search="handleSearch"
         @clear="onClear"
@@ -36,6 +37,7 @@
         :disabled="disabled"
         :multiple="multiple"
         :placeholder="placeholder"
+        :loading="loading"
         @change="select"
         @search="handleSearch"
         @clear="onClear"
@@ -119,6 +121,7 @@ const emits = defineEmits([
   'select'
 ])
 
+const loading = ref(false)
 const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 
 const props = defineProps({
@@ -567,6 +570,8 @@ const loadData = (message?:string) => {
       return
     }
 
+    loading.value = true
+
     const entityReaderParams: EntityReaderParam[] = []
     parsedParams.forEach((param: EntityReaderParam) => {
       const newEntityReaderParam = new EntityReaderParam(
@@ -634,11 +639,13 @@ const loadData = (message?:string) => {
         if (renderAfterLoad()) {
           handleSearch()
         }
+        loading.value = false
         // data 从服务端加载的数据
         // loadedOptions 加载的
         emits('fetchSuccess', resp.data, loadedOptions.value)
       },
       (err) => {
+        loading.value = false
         emits('fetchFail', '加载失败')
       }
     )
