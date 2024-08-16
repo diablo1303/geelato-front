@@ -2,6 +2,7 @@
 export default {
   name: 'GlDict'
 }
+
 export const enum DictItemDisplayMode {
   // 编辑状态下隐藏禁用项，在其它状态不隐藏，此为默认值
   hideInEdit = 'hideInEdit',
@@ -13,7 +14,7 @@ export const enum DictItemDisplayMode {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import {computed, inject, type Ref, ref, watch} from 'vue'
+import { computed, inject, type Ref, ref, watch } from 'vue'
 import { entityApi, mixins, PageProvideKey, type PageProvideProxy, useLogger } from '@geelato/gl-ui'
 
 const logger = useLogger('GlDict')
@@ -97,6 +98,12 @@ const props = defineProps({
   isForbiddenItemCanSelect: Boolean,
   disabled: Boolean,
   readonly: Boolean,
+  allowClear: {
+    type: Boolean,
+    default() {
+      return false
+    }
+  },
   ...mixins.props
 })
 
@@ -104,7 +111,9 @@ const pageProvideProxy: PageProvideProxy = inject(PageProvideKey)!
 const mv = ref(props.modelValue)
 let selectedOption: Ref<OptionType | undefined> = ref({ value: '', label: '' })
 const isRead = !!(pageProvideProxy?.isPageStatusRead() || props.disabled || props.readonly)
-const isEdit = !isRead && (pageProvideProxy?.isPageStatusUpdate() || pageProvideProxy?.isPageStatusCreateOrCopyCreate())
+const isEdit =
+  !isRead &&
+  (pageProvideProxy?.isPageStatusUpdate() || pageProvideProxy?.isPageStatusCreateOrCopyCreate())
 const showDictItem = computed(() => {
   switch (props.dictItemDisplayMode) {
     case DictItemDisplayMode.hideInEdit:
@@ -214,7 +223,7 @@ const loadData = () => {
       .then((resp: any) => {
         options.value = resp.data
         renderOptions.value = options.value.filter((option: OptionType) => {
-          return option.enableStatus || (!option.enableStatus&&showDictItem.value)
+          return option.enableStatus || (!option.enableStatus && showDictItem.value)
         })
         callBackToSetValue()
       })
@@ -256,6 +265,33 @@ if (!props.glIsRuntime) {
     }
   )
 }
+
+/**
+ *  点选checkBox
+ *  由于在查询组件中，字段的复选无效，这里去掉checkbox原生事件，实现选择与反选
+ */
+const onCheckBoxClick = (event, opt: any) => {
+  event.preventDefault()
+  if (
+    props.disabled ||
+    props.readonly ||
+    (!props.isForbiddenItemCanSelect && opt.enableStatus == '0')
+  ) {
+    return
+  }
+  console.log('mv', mv, opt.value)
+  if (mv.value == undefined) {
+    mv.value = []
+  }
+  let ary: [] = mv.value
+  let index = ary.indexOf(opt.value)
+  if (index === -1) {
+    mv.value.push(opt.value)
+  } else {
+    mv.value.splice(index, 1)
+  }
+}
+
 // 初始加载数据
 loadData()
 defineExpose({ getSelectedOption })
@@ -271,15 +307,19 @@ defineExpose({ getSelectedOption })
           :multiple="displayType === 'multiSelect'"
           placeholder="请选择"
           v-model="mv"
-          allow-clear
+          :allow-clear="allowClear"
           allow-search
           @clear="onClear"
           :disabled="disabled || readonly"
           :readonly="readonly"
-          :style="{width:'100%'}"
+          :style="{ width: '100%' }"
           :max-tag-count="3"
         >
-          <a-option v-for="opt in renderOptions" :value="opt.value" :disabled="!isForbiddenItemCanSelect&&opt.enableStatus == '0'">
+          <a-option
+            v-for="opt in renderOptions"
+            :value="opt.value"
+            :disabled="!isForbiddenItemCanSelect && opt.enableStatus == '0'"
+          >
             {{ getLabel(opt) }}
           </a-option>
         </a-select>
@@ -290,7 +330,12 @@ defineExpose({ getSelectedOption })
         <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
       </template>
       <a-checkbox-group v-model="mv" :max="maxCount" :disabled="disabled" :readonly="readonly">
-        <a-checkbox v-for="opt in renderOptions" :value="opt.value" :disabled="!isForbiddenItemCanSelect&&opt.enableStatus == '0'">
+        <a-checkbox
+          v-for="opt in renderOptions"
+          :value="opt.value"
+          :disabled="!isForbiddenItemCanSelect && opt.enableStatus == '0'"
+          @click="onCheckBoxClick($event, opt)"
+        >
           {{ getLabel(opt) }}
         </a-checkbox>
       </a-checkbox-group>
@@ -300,7 +345,11 @@ defineExpose({ getSelectedOption })
         <div>{{ dictId ? '【暂无数据】' : '【未配置字典】' }}</div>
       </template>
       <a-radio-group v-model="mv" :disabled="disabled" :readonly="readonly">
-        <a-radio v-for="opt in renderOptions" :value="opt.value" :disabled="!isForbiddenItemCanSelect&&opt.enableStatus == '0'">
+        <a-radio
+          v-for="opt in renderOptions"
+          :value="opt.value"
+          :disabled="!isForbiddenItemCanSelect && opt.enableStatus == '0'"
+        >
           {{ getLabel(opt) }}
         </a-radio>
       </a-radio-group>

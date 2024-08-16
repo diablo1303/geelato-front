@@ -55,6 +55,10 @@ const global = useGlobal()
  *  change:在表格编辑状态时，更换表格数据时触发
  */
 const emits = defineEmits([
+  // tableRef.value.addRow()执行完成之后触发
+  'addRow',
+  // 列表中插入了多条记录之后触发
+  'insertRecords',
   'changeRecord',
   'deleteRecord',
   'fetchSuccess',
@@ -82,10 +86,10 @@ const isRead = !!pageProvideProxy?.isPageStatusRead()
 const { t } = CheckUtil.isBrowser()
   ? useI18n()
   : {
-    t: (str: any) => {
-      return str
+      t: (str: any) => {
+        return str
+      }
     }
-  }
 // const t = (str: any) => {
 //   return str
 // }
@@ -172,7 +176,7 @@ onMounted(() => {
   props.columns.forEach((item, index) => {
     if (item._renderFnBody) {
       const fn = `(record,column,rowIndex)=>{return ${item._renderFnBody}}`
-      // eslint-disable-next-line no-eval
+      // @ts-ignore eslint-disable-next-line no-eval
       item.render = eval(fn)
     }
   })
@@ -240,8 +244,8 @@ const updateColumns = (showColumnsValue: GlTableColumn[]) => {
  * 更新行数据
  * @param data
  */
-const onChangeRecord = (record: object,rowIndex: number,columns: GlTableColumn) => {
-  emits('changeRecord', record,rowIndex,columns)
+const onChangeRecord = (record: object, rowIndex: number, columns: GlTableColumn) => {
+  emits('changeRecord', record, rowIndex, columns)
 }
 
 let lastEntityReaderParams: Array<EntityReaderParam>
@@ -307,11 +311,20 @@ const changeColumnsVisible = (hideDataIndexes: string[], showDataIndexes: string
   tableRef.value.changeColumnsVisible(hideDataIndexes, showDataIndexes)
 }
 
-const addRow = () => {
-  if(props.glIsRuntime){
-    tableRef.value.addRow()
+
+
+/**
+ *  添加一行，只用于编辑表格
+ */
+const addRow = (record?:Record<string,any>) => {
+  if (props.glIsRuntime && typeof tableRef.value.addRow === 'function') {
+    const newRecord = tableRef.value.addRow(record)
+    emits('addRow', newRecord)
+    return newRecord
   }
 }
+
+
 const selectedKeys: Ref<string[]> = ref([])
 
 const useDeleteFailFn = (message: string) => {
@@ -376,8 +389,7 @@ const deleteRecordWithConfirm = (params: { id: string }) => {
     onOk: () => {
       deleteRecord(params)
     },
-    onCancel: () => {
-    }
+    onCancel: () => {}
   })
 }
 
@@ -397,8 +409,7 @@ const deleteSelectedRecords = (params: { withConfirm?: boolean }) => {
             refresh()
           }, useDeleteFailFn('删除失败'))
         },
-        onCancel: () => {
-        }
+        onCancel: () => {}
       })
     } else {
       return entityApi.deleteByIds(props.base.entityName, selectedKeys.value).then(() => {
@@ -536,9 +547,9 @@ const deleteRecordByEdit = (data: { record: Record<string, any>; rowIndex: any }
 const rowSelection = computed(() => {
   return props.base.checkType === 'checkbox' || props.base.checkType === 'radio'
     ? {
-      type: props.base.checkType,
-      showCheckedAll: props.base.showCheckAll && props.base.checkType === 'checkbox'
-    }
+        type: props.base.checkType,
+        showCheckedAll: props.base.showCheckAll && props.base.checkType === 'checkbox'
+      }
     : undefined
 })
 
@@ -751,21 +762,21 @@ const getRenderColumns = (): GlTableColumn[] => {
   return tableRef.value.getRenderColumns()
 }
 
-/**
- * 给可编辑表格添加记录，常用于excel导入
- * @param params 每条记录的属性为title，如：[{'名称': '张三', '年龄': 18}]
- */
-const addRecordsByTitle = (params: { records: Record<string, any>[] }) => {
-  return tableRef.value.addRecordsByTitle(params.records)
-}
-
-/**
- * 给可编辑表格添加记录
- * @param params 每条记录的属性为dataIndex，如：[{'name': '张三', 'age': 18}]
- */
-const addRecordsByDataIndex = (params: { records: Record<string, any>[] }) => {
-  return tableRef.value.addRecordsByDataIndex(params.records)
-}
+// /**
+//  * 给可编辑表格添加记录，常用于excel导入
+//  * @param params 每条记录的属性为title，如：[{'名称': '张三', '年龄': 18}]
+//  */
+// const addRecordsByTitle = (params: { records: Record<string, any>[] }) => {
+//   return tableRef.value.addRecordsByTitle(params.records)
+// }
+//
+// /**
+//  * 给可编辑表格添加记录
+//  * @param params 每条记录的属性为dataIndex，如：[{'name': '张三', 'age': 18}]
+//  */
+// const addRecordsByDataIndex = (params: { records: Record<string, any>[] }) => {
+//   return tableRef.value.addRecordsByDataIndex(params.records)
+// }
 
 const getDeleteRecords = () => {
   if (typeof tableRef.value.getDeleteRecords === 'function') {
@@ -796,16 +807,16 @@ const validate = () => {
 const reRender = () => {
   return tableRef.value.reRender()
 }
-const onFetchSuccess = (args: { data: []; pagination: object;message?:string }) => {
+const onFetchSuccess = (args: { data: []; pagination: object; message?: string }) => {
   // @ts-ignore
   props.glComponentInst.value = args.data
-  emits('fetchSuccess', args.data,args.message,args.pagination)
+  emits('fetchSuccess', args.data, args.message, args.pagination)
 }
-const onFetchFail = (args: { data: []; pagination: object;message?:string }) => {
-  emits('fetchFail', args.message,args.pagination)
+const onFetchFail = (args: { data: []; pagination: object; message?: string }) => {
+  emits('fetchFail', args.message, args.pagination)
 }
-const onFetchInterdict = (args: { data: []; pagination: object;message?: string }) => {
-  emits('fetchInterdict', args.message,args.pagination)
+const onFetchInterdict = (args: { data: []; pagination: object; message?: string }) => {
+  emits('fetchInterdict', args.message, args.pagination)
 }
 
 const entityTable = computed(() => {
@@ -887,7 +898,7 @@ const createEntitySavers = (
             (item) =>
               item[EntityDataSource.ConstObject.keyFiledName] &&
               item[EntityDataSource.ConstObject.keyFiledName] ===
-              record[EntityDataSource.ConstObject.keyFiledName]
+                record[EntityDataSource.ConstObject.keyFiledName]
           )
         ) {
           record[subTablePidName] = undefined
@@ -1071,9 +1082,13 @@ const updateRecord = (params: { record: Record<string, any> }) => {
 const insertRecords = (params: {
   records: Record<string, any>[]
   ignoreDataIndexes?: string[]
+  uniqueDataIndexes?: string[]
+  isColTitleAsKeyField?: boolean
 }) => {
   if (typeof tableRef.value.insertRecords === 'function') {
-    return tableRef.value.insertRecords(params)
+    const newRecords = tableRef.value.insertRecords(params)
+    emits('insertRecords', newRecords)
+    return newRecords
   }
   return undefined
 }
@@ -1294,17 +1309,22 @@ const isSelectedRecordsSameColumn = (params: { dataIndex: string }) => {
  * 列是否包含某值
  * @param params
  */
-const isColumnHasValue = (params: { dataIndex: string, value: any, onlySelected?: boolean }) => {
+const isColumnHasValue = (params: { dataIndex: string; value: any; onlySelected?: boolean }) => {
   if (!params || !params.dataIndex || !params.value) {
-    console.error('isColumnHasValue的参数不正确,格式应为：{ dataIndex: string, value: any, onlySelected?: boolean }，实为：', params)
-    throw new Error('isColumnHasValue的参数不正确,格式应为：{ dataIndex: string, value: any, onlySelected?: boolean }')
+    console.error(
+      'isColumnHasValue的参数不正确,格式应为：{ dataIndex: string, value: any, onlySelected?: boolean }，实为：',
+      params
+    )
+    throw new Error(
+      'isColumnHasValue的参数不正确,格式应为：{ dataIndex: string, value: any, onlySelected?: boolean }'
+    )
   }
   let foundRecord
-  if(params.onlySelected) {
+  if (params.onlySelected) {
     foundRecord = getSelectedRecords()?.find((record: Record<string, any>) => {
       return record[params.dataIndex] === params.value
     })
-  }else{
+  } else {
     foundRecord = getRenderRecords()?.find((record: Record<string, any>) => {
       return record[params.dataIndex] === params.value
     })
@@ -1790,8 +1810,6 @@ defineExpose({
   pushSelectedRecords,
   unPushRecordsByKeys,
   unPushSelectedRecords,
-  addRecordsByTitle,
-  addRecordsByDataIndex,
   createEntitySavers,
   changeColumnsVisible,
   batchUpdate,

@@ -5,7 +5,7 @@ export default {
 </script>
 <script lang="ts" setup>
 // @ts-nocheck
-import { inject, PropType, ref, watch } from 'vue'
+import { inject, type PropType, ref, watch } from 'vue'
 import { PageProvideKey, type PageProvideProxy } from '@geelato/gl-ui'
 
 const emits = defineEmits(['update:modelValue'])

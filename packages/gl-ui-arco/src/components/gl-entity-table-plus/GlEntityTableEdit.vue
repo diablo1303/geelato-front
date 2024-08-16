@@ -63,6 +63,10 @@ const emits = defineEmits([
   // 阻断查询，如作为子表时，若无主表ID则会阻断查询
   'fetchInterdict',
   'change',
+  // 添加一行
+  'addRow',
+  // 插入多行
+  'insertRecords',
   'copyRecord',
   // 从前端的列表中点了删除按钮，且前端已正常删除，则触发此事件。不管后续是否有进行服务端删除操作
   'deleteRecord',
@@ -695,50 +699,54 @@ const setError = (record: object, rowIndex: number, err: { [key: string]: any })
  *  表格在编辑模式下，添加空行
  *  设置列的dataIndex让其与绑定的组件一致
  */
-const addRow = () => {
+const addRow = (record:Record<string,any>) => {
   const newRow = {}
   props.columns.forEach((col: Column) => {
     //@ts-ignore
-    newRow[col.dataIndex] = col._component?.value
+    newRow[col.dataIndex] = record[col.dataIndex] || col._component?.value
   })
   renderData.value.push(newRow)
   props.glComponentInst.value = renderData.value
+  emits('addRow',newRow)
+  return newRow
 }
 
-/**
- *  表格在编辑模式下，添加一到多行记录
- *  常用于excel导入数据
- *  每行的数据以列title作为key
- */
-const addRecordsByTitle = (records: Record<string, any>[]) => {
-  addRecords(records, 'title')
-}
-
-/**
- *  表格在编辑模式下，添加一到多行记录
- *  每行的数据以列dataIndex作为key
- */
-const addRecordsByDataIndex = (records: Record<string, any>[]) => {
-  addRecords(records, 'dataIndex')
-}
-
-const addRecords = (records: Record<string, any>[], keyField: string = 'dataIndex',withAlarm:boolean) => {
-  if (!records || records.length === undefined) {
-    $message.error('加入列表的数据为空或不是有效的数组')
-    return
-  }
-  records?.forEach((record: Record<string, any>) => {
-    const newRow = {}
-    props.columns.forEach((col: Column) => {
-      // console.log('col', col,'record',record,keyField,col[keyField],record[col[keyField]],record[`"${col[keyField]}"`])
-      //@ts-ignore
-      newRow[col.dataIndex] = record[`"${col[keyField]}"`] || col._component?.value
-    })
-    // console.log('newRow', newRow)
-    renderData.value.push(newRow)
-  })
-  props.glComponentInst.value = renderData.value
-}
+// /**
+//  *  表格在编辑模式下，添加一到多行记录
+//  *  常用于excel导入数据
+//  *  每行的数据以列title作为key
+//  */
+// const addRecordsByTitle = (records: Record<string, any>[]) => {
+//   addRecords(records, 'title')
+// }
+//
+// /**
+//  *  表格在编辑模式下，添加一到多行记录
+//  *  每行的数据以列dataIndex作为key
+//  */
+// const addRecordsByDataIndex = (records: Record<string, any>[]) => {
+//   addRecords(records, 'dataIndex')
+// }
+//
+// const addRecords = (records: Record<string, any>[], keyField: string = 'dataIndex',withAlarm:boolean) => {
+//   if (!records || records.length === undefined) {
+//     $message.error('加入列表的数据为空或不是有效的数组')
+//     return
+//   }
+//   const newRows = []
+//   records?.forEach((record: Record<string, any>) => {
+//     const newRow = {}
+//     props.columns.forEach((col: Column) => {
+//       //@ts-ignore
+//       newRow[col.dataIndex] = record[`"${col[keyField]}"`] || col._component?.value
+//     })
+//     newRows.push(newRow)
+//     renderData.value.push(newRow)
+//   })
+//   props.glComponentInst.value = renderData.value
+//   emits('addRecords',newRows)
+//   return newRows
+// }
 
 /**
  * 获取重复的数据和不重复的数据
@@ -748,6 +756,7 @@ const addRecords = (records: Record<string, any>[], keyField: string = 'dataInde
  * @param uniqueDataIndexes 唯一字段，多个字段时，表示联合唯一
  */
 const findRecords = (records: Record<string, any>[],insertRecords:Record<string, any>[],uniqueDataIndexes: string[]) => {
+  console.log(records,insertRecords,uniqueDataIndexes)
   const sameRecords: Array<Record<string, any>> = []
   const notSameRecords: Array<Record<string, any>> = []
   if (uniqueDataIndexes && uniqueDataIndexes.length > 0) {
@@ -756,11 +765,33 @@ const findRecords = (records: Record<string, any>[],insertRecords:Record<string,
       // 判断是否与当前列表中的数据重复
       const foundSameRecord = records.find((item: Record<string, any>) => {
         let allUniqueDataIndexAreSame = true
+        // 找出存在不同的非空字段
+        let unSameNotEmptyDataIndexes=[]
+        // 找出相同的空字段
+        let sameEmptyDataIndexes = []
         uniqueDataIndexes.forEach((uniqueDataIndex: string) => {
-          if (item[uniqueDataIndex] != record[uniqueDataIndex]) {
-            allUniqueDataIndexAreSame = false
+          console.log('查看同相的记录，唯一约束字段是：',uniqueDataIndex,'值为：',item[uniqueDataIndex],record[uniqueDataIndex],item[uniqueDataIndex]===undefined && record[uniqueDataIndex]===undefined)
+          if(item[uniqueDataIndex]===undefined && record[uniqueDataIndex]===undefined){
+            sameEmptyDataIndexes.push(uniqueDataIndex)
+          } else if (item[uniqueDataIndex] != record[uniqueDataIndex]) {
+            unSameNotEmptyDataIndexes.push(uniqueDataIndex)
           }
         })
+
+        if(unSameNotEmptyDataIndexes.length>0){
+          // 找出存在不同的非空字段
+          allUniqueDataIndexAreSame = false
+        }else{
+          // 此时，有可能是有一到多个字段相同
+          if(uniqueDataIndexes.length === sameEmptyDataIndexes.length){
+            // 如果相同的都是空字段，在不考虑空值的情况下，则表示，数据不重复
+            allUniqueDataIndexAreSame = false
+          }else{
+            // 相同包括空字段和非空字段，则表求数据重复
+            allUniqueDataIndexAreSame = true
+          }
+        }
+
         return allUniqueDataIndexAreSame
       })
 
@@ -780,12 +811,19 @@ const findRecords = (records: Record<string, any>[],insertRecords:Record<string,
  * 表格在编辑模式下，基于外部的数据记录，插入新记录到当前组件
  * @param params ignoreDataIndexes 忽列掉的字段
  *               uniqueDataIndexes 唯一字段，多个字段时，表示联合唯一，默认为模型的主键字段“id”
+ *               isColTitleAsKeyField 是否将列的title为作record的key，即默认采用列的dataIndex作为record的key
  */
 const insertRecords = (params: {
   records: Record<string, any>[]
   ignoreDataIndexes?: string[]
   uniqueDataIndexes?: string[]
+  isColTitleAsKeyField?:boolean
 }) => {
+  if (!params.records || params.records.length === undefined) {
+    $message.error('加入列表的数据为空或不是有效的数组')
+    return []
+  }
+
   const uniqueDataIndexes = params.uniqueDataIndexes || [EntityDataSource.ConstObject.keyFiledName]
   // 先做唯一性检查，如果有重复，则不插入，并记录重复的记录数
   const {sameRecords, notSameRecords} = findRecords(renderData.value, params.records, uniqueDataIndexes)
@@ -797,6 +835,7 @@ const insertRecords = (params: {
     })
   }
 
+  const newRows = []
   // 插入经过滤不重复的记录
   notSameRecords.forEach((record: Record<string, any>) => {
     const newRow: Record<string, any> = {}
@@ -804,9 +843,16 @@ const insertRecords = (params: {
       let dataIndex: string = col.dataIndex!
       // TODO 序号 CHECK 等专用字段是否需要处理？
       if (!params.ignoreDataIndexes?.includes(dataIndex)) {
-        newRow[dataIndex] = record[dataIndex]
+        // console.log('record[col.title]',record[`${col.title}`],'record[dataIndex]',record[dataIndex])
+        if(params.isColTitleAsKeyField===true){
+          newRow[dataIndex] = record[col.title] || record[`"${col.title}"`] || col._component?.value
+        }else{
+          newRow[dataIndex] = record[dataIndex] || col._component?.value
+        }
       }
     })
+    newRows.push(newRow)
+    console.log('newRows',newRows)
     renderData.value.push(newRow)
   })
 
@@ -818,6 +864,8 @@ const insertRecords = (params: {
   toReleaseRecords.value = [...toReleaseRecordsFindResult.notSameRecords]
 
   props.glComponentInst.value = renderData.value
+  emits('insertRecords',newRows)
+  return newRows
 }
 
 /**
@@ -1000,8 +1048,6 @@ defineExpose({
   validate,
   validateRecord,
   addRow,
-  addRecordsByTitle,
-  addRecordsByDataIndex,
   insertRecords,
   reRender,
   getRenderData,

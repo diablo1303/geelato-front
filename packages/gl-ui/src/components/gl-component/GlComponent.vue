@@ -145,6 +145,10 @@ const _setReadonlyAndDisabled = (params: { readonly? : boolean,disabled? : boole
   }
 }
 
+const _setLoading = (params: { loading? : boolean}) => {
+  props.glComponentInst.props.loading = !!params.loading
+}
+
 const _getVars = () => {
   return vars.value
 }
@@ -458,6 +462,7 @@ defineExpose({
   _getVar,
   _getVars,
   _getVarsRef,
+  _setLoading,
   _setReadonlyAndDisabled
 })
 </script>

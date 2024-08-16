@@ -229,7 +229,7 @@ export class JsScriptExecutor {
       const pageProxy = pageProxyMap[pageComponentId]
       if (pageProxy) {
         const _ctx = ctx || {}
-        console.log('triggerComponentAction',componentId,actionName,ctx,gl)
+        // console.log('triggerComponentAction',componentId,actionName,ctx,gl)
         Object.assign(_ctx,pageProxy)
         const ref = pageProxy.getRef(componentId)
         // console.log('triggerComponentAction() > componentId:', componentId, 'ref:', ref, 'pageProxy:', pageProxy)
