@@ -191,7 +191,7 @@ export const getSysConfig = async (global: ComponentCustomProperties & Record<st
         global.$gl.app = Object.assign(global.$gl.app, appData?.data || {});
       }
       // 用户信息
-      global.$gl.user = Object.assign(global.$gl.user || {}, userInfo) || {};
+      global.$gl.user = global.$gl.user || userInfo || {};
       // 服务端未提供用户的公司信息时，在前端发起请求另行获取
       if (userInfo?.id && !userInfo?.corpId) {
         const resp = await securityApi.getUserCompany(userInfo.id)
