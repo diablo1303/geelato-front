@@ -9,8 +9,8 @@ export default {
 <script lang="ts" setup>
 import {compile, h, type Ref, ref, watch} from 'vue'
 import {useAppStore} from '@geelato/gl-ide'
-import type {QueryAppRestfulForm, QueryAppTableForm, QueryAppViewForm, QueryRestfulForm, QueryTableForm, QueryViewForm} from '@geelato/gl-ui'
-import {modelApi, restfulApi, entityApi, EntityReader, EntityReaderParam, useGlobal, utils} from '@geelato/gl-ui'
+import type {QueryAppSqlForm, QueryAppTableForm, QueryAppViewForm, QuerySqlForm, QueryTableForm, QueryViewForm} from '@geelato/gl-ui'
+import {modelApi, sqlApi, entityApi, EntityReader, EntityReaderParam, useGlobal, utils} from '@geelato/gl-ui'
 import {approvalStatusOptions} from "./application/searchTable";
 import {viewTypeOptions} from "./view/searchTable";
 import GlModelTableModal from "./table/modal.vue";
@@ -20,8 +20,8 @@ import GlModelTableAppTabs from "./application/table/tableTabs.vue";
 import GlModelViewAppForm from "./application/view/form.vue";
 import GlModelViewAppTabs from "./application/view/tableTabs.vue";
 import GlModelTableViewForm from "./view/form.vue";
-import GlModelRestfulAppForm from "./application/restful/form.vue";
-import GlModelRestfulTabs from "./application/restful/tableTabs.vue";
+import GlModelSqlAppForm from "./application/sql/form.vue";
+import GlModelSqlTabs from "./application/sql/tableTabs.vue";
 
 type Item = {
   id: string
@@ -39,8 +39,8 @@ interface ViewItem extends QueryViewForm {
   approval: QueryAppViewForm[]
 }
 
-interface RestfulItem extends QueryRestfulForm {
-  approval: QueryAppRestfulForm[]
+interface SqlItem extends QuerySqlForm {
+  approval: QueryAppSqlForm[]
 }
 
 const props = defineProps({
@@ -63,12 +63,12 @@ const allAccreditViewItems: Ref<QueryAppViewForm[]> = ref([])
 const renderAccreditViewItems: Ref<QueryAppViewForm[]> = ref([])
 const allTableAppViewItems: Ref<QueryAppViewForm[]> = ref([]);
 // 自定义SQL
-const allRestfulItems: Ref<RestfulItem[]> = ref([])
-const renderRestfulItems: Ref<RestfulItem[]> = ref([])
+const allSqlItems: Ref<SqlItem[]> = ref([])
+const renderSqlItems: Ref<SqlItem[]> = ref([])
 // 自定义SQL授权
-const allAccreditRestfulItems: Ref<QueryAppRestfulForm[]> = ref([])
-const renderAccreditRestfulItems: Ref<QueryAppRestfulForm[]> = ref([])
-const allTableAppRestfulItems: Ref<QueryAppRestfulForm[]> = ref([]);
+const allAccreditSqlItems: Ref<QueryAppSqlForm[]> = ref([])
+const renderAccreditSqlItems: Ref<QueryAppSqlForm[]> = ref([])
+const allTableAppSqlItems: Ref<QueryAppSqlForm[]> = ref([]);
 
 const searchText = ref('')
 const orderBy = ref('updateAt')
@@ -179,21 +179,21 @@ const generateRenderAccreditViewItems = () => {
   }
 }
 
-const generateRenderRestfulItems = () => {
+const generateRenderSqlItems = () => {
   // 如果有排序值，则先对数据进行排序
   if (orderBy.value === 'updateAt') {
     // @ts-ignore 从最新到最老
-    allRestfulItems.value.sort((a, b) => b[orderBy.value].localeCompare(a[orderBy.value]))
+    allSqlItems.value.sort((a, b) => b[orderBy.value].localeCompare(a[orderBy.value]))
   } else if (orderBy.value === 'entityName') {
     // @ts-ignore 从小到大
-    allRestfulItems.value.sort((a, b) => a['keyName'].localeCompare(b['keyName']))
+    allSqlItems.value.sort((a, b) => a['keyName'].localeCompare(b['keyName']))
   }
 
   if (!searchText.value) {
-    renderRestfulItems.value.length = 0
-    renderRestfulItems.value.push(...allRestfulItems.value)
+    renderSqlItems.value.length = 0
+    renderSqlItems.value.push(...allSqlItems.value)
   } else {
-    renderRestfulItems.value = allRestfulItems.value.filter((item) => {
+    renderSqlItems.value = allSqlItems.value.filter((item) => {
       return (
           item.keyName.indexOf(searchText.value) != -1 || item.keyName?.indexOf(searchText.value) != -1
       )
@@ -201,33 +201,33 @@ const generateRenderRestfulItems = () => {
   }
 
   activeKey.value = activeKey.value.filter(item => item !== 5);
-  if (renderRestfulItems.value.length > 0) {
+  if (renderSqlItems.value.length > 0) {
     activeKey.value.push(5);
   }
 }
-const generateRenderAccreditRestfulItems = () => {
+const generateRenderAccreditSqlItems = () => {
   // 如果有排序值，则先对数据进行排序
   if (orderBy.value === 'updateAt') {
     // @ts-ignore 从最新到最老
-    allAccreditRestfulItems.value.sort((a, b) => b[orderBy.value].localeCompare(a[orderBy.value]))
+    allAccreditSqlItems.value.sort((a, b) => b[orderBy.value].localeCompare(a[orderBy.value]))
   } else if (orderBy.value === 'entityName') {
     // @ts-ignore 从小到大
-    allAccreditRestfulItems.value.sort((a, b) => a['restfulKey'].localeCompare(b['restfulKey']))
+    allAccreditSqlItems.value.sort((a, b) => a['sqlKey'].localeCompare(b['sqlKey']))
   }
 
   if (!searchText.value) {
-    renderAccreditRestfulItems.value.length = 0
-    renderAccreditRestfulItems.value.push(...allAccreditRestfulItems.value)
+    renderAccreditSqlItems.value.length = 0
+    renderAccreditSqlItems.value.push(...allAccreditSqlItems.value)
   } else {
-    renderAccreditRestfulItems.value = allAccreditRestfulItems.value.filter((item) => {
+    renderAccreditSqlItems.value = allAccreditSqlItems.value.filter((item) => {
       return (
-          item.restfulKey.indexOf(searchText.value) != -1 || item.restfulKey?.indexOf(searchText.value) != -1
+          item.sqlKey.indexOf(searchText.value) != -1 || item.sqlKey?.indexOf(searchText.value) != -1
       )
     })
   }
 
   activeKey.value = activeKey.value.filter(item => item !== 6);
-  if (renderAccreditRestfulItems.value.length > 0) {
+  if (renderAccreditSqlItems.value.length > 0) {
     activeKey.value.push(6);
   }
 }
@@ -237,16 +237,16 @@ watch(searchText, () => {
   generateRenderAccreditItems()
   generateRenderViewItems()
   generateRenderAccreditViewItems()
-  generateRenderRestfulItems()
-  generateRenderAccreditRestfulItems()
+  generateRenderSqlItems()
+  generateRenderAccreditSqlItems()
 })
 watch(orderBy, () => {
   generateRenderItems()
   generateRenderAccreditItems()
   generateRenderViewItems()
   generateRenderAccreditViewItems()
-  generateRenderRestfulItems()
-  generateRenderAccreditRestfulItems()
+  generateRenderSqlItems()
+  generateRenderAccreditSqlItems()
 })
 
 /**
@@ -361,54 +361,54 @@ const fetchAccreditViewData = async (successBack?: any, failBack?: any) => {
 }
 
 
-const fetchRestfulData = async (successBack?: any, failBack?: any) => {
+const fetchSqlData = async (successBack?: any, failBack?: any) => {
   if (!appStore.currentApp.id) {
     return
   }
   try {
-    const {data} = await restfulApi.queryRestfuls({appId: appStore.currentApp.id});
-    const result = await restfulApi.queryAppRestfuls({restfulAppId: appStore.currentApp.id, approvalStatus: "draft"});
-    allTableAppRestfulItems.value = result.data.filter((item) => item.approvalStatus === "draft") as QueryAppRestfulForm[];
-    for (const item of data as unknown as RestfulItem[]) {
+    const {data} = await sqlApi.querySqls({appId: appStore.currentApp.id});
+    const result = await sqlApi.queryAppSqls({sqlAppId: appStore.currentApp.id, approvalStatus: "draft"});
+    allTableAppSqlItems.value = result.data.filter((item) => item.approvalStatus === "draft") as QueryAppSqlForm[];
+    for (const item of data as unknown as SqlItem[]) {
       item.approval = [];
-      for (const node of allTableAppRestfulItems.value) {
-        if (node.restfulKey === item.keyName) {
+      for (const node of allTableAppSqlItems.value) {
+        if (node.sqlKey === item.keyName) {
           item.approval.push(node);
         }
       }
     }
-    allRestfulItems.value = data as unknown as RestfulItem[];
+    allSqlItems.value = data as unknown as SqlItem[];
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
-    allRestfulItems.value = [];
+    allSqlItems.value = [];
     if (failBack && typeof failBack === 'function') failBack(err);
   } finally {
-    generateRenderRestfulItems()
+    generateRenderSqlItems()
   }
 }
 
-const fetchAccreditRestfulData = async (successBack?: any, failBack?: any) => {
+const fetchAccreditSqlData = async (successBack?: any, failBack?: any) => {
   if (!appStore.currentApp.id) {
     return
   }
   try {
-    const {data} = await restfulApi.queryAppRestfuls({appId: appStore.currentApp.id});
+    const {data} = await sqlApi.queryAppSqls({appId: appStore.currentApp.id});
     // @ts-ignore
     data.sort((a, b) => new Date(b?.updateAt).getTime() - new Date(a?.updateAt).getTime());
-    allAccreditRestfulItems.value = [];
+    allAccreditSqlItems.value = [];
     const viewNames: string[] = [];
     data.forEach((item) => {
-      if (!viewNames.includes(item.restfulKey)) {
-        viewNames.push(item.restfulKey);
-        allAccreditRestfulItems.value.push(item);
+      if (!viewNames.includes(item.sqlKey)) {
+        viewNames.push(item.sqlKey);
+        allAccreditSqlItems.value.push(item);
       }
     });
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
-    allAccreditRestfulItems.value = [];
+    allAccreditSqlItems.value = [];
     if (failBack && typeof failBack === 'function') failBack(err);
   } finally {
-    generateRenderAccreditRestfulItems()
+    generateRenderAccreditSqlItems()
   }
 }
 
@@ -484,8 +484,8 @@ const resetData = (type: string) => {
     }, () => {
       global.$message.error({content: '应用视图数据重置失败！'})
     })
-  } else if (type === 'restful') {
-    fetchRestfulData(() => {
+  } else if (type === 'sql') {
+    fetchSqlData(() => {
       global.$message.success({content: '自定义SQL数据重置成功！'})
     }, () => {
       global.$message.error({content: '自定义SQL数据重置失败！'})
@@ -502,8 +502,8 @@ const resetData = (type: string) => {
     }, () => {
       global.$message.error({content: '授权视图数据重置失败！'})
     })
-  } else if (type === 'accreditRestful') {
-    fetchAccreditRestfulData(() => {
+  } else if (type === 'accreditSql') {
+    fetchAccreditSqlData(() => {
       global.$message.success({content: '授权自定义SQL数据重置成功！'})
     }, () => {
       global.$message.error({content: '授权自定义SQL数据重置失败！'})
@@ -515,8 +515,8 @@ fetchData()
 fetchAccreditData()
 fetchViewData()
 fetchAccreditViewData()
-fetchRestfulData()
-fetchAccreditRestfulData()
+fetchSqlData()
+fetchAccreditSqlData()
 
 /* 模型tab页所需参数 */
 const formTabsParams = ref({
@@ -579,14 +579,14 @@ const aViewFormSaveSuccess = (data: QueryAppViewForm, action: string) => {
   fetchAccreditViewData();
 }
 
-const restfulFormSaveSuccess = (data: RestfulItem, action: string) => {
+const sqlFormSaveSuccess = (data: SqlItem, action: string) => {
   // 刷新模型列表
-  fetchRestfulData();
+  fetchSqlData();
 }
 
-const aRestfulFormSaveSuccess = (data: QueryAppRestfulForm, action: string) => {
+const aSqlFormSaveSuccess = (data: QueryAppSqlForm, action: string) => {
   // 刷新视图授权列表
-  fetchAccreditRestfulData();
+  fetchAccreditSqlData();
 }
 
 const atFormTabsParams = ref({
@@ -686,7 +686,7 @@ const addAppViewForm = (ev?: MouseEvent) => {
 const arFormParams = ref({
   id: '', visible: false, formState: 'add', formCol: 1, title: '', width: '',
   parameter: {
-    restfulId: '', restfulKey: '', author: true,
+    sqlId: '', sqlKey: '', author: true,
     appId: appStore.currentApp.id, tenantCode: appStore.currentApp.tenantCode
   },
 });
@@ -698,7 +698,7 @@ const arFormTabsParams = ref({
   }
 });
 
-const addAppRestfulForm = (ev?: MouseEvent) => {
+const addAppSqlForm = (ev?: MouseEvent) => {
   if (!appStore.currentApp.id) {
     return
   }
@@ -707,7 +707,7 @@ const addAppRestfulForm = (ev?: MouseEvent) => {
   arFormParams.value.visible = true;
 }
 
-const addRestfulForm = () => {
+const addSqlForm = () => {
   Object.assign(arFormTabsParams.value, {
     id: '', visible: true, formState: 'add', title: '新建自定义SQL',
     parameter: {
@@ -717,7 +717,7 @@ const addRestfulForm = () => {
     }
   });
 }
-const editRestfulForm = (record: RestfulItem) => {
+const editSqlForm = (record: SqlItem) => {
   Object.assign(arFormTabsParams.value, {
     id: record.id, visible: true, formState: 'edit', title: `编辑自定义SQL（${record.keyName}）`,
     parameter: {
@@ -729,9 +729,9 @@ const editRestfulForm = (record: RestfulItem) => {
 }
 
 
-const appRestfulOpen = (record: QueryAppRestfulForm) => {
+const appSqlOpen = (record: QueryAppSqlForm) => {
   Object.assign(arFormTabsParams.value, {
-    id: record.restfulId, visible: true, formState: 'view', title: `自定义SQL申请（${record.restfulKey}）`,
+    id: record.sqlId, visible: true, formState: 'view', title: `自定义SQL申请（${record.sqlKey}）`,
     parameter: {
       author: true,
       appId: appStore.currentApp.id,
@@ -753,7 +753,7 @@ const appRestfulOpen = (record: QueryAppRestfulForm) => {
           {{
             allItems.length + allAccreditItems.length +
             allViewItems.length + allAccreditViewItems.length +
-            allRestfulItems.length + allAccreditRestfulItems.length
+            allSqlItems.length + allAccreditSqlItems.length
           }}
         </a-tag>
       </template>
@@ -866,27 +866,27 @@ const appRestfulOpen = (record: QueryAppRestfulForm) => {
           </template>
         </a-list>
       </a-collapse-item>
-      <a-collapse-item :key="5" :header="`自定义SQL（${renderRestfulItems.length}）`" class="colapse-list1">
+      <a-collapse-item :key="5" :header="`自定义SQL（${renderSqlItems.length}）`" class="colapse-list1">
         <template #header>
-          {{ `自定义SQL（${renderRestfulItems.length}${allTableAppRestfulItems.length > 0 ? '，' + allTableAppRestfulItems.length : ''}）` }}
+          {{ `自定义SQL（${renderSqlItems.length}${allTableAppSqlItems.length > 0 ? '，' + allTableAppSqlItems.length : ''}）` }}
         </template>
         <template #extra>
           <a-space>
             <a-tooltip content="新建">
-              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addRestfulForm">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addSqlForm">
                 <gl-iconfont type="gl-plus-circle"/>
               </a-button>
             </a-tooltip>
             <a-tooltip content="重置">
-              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="resetData('restful')">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="resetData('sql')">
                 <gl-iconfont type="gl-reset"/>
               </a-button>
             </a-tooltip>
           </a-space>
         </template>
         <a-list size="small">
-          <template v-for="item in renderRestfulItems" :key="item.id">
-            <a-list-item style="cursor: pointer;" @click="editRestfulForm(item)">
+          <template v-for="item in renderSqlItems" :key="item.id">
+            <a-list-item style="cursor: pointer;" @click="editSqlForm(item)">
               <a-list-item-meta :title="item.keyName">
                 <template #title>
                   <a-tooltip v-if="item.approval.length>0" :content="`模型权限申请（${item.approval.length}）`">
@@ -965,25 +965,25 @@ const appRestfulOpen = (record: QueryAppRestfulForm) => {
           </template>
         </a-list>
       </a-collapse-item>
-      <a-collapse-item :key="6" :header="`授权自定义SQL（${renderAccreditRestfulItems.length}）`" class="colapse-list1">
+      <a-collapse-item :key="6" :header="`授权自定义SQL（${renderAccreditSqlItems.length}）`" class="colapse-list1">
         <template #extra>
           <a-space>
             <a-tooltip content="新建">
-              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addAppRestfulForm">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="addAppSqlForm">
                 <gl-iconfont type="gl-plus-circle"/>
               </a-button>
             </a-tooltip>
             <a-tooltip content="重置">
-              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="resetData('accreditRestful')">
+              <a-button size="mini" style="padding: 0 5px;" type="text" @click.stop="resetData('accreditSql')">
                 <gl-iconfont type="gl-reset"/>
               </a-button>
             </a-tooltip>
           </a-space>
         </template>
         <a-list size="small">
-          <template v-for="item in renderAccreditRestfulItems" :key="item.id">
-            <a-list-item style="cursor: pointer;" @click="appRestfulOpen(item)">
-              <a-list-item-meta :description="item.restfulTitle" :title="item.restfulKey">
+          <template v-for="item in renderAccreditSqlItems" :key="item.id">
+            <a-list-item style="cursor: pointer;" @click="appSqlOpen(item)">
+              <a-list-item-meta :description="item.sqlTitle" :title="item.sqlKey">
               </a-list-item-meta>
               <template #actions>
             <span :title="`${item.updaterName || ''}更新@${item.updateAt}`" class="gl-actions-description">
@@ -1026,23 +1026,23 @@ const appRestfulOpen = (record: QueryAppRestfulForm) => {
                       :refApp="avFormTabsParams.refApp" :width="avFormTabsParams.width"
                       @deleteSuccess="aViewFormSaveSuccess" @updateSuccess="aViewFormSaveSuccess"/>
 
-  <GlModelRestfulAppForm v-model:visible="arFormParams.visible"
-                         :formCol="arFormParams.formCol"
-                         :formState="arFormParams.formState"
-                         :modelValue="arFormParams.id"
-                         :parameter="arFormParams.parameter"
-                         :title="arFormParams.title"
-                         :width="arFormParams.width"
-                         @saveSuccess="aRestfulFormSaveSuccess"/>
+  <GlModelSqlAppForm v-model:visible="arFormParams.visible"
+                     :formCol="arFormParams.formCol"
+                     :formState="arFormParams.formState"
+                     :modelValue="arFormParams.id"
+                     :parameter="arFormParams.parameter"
+                     :title="arFormParams.title"
+                     :width="arFormParams.width"
+                     @saveSuccess="aSqlFormSaveSuccess"/>
 
-  <GlModelRestfulTabs v-model:visible="arFormTabsParams.visible"
-                      :formState="arFormTabsParams.formState"
-                      :formCol="arFormTabsParams.formCol"
-                      :modelValue="arFormTabsParams.id"
-                      :parameter="arFormTabsParams.parameter"
-                      :width="arFormTabsParams.width"
-                      :title="arFormTabsParams.title"
-                      @saveSuccess="restfulFormSaveSuccess"/>
+  <GlModelSqlTabs v-model:visible="arFormTabsParams.visible"
+                  :formState="arFormTabsParams.formState"
+                  :formCol="arFormTabsParams.formCol"
+                  :modelValue="arFormTabsParams.id"
+                  :parameter="arFormTabsParams.parameter"
+                  :width="arFormTabsParams.width"
+                  :title="arFormTabsParams.title"
+                  @saveSuccess="sqlFormSaveSuccess"/>
 
   <GlModelTableModal v-model:visible="formParams.visible" :formCol="formParams.formCol"
                      :formState="formParams.formState" :modelValue="formParams.id"
@@ -1076,6 +1076,10 @@ const appRestfulOpen = (record: QueryAppRestfulForm) => {
 
 .gl-model-list .arco-list-item-meta-description {
   font-size: 11px;
+}
+
+.gl-model-list .arco-collapse-item-header-title {
+  font-weight: bold !important;
 }
 
 .gl-model-list .gl-actions-description {

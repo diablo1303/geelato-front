@@ -8,7 +8,7 @@ export default {
 import {ref, shallowRef, watch} from "vue";
 import {Modal} from "@arco-design/web-vue";
 import type {FormInstance} from "@arco-design/web-vue";
-import {applicationApi, interApi, useGlobal} from "@geelato/gl-ui";
+import {applicationApi, interApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {QueryApiForm, QueryApiParamForm, QueryAppForm} from "@geelato/gl-ui";
 import {enableStatusOptions} from "./searchTable";
 import GlApiParamListTabs from "./param/listTabs.vue";
@@ -41,6 +41,7 @@ const visibleForm = ref<boolean>(false);// 弹层-是否显示
 const tabsKey = ref<number>(1);// 定位tabs页面
 const parameterDefinition = ref<QueryApiParamForm[]>([])
 const listTabsRef = shallowRef(GlApiParamListTabs);
+const groupNameOptions = ref<String[]>([]);
 
 /* 表单 */
 const generateFormData = (): QueryApiForm => {
@@ -54,6 +55,8 @@ const generateFormData = (): QueryApiForm => {
     sourceContent: '',
     releaseContent: '',
     enableStatus: 1,
+    outsideUrl: '',
+    outSideStatus: 0,
     parameters: [],
     appId: props.parameter?.appId || '',
     tenantCode: props.parameter?.tenantCode || '',
@@ -81,6 +84,7 @@ const createOrUpdateData = async (params: QueryApiForm, successBack?: any, failB
   if (!res) {
     try {
       formData.value.parameters = parameterDefinition.value || [];
+      formData.value.outSideStatus = !formData.value.outsideUrl ? 0 : formData.value.outSideStatus;
       const {data} = await interApi.createOrUpdateApi(params);
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
@@ -115,6 +119,20 @@ const validate = async (value: any, callback: any) => {
     console.log(err);
   }
 }
+/**
+ * 获取应用列表
+ * @param params
+ * @param successBack
+ * @param failBack
+ */
+const queryGroupName = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
+  try {
+    const {data} = await interApi.queryApiGroupNames(params);
+    if (successBack && typeof successBack === 'function') successBack(data);
+  } catch (err) {
+    if (failBack && typeof failBack === 'function') failBack(err);
+  }
+};
 /**
  * 文本域查看
  * @param content
@@ -155,6 +173,23 @@ const dataTypeChange = (record: QueryApiParamForm) => {
   record.demoValue = '';
 }
 
+const createOutsideUrl = () => {
+  const appCode = global.$gl.app?.code || 'api';
+  const tenantCode = global.$gl.app?.tenantCode || '';
+  const isExist = appCode.indexOf(tenantCode) > -1;
+  formData.value.outsideUrl = `/${isExist ? appCode : tenantCode + '_' + appCode}_${utils.uuid(10)}`;
+  formData.value.outSideStatus = 1;
+}
+
+const cleanOutsideUrl = () => {
+  formData.value.outsideUrl = '';
+  formData.value.outSideStatus = 0;
+}
+
+const changeOutsideStatus = () => {
+  formData.value.outSideStatus = formData.value.outSideStatus === 1 ? 0 : 1;
+}
+
 watch(() => props, async () => {
   if (props.visible === true) {
     tabsKey.value = 1;
@@ -168,6 +203,14 @@ watch(() => props, async () => {
       appSelectOptions.value = data || [];
     }, () => {
       appSelectOptions.value = [];
+    });
+    // 分组信息
+    await queryGroupName({
+      appId: props.parameter?.appId || '', tenantCode: props.parameter?.tenantCode || ''
+    }, (data: string[]) => {
+      groupNameOptions.value = data || [];
+    }, () => {
+      groupNameOptions.value = [];
     });
     // 表单数据重置
     formData.value = generateFormData();
@@ -213,15 +256,15 @@ watch(() => visibleForm, () => {
                   <span v-else>{{ formData.code }}</span>
                 </a-form-item>
               </a-col>
-              <a-col :span="(labelCol+wrapperCol)/formCol">
-                <a-form-item field="version" label="版本">
-                  <a-input-number v-if="formState!=='view'" v-model="formData.version"/>
-                  <span v-else>{{ formData.version }}</span>
-                </a-form-item>
-              </a-col>
+              <!--              <a-col :span="(labelCol+wrapperCol)/formCol">
+                              <a-form-item field="version" label="版本">
+                                <a-input-number v-if="formState!=='view'" v-model="formData.version"/>
+                                <span v-else>{{ formData.version }}</span>
+                              </a-form-item>
+                            </a-col>-->
               <a-col :span="(labelCol+wrapperCol)/formCol">
                 <a-form-item field="groupName" label="分组名称">
-                  <a-input v-if="formState!=='view'" v-model="formData.groupName" :max-length="32"/>
+                  <a-auto-complete v-if="formState!=='view'" v-model.trim="formData.groupName" :data="groupNameOptions" allow-clear/>
                   <span v-else>{{ formData.groupName }}</span>
                 </a-form-item>
               </a-col>
@@ -235,6 +278,55 @@ watch(() => visibleForm, () => {
               <a-col :span="(labelCol+wrapperCol)/formCol">
                 <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="enableStatus" label="是否启用">
                   <a-select v-model="formData.enableStatus" :disabled="formState==='view'" :options="enableStatusOptions"/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="(labelCol+wrapperCol)">
+                <a-form-item :label-col-props="{ span: labelCol/formCol }"
+                             :wrapper-col-props="{ span: (labelCol+wrapperCol-labelCol/formCol) }"
+                             field="outsideUrl" label="第三方访问">
+                  <a-input-group v-if="formState!=='view'" class="input-group">
+                    <a-popconfirm v-if="formData.outsideUrl" :content="`是否${formData.outSideStatus===1?'禁用':'启用'}第三方访问路径？`" position="bl"
+                                  type="warning" @ok="changeOutsideStatus">
+                      <a-tooltip v-if="formData.outSideStatus===1" content="点击，禁用第三方访问路径（不清空）">
+                        <a-button class="input-button" type="dashed">
+                          <span class="button-icon icon-right">已启用</span>
+                        </a-button>
+                      </a-tooltip>
+                      <a-tooltip v-else content="点击，启用第三方访问路径">
+                        <a-button class="input-button" type="dashed">
+                          <span class="button-icon icon-wrong">已禁用</span>
+                        </a-button>
+                      </a-tooltip>
+                    </a-popconfirm>
+                    <a-input v-model.trim="formData.outsideUrl" :max-length="32" readonly/>
+                    <a-popconfirm v-if="!formData.outsideUrl" content="是否生成第三方访问路径？" position="br" type="info" @ok="createOutsideUrl">
+                      <a-tooltip content="生成第三方访问路径">
+                        <a-button class="input-button" type="dashed">
+                          <gl-iconfont class="button-icon icon-edit" type="gl-plus-circle"/>
+                        </a-button>
+                      </a-tooltip>
+                    </a-popconfirm>
+                    <a-popconfirm v-if="formData.outsideUrl" content="是否清空第三方访问路径？" position="br" type="warning" @ok="cleanOutsideUrl">
+                      <a-tooltip content="清空第三方访问路径">
+                        <a-button class="input-button" type="dashed">
+                          <gl-iconfont class="button-icon icon-delete" type="gl-delete"/>
+                        </a-button>
+                      </a-tooltip>
+                    </a-popconfirm>
+                  </a-input-group>
+                  <a-space v-else>
+                    <span v-if="formData.outsideUrl">
+                      <a-button :status="formData.outSideStatus===1?'success':'danger'"
+                                class="list-action-button-default" type="outline">
+                        <span v-if="formData.outSideStatus===1">已启用</span>
+                        <span v-else>已禁用</span>
+                      </a-button>
+                    </span>
+                    <span>
+                      {{ formData.outsideUrl }}
+                      <GlCopyToClipboard :modelValue="formData.outsideUrl"/>
+                    </span>
+                  </a-space>
                 </a-form-item>
               </a-col>
               <a-col :span="(labelCol+wrapperCol)">
@@ -276,5 +368,37 @@ div.arco-form-item-content > span.textarea-span {
   -webkit-box-orient: vertical;
   white-space: normal;
   word-wrap: break-word;
+}
+
+.list-action-button-default {
+  cursor: auto;
+  height: 20px;
+  font-size: 12px;
+  border-radius: 5px;
+  line-height: 20px;
+  padding: 0 5px;
+}
+
+.input-group {
+  width: 100%;
+
+  .input-button {
+    border: 0px dashed var(--color-neutral-3);
+    height: 31px;
+    padding: 0 13px;
+    font-size: 15px;
+
+    .icon-edit {
+      color: rgb(var(--primary-6));
+    }
+
+    .icon-delete {
+      color: rgb(var(--danger-6));
+    }
+
+    .icon-right {
+      color: rgb(var(--success-6));
+    }
+  }
 }
 </style>

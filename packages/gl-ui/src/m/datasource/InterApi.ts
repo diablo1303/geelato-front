@@ -53,6 +53,8 @@ export interface QueryApiForm {
   sourceContent: string;
   releaseContent: string;
   enableStatus: number;
+  outsideUrl: string;// 第三方访问地址
+  outSideStatus: number; // 第三方访问状态
   appId: string;
   tenantCode: string;
   updateAt?: string;
@@ -84,4 +86,9 @@ export function deleteApi(id: string) {
 
 export function validateApiCode(params: QueryApiForm) {
   return entityApi.getAxios().post<QueryResult>('/api/script/api/validate', params);
+}
+
+export function queryApiGroupNames(params: Record<string, any>) {
+  const records = utils.getUrlParams(params);
+  return entityApi.getAxios().get<QueryApiForm[]>(`/api/script/api/queryGroupName?${records.join('&')}`);
 }

@@ -6,7 +6,7 @@ import {isLogin} from "./m/utils/Auth";
 import * as routeUtil from "./m/utils/RouteListener"
 import * as eventUtil from "./m/utils/Event"
 import * as monitorUtil from "./m/utils/Monitor"
-import type {PageParamConfigType, PagePermission, PageTemplate,PageCustomType} from './components/PageProvideProxy'
+import type {PageCustomType, PageParamConfigType, PagePermission, PageTemplate} from './components/PageProvideProxy'
 import PageProvideProxy, {PageParamsKey, PageProvideKey, paramStringify} from './components/PageProvideProxy'
 import GlHtml from './components/gl-html/Index.vue'
 import GlIconfont from './components/gl-iconfont/Index.vue'
@@ -101,8 +101,8 @@ import type {
   QueryViewForm
 } from './m/datasource/ModelApi'
 import * as modelApi from './m/datasource/ModelApi'
-import type {QueryAppRestfulForm, QueryRestfulForm} from './m/datasource/RestfulApi'
-import * as restfulApi from './m/datasource/RestfulApi'
+import type {QueryAppSqlForm, QuerySqlForm} from './m/datasource/SqlApi'
+import * as sqlApi from './m/datasource/SqlApi'
 import type {
   QueryColumnRolePermissionForm,
   QueryOrgForm,
@@ -139,7 +139,7 @@ import './assets/style.css'
 import useLogger from './m/hooks/useLogger'
 import {loadPageContent} from './components/PageLoader'
 
-const RuleExpression:string = '_RuleExpression'
+const RuleExpression: string = '_RuleExpression'
 const Utils = AllUtils
 
 const component: GeelatoPlugin = {
@@ -310,9 +310,9 @@ export {
   QueryTableForeignForm,
   QueryTableForm,
   QueryViewForm,
-  restfulApi,
-  QueryRestfulForm,
-  QueryAppRestfulForm,
+  sqlApi,
+  QueryAppSqlForm,
+  QuerySqlForm,
   securityApi,
   QueryOrgForm,
   QueryUserForm,

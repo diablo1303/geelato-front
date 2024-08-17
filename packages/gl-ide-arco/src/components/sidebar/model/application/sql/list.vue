@@ -6,15 +6,15 @@ export default {
 
 <script lang="ts" setup>
 import {reactive, ref, watch, computed} from 'vue';
-import {modelApi, restfulApi, useGlobal, utils} from "@geelato/gl-ui";
+import {modelApi, sqlApi, useGlobal, utils} from "@geelato/gl-ui";
 import type {TableColumnData, TableSortable} from '@arco-design/web-vue';
-import type {Pagination, QueryAppRestfulForm} from "@geelato/gl-ui";
+import type {Pagination, QueryAppSqlForm} from "@geelato/gl-ui";
 import {approvalNeedOptions, approvalStatusOptions, enableStatusOptions} from '../searchTable';
 import GlModelRestfulAppForm from './form.vue'
 
 type PageParams = {
-  restfulId: string; // 模型主键
-  restfulTitle: string; // 模型名称
+  sqlId: string; // 模型主键
+  sqlTitle: string; // 模型名称
   restAppId: string; // 应用主键
   author: boolean; // 是否应用表
   appId?: string; // 应用主键
@@ -52,9 +52,9 @@ const generateFilterData = () => {
     id: '',
     appId: '',
     appName: '',
-    restfulId: props.parameter.restfulId || '',
-    restfulTitle: '',
-    restfulKey: '',
+    sqlId: props.parameter.sqlId || '',
+    sqlTitle: '',
+    sqlKey: '',
     approvalNeed: '',
     approvalStatus: '',
     enableStatus: '1',
@@ -70,7 +70,7 @@ const filterData = ref(generateFilterData());
 const fetchData = async (params: Record<string, any>) => {
   loading.value = true;
   try {
-    const {data} = await restfulApi.queryAppRestfuls(params);
+    const {data} = await sqlApi.queryAppSqls(params);
     renderData.value = data;
     pagination.current = params.current;
     pagination.pageSize = basePagination.pageSize;
@@ -91,7 +91,7 @@ const fetchData = async (params: Record<string, any>) => {
  */
 const deleteData = async (id: string, successBack?: any, failBack?: any) => {
   try {
-    await restfulApi.deleteAppRestful(id);
+    await sqlApi.deleteAppSql(id);
     if (successBack && typeof successBack === 'function') successBack(id);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -122,7 +122,7 @@ const conditionChange = (value: string | number | boolean | Record<string, any> 
 const reset = (ev?: Event) => {
   basePagination.current = 1;
   filterData.value = generateFilterData();
-  if (filterData.value.restfulId) {
+  if (filterData.value.sqlId) {
     search();
   }
 };
@@ -167,7 +167,7 @@ const formPage = ref({
   visible: false,
   parameter: {
     author: true,
-    restfulId: '', restfulAppId: '',
+    sqlId: '', sqlAppId: '',
     appId: '', tenantCode: ''
   },// 是否可编辑模型名称
   formState: 'add',
@@ -186,13 +186,13 @@ const addTable = (ev?: MouseEvent) => {
   formPage.value.id = '';
   formPage.value.visible = true;
 };
-const editTable = (data: QueryAppRestfulForm) => {
+const editTable = (data: QueryAppSqlForm) => {
   formPage.value.formState = ['draft'].includes(data.approvalStatus) ? 'edit' : 'view';
   formPage.value.id = data.id;
   formPage.value.visible = true;
 }
 
-const saveSuccess = (data: QueryAppRestfulForm, type: string) => {
+const saveSuccess = (data: QueryAppSqlForm, type: string) => {
   if (type === 'add') {
     reset();
     emits('add', data);
@@ -201,18 +201,18 @@ const saveSuccess = (data: QueryAppRestfulForm, type: string) => {
     emits('edit', data);
   }
 }
-const deleteTable = (data: QueryAppRestfulForm) => {
+const deleteTable = (data: QueryAppSqlForm) => {
   deleteData(data.id, (id: string) => {
     condition();
     emits('delete', data);
   });
 }
 
-const approvalRecord = async (record: QueryAppRestfulForm, status: string) => {
+const approvalRecord = async (record: QueryAppSqlForm, status: string) => {
   try {
     const params = {...record};
     params.approvalStatus = status;
-    await restfulApi.createOrUpdateAppRestful(params);
+    await sqlApi.createOrUpdateAppSql(params);
     global.$message.success({content: `授权审批 -> ${status === 'agree' ? '同意' : '拒绝'}！`})
     condition();
   } catch (err) {
@@ -222,10 +222,10 @@ const approvalRecord = async (record: QueryAppRestfulForm, status: string) => {
 
 watch(() => props.parameter, (val) => {
   formPage.value.parameter = {
-    restfulId: props.parameter.restfulId || '',
-    restfulAppId: props.parameter?.restfulAppId || '',
+    sqlId: props.parameter.sqlId || '',
+    sqlAppId: props.parameter?.sqlAppId || '',
     author: props.parameter?.author || false,
-    appId: !!props.parameter.author ? props.parameter?.appId : '',
+    appId: props.parameter.author ? props.parameter?.appId : '',
     tenantCode: props.parameter?.tenantCode || '',
   };
   reset();

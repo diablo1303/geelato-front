@@ -8,11 +8,11 @@ export default {
 import {ref, shallowRef, watch} from "vue";
 import {Modal} from "@arco-design/web-vue";
 import type {FormInstance} from "@arco-design/web-vue";
-import {applicationApi, restfulApi, utils, useGlobal, isUtil} from "@geelato/gl-ui";
-import type {QueryRestfulForm, QueryAppForm, QueryApiParamForm} from "@geelato/gl-ui";
+import {applicationApi, sqlApi, utils, useGlobal, isUtil} from "@geelato/gl-ui";
+import type {QuerySqlForm, QueryAppForm, QueryApiParamForm} from "@geelato/gl-ui";
 import {enableStatusOptions} from "../../../api/searchTable";
 import {configTypeOptions, getConfigTypeOther} from "./searchTable";
-import GlModelResfulAppList from "./list.vue";
+import GlModelSqlAppList from "./list.vue";
 import GlApiParamListTabs from '../../../api/param/listTabs.vue'
 
 // 页面所需 参数
@@ -45,7 +45,7 @@ const tabsKey = ref<number>(1);// 定位tabs页面
 const paramTabsKey = ref<number>(1);// 定位tabs页面
 const listTabsRef = shallowRef(GlApiParamListTabs);
 /* 表单 */
-const generateFormData = (): QueryRestfulForm => {
+const generateFormData = (): QuerySqlForm => {
   return {
     id: props.modelValue || '',
     title: '',
@@ -66,7 +66,7 @@ const listParams = ref({
   id: '', visible: false, formState: 'edit', height: tableTabHeight.value - 248,
   parameter: {
     author: props.parameter.author || false,
-    restfulId: '', restfulAppId: '',
+    sqlId: '', sqlAppId: '',
     appId: '', tenantCode: ''
   }
 });
@@ -77,7 +77,7 @@ const listParams = ref({
  * @param successBack
  * @param failBack
  */
-const createOrUpdateData = async (params: QueryRestfulForm, successBack?: any, failBack?: any) => {
+const createOrUpdateData = async (params: QuerySqlForm, successBack?: any, failBack?: any) => {
   // @ts-ignore
   if (!(listTabsRef?.value?.validate())) {
     global.$message.warning("请补全参数定义！！");
@@ -90,7 +90,7 @@ const createOrUpdateData = async (params: QueryRestfulForm, successBack?: any, f
   if (!res) {
     try {
       formData.value.parameterDefinition = JSON.stringify(parameterDefinition.value || []);
-      const {data} = await restfulApi.createOrUpdateRestful(params);
+      const {data} = await sqlApi.createOrUpdateSql(params);
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
       if (failBack && typeof failBack === 'function') failBack(err);
@@ -105,7 +105,7 @@ const createOrUpdateData = async (params: QueryRestfulForm, successBack?: any, f
  */
 const getData = async (id: string, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await restfulApi.getRestful(id);
+    const {data} = await sqlApi.getSql(id);
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -120,7 +120,7 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
  */
 const deleteData = async (id: string, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await restfulApi.deleteRestful(id);
+    const {data} = await sqlApi.deleteSql(id);
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -133,7 +133,7 @@ const deleteData = async (id: string, successBack?: any, failBack?: any) => {
  */
 const validate = async (value: any, callback: any) => {
   try {
-    const {data} = await restfulApi.validateRestfulKeyName(formData.value);
+    const {data} = await sqlApi.validateSqlKeyName(formData.value);
     if (!data) callback('不能重复');
   } catch (err) {
     console.log(err);
@@ -158,7 +158,7 @@ const resetValidate = async () => {
  * @param ev
  */
 const handleModelOk = (done: any) => {
-  createOrUpdateData(formData.value, (data: QueryRestfulForm) => {
+  createOrUpdateData(formData.value, (data: QuerySqlForm) => {
     done();
     visibleForm.value = false;
     emits('saveSuccess', data, props.formState);
@@ -211,7 +211,7 @@ watch(() => props, async () => {
     resetValidate();
     // 编辑、查看 状态 查询数据
     if (['edit', 'view'].includes(props.formState) && props.modelValue) {
-      await getData(props.modelValue, (data: QueryRestfulForm) => {
+      await getData(props.modelValue, (data: QuerySqlForm) => {
         formData.value = data;
         // 参数定义
         if (isUtil.isJSON(data.parameterDefinition)) {
@@ -222,7 +222,7 @@ watch(() => props, async () => {
           id: '', visible: true, formState: 'edit', height: tableTabHeight.value - (props.formState === 'view' ? 248 : 200),
           parameter: {
             author: props.parameter.author || false,
-            restfulId: data.id, restfulAppId: data.appId,
+            sqlId: data.id, sqlAppId: data.appId,
             appId: props.parameter.appId || "", tenantCode: props.parameter.tenantCode || ""
           }
         })
@@ -336,7 +336,7 @@ watch(() => visibleForm, () => {
       </a-tab-pane>
       <a-tab-pane v-if="formState!=='add'" :key="4" :title="`${parameter.author?'授权申请':'授权应用'}`" class="a-tabs-two">
         <a-card class="general-card">
-          <GlModelResfulAppList v-if="listParams.visible"
+          <GlModelSqlAppList v-if="listParams.visible"
                                 :form-state="listParams.formState"
                                 :height="listParams.height"
                                 :is-modal="true"

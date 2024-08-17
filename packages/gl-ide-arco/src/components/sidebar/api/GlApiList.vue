@@ -12,6 +12,7 @@ import {entityApi, EntityReader, EntityReaderParam, interApi, useGlobal, utils} 
 import {useAppStore} from '@geelato/gl-ide'
 import GlApiModal from "./GlApiModal.vue";
 import ApiForm from "./ApiForm.vue";
+import ApiList from "./ApiList.vue";
 
 const props = defineProps({
   recordId: String
@@ -20,6 +21,9 @@ const global = useGlobal()
 const appStore = useAppStore()
 const allItems: Ref<Item[]> = ref([])
 const renderItems: Ref<Item[]> = ref([])
+const groupNames = ref<String[]>([])
+const existNull = ref<boolean>(false)
+const activeKey = ref<number[]>([]);
 const searchText = ref('')
 const orderBy = ref('updateAt')
 
@@ -44,23 +48,58 @@ const generateRenderItems = () => {
     )
   })
 }
+
 watch(searchText, () => {
   generateRenderItems()
+  setActiveKey()
 })
+
 watch(orderBy, () => {
   generateRenderItems()
+  setActiveKey()
 })
+
 type Item = {
   id: string
   name: string
   code: string
   remark?: string
+  groupName: string
   creator: string
   updateAt: string
   updaterName: string
   creatorName: string
   enableStatus: boolean
 }
+
+const setGroupNames = () => {
+  groupNames.value = [];
+  if (allItems.value.length > 0) {
+    for (const item of allItems.value) {
+      if (!item.groupName) {
+        existNull.value = true;
+      } else if (!groupNames.value.includes(item.groupName)) {
+        groupNames.value.push(item.groupName);
+      }
+    }
+  }
+}
+
+const setActiveKey = () => {
+  // 初始化activeKey
+  activeKey.value = []
+  if (groupNames.value.length > 0) {
+    for (let i = 0; i < groupNames.value.length; i += 1) {
+      const names = renderItems.value.filter(item => item.groupName === groupNames.value[i]);
+      if (names && names.length > 0) activeKey.value.push(i + 1);
+    }
+    if (existNull.value) {
+      const names = renderItems.value.filter(item => !groupNames.value.includes(item.groupName));
+      if (names && names.length > 0) activeKey.value.push(groupNames.value.length + 1);
+    }
+  }
+}
+
 /**
  * 加载记录
  */
@@ -70,14 +109,16 @@ const fetchData = (successBack?: any) => {
   }
   const entityReader = new EntityReader()
   entityReader.entity = 'platform_api'
-  entityReader.setFields('id,creator,creatorName,updateAt,updaterName,name,code,enableStatus,remark')
+  entityReader.setFields('id,creator,creatorName,updateAt,updaterName,name,code,enableStatus,remark,groupName')
   entityReader.params = []
   entityReader.params.push(new EntityReaderParam('appId', 'eq', appStore.currentApp.id))
 
   entityApi.queryByEntityReader(entityReader).then(
       (res: any) => {
         allItems.value = res.data
+        setGroupNames()
         generateRenderItems()
+        setActiveKey()
         if (successBack && typeof successBack === 'function') successBack();
       },
       () => {
@@ -160,7 +201,7 @@ fetchData()
 </script>
 
 <template>
-  <div class="gl-service-list">
+  <div class="gl-api-list">
     <a-tabs :default-active-key="orderBy" size="mini" @change="changeTab">
       <a-tab-pane key="updateAt" title="按时间排序"></a-tab-pane>
       <a-tab-pane key="name" title="按名称排序"></a-tab-pane>
@@ -184,39 +225,25 @@ fetchData()
       </a-tooltip>
       <a-input-search v-model="searchText" size="small" placeholder="录入中、英文名查询" style="width: 100%"/>
     </a-space>
-    <a-list size="small">
-      <template v-for="(item,index) in renderItems" :key="index">
-        <a-list-item style="cursor: pointer;" @click="openModal(item)" action-layout="vertical" title="编辑接口脚本">
-          <a-list-item-meta>
-            <template #title>
-              <span :title="item.name">{{ item.name }}</span>
-            </template>
-            <template #description>
-              <span :title="item.remark || item.code">{{ item.remark || item.code }}</span>
-            </template>
-          </a-list-item-meta>
-          <template #extra>
-            <span class="gl-actions-description" :title="`${item.updaterName||''}更新@${item.updateAt}`">
-              {{ utils.timeAgo(item.updateAt) }}
-            </span>
-          </template>
-          <template #actions>
-            <a-tooltip content="编辑接口信息" position="top">
-              <a-button size="small" type="text" style="height: 16px;padding: 0;" @click.stop="editApiModel(item)">
-                <gl-iconfont type="gl-edit-square"/>
-              </a-button>
-            </a-tooltip>
-            <a-popconfirm content="是否删除该条数据？" position="bl" type="warning" @ok="deleteApiModel(item)">
-              <a-tooltip content="删除接口" position="top">
-                <a-button size="small" type="text" status="danger" style="height: 16px;padding: 0;" @click.stop>
-                  <gl-iconfont type="gl-delete"/>
-                </a-button>
-              </a-tooltip>
-            </a-popconfirm>
-          </template>
-        </a-list-item>
-      </template>
-    </a-list>
+
+    <a-collapse v-if="groupNames.length > 0" v-model:active-key="activeKey" :bordered="true" class="collapse1">
+      <a-collapse-item v-for="(name,n) in groupNames" :key="n+1" class="colapse-list1">
+        <template #header>
+          {{ `${name}（${(renderItems.filter(it => it.groupName === name)).length}）` }}
+        </template>
+        <ApiList :model-value="renderItems.filter(it => it.groupName === name)"
+                 @openModal="openModal" @editApiModel="editApiModel" @deleteApiModel="deleteApiModel"/>
+      </a-collapse-item>
+      <a-collapse-item v-if="existNull" :key="groupNames.length+1" class="colapse-list1">
+        <template #header>
+          {{ `其他（无分组）（${(renderItems.filter(it => !groupNames.includes(it.groupName))).length}）` }}
+        </template>
+        <ApiList :model-value="renderItems.filter(it => !groupNames.includes(it.groupName))"
+                 @openModal="openModal" @editApiModel="editApiModel" @deleteApiModel="deleteApiModel"/>
+      </a-collapse-item>
+    </a-collapse>
+    <ApiList v-else :model-value="renderItems"
+             @openModal="openModal" @editApiModel="editApiModel" @deleteApiModel="deleteApiModel"/>
 
     <a-modal
         draggable
@@ -246,24 +273,24 @@ fetchData()
   </div>
 </template>
 <style>
-.gl-service-list .gl-has {
+.gl-api-list .gl-has {
   color: #165dff;
 }
 
-.gl-service-list .arco-list-item {
+.gl-api-list .arco-list-item {
   padding: 1px 14px !important;
 }
 
-.gl-service-list .arco-list-item-extra {
+.gl-api-list .arco-list-item-extra {
   display: flex;
   align-items: center;
 }
 
-.gl-service-list .arco-list-item-action {
+.gl-api-list .arco-list-item-action {
   margin-top: 0 !important;
 }
 
-.gl-service-list .arco-list-item-meta-title {
+.gl-api-list .arco-list-item-meta-title {
   display: -webkit-box;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -273,7 +300,11 @@ fetchData()
   word-wrap: break-word;
 }
 
-.gl-service-list .arco-list-item-meta-description {
+.gl-api-list .arco-collapse-item-header-title {
+  font-weight: bold !important;
+}
+
+.gl-api-list .arco-list-item-meta-description {
   font-size: 11px;
   display: -webkit-box;
   overflow: hidden;
@@ -284,7 +315,7 @@ fetchData()
   word-wrap: break-word;
 }
 
-.gl-service-list .gl-actions-description {
+.gl-api-list .gl-actions-description {
   font-size: 11px;
 }
 </style>

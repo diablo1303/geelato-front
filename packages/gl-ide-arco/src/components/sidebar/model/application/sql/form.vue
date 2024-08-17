@@ -8,15 +8,15 @@ export default {
 import {computed, ref, watch} from "vue";
 import {Modal, type SelectOptionData} from "@arco-design/web-vue";
 import type {TableColumnData, FormInstance} from "@arco-design/web-vue";
-import type {QueryAppForm, QueryAppRestfulForm, QueryRestfulForm} from '@geelato/gl-ui';
-import {restfulApi, applicationApi, useGlobal} from "@geelato/gl-ui";
+import type {QueryAppForm, QueryAppSqlForm, QuerySqlForm} from '@geelato/gl-ui';
+import {sqlApi, applicationApi, useGlobal} from "@geelato/gl-ui";
 import {approvalStatusOptions} from "../searchTable";
 
 type PageParams = {
-  restfulId: string; // 数据库链接id
-  restfulTitle: string; // 模型名称
-  restfulKey: string;
-  restfulAppId: string; // 应用id
+  sqlId: string; // 数据库链接id
+  sqlKey: string;
+  sqlTitle: string; // 模型名称
+  sqlAppId: string; // 应用id
   author: boolean; // 创建人
   appId?: string; // 应用主键
   tenantCode?: string; // 租户编码
@@ -43,14 +43,14 @@ const tableTabStyle = ref({height: `${tableTabHeight.value}px`});
 const appSelectOptions = ref<QueryAppForm[]>([]);
 const resfulSelectOptions = ref<SelectOptionData[]>([]);
 
-const generateFormData = (): QueryAppRestfulForm => {
+const generateFormData = (): QueryAppSqlForm => {
   return {
     id: props.modelValue || '',
     appName: '',
-    restfulId: props.parameter.restfulId || '',
-    restfulTitle: props.parameter.restfulTitle || '',
-    restfulKey: '',
-    restfulAppId: props.parameter.restfulAppId || '',
+    sqlId: props.parameter.sqlId || '',
+    sqlTitle: props.parameter.sqlTitle || '',
+    sqlKey: '',
+    sqlAppId: props.parameter.sqlAppId || '',
     approvalStatus: 'draft',
     approvalNeed: false,
     enableStatus: 1,
@@ -67,11 +67,11 @@ const formData = ref(generateFormData());
  * @param successBack
  * @param failBack
  */
-const createOrUpdateData = async (params: QueryAppRestfulForm, successBack?: any, failBack?: any) => {
+const createOrUpdateData = async (params: QueryAppSqlForm, successBack?: any, failBack?: any) => {
   const res = await validateForm.value?.validate();
   if (!res) {
     try {
-      const {data} = await restfulApi.createOrUpdateAppRestful(params);
+      const {data} = await sqlApi.createOrUpdateAppSql(params);
       if (successBack && typeof successBack === 'function') successBack(data);
     } catch (err) {
       if (failBack && typeof failBack === 'function') failBack(err);
@@ -88,7 +88,7 @@ const createOrUpdateData = async (params: QueryAppRestfulForm, successBack?: any
  */
 const getData = async (id: string, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await restfulApi.getAppRestful(id);
+    const {data} = await sqlApi.getAppSql(id);
     if (successBack && typeof successBack === 'function') successBack(data);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -97,7 +97,7 @@ const getData = async (id: string, successBack?: any, failBack?: any) => {
 
 const queryRestfulSelectOptions = async (params: Record<string, any>, successBack?: any, failBack?: any) => {
   try {
-    const {data} = await restfulApi.pageQueryRestfuls(params);
+    const {data} = await sqlApi.pageQuerySqls(params);
     if (successBack && typeof successBack === 'function') successBack(data.items || []);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -112,7 +112,7 @@ const queryRestfulSelectOptions = async (params: Record<string, any>, successBac
  */
 const deleteData = async (id: string, successBack?: any, failBack?: any) => {
   try {
-    await restfulApi.deleteAppRestful(id);
+    await sqlApi.deleteAppSql(id);
     if (successBack && typeof successBack === 'function') successBack(id);
   } catch (err) {
     if (failBack && typeof failBack === 'function') failBack(err);
@@ -132,7 +132,7 @@ const resetValidate = async () => {
  * @param ev
  */
 const handleModelOk = (done: any) => {
-  createOrUpdateData(formData.value, (data: QueryAppRestfulForm) => {
+  createOrUpdateData(formData.value, (data: QueryAppSqlForm) => {
     done(true);
     visibleForm.value = false;
     emits('saveSuccess', data, props.formState);
@@ -152,12 +152,12 @@ const handleModelCancel = (ev?: Event) => {
 
 const tableAppIdChange = () => {
   resfulSelectOptions.value = [];
-  formData.value.restfulId = '';
-  if (formData.value.restfulAppId) {
+  formData.value.sqlId = '';
+  if (formData.value.sqlAppId) {
     queryRestfulSelectOptions({
       order: 'keyName|asc', current: 1, pageSize: 10000,
-      appId: formData.value.restfulAppId, tenantCode: props.parameter?.tenantCode || ''
-    }, (data: QueryRestfulForm[]) => {
+      appId: formData.value.sqlAppId, tenantCode: props.parameter?.tenantCode || ''
+    }, (data: QuerySqlForm[]) => {
       for (const item of data) {
         resfulSelectOptions.value.push({label: `${item.keyName} ${item.title}`, value: item.id});
       }
@@ -184,10 +184,10 @@ watch(() => props, () => {
     resetValidate();
     // 编辑、查看 状态 查询数据
     if (['edit', 'view'].includes(props.formState) && props.modelValue) {
-      getData(props.modelValue, (data: QueryAppRestfulForm) => {
+      getData(props.modelValue, (data: QueryAppSqlForm) => {
         formData.value = JSON.parse(JSON.stringify(data));
         tableAppIdChange();
-        formData.value.restfulId = data.restfulId;
+        formData.value.sqlId = data.sqlId;
       });
     }
   }
@@ -221,19 +221,19 @@ const cloneColumns = ref<Column[]>([]);
           </a-form-item>
         </a-col>
         <a-col v-else :span="(labelCol+wrapperCol)/formCol">
-          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="restfulAppId" label="所属应用">
-            <a-select v-if="formState!=='view'&&!!parameter.author" v-model="formData.restfulAppId" :disabled="!!parameter.restfulAppId"
+          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="sqlAppId" label="所属应用">
+            <a-select v-if="formState!=='view'&&!!parameter.author" v-model="formData.sqlAppId" :disabled="!!parameter.sqlAppId"
                       allow-search @change="tableAppIdChange">
               <a-option v-for="item of appSelectOptions" :key="item.id as string" :label="item.name" :value="item.id"/>
             </a-select>
-            <span v-else>{{ formData.restfulAppId }}</span>
+            <span v-else>{{ formData.sqlAppId }}</span>
           </a-form-item>
         </a-col>
         <a-col :span="(labelCol+wrapperCol)/formCol">
-          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="restfulId" label="自定义接口">
-            <a-select v-if="formState!=='view'&&!!parameter.author" v-model="formData.restfulId" :disabled="!!parameter.restfulId"
+          <a-form-item :rules="[{required: true,message: '这是必填项'}]" field="sqlId" label="自定义接口">
+            <a-select v-if="formState!=='view'&&!!parameter.author" v-model="formData.sqlId" :disabled="!!parameter.sqlId"
                       :options="resfulSelectOptions" allow-search/>
-            <span v-else>{{ `${formData.restfulKey} ${formData.restfulTitle}` }}</span>
+            <span v-else>{{ `${formData.sqlKey} ${formData.sqlTitle}` }}</span>
           </a-form-item>
         </a-col>
         <a-col :span="labelCol+wrapperCol">
